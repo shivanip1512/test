@@ -26,53 +26,42 @@
         <div class="scroll-md monospace">${configString}</div>
     </tags:hideReveal2>
 </c:if>
-
 <c:if test="${fn:length(errors) > 0}">
- 	<c:if test="${!isRead}">
-		<div class="scroll-md">
-			<c:forEach items="${errors}" var="error">
-				<tags:hideReveal title="${error.description} (${error.errorCode})"
-					showInitially="false">
-					<div>${error.porter}</div>
-					<div>${error.troubleshooting}</div>
-				</tags:hideReveal>
-			</c:forEach>
-			<c:if test="${exceptionReason != null}">
-				<span class="error">${exceptionReason}</span>
-			</c:if>
-		</div>
-	</c:if>
-	<c:if test="${isRead}">
-		<div class="scroll-md">
-			<c:forEach items="${errors}" var="error">
+	<div class="scroll-md">
+		<c:forEach items="${errors}" var="error">
+			<tags:hideReveal title="${error.description} (${error.errorCode})" showInitially="false">
 				<c:if test="${not empty error.detail}">
-					<tags:hideReveal2 titleKey="${error.summary}" showInitially="false">
-						<i:inline key="${error.detail}" />
-					</tags:hideReveal2>
+					<i:inline key="${error.detail}" />
 				</c:if>
-				<c:if test="${empty error.detail}">
-					<div>
-						<span class="error"><i:inline key="${error.summary}" /></span>
-					</div>
-				</c:if>
-			</c:forEach>
-		</div>
-	</c:if> 
+				<div>${error.porter}</div>
+				<div>${error.troubleshooting}</div>
+			</tags:hideReveal>
+		</c:forEach>
+		<c:if test="${exceptionReason != null}">
+			<span class="error">${exceptionReason}</span>
+		</c:if>
+	</div>
 </c:if>
 
 <div class="action-area">
     <c:if test="${success}">
-        <c:choose>
-            <c:when test="${command != null}">
-                <span class="success fl"><i:inline key=".${command}.success" /></span>
-            </c:when>
-            <c:otherwise>
-                <span class="success fl"><i:inline key=".read.success" /></span>
-            </c:otherwise>
-        </c:choose>
+		<c:if test="${command != null}">
+			<span class="success fl"><i:inline key=".${command}.success" /></span>
+		</c:if>
+    	<c:if test="${isRead}">
+			<span class="success fl"><i:inline key=".read.success" /></span>
+		</c:if>
+		<c:if test="${isQuery}">
+			<span class="success fl"><i:inline key=".query.success" /></span>
+		</c:if>
     </c:if>
     
-    <tags:widgetActionRefresh method="read" nameKey="read" icon="icon-read" classes="right M0"/>
+    <c:if test="${supportsRead}">
+    	<tags:widgetActionRefresh method="read" nameKey="read" icon="icon-read" classes="right M0"/>
+    </c:if>
+    <c:if test="${supportsQuery}">
+    	<tags:widgetActionRefresh method="query" nameKey="query" icon="icon-read" classes="right M0"/>
+    </c:if>
     <cti:checkRolesAndProperties value="ALLOW_DISCONNECT_CONTROL">
         <tags:widgetActionRefresh method="connect" nameKey="connect" showConfirm="true" classes="middle"/>
         <c:if test="${supportsArm}">

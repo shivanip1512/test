@@ -1,9 +1,12 @@
 package com.cannontech.web.widget;
 
+import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -12,9 +15,18 @@ import com.cannontech.amr.deviceread.service.DeviceReadResult;
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
 import com.cannontech.amr.disconnect.model.DisconnectMeterResult;
 import com.cannontech.amr.disconnect.service.DisconnectService;
+import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
+import com.cannontech.amr.errors.model.DeviceErrorDescription;
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
+import com.cannontech.amr.rfn.model.RfnMeter;
+import com.cannontech.amr.rfn.service.RfnMeterDisconnectCallback;
+import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -23,6 +35,7 @@ import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LitePoint;
@@ -32,6 +45,8 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+
+import org.apache.log4j.Logger;
 
 public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
     
@@ -44,6 +59,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     @Autowired private StateDao stateDao;
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
+    @Autowired private RfnMeterDisconnectService rfnMeterDisconnectService;
     
     private final Set<BuiltInAttribute> disconnectAttribute = Sets.newHashSet(BuiltInAttribute.DISCONNECT_STATUS);
 
@@ -52,6 +68,62 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
         
         YukonMeter meter = meterDao.getForId(deviceId);
         initModel(model, userContext, meter);
+        
+        return "disconnectMeterWidget/render.jsp";
+    }
+    
+    @RequestMapping("query")
+    public String query(ModelMap model, YukonUserContext userContext, Integer deviceId) {
+    	
+    	RfnMeter meter = (RfnMeter) meterDao.getForId(deviceId);
+        initModel(model, userContext, meter);
+
+        class WaitableCallback implements RfnMeterDisconnectCallback {
+        	private final DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE);
+            private Logger log = YukonLogManager.getLogger(RfnMeterDisconnectCallback.class);
+            private CountDownLatch completeLatch = new CountDownLatch(1);
+            private Set<SpecificDeviceErrorDescription> errors = new HashSet<>();
+
+            @Override
+            public final void complete() {
+                completeLatch.countDown();
+            }
+
+            public void waitForCompletion() throws InterruptedException {
+                log.debug("Starting await completion");
+                completeLatch.await();
+                log.debug("Finished await completion");
+            }
+            
+            @Override
+            public void processingExceptionOccured(MessageSourceResolvable message) {
+                errors.add(new SpecificDeviceErrorDescription(errorDescription, message));
+            }
+
+            @Override
+            public void receivedSuccess(RfnMeterDisconnectState state, PointValueQualityHolder pointData) {
+                model.addAttribute("success", true);
+            }
+
+            @Override
+            public void receivedError(MessageSourceResolvable message, RfnMeterDisconnectState state) {
+                errors.add(new SpecificDeviceErrorDescription(errorDescription, message));
+            }
+
+			public Set<SpecificDeviceErrorDescription> getErrors() {
+				return errors;
+			}
+        };
+        
+        WaitableCallback callback = new WaitableCallback();
+		rfnMeterDisconnectService.send(meter, RfnMeterDisconnectStatusType.QUERY, callback);
+	    try {
+	    	callback.waitForCompletion();
+        } catch (InterruptedException e) { /* Ignore */ }
+        
+		model.addAttribute("isQuery", true);
+		model.addAttribute("isRead", false);
+		model.addAttribute("errors", callback.getErrors());
         
         return "disconnectMeterWidget/render.jsp";
     }
@@ -171,6 +243,10 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
         model.addAttribute("device", meter);
         model.addAttribute("supportsArm", supportsArm);
         model.addAttribute("attribute", BuiltInAttribute.DISCONNECT_STATUS);
-    }
-    
+		if (meter.getPaoType().isRfn()) {
+			model.addAttribute("supportsQuery", true);
+		} else {
+			model.addAttribute("supportsRead", true);
+		}
+	}
 }
