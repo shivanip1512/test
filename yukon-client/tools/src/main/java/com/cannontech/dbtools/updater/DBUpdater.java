@@ -192,6 +192,7 @@ public class DBUpdater extends MessageFrameAdaptor {
 				.parseBoolean(System.getProperty(CMD_LINE_PARAM_NAMES[2]).trim()) : false;
 
         Connection conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+       
         String cmd = null;
         File sqlFile = null;
         UpdateLine[] validLines = null;
@@ -210,13 +211,10 @@ public class DBUpdater extends MessageFrameAdaptor {
                     isIgnoreAllErrors = true;
                     isIgnoreBlockErrors = true;
                 }
+                
                 for (int j = 0; j < validLines.length; j++) {
                     cmd = validLines[j].getValue().toString();
-                    if (!isNightlyCheck) {
                         processLine(validLines[j], conn);
-                    } else {
-                        processLine(validLines[j], conn);
-                    }
                 }
 
                 // print a new version of this file
