@@ -763,19 +763,17 @@
     
     <!-- importUpload.jsp -->
     <entry key="yukon.web.modules.tools.bulk.importUpload.pageName">Bulk Import</entry>
-    <entry key="yukon.common.device.bulk.importUpload.header">Import Devices via CSV File</entry>
+    
     <entry key="yukon.common.device.bulk.importUpload.noteLabel">Note:</entry>
-    <entry key="yukon.common.device.bulk.importUpload.noteText"><![CDATA[
-        Uploading a file will not immediately create any devices.<br>You will be directed to a page with additional options and/or opportunity to confirm.
-    ]]></entry>
-    <entry key="yukon.common.device.bulk.importUpload.optionsLabel">Options:</entry>
-    <entry key="yukon.common.device.bulk.importUpload.importFileLabel">Import File:</entry>
-    <entry key="yukon.common.device.bulk.importUpload.loadButton">Load</entry>
-    <entry key="yukon.common.device.bulk.importUpload.loadButton.busy">Loading...</entry>
+    <entry key="yukon.common.device.bulk.importUpload.noteText">
+        Uploading a file will not immediately create any devices.  You will be directed to a page with additional options and/or opportunity to confirm.
+    </entry>
+    <entry key="yukon.common.device.bulk.importUpload.importFileLabel">Import File</entry>
     <entry key="yukon.common.device.bulk.importUpload.instructions"><![CDATA[
         <li>Files must contain a header row with valid columns as listed in the tables below.</li><br>
-        <li>Devices may be imported using either by <i><b>Template</b></i> or by <i><b>Device Type</b></i>.<br>Each method requires that certain column values are included for each row.</li><br>
-        <li>Additional columns may be included to further configure the device.</li><br>
+        <li>Devices may be imported using either by <i>Template</i> or by <i>Device Type</i>.<br>
+        Each method requires that certain column values are included for each row.</li><br>
+        <li>Additional columns may be included to further configure the device.</li>
     ]]></entry>
     <entry key="yukon.common.device.bulk.importUpload.sampleFilesLabel">Sample Files</entry>
     
@@ -783,7 +781,7 @@
     <entry key="yukon.common.device.bulk.options.import.ignoreInvalidHeaders">Ignore columns with invalid headers</entry>
     <entry key="yukon.common.device.bulk.options.import.ignoreInvalidTemplates">Ignore invalid template names</entry>
     
-    <entry key="yukon.common.device.bulk.options.deviceTypeSelect.text">Select type of Device: </entry>
+    <entry key="yukon.common.device.bulk.options.deviceTypeSelect.text">Device Type</entry>
     <entry key="yukon.common.device.bulk.options.deviceTypeSelect.RFN">RFN Meter</entry>
     <entry key="yukon.common.device.bulk.options.deviceTypeSelect.MCT">MCT Meter</entry>
     

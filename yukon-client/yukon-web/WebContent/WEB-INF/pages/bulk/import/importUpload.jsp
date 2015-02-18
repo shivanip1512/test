@@ -1,177 +1,158 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="tools" page="bulk.importUpload">
+<cti:msgScope paths=", yukon.common.device.bulk">
 
-<script>
-$(function(){
-    updateImportTypeSelection();
-    $("#importTypeSelector").change(function(){
-        updateImportTypeSelection();
-    });
-});
+<cti:includeScript link="/JavaScript/yukon.tools.import.upload.js"/>
 
-function updateImportTypeSelection() {
-    var itemSelected = $("#importTypeSelector").val();
-    //hide all rows
-    $("[class^='bulkImportType_']").hide();
-    //show rows for the selected interface
-    $(".bulkImportType_" + itemSelected).show();
+<div class="stacked">
+    <strong><i:inline key=".importUpload.noteLabel"/></strong>
+    <i:inline key=".importUpload.noteText"/>
+</div>
+
+<cti:url var="url" value="/bulk/import/parseUpload"/>
+<form id="uploadForm" method="post" action="${url}" enctype="multipart/form-data">
     
-    //hide all sample files
-    $("[class^='sample_import_files_']").hide();
-    //show sample files for the selected interface
-    $(".sample_import_files_" + itemSelected).show();
-}
-
-window.pressed = function(){
-	$('#fileErr').hide();
-};
-</script>
-    
-    <cti:msg var="headerTitle" key="yukon.common.device.bulk.importUpload.header"/>
-    <cti:url var="parseUploadUrl" value="/bulk/import/parseUpload"/>
-    <form id="uploadForm" method="post" action="${parseUploadUrl}" enctype="multipart/form-data">
-        <cti:csrfToken/>    
-    <tags:sectionContainer title="${headerTitle}" id="importUploadContainer" hideEnabled="false">
-        <div class="column-12-12">
-            <div class="column one">
+    <cti:csrfToken/>
+        
+    <div class="column-12-12 clearfix stacked-md">
+        <div class="column one">
+        
+            <tags:nameValueContainer2 tableClass="with-form-controls">
                 
-                <div class="stacked">
-                    <strong><cti:msg key="yukon.common.device.bulk.importUpload.noteLabel"/></strong>
-                    <i:inline key="yukon.common.device.bulk.importUpload.noteText"/>
-                </div>
-                <div class="stacked">
-                    <strong><i:inline key="yukon.common.device.bulk.importUpload.optionsLabel"/></strong>
-                    <label><input type="checkbox" name="ignoreInvalidCols" <c:if test="${ignoreInvalidCols}">checked</c:if>><i:inline key="yukon.common.device.bulk.options.import.ignoreInvalidHeaders"/></label>
-                </div>
+                <tags:nameValue2 nameKey=".importUpload.importFileLabel">
+                    <tags:file classes="js-file"/>
+                </tags:nameValue2>
                 
-                <%-- file errors --%>
-                <c:if test="${not empty fileErrorKeysList}">
-                    <div id="fileErr">
-                        <c:forEach var="fileErrorKey" items="${fileErrorKeysList}">
-                            <div class="error">
-                                <i:inline key="${fileErrorKey}"/>
-                            </div>
-                        </c:forEach>
-                    </div>
-                </c:if>
-
-                <%-- header errors --%>
-                <c:if test="${not empty headersErrorResolverList}">
-                    <div>
-                        <c:forEach var="headersErrorResolver" items="${headersErrorResolverList}">
-                            <div class="error">
-                                <i:inline key="${headersErrorResolver}"/>
-                            </div>
-                        </c:forEach>
-                    </div>
-                </c:if>
-            
-                <%-- file select --%>
-                <div>
-                    <strong><i:inline key="yukon.common.device.bulk.importUpload.importFileLabel"/></strong>
-                    <input type="file" name="dataFile" onchange="pressed()">
-                </div>
-                <div class="action-area"><cti:button nameKey="load" classes="primary action" busy="true" type="submit"/></div>
-            </div>
-            <div class="column two nogutter">
-                <%-- INSTRUCTIONS --%>
-                <h3>Instructions:</h3>
-                <ul class="stacked"><cti:msg key="yukon.common.device.bulk.importUpload.instructions"/></ul>
-               
-                <%-- sample files --%>
-                <div>
-                    <strong><cti:msg key="yukon.common.device.bulk.importUpload.sampleFilesLabel"/>:</strong>
-                    <c:forEach var="bulkImportType" items="${bulkImportTypes}">
-                            <span class="sample_import_files_${bulkImportType}">
-                                <span class="fwb">(${bulkImportType}):</span>
-                                <c:choose>
-                                    <c:when test="${bulkImportType=='MCT'}">
-                                        <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/import/${bulkImportType}/Sample_Bulk_Import_File1.csv"/>">File 1</a>,
-                                        <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/import/${bulkImportType}/Sample_Bulk_Import_File2.csv"/>">File 2</a>,
-                                        <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/import/${bulkImportType}/Sample_Bulk_Import_File3.csv"/>">File 3</a>,
-                                        <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/import/${bulkImportType}/Sample_Bulk_Import_File4.csv"/>">File 4</a>
-                                    </c:when>
-                                    <c:when test="${bulkImportType=='RFN'}">
-                                        <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/import/${bulkImportType}/Sample_Bulk_Import_File1.csv"/>">File 1</a>,
-                                        <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/import/${bulkImportType}/Sample_Bulk_Import_File2.csv"/>">File 2</a>,
-                                        <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/import/${bulkImportType}/Sample_Bulk_Import_File3.csv"/>">File 3</a>,
-                                        <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/import/${bulkImportType}/Sample_Bulk_Import_File4.csv"/>">File 4</a>
-                                    </c:when>
-                                </c:choose>
-                            </span>
-                        </c:forEach>
-                </div>
-            </div>
-        </div>
-        <div class="column-24 stacked">
-            <div class="column one">
-                <label>
-                    <strong><cti:msg2 key="yukon.common.device.bulk.options.deviceTypeSelect.text" /></strong>
-                    <select name="importTypeSelector" id="importTypeSelector">
-                        <c:forEach var="bulkImportType" items="${bulkImportTypes}">
-                            <option value="${bulkImportType}" <c:if test="${importTypeSelector eq bulkImportType}">selected="selected"</c:if>>
-                                <i:inline key="yukon.common.device.bulk.options.deviceTypeSelect.${bulkImportType}" />
+                <tags:nameValue2 nameKey=".options.deviceTypeSelect.text">
+                    <select name="importTypeSelector" class="js-import-type">
+                        <c:forEach var="type" items="${bulkImportTypes}">
+                            <option value="${type}" 
+                                <c:if test="${type eq importTypeSelector}">selected</c:if>>
+                                <i:inline key=".options.deviceTypeSelect.${type}"/>
                             </option>
                         </c:forEach>
                     </select>
-                </label>
+                </tags:nameValue2>
+                
+                <tags:nameValue2 excludeColon="true">
+                    <label>
+                        <input type="checkbox" name="ignoreInvalidCols" <c:if test="${ignoreInvalidCols}">checked</c:if>>
+                        <i:inline key=".options.import.ignoreInvalidHeaders"/>
+                    </label>
+                </tags:nameValue2>
+                
+            </tags:nameValueContainer2>
+            
+            <%-- file errors --%>
+            <c:if test="${not empty fileErrorKeysList}">
+                <div class="js-file-validation">
+                    <c:forEach var="key" items="${fileErrorKeysList}">
+                        <div class="error"><i:inline key="${key}"/></div>
+                    </c:forEach>
+                </div>
+            </c:if>
+            
+            <%-- header errors --%>
+            <c:if test="${not empty headersErrorResolverList}">
+                <div class="js-file-validation">
+                    <c:forEach var="key" items="${headersErrorResolverList}">
+                        <div class="error"><i:inline key="${key}"/></div>
+                    </c:forEach>
+                </div>
+            </c:if>
+            
+            <div class="action-area">
+                <cti:button nameKey="upload" classes="primary action" busy="true" type="submit"/>
             </div>
         </div>
-        <div class="column-12-12">
-            <c:forEach var="method" items="${importMethods}" varStatus="status">
-                <c:choose>
-                    <c:when test="${status.count % 2 > 0}">
-                        <c:set var="classes" value="bulkImportType_${method.type} column one"/>
-                    </c:when>
-                    <c:otherwise>
-                        <c:set var="classes" value="bulkImportType_${method.type} column two nogutter"/>
-                    </c:otherwise>
-                </c:choose>
-                <div class="${classes}">
-                    <div class="bulkImportType_${method.type}" style="display: none;">
-                        <h4><i:inline key="yukon.common.device.bulk.columnHeader.tableHeader.import.method.tableLabel.${method.name}"/></h4>
-                        <div><i:inline key="yukon.common.device.bulk.columnHeader.tableHeader.import.method.tableDescription.${method.name}"/></div>
-                        <table class="results-table detail">
-                            <thead>
-                                <tr>
-                                    <th><cti:msg key="yukon.common.device.bulk.columnHeader.tableHeader.import.requiredColumnHeaders"/></th>
-                                    <th><cti:msg key="yukon.common.device.bulk.columnHeader.tableHeader.import.descriptionInstruction"/></th>
-                                </tr>
-                            <thead>
-                            <c:forEach var="field" items="${requiredFieldsByMethod[method]}">
-                                <tr>
-                                    <td class="strong-label-small">${field}</td>
-                                    <td>
-                                        <cti:msg var="description" key="yukon.common.device.bulk.columnHeader.import.description.${field}"/>
-                                        <cti:msg var="instruction" key="yukon.common.device.bulk.columnHeader.import.instruction.${field}"/>
-                                        ${description}<c:if test="${instruction != ''}"><br>${instruction}</c:if>
-                                    </td>
-                                </tr>
-                            </c:forEach>
-                            <tr>
-                                <th><cti:msg key="yukon.common.device.bulk.columnHeader.tableHeader.import.optionalHeaders"/></th>
-                                <th><cti:msg key="yukon.common.device.bulk.columnHeader.tableHeader.import.descriptionInstruction"/></th>
-                            </tr>
-                            <c:forEach var="field" items="${updateableFieldsByMethod[method]}">
-                                <tr>
-                                    <td class="strong-label-small">${field}</td>
-                                    <td>
-                                        <cti:msg var="description" key="yukon.common.device.bulk.columnHeader.import.description.${field}"/>
-                                        <cti:msg var="instruction" key="yukon.common.device.bulk.columnHeader.import.instruction.${field}"/>
-                                        ${description}<c:if test="${instruction != ''}"><br>${instruction}</c:if>
-                                    </td>
-                                </tr>
-                            </c:forEach>
-                        </table>
-                    </div>
-                </div>
-            </c:forEach>
+        
+        <div class="column two nogutter">
+            <%-- INSTRUCTIONS --%>
+            <h3><i:inline key="yukon.common.instructions"/></h3>
+            <ul class="stacked"><cti:msg2 key=".importUpload.instructions"/></ul>
+           
+            <%-- sample files --%>
+            <div>
+                <cti:msg2 key=".importUpload.sampleFilesLabel"/>
+                <c:set var="base" value="/WebConfig/custom/sample_bulk_files/import"/>
+                <c:forEach var="type" items="${bulkImportTypes}">
+                    <cti:url var="url" value="${base}/${type}/Sample_Bulk_Import_File"/>
+                    <span data-file-type="${type}">
+                        <span>(${type}):</span>
+                        <a href="${url}1.csv"><i:inline key="yukon.common.file1"/></a>,
+                        <a href="${url}2.csv"><i:inline key="yukon.common.file2"/></a>,
+                        <a href="${url}3.csv"><i:inline key="yukon.common.file3"/></a>,
+                        <a href="${url}4.csv"><i:inline key="yukon.common.file4"/></a>
+                    </span>
+                </c:forEach>
+            </div>
         </div>
-    </tags:sectionContainer>
-    </form>
+    </div>
+    
+    <div class="column-12-12 clearfix">
+        
+        <c:forEach var="method" items="${importMethods}" varStatus="status">
+            
+            <c:choose>
+                <c:when test="${status.count % 2 > 0}">
+                    <c:set var="classes" value="column one"/>
+                </c:when>
+                <c:otherwise>
+                    <c:set var="classes" value="column two nogutter"/>
+                </c:otherwise>
+            </c:choose>
+            
+            <div class="${classes} dn" data-import-type="${method.type}">
+                <h3><i:inline key=".columnHeader.tableHeader.import.method.tableLabel.${method.name}"/></h3>
+                <div class="stacked">
+                    <em><i:inline key=".columnHeader.tableHeader.import.method.tableDescription.${method.name}"/></em>
+                </div>
+                <table class="compact-results-table manual-striping">
+                    <thead>
+                        <tr>
+                            <th><cti:msg2 key=".columnHeader.tableHeader.import.requiredColumnHeaders"/></th>
+                            <th><cti:msg2 key=".columnHeader.tableHeader.import.descriptionInstruction"/></th>
+                        </tr>
+                    <thead>
+                    <c:forEach var="field" items="${requiredFieldsByMethod[method]}" varStatus="status">
+                        <c:set var="classes" value="${status.count % 2 == 0 ? 'alt-row' : ''}"/>
+                        <tr class="${classes}">
+                            <td>${field}</td>
+                            <td>
+                                <cti:msg2 var="description" key=".columnHeader.import.description.${field}"/>
+                                <cti:msg2 var="instruction" key=".columnHeader.import.instruction.${field}"/>
+                                ${description}<c:if test="${instruction != ''}"><br>${instruction}</c:if>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    <tr><td colspan="2">&nbsp;</td></tr>
+                    <tr>
+                        <th><cti:msg2 key=".columnHeader.tableHeader.import.optionalHeaders"/></th>
+                        <th><cti:msg2 key=".columnHeader.tableHeader.import.descriptionInstruction"/></th>
+                    </tr>
+                    <c:forEach var="field" items="${updateableFieldsByMethod[method]}" varStatus="status">
+                        <c:set var="classes" value="${status.count % 2 == 0 ? 'alt-row' : ''}"/>
+                        <tr class="${classes}">
+                            <td>${field}</td>
+                            <td>
+                                <cti:msg2 var="description" key=".columnHeader.import.description.${field}"/>
+                                <cti:msg2 var="instruction" key=".columnHeader.import.instruction.${field}"/>
+                                ${description}<c:if test="${instruction != ''}"><br>${instruction}</c:if>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </table>
+            </div>
+            
+        </c:forEach>
+        
+    </div>
+</form>
+
+</cti:msgScope>
  </cti:standardPage>

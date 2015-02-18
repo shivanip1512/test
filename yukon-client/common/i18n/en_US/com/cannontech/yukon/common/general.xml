@@ -92,6 +92,7 @@
 <entry key="yukon.common.help">Help</entry>
 <entry key="yukon.common.historyTooltip">Click to view history</entry>
 <entry key="yukon.common.html">HTML</entry>
+<entry key="yukon.common.instructions">Instructions</entry>
 <entry key="yukon.common.invalidCron">Invalid Cron Expression</entry>
 <entry key="yukon.common.ipaddress">IP Address</entry>
 <entry key="yukon.common.left">Left</entry>
