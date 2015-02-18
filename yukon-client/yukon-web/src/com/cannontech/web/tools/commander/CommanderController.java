@@ -324,7 +324,9 @@ public class CommanderController {
             return null;
         } else {
             model.addAttribute("nearby", nearby);
-            model.addAttribute("nearbyCollection", dcProducer.createDeviceCollection(PaoUtils.asPaoIdList(nearby), null));
+            List<Integer> nearbyIds = new ArrayList<>(PaoUtils.asPaoIdList(nearby));
+            nearbyIds.add(paoId); // Include this device
+            model.addAttribute("nearbyCollection", dcProducer.createDeviceCollection(nearbyIds, null));
             return "commander/nearby.jsp";
         }
         
