@@ -1220,6 +1220,104 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,     11 );
         }
     }
+    BOOST_AUTO_TEST_CASE(test_putconfig_install_tou_mct470_trailing_midnights)
+    {
+        using namespace Cti::Config;
+
+        mct._type = TYPEMCT470;
+
+        Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+        // add TOU config
+
+        // Schedule 1
+        config.insertValue( MCTStrings::Schedule1Time1, "00:01" );
+        config.insertValue( MCTStrings::Schedule1Time2, "10:06" );
+        config.insertValue( MCTStrings::Schedule1Time3, "12:22" );
+        config.insertValue( MCTStrings::Schedule1Time4, "00:00" );
+        config.insertValue( MCTStrings::Schedule1Time5, "00:00" );
+
+        config.insertValue( MCTStrings::Schedule1Rate0, "A" );
+        config.insertValue( MCTStrings::Schedule1Rate1, "B" );
+        config.insertValue( MCTStrings::Schedule1Rate2, "C" );
+        config.insertValue( MCTStrings::Schedule1Rate3, "D" );
+        config.insertValue( MCTStrings::Schedule1Rate4, "A" );
+        config.insertValue( MCTStrings::Schedule1Rate5, "B" );
+
+        // Schedule 2
+        config.insertValue( MCTStrings::Schedule2Time1, "01:23" );
+        config.insertValue( MCTStrings::Schedule2Time2, "03:12" );
+        config.insertValue( MCTStrings::Schedule2Time3, "00:00" );
+        config.insertValue( MCTStrings::Schedule2Time4, "00:00" );
+        config.insertValue( MCTStrings::Schedule2Time5, "00:00" );
+
+        config.insertValue( MCTStrings::Schedule2Rate0, "D" );
+        config.insertValue( MCTStrings::Schedule2Rate1, "A" );
+        config.insertValue( MCTStrings::Schedule2Rate2, "B" );
+        config.insertValue( MCTStrings::Schedule2Rate3, "C" );
+        config.insertValue( MCTStrings::Schedule2Rate4, "D" );
+        config.insertValue( MCTStrings::Schedule2Rate5, "A" );
+
+        // Schedule 3
+        config.insertValue( MCTStrings::Schedule3Time1, "01:02" );
+        config.insertValue( MCTStrings::Schedule3Time2, "00:00" );
+        config.insertValue( MCTStrings::Schedule3Time3, "00:00" );
+        config.insertValue( MCTStrings::Schedule3Time4, "00:00" );
+        config.insertValue( MCTStrings::Schedule3Time5, "00:00" );
+
+        config.insertValue( MCTStrings::Schedule3Rate0, "C" );
+        config.insertValue( MCTStrings::Schedule3Rate1, "D" );
+        config.insertValue( MCTStrings::Schedule3Rate2, "A" );
+        config.insertValue( MCTStrings::Schedule3Rate3, "B" );
+        config.insertValue( MCTStrings::Schedule3Rate4, "C" );
+        config.insertValue( MCTStrings::Schedule3Rate5, "D" );
+
+        // Schedule 4
+        config.insertValue( MCTStrings::Schedule4Time1, "00:01" );
+        config.insertValue( MCTStrings::Schedule4Time2, "08:59" );
+        config.insertValue( MCTStrings::Schedule4Time3, "12:12" );
+        config.insertValue( MCTStrings::Schedule4Time4, "23:01" );
+        config.insertValue( MCTStrings::Schedule4Time5, "23:55" );
+
+        config.insertValue( MCTStrings::Schedule4Rate0, "B" );
+        config.insertValue( MCTStrings::Schedule4Rate1, "C" );
+        config.insertValue( MCTStrings::Schedule4Rate2, "D" );
+        config.insertValue( MCTStrings::Schedule4Rate3, "A" );
+        config.insertValue( MCTStrings::Schedule4Rate4, "B" );
+        config.insertValue( MCTStrings::Schedule4Rate5, "C" );
+
+        // day table
+        config.insertValue( MCTStrings::SundaySchedule,    "Schedule 1" );
+        config.insertValue( MCTStrings::MondaySchedule,    "Schedule 1" );
+        config.insertValue( MCTStrings::TuesdaySchedule,   "Schedule 3" );
+        config.insertValue( MCTStrings::WednesdaySchedule, "Schedule 2" );
+        config.insertValue( MCTStrings::ThursdaySchedule,  "Schedule 4" );
+        config.insertValue( MCTStrings::FridaySchedule,    "Schedule 2" );
+        config.insertValue( MCTStrings::SaturdaySchedule,  "Schedule 3" );
+        config.insertValue( MCTStrings::HolidaySchedule,   "Schedule 3" );
+
+        // default rate
+        config.insertValue( MCTStrings::DefaultTOURate, "B" );
+
+        // set TOU enabled
+        config.insertValue( MCTStrings::touEnabled, "true" );
+
+        CtiCommandParser parse("putconfig install tou");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( outList.empty() );
+
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+
+        CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE( retMsg );
+
+        BOOST_CHECK_EQUAL( retMsg->ResultString(), "ERROR: Invalid config data. Config name:tou" );
+        BOOST_CHECK_EQUAL( retMsg->Status(), ClientErrors::NoConfigData );
+    }
     BOOST_AUTO_TEST_CASE(test_putconfig_install_mct470)
     {
         using namespace Cti::Config;
