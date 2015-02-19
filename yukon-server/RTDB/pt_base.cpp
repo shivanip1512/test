@@ -69,9 +69,9 @@ LONG              CtiPointBase::getDeviceID() const              { return _point
 
 LONG              CtiPointBase::getStateGroupID() const          { return _pointBase.getStateGroupID();}
 
-BOOL              CtiPointBase::isAlarmDisabled() const          { return _pointBase.getAlarmDisableTag();}
+BOOL              CtiPointBase::isAlarmDisabled() const          { return _pointBase.isAlarmDisabled();}
 
-BOOL              CtiPointBase::isPseudoPoint() const            { return _pointBase.getPseudoTag();}
+BOOL              CtiPointBase::isPseudoPoint() const            { return _pointBase.isPseudoPoint();}
 
 CtiPointType_t    CtiPointBase::getType() const                  { return _pointBase.getType();}
 

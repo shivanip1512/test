@@ -44,38 +44,20 @@ public:
    void DecodeDatabaseReader(Cti::RowReader &rdr);
 
    INT  getArchiveInterval() const;
-
    LONG getPointID() const;
-   void setPointID(LONG id);
-
    LONG getID() const;
-   void setID(LONG id);
-
    LONG getPAObjectID() const;
-   void setPAObjectID(LONG id);
-
    LONG getStateGroupID() const;
 
-   BOOL getDisableTag() const;
-
    BOOL isOutOfService() const;
-
-   BOOL getAlarmDisableTag() const;
    BOOL isAlarmDisabled() const;
 
-   BOOL getPseudoTag() const;
-
-   std::string getName() const;
-   void setName( std::string name );
-
+   std::string    getName() const;
    CtiPointType_t getType() const;
    void setType(CtiPointType_t t);
 
    INT  getArchiveType() const;
-
    INT  getPointOffset() const;
-   void setPointOffset(INT i);
-
 
    BOOL isPseudoPoint() const;
 

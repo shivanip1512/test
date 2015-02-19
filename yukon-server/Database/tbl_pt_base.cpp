@@ -93,29 +93,14 @@ LONG CtiTablePointBase::getStateGroupID() const
    return _stateGroupID;
 }
 
-BOOL CtiTablePointBase::getDisableTag() const
-{
-   return _outOfService;
-}
-
 BOOL CtiTablePointBase::isOutOfService() const
 {
    return _outOfService;
 }
 
-BOOL CtiTablePointBase::getAlarmDisableTag() const
-{
-   return _alarmDisable;
-}
-
 BOOL CtiTablePointBase::isAlarmDisabled() const
 {
    return _alarmDisable;
-}
-
-BOOL CtiTablePointBase::getPseudoTag() const
-{
-   return _pseudoPoint;
 }
 
 BOOL CtiTablePointBase::isPseudoPoint() const
@@ -133,35 +118,9 @@ INT CtiTablePointBase::getArchiveType() const
    return _archiveType;
 }
 
-/* setters */
-void CtiTablePointBase::setPointID(LONG id)
-{
-   _pointID = id;
-}
-
-void CtiTablePointBase::setID(LONG id)
-{
-   _pointID = id;
-}
-
-void CtiTablePointBase::setName(std::string name)
-{
-   _name = name;
-}
-
 void CtiTablePointBase::setType(CtiPointType_t t)
 {
    _type = t;
-}
-
-void CtiTablePointBase::setPAObjectID(LONG id)
-{
-   _paObjectID = id;
-}
-
-void CtiTablePointBase::setPointOffset(INT i)
-{
-   _pointOffset = i;
 }
 
 UINT CtiTablePointBase::adjustStaticTags(UINT &tag) const

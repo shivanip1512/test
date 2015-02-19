@@ -27,9 +27,6 @@ public:
     const std::string& getStateOneControl() const  {  return _stateOneControl;  }
     int getCommandTimeout()  const;
 
-    // -- only used for unit tests?  Fixy? --
-    void setControlType(CtiControlType_t t);
-
     void DecodeDatabaseReader(Cti::RowReader &rdr);
 };
 

@@ -28,11 +28,6 @@ void CtiTablePointStatusControl::DecodeDatabaseReader(Cti::RowReader &rdr)
 }
 
 
-void CtiTablePointStatusControl::setControlType(CtiControlType_t t)
-{
-    _controlType = t;
-}
-
 CtiTablePointStatusControl::CtiTablePointStatusControl() :
     CtiTablePointControl(),
     _controlType(ControlType_Invalid),
