@@ -502,7 +502,8 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
             //Using phase A points here since all three phases contain our "no phase" points
             Collections.sort(phaseAPoints, positionOrderer);
             VfLineSettings noPhaseLineSettings = getNoPhaseLineSetting(settings);
-            VfLine noPhaseLine = new VfLine(graphId.getAndIncrement(), null, zone.getName(), null, 
+            String phaseString="ALL";
+            VfLine noPhaseLine = new VfLine(graphId.getAndIncrement(), phaseString, zone.getName(), null, 
                                             noPhaseLineSettings, phaseAPoints);
             lines.add(noPhaseLine);
         }

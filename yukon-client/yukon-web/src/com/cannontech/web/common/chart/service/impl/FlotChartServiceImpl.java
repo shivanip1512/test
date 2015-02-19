@@ -190,11 +190,7 @@ public class FlotChartServiceImpl implements FlotChartService {
                 dataObj.put("titleYPos", labelPoint.getY());
             }
             
-            String linename= line.getLineName();
-            if(linename==null){
-                linename="ALL";
-            }
-            dataObj.put("lineName", linename);
+            dataObj.put("lineName", line.getLineName());
             dataObj.put("data", linesArray);
             dataObj.put("color", line.getSettings().getColor());
             dataObj.put("phase", line.getPhase());
