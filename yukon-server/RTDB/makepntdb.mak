@@ -4379,6 +4379,36 @@ test_dev_dlcbase.obj:	dev_dlcbase.h dev_single.h dsm2.h \
 		vcomdefs.h tbl_loadprofile.h da_load_profile.h \
 		tbl_dv_mctiedport.h pt_numeric.h tbl_pt_unit.h \
 		tbl_unitmeasure.h
+test_dev_dnp.obj:	dev_dnp.h dev_remote.h dev_single.h dsm2.h \
+		streamConnection.h yukon.h types.h ctidbgmem.h dlldefs.h \
+		netports.h timing_util.h immutable.h critical_section.h \
+		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
+		constants.h numstr.h logger.h streamBuffer.h loggable.h \
+		string_util.h exception_helper.h boostutil.h mutex.h \
+		dsm2err.h words.h optional.h macro_offset.h dev_base.h \
+		cmdparse.h ctitokenizer.h parsevalue.h dev_exclusion.h \
+		tbl_paoexclusion.h row_reader.h rte_base.h dbmemobject.h \
+		ctibase.h streamSocketConnection.h socket_helper.h \
+		win_helper.h dllbase.h message.h collectable.h tbl_pao_lite.h \
+		tbl_rtcomm.h dbaccess.h resolvers.h pointtypes.h \
+		db_entry_defines.h msg_signal.h tbl_static_paoinfo.h \
+		encryption.h std_helper.h tbl_base.h tbl_scanrate.h \
+		database_connection.h tbl_dyn_paoinfo.h pt_base.h \
+		tbl_pt_base.h pointdefs.h msg_pcrequest.h msg_pcreturn.h \
+		msg_multi.h msg_pdata.h tbl_dv_scandata.h tbl_dv_wnd.h \
+		connection.h msg_ptreg.h msg_reg.h queue.h cparms.h \
+		configkey.h configval.h readers_writer_lock.h \
+		connection_base.h worker_thread.h xfer.h exceptions.h \
+		tbl_dialup.h tbl_direct.h porter.h devicetypes.h prot_dnp.h \
+		prot_base.h packet_finder.h dnp_application.h dnp_objects.h \
+		dnp_transport.h dnp_datalink.h dnp_datalink_packet.h \
+		dnp_configuration.h dnp_object_binaryoutput.h \
+		tbl_dv_address.h rtdb_test_helpers.h mgr_dyn_paoinfo.h \
+		desolvers.h pt_analog.h pt_numeric.h tbl_pt_unit.h \
+		tbl_unitmeasure.h tbl_pt_analog.h tbl_pt_control.h pt_accum.h \
+		tbl_pt_accum.h tbl_pt_accumhistory.h pt_status.h \
+		tbl_pt_status.h tbl_pt_status_control.h test_reader.h \
+		boost_test_helpers.h millisecond_timer.h
 test_dev_grp.obj:	dev_grp.h cparms.h dlldefs.h configkey.h configval.h \
 		msg_lmcontrolhistory.h pointdefs.h message.h ctitime.h \
 		ctidbgmem.h collectable.h loggable.h yukon.h types.h \
@@ -4607,8 +4637,8 @@ test_dev_mct410.obj:	dev_mct410.h dev_mct4xx.h dev_mct.h dev_carrier.h \
 		pt_analog.h tbl_pt_analog.h tbl_pt_control.h pt_accum.h \
 		tbl_pt_accum.h tbl_pt_accumhistory.h pt_status.h \
 		tbl_pt_status.h tbl_pt_status_control.h desolvers.h \
-		rtdb_test_helpers.h mgr_dyn_paoinfo.h boost_test_helpers.h \
-		millisecond_timer.h
+		rtdb_test_helpers.h mgr_dyn_paoinfo.h test_reader.h \
+		boost_test_helpers.h millisecond_timer.h
 test_dev_mct420.obj:	dev_mct420.h dev_mct410.h dev_mct4xx.h dev_mct.h \
 		dev_carrier.h dev_dlcbase.h dev_single.h dsm2.h \
 		streamConnection.h yukon.h types.h ctidbgmem.h dlldefs.h \
@@ -4638,8 +4668,9 @@ test_dev_mct420.obj:	dev_mct420.h dev_mct410.h dev_mct4xx.h dev_mct.h \
 		cmd_mct410_disconnectConfiguration.h devicetypes.h \
 		pt_analog.h tbl_pt_analog.h tbl_pt_control.h pt_accum.h \
 		tbl_pt_accum.h tbl_pt_accumhistory.h pt_status.h \
-		tbl_pt_status.h tbl_pt_status_control.h boost_test_helpers.h \
-		millisecond_timer.h
+		tbl_pt_status.h tbl_pt_status_control.h rtdb_test_helpers.h \
+		mgr_dyn_paoinfo.h desolvers.h test_reader.h \
+		boost_test_helpers.h millisecond_timer.h
 test_dev_mct440_2131b.obj:	dev_mct440_2131b.h dev_mct440_213xb.h \
 		dev_mct420.h dev_mct410.h dev_mct4xx.h dev_mct.h \
 		dev_carrier.h dev_dlcbase.h dev_single.h dsm2.h \
@@ -4670,8 +4701,9 @@ test_dev_mct440_2131b.obj:	dev_mct440_2131b.h dev_mct440_213xb.h \
 		cmd_mct410_disconnectConfiguration.h devicetypes.h \
 		pt_analog.h tbl_pt_analog.h tbl_pt_control.h pt_accum.h \
 		tbl_pt_accum.h tbl_pt_accumhistory.h pt_status.h \
-		tbl_pt_status.h tbl_pt_status_control.h boost_test_helpers.h \
-		millisecond_timer.h
+		tbl_pt_status.h tbl_pt_status_control.h rtdb_test_helpers.h \
+		mgr_dyn_paoinfo.h desolvers.h test_reader.h \
+		boost_test_helpers.h millisecond_timer.h
 test_dev_mct440_2132b.obj:	dev_mct440_2132b.h dev_mct440_213xb.h \
 		dev_mct420.h dev_mct410.h dev_mct4xx.h dev_mct.h \
 		dev_carrier.h dev_dlcbase.h dev_single.h dsm2.h \
@@ -4702,8 +4734,9 @@ test_dev_mct440_2132b.obj:	dev_mct440_2132b.h dev_mct440_213xb.h \
 		cmd_mct410_disconnectConfiguration.h devicetypes.h \
 		pt_analog.h tbl_pt_analog.h tbl_pt_control.h pt_accum.h \
 		tbl_pt_accum.h tbl_pt_accumhistory.h pt_status.h \
-		tbl_pt_status.h tbl_pt_status_control.h boost_test_helpers.h \
-		millisecond_timer.h
+		tbl_pt_status.h tbl_pt_status_control.h rtdb_test_helpers.h \
+		mgr_dyn_paoinfo.h desolvers.h test_reader.h \
+		boost_test_helpers.h millisecond_timer.h
 test_dev_mct440_2133b.obj:	dev_mct440_2133b.h dev_mct440_213xb.h \
 		dev_mct420.h dev_mct410.h dev_mct4xx.h dev_mct.h \
 		dev_carrier.h dev_dlcbase.h dev_single.h dsm2.h \
@@ -4734,8 +4767,9 @@ test_dev_mct440_2133b.obj:	dev_mct440_2133b.h dev_mct440_213xb.h \
 		cmd_mct410_disconnectConfiguration.h devicetypes.h \
 		pt_analog.h tbl_pt_analog.h tbl_pt_control.h pt_accum.h \
 		tbl_pt_accum.h tbl_pt_accumhistory.h pt_status.h \
-		tbl_pt_status.h tbl_pt_status_control.h boost_test_helpers.h \
-		millisecond_timer.h
+		tbl_pt_status.h tbl_pt_status_control.h rtdb_test_helpers.h \
+		mgr_dyn_paoinfo.h desolvers.h test_reader.h \
+		boost_test_helpers.h millisecond_timer.h
 test_dev_mct440_213xb.obj:	dev_mct440_213xb.h dev_mct420.h \
 		dev_mct410.h dev_mct4xx.h dev_mct.h dev_carrier.h \
 		dev_dlcbase.h dev_single.h dsm2.h streamConnection.h yukon.h \
@@ -4765,13 +4799,14 @@ test_dev_mct440_213xb.obj:	dev_mct440_213xb.h dev_mct420.h \
 		cmd_mct410_disconnectConfiguration.h devicetypes.h \
 		pt_analog.h tbl_pt_analog.h tbl_pt_control.h pt_accum.h \
 		tbl_pt_accum.h tbl_pt_accumhistory.h pt_status.h \
-		tbl_pt_status.h tbl_pt_status_control.h rtdb_test_helpers.h \
-		mgr_dyn_paoinfo.h boost_test_helpers.h millisecond_timer.h \
-		dev_ccu.h dev_idlc.h dev_remote.h tbl_dialup.h tbl_direct.h \
-		porter.h tbl_dv_idlcremote.h trx_info.h trx_711.h \
+		tbl_pt_status.h tbl_pt_status_control.h dev_ccu.h dev_idlc.h \
+		dev_remote.h tbl_dialup.h tbl_direct.h porter.h \
+		tbl_dv_idlcremote.h trx_info.h trx_711.h \
 		dev_ccu_queue_interface.h device_queue_interface.h rte_ccu.h \
 		rte_xcu.h smartmap.h tbl_rtcarrier.h tbl_rtrepeater.h \
-		connection_client.h
+		connection_client.h rtdb_test_helpers.h mgr_dyn_paoinfo.h \
+		desolvers.h test_reader.h boost_test_helpers.h \
+		millisecond_timer.h
 test_dev_mct470.obj:	dev_mct470.h dev_mct4xx.h dev_mct.h dev_carrier.h \
 		dev_dlcbase.h dev_single.h dsm2.h streamConnection.h yukon.h \
 		types.h ctidbgmem.h dlldefs.h netports.h timing_util.h \
@@ -4801,6 +4836,9 @@ test_dev_mct470.obj:	dev_mct470.h dev_mct4xx.h dev_mct.h dev_carrier.h \
 		trx_711.h dev_ccu_queue_interface.h device_queue_interface.h \
 		rte_ccu.h rte_xcu.h smartmap.h tbl_rtcarrier.h \
 		tbl_rtrepeater.h rtdb_test_helpers.h mgr_dyn_paoinfo.h \
+		desolvers.h pt_analog.h tbl_pt_analog.h tbl_pt_control.h \
+		pt_accum.h tbl_pt_accum.h tbl_pt_accumhistory.h pt_status.h \
+		tbl_pt_status.h tbl_pt_status_control.h test_reader.h \
 		boost_test_helpers.h millisecond_timer.h
 test_dev_mct4xx.obj:	dev_mct4xx.h dev_mct.h dev_carrier.h \
 		dev_dlcbase.h dev_single.h dsm2.h streamConnection.h yukon.h \
@@ -4899,7 +4937,12 @@ test_dev_rfn420centron.obj:	dev_rfn420centron.h dev_rfnResidential.h \
 		cmd_rfn_DemandFreeze.h cmd_rfn_TouConfiguration.h \
 		cmd_rfn_OvUvConfiguration.h cmd_rfn_RemoteDisconnect.h \
 		cmd_rfn_CentronLcdConfiguration.h rtdb_test_helpers.h \
-		mgr_dyn_paoinfo.h boost_test_helpers.h millisecond_timer.h
+		mgr_dyn_paoinfo.h desolvers.h pt_analog.h pt_numeric.h \
+		tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_analog.h \
+		tbl_pt_control.h pt_accum.h tbl_pt_accum.h \
+		tbl_pt_accumhistory.h pt_status.h tbl_pt_status.h \
+		tbl_pt_status_control.h test_reader.h boost_test_helpers.h \
+		millisecond_timer.h
 test_dev_rfn420focus_al.obj:	dev_rfn420focus_al.h dev_rfnResidential.h \
 		dev_rfnMeter.h dev_rfn.h rfn_identifier.h streamBuffer.h \
 		dlldefs.h loggable.h cmd_rfn.h cmd_device.h dev_single.h \
@@ -4926,7 +4969,12 @@ test_dev_rfn420focus_al.obj:	dev_rfn420focus_al.h dev_rfnResidential.h \
 		cmd_rfn_DemandFreeze.h cmd_rfn_TouConfiguration.h \
 		cmd_rfn_OvUvConfiguration.h cmd_rfn_RemoteDisconnect.h \
 		cmd_rfn_FocusAlLcdConfiguration.h rtdb_test_helpers.h \
-		mgr_dyn_paoinfo.h boost_test_helpers.h millisecond_timer.h
+		mgr_dyn_paoinfo.h desolvers.h pt_analog.h pt_numeric.h \
+		tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_analog.h \
+		tbl_pt_control.h pt_accum.h tbl_pt_accum.h \
+		tbl_pt_accumhistory.h pt_status.h tbl_pt_status.h \
+		tbl_pt_status_control.h test_reader.h boost_test_helpers.h \
+		millisecond_timer.h
 test_dev_rfncommercial.obj:	dev_rfnCommercial.h dev_rfnMeter.h \
 		dev_rfn.h rfn_identifier.h streamBuffer.h dlldefs.h \
 		loggable.h cmd_rfn.h cmd_device.h dev_single.h dsm2.h \
@@ -4952,7 +5000,12 @@ test_dev_rfncommercial.obj:	dev_rfnCommercial.h dev_rfnMeter.h \
 		rfn_asid.h cmd_rfn_LoadProfile.h ctidate.h \
 		cmd_rfn_DemandFreeze.h cmd_rfn_TouConfiguration.h \
 		cmd_rfn_OvUvConfiguration.h rtdb_test_helpers.h \
-		mgr_dyn_paoinfo.h boost_test_helpers.h millisecond_timer.h
+		mgr_dyn_paoinfo.h desolvers.h pt_analog.h pt_numeric.h \
+		tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_analog.h \
+		tbl_pt_control.h pt_accum.h tbl_pt_accum.h \
+		tbl_pt_accumhistory.h pt_status.h tbl_pt_status.h \
+		tbl_pt_status_control.h test_reader.h boost_test_helpers.h \
+		millisecond_timer.h
 test_dev_rfnresidential.obj:	dev_rfnResidential.h dev_rfnMeter.h \
 		dev_rfn.h rfn_identifier.h streamBuffer.h dlldefs.h \
 		loggable.h cmd_rfn.h cmd_device.h dev_single.h dsm2.h \
@@ -4978,7 +5031,11 @@ test_dev_rfnresidential.obj:	dev_rfnResidential.h dev_rfnMeter.h \
 		rfn_asid.h cmd_rfn_LoadProfile.h ctidate.h \
 		cmd_rfn_DemandFreeze.h cmd_rfn_TouConfiguration.h \
 		cmd_rfn_OvUvConfiguration.h cmd_rfn_RemoteDisconnect.h \
-		rtdb_test_helpers.h mgr_dyn_paoinfo.h boost_test_helpers.h \
+		rtdb_test_helpers.h mgr_dyn_paoinfo.h desolvers.h pt_analog.h \
+		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_analog.h \
+		tbl_pt_control.h pt_accum.h tbl_pt_accum.h \
+		tbl_pt_accumhistory.h pt_status.h tbl_pt_status.h \
+		tbl_pt_status_control.h test_reader.h boost_test_helpers.h \
 		millisecond_timer.h
 test_dev_rf_da.obj:	dev_rf_da.h dev_rfn.h rfn_identifier.h \
 		streamBuffer.h dlldefs.h loggable.h cmd_rfn.h cmd_device.h \
@@ -5001,8 +5058,12 @@ test_dev_rf_da.obj:	dev_rf_da.h dev_rfn.h rfn_identifier.h \
 		connection.h msg_ptreg.h msg_reg.h queue.h cparms.h \
 		configkey.h configval.h readers_writer_lock.h \
 		connection_base.h worker_thread.h xfer.h exceptions.h \
-		rfn_asid.h rtdb_test_helpers.h mgr_dyn_paoinfo.h \
-		boost_test_helpers.h millisecond_timer.h ctidate.h
+		rfn_asid.h rtdb_test_helpers.h mgr_dyn_paoinfo.h desolvers.h \
+		pt_analog.h pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h \
+		tbl_pt_analog.h tbl_pt_control.h pt_accum.h tbl_pt_accum.h \
+		tbl_pt_accumhistory.h pt_status.h tbl_pt_status.h \
+		tbl_pt_status_control.h test_reader.h boost_test_helpers.h \
+		millisecond_timer.h ctidate.h
 test_dev_rtm.obj:	dev_rtm.h dev_ied.h types.h os2_2w32.h dlldefs.h \
 		dsm2.h streamConnection.h yukon.h ctidbgmem.h netports.h \
 		timing_util.h immutable.h critical_section.h guard.h \
@@ -5113,7 +5174,9 @@ test_mgr_point.obj:	mgr_point.h pt_base.h dbmemobject.h tbl_pt_base.h \
 		readers_writer_lock.h pt_status.h tbl_pt_status.h \
 		tbl_pt_status_control.h tbl_pt_control.h pt_analog.h \
 		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_analog.h \
-		pt_accum.h tbl_pt_accum.h tbl_pt_accumhistory.h
+		pt_accum.h tbl_pt_accum.h tbl_pt_accumhistory.h \
+		rtdb_test_helpers.h mgr_dyn_paoinfo.h tbl_dyn_paoinfo.h \
+		database_connection.h desolvers.h test_reader.h
 test_pt_base.obj:	pt_base.h dbmemobject.h tbl_pt_base.h row_reader.h \
 		ctitime.h dlldefs.h dllbase.h dsm2.h streamConnection.h \
 		yukon.h types.h ctidbgmem.h netports.h timing_util.h \

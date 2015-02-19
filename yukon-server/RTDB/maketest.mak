@@ -4524,9 +4524,7 @@ test_dev_grp.obj:	dev_grp.h cparms.h dlldefs.h configkey.h configval.h \
 		std_helper.h tbl_base.h tbl_scanrate.h database_connection.h \
 		tbl_dyn_paoinfo.h dev_grp_expresscom.h tbl_dv_expresscom.h \
 		vcomdefs.h devicetypes.h mgr_point.h smartmap.h \
-		readers_writer_lock.h expresscom.h rtdb_test_helpers.h \
-		mgr_config.h mgr_dyn_paoinfo.h desolvers.h pt_accum.h \
-		tbl_pt_accum.h tbl_pt_accumhistory.h test_reader.h
+		readers_writer_lock.h expresscom.h
 test_dev_mct.obj:	dev_mct.h dev_carrier.h dev_dlcbase.h dev_single.h \
 		dsm2.h streamConnection.h yukon.h types.h ctidbgmem.h \
 		dlldefs.h netports.h timing_util.h immutable.h \
