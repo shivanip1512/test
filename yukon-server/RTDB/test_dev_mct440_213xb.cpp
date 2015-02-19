@@ -6,11 +6,12 @@
 #include "pt_accum.h"
 #include "pt_status.h"
 #include "utility.h"  //  for delete_container
-#include "rtdb_test_helpers.h"
-#include "boost_test_helpers.h"
 #include "dev_ccu.h"
 #include "rte_ccu.h"
 #include "connection_client.h"
+
+#include "rtdb_test_helpers.h"
+#include "boost_test_helpers.h"
 
 #include <boost/assign/list_of.hpp>
 
@@ -88,67 +89,17 @@ struct test_Mct440_213xBDevice : Cti::Devices::Mct440_213xBDevice
     bool test_isSupported_Mct410Feature_HourlyKwh()
     {  return isSupported(Feature_HourlyKwh);  }
 
-    typedef std::map<int, CtiPointSPtr>              PointOffsetMap;
-    typedef std::map<CtiPointType_t, PointOffsetMap> PointTypeOffsetMap;
+    Cti::Test::DevicePointHelper pointHelper;
 
-    PointTypeOffsetMap points;
-
-    virtual CtiPointSPtr getDevicePointOffsetTypeEqual(int offset, CtiPointType_t type)
+    CtiPointSPtr getDevicePointOffsetTypeEqual(int offset, CtiPointType_t type) override
     {
-        CtiPointSPtr &point = points[type][offset];
-
-        if( point.get() )
-        {
-            return point;
-        }
-
-        // use a unique point id for any type
-        static unsigned point_count = 0;
-        point_count++;
-
-        switch( type )
-        {
-            case AnalogPointType:
-            {
-                Test_CtiPointAnalog *analog = new Test_CtiPointAnalog();
-                analog->setPointOffset(offset);
-                analog->setDeviceID(reinterpret_cast<long>(&points));
-                analog->setID(point_count);
-                point.reset(analog);
-            }
-            break;
-
-            case PulseAccumulatorPointType:
-            case DemandAccumulatorPointType:
-            {
-                Test_CtiPointAccumulator *accumulator = new Test_CtiPointAccumulator();
-                accumulator->setPointOffset(offset);
-                accumulator->setDeviceID(reinterpret_cast<long>(&points));
-                accumulator->setID(point_count);
-                point.reset(accumulator);
-            }
-            break;
-
-            case StatusPointType:
-            {
-                Test_CtiPointStatus *status = new Test_CtiPointStatus();
-                status->setPointOffset(offset);
-                status->setDeviceID(reinterpret_cast<long>(&points));
-                status->setID(point_count);
-                point.reset(status);
-            }
-            break;
-        }
-
-        return point;
+        return pointHelper.getCachedPoint(offset, type);
     }
 
     virtual int getPhaseCount()
     {
         return 0;
     }
-
-
 };
 
 struct test_Mct440_213xB : test_Mct440_213xBDevice

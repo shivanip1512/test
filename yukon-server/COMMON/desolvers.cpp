@@ -1,6 +1,5 @@
 #include "precompiled.h"
 
-
 #include "desolvers.h"
 #include "dsm2.h"
 #include "resolvers.h"
@@ -8,6 +7,8 @@
 #include "pointtypes.h"
 #include "logger.h"
 #include "utility.h"
+
+#include "std_helper.h"
 
 using std::endl;
 using std::string;
@@ -268,5 +269,24 @@ const string &desolvePointType( int aPointType )
     }
 
     return none;
+}
+
+static const std::map<CtiControlType_t, std::string> ControlTypeStrings {
+    { ControlType_Normal,   "normal"    },
+    { ControlType_Latch,    "latch"     },
+    { ControlType_Pseudo,   "pseudo"    },
+    { ControlType_SBOPulse, "sbo pulse" },
+    { ControlType_SBOLatch, "sbo latch" }};
+
+string desolveControlType(const CtiControlType_t type)
+{
+    if( boost::optional<string> controlStr = Cti::mapFind(ControlTypeStrings, type) )
+    {
+        return *controlStr;
+    }
+
+    CTILOG_ERROR(dout, "Unknown control type (" << type << ")");
+
+    return "";
 }
 

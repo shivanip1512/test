@@ -7,6 +7,7 @@
 #include "pt_status.h"
 #include "utility.h"  //  for delete_container
 
+#include "rtdb_test_helpers.h"
 #include "boost_test_helpers.h"
 
 #include <boost/assign/list_of.hpp>
@@ -57,62 +58,11 @@ struct test_Mct420Device : Cti::Devices::Mct420Device
     bool test_isSupported_Mct4xxFeature_TouPeaks() const
             {  return Mct410Device::isSupported(Feature_TouPeaks);  }
 
-    typedef std::map<int, CtiPointSPtr>              PointOffsetMap;
-    typedef std::map<CtiPointType_t, PointOffsetMap> PointTypeOffsetMap;
+    Cti::Test::DevicePointHelper pointHelper;
 
-    PointTypeOffsetMap points;
-
-    virtual CtiPointSPtr getDevicePointOffsetTypeEqual(int offset, CtiPointType_t type)
+    CtiPointSPtr getDevicePointOffsetTypeEqual(int offset, CtiPointType_t type) override
     {
-        CtiPointSPtr point = points[type][offset];
-
-        if( point )
-        {
-            return point;
-        }
-
-        unsigned point_count = 0;
-
-        for each( const PointTypeOffsetMap::value_type &p in points )
-        {
-            point_count += p.second.size();
-        }
-
-        switch( type )
-        {
-            case AnalogPointType:
-            {
-                Test_CtiPointAnalog *analog = new Test_CtiPointAnalog();
-                analog->setPointOffset(offset);
-                analog->setDeviceID(reinterpret_cast<long>(&points));
-                analog->setID(point_count);
-                point.reset(analog);
-            }
-            break;
-
-            case PulseAccumulatorPointType:
-            case DemandAccumulatorPointType:
-            {
-                Test_CtiPointAccumulator *accumulator = new Test_CtiPointAccumulator();
-                accumulator->setPointOffset(offset);
-                accumulator->setDeviceID(reinterpret_cast<long>(&points));
-                accumulator->setID(point_count);
-                point.reset(accumulator);
-            }
-            break;
-
-            case StatusPointType:
-            {
-                Test_CtiPointStatus *status = new Test_CtiPointStatus();
-                status->setPointOffset(offset);
-                status->setDeviceID(reinterpret_cast<long>(&points));
-                status->setID(point_count);
-                point.reset(status);
-            }
-            break;
-        }
-
-        return point;
+        return pointHelper.getCachedPoint(offset, type);
     }
 };
 

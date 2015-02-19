@@ -88,11 +88,6 @@ public:
         return demand_interval;
     }
 
-    typedef std::map<int, CtiPointSPtr>              PointOffsetMap;
-    typedef std::map<CtiPointType_t, PointOffsetMap> PointTypeOffsetMap;
-
-    PointTypeOffsetMap points;
-
     bool test_isSupported_Mct410Feature_HourlyKwh() const
             {  return isSupported(Feature_HourlyKwh);  }
 
@@ -105,60 +100,11 @@ public:
     bool test_isSupported_Mct4xxFeature_TouPeaks() const
             {  return isSupported(Feature_TouPeaks);  }
 
-    virtual CtiPointSPtr getDevicePointOffsetTypeEqual(int offset, CtiPointType_t type)
+    Cti::Test::DevicePointHelper pointHelper;
+
+    CtiPointSPtr getDevicePointOffsetTypeEqual(int offset, CtiPointType_t type) override
     {
-        CtiPointSPtr point = points[type][offset];
-
-        if( point )
-        {
-            return point;
-        }
-
-        unsigned point_count = 0;
-
-        for each( const PointTypeOffsetMap::value_type &p in points )
-        {
-            point_count += p.second.size();
-        }
-
-        switch( type )
-        {
-            case AnalogPointType:
-            {
-                Test_CtiPointAnalog *analog = new Test_CtiPointAnalog();
-                analog->setName(desolvePointType(type) + CtiNumStr(offset));
-                analog->setPointOffset(offset);
-                analog->setDeviceID(reinterpret_cast<long>(&points));
-                analog->setID(point_count);
-                point.reset(analog);
-            }
-            break;
-
-            case PulseAccumulatorPointType:
-            case DemandAccumulatorPointType:
-            {
-                Test_CtiPointAccumulator *accumulator = new Test_CtiPointAccumulator();
-                accumulator->setName(desolvePointType(type) + CtiNumStr(offset));
-                accumulator->setPointOffset(offset);
-                accumulator->setDeviceID(reinterpret_cast<long>(&points));
-                accumulator->setID(point_count);
-                point.reset(accumulator);
-            }
-            break;
-
-            case StatusPointType:
-            {
-                Test_CtiPointStatus *status = new Test_CtiPointStatus();
-                status->setName(desolvePointType(type) + CtiNumStr(offset));
-                status->setPointOffset(offset);
-                status->setDeviceID(reinterpret_cast<long>(&points));
-                status->setID(point_count);
-                point.reset(status);
-            }
-            break;
-        }
-
-        return point;
+        return pointHelper.getCachedPoint(offset, type);
     }
 
     virtual CtiRouteSPtr getRoute() const
