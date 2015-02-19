@@ -373,7 +373,7 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection, const char*
             DnpSlaveProtocol::input_point iPoint;
 
             iPoint.online = YukonToForeignQuality(fdrPoint->getQuality(), fdrPoint->getLastTimeStamp(), Now);
-            iPoint.control_offset = dnpId.Offset;
+            iPoint.offset = dnpId.Offset - 1;  //  convert to DNP's 0-based indexing
 
             switch (dnpId.PointType)
             {
@@ -469,9 +469,9 @@ ControlParameters extractByteIndexByteQuantity(const char *data)
     c.offset  = data[17],
     c.code    = data[18],
     c.count   = data[19],
-    c.onTime  = ntohl(*reinterpret_cast<const unsigned long *> (data + 20)),
-    c.offTime = ntohs(*reinterpret_cast<const unsigned short *>(data + 24)) << 16 |
-                ntohs(*reinterpret_cast<const unsigned short *>(data + 28)),
+    c.onTime  = *reinterpret_cast<const unsigned long *> (data + 20),
+    c.offTime = *reinterpret_cast<const unsigned short *>(data + 24) << 16 |
+                *reinterpret_cast<const unsigned short *>(data + 28),
     c.status  = data[30];
 
     return c;
@@ -489,15 +489,15 @@ ControlParameters extractShortIndexShortQuantity(const char *data)
     // [28] 00 00 00 00 - off time
     // [32] 00 - status //  FF FF  CRC
 
-    const unsigned elements = ntohs(*reinterpret_cast<const unsigned short *>(data + 16));
+    const unsigned elements = *reinterpret_cast<const unsigned short *>(data + 16);
 
     ControlParameters c;
 
-    c.offset  = ntohs(*reinterpret_cast<const unsigned short *>(data + 18));
+    c.offset  = *reinterpret_cast<const unsigned short *>(data + 18);
     c.code    = data[20],
     c.count   = data[21],
-    c.onTime  = ntohl(*reinterpret_cast<const unsigned long *>(data + 22)),
-    c.offTime = ntohs(*reinterpret_cast<const unsigned long *>(data + 28)),
+    c.onTime  = *reinterpret_cast<const unsigned long *>(data + 22),
+    c.offTime = *reinterpret_cast<const unsigned long *>(data + 28),
     c.status  = data[32];
 
     return c;
@@ -570,7 +570,7 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const char* d
 
     //  create the point so we can echo it back in the DNP response
     iPoint.type = DnpSlaveProtocol::DigitalInput;
-    iPoint.control_offset = control.offset;
+    iPoint.offset         = control.offset;
     iPoint.din.control    = static_cast<BinaryOutputControl::ControlCode>(control.code & 0x0f);
     iPoint.din.queue      = control.code & 0x10;
     iPoint.din.clear      = control.code & 0x20;

@@ -2212,7 +2212,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_inhibited_by_local_automation)
     op.dout.clear = false;
     op.dout.count = 1;
 
-    op.control_offset = 1;
+    op.control_offset = 0;
     op.type = DnpProtocol::DigitalOutputPointType;
     op.expiration = ~0;
 
@@ -2318,7 +2318,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_not_supported)
     op.dout.clear = false;
     op.dout.count = 1;
 
-    op.control_offset = 1;
+    op.control_offset = 0;
     op.type = DnpProtocol::DigitalOutputPointType;
     op.expiration = ~0;
 
@@ -2424,7 +2424,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_sbo)
     op.dout.clear = false;
     op.dout.count = 1;
 
-    op.control_offset = 1;
+    op.control_offset = 0;
     op.type = DnpProtocol::DigitalOutputPointType;
     op.expiration = ~0;
 

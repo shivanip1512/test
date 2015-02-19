@@ -54,7 +54,7 @@ public:
             } counterin;
         };
 
-        unsigned long control_offset;
+        unsigned long offset;
         InputPointType type;
         bool online;
     };

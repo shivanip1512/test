@@ -191,16 +191,6 @@ ObjectBlockPtr ObjectBlock::makeIndexedBlock( ObjectPtr object, unsigned index )
                     object->getGroup(),
                     object->getVariation());
 
-    if( index > 0 )
-    {
-        //  MAGIC NUMBER WARNING:  turning 1-based offset into a 0-based offset
-        index--;
-    }
-    else
-    {
-        CTILOG_ERROR(dout, "invalid index (0)");
-    }
-
     objBlock->_objectList.emplace_back(std::move(object));
     objBlock->_objectIndices.push_back(index);
 
@@ -215,16 +205,6 @@ ObjectBlockPtr ObjectBlock::makeLongIndexedBlock( ObjectPtr object, unsigned ind
                     ShortIndex_ShortQty,
                     object->getGroup(),
                     object->getVariation());
-
-    if( index > 0 )
-    {
-        //  MAGIC NUMBER WARNING:  turning 1-based offset into a 0-based offset
-        index--;
-    }
-    else
-    {
-        CTILOG_ERROR(dout, "invalid index (0)");
-    }
 
     objBlock->_objectList.emplace_back(std::move(object));
     objBlock->_objectIndices.push_back(index);
@@ -252,16 +232,6 @@ ObjectBlockPtr ObjectBlock::makeLongIndexedBlock( std::map<unsigned, std::unique
     for( auto &kv : objects )
     {
         unsigned index = kv.first;
-
-        if( index > 0 )
-        {
-            //  MAGIC NUMBER WARNING:  turning 1-based offset into a 0-based offset
-            index--;
-        }
-        else
-        {
-            CTILOG_ERROR(dout, "invalid index (0)");
-        }
 
         objBlock->_objectList.emplace_back(std::move(kv.second));
         objBlock->_objectIndices.push_back(index);
@@ -319,8 +289,7 @@ ObjectBlock::object_descriptor ObjectBlock::at( unsigned offset ) const
 
     if( _objectIndices.size() > offset )
     {
-        //  MAGIC NUMBER WARNING:  turning 0-based offset into 1-based offset
-        retval.index = _objectIndices.at(offset) + 1;
+        retval.index = _objectIndices.at(offset);
     }
 
     return retval;
@@ -774,8 +743,7 @@ void ObjectBlock::getPoints( Interface::pointlist_t &points, const TimeCTO *cto,
                 {
                     if( i_itr != _objectIndices.end() )
                     {
-                        //  MAGIC NUMBER WARNING:  turning 0-based offset into 1-based offset
-                        pMsg->setId(*i_itr + 1);
+                        pMsg->setId(*i_itr);
 
                         //  if it is a binary output, offset by BinaryOutputStatusOffset (currently 10,000)
                         //    to make sure it doesn't collide with the other status points

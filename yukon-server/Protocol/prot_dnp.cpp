@@ -655,7 +655,11 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
 
                 recordPoints(ob->getGroup(), points);
 
-                _point_results.insert(_point_results.end(), points.begin(), points.end());
+                for( CtiPointDataMsg *p : points )
+                {
+                    p->setId(p->getId() + 1);  //  convert to Yukon's 1-based offset
+                    _point_results.push_back(p);
+                }
             }
         }
 
@@ -756,7 +760,7 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
            CtiTime( CtiDate(st.wDay, st.wMonth, st.wYear), st.wHour, st.wMinute, st.wSecond ),
            st.wMilliseconds );
 
-        _point_results.insert(_point_results.end(), pt_msg);
+        _point_results.push_back(pt_msg);
     }
 
     return retVal;
@@ -793,7 +797,7 @@ void DnpProtocol::recordPoints( int group, const pointlist_t &points )
     {
         if( msg )
         {
-            (*target)[msg->getId()] = msg->getValue();
+            (*target)[msg->getId() + 1] = msg->getValue();  //  convert to 1-based offset for display
         }
     }
 }

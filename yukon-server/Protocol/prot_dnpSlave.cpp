@@ -65,7 +65,7 @@ void DnpSlaveProtocol::setCommand( Commands command, int seqNumber, std::vector<
                         ain->setValue(ip.ain.value);
                         ain->setOnlineFlag(ip.online);
 
-                        analogs.emplace(ip.control_offset, std::move(ain));
+                        analogs.emplace(ip.offset, std::move(ain));
 
                         break;
                     }
@@ -75,7 +75,7 @@ void DnpSlaveProtocol::setCommand( Commands command, int seqNumber, std::vector<
                         bin->setStateValue(ip.din.trip_close);
                         bin->setOnlineFlag(ip.online);
 
-                        digitals.emplace(ip.control_offset, std::move(bin));
+                        digitals.emplace(ip.offset, std::move(bin));
 
                         break;
                     }
@@ -85,7 +85,7 @@ void DnpSlaveProtocol::setCommand( Commands command, int seqNumber, std::vector<
                         counterin->setValue(ip.counterin.value);
                         counterin->setOnlineFlag(ip.online);
 
-                        counters.emplace(ip.control_offset, std::move(counterin));
+                        counters.emplace(ip.offset, std::move(counterin));
 
                         break;
                     }
@@ -128,7 +128,7 @@ void DnpSlaveProtocol::setCommand( Commands command, int seqNumber, std::vector<
                         ApplicationLayer::ResponseResponse,
                         ObjectBlock::makeIndexedBlock(
                                 std::move(boc),
-                                p.control_offset));
+                                p.offset));
 
                 break;
             }

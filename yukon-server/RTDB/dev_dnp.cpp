@@ -304,14 +304,14 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
                 p_i.is_pseudo = false;
             }
 
-            if( !offset )
+            if( offset <= 0 )
             {
                 CTILOG_WARN(dout, "no point specified for control for device \""<< getName() <<"\"");
             }
             else
             {
                 controlout.type            = DnpProtocol::DigitalOutputPointType;
-                controlout.control_offset  = offset;
+                controlout.control_offset  = offset - 1;  //  convert to DNP's 0-based indexing
 
                 controlout.dout.control    = controltype;
                 controlout.dout.trip_close = trip_close;
@@ -433,7 +433,7 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
         {
             int offset;
 
-            boost::optional<long> control_offset;
+            long control_offset = 0;
 
             if( parse.isKeyValid("analog") )
             {
@@ -485,9 +485,9 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
                     }
                 }
 
-                if( control_offset )
+                if( control_offset > 0 )
                 {
-                    controlout.control_offset = *control_offset;
+                    controlout.control_offset = control_offset - 1;  //  convert to DNP's 0-based indexing
 
                     if (parse.isKeyValid("analogfloatvalue"))
                     {

@@ -344,7 +344,7 @@ BOOST_AUTO_TEST_CASE( test_control_close )
     {
         const byte_str request(
                 "05 64 18 c4 f6 01 e8 03 36 79 "
-                "c0 c1 05 0c 01 17 01 00 41 01 00 00 00 00 00 00 84 a9 "
+                "c0 c1 05 0c 01 17 01 00 41 01 e8 03 00 00 00 00 2e 18 "
                 "00 00 00 ff ff");
 
         Test_ServerConnection connection;
@@ -353,7 +353,7 @@ BOOST_AUTO_TEST_CASE( test_control_close )
 
         const byte_str expected(
                 "05 64 1a 44 e8 03 f6 01 20 bb "
-                "c0 c1 81 00 00 0c 01 17 01 00 41 01 00 00 00 00 a7 b3 "
+                "c0 c1 81 00 00 0c 01 17 01 00 41 01 e8 03 00 00 c5 65 "
                 "00 00 00 00 00 ff ff");
 
         BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
@@ -376,7 +376,7 @@ BOOST_AUTO_TEST_CASE( test_control_close )
     {
         const byte_str request(
                 "05 64 18 c4 f6 01 e8 03 36 79 "
-                "c0 c1 05 0c 01 17 01 00 42 01 00 00 00 00 00 00 b2 93 "
+                "c0 c1 05 0c 01 17 01 00 42 01 e8 03 00 00 00 00 18 22 "
                 "00 00 00 ff ff");
 
         Test_ServerConnection connection;
@@ -385,7 +385,7 @@ BOOST_AUTO_TEST_CASE( test_control_close )
 
         const byte_str expected(
                 "05 64 1a 44 e8 03 f6 01 20 bb "
-                "c0 c1 81 00 00 0c 01 17 01 00 42 01 00 00 00 00 f7 20 "
+                "c0 c1 81 00 00 0c 01 17 01 00 42 01 e8 03 00 00 95 f6 "
                 "00 00 00 00 00 ff ff");
 
         BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
@@ -718,7 +718,7 @@ BOOST_AUTO_TEST_CASE( test_control_request_visualTD_MCT )
         fdrPoint->setValue(0);
         fdrPoint->setControllable(true);
 
-        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:11;POINTTYPE:Status;Offset:0", "Test Destination");
+        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:11;POINTTYPE:Status;Offset:1", "Test Destination");
 
         vector<CtiFDRDestination> destinationList;
 
@@ -741,9 +741,9 @@ BOOST_AUTO_TEST_CASE( test_control_request_visualTD_MCT )
     dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
 
     const byte_str expected(
-            "05 64 1c 44 e8 03 0b 00 b2 89 "
-            "c0 c2 81 00 00 0c 01 28 01 00 ff 00 41 01 00 00 f2 79 "
-            "00 00 00 00 00 00 04 87 26");
+            "05 64 1a 44 e8 03 0b 00 6b e2 "
+            "c0 c2 81 00 00 0c 01 17 01 01 41 01 00 00 00 00 ed 5e "
+            "00 00 00 00 00 ff ff");
 
     BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
 }
@@ -775,7 +775,7 @@ BOOST_AUTO_TEST_CASE( test_control_request_visualTD_CBC )
         fdrPoint->setValue(0);
         fdrPoint->setControllable(true);
 
-        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:11;POINTTYPE:Status;Offset:2", "Test Destination");
+        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:11;POINTTYPE:Status;Offset:0", "Test Destination");
 
         vector<CtiFDRDestination> destinationList;
 
@@ -800,7 +800,7 @@ BOOST_AUTO_TEST_CASE( test_control_request_visualTD_CBC )
     const byte_str expected(
             "05 64 1a 44 e8 03 0b 00 6b e2 "
             "c0 c3 81 00 00 0c 01 17 01 00 41 01 00 00 00 00 97 6f "
-            "00 00 00 00 04 87 26");
+            "00 00 00 00 00 ff ff");
 
     BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
 }
