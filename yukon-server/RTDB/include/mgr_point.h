@@ -33,11 +33,6 @@ private:
 
     void updateAccess(long pointid);
 
-    void addPoint(CtiPointBase *point);  //  also used by the unit test
-
-    //ONLY used by unit test.
-    void setAllPointsLoaded(bool isLoaded) { _all_paoids_loaded = isLoaded; }
-
     struct pao_offset_t
     {
         long paobjectid;
@@ -60,11 +55,13 @@ private:
 
     virtual void refreshListByIDs(const std::set<long> &ids, bool paoids);
 
-    friend class Test_CtiPointManager;
-
     void removePoint(ptr_type pTempCtiPoint);
 
 protected:
+
+    //ONLY used by unit test.
+    void setAllPointsLoaded(bool isLoaded) { _all_paoids_loaded = isLoaded; }
+    void addPoint(CtiPointBase *point);
 
     coll_type::lock_t &getLock();
     coll_type::lock_t &getLock() const;
@@ -102,16 +99,5 @@ public:
     spiterator end();
 
     size_t entries();
-};
-
-class Test_CtiPointManager : public CtiPointManager
-{
-public:
-    Test_CtiPointManager()
-    {
-        setAllPointsLoaded(true);
-    }
-
-    void addPoint(CtiPointBase *point)  {  ((CtiPointManager *)this)->addPoint(point);  }
 };
 

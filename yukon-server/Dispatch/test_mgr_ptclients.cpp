@@ -1,10 +1,13 @@
 #include <boost/test/auto_unit_test.hpp>
-#include <boost/assign/list_of.hpp>
 
 #include "mgr_ptclients.h"
 #include "tbl_pt_alarm.h"
 #include "pt_status.h"
 #include "pt_analog.h"
+
+#include "rtdb_test_helpers.h"
+
+#include <boost/assign/list_of.hpp>
 
 struct Test_CtiPointClientManager : CtiPointClientManager
 {
@@ -17,20 +20,6 @@ struct Test_CtiPointClientManager : CtiPointClientManager
 using namespace std;
 
 BOOST_AUTO_TEST_SUITE( test_mgr_ptclients )
-
-template <class T>
-std::auto_ptr<T> make_point(long deviceid, long pointid, CtiPointType_t type, int offset)
-{
-    std::auto_ptr<T> new_point(new T());
-
-    new_point->setID(pointid);
-    new_point->setDeviceID(deviceid);
-    new_point->setType(type);
-    new_point->setPointOffset(offset);
-    new_point->setUpdatedFlag(true);
-
-    return new_point;
-}
 
 enum
 {
@@ -55,9 +44,7 @@ BOOST_AUTO_TEST_CASE(test_alarming)
     Test_CtiPointClientManager manager;
     BOOST_CHECK(manager.entries() == 0);
 
-    std::auto_ptr<Test_CtiPointStatus> point_status1;
-
-    point_status1 = make_point<Test_CtiPointStatus>(device1_id, status1_id, StatusPointType, point1_offset);
+    CtiPointSPtr point_status1(Cti::Test::makeStatusPoint(device1_id, status1_id, point1_offset));
 
     Test_CtiTablePointAlarming alarm;
     alarm = manager.getAlarming(*point_status1);
@@ -111,9 +98,7 @@ BOOST_AUTO_TEST_CASE(test_dynamic)
     Test_CtiPointClientManager manager;
     BOOST_CHECK(manager.entries() == 0);
 
-    std::auto_ptr<Test_CtiPointStatus> point_status1;
-
-    point_status1 = make_point<Test_CtiPointStatus>(device1_id, status1_id, StatusPointType, point1_offset);
+    CtiPointSPtr point_status1(Cti::Test::makeStatusPoint(device1_id, status1_id, point1_offset));
 
     CtiDynamicPointDispatchSPtr dynamic = manager.getDynamic(*point_status1);
 

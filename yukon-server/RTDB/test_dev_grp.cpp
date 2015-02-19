@@ -52,20 +52,6 @@ BOOST_AUTO_TEST_CASE(test_dev_group_parent_child)
     BOOST_CHECK(!group->isAParent());
 }
 
-
-template <class T>
-T *make_point(CtiPointType_t type, int pointid, int deviceid)
-{
-    T *new_point = new T();
-
-    new_point->setID(pointid);
-    new_point->setDeviceID(deviceid);
-    new_point->setType(type);
-    new_point->setUpdatedFlag(true);
-
-    return new_point;
-}
-
 BOOST_AUTO_TEST_CASE(test_expresscom_contol_notification)
 {
     CtiDeviceGroupExpresscom* expresscomGrpPtr;
@@ -73,22 +59,6 @@ BOOST_AUTO_TEST_CASE(test_expresscom_contol_notification)
     CtiDeviceGroupBaseSPtr child = CtiDeviceGroupBaseSPtr(CTIDBG_new CtiDeviceGroupExpresscom());
     parent->setType(TYPE_LMGROUP_EXPRESSCOM);
     child->setType(TYPE_LMGROUP_EXPRESSCOM);
-
-    Test_CtiPointManager manager;
-
-    Test_CtiPointStatus *point_status1,
-                        *point_status2;
-
-    point_status1 = make_point<Test_CtiPointStatus>(StatusPointType, 1, 1);
-    parent->setID(1);
-    point_status2 = make_point<Test_CtiPointStatus>(StatusPointType, 2, 2);
-    child->setID(2);
-
-    point_status1->setPointOffset(GRP_CONTROL_STATUS);
-    point_status2->setPointOffset(GRP_CONTROL_STATUS);
-
-    manager.addPoint(point_status1);
-    manager.addPoint(point_status2);
 
     std::list<CtiMessage *> vgList;
     int count = 0;
@@ -116,10 +86,7 @@ BOOST_AUTO_TEST_CASE(test_expresscom_contol_notification)
     count+=1;
     BOOST_CHECK_EQUAL(count, vgList.size());
 
-    for( std::list<CtiMessage *>::iterator iter = vgList.begin(); iter != vgList.end(); iter++ )
-    {
-        delete *iter;
-    }
+    delete_container(vgList);
     vgList.clear();
 }
 

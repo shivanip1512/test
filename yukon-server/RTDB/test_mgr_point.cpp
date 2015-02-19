@@ -5,8 +5,7 @@
 #include "pt_analog.h"
 #include "pt_accum.h"
 
-#include <string>
-#include <iostream>
+#include "rtdb_test_helpers.h"
 
 BOOST_AUTO_TEST_SUITE( test_mgr_point )
 
@@ -31,43 +30,29 @@ enum
     point4_offset,
 };
 
-template <class T>
-T *make_point(long deviceid, long pointid, CtiPointType_t type, int offset)
+
+struct Test_CtiPointManager : public CtiPointManager
 {
-    T *new_point = new T();
+    Test_CtiPointManager()
+    {
+        setAllPointsLoaded(true);
+    }
 
-    new_point->setID(pointid);
-    new_point->setDeviceID(deviceid);
-    new_point->setType(type);
-    new_point->setPointOffset(offset);
-    new_point->setUpdatedFlag(true);
-
-    return new_point;
-}
+    using CtiPointManager::addPoint;
+};
 
 
 BOOST_AUTO_TEST_CASE(test_mgr_point_get_control_offset)
 {
     Test_CtiPointManager manager;
-    Test_CtiPointStatus  *point_status1,
-                         *point_status2,
-                         *point_status3;
 
     const int control_offset_contentious = 15,
               control_offset_unique      = 999;
 
     //  configure and add one status point with a control offset
-    point_status1 = make_point<Test_CtiPointStatus>(device1_id, status1_id, StatusPointType, point1_offset);
-    point_status2 = make_point<Test_CtiPointStatus>(device2_id, status2_id, StatusPointType, point2_offset);
-    point_status3 = make_point<Test_CtiPointStatus>(device2_id, status3_id, StatusPointType, point3_offset);
-
-    point_status1->setControlOffset(control_offset_contentious);
-    point_status2->setControlOffset(control_offset_contentious);
-    point_status3->setControlOffset(control_offset_unique);
-
-    point_status1->setControlType(ControlType_Normal);
-    point_status2->setControlType(ControlType_Normal);
-    point_status3->setControlType(ControlType_Normal);
+    CtiPointStatus *point_status1 = Cti::Test::makeControlPoint(device1_id, status1_id, point1_offset, control_offset_contentious, ControlType_Normal);
+    CtiPointStatus *point_status2 = Cti::Test::makeControlPoint(device2_id, status2_id, point2_offset, control_offset_contentious, ControlType_Normal);
+    CtiPointStatus *point_status3 = Cti::Test::makeControlPoint(device2_id, status3_id, point3_offset, control_offset_unique,      ControlType_Normal);
 
     manager.addPoint(point_status1);
     manager.addPoint(point_status2);
@@ -83,16 +68,12 @@ BOOST_AUTO_TEST_CASE(test_mgr_point_get_control_offset)
 BOOST_AUTO_TEST_CASE(test_mgr_point_changes)
 {
     Test_CtiPointManager manager;
-    Test_CtiPointStatus  *point_status1;  //  status point so we can check control offset
 
     const int control1_offset = 42,
               control2_offset = 49;
 
     //  configure and add one status point with a control offset
-    point_status1 = make_point<Test_CtiPointStatus>(device1_id, status1_id, StatusPointType, point1_offset);
-
-    point_status1->setControlOffset(control1_offset);
-    point_status1->setControlType(ControlType_Normal);
+    CtiPointStatus  *point_status1 = Cti::Test::makeControlPoint(device1_id, status1_id, point1_offset, control1_offset, ControlType_Normal);
 
     manager.addPoint(point_status1);
     //  we need to replace the following tests with point replacements from addPoint on the same pointid
@@ -149,17 +130,11 @@ BOOST_AUTO_TEST_CASE(test_mgr_point_get_type_offset)
 {
     Test_CtiPointManager manager;
 
-    Test_CtiPointStatus *point_status1,
-                        *point_status2;
-    Test_CtiPointAnalog *point_analog1,
-                        *point_analog2,
-                        *point_analog3;
-
-    point_status1 = make_point<Test_CtiPointStatus>(device1_id, status1_id, StatusPointType, point1_offset);
-    point_status2 = make_point<Test_CtiPointStatus>(device1_id, status2_id, StatusPointType, point2_offset);
-    point_analog1 = make_point<Test_CtiPointAnalog>(device1_id, analog1_id, AnalogPointType, point1_offset);
-    point_analog2 = make_point<Test_CtiPointAnalog>(device1_id, analog2_id, AnalogPointType, point2_offset);
-    point_analog3 = make_point<Test_CtiPointAnalog>(device2_id, analog3_id, AnalogPointType, point1_offset);
+    CtiPointStatus *point_status1 = Cti::Test::makeStatusPoint(device1_id, status1_id, point1_offset);
+    CtiPointStatus *point_status2 = Cti::Test::makeStatusPoint(device1_id, status2_id, point2_offset);
+    CtiPointAnalog *point_analog1 = Cti::Test::makeAnalogPoint(device1_id, analog1_id, point1_offset);
+    CtiPointAnalog *point_analog2 = Cti::Test::makeAnalogPoint(device1_id, analog2_id, point2_offset);
+    CtiPointAnalog *point_analog3 = Cti::Test::makeAnalogPoint(device2_id, analog3_id, point1_offset);
 
     manager.addPoint(point_status1);
     manager.addPoint(point_status2);
@@ -179,23 +154,11 @@ BOOST_AUTO_TEST_CASE(test_mgr_point_get_equal_by_pao)
 {
     Test_CtiPointManager manager;
 
-    Test_CtiPointStatus *point_status1,
-                        *point_status2;
-    Test_CtiPointAnalog *point_analog1,
-                        *point_analog2,
-                        *point_analog3;
-
-    point_status1 = make_point<Test_CtiPointStatus>(StatusPointType, status1_id, device1_id);
-    point_status2 = make_point<Test_CtiPointStatus>(StatusPointType, status2_id, device1_id);
-    point_analog1 = make_point<Test_CtiPointAnalog>(AnalogPointType, analog1_id, device1_id);
-    point_analog2 = make_point<Test_CtiPointAnalog>(AnalogPointType, analog2_id, device1_id);
-    point_analog3 = make_point<Test_CtiPointAnalog>(AnalogPointType, analog3_id, device2_id);
-
-    point_status1->setPointOffset(1);
-    point_status2->setPointOffset(2);
-    point_analog1->setPointOffset(1);
-    point_analog2->setPointOffset(2);
-    point_analog3->setPointOffset(1);
+    CtiPointStatus *point_status1 = Cti::Test::makeStatusPoint(device1_id, status1_id, 1);
+    CtiPointStatus *point_status2 = Cti::Test::makeStatusPoint(device1_id, status2_id, 2);
+    CtiPointAnalog *point_analog1 = Cti::Test::makeAnalogPoint(device1_id, analog1_id, 1);
+    CtiPointAnalog *point_analog2 = Cti::Test::makeAnalogPoint(device1_id, analog2_id, 2);
+    CtiPointAnalog *point_analog3 = Cti::Test::makeAnalogPoint(device2_id, analog3_id, 1);
 
     manager.addPoint(point_status1);
     manager.addPoint(point_status2);
