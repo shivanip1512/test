@@ -11,16 +11,12 @@
 
 class IM_EX_PNTDB CtiPointAccumulator : public CtiPointNumeric
 {
-private:
-
-   friend class Test_CtiPointAccumulator;
-
    CtiTablePointAccumulator         _pointAccumulator;
    CtiTablePointAccumulatorHistory  *_pointHistory;
 
-public:
-
    typedef     CtiPointNumeric    Inherited;
+
+public:
 
    CtiPointAccumulator() :
    _pointHistory(NULL)
@@ -86,31 +82,15 @@ public:
    {
       if(_pointHistory == NULL)
       {
-         _pointHistory = CTIDBG_new CtiTablePointAccumulatorHistory( getPointID() );
-         if(_pointHistory != NULL)
+         _pointHistory = new CtiTablePointAccumulatorHistory( getPointID() );
+
+         if(!_pointHistory->Restore() )
          {
-            if(!_pointHistory->Restore() )
-            {
-               _pointHistory->Insert();
-            }
-         }
-         else
-         {
-            CTILOG_ERROR(dout, "Unexpected _pointHistory is NULL");
+            _pointHistory->Insert();
          }
       }
    }
 
-};
-
-
-struct IM_EX_PNTDB Test_CtiPointAccumulator : public CtiPointAccumulator
-{
-    void setPointOffset( int  offset   )     {  _pointBase.setPointOffset(offset);   }
-    void setID         ( long id       )     {  _pointBase.setID(id);                }
-    void setDeviceID   ( long deviceid )     {  _pointBase.setPAObjectID(deviceid);  }
-    void setName       ( std::string name )  {  _pointBase.setName(name);  }
-    double computeValueForUOM( double value ) const  {  return value;  }
 };
 
 

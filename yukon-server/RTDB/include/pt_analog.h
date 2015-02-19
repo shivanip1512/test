@@ -13,17 +13,13 @@
 
 class IM_EX_PNTDB CtiPointAnalog : public CtiPointNumeric
 {
-private:
-
     CtiTablePointAnalog _pointAnalog;
 
     boost::optional<CtiTablePointControl> _pointControl;
 
-    friend class Test_CtiPointAnalog;
+    typedef CtiPointNumeric Inherited;
 
 public:
-
-    typedef CtiPointNumeric Inherited;
 
     //  NOTE - no WHERE clause, you will need to add your own!
     static std::string getSQLCoreStatement()
@@ -97,15 +93,6 @@ public:
     virtual double getDataOffset() const  {  return _pointAnalog.getDataOffset();  }
 };
 
-
-struct IM_EX_PNTDB Test_CtiPointAnalog : public CtiPointAnalog
-{
-    void setPointOffset( int  offset   )     {  _pointBase.setPointOffset(offset);   }
-    void setID         ( long id       )     {  _pointBase.setID(id);                }
-    void setDeviceID   ( long deviceid )     {  _pointBase.setPAObjectID(deviceid);  }
-    void setName       ( std::string name )  {  _pointBase.setName(name);  }
-    double computeValueForUOM( double value ) const  {  return value;  }
-};
 
 typedef shared_ptr< CtiPointAnalog > CtiPointAnalogSPtr;
 

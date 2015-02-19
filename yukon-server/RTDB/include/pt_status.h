@@ -11,8 +11,6 @@
 
 class IM_EX_PNTDB CtiPointStatus : public CtiPointBase
 {
-protected:
-
    CtiTablePointStatus _pointStatus;
    boost::optional<CtiTablePointStatusControl> _pointStatusControl;
 
@@ -29,26 +27,5 @@ public:
    virtual double getDefaultValue( ) const;
 };
 
-
-struct IM_EX_PNTDB Test_CtiPointStatus : public CtiPointStatus
-{
-    void setPointOffset  ( int  offset   )     {  _pointBase.setPointOffset(offset);   }
-    void setControlOffset( int offset    )     {  getPointStatusControl()->setControlOffset(offset);   }
-    void setID           ( long id       )     {  _pointBase.setID(id);                }
-    void setDeviceID     ( long deviceid )     {  _pointBase.setPAObjectID(deviceid);  }
-    void setName         ( std::string name )  {  _pointBase.setName(name);  }
-
-    void setControlType  ( CtiControlType_t type )  {  getPointStatusControl()->setControlType(type);  }
-
-    CtiTablePointStatusControl *getPointStatusControl()
-    {
-        if( ! _pointStatusControl )
-        {
-            _pointStatusControl = CtiTablePointStatusControl();
-        }
-
-        return &(*_pointStatusControl);
-    }
-};
 
 typedef boost::shared_ptr< CtiPointStatus > CtiPointStatusSPtr;

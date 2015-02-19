@@ -8,8 +8,6 @@
 
 class IM_EX_PNTDB CtiPointBase : public CtiMemDBObject, boost::noncopyable
 {
-protected:
-
    CtiTablePointBase _pointBase;
 
 public:
