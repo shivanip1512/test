@@ -2749,23 +2749,23 @@ YukonError_t Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandPar
 
         // Unfortunatelly the arrays have a 0 offset, while the schedules times/rates are referenced with a 1 offset
         // Also note that rate "0" is the midnight rate.
-        const string mondayScheduleStr = deviceConfig->getValueFromKey(MCTStrings::MondaySchedule);
-        const string tuesdayScheduleStr = deviceConfig->getValueFromKey(MCTStrings::TuesdaySchedule);
+        const string mondayScheduleStr    = deviceConfig->getValueFromKey(MCTStrings::MondaySchedule);
+        const string tuesdayScheduleStr   = deviceConfig->getValueFromKey(MCTStrings::TuesdaySchedule);
         const string wednesdayScheduleStr = deviceConfig->getValueFromKey(MCTStrings::WednesdaySchedule);
-        const string thursdayScheduleStr = deviceConfig->getValueFromKey(MCTStrings::ThursdaySchedule);
-        const string fridayScheduleStr = deviceConfig->getValueFromKey(MCTStrings::FridaySchedule);
-        const string saturdayScheduleStr = deviceConfig->getValueFromKey(MCTStrings::SaturdaySchedule);
-        const string sundayScheduleStr = deviceConfig->getValueFromKey(MCTStrings::SundaySchedule);
-        const string holidayScheduleStr = deviceConfig->getValueFromKey(MCTStrings::HolidaySchedule);
+        const string thursdayScheduleStr  = deviceConfig->getValueFromKey(MCTStrings::ThursdaySchedule);
+        const string fridayScheduleStr    = deviceConfig->getValueFromKey(MCTStrings::FridaySchedule);
+        const string saturdayScheduleStr  = deviceConfig->getValueFromKey(MCTStrings::SaturdaySchedule);
+        const string sundayScheduleStr    = deviceConfig->getValueFromKey(MCTStrings::SundaySchedule);
+        const string holidayScheduleStr   = deviceConfig->getValueFromKey(MCTStrings::HolidaySchedule);
 
-        const long mondaySchedule = resolveScheduleName(mondayScheduleStr);
-        const long tuesdaySchedule = resolveScheduleName(tuesdayScheduleStr);
+        const long mondaySchedule    = resolveScheduleName(mondayScheduleStr);
+        const long tuesdaySchedule   = resolveScheduleName(tuesdayScheduleStr);
         const long wednesdaySchedule = resolveScheduleName(wednesdayScheduleStr);
-        const long thursdaySchedule = resolveScheduleName(thursdayScheduleStr);
-        const long fridaySchedule = resolveScheduleName(fridayScheduleStr);
-        const long saturdaySchedule = resolveScheduleName(saturdayScheduleStr);
-        const long sundaySchedule = resolveScheduleName(sundayScheduleStr);
-        const long holidaySchedule = resolveScheduleName(holidayScheduleStr);
+        const long thursdaySchedule  = resolveScheduleName(thursdayScheduleStr);
+        const long fridaySchedule    = resolveScheduleName(fridayScheduleStr);
+        const long saturdaySchedule  = resolveScheduleName(saturdayScheduleStr);
+        const long sundaySchedule    = resolveScheduleName(sundayScheduleStr);
+        const long holidaySchedule   = resolveScheduleName(holidayScheduleStr);
 
         //These are all string values
         timeStringValues[0][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time1);
@@ -2816,66 +2816,73 @@ YukonError_t Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandPar
 
         string defaultTOURateString = deviceConfig->getValueFromKey(MCTStrings::DefaultTOURate);
 
-        for( int i = 0; i < 4; i++ )
-        {
-            for( int j = 0; j < 6; j++ )
-            {
-                if( rateStringValues[i][j].empty() )
-                {
-                    CTILOG_ERROR(dout, "device " << getName() << " bad rate string stored");
-
-                    return ClientErrors::NoConfigData;
-                }
-            }
-        }
-
-        for( int i = 0; i < 4; i++ )
-        {
-            for( int j = 0; j < 5; j++ )
-            {
-                if( timeStringValues[i][j].length() < 4 ) //A time needs at least 4 digits X:XX
-                {
-                    CTILOG_ERROR(dout, "device "<< getName() <<" bad time string stored");
-
-                    return ClientErrors::NoConfigData;
-                }
-            }
-        }
-
         //Do conversions from strings to longs here.
         for( int i = 0; i < 4; i++ )
         {
             for( int j = 0; j < 6; j++ )
             {
-                rates[i][j] = rateStringValues[i][j][0] - 'A';
-                if( rates[i][j] < 0 || rates[i][j] > 3 )
+                const std::string &rateStringValue = rateStringValues[i][j];
+
+                if( rateStringValue.empty() )
+                {
+                    CTILOG_ERROR(dout, "device " << getName() << " bad rate string stored");
+
+                    return ClientErrors::NoConfigData;
+                }
+
+                if( rateStringValue[0] < 'A' || rateStringValue[0] > 'D' )
                 {
                     CTILOG_ERROR(dout, "device "<< getName() <<" bad rate string stored");
 
                     return ClientErrors::NoConfigData;
                 }
+
+                rates[i][j] = rateStringValue[0] - 'A';
             }
         }
-        long tempTime;
+
         for( int i = 0; i < 4; i++ )
         {
             for( int j = 0; j < 5; j++ )
             {
-                // Im going to remove the :, get the remaining value, and do simple math on it. I think this
-                // results in less error checking needed.
-                timeStringValues[i][j].erase(timeStringValues[i][j].find(':'), 1);
-                tempTime = strtol(timeStringValues[i][j].data(),NULL,10);
+                std::string &timeStringValue = timeStringValues[i][j];
+
+                if( timeStringValue.length() < 4 ) //A time needs at least 4 digits X:XX
+                {
+                    CTILOG_ERROR(dout, "device "<< getName() <<" bad time string stored");
+
+                    return ClientErrors::NoConfigData;
+                }
+
+                const std::string::size_type colonPos = timeStringValue.find(':');
+                if( colonPos == std::string::npos )
+                {
+                    CTILOG_ERROR(dout, "device "<< getName() <<" bad time string stored");
+
+                    return ClientErrors::NoConfigData;
+                }
+
+                // Remove the :, get the remaining value, and do simple math to extract the hours and minutes.
+                timeStringValue.erase(colonPos, 1);
+
+                const long tempTime = strtol(timeStringValue.data(),NULL,10);
+
                 times[i][j] = ((tempTime/100) * 60) + (tempTime%100);
             }
         }
+
         // Time is currently the actual minutes, we need the difference. Also the MCT has 5 minute resolution.
         for( int i = 0; i < 4; i++ )
         {
             for( int j = 4; j > 0; j-- )
             {
-                times[i][j] = times[i][j]-times[i][j-1];
-                times[i][j] = times[i][j]/5;
-                if( times[i][j] < 0 || times[i][j] > 255 )
+                long &current  = times[i][j];
+                long &previous = times[i][j-1];
+
+                current = current - previous;
+                current /= 5;
+
+                if( current < 0 || current > 255 )
                 {
                     CTILOG_ERROR(dout, "device "<< getName() <<" time sequencing");
 
@@ -2899,27 +2906,27 @@ YukonError_t Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandPar
             return ClientErrors::NoConfigData;
         }
 
-        if( mondaySchedule == std::numeric_limits<long>::min() ||
-            tuesdaySchedule == std::numeric_limits<long>::min() ||
-            fridaySchedule == std::numeric_limits<long>::min() ||
-            saturdaySchedule == std::numeric_limits<long>::min() ||
-            sundaySchedule == std::numeric_limits<long>::min() ||
-            holidaySchedule == std::numeric_limits<long>::min() ||
+        if( mondaySchedule    == std::numeric_limits<long>::min() ||
+            tuesdaySchedule   == std::numeric_limits<long>::min() ||
+            fridaySchedule    == std::numeric_limits<long>::min() ||
+            saturdaySchedule  == std::numeric_limits<long>::min() ||
+            sundaySchedule    == std::numeric_limits<long>::min() ||
+            holidaySchedule   == std::numeric_limits<long>::min() ||
             wednesdaySchedule == std::numeric_limits<long>::min() ||
-            thursdaySchedule == std::numeric_limits<long>::min() )
+            thursdaySchedule  == std::numeric_limits<long>::min() )
         {
             CTILOG_ERROR(dout, "device "<< getName() <<" no or bad schedule value stored");
 
             return ClientErrors::NoConfigData;
         }
 
-        dayTable = holidaySchedule << 14;
-        dayTable |= saturdaySchedule << 12;
-        dayTable |= fridaySchedule << 10;
-        dayTable |= thursdaySchedule << 8;
+        dayTable = holidaySchedule    << 14;
+        dayTable |= saturdaySchedule  << 12;
+        dayTable |= fridaySchedule    << 10;
+        dayTable |= thursdaySchedule  << 8;
         dayTable |= wednesdaySchedule << 6;
-        dayTable |= tuesdaySchedule << 4;
-        dayTable |= mondaySchedule << 2;
+        dayTable |= tuesdaySchedule   << 4;
+        dayTable |= mondaySchedule    << 2;
         dayTable |= sundaySchedule;
 
         createTOUDayScheduleString(daySchedule1, times[0], rates[0]);
