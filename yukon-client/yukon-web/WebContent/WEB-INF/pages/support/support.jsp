@@ -90,10 +90,7 @@ $(function() {
                 <div><label><strong><i:inline key=".hours.header"/></strong>&nbsp;<i:inline key=".hours.value"/></label></div>
             </div>
             <div>
-                <label><a href="<cti:msg2 key=".supportSite.link"/>"><i:inline key=".supportSite.title"/></a>&nbsp;<span class="notes"><i:inline key=".supportSite.label"/></span></label>
-            </div>
-            <div>
-                <label><a href="<cti:msg2 key=".powerCentral.link"/>"><i:inline key=".powerCentral.title"/></a>&nbsp;<span class="notes"><i:inline key=".powerCentral.label"/></span></label>
+                <label><a href="<cti:msg2 key=".supportSite.link"/>"><i:inline key=".supportSite.title"/></a></label>
             </div>
             <div>
                 <a href="<cti:msg2 key=".rma.link"/>" target="_blank"><i:inline key=".rma"/></a>

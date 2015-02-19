@@ -25,12 +25,8 @@
     <entry key="yukon.web.modules.support.support.rma">RMA Form</entry>
     <entry key="yukon.web.modules.support.support.rma.link">http://www.cannontech.com/support/CustomerServiceRMA.asp</entry>
     <entry key="yukon.web.modules.support.supportSite.title">Support Website</entry>
-    <entry key="yukon.web.modules.support.supportSite.link">http://www.cannontech.com/support/docs/supportintro.asp</entry>
-    <entry key="yukon.web.modules.support.supportSite.label">(AMI and DR)</entry>
-    <entry key="yukon.web.modules.support.powerCentral.title">Cooper Power Central</entry>
-    <entry key="yukon.web.modules.support.powerCentral.link"> http://www.cooperpowercentral.com</entry>
-    <entry key="yukon.web.modules.support.powerCentral.label">(CBCs and Smart Sensors)</entry>
-    
+    <entry key="yukon.web.modules.support.supportSite.link">http://www.cooperpowercentral.com</entry>
+
     <entry key="yukon.web.modules.support.support.ftpUpload.title">Upload Support Bundle</entry>
 
 
