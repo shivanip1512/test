@@ -1159,8 +1159,26 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
             const unsigned char expected_message[] =
             {
-                0xa7, 0x60, 0x01, 0x79, 0x1b, 0x86, 0x02, 0x34,
-                0xe4, 0x53, 0x15, 0x09, 0x10, 0x85, 0x93
+                0xa7, // Day table
+                0x60, // a760 -> 1010011101100000 -> 10 10 01 11 01 10 00 00
+                //  schedule 1
+                0x01,  //  switch 1
+                0x79,  //  switch 2
+                0x1b,  //  switch 3
+                0x86,  //  switch 4
+                0x02,  //  switch 5
+                //  schedule 1+2 rates
+                0x34,
+                //  schedule 1 rates byte 6
+                0xe4,
+                //  schedule 2
+                0x53,  //  switch 1
+                0x15,  //  switch 2
+                0x09,  //  switch 3
+                0x10,  //  switch 4
+                0x85,  //  switch 5
+                //  schedule 2 rates byte 6
+                0x93
             };
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
@@ -1180,8 +1198,26 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
             const unsigned char expected_message[] =
             {
-                0x3e, 0x0c, 0x18, 0x0c, 0x0c, 0x0e, 0x4e, 0x01,
-                0x6b, 0x26, 0x81, 0x0a, 0x09, 0x39, 0x01
+                //  schedule 3
+                0x3e,  //  switch 1
+                0x0c,  //  switch 2
+                0x18,  //  switch 3
+                0x0c,  //  switch 4
+                0x0c,  //  switch 5
+                //  schedule 3 rates
+                0x0e,
+                0x4e,
+                //  schedule 4
+                0x01,  //  switch 1
+                0x6b,  //  switch 2
+                0x26,  //  switch 3
+                0x81,  //  switch 4
+                0x0a,  //  switch 5
+                //  schedule 4 rates
+                0x09,
+                0x39,
+                //  default TOU rate
+                0x01
             };
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
