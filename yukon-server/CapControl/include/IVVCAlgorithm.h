@@ -4,6 +4,7 @@
 #include "IVVCState.h"
 #include "PointDataRequestFactory.h"
 #include "ZoneManager.h"
+#include "VoltageRegulatorManager.h"
 
 
 namespace Cti           {
@@ -30,6 +31,8 @@ class IVVCAlgorithm
 
     protected:
 
+        bool checkZoneRegulatorsInProperConfig(IVVCStatePtr state, CtiCCSubstationBusPtr subbus);
+
         bool isBusInDisabledIvvcState( IVVCStatePtr state, CtiCCSubstationBusPtr subbus );
 
         void sendIVVCAnalysisMessage( Cti::Messaging::CapControl::IVVCAnalysisMessage * message );
@@ -44,9 +47,10 @@ class IVVCAlgorithm
 
         double calculateTargetPFVars(const double targetPF, const double wattValue);
         double calculateVf(const PointValueMap &voltages);
-        int calculateVte(const PointValueMap &voltages, IVVCStrategy* strategy,
-                         const std::map<long, CtiCCMonitorPointPtr> & _monitorMap,
-                         const bool isPeakTime, const double voltChangePerTap);
+        double calculateVte(const PointValueMap &voltages, IVVCStrategy* strategy,
+                            const std::map<long, CtiCCMonitorPointPtr> & _monitorMap,
+                            const bool isPeakTime,
+                            Cti::CapControl::VoltageRegulatorManager::SharedPtr  regulator);
 
         double voltageViolationCalculator(const double voltage, const IVVCStrategy * strategy, const bool isPeakTime);
 

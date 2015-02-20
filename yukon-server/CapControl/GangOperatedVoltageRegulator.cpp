@@ -7,23 +7,12 @@
 #include "capcontroller.h"
 #include "ccmessage.h"
 
-
+#include <boost/assign/list_of.hpp>
 
 namespace Cti           {
 namespace CapControl    {
 
 DEFINE_COLLECTABLE( GangOperatedVoltageRegulator, CTIVOLTAGEREGULATOR_ID )
-
-
-const PointAttribute GangOperatedVoltageRegulator::attributes[] =
-{
-    PointAttribute::VoltageY,
-    PointAttribute::TapDown,
-    PointAttribute::TapUp,
-    PointAttribute::TapPosition,
-    PointAttribute::AutoRemoteControl,
-    PointAttribute::KeepAlive
-};
 
 
 GangOperatedVoltageRegulator::GangOperatedVoltageRegulator()
@@ -74,6 +63,18 @@ GangOperatedVoltageRegulator & GangOperatedVoltageRegulator::operator=(const Gan
 
 void GangOperatedVoltageRegulator::loadAttributes(AttributeService * service)
 {
+    const std::vector<PointAttribute> attributes =
+        boost::assign::list_of
+            ( PointAttribute::VoltageY )
+            ( PointAttribute::TapDown )
+            ( PointAttribute::TapUp )
+            ( PointAttribute::TapPosition )
+            ( PointAttribute::AutoRemoteControl )
+            ( PointAttribute::KeepAlive )
+            ( PointAttribute::ForwardSetPoint )
+            ( PointAttribute::ForwardBandwidth )
+        ;
+
     for each ( const PointAttribute attribute in attributes )
     {
         loadPointAttributes(service, attribute);
@@ -83,7 +84,7 @@ void GangOperatedVoltageRegulator::loadAttributes(AttributeService * service)
 
 void GangOperatedVoltageRegulator::updateFlags(const unsigned tapDelay)
 {
-    bool recentOperation = ( ( _lastTapOperationTime + 30 ) > CtiTime() );
+    bool recentOperation = ( ( _lastControlOperationTime + 30 ) > CtiTime() );
 
     if (_recentTapOperation != recentOperation)
     {
@@ -123,6 +124,8 @@ void GangOperatedVoltageRegulator::executeIntegrityScan()
 
 void GangOperatedVoltageRegulator::executeEnableKeepAlive()
 {
+    _keepAliveConfig = getKeepAliveConfig();
+
     executeKeepAliveHelper( getPointByAttribute( PointAttribute::KeepAlive ), _keepAliveConfig );
 
     if ( isTimeToSendKeepAlive() )      // update the keep alive timer
@@ -145,6 +148,8 @@ void GangOperatedVoltageRegulator::executeDisableKeepAlive()
 
 void GangOperatedVoltageRegulator::executeEnableRemoteControl()
 {
+    _keepAliveConfig = getKeepAliveConfig();
+
     _lastCommandedOperatingMode = RemoteMode;
 
     executeRemoteControlHelper( getPointByAttribute( PointAttribute::KeepAlive ), _keepAliveConfig, "Enable Remote Control",

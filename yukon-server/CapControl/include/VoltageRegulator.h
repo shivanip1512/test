@@ -25,11 +25,19 @@ class VoltageRegulator : public CapControlPao, public UpdatablePao
 {
 public:
 
-    enum TapOperation
+    enum ControlMode
+    {
+        ManualTap,
+        SetPoint
+    };
+
+    enum ControlOperation
     {
         None,
         LowerTap,
-        RaiseTap
+        RaiseTap,
+        LowerSetPoint,
+        RaiseSetPoint
     };
 
     enum OperatingMode
@@ -86,6 +94,8 @@ public:
 
     virtual void executeTapUpOperation();
     virtual void executeTapDownOperation();
+    virtual void executeAdjustSetPointOperation( const double changeAmount );
+
     virtual void executeIntegrityScan() = 0;
     virtual void executeEnableRemoteControl() = 0;
     virtual void executeDisableRemoteControl() = 0;
@@ -100,13 +110,28 @@ public:
     std::string getPhaseString() const;
 
     double getVoltageChangePerTap() const;
+    double requestVoltageChange( const double changeAmount,
+                                 const bool isEmergency = false );
 
-    TapOperation getLastTapOperation() const     { return _lastTapOperation; }
-    CtiTime      getLastTapOperationTime() const { return _lastTapOperationTime; }
+    void canExecuteVoltageRequest( const double changeAmount ) ;//const;
+
+    double adjustVoltage( const double changeAmount );
+
+    ControlOperation getLastControlOperation() const     { return _lastControlOperation; }
+    CtiTime          getLastControlOperationTime() const { return _lastControlOperationTime; }
 
     virtual bool            getRecentTapOperation() const = 0;
     virtual OperatingMode   getLastOperatingMode() const = 0;
     virtual OperatingMode   getLastCommandedOperatingMode() const = 0;
+
+    ControlMode getControlMode() const;
+
+    double getVoltage();
+    double getSetPoint();
+    virtual double getSetPointBandwidth();
+
+    long getKeepAliveConfig();
+    long getKeepAliveTimer();
 
 protected:
 
@@ -115,8 +140,8 @@ protected:
     bool            _updated;
     OperatingMode   _mode;
 
-    TapOperation    _lastTapOperation;
-    CtiTime         _lastTapOperationTime;
+    ControlOperation    _lastControlOperation;
+    CtiTime             _lastControlOperationTime;
 
     AttributeMap    _attributes;
 
@@ -147,7 +172,7 @@ protected:
 
     CtiSignalMsg * createDispatchMessage( const long ID, const std::string &text );
 
-    void notifyTapOperation(const TapOperation & operation, const CtiTime & timeStamp = CtiTime() );
+    void notifyControlOperation(const ControlOperation & operation, const CtiTime & timeStamp = CtiTime() );
 };
 
 // this is added to use voltageRegulator with boost::ptr_vector, since it is an abstract class

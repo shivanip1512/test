@@ -1,14 +1,14 @@
-
-
 #include "precompiled.h"
+
 #include "VoltageRegulator.h"
 #include "ccutil.h"
-
 #include "logger.h"
-
 #include "msg_signal.h"
 #include "msg_pcrequest.h"
 #include "Capcontroller.h"
+#include "resolvers.h"
+#include "mgr_config.h"
+#include "config_data_regulator.h"
 
 using namespace boost::posix_time;
 using namespace Cti::Messaging::CapControl;
@@ -16,6 +16,26 @@ using namespace Cti::Messaging::CapControl;
 namespace Cti           {
 namespace CapControl    {
 
+namespace   {
+
+Config::DeviceConfigSPtr    getDeviceConfig( const CapControlPao * regulator )
+{
+    Config::DeviceConfigSPtr    deviceConfig = 
+        ConfigManager::getConfigForIdAndType( regulator->getPaoId(),
+                                              static_cast<DeviceTypes>( resolvePAOType( regulator->getPaoCategory(),
+                                                                                        regulator->getPaoType() ) ) );
+
+    if ( ! deviceConfig )
+    {
+        // This technically should be impossible - no regulator should exist without an
+        //  assigned config - should we bother to throw an exception if lookup fails or fail
+        //  silently with acceptable defaults...?
+    }
+
+    return deviceConfig;
+}
+
+}
 
 // If these strings change, remember to update them in resolveCapControlType()
 const std::string VoltageRegulator::LoadTapChanger                  = "LTC";
@@ -28,7 +48,7 @@ VoltageRegulator::VoltageRegulator()
     _phase(Phase_Unknown),
     _updated(true),
     _mode(VoltageRegulator::RemoteMode),
-    _lastTapOperation(VoltageRegulator::None),
+    _lastControlOperation(VoltageRegulator::None),
     _lastMissingAttributeComplainTime(CtiTime(neg_infin)),
     _keepAliveConfig(0),
     _keepAliveTimer(0),
@@ -44,7 +64,7 @@ VoltageRegulator::VoltageRegulator(Cti::RowReader & rdr)
     _phase(Phase_Unknown),
     _updated(true),
     _mode(VoltageRegulator::RemoteMode),
-    _lastTapOperation(VoltageRegulator::None),
+    _lastControlOperation(VoltageRegulator::None),
     _lastMissingAttributeComplainTime(CtiTime(neg_infin)),
     _keepAliveConfig(0),
     _keepAliveTimer(0),
@@ -74,7 +94,7 @@ VoltageRegulator::VoltageRegulator(const VoltageRegulator & toCopy)
     _phase(Phase_Unknown),
     _updated(true),
     _mode(VoltageRegulator::RemoteMode),
-    _lastTapOperation(VoltageRegulator::None),
+    _lastControlOperation(VoltageRegulator::None),
     _lastMissingAttributeComplainTime(CtiTime(neg_infin)),
     _keepAliveConfig(0),
     _keepAliveTimer(0),
@@ -96,8 +116,8 @@ VoltageRegulator & VoltageRegulator::operator=(const VoltageRegulator & rhs)
         _updated    = rhs._updated;
         _mode       = rhs._mode;
 
-        _lastTapOperation       = rhs._lastTapOperation;
-        _lastTapOperationTime   = rhs._lastTapOperationTime;
+        _lastControlOperation       = rhs._lastControlOperation;
+        _lastControlOperationTime   = rhs._lastControlOperationTime;
 
         _attributes = rhs._attributes;
 
@@ -166,10 +186,10 @@ void VoltageRegulator::setUpdated(const bool updated)
 }
 
 
-void VoltageRegulator::notifyTapOperation(const TapOperation & operation, const CtiTime & timeStamp)
+void VoltageRegulator::notifyControlOperation(const ControlOperation & operation, const CtiTime & timeStamp)
 {
-    _lastTapOperation     = operation;
-    _lastTapOperationTime = timeStamp;
+    _lastControlOperation     = operation;
+    _lastControlOperationTime = timeStamp;
 }
 
 
@@ -216,7 +236,7 @@ void VoltageRegulator::setKeepAliveConfig(const long value)
 
 void VoltageRegulator::executeTapUpOperation()
 {
-    notifyTapOperation( VoltageRegulator::RaiseTap );
+    notifyControlOperation( RaiseTap );
 
     std::string description = "Raise Tap Position" + getPhaseString();
 
@@ -227,12 +247,54 @@ void VoltageRegulator::executeTapUpOperation()
 
 void VoltageRegulator::executeTapDownOperation()
 {
-    notifyTapOperation( VoltageRegulator::LowerTap );
+    notifyControlOperation( LowerTap );
 
     std::string description = "Lower Tap Position" + getPhaseString();
 
     executeDigitalOutputHelper( getPointByAttribute( PointAttribute::TapDown ), description, capControlIvvcTapOperation );
     sendCapControlOperationMessage( CapControlOperationMessage::createLowerTapMessage( getPaoId(), CtiTime() ) );
+}
+
+
+void VoltageRegulator::executeAdjustSetPointOperation( const double changeAmount )
+{
+    double    currentSetPoint = 0.0;
+    LitePoint point = getPointByAttribute( PointAttribute::ForwardSetPoint );
+
+    if ( getPointValue( point.getPointId(), currentSetPoint ) )
+    {
+        std::string description;
+
+        if ( changeAmount > 0.0 )
+        {
+            notifyControlOperation(RaiseSetPoint); 
+            description = "Raise Set Point" + getPhaseString();
+        }
+        else
+        {
+            notifyControlOperation(LowerSetPoint); 
+            description = "Lower Set Point" + getPhaseString();
+        }
+
+        CtiCapController::getInstance()->sendMessageToDispatch(
+                createDispatchMessage( point.getPointId(), description ) );
+
+        const long pointOffset=
+            point.getControlOffset() ?
+                point.getControlOffset() :
+                point.getPointOffset() % 10000;
+
+        const double newSetPoint = currentSetPoint + changeAmount;
+
+        std::string commandString = "putvalue analog " + CtiNumStr( pointOffset ) + " " + CtiNumStr( newSetPoint );
+
+        CtiRequestMsg *request = createPorterRequestMsg( point.getPaoId(), commandString );
+        request->setSOE(5);
+
+        CtiCapController::getInstance()->manualCapBankControl( request );
+
+        CtiCapController::submitEventLogEntry( EventLogEntry( description, getPaoId(), capControlIvvcSetPointOperation ) );
+    }
 }
 
 
@@ -369,9 +431,229 @@ std::string VoltageRegulator::getPhaseString() const
 }
 
 
+long VoltageRegulator::getKeepAliveConfig()
+{
+    return _keepAliveConfig;
+
+///    Config::DeviceConfigSPtr    deviceConfig = getDeviceConfig( this );
+///
+///    if ( deviceConfig )
+///    {
+///        if ( boost::optional<double>    keepAliveConfig =
+///             deviceConfig->findValue<double>( Cti::Config::RegulatorStrings::heartbeatValue ) )
+///        {
+///            return *keepAliveConfig;
+///        }
+///    }
+///
+///    return 0;
+}
+
+
+long VoltageRegulator::getKeepAliveTimer()
+{
+    return _keepAliveTimer;
+
+///    Config::DeviceConfigSPtr    deviceConfig = getDeviceConfig( this );
+///
+///    if ( deviceConfig )
+///    {
+///        if ( boost::optional<double>    keepAliveTimer =
+///             deviceConfig->findValue<double>( Cti::Config::RegulatorStrings::heartbeatPeriod ) )
+///        {
+///            return *keepAliveTimer;
+///        }
+///    }
+///
+///    return 0;
+}
+
+
 double VoltageRegulator::getVoltageChangePerTap() const
 {
     return _voltChangePerTap;
+
+///    Config::DeviceConfigSPtr    deviceConfig = getDeviceConfig( this );
+///
+///    if ( deviceConfig )
+///    {
+///        if ( boost::optional<double>    voltageChange =
+///             deviceConfig->findValue<double>( Cti::Config::RegulatorStrings::voltageChangePerTap ) )
+///        {
+///            return *voltageChange;
+///        }
+///    }
+///
+///    return 0.75;
+}
+
+
+VoltageRegulator::ControlMode VoltageRegulator::getControlMode() const
+{
+    Config::DeviceConfigSPtr    deviceConfig = getDeviceConfig( this );
+
+    if ( deviceConfig )
+    {
+        if ( boost::optional<std::string>   mode =
+             deviceConfig->findValue<std::string>( Config::RegulatorStrings::voltageControlMode ) )
+        {
+            if ( *mode == "SET_POINT" )
+            {
+                return SetPoint;
+            }
+        }
+    }
+
+    return ManualTap;
+}
+
+
+double VoltageRegulator::requestVoltageChange( const double changeAmount,
+                                               const bool   isEmergency )
+{
+    const double voltageChangePerTap = getVoltageChangePerTap();
+
+    if ( getControlMode() == ManualTap ) 
+    {
+        double tapCount = isEmergency
+                            ? std::ceil( std::abs( changeAmount ) / voltageChangePerTap )
+                            : 1 ;
+
+        return tapCount * ( changeAmount > 0 )
+                    ?  voltageChangePerTap
+                    : -voltageChangePerTap;
+    }
+    else    // set point calculations...
+    {
+        const double currentVoltage       = getVoltage();
+        const double currentSetPoint      = getSetPoint();
+        const double currentHalfBandwidth = getSetPointBandwidth() / 2.0;
+
+        const bool withinBandwidth =
+            ( ( ( currentSetPoint - currentHalfBandwidth ) < currentVoltage ) &&
+            ( currentVoltage < ( currentSetPoint + currentHalfBandwidth ) ) );
+
+        const double voltageWindow = currentVoltage - currentSetPoint;
+
+        if ( withinBandwidth )
+        {
+            if ( changeAmount > 0 )
+            {
+                const int Ntaps = std::abs( 1 +
+                    ( ( currentHalfBandwidth + voltageWindow ) / voltageChangePerTap ) );
+
+                const int caTaps = changeAmount / voltageChangePerTap;  // taps for 'all' requested change
+
+                return ( Ntaps <= caTaps ? Ntaps : 1 ) * voltageChangePerTap;
+            }
+            else
+            {
+                const int Ntaps = std::abs( 1 +
+                    ( ( currentHalfBandwidth + voltageWindow ) / voltageChangePerTap ) );
+
+                return -Ntaps * voltageChangePerTap;
+            }
+        }
+    }
+
+    return 0.0;
+}
+
+
+double VoltageRegulator::getVoltage()
+{
+    double    value = 0.0;
+    LitePoint point = getPointByAttribute( PointAttribute::VoltageY );
+
+    if ( getPointValue( point.getPointId(), value ) )
+    {
+        return value;
+    }
+
+    return 0.0;
+}
+
+
+double VoltageRegulator::getSetPoint()
+{
+    double    value = 0.0;
+    LitePoint point = getPointByAttribute( PointAttribute::ForwardSetPoint );
+
+    if ( getPointValue( point.getPointId(), value ) )
+    {
+        return value;
+    }
+
+    return 0.0;
+}
+
+
+/*
+    This guy should return the entire bandwidth window from [-Vb/2 to +Vb/2]
+*/
+double VoltageRegulator::getSetPointBandwidth()
+{
+    double    value = 0.0;
+    LitePoint point = getPointByAttribute( PointAttribute::ForwardBandwidth );
+
+    if ( getPointValue( point.getPointId(), value ) )
+    {
+        return value;
+    }
+
+    return 0.0;
+}
+
+
+void VoltageRegulator::canExecuteVoltageRequest( const double changeAmount ) //const
+{
+    if ( changeAmount != 0.0 )
+    {
+        if ( getControlMode() == ManualTap ) 
+        {
+            getPointByAttribute( ( changeAmount > 0.0 )
+                                    ? PointAttribute::TapUp
+                                    : PointAttribute::TapDown ); 
+        }
+        else
+        {
+            getPointByAttribute( PointAttribute::ForwardSetPoint ); 
+            getPointByAttribute( PointAttribute::ForwardBandwidth ); 
+        }
+    }
+}
+
+
+double VoltageRegulator::adjustVoltage( const double changeAmount )
+{
+    if ( changeAmount == 0.0 )
+    {
+        return 0.0;
+    }
+
+    const double voltageChangePerTap = getVoltageChangePerTap();
+
+    if ( getControlMode() == ManualTap ) 
+    {
+        if ( changeAmount > 0.0 )
+        {
+            executeTapUpOperation();
+
+            return voltageChangePerTap;
+        }
+        else
+        {
+            executeTapDownOperation();
+
+            return -voltageChangePerTap;
+        }
+    }
+    else    // Set Point
+    {
+        executeAdjustSetPointOperation( changeAmount );
+    }
+
+    return changeAmount;
 }
 
 

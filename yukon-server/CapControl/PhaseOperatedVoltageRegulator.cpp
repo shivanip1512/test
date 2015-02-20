@@ -6,6 +6,8 @@
 #include "ccutil.h"
 #include "ccmessage.h"
 
+#include <boost/assign/list_of.hpp>
+
 extern unsigned long _IVVC_REGULATOR_AUTO_MODE_MSG_DELAY;
 
 
@@ -13,21 +15,6 @@ namespace Cti           {
 namespace CapControl    {
 
 DEFINE_COLLECTABLE( PhaseOperatedVoltageRegulator, CTIVOLTAGEREGULATOR_ID )
-
-
-const PointAttribute PhaseOperatedVoltageRegulator::attributes[] =
-{
-    PointAttribute::VoltageX,
-    PointAttribute::VoltageY,
-    PointAttribute::TapDown,
-    PointAttribute::TapUp,
-    PointAttribute::TapPosition,
-    PointAttribute::AutoRemoteControl,
-    PointAttribute::KeepAlive,
-    PointAttribute::Terminate,
-    PointAttribute::AutoBlockEnable,
-    PointAttribute::HeartbeatTimerConfig
-};
 
 
 PhaseOperatedVoltageRegulator::PhaseOperatedVoltageRegulator()
@@ -78,6 +65,22 @@ PhaseOperatedVoltageRegulator & PhaseOperatedVoltageRegulator::operator=(const P
 
 void PhaseOperatedVoltageRegulator::loadAttributes(AttributeService * service)
 {
+    const std::vector<PointAttribute> attributes =
+        boost::assign::list_of
+            ( PointAttribute::VoltageX )
+            ( PointAttribute::VoltageY )
+            ( PointAttribute::TapDown )
+            ( PointAttribute::TapUp )
+            ( PointAttribute::TapPosition )
+            ( PointAttribute::AutoRemoteControl )
+            ( PointAttribute::KeepAlive )
+            ( PointAttribute::Terminate )
+            ( PointAttribute::AutoBlockEnable )
+            ( PointAttribute::HeartbeatTimerConfig )
+            ( PointAttribute::ForwardSetPoint )
+            ( PointAttribute::ForwardBandwidth )
+        ;
+
     for each ( const PointAttribute attribute in attributes )
     {
         loadPointAttributes(service, attribute);
@@ -89,7 +92,7 @@ void PhaseOperatedVoltageRegulator::updateFlags(const unsigned tapDelay)
 {
     _keepAliveTimer = getKeepAliveRefreshRate();
 
-    bool recentOperation = ( ( _lastTapOperationTime + 30 ) > CtiTime() );
+    bool recentOperation = ( ( _lastControlOperationTime + 30 ) > CtiTime() );
 
     if (_recentTapOperation != recentOperation)
     {

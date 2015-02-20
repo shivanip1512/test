@@ -30,7 +30,7 @@ class IVVCState
         };
 
 //        typedef std::map<Zone::IdSet::value_type, int>  TapOperationZoneMap;
-        typedef std::map<long, int>  TapOperationZoneMap;
+        typedef std::map<long, double>  TapOperationZoneMap;
 
         TapOperationZoneMap     _tapOps;
         CtiTime                 _tapOpDelay;
@@ -109,6 +109,8 @@ class IVVCState
         EstimatedDataMap    _estimated;
 
         VerificationHelper _verification;
+
+        bool showZoneRegulatorConfigMsg;
 
     private:
 

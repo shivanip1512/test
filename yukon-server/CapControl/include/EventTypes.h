@@ -24,7 +24,8 @@ enum CtiCCEventType_t
     capControlIvvcRejectedPoint = 18,
     capControlIvvcTapOperation = 19,
     capControlIvvcRemoteControlEvent = 20,
-    capControlIvvcScanOperation = 21
+    capControlIvvcScanOperation = 21,
+    capControlIvvcSetPointOperation = 22
 };
 
 enum CtiCCEventSubtype_t

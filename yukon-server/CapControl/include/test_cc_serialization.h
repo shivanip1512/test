@@ -832,8 +832,8 @@ struct TestCase<Cti::CapControl::VoltageRegulator> : public TestCase<CapControlP
         const int OperatingMode_items[] = { (int)Cti::CapControl::VoltageRegulator::RemoteMode,
                                             (int)Cti::CapControl::VoltageRegulator::LocalMode };
 
-        GenerateRandom( (int&)imsg._lastTapOperation, TapOperation_items );
-        GenerateRandom( imsg._lastTapOperationTime );
+        GenerateRandom( (int&)imsg._lastControlOperation, TapOperation_items );
+        GenerateRandom( imsg._lastControlOperationTime );
 
         {
             Cti::CapControl::GangOperatedVoltageRegulator* p_imsg = dynamic_cast<Cti::CapControl::GangOperatedVoltageRegulator*>( &imsg );

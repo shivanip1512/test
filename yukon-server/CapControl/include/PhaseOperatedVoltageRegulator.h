@@ -45,8 +45,6 @@ protected:
 
     OperatingMode   _lastOperatingMode;
     OperatingMode   _lastCommandedOperatingMode;
-
-    static const PointAttribute attributes[];
 };
 
 }

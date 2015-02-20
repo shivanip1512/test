@@ -784,8 +784,8 @@ MessagePtr<Thrift::CCVoltageRegulatorItem>::type populateThrift( const ::Cti::Ca
 
     omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CapControlPao&>(imsg) ));
     omsg->__set__parentId                       ( 0 ); //parentId Must be here for clients...
-    omsg->__set__lastTapOperation               ( imsg.getLastTapOperation() );
-    omsg->__set__lastTapOperationTime           ( CtiTimeToMilliseconds( imsg.getLastTapOperationTime() ));
+    omsg->__set__lastTapOperation               ( imsg.getLastControlOperation() );
+    omsg->__set__lastTapOperationTime           ( CtiTimeToMilliseconds( imsg.getLastControlOperationTime() ));
     omsg->__set__regulatorType                  ( imsg.getType() );
     omsg->__set__recentTapOperation             ( imsg.getRecentTapOperation() );
     omsg->__set__lastOperatingMode              ( imsg.getLastOperatingMode() );

@@ -17,6 +17,7 @@
 #include "amq_connection.h"
 #include "IVVCAnalysisMessage.h"
 #include "ccutil.h"
+#include "std_helper.h"
 
 using Cti::CapControl::PaoIdVector;
 using Cti::CapControl::PointIdVector;
@@ -126,6 +127,105 @@ bool IVVCAlgorithm::checkConfigAllZonesHaveRegulator(IVVCStatePtr state, CtiCCSu
     return (missingRegulatorCount == 0);
 }
 
+
+/*
+    No manual tap configured regulators downstream of a set point configured regulator
+*/
+bool IVVCAlgorithm::checkZoneRegulatorsInProperConfig(IVVCStatePtr state, CtiCCSubstationBusPtr subbus)
+{
+    unsigned badRegulatorConfig = 0;
+
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    ZoneManager & zoneManager = store->getZoneManager();
+
+    const long rootZoneId = zoneManager.getRootZoneIdForSubbus( subbus->getPaoId() );
+
+    Zone::IdSet allChildren = zoneManager.getAllChildrenOfZone( rootZoneId );
+
+    for each ( const Zone::IdSet::value_type & ID in allChildren )
+    {
+        ZoneManager::SharedPtr  zone        = zoneManager.getZone( ID );
+        ZoneManager::SharedPtr  parentZone  = zoneManager.getZone( zone->getParentId() );
+
+        for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
+        {
+            const long childRegulatorID = mapping.second;
+
+            for each ( const Zone::PhaseIdMap::value_type & parentMapping in parentZone->getRegulatorIds() )
+            {
+                const long parentRegulatorID = parentMapping.second;
+
+                try
+                {
+                    VoltageRegulatorManager::SharedPtr  parentRegulator
+                        = store->getVoltageRegulatorManager()->getVoltageRegulator( parentRegulatorID );
+
+                    VoltageRegulatorManager::SharedPtr  childRegulator
+                        = store->getVoltageRegulatorManager()->getVoltageRegulator( childRegulatorID );
+
+                    if ( parentRegulator->getControlMode() == VoltageRegulator::SetPoint &&
+                         childRegulator->getControlMode() == VoltageRegulator::ManualTap )
+                    {
+                        badRegulatorConfig++;
+
+                        if ( state->showZoneRegulatorConfigMsg )
+                        {
+                            CTILOG_ERROR(dout, "IVVC Configuration Error. Manual Tap configured regulator: " << childRegulator->getPaoName()
+                                                << " downstream from a Set Point configured regulator: " << parentRegulator->getPaoName());
+                        }
+                    }
+                }
+                catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
+                {
+                    CTILOG_EXCEPTION_ERROR(dout, noRegulator);
+                }
+            }
+        }
+    }
+
+    return ( badRegulatorConfig == 0 );
+}
+
+
+#if 0
+void IVVCAlgorithm::tapOpZoneNormalization(const long parentID, const ZoneManager & zoneManager, IVVCState::TapOperationZoneMap &tapOp )
+{
+    Zone::IdSet allChildren = zoneManager.getAllChildrenOfZone(parentID);
+
+    for each ( const Zone::IdSet::value_type & ID in allChildren )
+    {
+        ZoneManager::SharedPtr  parentZone  = zoneManager.getZone(parentID);
+        ZoneManager::SharedPtr  zone        = zoneManager.getZone(ID);
+
+        for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
+        {
+            Zone::PhaseIdMap    parentMapping = parentZone->getRegulatorIds();
+
+            if ( parentZone->isGangOperated() )
+            {
+                tapOp[ mapping.second ] -= tapOp[ parentMapping[ Cti::CapControl::Phase_Poly ] ];
+            }
+            else
+            {
+                // normalize parent to child on the same phase
+
+                if ( parentMapping.find( mapping.first ) != parentMapping.end() )
+                {
+                    tapOp[ mapping.second ] -= tapOp[ parentMapping[ mapping.first ] ];
+                }
+            }
+        }
+    }
+
+    Zone::IdSet immediateChildren = zoneManager.getZone(parentID)->getChildIds();
+
+    for each ( const Zone::IdSet::value_type & ID in immediateChildren )
+    {
+        tapOpZoneNormalization( ID, zoneManager, tapOp );   // recursion!!!
+    }
+}
+#endif
+
 /**
  * Checks to see if the subbus or any of the parents of the
  * subbus are disabled.
@@ -209,6 +309,17 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
     }
 
     state->setShowNoRegulatorAttachedMsg(true);
+
+    // Make sure all Manual Tap configured regulators are upstream from Set Point configured regulators
+    if ( ! checkZoneRegulatorsInProperConfig(state, subbus) )
+    {
+        state->showZoneRegulatorConfigMsg = false;
+        state->setState(IVVCState::IVVC_WAIT);
+
+        return;
+    }
+
+    state->showZoneRegulatorConfigMsg = true;
 
     if ( subbus->getRecentlyControlledFlag() )
     {
@@ -602,18 +713,17 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                 for each ( const IVVCState::TapOperationZoneMap::value_type & operation in state->_tapOps )
                 {
-                    long regulatorId    = operation.first;
-                    int  tapOpCount     = operation.second;
+                    long   regulatorId       = operation.first;
+                    double voltageAdjustment = operation.second;
 
                     try
                     {
-                        if ( tapOpCount != 0 )
+                        if ( voltageAdjustment != 0 )
                         {
                             VoltageRegulatorManager::SharedPtr  regulator
                                 = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorId );
 
-                            regulator->getPointByAttribute(
-                                ( tapOpCount > 0 ) ? PointAttribute::TapUp : PointAttribute::TapDown );
+                            regulator->canExecuteVoltageRequest( voltageAdjustment );
                         }
                     }
                     catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
@@ -647,42 +757,29 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                 for each ( const IVVCState::TapOperationZoneMap::value_type & operation in state->_tapOps )
                 {
-                    long regulatorId    = operation.first;
-                    int  tapOpCount     = operation.second;
+                    long   regulatorId       = operation.first;
+                    double voltageAdjustment = operation.second;
 
                     try
                     {
-                        if ( tapOpCount != 0 )
+                        if ( voltageAdjustment != 0 )
                         {
                             VoltageRegulatorManager::SharedPtr  regulator
                                 = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorId );
 
-                            if ( tapOpCount > 0 )
-                            {
-                                regulator->executeTapUpOperation();
-                                state->_tapOps[ regulatorId ]--;
+                            state->_tapOps[ regulatorId ] -= regulator->adjustVoltage( voltageAdjustment );
 
-                                if (_CC_DEBUG & CC_DEBUG_IVVC)
-                                {
-                                    CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName()
-                                                      << " - Raising Tap on Voltage Regulator with ID: " << regulatorId);
-                                }
-                            }
-                            else
+                            if (_CC_DEBUG & CC_DEBUG_IVVC)
                             {
-                                regulator->executeTapDownOperation();
-                                state->_tapOps[ regulatorId ]++;
-
-                                if (_CC_DEBUG & CC_DEBUG_IVVC)
-                                {
-                                    CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName()
-                                                      << " - Lowering Tap on Voltage Regulator with ID: " << regulatorId);
-                                }
+                                CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName()
+                                                  << " - Adjusting Voltage on Regulator: " << regulator->getPaoName());
                             }
+
+                            // jmoc -- do we need a new type of message for set point stuff?
 
                             sendIVVCAnalysisMessage(
                                 IVVCAnalysisMessage::createTapOperationMessage( subbus->getPaoId(),
-                                                                                ( tapOpCount > 0 )
+                                                                                ( voltageAdjustment > 0 )
                                                                                     ? IVVCAnalysisMessage::Scenario_TapRaiseOperation
                                                                                         : IVVCAnalysisMessage::Scenario_TapLowerOperation,
                                                                                 timeNow,
@@ -1926,7 +2023,7 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
                     }
                 }
 
-                state->_tapOps[ regulator->getPaoId() ] = calculateVte(zonePointValues, strategy, subbus->getAllMonitorPoints(), isPeakTime, regulator->getVoltageChangePerTap());
+                state->_tapOps[ regulator->getPaoId() ] = calculateVte(zonePointValues, strategy, subbus->getAllMonitorPoints(), isPeakTime, regulator);
             }
         }
         catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
@@ -2109,32 +2206,30 @@ double IVVCAlgorithm::calculateVf(const PointValueMap &voltages)
 }
 
 
-int IVVCAlgorithm::calculateVte(const PointValueMap &voltages, IVVCStrategy* strategy,
-                                const std::map<long, CtiCCMonitorPointPtr> & _monitorMap,
-                                const bool isPeakTime,
-                                const double voltChangePerTap)
+double IVVCAlgorithm::calculateVte(const PointValueMap &voltages, IVVCStrategy* strategy,
+                                   const std::map<long, CtiCCMonitorPointPtr> & _monitorMap,
+                                   const bool isPeakTime,
+                                   Cti::CapControl::VoltageRegulatorManager::SharedPtr  regulator)
 {
-    bool lowerTap = false;
-    bool raiseTap = false;
-    bool marginTap = true;
-    bool regulatorMargin = true;
+    double overVmax   = 0.0;
+    double overVrm    = std::numeric_limits<double>::max();
+    double underVmin  = 0.0;
+    bool   allowTapUp = true;
 
     if ( voltages.empty() )
     {
-        return 0;
+        return 0.0;
     }
 
-    for ( PointValueMap::const_iterator b = voltages.begin(), e = voltages.end(); b != e; ++b )
+    for each ( const PointValueMap::value_type & item in voltages )
     {
         double Vmax = strategy->getUpperVoltLimit(isPeakTime);
         double Vmin = strategy->getLowerVoltLimit(isPeakTime);
         double Vrm  = strategy->getLowerVoltLimit(isPeakTime) + strategy->getVoltageRegulationMargin(isPeakTime);
 
-        std::map<long, CtiCCMonitorPointPtr>::const_iterator iter = _monitorMap.find( b->first );
-
-        if ( iter != _monitorMap.end() )    // monitor point exists - use its bandwidth settings instead
+        if ( boost::optional<CtiCCMonitorPointPtr> monitorLookup = Cti::mapFind( _monitorMap, item.first ) )
         {
-            const CtiCCMonitorPoint &   monitor = *iter->second;
+            const CtiCCMonitorPoint & monitor = **monitorLookup;
 
             if ( monitor.getOverrideStrategy() )
             {
@@ -2144,13 +2239,30 @@ int IVVCAlgorithm::calculateVte(const PointValueMap &voltages, IVVCStrategy* str
             }
         }
 
-        if ( b->second.value > Vmax ) { lowerTap = true; }
-        if ( b->second.value < Vmin ) { raiseTap = true; }
-        if ( b->second.value <= Vrm ) { marginTap = false; }
-        if ( ( b->second.value + voltChangePerTap ) >= Vmax ) { regulatorMargin = false; }
+        const double voltage = item.second.value;
+
+        overVmax  = std::max( overVmax, voltage - Vmax );
+        overVrm   = std::min( overVrm, voltage - Vrm );
+        underVmin = std::max( underVmin, Vmin - voltage );
+
+        // If the voltage is close to Vmax such that a single TapUp would push us over it, we disallow it.
+        if ( ( voltage + regulator->getVoltageChangePerTap() ) >= Vmax )
+        {
+            allowTapUp = false;
+        }
     }
 
-    return (( lowerTap || marginTap ) ? -1 : ( raiseTap && regulatorMargin ) ? 1 : 0);
+    if ( overVmax > 0.0 || overVrm >= 0.0 )
+    {
+        return regulator->requestVoltageChange( -std::max( overVmax, overVrm ) );
+    }
+
+    if ( underVmin > 0.0 && allowTapUp )
+    {
+        return regulator->requestVoltageChange( underVmin );
+    }
+
+    return 0.0;
 }
 
 
@@ -2610,15 +2722,11 @@ void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
 
             if ( theMaxVoltage > 0.0 )
             {
-                const double voltageChange = regulator->getVoltageChangePerTap();
+                // tapping down so this should be negative and is an emergency voltage adjustment
 
-                // tapping down so this should be negative
-
-                solution[ regulatorID ] = -std::ceil( theMaxVoltage / voltageChange );
-
-                // also negative
-
-                realVoltageChange[ phase ] = voltageChange * solution[ regulatorID ];
+                realVoltageChange[ phase ]  =
+                    solution[ regulatorID ] =
+                        regulator->requestVoltageChange( -theMaxVoltage, true );
             }
 
             if ( zone->isGangOperated() )
@@ -2645,11 +2753,9 @@ void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
                     const long                      pointID = point->getPointId();
                     const Cti::CapControl::Phase    phase   = point->getPhase();
 
-                    PointValueMap::iterator pointValue = voltages.find( pointID );
-
-                    if ( pointValue != voltages.end() )
+                    if ( boost::optional<PointValue> pv = Cti::mapFind( voltages, pointID ) )
                     {
-                        pointValue->second.value += realVoltageChange[ phase ];
+                        pv->value += realVoltageChange[ phase ];
                     }
                 }
             }
@@ -2662,11 +2768,9 @@ void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
             const long                      pointID = entry.second;
             const Cti::CapControl::Phase    phase   = entry.first;
 
-            PointValueMap::iterator pointValue = voltages.find( pointID );
-
-            if ( pointValue != voltages.end() )
+            if ( boost::optional<PointValue> pv = Cti::mapFind( voltages, pointID ) )
             {
-                pointValue->second.value += realVoltageChange[ phase ];
+                pv->value += realVoltageChange[ phase ];
             }
         }
 
@@ -2682,11 +2786,9 @@ void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
 
             const long  pointID = regulator->getPointByAttribute( PointAttribute::VoltageY ).getPointId();
 
-            PointValueMap::iterator pointValue = voltages.find( pointID );
-
-            if ( pointValue != voltages.end() )
+            if ( boost::optional<PointValue> pv = Cti::mapFind( voltages, pointID ) )
             {
-                pointValue->second.value += realVoltageChange[ phase ];
+                pv->value += realVoltageChange[ phase ];
             }
         }
 

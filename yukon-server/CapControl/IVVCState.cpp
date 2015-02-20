@@ -12,7 +12,8 @@ IVVCState::IVVCState() :
     _showNoZonesOnBusMsg(true),
     _commsLost(false),
     _commsRetryCount(0),
-    _firstPass(true)
+    _firstPass(true),
+    showZoneRegulatorConfigMsg(true)
 {
 }
 
