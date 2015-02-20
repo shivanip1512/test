@@ -3227,6 +3227,107 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   4 );
     }
 
+    BOOST_AUTO_TEST_CASE(test_getconfig_tou_schedule_1)
+    {
+        mct._type = TYPEMCT470;
+        mct._name = "Jimmy";
+
+        CtiCommandParser parse("getconfig tou schedule 1");
+        request.setCommandString(parse.getCommandStr());
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        const OUTMESS *om = outList.front();
+
+        BOOST_REQUIRE(om);
+
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 174 );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   13 );
+
+        INMESS  InMessage;
+
+        OutEchoToIN(*om, InMessage);
+
+        delete_container(outList);
+        outList.clear();
+
+        unsigned char test_data[] = {
+                //  schedule 1
+                0x00,  //  switch 1
+                0x79,  //  switch 2
+                0x1b,  //  switch 3
+                0x86,  //  switch 4
+                0x02,  //  switch 5
+                //  schedule 2+1 rates byte 5, respectively
+                0xe3,
+                //  schedule 1 rates byte 6
+                0x91,
+                //  schedule 2
+                0x10,  //  switch 1
+                0x16,  //  switch 2
+                0x0a,  //  switch 3
+                0x10,  //  switch 4
+                0x85,  //  switch 5
+                //  schedule 2 rates byte 6
+                0x4c };
+
+        memcpy(InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
+        InMessage.Buffer.DSt.Length = sizeof(test_data);
+
+        BOOST_CHECK( ! mct.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1));
+        BOOST_CHECK( ! mct.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2));
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, mct.ResultDecode(InMessage, CtiTime(), vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+        BOOST_CHECK(outList.empty());
+        BOOST_CHECK(vgList.empty());
+
+        {
+            const CtiReturnMsg *retMsg = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(retMsg);
+
+            const std::string expected =
+                "Jimmy / TOU Schedule 1:"
+                "\n00:00: B"
+                "\n00:00: A"
+                "\n10:05: B"
+                "\n12:20: C"
+                "\n23:30: D"
+                "\n23:40: A"
+                "\n- end of day - "
+                "\n"
+                "\nJimmy / TOU Schedule 2:"
+                "\n00:00: A"
+                "\n01:20: D"
+                "\n03:10: A"
+                "\n04:00: B"
+                "\n05:20: C"
+                "\n16:25: D"
+                "\n- end of day - "
+                "\n"
+                "\n";
+
+            BOOST_CHECK_EQUAL( retMsg->Status(), ClientErrors::None );
+            BOOST_CHECK_EQUAL( retMsg->ResultString(), expected );
+        }
+
+        {
+            std::string daySchedule;
+            BOOST_CHECK(mct.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, daySchedule));
+            BOOST_CHECK_EQUAL(daySchedule, "0 121 27 134 2 0 1 2 3 0 1");
+        }
+        {
+            std::string daySchedule;
+            BOOST_CHECK(mct.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, daySchedule));
+            BOOST_CHECK_EQUAL(daySchedule, "16 22 10 16 133 3 0 1 2 3 0");
+        }
+    }
+
     BOOST_AUTO_TEST_CASE(test_getstatus_lp)
     {
         mct._type = TYPEMCT470;
