@@ -9,65 +9,69 @@
 
 <style>
 .map {
-  height: 100%;
-  width: 100%;
-  border: 1px solid #bbb;
-  box-shadow: 0px 0px 5px #ddd;
-  outline: none;
+    height: 100%;
+    min-height: 600px;
+    width: 100%;
+    border: 1px solid #bbb;
+    box-shadow: 0px 0px 5px #ddd;
+    outline: none;
 }
 
-.map .ol-viewport canvas { vertical-align: middle; }
+.map .ol-viewport canvas {
+    vertical-align: middle;
+    min-height: 600px;
+}
 
 .ol-scale-line,.ol-mouse-position {
-  background: rgba(0, 60, 136, 0.3);
-  border-radius: 2px;
-  padding: 2px;
-  margin-right: 2px;
-  position: inherit;
+    background: rgba(0, 60, 136, 0.3);
+    border-radius: 2px;
+    padding: 2px;
+    margin-right: 2px;
+    position: inherit;
 }
 
 .ol-mouse-position {
-  color: #eee;
-  padding: 2px 5px;
-  width: 150px;
+    color: #eee;
+    padding: 2px 5px;
+    width: 150px;
 }
 
 #filter-form .chosen-results {
-  max-height: 95px;
+    max-height: 95px;
 }
 
 #marker-info {
-  background: #fff;
-  border: 1px solid #bbb;
-  border-radius: 2px;
-  padding: 4px;
-  position: relative;
-  box-shadow: 0px 0px 10px #888;
+    background: #fff;
+    border: 1px solid #bbb;
+    border-radius: 2px;
+    padding: 4px;
+    position: relative;
+    box-shadow: 0px 0px 10px #888;
 }
 
 #marker-info:after,#marker-info:before {
-  top: 100%;
-  left: 50%;
-  border: solid transparent;
-  content: " ";
-  height: 0;
-  width: 0;
-  position: absolute;
-  pointer-events: none;
+    top: 100%;
+    left: 50%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
 }
 
 #marker-info:after {
-  border-color: rgba(252, 252, 252, 0);
-  border-top-color: #fff;
-  border-width: 6px;
-  margin-left: -6px;
+    border-color: rgba(252, 252, 252, 0);
+    border-top-color: #fff;
+    border-width: 6px;
+    margin-left: -6px;
 }
 
 #marker-info:before {
-  border-color: rgba(153, 153, 153, 0);
-  border-top-color: #bbb;
-  border-width: 7px;
-  margin-left: -7px;
+    border-color: rgba(153, 153, 153, 0);
+    border-top-color: #bbb;
+    border-width: 7px;
+    margin-left: -7px;
 }
 </style>
 
@@ -80,7 +84,7 @@
             <cti:button id="filter-btn" icon="icon-filter" nameKey="filter" data-popup="#map-popup"/>
             <cti:button id="no-filter-btn" icon="icon-cross disabled cp" classes="right dn" renderMode="buttonImage"/>
         </div>
-    
+        
         <div id="map-popup" data-dialog class="dn" data-title="<cti:msg2 key=".filter.title"/>" data-event="yukon.map.filter"
             data-width="500" data-height="250">
             <cti:url value="/tools/map/filter" var="filterUrl"/>
@@ -130,7 +134,7 @@
             </div>
         </div>
     </div>
-    <div id="map" class="map js-focus" <c:if test="${dynamic}">data-dynamic</c:if> tabindex="0"></div>
+    <div id="map" class="map clearfix js-focus" <c:if test="${dynamic}">data-dynamic</c:if> tabindex="0"></div>
     <div class="buffered">
         <div id="mouse-position" class="fl detail"></div>
         <div id="scale-line" class="fl"></div>

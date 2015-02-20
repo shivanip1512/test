@@ -164,15 +164,6 @@ yukon.assets.gateway.details = (function () {
                 _destProjection = _map.getView().getProjection().getCode();
                 _map.addLayer(new ol.layer.Vector({ name: 'icons', source: new ol.source.Vector({ projection: _destProjection }) }));
                 
-                /** Add class to fix height when fullscreen */
-                _map.on('propertychange', function(ev) {
-                    var isFullscreen = $('.ol-full-screen-true').length === 1;
-                    
-                    if (ev.key === 'size') {
-                        $('#gateway-location').toggleClass('fullscreen', isFullscreen);
-                    }
-                });
-                
                 /** Load icon for location */
                 _loadIcon();
                 

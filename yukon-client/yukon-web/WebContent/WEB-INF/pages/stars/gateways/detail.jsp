@@ -11,15 +11,14 @@
 
 <style>
 .map {
-  height: 300px;
+  height: 100%;
   width: 100%;
   border: 1px solid #bbb;
   box-shadow: 0px 0px 5px #ddd;
   outline: none;
 }
-.map.fullscreen {
-  height: 100%;
-}
+.map .ol-viewport canvas { vertical-align: middle; }
+#gateway-location-container { height: 300px; }
 </style>
 
 <c:if test="${not empty geojson}"><cti:toJson id="gateway-geojson" object="${geojson}"/></c:if>
