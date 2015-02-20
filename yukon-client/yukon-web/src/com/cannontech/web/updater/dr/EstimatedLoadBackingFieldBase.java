@@ -30,7 +30,9 @@ public abstract class EstimatedLoadBackingFieldBase implements EstimatedLoadBack
         summaryNode.put("paoId", pao.getPaoId());
         if (summary.getContributing() == 0 && summary.getCalculating() == 0) {
             summaryNode.put("status", "error");
-            summaryNode.put("tooltip", "No contributing programs.");
+            MessageSourceResolvable noContributingPrograms = 
+                    new YukonMessageSourceResolvable("yukon.web.modules.dr.estimatedLoad.calcErrors.noContributingPrograms");
+            summaryNode.put("tooltip", accessor.getMessage(noContributingPrograms));
             summaryNode.put("connected", accessor.getMessage(blankFieldResolvable));
             summaryNode.put("diversified", accessor.getMessage(blankFieldResolvable));
             summaryNode.put("kwSavings", accessor.getMessage(blankFieldResolvable));
