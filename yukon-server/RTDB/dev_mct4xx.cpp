@@ -2789,12 +2789,12 @@ YukonError_t Mct4xxDevice::decodeGetConfigTOU(const INMESS &InMessage, const Cti
                 byte_offset = 7;
             }
 
-            rateArray[offset][0] = (rates >> 2) & 0x03;
-            rateArray[offset][1] = (rates >> 4) & 0x03;
-            rateArray[offset][2] = (rates >> 6) & 0x03;
-            rateArray[offset][3] = (rates >> 8) & 0x03;
-            rateArray[offset][4] = (rates >> 10) & 0x03;
-            rateArray[offset][5] = (rates) & 0x03;
+            rateArray[offset][0] = (rates)       & 0x03;
+            rateArray[offset][1] = (rates >>  2) & 0x03;
+            rateArray[offset][2] = (rates >>  4) & 0x03;
+            rateArray[offset][3] = (rates >>  6) & 0x03;
+            rateArray[offset][4] = (rates >>  8) & 0x03;
+            rateArray[offset][5] = (rates >> 10) & 0x03;
 
             current_rate = rates & 0x03;
             resultString += "00:00: ";
@@ -3460,12 +3460,12 @@ void Mct4xxDevice::createTOUDayScheduleString(string &schedule, long (&times)[5]
         schedule += CtiNumStr(times[i]);
         schedule += ', ';
     }
-    for( int i=0; i<5; i++ )
+    for( int i=1; i<6; i++ )
     {
         schedule += CtiNumStr(rates[i]);
         schedule += ', ';
     }
-    schedule += CtiNumStr(rates[5]);
+    schedule += CtiNumStr(rates[0]);  //  put the first element last to match legacy DynamicPaoInfo
 }
 
 

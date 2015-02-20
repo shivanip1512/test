@@ -2717,6 +2717,17 @@ YukonError_t Mct470Device::executePutValue(CtiRequestMsg *pReq, CtiCommandParser
     return nRet;
 }
 
+
+unsigned char makeByteFrom2BitQuantities(unsigned a, unsigned b, unsigned c, unsigned d)
+{
+    return
+        (a << 6 & 0xC0) |
+        (b << 4 & 0x30) |
+        (c << 2 & 0x0C) |
+        (d      & 0x03);
+}
+
+
 YukonError_t Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList &outList, bool readsOnly)
 {
     DeviceConfigSPtr deviceConfig = getDeviceConfig();
@@ -2728,13 +2739,9 @@ YukonError_t Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandPar
 
     if( ! readsOnly )
     {
-        long times[4][5];
-        long rates[4][6];
         string rateStringValues[4][6], timeStringValues[4][5],
                daySchedule1, daySchedule2, daySchedule3, daySchedule4,
                dynDaySchedule1, dynDaySchedule2, dynDaySchedule3, dynDaySchedule4;
-        long defaultTOURate;
-        long dayTable;
 
         const boost::optional<bool> optTouEnabled = deviceConfig->findValue<bool>(MCTStrings::touEnabled);
 
@@ -2773,52 +2780,61 @@ YukonError_t Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandPar
         timeStringValues[0][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time3);
         timeStringValues[0][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time4);
         timeStringValues[0][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time5);
+
         timeStringValues[1][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time1);
         timeStringValues[1][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time2);
         timeStringValues[1][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time3);
         timeStringValues[1][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time4);
         timeStringValues[1][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time5);
+
         timeStringValues[2][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time1);
         timeStringValues[2][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time2);
         timeStringValues[2][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time3);
         timeStringValues[2][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time4);
         timeStringValues[2][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time5);
+
         timeStringValues[3][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time1);
         timeStringValues[3][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time2);
         timeStringValues[3][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time3);
         timeStringValues[3][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time4);
         timeStringValues[3][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time5);
 
-        rateStringValues[0][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate1);
-        rateStringValues[0][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate2);
-        rateStringValues[0][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate3);
-        rateStringValues[0][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate4);
-        rateStringValues[0][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate5);
-        rateStringValues[0][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate0);
-        rateStringValues[1][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate1);
-        rateStringValues[1][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate2);
-        rateStringValues[1][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate3);
-        rateStringValues[1][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate4);
-        rateStringValues[1][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate5);
-        rateStringValues[1][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate0);
-        rateStringValues[2][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate1);
-        rateStringValues[2][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate2);
-        rateStringValues[2][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate3);
-        rateStringValues[2][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate4);
-        rateStringValues[2][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate5);
-        rateStringValues[2][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate0);
-        rateStringValues[3][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate1);
-        rateStringValues[3][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate2);
-        rateStringValues[3][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate3);
-        rateStringValues[3][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate4);
-        rateStringValues[3][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate5);
-        rateStringValues[3][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate0);
+        rateStringValues[0][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate0);
+        rateStringValues[0][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate1);
+        rateStringValues[0][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate2);
+        rateStringValues[0][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate3);
+        rateStringValues[0][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate4);
+        rateStringValues[0][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate5);
+
+        rateStringValues[1][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate0);
+        rateStringValues[1][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate1);
+        rateStringValues[1][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate2);
+        rateStringValues[1][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate3);
+        rateStringValues[1][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate4);
+        rateStringValues[1][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate5);
+
+        rateStringValues[2][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate0);
+        rateStringValues[2][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate1);
+        rateStringValues[2][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate2);
+        rateStringValues[2][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate3);
+        rateStringValues[2][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate4);
+        rateStringValues[2][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate5);
+
+        rateStringValues[3][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate0);
+        rateStringValues[3][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate1);
+        rateStringValues[3][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate2);
+        rateStringValues[3][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate3);
+        rateStringValues[3][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate4);
+        rateStringValues[3][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate5);
 
         string defaultTOURateString = deviceConfig->getValueFromKey(MCTStrings::DefaultTOURate);
 
-        //Do conversions from strings to longs here.
+        long durations[4][5];
+        long rates[4][6];
+
         for( int i = 0; i < 4; i++ )
         {
+            //  first, set up the rates
             for( int j = 0; j < 6; j++ )
             {
                 const std::string &rateStringValue = rateStringValues[i][j];
@@ -2839,10 +2855,10 @@ YukonError_t Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandPar
 
                 rates[i][j] = rateStringValue[0] - 'A';
             }
-        }
 
-        for( int i = 0; i < 4; i++ )
-        {
+            int prevTime = 0;
+
+            //  then calculate the durations from the time strings
             for( int j = 0; j < 5; j++ )
             {
                 std::string &timeStringValue = timeStringValues[i][j];
@@ -2867,26 +2883,35 @@ YukonError_t Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandPar
 
                 const long tempTime = strtol(timeStringValue.data(),NULL,10);
 
-                times[i][j] = ((tempTime/100) * 60) + (tempTime%100);
-            }
-        }
+                long &duration = durations[i][j];
 
-        // Time is currently the actual minutes, we need the difference. Also the MCT has 5 minute resolution.
-        for( int i = 0; i < 4; i++ )
-        {
-            for( int j = 4; j > 0; j-- )
-            {
-                long &current  = times[i][j];
-                long &previous = times[i][j-1];
-
-                current = current - previous;
-                current /= 5;
-
-                if( current < 0 || current > 255 )
+                //  if the time is unused, ignore the rate change entirely
+                if( tempTime == 0 )
                 {
-                    CTILOG_ERROR(dout, "device "<< getName() <<" time sequencing");
+                    //  ignore this rate change, continue the previous
+                    rates[i][j+1] = rates[i][j];
+                    duration = 255;
+                    prevTime = 24 * 60;  //  set to end of day marker
+                }
+                else
+                {
+                    const int currentTime = ((tempTime/100) * 60) + (tempTime%100);
 
-                    return ClientErrors::NoConfigData;
+                    duration = currentTime / 5;
+
+                    if( j )
+                    {
+                        duration -= prevTime / 5;
+                    }
+
+                    prevTime = currentTime;
+
+                    if( duration < 0 || duration > 255 )
+                    {
+                        CTILOG_ERROR(dout, "device "<< getName() <<" time sequencing");
+
+                        return ClientErrors::NoConfigData;
+                    }
                 }
             }
         }
@@ -2898,7 +2923,7 @@ YukonError_t Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandPar
             return ClientErrors::NoConfigData;
         }
 
-        defaultTOURate = defaultTOURateString[0] - 'A';
+        const long defaultTOURate = defaultTOURateString[0] - 'A';
         if( defaultTOURate < 0 || defaultTOURate > 3 )
         {
             CTILOG_ERROR(dout, "device "<< getName() <<" bad default rate");
@@ -2920,6 +2945,7 @@ YukonError_t Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandPar
             return ClientErrors::NoConfigData;
         }
 
+        long dayTable;
         dayTable = holidaySchedule    << 14;
         dayTable |= saturdaySchedule  << 12;
         dayTable |= fridaySchedule    << 10;
@@ -2929,10 +2955,10 @@ YukonError_t Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandPar
         dayTable |= mondaySchedule    << 2;
         dayTable |= sundaySchedule;
 
-        createTOUDayScheduleString(daySchedule1, times[0], rates[0]);
-        createTOUDayScheduleString(daySchedule2, times[1], rates[1]);
-        createTOUDayScheduleString(daySchedule3, times[2], rates[2]);
-        createTOUDayScheduleString(daySchedule4, times[3], rates[3]);
+        createTOUDayScheduleString(daySchedule1, durations[0], rates[0]);
+        createTOUDayScheduleString(daySchedule2, durations[1], rates[1]);
+        createTOUDayScheduleString(daySchedule3, durations[2], rates[2]);
+        createTOUDayScheduleString(daySchedule4, durations[3], rates[3]);
         CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, dynDaySchedule1);
         CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, dynDaySchedule2);
         CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, dynDaySchedule3);
@@ -2963,46 +2989,46 @@ YukonError_t Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandPar
 
         outList.push_back( new OUTMESS(*OutMessage) );
 
-        OutMessage->Buffer.BSt.Function   = FuncWrite_TOUSchedule1Pos;
-        OutMessage->Buffer.BSt.Length     = FuncWrite_TOUSchedule1Len;
-        OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Function_Write;
-        OutMessage->Buffer.BSt.Message[0] = (char)(dayTable>>8);
-        OutMessage->Buffer.BSt.Message[1] = (char)dayTable;
-        OutMessage->Buffer.BSt.Message[2] = (char)times[0][0];
-        OutMessage->Buffer.BSt.Message[3] = (char)times[0][1];
-        OutMessage->Buffer.BSt.Message[4] = (char)times[0][2];
-        OutMessage->Buffer.BSt.Message[5] = (char)times[0][3];
-        OutMessage->Buffer.BSt.Message[6] = (char)times[0][4];
-        OutMessage->Buffer.BSt.Message[7] = (char)( ((rates[1][4]<<6)&0xC0) | ((rates[1][3]<<4)&0x30) | ((rates[0][4]<<2)&0x0C) | (rates[0][3]&0x03) );
-        OutMessage->Buffer.BSt.Message[8] = (char)( ((rates[0][2]<<6)&0xC0) | ((rates[0][1]<<4)&0x30) | ((rates[0][0]<<2)&0x0C) | (rates[0][5]&0x03) );
-        OutMessage->Buffer.BSt.Message[9] =  (char)times[1][0];
-        OutMessage->Buffer.BSt.Message[10] = (char)times[1][1];
-        OutMessage->Buffer.BSt.Message[11] = (char)times[1][2];
-        OutMessage->Buffer.BSt.Message[12] = (char)times[1][3];
-        OutMessage->Buffer.BSt.Message[13] = (char)times[1][4];
-        OutMessage->Buffer.BSt.Message[14] = (char)( ((rates[1][2]<<6)&0xC0) | ((rates[1][1]<<4)&0x30) | ((rates[1][0]<<2)&0x0C) | (rates[1][5]&0x03) );
+        OutMessage->Buffer.BSt.Function    = FuncWrite_TOUSchedule1Pos;
+        OutMessage->Buffer.BSt.Length      = FuncWrite_TOUSchedule1Len;
+        OutMessage->Buffer.BSt.IO          = EmetconProtocol::IO_Function_Write;
+        OutMessage->Buffer.BSt.Message[0]  = dayTable >> 8;
+        OutMessage->Buffer.BSt.Message[1]  = dayTable;
+        OutMessage->Buffer.BSt.Message[2]  = durations[0][0];
+        OutMessage->Buffer.BSt.Message[3]  = durations[0][1];
+        OutMessage->Buffer.BSt.Message[4]  = durations[0][2];
+        OutMessage->Buffer.BSt.Message[5]  = durations[0][3];
+        OutMessage->Buffer.BSt.Message[6]  = durations[0][4];
+        OutMessage->Buffer.BSt.Message[7]  = makeByteFrom2BitQuantities(rates[1][5], rates[1][4], rates[0][5], rates[0][4]);
+        OutMessage->Buffer.BSt.Message[8]  = makeByteFrom2BitQuantities(rates[0][3], rates[0][2], rates[0][1], rates[0][0]);
+        OutMessage->Buffer.BSt.Message[9]  = durations[1][0];
+        OutMessage->Buffer.BSt.Message[10] = durations[1][1];
+        OutMessage->Buffer.BSt.Message[11] = durations[1][2];
+        OutMessage->Buffer.BSt.Message[12] = durations[1][3];
+        OutMessage->Buffer.BSt.Message[13] = durations[1][4];
+        OutMessage->Buffer.BSt.Message[14] = makeByteFrom2BitQuantities(rates[1][3], rates[1][2], rates[1][1], rates[1][0]);
 
         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
-        OutMessage->Buffer.BSt.Function   = FuncWrite_TOUSchedule2Pos;
-        OutMessage->Buffer.BSt.Length     = FuncWrite_TOUSchedule2Len;
-        OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Function_Write;
-        OutMessage->Buffer.BSt.Message[0] = (char)times[2][0];
-        OutMessage->Buffer.BSt.Message[1] = (char)times[2][1];
-        OutMessage->Buffer.BSt.Message[2] = (char)times[2][2];
-        OutMessage->Buffer.BSt.Message[3] = (char)times[2][3];
-        OutMessage->Buffer.BSt.Message[4] = (char)times[2][4];
-        OutMessage->Buffer.BSt.Message[5] = (char)( ((rates[2][4]<<2)&0x0C) | (rates[2][3]&0x03) );
-        OutMessage->Buffer.BSt.Message[6] = (char)( ((rates[2][2]<<6)&0xC0) | ((rates[2][1]<<4)&0x30) | ((rates[2][0]<<2)&0x0C) | (rates[2][5]&0x03) );
+        OutMessage->Buffer.BSt.Function    = FuncWrite_TOUSchedule2Pos;
+        OutMessage->Buffer.BSt.Length      = FuncWrite_TOUSchedule2Len;
+        OutMessage->Buffer.BSt.IO          = EmetconProtocol::IO_Function_Write;
+        OutMessage->Buffer.BSt.Message[0]  = durations[2][0];
+        OutMessage->Buffer.BSt.Message[1]  = durations[2][1];
+        OutMessage->Buffer.BSt.Message[2]  = durations[2][2];
+        OutMessage->Buffer.BSt.Message[3]  = durations[2][3];
+        OutMessage->Buffer.BSt.Message[4]  = durations[2][4];
+        OutMessage->Buffer.BSt.Message[5]  = makeByteFrom2BitQuantities(          0,           0, rates[2][5], rates[2][4]);
+        OutMessage->Buffer.BSt.Message[6]  = makeByteFrom2BitQuantities(rates[2][3], rates[2][2], rates[2][1], rates[2][0]);
 
-        OutMessage->Buffer.BSt.Message[7] = (char)times[3][0];
-        OutMessage->Buffer.BSt.Message[8] = (char)times[3][1];
-        OutMessage->Buffer.BSt.Message[9] = (char)times[3][2];
-        OutMessage->Buffer.BSt.Message[10] = (char)times[3][3];
-        OutMessage->Buffer.BSt.Message[11] = (char)times[3][4];
-        OutMessage->Buffer.BSt.Message[12] = (char)( ((rates[3][4]<<2)&0x0C) | (rates[3][3]&0x03) );
-        OutMessage->Buffer.BSt.Message[13] = (char)( ((rates[3][2]<<6)&0xC0) | ((rates[3][1]<<4)&0x30) | ((rates[3][0]<<2)&0x0C) | (rates[3][5]&0x03) );
-        OutMessage->Buffer.BSt.Message[14] = (char)(defaultTOURate);
+        OutMessage->Buffer.BSt.Message[7]  = durations[3][0];
+        OutMessage->Buffer.BSt.Message[8]  = durations[3][1];
+        OutMessage->Buffer.BSt.Message[9]  = durations[3][2];
+        OutMessage->Buffer.BSt.Message[10] = durations[3][3];
+        OutMessage->Buffer.BSt.Message[11] = durations[3][4];
+        OutMessage->Buffer.BSt.Message[12] = makeByteFrom2BitQuantities(          0,           0, rates[3][5], rates[3][4]);
+        OutMessage->Buffer.BSt.Message[13] = makeByteFrom2BitQuantities(rates[3][3], rates[3][2], rates[3][1], rates[3][0]);
+        OutMessage->Buffer.BSt.Message[14] = defaultTOURate;
 
         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
     }

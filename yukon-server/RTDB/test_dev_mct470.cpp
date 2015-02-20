@@ -1162,7 +1162,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
                 0xa7, // Day table
                 0x60, // a760 -> 1010011101100000 -> 10 10 01 11 01 10 00 00
                 //  schedule 1
-                0x01,  //  switch 1
+                0x00,  //  switch 1
                 0x79,  //  switch 2
                 0x1b,  //  switch 3
                 0x86,  //  switch 4
@@ -1172,9 +1172,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
                 //  schedule 1 rates byte 6
                 0xe4,
                 //  schedule 2
-                0x53,  //  switch 1
-                0x15,  //  switch 2
-                0x09,  //  switch 3
+                0x10,  //  switch 1
+                0x16,  //  switch 2
+                0x0a,  //  switch 3
                 0x10,  //  switch 4
                 0x85,  //  switch 5
                 //  schedule 2 rates byte 6
@@ -1199,20 +1199,20 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             const unsigned char expected_message[] =
             {
                 //  schedule 3
-                0x3e,  //  switch 1
+                0x0c,  //  switch 1
                 0x0c,  //  switch 2
-                0x18,  //  switch 3
+                0x19,  //  switch 3
                 0x0c,  //  switch 4
                 0x0c,  //  switch 5
                 //  schedule 3 rates
                 0x0e,
                 0x4e,
                 //  schedule 4
-                0x01,  //  switch 1
+                0x00,  //  switch 1
                 0x6b,  //  switch 2
-                0x26,  //  switch 3
-                0x81,  //  switch 4
-                0x0a,  //  switch 5
+                0x27,  //  switch 3
+                0x82,  //  switch 4
+                0x0b,  //  switch 5
                 //  schedule 4 rates
                 0x09,
                 0x39,
@@ -1342,17 +1342,130 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
-        BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK( outList.empty() );
+        BOOST_CHECK( vgList .empty() );
+        BOOST_CHECK( retList.empty() );
+        BOOST_REQUIRE_EQUAL( outList.size(), 6 );
 
-        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
 
-        CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+        // 3 writes
+        {
+            const OUTMESS *om = *om_itr++;
 
-        BOOST_REQUIRE( retMsg );
+            BOOST_REQUIRE(om);
 
-        BOOST_CHECK_EQUAL( retMsg->ResultString(), "ERROR: Invalid config data. Config name:tou" );
-        BOOST_CHECK_EQUAL( retMsg->Status(), ClientErrors::NoConfigData );
+            // This is the Enable TOU command
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x56 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      0 );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x30 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,     15 );
+
+            const unsigned char expected_message[] =
+            {
+                0xa7, // Day table
+                0x60, // a760 -> 1010011101100000 -> 10 10 01 11 01 10 00 00
+                //  schedule 1
+                0x00,  //  switch 1
+                0x79,  //  switch 2
+                0x1b,  //  switch 3
+                0xff,  //  switch 4
+                0xff,  //  switch 5
+                //  schedule 1+2 rates byte 5
+                0x5f,
+                //  schedule 1 rates byte 6
+                0xe4,  //  fe4 -> 111111100100 -> 11 11 11 10 01 00 -> A B C D D D
+                //  schedule 2
+                0x10,  //  switch 1
+                0x16,  //  switch 2
+                0xff,  //  switch 3
+                0xff,  //  switch 4
+                0xff,  //  switch 5
+                //  schedule 2 rates byte 6
+                0x53   //  a92 -> 101010010010 -> 10 10 10 01 00 10 -> C A B C C C
+            };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+                expected_message,
+                expected_message + sizeof(expected_message) );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x31 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,     15 );
+
+            const unsigned char expected_message[] =
+            {
+                //  schedule 3
+                0x0c,  //  switch 1
+                0xff,  //  switch 2
+                0xff,  //  switch 3
+                0xff,  //  switch 4
+                0xff,  //  switch 5
+                //  schedule 3 rates
+                0x0f,
+                0xfe,
+                //  schedule 4
+                0x00,  //  switch 1
+                0x6b,  //  switch 2
+                0x27,  //  switch 3
+                0x82,  //  switch 4
+                0x0b,  //  switch 5
+                //  schedule 4 rates
+                0x09,
+                0x39,
+                //  default TOU rate
+                0x01
+            };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+                expected_message,
+                expected_message + sizeof(expected_message) );
+        }
+
+        // 3 reads
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          3 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xae );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,     13 );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          3 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xaf );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,     13 );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          3 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xad );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,     11 );
+        }
     }
     BOOST_AUTO_TEST_CASE(test_putconfig_install_tou_mct470_out_of_order_times)
     {
