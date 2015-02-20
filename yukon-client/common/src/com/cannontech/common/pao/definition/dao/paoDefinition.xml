@@ -10476,7 +10476,7 @@
     </pao>
 
     <!-- CBCs -->
-    <pao id="CBC_BASE" abstract="true">
+    <pao id="CBC_BASE" abstract="true" inherits="SUPPORTS_COMMANDER_REQUESTS_TAG">
         <displayGroup>Volt/Var</displayGroup>
         <points>
             <point type="Status" offset="1">

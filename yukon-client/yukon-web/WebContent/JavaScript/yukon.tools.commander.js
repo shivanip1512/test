@@ -168,9 +168,9 @@ yukon.tools.commander = (function () {
         result.addClass('cmd-req-resp').data('requestId', req.id).attr('data-request-id', req.id);
         resultReq.addClass('cmd-req').text('[' + timestamp + '] - ' + req.requestText).appendTo(result);
         
+        _pending[req.id] = [];
         if (!req.complete) {
             result.append($('#cmdr-templates .cmd-pending').clone());
-            _pending[req.id] = [];
         }
         
         console.append(result);

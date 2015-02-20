@@ -349,14 +349,23 @@ public class CommanderController {
         
         List<ViewableTarget> viewables = new ArrayList<>();
         for (RecentTarget recent : recents) {
+            
             ViewableTarget viewable = new ViewableTarget();
             viewable.setTarget(recent);
             CommandTarget type = CommandTarget.valueOf(recent.getTarget());
+            
             if (type == CommandTarget.DEVICE || type == CommandTarget.LOAD_GROUP) {
-                viewable.setLabel(cache.getAllPaosMap().get(recent.getPaoId()).getPaoName());
+                
+                LiteYukonPAObject pao = cache.getAllPaosMap().get(recent.getPaoId());
+                if (pao == null) continue; // May have had an old id in the cookie
+                
+                viewable.setLabel(pao.getPaoName());
             } else {
-                viewable.setLabel(recent.getSerialNumber() + " - " 
-                        + cache.getAllPaosMap().get(recent.getRouteId()).getPaoName());
+                
+                LiteYukonPAObject route = cache.getAllPaosMap().get(recent.getRouteId());
+                if (route == null) continue; // May have had an old id in the cookie
+                
+                viewable.setLabel(recent.getSerialNumber() + " - " + route.getPaoName());
             }
             viewables.add(viewable);
         }
