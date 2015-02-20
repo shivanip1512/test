@@ -7,6 +7,7 @@
 	<entry key="yukon.common.durationFormatting.pattern.YMODHMS">%Y_FULL% %MO_FULL% %D_FULL% %H_FULL% %M_FULL% %S_FULL%</entry>
 	<entry key="yukon.common.durationFormatting.pattern.DHMS">%D_FULL% %H_FULL% %M_FULL% %S_FULL%</entry>
 	<entry key="yukon.common.durationFormatting.pattern.DHMS_REDUCED">%D_FULL% %H_FULL% %M_FULL% %S_FULL%</entry>
+	<entry key="yukon.common.durationFormatting.pattern.DHMS_SHORT_REDUCED">%D_SHORT% %H_SHORT% %M_SHORT% %S_SHORT%</entry>
     <entry key="yukon.common.durationFormatting.pattern.DH">%D_FULL% %H_FULL%</entry>
     <entry key="yukon.common.durationFormatting.pattern.DH_ABBR">%D_ABBR% %H_ABBR%</entry>
     <entry key="yukon.common.durationFormatting.pattern.HMS">%H_FULL% %M_FULL% %S_FULL%</entry>
@@ -23,6 +24,8 @@
 	<entry key="yukon.common.durationFormatting.symbol.S.suffix.plural"></entry>
 	<entry key="yukon.common.durationFormatting.symbol.S_FULL.suffix.singular">second</entry>
 	<entry key="yukon.common.durationFormatting.symbol.S_FULL.suffix.plural">seconds</entry>
+	<entry key="yukon.common.durationFormatting.symbol.S_SHORT.suffix.singular">sec</entry>
+	<entry key="yukon.common.durationFormatting.symbol.S_SHORT.suffix.plural">secs</entry>
 	<entry key="yukon.common.durationFormatting.symbol.S_ABBR.suffix.singular">s</entry>
 	<entry key="yukon.common.durationFormatting.symbol.S_ABBR.suffix.plural">s</entry>
 	
@@ -30,6 +33,8 @@
 	<entry key="yukon.common.durationFormatting.symbol.M.suffix.plural"></entry>
 	<entry key="yukon.common.durationFormatting.symbol.M_FULL.suffix.singular">minute</entry>
 	<entry key="yukon.common.durationFormatting.symbol.M_FULL.suffix.plural">minutes</entry>
+	<entry key="yukon.common.durationFormatting.symbol.M_SHORT.suffix.singular">min</entry>
+	<entry key="yukon.common.durationFormatting.symbol.M_SHORT.suffix.plural">mins</entry>
 	<entry key="yukon.common.durationFormatting.symbol.M_ABBR.suffix.singular">m</entry>
 	<entry key="yukon.common.durationFormatting.symbol.M_ABBR.suffix.plural">m</entry>
 	
@@ -37,6 +42,8 @@
 	<entry key="yukon.common.durationFormatting.symbol.H.suffix.plural"></entry>
 	<entry key="yukon.common.durationFormatting.symbol.H_FULL.suffix.singular">hour</entry>
 	<entry key="yukon.common.durationFormatting.symbol.H_FULL.suffix.plural">hours</entry>
+	<entry key="yukon.common.durationFormatting.symbol.H_SHORT.suffix.singular">hr</entry>
+	<entry key="yukon.common.durationFormatting.symbol.H_SHORT.suffix.plural">hrs</entry>
 	<entry key="yukon.common.durationFormatting.symbol.H_ABBR.suffix.singular">h</entry>
 	<entry key="yukon.common.durationFormatting.symbol.H_ABBR.suffix.plural">h</entry>
 	
@@ -44,6 +51,8 @@
 	<entry key="yukon.common.durationFormatting.symbol.D.suffix.plural"></entry>
 	<entry key="yukon.common.durationFormatting.symbol.D_FULL.suffix.singular">day</entry>
 	<entry key="yukon.common.durationFormatting.symbol.D_FULL.suffix.plural">days</entry>
+	<entry key="yukon.common.durationFormatting.symbol.D_SHORT.suffix.singular">day</entry>
+	<entry key="yukon.common.durationFormatting.symbol.D_SHORT.suffix.plural">days</entry>
 	<entry key="yukon.common.durationFormatting.symbol.D_ABBR.suffix.singular">d</entry>
 	<entry key="yukon.common.durationFormatting.symbol.D_ABBR.suffix.plural">d</entry>
 	
@@ -51,6 +60,8 @@
 	<entry key="yukon.common.durationFormatting.symbol.MO.suffix.plural"></entry>
 	<entry key="yukon.common.durationFormatting.symbol.MO_FULL.suffix.singular">month</entry>
 	<entry key="yukon.common.durationFormatting.symbol.MO_FULL.suffix.plural">months</entry>
+	<entry key="yukon.common.durationFormatting.symbol.MO_SHORT.suffix.singular">mo</entry>
+	<entry key="yukon.common.durationFormatting.symbol.MO_SHORT.suffix.plural">mo</entry>
 	<entry key="yukon.common.durationFormatting.symbol.MO_ABBR.suffix.singular">mo</entry>
 	<entry key="yukon.common.durationFormatting.symbol.MO_ABBR.suffix.plural">mo</entry>
 	
@@ -58,6 +69,8 @@
 	<entry key="yukon.common.durationFormatting.symbol.Y.suffix.plural"></entry>
 	<entry key="yukon.common.durationFormatting.symbol.Y_FULL.suffix.singular">year</entry>
 	<entry key="yukon.common.durationFormatting.symbol.Y_FULL.suffix.plural">years</entry>
+	<entry key="yukon.common.durationFormatting.symbol.Y_SHORT.suffix.singular">yr</entry>
+	<entry key="yukon.common.durationFormatting.symbol.Y_SHORT.suffix.plural">yrs</entry>
 	<entry key="yukon.common.durationFormatting.symbol.Y_ABBR.suffix.singular">y</entry>
 	<entry key="yukon.common.durationFormatting.symbol.Y_ABBR.suffix.plural">y</entry>
 

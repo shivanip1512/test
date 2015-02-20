@@ -9,6 +9,7 @@ public enum DurationFormat implements DisplayableEnum {
 	YMODHMS(RoundingMode.HALF_UP, true),
     DHMS(RoundingMode.HALF_UP, true),
     DHMS_REDUCED(RoundingMode.HALF_UP, false),
+    DHMS_SHORT_REDUCED(RoundingMode.HALF_UP, false),
     DH(RoundingMode.HALF_UP, true),
     DH_ABBR(RoundingMode.HALF_UP, true),
     HMS(RoundingMode.HALF_UP, true),

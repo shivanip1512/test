@@ -25,7 +25,7 @@ public class Interval implements DeviceConfigurationInputEnumeration {
 
         for (int value : intervals) {
             validIntervals.add( new InputOption( Integer.toString(value), 
-                durationService.formatDuration(value, TimeUnit.MINUTES, DurationFormat.DHMS_REDUCED, userContext)));
+                durationService.formatDuration(value, TimeUnit.MINUTES, DurationFormat.DHMS_SHORT_REDUCED, userContext)));
         }
 
         return validIntervals;
@@ -34,5 +34,10 @@ public class Interval implements DeviceConfigurationInputEnumeration {
     @Override
     public String getEnumOptionName() {
         return "Interval";
+    }
+
+    @Override
+    public SelectionType getSelectionType() {
+        return SelectionType.SWITCH;
     }
 }

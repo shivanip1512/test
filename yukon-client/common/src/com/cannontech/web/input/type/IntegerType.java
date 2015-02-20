@@ -9,8 +9,8 @@ import org.springframework.beans.propertyeditors.CustomNumberEditor;
  */
 public class IntegerType extends DefaultValidatedType<Integer> {
 
-    private int minValue = 0;
-    private int maxValue = 0;
+    private int minValue = Integer.MIN_VALUE;
+    private int maxValue = Integer.MAX_VALUE;
 
     private String renderer = null;
 

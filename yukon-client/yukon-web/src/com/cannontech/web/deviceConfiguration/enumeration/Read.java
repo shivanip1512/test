@@ -47,4 +47,9 @@ public final class Read implements DeviceConfigurationInputEnumeration {
     public String getEnumOptionName() {
         return "ReadType";
     }
+
+    @Override
+    public SelectionType getSelectionType() {
+        return SelectionType.SWITCH;
+    }
 }

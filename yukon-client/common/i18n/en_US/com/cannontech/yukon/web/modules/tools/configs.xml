@@ -35,15 +35,15 @@
     <entry key="yukon.web.modules.tools.configs.enum.schedules.schedule3">Schedule 3</entry>
     <entry key="yukon.web.modules.tools.configs.enum.schedules.schedule4">Schedule 4</entry>
 
-    <entry key="yukon.web.modules.tools.configs.enum.timeZone.noronha">America/Noronha</entry>
-    <entry key="yukon.web.modules.tools.configs.enum.timeZone.saoPaulo">America/Sao_Paulo</entry>
-    <entry key="yukon.web.modules.tools.configs.enum.timeZone.manaus">America/Manaus</entry>
-    <entry key="yukon.web.modules.tools.configs.enum.timeZone.newYork">America/New_York</entry>
-    <entry key="yukon.web.modules.tools.configs.enum.timeZone.chicago">America/Chicago</entry>
-    <entry key="yukon.web.modules.tools.configs.enum.timeZone.denver">America/Denver</entry>
-    <entry key="yukon.web.modules.tools.configs.enum.timeZone.losAngeles">America/Los_Angeles</entry>
-    <entry key="yukon.web.modules.tools.configs.enum.timeZone.anchorage">America/Anchorage</entry>
-    <entry key="yukon.web.modules.tools.configs.enum.timeZone.honolulu">Pacific/Honolulu</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.timeZone.noronha">America / Noronha</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.timeZone.saoPaulo">America / Sao Paulo</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.timeZone.manaus">America / Manaus</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.timeZone.newYork">America / New York</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.timeZone.chicago">America / Chicago</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.timeZone.denver">America / Denver</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.timeZone.losAngeles">America / Los Angeles</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.timeZone.anchorage">America / Anchorage</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.timeZone.honolulu">Pacific / Honolulu</entry>
 
     <entry key="yukon.web.modules.tools.configs.enum.centronDisplayItem.slotDisabled">Slot Disabled</entry>
     <entry key="yukon.web.modules.tools.configs.enum.centronDisplayItem.noSegments">No Segments</entry>

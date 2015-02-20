@@ -32,4 +32,9 @@ public final class Rate implements DeviceConfigurationInputEnumeration {
     public String getEnumOptionName() {
         return "Rate";
     }
+
+    @Override
+    public SelectionType getSelectionType() {
+        return SelectionType.SWITCH;
+    }
 }

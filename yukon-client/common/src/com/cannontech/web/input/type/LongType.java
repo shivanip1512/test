@@ -6,8 +6,8 @@ import org.springframework.beans.propertyeditors.CustomNumberEditor;
 
 public class LongType  extends DefaultValidatedType<Long> {
 
-    private long minValue = 0;
-    private long maxValue = 0;
+    private long minValue = Long.MIN_VALUE;
+    private long maxValue = Long.MAX_VALUE;
 
     private String renderer = null;
 

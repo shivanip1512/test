@@ -53,4 +53,9 @@ public final class Mct430MeterType implements DeviceConfigurationInputEnumeratio
     public String getEnumOptionName() {
         return "Mct430MeterType";
     }
+
+    @Override
+    public SelectionType getSelectionType() {
+        return SelectionType.SWITCH;
+    }
 }

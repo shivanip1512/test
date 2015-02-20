@@ -33,4 +33,9 @@ public class TableReadInterval implements DeviceConfigurationInputEnumeration {
     public String getEnumOptionName() {
         return "TableReadInterval";
     }
+
+    @Override
+    public SelectionType getSelectionType() {
+        return SelectionType.CHOSEN;
+    }
 }

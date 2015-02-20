@@ -20,4 +20,25 @@ public interface DeviceConfigurationInputEnumeration {
      */
     List<InputOption> getDisplayableValues(YukonUserContext userContext);
 
+    default SelectionType getSelectionType() {
+        return SelectionType.STANDARD;
+    }
+
+    public enum SelectionType {
+        STANDARD("enumeratedType.jsp"),
+        SWITCH("switchEnumType.jsp"),
+        CHOSEN("chosenEnumType.jsp"),
+        ;
+
+        String renderer;
+
+        SelectionType(String renderer) {
+            this.renderer = renderer;
+        }
+
+        public String getRenderer() {
+            return renderer;
+        }
+    }
+
 }

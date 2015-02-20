@@ -13,9 +13,16 @@
 </cti:displayForPageEditModes>
 <cti:displayForPageEditModes modes="CREATE,EDIT">
     <c:set var="inputClass" value="${status.error ? 'error' : ''}"/>
-    <select name="${status.expression}" class="${inputClass}">
+    <div class="button-group button-group-toggle">
+        <input type="hidden" name="${status.expression}" value="${status.value}" data-input>
+
         <c:forEach var="option" items="${inputType.optionList}">
-            <option value="${option.value}" <c:if test="${status.value == option.value}">selected</c:if>><cti:msg2 key="${option}"/></option>
+            <cti:msg2 var="optionText" key="${option}"/>
+            <c:set var="on" value=""/>
+            <c:if test="${status.value == option.value}">
+                <c:set var="on" value="on"/>
+            </c:if>
+            <cti:button label="${optionText}" classes="yes ${on}" data-value="${option.value}"/>
         </c:forEach>
-    </select>
+    </div>
 </cti:displayForPageEditModes>

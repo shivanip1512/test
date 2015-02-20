@@ -203,12 +203,14 @@ public class DeviceConfigurationHelper {
         DelegatingEnumeratedType<String> timeEnumeratedType = new DelegatingEnumeratedType<>();
         timeEnumeratedType.setOptionList(timeOptions);
         timeEnumeratedType.setEnumeratedType(new StringType());
+        timeEnumeratedType.setRenderer(enumeration.getSelectionType().getRenderer());
 
         DeviceConfigurationInputEnumeration rateEnum = fieldToEnumerationMap.get(EnumOption.RATE);
         List<InputOption> rateOptions = rateEnum.getDisplayableValues(userContext);
         DelegatingEnumeratedType<String> rateEnumeratedType = new DelegatingEnumeratedType<>();
         rateEnumeratedType.setOptionList(rateOptions);
         rateEnumeratedType.setEnumeratedType(new StringType());
+        rateEnumeratedType.setRenderer(rateEnum.getSelectionType().getRenderer());
 
         for (InputMap.Entry entry : entries) {
             inputTypes.add(new DisplayableRate(timeEnumeratedType, rateEnumeratedType, entry.getField()));
@@ -335,6 +337,8 @@ public class DeviceConfigurationHelper {
 
         inputType.setOptionList(options);
         inputType.setEnumeratedType(new StringType());
+
+        inputType.setRenderer(enumeration.getSelectionType().getRenderer());
 
         return inputType;
     }

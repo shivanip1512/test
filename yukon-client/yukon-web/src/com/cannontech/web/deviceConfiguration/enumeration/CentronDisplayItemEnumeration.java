@@ -87,4 +87,9 @@ public final class CentronDisplayItemEnumeration implements DeviceConfigurationI
     public String getEnumOptionName() {
         return "CentronDisplayItem";
     }
+
+    @Override
+    public SelectionType getSelectionType() {
+        return SelectionType.CHOSEN;
+    }
 }

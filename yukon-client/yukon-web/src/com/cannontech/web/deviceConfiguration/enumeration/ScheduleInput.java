@@ -54,4 +54,9 @@ public final class ScheduleInput implements DeviceConfigurationInputEnumeration 
     public String getEnumOptionName() {
         return "Schedule";
     }
+
+    @Override
+    public SelectionType getSelectionType() {
+        return SelectionType.SWITCH;
+    }
 }

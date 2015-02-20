@@ -11,35 +11,34 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.input.type.InputOption;
+import com.google.common.base.CaseFormat;
 
 @Component
 public final class TimeZoneInput implements DeviceConfigurationInputEnumeration {
 
-    private static final String baseKey = "yukon.web.modules.tools.configs.enum.timeZone";
+    private static final String baseKey = "yukon.web.modules.tools.configs.enum.timeZone.";
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     public enum TimeZone implements DisplayableEnum {
-        NORONHA("-2", ".noronha"),
-        SAO_PAULO("-3", ".saoPaulo"),
-        MANAUS("-4", ".manaus"),
-        EST("-5", ".newYork"),
-        CST("-6", ".chicago"),
-        MST("-7", ".denver"),
-        PST("-8", ".losAngeles"),
-        ALASKA("-9", ".anchorage"),
-        HAWAII("-10", ".honolulu");
+        NORONHA("-2"),
+        SAO_PAULO("-3"),
+        MANAUS("-4"),
+        NEW_YORK("-5"),
+        CHICAGO("-6"),
+        DENVER("-7"),
+        LOS_ANGELES("-8"),
+        ANCHORAGE("-9"),
+        HONOLULU("-10");
 
         private final String dbValue;
-        private final String messageKey;
 
-        private TimeZone(String dbValue, String messageKey) {
+        private TimeZone(String dbValue) {
             this.dbValue = dbValue;
-            this.messageKey = messageKey;
         }
 
         @Override
         public String getFormatKey() {
-            return baseKey + messageKey;
+            return baseKey + CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this.name());
         }
     }
 
@@ -58,5 +57,10 @@ public final class TimeZoneInput implements DeviceConfigurationInputEnumeration 
     @Override
     public String getEnumOptionName() {
         return "TimeZoneInput";
+    }
+
+    @Override
+    public SelectionType getSelectionType() {
+        return SelectionType.CHOSEN;
     }
 }

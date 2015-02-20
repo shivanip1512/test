@@ -173,7 +173,7 @@ public strictfp class DurationFormattingServiceImpl implements DurationFormattin
     	// format
     	StringBuffer out = new StringBuffer();
     	periodFormatter.printTo(out, period);
-    	return out.toString();
+    	return out.toString().trim();
     }
 
     

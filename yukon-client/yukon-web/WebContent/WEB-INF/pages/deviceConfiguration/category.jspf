@@ -28,13 +28,11 @@
             <div class="column one form-control">${field.displayName}</div>
             <div class="column two nogutter">
                 <tags:simpleInputType input="${field.inputType}" path="categoryInputs[${field.fieldName}]"/>
-                <div id="fieldErrors">
-                    <spring:bind path="categoryInputs[${field.fieldName}]">
-                        <c:if test="${status.error}">
-                            <form:errors path="categoryInputs[${field.fieldName}]" cssClass="error"/>
-                        </c:if>
-                    </spring:bind>
-                </div>
+                <spring:bind path="categoryInputs[${field.fieldName}]">
+                    <c:if test="${status.error}">
+                        <div><form:errors path="categoryInputs[${field.fieldName}]" cssClass="error"/></div>
+                    </c:if>
+                </spring:bind>
                 <div class="description">
                     <span class="detail">${field.description}</span>
                 </div>
@@ -43,16 +41,16 @@
     </c:forEach>
     <cti:displayForPageEditModes modes="CREATE,EDIT">
         <c:if test="${isDisplayItemsCategory}">
-            <div class="page-action-area stacked" id="showNextDiv">
-                <cti:msg2 var="addTitle" key=".addDisplayItem"/>
-                <cti:button nameKey="addDisplayItem" icon="icon-add" id="showNextFieldBtn" title="${addTitle}" classes="fr"/>
+            <cti:msg2 var="addTitle" key=".addDisplayItem"/>
+            <div class="action-area stacked-md">
+                <cti:button nameKey="addDisplayItem" classes="js-show-next" icon="icon-add" title="${addTitle}"/>
             </div>
         </c:if>
         <c:if test="${isTouCategory}">
             <c:forEach begin="1" end="4" var="status">
-                <div class="stacked dn" id="showNextDivSchedule${status}">
-                    <cti:msg2 var="title" key=".addScheduleItem" argument="${status}"/>
-                    <cti:button nameKey="addSchedule" icon="icon-add" id="showNextSchedule${status}TimeBtn" data-add-schedule="${status}" title="${title}" classes="fr js-addScheduleBtn"/>
+                <cti:msg2 var="title" key=".addScheduleItem" argument="${status}"/>
+                <div class="action-area">
+                    <cti:button nameKey="addSchedule" classes="js-add-schedule" icon="icon-add" data-schedule="${status}" title="${title}"/>
                 </div>
             </c:forEach>
         </c:if>

@@ -49,4 +49,9 @@ public final class DisconnectMode implements DeviceConfigurationInputEnumeration
     public String getEnumOptionName() {
         return "DisconnectMode";
     }
+
+    @Override
+    public SelectionType getSelectionType() {
+        return SelectionType.SWITCH;
+    }
 }

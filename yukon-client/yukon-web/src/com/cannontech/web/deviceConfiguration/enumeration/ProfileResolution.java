@@ -56,4 +56,9 @@ public final class ProfileResolution implements DeviceConfigurationInputEnumerat
     public String getEnumOptionName() {
         return "ProfileResolution";
     }
+
+    @Override
+    public SelectionType getSelectionType() {
+        return SelectionType.SWITCH;
+    }
 }

@@ -129,7 +129,7 @@
                     <div class="action-area">
                         <form action="category/create">
                             <cti:button nameKey="create" type="submit" icon="icon-plus-green"/>
-                            <select name="categoryType" id="categoryTypesSelect">
+                            <select name="categoryType" class="js-init-chosen">
                                 <c:forEach var="option" items="${categoryTypes}">
                                     <option value="${option.value}"><cti:msg2 key="${option.formatKey}"/></option>
                                 </c:forEach>

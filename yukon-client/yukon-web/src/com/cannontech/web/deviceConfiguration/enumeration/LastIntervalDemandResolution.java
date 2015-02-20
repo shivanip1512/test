@@ -58,4 +58,9 @@ public final class LastIntervalDemandResolution implements DeviceConfigurationIn
     public String getEnumOptionName() {
         return "LastIntervalDemandResolution";
     }
+
+    @Override
+    public SelectionType getSelectionType() {
+        return SelectionType.SWITCH;
+    }
 }

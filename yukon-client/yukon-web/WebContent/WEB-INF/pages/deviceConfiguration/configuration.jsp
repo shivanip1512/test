@@ -47,7 +47,7 @@
                         <cti:url var="deleteUrl" value="delete">
                             <cti:param name="configId" value="${deviceConfig.configId}"/>
                         </cti:url>
-                        <cti:button nameKey="remove" id="remove" href="${deleteUrl}" disabled="${disabled}"/>
+                        <cti:button nameKey="remove" id="remove" href="${deleteUrl}" classes="delete" disabled="${disabled}"/>
                     </c:if>
                     <cti:url var="viewUrl" value="view">
                         <cti:param name="configId" value="${deviceConfig.configId}"/>
@@ -92,7 +92,7 @@
                                     <li class="js-categories" data-device-type="${type.key}">
                                         <a href="javascript:void(0);" class="pipe-selector ">
                                             <span data-device-type="${type.key}" class="pipe js-categories">&nbsp;</span>
-                                            <span>${type.key.dbString}</span>
+                                            <span><i:inline key="${type.key}"/></span>
                                         </a>
                                         <cti:checkRolesAndProperties value="${editingRoleProperty}">
                                             <cti:displayForPageEditModes modes="VIEW">
@@ -130,13 +130,11 @@
             <div class="column two nogutter">
                 <tags:sectionContainer title="Categories">
                     <div class="separated-sections">
-                        <cti:displayForPageEditModes modes="VIEW,EDIT,CREATE">
-                            <c:forEach var="category" items="${configCategories.categorySelections}" varStatus="loopStatus">
-                                <div class="pipe-selector section <c:if test="${!loopStatus.last}">stacked</c:if>">
-                                    <%@ include file="categories.jspf" %>
-                                </div>
-                            </c:forEach>
-                        </cti:displayForPageEditModes>
+                        <c:forEach var="category" items="${configCategories.categorySelections}" varStatus="loopStatus">
+                            <div class="pipe-selector section <c:if test="${!loopStatus.last}">stacked</c:if>">
+                                <%@ include file="categories.jspf" %>
+                            </div>
+                        </c:forEach>
                     </div>
                 </tags:sectionContainer>
             </div>

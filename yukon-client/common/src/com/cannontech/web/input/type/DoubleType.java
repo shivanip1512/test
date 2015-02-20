@@ -5,8 +5,8 @@ import java.beans.PropertyEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 
 public class DoubleType extends DefaultValidatedType<Double>{
-	private double minValue = 0;
-	private double maxValue = 0;
+	private double minValue = -Double.MAX_VALUE;
+	private double maxValue = Double.MAX_VALUE;
 	private String renderer = null;
 	
 	public DoubleType() {

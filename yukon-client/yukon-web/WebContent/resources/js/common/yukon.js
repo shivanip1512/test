@@ -385,11 +385,11 @@ yukon.ui = (function () {
             
             /** Initialize any chosen selects on page load. */
             $('.js-init-chosen').each( function () {
-                $(this).chosen({'width': $(this).getHiddenDimensions().width + 'px'});
-            });
+                $(this).chosen({'width': $(this).getHiddenDimensions().innerWidth + 11 + 'px'});
+            }).removeClass('js-init-chosen');
             
             /** Initialize any tabbed containers on page load. */
-            $('.js-init-tabs').tabs().show();
+            $('.js-init-tabs').tabs().show().removeClass('js-init-tabs');
                 
             /** Add fancy tooltip support (tipsy)
              *  To give an item a custom tooltip, give it an attribute 'data-tooltip'
@@ -821,7 +821,7 @@ yukon.ui = (function () {
                     click: function (ev) {
                         confirmSpan.remove();
                         dialog.dialog('option', 'buttons', oldButtons);
-                        target.trigger(event);
+                        $(target).trigger(event);
                     },
                     'class': 'primary action js-primary-action'
                 },

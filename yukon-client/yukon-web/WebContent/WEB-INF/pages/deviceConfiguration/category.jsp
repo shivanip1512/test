@@ -66,7 +66,6 @@
                         <cti:param name="categoryId" value="${categoryEditBean.categoryId}"/>
                     </cti:url>
                     <cti:button nameKey="save" id="save" type="submit" classes="primary action"/>
-                    <cti:button nameKey="cancel" href="${viewUrl}"/>
                     <c:if test="${isDeletable}">
                         <d:confirm on="#remove" nameKey="confirmRemove"/>
                         <cti:url var="deleteUrl" value="delete">
@@ -74,6 +73,7 @@
                         </cti:url>
                         <cti:button nameKey="delete" id="remove" href="${deleteUrl}" disabled="${disabled}" classes="delete"/>
                     </c:if>
+                    <cti:button nameKey="cancel" href="${viewUrl}"/>
                 </div>
             </cti:checkRolesAndProperties>
         </cti:displayForPageEditModes>

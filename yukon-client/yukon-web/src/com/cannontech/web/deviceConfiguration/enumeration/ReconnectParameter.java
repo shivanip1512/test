@@ -46,4 +46,9 @@ public final class ReconnectParameter implements DeviceConfigurationInputEnumera
     public String getEnumOptionName() {
         return "ReconnectParameter";
     }
+
+    @Override
+    public SelectionType getSelectionType() {
+        return SelectionType.SWITCH;
+    }
 }

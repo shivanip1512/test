@@ -56,4 +56,9 @@ public final class DemandResolution implements DeviceConfigurationInputEnumerati
     public String getEnumOptionName() {
         return "DemandResolution";
     }
+
+    @Override
+    public SelectionType getSelectionType() {
+        return SelectionType.SWITCH;
+    }
 }

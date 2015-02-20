@@ -26,7 +26,7 @@ public class DisconnectDemandInterval implements DeviceConfigurationInputEnumera
 
         for (int value : intervals) {
             validIntervals.add( new InputOption( Integer.toString(value), 
-                durationService.formatDuration(value, TimeUnit.MINUTES, DurationFormat.DHMS_REDUCED, userContext)));
+                durationService.formatDuration(value, TimeUnit.MINUTES, DurationFormat.DHMS_SHORT_REDUCED, userContext)));
         }
 
         return validIntervals;
@@ -35,5 +35,10 @@ public class DisconnectDemandInterval implements DeviceConfigurationInputEnumera
     @Override
     public String getEnumOptionName() {
         return "DisconnectDemandInterval";
+    }
+
+    @Override
+    public SelectionType getSelectionType() {
+        return SelectionType.SWITCH;
     }
 }

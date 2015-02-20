@@ -58,4 +58,9 @@ public final class RelayTiming implements DeviceConfigurationInputEnumeration {
     public String getEnumOptionName() {
         return "RelayTiming";
     }
+
+    @Override
+    public SelectionType getSelectionType() {
+        return SelectionType.CHOSEN;
+    }
 }

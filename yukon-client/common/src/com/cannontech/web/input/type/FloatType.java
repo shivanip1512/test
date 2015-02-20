@@ -9,8 +9,8 @@ import org.springframework.beans.propertyeditors.CustomNumberEditor;
  */
 public class FloatType extends DefaultValidatedType<Float> {
 
-    private float minValue = 0;
-    private float maxValue = 0;
+    private float minValue = -Float.MAX_VALUE;
+    private float maxValue = Float.MAX_VALUE;
 
     private String renderer = null;
 

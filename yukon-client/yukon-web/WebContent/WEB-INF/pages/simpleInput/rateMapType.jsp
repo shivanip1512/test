@@ -31,7 +31,7 @@
                             <tags:simpleInputType input="${rate.timeType}" path="scheduleInputs[${field.fieldName}].rateInputs[${rate.field}].time"/>
                             <spring:bind path="scheduleInputs[${field.fieldName}].rateInputs[${rate.field}].time">
                                 <c:if test="${status.error}">
-                                    <form:errors path="scheduleInputs[${field.fieldName}].rateInputs[${rate.field}].time" cssClass="error"/>
+                                    <div><form:errors path="scheduleInputs[${field.fieldName}].rateInputs[${rate.field}].time" cssClass="error"/></div>
                                 </c:if>
                             </spring:bind>
                         </cti:displayForPageEditModes>

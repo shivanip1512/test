@@ -7,16 +7,17 @@ yukon.namespace('yukon.deviceConfig');
  * @requires JQUERY UI
  */
 yukon.deviceConfig = (function () {
-    
+    'use strict';
+
     /** Show and hide the div that have add button */
     var _determineDisplayItemAddButtonVisibility = function () {
         var totalElems = $('[data-display-item]'),
             visibleElems = totalElems.filter(":visible");
 
         if (visibleElems.length < totalElems.length) {
-            $('#showNextDiv').show();
+            $('.js-show-next').show();
         } else {
-            $('#showNextDiv').hide();
+            $('.js-show-next').hide();
         }
     },
 
@@ -55,6 +56,32 @@ yukon.deviceConfig = (function () {
         },
 
         /**
+         * Determines the visibility of the schedule (Add Rate) button
+         * @param {Object} num - number.
+         */
+        _determineScheduleAddButtonVisibility = function (num) {
+            var allSchedules = $("tr").filter(function () {
+                    return $(this).data('scheduleName') === 'schedule' + num;
+                }),
+                visableSchedules = allSchedules.filter(':visible'),
+                btn;
+
+            if (visableSchedules.length < allSchedules.length) {
+                btn = $('.js-add-schedule').filter(function (idx, elem) {
+                    return $(elem).is('[data-schedule="' + num + '"]');
+                });
+                btn.show();
+
+                visableSchedules.last().find(':last').append(btn);
+
+            } else {
+                $('.js-add-schedule').filter(function (idx, elem) {
+                    return $(elem).is('[data-schedule="' + num + '"]');
+                }).hide();
+            }
+        },
+
+        /**
          * Show/hide the div having the add button and set the visibility of
          * schedule button.
          */
@@ -64,48 +91,27 @@ yukon.deviceConfig = (function () {
                 i;
 
             if (hiddenElems.length <= totalElems.length) {
-                $('#showNextDiv').show();
+                $('.js-show-next').show();
             } else {
-                $('#showNextDiv').hide();
+                $('.js-show-next').hide();
             }
 
-            for (i = 1; i < 5; i += 1) {
+            for (i = 1; i <= 4; i += 1) {
                 _determineScheduleAddButtonVisibility(i);
-            }
-        },
-
-        /**
-         * Determines the visibility of the schedule (Add Rate) button
-         * @param {Object} num - number.
-         */        
-        _determineScheduleAddButtonVisibility = function (num) {
-            var total = $("tr").filter(function () {
-                    return $(this).attr("data-schedule-name") === 'schedule' + num;
-                }).length,
-                scheduleVisibles = $("tr").filter(function () {
-                    return $(this).attr("data-schedule-name") === 'schedule' + num && $(this).is(':visible');
-                }),
-                btn;
-
-            if (scheduleVisibles.length < total) {
-                btn = $('#showNextDivSchedule' + num);
-                btn.show();
-                $(scheduleVisibles[scheduleVisibles.length - 1].lastElementChild).append(btn);
-            } else {
-                $('#showNextDivSchedule' + num).hide();
+                _showSandwichedMidnightEntries(i);
             }
         },
 
         /** Shows the schedule (Add Rate) button */
         _registerScheduleButtons = function () {
-            $(".js-addScheduleBtn").click(function () {
+            $(".js-add-schedule").click(function () {
                 var button = $(this),
-                    num = button.attr('data-add-schedule'),
+                    num = button.data('schedule'),
                     hiddenElems = $("tr").filter(function () {
-                        return $(this).attr('data-schedule-name') === "schedule" + num && !$(this).is(':visible');
+                        return $(this).data('scheduleName') === "schedule" + num && !$(this).is(':visible');
                     });
 
-                $(hiddenElems[0]).show();
+                hiddenElems.first().show();
                 _determineScheduleAddButtonVisibility(num);
             });
         },
@@ -181,12 +187,26 @@ yukon.deviceConfig = (function () {
             }
         },
 
+        _initFields = function () {
+
+            $('.js-init-chosen').each( function () {
+                $(this).chosen({'width': $(this).getHiddenDimensions().innerWidth + 11 + 'px'});
+            }).removeClass('js-init-chosen');
+
+            _handleVisibleElemsAndButtons();
+            _hideSlotDisabledEntries();
+            _showSandwichedSlotDisabledEntries();
+            _registerScheduleButtons();
+            _determineDisplayItemAddButtonVisibility();
+            _hideThingsInMap();
+        },
+
         /**
          * Open category popup page when create/edit category button is clicked from
          * configuration page.
          * @param {Object} btn - Reference of button clicked.
          * @param {Object} url - url of page to open.
-         */        
+         */
         _openCategoryPopup = function (btn, url) {
             $('#category-popup').load(url, function () {
                 var title = $('#popup-title').val(),
@@ -198,24 +218,26 @@ yukon.deviceConfig = (function () {
             });
         },
 
-        _initFields = function () {
-            _handleVisibleElemsAndButtons();
-            _hideSlotDisabledEntries();
-            _showSandwichedSlotDisabledEntries();
-            _registerScheduleButtons();
-            _determineDisplayItemAddButtonVisibility();
-            _hideThingsInMap();
+        /**
+         * Show pipes for the device type associated with the input
+         * @param {jQuery} elem - Element with data "deviceType" on it.
+         */
+        _setPipeVisibilityForType = function (elem) {
+
+            var deviceType = $(elem).data('deviceType');
+
+            $('.pipe').css('visibility', 'hidden');
+            $('.pipe[data-device-type-"' + deviceType + '"]').css('visibility', 'visible');
         },
+
 
         mod = {
 
             /** Initialize the module. Depends on DOM elements so call after page load. */
             init : function () {
 
-                var typesLink = $('[data-show-device-types]'),
-                    num,
-                    pipe,
-                    deviceType;
+                var typesLink = $('[data-show-device-types]');
+
                 if (typesLink.data('showDeviceTypes') === true) {
                     typesLink.trigger('click');
                 }
@@ -239,7 +261,7 @@ yukon.deviceConfig = (function () {
                         success: function (data, status, xhr, $form) {
 
                             $('#category-popup').dialog('close');
-                            location.reload();
+                            window.location.reload();
                             // TODO add message
 
                         },
@@ -287,50 +309,44 @@ yukon.deviceConfig = (function () {
                     }
                 });
 
+                $(document).on('click', '.chosen-single', function () {
+
+                    var select = $(this),
+                        container = select.closest('.ui-dialog-content');
+
+                    if (!container.length) { container = $('html'); }
+
+                    container.scrollTo(select);
+                });
+
                 _initFields();
 
-                for (num = 1; num < 5; num += 1) {
-                    _determineScheduleAddButtonVisibility(num);
-                    _showSandwichedMidnightEntries(num);
-                }
-
-                $("#showNextFieldBtn").on("click", function () {
-                    // Show the next hidden display item.
-                    var hiddenElems = $('[data-display-item]').filter(":hidden");
-                    $(hiddenElems[0]).show();
-                    _determineDisplayItemAddButtonVisibility();
-                });
+                // Find the first type and select his categories
+                _setPipeVisibilityForType($(".pipe").first());
 
                 $(".js-categories").click(function () {
-                    var deviceType = $(this).attr('data-device-type');
-                    $(".pipe").css('visibility', 'hidden');
-                    $(".pipe[data-device-type-" + deviceType + "]").css('visibility', 'visible');
-                    $(".pipe[data-device-type=" + deviceType + "]").css('visibility', 'visible');
+                    _setPipeVisibilityForType(this);
                 });
 
-                $("#category-popup").on("click", function (event) {
-                    if ($(event.target).closest('#showNextFieldBtn').length > 0) {
-                        // Show the next hidden display item.
-                        var hiddenElems = $('[data-display-item]').filter(":hidden"),
-                            visibleElems = $('[data-display-item]').filter(":visible");
-                        if (hiddenElems.length < $('[data-display-item]').length) {
-                            $(hiddenElems[0]).show();
-                        }
-                        if (visibleElems.length + 1 < $('[data-display-item]').length) {
-                            $('#showNextDiv').show();
-                        } else {
-                            $('#showNextDiv').hide();
-                        }
+                // Show the next hidden display item.
+                $(document).on('click', '.js-show-next', function (event) {
+
+                    var btn = $(this),
+                        hiddenElems = $('[data-display-item]').filter(":hidden"),
+                        container = btn.closest('.ui-dialog-content');
+
+                    if (! container.length) { container = $('html'); }
+
+                    hiddenElems.first().slideDown(200);
+                    container.scrollTo(btn, 100);
+
+                    if (hiddenElems.length > 1) {
+                        $('.js-show-next').show();
+                    } else {
+                        $('.js-show-next').hide();
                     }
                 });
 
-                // Find the first type and select his categories
-                pipe = $(".pipe").get(0);
-                if (pipe) {
-                    deviceType = pipe.attributes["data-device-type"].value;
-                    $('.pipe[data-device-type-' + deviceType + ']').css('visibility', 'visible');
-                    $(pipe).css('visibility', 'visible');
-                }
             },
 
             changeOut : function (type) {
