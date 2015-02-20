@@ -2,7 +2,6 @@ package com.cannontech.amr.meter.dao;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.amr.meter.model.SimpleMeter;
@@ -12,6 +11,7 @@ import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.service.impl.PaoLoader;
+import com.google.common.collect.ListMultimap;
 
 public interface MeterDao {
     
@@ -54,9 +54,9 @@ public interface MeterDao {
     List<YukonMeter> getMetersForMeterNumbers(List<String> meterNumbers);
     
     /**
-     * Returns a map of <MeterNumber, YukonMeter> objects.
+     * Returns a multimap of <MeterNumber, YukonMeter> objects.
      */
-    Map<String, YukonMeter> getMetersMapForMeterNumbers(final List<String> meterNumbers);
+    ListMultimap<String, YukonMeter> getMetersMapForMeterNumbers(final List<String> meterNumbers);
     
     Comparator<YukonMeter> getMeterComparator();
     

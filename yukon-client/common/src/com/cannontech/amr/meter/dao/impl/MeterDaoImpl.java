@@ -46,7 +46,9 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.util.NaturalOrderComparator;
 import com.google.common.base.Function;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -341,14 +343,13 @@ public class MeterDaoImpl implements MeterDao {
     }
     
     @Override
-    public Map<String, YukonMeter> getMetersMapForMeterNumbers(final List<String> meterNumbers) {
+    public ListMultimap<String, YukonMeter> getMetersMapForMeterNumbers(final List<String> meterNumbers) {
         List<YukonMeter> meters = getMetersForMeterNumbers(meterNumbers);
-        return Maps.uniqueIndex(meters, new Function<YukonMeter, String>() {
-            @Override
-            public String apply(YukonMeter meter) {
-                return meter.getMeterNumber();
-            }
-        });
+        ListMultimap<String, YukonMeter> metersMap = ArrayListMultimap.create();
+        for (YukonMeter yukonMeter : meters) {
+            metersMap.put(yukonMeter.getMeterNumber(), yukonMeter);
+        }
+        return metersMap;
     }
 
     @Override

@@ -161,6 +161,7 @@ import com.google.common.collect.ImmutableMultimap.Builder;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.MapMaker;
 import com.google.common.collect.Maps;
@@ -459,11 +460,12 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         List<YukonMeter> rfnPaosToPing = Lists.newArrayList();
         List<CommandRequestDevice> plcCommandRequests = Lists.newArrayList();
         
-        Map<String, YukonMeter> meterNumberToMeterMap = meterDao.getMetersMapForMeterNumbers(Lists.newArrayList(meterNumbers));
+        ListMultimap<String, YukonMeter> meterNumberToMeterMap = meterDao.getMetersMapForMeterNumbers(Lists.newArrayList(meterNumbers));
         boolean excludeDisabled = globalSettingDao.getBoolean(GlobalSettingType.MSP_EXCLUDE_DISABLED_METERS);
 
         for (String meterNumber : meterNumbers) {
-                YukonMeter meter = meterNumberToMeterMap.get(meterNumber);
+            List<YukonMeter> meters = meterNumberToMeterMap.get(meterNumber);    // this will most likely be size 1
+            for (YukonMeter meter : meters) {
                 if (meter == null) {
                     multispeakEventLogService.meterNotFound(meterNumber, "initiateOutageDetectionEventRequest", mspVendor.toString());
                     ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "ODEvent", mspVendor.getCompanyName());
@@ -494,6 +496,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                                                                   "Meter", "ODEvent", mspVendor.getCompanyName());
                     errorObjects.add(err);
                 }
+            }
         }
 
         // perform read attribute(?) on list of meters
@@ -745,27 +748,27 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         log.info("Received " + meterNumbers.length + " Meter(s) for MeterReading from " + mspVendor.getCompanyName());
         multispeakEventLogService.initiateMeterReadRequest(meterNumbers.length, "initiateMeterReadByMeterNumber", mspVendor.getCompanyName());
         List<YukonMeter> allPaosToRead = Lists.newArrayListWithCapacity(meterNumbers.length);
-        Map<String, YukonMeter> meterNumberToMeterMap = meterDao.getMetersMapForMeterNumbers(Lists.newArrayList(meterNumbers));
+        ListMultimap<String, YukonMeter> meterNumberToMeterMap = meterDao.getMetersMapForMeterNumbers(Lists.newArrayList(meterNumbers));
         boolean excludeDisabled = globalSettingDao.getBoolean(GlobalSettingType.MSP_EXCLUDE_DISABLED_METERS);
         
-        
         for (String meterNumber : meterNumbers) {
-
-            YukonMeter meter = meterNumberToMeterMap.get(meterNumber);
-            if (meter == null) {
-                multispeakEventLogService.meterNotFound(meterNumber, "initiateMeterReadByMeterNumber", mspVendor.getCompanyName());
-                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "MeterReadEvent", mspVendor.getCompanyName());
-                errorObjects.add(err);
-                continue;
+            List<YukonMeter> meters = meterNumberToMeterMap.get(meterNumber);    // this will most likely be size 1
+            for (YukonMeter meter : meters) {
+                if (meter == null) {
+                    multispeakEventLogService.meterNotFound(meterNumber, "initiateMeterReadByMeterNumber", mspVendor.getCompanyName());
+                    ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "MeterReadEvent", mspVendor.getCompanyName());
+                    errorObjects.add(err);
+                    continue;
+                }
+    
+                if (excludeDisabled && meter.isDisabled()) {
+                    log.debug("Meter " + meter.getMeterNumber() + " is disabled, skipping.");
+                    continue;
+                }
+    
+                allPaosToRead.add(meter);
+                multispeakEventLogService.initiateMeterRead(meterNumber, meter, transactionID, "initiateMeterReadByMeterNumber", mspVendor.getCompanyName());
             }
-
-            if (excludeDisabled && meter.isDisabled()) {
-                log.debug("Meter " + meter.getMeterNumber() + " is disabled, skipping.");
-                continue;
-            }
-
-            allPaosToRead.add(meter);
-            multispeakEventLogService.initiateMeterRead(meterNumber, meter, transactionID, "initiateMeterReadByMeterNumber", mspVendor.getCompanyName());
         }
 
 
