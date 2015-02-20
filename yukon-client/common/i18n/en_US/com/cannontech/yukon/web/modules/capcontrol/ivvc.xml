@@ -186,7 +186,7 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseA">#993333</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseB">#2929FF</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseC">#006600</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorNoPhase">#000000</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseALL">#000000</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneTransitionDataLabel">{description}</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.showZoneTransitionText.busGraph">true</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.showZoneTransitionText.zoneGraph">false</entry>

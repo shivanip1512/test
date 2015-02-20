@@ -235,7 +235,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         
         Map<Phase, String> phaseStringMap = Maps.newHashMapWithExpectedSize(3);
         Map<Phase, String> zoneLineColorPhaseMap = Maps.newHashMapWithExpectedSize(3);
-        for (Phase phase : Phase.getRealPhases()) {
+        for (Phase phase : Phase.values()) {
             String phaseString = messageSourceAccessor.getMessage("yukon.common.phase");
             phaseString += " " + messageSourceAccessor.getMessage(phase);
             phaseStringMap.put(phase, phaseString);
@@ -244,7 +244,6 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         }
 
         String zoneTransitionDataLabel = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneTransitionDataLabel");
-        String zoneLineColorNoPhase = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorNoPhase");
         boolean showZoneTransitionTextBusGraph = Boolean.valueOf(messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.showZoneTransitionText.busGraph"));
         boolean showZoneTransitionTextZoneGraph = Boolean.valueOf(messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.showZoneTransitionText.zoneGraph"));
         String graphTitle = name + " " + graphWidgetLabel;
@@ -258,7 +257,6 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
                                 graphWidgetLabel,
                                 phaseStringMap,
                                 zoneLineColorPhaseMap,
-                                zoneLineColorNoPhase,
                                 showZoneTransitionTextBusGraph,
                                 showZoneTransitionTextZoneGraph,
                                 zoneTransitionDataLabel,
@@ -501,8 +499,8 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         if (haveShownLine == false && !phaseAPoints.isEmpty()) {
             //Using phase A points here since all three phases contain our "no phase" points
             Collections.sort(phaseAPoints, positionOrderer);
-            VfLineSettings noPhaseLineSettings = getNoPhaseLineSetting(settings);
-            String phaseString="ALL";
+            VfLineSettings noPhaseLineSettings = getLineSettingsForPhase(settings, Phase.ALL);
+            String phaseString = settings.getPhaseString(Phase.ALL);
             VfLine noPhaseLine = new VfLine(graphId.getAndIncrement(), phaseString, zone.getName(), null, 
                                             noPhaseLineSettings, phaseAPoints);
             lines.add(noPhaseLine);
@@ -616,13 +614,6 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         return lineSettings;
     }
     
-    private VfLineSettings getNoPhaseLineSetting(VfGraphSettings settings) {
-        String zoneLineColorNoPhase = settings.getZoneLineColorNoPhase();
-        VfLineSettings lineSetting = new VfLineSettings(zoneLineColorNoPhase, 
-                                                        true, true, true, false, true);
-        return lineSetting;
-    }
-
 	public double getUpperVoltLimitForSubBus(CapControlCache cache, int subBusId) {
     	CapControlStrategy strategy = strategyDao.getForId(cache.getSubBus(subBusId).getStrategyId());
         double yUpper = Double.parseDouble(TargetSettingType.UPPER_VOLT_LIMIT.getDefaultValue());
