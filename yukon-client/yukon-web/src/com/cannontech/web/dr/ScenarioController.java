@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -44,6 +45,7 @@ import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.AssetAvailabilityDetails;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityPingService;
 import com.cannontech.dr.filter.AuthorizedFilter;
+import com.cannontech.dr.filter.NameFilter;
 import com.cannontech.dr.program.filter.ForScenarioFilter;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
 import com.cannontech.dr.scenario.service.ScenarioService;
@@ -71,6 +73,7 @@ public class ScenarioController extends DemandResponseControllerBase {
     @RequestMapping("/scenario/list")
     public String list(ModelMap model,
             @DefaultItemsPerPage(25) PagingParameters paging,
+            String name,
             YukonUserContext userContext) {
         
         List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
@@ -78,16 +81,22 @@ public class ScenarioController extends DemandResponseControllerBase {
         filters.add(new AuthorizedFilter<DisplayablePao>(paoAuthorizationService, 
                                          userContext.getYukonUser(),
                                          Permission.LM_VISIBLE));
-
+        
+        if (StringUtils.isNotEmpty(name)) {
+            filters.add(new NameFilter(name));
+        }
+        
         // Sorting - name is default sorter
         Comparator<DisplayablePao> sorter = new DisplayablePaoComparator();
         UiFilter<DisplayablePao> uifilter = UiFilterList.wrap(filters);
         SearchResults<DisplayablePao> scenarios =
             scenarioService.filterScenarios(userContext, uifilter, sorter, 
                     paging.getStartIndex(), paging.getItemsPerPage());
-
+        
         model.addAttribute("scenarios", scenarios);
-
+        model.addAttribute("paging", paging);
+        model.addAttribute("name", name);
+        
         return "dr/scenario/list.jsp";
     }
 

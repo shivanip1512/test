@@ -101,7 +101,7 @@ public class ControlAreaController extends DemandResponseControllerBase {
         private String name;
         private String state;
         private IntegerRange priority = new IntegerRange();
-
+        
         public String getName() {
             return name;
         }
@@ -113,21 +113,21 @@ public class ControlAreaController extends DemandResponseControllerBase {
         public String getState() {
             return state;
         }
-
+        
         public void setState(String state) {
             this.state = state;
         }
-
+        
         public IntegerRange getPriority() {
             return priority;
         }
-
+        
         public void setPriority(IntegerRange priority) {
             this.priority = priority;
         }
-
+        
     }
-
+    
     private SimpleValidator<ControlAreaFilter> filterValidator =
         new SimpleValidator<ControlAreaFilter>(ControlAreaFilter.class) {
             @Override
