@@ -183,7 +183,7 @@ public class JobManagerImpl implements JobManager {
     @Override
     public List<ScheduledRepeatingJob> getNotDeletedRepeatingJobsByDefinition(
             YukonJobDefinition<? extends YukonTask> definition) {
-        Set<ScheduledRepeatingJob> jobsNotDeleted= scheduledRepeatingJobDao.getJobsByDefinition(definition);
+        Set<ScheduledRepeatingJob> jobsNotDeleted = scheduledRepeatingJobDao.getJobsByDefinition(definition);
         return Lists.newArrayList(jobsNotDeleted);
     }
 
