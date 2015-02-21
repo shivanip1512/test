@@ -17,6 +17,7 @@ public class VfGraphSettings {
 	private String graphWidgetName;
     private Map<Phase, String> phaseStringMap;
     private Map<Phase, String> phaseZoneLineColorMap;
+    private String zoneLineColorNoPhase;
     private boolean showZoneTransitionTextBusGraph;
     private boolean showZoneTransitionTextZoneGraph;
     private String zoneTransitionDataLabel;
@@ -28,7 +29,7 @@ public class VfGraphSettings {
                            String yAxisLabel, String xAxisLabel,
                            String graphTitle, String graphWidgetName,
                            Map<Phase, String> phaseStringMap,
-                           Map<Phase, String> phaseZoneLineColorMap,
+                           Map<Phase, String> phaseZoneLineColorMap, String zoneLineColorNoPhase,
                            boolean showZoneTransitionTextBusGraph,
                            boolean showZoneTransitionTextZoneGraph, String zoneTransitionDataLabel,
                            String balloonDistanceText) {
@@ -40,6 +41,7 @@ public class VfGraphSettings {
         this.graphWidgetName = graphWidgetName;
         this.phaseStringMap = phaseStringMap;
         this.phaseZoneLineColorMap = phaseZoneLineColorMap;
+        this.zoneLineColorNoPhase = zoneLineColorNoPhase;
         this.showZoneTransitionTextBusGraph = showZoneTransitionTextBusGraph;
         this.showZoneTransitionTextZoneGraph = showZoneTransitionTextZoneGraph;
         this.zoneTransitionDataLabel = zoneTransitionDataLabel;
@@ -132,6 +134,14 @@ public class VfGraphSettings {
 
     public void setPhaseZoneLineColorMap(Map<Phase, String> phaseZoneLineColorMap) {
         this.phaseZoneLineColorMap = phaseZoneLineColorMap;
+    }
+
+    public String getZoneLineColorNoPhase() {
+        return zoneLineColorNoPhase;
+    }
+
+    public void setZoneLineColorNoPhase(String zoneLineColorNoPhase) {
+        this.zoneLineColorNoPhase = zoneLineColorNoPhase;
     }
 
     public boolean isShowZoneTransitionTextBusGraph() {
