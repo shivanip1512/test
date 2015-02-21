@@ -12,7 +12,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
  * 1        Premise #                           5       1       5
  * 2        Service #           Leading Zero    3       6       8
  * 3        Blanks                              21      9       29
- * 4        Customer Meter Number               21      30      50
+ * 4        Customer Meter Number Lagging Space 21      30      50
  * 5        Reading             Leading Zero    9       51      59
  * 6        Filler "00"                         2       60      61
  * 7        Date                YYMMDD          6       62      67
@@ -20,7 +20,10 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
  * 9        Blanks                              4       74      77
  * 10       Route #             Leading Zero    6       78      83
  * 11       Scat #              Leading Zero    2       84      85
- * 12       Blanks                              47      86      132
+ * 12       Blanks                              10      86      95
+ * 13       Premise # (repeated)                5       96      100
+ * 14       Service # (repeated)                3       101     103
+ * 15       Blanks                              29      104      132
  */
 public class BannerRecord implements BillingRecordBase {
     
@@ -55,7 +58,10 @@ public class BannerRecord implements BillingRecordBase {
         writeToFile.append(StringUtils.leftPad("", 4));    // length 4, blanks
         writeToFile.append(StringUtils.leftPad(getBannerData().getRouteNumber(),  6, '0'));    //length 6, pad 0
         writeToFile.append(StringUtils.leftPad(String.valueOf(getBannerData().getScatNumber()),  2, '0'));    //length 2, pad 0
-        writeToFile.append(StringUtils.leftPad("", 46));    // length 47, blanks // NOTE: Using 46 as length because the \r\n line separator is adding one to the total length
+        writeToFile.append(StringUtils.leftPad("", 10));    // length 10, blanks
+        writeToFile.append(StringUtils.leftPad(getBannerData().getPremiseNumber(),  5)); // length 5, pad spaces
+        writeToFile.append(StringUtils.leftPad(getBannerData().getServiceNumber(),  3, '0'));    //length 3, pad 0
+        writeToFile.append(StringUtils.leftPad("", 28));    // length 28, blanks // NOTE: Using 28 as length because the \r\n line separator is adding one to the total length
         writeToFile.append(System.getProperty("line.separator"));
         return writeToFile.toString();
     }
