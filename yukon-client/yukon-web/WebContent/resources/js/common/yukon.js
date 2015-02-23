@@ -348,7 +348,7 @@ yukon.ui = (function () {
                     if (!form.is('form')) form = dialog.find('form');
                     form.submit();
                 } else {
-                    target.trigger(defaults.event);
+                    $(target).trigger(defaults.event);
                 }
             };
             

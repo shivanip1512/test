@@ -137,12 +137,12 @@ yukon.dataExporter = (function () {
             });
             $('#b-create').click(function(ev) {
                 
-                var buttons = [{text: _config.text.create, 
+                var buttons = [{text: _config.text.cancel, click: function() { $(this).dialog('close'); }},
+                               {text: _config.text.create, 
                                     click: function() {
                                         window.location.href = 'format/create?formatType=' + $('input[name=newFormatType]:checked').val();
                                     },
-                                    'class': 'primary action'},
-                                {text: _config.text.cancel, click: function() { $(this).dialog('close'); }}
+                                    'class': 'primary action'}
                                ];
                 
                 $('#create-format-dialog').dialog({
