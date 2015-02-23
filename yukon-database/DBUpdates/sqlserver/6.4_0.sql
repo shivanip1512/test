@@ -147,6 +147,12 @@ GO
 sp_rename 'FK_CAPCONTR_SWPTID', 'FK_CapContrSubBus_Point_Switch', 'OBJECT';
 /* End YUK-12968 */
 
+/* Start YUK-14083 */
+/* @error ignore-begin */
+INSERT INTO YukonRoleProperty VALUES(-21403, -214, 'Infrastructure View', 'false', 'Controls the ability to view infrastructure devices. i.e. RF Gateways.');
+/* @error ignore-end */
+/* End YUK-14083 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

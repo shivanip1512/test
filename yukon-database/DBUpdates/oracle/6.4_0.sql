@@ -111,6 +111,12 @@ ALTER TABLE TemplateColumns    RENAME CONSTRAINT SYS_C0013429 TO FK_TemplateColu
 ALTER TABLE TemplateColumns    RENAME CONSTRAINT SYS_C0013430 TO FK_TemplateColumns_ColumnType;
 /* End YUK-12968 */
 
+/* Start YUK-14083 */
+/* @error ignore-begin */
+INSERT INTO YukonRoleProperty VALUES(-21403, -214, 'Infrastructure View', 'false', 'Controls the ability to view infrastructure devices. i.e. RF Gateways.');
+/* @error ignore-end */
+/* End YUK-14083 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
