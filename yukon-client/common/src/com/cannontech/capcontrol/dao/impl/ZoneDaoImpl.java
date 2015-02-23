@@ -97,6 +97,9 @@ public class ZoneDaoImpl implements ZoneDao {
             regulatorToZone.setRegulatorId(rs.getInt("RegulatorId"));
             regulatorToZone.setZoneId(rs.getInt("ZoneId"));
             regulatorToZone.setPhase(rs.getEnum("Phase", Phase.class));
+            if (regulatorToZone.getPhase() == null) {
+                regulatorToZone.setPhase(Phase.ALL);
+            }
 
             return regulatorToZone;
         }

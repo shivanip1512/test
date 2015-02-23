@@ -502,7 +502,9 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
             //Using phase A points here since all three phases contain our "no phase" points
             Collections.sort(phaseAPoints, positionOrderer);
             VfLineSettings noPhaseLineSettings = getNoPhaseLineSetting(settings);
-            VfLine noPhaseLine = new VfLine(graphId.getAndIncrement(), null, zone.getName(), null, 
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            String allPhases = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.zoneDetail.phase.allPhases");
+            VfLine noPhaseLine = new VfLine(graphId.getAndIncrement(), allPhases, zone.getName(), Phase.ALL, 
                                             noPhaseLineSettings, phaseAPoints);
             lines.add(noPhaseLine);
         }
