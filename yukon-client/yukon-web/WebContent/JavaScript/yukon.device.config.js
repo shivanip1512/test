@@ -227,7 +227,7 @@ yukon.deviceConfig = (function () {
             var deviceType = $(elem).data('deviceType');
 
             $('.pipe').css('visibility', 'hidden');
-            $('.pipe[data-device-type-"' + deviceType + '"]').css('visibility', 'visible');
+            $('.pipe[data-device-type="' + deviceType + '"]').css('visibility', 'visible');
         },
 
 
