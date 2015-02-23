@@ -330,4 +330,11 @@
     <category type="demandFreeze">
         <integer field="demandFreezeDay" default="0" minValue="0" maxValue="32"/>
     </category>
+
+    <category type="regulatorCategory">
+        <float field="voltageChangePerTap" default="0.75" minValue="0" />
+        <enum field="voltageControlMode" type="VoltageControlMode" />
+        <float field="heartbeatPeriod" default="0" minValue="0" />
+        <float field="heartbeatValue" default="0" minValue="0" />
+    </category>
 </deviceConfigurationCategories>

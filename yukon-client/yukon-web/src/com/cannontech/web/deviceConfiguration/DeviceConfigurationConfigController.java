@@ -509,6 +509,7 @@ public class DeviceConfigurationConfigController {
         List<PaoType> rtus = new ArrayList<>();
         List<PaoType> meters = new ArrayList<>();
         List<PaoType> cbcs = new ArrayList<>();
+        List<PaoType> regulators = new ArrayList<>();
         for (PaoType paoType : backingBean.getSupportedTypes().keySet()) {
             if (paoType.isRtu()) {
                 rtus.add(paoType);
@@ -516,6 +517,8 @@ public class DeviceConfigurationConfigController {
                 meters.add(paoType);
             } else if (paoType.isCbc()) {
                 cbcs.add(paoType);
+            } else if (paoType.isRegulator()) {
+                regulators.add(paoType);
             } else {
                 log.error("Invalid paoType " + paoType + " received for device configuration");
             }
@@ -524,10 +527,12 @@ public class DeviceConfigurationConfigController {
         Collections.sort(meters, paoTypeAlphaComparator);
         Collections.sort(cbcs, paoTypeAlphaComparator);
         Collections.sort(rtus, paoTypeAlphaComparator);
+        Collections.sort(regulators, paoTypeAlphaComparator);
         
         model.addAttribute("meters", meters);
         model.addAttribute("cbcs", cbcs);
         model.addAttribute("rtus", rtus);
+        model.addAttribute("regulators", regulators);
     }
     
     /**

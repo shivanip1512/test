@@ -98,6 +98,9 @@
     <entry key="yukon.web.modules.tools.configs.enum.reconnectType.arm">Arm</entry>
     <entry key="yukon.web.modules.tools.configs.enum.reconnectType.immediate">Immediate</entry>
 
+    <entry key="yukon.web.modules.tools.configs.enum.voltageControlMode.DIRECT_TAP">Direct Tap</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.voltageControlMode.SET_POINT">Set Point</entry>
+
     <!-- Configuration Category Messages -->
     <entry key="yukon.web.modules.tools.configs.category.timeZone.title">MCT Time Zone</entry>
     <entry key="yukon.web.modules.tools.configs.category.timeZone.definition">Time zone used for local time calculations, such as TOU and midnight kWh reads.</entry>
@@ -477,6 +480,15 @@
     <entry key="yukon.web.modules.tools.configs.category.rfnTempAlarm.temperatureAlarmRepeatCount">Temperature Alarm Repeat Count</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnTempAlarm.temperatureAlarmRepeatCount.description">The number of times the RFN device will report an alarm whose state has not changed.</entry>
 
+    <entry key="yukon.web.modules.tools.configs.category.regulatorCategory.title">Regulator Category</entry>
+    <entry key="yukon.web.modules.tools.configs.category.regulatorCategory.definition">Regulator Category Definition</entry>
+    <entry key="yukon.web.modules.tools.configs.category.regulatorCategory.voltageChangePerTap">Volt Change Per Tap</entry>
+    <entry key="yukon.web.modules.tools.configs.category.regulatorCategory.voltageControlMode">Control Mode</entry>
+    <entry key="yukon.web.modules.tools.configs.category.regulatorCategory.heartbeatPeriod">Heartbeat Period</entry>
+    <entry key="yukon.web.modules.tools.configs.category.regulatorCategory.heartbeatPeriod.description">The frequency (in seconds) to send the heartbeat message</entry>
+    <entry key="yukon.web.modules.tools.configs.category.regulatorCategory.heartbeatValue">Heartbeat Value</entry>
+    <entry key="yukon.web.modules.tools.configs.category.regulatorCategory.heartbeatValue.description">The value to send to the device for its heartbeat countdown</entry>
+
     <!-- general entries -->
     <entry key="yukon.web.modules.tools.configs.errorsExist">Errors exist in the submitted form. Please correct the problem(s) and submit again.</entry>
     <entry key="yukon.web.modules.tools.configs.noSelectedTypes">At least one device type must be selected.</entry>    
@@ -587,4 +599,5 @@
     <entry key="yukon.web.modules.tools.configs.config.meter.title">Meter</entry>
     <entry key="yukon.web.modules.tools.configs.config.rtu.title">RTU</entry>
     <entry key="yukon.web.modules.tools.configs.config.cbc.title">Cap Bank Controller</entry>
+    <entry key="yukon.web.modules.tools.configs.config.regulator.title">Regulator</entry>
 </properties>

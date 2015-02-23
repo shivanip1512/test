@@ -368,6 +368,12 @@
         </configuration>
     </pao>
 
+    <pao id="REGULATOR_CONFIGURATION" abstract="true">
+        <configuration>
+            <category type="regulatorCategory" />
+        </configuration>
+    </pao>
+
     <!-- MCT BASE -->
     <pao id="MCT_BASE" abstract="true"
         inherits="OUTAGE_STATUS_BASE, SUPPORTS_COMMANDER_REQUESTS_TAG">
@@ -11438,10 +11444,11 @@
         </points>
     </pao>
 
-    <pao id="VOLTAGE_REGULATOR" abstract="true">
+    <pao id="VOLTAGE_REGULATOR" abstract="true" inherits="REGULATOR_CONFIGURATION">
         <displayGroup>Volt/Var</displayGroup>
         <tags>
             <tag name="VOLTAGE_REGULATOR" />
+            <tag name="DEVICE_CONFIGURATION" />
         </tags>
     </pao>
 

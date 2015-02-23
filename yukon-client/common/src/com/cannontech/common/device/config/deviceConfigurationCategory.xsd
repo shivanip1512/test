@@ -30,6 +30,7 @@
             <xs:enumeration value="mctDisconnectConfiguration"/>
             <xs:enumeration value="rfnOvUv"/>
             <xs:enumeration value="rfnTempAlarm"/>
+            <xs:enumeration value="regulatorCategory"/>
         </xs:restriction>
     </xs:simpleType>
 

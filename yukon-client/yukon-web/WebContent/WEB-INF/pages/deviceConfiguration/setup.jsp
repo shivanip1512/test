@@ -79,6 +79,17 @@
                         </div>
                     </div>
                 </tags:sectionContainer2>
+                <tags:sectionContainer2 nameKey="regulator" styleClass="stacked">
+                    <c:forEach items="${regulators}" var="regulator" varStatus="status">
+                        <div class="category">
+                            <label>
+                                <c:set var="disabled" value="${deviceConfigTypes.supportedTypes[regulator]}"/>
+                                <tags:checkbox path="supportedTypes[${regulator}]" disabled="${disabled}"/>
+                                <span class="checkBoxLabel"><i:inline key="${regulator}"/></span>
+                            </label>
+                        </div>
+                    </c:forEach>
+                </tags:sectionContainer2>
             </div>
             <div class="column three nogutter">
                 <tags:sectionContainer2 nameKey="cbc" styleClass="stacked">

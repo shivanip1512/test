@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="mctDisconnectConfiguration"/>
  *     &lt;enumeration value="rfnOvUv"/>
  *     &lt;enumeration value="rfnTempAlarm"/>
+ *     &lt;enumeration value="regulatorCategory"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -100,7 +101,9 @@ public enum CategoryType {
     @XmlEnumValue("rfnOvUv")
     RFN_OV_UV("rfnOvUv"),
     @XmlEnumValue("rfnTempAlarm")
-    RFN_TEMP_ALARM("rfnTempAlarm");
+    RFN_TEMP_ALARM("rfnTempAlarm"),
+    @XmlEnumValue("regulatorCategory")
+    REGULATOR_CATEGORY("regulatorCategory");
     private final String value;
 
     CategoryType(String v) {

@@ -93,6 +93,7 @@
             <xs:enumeration value="ReadType"/>
             <xs:enumeration value="RecordingInterval"/>
             <xs:enumeration value="ReportingInterval"/>
+            <xs:enumeration value="VoltageControlMode"/>
         </xs:restriction>
     </xs:simpleType>
 
