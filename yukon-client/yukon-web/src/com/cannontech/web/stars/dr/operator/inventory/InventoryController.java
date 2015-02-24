@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -88,10 +89,16 @@ public class InventoryController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @RequestMapping(value = "view", params = {"deviceId"})
-    public String viewByDeviceId(ModelMap model, YukonUserContext context, int deviceId) {
+    public String viewByDeviceId(ModelMap model, YukonUserContext context, int deviceId ,FlashScope flashScope) {
         model.addAttribute("mode", PageEditMode.VIEW);
-        InventoryIdentifier inventory = inventoryDao.getYukonInventoryForDeviceId(deviceId);
-        int inventoryId = inventory.getInventoryId();
+        InventoryIdentifier inventory = null;
+		try {
+			inventory = inventoryDao.getYukonInventoryForDeviceId(deviceId);
+		} catch (EmptyResultDataAccessException e) {
+			flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.error.notFound.inventoryId"));
+			return "operator/inventory/inventory.jsp";
+		}
+		int inventoryId = inventory.getInventoryId();
         int accountId = inventoryDao.getAccountIdForInventory(inventoryId);
         if (accountId > 0) {
             model.addAttribute("inventoryId", inventoryId);

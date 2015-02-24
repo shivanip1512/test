@@ -3,13 +3,11 @@ package com.cannontech.web.common.pao.service;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -17,7 +15,7 @@ import com.google.common.collect.ImmutableMap.Builder;
 public class PaoDetailUrlHelper {
     
     @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private InventoryDao inventoryDao;
+    
     private static Map<PaoTag, Function<YukonPao, String>> supportDeviceUrlPatterns;
     private static Map<PaoTag, String> supportDevicePageNames;
     
@@ -96,21 +94,14 @@ public class PaoDetailUrlHelper {
             return "/stars/gateways/" + pao.getPaoIdentifier().getPaoId();
         }
         
-        // Check device url pattern map and also check inventory id for RFN-LCR device.
-        // There is no inventory Id for RFN-LCR template so disable the link
+        // Check device url pattern map
         for (Map.Entry<PaoTag, Function<YukonPao, String>> entry : supportDeviceUrlPatterns.entrySet()) {
             if (paoDefinitionDao.isTagSupported(type, entry.getKey())) {
-                if (type == PaoType.LCR6200_RFN || type == PaoType.LCR6600_RFN) {
-                    try {
-                        inventoryDao.getYukonInventoryForDeviceId(pao.getPaoIdentifier().getPaoId());
-                    } catch (EmptyResultDataAccessException e) {
-                        return null;
-                    }
-                }
                 String url = entry.getValue().apply(pao);
                 return url;
             }
         }
+
         // No url builder found, return null
         return null;
     }

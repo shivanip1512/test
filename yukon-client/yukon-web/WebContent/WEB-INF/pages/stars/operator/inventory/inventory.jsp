@@ -16,7 +16,7 @@
     <cti:displayForPageEditModes modes="CREATE">
         <cti:url value="/stars/operator/inventory/create" var="action"/>
     </cti:displayForPageEditModes>
-
+ <c:if test="${not empty hardware}">
     <div class="column-12-12">
         <div class="column one">
             <%@ include file="../hardware/hardwareInfo.jspf" %>
@@ -28,7 +28,7 @@
             </div>
         </cti:displayForPageEditModes>
     </div>
-    
+ </c:if>   
 
     <cti:displayForPageEditModes modes="VIEW">
         <cti:checkRolesAndProperties value="${editingRoleProperty}">
