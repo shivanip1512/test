@@ -128,14 +128,10 @@ public class SCADAServiceEndpoint {
     PingURLResponse pingURL() throws MultispeakWebServiceException {
         PingURLResponse response = objectFactory.createPingURLResponse();
 
-        ErrorObject[] errorObjects = scada_Server.pingURL();
+        ErrorObject errorObject = scada_Server.pingURL();
+        
         ArrayOfErrorObject arrOfErrorObj = objectFactory.createArrayOfErrorObject();
-
-        List<ErrorObject> errorObjList = arrOfErrorObj.getErrorObject();
-
-        for (ErrorObject errorObject : errorObjects) {
-            errorObjList.add(errorObject);
-        }
+        arrOfErrorObj.getErrorObject().add(errorObject);
         response.setPingURLResult(arrOfErrorObj);
         return response;
     }
@@ -144,14 +140,10 @@ public class SCADAServiceEndpoint {
     public @ResponsePayload
     GetMethodsResponse getMethods() throws MultispeakWebServiceException {
         GetMethodsResponse response = objectFactory.createGetMethodsResponse();
-
-        String[] methods = scada_Server.getMethods();
+        List<String> methods = scada_Server.getMethods();
+        
         ArrayOfString stringArray = objectFactory.createArrayOfString();
-        List<String> methodNameList = stringArray.getString();
-
-        for (String methodName : methods) {
-            methodNameList.add(methodName);
-        }
+        stringArray.getString().addAll(methods);
         response.setGetMethodsResult(stringArray);
         return response;
     }
@@ -161,13 +153,12 @@ public class SCADAServiceEndpoint {
     GetAllSCADAAnalogsResponse getAllSCADAAnalogs(@RequestPayload GetAllSCADAAnalogs getAllSCADAAnalogs)
             throws MultispeakWebServiceException {
         GetAllSCADAAnalogsResponse response = objectFactory.createGetAllSCADAAnalogsResponse();
+        
         String lastReceived = getAllSCADAAnalogs.getLastReceived();
-        ScadaAnalog[] scadaAnalog = scada_Server.getAllSCADAAnalogs(lastReceived);
+        List<ScadaAnalog> scadaAnalogs = scada_Server.getAllSCADAAnalogs(lastReceived);
+        
         ArrayOfScadaAnalog arrayOfScadaAnalog = objectFactory.createArrayOfScadaAnalog();
-        List<ScadaAnalog> scadaAnalogList = arrayOfScadaAnalog.getScadaAnalog();
-        for (ScadaAnalog scdAnalog : scadaAnalog) {
-            scadaAnalogList.add(scdAnalog);
-        }
+        arrayOfScadaAnalog.getScadaAnalog().addAll(scadaAnalogs);
         response.setGetAllSCADAAnalogsResult(arrayOfScadaAnalog);
         return response;
     }
@@ -176,12 +167,9 @@ public class SCADAServiceEndpoint {
     public @ResponsePayload
     GetDomainNamesResponse getDomainNames() throws MultispeakWebServiceException {
         GetDomainNamesResponse response = objectFactory.createGetDomainNamesResponse();
-        String[] domainResult = scada_Server.getDomainNames();
+        List<String> domains = scada_Server.getDomainNames();
         ArrayOfString domainArray = objectFactory.createArrayOfString();
-        List<String> domainList = domainArray.getString();
-        for (String domain : domainResult) {
-            domainList.add(domain);
-        }
+        domainArray.getString().addAll(domains);
         response.setGetDomainNamesResult(domainArray);
         return response;
     }
@@ -191,13 +179,10 @@ public class SCADAServiceEndpoint {
     GetDomainMembersResponse getDomainMembers(@RequestPayload GetDomainMembers getDomainMembers)
             throws MultispeakWebServiceException {
         GetDomainMembersResponse response = objectFactory.createGetDomainMembersResponse();
-        DomainMember[] domainMemberResult = scada_Server.getDomainMembers(getDomainMembers.getDomainName());
+        List<DomainMember> domainMembers = scada_Server.getDomainMembers(getDomainMembers.getDomainName());
+        
         ArrayOfDomainMember domainMemberArray = objectFactory.createArrayOfDomainMember();
-        List<DomainMember> domainMemberList = domainMemberArray.getDomainMember();
-
-        for (DomainMember domMember : domainMemberResult) {
-            domainMemberList.add(domMember);
-        }
+        domainMemberArray.getDomainMember().addAll(domainMembers);
         response.setGetDomainMembersResult(domainMemberArray);
         return response;
     }
@@ -216,7 +201,7 @@ public class SCADAServiceEndpoint {
     RegisterForServiceResponse registerForService(@RequestPayload RegisterForService registerForService)
             throws MultispeakWebServiceException {
         RegisterForServiceResponse response = objectFactory.createRegisterForServiceResponse();
-        ErrorObject[] errorObj = scada_Server.registerForService(registerForService.getRegistrationDetails());
+        List<ErrorObject> errorObj = scada_Server.registerForService(registerForService.getRegistrationDetails());
         ArrayOfErrorObject arrayOfErrorObj = multispeakFuncs.toArrayOfErrorObject(errorObj);
         response.setRegisterForServiceResult(arrayOfErrorObj);
         return response;
@@ -228,7 +213,7 @@ public class SCADAServiceEndpoint {
     UnregisterForServiceResponse unregisterForService(@RequestPayload UnregisterForService unregisterForService)
             throws MultispeakWebServiceException {
         UnregisterForServiceResponse response = objectFactory.createUnregisterForServiceResponse();
-        ErrorObject[] errorObj = scada_Server.unregisterForService(unregisterForService.getRegistrationID());
+        List<ErrorObject> errorObj = scada_Server.unregisterForService(unregisterForService.getRegistrationID());
         ArrayOfErrorObject arrayOfErrorObj = multispeakFuncs.toArrayOfErrorObject(errorObj);
         response.setUnregisterForServiceResult(arrayOfErrorObj);
         return response;
@@ -240,8 +225,7 @@ public class SCADAServiceEndpoint {
     GetRegistrationInfoByIDResponse getRegistrationInfoByID(
             @RequestPayload GetRegistrationInfoByID getRegistrationInfoByID) throws MultispeakWebServiceException {
         GetRegistrationInfoByIDResponse response = objectFactory.createGetRegistrationInfoByIDResponse();
-        RegistrationInfo regInfoResult =
-            scada_Server.getRegistrationInfoByID(getRegistrationInfoByID.getRegistrationID());
+        RegistrationInfo regInfoResult = scada_Server.getRegistrationInfoByID(getRegistrationInfoByID.getRegistrationID());
         response.setGetRegistrationInfoByIDResult(regInfoResult);
         return response;
     }
@@ -251,16 +235,13 @@ public class SCADAServiceEndpoint {
     GetPublishMethodsResponse getPublishMethods(@RequestPayload GetPublishMethods getPublishMethods)
             throws MultispeakWebServiceException {
         GetPublishMethodsResponse response = objectFactory.createGetPublishMethodsResponse();
-        String[] publishMethodResult = scada_Server.getPublishMethods();
+        
+        List<String> publishMethods = scada_Server.getPublishMethods();
 
         ArrayOfString arrayOfStringObj = objectFactory.createArrayOfString();
-        List<String> stringObjList = arrayOfStringObj.getString();
-        for (String stringObj : publishMethodResult) {
-            stringObjList.add(stringObj);
-        }
+        arrayOfStringObj.getString().addAll(publishMethods);
         response.setGetPublishMethodsResult(arrayOfStringObj);
         return response;
-
     }
 
     @PayloadRoot(localPart = "DomainMembersChangedNotification", namespace = MultispeakDefines.NAMESPACE_v3)
@@ -268,20 +249,14 @@ public class SCADAServiceEndpoint {
     DomainMembersChangedNotificationResponse domainMembersChangedNotification(
             @RequestPayload DomainMembersChangedNotification domainMembersChangedNotification)
             throws MultispeakWebServiceException {
-        DomainMembersChangedNotificationResponse response =
-            objectFactory.createDomainMembersChangedNotificationResponse();
-        List<DomainMember> domainMember = domainMembersChangedNotification.getChangedDomainMembers().getDomainMember();
-        DomainMember[] domain = new DomainMember[domainMember.size()];
-        int i = 0;
-        for (DomainMember domainmember : domainMember) {
-            domain[i] = domainmember;
-            i++;
-        }
-        ErrorObject[] errorObj = scada_Server.domainMembersChangedNotification(domain);
+        DomainMembersChangedNotificationResponse response = objectFactory.createDomainMembersChangedNotificationResponse();
+        
+        List<DomainMember> domainMembers = domainMembersChangedNotification.getChangedDomainMembers().getDomainMember();
+        List<ErrorObject> errorObj = scada_Server.domainMembersChangedNotification(domainMembers);
+        
         ArrayOfErrorObject arrayOfErrorObj = multispeakFuncs.toArrayOfErrorObject(errorObj);
         response.setDomainMembersChangedNotificationResult(arrayOfErrorObj);
         return response;
-
     }
 
     @PayloadRoot(localPart = "DomainNamesChangedNotification", namespace = MultispeakDefines.NAMESPACE_v3)
@@ -290,19 +265,13 @@ public class SCADAServiceEndpoint {
             @RequestPayload DomainNamesChangedNotification domainNamesChangedNotification)
             throws MultispeakWebServiceException {
         DomainNamesChangedNotificationResponse response = objectFactory.createDomainNamesChangedNotificationResponse();
-        List<DomainNameChange> domainNameChanges =
-            domainNamesChangedNotification.getChangedDomainNames().getDomainNameChange();
-        DomainNameChange[] domain = new DomainNameChange[domainNameChanges.size()];
-        int i = 0;
-        for (DomainNameChange domainname : domainNameChanges) {
-            domain[i] = domainname;
-            i++;
-        }
-        ErrorObject[] errorObj = scada_Server.domainNamesChangedNotification(domain);
+        
+        List<DomainNameChange> domainNameChanges = domainNamesChangedNotification.getChangedDomainNames().getDomainNameChange();
+        List<ErrorObject> errorObj = scada_Server.domainNamesChangedNotification(domainNameChanges);
+        
         ArrayOfErrorObject arrayOfErrorObj = multispeakFuncs.toArrayOfErrorObject(errorObj);
         response.setDomainNamesChangedNotificationResult(arrayOfErrorObj);
         return response;
-
     }
 
     @PayloadRoot(localPart = "GetSCADAAnalogBySCADAPointID", namespace = MultispeakDefines.NAMESPACE_v3)
@@ -311,8 +280,7 @@ public class SCADAServiceEndpoint {
             @RequestPayload GetSCADAAnalogBySCADAPointID getSCADAAnalogBySCADAPointID)
             throws MultispeakWebServiceException {
         GetSCADAAnalogBySCADAPointIDResponse response = objectFactory.createGetSCADAAnalogBySCADAPointIDResponse();
-        ScadaAnalog scdAnalog =
-            scada_Server.getSCADAAnalogBySCADAPointID(getSCADAAnalogBySCADAPointID.getScadaPointID());
+        ScadaAnalog scdAnalog = scada_Server.getSCADAAnalogBySCADAPointID(getSCADAAnalogBySCADAPointID.getScadaPointID());
         response.setGetSCADAAnalogBySCADAPointIDResult(scdAnalog);
         return response;
     }
@@ -322,12 +290,10 @@ public class SCADAServiceEndpoint {
     GetAllSCADAStatusResponse getAllSCADAStatus(@RequestPayload GetAllSCADAStatus getAllSCADAStatus)
             throws MultispeakWebServiceException {
         GetAllSCADAStatusResponse response = objectFactory.createGetAllSCADAStatusResponse();
-        ScadaStatus[] scadaStatusResult = scada_Server.getAllSCADAStatus(getAllSCADAStatus.getLastReceived());
+        List<ScadaStatus> scadaStatus = scada_Server.getAllSCADAStatus(getAllSCADAStatus.getLastReceived());
+        
         ArrayOfScadaStatus arrayOfScada = objectFactory.createArrayOfScadaStatus();
-        List<ScadaStatus> stringObjList = arrayOfScada.getScadaStatus();
-        for (ScadaStatus scdStatus : scadaStatusResult) {
-            stringObjList.add(scdStatus);
-        }
+        arrayOfScada.getScadaStatus().addAll(scadaStatus);
         response.setGetAllSCADAStatusResult(arrayOfScada);
         return response;
     }
@@ -338,11 +304,9 @@ public class SCADAServiceEndpoint {
             @RequestPayload GetSCADAStatusBySCADAPointID getSCADAStatusBySCADAPointID)
             throws MultispeakWebServiceException {
         GetSCADAStatusBySCADAPointIDResponse response = objectFactory.createGetSCADAStatusBySCADAPointIDResponse();
-        ScadaStatus scadaStatus =
-            scada_Server.getSCADAStatusBySCADAPointID(getSCADAStatusBySCADAPointID.getScadaPointID());
+        ScadaStatus scadaStatus = scada_Server.getSCADAStatusBySCADAPointID(getSCADAStatusBySCADAPointID.getScadaPointID());
         response.setGetSCADAStatusBySCADAPointIDResult(scadaStatus);
         return response;
-
     }
 
     @PayloadRoot(localPart = "GetAllSCADAPoints", namespace = MultispeakDefines.NAMESPACE_v3)
@@ -350,15 +314,12 @@ public class SCADAServiceEndpoint {
     GetAllSCADAPointsResponse getAllSCADAPoints(@RequestPayload GetAllSCADAPoints getAllSCADAPoints)
             throws MultispeakWebServiceException {
         GetAllSCADAPointsResponse response = objectFactory.createGetAllSCADAPointsResponse();
-        ScadaPoint[] scdPointResult = scada_Server.getAllSCADAPoints(getAllSCADAPoints.getLastReceived());
+        List<ScadaPoint> scadaPoints = scada_Server.getAllSCADAPoints(getAllSCADAPoints.getLastReceived());
+        
         ArrayOfScadaPoint1 arrayOfScada = objectFactory.createArrayOfScadaPoint1();
-        List<ScadaPoint> stringObjList = arrayOfScada.getScadaPoint();
-        for (ScadaPoint scdPoint : scdPointResult) {
-            stringObjList.add(scdPoint);
-        }
+        arrayOfScada.getScadaPoint().addAll(scadaPoints);
         response.setGetAllSCADAPointsResult(arrayOfScada);
         return response;
-
     }
 
     @PayloadRoot(localPart = "GetModifiedSCADAPoints", namespace = MultispeakDefines.NAMESPACE_v3)
@@ -366,14 +327,12 @@ public class SCADAServiceEndpoint {
     GetModifiedSCADAPointsResponse getModifiedSCADAPoints(@RequestPayload GetModifiedSCADAPoints getModifiedSCADAPoints)
             throws MultispeakWebServiceException {
         GetModifiedSCADAPointsResponse response = objectFactory.createGetModifiedSCADAPointsResponse();
-        ScadaPoint[] scdPointResult =
+        List<ScadaPoint> scadaPoints =
             scada_Server.getModifiedSCADAPoints(getModifiedSCADAPoints.getPreviousSessionID(),
                 getModifiedSCADAPoints.getLastReceived());
+        
         ArrayOfScadaPoint1 arrayOfScada = objectFactory.createArrayOfScadaPoint1();
-        List<ScadaPoint> stringObjList = arrayOfScada.getScadaPoint();
-        for (ScadaPoint scdPoint : scdPointResult) {
-            stringObjList.add(scdPoint);
-        }
+        arrayOfScada.getScadaPoint().addAll(scadaPoints);
         response.setGetModifiedSCADAPointsResult(arrayOfScada);
         return response;
 
@@ -389,7 +348,7 @@ public class SCADAServiceEndpoint {
         XMLGregorianCalendar startTime = getSCADAAnalogsByDateRangeAndPointID.getStartTime();
         XMLGregorianCalendar endTime = getSCADAAnalogsByDateRangeAndPointID.getEndTime();
 
-        ScadaAnalog[] scdAnalogResult =
+        List<ScadaAnalog> scadaAnalogs =
             scada_Server.getSCADAAnalogsByDateRangeAndPointID(getSCADAAnalogsByDateRangeAndPointID.getScadaPointID(),
                 (startTime != null) ? startTime.toGregorianCalendar() : null,
                 (endTime != null) ? endTime.toGregorianCalendar() : null,
@@ -397,10 +356,7 @@ public class SCADAServiceEndpoint {
                 getSCADAAnalogsByDateRangeAndPointID.getLastReceived());
 
         ArrayOfScadaAnalog arrayOfScada = objectFactory.createArrayOfScadaAnalog();
-        List<ScadaAnalog> scadaAnalogList = arrayOfScada.getScadaAnalog();
-        for (ScadaAnalog scdStatus : scdAnalogResult) {
-            scadaAnalogList.add(scdStatus);
-        }
+        arrayOfScada.getScadaAnalog().addAll(scadaAnalogs);
         response.setGetSCADAAnalogsByDateRangeAndPointIDResult(arrayOfScada);
         return response;
     }
@@ -415,7 +371,7 @@ public class SCADAServiceEndpoint {
         XMLGregorianCalendar startTime = getSCADAStatusesByDateRangeAndPointID.getStartTime();
         XMLGregorianCalendar endTime = getSCADAStatusesByDateRangeAndPointID.getEndTime();
 
-        ScadaStatus[] scdStatusResult =
+        List<ScadaStatus> scadaStatus  =
             scada_Server.getSCADAStatusesByDateRangeAndPointID(getSCADAStatusesByDateRangeAndPointID.getScadaPointID(),
                 (startTime != null) ? startTime.toGregorianCalendar() : null,
                 (endTime != null) ? endTime.toGregorianCalendar() : null,
@@ -423,13 +379,9 @@ public class SCADAServiceEndpoint {
                 getSCADAStatusesByDateRangeAndPointID.getLastReceived());
 
         ArrayOfScadaStatus arrayOfScada = objectFactory.createArrayOfScadaStatus();
-        List<ScadaStatus> scadaStatusList = arrayOfScada.getScadaStatus();
-        for (ScadaStatus scdStatus : scdStatusResult) {
-            scadaStatusList.add(scdStatus);
-        }
+        arrayOfScada.getScadaStatus().addAll(scadaStatus);
         response.setGetSCADAStatusesByDateRangeAndPointIDResult(arrayOfScada);
         return response;
-
     }
 
     @PayloadRoot(localPart = "GetSCADAStatusesByDateRange", namespace = MultispeakDefines.NAMESPACE_v3)
@@ -440,19 +392,15 @@ public class SCADAServiceEndpoint {
         GetSCADAStatusesByDateRangeResponse response = objectFactory.createGetSCADAStatusesByDateRangeResponse();
         XMLGregorianCalendar startTime = getSCADAStatusesByDateRange.getStartTime();
         XMLGregorianCalendar endTime = getSCADAStatusesByDateRange.getEndTime();
-        ScadaStatus[] scdStatusResult =
+        List<ScadaStatus> scadaStatus =
             scada_Server.getSCADAStatusesByDateRange((startTime != null) ? startTime.toGregorianCalendar() : null,
                 (endTime != null) ? endTime.toGregorianCalendar() : null, getSCADAStatusesByDateRange.getSampleRate(),
                 getSCADAStatusesByDateRange.getLastReceived());
 
         ArrayOfScadaStatus arrayOfScada = objectFactory.createArrayOfScadaStatus();
-        List<ScadaStatus> scadaStatusList = arrayOfScada.getScadaStatus();
-        for (ScadaStatus scdStatus : scdStatusResult) {
-            scadaStatusList.add(scdStatus);
-        }
+        arrayOfScada.getScadaStatus().addAll(scadaStatus);
         response.setGetSCADAStatusesByDateRangeResult(arrayOfScada);
         return response;
-
     }
 
     @PayloadRoot(localPart = "GetSCADAAnalogsByDateRangeAndPointIDFormattedBlock", namespace = MultispeakDefines.NAMESPACE_v3)
@@ -465,7 +413,7 @@ public class SCADAServiceEndpoint {
         XMLGregorianCalendar startTime = getSCADAAnalogsByDateRangeAndPointIDFormattedBlock.getStartTime();
         XMLGregorianCalendar endTime = getSCADAAnalogsByDateRangeAndPointIDFormattedBlock.getEndTime();
 
-        FormattedBlock[] formattedBlockResult =
+        List<FormattedBlock> formattedBlocks =
             scada_Server.getSCADAAnalogsByDateRangeAndPointIDFormattedBlock(
                 getSCADAAnalogsByDateRangeAndPointIDFormattedBlock.getScadaPointID(),
                 (startTime != null) ? startTime.toGregorianCalendar() : null,
@@ -474,13 +422,9 @@ public class SCADAServiceEndpoint {
                 getSCADAAnalogsByDateRangeAndPointIDFormattedBlock.getLastReceived());
 
         ArrayOfFormattedBlock formattedBlock = objectFactory.createArrayOfFormattedBlock();
-        List<FormattedBlock> formattedBlockList = formattedBlock.getFormattedBlock();
-        for (FormattedBlock block : formattedBlockResult) {
-            formattedBlockList.add(block);
-        }
+        formattedBlock.getFormattedBlock().addAll(formattedBlocks);
         response.setGetSCADAAnalogsByDateRangeAndPointIDFormattedBlockResult(formattedBlock);
         return response;
-
     }
 
     @PayloadRoot(localPart = "GetSCADAStatusesByDateRangeAndPointIDFormattedBlock", namespace = MultispeakDefines.NAMESPACE_v3)
@@ -493,7 +437,7 @@ public class SCADAServiceEndpoint {
         XMLGregorianCalendar startTime = getSCADAStatusesByDateRangeAndPointIDFormattedBlock.getStartTime();
         XMLGregorianCalendar endTime = getSCADAStatusesByDateRangeAndPointIDFormattedBlock.getEndTime();
 
-        FormattedBlock[] formattedBlockResult =
+        List<FormattedBlock> formattedBlocks =
             scada_Server.getSCADAStatusesByDateRangeAndPointIDFormattedBlock(
                 getSCADAStatusesByDateRangeAndPointIDFormattedBlock.getScadaPointID(),
                 (startTime != null) ? startTime.toGregorianCalendar() : null,
@@ -502,10 +446,7 @@ public class SCADAServiceEndpoint {
                 getSCADAStatusesByDateRangeAndPointIDFormattedBlock.getLastReceived());
 
         ArrayOfFormattedBlock formattedBlock = objectFactory.createArrayOfFormattedBlock();
-        List<FormattedBlock> formattedBlockList = formattedBlock.getFormattedBlock();
-        for (FormattedBlock block : formattedBlockResult) {
-            formattedBlockList.add(block);
-        }
+        formattedBlock.getFormattedBlock().addAll(formattedBlocks);
         response.setGetSCADAStatusesByDateRangeAndPointIDFormattedBlockResult(formattedBlock);
         return response;
     }
@@ -520,17 +461,15 @@ public class SCADAServiceEndpoint {
         XMLGregorianCalendar startTime = getSCADAStatusesByDateRangeFormattedBlock.getStartTime();
         XMLGregorianCalendar endTime = getSCADAStatusesByDateRangeFormattedBlock.getEndTime();
 
-        FormattedBlock[] formattedBlockResult =
+        List<FormattedBlock> formattedBlocks =
             scada_Server.getSCADAStatusesByDateRangeFormattedBlock(
                 (startTime != null) ? startTime.toGregorianCalendar() : null,
                 (endTime != null) ? endTime.toGregorianCalendar() : null,
                 getSCADAStatusesByDateRangeFormattedBlock.getSampleRate(),
                 getSCADAStatusesByDateRangeFormattedBlock.getLastReceived());
+
         ArrayOfFormattedBlock formattedBlock = objectFactory.createArrayOfFormattedBlock();
-        List<FormattedBlock> formattedBlockList = formattedBlock.getFormattedBlock();
-        for (FormattedBlock block : formattedBlockResult) {
-            formattedBlockList.add(block);
-        }
+        formattedBlock.getFormattedBlock().addAll(formattedBlocks);
         response.setGetSCADAStatusesByDateRangeFormattedBlockResult(formattedBlock);
         return response;
     }
@@ -541,17 +480,11 @@ public class SCADAServiceEndpoint {
             @RequestPayload InitiateStatusReadByPointID initiateStatusReadByPointID)
             throws MultispeakWebServiceException {
         InitiateStatusReadByPointIDResponse response = objectFactory.createInitiateStatusReadByPointIDResponse();
-        ArrayOfString arrayOfPoints = initiateStatusReadByPointID.getPointIDs();
-        String[] pointIds = new String[arrayOfPoints.getString().size()];
-
-        int i = 0;
-        for (String domainname : arrayOfPoints.getString()) {
-            pointIds[i] = domainname;
-            i++;
-        }
-        ErrorObject[] errorObj =
+        List<String> pointIds = initiateStatusReadByPointID.getPointIDs().getString();
+        List<ErrorObject> errorObj =
             scada_Server.initiateStatusReadByPointID(pointIds, initiateStatusReadByPointID.getResponseURL(),
                 initiateStatusReadByPointID.getTransactionID());
+        
         ArrayOfErrorObject arrayOfErrorObj = multispeakFuncs.toArrayOfErrorObject(errorObj);
         response.setInitiateStatusReadByPointIDResult(arrayOfErrorObj);
         return response;
@@ -563,17 +496,11 @@ public class SCADAServiceEndpoint {
             @RequestPayload InitiateAnalogReadByPointID initiateAnalogReadByPointID)
             throws MultispeakWebServiceException {
         InitiateAnalogReadByPointIDResponse response = objectFactory.createInitiateAnalogReadByPointIDResponse();
-        ArrayOfString arrayOfPoints = initiateAnalogReadByPointID.getPointIDs();
-        String[] pointIds = new String[arrayOfPoints.getString().size()];
-
-        int i = 0;
-        for (String domainname : arrayOfPoints.getString()) {
-            pointIds[i] = domainname;
-            i++;
-        }
-        ErrorObject[] errorObj =
+        List<String> pointIds = initiateAnalogReadByPointID.getPointIDs().getString();
+        List<ErrorObject> errorObj =
             scada_Server.initiateAnalogReadByPointID(pointIds, initiateAnalogReadByPointID.getResponseURL(),
                 initiateAnalogReadByPointID.getTransactionID());
+        
         ArrayOfErrorObject arrayOfErrorObj = multispeakFuncs.toArrayOfErrorObject(errorObj);
         response.setInitiateAnalogReadByPointIDResult(arrayOfErrorObj);
         return response;
@@ -598,14 +525,8 @@ public class SCADAServiceEndpoint {
             throws MultispeakWebServiceException {
         OutageEventChangedNotificationResponse response = objectFactory.createOutageEventChangedNotificationResponse();
         List<OutageEvent> outageEvents = outageEventChangedNotification.getOEvents().getOutageEvent();
-        OutageEvent[] events = new OutageEvent[outageEvents.size()];
-        int i = 0;
-        for (OutageEvent event : outageEvents) {
-            events[i] = event;
-            i++;
-        }
-
-        ErrorObject[] errorObj = scada_Server.outageEventChangedNotification(events);
+        List<ErrorObject> errorObj = scada_Server.outageEventChangedNotification(outageEvents);
+        
         ArrayOfErrorObject arrayOfErrorObj = multispeakFuncs.toArrayOfErrorObject(errorObj);
         response.setOutageEventChangedNotificationResult(arrayOfErrorObj);
         return response;
@@ -620,19 +541,13 @@ public class SCADAServiceEndpoint {
         PointSubscriptionListNotificationResponse response =
             objectFactory.createPointSubscriptionListNotificationResponse();
         List<ListItem> listItems = pointSubscriptionListNotification.getPointList().getListItem();
-        ListItem[] items = new ListItem[listItems.size()];
-        int i = 0;
-        for (ListItem item : listItems) {
-            items[i] = item;
-            i++;
-        }
-        ErrorObject[] errorObj =
-            scada_Server.pointSubscriptionListNotification(items, pointSubscriptionListNotification.getResponseURL(),
+        List<ErrorObject> errorObj =
+            scada_Server.pointSubscriptionListNotification(listItems, pointSubscriptionListNotification.getResponseURL(),
                 pointSubscriptionListNotification.getErrorString());
+        
         ArrayOfErrorObject arrayOfErrorObj = multispeakFuncs.toArrayOfErrorObject(errorObj);
         response.setPointSubscriptionListNotificationResult(arrayOfErrorObj);
         return response;
-
     }
 
     @PayloadRoot(localPart = "AnalogChangedNotificationByPointID", namespace = MultispeakDefines.NAMESPACE_v3)
@@ -642,16 +557,12 @@ public class SCADAServiceEndpoint {
             throws MultispeakWebServiceException {
         AnalogChangedNotificationByPointIDResponse response =
             objectFactory.createAnalogChangedNotificationByPointIDResponse();
-        List<ScadaAnalog> scadaAnalogList = analogChangedNotificationByPointID.getScadaAnalogs().getScadaAnalog();
-        ScadaAnalog[] scadaAnalog = new ScadaAnalog[scadaAnalogList.size()];
-        int i = 0;
-        for (ScadaAnalog scada : scadaAnalogList) {
-            scadaAnalog[i] = scada;
-            i++;
-        }
-        ErrorObject[] errorObj =
-            scada_Server.analogChangedNotificationByPointID(scadaAnalog,
+        
+        List<ScadaAnalog> scadaAnalogs = analogChangedNotificationByPointID.getScadaAnalogs().getScadaAnalog();
+        List<ErrorObject> errorObj =
+            scada_Server.analogChangedNotificationByPointID(scadaAnalogs,
                 analogChangedNotificationByPointID.getTransactionID());
+        
         ArrayOfErrorObject arrayOfErrorObj = multispeakFuncs.toArrayOfErrorObject(errorObj);
         response.setAnalogChangedNotificationByPointIDResult(arrayOfErrorObj);
         return response;
@@ -664,20 +575,14 @@ public class SCADAServiceEndpoint {
             throws MultispeakWebServiceException {
         StatusChangedNotificationByPointIDResponse response =
             objectFactory.createStatusChangedNotificationByPointIDResponse();
-        List<ScadaStatus> scadaStatusList = statusChangedNotificationByPointID.getScadaStatuses().getScadaStatus();
-        ScadaStatus[] scadaStatus = new ScadaStatus[scadaStatusList.size()];
-        int i = 0;
-        for (ScadaStatus scada : scadaStatusList) {
-            scadaStatus[i] = scada;
-            i++;
-        }
-        ErrorObject[] errorObj =
+        List<ScadaStatus> scadaStatus = statusChangedNotificationByPointID.getScadaStatuses().getScadaStatus();
+        List<ErrorObject> errorObj =
             scada_Server.statusChangedNotificationByPointID(scadaStatus,
                 statusChangedNotificationByPointID.getTransactionID());
+        
         ArrayOfErrorObject arrayOfErrorObj = multispeakFuncs.toArrayOfErrorObject(errorObj);
         response.setStatusChangedNotificationByPointIDResult(arrayOfErrorObj);
         return response;
-
     }
 
     @PayloadRoot(localPart = "SCADAAnalogChangedNotification", namespace = MultispeakDefines.NAMESPACE_v3)
@@ -686,18 +591,12 @@ public class SCADAServiceEndpoint {
             @RequestPayload com.cannontech.msp.beans.v3.SCADAAnalogChangedNotification analogChangedNotification)
             throws MultispeakWebServiceException {
         SCADAAnalogChangedNotificationResponse response = objectFactory.createSCADAAnalogChangedNotificationResponse();
-        List<ScadaAnalog> scadaAnalogList = analogChangedNotification.getScadaAnalogs().getScadaAnalog();
-        ScadaAnalog[] scadaAnalog = new ScadaAnalog[scadaAnalogList.size()];
-        int i = 0;
-        for (ScadaAnalog scada : scadaAnalogList) {
-            scadaAnalog[i] = scada;
-            i++;
-        }
-        ErrorObject[] errorObj = scada_Server.SCADAAnalogChangedNotification(scadaAnalog);
+        List<ScadaAnalog> scadaAnalogs = analogChangedNotification.getScadaAnalogs().getScadaAnalog();
+        List<ErrorObject> errorObj = scada_Server.SCADAAnalogChangedNotification(scadaAnalogs);
+        
         ArrayOfErrorObject arrayOfErrorObj = multispeakFuncs.toArrayOfErrorObject(errorObj);
         response.setSCADAAnalogChangedNotificationResult(arrayOfErrorObj);
         return response;
-
     }
 
     @PayloadRoot(localPart = "SCADAStatusChangedNotification", namespace = MultispeakDefines.NAMESPACE_v3)
@@ -706,18 +605,12 @@ public class SCADAServiceEndpoint {
             @RequestPayload com.cannontech.msp.beans.v3.SCADAStatusChangedNotification statusChangedNotification)
             throws MultispeakWebServiceException {
         SCADAStatusChangedNotificationResponse response = objectFactory.createSCADAStatusChangedNotificationResponse();
-        List<ScadaStatus> scadaStatusList = statusChangedNotification.getScadaStatuses().getScadaStatus();
-        ScadaStatus[] scadaStatus = new ScadaStatus[scadaStatusList.size()];
-        int i = 0;
-        for (ScadaStatus scada : scadaStatusList) {
-            scadaStatus[i] = scada;
-            i++;
-        }
-        ErrorObject[] errorObj = scada_Server.SCADAStatusChangedNotification(scadaStatus);
+        List<ScadaStatus> scadaStatus = statusChangedNotification.getScadaStatuses().getScadaStatus();
+        List<ErrorObject> errorObj = scada_Server.SCADAStatusChangedNotification(scadaStatus);
+        
         ArrayOfErrorObject arrayOfErrorObj = multispeakFuncs.toArrayOfErrorObject(errorObj);
         response.setSCADAStatusChangedNotificationResult(arrayOfErrorObj);
         return response;
-
     }
 
     @PayloadRoot(localPart = "AccumulatedValueChangedNotification", namespace = MultispeakDefines.NAMESPACE_v3)
@@ -727,19 +620,12 @@ public class SCADAServiceEndpoint {
             throws MultispeakWebServiceException {
         AccumulatedValueChangedNotificationResponse response =
             objectFactory.createAccumulatedValueChangedNotificationResponse();
-        List<AccumulatedValue> accumulatedValueList =
-            accumulatedValueChangedNotification.getAccumulators().getAccumulatedValue();
-        AccumulatedValue[] accumulatedValue = new AccumulatedValue[accumulatedValueList.size()];
-        int i = 0;
-        for (AccumulatedValue accumulated : accumulatedValueList) {
-            accumulatedValue[i] = accumulated;
-            i++;
-        }
-        ErrorObject[] errorObj = scada_Server.accumulatedValueChangedNotification(accumulatedValue);
+        List<AccumulatedValue> accumulatedValues = accumulatedValueChangedNotification.getAccumulators().getAccumulatedValue();
+        List<ErrorObject> errorObj = scada_Server.accumulatedValueChangedNotification(accumulatedValues);
+        
         ArrayOfErrorObject arrayOfErrorObj = multispeakFuncs.toArrayOfErrorObject(errorObj);
         response.setAccumulatedValueChangedNotificationResult(arrayOfErrorObj);
         return response;
-
     }
 
     @PayloadRoot(localPart = "SCADAPointChangedNotification", namespace = MultispeakDefines.NAMESPACE_v3)
@@ -748,14 +634,9 @@ public class SCADAServiceEndpoint {
             @RequestPayload SCADAPointChangedNotification pointChangedNotification)
             throws MultispeakWebServiceException {
         SCADAPointChangedNotificationResponse response = objectFactory.createSCADAPointChangedNotificationResponse();
-        List<ScadaPoint> scadaPointList = pointChangedNotification.getScadaPoints().getScadaPoint();
-        ScadaPoint[] scadaPoint = new ScadaPoint[scadaPointList.size()];
-        int i = 0;
-        for (ScadaPoint scada : scadaPointList) {
-            scadaPoint[i] = scada;
-            i++;
-        }
-        ErrorObject[] errorObj = scada_Server.SCADAPointChangedNotification(scadaPoint);
+        List<ScadaPoint> scadaPoints = pointChangedNotification.getScadaPoints().getScadaPoint();
+        List<ErrorObject> errorObj = scada_Server.SCADAPointChangedNotification(scadaPoints);
+        
         ArrayOfErrorObject arrayOfErrorObj = multispeakFuncs.toArrayOfErrorObject(errorObj);
         response.setSCADAPointChangedNotificationResult(arrayOfErrorObj);
         return response;
@@ -768,14 +649,9 @@ public class SCADAServiceEndpoint {
             throws MultispeakWebServiceException {
         SCADAPointChangedNotificationForAnalogResponse response =
             objectFactory.createSCADAPointChangedNotificationForAnalogResponse();
-        List<ScadaPoint> scadaPointList = pointChangedNotificationForAnalog.getScadaPoints().getScadaPoint();
-        ScadaPoint[] scadaPoint = new ScadaPoint[scadaPointList.size()];
-        int i = 0;
-        for (ScadaPoint scada : scadaPointList) {
-            scadaPoint[i] = scada;
-            i++;
-        }
-        ErrorObject[] errorObj = scada_Server.SCADAPointChangedNotificationForAnalog(scadaPoint);
+        List<ScadaPoint> scadaPoints = pointChangedNotificationForAnalog.getScadaPoints().getScadaPoint();
+        List<ErrorObject> errorObj = scada_Server.SCADAPointChangedNotificationForAnalog(scadaPoints);
+        
         ArrayOfErrorObject arrayOfErrorObj = multispeakFuncs.toArrayOfErrorObject(errorObj);
         response.setSCADAPointChangedNotificationForAnalogResult(arrayOfErrorObj);
         return response;
@@ -788,14 +664,9 @@ public class SCADAServiceEndpoint {
             throws MultispeakWebServiceException {
         SCADAPointChangedNotificationForStatusResponse response =
             objectFactory.createSCADAPointChangedNotificationForStatusResponse();
-        List<ScadaPoint> scadaPointList = pointChangedNotificationForStatus.getScadaPoints().getScadaPoint();
-        ScadaPoint[] scadaPoint = new ScadaPoint[scadaPointList.size()];
-        int i = 0;
-        for (ScadaPoint scada : scadaPointList) {
-            scadaPoint[i] = scada;
-            i++;
-        }
-        ErrorObject[] errorObj = scada_Server.SCADAPointChangedNotificationForStatus(scadaPoint);
+        List<ScadaPoint> scadaPoints = pointChangedNotificationForStatus.getScadaPoints().getScadaPoint();
+        List<ErrorObject> errorObj = scada_Server.SCADAPointChangedNotificationForStatus(scadaPoints);
+        
         ArrayOfErrorObject arrayOfErrorObj = multispeakFuncs.toArrayOfErrorObject(errorObj);
         response.setSCADAPointChangedNotificationForStatusResult(arrayOfErrorObj);
         return response;
@@ -819,18 +690,12 @@ public class SCADAServiceEndpoint {
             throws MultispeakWebServiceException {
         SCADAAnalogChangedNotificationForPowerResponse response =
             objectFactory.createSCADAAnalogChangedNotificationForPowerResponse();
-        List<ScadaAnalog> scadaAnalogList = analogChangedNotificationForPower.getScadaAnalogs().getScadaAnalog();
-        ScadaAnalog[] scadaAnalog = new ScadaAnalog[scadaAnalogList.size()];
-        int i = 0;
-        for (ScadaAnalog scada : scadaAnalogList) {
-            scadaAnalog[i] = scada;
-            i++;
-        }
-        ErrorObject[] errorObj = scada_Server.SCADAAnalogChangedNotificationForPower(scadaAnalog);
+        List<ScadaAnalog> scadaAnalogs = analogChangedNotificationForPower.getScadaAnalogs().getScadaAnalog();
+        List<ErrorObject> errorObj = scada_Server.SCADAAnalogChangedNotificationForPower(scadaAnalogs);
+        
         ArrayOfErrorObject arrayOfErrorObj = multispeakFuncs.toArrayOfErrorObject(errorObj);
         response.setSCADAAnalogChangedNotificationForPowerResult(arrayOfErrorObj);
         return response;
-
     }
 
     @PayloadRoot(localPart = "SCADAAnalogChangedNotificationForVoltage", namespace = MultispeakDefines.NAMESPACE_v3)
@@ -840,18 +705,12 @@ public class SCADAServiceEndpoint {
             throws MultispeakWebServiceException {
         SCADAAnalogChangedNotificationForVoltageResponse response =
             objectFactory.createSCADAAnalogChangedNotificationForVoltageResponse();
-        List<ScadaAnalog> scadaAnalogList = analogChangedNotificationForVoltage.getScadaAnalogs().getScadaAnalog();
-        ScadaAnalog[] scadaAnalog = new ScadaAnalog[scadaAnalogList.size()];
-        int i = 0;
-        for (ScadaAnalog scada : scadaAnalogList) {
-            scadaAnalog[i] = scada;
-            i++;
-        }
-        ErrorObject[] errorObj = scada_Server.SCADAAnalogChangedNotificationForVoltage(scadaAnalog);
+        List<ScadaAnalog> scadaAnalogs = analogChangedNotificationForVoltage.getScadaAnalogs().getScadaAnalog();
+        List<ErrorObject> errorObj = scada_Server.SCADAAnalogChangedNotificationForVoltage(scadaAnalogs);
+        
         ArrayOfErrorObject arrayOfErrorObj = multispeakFuncs.toArrayOfErrorObject(errorObj);
         response.setSCADAAnalogChangedNotificationForVoltageResult(arrayOfErrorObj);
         return response;
-
     }
 
     @PayloadRoot(localPart = "SCADAStatusChangedNotificationByPointID", namespace = MultispeakDefines.NAMESPACE_v3)
@@ -870,18 +729,12 @@ public class SCADAServiceEndpoint {
     ControlActionCompletedResponse controlActionCompleted(@RequestPayload ControlActionCompleted controlActionCompleted)
             throws MultispeakWebServiceException {
         ControlActionCompletedResponse response = objectFactory.createControlActionCompletedResponse();
-        List<ScadaControl> scadaControlList = controlActionCompleted.getControlActions().getScadaControl();
-        ScadaControl[] scadaControl = new ScadaControl[scadaControlList.size()];
-        int i = 0;
-        for (ScadaControl scada : scadaControlList) {
-            scadaControl[i] = scada;
-            i++;
-        }
-        ErrorObject[] errorObj =
-            scada_Server.controlActionCompleted(scadaControl, controlActionCompleted.getTransactionID());
+        List<ScadaControl> scadaControls = controlActionCompleted.getControlActions().getScadaControl();
+        List<ErrorObject> errorObj =
+            scada_Server.controlActionCompleted(scadaControls, controlActionCompleted.getTransactionID());
+        
         ArrayOfErrorObject arrayOfErrorObj = multispeakFuncs.toArrayOfErrorObject(errorObj);
         response.setControlActionCompletedResult(arrayOfErrorObj);
         return response;
     }
-
 }

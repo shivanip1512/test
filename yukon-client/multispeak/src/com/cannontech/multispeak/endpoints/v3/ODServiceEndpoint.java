@@ -13,15 +13,10 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
-import com.cannontech.msp.beans.v3.ArrayOfCustomer;
 import com.cannontech.msp.beans.v3.ArrayOfDomainMember;
-import com.cannontech.msp.beans.v3.ArrayOfDomainNameChange;
 import com.cannontech.msp.beans.v3.ArrayOfErrorObject;
-import com.cannontech.msp.beans.v3.ArrayOfMeter;
 import com.cannontech.msp.beans.v3.ArrayOfObjectRef;
 import com.cannontech.msp.beans.v3.ArrayOfOutageDetectionDevice;
-import com.cannontech.msp.beans.v3.ArrayOfOutageEvent;
-import com.cannontech.msp.beans.v3.ArrayOfServiceLocation;
 import com.cannontech.msp.beans.v3.ArrayOfString;
 import com.cannontech.msp.beans.v3.CancelODMonitoringRequestByObject;
 import com.cannontech.msp.beans.v3.CancelODMonitoringRequestByObjectResponse;
@@ -104,14 +99,13 @@ public class ODServiceEndpoint {
     public @ResponsePayload
     PingURLResponse pingUrl() throws MultispeakWebServiceException {
         PingURLResponse response = objectFactory.createPingURLResponse();
-        ErrorObject[] errorObjects = od_server.pingURL();
-        ArrayOfErrorObject arrOfErrorObj = objectFactory.createArrayOfErrorObject();
-        List<ErrorObject> errorObjList = arrOfErrorObj.getErrorObject();
-        for (ErrorObject errorObject : errorObjects) {
-            errorObjList.add(errorObject);
-        }
-        response.setPingURLResult(arrOfErrorObj);
-
+        
+        ErrorObject errorObject = od_server.pingURL();
+        
+        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        List<ErrorObject> errorObjList = arrayOfErrorObject.getErrorObject();
+        errorObjList.add(errorObject);
+        response.setPingURLResult(arrayOfErrorObject);
         return response;
     }
 
@@ -119,12 +113,11 @@ public class ODServiceEndpoint {
     public @ResponsePayload
     GetMethodsResponse getMethods() throws MultispeakWebServiceException {
         GetMethodsResponse response = objectFactory.createGetMethodsResponse();
-        String[] methods = od_server.getMethods();
+        
+        List<String> methods = od_server.getMethods();
+        
         ArrayOfString arrayOfString = objectFactory.createArrayOfString();
-        List<String> methodNameList = arrayOfString.getString();
-        for (String methodName : methods) {
-            methodNameList.add(methodName);
-        }
+        arrayOfString.getString().addAll(methods);
         response.setGetMethodsResult(arrayOfString);
         return response;
     }
@@ -136,14 +129,8 @@ public class ODServiceEndpoint {
             throws MultispeakWebServiceException {
         InitiateOutageDetectionEventRequestResponse response =
             objectFactory.createInitiateOutageDetectionEventRequestResponse();
-        ArrayOfString arrOfMeterId = initiateOutageDetectionEventRequest.getMeterNos();
-        List<String> meterIds = arrOfMeterId.getString();
-        String[] allMeterIds = new String[meterIds.size()];
-        int i = 0;
-        for (String meterId : meterIds) {
-            allMeterIds[i] = meterId;
-            i++;
-        }
+
+        List<String> meterNumbers = initiateOutageDetectionEventRequest.getMeterNos().getString();
         XMLGregorianCalendar xmlRequestDate = initiateOutageDetectionEventRequest.getRequestDate();
         Date requestDate =  (xmlRequestDate != null) ? xmlRequestDate.toGregorianCalendar().getTime() : null;
         Calendar requestDateTime = Calendar.getInstance();
@@ -151,17 +138,13 @@ public class ODServiceEndpoint {
         String responseURL = initiateOutageDetectionEventRequest.getResponseURL();
         String transactionID = initiateOutageDetectionEventRequest.getTransactionID();
         Float expirationTime = initiateOutageDetectionEventRequest.getExpirationTime();
-        ErrorObject[] errorObjects =
-            od_server.initiateOutageDetectionEventRequest(allMeterIds, requestDateTime, responseURL, transactionID,
+        
+        List<ErrorObject> errorObjects =
+            od_server.initiateOutageDetectionEventRequest(meterNumbers, requestDateTime, responseURL, transactionID,
                 expirationTime);
-        ArrayOfErrorObject arrOfErrorObj = objectFactory.createArrayOfErrorObject();
-        if (errorObjects != null) {
-            for (ErrorObject errorObject : errorObjects) {
-                arrOfErrorObj.getErrorObject().add(errorObject);
-            }
-
-        }
-        response.setInitiateOutageDetectionEventRequestResult(arrOfErrorObj);
+        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+        response.setInitiateOutageDetectionEventRequestResult(arrayOfErrorObject);
         return response;
     }
 
@@ -170,13 +153,12 @@ public class ODServiceEndpoint {
     GetDomainMembersResponse getDomainMembers(@RequestPayload GetDomainMembers getDomainMembers)
             throws MultispeakWebServiceException {
         GetDomainMembersResponse getDomainMembersResponse = objectFactory.createGetDomainMembersResponse();
+        
         String domainName = getDomainMembers.getDomainName();
-        DomainMember[] domainMemberArr = od_server.getDomainMembers(domainName);
+        List<DomainMember> domainMembers = od_server.getDomainMembers(domainName);
+        
         ArrayOfDomainMember arrayOfDomainMember = objectFactory.createArrayOfDomainMember();
-        List<DomainMember> domainMemberList = arrayOfDomainMember.getDomainMember();
-        for (DomainMember domainMember : domainMemberArr) {
-            domainMemberList.add(domainMember);
-        }
+        arrayOfDomainMember.getDomainMember().addAll(domainMembers);
         getDomainMembersResponse.setGetDomainMembersResult(arrayOfDomainMember);
         return getDomainMembersResponse;
     }
@@ -185,12 +167,11 @@ public class ODServiceEndpoint {
     public @ResponsePayload
     GetDomainNamesResponse getDomainNames() throws MultispeakWebServiceException {
         GetDomainNamesResponse getDomainNamesResponse = objectFactory.createGetDomainNamesResponse();
-        String[] domainNamesArr = od_server.getDomainNames();
+        
+        List<String> domainNames = od_server.getDomainNames();
+        
         ArrayOfString arrayOfString = objectFactory.createArrayOfString();
-        List<String> domainNameList = arrayOfString.getString();
-        for (String domainName : domainNamesArr) {
-            domainNameList.add(domainName);
-        }
+        arrayOfString.getString().addAll(domainNames);
         getDomainNamesResponse.setGetDomainNamesResult(arrayOfString);
         return getDomainNamesResponse;
     }
@@ -202,13 +183,12 @@ public class ODServiceEndpoint {
             throws MultispeakWebServiceException {
         GetAllOutageDetectionDevicesResponse getAllOutageDetectionDevicesResponse =
             objectFactory.createGetAllOutageDetectionDevicesResponse();
+        
         String lastReceived = getAllOutageDetectionDevices.getLastReceived();
-        OutageDetectionDevice[] outageDetectionDeviceArr = od_server.getAllOutageDetectionDevices(lastReceived);
+        List<OutageDetectionDevice> outageDetectionDevices = od_server.getAllOutageDetectionDevices(lastReceived);
+        
         ArrayOfOutageDetectionDevice arrayOfOutageDetectionDevice = objectFactory.createArrayOfOutageDetectionDevice();
-        List<OutageDetectionDevice> outageDetectionDeviceList = arrayOfOutageDetectionDevice.getOutageDetectionDevice();
-        for (OutageDetectionDevice outageDetectionDevice : outageDetectionDeviceArr) {
-            outageDetectionDeviceList.add(outageDetectionDevice);
-        }
+        arrayOfOutageDetectionDevice.getOutageDetectionDevice().addAll(outageDetectionDevices);
         getAllOutageDetectionDevicesResponse.setGetAllOutageDetectionDevicesResult(arrayOfOutageDetectionDevice);
         return getAllOutageDetectionDevicesResponse;
     }
@@ -220,13 +200,12 @@ public class ODServiceEndpoint {
             throws MultispeakWebServiceException {
         GetOutageDetectionDevicesByMeterNoResponse getOutageDetectionDevicesByMeterNoResponse =
             objectFactory.createGetOutageDetectionDevicesByMeterNoResponse();
+        
         String meterNo = getOutageDetectionDevicesByMeterNo.getMeterNo();
-        OutageDetectionDevice[] outageDetectionDeviceArr = od_server.getOutageDetectionDevicesByMeterNo(meterNo);
+        List<OutageDetectionDevice> outageDetectionDevices = od_server.getOutageDetectionDevicesByMeterNo(meterNo);
+
         ArrayOfOutageDetectionDevice arrayOfOutageDetectionDevice = objectFactory.createArrayOfOutageDetectionDevice();
-        List<OutageDetectionDevice> outageDetectionDeviceList = arrayOfOutageDetectionDevice.getOutageDetectionDevice();
-        for (OutageDetectionDevice outageDetectionDevice : outageDetectionDeviceArr) {
-            outageDetectionDeviceList.add(outageDetectionDevice);
-        }
+        arrayOfOutageDetectionDevice.getOutageDetectionDevice().addAll(outageDetectionDevices);
         getOutageDetectionDevicesByMeterNoResponse.setGetOutageDetectionDevicesByMeterNoResult(arrayOfOutageDetectionDevice);
         return getOutageDetectionDevicesByMeterNoResponse;
     }
@@ -238,15 +217,14 @@ public class ODServiceEndpoint {
             throws MultispeakWebServiceException {
         GetOutageDetectionDevicesByStatusResponse getOutageDetectionDevicesByStatusResponse =
             objectFactory.createGetOutageDetectionDevicesByStatusResponse();
+        
         String lastReceived = GetOutageDetectionDevicesByStatus.getLastReceived();
         OutageDetectDeviceStatus oDDStatus = GetOutageDetectionDevicesByStatus.getODDStatus();
-        OutageDetectionDevice[] outageDetectionDeviceArr =
+        List<OutageDetectionDevice> outageDetectionDevices =
             od_server.getOutageDetectionDevicesByStatus(oDDStatus, lastReceived);
+
         ArrayOfOutageDetectionDevice arrayOfOutageDetectionDevice = objectFactory.createArrayOfOutageDetectionDevice();
-        List<OutageDetectionDevice> outageDetectionDeviceList = arrayOfOutageDetectionDevice.getOutageDetectionDevice();
-        for (OutageDetectionDevice outageDetectionDevice : outageDetectionDeviceArr) {
-            outageDetectionDeviceList.add(outageDetectionDevice);
-        }
+        arrayOfOutageDetectionDevice.getOutageDetectionDevice().addAll(outageDetectionDevices);
         getOutageDetectionDevicesByStatusResponse.setGetOutageDetectionDevicesByStatusResult(arrayOfOutageDetectionDevice);
         return getOutageDetectionDevicesByStatusResponse;
     }
@@ -258,15 +236,14 @@ public class ODServiceEndpoint {
             throws MultispeakWebServiceException {
         GetOutageDetectionDevicesByTypeResponse getOutageDetectionDevicesByTypeResponse =
             objectFactory.createGetOutageDetectionDevicesByTypeResponse();
+        
         String lastReceived = getOutageDetectionDevicesByType.getLastReceived();
         OutageDetectDeviceType oddType = getOutageDetectionDevicesByType.getODDType();
-        OutageDetectionDevice[] outageDetectionDeviceArr =
+        List<OutageDetectionDevice> outageDetectionDevices =
             od_server.getOutageDetectionDevicesByType(oddType, lastReceived);
+        
         ArrayOfOutageDetectionDevice arrayOfOutageDetectionDevice = objectFactory.createArrayOfOutageDetectionDevice();
-        List<OutageDetectionDevice> outageDetectionDeviceList = arrayOfOutageDetectionDevice.getOutageDetectionDevice();
-        for (OutageDetectionDevice outageDetectionDevice : outageDetectionDeviceArr) {
-            outageDetectionDeviceList.add(outageDetectionDevice);
-        }
+        arrayOfOutageDetectionDevice.getOutageDetectionDevice().addAll(outageDetectionDevices);
         getOutageDetectionDevicesByTypeResponse.setGetOutageDetectionDevicesByTypeResult(arrayOfOutageDetectionDevice);
         return getOutageDetectionDevicesByTypeResponse;
     }
@@ -275,12 +252,11 @@ public class ODServiceEndpoint {
     public @ResponsePayload
     GetOutagedODDevicesResponse getOutagedODDevices() throws MultispeakWebServiceException {
         GetOutagedODDevicesResponse getOutagedODDevicesResponse = objectFactory.createGetOutagedODDevicesResponse();
-        OutageDetectionDevice[] outageDetectionDeviceArr = od_server.getOutagedODDevices();
+        
+        List<OutageDetectionDevice> outageDetectionDevices = od_server.getOutagedODDevices();
+        
         ArrayOfOutageDetectionDevice arrayOfOutageDetectionDevice = objectFactory.createArrayOfOutageDetectionDevice();
-        List<OutageDetectionDevice> outageDetectionDeviceList = arrayOfOutageDetectionDevice.getOutageDetectionDevice();
-        for (OutageDetectionDevice outageDetectionDevice : outageDetectionDeviceArr) {
-            outageDetectionDeviceList.add(outageDetectionDevice);
-        }
+        arrayOfOutageDetectionDevice.getOutageDetectionDevice().addAll(outageDetectionDevices);
         getOutagedODDevicesResponse.setGetOutagedODDevicesResult(arrayOfOutageDetectionDevice);
         return getOutagedODDevicesResponse;
     }
@@ -292,6 +268,7 @@ public class ODServiceEndpoint {
             throws MultispeakWebServiceException {
         ModifyODDataForOutageDetectionDeviceResponse modifyODDataForOutageDetectionDeviceResponse =
             objectFactory.createModifyODDataForOutageDetectionDeviceResponse();
+        
         OutageDetectionDevice odDevice = modifyODDataForOutageDetectionDevice.getODDevice();
         od_server.modifyODDataForOutageDetectionDevice(odDevice);
         return modifyODDataForOutageDetectionDeviceResponse;
@@ -302,14 +279,11 @@ public class ODServiceEndpoint {
     DisplayODMonitoringRequestsResponse displayODMonitoringRequests() throws MultispeakWebServiceException {
         DisplayODMonitoringRequestsResponse displayODMonitoringRequestsResponse =
             objectFactory.createDisplayODMonitoringRequestsResponse();
-        ObjectRef[] displayODMonitoringRequests = od_server.displayODMonitoringRequests();
+        
+        List<ObjectRef> displayODMonitoringRequests = od_server.displayODMonitoringRequests();
+        
         ArrayOfObjectRef arrayOfObjectRef = objectFactory.createArrayOfObjectRef();
-        if (displayODMonitoringRequests != null) {
-            List<ObjectRef> displayODMonitoringRequestsList = arrayOfObjectRef.getObjectRef();
-            for (ObjectRef displayODMonitoringRequest : displayODMonitoringRequests) {
-                displayODMonitoringRequestsList.add(displayODMonitoringRequest);
-            }
-        }
+        arrayOfObjectRef.getObjectRef().addAll(displayODMonitoringRequests);
         displayODMonitoringRequestsResponse.setDisplayODMonitoringRequestsResult(arrayOfObjectRef);
         return displayODMonitoringRequestsResponse;
     }
@@ -321,23 +295,17 @@ public class ODServiceEndpoint {
             throws MultispeakWebServiceException {
         CancelODMonitoringRequestByObjectResponse cancelODMonitoringRequestByObjectResponse =
             objectFactory.createCancelODMonitoringRequestByObjectResponse();
-        ArrayOfObjectRef objectRef = cancelODMonitoringRequestByObject.getObjectRef();
-        List<ObjectRef> objectRefList = objectRef.getObjectRef();
+        
+        List<ObjectRef> objectRefs = cancelODMonitoringRequestByObject.getObjectRef().getObjectRef();
         XMLGregorianCalendar xmlRequestDate = cancelODMonitoringRequestByObject.getRequestDate();
         Date requestDate =  (xmlRequestDate != null) ? xmlRequestDate.toGregorianCalendar().getTime() : null;
         Calendar requestDateTime = Calendar.getInstance();
         requestDateTime.setTime(requestDate);
-        ErrorObject[] errorObjects =
-            od_server.cancelODMonitoringRequestByObject(objectRefList.toArray(new ObjectRef[objectRefList.size()]),
-                requestDateTime);
-        ArrayOfErrorObject arrOfErrorObj = objectFactory.createArrayOfErrorObject();
-        if (errorObjects != null) {
-            List<ErrorObject> errorObjList = arrOfErrorObj.getErrorObject();
-            for (ErrorObject errorObject : errorObjects) {
-                errorObjList.add(errorObject);
-            }
-        }
-        cancelODMonitoringRequestByObjectResponse.setCancelODMonitoringRequestByObjectResult(arrOfErrorObj);
+        List<ErrorObject> errorObjects = od_server.cancelODMonitoringRequestByObject(objectRefs, requestDateTime);
+        
+        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+        cancelODMonitoringRequestByObjectResponse.setCancelODMonitoringRequestByObjectResult(arrayOfErrorObject);
         return cancelODMonitoringRequestByObjectResponse;
     }
 
@@ -348,6 +316,7 @@ public class ODServiceEndpoint {
             throws MultispeakWebServiceException {
         InitiateODEventRequestByObjectResponse initiateODEventRequestByObjectResponse =
             objectFactory.createInitiateODEventRequestByObjectResponse();
+        
         float expirationTime = initiateODEventRequestByObject.getExpirationTime();
         String nounType = initiateODEventRequestByObject.getNounType();
         String objectName = initiateODEventRequestByObject.getObjectName();
@@ -358,17 +327,13 @@ public class ODServiceEndpoint {
         Date requestDate =  (xmlRequestDate != null) ? xmlRequestDate.toGregorianCalendar().getTime() : null;
         Calendar requestDateTime = Calendar.getInstance();
         requestDateTime.setTime(requestDate);
-        ErrorObject[] errorObjects =
+        List<ErrorObject> errorObjects =
             od_server.initiateODEventRequestByObject(objectName, nounType, phaseCode, requestDateTime, responseURL,
                 transactionID, expirationTime);
-        ArrayOfErrorObject arrOfErrorObj = objectFactory.createArrayOfErrorObject();
-        if (errorObjects != null) {
-            List<ErrorObject> errorObjList = arrOfErrorObj.getErrorObject();
-            for (ErrorObject errorObject : errorObjects) {
-                errorObjList.add(errorObject);
-            }
-        }
-        initiateODEventRequestByObjectResponse.setInitiateODEventRequestByObjectResult(arrOfErrorObj);
+        
+        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+        initiateODEventRequestByObjectResponse.setInitiateODEventRequestByObjectResult(arrayOfErrorObject);
         return initiateODEventRequestByObjectResponse;
     }
 
@@ -379,26 +344,21 @@ public class ODServiceEndpoint {
             throws MultispeakWebServiceException {
         InitiateODEventRequestByServiceLocationResponse initiateODEventRequestByServiceLocationResponse =
             objectFactory.createInitiateODEventRequestByServiceLocationResponse();
+        
         float expirationTime = initiateODEventRequestByServiceLocation.getExpirationTime();
-        ArrayOfString servLoc = initiateODEventRequestByServiceLocation.getServLoc();
-        List<String> servLocList = servLoc.getString();
+        List<String> servLocs = initiateODEventRequestByServiceLocation.getServLoc().getString();
         String transactionID = initiateODEventRequestByServiceLocation.getTransactionID();
         String responseURL = initiateODEventRequestByServiceLocation.getResponseURL();
         XMLGregorianCalendar xmlRequestDate = initiateODEventRequestByServiceLocation.getRequestDate();
         Date requestDate =  (xmlRequestDate != null) ? xmlRequestDate.toGregorianCalendar().getTime() : null;
         Calendar requestDateTime = Calendar.getInstance();
         requestDateTime.setTime(requestDate);
-        ErrorObject[] errorObjects =
-            od_server.initiateODEventRequestByServiceLocation(servLocList.toArray(new String[servLocList.size()]),
-                requestDateTime, responseURL, transactionID, expirationTime);
-        ArrayOfErrorObject arrOfErrorObj = objectFactory.createArrayOfErrorObject();
-        if (errorObjects != null) {
-            List<ErrorObject> errorObjList = arrOfErrorObj.getErrorObject();
-            for (ErrorObject errorObject : errorObjects) {
-                errorObjList.add(errorObject);
-            }
-        }
-        initiateODEventRequestByServiceLocationResponse.setInitiateODEventRequestByServiceLocationResult(arrOfErrorObj);
+        List<ErrorObject> errorObjects =
+            od_server.initiateODEventRequestByServiceLocation(servLocs, requestDateTime, responseURL, transactionID, expirationTime);
+        
+        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+        initiateODEventRequestByServiceLocationResponse.setInitiateODEventRequestByServiceLocationResult(arrayOfErrorObject);
         return initiateODEventRequestByServiceLocationResponse;
     }
 
@@ -409,6 +369,7 @@ public class ODServiceEndpoint {
             throws MultispeakWebServiceException {
         InitiateODMonitoringRequestByObjectResponse initiateODMonitoringRequestByObjectResponse =
             objectFactory.createInitiateODMonitoringRequestByObjectResponse();
+        
         float expirationTime = initiateODMonitoringRequestByObject.getExpirationTime();
         String nounType = initiateODMonitoringRequestByObject.getNounType();
         String objectName = initiateODMonitoringRequestByObject.getObjectName();
@@ -420,17 +381,13 @@ public class ODServiceEndpoint {
         Calendar requestDateTime = Calendar.getInstance();
         requestDateTime.setTime(requestDate);
         int periodicity = initiateODMonitoringRequestByObject.getPeriodicity();
-        ErrorObject[] errorObjects =
+        List<ErrorObject> errorObjects =
             od_server.initiateODMonitoringRequestByObject(objectName, nounType, phaseCode, periodicity,
                 requestDateTime, responseURL, transactionID, expirationTime);
-        ArrayOfErrorObject arrOfErrorObj = objectFactory.createArrayOfErrorObject();
-        if (errorObjects != null) {
-            List<ErrorObject> errorObjList = arrOfErrorObj.getErrorObject();
-            for (ErrorObject errorObject : errorObjects) {
-                errorObjList.add(errorObject);
-            }
-        }
-        initiateODMonitoringRequestByObjectResponse.setInitiateODMonitoringRequestByObjectResult(arrOfErrorObj);
+        
+        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+        initiateODMonitoringRequestByObjectResponse.setInitiateODMonitoringRequestByObjectResult(arrayOfErrorObject);
         return initiateODMonitoringRequestByObjectResponse;
     }
 
@@ -441,18 +398,14 @@ public class ODServiceEndpoint {
             throws MultispeakWebServiceException {
         CustomerChangedNotificationResponse customerChangedNotificationResponse =
             objectFactory.createCustomerChangedNotificationResponse();
-        ArrayOfCustomer changedCustomers = customerChangedNotification.getChangedCustomers();
-        List<Customer> customerList = changedCustomers.getCustomer();
-        ErrorObject[] errorObjects =
-            od_server.customerChangedNotification(customerList.toArray(new Customer[customerList.size()]));
-        ArrayOfErrorObject arrOfErrorObj = objectFactory.createArrayOfErrorObject();
-        if (errorObjects != null) {
-            List<ErrorObject> errorObjList = arrOfErrorObj.getErrorObject();
-            for (ErrorObject errorObject : errorObjects) {
-                errorObjList.add(errorObject);
-            }
-        }
-        customerChangedNotificationResponse.setCustomerChangedNotificationResult(arrOfErrorObj);
+        
+        List<Customer> customers = customerChangedNotification.getChangedCustomers().getCustomer();
+        List<ErrorObject> errorObjects =
+            od_server.customerChangedNotification(customers);
+        
+        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+        customerChangedNotificationResponse.setCustomerChangedNotificationResult(arrayOfErrorObject);
         return customerChangedNotificationResponse;
     }
 
@@ -462,17 +415,13 @@ public class ODServiceEndpoint {
             @RequestPayload MeterChangedNotification meterChangedNotification) throws MultispeakWebServiceException {
         MeterChangedNotificationResponse meterChangedNotificationResponse =
             objectFactory.createMeterChangedNotificationResponse();
-        ArrayOfMeter changedMeters = meterChangedNotification.getChangedMeters();
-        List<Meter> meterList = changedMeters.getMeter();
-        ErrorObject[] errorObjects = od_server.meterChangedNotification(meterList.toArray(new Meter[meterList.size()]));
-        ArrayOfErrorObject arrOfErrorObj = objectFactory.createArrayOfErrorObject();
-        if (errorObjects != null) {
-            List<ErrorObject> errorObjList = arrOfErrorObj.getErrorObject();
-            for (ErrorObject errorObject : errorObjects) {
-                errorObjList.add(errorObject);
-            }
-        }
-        meterChangedNotificationResponse.setMeterChangedNotificationResult(arrOfErrorObj);
+        
+        List<Meter> meters = meterChangedNotification.getChangedMeters().getMeter();
+        List<ErrorObject> errorObjects = od_server.meterChangedNotification(meters);
+        
+        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+        meterChangedNotificationResponse.setMeterChangedNotificationResult(arrayOfErrorObject);
         return meterChangedNotificationResponse;
     }
 
@@ -483,19 +432,13 @@ public class ODServiceEndpoint {
             throws MultispeakWebServiceException {
         ServiceLocationChangedNotificationResponse serviceLocationChangedNotificationResponse =
             objectFactory.createServiceLocationChangedNotificationResponse();
-        ArrayOfServiceLocation changedServiceLocations =
-            serviceLocationChangedNotification.getChangedServiceLocations();
-        List<ServiceLocation> serviceLocationList = changedServiceLocations.getServiceLocation();
-        ErrorObject[] errorObjects =
-            od_server.serviceLocationChangedNotification(serviceLocationList.toArray(new ServiceLocation[serviceLocationList.size()]));
-        ArrayOfErrorObject arrOfErrorObj = objectFactory.createArrayOfErrorObject();
-        if (errorObjects != null) {
-            List<ErrorObject> errorObjList = arrOfErrorObj.getErrorObject();
-            for (ErrorObject errorObject : errorObjects) {
-                errorObjList.add(errorObject);
-            }
-        }
-        serviceLocationChangedNotificationResponse.setServiceLocationChangedNotificationResult(arrOfErrorObj);
+        
+        List<ServiceLocation> serviceLocations = serviceLocationChangedNotification.getChangedServiceLocations().getServiceLocation();
+        List<ErrorObject> errorObjects = od_server.serviceLocationChangedNotification(serviceLocations);
+        
+        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+        serviceLocationChangedNotificationResponse.setServiceLocationChangedNotificationResult(arrayOfErrorObject);
         return serviceLocationChangedNotificationResponse;
     }
 
@@ -504,6 +447,7 @@ public class ODServiceEndpoint {
     RequestRegistrationIDResponse requestRegistrationID() throws MultispeakWebServiceException {
         RequestRegistrationIDResponse requestRegistrationIDResponse =
             objectFactory.createRequestRegistrationIDResponse();
+        
         String requestRegistrationIDResult = od_server.requestRegistrationID();
         requestRegistrationIDResponse.setRequestRegistrationIDResult(requestRegistrationIDResult);
         return requestRegistrationIDResponse;
@@ -515,40 +459,26 @@ public class ODServiceEndpoint {
             throws MultispeakWebServiceException {
         RegisterForServiceResponse registerForServiceResponse = objectFactory.createRegisterForServiceResponse();
         RegistrationInfo registrationInfo = registerForService.getRegistrationDetails();
-        ErrorObject[] errorObjects = od_server.registerForService(registrationInfo);
-        ArrayOfErrorObject arrOfErrorObj = objectFactory.createArrayOfErrorObject();
-        if (errorObjects != null) {
-            List<ErrorObject> errorObjList = arrOfErrorObj.getErrorObject();
-            for (ErrorObject errorObject : errorObjects) {
-                errorObjList.add(errorObject);
-            }
-        }
-        registerForServiceResponse.setRegisterForServiceResult(arrOfErrorObj);
+        List<ErrorObject> errorObjects = od_server.registerForService(registrationInfo);
+        
+        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+        registerForServiceResponse.setRegisterForServiceResult(arrayOfErrorObject);
         return registerForServiceResponse;
     }
-
-    /**
-     * Un register For service request
-     * 
-     * @param UnregisterForService - request Object.
-     * @return UnregisterForServiceResponse
-     */
 
     @PayloadRoot(localPart = "UnregisterForService", namespace = MultispeakDefines.NAMESPACE_v3)
     public @ResponsePayload
     UnregisterForServiceResponse unregisterForService(@RequestPayload UnregisterForService unregisterForService)
             throws MultispeakWebServiceException {
         UnregisterForServiceResponse unregisterForServiceResponse = objectFactory.createUnregisterForServiceResponse();
+        
         String registrationID = unregisterForService.getRegistrationID();
-        ErrorObject[] errorObjects = od_server.unregisterForService(registrationID);
-        ArrayOfErrorObject arrOfErrorObj = objectFactory.createArrayOfErrorObject();
-        if (errorObjects != null) {
-            List<ErrorObject> errorObjList = arrOfErrorObj.getErrorObject();
-            for (ErrorObject errorObject : errorObjects) {
-                errorObjList.add(errorObject);
-            }
-        }
-        unregisterForServiceResponse.setUnregisterForServiceResult(arrOfErrorObj);
+        List<ErrorObject> errorObjects = od_server.unregisterForService(registrationID);
+        
+        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+        unregisterForServiceResponse.setUnregisterForServiceResult(arrayOfErrorObject);
         return unregisterForServiceResponse;
     }
 
@@ -558,6 +488,7 @@ public class ODServiceEndpoint {
             @RequestPayload GetRegistrationInfoByID getRegistrationInfoByID) throws MultispeakWebServiceException {
         GetRegistrationInfoByIDResponse getRegistrationInfoByIDResponse =
             objectFactory.createGetRegistrationInfoByIDResponse();
+        
         String registrationID = getRegistrationInfoByID.getRegistrationID();
         RegistrationInfo registrationInfo = od_server.getRegistrationInfoByID(registrationID);
         getRegistrationInfoByIDResponse.setGetRegistrationInfoByIDResult(registrationInfo);
@@ -569,14 +500,10 @@ public class ODServiceEndpoint {
     GetPublishMethodsResponse getPublishMethods(@RequestPayload GetPublishMethods getPublishMethods)
             throws MultispeakWebServiceException {
         GetPublishMethodsResponse getPublishMethodsResponse = objectFactory.createGetPublishMethodsResponse();
-        String[] publishMethodsArr = od_server.getPublishMethods();
+        
+        List<String> publishMethods = od_server.getPublishMethods();
         ArrayOfString arrayOfString = objectFactory.createArrayOfString();
-        if (publishMethodsArr != null) {
-            List<String> publishMethodsList = arrayOfString.getString();
-            for (String publishMethod : publishMethodsArr) {
-                publishMethodsList.add(publishMethod);
-            }
-        }
+        arrayOfString.getString().addAll(publishMethods);
         getPublishMethodsResponse.setGetPublishMethodsResult(arrayOfString);
         return getPublishMethodsResponse;
     }
@@ -588,18 +515,13 @@ public class ODServiceEndpoint {
             throws MultispeakWebServiceException {
         DomainMembersChangedNotificationResponse domainMembersChangedNotificationResponse =
             objectFactory.createDomainMembersChangedNotificationResponse();
-        ArrayOfDomainMember changedDomainMembers = domainMembersChangedNotification.getChangedDomainMembers();
-        List<DomainMember> domainMemberList = changedDomainMembers.getDomainMember();
-        ErrorObject[] errorObjects =
-            od_server.domainMembersChangedNotification(domainMemberList.toArray(new DomainMember[domainMemberList.size()]));
-        ArrayOfErrorObject arrOfErrorObj = objectFactory.createArrayOfErrorObject();
-        if (errorObjects != null) {
-            List<ErrorObject> errorObjList = arrOfErrorObj.getErrorObject();
-            for (ErrorObject errorObject : errorObjects) {
-                errorObjList.add(errorObject);
-            }
-        }
-        domainMembersChangedNotificationResponse.setDomainMembersChangedNotificationResult(arrOfErrorObj);
+        
+        List<DomainMember> domainMembers = domainMembersChangedNotification.getChangedDomainMembers().getDomainMember();
+        List<ErrorObject> errorObjects = od_server.domainMembersChangedNotification(domainMembers);
+
+        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+        domainMembersChangedNotificationResponse.setDomainMembersChangedNotificationResult(arrayOfErrorObject);
         return domainMembersChangedNotificationResponse;
     }
 
@@ -610,18 +532,13 @@ public class ODServiceEndpoint {
             throws MultispeakWebServiceException {
         DomainNamesChangedNotificationResponse domainNamesChangedNotificationResponse =
             objectFactory.createDomainNamesChangedNotificationResponse();
-        ArrayOfDomainNameChange changedDomainNames = domainNamesChangedNotification.getChangedDomainNames();
-        List<DomainNameChange> domainNameChange = changedDomainNames.getDomainNameChange();
-        ErrorObject[] errorObjects =
-            od_server.domainNamesChangedNotification(domainNameChange.toArray(new DomainNameChange[domainNameChange.size()]));
-        ArrayOfErrorObject arrOfErrorObj = objectFactory.createArrayOfErrorObject();
-        if (errorObjects != null) {
-            List<ErrorObject> errorObjList = arrOfErrorObj.getErrorObject();
-            for (ErrorObject errorObject : errorObjects) {
-                errorObjList.add(errorObject);
-            }
-        }
-        domainNamesChangedNotificationResponse.setDomainNamesChangedNotificationResult(arrOfErrorObj);
+        
+        List<DomainNameChange> domainNameChanges = domainNamesChangedNotification.getChangedDomainNames().getDomainNameChange();
+        List<ErrorObject> errorObjects =
+            od_server.domainNamesChangedNotification(domainNameChanges);
+        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+        domainNamesChangedNotificationResponse.setDomainNamesChangedNotificationResult(arrayOfErrorObject);
         return domainNamesChangedNotificationResponse;
     }
 
@@ -632,19 +549,12 @@ public class ODServiceEndpoint {
             throws MultispeakWebServiceException {
         OutageEventChangedNotificationResponse outageEventChangedNotificationResponse =
             objectFactory.createOutageEventChangedNotificationResponse();
-        ArrayOfOutageEvent oEvents = outageEventChangedNotification.getOEvents();
-        List<OutageEvent> outageEvent = oEvents.getOutageEvent();
-        ErrorObject[] errorObjects =
-            od_server.outageEventChangedNotification(outageEvent.toArray(new OutageEvent[outageEvent.size()]));
-        ArrayOfErrorObject arrOfErrorObj = objectFactory.createArrayOfErrorObject();
-        if (errorObjects != null) {
-            List<ErrorObject> errorObjList = arrOfErrorObj.getErrorObject();
-            for (ErrorObject errorObject : errorObjects) {
-                errorObjList.add(errorObject);
-            }
-        }
-        outageEventChangedNotificationResponse.setOutageEventChangedNotificationResult(arrOfErrorObj);
+        
+        List<OutageEvent> outageEvents = outageEventChangedNotification.getOEvents().getOutageEvent();
+        List<ErrorObject> errorObjects = od_server.outageEventChangedNotification(outageEvents);
+        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+        outageEventChangedNotificationResponse.setOutageEventChangedNotificationResult(arrayOfErrorObject);
         return outageEventChangedNotificationResponse;
     }
-
 }

@@ -1,5 +1,7 @@
 package com.cannontech.multispeak.service;
 
+import java.util.List;
+
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.msp.beans.v3.ConnectDisconnectEvent;
@@ -40,8 +42,8 @@ public interface MultispeakMeterService {
 	 * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
 	 * @throws MultispeakWebServiceException 
 	 */
-	public ErrorObject[] odEvent(MultispeakVendor mspVendor, 
-	        String[] meterNumbers,
+	public List<ErrorObject> odEvent(MultispeakVendor mspVendor, 
+	        List<String> meterNumbers,
 	        String transactionID, String responseUrl) throws MultispeakWebServiceException;
 	
     /**
@@ -49,8 +51,8 @@ public interface MultispeakMeterService {
      * Callback fires for each completed read, may have multiple per meterNumber.
      * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
      */
-    public ErrorObject[] meterReadEvent(MultispeakVendor mspVendor, 
-            String[] meterNumbers,
+    public List<ErrorObject> meterReadEvent(MultispeakVendor mspVendor, 
+            List<String> meterNumbers,
             String transactionID, String responseUrl);
 
     /**
@@ -58,7 +60,7 @@ public interface MultispeakMeterService {
      * Callback fires for all completed reads, will have only one for meterNumber. 
      * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
      */
-    public ErrorObject[] blockMeterReadEvent(MultispeakVendor mspVendor,
+    public List<ErrorObject> blockMeterReadEvent(MultispeakVendor mspVendor,
                                              String meterNumber,
                                              FormattedBlockProcessingService<Block> blockProcessingService,
                                              String transactionId, String responseUrl);
@@ -67,29 +69,29 @@ public interface MultispeakMeterService {
      * Send a disconnect/connect request to Porter (PLC) or submit to queue (RFN) for each meter in meterNumbers.
      * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
      */
-    public ErrorObject[] cdEvent(MultispeakVendor mspVendor, 
-            ConnectDisconnectEvent [] cdEvents,
+    public List<ErrorObject> cdEvent(MultispeakVendor mspVendor, 
+            List<ConnectDisconnectEvent> cdEvents,
             String transactionID, String responseURL) throws MultispeakWebServiceException;
 
     /**
      * Add MeterNos to SystemGroupEnum.DISCONNECTSTATUS Device Group. 
      */
-    public ErrorObject[] initiateDisconnectedStatus(MultispeakVendor mspVendor, String[] meterNos);
+    public List<ErrorObject> initiateDisconnectedStatus(MultispeakVendor mspVendor, List<String> meterNos);
 
     /**
      * Add MeterNos to SystemGroupEnum.USAGEMONITORING Device Group.
      */
-    public ErrorObject[] initiateUsageMonitoring(MultispeakVendor mspVendor, String[] meterNos);
+    public List<ErrorObject> initiateUsageMonitoring(MultispeakVendor mspVendor, List<String> meterNos);
 
     /**
      * Remove MeterNos from SystemGroupEnum.DISCONNECTSTATUS Device Group. 
      */
-    public ErrorObject[] cancelDisconnectedStatus(MultispeakVendor mspVendor, String[] meterNos);
+    public List<ErrorObject> cancelDisconnectedStatus(MultispeakVendor mspVendor, List<String> meterNos);
 
     /**
      * Remove MeterNos from SystemGroupEnum.USAGEMONITORING Device Group.
      */
-    public ErrorObject[] cancelUsageMonitoring(MultispeakVendor mspVendor, String[] meterNos);
+    public List<ErrorObject> cancelUsageMonitoring(MultispeakVendor mspVendor, List<String> meterNos);
     
     /**
      * Add addMeters to Yukon database.
@@ -100,33 +102,33 @@ public interface MultispeakMeterService {
      *  then a new Meter object will be added to Yukon.
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] meterAdd(final MultispeakVendor mspVendor, Meter[] addMeters) throws MultispeakWebServiceException;
+    public List<ErrorObject> meterAdd(final MultispeakVendor mspVendor, List<Meter> addMeters) throws MultispeakWebServiceException;
 
     /**
      * Removes (disables) a list of meters in Yukon.
      */
-    public ErrorObject[] meterRemove(MultispeakVendor mspVendor, Meter[] removeMeters);
+    public List<ErrorObject> meterRemove(MultispeakVendor mspVendor, List<Meter> removeMeters);
 
     /**
      * Updates the "meter" object, based on the PaoName Alias lookup value. 
      */
-    public ErrorObject[] serviceLocationChanged(final MultispeakVendor mspVendor, ServiceLocation[] serviceLocations);
+    public List<ErrorObject> serviceLocationChanged(final MultispeakVendor mspVendor, List<ServiceLocation> serviceLocations);
 
     /**
      * Changes the meter information.  Meter is looked up by the Physical Address (TransponderId). 
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] meterChanged(final MultispeakVendor mspVendor, Meter[] changedMeters) throws MultispeakWebServiceException;
+    public List<ErrorObject> meterChanged(final MultispeakVendor mspVendor, List<Meter> changedMeters) throws MultispeakWebServiceException;
 
     /**
      * Adds meters to a group.  If the group doesn't exist, a new group will be created
      */
-    public ErrorObject[] addMetersToGroup(MeterGroup meterGroup, String mspMethod, MultispeakVendor mspVendor);
+    public List<ErrorObject> addMetersToGroup(MeterGroup meterGroup, String mspMethod, MultispeakVendor mspVendor);
     
     /**
      * Removes meterNumbers from groupName.
      */
-    public ErrorObject[] removeMetersFromGroup(String groupName, String[] meterNumbers, MultispeakVendor mspVendor);
+    public List<ErrorObject> removeMetersFromGroup(String groupName, List<String> meterNumbers, MultispeakVendor mspVendor);
     
     /**
      * Removed meters from groupName AND deletes groupName from the system.

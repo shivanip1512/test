@@ -6,7 +6,10 @@
 package com.cannontech.multispeak.event;
 
 
+
 import java.util.List;
+
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.SimpleMeter;
@@ -32,13 +35,6 @@ import com.cannontech.multispeak.data.ReadableDevice;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 import com.cannontech.spring.YukonSpringHook;
 
-
-/**
- * @author stacey
- *
- *         To change the template for this generated type comment go to
- *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 public class MeterReadEvent extends MultispeakEvent {
 
     private final MeterDao meterDao = YukonSpringHook.getBean("meterDao", MeterDao.class);
@@ -93,7 +89,6 @@ public class MeterReadEvent extends MultispeakEvent {
             + getDevice().getMeterRead().getObjectID());
 
       try {
-          ErrorObject[] errObjects;
           ReadingChangedNotification readChangeNotification = objectFactory.createReadingChangedNotification();
           ArrayOfMeterRead arrayOfMeterRead = objectFactory.createArrayOfMeterRead();
           List<MeterRead> meterReadList = arrayOfMeterRead.getMeterRead();
@@ -102,11 +97,10 @@ public class MeterReadEvent extends MultispeakEvent {
           readChangeNotification.setChangedMeterReads(arrayOfMeterRead);
           ReadingChangedNotificationResponse response = cbClient.readingChangedNotification(getMspVendor(), getResponseUrl(), readChangeNotification);
           if (response != null) {
-              List<ErrorObject> errorObjList = response.getReadingChangedNotificationResult().getErrorObject();
-              errObjects = mspObjectDao.toErrorObject(errorObjList);
-              if (errObjects != null) {
+              List<ErrorObject> responseErrorObjects = response.getReadingChangedNotificationResult().getErrorObject();
+              if (CollectionUtils.isNotEmpty(responseErrorObjects)) {
                   YukonSpringHook.getBean(MultispeakFuncs.class).logErrorObjects(getResponseUrl(), "ReadingChangedNotification",
-                                                                                 errObjects);
+                                                                                 responseErrorObjects);
               }
           } else {
               CTILogger.info("Response not recieved for (" + getResponseUrl() + "): Meter Number " + getDevice().getMeterRead()

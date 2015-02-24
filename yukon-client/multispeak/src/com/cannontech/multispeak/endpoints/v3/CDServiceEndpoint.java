@@ -1,5 +1,5 @@
-package com.cannontech.multispeak.endpoints.v3;
 
+package com.cannontech.multispeak.endpoints.v3;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,14 +98,10 @@ public class CDServiceEndpoint {
     PingURLResponse pingUrl() throws MultispeakWebServiceException {
         PingURLResponse response = objectFactory.createPingURLResponse();
 
-        ErrorObject[] errorObjects = cd_server.pingURL();
+        ErrorObject errorObject = cd_server.pingURL();
 
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        List<ErrorObject> errorObjList = arrayOfErrorObject.getErrorObject();
-
-        for (ErrorObject errorObject : errorObjects) {
-            errorObjList.add(errorObject);
-        }
+        arrayOfErrorObject.getErrorObject().add(errorObject);
         response.setPingURLResult(arrayOfErrorObject);
         return response;
     }
@@ -114,7 +110,8 @@ public class CDServiceEndpoint {
     public @ResponsePayload
     GetMethodsResponse getMethods() throws MultispeakWebServiceException {
         GetMethodsResponse response = objectFactory.createGetMethodsResponse();
-        String[] methodNames = cd_server.getMethods();
+        
+        List<String> methodNames = cd_server.getMethods();
         response.setGetMethodsResult(multispeakFuncs.toArrayOfString(methodNames));
         return response;
     }
@@ -123,7 +120,8 @@ public class CDServiceEndpoint {
     public @ResponsePayload
     GetDomainNamesResponse getDomainNames() throws MultispeakWebServiceException {
         GetDomainNamesResponse response = objectFactory.createGetDomainNamesResponse();
-        String[] domainNames = cd_server.getDomainNames();
+        
+        List<String> domainNames = cd_server.getDomainNames();
         response.setGetDomainNamesResult(multispeakFuncs.toArrayOfString(domainNames));
         return response;
     }
@@ -133,12 +131,11 @@ public class CDServiceEndpoint {
     GetDomainMembersResponse getDomainMembers(@RequestPayload GetDomainMembers getDomainMembers)
             throws MultispeakWebServiceException {
         GetDomainMembersResponse response = objectFactory.createGetDomainMembersResponse();
-        DomainMember[] domainMembers = cd_server.getDomainMembers(getDomainMembers.getDomainName());
+        
+        List<DomainMember> domainMembers = cd_server.getDomainMembers(getDomainMembers.getDomainName());
+        
         ArrayOfDomainMember arrayOfDomainMember = objectFactory.createArrayOfDomainMember();
-        List<DomainMember> domainMembersList = arrayOfDomainMember.getDomainMember();
-        for (DomainMember domainMember : domainMembers) {
-            domainMembersList.add(domainMember);
-        }
+        arrayOfDomainMember.getDomainMember().addAll(domainMembers);
         response.setGetDomainMembersResult(arrayOfDomainMember);
         return response;
     }
@@ -148,12 +145,11 @@ public class CDServiceEndpoint {
     GetCDSupportedMetersResponse getCDSupportedMeters(@RequestPayload GetCDSupportedMeters getCDSupportedMeters)
             throws MultispeakWebServiceException {
         GetCDSupportedMetersResponse response = objectFactory.createGetCDSupportedMetersResponse();
-        Meter[] meters = cd_server.getCDSupportedMeters(getCDSupportedMeters.getLastReceived());
+        
+        List<Meter> meters = cd_server.getCDSupportedMeters(getCDSupportedMeters.getLastReceived());
+
         ArrayOfMeter arrayOfMeter = objectFactory.createArrayOfMeter();
-        List<Meter> meterList = arrayOfMeter.getMeter();
-        for (Meter meter : meters) {
-            meterList.add(meter);
-        }
+        arrayOfMeter.getMeter().addAll(meters);
         response.setGetCDSupportedMetersResult(arrayOfMeter);
         return response;
     }
@@ -163,14 +159,12 @@ public class CDServiceEndpoint {
     GetModifiedCDMetersResponse getModifiedCDMeters(@RequestPayload GetModifiedCDMeters getModifiedCDMeters)
             throws MultispeakWebServiceException {
         GetModifiedCDMetersResponse response = objectFactory.createGetModifiedCDMetersResponse();
-        Meter[] meters =
-            cd_server.getModifiedCDMeters(getModifiedCDMeters.getPreviousSessionID(),
-                getModifiedCDMeters.getLastReceived());
+        
+        List<Meter> meters =
+            cd_server.getModifiedCDMeters(getModifiedCDMeters.getPreviousSessionID(), getModifiedCDMeters.getLastReceived());
+        
         ArrayOfMeter arrayOfMeter = objectFactory.createArrayOfMeter();
-        List<Meter> meterList = arrayOfMeter.getMeter();
-        for (Meter meter : meters) {
-            meterList.add(meter);
-        }
+        arrayOfMeter.getMeter().addAll(meters);
         response.setGetModifiedCDMetersResult(arrayOfMeter);
         return response;
     }
@@ -190,10 +184,10 @@ public class CDServiceEndpoint {
     InitiateConnectDisconnectResponse initiateConnectDisconnect(
             @RequestPayload InitiateConnectDisconnect initiateConnectDisconnect) throws MultispeakWebServiceException {
         InitiateConnectDisconnectResponse response = objectFactory.createInitiateConnectDisconnectResponse();
-        List<ConnectDisconnectEvent> cdEventList = initiateConnectDisconnect.getCdEvents().getConnectDisconnectEvent();
+        List<ConnectDisconnectEvent> cdEvents = initiateConnectDisconnect.getCdEvents().getConnectDisconnectEvent();
 
-        ErrorObject[] errorObjects =
-            cd_server.initiateConnectDisconnect(cdEventList.toArray(new ConnectDisconnectEvent[0]),
+        List<ErrorObject> errorObjects =
+            cd_server.initiateConnectDisconnect(cdEvents,
                 initiateConnectDisconnect.getResponseURL(), initiateConnectDisconnect.getTransactionID(),
                 initiateConnectDisconnect.getExpirationTime());
 
@@ -208,13 +202,11 @@ public class CDServiceEndpoint {
             throws MultispeakWebServiceException {
         ServiceLocationChangedNotificationResponse response =
             objectFactory.createServiceLocationChangedNotificationResponse();
+        
         if (serviceLocationChangedNotification != null
             && serviceLocationChangedNotification.getChangedServiceLocations() != null) {
-            List<ServiceLocation> serviceLocationList =
-                serviceLocationChangedNotification.getChangedServiceLocations().getServiceLocation();
-            ServiceLocation[] serviceLocations =
-                serviceLocationList.toArray(new ServiceLocation[serviceLocationList.size()]);
-            ErrorObject[] errorObjects = cd_server.serviceLocationChangedNotification(serviceLocations);
+            List<ServiceLocation> serviceLocations = serviceLocationChangedNotification.getChangedServiceLocations().getServiceLocation();
+            List<ErrorObject> errorObjects = cd_server.serviceLocationChangedNotification(serviceLocations);
             response.setServiceLocationChangedNotificationResult(multispeakFuncs.toArrayOfErrorObject(errorObjects));
         }       
         return response;
@@ -225,9 +217,9 @@ public class CDServiceEndpoint {
     MeterChangedNotificationResponse meterChangedNotification(
             @RequestPayload MeterChangedNotification meterChangedNotification) throws MultispeakWebServiceException {
         MeterChangedNotificationResponse response = objectFactory.createMeterChangedNotificationResponse();
-        List<Meter> metersList = meterChangedNotification.getChangedMeters().getMeter();
-        Meter[] meters = metersList.toArray(new Meter[metersList.size()]);
-        ErrorObject[] errorObjects = cd_server.meterChangedNotification(meters);
+        
+        List<Meter> meters = meterChangedNotification.getChangedMeters().getMeter();
+        List<ErrorObject> errorObjects = cd_server.meterChangedNotification(meters);
         response.setMeterChangedNotificationResult(multispeakFuncs.toArrayOfErrorObject(errorObjects));
         return response;
     }
@@ -238,9 +230,8 @@ public class CDServiceEndpoint {
             @RequestPayload CustomerChangedNotification customerChangedNotification)
             throws MultispeakWebServiceException {
         CustomerChangedNotificationResponse response = objectFactory.createCustomerChangedNotificationResponse();
-        List<Customer> customersList = customerChangedNotification.getChangedCustomers().getCustomer();
-        Customer[] customers = customersList.toArray(new Customer[customersList.size()]);
-        ErrorObject[] errorObjects = cd_server.customerChangedNotification(customers);
+        List<Customer> customers = customerChangedNotification.getChangedCustomers().getCustomer();
+        List<ErrorObject> errorObjects = cd_server.customerChangedNotification(customers);
         response.setCustomerChangedNotificationResult(multispeakFuncs.toArrayOfErrorObject(errorObjects));
         return response;
     }
@@ -250,9 +241,8 @@ public class CDServiceEndpoint {
     CDDeviceAddNotificationResponse CDDeviceAddNotification(
             @RequestPayload CDDeviceAddNotification cdDeviceAddNotification) throws MultispeakWebServiceException {
         CDDeviceAddNotificationResponse response = objectFactory.createCDDeviceAddNotificationResponse();
-        List<CDDevice> cdDeviceList = cdDeviceAddNotification.getAddedCDDs().getCDDevice();
-        CDDevice[] cdDevices = cdDeviceList.toArray(new CDDevice[cdDeviceList.size()]);
-        ErrorObject[] errorObjects = cd_server.CDDeviceAddNotification(cdDevices);
+        List<CDDevice> cdDevices = cdDeviceAddNotification.getAddedCDDs().getCDDevice();
+        List<ErrorObject> errorObjects = cd_server.CDDeviceAddNotification(cdDevices);
         response.setCDDeviceAddNotificationResult(multispeakFuncs.toArrayOfErrorObject(errorObjects));
         return response;
     }
@@ -263,9 +253,8 @@ public class CDServiceEndpoint {
             @RequestPayload CDDeviceChangedNotification cdDeviceChangedNotification)
             throws MultispeakWebServiceException {
         CDDeviceChangedNotificationResponse response = objectFactory.createCDDeviceChangedNotificationResponse();
-        List<CDDevice> cdDeviceList = cdDeviceChangedNotification.getChangedCDDs().getCDDevice();
-        CDDevice[] CDDevices = cdDeviceList.toArray(new CDDevice[cdDeviceList.size()]);
-        ErrorObject[] errorObjects = cd_server.CDDeviceChangedNotification(CDDevices);
+        List<CDDevice> cdDevices = cdDeviceChangedNotification.getChangedCDDs().getCDDevice();
+        List<ErrorObject> errorObjects = cd_server.CDDeviceChangedNotification(cdDevices);
         response.setCDDeviceChangedNotificationResult(multispeakFuncs.toArrayOfErrorObject(errorObjects));
         return response;
     }
@@ -276,11 +265,8 @@ public class CDServiceEndpoint {
             @RequestPayload CDDeviceExchangeNotification cdDeviceExchangeNotification)
             throws MultispeakWebServiceException {
         CDDeviceExchangeNotificationResponse response = objectFactory.createCDDeviceExchangeNotificationResponse();
-        List<CDDeviceExchange> cdDeviceExchangeList =
-            cdDeviceExchangeNotification.getCDDChangeout().getCDDeviceExchange();
-        CDDeviceExchange[] cdDeviceExchanges =
-            cdDeviceExchangeList.toArray(new CDDeviceExchange[cdDeviceExchangeList.size()]);
-        ErrorObject[] errorObjects = cd_server.CDDeviceExchangeNotification(cdDeviceExchanges);
+        List<CDDeviceExchange> cdDeviceExchanges = cdDeviceExchangeNotification.getCDDChangeout().getCDDeviceExchange();
+        List<ErrorObject> errorObjects = cd_server.CDDeviceExchangeNotification(cdDeviceExchanges);
         response.setCDDeviceExchangeNotificationResult(multispeakFuncs.toArrayOfErrorObject(errorObjects));
         return response;
     }
@@ -290,9 +276,8 @@ public class CDServiceEndpoint {
     CDDeviceRemoveNotificationResponse CDDeviceRemoveNotification(
             @RequestPayload CDDeviceRemoveNotification cdDeviceRemoveNotification) throws MultispeakWebServiceException {
         CDDeviceRemoveNotificationResponse response = objectFactory.createCDDeviceRemoveNotificationResponse();
-        List<CDDevice> cdDeviceList = cdDeviceRemoveNotification.getRemovedCDDs().getCDDevice();
-        CDDevice[] cdDevices = cdDeviceList.toArray(new CDDevice[cdDeviceList.size()]);
-        ErrorObject[] errorObjects = cd_server.CDDeviceRemoveNotification(cdDevices);
+        List<CDDevice> cdDevices= cdDeviceRemoveNotification.getRemovedCDDs().getCDDevice();
+        List<ErrorObject> errorObjects = cd_server.CDDeviceRemoveNotification(cdDevices);
         response.setCDDeviceRemoveNotificationResult(multispeakFuncs.toArrayOfErrorObject(errorObjects));
         return response;
     }
@@ -302,9 +287,8 @@ public class CDServiceEndpoint {
     CDDeviceRetireNotificationResponse CDDeviceRetireNotification(
             @RequestPayload CDDeviceRetireNotification cdDeviceRetireNotification) throws MultispeakWebServiceException {
         CDDeviceRetireNotificationResponse response = objectFactory.createCDDeviceRetireNotificationResponse();
-        List<CDDevice> cdDeviceList = cdDeviceRetireNotification.getRetiredCDDs().getCDDevice();
-        CDDevice[] cdDevices = cdDeviceList.toArray(new CDDevice[cdDeviceList.size()]);
-        ErrorObject[] errorObjects = cd_server.CDDeviceRetireNotification(cdDevices);
+        List<CDDevice> cdDevices = cdDeviceRetireNotification.getRetiredCDDs().getCDDevice();
+        List<ErrorObject> errorObjects = cd_server.CDDeviceRetireNotification(cdDevices);
         response.setCDDeviceRetireNotificationResult(multispeakFuncs.toArrayOfErrorObject(errorObjects));
         return response;
     }
@@ -323,7 +307,7 @@ public class CDServiceEndpoint {
     RegisterForServiceResponse registerForService(@RequestPayload RegisterForService registerForService)
             throws MultispeakWebServiceException {
         RegisterForServiceResponse response = objectFactory.createRegisterForServiceResponse();
-        ErrorObject[] errorObjects = cd_server.registerForService(registerForService.getRegistrationDetails());
+        List<ErrorObject> errorObjects = cd_server.registerForService(registerForService.getRegistrationDetails());
         response.setRegisterForServiceResult(multispeakFuncs.toArrayOfErrorObject(errorObjects));
         return response;
     }
@@ -333,7 +317,7 @@ public class CDServiceEndpoint {
     UnregisterForServiceResponse unregisterForService(@RequestPayload UnregisterForService unregisterForService)
             throws MultispeakWebServiceException {
         UnregisterForServiceResponse response = objectFactory.createUnregisterForServiceResponse();
-        ErrorObject[] errorObjects = cd_server.unregisterForService(unregisterForService.getRegistrationID());
+        List<ErrorObject> errorObjects = cd_server.unregisterForService(unregisterForService.getRegistrationID());
         response.setUnregisterForServiceResult(multispeakFuncs.toArrayOfErrorObject(errorObjects));
         return response;
     }
@@ -343,8 +327,7 @@ public class CDServiceEndpoint {
     GetRegistrationInfoByIDResponse getRegistrationInfoByID(
             @RequestPayload GetRegistrationInfoByID getRegistrationInfoByID) throws MultispeakWebServiceException {
         GetRegistrationInfoByIDResponse response = objectFactory.createGetRegistrationInfoByIDResponse();
-        RegistrationInfo registrationInfo =
-            cd_server.getRegistrationInfoByID(getRegistrationInfoByID.getRegistrationID());
+        RegistrationInfo registrationInfo = cd_server.getRegistrationInfoByID(getRegistrationInfoByID.getRegistrationID());
         response.setGetRegistrationInfoByIDResult(registrationInfo);
         return response;
     }
@@ -353,7 +336,7 @@ public class CDServiceEndpoint {
     public @ResponsePayload
     GetPublishMethodsResponse getPublishMethods() throws MultispeakWebServiceException {
         GetPublishMethodsResponse response = objectFactory.createGetPublishMethodsResponse();
-        String[] publishMethods = cd_server.getPublishMethods();
+        List<String> publishMethods = cd_server.getPublishMethods();
         response.setGetPublishMethodsResult(multispeakFuncs.toArrayOfString(publishMethods));
         return response;
     }
@@ -363,12 +346,9 @@ public class CDServiceEndpoint {
     DomainMembersChangedNotificationResponse domainMembersChangedNotification(
             @RequestPayload DomainMembersChangedNotification domainMembersChangedNotification)
             throws MultispeakWebServiceException {
-        DomainMembersChangedNotificationResponse response =
-            objectFactory.createDomainMembersChangedNotificationResponse();
-        List<DomainMember> domainMembersList =
-            domainMembersChangedNotification.getChangedDomainMembers().getDomainMember();
-        DomainMember[] domainMembers = domainMembersList.toArray(new DomainMember[domainMembersList.size()]);
-        ErrorObject[] errorObjects = cd_server.domainMembersChangedNotification(domainMembers);
+        DomainMembersChangedNotificationResponse response = objectFactory.createDomainMembersChangedNotificationResponse();
+        List<DomainMember> domainMembers = domainMembersChangedNotification.getChangedDomainMembers().getDomainMember();
+        List<ErrorObject> errorObjects = cd_server.domainMembersChangedNotification(domainMembers);
         response.setDomainMembersChangedNotificationResult(multispeakFuncs.toArrayOfErrorObject(errorObjects));
         return response;
     }
@@ -379,11 +359,8 @@ public class CDServiceEndpoint {
             @RequestPayload DomainNamesChangedNotification domainNamesChangedNotification)
             throws MultispeakWebServiceException {
         DomainNamesChangedNotificationResponse response = objectFactory.createDomainNamesChangedNotificationResponse();
-        List<DomainNameChange> domainNameChangeList =
-            domainNamesChangedNotification.getChangedDomainNames().getDomainNameChange();
-        DomainNameChange[] domainNameChanges =
-            domainNameChangeList.toArray(new DomainNameChange[domainNameChangeList.size()]);
-        ErrorObject[] errorObjects = cd_server.domainNamesChangedNotification(domainNameChanges);
+        List<DomainNameChange> domainNameChanges = domainNamesChangedNotification.getChangedDomainNames().getDomainNameChange();
+        List<ErrorObject> errorObjects = cd_server.domainNamesChangedNotification(domainNameChanges);
         response.setDomainNamesChangedNotificationResult(multispeakFuncs.toArrayOfErrorObject(errorObjects));
         return response;
     }
@@ -393,9 +370,8 @@ public class CDServiceEndpoint {
     InitiateCDStateRequestResponse initiateCDStateRequest(@RequestPayload InitiateCDStateRequest initiateCDStateRequest)
             throws MultispeakWebServiceException {
         InitiateCDStateRequestResponse response = objectFactory.createInitiateCDStateRequestResponse();
-        List<CDState> cdStateList = initiateCDStateRequest.getStates().getCDState();
-        CDState[] cdStates = cdStateList.toArray(new CDState[cdStateList.size()]);
-        ErrorObject[] errorObjects =
+        List<CDState> cdStates = initiateCDStateRequest.getStates().getCDState();
+        List<ErrorObject> errorObjects =
             cd_server.initiateCDStateRequest(cdStates, initiateCDStateRequest.getResponseURL(),
                 initiateCDStateRequest.getTransactionID(), initiateCDStateRequest.getExpirationTime());
         response.setInitiateCDStateRequestResult(multispeakFuncs.toArrayOfErrorObject(errorObjects));
@@ -407,9 +383,8 @@ public class CDServiceEndpoint {
     InitiateArmCDDeviceResponse initiateArmCDDevice(@RequestPayload InitiateArmCDDevice initiateArmCDDevice)
             throws MultispeakWebServiceException {
         InitiateArmCDDeviceResponse response = objectFactory.createInitiateArmCDDeviceResponse();
-        List<CDState> cdStateList = initiateArmCDDevice.getStates().getCDState();
-        CDState[] cdStates = cdStateList.toArray(new CDState[cdStateList.size()]);
-        ErrorObject[] errorObjects =
+        List<CDState> cdStates = initiateArmCDDevice.getStates().getCDState();
+        List<ErrorObject> errorObjects =
             cd_server.initiateArmCDDevice(cdStates, initiateArmCDDevice.getResponseURL(),
                 initiateArmCDDevice.getTransactionID(), initiateArmCDDevice.getExpirationTime());
         response.setInitiateArmCDDeviceResult(multispeakFuncs.toArrayOfErrorObject(errorObjects));
@@ -421,9 +396,8 @@ public class CDServiceEndpoint {
     InitiateEnableCDDeviceResponse initiateEnableCDDevice(@RequestPayload InitiateEnableCDDevice initiateEnableCDDevice)
             throws MultispeakWebServiceException {
         InitiateEnableCDDeviceResponse response = objectFactory.createInitiateEnableCDDeviceResponse();
-        List<CDState> cdStateList = initiateEnableCDDevice.getStates().getCDState();
-        CDState[] cdStates = cdStateList.toArray(new CDState[cdStateList.size()]);
-        ErrorObject[] errorObjects =
+        List<CDState> cdStates = initiateEnableCDDevice.getStates().getCDState();
+        List<ErrorObject> errorObjects =
             cd_server.initiateEnableCDDevice(cdStates, initiateEnableCDDevice.getResponseURL(),
                 initiateEnableCDDevice.getTransactionID(), initiateEnableCDDevice.getExpirationTime());
         response.setInitiateEnableCDDeviceResult(multispeakFuncs.toArrayOfErrorObject(errorObjects));
@@ -435,9 +409,8 @@ public class CDServiceEndpoint {
     InitiateDisableCDDeviceResponse initiateDisableCDDevice(
             @RequestPayload InitiateDisableCDDevice initiateDisableCDDevice) throws MultispeakWebServiceException {
         InitiateDisableCDDeviceResponse response = objectFactory.createInitiateDisableCDDeviceResponse();
-        List<CDState> cdStateList = initiateDisableCDDevice.getStates().getCDState();
-        CDState[] cdStates = cdStateList.toArray(new CDState[cdStateList.size()]);
-        ErrorObject[] errorObjects =
+        List<CDState> cdStates = initiateDisableCDDevice.getStates().getCDState();
+        List<ErrorObject> errorObjects =
             cd_server.initiateDisableCDDevice(cdStates, initiateDisableCDDevice.getResponseURL(),
                 initiateDisableCDDevice.getTransactionID(), initiateDisableCDDevice.getExpirationTime());
         response.setInitiateDisableCDDeviceResult(multispeakFuncs.toArrayOfErrorObject(errorObjects));

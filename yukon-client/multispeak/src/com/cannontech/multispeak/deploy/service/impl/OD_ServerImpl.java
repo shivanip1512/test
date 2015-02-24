@@ -1,6 +1,8 @@
 package com.cannontech.multispeak.deploy.service.impl;
 
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,71 +41,70 @@ public class OD_ServerImpl implements OD_Server {
     }
     
     @Override
-    public ErrorObject[] pingURL() throws MultispeakWebServiceException {
+    public ErrorObject pingURL() throws MultispeakWebServiceException {
         init();
-        return new ErrorObject[0];
+        return new ErrorObject();
     }
     
     @Override
-    public String[] getMethods() throws MultispeakWebServiceException {
+    public List<String> getMethods() throws MultispeakWebServiceException {
         init();
         String[] methods = new String[] { "pingURL", "getMethods", "initiateOutageDetectionEventRequest" };
-        return multispeakFuncs.getMethods(MultispeakDefines.OD_Server_STR, methods);
+        return multispeakFuncs.getMethods(MultispeakDefines.OD_Server_STR, Arrays.asList(methods));
     }
     
     @Override
-    public String[] getDomainNames() throws MultispeakWebServiceException {
+    public List<String> getDomainNames() throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
     
     @Override
-    public DomainMember[] getDomainMembers(String domainName) throws MultispeakWebServiceException {
+    public List<DomainMember> getDomainMembers(String domainName) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
     
     @Override
-    public OutageDetectionDevice[] getAllOutageDetectionDevices(String lastReceived) throws MultispeakWebServiceException {
+    public List<OutageDetectionDevice> getAllOutageDetectionDevices(String lastReceived) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
     
     @Override
-    public OutageDetectionDevice[] getOutageDetectionDevicesByMeterNo(String meterNo) throws MultispeakWebServiceException {
+    public List<OutageDetectionDevice> getOutageDetectionDevicesByMeterNo(String meterNo) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
     
     @Override
-    public OutageDetectionDevice[] getOutageDetectionDevicesByStatus(OutageDetectDeviceStatus oDDStatus, String lastReceived) throws MultispeakWebServiceException {
+    public List<OutageDetectionDevice> getOutageDetectionDevicesByStatus(OutageDetectDeviceStatus oDDStatus, String lastReceived) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
     
     @Override
-    public OutageDetectionDevice[] getOutageDetectionDevicesByType(OutageDetectDeviceType oDDType, String lastReceived) throws MultispeakWebServiceException {
+    public List<OutageDetectionDevice> getOutageDetectionDevicesByType(OutageDetectDeviceType oDDType, String lastReceived) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
     
     @Override
-    public OutageDetectionDevice[] getOutagedODDevices() throws MultispeakWebServiceException {
+    public List<OutageDetectionDevice> getOutagedODDevices() throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
     
     @Override
-    public ErrorObject[] initiateOutageDetectionEventRequest(String[] meterNos, Calendar requestDate,
+    public List<ErrorObject> initiateOutageDetectionEventRequest(List<String> meterNos, Calendar requestDate,
             String responseURL, String transactionID, Float expirationTime) throws MultispeakWebServiceException {
         init();
-        ErrorObject[] errorObjects = new ErrorObject[0];
 
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("initiateOutageDetectionEventRequest", vendor.getCompanyName());
         String actualResponseUrl = multispeakFuncs.getResponseUrl(vendor, responseURL, MultispeakDefines.OA_Server_STR);
 
-        errorObjects = multispeakMeterService.odEvent(vendor, meterNos, transactionID, actualResponseUrl);
+        List<ErrorObject> errorObjects = multispeakMeterService.odEvent(vendor, meterNos, transactionID, actualResponseUrl);
         multispeakFuncs.logErrorObjects(MultispeakDefines.OD_Server_STR, "initiateOutageDetectionEventRequest",
             errorObjects);
         return errorObjects;
@@ -117,20 +118,20 @@ public class OD_ServerImpl implements OD_Server {
     }
     
     @Override
-    public ObjectRef[] displayODMonitoringRequests() throws MultispeakWebServiceException {
+    public List<ObjectRef> displayODMonitoringRequests() throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
     
     @Override
-    public ErrorObject[] cancelODMonitoringRequestByObject(ObjectRef[] objectRef, Calendar requestDate)
+    public List<ErrorObject> cancelODMonitoringRequestByObject(List<ObjectRef> objectRef, Calendar requestDate)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
     
     @Override
-    public ErrorObject[] initiateODEventRequestByObject(String objectName, String nounType, PhaseCd phaseCode,
+    public List<ErrorObject> initiateODEventRequestByObject(String objectName, String nounType, PhaseCd phaseCode,
             Calendar requestDate, String responseURL, String transactionID, float expirationTime)
             throws MultispeakWebServiceException {
         init();
@@ -138,14 +139,14 @@ public class OD_ServerImpl implements OD_Server {
     }
 
     @Override
-    public ErrorObject[] initiateODEventRequestByServiceLocation(String[] servLoc, Calendar requestDate,
+    public List<ErrorObject> initiateODEventRequestByServiceLocation(List<String> servLoc, Calendar requestDate,
             String responseURL, String transactionID, float expirationTime) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] initiateODMonitoringRequestByObject(String objectName, String nounType, PhaseCd phaseCode,
+    public List<ErrorObject> initiateODMonitoringRequestByObject(String objectName, String nounType, PhaseCd phaseCode,
             int periodicity, Calendar requestDate, String responseURL, String transactionID, float expirationTime)
             throws MultispeakWebServiceException {
         init();
@@ -153,19 +154,19 @@ public class OD_ServerImpl implements OD_Server {
     }
 
     @Override
-    public ErrorObject[] customerChangedNotification(Customer[] changedCustomers) throws MultispeakWebServiceException {
+    public List<ErrorObject> customerChangedNotification(List<Customer> changedCustomers) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] meterChangedNotification(Meter[] changedMeters) throws MultispeakWebServiceException {
+    public List<ErrorObject> meterChangedNotification(List<Meter> changedMeters) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] serviceLocationChangedNotification(ServiceLocation[] changedServiceLocations)
+    public List<ErrorObject> serviceLocationChangedNotification(List<ServiceLocation> changedServiceLocations)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
@@ -178,13 +179,13 @@ public class OD_ServerImpl implements OD_Server {
     }
 
     @Override
-    public ErrorObject[] registerForService(RegistrationInfo registrationDetails) throws MultispeakWebServiceException {
+    public List<ErrorObject> registerForService(RegistrationInfo registrationDetails) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] unregisterForService(String registrationID) throws MultispeakWebServiceException {
+    public List<ErrorObject> unregisterForService(String registrationID) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
@@ -196,27 +197,27 @@ public class OD_ServerImpl implements OD_Server {
     }
 
     @Override
-    public String[] getPublishMethods() throws MultispeakWebServiceException {
+    public List<String> getPublishMethods() throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] domainMembersChangedNotification(DomainMember[] changedDomainMembers)
+    public List<ErrorObject> domainMembersChangedNotification(List<DomainMember> changedDomainMembers)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] domainNamesChangedNotification(DomainNameChange[] changedDomainNames)
+    public List<ErrorObject> domainNamesChangedNotification(List<DomainNameChange> changedDomainNames)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] outageEventChangedNotification(OutageEvent[] oEvents) throws MultispeakWebServiceException {
+    public List<ErrorObject> outageEventChangedNotification(List<OutageEvent> oEvents) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }

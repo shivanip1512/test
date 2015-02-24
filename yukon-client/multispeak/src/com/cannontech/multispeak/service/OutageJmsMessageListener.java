@@ -11,6 +11,7 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -134,15 +135,15 @@ public class OutageJmsMessageListener implements MessageListener {
                 ODEventNotificationResponse odEventNotificationResponse = oaClient.odEventNotification(mspVendor,
                                                                                                        endpointUrl,
                                                                                                        odEventNotification);
-                ErrorObject[] errObjects = null;
+                List<ErrorObject> errObjects = null;
                 if (odEventNotificationResponse != null) {
                     ArrayOfErrorObject arrOfErrorObject = odEventNotificationResponse.getODEventNotificationResult();
                     List<ErrorObject> errorObjects = arrOfErrorObject.getErrorObject();
                     if (errorObjects != null) {
-                        errObjects = mspObjectDao.toErrorObject(errorObjects);
+                        errObjects = errorObjects;
                     }
                 }
-                    if( errObjects != null && errObjects.length > 0) {
+                    if (CollectionUtils.isNotEmpty(errObjects)) {
                         multispeakFuncs.logErrorObjects(endpointUrl, "ODEventNotification", errObjects);
                     } else {
                         outageEventLogService.mspMessageSentToVendor(outageJmsMessage.getSource(), 

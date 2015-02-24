@@ -13,7 +13,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 
-import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,16 +80,16 @@ public class MultispeakFuncs {
     @Autowired public Jaxb2Marshaller unmarshaller;
     @Autowired private ObjectFactory objectFactory;
 
-    public void logStrings(String intfaceName, String methodName, String[] strings) {
-        if (ArrayUtils.isNotEmpty(strings)) {
+    public void logStrings(String intfaceName, String methodName, List<String> strings) {
+        if (CollectionUtils.isNotEmpty(strings)) {
             for (String method : strings) {
                 log.info("Return from " + intfaceName + " (" + methodName + "): " + method);
             }
         }
     }
 
-    public void logErrorObjects(String intfaceName, String methodName, ErrorObject[] objects) {
-        if (ArrayUtils.isNotEmpty(objects)) {
+    public void logErrorObjects(String intfaceName, String methodName, List<ErrorObject> objects) {
+        if (CollectionUtils.isNotEmpty(objects)) {
             for (ErrorObject errorObject : objects) {
                 log.info("Error Return from " + intfaceName + "(" + methodName + "): " + (errorObject == null ? "Null"
                         : errorObject.getObjectID() + " - " + errorObject.getErrorString()));
@@ -143,7 +143,7 @@ public class MultispeakFuncs {
      * @return
      * @throws java.rmi.RemoteException
      */
-    public String[] getMethods(String interfaceName, String[] methods) {
+    public List<String> getMethods(String interfaceName, List<String> methods) {
         logStrings(interfaceName, "getMethods", methods);
         return methods;
     }
@@ -570,28 +570,19 @@ public class MultispeakFuncs {
         return eventTime;
     }
 
-    public ArrayOfErrorObject toArrayOfErrorObject(ErrorObject[] errorObjectArr) {
-        ArrayOfErrorObject arrayOfErrorObject = null;
-        if (errorObjectArr != null) {
-            arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-            List<ErrorObject> errorObjects = arrayOfErrorObject.getErrorObject();
-            for (ErrorObject errorObject : errorObjectArr) {
-                errorObjects.add(errorObject);
-            }
+    public ArrayOfErrorObject toArrayOfErrorObject(List<ErrorObject> errorObjects) {
+        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        if (errorObjects != null) {
+            arrayOfErrorObject.getErrorObject().addAll(errorObjects);
         }
         return arrayOfErrorObject;
     }
 
-    public ArrayOfString toArrayOfString(String[] stringArr) {
-        ArrayOfString arrayOfString = null;
-        if (stringArr != null) {
-            arrayOfString = objectFactory.createArrayOfString();
-            List<String> stringList = arrayOfString.getString();
-            for (String stringValue : stringArr) {
-                stringList.add(stringValue);
-            }
+    public ArrayOfString toArrayOfString(List<String> strings) {
+        ArrayOfString arrayOfString = objectFactory.createArrayOfString();
+        if (strings != null) {
+            arrayOfString.getString().addAll(strings);
         }
         return arrayOfString;
     }
-
 }

@@ -1,6 +1,7 @@
 package com.cannontech.multispeak.deploy.service.impl;
 
-import java.util.Vector;
+import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.multispeak.service.LM_Server;
 import com.cannontech.multispeak.service.MspValidationService;
 import com.cannontech.multispeak.service.MultispeakLMService;
+import com.google.common.collect.Lists;
 
 @Service
 public class LM_ServerImpl implements LM_Server
@@ -47,82 +49,84 @@ public class LM_ServerImpl implements LM_Server
     }
     
     @Override
-    public ErrorObject[] pingURL() throws MultispeakWebServiceException {
+    public ErrorObject pingURL() throws MultispeakWebServiceException {
         init();
-        return new ErrorObject[0];
+        return new ErrorObject();
     }
     
     @Override
-    public String[] getMethods() throws MultispeakWebServiceException {
+    public List<String> getMethods() throws MultispeakWebServiceException {
         init();
-        String [] methods = new String[]{"pingURL", "getMethods",
-        		"SCADAAnalogChangedNotification",
-        		"getAllSubstationLoadControlStatuses",
-        		"initiateLoadManagementEvent",
-        		"initiateLoadManagementEvents"
-        		};
-        return multispeakFuncs.getMethods(MultispeakDefines.LM_Server_STR, methods );
+        String[] methods = new String[] {
+                "pingURL",
+                "getMethods",
+                "SCADAAnalogChangedNotification",
+                "getAllSubstationLoadControlStatuses",
+                "initiateLoadManagementEvent",
+                "initiateLoadManagementEvents"
+                };
+        return multispeakFuncs.getMethods(MultispeakDefines.LM_Server_STR, Arrays.asList(methods));
     }
     
     @Override
-    public String[] getDomainNames() throws MultispeakWebServiceException {
+    public List<String> getDomainNames() throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
     
     @Override
-    public DomainMember[] getDomainMembers(java.lang.String domainName) throws MultispeakWebServiceException {
+    public List<DomainMember> getDomainMembers(java.lang.String domainName) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
     @Override
-    public ErrorObject[] LMDeviceAddNotification(LoadManagementDevice[] addedLMDs) throws MultispeakWebServiceException {
+    public List<ErrorObject> LMDeviceAddNotification(List<LoadManagementDevice> addedLMDs) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
     @Override
-    public ErrorObject[] LMDeviceChangedNotification(LoadManagementDevice[] changedLMDs)
+    public List<ErrorObject> LMDeviceChangedNotification(List<LoadManagementDevice> changedLMDs)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
     @Override
-    public ErrorObject[] LMDeviceExchangeNotification(LMDeviceExchange[] LMDChangeout)
+    public List<ErrorObject> LMDeviceExchangeNotification(List<LMDeviceExchange> LMDChangeout)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
     @Override
-    public ErrorObject[] LMDeviceRemoveNotification(LoadManagementDevice[] removedLMDs)
+    public List<ErrorObject> LMDeviceRemoveNotification(List<LoadManagementDevice> removedLMDs)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
     @Override
-    public ErrorObject[] LMDeviceRetireNotification(LoadManagementDevice[] retiredLMDs)
+    public List<ErrorObject> LMDeviceRetireNotification(List<LoadManagementDevice> retiredLMDs)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
     @Override
-    public ErrorObject[] SCADAAnalogChangedNotification(
-            ScadaAnalog[] scadaAnalogs) throws MultispeakWebServiceException {
+    public List<ErrorObject> SCADAAnalogChangedNotification(
+            List<ScadaAnalog> scadaAnalogs) throws MultispeakWebServiceException {
         LiteYukonUser liteYukonUser = init();
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("SCADAAnalogChangedNotification", vendor.getCompanyName());
         
-        Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
+        List<ErrorObject> errorObjects = Lists.newArrayList();
         for (ScadaAnalog scadaAnalog : scadaAnalogs) {
-        	ErrorObject errorObject = mspValidationService.isValidScadaAnalog(scadaAnalog);
-        	if( errorObject == null) {
-        		errorObject = multispeakLMService.writeAnalogPointData(scadaAnalog, liteYukonUser);
-        	} 
-        	if (errorObject != null) {
-        		errorObjects.add(errorObject);
-        	}
-		}
-        return mspObjectDao.toErrorObject(errorObjects);
+            ErrorObject errorObject = mspValidationService.isValidScadaAnalog(scadaAnalog);
+            if (errorObject == null) {
+                errorObject = multispeakLMService.writeAnalogPointData(scadaAnalog, liteYukonUser);
+            }
+            if (errorObject != null) {
+                errorObjects.add(errorObject);
+            }
+        }
+        return errorObjects;
     }
     @Override
     public void SCADAAnalogChangedNotificationByPointID(ScadaAnalog scadaAnalog) throws MultispeakWebServiceException {
@@ -130,42 +134,42 @@ public class LM_ServerImpl implements LM_Server
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
     @Override
-    public ErrorObject[] SCADAAnalogChangedNotificationForPower(ScadaAnalog[] scadaAnalogs)
+    public List<ErrorObject> SCADAAnalogChangedNotificationForPower(List<ScadaAnalog> scadaAnalogs)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
     @Override
-    public ErrorObject[] SCADAAnalogChangedNotificationForVoltage(ScadaAnalog[] scadaAnalogs)
+    public List<ErrorObject> SCADAAnalogChangedNotificationForVoltage(List<ScadaAnalog> scadaAnalogs)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
     @Override
-    public ErrorObject[] SCADAPointChangedNotification(ScadaPoint[] scadaPoints) throws MultispeakWebServiceException {
+    public List<ErrorObject> SCADAPointChangedNotification(List<ScadaPoint> scadaPoints) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
     @Override
-    public ErrorObject[] SCADAPointChangedNotificationForAnalog(ScadaPoint[] scadaPoints)
+    public List<ErrorObject> SCADAPointChangedNotificationForAnalog(List<ScadaPoint> scadaPoints)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
     @Override
-    public SubstationLoadControlStatus[] getAllSubstationLoadControlStatuses()
+    public List<SubstationLoadControlStatus> getAllSubstationLoadControlStatuses()
             throws MultispeakWebServiceException {
         init();
         return multispeakLMService.getActiveLoadControlStatus();
     } 
     @Override
-    public ErrorObject[] SCADAPointChangedNotificationForStatus(ScadaPoint[] scadaPoints)
+    public List<ErrorObject> SCADAPointChangedNotificationForStatus(List<ScadaPoint> scadaPoints)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
     @Override
-    public ErrorObject[] SCADAStatusChangedNotification(ScadaStatus[] scadaStatuses)
+    public List<ErrorObject> SCADAStatusChangedNotification(List<ScadaStatus> scadaStatuses)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
@@ -176,12 +180,12 @@ public class LM_ServerImpl implements LM_Server
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
     @Override
-    public ErrorObject[] customerChangedNotification(Customer[] changedCustomers) throws MultispeakWebServiceException {
+    public List<ErrorObject> customerChangedNotification(List<Customer> changedCustomers) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
     @Override
-    public LoadManagementDevice[] getAllLoadManagementDevices(String lastReceived) throws MultispeakWebServiceException {
+    public List<LoadManagementDevice> getAllLoadManagementDevices(String lastReceived) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
@@ -196,13 +200,13 @@ public class LM_ServerImpl implements LM_Server
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
     @Override
-    public LoadManagementDevice[] getLoadManagementDeviceByMeterNumber(String meterNo)
+    public List<LoadManagementDevice> getLoadManagementDeviceByMeterNumber(String meterNo)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
     @Override
-    public LoadManagementDevice[] getLoadManagementDeviceByServLoc(String servLoc) throws MultispeakWebServiceException {
+    public List<LoadManagementDevice> getLoadManagementDeviceByServLoc(String servLoc) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
@@ -219,10 +223,10 @@ public class LM_ServerImpl implements LM_Server
         ErrorObject errorObject = mspValidationService.isValidLoadManagementEvent(theLMEvent);
     	if (errorObject == null) {
     		MspLoadControl mspLoadControl = new MspLoadControl();
-            ErrorObject[] errorObject2 = multispeakLMService.buildMspLoadControl(theLMEvent, mspLoadControl, vendor);
-            if (errorObject2.length > 0) {
+            List<ErrorObject> errorObject2 = multispeakLMService.buildMspLoadControl(theLMEvent, mspLoadControl, vendor);
+            if (errorObject2.size() > 0) {
             	//We may have more than one error possibly, just return the first error.
-            	return errorObject2[0];
+            	return errorObject2.get(0);
             }
             errorObject = multispeakLMService.control(mspLoadControl, liteYukonUser);
     	} 
@@ -230,31 +234,32 @@ public class LM_ServerImpl implements LM_Server
     }
     
     @Override
-    public ErrorObject[] initiateLoadManagementEvents(LoadManagementEvent[] theLMEvents)
+    public List<ErrorObject> initiateLoadManagementEvents(List<LoadManagementEvent> theLMEvents)
             throws MultispeakWebServiceException {
         LiteYukonUser liteYukonUser = init();
-        
-    	MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
+
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("initiateLoadManagementEvents", vendor.getCompanyName());
-        
-        Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
-        
+
+        List<ErrorObject> errorObjects = Lists.newArrayList();
+
         for (LoadManagementEvent loadManagementEvent : theLMEvents) {
-        	ErrorObject errorObject = mspValidationService.isValidLoadManagementEvent(loadManagementEvent);
-        	if (errorObject == null) {
-        		MspLoadControl mspLoadControl = new MspLoadControl();
-        		//If errorObjects are returned, we still continue on and control what we can.  
-        		ErrorObject[] errorObject2 = multispeakLMService.buildMspLoadControl(loadManagementEvent, mspLoadControl, vendor);
-        		for (ErrorObject err : errorObject2) {
-        			errorObjects.add(err);					
-            	}
-	            errorObject = multispeakLMService.control(mspLoadControl, liteYukonUser);
-        	} 
-        	if (errorObject != null) {
-        		errorObjects.add(errorObject);
-        	}
-		}
-        return mspObjectDao.toErrorObject(errorObjects);
+            ErrorObject errorObject = mspValidationService.isValidLoadManagementEvent(loadManagementEvent);
+            if (errorObject == null) {
+                MspLoadControl mspLoadControl = new MspLoadControl();
+                // If errorObjects are returned, we still continue on and control what we can.
+                List<ErrorObject> errorObject2 =
+                        multispeakLMService.buildMspLoadControl(loadManagementEvent, mspLoadControl, vendor);
+                for (ErrorObject err : errorObject2) {
+                    errorObjects.add(err);
+                }
+                errorObject = multispeakLMService.control(mspLoadControl, liteYukonUser);
+            }
+            if (errorObject != null) {
+                errorObjects.add(errorObject);
+            }
+        }
+        return errorObjects;
     }
     @Override
     public ErrorObject initiatePowerFactorManagementEvent(PowerFactorManagementEvent thePFMEvent)
@@ -268,7 +273,7 @@ public class LM_ServerImpl implements LM_Server
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
     @Override
-    public ErrorObject[] serviceLocationChangedNotification(ServiceLocation[] changedServiceLocations)
+    public List<ErrorObject> serviceLocationChangedNotification(List<ServiceLocation> changedServiceLocations)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
@@ -281,13 +286,13 @@ public class LM_ServerImpl implements LM_Server
     }
 
     @Override
-    public ErrorObject[] registerForService(RegistrationInfo registrationDetails) throws MultispeakWebServiceException {
+    public List<ErrorObject> registerForService(RegistrationInfo registrationDetails) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] unregisterForService(String registrationID) throws MultispeakWebServiceException {
+    public List<ErrorObject> unregisterForService(String registrationID) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
@@ -299,20 +304,20 @@ public class LM_ServerImpl implements LM_Server
     }
 
     @Override
-    public String[] getPublishMethods() throws MultispeakWebServiceException {
+    public List<String> getPublishMethods() throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] domainMembersChangedNotification(DomainMember[] changedDomainMembers)
+    public List<ErrorObject> domainMembersChangedNotification(List<DomainMember> changedDomainMembers)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] domainNamesChangedNotification(DomainNameChange[] changedDomainNames)
+    public List<ErrorObject> domainNamesChangedNotification(List<DomainNameChange> changedDomainNames)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");

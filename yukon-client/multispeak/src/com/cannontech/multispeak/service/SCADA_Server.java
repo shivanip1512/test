@@ -1,6 +1,7 @@
 package com.cannontech.multispeak.service;
 
 import java.util.Calendar;
+import java.util.List;
 
 import com.cannontech.msp.beans.v3.AccumulatedValue;
 import com.cannontech.msp.beans.v3.DomainMember;
@@ -24,7 +25,7 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] pingURL() throws MultispeakWebServiceException;
+    public ErrorObject pingURL() throws MultispeakWebServiceException;
 
     /**
      * get Methods
@@ -32,7 +33,7 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public String[] getMethods() throws MultispeakWebServiceException;
+    public List<String> getMethods() throws MultispeakWebServiceException;
 
     /**
      * get All SCADA Analogs
@@ -41,20 +42,20 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ScadaAnalog[] getAllSCADAAnalogs(String lastReceived) throws MultispeakWebServiceException;
+    public List<ScadaAnalog> getAllSCADAAnalogs(String lastReceived) throws MultispeakWebServiceException;
 
     /**
      * @return
      * @throws MultispeakWebServiceException
      */
-    public String[] getDomainNames() throws MultispeakWebServiceException;
+    public List<String> getDomainNames() throws MultispeakWebServiceException;
 
     /**
      * @param domainName
      * @return
      * @throws MultispeakWebServiceException
      */
-    public DomainMember[] getDomainMembers(String domainName) throws MultispeakWebServiceException;
+    public List<DomainMember> getDomainMembers(String domainName) throws MultispeakWebServiceException;
 
     /**
      * @return
@@ -67,14 +68,14 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] registerForService(RegistrationInfo registrationDetails) throws MultispeakWebServiceException;
+    public List<ErrorObject> registerForService(RegistrationInfo registrationDetails) throws MultispeakWebServiceException;
 
     /**
      * @param registrationID
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] unregisterForService(String registrationID) throws MultispeakWebServiceException;
+    public List<ErrorObject> unregisterForService(String registrationID) throws MultispeakWebServiceException;
 
     /**
      * @param registrationID
@@ -87,14 +88,14 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public String[] getPublishMethods() throws MultispeakWebServiceException;
+    public List<String> getPublishMethods() throws MultispeakWebServiceException;
 
     /**
      * @param changedDomainMembers
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] domainMembersChangedNotification(DomainMember[] changedDomainMembers)
+    public List<ErrorObject> domainMembersChangedNotification(List<DomainMember> changedDomainMembers)
             throws MultispeakWebServiceException;
 
     /**
@@ -102,7 +103,7 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] domainNamesChangedNotification(DomainNameChange[] changedDomainNames)
+    public List<ErrorObject> domainNamesChangedNotification(List<DomainNameChange> changedDomainNames)
             throws MultispeakWebServiceException;
 
     /**
@@ -117,7 +118,7 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ScadaPoint[] getAllSCADAPoints(String lastReceived) throws MultispeakWebServiceException;
+    public List<ScadaPoint> getAllSCADAPoints(String lastReceived) throws MultispeakWebServiceException;
 
     /**
      * @param previousSessionID
@@ -125,7 +126,7 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ScadaPoint[] getModifiedSCADAPoints(String previousSessionID, String lastReceived)
+    public List<ScadaPoint> getModifiedSCADAPoints(String previousSessionID, String lastReceived)
             throws MultispeakWebServiceException;
 
     /**
@@ -137,7 +138,7 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ScadaAnalog[] getSCADAAnalogsByDateRangeAndPointID(String scadaPointID, Calendar startTime,
+    public List<ScadaAnalog> getSCADAAnalogsByDateRangeAndPointID(String scadaPointID, Calendar startTime,
             Calendar endTime, float sampleRate, String lastReceived) throws MultispeakWebServiceException;
 
     /**
@@ -149,7 +150,7 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ScadaStatus[] getSCADAStatusesByDateRangeAndPointID(String scadaPointID, Calendar startTime,
+    public List<ScadaStatus> getSCADAStatusesByDateRangeAndPointID(String scadaPointID, Calendar startTime,
             Calendar endTime, float sampleRate, String lastReceived) throws MultispeakWebServiceException;
 
     /**
@@ -160,7 +161,7 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ScadaStatus[] getSCADAStatusesByDateRange(Calendar startTime, Calendar endTime, float sampleRate,
+    public List<ScadaStatus> getSCADAStatusesByDateRange(Calendar startTime, Calendar endTime, float sampleRate,
             String lastReceived) throws MultispeakWebServiceException;
 
     /**
@@ -172,7 +173,7 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public FormattedBlock[] getSCADAAnalogsByDateRangeAndPointIDFormattedBlock(String scadaPointID, Calendar startTime,
+    public List<FormattedBlock> getSCADAAnalogsByDateRangeAndPointIDFormattedBlock(String scadaPointID, Calendar startTime,
             Calendar endTime, float sampleRate, String lastReceived) throws MultispeakWebServiceException;
 
     /**
@@ -184,7 +185,7 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public FormattedBlock[] getSCADAStatusesByDateRangeAndPointIDFormattedBlock(String scadaPointID,
+    public List<FormattedBlock> getSCADAStatusesByDateRangeAndPointIDFormattedBlock(String scadaPointID,
             Calendar startTime, Calendar endTime, float sampleRate, String lastReceived)
             throws MultispeakWebServiceException;
 
@@ -196,7 +197,7 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public FormattedBlock[] getSCADAStatusesByDateRangeFormattedBlock(Calendar startTime, Calendar endTime,
+    public List<FormattedBlock> getSCADAStatusesByDateRangeFormattedBlock(Calendar startTime, Calendar endTime,
             float sampleRate, String lastReceived) throws MultispeakWebServiceException;
 
     /**
@@ -206,7 +207,7 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] initiateStatusReadByPointID(String[] pointIDs, String responseURL, String transactionID)
+    public List<ErrorObject> initiateStatusReadByPointID(List<String> pointIDs, String responseURL, String transactionID)
             throws MultispeakWebServiceException;
 
     /**
@@ -216,7 +217,7 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] initiateAnalogReadByPointID(String[] pointIDs, String responseURL, String transactionID)
+    public List<ErrorObject> initiateAnalogReadByPointID(List<String> pointIDs, String responseURL, String transactionID)
             throws MultispeakWebServiceException;
 
     /**
@@ -234,7 +235,7 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] outageEventChangedNotification(OutageEvent[] oEvents) throws MultispeakWebServiceException;
+    public List<ErrorObject> outageEventChangedNotification(List<OutageEvent> oEvents) throws MultispeakWebServiceException;
 
     /**
      * @param pointList
@@ -243,7 +244,7 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] pointSubscriptionListNotification(ListItem[] pointList, String responseURL, String errorString)
+    public List<ErrorObject> pointSubscriptionListNotification(List<ListItem> pointList, String responseURL, String errorString)
             throws MultispeakWebServiceException;
 
     /**
@@ -252,7 +253,7 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] analogChangedNotificationByPointID(ScadaAnalog[] scadaAnalogs, String transactionID)
+    public List<ErrorObject> analogChangedNotificationByPointID(List<ScadaAnalog> scadaAnalogs, String transactionID)
             throws MultispeakWebServiceException;
 
     /**
@@ -260,7 +261,7 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ScadaStatus[] getAllSCADAStatus(String lastReceived) throws MultispeakWebServiceException;
+    public List<ScadaStatus> getAllSCADAStatus(String lastReceived) throws MultispeakWebServiceException;
 
     /**
      * @param scadaPointID
@@ -275,7 +276,7 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] statusChangedNotificationByPointID(ScadaStatus[] scadaStatuses, String transactionID)
+    public List<ErrorObject> statusChangedNotificationByPointID(List<ScadaStatus> scadaStatuses, String transactionID)
             throws MultispeakWebServiceException;
 
     /**
@@ -283,7 +284,7 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] SCADAAnalogChangedNotification(ScadaAnalog[] scadaAnalogs)
+    public List<ErrorObject> SCADAAnalogChangedNotification(List<ScadaAnalog> scadaAnalogs)
             throws MultispeakWebServiceException;
 
     /**
@@ -291,7 +292,7 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] SCADAStatusChangedNotification(ScadaStatus[] scadaStatuses)
+    public List<ErrorObject> SCADAStatusChangedNotification(List<ScadaStatus> scadaStatuses)
             throws MultispeakWebServiceException;
 
     /**
@@ -299,7 +300,7 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] accumulatedValueChangedNotification(AccumulatedValue[] accumulators)
+    public List<ErrorObject> accumulatedValueChangedNotification(List<AccumulatedValue> accumulators)
             throws MultispeakWebServiceException;
 
     /**
@@ -307,14 +308,14 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] SCADAPointChangedNotification(ScadaPoint[] scadaPoints) throws MultispeakWebServiceException;
+    public List<ErrorObject> SCADAPointChangedNotification(List<ScadaPoint> scadaPoints) throws MultispeakWebServiceException;
 
     /**
      * @param scadaPoints
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] SCADAPointChangedNotificationForAnalog(ScadaPoint[] scadaPoints)
+    public List<ErrorObject> SCADAPointChangedNotificationForAnalog(List<ScadaPoint> scadaPoints)
             throws MultispeakWebServiceException;
 
     /**
@@ -322,7 +323,7 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] SCADAPointChangedNotificationForStatus(ScadaPoint[] scadaPoints)
+    public List<ErrorObject> SCADAPointChangedNotificationForStatus(List<ScadaPoint> scadaPoints)
             throws MultispeakWebServiceException;
 
     /**
@@ -336,7 +337,7 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] SCADAAnalogChangedNotificationForPower(ScadaAnalog[] scadaAnalogs)
+    public List<ErrorObject> SCADAAnalogChangedNotificationForPower(List<ScadaAnalog> scadaAnalogs)
             throws MultispeakWebServiceException;
 
     /**
@@ -344,7 +345,7 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] SCADAAnalogChangedNotificationForVoltage(ScadaAnalog[] scadaAnalogs)
+    public List<ErrorObject> SCADAAnalogChangedNotificationForVoltage(List<ScadaAnalog> scadaAnalogs)
             throws MultispeakWebServiceException;
 
     /**
@@ -359,7 +360,7 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] controlActionCompleted(ScadaControl[] controlActions, String transactionID)
+    public List<ErrorObject> controlActionCompleted(List<ScadaControl> controlActions, String transactionID)
             throws MultispeakWebServiceException;
 
 }

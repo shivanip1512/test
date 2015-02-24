@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +65,7 @@ import com.cannontech.multispeak.db.MspLmMappingComparator;
 import com.cannontech.multispeak.db.MspLoadControl;
 import com.cannontech.multispeak.service.MultispeakLMService;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
+import com.google.common.collect.Lists;
 
 public class MultispeakLMServiceImpl implements MultispeakLMService {
 
@@ -86,7 +86,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
     private static Logger log = YukonLogManager.getLogger(MultispeakLMServiceImpl.class);
 
     @Override
-    public ErrorObject[] buildMspLoadControl(LoadManagementEvent loadManagementEvent, MspLoadControl mspLoadControl, MultispeakVendor vendor) {
+    public List<ErrorObject> buildMspLoadControl(LoadManagementEvent loadManagementEvent, MspLoadControl mspLoadControl, MultispeakVendor vendor) {
 
         // Set the start date
         Calendar scheduleDateTime = loadManagementEvent.getScheduleDateTime().toGregorianCalendar();
@@ -115,7 +115,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
         List<MspLmMapping> lmInterfaces = new ArrayList<MspLmMapping>();
         List<ObjectRef> substations = loadManagementEvent.getStrategy().getApplicationPointList().getApplicationPoint();
 
-        Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
+        List<ErrorObject> errorObjects = Lists.newArrayList();
         for (ObjectRef substationRef : substations) {
             String substationName = substationRef.getName();
             MspLmMapping lmInterface = new MspLmMapping();
@@ -130,7 +130,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
         }
         mspLoadControl.setMspLmInterfaceMappings(lmInterfaces);
 
-        return mspObjectDao.toErrorObject(errorObjects);
+        return errorObjects;
     }
 
     @Override
@@ -286,7 +286,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
     }
 
     @Override
-    public SubstationLoadControlStatus[] getActiveLoadControlStatus() throws ConnectionException, NotFoundException {
+    public List<SubstationLoadControlStatus> getActiveLoadControlStatus() throws ConnectionException, NotFoundException {
         List<SubstationLoadControlStatus> substationLoadControlStatusList = new ArrayList<SubstationLoadControlStatus>();
         List<ControlItem> controlledItemsList = new ArrayList<ControlItem>();
 
@@ -367,14 +367,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
                 substationLoadControlStatusList.add(substationLoadControlStatus);
             }
         }
-
-        // Convert to array for return
-        if (!substationLoadControlStatusList.isEmpty()) {
-            SubstationLoadControlStatus[] substationLoadControlStatus = new SubstationLoadControlStatus[substationLoadControlStatusList.size()];
-            substationLoadControlStatusList.toArray(substationLoadControlStatus);
-            return substationLoadControlStatus;
-        }
-        return new SubstationLoadControlStatus[0];
+        return substationLoadControlStatusList;
     }
 
     @Override

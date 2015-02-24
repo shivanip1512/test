@@ -1,6 +1,7 @@
 package com.cannontech.multispeak.service;
 
 import java.util.Date;
+import java.util.List;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.point.PointQuality;
@@ -30,7 +31,7 @@ public interface MultispeakLMService {
      * The substation name and strategy name values are used to lookup and return the 
      *  corresponding MspLMInterfaceMapping values.  If combination not found, ErrorObject is returned for each occurrence.
      */
-    public ErrorObject[] buildMspLoadControl(LoadManagementEvent loadManagementEvent, MspLoadControl mspLoadControl, MultispeakVendor vendor);
+    public List<ErrorObject> buildMspLoadControl(LoadManagementEvent loadManagementEvent, MspLoadControl mspLoadControl, MultispeakVendor vendor);
 
     /**
      * Start (ControlEventType.INITIATE) or Stop (ControlEventType.RESTORE) control for the "controllable"
@@ -116,7 +117,7 @@ public interface MultispeakLMService {
      *           date range supplied.  We currently do not have a way to get an accurate control count without
      *           2way load control switches.
      */
-    public SubstationLoadControlStatus[] getActiveLoadControlStatus() throws ConnectionException, NotFoundException;
+    public List<SubstationLoadControlStatus> getActiveLoadControlStatus() throws ConnectionException, NotFoundException;
 
     /**
      * Return the MultiSpeak QualityDescription for the Yukon Point Quality value.

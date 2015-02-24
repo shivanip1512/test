@@ -1,5 +1,7 @@
 package com.cannontech.multispeak.service;
 
+import java.util.List;
+
 import com.cannontech.msp.beans.v3.Customer;
 import com.cannontech.msp.beans.v3.DomainMember;
 import com.cannontech.msp.beans.v3.DomainNameChange;
@@ -24,7 +26,7 @@ public interface LM_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] pingURL() throws MultispeakWebServiceException;
+    public ErrorObject pingURL() throws MultispeakWebServiceException;
 
     /**
      * get Methods.
@@ -32,7 +34,7 @@ public interface LM_Server {
      * @return the methods
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public String[] getMethods() throws MultispeakWebServiceException;
+    public List<String> getMethods() throws MultispeakWebServiceException;
 
     /**
      * SCADA Analog Changed Notification.
@@ -41,7 +43,7 @@ public interface LM_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] SCADAAnalogChangedNotification(ScadaAnalog[] scadaAnalogs)
+    public List<ErrorObject> SCADAAnalogChangedNotification(List<ScadaAnalog> scadaAnalogs)
             throws MultispeakWebServiceException;
 
     /**
@@ -50,7 +52,7 @@ public interface LM_Server {
      * @return the all substation load control statuses
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public SubstationLoadControlStatus[] getAllSubstationLoadControlStatuses() throws MultispeakWebServiceException;
+    public List<SubstationLoadControlStatus> getAllSubstationLoadControlStatuses() throws MultispeakWebServiceException;
 
     /**
      * initiate Load Management Event.
@@ -68,7 +70,7 @@ public interface LM_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] initiateLoadManagementEvents(LoadManagementEvent[] theLMEvents)
+    public List<ErrorObject> initiateLoadManagementEvents(List<LoadManagementEvent> theLMEvents)
             throws MultispeakWebServiceException;
 
     /**
@@ -86,7 +88,7 @@ public interface LM_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    ErrorObject[] SCADAAnalogChangedNotificationForPower(ScadaAnalog[] scadaAnalogs)
+    List<ErrorObject> SCADAAnalogChangedNotificationForPower(List<ScadaAnalog> scadaAnalogs)
             throws MultispeakWebServiceException;
 
     /**
@@ -96,7 +98,7 @@ public interface LM_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    ErrorObject[] SCADAAnalogChangedNotificationForVoltage(ScadaAnalog[] scadaAnalogs)
+    List<ErrorObject> SCADAAnalogChangedNotificationForVoltage(List<ScadaAnalog> scadaAnalogs)
             throws MultispeakWebServiceException;
 
     /**
@@ -106,7 +108,7 @@ public interface LM_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    ErrorObject[] SCADAPointChangedNotification(ScadaPoint[] scadaPoints) throws MultispeakWebServiceException;
+    List<ErrorObject> SCADAPointChangedNotification(List<ScadaPoint> scadaPoints) throws MultispeakWebServiceException;
 
     /**
      * initiate Load Management Events.
@@ -115,7 +117,7 @@ public interface LM_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    ErrorObject[] SCADAPointChangedNotificationForAnalog(ScadaPoint[] scadaPoints) throws MultispeakWebServiceException;
+    List<ErrorObject> SCADAPointChangedNotificationForAnalog(List<ScadaPoint> scadaPoints) throws MultispeakWebServiceException;
 
     /**
      * initiate Load Management Events.
@@ -124,7 +126,7 @@ public interface LM_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    ErrorObject[] SCADAPointChangedNotificationForStatus(ScadaPoint[] scadaPoints) throws MultispeakWebServiceException;
+    List<ErrorObject> SCADAPointChangedNotificationForStatus(List<ScadaPoint> scadaPoints) throws MultispeakWebServiceException;
 
     /**
      * initiate Load Management Events.
@@ -133,7 +135,7 @@ public interface LM_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    ErrorObject[] SCADAStatusChangedNotification(ScadaStatus[] scadaStatuses) throws MultispeakWebServiceException;
+    List<ErrorObject> SCADAStatusChangedNotification(List<ScadaStatus> scadaStatuses) throws MultispeakWebServiceException;
 
     /**
      * initiate Load Management Events.
@@ -150,7 +152,7 @@ public interface LM_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    ErrorObject[] customerChangedNotification(Customer[] changedCustomers) throws MultispeakWebServiceException;
+    List<ErrorObject> customerChangedNotification(List<Customer> changedCustomers) throws MultispeakWebServiceException;
 
     /**
      * initiate Load Management Events.
@@ -159,7 +161,7 @@ public interface LM_Server {
      * @return the all load management devices
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    LoadManagementDevice[] getAllLoadManagementDevices(String lastReceived) throws MultispeakWebServiceException;
+    List<LoadManagementDevice> getAllLoadManagementDevices(String lastReceived) throws MultispeakWebServiceException;
 
     /**
      * initiate Load Management Events.
@@ -167,7 +169,7 @@ public interface LM_Server {
      * @return the domain names
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    String[] getDomainNames() throws MultispeakWebServiceException;
+    List<String> getDomainNames() throws MultispeakWebServiceException;
 
     /**
      * initiate Load Management Events.
@@ -176,7 +178,7 @@ public interface LM_Server {
      * @return the domain members
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    DomainMember[] getDomainMembers(String domainName) throws MultispeakWebServiceException;
+    List<DomainMember> getDomainMembers(String domainName) throws MultispeakWebServiceException;
 
     /**
      * initiate Load Management Events.
@@ -185,7 +187,7 @@ public interface LM_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    ErrorObject[] LMDeviceAddNotification(LoadManagementDevice[] addedLMDs) throws MultispeakWebServiceException;
+    List<ErrorObject> LMDeviceAddNotification(List<LoadManagementDevice> addedLMDs) throws MultispeakWebServiceException;
 
     /**
      * initiate Load Management Events.
@@ -194,7 +196,7 @@ public interface LM_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    ErrorObject[] LMDeviceChangedNotification(LoadManagementDevice[] changedLMDs) throws MultispeakWebServiceException;
+    List<ErrorObject> LMDeviceChangedNotification(List<LoadManagementDevice> changedLMDs) throws MultispeakWebServiceException;
 
     /**
      * initiate Load Management Events.
@@ -203,7 +205,7 @@ public interface LM_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    ErrorObject[] LMDeviceExchangeNotification(LMDeviceExchange[] LMDChangeout) throws MultispeakWebServiceException;
+    List<ErrorObject> LMDeviceExchangeNotification(List<LMDeviceExchange> LMDChangeout) throws MultispeakWebServiceException;
 
     /**
      * initiate Load Management Events.
@@ -212,7 +214,7 @@ public interface LM_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    ErrorObject[] LMDeviceRemoveNotification(LoadManagementDevice[] removedLMDs) throws MultispeakWebServiceException;
+    List<ErrorObject> LMDeviceRemoveNotification(List<LoadManagementDevice> removedLMDs) throws MultispeakWebServiceException;
 
     /**
      * LM device retire notification.
@@ -221,7 +223,7 @@ public interface LM_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    ErrorObject[] LMDeviceRetireNotification(LoadManagementDevice[] retiredLMDs) throws MultispeakWebServiceException;
+    List<ErrorObject> LMDeviceRetireNotification(List<LoadManagementDevice> retiredLMDs) throws MultispeakWebServiceException;
 
     /**
      * Gets the amount of controllable load.
@@ -246,7 +248,7 @@ public interface LM_Server {
      * @return the load management device by meter number
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    LoadManagementDevice[] getLoadManagementDeviceByMeterNumber(String meterNo) throws MultispeakWebServiceException;
+    List<LoadManagementDevice> getLoadManagementDeviceByMeterNumber(String meterNo) throws MultispeakWebServiceException;
 
     /**
      * Gets the load management device by serv loc.
@@ -255,7 +257,7 @@ public interface LM_Server {
      * @return the load management device by serv loc
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    LoadManagementDevice[] getLoadManagementDeviceByServLoc(String servLoc) throws MultispeakWebServiceException;
+    List<LoadManagementDevice> getLoadManagementDeviceByServLoc(String servLoc) throws MultispeakWebServiceException;
 
     /**
      * Initiate power factor management event.
@@ -283,7 +285,7 @@ public interface LM_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    ErrorObject[] serviceLocationChangedNotification(ServiceLocation[] changedServiceLocations)
+    List<ErrorObject> serviceLocationChangedNotification(List<ServiceLocation> changedServiceLocations)
             throws MultispeakWebServiceException;
 
     /**
@@ -301,7 +303,7 @@ public interface LM_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    ErrorObject[] registerForService(RegistrationInfo registrationDetails) throws MultispeakWebServiceException;
+    List<ErrorObject> registerForService(RegistrationInfo registrationDetails) throws MultispeakWebServiceException;
 
     /**
      * Unregister for service.
@@ -310,7 +312,7 @@ public interface LM_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    ErrorObject[] unregisterForService(String registrationID) throws MultispeakWebServiceException;
+    List<ErrorObject> unregisterForService(String registrationID) throws MultispeakWebServiceException;
 
     /**
      * Gets the registration info by id.
@@ -327,7 +329,7 @@ public interface LM_Server {
      * @return the publish methods
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    String[] getPublishMethods() throws MultispeakWebServiceException;
+    List<String> getPublishMethods() throws MultispeakWebServiceException;
 
     /**
      * Domain members changed notification.
@@ -336,7 +338,7 @@ public interface LM_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    ErrorObject[] domainMembersChangedNotification(DomainMember[] changedDomainMembers)
+    List<ErrorObject> domainMembersChangedNotification(List<DomainMember> changedDomainMembers)
             throws MultispeakWebServiceException;
 
     /**
@@ -346,6 +348,6 @@ public interface LM_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    ErrorObject[] domainNamesChangedNotification(DomainNameChange[] changedDomainNames)
+    List<ErrorObject> domainNamesChangedNotification(List<DomainNameChange> changedDomainNames)
             throws MultispeakWebServiceException;
 }

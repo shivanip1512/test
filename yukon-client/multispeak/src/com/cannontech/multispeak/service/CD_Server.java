@@ -1,5 +1,7 @@
 package com.cannontech.multispeak.service;
 
+import java.util.List;
+
 import com.cannontech.msp.beans.v3.CDDevice;
 import com.cannontech.msp.beans.v3.CDDeviceExchange;
 import com.cannontech.msp.beans.v3.CDState;
@@ -21,12 +23,12 @@ public interface CD_Server {
      * 
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] pingURL() throws MultispeakWebServiceException;
+    public ErrorObject pingURL() throws MultispeakWebServiceException;
 
     /**
      * Requester requests list of methods supported by CD.
      */
-    public String[] getMethods() throws MultispeakWebServiceException;
+    public List<String> getMethods() throws MultispeakWebServiceException;
 
     /**
      * The client requests from the server a list of names of domains
@@ -36,7 +38,7 @@ public interface CD_Server {
      * counties for this installation or the list of serviceStatusCodes used
      * by the server.
      */
-    public String[] getDomainNames() throws MultispeakWebServiceException;
+    public List<String> getDomainNames() throws MultispeakWebServiceException;
 
     /**
      * The client requests from the server the members of a specific
@@ -47,7 +49,7 @@ public interface CD_Server {
      * such as the lists of counties for this installation or the list of
      * serviceStatusCodes used by the server.
      */
-    public DomainMember[] getDomainMembers(String domainName) throws MultispeakWebServiceException;
+    public List<DomainMember> getDomainMembers(String domainName) throws MultispeakWebServiceException;
 
     /**
      * This service requests of the publisher a unique registration
@@ -76,14 +78,14 @@ public interface CD_Server {
      * an existing subscription replace prior subscription details in their
      * entirety - they do NOT add to an existing subscription.
      */
-    public ErrorObject[] registerForService(RegistrationInfo registrationDetails) throws MultispeakWebServiceException;
+    public List<ErrorObject> registerForService(RegistrationInfo registrationDetails) throws MultispeakWebServiceException;
 
     /**
      * This method deletes a previously established subscription (registration
      * for service) that carries the registration identifer listed in the
      * input parameter registrationID.
      */
-    public ErrorObject[] unregisterForService(String registrationID) throws MultispeakWebServiceException;
+    public List<ErrorObject> unregisterForService(String registrationID) throws MultispeakWebServiceException;
 
     /**
      * This method requests the return of existing registration information
@@ -97,7 +99,7 @@ public interface CD_Server {
      * Requester requests list of methods to which this server can
      * publish information.
      */
-    public String[] getPublishMethods() throws MultispeakWebServiceException;
+    public List<String> getPublishMethods() throws MultispeakWebServiceException;
 
     /**
      * This method permits a client to have changed information on
@@ -109,7 +111,7 @@ public interface CD_Server {
      * the registrationID for the subscription in the message header so that
      * the client can determine the source of the domainMember information.
      */
-    public ErrorObject[] domainMembersChangedNotification(DomainMember[] changedDomainMembers)
+    public List<ErrorObject> domainMembersChangedNotification(List<DomainMember> changedDomainMembers)
             throws MultispeakWebServiceException;
 
     /**
@@ -122,7 +124,7 @@ public interface CD_Server {
      * the registrationID for the subscription in the message header so that
      * the client can determine the source of the domainName information.
      */
-    public ErrorObject[] domainNamesChangedNotification(DomainNameChange[] changedDomainNames)
+    public List<ErrorObject> domainNamesChangedNotification(List<DomainNameChange> changedDomainNames)
             throws MultispeakWebServiceException;
 
     /**
@@ -135,7 +137,7 @@ public interface CD_Server {
      * the objectID of the data instance noted by the server as being the
      * lastSent.
      */
-    public Meter[] getCDSupportedMeters(String lastReceived) throws MultispeakWebServiceException;
+    public List<Meter> getCDSupportedMeters(String lastReceived) throws MultispeakWebServiceException;
 
     /**
      * Returns all meters that have Connect/Disconnect Capability
@@ -150,7 +152,7 @@ public interface CD_Server {
      * the objectID of the data instance noted by the server as being the
      * lastSent.
      */
-    public Meter[] getModifiedCDMeters(String previousSessionID, String lastReceived)
+    public List<Meter> getModifiedCDMeters(String previousSessionID, String lastReceived)
             throws MultispeakWebServiceException;
 
     /**
@@ -173,7 +175,7 @@ public interface CD_Server {
      * then the publisher will discard the request and the requestor should
      * not expect a response.
      */
-    public ErrorObject[] initiateConnectDisconnect(ConnectDisconnectEvent[] cdEvents, String responseURL,
+    public List<ErrorObject> initiateConnectDisconnect(List<ConnectDisconnectEvent> cdEvents, String responseURL,
             String transactionID, Float expirationTime) throws MultispeakWebServiceException;
 
     /**
@@ -191,7 +193,7 @@ public interface CD_Server {
      * in seconds), then the publisher will discard the request and the requestor
      * should not expect a response.
      */
-    public ErrorObject[] initiateCDStateRequest(CDState[] states, String responseURL, String transactionID,
+    public List<ErrorObject> initiateCDStateRequest(List<CDState> states, String responseURL, String transactionID,
             float expirationTime) throws MultispeakWebServiceException;
 
     /**
@@ -208,7 +210,7 @@ public interface CD_Server {
      * data after the expiration time (specified in seconds), then the publisher
      * will discard the request and the requestor should not expect a response.
      */
-    public ErrorObject[] initiateArmCDDevice(CDState[] states, String responseURL, String transactionID,
+    public List<ErrorObject> initiateArmCDDevice(List<CDState> states, String responseURL, String transactionID,
             float expirationTime) throws MultispeakWebServiceException;
 
     /**
@@ -225,7 +227,7 @@ public interface CD_Server {
      * data after the expiration time (specified in seconds), then the publisher
      * will discard the request and the requestor should not expect a response.
      */
-    public ErrorObject[] initiateEnableCDDevice(CDState[] states, String responseURL, String transactionID,
+    public List<ErrorObject> initiateEnableCDDevice(List<CDState> states, String responseURL, String transactionID,
             float expirationTime) throws MultispeakWebServiceException;
 
     /**
@@ -242,7 +244,7 @@ public interface CD_Server {
      * data after the expiration time (specified in seconds), then the publisher
      * will discard the request and the requestor should not expect a response.
      */
-    public ErrorObject[] initiateDisableCDDevice(CDState[] states, String responseURL, String transactionID,
+    public List<ErrorObject> initiateDisableCDDevice(List<CDState> states, String responseURL, String transactionID,
             float expirationTime) throws MultispeakWebServiceException;
 
     /**
@@ -253,7 +255,7 @@ public interface CD_Server {
      * to indicate to the subscriber under which registrationID they received
      * this notification data.
      */
-    public ErrorObject[] customerChangedNotification(Customer[] changedCustomers) throws MultispeakWebServiceException;
+    public List<ErrorObject> customerChangedNotification(List<Customer> changedCustomers) throws MultispeakWebServiceException;
 
     /**
      * Publisher Notifies CD of a change in the Service Location object
@@ -263,7 +265,7 @@ public interface CD_Server {
      * to indicate to the subscriber under which registrationID they received
      * this notification data.
      */
-    public ErrorObject[] serviceLocationChangedNotification(ServiceLocation[] changedServiceLocations)
+    public List<ErrorObject> serviceLocationChangedNotification(List<ServiceLocation> changedServiceLocations)
             throws MultispeakWebServiceException;
 
     /**
@@ -274,7 +276,7 @@ public interface CD_Server {
      * to the subscriber under which registrationID they received this notification
      * data.
      */
-    public ErrorObject[] meterChangedNotification(Meter[] changedMeters) throws MultispeakWebServiceException;
+    public List<ErrorObject> meterChangedNotification(List<Meter> changedMeters) throws MultispeakWebServiceException;
 
     /**
      * Publisher notifies CD to add the associated connect/disconnect
@@ -283,7 +285,7 @@ public interface CD_Server {
      * should be added to all publish messages to indicate to the subscriber
      * under which registrationID they received this notification data.
      */
-    public ErrorObject[] CDDeviceAddNotification(CDDevice[] addedCDDs) throws MultispeakWebServiceException;
+    public List<ErrorObject> CDDeviceAddNotification(List<CDDevice> addedCDDs) throws MultispeakWebServiceException;
 
     /**
      * Publisher notifies CD of a change in connect/disconnect device(s).
@@ -292,7 +294,7 @@ public interface CD_Server {
      * be added to all publish messages to indicate to the subscriber under
      * which registrationID they received this notification data.
      */
-    public ErrorObject[] CDDeviceChangedNotification(CDDevice[] changedCDDs) throws MultispeakWebServiceException;
+    public List<ErrorObject> CDDeviceChangedNotification(List<CDDevice> changedCDDs) throws MultispeakWebServiceException;
 
     /**
      * Publisher notifies CD that connect/disconnect device(s) have
@@ -301,7 +303,7 @@ public interface CD_Server {
      * should be added to all publish messages to indicate to the subscriber
      * under which registrationID they received this notification data.
      */
-    public ErrorObject[] CDDeviceExchangeNotification(CDDeviceExchange[] CDDChangeout)
+    public List<ErrorObject> CDDeviceExchangeNotification(List<CDDeviceExchange> CDDChangeout)
             throws MultispeakWebServiceException;
 
     /**
@@ -311,7 +313,7 @@ public interface CD_Server {
      * should be added to all publish messages to indicate to the subscriber
      * under which registrationID they received this notification data.
      */
-    public ErrorObject[] CDDeviceRemoveNotification(CDDevice[] removedCDDs) throws MultispeakWebServiceException;
+    public List<ErrorObject> CDDeviceRemoveNotification(List<CDDevice> removedCDDs) throws MultispeakWebServiceException;
 
     /**
      * Publisher notifies CD that the associated connect/disconnect
@@ -321,5 +323,5 @@ public interface CD_Server {
      * to indicate to the subscriber under which registrationID they received
      * this notification data.
      */
-    public ErrorObject[] CDDeviceRetireNotification(CDDevice[] retiredCDDs) throws MultispeakWebServiceException;
+    public List<ErrorObject> CDDeviceRetireNotification(List<CDDevice> retiredCDDs) throws MultispeakWebServiceException;
 }

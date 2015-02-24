@@ -1,6 +1,8 @@
 package com.cannontech.multispeak.service;
 
 import java.util.Calendar;
+import java.util.List;
+import java.util.Set;
 
 import com.cannontech.msp.beans.v3.Customer;
 import com.cannontech.msp.beans.v3.CustomersAffectedByOutage;
@@ -38,7 +40,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] pingURL() throws MultispeakWebServiceException;
+    public ErrorObject pingURL() throws MultispeakWebServiceException;
 
     /**
      * get Methods.
@@ -46,7 +48,7 @@ public interface MR_Server {
      * @return the methods
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public String[] getMethods() throws MultispeakWebServiceException;;
+    public List<String> getMethods() throws MultispeakWebServiceException;;
 
     /**
      * get AMR SupportedMeters.
@@ -55,7 +57,7 @@ public interface MR_Server {
      * @return the AMR supported meters
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public Meter[] getAMRSupportedMeters(java.lang.String lastReceived) throws MultispeakWebServiceException;
+    public List<Meter> getAMRSupportedMeters(java.lang.String lastReceived) throws MultispeakWebServiceException;
 
     /**
      * is AMR Meter.
@@ -75,7 +77,7 @@ public interface MR_Server {
      * @return the readings by date
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public MeterRead[] getReadingsByDate(java.util.Calendar startDate, java.util.Calendar endDate,
+    public List<MeterRead> getReadingsByDate(java.util.Calendar startDate, java.util.Calendar endDate,
             java.lang.String lastReceived) throws MultispeakWebServiceException;
 
     /**
@@ -87,7 +89,7 @@ public interface MR_Server {
      * @return the readings by meter no
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public MeterRead[] getReadingsByMeterNo(java.lang.String meterNo, java.util.Calendar startDate,
+    public List<MeterRead> getReadingsByMeterNo(java.lang.String meterNo, java.util.Calendar startDate,
             java.util.Calendar endDate) throws MultispeakWebServiceException;
 
     /**
@@ -113,9 +115,9 @@ public interface MR_Server {
      * @return the readings by billing cycle
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public FormattedBlock[] getReadingsByBillingCycle(String billingCycle, Calendar billingDate, int kWhLookBack,
+    public List<FormattedBlock> getReadingsByBillingCycle(String billingCycle, Calendar billingDate, int kWhLookBack,
             int kWLookBack, int kWLookForward, String lastReceived, String formattedBlockTemplateName,
-            String[] fieldName) throws MultispeakWebServiceException;
+            List<String> fieldName) throws MultispeakWebServiceException;
 
     /**
      * initiate Usage Monitoring.
@@ -124,7 +126,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] initiateUsageMonitoring(String[] meterNos) throws MultispeakWebServiceException;
+    public List<ErrorObject> initiateUsageMonitoring(List<String> meterNos) throws MultispeakWebServiceException;
 
     /**
      * cancel Usage Monitoring.
@@ -133,7 +135,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] cancelUsageMonitoring(String[] meterNos) throws MultispeakWebServiceException;
+    public List<ErrorObject> cancelUsageMonitoring(List<String> meterNos) throws MultispeakWebServiceException;
 
     /**
      * initiate Disconnected Status.
@@ -142,7 +144,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] initiateDisconnectedStatus(String[] meterNos) throws MultispeakWebServiceException;
+    public List<ErrorObject> initiateDisconnectedStatus(List<String> meterNos) throws MultispeakWebServiceException;
 
     /**
      * cancel Disconnected Status.
@@ -151,7 +153,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] cancelDisconnectedStatus(String[] meterNos) throws MultispeakWebServiceException;
+    public List<ErrorObject> cancelDisconnectedStatus(List<String> meterNos) throws MultispeakWebServiceException;
 
     /**
      * initiate Meter Read By Meter Number.
@@ -163,7 +165,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] initiateMeterReadByMeterNumber(String[] meterNos, String responseURL, String transactionID,
+    public List<ErrorObject> initiateMeterReadByMeterNumber(List<String> meterNos, String responseURL, String transactionID,
             Float expirationTime) throws MultispeakWebServiceException;
 
     /**
@@ -173,7 +175,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] serviceLocationChangedNotification(ServiceLocation[] changedServiceLocations)
+    public List<ErrorObject> serviceLocationChangedNotification(List<ServiceLocation> changedServiceLocations)
             throws MultispeakWebServiceException;
 
     /**
@@ -183,7 +185,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] meterChangedNotification(Meter[] changedMeters) throws MultispeakWebServiceException;
+    public List<ErrorObject> meterChangedNotification(List<Meter> changedMeters) throws MultispeakWebServiceException;
 
     /**
      * meter Remove Notification.
@@ -192,7 +194,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] meterRemoveNotification(Meter[] removedMeters) throws MultispeakWebServiceException;
+    public List<ErrorObject> meterRemoveNotification(List<Meter> removedMeters) throws MultispeakWebServiceException;
 
     /**
      * meter Add Notification.
@@ -201,7 +203,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] meterAddNotification(Meter[] addedMeters) throws MultispeakWebServiceException;
+    public List<ErrorObject> meterAddNotification(List<Meter> addedMeters) throws MultispeakWebServiceException;
 
     /**
      * delete Meter Group.
@@ -219,7 +221,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] establishMeterGroup(MeterGroup meterGroup) throws MultispeakWebServiceException;
+    public List<ErrorObject> establishMeterGroup(MeterGroup meterGroup) throws MultispeakWebServiceException;
 
     /**
      * insert Meter In Meter Group.
@@ -229,7 +231,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] insertMeterInMeterGroup(String[] meterNumbers, String meterGroupID)
+    public List<ErrorObject> insertMeterInMeterGroup(List<String> meterNumbers, String meterGroupID)
             throws MultispeakWebServiceException;
 
     /**
@@ -240,7 +242,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] removeMetersFromMeterGroup(String[] meterNumbers, String meterGroupID)
+    public List<ErrorObject> removeMetersFromMeterGroup(List<String> meterNumbers, String meterGroupID)
             throws MultispeakWebServiceException;
 
     /**
@@ -250,7 +252,7 @@ public interface MR_Server {
      * @return the latest readings
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public MeterRead[] getLatestReadings(String lastReceived) throws MultispeakWebServiceException;
+    public List<MeterRead> getLatestReadings(String lastReceived) throws MultispeakWebServiceException;
 
     /**
      * get Latest Reading By Meter No And Type.
@@ -263,7 +265,7 @@ public interface MR_Server {
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
     public FormattedBlock getLatestReadingByMeterNoAndType(String meterNo, String readingType,
-            String formattedBlockTemplateName, String[] fieldName) throws MultispeakWebServiceException;
+            String formattedBlockTemplateName, List<String> fieldName) throws MultispeakWebServiceException;
 
     /**
      * get Latest Reading By Type.
@@ -275,8 +277,8 @@ public interface MR_Server {
      * @return the latest reading by type
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public FormattedBlock[] getLatestReadingByType(String readingType, String lastReceived,
-            String formattedBlockTemplateName, String[] fieldName) throws MultispeakWebServiceException;
+    public List<FormattedBlock> getLatestReadingByType(String readingType, String lastReceived,
+            String formattedBlockTemplateName, List<String> fieldName) throws MultispeakWebServiceException;
 
     /**
      * get Readings By Date And Type.
@@ -290,8 +292,8 @@ public interface MR_Server {
      * @return the readings by date and type
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public FormattedBlock[] getReadingsByDateAndType(Calendar startDate, Calendar endDate, String readingType,
-            String lastReceived, String formattedBlockTemplateName, String[] fieldName)
+    public List<FormattedBlock> getReadingsByDateAndType(Calendar startDate, Calendar endDate, String readingType,
+            String lastReceived, String formattedBlockTemplateName, List<String> fieldName)
             throws MultispeakWebServiceException;
 
     /**
@@ -307,8 +309,8 @@ public interface MR_Server {
      * @return the readings by meter no and type
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public FormattedBlock[] getReadingsByMeterNoAndType(String meterNo, Calendar startDate, Calendar endDate,
-            String readingType, String lastReceived, String formattedBlockTemplateName, String[] fieldName)
+    public List<FormattedBlock> getReadingsByMeterNoAndType(String meterNo, Calendar startDate, Calendar endDate,
+            String readingType, String lastReceived, String formattedBlockTemplateName, List<String> fieldName)
             throws MultispeakWebServiceException;
 
     /**
@@ -317,7 +319,7 @@ public interface MR_Server {
      * @return the supported reading types
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public String[] getSupportedReadingTypes() throws MultispeakWebServiceException;
+    public Set<String> getSupportedReadingTypes() throws MultispeakWebServiceException;
 
     /**
      * initiate Meter Read By Meter No And Type.
@@ -330,7 +332,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] initiateMeterReadByMeterNoAndType(String meterNo, String responseURL, String readingType,
+    public List<ErrorObject> initiateMeterReadByMeterNoAndType(String meterNo, String responseURL, String readingType,
             String transactionID, Float expirationTime) throws MultispeakWebServiceException;
 
     /**
@@ -343,7 +345,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] initiateDemandReset(MeterIdentifier[] meterIDs, String responseURL, String transactionId,
+    public List<ErrorObject> initiateDemandReset(List<MeterIdentifier> meterIDs, String responseURL, String transactionId,
             Float expirationTime) throws MultispeakWebServiceException;
 
     /**
@@ -353,7 +355,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] cancelPlannedOutage(String[] meterNos) throws MultispeakWebServiceException;
+    public List<ErrorObject> cancelPlannedOutage(List<String> meterNos) throws MultispeakWebServiceException;
 
     /**
      * customer change notification.
@@ -362,7 +364,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] customerChangedNotification(Customer[] changedCustomers) throws MultispeakWebServiceException;
+    public List<ErrorObject> customerChangedNotification(List<Customer> changedCustomers) throws MultispeakWebServiceException;
 
     /**
      * customers affected by Outage notification.
@@ -371,7 +373,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] customersAffectedByOutageNotification(CustomersAffectedByOutage[] newOutages)
+    public List<ErrorObject> customersAffectedByOutageNotification(List<CustomersAffectedByOutage> newOutages)
             throws MultispeakWebServiceException;
 
     /**
@@ -381,7 +383,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] deleteReadingSchedule(String readingScheduleID) throws MultispeakWebServiceException;
+    public List<ErrorObject> deleteReadingSchedule(String readingScheduleID) throws MultispeakWebServiceException;
 
     /**
      * Delete schedule.
@@ -390,7 +392,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] deleteSchedule(String scheduleID) throws MultispeakWebServiceException;
+    public List<ErrorObject> deleteSchedule(String scheduleID) throws MultispeakWebServiceException;
 
     /**
      * Disable reading schedule.
@@ -399,7 +401,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] disableReadingSchedule(String readingScheduleID) throws MultispeakWebServiceException;
+    public List<ErrorObject> disableReadingSchedule(String readingScheduleID) throws MultispeakWebServiceException;
 
     /**
      * Domain members changed notification.
@@ -408,7 +410,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] domainMembersChangedNotification(DomainMember[] changedDomainMembers)
+    public List<ErrorObject> domainMembersChangedNotification(List<DomainMember> changedDomainMembers)
             throws MultispeakWebServiceException;
 
     /**
@@ -418,7 +420,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] domainNamesChangedNotification(DomainNameChange[] changedDomainNames)
+    public List<ErrorObject> domainNamesChangedNotification(List<DomainNameChange> changedDomainNames)
             throws MultispeakWebServiceException;
 
     /**
@@ -428,7 +430,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] enableReadingSchedule(String readingScheduleID) throws MultispeakWebServiceException;
+    public List<ErrorObject> enableReadingSchedule(String readingScheduleID) throws MultispeakWebServiceException;
 
     /**
      * End device shipment notification.
@@ -437,7 +439,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] endDeviceShipmentNotification(EndDeviceShipment shipment) throws MultispeakWebServiceException;
+    public List<ErrorObject> endDeviceShipmentNotification(EndDeviceShipment shipment) throws MultispeakWebServiceException;
 
     /**
      * Establish reading schedules.
@@ -446,7 +448,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] establishReadingSchedules(ReadingSchedule[] readingSchedules)
+    public List<ErrorObject> establishReadingSchedules(List<ReadingSchedule> readingSchedules)
             throws MultispeakWebServiceException;
 
     /**
@@ -456,7 +458,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] establishSchedules(com.cannontech.msp.beans.v3.Schedule[] schedules)
+    public List<ErrorObject> establishSchedules(List<Schedule> schedules)
             throws MultispeakWebServiceException;
 
     /**
@@ -465,7 +467,7 @@ public interface MR_Server {
      * @return the domain names
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public String[] getDomainNames() throws MultispeakWebServiceException;
+    public List<String> getDomainNames() throws MultispeakWebServiceException;
 
     /**
      * Gets the domain members.
@@ -474,7 +476,7 @@ public interface MR_Server {
      * @return the domain members
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public DomainMember[] getDomainMembers(String domainNaString) throws MultispeakWebServiceException;
+    public List<DomainMember> getDomainMembers(String domainNaString) throws MultispeakWebServiceException;
 
     /**
      * Gets the formatted block templates.
@@ -483,7 +485,7 @@ public interface MR_Server {
      * @return the formatted block templates
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public FormattedBlockTemplate[] getFormattedBlockTemplates(String lastReceived)
+    public List<FormattedBlockTemplate> getFormattedBlockTemplates(String lastReceived)
             throws MultispeakWebServiceException;
 
     /**
@@ -495,7 +497,7 @@ public interface MR_Server {
      * @return the history log by meter no
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public HistoryLog[] getHistoryLogByMeterNo(String meterNo, Calendar startDate, Calendar endDate)
+    public List<HistoryLog> getHistoryLogByMeterNo(String meterNo, Calendar startDate, Calendar endDate)
             throws MultispeakWebServiceException;
 
     /**
@@ -507,7 +509,7 @@ public interface MR_Server {
      * @return the history logs by date
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public HistoryLog[] getHistoryLogsByDate(Calendar startDate, Calendar endDate, String lastReceived)
+    public List<HistoryLog> getHistoryLogsByDate(Calendar startDate, Calendar endDate, String lastReceived)
             throws MultispeakWebServiceException;
 
     /**
@@ -520,7 +522,7 @@ public interface MR_Server {
      * @return the history logs by meter no and event code
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public HistoryLog[] getHistoryLogsByMeterNoAndEventCode(String meterNo, EventCode eventCode, Calendar startDate,
+    public List<HistoryLog> getHistoryLogsByMeterNoAndEventCode(String meterNo, EventCode eventCode, Calendar startDate,
             Calendar endDate) throws MultispeakWebServiceException;
 
     /**
@@ -533,7 +535,7 @@ public interface MR_Server {
      * @return the history logs by date and event code
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public HistoryLog[] getHistoryLogsByDateAndEventCode(EventCode eventCode, Calendar startDate, Calendar endDate,
+    public List<HistoryLog> getHistoryLogsByDateAndEventCode(EventCode eventCode, Calendar startDate, Calendar endDate,
             String lastReceived) throws MultispeakWebServiceException;
 
     /**
@@ -546,7 +548,7 @@ public interface MR_Server {
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
     public FormattedBlock getLatestMeterReadingsByMeterGroup(String meterGroupID, String formattedBlockTemplateName,
-            String[] fieldName) throws MultispeakWebServiceException;
+            List<String> fieldName) throws MultispeakWebServiceException;
 
     /**
      * Gets the latest readings by meter no list.
@@ -562,9 +564,9 @@ public interface MR_Server {
      * @return the latest readings by meter no list
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public FormattedBlock[] getLatestReadingsByMeterNoList(String[] meterNo, Calendar startDate, Calendar endDate,
+    public List<FormattedBlock> getLatestReadingsByMeterNoList(List<String> meterNo, Calendar startDate, Calendar endDate,
             String readingType, String lastReceived, ServiceType serviceType, String formattedBlockTemplateName,
-            String[] fieldName) throws MultispeakWebServiceException;
+            List<String> fieldName) throws MultispeakWebServiceException;
 
     /**
      * Gets the latest readings by meter no list formatted block.
@@ -579,8 +581,8 @@ public interface MR_Server {
      * @return the latest readings by meter no list formatted block
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public FormattedBlock[] getLatestReadingsByMeterNoListFormattedBlock(String[] meterNo, Calendar startDate,
-            Calendar endDate, String formattedBlockTemplateName, String[] fieldName, String lastReceived,
+    public List<FormattedBlock> getLatestReadingsByMeterNoListFormattedBlock(List<String> meterNo, Calendar startDate,
+            Calendar endDate, String formattedBlockTemplateName, List<String> fieldName, String lastReceived,
             ServiceType serviceType) throws MultispeakWebServiceException;
 
     /**
@@ -591,7 +593,7 @@ public interface MR_Server {
      * @return the modified amr meters
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public Meter[] getModifiedAMRMeters(String previousSessionID, String lastReceived)
+    public List<Meter> getModifiedAMRMeters(String previousSessionID, String lastReceived)
             throws MultispeakWebServiceException;
 
     /**
@@ -600,7 +602,7 @@ public interface MR_Server {
      * @return the publish methods
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public String[] getPublishMethods() throws MultispeakWebServiceException;
+    public List<String> getPublishMethods() throws MultispeakWebServiceException;
 
     /**
      * Gets the reading by meter number formatted block.
@@ -616,9 +618,9 @@ public interface MR_Server {
      * @return the reading by meter number formatted block
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public FormattedBlock[] getReadingByMeterNumberFormattedBlock(String meterNumber, Calendar billingDate,
+    public List<FormattedBlock> getReadingByMeterNumberFormattedBlock(String meterNumber, Calendar billingDate,
             int kWhLookBack, int kWLookBack, int kWLookForward, String lastReceived, String formattedBlockTemplateName,
-            String[] fieldName) throws MultispeakWebServiceException;
+            List<String> fieldName) throws MultispeakWebServiceException;
 
     /**
      * Gets the readings by date formatted block.
@@ -633,8 +635,8 @@ public interface MR_Server {
      * @return the readings by date formatted block
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public FormattedBlock[] getReadingsByDateFormattedBlock(Calendar billingDate, int kWhLookBack, int kWLookBack,
-            int kWLookForward, String lastReceived, String formattedBlockTemplateName, String[] fieldName)
+    public List<FormattedBlock> getReadingsByDateFormattedBlock(Calendar billingDate, int kWhLookBack, int kWLookBack,
+            int kWLookForward, String lastReceived, String formattedBlockTemplateName, List<String> fieldName)
             throws MultispeakWebServiceException;
 
     /**
@@ -647,7 +649,7 @@ public interface MR_Server {
      * @return the readings by uom and date
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public MeterRead[] getReadingsByUOMAndDate(String uomData, Calendar startDate, Calendar endDate, String lastReceived)
+    public List<MeterRead> getReadingsByUOMAndDate(String uomData, Calendar startDate, Calendar endDate, String lastReceived)
             throws MultispeakWebServiceException;
 
     /**
@@ -666,7 +668,7 @@ public interface MR_Server {
      * @return the reading schedules
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ReadingSchedule[] getReadingSchedules(String lastReceived) throws MultispeakWebServiceException;
+    public List<ReadingSchedule> getReadingSchedules(String lastReceived) throws MultispeakWebServiceException;
 
     /**
      * Gets the registration info by id.
@@ -693,7 +695,7 @@ public interface MR_Server {
      * @return the schedules
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public Schedule[] getSchedules(String lastReceived) throws MultispeakWebServiceException;
+    public List<Schedule> getSchedules(String lastReceived) throws MultispeakWebServiceException;
 
     /**
      * In home display add notification.
@@ -702,7 +704,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] inHomeDisplayAddNotification(InHomeDisplay[] addedIHDs) throws MultispeakWebServiceException;
+    public List<ErrorObject> inHomeDisplayAddNotification(List<InHomeDisplay> addedIHDs) throws MultispeakWebServiceException;
 
     /**
      * In home display changed notification.
@@ -711,7 +713,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] inHomeDisplayChangedNotification(InHomeDisplay[] changedIHDs)
+    public List<ErrorObject> inHomeDisplayChangedNotification(List<InHomeDisplay> changedIHDs)
             throws MultispeakWebServiceException;
 
     /**
@@ -721,7 +723,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] inHomeDisplayExchangeNotification(InHomeDisplayExchange[] IHDChangeout)
+    public List<ErrorObject> inHomeDisplayExchangeNotification(List<InHomeDisplayExchange> IHDChangeout)
             throws MultispeakWebServiceException;
 
     /**
@@ -731,7 +733,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] inHomeDisplayRemoveNotification(InHomeDisplay[] removedIHDs)
+    public List<ErrorObject> inHomeDisplayRemoveNotification(List<InHomeDisplay> removedIHDs)
             throws MultispeakWebServiceException;
 
     /**
@@ -741,7 +743,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] inHomeDisplayRetireNotification(InHomeDisplay[] retiredIHDs)
+    public List<ErrorObject> inHomeDisplayRetireNotification(List<InHomeDisplay> retiredIHDs)
             throws MultispeakWebServiceException;
 
     /**
@@ -754,7 +756,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] initiateGroupMeterRead(String meterGroupName, String responseURL, String transactionID,
+    public List<ErrorObject> initiateGroupMeterRead(String meterGroupName, String responseURL, String transactionID,
             float expirationTime) throws MultispeakWebServiceException;
 
     /**
@@ -769,7 +771,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] initiateMeterReadByObject(String objectName, String nounType, PhaseCd phaseCode,
+    public List<ErrorObject> initiateMeterReadByObject(String objectName, String nounType, PhaseCd phaseCode,
             String responseURL, String transactionID, float expirationTime) throws MultispeakWebServiceException;
 
     /**
@@ -784,7 +786,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] initiateMeterReadsByFieldName(String[] meterNumbers, String[] fieldNames, String responseURL,
+    public List<ErrorObject> initiateMeterReadsByFieldName(List<String> meterNumbers, List<String> fieldNames, String responseURL,
             String transactionID, float expirationTime, String formattedBlockTemplateName)
             throws MultispeakWebServiceException;
 
@@ -797,7 +799,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] initiatePlannedOutage(String[] meterNos, Calendar startDate, Calendar endDate)
+    public List<ErrorObject> initiatePlannedOutage(List<String> meterNos, Calendar startDate, Calendar endDate)
             throws MultispeakWebServiceException;
 
     /**
@@ -809,7 +811,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] insertMetersInConfigurationGroup(String[] meterNumbers, String meterGroupID,
+    public List<ErrorObject> insertMetersInConfigurationGroup(List<String> meterNumbers, String meterGroupID,
             ServiceType serviceType) throws MultispeakWebServiceException;
 
     /**
@@ -819,7 +821,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] meterBaseAddNotification(MeterBase[] addedMBs) throws MultispeakWebServiceException;
+    public List<ErrorObject> meterBaseAddNotification(List<MeterBase> addedMBs) throws MultispeakWebServiceException;
 
     /**
      * Meter base changed notification.
@@ -828,7 +830,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] meterBaseChangedNotification(MeterBase[] changedMBs) throws MultispeakWebServiceException;
+    public List<ErrorObject> meterBaseChangedNotification(List<MeterBase> changedMBs) throws MultispeakWebServiceException;
 
     /**
      * Meter base exchange notification.
@@ -837,7 +839,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] meterBaseExchangeNotification(MeterBaseExchange[] MBChangeout)
+    public List<ErrorObject> meterBaseExchangeNotification(List<MeterBaseExchange> MBChangeout)
             throws MultispeakWebServiceException;
 
     /**
@@ -847,7 +849,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] meterBaseRemoveNotification(MeterBase[] removedMBs) throws MultispeakWebServiceException;
+    public List<ErrorObject> meterBaseRemoveNotification(List<MeterBase> removedMBs) throws MultispeakWebServiceException;
 
     /**
      * Meter base retire notification.
@@ -856,7 +858,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] meterBaseRetireNotification(MeterBase[] retiredMBs) throws MultispeakWebServiceException;
+    public List<ErrorObject> meterBaseRetireNotification(List<MeterBase> retiredMBs) throws MultispeakWebServiceException;
 
     /**
      * Meter connectivity notification.
@@ -865,7 +867,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] meterConnectivityNotification(MeterConnectivity[] newConnectivity)
+    public List<ErrorObject> meterConnectivityNotification(List<MeterConnectivity> newConnectivity)
             throws MultispeakWebServiceException;
 
     /**
@@ -875,7 +877,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] meterExchangeNotification(MeterExchange[] meterChangeout) throws MultispeakWebServiceException;
+    public List<ErrorObject> meterExchangeNotification(List<MeterExchange> meterChangeout) throws MultispeakWebServiceException;
 
     /**
      * Meter retire notification.
@@ -884,7 +886,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] meterRetireNotification(Meter[] retiredMeters) throws MultispeakWebServiceException;
+    public List<ErrorObject> meterRetireNotification(List<Meter> retiredMeters) throws MultispeakWebServiceException;
 
     /**
      * Register for service.
@@ -893,7 +895,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] registerForService(RegistrationInfo registrationDetails) throws MultispeakWebServiceException;
+    public List<ErrorObject> registerForService(RegistrationInfo registrationDetails) throws MultispeakWebServiceException;
 
     /**
      * Removes the meters from configuration group.
@@ -904,7 +906,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] removeMetersFromConfigurationGroup(String[] meterNumbers, String meterGroupID,
+    public List<ErrorObject> removeMetersFromConfigurationGroup(List<String> meterNumbers, String meterGroupID,
             ServiceType serviceType) throws MultispeakWebServiceException;
 
     /**
@@ -925,7 +927,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] scheduleGroupMeterRead(String meterGroupName, Calendar timeToRead, String responseURL,
+    public List<ErrorObject> scheduleGroupMeterRead(String meterGroupName, Calendar timeToRead, String responseURL,
             String transactionID) throws MultispeakWebServiceException;
 
     /**
@@ -935,7 +937,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] unregisterForService(String registrationID) throws MultispeakWebServiceException;
+    public List<ErrorObject> unregisterForService(String registrationID) throws MultispeakWebServiceException;
 
     /**
      * Update service location displays.
@@ -944,6 +946,6 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject[] updateServiceLocationDisplays(String servLocID) throws MultispeakWebServiceException;
+    public List<ErrorObject> updateServiceLocationDisplays(String servLocID) throws MultispeakWebServiceException;
 
 }

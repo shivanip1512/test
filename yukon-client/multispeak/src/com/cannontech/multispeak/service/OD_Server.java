@@ -1,6 +1,7 @@
 package com.cannontech.multispeak.service;
 
 import java.util.Calendar;
+import java.util.List;
 
 import com.cannontech.msp.beans.v3.Customer;
 import com.cannontech.msp.beans.v3.DomainMember;
@@ -24,12 +25,12 @@ public interface OD_Server {
      * as necessary to communicate application status.
      * @throws MultispeakWebServiceException 
      */
-    public ErrorObject[] pingURL() throws MultispeakWebServiceException;
+    public ErrorObject pingURL() throws MultispeakWebServiceException;
 
     /**
      * Requester requests list of methods supported by OD.
      */
-    public String[] getMethods() throws MultispeakWebServiceException;
+    public List<String> getMethods() throws MultispeakWebServiceException;
 
     /**
      * Client requests server to update the status of an outageDetectionDevice.
@@ -45,7 +46,7 @@ public interface OD_Server {
      * should not expect a response.
      */
     
-    public ErrorObject[] initiateOutageDetectionEventRequest(String[] meterNos, Calendar requestDate,
+    public List<ErrorObject> initiateOutageDetectionEventRequest(List<String> meterNos, Calendar requestDate,
             String responseURL, String transactionID, Float expirationTime) throws MultispeakWebServiceException;
     
     /**
@@ -53,7 +54,7 @@ public interface OD_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public String[] getDomainNames() throws MultispeakWebServiceException;
+    public List<String> getDomainNames() throws MultispeakWebServiceException;
 
     /**
      * get domain members
@@ -61,7 +62,7 @@ public interface OD_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public DomainMember[] getDomainMembers(String domainName) throws MultispeakWebServiceException;
+    public List<DomainMember> getDomainMembers(String domainName) throws MultispeakWebServiceException;
 
     /**
      * get all outage detection devices
@@ -69,7 +70,7 @@ public interface OD_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public OutageDetectionDevice[] getAllOutageDetectionDevices(String lastReceived)
+    public List<OutageDetectionDevice> getAllOutageDetectionDevices(String lastReceived)
             throws MultispeakWebServiceException;
 
     /**
@@ -78,7 +79,7 @@ public interface OD_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public OutageDetectionDevice[] getOutageDetectionDevicesByMeterNo(String meterNo)
+    public List<OutageDetectionDevice> getOutageDetectionDevicesByMeterNo(String meterNo)
             throws MultispeakWebServiceException;
 
     /**
@@ -88,7 +89,7 @@ public interface OD_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public OutageDetectionDevice[] getOutageDetectionDevicesByStatus(OutageDetectDeviceStatus oDDStatus,
+    public List<OutageDetectionDevice> getOutageDetectionDevicesByStatus(OutageDetectDeviceStatus oDDStatus,
             String lastReceived) throws MultispeakWebServiceException;
 
     /**
@@ -98,7 +99,7 @@ public interface OD_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public OutageDetectionDevice[] getOutageDetectionDevicesByType(OutageDetectDeviceType oDDType,
+    public List<OutageDetectionDevice> getOutageDetectionDevicesByType(OutageDetectDeviceType oDDType,
             String lastReceived) throws MultispeakWebServiceException;
 
     /**
@@ -106,7 +107,7 @@ public interface OD_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public OutageDetectionDevice[] getOutagedODDevices() throws MultispeakWebServiceException;
+    public List<OutageDetectionDevice> getOutagedODDevices() throws MultispeakWebServiceException;
 
     /**
      * modify OD data for outage detection device
@@ -121,7 +122,7 @@ public interface OD_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ObjectRef[] displayODMonitoringRequests() throws MultispeakWebServiceException;
+    public List<ObjectRef> displayODMonitoringRequests() throws MultispeakWebServiceException;
 
     /**
      * cancel OD monitoring request by object
@@ -130,7 +131,7 @@ public interface OD_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] cancelODMonitoringRequestByObject(ObjectRef[] objectRef, Calendar requestDate)
+    public List<ErrorObject> cancelODMonitoringRequestByObject(List<ObjectRef> objectRef, Calendar requestDate)
             throws MultispeakWebServiceException;
 
     /**
@@ -145,7 +146,7 @@ public interface OD_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] initiateODEventRequestByObject(String objectName, String nounType, PhaseCd phaseCode,
+    public List<ErrorObject> initiateODEventRequestByObject(String objectName, String nounType, PhaseCd phaseCode,
             Calendar requestDate, String responseURL, String transactionID, float expirationTime)
             throws MultispeakWebServiceException;
 
@@ -159,7 +160,7 @@ public interface OD_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] initiateODEventRequestByServiceLocation(String[] servLoc, Calendar requestDate,
+    public List<ErrorObject> initiateODEventRequestByServiceLocation(List<String> servLoc, Calendar requestDate,
             String responseURL, String transactionID, float expirationTime) throws MultispeakWebServiceException;
 
     /**
@@ -175,7 +176,7 @@ public interface OD_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] initiateODMonitoringRequestByObject(String objectName, String nounType, PhaseCd phaseCode,
+    public List<ErrorObject> initiateODMonitoringRequestByObject(String objectName, String nounType, PhaseCd phaseCode,
             int periodicity, Calendar requestDate, String responseURL, String transactionID, float expirationTime)
             throws MultispeakWebServiceException;
 
@@ -185,7 +186,7 @@ public interface OD_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] customerChangedNotification(Customer[] changedCustomers) throws MultispeakWebServiceException;
+    public List<ErrorObject> customerChangedNotification(List<Customer> changedCustomers) throws MultispeakWebServiceException;
 
     /**
      * meter changed notification
@@ -193,7 +194,7 @@ public interface OD_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] meterChangedNotification(Meter[] changedMeters) throws MultispeakWebServiceException;
+    public List<ErrorObject> meterChangedNotification(List<Meter> changedMeters) throws MultispeakWebServiceException;
 
     /**
      * service location changed notification
@@ -201,7 +202,7 @@ public interface OD_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] serviceLocationChangedNotification(ServiceLocation[] changedServiceLocations)
+    public List<ErrorObject> serviceLocationChangedNotification(List<ServiceLocation> changedServiceLocations)
             throws MultispeakWebServiceException;
 
     /**
@@ -217,7 +218,7 @@ public interface OD_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] registerForService(RegistrationInfo registrationDetails) throws MultispeakWebServiceException;
+    public List<ErrorObject> registerForService(RegistrationInfo registrationDetails) throws MultispeakWebServiceException;
 
     /**
      * un register for service
@@ -225,7 +226,7 @@ public interface OD_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] unregisterForService(String registrationID) throws MultispeakWebServiceException;
+    public List<ErrorObject> unregisterForService(String registrationID) throws MultispeakWebServiceException;
 
     /**
      * get registration info by ID
@@ -240,7 +241,7 @@ public interface OD_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public String[] getPublishMethods() throws MultispeakWebServiceException;
+    public List<String> getPublishMethods() throws MultispeakWebServiceException;
 
     /**
      * domain members changed notification
@@ -248,7 +249,7 @@ public interface OD_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] domainMembersChangedNotification(DomainMember[] changedDomainMembers)
+    public List<ErrorObject> domainMembersChangedNotification(List<DomainMember> changedDomainMembers)
             throws MultispeakWebServiceException;
 
     /**
@@ -257,7 +258,7 @@ public interface OD_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] domainNamesChangedNotification(DomainNameChange[] changedDomainNames)
+    public List<ErrorObject> domainNamesChangedNotification(List<DomainNameChange> changedDomainNames)
             throws MultispeakWebServiceException;
 
     /**
@@ -266,5 +267,5 @@ public interface OD_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] outageEventChangedNotification(OutageEvent[] oEvents) throws MultispeakWebServiceException;
+    public List<ErrorObject> outageEventChangedNotification(List<OutageEvent> oEvents) throws MultispeakWebServiceException;
 }

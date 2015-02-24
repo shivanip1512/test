@@ -1,5 +1,6 @@
 package com.cannontech.multispeak.endpoints.v3;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +14,6 @@ import com.cannontech.msp.beans.v3.ArrayOfCustomer;
 import com.cannontech.msp.beans.v3.ArrayOfDomainMember;
 import com.cannontech.msp.beans.v3.ArrayOfLMDeviceExchange;
 import com.cannontech.msp.beans.v3.ArrayOfLoadManagementDevice;
-import com.cannontech.msp.beans.v3.ArrayOfLoadManagementEvent;
-import com.cannontech.msp.beans.v3.ArrayOfScadaAnalog;
-import com.cannontech.msp.beans.v3.ArrayOfServiceLocation;
 import com.cannontech.msp.beans.v3.ArrayOfSubstationLoadControlStatus;
 import com.cannontech.msp.beans.v3.Customer;
 import com.cannontech.msp.beans.v3.CustomerChangedNotification;
@@ -122,7 +120,7 @@ public class LMServiceEndpoint {
     public @ResponsePayload
     PingURLResponse pingURL() throws MultispeakWebServiceException {
         PingURLResponse response = objectFactory.createPingURLResponse();
-        response.setPingURLResult(multispeakFuncs.toArrayOfErrorObject(lm_Server.pingURL()));
+        response.setPingURLResult(multispeakFuncs.toArrayOfErrorObject(Collections.singletonList(lm_Server.pingURL())));
         return response;
     }
 
@@ -140,11 +138,8 @@ public class LMServiceEndpoint {
             @RequestPayload SCADAAnalogChangedNotification SCADAAnalogChangedNotification)
             throws MultispeakWebServiceException {
         SCADAAnalogChangedNotificationResponse response = objectFactory.createSCADAAnalogChangedNotificationResponse();
-        ArrayOfScadaAnalog arrayOfScadaAnalog = SCADAAnalogChangedNotification.getScadaAnalogs();
-        List<ScadaAnalog> scadaAnalogsList = arrayOfScadaAnalog.getScadaAnalog();
-        if (!scadaAnalogsList.isEmpty()) {
-            ScadaAnalog[] scadaAnalogs = new ScadaAnalog[scadaAnalogsList.size()];
-            scadaAnalogsList.toArray(scadaAnalogs);
+        List<ScadaAnalog> scadaAnalogs = SCADAAnalogChangedNotification.getScadaAnalogs().getScadaAnalog();
+        if (!scadaAnalogs.isEmpty()) {
             response.setSCADAAnalogChangedNotificationResult(multispeakFuncs.toArrayOfErrorObject(lm_Server.SCADAAnalogChangedNotification(scadaAnalogs)));
         }
         return response;
@@ -157,15 +152,11 @@ public class LMServiceEndpoint {
             throws MultispeakWebServiceException {
         GetAllSubstationLoadControlStatusesResponse response =
             objectFactory.createGetAllSubstationLoadControlStatusesResponse();
-        SubstationLoadControlStatus[] substationLoadControlStatusArray =
+        List<SubstationLoadControlStatus> substationLoadControlStatus =
             lm_Server.getAllSubstationLoadControlStatuses();
-        ArrayOfSubstationLoadControlStatus arrayOfSubstationLoadControlStatus =
-            objectFactory.createArrayOfSubstationLoadControlStatus();
-        List<SubstationLoadControlStatus> substationLoadControlStatusList =
-            arrayOfSubstationLoadControlStatus.getSubstationLoadControlStatus();
-        for (SubstationLoadControlStatus substationLoadControlStatus : substationLoadControlStatusArray) {
-            substationLoadControlStatusList.add(substationLoadControlStatus);
-        }
+        
+        ArrayOfSubstationLoadControlStatus arrayOfSubstationLoadControlStatus = objectFactory.createArrayOfSubstationLoadControlStatus();
+        arrayOfSubstationLoadControlStatus.getSubstationLoadControlStatus().addAll(substationLoadControlStatus);
         response.setGetAllSubstationLoadControlStatusesResult(arrayOfSubstationLoadControlStatus);
         return response;
     }
@@ -187,14 +178,11 @@ public class LMServiceEndpoint {
             @RequestPayload InitiateLoadManagementEvents initiateLoadManagementEvents)
             throws MultispeakWebServiceException {
         InitiateLoadManagementEventsResponse response = objectFactory.createInitiateLoadManagementEventsResponse();
-        ArrayOfLoadManagementEvent arrayOfLoadManagementEvent = initiateLoadManagementEvents.getTheLMEvents();
-        List<LoadManagementEvent> loadManagementEventList = arrayOfLoadManagementEvent.getLoadManagementEvent();
-        if (!loadManagementEventList.isEmpty()) {
-            LoadManagementEvent[] loadManagementEvents = new LoadManagementEvent[loadManagementEventList.size()];
-            loadManagementEventList.toArray(loadManagementEvents);
+        
+        List<LoadManagementEvent> loadManagementEvents = initiateLoadManagementEvents.getTheLMEvents().getLoadManagementEvent();
+        if (!loadManagementEvents.isEmpty()) {
             response.setInitiateLoadManagementEventsResult(multispeakFuncs.toArrayOfErrorObject(lm_Server.initiateLoadManagementEvents(loadManagementEvents)));
         }
-
         return response;
     }
 
@@ -212,10 +200,9 @@ public class LMServiceEndpoint {
     GetDomainMembersResponse getDomainMembers(@RequestPayload GetDomainMembers getDomainMembers)
             throws MultispeakWebServiceException {
         GetDomainMembersResponse response = objectFactory.createGetDomainMembersResponse();
-        DomainMember[] domainMemberArr = lm_Server.getDomainMembers(getDomainMembers.getDomainName());
+        List<DomainMember> domainMembers = lm_Server.getDomainMembers(getDomainMembers.getDomainName());
         ArrayOfDomainMember arrayOfDomainMember = objectFactory.createArrayOfDomainMember();
-        List<DomainMember> domainMember = arrayOfDomainMember.getDomainMember();
-        domainMember.add(domainMemberArr[0]);
+        arrayOfDomainMember.getDomainMember().addAll(domainMembers);
         response.setGetDomainMembersResult(arrayOfDomainMember);
         return response;
     }
@@ -226,14 +213,10 @@ public class LMServiceEndpoint {
             @RequestPayload LMDeviceAddNotification lmDeviceAddNotification) throws MultispeakWebServiceException {
         LMDeviceAddNotificationResponse response = objectFactory.createLMDeviceAddNotificationResponse();
         ArrayOfLoadManagementDevice arrayOfLoadManagementDevice = lmDeviceAddNotification.getAddedLMDs();
-        LoadManagementDevice[] loadManagementDeviceArr = null;
         if (null != arrayOfLoadManagementDevice) {
             List<LoadManagementDevice> loadManagementDevices = arrayOfLoadManagementDevice.getLoadManagementDevice();
-            loadManagementDeviceArr = new LoadManagementDevice[loadManagementDevices.size()];
-            loadManagementDevices.toArray(loadManagementDeviceArr);
-            response.setLMDeviceAddNotificationResult(multispeakFuncs.toArrayOfErrorObject(lm_Server.LMDeviceAddNotification(loadManagementDeviceArr)));
+            response.setLMDeviceAddNotificationResult(multispeakFuncs.toArrayOfErrorObject(lm_Server.LMDeviceAddNotification(loadManagementDevices)));
         }
-
         return response;
     }
 
@@ -244,14 +227,10 @@ public class LMServiceEndpoint {
             throws MultispeakWebServiceException {
         LMDeviceChangedNotificationResponse response = objectFactory.createLMDeviceChangedNotificationResponse();
         ArrayOfLoadManagementDevice arrayOfLoadManagementDevice = lmDeviceChangedNotification.getChangedLMDs();
-        LoadManagementDevice[] loadManagementDeviceArr = null;
         if (null != arrayOfLoadManagementDevice) {
             List<LoadManagementDevice> loadManagementDevices = arrayOfLoadManagementDevice.getLoadManagementDevice();
-            loadManagementDeviceArr = new LoadManagementDevice[loadManagementDevices.size()];
-            loadManagementDevices.toArray(loadManagementDeviceArr);
-            response.setLMDeviceChangedNotificationResult(multispeakFuncs.toArrayOfErrorObject(lm_Server.LMDeviceChangedNotification(loadManagementDeviceArr)));
+            response.setLMDeviceChangedNotificationResult(multispeakFuncs.toArrayOfErrorObject(lm_Server.LMDeviceChangedNotification(loadManagementDevices)));
         }
-
         return response;
     }
 
@@ -264,9 +243,7 @@ public class LMServiceEndpoint {
         ArrayOfLMDeviceExchange arrayOfLMDeviceExchange = lmDeviceExchangeNotification.getLMDChangeout();
         if (null != arrayOfLMDeviceExchange) {
             List<LMDeviceExchange> lmDeviceExchanges = arrayOfLMDeviceExchange.getLMDeviceExchange();
-            LMDeviceExchange[] lmDeviceExchangeArr = new LMDeviceExchange[lmDeviceExchanges.size()];
-            lmDeviceExchanges.toArray(lmDeviceExchangeArr);
-            response.setLMDeviceExchangeNotificationResult(multispeakFuncs.toArrayOfErrorObject(lm_Server.LMDeviceExchangeNotification(lmDeviceExchangeArr)));
+            response.setLMDeviceExchangeNotificationResult(multispeakFuncs.toArrayOfErrorObject(lm_Server.LMDeviceExchangeNotification(lmDeviceExchanges)));
         }
         return response;
     }
@@ -277,14 +254,10 @@ public class LMServiceEndpoint {
             @RequestPayload LMDeviceRemoveNotification lmDeviceRemoveNotification) throws MultispeakWebServiceException {
         LMDeviceRemoveNotificationResponse response = objectFactory.createLMDeviceRemoveNotificationResponse();
         ArrayOfLoadManagementDevice loadManagementDeviceArr = lmDeviceRemoveNotification.getRemovedLMDs();
-        LoadManagementDevice[] arrayOfLoadManagementDevice = null;
         if (null != loadManagementDeviceArr) {
             List<LoadManagementDevice> loadManagementDevices = loadManagementDeviceArr.getLoadManagementDevice();
-            arrayOfLoadManagementDevice = new LoadManagementDevice[loadManagementDevices.size()];
-            loadManagementDevices.toArray(arrayOfLoadManagementDevice);
-            response.setLMDeviceRemoveNotificationResult(multispeakFuncs.toArrayOfErrorObject(lm_Server.LMDeviceRemoveNotification(arrayOfLoadManagementDevice)));
+            response.setLMDeviceRemoveNotificationResult(multispeakFuncs.toArrayOfErrorObject(lm_Server.LMDeviceRemoveNotification(loadManagementDevices)));
         }
-
         return response;
     }
 
@@ -294,14 +267,10 @@ public class LMServiceEndpoint {
             @RequestPayload LMDeviceRetireNotification lmDeviceRetireNotification) throws MultispeakWebServiceException {
         LMDeviceRetireNotificationResponse response = objectFactory.createLMDeviceRetireNotificationResponse();
         ArrayOfLoadManagementDevice arrayOfLoadManagementDevice = lmDeviceRetireNotification.getRetiredLMDs();
-        LoadManagementDevice[] loadManagementDeviceArr = null;
         if (null != arrayOfLoadManagementDevice) {
             List<LoadManagementDevice> loadManagementDevices = arrayOfLoadManagementDevice.getLoadManagementDevice();
-            loadManagementDeviceArr = new LoadManagementDevice[loadManagementDevices.size()];
-            loadManagementDevices.toArray(loadManagementDeviceArr);
-            response.setLMDeviceRetireNotificationResult(multispeakFuncs.toArrayOfErrorObject(lm_Server.LMDeviceRetireNotification(loadManagementDeviceArr)));
+            response.setLMDeviceRetireNotificationResult(multispeakFuncs.toArrayOfErrorObject(lm_Server.LMDeviceRetireNotification(loadManagementDevices)));
         }
-
         return response;
     }
 
@@ -324,9 +293,7 @@ public class LMServiceEndpoint {
         SCADAAnalogChangedNotificationForPowerResponse response =
             objectFactory.createSCADAAnalogChangedNotificationForPowerResponse();
         List<ScadaAnalog> scadaAnalogs = scadaAnalogChangedNotificationForPower.getScadaAnalogs().getScadaAnalog();
-        ScadaAnalog[] scadaAnalogArr = new ScadaAnalog[scadaAnalogs.size()];
-        scadaAnalogs.toArray(scadaAnalogArr);
-        response.setSCADAAnalogChangedNotificationForPowerResult((multispeakFuncs.toArrayOfErrorObject(lm_Server.SCADAAnalogChangedNotificationForVoltage(scadaAnalogArr))));
+        response.setSCADAAnalogChangedNotificationForPowerResult((multispeakFuncs.toArrayOfErrorObject(lm_Server.SCADAAnalogChangedNotificationForVoltage(scadaAnalogs))));
         return response;
     }
 
@@ -338,9 +305,7 @@ public class LMServiceEndpoint {
         SCADAAnalogChangedNotificationForVoltageResponse response =
             objectFactory.createSCADAAnalogChangedNotificationForVoltageResponse();
         List<ScadaAnalog> scadaAnalogs = scadaAnalogChangedNotificationForVoltage.getScadaAnalogs().getScadaAnalog();
-        ScadaAnalog[] scadaAnalogArr = new ScadaAnalog[scadaAnalogs.size()];
-        scadaAnalogs.toArray(scadaAnalogArr);
-        response.setSCADAAnalogChangedNotificationForVoltageResult(multispeakFuncs.toArrayOfErrorObject(lm_Server.SCADAAnalogChangedNotificationForVoltage(scadaAnalogArr)));
+        response.setSCADAAnalogChangedNotificationForVoltageResult(multispeakFuncs.toArrayOfErrorObject(lm_Server.SCADAAnalogChangedNotificationForVoltage(scadaAnalogs)));
         return response;
     }
 
@@ -351,9 +316,7 @@ public class LMServiceEndpoint {
             throws MultispeakWebServiceException {
         SCADAPointChangedNotificationResponse response = objectFactory.createSCADAPointChangedNotificationResponse();
         List<ScadaPoint> scadaPoints = scadaPointChangedNotification.getScadaPoints().getScadaPoint();
-        ScadaPoint[] scadaPointArr = new ScadaPoint[scadaPoints.size()];
-        scadaPoints.toArray(scadaPointArr);
-        response.setSCADAPointChangedNotificationResult((multispeakFuncs.toArrayOfErrorObject(lm_Server.SCADAPointChangedNotificationForAnalog(scadaPointArr))));
+        response.setSCADAPointChangedNotificationResult((multispeakFuncs.toArrayOfErrorObject(lm_Server.SCADAPointChangedNotificationForAnalog(scadaPoints))));
         return response;
     }
 
@@ -365,9 +328,7 @@ public class LMServiceEndpoint {
         SCADAPointChangedNotificationForAnalogResponse response =
             objectFactory.createSCADAPointChangedNotificationForAnalogResponse();
         List<ScadaPoint> scadaPoints = scadaPointChangedNotificationForAnalog.getScadaPoints().getScadaPoint();
-        ScadaPoint[] scadaPointArr = new ScadaPoint[scadaPoints.size()];
-        scadaPoints.toArray(scadaPointArr);
-        response.setSCADAPointChangedNotificationForAnalogResult(multispeakFuncs.toArrayOfErrorObject(lm_Server.SCADAPointChangedNotificationForAnalog(scadaPointArr)));
+        response.setSCADAPointChangedNotificationForAnalogResult(multispeakFuncs.toArrayOfErrorObject(lm_Server.SCADAPointChangedNotificationForAnalog(scadaPoints)));
         return response;
     }
 
@@ -380,9 +341,7 @@ public class LMServiceEndpoint {
         SCADAPointChangedNotificationForStatusResponse response =
             objectFactory.createSCADAPointChangedNotificationForStatusResponse();
         List<ScadaPoint> scadaPoints = scadaPointChangedNotificationForStatus.getScadaPoints().getScadaPoint();
-        ScadaPoint[] scadaPointArr = new ScadaPoint[scadaPoints.size()];
-        scadaPoints.toArray(scadaPointArr);
-        response.setSCADAPointChangedNotificationForStatusResult(multispeakFuncs.toArrayOfErrorObject(lm_Server.SCADAPointChangedNotificationForStatus(scadaPointArr)));
+        response.setSCADAPointChangedNotificationForStatusResult(multispeakFuncs.toArrayOfErrorObject(lm_Server.SCADAPointChangedNotificationForStatus(scadaPoints)));
         return response;
     }
 
@@ -392,10 +351,8 @@ public class LMServiceEndpoint {
             @RequestPayload SCADAStatusChangedNotification scadaStatusChangedNotification)
             throws MultispeakWebServiceException {
         SCADAStatusChangedNotificationResponse response = objectFactory.createSCADAStatusChangedNotificationResponse();
-        List<ScadaStatus> scadaStats = scadaStatusChangedNotification.getScadaStatuses().getScadaStatus();
-        ScadaStatus[] scadaStatusArr = new ScadaStatus[scadaStats.size()];
-        scadaStats.toArray(scadaStatusArr);
-        response.setSCADAStatusChangedNotificationResult(multispeakFuncs.toArrayOfErrorObject(lm_Server.SCADAStatusChangedNotification(scadaStatusArr)));
+        List<ScadaStatus> scadaStatus = scadaStatusChangedNotification.getScadaStatuses().getScadaStatus();
+        response.setSCADAStatusChangedNotificationResult(multispeakFuncs.toArrayOfErrorObject(lm_Server.SCADAStatusChangedNotification(scadaStatus)));
         return response;
     }
 
@@ -419,11 +376,8 @@ public class LMServiceEndpoint {
         ArrayOfCustomer arrayOfCustomer = customerChangedNotification.getChangedCustomers();
         List<Customer> customers = arrayOfCustomer.getCustomer();
         if (!customers.isEmpty()) {
-            Customer[] customerArr = new Customer[customers.size()];
-            customers.toArray(customerArr);
-            response.setCustomerChangedNotificationResult(multispeakFuncs.toArrayOfErrorObject(lm_Server.customerChangedNotification(customerArr)));
+            response.setCustomerChangedNotificationResult(multispeakFuncs.toArrayOfErrorObject(lm_Server.customerChangedNotification(customers)));
         }
-
         return response;
     }
 
@@ -433,18 +387,15 @@ public class LMServiceEndpoint {
             @RequestPayload GetAllLoadManagementDevices getAllLoadManagementDevices)
             throws MultispeakWebServiceException {
         GetAllLoadManagementDevicesResponse response = objectFactory.createGetAllLoadManagementDevicesResponse();
-        LoadManagementDevice[] loadManagementDeviceArr =
+        List<LoadManagementDevice> loadManagementDevices =
             lm_Server.getAllLoadManagementDevices(getAllLoadManagementDevices.getLastReceived());
+        
         ArrayOfLoadManagementDevice arrayOfLoadManagementDevice = null;
-        if (null != loadManagementDeviceArr) {
+        if (null != loadManagementDevices) {
             arrayOfLoadManagementDevice = objectFactory.createArrayOfLoadManagementDevice();
-            List<LoadManagementDevice> loadManagementDevices = arrayOfLoadManagementDevice.getLoadManagementDevice();
-            for (LoadManagementDevice loadManagementDevice : loadManagementDeviceArr) {
-                loadManagementDevices.add(loadManagementDevice);
-            }
+            arrayOfLoadManagementDevice.getLoadManagementDevice().addAll(loadManagementDevices);
             response.setGetAllLoadManagementDevicesResult(arrayOfLoadManagementDevice);
         }
-
         return response;
     }
 
@@ -474,18 +425,14 @@ public class LMServiceEndpoint {
             throws MultispeakWebServiceException {
         GetLoadManagementDeviceByMeterNumberResponse response =
             objectFactory.createGetLoadManagementDeviceByMeterNumberResponse();
-        LoadManagementDevice[] loadManagementDeviceArr =
+        List<LoadManagementDevice> loadManagementDevices =
             lm_Server.getLoadManagementDeviceByMeterNumber(getLoadManagementDeviceByMeterNumber.getMeterNo());
         ArrayOfLoadManagementDevice arrayOfLoadManagementDevice = null;
-        if (null != loadManagementDeviceArr) {
+        if (null != loadManagementDevices) {
             arrayOfLoadManagementDevice = objectFactory.createArrayOfLoadManagementDevice();
-            List<LoadManagementDevice> loadManagementDevices = arrayOfLoadManagementDevice.getLoadManagementDevice();
-            for (LoadManagementDevice loadManagementDevice : loadManagementDeviceArr) {
-                loadManagementDevices.add(loadManagementDevice);
-            }
+            arrayOfLoadManagementDevice.getLoadManagementDevice().addAll(loadManagementDevices);
             response.setGetLoadManagementDeviceByMeterNumberResult(arrayOfLoadManagementDevice);
         }
-
         return response;
     }
 
@@ -497,14 +444,11 @@ public class LMServiceEndpoint {
         GetLoadManagementDeviceByServLocResponse response =
             objectFactory.createGetLoadManagementDeviceByServLocResponse();
 
-        LoadManagementDevice[] loadManagementDeviceArr =
+        List<LoadManagementDevice> loadManagementDevices =
             lm_Server.getLoadManagementDeviceByServLoc(getLoadManagementDeviceByServLoc.getServLoc());
-        if (null != loadManagementDeviceArr) {
+        if (null != loadManagementDevices) {
             ArrayOfLoadManagementDevice arrayOfLoadManagementDevice = objectFactory.createArrayOfLoadManagementDevice();
-            List<LoadManagementDevice> loadManagementDevices = arrayOfLoadManagementDevice.getLoadManagementDevice();
-            for (LoadManagementDevice loadManagementDevice : loadManagementDeviceArr) {
-                loadManagementDevices.add(loadManagementDevice);
-            }
+            arrayOfLoadManagementDevice.getLoadManagementDevice().addAll(loadManagementDevices);
             response.setGetLoadManagementDeviceByServLocResult(arrayOfLoadManagementDevice);
         }
         return response;
@@ -536,16 +480,10 @@ public class LMServiceEndpoint {
     ServiceLocationChangedNotificationResponse serviceLocationChangedNotification(
             @RequestPayload ServiceLocationChangedNotification serviceLocationChangedNotification)
             throws MultispeakWebServiceException {
-        ServiceLocation[] serviceLocationArr = null;
         ServiceLocationChangedNotificationResponse serviceLocationChangedNotificationResponse =
             objectFactory.createServiceLocationChangedNotificationResponse();
-        ArrayOfServiceLocation arrayOfServiceLocation = serviceLocationChangedNotification.getChangedServiceLocations();
-        if (null != arrayOfServiceLocation) {
-            List<ServiceLocation> serviceLocations = arrayOfServiceLocation.getServiceLocation();
-            serviceLocationArr = new ServiceLocation[serviceLocations.size()];
-            serviceLocations.toArray(serviceLocationArr);
-        }
-        serviceLocationChangedNotificationResponse.setServiceLocationChangedNotificationResult(multispeakFuncs.toArrayOfErrorObject(lm_Server.serviceLocationChangedNotification(serviceLocationArr)));
+        List<ServiceLocation> serviceLocations = serviceLocationChangedNotification.getChangedServiceLocations().getServiceLocation();
+        serviceLocationChangedNotificationResponse.setServiceLocationChangedNotificationResult(multispeakFuncs.toArrayOfErrorObject(lm_Server.serviceLocationChangedNotification(serviceLocations)));
         return serviceLocationChangedNotificationResponse;
     }
 
@@ -606,11 +544,8 @@ public class LMServiceEndpoint {
         if (null != domainMembersChangedNotification.getChangedDomainMembers()) {
             List<DomainMember> domainMembers =
                 domainMembersChangedNotification.getChangedDomainMembers().getDomainMember();
-            DomainMember[] domainMembersArr = new DomainMember[domainMembers.size()];
-            domainMembers.toArray(domainMembersArr);
-            domainMembersChangedNotificationResponse.setDomainMembersChangedNotificationResult(multispeakFuncs.toArrayOfErrorObject(lm_Server.domainMembersChangedNotification(domainMembersArr)));
+            domainMembersChangedNotificationResponse.setDomainMembersChangedNotificationResult(multispeakFuncs.toArrayOfErrorObject(lm_Server.domainMembersChangedNotification(domainMembers)));
         }
-
         return domainMembersChangedNotificationResponse;
     }
 
@@ -622,14 +557,9 @@ public class LMServiceEndpoint {
         DomainNamesChangedNotificationResponse domainNamesChangedNotificationResponse =
             objectFactory.createDomainNamesChangedNotificationResponse();
         if (null != domainNamesChangedNotification.getChangedDomainNames()) {
-            List<DomainNameChange> domainNameChanges =
-                domainNamesChangedNotification.getChangedDomainNames().getDomainNameChange();
-            DomainNameChange[] domainNameChangeArr = new DomainNameChange[domainNameChanges.size()];
-            domainNameChanges.toArray(domainNameChangeArr);
-            domainNamesChangedNotificationResponse.setDomainNamesChangedNotificationResult(multispeakFuncs.toArrayOfErrorObject(lm_Server.domainNamesChangedNotification(domainNameChangeArr)));
+            List<DomainNameChange> domainNameChanges = domainNamesChangedNotification.getChangedDomainNames().getDomainNameChange();
+            domainNamesChangedNotificationResponse.setDomainNamesChangedNotificationResult(multispeakFuncs.toArrayOfErrorObject(lm_Server.domainNamesChangedNotification(domainNameChanges)));
         }
-
         return domainNamesChangedNotificationResponse;
     }
-
 }

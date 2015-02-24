@@ -2,6 +2,7 @@ package com.cannontech.multispeak.deploy.service.impl;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
@@ -135,19 +136,19 @@ public class MR_ServerImpl implements MR_Server{
     }
 
     @Override
-    public ErrorObject[] pingURL() throws MultispeakWebServiceException {
+    public ErrorObject pingURL() throws MultispeakWebServiceException {
         init();
-        return new ErrorObject[0];
+        return new ErrorObject();
     }
     
     @Override
-    public String[] getMethods() throws MultispeakWebServiceException {
+    public List<String> getMethods() throws MultispeakWebServiceException {
         init();
-        return multispeakFuncs.getMethods(MultispeakDefines.MR_Server_STR , methods);
+        return multispeakFuncs.getMethods(MultispeakDefines.MR_Server_STR , Arrays.asList(methods));
     }
     
     @Override
-    public Meter[] getAMRSupportedMeters(java.lang.String lastReceived) throws MultispeakWebServiceException {
+    public List<Meter> getAMRSupportedMeters(java.lang.String lastReceived) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("getAMRSupportedMeters", vendor.getCompanyName());
@@ -158,13 +159,11 @@ public class MR_ServerImpl implements MR_Server{
 
         multispeakFuncs.updateResponseHeader(meterList);
 
-        Meter[] meters = new Meter[meterList.getMeters().size()];
-        meterList.getMeters().toArray(meters);
-        log.info("Returning " + meters.length + " AMR Supported Meters. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
-        multispeakEventLogService.returnObjects(meters.length, meterList.getObjectsRemaining(), "Meter", meterList.getLastSent(),
+        log.info("Returning " + meterList.getMeters().size() + " AMR Supported Meters. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
+        multispeakEventLogService.returnObjects(meterList.getMeters().size(), meterList.getObjectsRemaining(), "Meter", meterList.getLastSent(),
                                                 "getAMRSupportedMeters", vendor.getCompanyName());
         
-        return meters;
+        return meterList.getMeters();
     }
     
     @Override
@@ -186,7 +185,7 @@ public class MR_ServerImpl implements MR_Server{
     }
     
     @Override
-    public MeterRead[] getReadingsByDate(java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws MultispeakWebServiceException {
+    public List<MeterRead> getReadingsByDate(java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws MultispeakWebServiceException {
     	init();
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
@@ -200,18 +199,16 @@ public class MR_ServerImpl implements MR_Server{
                                                                           vendor.getMaxReturnRecords());
 
         multispeakFuncs.updateResponseHeader(mspMeterReadReturnList);
-
-        MeterRead[] meterReadArray = new MeterRead[mspMeterReadReturnList.getMeterReads().size()];
-        mspMeterReadReturnList.getMeterReads().toArray(meterReadArray);
-        log.info("Returning " + meterReadArray.length + " Readings By Date.");
-        multispeakEventLogService.returnObjects(meterReadArray.length, mspMeterReadReturnList.getObjectsRemaining(), "MeterRead", 
+        List<MeterRead> meterReads = mspMeterReadReturnList.getMeterReads();
+        log.info("Returning " + meterReads.size() + " Readings By Date.");
+        multispeakEventLogService.returnObjects(meterReads.size(), mspMeterReadReturnList.getObjectsRemaining(), "MeterRead", 
                                                 mspMeterReadReturnList.getLastSent(), "getReadingsByDate", vendor.getCompanyName());
 
-        return meterReadArray;
+        return meterReads;
     }
 
     @Override
-    public MeterRead[] getReadingsByMeterNo(java.lang.String meterNo, java.util.Calendar startDate, java.util.Calendar endDate) throws MultispeakWebServiceException {
+    public List<MeterRead> getReadingsByMeterNo(java.lang.String meterNo, java.util.Calendar startDate, java.util.Calendar endDate) throws MultispeakWebServiceException {
         init(); //init is already performed on the call to isAMRMeter()
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
@@ -229,13 +226,11 @@ public class MR_ServerImpl implements MR_Server{
         
         // There is only one MeterNo in the response, so does it make sense to update the header with lastSent?
         // updateResponseHeader(mspMeterRead);
-        
-        MeterRead[] meterReadArray = new MeterRead[mspMeterReadReturnList.getMeterReads().size()];
-        mspMeterReadReturnList.getMeterReads().toArray(meterReadArray);
-        log.info("Returning " + meterReadArray.length + " Readings By MeterNo.");
-        multispeakEventLogService.returnObjects(meterReadArray.length, mspMeterReadReturnList.getObjectsRemaining(), "MeterRead", 
+        List<MeterRead> meterReads = mspMeterReadReturnList.getMeterReads();
+        log.info("Returning " + meterReads.size() + " Readings By MeterNo.");
+        multispeakEventLogService.returnObjects(meterReads.size(), mspMeterReadReturnList.getObjectsRemaining(), "MeterRead", 
                                                 mspMeterReadReturnList.getLastSent(), "getReadingsByMeterNo", vendor.getCompanyName());
-        return meterReadArray;
+        return meterReads;
     }
 
     @Override
@@ -287,10 +282,10 @@ public class MR_ServerImpl implements MR_Server{
     }
     
     @Override
-    public FormattedBlock[] getReadingsByBillingCycle(String billingCycle,
+    public List<FormattedBlock> getReadingsByBillingCycle(String billingCycle,
             Calendar billingDate, int kWhLookBack, int kWLookBack,
             int kWLookForward, String lastReceived,
-            String formattedBlockTemplateName, String[] fieldName)
+            String formattedBlockTemplateName, List<String> fieldName)
             throws MultispeakWebServiceException {
         /* TODO
         init();
@@ -306,48 +301,47 @@ public class MR_ServerImpl implements MR_Server{
     }
     
     @Override
-    public ErrorObject[] initiateUsageMonitoring(String[] meterNos) throws MultispeakWebServiceException {
+    public List<ErrorObject> initiateUsageMonitoring(List<String> meterNos) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("initiateUsageMonitoring", vendor.getCompanyName());
-        ErrorObject[] errorObject = multispeakMeterService.initiateUsageMonitoring(vendor, meterNos);
+        List<ErrorObject> errorObject = multispeakMeterService.initiateUsageMonitoring(vendor, meterNos);
         return errorObject;
     }
     
     @Override
-    public ErrorObject[] cancelUsageMonitoring(String[] meterNos) throws MultispeakWebServiceException {
+    public List<ErrorObject> cancelUsageMonitoring(List<String> meterNos) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("cancelUsageMonitoring", vendor.getCompanyName());
-        ErrorObject[] errorObject = multispeakMeterService.cancelUsageMonitoring(vendor, meterNos);
+        List<ErrorObject> errorObject = multispeakMeterService.cancelUsageMonitoring(vendor, meterNos);
         return errorObject;
     }
     
     @Override
-    public ErrorObject[] initiateDisconnectedStatus(String[] meterNos) throws MultispeakWebServiceException {
+    public List<ErrorObject> initiateDisconnectedStatus(List<String> meterNos) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("initiateDisconnectedStatus", vendor.getCompanyName());
-        ErrorObject[] errorObject = multispeakMeterService.initiateDisconnectedStatus(vendor, meterNos);
+        List<ErrorObject> errorObject = multispeakMeterService.initiateDisconnectedStatus(vendor, meterNos);
         return errorObject;
     }
     
     @Override
-    public ErrorObject[] cancelDisconnectedStatus(String[] meterNos) throws MultispeakWebServiceException {
+    public List<ErrorObject> cancelDisconnectedStatus(List<String> meterNos) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("cancelDisconnectedStatus", vendor.getCompanyName());
-        ErrorObject[] errorObject = multispeakMeterService.cancelDisconnectedStatus(vendor, meterNos);
+        List<ErrorObject> errorObject = multispeakMeterService.cancelDisconnectedStatus(vendor, meterNos);
         return errorObject;
     }
 
     //Perform an actual read of the meter and return a CB_MR readingChangedNotification message for each meterNo
     @Override
-    public ErrorObject[] initiateMeterReadByMeterNumber(String[] meterNos,
+    public List<ErrorObject> initiateMeterReadByMeterNumber(List<String> meterNos,
             String responseURL, String transactionID, Float expirationTime)
             throws MultispeakWebServiceException {
         init();
-        ErrorObject[] errorObjects = new ErrorObject[0];
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("initiateMeterReadByMeterNumber", vendor.getCompanyName());
@@ -360,45 +354,45 @@ public class MR_ServerImpl implements MR_Server{
             throw new MultispeakWebServiceException(message);
         }
 
-        errorObjects = multispeakMeterService.meterReadEvent(vendor, meterNos, transactionID, actualResponseUrl);
+        List<ErrorObject> errorObjects = multispeakMeterService.meterReadEvent(vendor, meterNos, transactionID, actualResponseUrl);
 
         multispeakFuncs.logErrorObjects(MultispeakDefines.MR_Server_STR, "initiateMeterReadByMeterNumberRequest", errorObjects);
         return errorObjects;
     }
     
     @Override
-    public ErrorObject[] serviceLocationChangedNotification(ServiceLocation[] changedServiceLocations) throws MultispeakWebServiceException {
+    public List<ErrorObject> serviceLocationChangedNotification(List<ServiceLocation> changedServiceLocations) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("serviceLocationChangedNotification", vendor.getCompanyName());
-        ErrorObject[] errorObject = multispeakMeterService.serviceLocationChanged(vendor, changedServiceLocations);
+        List<ErrorObject> errorObject = multispeakMeterService.serviceLocationChanged(vendor, changedServiceLocations);
         return errorObject;
     }
     
     @Override
-    public ErrorObject[] meterChangedNotification(Meter[] changedMeters) throws MultispeakWebServiceException {
+    public List<ErrorObject> meterChangedNotification(List<Meter> changedMeters) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("meterChangedNotification", vendor.getCompanyName());
-        ErrorObject[] errorObject = multispeakMeterService.meterChanged(vendor, changedMeters);
+        List<ErrorObject> errorObject = multispeakMeterService.meterChanged(vendor, changedMeters);
         return errorObject;
     }
     
     @Override
-    public ErrorObject[] meterRemoveNotification(Meter[] removedMeters) throws MultispeakWebServiceException {
+    public List<ErrorObject> meterRemoveNotification(List<Meter> removedMeters) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("meterRemoveNotification", vendor.getCompanyName());
-        ErrorObject[] errorObject = multispeakMeterService.meterRemove(vendor, removedMeters);
+        List<ErrorObject> errorObject = multispeakMeterService.meterRemove(vendor, removedMeters);
         return errorObject;
     }
     
     @Override
-    public ErrorObject[] meterAddNotification(Meter[] addedMeters) throws MultispeakWebServiceException {
+    public List<ErrorObject> meterAddNotification(List<Meter> addedMeters) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("meterAddNotification", vendor.getCompanyName());
-        ErrorObject[] errorObject = multispeakMeterService.meterAdd(vendor, addedMeters);
+        List<ErrorObject> errorObject = multispeakMeterService.meterAdd(vendor, addedMeters);
         return errorObject;
     }
 
@@ -412,17 +406,17 @@ public class MR_ServerImpl implements MR_Server{
     }
 
     @Override
-    public ErrorObject[] establishMeterGroup(MeterGroup meterGroup)
+    public List<ErrorObject> establishMeterGroup(MeterGroup meterGroup)
             throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("establishMeterGroup", vendor.getCompanyName());
-        ErrorObject[] errorObject = multispeakMeterService.addMetersToGroup(meterGroup, "establishMeterGroup", vendor);
+        List<ErrorObject> errorObject = multispeakMeterService.addMetersToGroup(meterGroup, "establishMeterGroup", vendor);
         return errorObject;
     }
 
     @Override
-    public ErrorObject[] insertMeterInMeterGroup(String[] meterNumbers,
+    public List<ErrorObject> insertMeterInMeterGroup(List<String> meterNumbers,
             String meterGroupID) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
@@ -435,24 +429,24 @@ public class MR_ServerImpl implements MR_Server{
         }
         meterGroup.setMeterList(meterList);
         meterGroup.setGroupName(meterGroupID);
-        ErrorObject[] errorObject = multispeakMeterService.addMetersToGroup(meterGroup, "insertMeterInMeterGroup", vendor);
+        List<ErrorObject> errorObject = multispeakMeterService.addMetersToGroup(meterGroup, "insertMeterInMeterGroup", vendor);
         return errorObject;
     }
 
 
     @Override
-    public ErrorObject[] removeMetersFromMeterGroup(String[] meterNumbers,
+    public List<ErrorObject> removeMetersFromMeterGroup(List<String> meterNumbers,
             String meterGroupID) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("removeMetersFromMeterGroup", vendor.getCompanyName());
         
-        ErrorObject[] errorObject = multispeakMeterService.removeMetersFromGroup(meterGroupID, meterNumbers, vendor);
+        List<ErrorObject> errorObject = multispeakMeterService.removeMetersFromGroup(meterGroupID, meterNumbers, vendor);
         return errorObject;
     }
 
     @Override
-    public MeterRead[] getLatestReadings(String lastReceived)
+    public List<MeterRead> getLatestReadings(String lastReceived)
             throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
@@ -462,20 +456,18 @@ public class MR_ServerImpl implements MR_Server{
 
         multispeakFuncs.updateResponseHeader(mspMeterReadReturnList);
 
-        MeterRead[] meterReadArray = new MeterRead[mspMeterReadReturnList.getMeterReads().size()];
-        mspMeterReadReturnList.getMeterReads().toArray(meterReadArray);
-        
-        log.info("Returning " + meterReadArray.length + " latest Readings.");
-        multispeakEventLogService.returnObjects(meterReadArray.length, mspMeterReadReturnList.getObjectsRemaining(), "MeterRead", 
+        List<MeterRead> meterReads = mspMeterReadReturnList.getMeterReads();
+        log.info("Returning " + meterReads.size() + " latest Readings.");
+        multispeakEventLogService.returnObjects(meterReads.size(), mspMeterReadReturnList.getObjectsRemaining(), "MeterRead", 
                                                 mspMeterReadReturnList.getLastSent(), "getLatestReadings", vendor.getCompanyName());
 
-        return meterReadArray;
+        return meterReads;
     }
     
     @Override
     public FormattedBlock getLatestReadingByMeterNoAndType(String meterNo,
             String readingType, String formattedBlockTemplateName,
-            String[] fieldName) throws MultispeakWebServiceException {
+            List<String> fieldName) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("getLatestReadingByMeterNoAndType", vendor.getCompanyName());
@@ -514,9 +506,9 @@ public class MR_ServerImpl implements MR_Server{
     }
     
     @Override
-    public FormattedBlock[] getLatestReadingByType(String readingType,
+    public List<FormattedBlock> getLatestReadingByType(String readingType,
             String lastReceived, String formattedBlockTemplateName,
-            String[] fieldName) throws MultispeakWebServiceException {
+            List<String> fieldName) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("getLatestReadingByType", vendor.getCompanyName());
@@ -529,18 +521,17 @@ public class MR_ServerImpl implements MR_Server{
         multispeakFuncs.updateResponseHeader(mspBlockReturnList);
         
         FormattedBlock formattedBlock = formattedBlockProcessingService.createMspFormattedBlock(mspBlockReturnList.getBlocks());
-        FormattedBlock[] formattedBlocks = new FormattedBlock[]{formattedBlock};
         
-        multispeakEventLogService.returnObjects(formattedBlocks.length, mspBlockReturnList.getObjectsRemaining(), "FormattedBlock", 
+        multispeakEventLogService.returnObjects(1, mspBlockReturnList.getObjectsRemaining(), "FormattedBlock", 
                                                 mspBlockReturnList.getLastSent(), "getLatestReadingByType", vendor.getCompanyName());
 
-        return formattedBlocks;
+        return Collections.singletonList(formattedBlock);
     }
     
     @Override
-    public FormattedBlock[] getReadingsByDateAndType(Calendar startDate,
+    public List<FormattedBlock> getReadingsByDateAndType(Calendar startDate,
             Calendar endDate, String readingType, String lastReceived,
-            String formattedBlockTemplateName, String[] fieldName)
+            String formattedBlockTemplateName, List<String> fieldName)
             throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
@@ -558,19 +549,18 @@ public class MR_ServerImpl implements MR_Server{
         multispeakFuncs.updateResponseHeader(mspBlockReturnList);
         
         FormattedBlock formattedBlock = formattedBlockProcessingService.createMspFormattedBlock(mspBlockReturnList.getBlocks());
-        FormattedBlock[] formattedBlocks = new FormattedBlock[]{formattedBlock};
         
-        multispeakEventLogService.returnObjects(formattedBlocks.length, mspBlockReturnList.getObjectsRemaining(), "FormattedBlock", 
+        multispeakEventLogService.returnObjects(1, mspBlockReturnList.getObjectsRemaining(), "FormattedBlock", 
                                                 mspBlockReturnList.getLastSent(), "getReadingsByDateAndType", vendor.getCompanyName());
 
-        return formattedBlocks;
+        return Collections.singletonList(formattedBlock);
     }
 
     @Override
-    public FormattedBlock[] getReadingsByMeterNoAndType(String meterNo,
+    public List<FormattedBlock> getReadingsByMeterNoAndType(String meterNo,
             Calendar startDate, Calendar endDate, String readingType,
             String lastReceived, String formattedBlockTemplateName,
-            String[] fieldName) throws MultispeakWebServiceException {
+            List<String> fieldName) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("getReadingsByMeterNoAndType", vendor.getCompanyName());
@@ -592,33 +582,28 @@ public class MR_ServerImpl implements MR_Server{
         // updateResponseHeader(mspBlockReturnList);
 
         FormattedBlock formattedBlock = formattedBlockProcessingService.createMspFormattedBlock(mspBlockReturnList.getBlocks());
-        FormattedBlock[] formattedBlocks = new FormattedBlock[]{formattedBlock};
 
-        multispeakEventLogService.returnObjects(formattedBlocks.length, mspBlockReturnList.getObjectsRemaining(), "FormattedBlock", 
+        multispeakEventLogService.returnObjects(1, mspBlockReturnList.getObjectsRemaining(), "FormattedBlock", 
                                                 mspBlockReturnList.getLastSent(), "getReadingsByMeterNoAndType", vendor.getCompanyName());
 
-        return formattedBlocks;
+        return Collections.singletonList(formattedBlock);
     }
     
     @Override
-    public String[] getSupportedReadingTypes() throws MultispeakWebServiceException {
+    public Set<String> getSupportedReadingTypes() throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("getSupportedReadingTypes", vendor.getCompanyName());
         
-        Set<String> keys = readingTypesMap.keySet();
-        String[] types = new String[keys.size()];
-        keys.toArray(types);
-
+        Set<String> types = readingTypesMap.keySet();
         return types;
     }
     
     @Override
-    public ErrorObject[] initiateMeterReadByMeterNoAndType(String meterNo, String responseURL,
+    public List<ErrorObject> initiateMeterReadByMeterNoAndType(String meterNo, String responseURL,
             String readingType, String transactionID,
             Float expirationTime) throws MultispeakWebServiceException {
         init();
-        ErrorObject[] errorObjects = new ErrorObject[0];
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("initiateMeterReadByMeterNoAndType", vendor.getCompanyName());
@@ -633,14 +618,14 @@ public class MR_ServerImpl implements MR_Server{
         FormattedBlockProcessingService<Block> formattedBlockServ = 
             mspValidationService.getProcessingServiceByReadingType(readingTypesMap, readingType);
         
-        errorObjects = multispeakMeterService.blockMeterReadEvent(vendor, meterNo, formattedBlockServ, transactionID, actualResponseUrl);
+        List<ErrorObject> errorObjects = multispeakMeterService.blockMeterReadEvent(vendor, meterNo, formattedBlockServ, transactionID, actualResponseUrl);
 
         multispeakFuncs.logErrorObjects(MultispeakDefines.MR_Server_STR, "initiateMeterReadByMeterNoAndTypeRequest", errorObjects);
         return errorObjects;
     }
 
     @Override
-    public ErrorObject[] initiateDemandReset(MeterIdentifier[] meterIDs,
+    public List<ErrorObject> initiateDemandReset(List<MeterIdentifier> meterIDs,
             String responseURL, String transactionId, Float expirationTime)
             throws MultispeakWebServiceException {
         init();
@@ -659,7 +644,6 @@ public class MR_ServerImpl implements MR_Server{
             hasFatalErrors = true;
         }
 
-        List<MeterIdentifier> meterIdentifierList = Arrays.asList(meterIDs);
         Function<MeterIdentifier, String> meterNumberFromIdentifier =
             new Function<MeterIdentifier, String>() {
                 @Override
@@ -668,7 +652,7 @@ public class MR_ServerImpl implements MR_Server{
                 }
             };
         Set<String> meterNumbers =
-                Sets.newHashSet(Lists.transform(meterIdentifierList, meterNumberFromIdentifier));
+                Sets.newHashSet(Lists.transform(meterIDs, meterNumberFromIdentifier));
         
         Map<String, PaoIdentifier> paoIdsByMeterNumber =
                 paoDao.findPaoIdentifiersByMeterNumber(meterNumbers);
@@ -693,10 +677,10 @@ public class MR_ServerImpl implements MR_Server{
         }
 
         if (hasFatalErrors || validMeters.isEmpty()) {
-            return errors.toArray(new ErrorObject[errors.size()]);
+            return errors;
         }
 
-        log.info("Received " + meterIDs.length + " Meter(s) for Demand Reset from " + vendor.getCompanyName());
+        log.info("Received " + meterIDs.size() + " Meter(s) for Demand Reset from " + vendor.getCompanyName());
         multispeakEventLogService.initiateDemandResetRequest(meterNumbers.size(), meterNumbersByPaoId.size(), 
                                                              invalidMeterNumbers.size(), unsupportedMeters.size(),
                                                              "initiateConnectDisconnect", vendor.getCompanyName());
@@ -706,7 +690,7 @@ public class MR_ServerImpl implements MR_Server{
         
         demandResetService.sendDemandResetAndVerify(validMeters, callback, UserUtils.getYukonUser());
         errors.addAll(callback.getErrors());
-        return errors.toArray(new ErrorObject[errors.size()]);
+        return errors;
     }
 
     @Required
@@ -721,123 +705,123 @@ public class MR_ServerImpl implements MR_Server{
     }
 
     @Override
-    public ErrorObject[] cancelPlannedOutage(String[] meterNos) throws MultispeakWebServiceException {
+    public List<ErrorObject> cancelPlannedOutage(List<String> meterNos) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] customerChangedNotification(Customer[] changedCustomers) throws MultispeakWebServiceException {
+    public List<ErrorObject> customerChangedNotification(List<Customer> changedCustomers) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] customersAffectedByOutageNotification(CustomersAffectedByOutage[] newOutages)
+    public List<ErrorObject> customersAffectedByOutageNotification(List<CustomersAffectedByOutage> newOutages)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] deleteReadingSchedule(String readingScheduleID) throws MultispeakWebServiceException {
+    public List<ErrorObject> deleteReadingSchedule(String readingScheduleID) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] deleteSchedule(String scheduleID) throws MultispeakWebServiceException {
+    public List<ErrorObject> deleteSchedule(String scheduleID) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] disableReadingSchedule(String readingScheduleID) throws MultispeakWebServiceException {
+    public List<ErrorObject> disableReadingSchedule(String readingScheduleID) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] domainMembersChangedNotification(DomainMember[] changedDomainMembers)
+    public List<ErrorObject> domainMembersChangedNotification(List<DomainMember> changedDomainMembers)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] domainNamesChangedNotification(DomainNameChange[] changedDomainNames)
+    public List<ErrorObject> domainNamesChangedNotification(List<DomainNameChange> changedDomainNames)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] enableReadingSchedule(String readingScheduleID) throws MultispeakWebServiceException {
+    public List<ErrorObject> enableReadingSchedule(String readingScheduleID) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] endDeviceShipmentNotification(EndDeviceShipment shipment) throws MultispeakWebServiceException {
+    public List<ErrorObject> endDeviceShipmentNotification(EndDeviceShipment shipment) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] establishReadingSchedules(ReadingSchedule[] readingSchedules)
+    public List<ErrorObject> establishReadingSchedules(List<ReadingSchedule> readingSchedules)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] establishSchedules(Schedule[] schedules) throws MultispeakWebServiceException {
+    public List<ErrorObject> establishSchedules(List<Schedule> schedules) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public String[] getDomainNames() throws MultispeakWebServiceException {
+    public List<String> getDomainNames() throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public DomainMember[] getDomainMembers(String domainNaString) throws MultispeakWebServiceException {
+    public List<DomainMember> getDomainMembers(String domainString) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public FormattedBlockTemplate[] getFormattedBlockTemplates(String lastReceived)
+    public List<FormattedBlockTemplate> getFormattedBlockTemplates(String lastReceived)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public HistoryLog[] getHistoryLogByMeterNo(String meterNo, Calendar startDate, Calendar endDate)
+    public List<HistoryLog> getHistoryLogByMeterNo(String meterNo, Calendar startDate, Calendar endDate)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public HistoryLog[] getHistoryLogsByDate(Calendar startDate, Calendar endDate, String lastReceived)
+    public List<HistoryLog>getHistoryLogsByDate(Calendar startDate, Calendar endDate, String lastReceived)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public HistoryLog[] getHistoryLogsByMeterNoAndEventCode(String meterNo, EventCode eventCode, Calendar startDate,
+    public List<HistoryLog>getHistoryLogsByMeterNoAndEventCode(String meterNo, EventCode eventCode, Calendar startDate,
             Calendar endDate) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public HistoryLog[] getHistoryLogsByDateAndEventCode(EventCode eventCode, Calendar startDate, Calendar endDate,
+    public List<HistoryLog>getHistoryLogsByDateAndEventCode(EventCode eventCode, Calendar startDate, Calendar endDate,
             String lastReceived) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
@@ -845,58 +829,58 @@ public class MR_ServerImpl implements MR_Server{
 
     @Override
     public FormattedBlock getLatestMeterReadingsByMeterGroup(String meterGroupID, String formattedBlockTemplateName,
-            String[] fieldName) throws MultispeakWebServiceException {
+            List<String> fieldName) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public FormattedBlock[] getLatestReadingsByMeterNoList(String[] meterNo, Calendar startDate, Calendar endDate,
+    public List<FormattedBlock> getLatestReadingsByMeterNoList(List<String> meterNo, Calendar startDate, Calendar endDate,
             String readingType, String lastReceived, ServiceType serviceType, String formattedBlockTemplateName,
-            String[] fieldName) throws MultispeakWebServiceException {
+            List<String> fieldName) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public FormattedBlock[] getLatestReadingsByMeterNoListFormattedBlock(String[] meterNo, Calendar startDate,
-            Calendar endDate, String formattedBlockTemplateName, String[] fieldName, String lastReceived,
+    public List<FormattedBlock> getLatestReadingsByMeterNoListFormattedBlock(List<String> meterNo, Calendar startDate,
+            Calendar endDate, String formattedBlockTemplateName, List<String> fieldName, String lastReceived,
             ServiceType serviceType) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public Meter[] getModifiedAMRMeters(String previousSessionID, String lastReceived)
+    public List<Meter> getModifiedAMRMeters(String previousSessionID, String lastReceived)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public String[] getPublishMethods() throws MultispeakWebServiceException {
+    public List<String> getPublishMethods() throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public FormattedBlock[] getReadingByMeterNumberFormattedBlock(String meterNumber, Calendar billingDate,
+    public List<FormattedBlock> getReadingByMeterNumberFormattedBlock(String meterNumber, Calendar billingDate,
             int kWhLookBack, int kWLookBack, int kWLookForward, String lastReceived, String formattedBlockTemplateName,
-            String[] fieldName) throws MultispeakWebServiceException {
+            List<String> fieldName) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public FormattedBlock[] getReadingsByDateFormattedBlock(Calendar billingDate, int kWhLookBack, int kWLookBack,
-            int kWLookForward, String lastReceived, String formattedBlockTemplateName, String[] fieldName)
+    public List<FormattedBlock> getReadingsByDateFormattedBlock(Calendar billingDate, int kWhLookBack, int kWLookBack,
+            int kWLookForward, String lastReceived, String formattedBlockTemplateName, List<String> fieldName)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public MeterRead[] getReadingsByUOMAndDate(String uomData, Calendar startDate, Calendar endDate, String lastReceived)
+    public List<MeterRead> getReadingsByUOMAndDate(String uomData, Calendar startDate, Calendar endDate, String lastReceived)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
@@ -909,7 +893,7 @@ public class MR_ServerImpl implements MR_Server{
     }
 
     @Override
-    public ReadingSchedule[] getReadingSchedules(String lastReceived) throws MultispeakWebServiceException {
+    public List<ReadingSchedule> getReadingSchedules(String lastReceived) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
@@ -927,61 +911,61 @@ public class MR_ServerImpl implements MR_Server{
     }
 
     @Override
-    public Schedule[] getSchedules(String lastReceived) throws MultispeakWebServiceException {
+    public List<Schedule> getSchedules(String lastReceived) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] inHomeDisplayAddNotification(InHomeDisplay[] addedIHDs) throws MultispeakWebServiceException {
+    public List<ErrorObject> inHomeDisplayAddNotification(List<InHomeDisplay> addedIHDs) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] inHomeDisplayChangedNotification(InHomeDisplay[] changedIHDs)
+    public List<ErrorObject> inHomeDisplayChangedNotification(List<InHomeDisplay> changedIHDs)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] inHomeDisplayExchangeNotification(InHomeDisplayExchange[] IHDChangeout)
+    public List<ErrorObject> inHomeDisplayExchangeNotification(List<InHomeDisplayExchange> IHDChangeout)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] inHomeDisplayRemoveNotification(InHomeDisplay[] removedIHDs)
+    public List<ErrorObject> inHomeDisplayRemoveNotification(List<InHomeDisplay> removedIHDs)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] inHomeDisplayRetireNotification(InHomeDisplay[] retiredIHDs)
+    public List<ErrorObject> inHomeDisplayRetireNotification(List<InHomeDisplay> retiredIHDs)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] initiateGroupMeterRead(String meterGroupName, String responseURL, String transactionID,
+    public List<ErrorObject> initiateGroupMeterRead(String meterGroupName, String responseURL, String transactionID,
             float expirationTime) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] initiateMeterReadByObject(String objectName, String nounType, PhaseCd phaseCode,
+    public List<ErrorObject> initiateMeterReadByObject(String objectName, String nounType, PhaseCd phaseCode,
             String responseURL, String transactionID, float expirationTime) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] initiateMeterReadsByFieldName(String[] meterNumbers, String[] fieldNames, String responseURL,
+    public List<ErrorObject> initiateMeterReadsByFieldName(List<String> meterNumbers, List<String> fieldNames, String responseURL,
             String transactionID, float expirationTime, String formattedBlockTemplateName)
             throws MultispeakWebServiceException {
         init();
@@ -989,77 +973,77 @@ public class MR_ServerImpl implements MR_Server{
     }
 
     @Override
-    public ErrorObject[] initiatePlannedOutage(String[] meterNos, Calendar startDate, Calendar endDate)
+    public List<ErrorObject> initiatePlannedOutage(List<String> meterNos, Calendar startDate, Calendar endDate)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] insertMetersInConfigurationGroup(String[] meterNumbers, String meterGroupID,
+    public List<ErrorObject> insertMetersInConfigurationGroup(List<String> meterNumbers, String meterGroupID,
             ServiceType serviceType) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] meterBaseAddNotification(MeterBase[] addedMBs) throws MultispeakWebServiceException {
+    public List<ErrorObject> meterBaseAddNotification(List<MeterBase> addedMBs) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] meterBaseChangedNotification(MeterBase[] changedMBs) throws MultispeakWebServiceException {
+    public List<ErrorObject> meterBaseChangedNotification(List<MeterBase> changedMBs) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] meterBaseExchangeNotification(MeterBaseExchange[] MBChangeout)
+    public List<ErrorObject> meterBaseExchangeNotification(List<MeterBaseExchange> MBChangeout)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] meterBaseRemoveNotification(MeterBase[] removedMBs) throws MultispeakWebServiceException {
+    public List<ErrorObject> meterBaseRemoveNotification(List<MeterBase> removedMBs) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] meterBaseRetireNotification(MeterBase[] retiredMBs) throws MultispeakWebServiceException {
+    public List<ErrorObject> meterBaseRetireNotification(List<MeterBase> retiredMBs) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] meterConnectivityNotification(MeterConnectivity[] newConnectivity)
+    public List<ErrorObject> meterConnectivityNotification(List<MeterConnectivity> newConnectivity)
             throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] meterExchangeNotification(MeterExchange[] meterChangeout) throws MultispeakWebServiceException {
+    public List<ErrorObject> meterExchangeNotification(List<MeterExchange> meterChangeout) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] meterRetireNotification(Meter[] retiredMeters) throws MultispeakWebServiceException {
+    public List<ErrorObject> meterRetireNotification(List<Meter> retiredMeters) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] registerForService(RegistrationInfo registrationDetails) throws MultispeakWebServiceException {
+    public List<ErrorObject> registerForService(RegistrationInfo registrationDetails) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] removeMetersFromConfigurationGroup(String[] meterNumbers, String meterGroupID,
+    public List<ErrorObject> removeMetersFromConfigurationGroup(List<String> meterNumbers, String meterGroupID,
             ServiceType serviceType) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
@@ -1072,20 +1056,20 @@ public class MR_ServerImpl implements MR_Server{
     }
 
     @Override
-    public ErrorObject[] scheduleGroupMeterRead(String meterGroupName, Calendar timeToRead, String responseURL,
+    public List<ErrorObject> scheduleGroupMeterRead(String meterGroupName, Calendar timeToRead, String responseURL,
             String transactionID) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] unregisterForService(String registrationID) throws MultispeakWebServiceException {
+    public List<ErrorObject> unregisterForService(String registrationID) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] updateServiceLocationDisplays(String servLocID) throws MultispeakWebServiceException {
+    public List<ErrorObject> updateServiceLocationDisplays(String servLocID) throws MultispeakWebServiceException {
         init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     } 
