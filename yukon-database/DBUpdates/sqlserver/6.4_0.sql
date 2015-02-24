@@ -153,6 +153,16 @@ INSERT INTO YukonRoleProperty VALUES(-21403, -214, 'Infrastructure View', 'false
 /* @error ignore-end */
 /* End YUK-14083 */
 
+/* Start YUK-14006 */
+UPDATE UserPage
+SET PagePath = '/capcontrol/schedules'
+WHERE PagePath = '/capcontrol/schedule/schedules';
+
+UPDATE UserPage
+SET PagePath = '/capcontrol/schedules/assignments'
+WHERE PagePath = '/capcontrol/schedule/scheduleAssignments';
+/* End YUK-14006 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
