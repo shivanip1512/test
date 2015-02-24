@@ -2,6 +2,9 @@ package com.cannontech.multispeak.emulator;
 
 import java.util.List;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import com.cannontech.msp.beans.v3.ErrorObject;
 import com.cannontech.msp.beans.v3.GetAllSCADAAnalogs;
 import com.cannontech.msp.beans.v3.GetAllSCADAAnalogsResponse;
@@ -14,33 +17,32 @@ import com.cannontech.msp.beans.v3.ScadaAnalog;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.core.SCADAClient;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
-import com.cannontech.spring.YukonSpringHook;
 
 public class SCADA_ServerTest {
 
     private static String endpointURL = "http://127.0.0.1:8088/mockSCADA_ServerSoap";
-    static {
-        YukonSpringHook.setDefaultContext("com.cannontech.context.multispeak");
-    }
-    static SCADAClient port = YukonSpringHook.getBean(SCADAClient.class);
-    static ObjectFactory objectFactory = YukonSpringHook.getBean(ObjectFactory.class);
+	private static SCADAClient port;
+	private static ObjectFactory objectFactory;
 
-    static MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "yukon", "yukon", "", "", 100,
+	private static MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "yukon", "yukon", "", "", 100,
         120, 12, null, endpointURL);
 
     public static void main(String[] args) {
         SCADA_ServerTest test = new SCADA_ServerTest();
-
+		ApplicationContext context = new ClassPathXmlApplicationContext("com/cannontech/multispeak/emulator/testEmulatorContext.xml");
+		port = context.getBean(SCADAClient.class);
+		objectFactory = context.getBean(ObjectFactory.class);
         try {
             if (args != null && args.length > 0) {
                 endpointURL = args[0];
             }
-            test.getAll();
+           test.getAll();
           //test.getMethodsTest();
           //test.pingURLTest();
+
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        } 
     }
 
     public void getMethodsTest() throws MultispeakWebServiceClientException {
@@ -87,5 +89,5 @@ public class SCADA_ServerTest {
             }
         }
     }
-
+   
 }

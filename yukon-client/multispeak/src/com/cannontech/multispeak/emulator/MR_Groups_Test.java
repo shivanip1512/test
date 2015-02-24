@@ -8,6 +8,9 @@ package com.cannontech.multispeak.emulator;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.msp.beans.v3.DeleteMeterGroup;
 import com.cannontech.msp.beans.v3.DeleteMeterGroupResponse;
@@ -24,7 +27,6 @@ import com.cannontech.msp.beans.v3.RemoveMetersFromMeterGroup;
 import com.cannontech.msp.beans.v3.RemoveMetersFromMeterGroupResponse;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.core.MRClient;
-import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author stacey
@@ -35,17 +37,18 @@ import com.cannontech.spring.YukonSpringHook;
 public class MR_Groups_Test {
     //static String endpointURL = "http://10.106.33.25:8080/soap/mockMR_CBSoap";
     private static String endpointURL = "http://localhost:8088/mockMR_ServerSoap";
-    static {
-        YukonSpringHook.setDefaultContext("com.cannontech.context.multispeak");
-    }
-    static MRClient instance = YukonSpringHook.getBean(MRClient.class);
-    static ObjectFactory objectFactory = YukonSpringHook.getBean(ObjectFactory.class);
 
-    static MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100,
+    private static MRClient instance;
+    private static ObjectFactory objectFactory;
+
+    private static MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100,
         120, 12, null, endpointURL);
 
     public static void main(String[] args) {
         List<ErrorObject> objects = new ArrayList<ErrorObject>();
+		ApplicationContext context = new ClassPathXmlApplicationContext("com/cannontech/multispeak/emulator/testEmulatorContext.xml");
+		instance = context.getBean(MRClient.class);
+		objectFactory = context.getBean(ObjectFactory.class);
         try {
             String METER_NO_1 = "10523687";
             String METER_NO_2 = "10153216";

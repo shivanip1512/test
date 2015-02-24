@@ -1,5 +1,8 @@
 package com.cannontech.multispeak.emulator;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.msp.beans.v3.Customer;
 import com.cannontech.msp.beans.v3.ErrorObject;
@@ -16,7 +19,6 @@ import com.cannontech.msp.beans.v3.PingURLResponse;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.core.CBClient;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
-import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This class is used for 'interactive testing'.
@@ -31,11 +33,11 @@ public class CB_CD_Test {
         // endpointURL = "http://209.101.158.56:8080/mspamrintegration/CB_Server.asmx"; //SEDC Test Server
         // and TCPTrace
         // endpointURL = "http://10.106.36.146:8081";
-        YukonSpringHook.setDefaultContext("com.cannontech.context.multispeak");
-        CBClient instance = YukonSpringHook.getBean(CBClient.class);
+		ApplicationContext context = new ClassPathXmlApplicationContext("com/cannontech/multispeak/emulator/testEmulatorContext.xml");
+		CBClient instance = context.getBean(CBClient.class);
+		ObjectFactory objectFactory = context.getBean(ObjectFactory.class);
         MultispeakVendor mspVendor =
             new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100, 120, 12, null, endpointURL);
-        ObjectFactory objectFactory = new ObjectFactory();
         int todo = 2; // 0=meterByServLoc, 1=getMethods, 2=pingURL
 
         try {

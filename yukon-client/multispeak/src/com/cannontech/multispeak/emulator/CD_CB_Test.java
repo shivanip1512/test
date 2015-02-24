@@ -2,6 +2,9 @@ package com.cannontech.multispeak.emulator;
 
 import java.util.List;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.msp.beans.v3.ArrayOfCDDevice;
 import com.cannontech.msp.beans.v3.ArrayOfConnectDisconnectEvent;
@@ -25,7 +28,6 @@ import com.cannontech.msp.beans.v3.ObjectFactory;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.core.CDClient;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
-import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This class is used for 'interactive testing'. 
@@ -34,17 +36,18 @@ import com.cannontech.spring.YukonSpringHook;
  */
 public class CD_CB_Test {
     private static String endpointURL = "http://localhost:8088/mockCD_ServerSoap";
-    static {
-        YukonSpringHook.setDefaultContext("com.cannontech.context.multispeak");
-    }
-    CDClient instance = YukonSpringHook.getBean(CDClient.class);
-    ObjectFactory objectFactory = YukonSpringHook.getBean(ObjectFactory.class);
-    MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100, 120, 12,
+    
+    private static CDClient instance;
+    private static ObjectFactory objectFactory;
+    private MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100, 120, 12,
         null, endpointURL);
 
     public static void main(String[] args) {
         try {
             CD_CB_Test t = new CD_CB_Test();
+			ApplicationContext context = new ClassPathXmlApplicationContext("com/cannontech/multispeak/emulator/testEmulatorContext.xml");
+			instance = context.getBean(CDClient.class);
+			objectFactory = context.getBean(ObjectFactory.class);
             // endpointURL = "http://demo.cannontech.com/soap/CD_CBSoap";
             // endpointURL = "http://10.100.10.25:80/soap/CD_ServerSoap";
             // endpointURL = "http://10.106.36.79:8080/soap/CD_ServerSoap"; //Mike's computer

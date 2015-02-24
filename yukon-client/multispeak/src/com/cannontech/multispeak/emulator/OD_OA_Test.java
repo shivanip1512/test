@@ -8,6 +8,9 @@ package com.cannontech.multispeak.emulator;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import com.cannontech.msp.beans.v3.ArrayOfString;
 import com.cannontech.msp.beans.v3.ErrorObject;
 import com.cannontech.msp.beans.v3.GetMethods;
@@ -21,7 +24,6 @@ import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.core.ODClient;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
-import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author stacey To change the template for this generated type comment go to
@@ -31,17 +33,16 @@ import com.cannontech.spring.YukonSpringHook;
 public class OD_OA_Test {
     private static String endpointURL = "http://127.0.0.1:8088/mockOD_ServerSoap";
     // private String endpointURL = "http://pspl-sw-demo62.eatoneaseng.net:8080/soap/OD_ServerSoap";
-    static {
-        YukonSpringHook.setDefaultContext("com.cannontech.context.multispeak");
-    }
-    static ODClient port = YukonSpringHook.getBean(ODClient.class);
-    static ObjectFactory objectFactory = YukonSpringHook.getBean(ObjectFactory.class);
-
-    static MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100,
+    private static ODClient port;
+    private static ObjectFactory objectFactory;
+    private static MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100,
         120, 12, null, endpointURL);
 
     public static void main(String[] args) {
         OD_OA_Test test = new OD_OA_Test();
+		ApplicationContext context = new ClassPathXmlApplicationContext("com/cannontech/multispeak/emulator/testEmulatorContext.xml");
+		port = context.getBean(ODClient.class);
+		objectFactory = context.getBean(ObjectFactory.class);
         try {
 
             String[] mn = new String[4];

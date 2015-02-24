@@ -7,6 +7,9 @@ package com.cannontech.multispeak.emulator;
 
 import java.util.List;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import com.cannontech.msp.beans.v3.ArrayOfMeter;
 import com.cannontech.msp.beans.v3.ArrayOfServiceLocation;
 import com.cannontech.msp.beans.v3.ErrorObject;
@@ -22,7 +25,6 @@ import com.cannontech.msp.beans.v3.ServiceLocationChangedNotificationResponse;
 import com.cannontech.msp.beans.v3.UtilityInfo;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.core.MRClient;
-import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author stacey
@@ -32,19 +34,17 @@ import com.cannontech.spring.YukonSpringHook;
  */
 public class SEDC_Test {
 
-   // private static String endpointURL = "http://127.0.0.1:8088/MR_CBSoap";
-    private static String endpointURL = "http://127.0.0.1:8088/mockMR_ServerSoap";
-    static MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100,
-                                                      120, 12, null, endpointURL);
-    static {
-        YukonSpringHook.setDefaultContext("com.cannontech.context.multispeak");
-    }
-    static MRClient instance = YukonSpringHook.getBean(MRClient.class);
-    static ObjectFactory objectFactory = new ObjectFactory();
+	// private static String endpointURL = "http://127.0.0.1:8088/MR_CBSoap";
+	private static String endpointURL = "http://127.0.0.1:8088/mockMR_ServerSoap";
+	private static MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100, 120, 12, null, endpointURL);
+	private static MRClient instance;
+	private static ObjectFactory objectFactory;
 
     public static void main(String[] args) {
         try {
-
+			ApplicationContext context = new ClassPathXmlApplicationContext("com/cannontech/multispeak/emulator/testEmulatorContext.xml");
+			instance = context.getBean(MRClient.class);
+			objectFactory = context.getBean(ObjectFactory.class);
             // ENTER IP ADDRESS OF WEBSERVICES HERE for localhost
             // String endpointURL = "http://msp2.cannontech.com:8080/soap/MR_CBSoap";
             // String endpointURL = "http://10.106.36.202:8080/soap/MR_CBSoap";

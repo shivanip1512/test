@@ -5,6 +5,9 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import com.cannontech.msp.beans.v3.ApplicationPointList;
 import com.cannontech.msp.beans.v3.ControlEventType;
 import com.cannontech.msp.beans.v3.ErrorObject;
@@ -26,22 +29,20 @@ import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.core.LMClient;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
-import com.cannontech.spring.YukonSpringHook;
 
 public class LM_ServerTest {
 
     private String endpointURL = "http://127.0.0.1:8088/mockLM_ServerSoap";
-    static {
-        YukonSpringHook.setDefaultContext("com.cannontech.context.multispeak");
-    }
-    LMClient port = YukonSpringHook.getBean(LMClient.class);
-    ObjectFactory objectFactory = YukonSpringHook.getBean(ObjectFactory.class);
-    MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100, 120, 12,
+    private static LMClient port;
+    private static ObjectFactory objectFactory;
+    private MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100, 120, 12,
         null, endpointURL);
 
     public static void main(String[] args) {
         LM_ServerTest test = new LM_ServerTest();
-
+		ApplicationContext context = new ClassPathXmlApplicationContext("com/cannontech/multispeak/emulator/testEmulatorContext.xml");
+		port = context.getBean(LMClient.class);
+		objectFactory = context.getBean(ObjectFactory.class);
         try {
             if (args != null && args.length > 0) {
                 test.endpointURL = args[0];

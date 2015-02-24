@@ -5,6 +5,9 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.msp.beans.v3.ArrayOfMeter;
 import com.cannontech.msp.beans.v3.ArrayOfServiceLocation;
@@ -56,7 +59,6 @@ import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.core.MRClient;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
-import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This class is used for 'interactive testing'.
@@ -66,16 +68,16 @@ import com.cannontech.spring.YukonSpringHook;
 public class MR_CB_Test {
 
     private String endpointURL = "http://localhost:8088/mockMR_ServerSoap";
-    static {
-        YukonSpringHook.setDefaultContext("com.cannontech.context.multispeak");
-    }
-    MRClient instance = YukonSpringHook.getBean(MRClient.class);
-    static ObjectFactory objectFactory = YukonSpringHook.getBean(ObjectFactory.class);
-    MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100, 120, 12,
+    private static MRClient instance;
+    private static ObjectFactory objectFactory;
+    private MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100, 120, 12,
         null, endpointURL);
 
     public static void main(String[] args) {
         MR_CB_Test test = new MR_CB_Test();
+		ApplicationContext context = new ClassPathXmlApplicationContext("com/cannontech/multispeak/emulator/testEmulatorContext.xml");
+		instance = context.getBean(MRClient.class);
+		objectFactory = context.getBean(ObjectFactory.class);
         try {
             // endpointURL = "http://pspl-qa008.eatoneaseng.net:8080/soap/MR_ServerSoap";
             // endpointURL = "http://demo.cannontech.com/soap/MR_CBSoap";
