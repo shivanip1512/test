@@ -209,11 +209,12 @@ public class SiteSearchIndexManager extends AbstractIndexManager {
      * to view the page.
      */
     public Page buildPageFromDocument(Document document, LiteYukonUser user) {
+        
         String pageKey = document.get("pageKey");
         String basePageKey = pageKey.substring(0, pageKey.lastIndexOf(':'));
         PageIndexBuilder indexBuilder = indexBuildersByBasePageKey.get(basePageKey);
         PageType pageType = PageType.valueOf(document.get("pageType"));
-
+        
         return indexBuilder.isAllowedToView(document, user) ? pageType.buildPage(document) : null;
     }
 }

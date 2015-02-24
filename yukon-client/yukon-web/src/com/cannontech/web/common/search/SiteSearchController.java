@@ -48,21 +48,25 @@ public class SiteSearchController {
         SearchResults<Page> results = SearchResults.emptyResult();
         int startIndex = paging.getStartIndex();
         int itemsPerPage = paging.getItemsPerPage();
+        
         if (startIndex + itemsPerPage > SiteSearchService.MAX_SEARCH_ITEMS) {
             model.addAttribute("error", new YukonMessageSourceResolvable(baseKey + "queryOutOfRange", startIndex,
                 SiteSearchService.MAX_SEARCH_ITEMS));
         } else if (query.length() == 0) {
             model.addAttribute("error", new YukonMessageSourceResolvable(baseKey + "emptySearch"));
         } else {
+            
             log.debug("searching");
+            
             try {
                 results = siteSearchService.search(query, startIndex, itemsPerPage, userContext);
             } catch (IndexBeingBuiltException e) {
                 model.addAttribute("error", new YukonMessageSourceResolvable(baseKey + "indexBeingBuilt"));
                 log.debug("got index being built exception");
             }
+            
             log.debug("done searching");
-
+            
             // Forward to the single result's URL
             if (results.getResultCount() == 1) {
                 String url = results.getResultList().get(0).getPath();

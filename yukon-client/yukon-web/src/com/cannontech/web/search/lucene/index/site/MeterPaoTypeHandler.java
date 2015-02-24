@@ -25,26 +25,26 @@ public class MeterPaoTypeHandler implements PaoTypeHandler {
     
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private PaoLoadingService paoLoadingService;
-
+    
     private final static Set<PaoType> allTypes = PaoType.getMeterTypes();
-
+    
     // Any of these roles is sufficient to allow the user to see both electric and water meters.
     private final static Set<YukonRole> allowedRoles = ImmutableSet.of(
             YukonRole.METERING, 
             YukonRole.APPLICATION_BILLING, 
             YukonRole.SCHEDULER, 
             YukonRole.DEVICE_ACTIONS);
-
+    
     @Override
     public Set<PaoType> getTypesHandled() {
         return allTypes;
     }
-
+    
     @Override
-    public void buildDocument(DocumentBuilder builder, YukonResultSet rs, PaoIdentifier paoIdentifier)
-            throws SQLException {
+    public void buildDocument(DocumentBuilder builder, YukonResultSet rs, PaoIdentifier paoIdentifier) throws SQLException {
+        
         int paoId = paoIdentifier.getPaoId();
-
+        
         builder.module(SiteModule.AMI.getName());
         String path = "/meter/home?deviceId=" + paoId;
         String pageName = "meterDetail.electric";
@@ -56,16 +56,17 @@ public class MeterPaoTypeHandler implements PaoTypeHandler {
         builder.path(path);
         DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(paoIdentifier);
         String deviceName = displayablePao.getName();
-
+        
         builder.pageArgs(deviceName);
-
+        
         String meterNumber = rs.getString("meterNumber");
-        String description = rs.getString("description");
-        builder.summaryArgs(meterNumber, description);
+        
+        builder.summaryArgs(meterNumber);
     }
-
+    
     @Override
     public Query userLimitingQuery(LiteYukonUser user) {
+        
         boolean allowed = false;
         for (YukonRole role : allowedRoles) {
             if (rolePropertyDao.checkRole(role, user)) {
@@ -73,16 +74,17 @@ public class MeterPaoTypeHandler implements PaoTypeHandler {
                 break;
             }
         }
-
+        
         if (!allowed) {
             return new TermQuery(new Term("module", SiteModule.AMI.getName()));
         }
-
+        
         return null;
     }
-
+    
     @Override
     public boolean isAllowedToView(Document document, LiteYukonUser user, PaoIdentifier paoIdentifier) {
         return true;
     }
+    
 }

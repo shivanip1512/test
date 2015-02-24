@@ -171,8 +171,8 @@
     </entry>
 
     <!-- Arguments available for the electric and water meter detail pages are 0: device name, 1: meter number -->
-    <entry key="yukon.web.modules.search.amr.meterDetail.electric.summary">Meter Number: {1}; Description: {2}</entry>
-    <entry key="yukon.web.modules.search.amr.meterDetail.water.summary">Meter Number: {1}; Description: {2}</entry>
+    <entry key="yukon.web.modules.search.amr.meterDetail.electric.summary"><![CDATA[Meter Number: <strong class="subtle">{1}</strong>]]></entry>
+    <entry key="yukon.web.modules.search.amr.meterDetail.water.summary"><![CDATA[Meter Number: <strong class="subtle">{1}</strong>]]></entry>
 
     <!-- Arguments available for the control area page 0: control area name -->
     <entry key="yukon.web.modules.search.dr.controlAreaDetail.summary">{0}</entry>
@@ -185,18 +185,18 @@
 
     <!-- Arguments available for the load group page 0: load group name -->
     <entry key="yukon.web.modules.search.dr.loadGroupDetail.summary">{0}</entry>
-
+    
     <!-- Arguments available for the load group page 0: load group name -->
-    <entry key="yukon.web.modules.search.operator.account.VIEW.summary">Account Number: {0}</entry>
-    <entry key="yukon.web.modules.search.operator.hardware.VIEW.summary">Serial Number: {1}, Meter Number: {2},
-        Device Label: {3}, Alt. Tracking Number: {4}, Display Type: {5}</entry>
-    <entry key="yukon.web.modules.search.operator.inventory.VIEW.summary">Serial Number: {1}, Meter Number: {2},
-        Device Label: {3}, Alt. Tracking Number: {4}, Display Type: {5}</entry>
-
+    <entry key="yukon.web.modules.search.operator.account.VIEW.summary"><![CDATA[Account Number: <strong class="subtle">{0}</strong>]]></entry>
+    <entry key="yukon.web.modules.search.operator.hardware.VIEW.summary"><![CDATA[Serial Number: <strong class="subtle">{1}</strong>&emsp;Meter Number: <strong class="subtle">{2}</strong>&emsp;
+        Device Label: <strong class="subtle">{3}</strong>&emsp;Alt. Tracking Number: <strong class="subtle">{4}</strong>&emsp;Display Type: <strong class="subtle">{5}</strong>]]></entry>
+    <entry key="yukon.web.modules.search.operator.inventory.VIEW.summary"><![CDATA[Serial Number: <strong class="subtle">{1}</strong>, Meter Number: <strong class="subtle">{2}</strong>,
+        Device Label: <strong class="subtle">{3}</strong>, Alt. Tracking Number: <strong class="subtle">{4}</strong>, Display Type: <strong class="subtle">{5}</strong>]]></entry>
+    
     <!-- Arguments available for Cap Control pages 0: name (pao) -->
     <entry key="yukon.web.modules.search.capcontrol.area.title">Area: {0}</entry>
     <entry key="yukon.web.modules.search.capcontrol.area.summary"></entry>
-      <entry key="yukon.web.modules.search.capcontrol.substation.title">Substation: {0}</entry>
+    <entry key="yukon.web.modules.search.capcontrol.substation.title">Substation: {0}</entry>
     <entry key="yukon.web.modules.search.capcontrol.substation.summary"></entry>
     <entry key="yukon.web.modules.search.capcontrol.bus.title">Bus: {0}</entry>
     <entry key="yukon.web.modules.search.capcontrol.bus.summary"></entry>

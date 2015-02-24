@@ -143,6 +143,19 @@ public class YukonResultSet {
         return new PaoIdentifier(paoId, paoType);
     }
     
+    /**
+     * Returns a {@link PaoIdentifier} using 'PAObjectId' as the pao id column name and 
+     * 'Type' as the pao type column name.  See {#getPaoIdentifier(String paObjectIdColumnLabel, String paoTypeColumnLabel)}
+     * if you need to use different column names.
+     */
+    public PaoIdentifier getPaoIdentifier() throws SQLException {
+        
+        int paoId = getInt("PAObjectId");
+        PaoType paoType = getEnum("Type", PaoType.class);
+        
+        return new PaoIdentifier(paoId, paoType);
+    }
+    
     public PointIdentifier getPointIdentifier(String pointTypeColumnLabel, String pointOffsetColumnLabel)
             throws SQLException {
         PointType pointType = getEnum(pointTypeColumnLabel, PointType.class);

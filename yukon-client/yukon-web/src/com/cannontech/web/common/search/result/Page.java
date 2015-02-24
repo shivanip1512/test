@@ -15,10 +15,11 @@ import com.cannontech.web.support.SiteMapPage;
  * Currently this is used to represent pages found in a search.
  */
 public final class Page {
+    
     private final static String baseKey = "yukon.web.modules.search.";
-
+    
     private final UserPage userPage;
-
+    
     /**
      * Arguments used for page summary message. These should contain some basic data for the page
      * and are documented in the tools/root.xml file. These are different from the arguments in the
@@ -26,21 +27,22 @@ public final class Page {
      * module_config.xml). They should be a superset of the arguments in {@link UserPage}.
      */
     private final Object[] summaryArgs;
-
+    
     /**
      * An instance of this class is used instead of UserPage for legacy pages. 
      */
     private final static class LegacyPage {
+        
         final String path;
         final MessageSourceResolvable title;
         final MessageSourceResolvable summary;
-
+        
         LegacyPage(String path, String module, String pageName, Object[] summaryArgs) {
             this.path = path;
             this.title = new YukonMessageSourceResolvable(baseKey + module + '.' + pageName + ".title", summaryArgs);
             this.summary = new YukonMessageSourceResolvable(baseKey + module + '.' + pageName + ".summary", summaryArgs);
         }
-
+        
         LegacyPage(SiteMapPage siteMapPage) {
             path = siteMapPage.getLink();
             String pageName = siteMapPage.name();
@@ -49,25 +51,25 @@ public final class Page {
             summary = new YukonMessageSourceResolvable(summaryCodes);
         }
     }
-
+    
     /**
      * A temporary hack to get around the fact that some statically searched pages aren't in module_config.xml.
      * For normal pages, this will be null.  For legacy pages, this will be set but userPage will be null.
      */
     private final LegacyPage legacyPage;
-
+    
     public Page(UserPage userPage, List<String> summaryArgs) {
         this.userPage = userPage;
         this.legacyPage = null;
         this.summaryArgs = summaryArgs.toArray(new Object[summaryArgs.size()]);
     }
-
+    
     public Page(SiteMapPage siteMapPage) {
         this.userPage = null;
         this.legacyPage = new LegacyPage(siteMapPage);
         this.summaryArgs = null;
     }
-
+    
     public Page(String path, String module, String pageName, List<String> summaryArgs) {
         checkArgument(module != null);
         checkArgument(pageName != null);
@@ -75,11 +77,11 @@ public final class Page {
         this.summaryArgs = summaryArgs.toArray(new Object[summaryArgs.size()]);
         this.legacyPage = new LegacyPage(path, module, pageName, this.summaryArgs);
     }
-
+    
     public UserPage getUserPage() {
         return userPage;
     }
-
+    
     public MessageSourceResolvable getSummary() {
         if (legacyPage != null) {
             return legacyPage.summary;
@@ -87,20 +89,21 @@ public final class Page {
         return new YukonMessageSourceResolvable(baseKey + userPage.getModule().getName() + "."
                 + userPage.getName() + ".summary", summaryArgs);
     }
-
+    
     public Object[] getSummaryArgs() {
         return summaryArgs;
     }
-
+    
     public boolean isLegacyPage() {
         return legacyPage != null;
     }
-
+    
     public MessageSourceResolvable getTitle() {
         return legacyPage.title;
     }
-
+    
     public String getPath() {
         return legacyPage == null ? userPage.getPath() : legacyPage.path;
     }
+    
 }
