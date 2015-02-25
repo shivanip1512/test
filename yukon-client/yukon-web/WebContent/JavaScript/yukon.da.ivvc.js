@@ -1,7 +1,7 @@
 yukon.namespace('yukon.da.ivvc');
 
 /**
- * Singleton that manages the ivvc pages in capcontrol
+ * Module that manages the ivvc pages in capcontrol
  * 
  * @requires JQUERY
  * @requires JQUERY UI
@@ -59,7 +59,8 @@ yukon.da.ivvc = (function () {
         mod = {
 
             /** Initialize this module. Depends on DOM elements so only call after DOM is loaded. */
-            init : function (params) {
+            init: function (params) {
+
                 var recentEvents = $('#ivvc-recent-events'),
                     timeout = recentEvents.data('timeout') || 4000,
                     zoneId = recentEvents.data('zoneId'),
@@ -80,26 +81,6 @@ yukon.da.ivvc = (function () {
                 });
 
                 setInterval(function () { _updateRecentEvents(zoneId, busId); }, timeout);
-            },
-
-            /** 
-             * Returns the point data.
-             * @param {number} point - Point Id to find the specific point details.
-             */
-            setRedBulletForPoint : function (pointId) {
-                return function (data) {
-
-                    var redBulletSpans = $('.redBullet_' + pointId),
-                        quality = data.quality;
-
-                    redBulletSpans.each(function (index, redBulletSpan) {
-                        if (quality !== 'Normal') {
-                            $(redBulletSpan).show();
-                        } else {
-                            $(redBulletSpan).hide();
-                        }
-                    });
-                };
             }
         };
     return mod;

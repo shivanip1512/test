@@ -26,13 +26,13 @@
     <cm:dropdownOption key=".otherActions.voltageDeltas" href="${zoneVoltageDeltasUrl}" icon="icon-control-equalizer" />
 </div>
 
-
 <div class="column-12-12">
     <div class="column one">
         <tags:boxContainer2 nameKey="details" hideEnabled="true" showInitially="true">
-            <table class="compact-results-table">
+            <table class="compact-results-table has-alerts">
                 <thead>
                 <tr>
+                    <th></th>
                     <th></th>
                     <th><i:inline key=".details.table.name"/></th>
                     <th><i:inline key=".details.table.type"/></th>
@@ -41,7 +41,8 @@
                 <tfoot></tfoot>
                 <tbody>
                 <tr>
-                    <td><cti:icon icon="icon-blank"/><span class="strong-label-small"><i:inline key=".details.table.zone"/></span></td>
+                    <td><cti:icon icon="icon-blank"/></td>
+                    <td><span class="strong-label-small"><i:inline key=".details.table.zone"/></span></td>
                     <td>
                         <c:if test="${hasEditingRole}">
                             <cti:msg2 key="yukon.web.modules.capcontrol.ivvc.zoneWizard.editor.title" var="zoneWizardTitle"/>
@@ -63,7 +64,9 @@
                     <c:set value="${regulator.key}" var="phaseKey"/>
                     <tr>
                         <td>
-                            <capTags:regulatorModeIndicator paoId="${regulatorIdMap[phaseKey]}" type="VOLTAGE_REGULATOR"/>
+                            <capTags:regulatorModeIndicator paoId="${regulatorIdMap[phaseKey]}"/>
+                        </td>
+                        <td>
                             <span class="strong-label-small">
                                 <i:inline key=".details.table.regulator"/>
                                 <c:if test="${zoneDto.zoneType != gangOperated}"> - 
@@ -138,159 +141,96 @@
         </tags:boxContainer2>
         <c:choose>
             <c:when test="${zoneDto.zoneType == threePhase}">
-                <cti:tabbedContentSelector>
-                    <cti:msg2 var="tabName" key=".ivvc.zoneDetail.attributesRegAll.title" />
-                    <cti:tabbedContentSelectorContent selectorName="${tabName}">
-                        <table class="compact-results-table">
-                            <thead>
-                            <tr style="text-align: left;">
-                                <th><i:inline key=".attributes.name"/></th>
-                                <c:forEach items="${zoneDto.regulators}" var="regulator">
-                                    <th><i:inline key=".attributes.phaseValue.${regulator.key}"/></th>
-                                </c:forEach>
-                            </tr>
-                            </thead>
-                            <tfoot></tfoot>
-                            <tbody>
-                            <c:forEach var="point" items="${regulatorPointMappingsMap[phaseA]}">
-                                <tr>
-                                    <td><i:inline key="${point.key}"/></td>
-                                    <c:forEach items="${zoneDto.regulators}" var="regulator">
-                                        <c:set var="phaseKey" value="${regulator.key}"/>
-                                        <td>
-                                            <c:set var="pointId" value="${regulatorPointMappingsMap[phaseKey][point.key]}"/>
-                                            <c:choose>
-                                                <c:when test="${pointId > 0}">
-                                                    <span class="redBullet_${pointId}">
-                                                        <cti:icon icon="icon-bullet-red" classes="thin fn M0" nameKey="questionable"/>
-                                                    </span>
-                                                    <cti:pointValue pointId="${pointId}" format="VALUE"/>
-                                                    <cti:dataUpdaterCallback function="yukon.da.ivvc.setRedBulletForPoint(${pointId})" 
-                                                        initialize="true" quality="POINT/${pointId}/QUALITY"/>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <i:inline key="yukon.web.defaults.dashes"/>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </td>
-                                    </c:forEach>
-                                </tr>
+                <table class="compact-results-table">
+                    <thead>
+                    <tr style="text-align: left;">
+                        <th><i:inline key=".attributes.name"/></th>
+                        <c:forEach items="${zoneDto.regulators}" var="regulator">
+                            <th><i:inline key=".attributes.phaseValue.${regulator.key}"/></th>
+                        </c:forEach>
+                    </tr>
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody>
+                    <c:set var="points" value="${regulatorPointMappingsMap[phaseA]}" />
+                    <c:if test="${empty points}">
+                        <c:set var="points" value="${regulatorPointMappingsMap[phaseAll]}" />
+                    </c:if>
+                    <c:forEach var="point" items="${points}">
+                        <tr>
+                            <td><i:inline key="${point.key}"/></td>
+                            <c:forEach items="${zoneDto.regulators}" var="regulator">
+                                <td>
+                                    <c:set var="pointId" value="${regulatorPointMappingsMap[regulator.key][point.key]}"/>
+                                    <c:choose>
+                                        <c:when test="${pointId > 0}">
+                                            <span data-tooltip="[data-point-updated='${pointId}']">
+                                                <cti:pointStatus pointId="${pointId}" statusPointOnly="true"/>
+                                                <cti:pointValue pointId="${pointId}" format="VALUE"/>
+                                                <cti:pointValue pointId="${pointId}" format="UNIT"/>
+                                                <cti:pointValue pointId="${pointId}" format="SHORT_QUALITY"/>
+                                            </span>
+                                            <div class="dn" data-point-updated="${pointId}">
+                                                <cti:pointValue pointId="${pointId}" format="DATE"/>
+                                            </div>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <i:inline key="yukon.web.defaults.dashes"/>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
                             </c:forEach>
-                            <tr>
-                                <td><i:inline key=".attributes.voltChangePerTap"/></td>
-                               <c:forEach items="${zoneDto.regulators}" var="regulator">
-                                    <c:set var="phaseKey" value="${regulator.key}" />
-                                    <td><cti:dataUpdaterValue identifier="${regulatorIdMap[phaseKey]}/VOLT_CHANGE_PER_TAP" type="VOLTAGE_REGULATOR"/></td>
-                               </c:forEach>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </cti:tabbedContentSelectorContent>
-                    <c:forEach items="${zoneDto.regulators}" var="regulator">
-                        <c:set var="phaseKey" value="${regulator.key}"/>
-                        <cti:msg2 var="tabName" key=".ivvc.zoneDetail.attributesReg${phaseKey}.title" />
-                        <cti:tabbedContentSelectorContent selectorName="${tabName}">
-                            <table class="compact-results-table">
-                                <thead>
-                                <tr style="text-align: left;">
-                                    <th><i:inline key=".attributes.name"/></th>
-                                    <th><i:inline key=".attributes.value"/></th>
-                                    <th><i:inline key=".attributes.timestamp"/></th>
-                                </tr>
-                                </thead>
-                                <tfoot></tfoot>
-                                <tbody>
-                                <c:forEach var="point" items="${regulatorPointMappingsMap[phaseKey]}">
-                                    <tr>
-                                        <td><i:inline key="${point.key}"/></td>
-                                        <td>
-                                            <c:choose>
-                                                <c:when test="${point.value > 0}">
-                                                    <span class="redBullet_${point.value}">
-                                                        <cti:icon icon="icon-bullet-red" classes="thin fn M0" nameKey="questionable"/>
-                                                    </span>
-                                                    <cti:pointValue pointId="${point.value}" format="VALUE"/>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <i:inline key="yukon.web.defaults.dashes"/>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </td>
-                                        <td>
-                                            <c:choose>
-                                                <c:when test="${point.value > 0}">
-                                                    <cti:pointValue pointId="${point.value}" 
-                                                        format="DATE"/>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <i:inline key="yukon.web.defaults.dashes"/>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </td>
-                                    </tr>
-                                </c:forEach>
-                                <tr>
-                                    <td><i:inline key=".attributes.voltChangePerTap"/></td>
-                                    <td><cti:dataUpdaterValue identifier="${regulatorIdMap[phaseKey]}/VOLT_CHANGE_PER_TAP" type="VOLTAGE_REGULATOR"/></td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </cti:tabbedContentSelectorContent>
+                        </tr>
                     </c:forEach>
-                </cti:tabbedContentSelector>
+                    <tr>
+                        <td><i:inline key=".attributes.voltChangePerTap"/></td>
+                       <c:forEach items="${zoneDto.regulators}" var="regulator">
+                            <c:set var="phaseKey" value="${regulator.key}" />
+                            <td><cti:dataUpdaterValue identifier="${regulatorIdMap[phaseKey]}/VOLT_CHANGE_PER_TAP" type="VOLTAGE_REGULATOR"/></td>
+                       </c:forEach>
+                    </tr>
+                    </tbody>
+                </table>
             </c:when>
             <c:otherwise>
                 <tags:boxContainer2 nameKey="attributes" hideEnabled="true" showInitially="true">
                     <table class="compact-results-table">
-                        <thead>
-                        <tr style="text-align: left;">
-                           <th><i:inline key=".attributes.name"/></th>
-                           <th><i:inline key=".attributes.value"/></th>
-                           <th><i:inline key=".attributes.timestamp"/></th>
-                        </tr>
-                        </thead>
+                        <thead></thead>
                         <tfoot></tfoot>
                         <tbody>
                         <c:forEach items="${zoneDto.regulators}" var="regulator">
                             <c:set var="phaseKey" value="${regulator.key}"/>
-                           <c:forEach var="point" items="${regulatorPointMappingsMap[phaseKey]}">
-                               <tr>
-                                   <td><i:inline key="${point.regulatorPointMapping}"/></td>
-                                   <td>
-                                       <c:choose>
-                                           <c:when test="${point.value > 0}">
-                                                <span class="redBullet_${point.value}">
-                                                    <cti:icon icon="icon-bullet-red" classes="thin fn M0"/>
+                            <c:forEach var="point" items="${regulatorPointMappingsMap[phaseKey]}">
+                                <c:set var="pointId" value="${point.value}" />
+                                <tr>
+                                    <td><i:inline key="${point.key}"/></td>
+                                    <td>
+                                        <c:choose>
+                                            <c:when test="${point.value > 0}">
+                                                <span data-tooltip="[data-point-updated='${pointId}']">
+                                                    <cti:pointStatus pointId="${pointId}" statusPointOnly="true"/>
+                                                    <cti:pointValue pointId="${pointId}" format="VALUE"/>
+                                                    <cti:pointValue pointId="${pointId}" format="UNIT"/>
+                                                    <cti:pointValue pointId="${pointId}" format="SHORT_QUALITY"/>
                                                 </span>
-                                                <cti:pointValue pointId="${point.value}" format="VALUE"/>
-                                                <cti:dataUpdaterCallback function="yukon.da.ivvc.setRedBulletForPoint(${point.value})" 
-                                                    initialize="true" quality="POINT/${point.value}/QUALITY"/>
-                                           </c:when>
-                                           <c:otherwise>
-                                               <i:inline key="yukon.web.defaults.dashes"/>
-                                           </c:otherwise>
-                                       </c:choose>
-                                   </td>
-                                   <td>
-                                       <c:choose>
-                                           <c:when test="${point.value > 0}">
-                                               <cti:pointValue pointId="${point.value}" format="DATE"/>
-                                           </c:when>
-                                           <c:otherwise>
-                                               <i:inline key="yukon.web.defaults.dashes"/>
-                                           </c:otherwise>
-                                       </c:choose>
+                                                <div class="dn" data-point-updated="${pointId}">
+                                                    <cti:pointValue pointId="${pointId}" format="DATE"/>
+                                                </div>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <i:inline key="yukon.web.defaults.dashes"/>
+                                            </c:otherwise>
+                                        </c:choose>
                                    </td>
                                </tr>
-                           </c:forEach>
+                            </c:forEach>
                             <tr>
                                 <td><i:inline key=".attributes.voltChangePerTap"/></td>
                                 <td><cti:dataUpdaterValue identifier="${regulatorIdMap[phaseKey]}/VOLT_CHANGE_PER_TAP" type="VOLTAGE_REGULATOR"/></td>
-                                <td><i:inline key="yukon.web.defaults.dashes"/></td>
                             </tr>
                         </c:forEach>
                         </tbody>
-                   </table>
+                    </table>
                 </tags:boxContainer2>
             </c:otherwise>
         </c:choose>

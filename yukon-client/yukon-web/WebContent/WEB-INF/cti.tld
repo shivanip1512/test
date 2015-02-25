@@ -599,6 +599,12 @@
       <rtexprvalue>true</rtexprvalue>
       <description>CSS class names applied to state box element.</description>
     </attribute>
+    <attribute>
+      <name>statusPointOnly</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>When true, will not create a state box for non-status points</description>
+    </attribute>
   </tag>
   
   <tag>

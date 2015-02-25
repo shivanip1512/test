@@ -368,6 +368,8 @@ public class ZoneDetailController {
         model.addAttribute("phaseA", Phase.A);
         model.addAttribute("phaseB", Phase.B);
         model.addAttribute("phaseC", Phase.C);
+        model.addAttribute("phaseAll", Phase.ALL);
+
     }
 
     private void setupRegulatorCommands(ModelMap model, AbstractZone abstractZone) {

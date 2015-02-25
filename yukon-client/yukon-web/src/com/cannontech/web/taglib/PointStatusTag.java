@@ -14,6 +14,7 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.web.updater.UpdateValue;
 import com.cannontech.web.updater.point.PointDataRegistrationService;
@@ -25,6 +26,7 @@ public class PointStatusTag extends YukonTagSupport {
     private Integer rawState;
     private String format = "{stateColor|#%02X%02X%02X}";
     private String classes = ""; // Prevent 'null' from being written as a class name.
+    private boolean statusPointOnly = false;
     
     @Autowired private PointDataRegistrationService registrationService;
     @Autowired private PointDao pointDao;
@@ -35,6 +37,11 @@ public class PointStatusTag extends YukonTagSupport {
         
         if (pointId == null) throw new JspException("pointId must be set");
         
+        if (statusPointOnly) {
+            PointType type = pointDao.getPaoPointIdentifier(pointId).getPointIdentifier().getPointType();
+            if (!type.isStatus()) return;
+        }
+
         StringBuilder boxBuilder = new StringBuilder();
         
         boxBuilder.append("<span class=\"box state-box " + classes + "\" ");
@@ -83,4 +90,8 @@ public class PointStatusTag extends YukonTagSupport {
         this.classes = classes;
     }
     
+    public void setStatusPointOnly(boolean statusPointOnly) {
+        this.statusPointOnly = statusPointOnly;
+    }
+
 }
