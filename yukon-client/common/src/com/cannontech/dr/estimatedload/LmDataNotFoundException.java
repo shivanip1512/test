@@ -1,10 +1,10 @@
 package com.cannontech.dr.estimatedload;
 
-public final class LmDataNotFoundExceptionException extends EstimatedLoadException {
+public final class LmDataNotFoundException extends EstimatedLoadException {
 
     private final int programId;
 
-    public LmDataNotFoundExceptionException(int programId) {
+    public LmDataNotFoundException(int programId) {
         this.programId = programId;
     }
 

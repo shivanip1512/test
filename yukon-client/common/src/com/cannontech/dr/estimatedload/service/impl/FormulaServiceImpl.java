@@ -138,7 +138,7 @@ public class FormulaServiceImpl implements FormulaService {
             Double value = formulaInputHolder.getFunctionInputValues().get(functionId);
             
             if (value < min || value > max) {
-                throw new InputOutOfRangeException(formula, Type.FUNCTION, functionId);
+                throw new InputOutOfRangeException(formula, Type.FUNCTION, functionId, value.toString(), min.toString(), max.toString());
             }
         }
         for (Integer tableId : formulaInputHolder.getTableInputs().keySet()) {
@@ -147,7 +147,7 @@ public class FormulaServiceImpl implements FormulaService {
             Double value = formulaInputHolder.getTableInputValues().get(tableId);
 
             if (value < min || value > max) {
-                throw new InputOutOfRangeException(formula, Type.LOOKUP, tableId);
+                throw new InputOutOfRangeException(formula, Type.LOOKUP, tableId, value.toString(), min.toString(), max.toString());
             }
         }
         for (Integer timeTableId : formulaInputHolder.getTimeTableInputs().keySet()) {
@@ -156,7 +156,7 @@ public class FormulaServiceImpl implements FormulaService {
             LocalTime value = formulaInputHolder.getTimeTableInputValues().get(timeTableId);
             
             if (value.isBefore(min) || value.isAfter(max)) {
-                throw new InputOutOfRangeException(formula, Type.TIME_LOOKUP, timeTableId);
+                throw new InputOutOfRangeException(formula, Type.TIME_LOOKUP, timeTableId, value.toString(), min.toString(), max.toString());
             }
         }
         if(log.isDebugEnabled()) {

@@ -19,6 +19,7 @@ import com.cannontech.dr.estimatedload.EstimatedLoadResult;
 import com.cannontech.dr.estimatedload.Formula;
 import com.cannontech.dr.estimatedload.FormulaInputHolder;
 import com.cannontech.dr.estimatedload.NoAppCatFormulaException;
+import com.cannontech.dr.estimatedload.NoGearFormulaException;
 import com.cannontech.dr.estimatedload.PartialEstimatedLoadReductionAmount;
 import com.cannontech.dr.estimatedload.dao.EstimatedLoadDao;
 import com.cannontech.dr.estimatedload.dao.FormulaDao;
@@ -202,12 +203,12 @@ public class EstimatedLoadServiceImpl implements EstimatedLoadService {
         Formula applianceCategoryFormula = formulaDao.getFormulaForApplianceCategory(applianceCategoryId);
         if (applianceCategoryFormula == null) {
             log.debug("No formula assigned for appliance category : " + applianceCategoryId);
-            throw new NoAppCatFormulaException();
+            throw new NoAppCatFormulaException(applianceCategoryId);
         }
         Formula gearFormula = formulaDao.getFormulaForGear(gearId);
         if (gearFormula == null) {
             log.debug("No formula assigned for gear: " + gearId);
-            throw new NoAppCatFormulaException();
+            throw new NoGearFormulaException(gearId);
         }
         
         return new EstimatedLoadCalculationInfo(applianceCategoryId, averageKwLoad, gearId,

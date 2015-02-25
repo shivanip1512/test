@@ -797,12 +797,12 @@ public class FormulaDaoImpl implements FormulaDao {
     public Formula getFormulaForApplianceCategory(int appCategoryId) throws EstimatedLoadException {
         ApplianceCategoryAssignment assignment = getAssignmentForApplianceCategory(appCategoryId);
         if (assignment.getFormulaId() == null) {
-            throw new NoAppCatFormulaException();
+            throw new NoAppCatFormulaException(appCategoryId);
         } else {
             try {
                 return getFormulaById(assignment.getFormulaId());
             } catch (DataAccessException e) {
-                throw new NoAppCatFormulaException();
+                throw new NoAppCatFormulaException(appCategoryId);
             }
         }
     }
@@ -811,12 +811,12 @@ public class FormulaDaoImpl implements FormulaDao {
     public Formula getFormulaForGear(int gearId) throws EstimatedLoadException {
         GearAssignment assignment = getAssignmentForGear(gearId);
         if (assignment.getFormulaId() == null) {
-            throw new NoGearFormulaException();
+            throw new NoGearFormulaException(gearId);
         } else {
             try {
                 return getFormulaById(assignment.getFormulaId());
             } catch (DataAccessException e) {
-                throw new NoGearFormulaException();
+                throw new NoGearFormulaException(gearId);
             }
         }
     }

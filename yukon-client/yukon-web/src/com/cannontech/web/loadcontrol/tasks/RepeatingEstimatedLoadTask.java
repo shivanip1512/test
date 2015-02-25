@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.events.loggers.EstimatedLoadEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -18,32 +19,48 @@ import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.service.PointCreationService;
 import com.cannontech.common.pao.service.PointService;
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.LMGearDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.dr.controlarea.dao.ControlAreaDao;
+import com.cannontech.dr.estimatedload.ApplianceCategoryInfoNotFoundException;
+import com.cannontech.dr.estimatedload.ApplianceCategoryNotFoundException;
 import com.cannontech.dr.estimatedload.EstimatedLoadAmount;
 import com.cannontech.dr.estimatedload.EstimatedLoadException;
 import com.cannontech.dr.estimatedload.EstimatedLoadResult;
 import com.cannontech.dr.estimatedload.EstimatedLoadSummary;
+import com.cannontech.dr.estimatedload.GearNotFoundException;
+import com.cannontech.dr.estimatedload.InputOutOfRangeException;
+import com.cannontech.dr.estimatedload.LmDataNotFoundException;
+import com.cannontech.dr.estimatedload.LmServerNotConnectedException;
+import com.cannontech.dr.estimatedload.NoAppCatFormulaException;
+import com.cannontech.dr.estimatedload.NoGearFormulaException;
+import com.cannontech.dr.estimatedload.InputOutOfRangeException.Type;
+import com.cannontech.dr.estimatedload.InputValueNotFoundException;
 import com.cannontech.dr.estimatedload.service.EstimatedLoadBackingServiceHelper;
 import com.cannontech.dr.estimatedload.service.EstimatedLoadService;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonTaskBase;
+import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.user.YukonUserContext;
 
 public class RepeatingEstimatedLoadTask extends YukonTaskBase {
 
     private Logger log = YukonLogManager.getLogger(RepeatingEstimatedLoadTask.class);
 
+    @Autowired private ApplianceCategoryDao applianceCategoryDao;
     @Autowired private AttributeService attributeService;
     @Autowired private ControlAreaDao controlAreaDao;
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private EstimatedLoadBackingServiceHelper backingServiceHelper;
+    @Autowired private EstimatedLoadEventLogService estimatedLoadEventLogService;
     @Autowired private EstimatedLoadService estimatedLoadService;
     @Autowired private JobManager jobManager;
+    @Autowired private LMGearDao lmGearDao;
     @Autowired private PaoDao paoDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private PointCreationService PointCreationService;
@@ -54,7 +71,8 @@ public class RepeatingEstimatedLoadTask extends YukonTaskBase {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     private final boolean estimatedLoadEnabled;
-
+    private static MessageSourceAccessor systemMessasgeSourceAccessor = null;
+    
     @Autowired 
     public RepeatingEstimatedLoadTask(ConfigurationSource configurationSource) {
         this.estimatedLoadEnabled
@@ -101,6 +119,9 @@ public class RepeatingEstimatedLoadTask extends YukonTaskBase {
                         .getMessageSourceAccessor(YukonUserContext.system);
                 errorReason = messageSourceAccessor.getMessage(backingServiceHelper.resolveException(
                         ((EstimatedLoadException) estimatedLoadResult), YukonUserContext.system));
+                
+                //Add event log entry for failed calculation
+                eventLogError(estimatedLoadResult, paoIdent);
             }
             
             if (amount != null) {
@@ -123,7 +144,82 @@ public class RepeatingEstimatedLoadTask extends YukonTaskBase {
             }
         }
     }
-
+    
+    /**
+     * Adds a record to the event log describing the error that occurred in the estimated load calculation.
+     */
+    private void eventLogError(EstimatedLoadResult result, PaoIdentifier paoIdentifier) {
+        
+        String programName = paoDao.getYukonPAOName(paoIdentifier.getPaoId());
+        
+        if (result instanceof ApplianceCategoryNotFoundException) {
+            estimatedLoadEventLogService.applianceCategoryNotFound(programName);
+        } else if (result instanceof ApplianceCategoryInfoNotFoundException) {
+            int appCatId = ((ApplianceCategoryInfoNotFoundException) result).getApplianceCategoryId();
+            String applianceCategoryName = applianceCategoryDao.getById(appCatId).getName();
+            estimatedLoadEventLogService.applianceCategoryInfoNotFound(programName, applianceCategoryName);
+        } else if (result instanceof GearNotFoundException) {
+            int gearNumber = ((GearNotFoundException) result).getGearNumber();
+            estimatedLoadEventLogService.gearNotFound(programName, gearNumber);
+        } else if (result instanceof InputOutOfRangeException) {
+            InputOutOfRangeException inputException = ((InputOutOfRangeException) result);
+            
+            //Formula name
+            String formulaName = inputException.getFormula().getName();
+            
+            //Component type and name
+            String componentType;
+            String componentName;
+            if (inputException.getType() == Type.FUNCTION) {
+                componentType = getSystemMessage("yukon.web.modules.dr.estimatedLoad.function");
+                componentName = inputException.getFormula().getFunctionById(inputException.getId()).getName();
+            } else if (inputException.getType() == Type.LOOKUP) {
+                componentType = getSystemMessage("yukon.web.modules.dr.estimatedLoad.lookup");
+                componentName = inputException.getFormula().getTableById(inputException.getId()).getName();
+            } else if (inputException.getType() == Type.TIME_LOOKUP) {
+                componentType = getSystemMessage("yukon.web.modules.dr.estimatedLoad.timeLookup");
+                componentName = inputException.getFormula().getTimeTableById(inputException.getId()).getName();
+            } else {
+                componentType = getSystemMessage("yukon.web.modules.dr.estimatedLoad.unknown");
+                componentName = getSystemMessage("yukon.web.modules.dr.estimatedLoad.unknown");
+            }
+            
+            //Input value, valid min and max
+            String inputValue = inputException.getInputValue();
+            String validMin = inputException.getMinValue();
+            String validMax = inputException.getMaxValue();
+            
+            estimatedLoadEventLogService.inputOutOfRange(formulaName, componentType, componentName, inputValue, validMin, validMax);
+            
+        } else if (result instanceof InputValueNotFoundException) {
+            String formulaName = ((InputValueNotFoundException) result).getFormulaName();
+            estimatedLoadEventLogService.inputValueNotFound(programName, formulaName);
+        } else if (result instanceof LmDataNotFoundException) {
+            estimatedLoadEventLogService.lmDataNotFound(programName);
+        } else if (result instanceof LmServerNotConnectedException) {
+            estimatedLoadEventLogService.notConnectedToLmServer();
+        } else if (result instanceof NoAppCatFormulaException) {
+            int appCatId = ((ApplianceCategoryInfoNotFoundException) result).getApplianceCategoryId();
+            String applianceCategoryName = applianceCategoryDao.getById(appCatId).getName();
+            estimatedLoadEventLogService.noApplianceCategoryFormula(applianceCategoryName, programName);
+        } else if (result instanceof NoGearFormulaException) {
+            int gearId = ((NoGearFormulaException) result).getGearId();
+            String gearName = lmGearDao.getByGearId(gearId).getGearName();
+            estimatedLoadEventLogService.noGearFormula(gearName, programName);
+        } else {
+            estimatedLoadEventLogService.unknownError(programName);
+        }
+    }
+    
+    /** Get the i18n string for the specified key, using the System user context */
+    private String getSystemMessage(String key) {
+        if (systemMessasgeSourceAccessor == null) {
+            systemMessasgeSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
+        }
+        YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable(key);
+        return systemMessasgeSourceAccessor.getMessage(resolvable);
+    }
+    
     /**
      * Will create 'Connected Load', Diversifed Load', 'Max Load Reduction', and 'Availalbe Load Reduction' points
      * on all LM paos if the points don't already exist.

@@ -31,7 +31,7 @@ import com.cannontech.dr.estimatedload.GearNotFoundException;
 import com.cannontech.dr.estimatedload.InputOutOfRangeException;
 import com.cannontech.dr.estimatedload.InputOutOfRangeException.Type;
 import com.cannontech.dr.estimatedload.InputValueNotFoundException;
-import com.cannontech.dr.estimatedload.LmDataNotFoundExceptionException;
+import com.cannontech.dr.estimatedload.LmDataNotFoundException;
 import com.cannontech.dr.estimatedload.LmServerNotConnectedException;
 import com.cannontech.dr.estimatedload.NoAppCatFormulaException;
 import com.cannontech.dr.estimatedload.NoGearFormulaException;
@@ -235,10 +235,10 @@ public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBacki
         } catch (ConnectionException e){
             throw new LmServerNotConnectedException();
         } catch (NotFoundException e) {
-            throw new LmDataNotFoundExceptionException(programId);
+            throw new LmDataNotFoundException(programId);
         }
         if (programBase == null) {
-            throw new LmDataNotFoundExceptionException(programId);
+            throw new LmDataNotFoundException(programId);
         }
         return programBase;
     }
@@ -271,7 +271,7 @@ public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBacki
         } else if (e instanceof InputValueNotFoundException) {
             return new YukonMessageSourceResolvable("yukon.web.modules.dr.estimatedLoad.calcErrors.inputValueNotFound",
                     ((InputValueNotFoundException) e).getFormulaName());
-        } else if (e instanceof LmDataNotFoundExceptionException) {
+        } else if (e instanceof LmDataNotFoundException) {
             return new YukonMessageSourceResolvable("yukon.web.modules.dr.estimatedLoad.calcErrors.loadManagementDataNotFound");
         } else if (e instanceof LmServerNotConnectedException) {
             return new YukonMessageSourceResolvable("yukon.web.modules.dr.estimatedLoad.calcErrors.loadManagementServerNotConnected");

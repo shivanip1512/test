@@ -57,7 +57,7 @@ public class EstimatedLoadDaoImpl implements EstimatedLoadDao{
             // No AverageKwLoad value was found for the appliance category. 
             log.error("No average kw load value was found when attempting to look up this info for program id: "
                     + lmProgramId);
-            throw new ApplianceCategoryInfoNotFoundException();
+            throw new ApplianceCategoryInfoNotFoundException(result.getApplianceCategoryId());
         }
         return result;
     }
@@ -77,7 +77,7 @@ public class EstimatedLoadDaoImpl implements EstimatedLoadDao{
                 log.debug("Gear not found for LM program id: " + lmProgramId
                         + " with gear number: " + gearNumber);
             }
-            throw new GearNotFoundException(lmProgramId);
+            throw new GearNotFoundException(lmProgramId, gearNumber);
         }
     }
 

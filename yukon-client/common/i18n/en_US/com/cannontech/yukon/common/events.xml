@@ -506,7 +506,7 @@
     <entry key="yukon.common.events.system.outageEvents.outageEventGenerated">OutageDetectionEvent generated with eventType={1} eventTime={11} deviceType={2} and objectId = {3}.</entry>
     
     
-<!-- ZigBee Webservices -->
+    <!-- ZigBee Webservices -->
     <entry key="yukon.common.events.hardware.commands.config.zigbeeDeviceCommission">User {1} attempted commission for ZigBee device {2}.</entry>
     <entry key="yukon.common.events.hardware.commands.config.zigbeeDeviceDecommission">User {1} attempted decommission for ZigBee device {2}.</entry>
     <entry key="yukon.common.events.hardware.commands.status.zigbeeDeviceRefresh">User {1} attempted refresh for ZigBee device {2}. Source: {3}</entry>
@@ -524,7 +524,7 @@
     <entry key="yukon.common.events.hardware.config.zigbeeDeviceAssigned">ZigBee device {1} assigned to ZigBee gateway {2}.</entry>
     <entry key="yukon.common.events.hardware.config.zigbeeDeviceUnassigned">ZigBee device {1} unassigned from ZigBee gateway {2}.</entry>
     
-<!-- Ecobee Communication Service-->
+    <!-- Ecobee Communication Service-->
     <entry key="yukon.common.events.ecobee.syncIssueFixed">User {1} fixed an ecobee sync issue of type {2}.</entry>
     <entry key="yukon.common.events.ecobee.allSyncIssuesFixed">User {1} fixed all ecobee sync issues.</entry>
     <entry key="yukon.common.events.ecobee.dataDownloaded">User {1} attempted to download an ecobee data report with start: {11}, end: {12}, load group ids: {2}.</entry>
@@ -599,5 +599,24 @@
     <entry key="yukon.common.events.multispeak.notificationResponse.5">Url</entry>
     <entry key="yukon.common.events.multispeak.notificationResponse.7">Errors</entry>
     <entry key="yukon.common.events.multispeak.errorObject">Encountered error: {1}. {2} by {3}.</entry>
+    
+    <entry key="yukon.common.events.estimatedLoad.applianceCategoryNotFound">No appliance category could be found for program {1}.</entry>
+    <entry key="yukon.common.events.estimatedLoad.applianceCategoryInfoNotFound">Unable to calculate value for program {1}. The Appliance Load (kW) value could not be found for appliance category {2}.</entry>
+    <entry key="yukon.common.events.estimatedLoad.gearNotFound">Unable to find gear number {7} for program {1}.</entry>
+    <entry key="yukon.common.events.estimatedLoad.gearNotFound.7">Gear Number</entry>
+    <entry key="yukon.common.events.estimatedLoad.inputOutOfRange">In formula {1}, {2} {3} has invalid input {4}, which is outside the valid range {5} - {6}.</entry>
+    <entry key="yukon.common.events.estimatedLoad.inputOutOfRange.1">Formula Name</entry>
+    <entry key="yukon.common.events.estimatedLoad.inputOutOfRange.2">Formula Component Type</entry>
+    <entry key="yukon.common.events.estimatedLoad.inputOutOfRange.3">Formula Component Name</entry>
+    <entry key="yukon.common.events.estimatedLoad.inputOutOfRange.4">Input Value</entry>
+    <entry key="yukon.common.events.estimatedLoad.inputOutOfRange.5">Minimum Valid Value</entry>
+    <entry key="yukon.common.events.estimatedLoad.inputOutOfRange.6">Maximum Valid Value</entry>
+    <entry key="yukon.common.events.estimatedLoad.inputValueNotFound">Unable to retrieve input point value for formula {1}, program {2}.</entry>
+    <entry key="yukon.common.events.estimatedLoad.inputValueNotFound.1">Formula Name</entry>
+    <entry key="yukon.common.events.estimatedLoad.lmDataNotFound">Could not find program {1} in Load Management server.</entry>
+    <entry key="yukon.common.events.estimatedLoad.notConnectedToLmServer">Not connected to Load Management server.</entry>
+    <entry key="yukon.common.events.estimatedLoad.noApplianceCategoryFormula">No formula assigned to appliance category {1} for program {2}.</entry>
+    <entry key="yukon.common.events.estimatedLoad.noGearFormula">No formula assigned to gear {1} for program {2}.</entry>
+    <entry key="yukon.common.events.estimatedLoad.unknownError">An unknown error occurred calculating estimated load for program {1}.</entry>
 </properties>
 
