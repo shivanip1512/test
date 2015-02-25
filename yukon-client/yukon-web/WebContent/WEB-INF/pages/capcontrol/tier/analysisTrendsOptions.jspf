@@ -59,10 +59,10 @@ function showTrends(title, url) {
 
 
 <div class="action-area">
-    <cti:button nameKey="todayKvarWatt" onclick="showTrends('${todayKvarWatt}', '/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=DAY')"/>
-    <cti:button nameKey="thirtyDayKvarWatt" onclick="showTrends('${thirtyDayKvarWatt}', '/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=MONTH')"/>
-    <cti:button nameKey="todayPf" onclick="showTrends('${todayPf}', '/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=DAY')"/>
-    <cti:button nameKey="thirtyDayPf" onclick="showTrends('${thirtyDayPf}', '/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=MONTH')"/>
+    <cti:button nameKey="todayKvarWatt" onclick="showTrends('${todayKvarWatt}', yukon.url('/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=DAY'))"/>
+    <cti:button nameKey="thirtyDayKvarWatt" onclick="showTrends('${thirtyDayKvarWatt}', yukon.url('/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=MONTH'))"/>
+    <cti:button nameKey="todayPf" onclick="showTrends('${todayPf}', yukon.url('/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=DAY'))"/>
+    <cti:button nameKey="thirtyDayPf" onclick="showTrends('${thirtyDayPf}', yukon.url('/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=MONTH'))"/>
 </div>
 
 
