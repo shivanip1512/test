@@ -89,7 +89,7 @@ public class InventoryController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @RequestMapping(value = "view", params = {"deviceId"})
-    public String viewByDeviceId(ModelMap model, YukonUserContext context, int deviceId ,FlashScope flashScope) {
+	public String viewByDeviceId(ModelMap model, YukonUserContext context, int deviceId, FlashScope flashScope) {
         model.addAttribute("mode", PageEditMode.VIEW);
         InventoryIdentifier inventory = null;
 		try {
