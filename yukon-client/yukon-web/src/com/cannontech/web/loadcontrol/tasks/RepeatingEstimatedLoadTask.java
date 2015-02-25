@@ -9,6 +9,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.events.loggers.EstimatedLoadEventLogService;
+import com.cannontech.common.exception.PointDataException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -18,6 +19,7 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.service.PointCreationService;
 import com.cannontech.common.pao.service.PointService;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.LMGearDao;
 import com.cannontech.core.dao.PaoDao;
@@ -124,11 +126,12 @@ public class RepeatingEstimatedLoadTask extends YukonTaskBase {
                 eventLogError(estimatedLoadResult, paoIdent);
             }
             
+            LitePoint connectedPoint = attributeService.getPointForAttribute(paoIdent, BuiltInAttribute.CONNECTED_LOAD);
+            LitePoint diversifiedPoint = attributeService.getPointForAttribute(paoIdent, BuiltInAttribute.DIVERSIFIED_LOAD);
+            LitePoint maxKwPoint = attributeService.getPointForAttribute(paoIdent, BuiltInAttribute.MAX_LOAD_REDUCTION);
+            LitePoint nowKwPoint = attributeService.getPointForAttribute(paoIdent, BuiltInAttribute.AVAILABLE_LOAD_REDUCTION);
+            
             if (amount != null) {
-                LitePoint connectedPoint = attributeService.getPointForAttribute(paoIdent, BuiltInAttribute.CONNECTED_LOAD);
-                LitePoint diversifiedPoint = attributeService.getPointForAttribute(paoIdent, BuiltInAttribute.DIVERSIFIED_LOAD);
-                LitePoint maxKwPoint = attributeService.getPointForAttribute(paoIdent, BuiltInAttribute.MAX_LOAD_REDUCTION);
-                LitePoint nowKwPoint = attributeService.getPointForAttribute(paoIdent, BuiltInAttribute.AVAILABLE_LOAD_REDUCTION);
                 
                 pointAccessDao.setPointValue(connectedPoint, amount.getConnectedLoad());
                 pointAccessDao.setPointValue(diversifiedPoint, amount.getDiversifiedLoad());
@@ -141,7 +144,21 @@ public class RepeatingEstimatedLoadTask extends YukonTaskBase {
                     // Only programs provide specific error messages. Control areas and scenarios do not
                     log.warn("Unable to archive estimated load data for pao: " + paoIdent); 
                 }
+                markPointAsNonUpdated(connectedPoint);
+                markPointAsNonUpdated(diversifiedPoint);
+                markPointAsNonUpdated(maxKwPoint);
+                markPointAsNonUpdated(nowKwPoint);
             }
+        }
+    }
+    
+    private void markPointAsNonUpdated(LitePoint point) {
+        try {
+            log.info("Point:" + point.getLiteID() + " marked as NonUpdated");
+            double value = pointAccessDao.getPointValue(point);
+            pointAccessDao.setPointValue(point, value, PointQuality.NonUpdated);
+        } catch (PointDataException e) {
+            log.warn("Unable to mark point:" + point.getLiteID() + " as NonUpdated. Point value is not found", e);
         }
     }
     

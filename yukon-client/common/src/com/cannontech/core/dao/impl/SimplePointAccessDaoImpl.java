@@ -66,14 +66,23 @@ public class SimplePointAccessDaoImpl implements SimplePointAccessDao {
         setPointValue(pointId,time,pointState.getRawState(),PointTypes.STATUS_POINT);
     }
     
+    @Override
+    public void setPointValue(LitePoint point, double value, PointQuality quality) {
+        setPointValue(point.getPointID(), new Instant(), value, PointTypes.ANALOG_POINT, quality);
+    }
+    
     private void setPointValue(int pointId, Instant time, double value, int pointType) {
+        setPointValue(pointId, time, value, pointType, PointQuality.Normal);
+    }
+
+    private void setPointValue(int pointId, Instant time, double value, int pointType, PointQuality quality) {
         PointData pointData = new PointData();
         pointData.setId(pointId);
         pointData.setValue(value);
         pointData.setType(pointType);
-        pointData.setPointQuality(PointQuality.Normal);
+        pointData.setPointQuality(quality);
         pointData.setTime(time.toDate());
-        
+
         writePointData(pointData);
     }
     
