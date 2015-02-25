@@ -104,6 +104,8 @@ import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.msp.beans.v3.ArrayOfMeterRead;
+import com.cannontech.msp.beans.v3.ArrayOfOutageDetectionEvent;
 import com.cannontech.msp.beans.v3.CDStateChangedNotification;
 import com.cannontech.msp.beans.v3.ConnectDisconnectEvent;
 import com.cannontech.msp.beans.v3.ErrorObject;
@@ -675,9 +677,9 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         try {
             
             ODEventNotification odEventNotification = objectFactory.createODEventNotification();
-            odEventNotification.getODEvents().getOutageDetectionEvent().add(outageDetectionEvent);
-            
-//            odEventNotification.setODEvents(arrayOfOutageDetectionEvent);
+            ArrayOfOutageDetectionEvent events = objectFactory.createArrayOfOutageDetectionEvent();
+            events.getOutageDetectionEvent().add(outageDetectionEvent);
+            odEventNotification.setODEvents(events);
             odEventNotification.setTransactionID(transactionId);
 
             log.info("Sending ODEventNotification (" + responseUrl + "): Meter Number " + meter.toString()
@@ -833,8 +835,10 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                     try {
                         log.info("Sending ReadingChangedNotification (" + responseUrl + "): Meter Number " + meterRead.getObjectID());
                         final ReadingChangedNotification readingChangedNotification = objectFactory.createReadingChangedNotification();
-                        List<MeterRead> meterReads = readingChangedNotification.getChangedMeterReads().getMeterRead();
-                        meterReads.add(meterRead);
+                        ArrayOfMeterRead meterReads = objectFactory.createArrayOfMeterRead();
+                        meterReads.getMeterRead().add(meterRead);
+                        readingChangedNotification.setChangedMeterReads(meterReads);
+                        
                         readingChangedNotification.setTransactionID(transactionID);
                         log.info("Sending ReadingChangedNotification (" + responseUrl + "): Meter Number " + meterRead.getObjectID());
                         ReadingChangedNotificationResponse readingChangedNotificationResponse = cbClient.readingChangedNotification(mspVendor,
@@ -1210,7 +1214,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             cdStateChangedNotification.setMeterNo(yukonMeter.getMeterNumber());
             cdStateChangedNotification.setStateChange(loadActionCode);
             cdStateChangedNotification.setTransactionID(transactionId);
-            cbClient.cdStateChangedNotification(mspVendor,responseUrl,cdStateChangedNotification);
+            cbClient.cdStateChangedNotification(mspVendor, responseUrl, cdStateChangedNotification);
             multispeakEventLogService.notificationResponse("CDStateChangedNotification", transactionId, yukonMeter.getMeterNumber(),
                                                                loadActionCode.value(), -1, responseUrl);
             
