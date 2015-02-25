@@ -5,6 +5,7 @@ import java.util.GregorianCalendar;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -29,12 +30,24 @@ public class ScadaAnalogProcessingServiceImpl implements ScadaAnalogProcessingSe
         String comments = "ProgramName: " + paoName + "; PointName: " + litePoint.getPointName();
         scadaAnalog.setComments(comments);
 
-        scadaAnalog.setQuality(QualityDescription.MEASURED);  // Corresponds to PointQuality.NORMAL.
+        scadaAnalog.setQuality(getQualityForPointValue(pointValue));
 
         Calendar cal = new GregorianCalendar();
         cal.setTime(pointValue.getPointDataTimeStamp());
         scadaAnalog.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(cal));
         scadaAnalog.setValue(new Float(pointValue.getValue()));
         return scadaAnalog;
+    }
+    
+    /**
+     * Convert Yukon point quality to a MultiSpeak QualityDescription.
+     * Non-Update -> Failed
+     * Else -> Measured ("normal")
+     */
+    private QualityDescription getQualityForPointValue(PointValueQualityHolder pointValue) {
+        if (pointValue.getPointQuality() == PointQuality.NonUpdated) {
+            return QualityDescription.FAILED;
+        }
+        return QualityDescription.MEASURED;  // Corresponds to PointQuality.NORMAL.
     }
 }
