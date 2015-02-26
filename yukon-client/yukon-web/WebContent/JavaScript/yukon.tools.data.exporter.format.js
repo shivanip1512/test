@@ -1,14 +1,14 @@
-yukon.namespace('yukon.dataExporterFormat');
+yukon.namespace('yukon.tools.dataExporterFormat');
 
 /**
- * Singleton that manages the data exporter format page.
- * @module yukon.dataExporterFormat
+ * Module that manages the data exporter format page.
+ * @module yukon.tools.dataExporterFormat
  * @requires JQUERY
  * @requires JQUERY UI
  * @requires yukon
  * @requires yukon.ui
  */
-yukon.dataExporterFormat = (function () {
+yukon.tools.dataExporterFormat = (function () {
     
     var
     _initialized = false,
@@ -32,8 +32,8 @@ yukon.dataExporterFormat = (function () {
             type: 'post',
             success: function (data, status, xhr, $form) {
                 $('[preview-body]').empty();
-                $.each(data.body, function (idx, el) {
-                    $('[preview-body]').append(el + '<br>');
+                $.each(data.body, function (idx, line) {
+                    $('[preview-body]').append($('<div>').text(line));
                 });
             }
         });
@@ -97,6 +97,7 @@ yukon.dataExporterFormat = (function () {
                 if (showField) delimiter.show(); else delimiter.hide();
                 _updatePreview();
             });
+            
             /** Update preview if they change the delimiter */
             delimiter.on('input', function (ev) { _updatePreview(); });
             
@@ -575,4 +576,4 @@ yukon.dataExporterFormat = (function () {
     return mod;
 }());
 
-$(function () { yukon.dataExporterFormat.init(); });
+$(function () { yukon.tools.dataExporterFormat.init(); });

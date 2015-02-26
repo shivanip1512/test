@@ -350,7 +350,7 @@ public class DataExporterFormatController {
                     pattern = accessor.getMessage(exportField.getTimestampPattern());
                 }
             }
-            text.put("pattern", HtmlUtils.htmlEscape(pattern));
+            text.put("pattern", pattern);
         } else {
             text.put("pattern", "");
         }

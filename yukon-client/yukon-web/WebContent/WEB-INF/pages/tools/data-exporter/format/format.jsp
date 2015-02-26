@@ -240,6 +240,6 @@
 
     <div id="format-popup"></div>
     
-    <cti:includeScript link="/JavaScript/yukon.data.exporter.format.js"/>
+    <cti:includeScript link="/JavaScript/yukon.tools.data.exporter.format.js"/>
     
 </cti:standardPage>

@@ -1,12 +1,12 @@
-yukon.namespace('yukon.dataExporter');
+yukon.namespace('yukon.tools.dataExporter');
 
 /**
  * Singleton that manages the data exporter page.
- * @module yukon.dataExporter
+ * @module yukon.tools.dataExporter
  * @requires JQUERY
  * @requires JQUERY UI
  */
-yukon.dataExporter = (function () {
+yukon.tools.dataExporter = (function () {
     
     var mod = {},
         _initialized = false,
@@ -178,4 +178,4 @@ yukon.dataExporter = (function () {
     return mod;
 }());
 
-$(function() {yukon.dataExporter.init();});
+$(function() {yukon.tools.dataExporter.init();});
