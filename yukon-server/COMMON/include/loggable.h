@@ -4,9 +4,8 @@
 
 namespace Cti {
 
-class Loggable
+struct Loggable
 {
-public:
     virtual std::string toString() const = 0;
 };
 

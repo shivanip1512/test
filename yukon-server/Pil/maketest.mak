@@ -38,11 +38,14 @@ $(COMPILEBASE)\lib\ctisvr.lib \
 $(COMPILEBASE)\lib\ctipil.lib \
 $(COMPILEBASE)\lib\ctidevdb.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
+$(COMPILEBASE)\lib\ctiprot.lib \
+$(COMPILEBASE)\lib\rfn-e2e.lib \
 $(COMPILEBASE)\lib\ctidbsrc.lib \
 
 PIL_TEST_OBJS= \
 $(PRECOMPILED_OBJ) \
 test_main.obj \
+test_mgr_rfn_request.obj \
 test_pilserver.obj
 
 PIL_TEST_FULLBUILD = $[Filename,$(OBJ),PilTestFullBuild,target]

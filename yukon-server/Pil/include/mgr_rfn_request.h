@@ -60,6 +60,11 @@ public:
 
     void cancelByGroupMessageId(long groupMessageId);
 
+protected:
+
+    virtual boost::optional<Protocols::E2eDataTransferProtocol::EndpointResponse> handleE2eDtIndication(const std::vector<unsigned char> &payload, const long endpointId);
+    virtual std::vector<unsigned char> sendE2eDtRequest(const std::vector<unsigned char> &payload, const long endpointId, const unsigned long token);
+
 private:
 
     typedef std::set<RfnIdentifier> RfnIdentifierSet;

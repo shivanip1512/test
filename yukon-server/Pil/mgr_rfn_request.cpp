@@ -71,6 +71,12 @@ void RfnRequestManager::tick()
 }
 
 
+boost::optional<Protocols::E2eDataTransferProtocol::EndpointResponse> RfnRequestManager::handleE2eDtIndication(const std::vector<unsigned char> &payload, const long endpointId)
+{
+    return _e2edt.handleIndication(payload, endpointId);
+}
+
+
 RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
 {
     RfnIdentifierSet completedDevices;
@@ -102,7 +108,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
 
         try
         {
-            optionalResponse = _e2edt.handleIndication(indication.payload, activeRequest.request.deviceId);
+            optionalResponse = handleE2eDtIndication(indication.payload, activeRequest.request.deviceId);
         }
         catch( Protocols::E2eDataTransferProtocol::PayloadTooLarge )
         {
@@ -401,6 +407,11 @@ void RfnRequestManager::handleNewRequests(const RfnIdentifierSet &recentCompleti
 }
 
 
+std::vector<unsigned char>  RfnRequestManager::sendE2eDtRequest(const std::vector<unsigned char> &payload, const long endpointId, const unsigned long token)
+{
+    return _e2edt.sendRequest(payload, endpointId, token);
+}
+
 void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
 {
     if( _activeRequests.count(rfnIdentifier) )
@@ -427,7 +438,7 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
 
             try
             {
-                e2ePacket = _e2edt.sendRequest(rfnRequest, request.deviceId, request.rfnRequestId);
+                e2ePacket = sendE2eDtRequest(rfnRequest, request.deviceId, request.rfnRequestId);
             }
             catch( Protocols::E2eDataTransferProtocol::PayloadTooLarge )
             {

@@ -5,11 +5,20 @@
 
 namespace Cti {
 
-struct RfnIdentifier : public Loggable
+struct RfnIdentifier : Loggable
 {
     std::string manufacturer;
     std::string model;
     std::string serialNumber;
+
+    RfnIdentifier()
+    {}
+
+    RfnIdentifier(std::string manufacturer_, std::string model_, std::string serialNumber_) :
+        manufacturer(manufacturer_),
+        model(model_),
+        serialNumber(serialNumber_)
+    {}
 
     virtual std::string toString() const override
     {

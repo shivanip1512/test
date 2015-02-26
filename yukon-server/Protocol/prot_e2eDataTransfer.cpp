@@ -49,11 +49,17 @@ void addToken(coap_pdu_t *pdu, const unsigned long token)
 }
 
 
+unsigned short E2eDataTransferProtocol::getOutboundId()
+{
+    return boost::random::uniform_int_distribution<>(0x1000, 0xf000)(_generator);
+}
+
+
 unsigned short E2eDataTransferProtocol::getOutboundIdForEndpoint(long endpointId)
 {
     if( ! _outboundIds.count(endpointId) )
     {
-        _outboundIds[endpointId] = boost::random::uniform_int_distribution<>(0x1000, 0xf000)(_generator);
+        _outboundIds[endpointId] = getOutboundId();
     }
 
     return ++_outboundIds[endpointId];

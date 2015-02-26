@@ -60,6 +60,11 @@ public:
     static void sendE2eDt    (const Request &msg, const ApplicationServiceIdentifiers &asid, Confirm::Callback callback);
     static void sendE2eAp_Dnp(const Request &msg, Confirm::Callback callback);
 
+protected:
+
+    virtual void serializeAndQueue(const E2eDataRequestMsg &msg, Confirm::Callback callback);
+    virtual void setE2eDtHandler(Indication::Callback callback);
+
 private:
 
     typedef std::vector<unsigned char> SerializedMessage;
@@ -69,8 +74,6 @@ private:
     readers_writer_lock_t _callbackMux;
     boost::optional<Indication::Callback> _e2edtCallback;
     CallbacksPerRfnIdentifier _dnp3Callbacks;
-
-    void serializeAndQueue(const E2eDataRequestMsg &msg, Confirm::Callback callback);
 
     void handleRfnE2eDataIndicationMsg(const SerializedMessage &msg);
     void handleRfnE2eDataConfirmMsg   (const SerializedMessage &msg, Confirm::Callback callback);

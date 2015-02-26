@@ -34,6 +34,7 @@ PROTOCOL_TEST_OBJS=\
 $(PRECOMPILED_OBJ) \
 test_main.obj \
 test_prot_klondike.obj \
+test_prot_e2eDataTransfer.obj \
 test_prot_expresscom.obj \
 test_prot_dnp.obj \
 test_dnp_transport.obj \

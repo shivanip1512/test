@@ -49,6 +49,10 @@ public:
 
     void handleTimeout(const long endpointId);
 
+protected:
+
+    virtual unsigned short getOutboundId();
+
 private:
 
     std::map<long, unsigned short> _outboundIds;

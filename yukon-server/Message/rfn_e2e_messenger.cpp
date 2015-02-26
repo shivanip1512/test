@@ -28,9 +28,15 @@ E2eMessenger::E2eMessenger()
 
 void E2eMessenger::registerE2eDtHandler(Indication::Callback callback)
 {
-    readers_writer_lock_t::writer_lock_guard_t lock(gE2eMessenger->_callbackMux);
+    gE2eMessenger->setE2eDtHandler(callback);
+}
 
-    gE2eMessenger->_e2edtCallback = callback;
+
+void E2eMessenger::setE2eDtHandler(Indication::Callback callback)
+{
+    readers_writer_lock_t::writer_lock_guard_t lock(_callbackMux);
+
+    _e2edtCallback = callback;
 }
 
 
