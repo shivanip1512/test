@@ -153,6 +153,7 @@ public class RepeatingEstimatedLoadTask extends YukonTaskBase {
     }
     
     private void markPointAsNonUpdated(LitePoint point) {
+    	
         try {
             log.info("Point:" + point.getLiteID() + " marked as NonUpdated");
             double value = pointAccessDao.getPointValue(point);
