@@ -22,10 +22,10 @@ namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift
 class PointData {
  public:
 
-  static const char* ascii_fingerprint; // = "A128486A1A86DED3F3E5C3257385DF3F";
-  static const uint8_t binary_fingerprint[16]; // = {0xA1,0x28,0x48,0x6A,0x1A,0x86,0xDE,0xD3,0xF3,0xE5,0xC3,0x25,0x73,0x85,0xDF,0x3F};
+  static const char* ascii_fingerprint; // = "73BE85E84219549295C92EE6F0703FEA";
+  static const uint8_t binary_fingerprint[16]; // = {0x73,0xBE,0x85,0xE8,0x42,0x19,0x54,0x92,0x95,0xC9,0x2E,0xE6,0xF0,0x70,0x3F,0xEA};
 
-  PointData() : _id(0), _type(0), _quality(0), _tags(0), _attrib(0), _limit(0), _value(0), _exemptionStatus(0), _str(), _time(0), _millis(0) {
+  PointData() : _id(0), _type(0), _quality(0), _tags(0), _limit(0), _value(0), _exemptionStatus(0), _str(), _time(0), _millis(0) {
   }
 
   virtual ~PointData() throw() {}
@@ -35,7 +35,6 @@ class PointData {
   int32_t _type;
   int32_t _quality;
   int32_t _tags;
-  int32_t _attrib;
   int32_t _limit;
   double _value;
   int32_t _exemptionStatus;
@@ -61,10 +60,6 @@ class PointData {
 
   void __set__tags(const int32_t val) {
     _tags = val;
-  }
-
-  void __set__attrib(const int32_t val) {
-    _attrib = val;
   }
 
   void __set__limit(const int32_t val) {
@@ -102,8 +97,6 @@ class PointData {
     if (!(_quality == rhs._quality))
       return false;
     if (!(_tags == rhs._tags))
-      return false;
-    if (!(_attrib == rhs._attrib))
       return false;
     if (!(_limit == rhs._limit))
       return false;

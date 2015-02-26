@@ -29,7 +29,10 @@ public class ReturnValidator extends AutoInitializedClassValidator<Return> {
         ctrlObj.setResultString(generator.generateString());
         ctrlObj.setStatus(generator.generateInt());
         ctrlObj.setRouteOffset(generator.generateInt());
-        ctrlObj.setMacroOffset(generator.generateInt());
+        ctrlObj.setMacroOffset(
+            generator.generateBoolean()
+                ? generator.generateUInt() + 1
+                : 0);
         ctrlObj.setAttemptNum(generator.generateInt());
         ctrlObj.setExpectMore(ConverterHelper.boolToInt(generator.generateBoolean()));
         ctrlObj.setGroupMessageID(generator.generateInt());

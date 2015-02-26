@@ -38,13 +38,12 @@ public class PointData implements org.apache.thrift.TBase<PointData, PointData._
   private static final org.apache.thrift.protocol.TField _TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("_type", org.apache.thrift.protocol.TType.I32, (short)3);
   private static final org.apache.thrift.protocol.TField _QUALITY_FIELD_DESC = new org.apache.thrift.protocol.TField("_quality", org.apache.thrift.protocol.TType.I32, (short)4);
   private static final org.apache.thrift.protocol.TField _TAGS_FIELD_DESC = new org.apache.thrift.protocol.TField("_tags", org.apache.thrift.protocol.TType.I32, (short)5);
-  private static final org.apache.thrift.protocol.TField _ATTRIB_FIELD_DESC = new org.apache.thrift.protocol.TField("_attrib", org.apache.thrift.protocol.TType.I32, (short)6);
-  private static final org.apache.thrift.protocol.TField _LIMIT_FIELD_DESC = new org.apache.thrift.protocol.TField("_limit", org.apache.thrift.protocol.TType.I32, (short)7);
-  private static final org.apache.thrift.protocol.TField _VALUE_FIELD_DESC = new org.apache.thrift.protocol.TField("_value", org.apache.thrift.protocol.TType.DOUBLE, (short)8);
-  private static final org.apache.thrift.protocol.TField _EXEMPTION_STATUS_FIELD_DESC = new org.apache.thrift.protocol.TField("_exemptionStatus", org.apache.thrift.protocol.TType.I32, (short)9);
-  private static final org.apache.thrift.protocol.TField _STR_FIELD_DESC = new org.apache.thrift.protocol.TField("_str", org.apache.thrift.protocol.TType.STRING, (short)10);
-  private static final org.apache.thrift.protocol.TField _TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("_time", org.apache.thrift.protocol.TType.I64, (short)11);
-  private static final org.apache.thrift.protocol.TField _MILLIS_FIELD_DESC = new org.apache.thrift.protocol.TField("_millis", org.apache.thrift.protocol.TType.I32, (short)12);
+  private static final org.apache.thrift.protocol.TField _LIMIT_FIELD_DESC = new org.apache.thrift.protocol.TField("_limit", org.apache.thrift.protocol.TType.I32, (short)6);
+  private static final org.apache.thrift.protocol.TField _VALUE_FIELD_DESC = new org.apache.thrift.protocol.TField("_value", org.apache.thrift.protocol.TType.DOUBLE, (short)7);
+  private static final org.apache.thrift.protocol.TField _EXEMPTION_STATUS_FIELD_DESC = new org.apache.thrift.protocol.TField("_exemptionStatus", org.apache.thrift.protocol.TType.I32, (short)8);
+  private static final org.apache.thrift.protocol.TField _STR_FIELD_DESC = new org.apache.thrift.protocol.TField("_str", org.apache.thrift.protocol.TType.STRING, (short)9);
+  private static final org.apache.thrift.protocol.TField _TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("_time", org.apache.thrift.protocol.TType.I64, (short)10);
+  private static final org.apache.thrift.protocol.TField _MILLIS_FIELD_DESC = new org.apache.thrift.protocol.TField("_millis", org.apache.thrift.protocol.TType.I32, (short)11);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -57,7 +56,6 @@ public class PointData implements org.apache.thrift.TBase<PointData, PointData._
   private int _type; // required
   private int _quality; // required
   private int _tags; // required
-  private int _attrib; // required
   private int _limit; // required
   private double _value; // required
   private int _exemptionStatus; // required
@@ -72,13 +70,12 @@ public class PointData implements org.apache.thrift.TBase<PointData, PointData._
     _TYPE((short)3, "_type"),
     _QUALITY((short)4, "_quality"),
     _TAGS((short)5, "_tags"),
-    _ATTRIB((short)6, "_attrib"),
-    _LIMIT((short)7, "_limit"),
-    _VALUE((short)8, "_value"),
-    _EXEMPTION_STATUS((short)9, "_exemptionStatus"),
-    _STR((short)10, "_str"),
-    _TIME((short)11, "_time"),
-    _MILLIS((short)12, "_millis");
+    _LIMIT((short)6, "_limit"),
+    _VALUE((short)7, "_value"),
+    _EXEMPTION_STATUS((short)8, "_exemptionStatus"),
+    _STR((short)9, "_str"),
+    _TIME((short)10, "_time"),
+    _MILLIS((short)11, "_millis");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -103,19 +100,17 @@ public class PointData implements org.apache.thrift.TBase<PointData, PointData._
           return _QUALITY;
         case 5: // _TAGS
           return _TAGS;
-        case 6: // _ATTRIB
-          return _ATTRIB;
-        case 7: // _LIMIT
+        case 6: // _LIMIT
           return _LIMIT;
-        case 8: // _VALUE
+        case 7: // _VALUE
           return _VALUE;
-        case 9: // _EXEMPTION_STATUS
+        case 8: // _EXEMPTION_STATUS
           return _EXEMPTION_STATUS;
-        case 10: // _STR
+        case 9: // _STR
           return _STR;
-        case 11: // _TIME
+        case 10: // _TIME
           return _TIME;
-        case 12: // _MILLIS
+        case 11: // _MILLIS
           return _MILLIS;
         default:
           return null;
@@ -161,12 +156,11 @@ public class PointData implements org.apache.thrift.TBase<PointData, PointData._
   private static final int ___TYPE_ISSET_ID = 1;
   private static final int ___QUALITY_ISSET_ID = 2;
   private static final int ___TAGS_ISSET_ID = 3;
-  private static final int ___ATTRIB_ISSET_ID = 4;
-  private static final int ___LIMIT_ISSET_ID = 5;
-  private static final int ___VALUE_ISSET_ID = 6;
-  private static final int ___EXEMPTIONSTATUS_ISSET_ID = 7;
-  private static final int ___TIME_ISSET_ID = 8;
-  private static final int ___MILLIS_ISSET_ID = 9;
+  private static final int ___LIMIT_ISSET_ID = 4;
+  private static final int ___VALUE_ISSET_ID = 5;
+  private static final int ___EXEMPTIONSTATUS_ISSET_ID = 6;
+  private static final int ___TIME_ISSET_ID = 7;
+  private static final int ___MILLIS_ISSET_ID = 8;
   private short __isset_bitfield = 0;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
@@ -180,8 +174,6 @@ public class PointData implements org.apache.thrift.TBase<PointData, PointData._
     tmpMap.put(_Fields._QUALITY, new org.apache.thrift.meta_data.FieldMetaData("_quality", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields._TAGS, new org.apache.thrift.meta_data.FieldMetaData("_tags", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-    tmpMap.put(_Fields._ATTRIB, new org.apache.thrift.meta_data.FieldMetaData("_attrib", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields._LIMIT, new org.apache.thrift.meta_data.FieldMetaData("_limit", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
@@ -208,7 +200,6 @@ public class PointData implements org.apache.thrift.TBase<PointData, PointData._
     int _type,
     int _quality,
     int _tags,
-    int _attrib,
     int _limit,
     double _value,
     int _exemptionStatus,
@@ -226,8 +217,6 @@ public class PointData implements org.apache.thrift.TBase<PointData, PointData._
     set_qualityIsSet(true);
     this._tags = _tags;
     set_tagsIsSet(true);
-    this._attrib = _attrib;
-    set_attribIsSet(true);
     this._limit = _limit;
     set_limitIsSet(true);
     this._value = _value;
@@ -253,7 +242,6 @@ public class PointData implements org.apache.thrift.TBase<PointData, PointData._
     this._type = other._type;
     this._quality = other._quality;
     this._tags = other._tags;
-    this._attrib = other._attrib;
     this._limit = other._limit;
     this._value = other._value;
     this._exemptionStatus = other._exemptionStatus;
@@ -279,8 +267,6 @@ public class PointData implements org.apache.thrift.TBase<PointData, PointData._
     this._quality = 0;
     set_tagsIsSet(false);
     this._tags = 0;
-    set_attribIsSet(false);
-    this._attrib = 0;
     set_limitIsSet(false);
     this._limit = 0;
     set_valueIsSet(false);
@@ -403,28 +389,6 @@ public class PointData implements org.apache.thrift.TBase<PointData, PointData._
 
   public void set_tagsIsSet(boolean value) {
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, ___TAGS_ISSET_ID, value);
-  }
-
-  public int get_attrib() {
-    return this._attrib;
-  }
-
-  public void set_attrib(int _attrib) {
-    this._attrib = _attrib;
-    set_attribIsSet(true);
-  }
-
-  public void unset_attrib() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, ___ATTRIB_ISSET_ID);
-  }
-
-  /** Returns true if field _attrib is set (has been assigned a value) and false otherwise */
-  public boolean isSet_attrib() {
-    return EncodingUtils.testBit(__isset_bitfield, ___ATTRIB_ISSET_ID);
-  }
-
-  public void set_attribIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, ___ATTRIB_ISSET_ID, value);
   }
 
   public int get_limit() {
@@ -602,14 +566,6 @@ public class PointData implements org.apache.thrift.TBase<PointData, PointData._
       }
       break;
 
-    case _ATTRIB:
-      if (value == null) {
-        unset_attrib();
-      } else {
-        set_attrib((Integer)value);
-      }
-      break;
-
     case _LIMIT:
       if (value == null) {
         unset_limit();
@@ -678,9 +634,6 @@ public class PointData implements org.apache.thrift.TBase<PointData, PointData._
     case _TAGS:
       return Integer.valueOf(get_tags());
 
-    case _ATTRIB:
-      return Integer.valueOf(get_attrib());
-
     case _LIMIT:
       return Integer.valueOf(get_limit());
 
@@ -720,8 +673,6 @@ public class PointData implements org.apache.thrift.TBase<PointData, PointData._
       return isSet_quality();
     case _TAGS:
       return isSet_tags();
-    case _ATTRIB:
-      return isSet_attrib();
     case _LIMIT:
       return isSet_limit();
     case _VALUE:
@@ -793,15 +744,6 @@ public class PointData implements org.apache.thrift.TBase<PointData, PointData._
       if (!(this_present__tags && that_present__tags))
         return false;
       if (this._tags != that._tags)
-        return false;
-    }
-
-    boolean this_present__attrib = true;
-    boolean that_present__attrib = true;
-    if (this_present__attrib || that_present__attrib) {
-      if (!(this_present__attrib && that_present__attrib))
-        return false;
-      if (this._attrib != that._attrib)
         return false;
     }
 
@@ -925,16 +867,6 @@ public class PointData implements org.apache.thrift.TBase<PointData, PointData._
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSet_attrib()).compareTo(typedOther.isSet_attrib());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSet_attrib()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this._attrib, typedOther._attrib);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     lastComparison = Boolean.valueOf(isSet_limit()).compareTo(typedOther.isSet_limit());
     if (lastComparison != 0) {
       return lastComparison;
@@ -1039,10 +971,6 @@ public class PointData implements org.apache.thrift.TBase<PointData, PointData._
     sb.append(this._tags);
     first = false;
     if (!first) sb.append(", ");
-    sb.append("_attrib:");
-    sb.append(this._attrib);
-    first = false;
-    if (!first) sb.append(", ");
     sb.append("_limit:");
     sb.append(this._limit);
     first = false;
@@ -1094,10 +1022,6 @@ public class PointData implements org.apache.thrift.TBase<PointData, PointData._
 
     if (!isSet_tags()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field '_tags' is unset! Struct:" + toString());
-    }
-
-    if (!isSet_attrib()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field '_attrib' is unset! Struct:" + toString());
     }
 
     if (!isSet_limit()) {
@@ -1207,15 +1131,7 @@ public class PointData implements org.apache.thrift.TBase<PointData, PointData._
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // _ATTRIB
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct._attrib = iprot.readI32();
-              struct.set_attribIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 7: // _LIMIT
+          case 6: // _LIMIT
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct._limit = iprot.readI32();
               struct.set_limitIsSet(true);
@@ -1223,7 +1139,7 @@ public class PointData implements org.apache.thrift.TBase<PointData, PointData._
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 8: // _VALUE
+          case 7: // _VALUE
             if (schemeField.type == org.apache.thrift.protocol.TType.DOUBLE) {
               struct._value = iprot.readDouble();
               struct.set_valueIsSet(true);
@@ -1231,7 +1147,7 @@ public class PointData implements org.apache.thrift.TBase<PointData, PointData._
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 9: // _EXEMPTION_STATUS
+          case 8: // _EXEMPTION_STATUS
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct._exemptionStatus = iprot.readI32();
               struct.set_exemptionStatusIsSet(true);
@@ -1239,7 +1155,7 @@ public class PointData implements org.apache.thrift.TBase<PointData, PointData._
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 10: // _STR
+          case 9: // _STR
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct._str = iprot.readString();
               struct.set_strIsSet(true);
@@ -1247,7 +1163,7 @@ public class PointData implements org.apache.thrift.TBase<PointData, PointData._
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 11: // _TIME
+          case 10: // _TIME
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct._time = iprot.readI64();
               struct.set_timeIsSet(true);
@@ -1255,7 +1171,7 @@ public class PointData implements org.apache.thrift.TBase<PointData, PointData._
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 12: // _MILLIS
+          case 11: // _MILLIS
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct._millis = iprot.readI32();
               struct.set_millisIsSet(true);
@@ -1292,9 +1208,6 @@ public class PointData implements org.apache.thrift.TBase<PointData, PointData._
       oprot.writeFieldEnd();
       oprot.writeFieldBegin(_TAGS_FIELD_DESC);
       oprot.writeI32(struct._tags);
-      oprot.writeFieldEnd();
-      oprot.writeFieldBegin(_ATTRIB_FIELD_DESC);
-      oprot.writeI32(struct._attrib);
       oprot.writeFieldEnd();
       oprot.writeFieldBegin(_LIMIT_FIELD_DESC);
       oprot.writeI32(struct._limit);
@@ -1338,7 +1251,6 @@ public class PointData implements org.apache.thrift.TBase<PointData, PointData._
       oprot.writeI32(struct._type);
       oprot.writeI32(struct._quality);
       oprot.writeI32(struct._tags);
-      oprot.writeI32(struct._attrib);
       oprot.writeI32(struct._limit);
       oprot.writeDouble(struct._value);
       oprot.writeI32(struct._exemptionStatus);
@@ -1361,8 +1273,6 @@ public class PointData implements org.apache.thrift.TBase<PointData, PointData._
       struct.set_qualityIsSet(true);
       struct._tags = iprot.readI32();
       struct.set_tagsIsSet(true);
-      struct._attrib = iprot.readI32();
-      struct.set_attribIsSet(true);
       struct._limit = iprot.readI32();
       struct.set_limitIsSet(true);
       struct._value = iprot.readDouble();

@@ -16,7 +16,10 @@ public class RequestMessageValidator extends AutoInitializedClassValidator<Reque
         ctrlObj.setDeviceID(generator.generateInt());
         ctrlObj.setCommandString(generator.generateString());
         ctrlObj.setRouteID(generator.generateInt());
-        ctrlObj.setMacroOffset(generator.generateInt());
+        ctrlObj.setMacroOffset(
+            generator.generateBoolean()
+                ? generator.generateUInt() + 1
+                : 0);
         ctrlObj.setAttemptNum(generator.generateInt());
         ctrlObj.setGroupMessageID(generator.generateInt());
         ctrlObj.setUserMessageID(generator.generateInt());

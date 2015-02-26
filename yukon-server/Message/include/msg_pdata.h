@@ -18,7 +18,6 @@ protected:
    CtiPointType_t _type;
    unsigned       _quality;            // see pointdefs.h
    unsigned       _tags;               // see pointdefs.h
-   unsigned       _attrib;             // see pointdefs.h
    unsigned       _limit;              // set iff ExceedsHigh or Low.
    double         _value;
 
@@ -44,11 +43,7 @@ public:
                    unsigned  quality     = NormalQuality,
                    CtiPointType_t type   = StatusPointType,
                    std::string     valReport  = std::string(),
-                   unsigned  tags        = 0,
-                   unsigned  attrib      = 0,
-                   unsigned  limit       = 0,
-                   int       pri         = 7
-                   );
+                   unsigned  tags        = 0);
 
    CtiPointDataMsg(const CtiPointDataMsg &aRef);
    virtual ~CtiPointDataMsg();
@@ -75,9 +70,6 @@ public:
    unsigned  getTags() const;
    CtiPointDataMsg& setTags( const unsigned a_tags );
    CtiPointDataMsg& resetTags( const unsigned tag_mask = 0xffffffff );
-
-   unsigned  getAttributes() const;
-   CtiPointDataMsg& setAttributes( const unsigned at );
 
    unsigned  getLimit() const;
    CtiPointDataMsg& setLimit( const unsigned a_limit );

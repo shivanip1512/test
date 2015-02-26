@@ -10,8 +10,8 @@
 
 namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift {
 
-const char* PointData::ascii_fingerprint = "A128486A1A86DED3F3E5C3257385DF3F";
-const uint8_t PointData::binary_fingerprint[16] = {0xA1,0x28,0x48,0x6A,0x1A,0x86,0xDE,0xD3,0xF3,0xE5,0xC3,0x25,0x73,0x85,0xDF,0x3F};
+const char* PointData::ascii_fingerprint = "73BE85E84219549295C92EE6F0703FEA";
+const uint8_t PointData::binary_fingerprint[16] = {0x73,0xBE,0x85,0xE8,0x42,0x19,0x54,0x92,0x95,0xC9,0x2E,0xE6,0xF0,0x70,0x3F,0xEA};
 
 uint32_t PointData::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -29,7 +29,6 @@ uint32_t PointData::read(::apache::thrift::protocol::TProtocol* iprot) {
   bool isset__type = false;
   bool isset__quality = false;
   bool isset__tags = false;
-  bool isset__attrib = false;
   bool isset__limit = false;
   bool isset__value = false;
   bool isset__exemptionStatus = false;
@@ -87,21 +86,13 @@ uint32_t PointData::read(::apache::thrift::protocol::TProtocol* iprot) {
         break;
       case 6:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->_attrib);
-          isset__attrib = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 7:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->_limit);
           isset__limit = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 8:
+      case 7:
         if (ftype == ::apache::thrift::protocol::T_DOUBLE) {
           xfer += iprot->readDouble(this->_value);
           isset__value = true;
@@ -109,7 +100,7 @@ uint32_t PointData::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 9:
+      case 8:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->_exemptionStatus);
           isset__exemptionStatus = true;
@@ -117,7 +108,7 @@ uint32_t PointData::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 10:
+      case 9:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->_str);
           isset__str = true;
@@ -125,7 +116,7 @@ uint32_t PointData::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 11:
+      case 10:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->_time);
           isset__time = true;
@@ -133,7 +124,7 @@ uint32_t PointData::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 12:
+      case 11:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->_millis);
           isset__millis = true;
@@ -159,8 +150,6 @@ uint32_t PointData::read(::apache::thrift::protocol::TProtocol* iprot) {
   if (!isset__quality)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset__tags)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset__attrib)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset__limit)
     throw TProtocolException(TProtocolException::INVALID_DATA);
@@ -201,31 +190,27 @@ uint32_t PointData::write(::apache::thrift::protocol::TProtocol* oprot) const {
   xfer += oprot->writeI32(this->_tags);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("_attrib", ::apache::thrift::protocol::T_I32, 6);
-  xfer += oprot->writeI32(this->_attrib);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("_limit", ::apache::thrift::protocol::T_I32, 7);
+  xfer += oprot->writeFieldBegin("_limit", ::apache::thrift::protocol::T_I32, 6);
   xfer += oprot->writeI32(this->_limit);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("_value", ::apache::thrift::protocol::T_DOUBLE, 8);
+  xfer += oprot->writeFieldBegin("_value", ::apache::thrift::protocol::T_DOUBLE, 7);
   xfer += oprot->writeDouble(this->_value);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("_exemptionStatus", ::apache::thrift::protocol::T_I32, 9);
+  xfer += oprot->writeFieldBegin("_exemptionStatus", ::apache::thrift::protocol::T_I32, 8);
   xfer += oprot->writeI32(this->_exemptionStatus);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("_str", ::apache::thrift::protocol::T_STRING, 10);
+  xfer += oprot->writeFieldBegin("_str", ::apache::thrift::protocol::T_STRING, 9);
   xfer += oprot->writeString(this->_str);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("_time", ::apache::thrift::protocol::T_I64, 11);
+  xfer += oprot->writeFieldBegin("_time", ::apache::thrift::protocol::T_I64, 10);
   xfer += oprot->writeI64(this->_time);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("_millis", ::apache::thrift::protocol::T_I32, 12);
+  xfer += oprot->writeFieldBegin("_millis", ::apache::thrift::protocol::T_I32, 11);
   xfer += oprot->writeI32(this->_millis);
   xfer += oprot->writeFieldEnd();
 
@@ -241,7 +226,6 @@ void swap(PointData &a, PointData &b) {
   swap(a._type, b._type);
   swap(a._quality, b._quality);
   swap(a._tags, b._tags);
-  swap(a._attrib, b._attrib);
   swap(a._limit, b._limit);
   swap(a._value, b._value);
   swap(a._exemptionStatus, b._exemptionStatus);

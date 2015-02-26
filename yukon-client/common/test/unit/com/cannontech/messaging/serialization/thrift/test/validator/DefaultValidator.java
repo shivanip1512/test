@@ -3,7 +3,6 @@ package com.cannontech.messaging.serialization.thrift.test.validator;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,7 +39,7 @@ public class DefaultValidator<T extends Object> extends Validator<T> {
             return this.validateMap((Map) value, (Map) expected);
         }
         else {
-            result.addError("value missmatach: was expecting \"" + expected + "\" but received \"" + value + "\"");
+            result.addError("value mismatch: was expecting \"" + expected + "\" but received \"" + value + "\"");
         }
 
         return result;

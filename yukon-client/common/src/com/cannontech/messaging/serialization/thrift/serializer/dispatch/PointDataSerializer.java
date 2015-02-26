@@ -62,7 +62,6 @@ public class PointDataSerializer
     protected void
         populateThriftEntityFromMessage(ThriftMessageFactory msgFactory, PointData msg,
                                         com.cannontech.messaging.serialization.thrift.generated.PointData entity) {
-        entity.set_attrib(0);// attributes used to hold this slot
         entity.set_exemptionStatus(ConverterHelper.UnsignedToInt(msg.getForced()));
         entity.set_id(msg.getId());
         entity.set_limit(ConverterHelper.UnsignedToInt(msg.getLimit()));

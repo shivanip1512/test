@@ -17,10 +17,7 @@ CtiPointDataMsg::CtiPointDataMsg(long id,
                                  unsigned  quality,
                                  CtiPointType_t type,
                                  string    valReport,
-                                 unsigned  tags,
-                                 unsigned  attrib,
-                                 unsigned  limit,
-                                 int       pri) :
+                                 unsigned  tags) :
    _id(id),
    _value(value),
    _quality(quality),
@@ -28,10 +25,9 @@ CtiPointDataMsg::CtiPointDataMsg(long id,
    _str(valReport),
    _time(CtiTime()),
    _tags(tags),
-   _attrib(attrib),
-   _limit(limit),
+   _limit(0),
    _millis(0),
-   CtiMessage(pri)
+   CtiMessage(7)
 {
     _instanceCount++;
 
@@ -68,7 +64,6 @@ CtiPointDataMsg& CtiPointDataMsg::operator=(const CtiPointDataMsg& aRef)
       _type             = aRef.getType();
       _quality          = aRef.getQuality();
       _tags             = aRef.getTags();
-      _attrib           = aRef.getAttributes();
       _limit            = aRef.getLimit();
       _value            = aRef.getValue();
       _str              = aRef.getString();
@@ -171,16 +166,6 @@ CtiPointDataMsg& CtiPointDataMsg::setTags( const unsigned a_tags )
 CtiPointDataMsg& CtiPointDataMsg::resetTags( const unsigned a_tags )
 {
    _tags &= ~(a_tags);
-   return *this;
-}
-
-unsigned  CtiPointDataMsg::getAttributes() const
-{
-   return _attrib;
-}
-CtiPointDataMsg& CtiPointDataMsg::setAttributes( const unsigned at )
-{
-   _attrib = at;
    return *this;
 }
 
