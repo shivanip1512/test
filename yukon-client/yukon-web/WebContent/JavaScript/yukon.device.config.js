@@ -189,9 +189,7 @@ yukon.deviceConfig = (function () {
 
         _initFields = function () {
 
-            $('.js-init-chosen').each( function () {
-                $(this).chosen({'width': $(this).getHiddenDimensions().innerWidth + 11 + 'px'});
-            }).removeClass('js-init-chosen');
+            yukon.ui.initChosen();
 
             _handleVisibleElemsAndButtons();
             _hideSlotDisabledEntries();
@@ -309,16 +307,6 @@ yukon.deviceConfig = (function () {
                     }
                 });
 
-                $(document).on('click', '.chosen-single', function () {
-
-                    var select = $(this),
-                        container = select.closest('.ui-dialog-content');
-
-                    if (!container.length) { container = $('html'); }
-
-                    container.scrollTo(select);
-                });
-
                 _initFields();
 
                 // Find the first type and select his categories
@@ -335,7 +323,7 @@ yukon.deviceConfig = (function () {
                         hiddenElems = $('[data-display-item]').filter(":hidden"),
                         container = btn.closest('.ui-dialog-content');
 
-                    if (! container.length) { container = $('html'); }
+                    if (!container.length) { container = $('html'); }
 
                     hiddenElems.first().slideDown(200);
                     container.scrollTo(btn, 100);

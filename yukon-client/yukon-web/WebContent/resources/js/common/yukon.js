@@ -381,13 +381,45 @@ yukon.ui = (function () {
             return [cancel, ok];
         },
         
-        autowire: function () {
-            
-            /** Initialize any chosen selects on page load. */
+        /** Initialize any chosen selects on page load. */
+        initChosen: function () {
             $('.js-init-chosen').each( function () {
                 $(this).chosen({'width': $(this).getHiddenDimensions().innerWidth + 11 + 'px'});
             }).removeClass('js-init-chosen');
-            
+
+            $(document).off('click.yukon.chosen', '.chosen-single');
+            $(document).on('click.yukon.chosen', '.chosen-single', function () {
+
+                var chosenElem = $(this),
+                    chosenContainer = chosenElem.closest('.chosen-container'),
+                    chosenHeight = chosenElem.outerHeight() + chosenContainer.find('.chosen-drop').outerHeight(),
+                    offsetInContainer = chosenContainer.offset().top - chosenContainer.offsetParent().offset().top,
+                    minButtom = offsetInContainer + chosenHeight,
+
+                    /* The following properties are specific to being in a dialog */
+                    scrollContainer = chosenElem.closest('.ui-dialog-content'),
+                    currentBottom = scrollContainer.outerHeight(),
+                    scrollOffset = scrollContainer.scrollTop();
+
+                /* If we're not in a dialog, scroll the page */
+                if (!scrollContainer.length) {
+
+                    scrollContainer = $(window);
+                    currentBottom = scrollContainer.outerHeight() + window.pageYOffset;
+                    scrollOffset = 0;
+                }
+
+
+                if (minButtom > currentBottom) {
+                    scrollContainer.scrollTop(minButtom - scrollContainer.outerHeight() + scrollOffset);
+                }
+            });
+        },
+
+        autowire: function () {
+
+            mod.initChosen();
+
             /** Initialize any tabbed containers on page load. */
             $('.js-init-tabs').tabs().show().removeClass('js-init-tabs');
                 
