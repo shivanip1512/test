@@ -85,7 +85,7 @@ std::vector<unsigned char> E2eDataTransferProtocol::sendRequest(const std::vecto
 }
 
 
-boost::optional<E2eDataTransferProtocol::EndpointResponse> E2eDataTransferProtocol::handleIndication(const std::vector<unsigned char> &raw_indication_pdu, const long endpointId)
+E2eDataTransferProtocol::EndpointResponse E2eDataTransferProtocol::handleIndication(const std::vector<unsigned char> &raw_indication_pdu, const long endpointId)
 {
     EndpointResponse er;
 
@@ -101,22 +101,30 @@ boost::optional<E2eDataTransferProtocol::EndpointResponse> E2eDataTransferProtoc
 
     coap_pdu_parse(&mutable_raw_pdu.front(), mutable_raw_pdu.size(), indication_pdu);
 
+    if( indication_pdu->hdr->code == COAP_RESPONSE_406_NOT_ACCEPTABLE )
+    {
+        throw RequestNotAcceptable();
+    }
     if( indication_pdu->hdr->code >= COAP_RESPONSE_400_BAD_REQUEST )
     {
-        CTILOG_ERROR(dout, "Unexpected header code ("<< indication_pdu->hdr->code <<") for endpointId "<< endpointId);
+        const unsigned human_readable =
+            indication_pdu->hdr->code / 32 * 100 +
+            indication_pdu->hdr->code % 32;
 
-        return boost::none;
+        throw BadRequest(human_readable);
     }
 
     switch( indication_pdu->hdr->type )
     {
         case COAP_MESSAGE_ACK:
         {
-            if( indication_pdu->hdr->id != _outboundIds[endpointId] )
+            if( ! _outboundIds.count(endpointId) )
             {
-                CTILOG_ERROR(dout, "Unexpected ACK ("<< indication_pdu->hdr->id <<" != "<< _outboundIds[endpointId] <<") for endpointId "<< endpointId);
-
-                return boost::none;
+                throw UnexpectedAck(indication_pdu->hdr->id);
+            }
+            else if( indication_pdu->hdr->id != _outboundIds[endpointId] )
+            {
+                throw UnexpectedAck(indication_pdu->hdr->id, _outboundIds[endpointId]);
             }
 
             break;
@@ -129,7 +137,7 @@ boost::optional<E2eDataTransferProtocol::EndpointResponse> E2eDataTransferProtoc
             {
                 CTILOG_WARN(dout, "NONconfirmable packet was duplicate ("<< indication_pdu->hdr->id <<") for endpointId "<< endpointId);
 
-                return boost::none;
+                throw DuplicatePacket(indication_pdu->hdr->id);
             }
 
             _inboundIds[endpointId] = indication_pdu->hdr->id;
@@ -143,20 +151,19 @@ boost::optional<E2eDataTransferProtocol::EndpointResponse> E2eDataTransferProtoc
             if( _inboundIds.count(endpointId) && _inboundIds[endpointId] == indication_pdu->hdr->id )
             {
                 CTILOG_WARN(dout, "CONfirmable packet was duplicate ("<< indication_pdu->hdr->id <<") for endpointId "<< endpointId);
+                //  TODO: Ignore data?
             }
 
             _inboundIds[endpointId] = indication_pdu->hdr->id;
 
-            er.ack =
-                    sendAck(indication_pdu->hdr->id);
+            er.ack = sendAck(indication_pdu->hdr->id);
 
             break;
         }
         default:
+        case COAP_MESSAGE_RST:
         {
-            CTILOG_WARN(dout, "E2eIndicationMsg ID mismatch ("<< indication_pdu->hdr->id <<" != "<< _outboundIds[endpointId] <<") for endpointId "<< endpointId);
-
-            return boost::none;
+            throw ResetReceived();
         }
     }
 

@@ -58,11 +58,11 @@ BOOST_AUTO_TEST_CASE( test_handleIndication )
 
     const std::vector<unsigned char> inbound(inboundBytes.begin(), inboundBytes.end());
 
-    boost::optional<Cti::Protocols::E2eDataTransferProtocol::EndpointResponse> er = e2e.handleIndication(inbound, endpointId);
+    Cti::Protocols::E2eDataTransferProtocol::EndpointResponse er = e2e.handleIndication(inbound, endpointId);
 
-    BOOST_CHECK(er->ack.empty());
-    BOOST_CHECK(er->blockContinuation.empty());
-    BOOST_CHECK_EQUAL(er->token, token);
+    BOOST_CHECK(er.ack.empty());
+    BOOST_CHECK(er.blockContinuation.empty());
+    BOOST_CHECK_EQUAL(er.token, token);
 
     Cti::Test::byte_str payloadBytesExpected =
         "79 02 00 01 02 00 a5 29 00 02 "
@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE( test_handleIndication )
 
     const std::vector<unsigned char> payloadExpected(payloadBytesExpected.begin(), payloadBytesExpected.end());
 
-    BOOST_CHECK_EQUAL_RANGES(payloadExpected, er->data);
+    BOOST_CHECK_EQUAL_RANGES(payloadExpected, er.data);
 }
 
 BOOST_AUTO_TEST_CASE( test_handleIndication_duplicatePacket )
@@ -103,19 +103,21 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_duplicatePacket )
 
     const std::vector<unsigned char> inbound(inboundBytes.begin(), inboundBytes.end());
 
-    {
-        boost::optional<Cti::Protocols::E2eDataTransferProtocol::EndpointResponse> er = e2e.handleIndication(inbound, endpointId);
+    Cti::Protocols::E2eDataTransferProtocol::EndpointResponse er = e2e.handleIndication(inbound, endpointId);
 
-        BOOST_CHECK(er->ack.empty());
-        BOOST_CHECK(er->blockContinuation.empty());
-        BOOST_CHECK(er->data.empty());
-        BOOST_CHECK_EQUAL(er->token, token);
+    BOOST_CHECK(er.ack.empty());
+    BOOST_CHECK(er.blockContinuation.empty());
+    BOOST_CHECK(er.data.empty());
+    BOOST_CHECK_EQUAL(er.token, token);
+
+    try
+    {
+        e2e.handleIndication(inbound, endpointId);
+        BOOST_FAIL("Did not throw");
     }
-
+    catch( Cti::Protocols::E2eDataTransferProtocol::DuplicatePacket &ex )
     {
-        boost::optional<Cti::Protocols::E2eDataTransferProtocol::EndpointResponse> er = e2e.handleIndication(inbound, endpointId);
-
-        BOOST_CHECK( ! er );
+        BOOST_CHECK_EQUAL(ex.reason, "Duplicate packet, id: 29442");
     }
 }
 
@@ -154,9 +156,15 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_requestNotAcceptable )
         "ff";
     const std::vector<unsigned char> inbound(inboundBytes.begin(), inboundBytes.end());
 
-    boost::optional<Cti::Protocols::E2eDataTransferProtocol::EndpointResponse> er = e2e.handleIndication(inbound, endpointId);
-
-    BOOST_CHECK( ! er );
+    try
+    {
+        e2e.handleIndication(inbound, endpointId);
+        BOOST_FAIL("Did not throw");
+    }
+    catch( Cti::Protocols::E2eDataTransferProtocol::RequestNotAcceptable &ex )
+    {
+        BOOST_CHECK_EQUAL(ex.reason, "Request not acceptable");
+    }
 }
 
 BOOST_AUTO_TEST_CASE( test_handleIndication_badRequest )
@@ -187,9 +195,15 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_badRequest )
         "ff";
     const std::vector<unsigned char> inbound(inboundBytes.begin(), inboundBytes.end());
 
-    boost::optional<Cti::Protocols::E2eDataTransferProtocol::EndpointResponse> er = e2e.handleIndication(inbound, endpointId);
-
-    BOOST_CHECK( ! er );
+    try
+    {
+        e2e.handleIndication(inbound, endpointId);
+        BOOST_FAIL("Did not throw");
+    }
+    catch( Cti::Protocols::E2eDataTransferProtocol::BadRequest &ex )
+    {
+        BOOST_CHECK_EQUAL(ex.reason, "Bad request: 407");
+    }
 }
 
 BOOST_AUTO_TEST_CASE( test_handleIndication_unexpectedAck_mismatch )
@@ -220,9 +234,15 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_unexpectedAck_mismatch )
         "ff";
     const std::vector<unsigned char> inbound(inboundBytes.begin(), inboundBytes.end());
 
-    boost::optional<Cti::Protocols::E2eDataTransferProtocol::EndpointResponse> er = e2e.handleIndication(inbound, endpointId);
-
-    BOOST_CHECK( ! er );
+    try
+    {
+        e2e.handleIndication(inbound, endpointId);
+        BOOST_FAIL("Did not throw");
+    }
+    catch( Cti::Protocols::E2eDataTransferProtocol::UnexpectedAck &ex )
+    {
+        BOOST_CHECK_EQUAL(ex.reason, "Unexpected ACK: 29441, expected 29442");
+    }
 }
 
 BOOST_AUTO_TEST_CASE( test_handleIndication_unexpectedAck_noRequest )
@@ -240,9 +260,15 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_unexpectedAck_noRequest )
         "ff";
     const std::vector<unsigned char> inbound(inboundBytes.begin(), inboundBytes.end());
 
-    boost::optional<Cti::Protocols::E2eDataTransferProtocol::EndpointResponse> er = e2e.handleIndication(inbound, endpointId);
-
-    BOOST_CHECK( ! er );
+    try
+    {
+        e2e.handleIndication(inbound, endpointId);
+        BOOST_FAIL("Did not throw");
+    }
+    catch( Cti::Protocols::E2eDataTransferProtocol::UnexpectedAck &ex )
+    {
+        BOOST_CHECK_EQUAL(ex.reason, "Unexpected ACK: 29442, no outbounds recorded");
+    }
 }
 
 BOOST_AUTO_TEST_CASE( test_handleIndication_resetReceived )
@@ -260,9 +286,15 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_resetReceived )
         "ff";
     const std::vector<unsigned char> inbound(inboundBytes.begin(), inboundBytes.end());
 
-    boost::optional<Cti::Protocols::E2eDataTransferProtocol::EndpointResponse> er = e2e.handleIndication(inbound, endpointId);
-
-    BOOST_CHECK( ! er );
+    try
+    {
+        e2e.handleIndication(inbound, endpointId);
+        BOOST_FAIL("Did not throw");
+    }
+    catch( Cti::Protocols::E2eDataTransferProtocol::ResetReceived &ex )
+    {
+        BOOST_CHECK_EQUAL(ex.reason, "Reset packet received");
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

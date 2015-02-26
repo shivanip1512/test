@@ -371,8 +371,7 @@ struct ClientErrors
         E2eRequestTimeout,
         NetworkManagerTimeout,
         E2eRequestPayloadTooLarge,
-
-        z_295,
+        E2eRequestNotAcceptable,
 
         NoPointsOnDevice,
     };

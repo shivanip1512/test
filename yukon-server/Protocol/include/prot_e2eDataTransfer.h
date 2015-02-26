@@ -28,11 +28,33 @@ public:
 
         std::vector<unsigned char> ack;
         std::vector<unsigned char> blockContinuation;
-
-        bool final;
     };
 
-    struct PayloadTooLarge {};
+    struct E2eException : std::exception
+    {
+        const std::string reason;
+
+        E2eException(std::string &&reason_) : reason(reason_) {}
+
+        const char * what() const override
+        {
+            return reason.c_str();
+        }
+    };
+    struct UnexpectedAck : E2eException
+    {
+        UnexpectedAck(unsigned short unexpected, unsigned short expected) :
+            E2eException("Unexpected ACK: " + std::to_string(unexpected) + ", expected " + std::to_string(expected))
+        {}
+        UnexpectedAck(unsigned short unexpected) :
+            E2eException("Unexpected ACK: " + std::to_string(unexpected) + ", no outbounds recorded")
+        {}
+    };
+    struct ResetReceived        : E2eException { ResetReceived()         : E2eException("Reset packet received")     {} };
+    struct PayloadTooLarge      : E2eException { PayloadTooLarge()       : E2eException("Payload too large")         {} };
+    struct RequestNotAcceptable : E2eException { RequestNotAcceptable()  : E2eException("Request not acceptable")    {} };
+    struct BadRequest           : E2eException { BadRequest(int code)    : E2eException("Bad request: " + std::to_string(code)) {} };
+    struct DuplicatePacket      : E2eException { DuplicatePacket(int id) : E2eException("Duplicate packet, id: " + std::to_string(id)) {} };
 
     enum
     {
@@ -44,8 +66,8 @@ public:
     //  throws PayloadTooLarge
     std::vector<unsigned char> sendRequest(const std::vector<unsigned char> &payload, const long endpointId, const unsigned long token);
 
-    //  throws PayloadTooLarge
-    boost::optional<EndpointResponse> handleIndication(const std::vector<unsigned char> &payload, const long endpointId);
+    //  throws E2eException
+    EndpointResponse handleIndication(const std::vector<unsigned char> &payload, const long endpointId);
 
     void handleTimeout(const long endpointId);
 

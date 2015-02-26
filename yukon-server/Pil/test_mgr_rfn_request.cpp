@@ -44,7 +44,7 @@ struct test_RfnRequestManager : Cti::Pil::RfnRequestManager
 
     } e2e;
 
-    boost::optional<Cti::Protocols::E2eDataTransferProtocol::EndpointResponse> handleE2eDtIndication(const std::vector<unsigned char> &payload, const long endpointId) override
+    Cti::Protocols::E2eDataTransferProtocol::EndpointResponse handleE2eDtIndication(const std::vector<unsigned char> &payload, const long endpointId) override
     {
         return e2e.handleIndication(payload, endpointId);
     }
@@ -258,7 +258,16 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_badRequest )
     boost::ptr_deque<Cti::Pil::RfnDeviceResult> results = mgr.getResults(99);
 
     {
-        BOOST_REQUIRE(results.empty());
+        BOOST_REQUIRE_EQUAL(results.size(), 1);
+
+        Cti::Pil::RfnDeviceResult &result = results.front();
+
+        const std::string expectedDescription =
+            "Request not acceptable";
+
+        BOOST_CHECK_EQUAL(result.commandResult.description, expectedDescription);
+        BOOST_CHECK(result.commandResult.points.empty());
+        BOOST_CHECK_EQUAL(result.status, ClientErrors::E2eRequestNotAcceptable);
     }
 }
 
