@@ -36,6 +36,11 @@ WorkerThread::~WorkerThread()
  */
 bool WorkerThread::isRunning()
 {
+    if( _thread.get_id() == boost::thread::id() )
+    {
+        return false;
+    }
+
     return ! tryJoinFor( Timing::Chrono::milliseconds(0) );
 }
 
