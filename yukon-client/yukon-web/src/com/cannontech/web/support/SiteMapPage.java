@@ -100,7 +100,8 @@ public enum SiteMapPage implements DisplayableEnum {
             MatchStyle.all, YukonRole.INVENTORY),
     WORK_ORDER_REPORTS(SiteMapCategory.ASSETS, "yukon.web.menu.assets.workOrderReports", "/operator/WorkOrder/Report.jsp",
             MatchStyle.all, YukonRole.WORK_ORDER),
-    GATEWAYS(SiteMapCategory.ASSETS, "yukon.web.menu.assets.gateways", "/stars/gateways", MatchStyle.all, YukonRole.INVENTORY),
+    GATEWAYS(SiteMapCategory.ASSETS, "yukon.web.menu.assets.gateways", "/stars/gateways", MatchStyle.any, YukonRoleProperty.INFRASTRUCTURE_ADMIN,
+             YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE, YukonRoleProperty.INFRASTRUCTURE_DELETE, YukonRoleProperty.INFRASTRUCTURE_VIEW),
 
     CONFIGURATION(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.config.pageName", "/adminSetup/config/view",
             MatchStyle.all, YukonRoleProperty.ADMIN_SUPER_USER),
