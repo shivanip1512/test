@@ -335,7 +335,7 @@ INT CtiPort::verifyPortIsRunnable( HANDLE hQuit )
             return queueStatus;
         }
 
-        if( _portThread.timed_join(boost::posix_time::milliseconds(0)) )
+        if( _portThread.get_id() == boost::thread::id() )
         {
             //  thread wasn't running
             if( ! _portFunc )
