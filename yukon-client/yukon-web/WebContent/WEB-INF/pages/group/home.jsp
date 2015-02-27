@@ -10,10 +10,6 @@
 <cti:msg2 var="removeGroupAreYouSure" key="yukon.web.deviceGroups.editor.operationsContainer.removeGroup.areYouSure" javaScriptEscape="true"/>
 <cti:msg2 var="invalidGroupNameError" key="yukon.web.deviceGroups.editor.operationsContainer.invalidGroupNameError" javaScriptEscape="true"/>
 
-<cti:includeScript link="JQUERY_FILE_UPLOAD"/>
-<!--[if lte IE 8]><cti:includeScript link="JQUERY_IFRAME_TRANSPORT" /><![endif]-->
-<cti:includeScript link="/JavaScript/yukon.device.selection.js" />
-
 <script type="text/javascript">
 $(function() {
     $(".js-edit-grp-name").click(function(event) {

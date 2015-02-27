@@ -25,28 +25,55 @@
 
 <h2>Tag Attributes</h2>
 <tags:nameValueContainer tableClass="description stacked">
-    <tags:nameValue name="?">
-        ?
+    <tags:nameValue name="key">
+        I18n object to use for the alert message. Note: key can be an i18n key String, 
+        <span class="label label-attr">MessageSourceResolvable</span>, 
+        <span class="label label-attr">Displayable</span>, <span class="label label-attr">DisplayableEnum</span>, 
+        or <span class="label label-attr">ResolvableTemplate</span>.
+    </tags:nameValue>
+    <tags:nameValue name="title">
+        I18n object to use for the popup title. Note: title can be an i18n key String, 
+        <span class="label label-attr">MessageSourceResolvable</span>, 
+        <span class="label label-attr">Displayable</span>, <span class="label label-attr">DisplayableEnum</span>, 
+        or <span class="label label-attr">ResolvableTemplate</span>.<br>
+        Default: <em>yukon.common.device.selection.title</em> - 'Select By:'
+    </tags:nameValue>
+    <tags:nameValue name="event">
+        Name of event to fire after successfully selecting devices.
+    </tags:nameValue>
+    <tags:nameValue name="submit">
+        If <strong>true</strong>, the closest parent form is submitted after successfully selecting devices.<br>
+        Default: <strong>false</strong>.
+    </tags:nameValue>
+    <tags:nameValue name="multi">
+        If <strong>true</strong>, selection mode for device group will be multiselection. Default: <strong>true</strong>.
+    </tags:nameValue>
+    <tags:nameValue name="predicates">
+        Optional comma separated strings of <span class="label label-attr">DeviceGroupPredicateEnum</span> entry names 
+        to filter the tree data by.<br>
+        Default: <strong>NON_HIDDEN</strong>.
+    </tags:nameValue>
+    <tags:nameValue name="callbacks">
+        Set of callbacks to be preformed on each node in the device group tree. Can be used to disable selecting 
+        certain nodes.
     </tags:nameValue>
 </tags:nameValueContainer>
 
 <h1 class="dib stacked">Examples</h1>
 
 <p class="description">
-    ?
+    A simple device collection picker using defaults.
 </p>
 <div class="column-4-20 clearfix style-guide-example">
     <div class="column one"><h4 class="subtle">Example:</h4></div>
     <div class="column two nogutter">
-        ?
+        <tags:deviceCollectionPicker >Choose Devices</tags:deviceCollectionPicker>
     </div>
 </div>
 <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
-    ?
+&lt;tags:deviceCollectionPicker&gt;Choose Devices&lt;/tags:deviceCollectionPicker&gt;
 </pre>
-
-
 
 <h1>Selected Devices Popup Tag</h1>
 

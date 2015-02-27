@@ -7,9 +7,9 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags/jsTree" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<%@ attribute name="key" description="i18n object to use for the alert message. Note: key can be an i18n key String, 
+<%@ attribute name="key" description="I18n object to use for the alert message. Note: key can be an i18n key String, 
                                       MessageSourceResolvable, Displayable, DisplayableEnum, or ResolvableTemplate." %>
-<%@ attribute name="title" description="i18n object to use for the alert message. Note: title can be an i18n key String, 
+<%@ attribute name="title" description="I18n object to use for the popup title. Note: title can be an i18n key String, 
                                       MessageSourceResolvable, Displayable, DisplayableEnum, or ResolvableTemplate.
                                       Default: 'yukon.common.device.selection.title' - 'Select By:'" %>
                                       
@@ -20,7 +20,7 @@
 
 <%--Device group attributes --%>
 <%@ attribute name="multi" type="java.lang.Boolean" 
-              description="If true, selection mode for device group will be multiselection. Default: single selection." %>
+              description="If true, selection mode for device group will be multiselection. Default: 'true'." %>
 <%@ attribute name="predicates" 
               description="Optional comma separated strings of DeviceGroupPredicateEnum entry names to filter the 
                            tree data by. Default: 'NON_HIDDEN'." %>
@@ -31,7 +31,7 @@
 <cti:msgScope paths=", yukon.common.device.bulk.deviceSelection, yukon.web.defaults, yukon.common.device.selection">
 
 <cti:default var="submit" value="${false}"/>
-<cti:default var="multi" value="${false}"/>
+<cti:default var="multi" value="${true}"/>
 <cti:default var="predicates" value="NON_HIDDEN"/>
 <cti:default var="title" value=".select.title"/>
 
@@ -44,6 +44,9 @@
     <cti:includeScript link="JQUERY_TREE_MIN"/>
 </cti:checkRolesAndProperties>
 <cti:includeScript link="JQUERY_TREE_HELPERS"/>
+<cti:includeScript link="JQUERY_FILE_UPLOAD"/>
+<!--[if lte IE 8]><cti:includeScript link="JQUERY_IFRAME_TRANSPORT" /><![endif]-->
+<cti:includeScript link="/JavaScript/yukon.device.selection.js"/>
 
 <cti:deviceGroupHierarchyJson var="groups" predicates="${predicates}" callbacks="${callbacks}"/>
 
