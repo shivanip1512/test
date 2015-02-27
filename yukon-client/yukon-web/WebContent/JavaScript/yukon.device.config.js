@@ -224,8 +224,8 @@ yukon.deviceConfig = (function () {
 
             var deviceType = $(elem).data('deviceType');
 
-            $('.pipe').css('visibility', 'hidden');
-            $('.pipe[data-device-type="' + deviceType + '"]').css('visibility', 'visible');
+            $('.pipe').invisible();
+            $('.pipe[data-device-type-' + deviceType + ']').visible();
         },
 
 
@@ -310,7 +310,7 @@ yukon.deviceConfig = (function () {
                 _initFields();
 
                 // Find the first type and select his categories
-                _setPipeVisibilityForType($(".pipe").first());
+                _setPipeVisibilityForType($(".js-categories").first());
 
                 $(".js-categories").click(function () {
                     _setPipeVisibilityForType(this);

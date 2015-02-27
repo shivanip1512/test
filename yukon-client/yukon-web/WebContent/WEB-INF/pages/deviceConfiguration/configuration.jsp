@@ -91,7 +91,7 @@
                                 <c:if test="${not empty type.value}">
                                     <li class="js-categories" data-device-type="${type.key}">
                                         <a href="javascript:void(0);" class="pipe-selector ">
-                                            <span data-device-type="${type.key}" class="pipe js-categories">&nbsp;</span>
+                                            <span data-device-type-${type.key} class="pipe">&nbsp;</span>
                                             <span><i:inline key="${type.key}"/></span>
                                         </a>
                                         <cti:checkRolesAndProperties value="${editingRoleProperty}">
