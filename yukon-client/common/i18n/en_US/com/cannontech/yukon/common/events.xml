@@ -12,6 +12,7 @@
     
     <!-- Event Log Arg Annotation i18n keys -->
     <entry key="yukon.common.events.accountNumber">Account Number</entry>
+    <entry key="yukon.common.events.applianceCategoryName">Appliance Category Name</entry>
     <entry key="yukon.common.events.applianceType">Appliance Type</entry>
     <entry key="yukon.common.events.commandRequestExecutionContextId">Command Request Execution Context Id</entry>
     <entry key="yukon.common.events.commandRequestExecutionId">Command Request Execution Id</entry>
@@ -600,9 +601,9 @@
     <entry key="yukon.common.events.multispeak.notificationResponse.7">Errors</entry>
     <entry key="yukon.common.events.multispeak.errorObject">Encountered error: {1}. {2} by {3}.</entry>
     
-    <entry key="yukon.common.events.estimatedLoad.applianceCategoryNotFound">No appliance category could be found for program {1}.</entry>
-    <entry key="yukon.common.events.estimatedLoad.applianceCategoryInfoNotFound">Unable to calculate value for program {1}. The Appliance Load (kW) value could not be found for appliance category {2}.</entry>
-    <entry key="yukon.common.events.estimatedLoad.gearNotFound">Unable to find gear number {7} for program {1}.</entry>
+    <entry key="yukon.common.events.estimatedLoad.applianceCategoryNotFound">No appliance category found for program {1}.</entry>
+    <entry key="yukon.common.events.estimatedLoad.applianceCategoryInfoNotFound">Unable to calculate value for program {1}. Appliance Load (kW) not found for appliance category {2}.</entry>
+    <entry key="yukon.common.events.estimatedLoad.gearNotFound">Gear number {7} not found for program {1}.</entry>
     <entry key="yukon.common.events.estimatedLoad.gearNotFound.7">Gear Number</entry>
     <entry key="yukon.common.events.estimatedLoad.inputOutOfRange">In formula {1}, {2} {3} has invalid input {4}, which is outside the valid range {5} - {6}.</entry>
     <entry key="yukon.common.events.estimatedLoad.inputOutOfRange.1">Formula Name</entry>
@@ -613,8 +614,8 @@
     <entry key="yukon.common.events.estimatedLoad.inputOutOfRange.6">Maximum Valid Value</entry>
     <entry key="yukon.common.events.estimatedLoad.inputValueNotFound">Unable to retrieve input point value for formula {1}, program {2}.</entry>
     <entry key="yukon.common.events.estimatedLoad.inputValueNotFound.1">Formula Name</entry>
-    <entry key="yukon.common.events.estimatedLoad.lmDataNotFound">Could not find program {1} in Load Management server.</entry>
-    <entry key="yukon.common.events.estimatedLoad.notConnectedToLmServer">Not connected to Load Management server.</entry>
+    <entry key="yukon.common.events.estimatedLoad.lmDataNotFound">Program {1} not found in Load Management Service.</entry>
+    <entry key="yukon.common.events.estimatedLoad.notConnectedToLmServer">Not connected to Load Management Service.</entry>
     <entry key="yukon.common.events.estimatedLoad.noApplianceCategoryFormula">No formula assigned to appliance category {1} for program {2}.</entry>
     <entry key="yukon.common.events.estimatedLoad.noGearFormula">No formula assigned to gear {1} for program {2}.</entry>
     <entry key="yukon.common.events.estimatedLoad.unknownError">An unknown error occurred calculating estimated load for program {1}.</entry>
