@@ -318,7 +318,9 @@ public class CommanderController {
         
         List<PaoDistance> nearby = paoLocationService.getNearbyLocations(location, 5, DistanceUnit.MILES, 
                 PaoTag.COMMANDER_REQUESTS);
-        nearby = nearby.subList(0, 10);
+        if (nearby.size() > 10) { 
+            nearby = nearby.subList(0, 10);
+        }
         if (nearby.isEmpty()) {
             resp.setStatus(HttpStatus.NO_CONTENT.value());
             return null;
