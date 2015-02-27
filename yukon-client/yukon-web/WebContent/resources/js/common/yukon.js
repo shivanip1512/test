@@ -394,7 +394,7 @@ yukon.ui = (function () {
                     chosenContainer = chosenElem.closest('.chosen-container'),
                     chosenHeight = chosenElem.outerHeight() + chosenContainer.find('.chosen-drop').outerHeight(),
                     offsetInContainer = chosenContainer.offset().top - chosenContainer.offsetParent().offset().top,
-                    minButtom = offsetInContainer + chosenHeight,
+                    minBottom = offsetInContainer + chosenHeight,
 
                     /* The following properties are specific to being in a dialog */
                     scrollContainer = chosenElem.closest('.ui-dialog-content'),
@@ -410,8 +410,8 @@ yukon.ui = (function () {
                 }
 
 
-                if (minButtom > currentBottom) {
-                    scrollContainer.scrollTop(minButtom - scrollContainer.outerHeight() + scrollOffset);
+                if (minBottom > currentBottom) {
+                    scrollContainer.scrollTop(minBottom - scrollContainer.outerHeight() + scrollOffset);
                 }
             });
         },
