@@ -15,6 +15,7 @@ import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.CommandDao;
@@ -479,7 +480,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     
     @Override
     public synchronized List<LiteYukonPAObject> getAllLMGroups() {
-        return new ArrayList<>(getAllLMGroupsMap().values());
+        List<LiteYukonPAObject> allLMGroups = new ArrayList<>(getAllLMGroupsMap().values());
+        Collections.sort(allLMGroups,  PaoUtils.NAME_COMPARE);
+        return allLMGroups;
     }
 
     @Override
