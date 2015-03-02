@@ -8,7 +8,6 @@ namespace Devices {
 class IM_EX_DEVDB Mct420Device : public Mct410Device
 {
     static const CommandSet       _commandStore;
-    static const ConfigPartsList  _config_parts;
 
     static const FunctionReadValueMappings _readValueMaps;
 

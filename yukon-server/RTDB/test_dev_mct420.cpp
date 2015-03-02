@@ -1977,15 +1977,7 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, test_Mct420CL().beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-
-        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
-
-        const CtiReturnMsg *ret = dynamic_cast<const CtiReturnMsg *>(retList.front());
-
-        BOOST_REQUIRE( ret );
-        BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
-        BOOST_CHECK_EQUAL( ret->Status(),   272 );
-        BOOST_CHECK_EQUAL( ret->ResultString(),  "ERROR: NoMethod or invalid config. Config name:disconnect" );
+        BOOST_CHECK( retList.empty() );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 4 );
 

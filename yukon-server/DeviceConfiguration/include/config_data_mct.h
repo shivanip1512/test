@@ -159,6 +159,33 @@ public:
 
     static const std::string EnableDst;
 
+    static const std::string displayItem01;
+    static const std::string displayItem02;
+    static const std::string displayItem03;
+    static const std::string displayItem04;
+    static const std::string displayItem05;
+    static const std::string displayItem06;
+    static const std::string displayItem07;
+    static const std::string displayItem08;
+    static const std::string displayItem09;
+    static const std::string displayItem10;
+    static const std::string displayItem11;
+    static const std::string displayItem12;
+    static const std::string displayItem13;
+    static const std::string displayItem14;
+    static const std::string displayItem15;
+    static const std::string displayItem16;
+    static const std::string displayItem17;
+    static const std::string displayItem18;
+    static const std::string displayItem19;
+    static const std::string displayItem20;
+    static const std::string displayItem21;
+    static const std::string displayItem22;
+    static const std::string displayItem23;
+    static const std::string displayItem24;
+    static const std::string displayItem25;
+    static const std::string displayItem26;
+
     static const std::string LcdCycleTime;
     static const std::string DisconnectDisplayDisabled;
     static const std::string DisplayDigits;

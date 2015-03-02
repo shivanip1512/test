@@ -30,13 +30,6 @@ const Mct420Device::CommandSet       Mct420Device::_commandStore = boost::assign
     (CommandStore(EmetconProtocol::PutConfig_Channel2NetMetering, EmetconProtocol::IO_Write,         0x85, 0));
 
 
-const Mct420Device::ConfigPartsList  Mct420Device::_config_parts = boost::assign::list_of
-    (PutConfigPart_display)
-    (PutConfigPart_meter_parameters)
-    (PutConfigPart_disconnect)
-    (PutConfigPart_freeze_day);
-
-
 const Mct420Device::FunctionReadValueMappings Mct420Device::_readValueMaps = boost::assign::map_list_of
     (0x000, boost::assign::map_list_of
         ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision))
@@ -222,7 +215,19 @@ const Mct420Device::FunctionReadValueMappings *Mct420Device::getReadValueMaps(vo
 
 Mct420Device::ConfigPartsList Mct420Device::getPartsList()
 {
-    return _config_parts;
+    if( ! isSupported(Feature_Disconnect) )
+    {
+        return {
+            PutConfigPart_display,
+            PutConfigPart_meter_parameters,
+            PutConfigPart_freeze_day };
+    }
+
+    return {
+        PutConfigPart_display,
+        PutConfigPart_meter_parameters,
+        PutConfigPart_disconnect,
+        PutConfigPart_freeze_day };
 }
 
 
@@ -367,44 +372,42 @@ YukonError_t Mct420Device::executePutConfigDisplay(CtiRequestMsg *pReq,CtiComman
 
     if( ! readsOnly )
     {
-        static const PaoInfoKeys lcd_metric_keys[26] = {
+        using dpi = CtiTableDynamicPaoInfo;
 
-            CtiTableDynamicPaoInfo::Key_MCT_LcdMetric01,
-            CtiTableDynamicPaoInfo::Key_MCT_LcdMetric02,
-            CtiTableDynamicPaoInfo::Key_MCT_LcdMetric03,
-            CtiTableDynamicPaoInfo::Key_MCT_LcdMetric04,
-            CtiTableDynamicPaoInfo::Key_MCT_LcdMetric05,
-            CtiTableDynamicPaoInfo::Key_MCT_LcdMetric06,
-            CtiTableDynamicPaoInfo::Key_MCT_LcdMetric07,
-            CtiTableDynamicPaoInfo::Key_MCT_LcdMetric08,
-            CtiTableDynamicPaoInfo::Key_MCT_LcdMetric09,
-            CtiTableDynamicPaoInfo::Key_MCT_LcdMetric10,
-            CtiTableDynamicPaoInfo::Key_MCT_LcdMetric11,
-            CtiTableDynamicPaoInfo::Key_MCT_LcdMetric12,
-            CtiTableDynamicPaoInfo::Key_MCT_LcdMetric13,
-            CtiTableDynamicPaoInfo::Key_MCT_LcdMetric14,
-            CtiTableDynamicPaoInfo::Key_MCT_LcdMetric15,
-            CtiTableDynamicPaoInfo::Key_MCT_LcdMetric16,
-            CtiTableDynamicPaoInfo::Key_MCT_LcdMetric17,
-            CtiTableDynamicPaoInfo::Key_MCT_LcdMetric18,
-            CtiTableDynamicPaoInfo::Key_MCT_LcdMetric19,
-            CtiTableDynamicPaoInfo::Key_MCT_LcdMetric20,
-            CtiTableDynamicPaoInfo::Key_MCT_LcdMetric21,
-            CtiTableDynamicPaoInfo::Key_MCT_LcdMetric22,
-            CtiTableDynamicPaoInfo::Key_MCT_LcdMetric23,
-            CtiTableDynamicPaoInfo::Key_MCT_LcdMetric24,
-            CtiTableDynamicPaoInfo::Key_MCT_LcdMetric25,
-            CtiTableDynamicPaoInfo::Key_MCT_LcdMetric26
-        };
-
-        int i = 0;
+        static const std::map<PaoInfoKeys, std::string> dynamicConfigKeys {
+            { dpi::Key_MCT_LcdMetric01, MCTStrings::displayItem01 },
+            { dpi::Key_MCT_LcdMetric02, MCTStrings::displayItem02 },
+            { dpi::Key_MCT_LcdMetric03, MCTStrings::displayItem03 },
+            { dpi::Key_MCT_LcdMetric04, MCTStrings::displayItem04 },
+            { dpi::Key_MCT_LcdMetric05, MCTStrings::displayItem05 },
+            { dpi::Key_MCT_LcdMetric06, MCTStrings::displayItem06 },
+            { dpi::Key_MCT_LcdMetric07, MCTStrings::displayItem07 },
+            { dpi::Key_MCT_LcdMetric08, MCTStrings::displayItem08 },
+            { dpi::Key_MCT_LcdMetric09, MCTStrings::displayItem09 },
+            { dpi::Key_MCT_LcdMetric10, MCTStrings::displayItem10 },
+            { dpi::Key_MCT_LcdMetric11, MCTStrings::displayItem11 },
+            { dpi::Key_MCT_LcdMetric12, MCTStrings::displayItem12 },
+            { dpi::Key_MCT_LcdMetric13, MCTStrings::displayItem13 },
+            { dpi::Key_MCT_LcdMetric14, MCTStrings::displayItem14 },
+            { dpi::Key_MCT_LcdMetric15, MCTStrings::displayItem15 },
+            { dpi::Key_MCT_LcdMetric16, MCTStrings::displayItem16 },
+            { dpi::Key_MCT_LcdMetric17, MCTStrings::displayItem17 },
+            { dpi::Key_MCT_LcdMetric18, MCTStrings::displayItem18 },
+            { dpi::Key_MCT_LcdMetric19, MCTStrings::displayItem19 },
+            { dpi::Key_MCT_LcdMetric20, MCTStrings::displayItem20 },
+            { dpi::Key_MCT_LcdMetric21, MCTStrings::displayItem21 },
+            { dpi::Key_MCT_LcdMetric22, MCTStrings::displayItem22 },
+            { dpi::Key_MCT_LcdMetric23, MCTStrings::displayItem23 },
+            { dpi::Key_MCT_LcdMetric24, MCTStrings::displayItem24 },
+            { dpi::Key_MCT_LcdMetric25, MCTStrings::displayItem25 },
+            { dpi::Key_MCT_LcdMetric26, MCTStrings::displayItem26 } };
 
         vector<unsigned char> paoinfo_metrics;
 
-        for each( const PaoInfoKeys pao_key in lcd_metric_keys )
+        for( const auto paoConfigKey : dynamicConfigKeys )
         {
-            string config_key = "displayItem" + CtiNumStr(++i);
-
+            const PaoInfoKeys pao_key    = paoConfigKey.first;
+            const std::string config_key = paoConfigKey.second;
 
             const boost::optional<long>
                 config_value = deviceConfig->findValue<long>(config_key);
