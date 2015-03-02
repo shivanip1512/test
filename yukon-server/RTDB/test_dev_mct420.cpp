@@ -1913,6 +1913,545 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()
 
+struct putconfigInstall_helper : beginExecuteRequest_helper
+{
+    boost::shared_ptr<Cti::Test::test_DeviceConfig> fixtureConfig;
+    Cti::Test::Override_ConfigManager overrideConfigManager;
+
+    putconfigInstall_helper() :
+        fixtureConfig(new Cti::Test::test_DeviceConfig),
+        overrideConfigManager(fixtureConfig)
+    {
+        //  Disconnect category
+        fixtureConfig->insertValue("disconnectMode", "DEMAND_THRESHOLD");
+        fixtureConfig->insertValue("disconnectDemandThreshold", "4.71");
+        fixtureConfig->insertValue("disconnectLoadLimitConnectDelay", "3");
+        fixtureConfig->insertValue("disconnectMinutes", "6");
+        fixtureConfig->insertValue("connectMinutes", "18");
+        fixtureConfig->insertValue("reconnectParam", "IMMEDIATE");
+
+        //  Demand freeze day category
+        fixtureConfig->insertValue("demandFreezeDay", "21");
+
+        //  Meter parameters category
+        fixtureConfig->insertValue("lcdCycleTime", "3" );
+        fixtureConfig->insertValue("disconnectDisplayDisabled", "true" );
+        fixtureConfig->insertValue("displayDigits", "5" );
+
+        //  Display category
+        fixtureConfig->insertValue("displayItem1",   "1" );
+        fixtureConfig->insertValue("displayItem2",   "3" );
+        fixtureConfig->insertValue("displayItem3",   "5" );
+        fixtureConfig->insertValue("displayItem4",   "7" );
+        fixtureConfig->insertValue("displayItem5",   "9" );
+        fixtureConfig->insertValue("displayItem6",  "11" );
+        fixtureConfig->insertValue("displayItem7",  "13" );
+        fixtureConfig->insertValue("displayItem8",  "15" );
+        fixtureConfig->insertValue("displayItem9",  "17" );
+        fixtureConfig->insertValue("displayItem10", "19" );
+        fixtureConfig->insertValue("displayItem11", "21" );
+        fixtureConfig->insertValue("displayItem12", "23" );
+        fixtureConfig->insertValue("displayItem13", "25" );
+        fixtureConfig->insertValue("displayItem14", "27" );
+        fixtureConfig->insertValue("displayItem15", "29" );
+        fixtureConfig->insertValue("displayItem16", "31" );
+        fixtureConfig->insertValue("displayItem17", "33" );
+        fixtureConfig->insertValue("displayItem18", "35" );
+        fixtureConfig->insertValue("displayItem19", "37" );
+        fixtureConfig->insertValue("displayItem20", "39" );
+        fixtureConfig->insertValue("displayItem21",  "0" );
+        fixtureConfig->insertValue("displayItem22",  "0" );
+        fixtureConfig->insertValue("displayItem23",  "0" );
+        fixtureConfig->insertValue("displayItem24",  "0" );
+        fixtureConfig->insertValue("displayItem25",  "0" );
+        fixtureConfig->insertValue("displayItem26",  "0" );
+    }
+};
+
+BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
+//{  Brace matching for BOOST_FIXTURE_TEST_SUITE
+    BOOST_AUTO_TEST_CASE(test_mct420cl_putconfig_install_all)
+    {
+        CtiCommandParser parse("putconfig install all");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, test_Mct420CL().beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+
+        const CtiReturnMsg *ret = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE( ret );
+        BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+        BOOST_CHECK_EQUAL( ret->Status(),   272 );
+        BOOST_CHECK_EQUAL( ret->ResultString(),  "ERROR: NoMethod or invalid config. Config name:disconnect" );
+
+        BOOST_REQUIRE_EQUAL( outList.size(), 4 );
+
+        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+
+        int writeMsgPriority,
+            readMsgPriority;        // Capture message priorities to validate ordering
+
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xf6 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,     13 );
+
+            const std::vector<unsigned> expected = { 0x01, 0x03, 0x05, 0x07, 0x09, 0x0b, 0x0d, 0x0f, 0x11, 0x13, 0x15, 0x17, 0x19 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(),
+                expected.end(),
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xf3 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      2 );
+
+            const std::vector<unsigned> expected = { 0xff, 0x83 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(),
+                expected.end(),
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length );
+        }
+
+        // This validates the read-after-write behavior... write message has higher priority
+
+        // Freeze Day messages - read-after-write.
+        // Write message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          0 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x4f );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      1 );
+
+            const std::vector<unsigned> expected = { 0x15 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(),
+                expected.end(),
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length );
+
+            writeMsgPriority = om->Priority;
+        }
+        // Read message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          1 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x4f );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      1 );
+
+            readMsgPriority = om->Priority;
+        }
+
+        // This validates the read-after-write behavior... write message has higher priority
+        BOOST_CHECK( writeMsgPriority > readMsgPriority );
+    }
+    BOOST_AUTO_TEST_CASE(test_mct420cd_putconfig_install_all)
+    {
+        CtiCommandParser parse("putconfig install all");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, test_Mct420CD().beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( retList.empty() );
+
+        BOOST_REQUIRE_EQUAL( outList.size(), 6 );
+
+        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+
+        int writeMsgPriority,
+            readMsgPriority;        // Capture message priorities to validate ordering
+
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xf6 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,     13 );
+
+            const std::vector<unsigned> expected = { 0x01, 0x03, 0x05, 0x07, 0x09, 0x0b, 0x0d, 0x0f, 0x11, 0x13, 0x15, 0x17, 0x19 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(),
+                expected.end(),
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xf3 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      2 );
+
+            const std::vector<unsigned> expected = { 0xff, 0x83 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(),
+                expected.end(),
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length );
+        }
+
+        // This validates the read-after-write behavior... write message has higher priority
+
+        // Disconnect messages - read-after-write.
+        // Write message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xfe );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      9 );
+
+            const std::vector<unsigned> expected = { 0x00, 0x00, 0x00, 0x3f, 0x55, 0x03, 0x06, 0x12, 0x44 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(),
+                expected.end(),
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length );
+
+            writeMsgPriority = om->Priority;
+        }
+        // Read message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          3 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xfe );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,     13 );
+
+            readMsgPriority = om->Priority;
+        }
+
+        // This validates the read-after-write behavior... write message has higher priority
+        BOOST_CHECK( writeMsgPriority > readMsgPriority );
+
+        // Freeze Day messages - read-after-write.
+        // Write message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          0 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x4f );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      1 );
+
+            const std::vector<unsigned> expected = { 0x15 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(),
+                expected.end(),
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length );
+
+            writeMsgPriority = om->Priority;
+        }
+        // Read message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          1 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x4f );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      1 );
+
+            readMsgPriority = om->Priority;
+        }
+
+        // This validates the read-after-write behavior... write message has higher priority
+        BOOST_CHECK( writeMsgPriority > readMsgPriority );
+    }
+    BOOST_AUTO_TEST_CASE(test_mct420fl_putconfig_install_all)
+    {
+        CtiCommandParser parse("putconfig install all");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, test_Mct420FL().beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( retList.empty() );
+
+        BOOST_REQUIRE_EQUAL( outList.size(), 6 );
+
+        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+
+        int writeMsgPriority,
+            readMsgPriority;        // Capture message priorities to validate ordering
+
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xf6 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,     13 );
+
+            const std::vector<unsigned> expected = { 0x01, 0x03, 0x05, 0x07, 0x09, 0x0b, 0x0d, 0x0f, 0x11, 0x13, 0x15, 0x17, 0x19 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(),
+                expected.end(),
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xf3 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      2 );
+
+            const std::vector<unsigned> expected = { 0xff, 0x83 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(),
+                expected.end(),
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length );
+        }
+
+        // This validates the read-after-write behavior... write message has higher priority
+
+        // Disconnect messages - read-after-write.
+        // Write message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xfe );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      9 );
+
+            const std::vector<unsigned> expected = { 0x00, 0x00, 0x00, 0x3f, 0x55, 0x03, 0x06, 0x12, 0x44 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(),
+                expected.end(),
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length );
+
+            writeMsgPriority = om->Priority;
+        }
+        // Read message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          3 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xfe );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,     13 );
+
+            readMsgPriority = om->Priority;
+        }
+
+        // This validates the read-after-write behavior... write message has higher priority
+        BOOST_CHECK( writeMsgPriority > readMsgPriority );
+
+        // Freeze Day messages - read-after-write.
+        // Write message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          0 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x4f );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      1 );
+
+            const std::vector<unsigned> expected = { 0x15 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(),
+                expected.end(),
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length );
+
+            writeMsgPriority = om->Priority;
+        }
+        // Read message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          1 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x4f );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      1 );
+
+            readMsgPriority = om->Priority;
+        }
+
+        // This validates the read-after-write behavior... write message has higher priority
+        BOOST_CHECK( writeMsgPriority > readMsgPriority );
+    }
+    BOOST_AUTO_TEST_CASE(test_mct420fd_putconfig_install_all)
+    {
+        CtiCommandParser parse("putconfig install all");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, test_Mct420FD().beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( retList.empty() );
+
+        BOOST_REQUIRE_EQUAL( outList.size(), 6 );
+
+        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+
+        int writeMsgPriority,
+            readMsgPriority;        // Capture message priorities to validate ordering
+
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xf6 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,     13 );
+
+            const std::vector<unsigned> expected = { 0x01, 0x03, 0x05, 0x07, 0x09, 0x0b, 0x0d, 0x0f, 0x11, 0x13, 0x15, 0x17, 0x19 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(),
+                expected.end(),
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xf3 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      2 );
+
+            const std::vector<unsigned> expected = { 0xff, 0x83 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(),
+                expected.end(),
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length );
+        }
+
+        // This validates the read-after-write behavior... write message has higher priority
+
+        // Disconnect messages - read-after-write.
+        // Write message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xfe );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      9 );
+
+            const std::vector<unsigned> expected = { 0x00, 0x00, 0x00, 0x3f, 0x55, 0x03, 0x06, 0x12, 0x44 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(),
+                expected.end(),
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length );
+
+            writeMsgPriority = om->Priority;
+        }
+        // Read message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          3 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xfe );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,     13 );
+
+            readMsgPriority = om->Priority;
+        }
+
+        // This validates the read-after-write behavior... write message has higher priority
+        BOOST_CHECK( writeMsgPriority > readMsgPriority );
+
+        // Freeze Day messages - read-after-write.
+        // Write message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          0 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x4f );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      1 );
+
+            const std::vector<unsigned> expected = { 0x15 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(),
+                expected.end(),
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length );
+
+            writeMsgPriority = om->Priority;
+        }
+        // Read message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          1 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x4f );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      1 );
+
+            readMsgPriority = om->Priority;
+        }
+
+        // This validates the read-after-write behavior... write message has higher priority
+        BOOST_CHECK( writeMsgPriority > readMsgPriority );
+    }
+//}  Brace matching for BOOST_FIXTURE_TEST_SUITE
+BOOST_AUTO_TEST_SUITE_END()
+
 
 BOOST_AUTO_TEST_CASE(test_dev_mct420_getUsageReportDelay)
 {

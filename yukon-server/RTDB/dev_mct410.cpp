@@ -1533,8 +1533,7 @@ YukonError_t Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq
 {
     if (!isSupported(Feature_Disconnect))
     {
-        returnErrorMessage(ClientErrors::UnsupportedDevice, OutMessage, retList, "This device type does not support the putconfig disconnect command");
-        return ExecutionComplete;
+        return ClientErrors::UnsupportedDevice;
     }
 
     Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
