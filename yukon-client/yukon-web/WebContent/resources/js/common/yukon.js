@@ -311,12 +311,15 @@ yukon.ui = (function () {
         },
         
         /** 
-         * Returns button array for jquery ui dialogs.  The 'ok' action can have a 
-         * custom target and/or event.
+         * Returns button array for jquery ui dialogs that contain a 'Cancel' and 'OK' buttons and an
+         * optional 'Delete' button.
+         * The 'OK' action can have a custom target and/or event.
          * 
          * @param {object} options                     - An object literal with the following properties:
          *        {string} [event=yukon.dialog.ok]     - The name of the event to fire when 'ok' button is clicked. 
          *                                               Defaults to 'yukon.dialog.ok'.
+         *        {string} [mode=VIEW]                 - When set to 'CREATE', the delete button will not be shown. 
+         *                                               Defaults to 'VIEW'.
          *        {string, element} [form]             - If present, submits the form supplied or the first form element 
          *                                               found inside the popup. 'event' is not fired when 'form' is 
          *                                               present. 
@@ -326,100 +329,125 @@ yukon.ui = (function () {
          *        {string} [okText=yg.text.ok]         - The text of the ok button. Defaults to yg.text.ok.
          *        {boolean} [okDisabled=false]         - If true, the primary (ok) button will be initially disabled.
          *        {boolean} [confirm=false]            - If true, after clicking the primary (ok) button, 
-         *                                               the dialog will ask for confirmation
+         *                                               the dialog will ask for confirmation.
          *        {string} [cancelClass='']            - CSS class names applied to the secondary (cancel) button.
          *        {string} [cancelText=yg.text.cancel] - The text of the cancel button. Defaults to yg.text.cancel.
+         *        {boolean} [delete=false]             - If true, a 'Delete' button will also be included.
+         *                                               Only used when mode is not 'CREATE'.
          */
         buttons: function (options) {
             
-            var defaults = {
-                event: 'yukon.dialog.ok',
-                okText: yg.text.ok,
-                okClass: '',
-                cancelText: yg.text.cancel,
-                cancelClass: '',
-                okDisabled: false
-            }, 
-            ok, cancel,
+            options = $.extend({
+                cancelClass : '',
+                cancelText : yg.text.cancel,
+                confirm : false,
+                'delete' : false,
+                event : 'yukon.dialog.ok',
+                mode : 'VIEW',
+                okClass : '',
+                okDisabled : false,
+                okText : yg.text.ok
+            }, options || {});
+            
+            var buttons = [],
             
             okClicked = function (dialog, target) {
-                if (defaults.hasOwnProperty('form')) {
-                    var form = $(defaults.form);
+                
+                if (options.hasOwnProperty('form')) {
+                    var form = $(options.form);
                     if (!form.is('form')) form = dialog.find('form');
                     form.submit();
                 } else {
-                    $(target).trigger(defaults.event);
+                    $(target).trigger(options.event);
                 }
             };
             
-            if (typeof (options) !== 'undefined') $.extend(defaults, options);
+            // Cancel Button
+            buttons.push({
+                text : options.cancelText, 
+                click : function (ev) { $(this).dialog('close'); }, 
+                'class' : 'js-secondary-action ' + options.cancelClass 
+            });
             
-            ok = {
-                text: defaults.okText, 
-                click: function (ev) {
+            if (options['delete'] && options.mode !== 'CREATE') {
+                // Delete Button
+                buttons.push({
+                    text : yg.text['delete'], 
+                    click: function (ev) {
+                        
+                        var dialog = $(this).closest('.ui-dialog-content'),
+                            target = options.target ? options.target : dialog;
+                        mod.confirm({ dialog : dialog });
+                        dialog.off('yukon:ui:dialog:confirm').on('yukon:ui:dialog:confirm', function (ev) {
+                            $(target).trigger('yukon:ui:dialog:delete');
+                        });
+                    }, 
+                    'class' : 'delete'
+                });
+            }
+            
+            // OK Button
+            buttons.push({
+                text : options.okText, 
+                click : function (ev) {
+                    
                     var dialog = $(this).closest('.ui-dialog-content'),
-                        target = defaults.target ? defaults.target : dialog;
-                    if (defaults.confirm) {
-                        mod.confirm({dialog: dialog});
-                        dialog.off('yukon:ui:dialog:confirm')
-                              .on('yukon:ui:dialog:confirm', function (ev) {
+                    target = options.target ? options.target : dialog;
+                    if (options.confirm) {
+                        mod.confirm({ dialog : dialog });
+                        dialog.off('yukon:ui:dialog:confirm').on('yukon:ui:dialog:confirm', function (ev) {
                             okClicked(dialog, target);
                         });
                     } else {
                         okClicked(dialog, target);
                     }
                 }, 
-                'class': 'primary action js-primary-action ' + defaults.okClass,
-                disabled: defaults.okDisabled
-            };
+                'class' : 'primary action js-primary-action ' + options.okClass,
+                disabled : options.okDisabled
+            });
             
-            cancel = {
-                text: defaults.cancelText, click: function (ev) { $(this).dialog('close'); }, 
-                'class': 'js-secondary-action ' + defaults.cancelClass 
-            };
-            
-            return [cancel, ok];
+            return buttons;
         },
         
         /** Initialize any chosen selects on page load. */
-        initChosen: function () {
-            $('.js-init-chosen').each( function () {
-                $(this).chosen({'width': $(this).getHiddenDimensions().innerWidth + 11 + 'px'});
+        initChosen : function () {
+            
+            $('.js-init-chosen').each(function () {
+                $(this).chosen({ 'width' : $(this).getHiddenDimensions().innerWidth + 11 + 'px' });
             }).removeClass('js-init-chosen');
-
+            
             $(document).off('click.yukon.chosen', '.chosen-single');
             $(document).on('click.yukon.chosen', '.chosen-single', function () {
-
+                
                 var chosenElem = $(this),
                     chosenContainer = chosenElem.closest('.chosen-container'),
                     chosenHeight = chosenElem.outerHeight() + chosenContainer.find('.chosen-drop').outerHeight(),
                     offsetInContainer = chosenContainer.offset().top - chosenContainer.offsetParent().offset().top,
                     minBottom = offsetInContainer + chosenHeight,
-
+                    
                     /* The following properties are specific to being in a dialog */
                     scrollContainer = chosenElem.closest('.ui-dialog-content'),
                     currentBottom = scrollContainer.outerHeight(),
                     scrollOffset = scrollContainer.scrollTop();
-
+                
                 /* If we're not in a dialog, scroll the page */
                 if (!scrollContainer.length) {
-
+                    
                     scrollContainer = $(window);
                     currentBottom = scrollContainer.outerHeight() + window.pageYOffset;
                     scrollOffset = 0;
                 }
-
-
+                
                 if (minBottom > currentBottom) {
                     scrollContainer.scrollTop(minBottom - scrollContainer.outerHeight() + scrollOffset);
                 }
             });
         },
-
+        
         autowire: function () {
-
+            
             mod.initChosen();
-
+            
             /** Initialize any tabbed containers on page load. */
             $('.js-init-tabs').tabs().show().removeClass('js-init-tabs');
                 
@@ -723,6 +751,12 @@ yukon.ui = (function () {
                     }
                 } catch (error) {/* Ignore error, occurs when dialog not initialized yet. */ }
                 
+                // Set a create/edit/view mode if possible
+                if (trigger.is('[data-mode]')) {
+                    var mode = trigger.attr('data-mode');
+                    popup.attr('data-mode', mode).data('mode', mode);
+                }
+                
                 // show the popup
                 mod.dialog(popup);
                 
@@ -743,32 +777,35 @@ yukon.ui = (function () {
          *                               
          * The popup element's attributes are as follows:
          * 
-         * data-dialog -       If present the popup will have 'ok', 'cancel' buttons. See yukon.ui.buttons
-         *                     function for button behaviors.
-         * data-dialog-tabbed  If present, the title bar will be tabs. Correct JQuery tabs markup is expected.
-         * data-width  -       Width of the popup. Default is 'auto'.
-         * data-height -       Height of the popup. Default is 'auto'.
-         * data-title  -       The title of the popup.
-         * data-event  -       If present and [data-dialog] is present, the value of [data-event] will be the name
-         *                     of the event to fire when clicking the 'ok' button.
-         * data-target -       If present and [data-dialog] is present' the value of [data-target] will be the 
-         *                     target of the event fired when clicking the ok button.
-         * data-url -          If present, the contents of the popup element will be replaced with the 
-         *                     response of an ajax request to the url before the popup is shown.
-         * data-load-event -   If present, this event will be fired right before the popup is shown.
-         *                     If 'data-url' is used, the event will be fired after the dialog is loaded with
-         *                     the response body.
-         * data-popup-toggle - If present, the trigger element can be clicked to close the popup as well.
-         * data-confirm -      If present, after clicking the 'OK' button, the dialog will ask for confirmation
+         * data-dialog        - If present the popup will have 'ok', 'cancel' buttons. See yukon.ui.buttons
+         *                      function for button behaviors.
+         * data-dialog-tabbed - If present, the title bar will be tabs. Correct JQuery tabs markup is expected.
+         * data-width         - Width of the popup. Default is 'auto'.
+         * data-height        - Height of the popup. Default is 'auto'.
+         * data-title         - The title of the popup.
+         * data-event         - If present and [data-dialog] is present, the value of [data-event] will be the name
+         *                      of the event to fire when clicking the 'ok' button.
+         * data-target        - If present and [data-dialog] is present' the value of [data-target] will be the 
+         *                      target of the event fired when clicking the ok button.
+         * data-url           - If present, the contents of the popup element will be replaced with the 
+         *                      response of an ajax request to the url before the popup is shown.
+         * data-load-event    - If present, this event will be fired right before the popup is shown.
+         *                      If 'data-url' is used, the event will be fired after the dialog is loaded with
+         *                      the response body.
+         * data-popup-toggle  - If present, the trigger element can be clicked to close the popup as well.
+         * data-confirm       - If present, after clicking the 'OK' button, the dialog will ask for confirmation.
+         * data-mode          - If present, sets a page mode for the popup, passed to buttons. 
+         *                      Values: 'CREATE', 'EDIT', 'VIEW'.
          *
          * Positioning options: see http://api.jqueryui.com/position/
-         * data-position-my -  'left|center|right top|center|bottom', Order matters. Default is 'center'
-         * data-position-at -  'left|center|right top|center|bottom', Order matters. Default is 'center'
-         * data-position-of -  selector|element.  Default is 'window'.
+         * data-position-my   - 'left|center|right top|center|bottom', Order matters. Default is 'center'
+         * data-position-at   - 'left|center|right top|center|bottom', Order matters. Default is 'center'
+         * data-position-of   - selector|element.  Default is 'window'.
          */
         dialog: function (popup, url) {
             
             popup = $(popup);
+            
             var dialog = popup.is('[data-dialog]'),
                 tabbed = popup.is('[data-dialog-tabbed]'),
                 loadEvent = popup.data('loadEvent'),
@@ -794,6 +831,8 @@ yukon.ui = (function () {
                 if (popup.is('[data-target]')) buttonOptions.target = $(popup.data('target'));
                 if (popup.is('[data-form]')) buttonOptions.form = popup.data('form');
                 if (popup.is('[data-confirm]')) buttonOptions.confirm = true;
+                if (popup.is('[data-mode]')) buttonOptions.mode = popup.data('mode');
+                if (popup.is('[data-delete]')) buttonOptions['delete'] = true;
                 options.buttons = mod.buttons(buttonOptions);
             }
             

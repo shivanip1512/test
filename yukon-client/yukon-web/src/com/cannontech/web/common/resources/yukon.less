@@ -22,6 +22,7 @@
     CATEGORIES AND SETTINGS
     MISC
     YUKON PICKER
+    COLLECTION PICKER
     COLOR PICKER
     IMAGE PICKER
     DATE/TIME PICKER
@@ -985,6 +986,22 @@ hr.dashed,
     .focus-indicator {
         width: 4px;
         padding: 0;
+    }
+}
+
+/* COLLECTION PICKER */
+.collection-picker {
+    
+    cursor: pointer;
+    display: inline-block;
+    
+    &:hover .collection-picker-label { text-decoration: underline; }
+    
+    .button { margin-left: 0;}
+    
+    .collection-picker-label {
+        color: #777;
+        font-style: italic;
     }
 }
 

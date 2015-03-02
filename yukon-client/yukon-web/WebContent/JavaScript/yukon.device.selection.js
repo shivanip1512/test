@@ -1,6 +1,7 @@
 yukon.namespace('yukon.device.selection');
+
 /**
- * Manages the deviceCollectionPicker.tag tag.
+ * Manages the deviceCollectionPicker.tag file.
  * @requires JQUERY
  * @requires JQUERY_FILE_UPLOAD
  * @requires JQUERY_IFRAME_TRANSPORT
@@ -9,7 +10,6 @@ yukon.namespace('yukon.device.selection');
  * @requires yukon
  * @requires yukon.picker
  */
-
 yukon.device.selection = (function () {
     
     'use strict';
@@ -17,6 +17,7 @@ yukon.device.selection = (function () {
     var
     _initialized = false,
     
+    /** Initialize the device group tab using yukon's dynatree helper module. */
     _initDeviceGroupTab = function (container) {
         
         var tab = container.find('[data-select-by="group"]'),
@@ -46,6 +47,7 @@ yukon.device.selection = (function () {
         
     },
     
+    /** Initialize the file upload tab using jquery fileupload plugin. */
     _initFileUploadTab = function (container) {
         
         var fakeForm = container.find('[data-form]'),
@@ -131,6 +133,7 @@ yukon.device.selection = (function () {
         return container.find('.js-upload-results').is(':visible');
     },
     
+    /** Validate address range selection. */
     _validateAddressRange = function (container) {
         
         var startInput = container.find(':input[name="addressRange.start"]'),
@@ -176,12 +179,14 @@ yukon.device.selection = (function () {
         return success;
     },
     
+    /** Validate device group selection. */
     _validateGroup = function (container) {
         
         var groupName = container.find('[data-select-by="group"]').find('[data-group-names]').data('groupNames');
         return groupName.length > 0;
     },
     
+    /** Validate the selection based on visible tab. */
     _validate = function (container) {
         
         var source = container.find('[data-select-by]:visible'),
@@ -208,6 +213,7 @@ yukon.device.selection = (function () {
             
             if (_initialized) return;
             
+            /** Dialog loaded, fired right before dialog is shown */
             $(document).on('yukon:device:selection:load', function (ev) {
                 
                 var container = $(ev.target),
@@ -218,10 +224,15 @@ yukon.device.selection = (function () {
                 _initDeviceGroupTab(container);
             });
             
+            /** OK button was clicked, check validation and perform selection. */
             $(document).on('yukon:device:selection:made', function (ev) {
                 
                 var dialog = $(ev.target),
                     destination = dialog.data('trigger'),
+                    picker = window[dialog.data('idPicker')],
+                    count = destination.find('.collection-picker-count'),
+                    label = destination.find('.collection-picker-label'),
+                    selection = destination.data('type') == 'button-selection',
                     source = dialog.find('[data-select-by]:visible');
                 
                 if (!_validate(dialog)) {
@@ -242,6 +253,28 @@ yukon.device.selection = (function () {
                         .val(group)
                         .appendTo(destination);
                     });
+                    
+                    if (selection) {
+                        if (groups.length == 1) {
+                            count.hide();
+                            label.text(label.data('group').replace('{0}', groups[0]));
+                        } else {
+                            count.text(groups.length).show();
+                            label.text(label.data('groups'));
+                        }
+                    }
+                } else if (source.is('[data-select-by="device"]') && selection) {
+                    count.text(picker.selectedItems.length).show();
+                    label.text(label.data('devices'));
+                } else if (source.is('[data-select-by="address"]') && selection) {
+                    count.hide();
+                    var from = source.find('[name="addressRange.start"]').val();
+                    var to = source.find('[name="addressRange.end"]').val();
+                    label.text(label.data('address').replace('{0}', from).replace('{1}', to));
+                } else if (source.is('[data-select-by="file"]') && selection) {
+                    count.hide();
+                    var fileName = source.find('.file-name').text();
+                    label.text(label.data('file').replace('{1}', fileName));
                 }
                 
                 dialog.dialog('close');
@@ -266,7 +299,8 @@ yukon.device.selection = (function () {
                 yukon.dynatree.adjustMaxHeight(container);
             });
             
-            $(document).on('click', '[data-device-collection]', function (ev) {
+            /** Connect the dialog to the trigger when collection picker is opened. */
+            $(document).on('click', '.collection-picker', function (ev) {
                 var trigger = $(this),
                     dialog = $(trigger.data('popup'));
                 

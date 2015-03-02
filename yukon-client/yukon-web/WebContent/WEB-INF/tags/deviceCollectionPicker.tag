@@ -7,29 +7,47 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags/jsTree" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<%@ attribute name="key" description="I18n object to use for the alert message. Note: key can be an i18n key String, 
-                                      MessageSourceResolvable, Displayable, DisplayableEnum, or ResolvableTemplate." %>
-<%@ attribute name="title" description="I18n object to use for the popup title. Note: title can be an i18n key String, 
-                                      MessageSourceResolvable, Displayable, DisplayableEnum, or ResolvableTemplate.
-                                      Default: 'yukon.common.device.selection.title' - 'Select By:'" %>
-                                      
-<%@ attribute name="event" description="Name of event to fire after successfully selecting devices." %>
-<%@ attribute name="submit" type="java.lang.Boolean" 
+<%@ attribute name="type" 
+              description="The type of trigger component. Values: 'link', 'button', 'button-selection'.
+                           Default: 'link'." %>
+<%@ attribute name="classes" 
+              description="CSS class names applied to the trigger component." %>
+
+<%@ attribute name="key" 
+              description="I18n object to use for the alert message. Note: key can be an i18n key String, 
+                           MessageSourceResolvable, Displayable, DisplayableEnum, or ResolvableTemplate." %>
+                           
+<%@ attribute name="title" 
+              description="I18n object to use for the popup title. Note: title can be an i18n key String, 
+                           MessageSourceResolvable, Displayable, DisplayableEnum, or ResolvableTemplate.
+                           Default: 'yukon.common.device.selection.title' - 'Select By:'" %>
+                           
+<%@ attribute name="event" 
+              description="Name of event to fire after successfully selecting devices." %>
+              
+<%@ attribute name="submit" 
+              type="java.lang.Boolean" 
               description="If 'true', the closest parent form is submitted after successfully selecting devices. 
                            Default: 'false'." %>
 
 <%--Device group attributes --%>
-<%@ attribute name="multi" type="java.lang.Boolean" 
+<%@ attribute name="multi"
+              type="java.lang.Boolean" 
               description="If true, selection mode for device group will be multiselection. Default: 'true'." %>
+              
 <%@ attribute name="predicates" 
               description="Optional comma separated strings of DeviceGroupPredicateEnum entry names to filter the 
                            tree data by. Default: 'NON_HIDDEN'." %>
-<%@ attribute name="callbacks" type="java.util.Set" 
+                           
+<%@ attribute name="callbacks"
+              type="java.util.Set" 
               description="Set of callbacks to be preformed on each node in the device group tree. Can be used to disable 
                            selecting certain nodes." %>
               
 <cti:msgScope paths=", yukon.common.device.bulk.deviceSelection, yukon.web.defaults, yukon.common.device.selection">
 
+<cti:default var="type" value="link"/>
+<cti:default var="classes" value=""/>
 <cti:default var="submit" value="${false}"/>
 <cti:default var="multi" value="${true}"/>
 <cti:default var="predicates" value="NON_HIDDEN"/>
@@ -49,19 +67,51 @@
 <cti:includeScript link="/JavaScript/yukon.device.selection.js"/>
 
 <cti:deviceGroupHierarchyJson var="groups" predicates="${predicates}" callbacks="${callbacks}"/>
-
 <cti:uniqueIdentifier var="id" prefix="collection"/>
 
-<a data-popup="#${id}" href="javascript:void(0);" data-device-collection
-    <c:if test="${submit}"> data-submit</c:if>
-    <c:if test="${not empty pageScope.event}"> data-event="${event}"</c:if>>
+<cti:msgScope paths=",yukon.web.components">
+<div class="collection-picker ${classes}" data-popup="#${id}" data-type="${type}"
+    <c:if test="${submit}">data-submit</c:if>
+    <c:if test="${not empty pageScope.event}">data-event="${event}"</c:if>>
     <c:choose>
-        <c:when test="${not empty pageScope.key}"><cti:msg2 key="${key}"/></c:when>
-        <c:otherwise><jsp:doBody/></c:otherwise>
+        <c:when test="${type == 'link'}">
+            <a href="javascript:void(0);">
+                <c:choose>
+                    <c:when test="${not empty pageScope.key}"><cti:msg2 key="${key}"/></c:when>
+                    <c:otherwise><jsp:doBody/></c:otherwise>
+                </c:choose>
+            </a>
+        </c:when>
+        <c:when test="${type == 'button' or type == 'button-selection'}">
+            <button class="button">
+                <cti:icon icon="icon-folder-edit"/>
+                <span class="b-label">
+                    <c:choose>
+                        <c:when test="${not empty pageScope.key}"><cti:msg2 key="${key}"/></c:when>
+                        <c:otherwise><jsp:doBody/></c:otherwise>
+                    </c:choose>
+                </span>
+            </button>
+            <c:if test="${type == 'button-selection'}">
+                <cti:msg2 var="devicesText" key="yukon.common.device.selection.device.selected"/>
+                <cti:msg2 var="groupText" key="yukon.common.device.selection.group.selected"/>
+                <cti:msg2 var="groupsText" key="yukon.common.device.selection.groups.selected"/>
+                <cti:msg2 var="addressText" key="yukon.common.device.selection.address.selected"/>
+                <cti:msg2 var="fileText" key="yukon.common.device.selection.file.selected"/>
+                <span class="collection-picker-count badge">0</span>
+                <span class="collection-picker-label"
+                    data-devices="${devicesText}"
+                    data-group="${groupText}"
+                    data-groups="${groupsText}"
+                    data-address="${addressText}"
+                    data-file="${fileText}">${devicesText}</span>
+            </c:if>
+        </c:when>
     </c:choose>
-</a>
+</div>
+</cti:msgScope>
 
-<div id="${id}" class="dn js-device-collection-picker-dialog" data-dialog data-dialog-tabbed 
+<div data-dialog data-dialog-tabbed id="${id}" class="dn js-device-collection-picker-dialog" 
     data-width="700" data-height="675" data-title="<cti:msg2 key="${title}"/>"
     data-class="js-device-collection-picker"
     data-load-event="yukon:device:selection:load" 
@@ -70,7 +120,7 @@
     
     <ul>
         <li><a href="#${id}-device-picker"><i:inline key=".device"/></a></li>
-        <li><a class="js-group-tab" href="#${id}-group"><i:inline key=".group"/></a></li>
+        <li><a href="#${id}-group" class="js-group-tab"><i:inline key=".group"/></a></li>
         <li><a href="#${id}-address"><i:inline key=".address"/></a></li>
         <li><a href="#${id}-file"><i:inline key=".file"/></a></li>
     </ul>
@@ -128,7 +178,7 @@
             <input type="hidden" name="collectionType" value="fileUpload">
             <input type="hidden" name="isFileUpload" value="true">
             
-            <tags:nameValueContainer2 tableClass="stacked natural-width">
+            <tags:nameValueContainer2 tableClass="with-form-controls stacked natural-width">
                 <tags:nameValue2 nameKey=".selectDataFileType">
                     <select name="fileUpload.uploadType">
                         <option value="ADDRESS"><cti:msg2 key=".dataFileAddress"/></option>

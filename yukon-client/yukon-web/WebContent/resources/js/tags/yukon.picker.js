@@ -831,7 +831,7 @@ yukon.protoPicker = function (okText,
      * If this is a multi-select picker, an array will be returned, 
      * but in single select mode a single selected item will be returned.
      */
-    yukon.protoPicker.prototype.getSelected = function () { // called from zoneWizardDetails.js
+    yukon.protoPicker.prototype.getSelected = function () {
         var retVal = this.destinationFieldId
             ? $(document.getElementById(this.destinationFieldId)).val().split(',')
             : $.map($(':input', this.inputAreaDiv), function (val, index) {
