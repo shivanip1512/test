@@ -1,6 +1,7 @@
 package com.cannontech.billing;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,10 +20,10 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -56,16 +57,12 @@ public class BannerFormat extends FileFormatBase {
                                                            1, false, Order.REVERSE, null); 
 
         
+        Range<Instant> instantRange =
+            new Range<Date>(getBillingFileDefaults().getDemandStartDate(), false,
+                getBillingFileDefaults().getEndDate(), true).translate(CtiUtilities.INSTANT_FROM_DATE);
         ListMultimap<PaoIdentifier, PointValueQualityHolder> limitedPeakDemandAttributeDatas =
-                rawPointHistoryDao.getLimitedAttributeData(allDevices, 
-                        BuiltInAttribute.PEAK_DEMAND, 
-                        getBillingFileDefaults().getDemandStartDate(),
-                        getBillingFileDefaults().getEndDate(),
-                        1,
-                        false,
-                        Clusivity.EXCLUSIVE_INCLUSIVE,
-                        Order.REVERSE,
-                        null);
+            rawPointHistoryDao.getLimitedAttributeData(allDevices, BuiltInAttribute.PEAK_DEMAND, 1, false,
+                instantRange, Order.REVERSE, null);
         
         List<YukonMeter> meters = meterDao.getMetersForYukonPaos(allDevices);
         for (YukonMeter meter : meters) {

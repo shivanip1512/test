@@ -18,6 +18,8 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.service.PointService;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ReverseList;
 import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -25,7 +27,6 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.RowMapper;
@@ -97,9 +98,9 @@ public class PointServiceImpl implements PointService {
 
         // first 36 hours - all points
         Date sixMonthsAgo = DateUtils.addMonths(today, -6);
+        Range<Date> dateRange = new Range<Date>(sixMonthsAgo, false, today, true);
         List<PointValueHolder> previous36 =
-            rawPointHistoryDao.getLimitedPointData(lp.getPointID(), sixMonthsAgo, today, Clusivity.EXCLUSIVE_INCLUSIVE,
-                false, Order.REVERSE, 36);
+            rawPointHistoryDao.getLimitedPointData(lp.getPointID(),dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), false, Order.REVERSE, 36);
 
         List<PointValueHolder> previous3Months = Collections.emptyList();
         if (previous36.size() == 36) {

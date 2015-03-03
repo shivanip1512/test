@@ -183,7 +183,6 @@ import com.cannontech.core.authorization.support.AllowDeny;
 import com.cannontech.core.authorization.support.AuthorizationResponse;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.PersistedSystemValueKey;
-import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Mode;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dao.impl.LiteYukonUserMapper;
@@ -565,7 +564,7 @@ public class SimpleImmutabilityTest {
             AuthType.class,
             AuthenticationCategory.class,
             AuthorizationResponse.class,
-            Clusivity.class,
+            Range.class,
             DateFormatEnum.class,
             DateOnlyMode.class,
             Format.class,

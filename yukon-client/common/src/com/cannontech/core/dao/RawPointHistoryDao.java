@@ -43,59 +43,7 @@ public interface RawPointHistoryDao {
         TIMESTAMP, VALUE
     }
 
-    /**
-     * Consider using Range<T> (which includes booleans for this) for the associated values instead of this enum.
-     */
-    public enum Clusivity {
-        INCLUSIVE_EXCLUSIVE(true, false),
-        EXCLUSIVE_INCLUSIVE(false, true),
-        INCLUSIVE_INCLUSIVE(true, true),
-        EXCLUSIVE_EXCLUSIVE(false, false),
-        ;
-
-        private final boolean startInclusive;
-        private final boolean endInclusive;
-
-        private Clusivity(boolean startInclusive, boolean endInclusive) {
-            this.startInclusive = startInclusive;
-            this.endInclusive = endInclusive;
-
-        }
-
-        public boolean isStartInclusive() {
-            return startInclusive;
-        }
-
-        public boolean isEndInclusive() {
-            return endInclusive;
-        }
-
-        public <T extends Comparable<? super T>> Range<T> makeRange(T start, T end) {
-            return new Range<T>(start, startInclusive, end, endInclusive);
-        }
-
-        public static Clusivity getClusivity(boolean startInclusive, boolean endInclusive) {
-            if (startInclusive && !endInclusive) {
-                return INCLUSIVE_EXCLUSIVE;
-            } else if (!startInclusive && endInclusive) {
-                return EXCLUSIVE_INCLUSIVE;
-            } else if (startInclusive && endInclusive) {
-                return INCLUSIVE_INCLUSIVE;
-            } else {
-                return EXCLUSIVE_EXCLUSIVE;
-            }
-        }
-    }
-
-    /**
-     * Method to get a list of point values for a given point and time period.
-     * StartDate is always exclusive, stopDate is inclusive.
-     * Ordering is always timestamp asc, changeid asc
-     * @param pointId - Id of point to get values for
-     * @param startDate - Start time of period (this is always the first argument in SQL, either > or >=)
-     * @param stopDate - End time of period (this is always the second argument in SQL, either < or <=)
-     * @return List of values for the point
-     */
+    
     public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate);
 
     /**
@@ -107,7 +55,7 @@ public interface RawPointHistoryDao {
      * @param order - controls ordering by timestamp and changeid
      * @return List of values for the point
      */
-    public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate, Clusivity clusivity, Order order);
+    public List<PointValueHolder> getPointData(int pointId, Range<Instant> instantRange, Order order);
 
     /**
      * Method to get a list of point values for a given set of pointIds and time period.
@@ -132,7 +80,7 @@ public interface RawPointHistoryDao {
      * @param maxRows - Maximum number of rows to return
      * @return List of values for the point
      */
-    public List<PointValueHolder> getLimitedPointData(int pointId, Date startDate, Date stopDate, Clusivity clusivity, boolean excludeDisabledPaos, Order order, int maxRows);
+    public List<PointValueHolder> getLimitedPointData(int pointId, Range<Instant> instantRange, boolean excludeDisabledPaos, Order order, int maxRows);
 
     /**
      * This method returns RawPointHistory data for a list of PAOs and a given Attribute. This data will be returned
@@ -150,10 +98,8 @@ public interface RawPointHistoryDao {
      */
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable<? extends YukonPao> paos,
         Attribute attribute,
-        Date startDate,
-        Date stopDate,
         boolean excludeDisabledPaos,
-        Clusivity clusivity,
+        Range<Instant> instantRange,
         Order order,
         Set<PointQuality> excludeQualities);
 
@@ -193,7 +139,7 @@ public interface RawPointHistoryDao {
      * @param order - controls ordering by timestamp (only affects the iteration order of the values)
      * @return
      */
-    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeDataByChangeIdRange(Iterable <? extends YukonPao> paos, Attribute attribute, ReadableRange<Long> changeIdRange, boolean excludeDisabledPaos, Clusivity clusivity, Order order);
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeDataByChangeIdRange(Iterable <? extends YukonPao> paos, Attribute attribute, ReadableRange<Long> changeIdRange, boolean excludeDisabledPaos, Range<Instant> instantRange, Order order);
 
     /**
      * This method returns RawPointHistory data for a list of PAOs and a given Attribute. This data will be returned as a ListMultimap
@@ -215,11 +161,9 @@ public interface RawPointHistoryDao {
      */
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> paos,
             Attribute attribute,
-            Date startDate,
-            Date stopDate,
             int maxRows,
             boolean excludeDisabledPaos,
-            Clusivity clusivity,
+            Range<Instant> range,
             Order order,
             Set<PointQuality> excludeQualities);
 

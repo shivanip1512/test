@@ -6,7 +6,6 @@ import org.w3c.dom.Node;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
-import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.yukon.api.amr.endpoint.helper.parsers.AfterParser;
 import com.cannontech.yukon.api.amr.endpoint.helper.parsers.AllAfterParser;
@@ -21,8 +20,8 @@ public class PointValueSelector {
     private SelectorType selectorType;
     private Instant startDate;
     private Instant stopDate;
-    private Clusivity clusivity;
-    private Order order;
+    private Range<Instant> instantRange;
+	private Order order;
     private Integer numberOfRows;
     private String label;
 
@@ -47,17 +46,14 @@ public class PointValueSelector {
         this.stopDate = stopDate;
     }
 
-    public Clusivity getClusivity() {
-        return clusivity;
-    }
+    
+    public Range<Instant> getInstantRange() {
+		return instantRange;
+	}
 
-    public void setClusivity(Clusivity clusivity) {
-        this.clusivity = clusivity;
-    }
-
-    public Range<Instant> getDateRange() {
-        return new Range<Instant>(startDate, clusivity.isStartInclusive(), stopDate, clusivity.isEndInclusive());
-    }
+	public void setInstantRange(Range<Instant> dateRange) {
+		this.instantRange = dateRange;
+	}
 
     public Order getOrder() {
         return order;
@@ -90,7 +86,7 @@ public class PointValueSelector {
     @Override
     public String toString() {
         return "PointValueSelector [selectorType=" + selectorType + ", startDate=" + startDate
-               + ", stopDate=" + stopDate + ", clusivity=" + clusivity + ", order=" + order
+               + ", stopDate=" + stopDate + ", DateRange=" + instantRange + ", order=" + order
                + ", numberOfRows=" + numberOfRows + ", label=" + label + "]";
     }
 

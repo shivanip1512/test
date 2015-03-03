@@ -26,12 +26,12 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
 import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -72,15 +72,23 @@ public class CMEP_MEPMD01Format extends FileFormatBase  {
         
         // Build up the data entries and write them out the report file.
         Map<Integer, YukonMeter> deviceIdToMeterMap = getDeviceIdToMeterMap(billingDeviceGroups);
+        Range<Date> dateRange = null;
         for (CMEPUnitEnum cmepUnit : cmepUnits) {
             try {
-                ListMultimap<PaoIdentifier, PointValueQualityHolder> billingAttributeData;  
-                if (useLastChangeId) {  // get data by token (lastChangeId)
-                    billingAttributeData = rawPointHistoryDao.getAttributeDataByChangeIdRange(deviceIdToMeterMap.values(), cmepUnit.getAttribute(), changeIdRange, false, Clusivity.EXCLUSIVE_INCLUSIVE, Order.FORWARD);
-                } else {    // get data by date range
-                    billingAttributeData = rawPointHistoryDao.getAttributeData(deviceIdToMeterMap.values(), cmepUnit.getAttribute(), billingStartDate, billingEndDate, false, Clusivity.EXCLUSIVE_INCLUSIVE, Order.FORWARD, null);
+                ListMultimap<PaoIdentifier, PointValueQualityHolder> billingAttributeData;
+                if (useLastChangeId) { // get data by token (lastChangeId)
+                    dateRange = new Range<Date>(null, false, null, true);
+                    billingAttributeData =
+                        rawPointHistoryDao.getAttributeDataByChangeIdRange(deviceIdToMeterMap.values(),
+                            cmepUnit.getAttribute(), changeIdRange, false,
+                            dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), Order.FORWARD);
+                } else { // get data by date range
+                    dateRange = new Range<Date>(billingStartDate, false, billingEndDate, true);
+                    billingAttributeData =
+                        rawPointHistoryDao.getAttributeData(deviceIdToMeterMap.values(), cmepUnit.getAttribute(), false,
+                            dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), Order.FORWARD, null);
                 }
-                
+
                 for (Entry<PaoIdentifier, PointValueQualityHolder> entry : billingAttributeData.entries()) {
                     PointValueQualityHolder pointValueHolder = entry.getValue();
                     PaoIdentifier paoIdentifier = entry.getKey();

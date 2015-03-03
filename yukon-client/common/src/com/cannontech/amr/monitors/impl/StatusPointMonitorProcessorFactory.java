@@ -21,9 +21,10 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.RichPointData;
@@ -214,8 +215,10 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
     private PointValueHolder getPreviousValueForPoint(PointValueHolder pointValueQualityHolder) {
         Date nextTimeStamp = pointValueQualityHolder.getPointDataTimeStamp();
         int pointId = pointValueQualityHolder.getId();
-        List<PointValueHolder> pointPrevValueList = rawPointHistoryDao.getLimitedPointData(pointId, null, nextTimeStamp, Clusivity.INCLUSIVE_EXCLUSIVE, false, Order.REVERSE, 1);
-        
+        Range<Date> dateRange = new Range<Date>(null, true, nextTimeStamp, false);
+		List<PointValueHolder> pointPrevValueList = rawPointHistoryDao.getLimitedPointData(pointId,dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), false,
+						Order.REVERSE, 1);
+
         if (pointPrevValueList.size() > 0) { 
             PointValueHolder pointValuePrev = pointPrevValueList.get(0);
             return pointValuePrev;

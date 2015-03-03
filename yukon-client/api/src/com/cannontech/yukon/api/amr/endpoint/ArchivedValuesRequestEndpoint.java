@@ -459,7 +459,7 @@ public class ArchivedValuesRequestEndpoint {
                 PointSelector pointSelector, PointValueSelector selector, Long sinceValueId) {
             String name = pointSelector.getName();
             Attribute attribute = attributeService.resolveAttributeName(name);
-            Range<Instant> dateRange = selector.getDateRange();
+            Range<Instant> dateRange = selector.getInstantRange();
             Range<Long> changeIdRange = Range.fromExclusive(sinceValueId);
 
             if (selector.getNumberOfRows() != null) {
@@ -521,7 +521,7 @@ public class ArchivedValuesRequestEndpoint {
         public ListMultimap<PaoIdentifier, PointValueQualityHolder> getPointValueMap(Set<PaoIdentifier> paos,
                 PointSelector pointSelector, PointValueSelector selector, Long sinceValueId) {
             String name = pointSelector.getName();
-            Range<Instant> dateRange = selector.getDateRange();
+            Range<Instant> dateRange = selector.getInstantRange();
             Range<Long> changeIdRange = Range.fromExclusive(sinceValueId);
 
             if (selector.getNumberOfRows() != null) {
@@ -552,7 +552,7 @@ public class ArchivedValuesRequestEndpoint {
                 PointSelector pointSelector, PointValueSelector selector, Long sinceValueId) {
             PointType type = pointSelector.getPointType();
             int offset = pointSelector.getOffset();
-            Range<Instant> dateRange = selector.getDateRange();
+            Range<Instant> dateRange = selector.getInstantRange();
             Range<Long> changeIdRange = Range.fromExclusive(sinceValueId);
 
             if (selector.getNumberOfRows() != null) {
@@ -583,7 +583,7 @@ public class ArchivedValuesRequestEndpoint {
         public ListMultimap<PaoIdentifier, PointValueQualityHolder> getPointValueMap(Set<PaoIdentifier> paos,
                 PointSelector pointSelector, PointValueSelector selector, Long sinceValueId) {
             String defaultName = pointSelector.getName();
-            Range<Instant> dateRange = selector.getDateRange();
+            Range<Instant> dateRange = selector.getInstantRange();
             Range<Long> changeIdRange = Range.fromExclusive(sinceValueId);
 
             if (selector.getNumberOfRows() != null) {

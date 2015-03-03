@@ -2,8 +2,8 @@ package com.cannontech.yukon.api.amr.endpoint.helper.parsers;
 
 import org.joda.time.Instant;
 
+import com.cannontech.common.util.Range;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
-import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.yukon.api.amr.endpoint.helper.PointValueSelector;
 import com.cannontech.yukon.api.amr.endpoint.helper.PointValueSelector.OrderHelper;
@@ -15,14 +15,13 @@ public class AllBeforeParser extends ValueParser {
         Integer limit = parseLimit(template);
 
         Boolean inclusive = template.evaluateAsBoolean("@inclusive", true);
-        Clusivity clusivity = Clusivity.getClusivity(true, inclusive);
-
         String orderString = template.evaluateAsString("@order");
         Order order = OrderHelper.getOrderByName(orderString, Order.REVERSE);
 
         selector.setStopDate(stopDate);
         selector.setNumberOfRows(limit);
-        selector.setClusivity(clusivity);
+        Range<Instant> dateRange = new Range<Instant>(selector.getStartDate(), true, selector.getStopDate(), inclusive);
+        selector.setInstantRange(dateRange);
         selector.setOrder(order);
     }
 }
