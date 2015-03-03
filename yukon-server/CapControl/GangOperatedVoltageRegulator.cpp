@@ -7,8 +7,6 @@
 #include "capcontroller.h"
 #include "ccmessage.h"
 
-#include <boost/assign/list_of.hpp>
-
 namespace Cti           {
 namespace CapControl    {
 
@@ -63,17 +61,12 @@ GangOperatedVoltageRegulator & GangOperatedVoltageRegulator::operator=(const Gan
 
 void GangOperatedVoltageRegulator::loadAttributes(AttributeService * service)
 {
-    const std::vector<PointAttribute> attributes =
-        boost::assign::list_of
-            ( PointAttribute::VoltageY )
-            ( PointAttribute::TapDown )
-            ( PointAttribute::TapUp )
-            ( PointAttribute::TapPosition )
-            ( PointAttribute::AutoRemoteControl )
-            ( PointAttribute::KeepAlive )
-            ( PointAttribute::ForwardSetPoint )
-            ( PointAttribute::ForwardBandwidth )
-        ;
+    const std::vector<PointAttribute> attributes
+    {
+        PointAttribute::VoltageY,
+        PointAttribute::AutoRemoteControl,
+        PointAttribute::KeepAlive,
+    };
 
     for each ( const PointAttribute attribute in attributes )
     {

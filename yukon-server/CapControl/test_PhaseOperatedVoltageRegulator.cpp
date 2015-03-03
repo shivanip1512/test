@@ -1134,7 +1134,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_RaiseSetPoint_Success
     BOOST_REQUIRE( requestMsg );
 
     BOOST_CHECK_EQUAL( 1020, requestMsg->DeviceId() );  // PaoID of the 'SetPoint' LitePoint
-    BOOST_CHECK_EQUAL( "putvalue analog 7 120.750",
+    BOOST_CHECK_EQUAL( "putvalue analog 7 120.750000",
                        requestMsg->CommandString() );   // Offset of the 'SetPoint' LitePoint and the new value
 
 
@@ -1194,7 +1194,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_LowerSetPoint_Success
     BOOST_REQUIRE( requestMsg );
 
     BOOST_CHECK_EQUAL( 1020, requestMsg->DeviceId() );  // PaoID of the 'SetPoint' LitePoint
-    BOOST_CHECK_EQUAL( "putvalue analog 7 119.250",
+    BOOST_CHECK_EQUAL( "putvalue analog 7 119.250000",
                        requestMsg->CommandString() );   // Offset of the 'SetPoint' LitePoint and the new value
 
 

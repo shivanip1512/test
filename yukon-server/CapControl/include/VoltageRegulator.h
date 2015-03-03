@@ -11,15 +11,20 @@
 
 #include "EventTypes.h"
 
+#include "ControlPolicy.h"
+
 #include <map>
 #include <set>
 #include <string>
 #include <stdexcept>
+#include <memory>
 
 class CtiSignalMsg;
 
+
 namespace Cti           {
 namespace CapControl    {
+
 
 class VoltageRegulator : public CapControlPao, public UpdatablePao
 {
@@ -127,13 +132,13 @@ public:
     ControlMode getControlMode() const;
 
     double getVoltage();
-    double getSetPoint();
-    virtual double getSetPointBandwidth();
 
     long getKeepAliveConfig();
     long getKeepAliveTimer();
 
 protected:
+
+    std::unique_ptr<ControlPolicy>  _controlPolicy;
 
     Phase   _phase;
 
@@ -173,6 +178,12 @@ protected:
     CtiSignalMsg * createDispatchMessage( const long ID, const std::string &text );
 
     void notifyControlOperation(const ControlOperation & operation, const CtiTime & timeStamp = CtiTime() );
+
+
+    void submitControlCommands( ControlPolicy::ControlRequest & blob,
+                                const ControlOperation          operation,
+                                const std::string             & opDescription,
+                                const CtiCCEventType_t          eventType );
 };
 
 // this is added to use voltageRegulator with boost::ptr_vector, since it is an abstract class

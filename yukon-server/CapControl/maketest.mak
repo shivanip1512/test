@@ -145,7 +145,11 @@ MsgDeleteItem.obj \
 MsgSystemStatus.obj \
 MsgCapControlServerResponse.obj \
 MsgCapControlShutdown.obj \
-ExecutorFactory.obj
+ExecutorFactory.obj \
+Policy.obj \
+StandardControlPolicy.obj
+
+
 
 CAPCONTROL_TEST_FULLBUILD = $[Filename,$(OBJ),CapControlTestFullBuild,target]
 

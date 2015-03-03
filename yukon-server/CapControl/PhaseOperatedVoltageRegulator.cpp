@@ -6,8 +6,6 @@
 #include "ccutil.h"
 #include "ccmessage.h"
 
-#include <boost/assign/list_of.hpp>
-
 extern unsigned long _IVVC_REGULATOR_AUTO_MODE_MSG_DELAY;
 
 
@@ -65,21 +63,16 @@ PhaseOperatedVoltageRegulator & PhaseOperatedVoltageRegulator::operator=(const P
 
 void PhaseOperatedVoltageRegulator::loadAttributes(AttributeService * service)
 {
-    const std::vector<PointAttribute> attributes =
-        boost::assign::list_of
-            ( PointAttribute::VoltageX )
-            ( PointAttribute::VoltageY )
-            ( PointAttribute::TapDown )
-            ( PointAttribute::TapUp )
-            ( PointAttribute::TapPosition )
-            ( PointAttribute::AutoRemoteControl )
-            ( PointAttribute::KeepAlive )
-            ( PointAttribute::Terminate )
-            ( PointAttribute::AutoBlockEnable )
-            ( PointAttribute::HeartbeatTimerConfig )
-            ( PointAttribute::ForwardSetPoint )
-            ( PointAttribute::ForwardBandwidth )
-        ;
+    const std::vector<PointAttribute> attributes
+    {
+        PointAttribute::VoltageX,
+        PointAttribute::VoltageY,
+        PointAttribute::AutoRemoteControl,
+        PointAttribute::KeepAlive,
+        PointAttribute::Terminate,
+        PointAttribute::AutoBlockEnable,
+        PointAttribute::HeartbeatTimerConfig
+    };
 
     for each ( const PointAttribute attribute in attributes )
     {

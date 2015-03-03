@@ -127,7 +127,10 @@ MsgDeleteItem.obj \
 MsgSystemStatus.obj \
 MsgCapControlServerResponse.obj \
 MsgCapControlShutdown.obj \
-ExecutorFactory.obj
+ExecutorFactory.obj \
+Policy.obj \
+StandardControlPolicy.obj
+
 
 TARGS = capcontrol.exe
 

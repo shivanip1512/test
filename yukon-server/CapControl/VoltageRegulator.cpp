@@ -10,6 +10,13 @@
 #include "mgr_config.h"
 #include "config_data_regulator.h"
 
+
+
+#include "StandardControlPolicy.h"
+
+
+
+
 using namespace boost::posix_time;
 using namespace Cti::Messaging::CapControl;
 
@@ -53,7 +60,9 @@ VoltageRegulator::VoltageRegulator()
     _keepAliveConfig(0),
     _keepAliveTimer(0),
     _nextKeepAliveSendTime(CtiTime(neg_infin)),
-    _voltChangePerTap(0.75)
+    _voltChangePerTap(0.75),
+    _controlPolicy( std::make_unique<StandardControlPolicy>() )
+//    _controlPolicy( new StandardControlPolicy )
 {
     // empty...
 }
@@ -69,7 +78,8 @@ VoltageRegulator::VoltageRegulator(Cti::RowReader & rdr)
     _keepAliveConfig(0),
     _keepAliveTimer(0),
     _nextKeepAliveSendTime(CtiTime(neg_infin)),
-    _voltChangePerTap(0.75)
+    _voltChangePerTap(0.75),
+    _controlPolicy( std::make_unique<StandardControlPolicy>() )
 {
     /*
         We have data from the Regulator table - this will only be the case if we are an LTC.
@@ -99,7 +109,8 @@ VoltageRegulator::VoltageRegulator(const VoltageRegulator & toCopy)
     _keepAliveConfig(0),
     _keepAliveTimer(0),
     _nextKeepAliveSendTime(CtiTime(neg_infin)),
-    _voltChangePerTap(0.75)
+    _voltChangePerTap(0.75),
+    _controlPolicy( std::make_unique<StandardControlPolicy>() )
 {
     operator=(toCopy);
 }
@@ -140,6 +151,8 @@ void VoltageRegulator::handlePointData(CtiPointDataMsg * message)
 {
     setUpdated(true);
     _pointValues.updatePointValue(message);
+
+    _controlPolicy->updatePointData( message );
 }
 
 
@@ -150,6 +163,11 @@ VoltageRegulator::IDSet VoltageRegulator::getRegistrationPoints()
     if ( getDisabledStatePointId() > 0 )
     {
         IDs.insert( getDisabledStatePointId() );
+    }
+
+    for ( const long ID : _controlPolicy->getRegistrationPointIDs() )
+    {
+        IDs.insert( ID );
     }
 
     for each ( const AttributeMap::value_type & attribute in _attributes  )
@@ -163,6 +181,16 @@ VoltageRegulator::IDSet VoltageRegulator::getRegistrationPoints()
 
 LitePoint VoltageRegulator::getPointByAttribute(const PointAttribute & attribute)
 {
+    try
+    {
+        return _controlPolicy->getPointByAttribute( attribute );
+    } 
+    catch ( PointAttribute & att )
+    {
+        // ... continue on to the local map lookup
+    }
+
+
     AttributeMap::const_iterator iter = _attributes.find(attribute);
 
     if ( iter == _attributes.end() )
@@ -201,6 +229,8 @@ bool VoltageRegulator::getPointValue(int pointId, double & value)
 
 void VoltageRegulator::loadPointAttributes(AttributeService * service, const PointAttribute & attribute)
 {
+    _controlPolicy->loadAttributes( *service, getPaoId() );
+
     LitePoint point = service->getPointByPaoAndAttribute( getPaoId(), attribute );
 
     if (point.getPointType() != InvalidPointType)
@@ -235,66 +265,91 @@ void VoltageRegulator::setKeepAliveConfig(const long value)
 
 
 void VoltageRegulator::executeTapUpOperation()
+try
 {
-    notifyControlOperation( RaiseTap );
+    submitControlCommands( _controlPolicy->TapUp(),
+                           RaiseTap,
+                           "Raise Tap Position",
+                           capControlIvvcTapOperation );
 
-    std::string description = "Raise Tap Position" + getPhaseString();
-
-    executeDigitalOutputHelper( getPointByAttribute( PointAttribute::TapUp ), description, capControlIvvcTapOperation );
-    sendCapControlOperationMessage( CapControlOperationMessage::createRaiseTapMessage( getPaoId(), CtiTime() ) );
+    sendCapControlOperationMessage(
+        CapControlOperationMessage::createRaiseTapMessage( getPaoId(), CtiTime() ) );
+}
+catch ( PointAttribute & missingAttribute )
+{
+    throw MissingPointAttribute( getPaoId(),
+                                 missingAttribute,
+                                 getPaoType(),
+                                 isTimeForMissingAttributeComplain()  );
 }
 
 
 void VoltageRegulator::executeTapDownOperation()
+try
 {
-    notifyControlOperation( LowerTap );
+    submitControlCommands( _controlPolicy->TapDown(),
+                           LowerTap,
+                           "Lower Tap Position",
+                           capControlIvvcTapOperation );
 
-    std::string description = "Lower Tap Position" + getPhaseString();
-
-    executeDigitalOutputHelper( getPointByAttribute( PointAttribute::TapDown ), description, capControlIvvcTapOperation );
-    sendCapControlOperationMessage( CapControlOperationMessage::createLowerTapMessage( getPaoId(), CtiTime() ) );
+    sendCapControlOperationMessage(
+        CapControlOperationMessage::createLowerTapMessage( getPaoId(), CtiTime() ) );
+}
+catch ( PointAttribute & missingAttribute )
+{
+    throw MissingPointAttribute( getPaoId(),
+                                 missingAttribute,
+                                 getPaoType(),
+                                 isTimeForMissingAttributeComplain()  );
 }
 
 
 void VoltageRegulator::executeAdjustSetPointOperation( const double changeAmount )
+try
 {
-    double    currentSetPoint = 0.0;
-    LitePoint point = getPointByAttribute( PointAttribute::ForwardSetPoint );
-
-    if ( getPointValue( point.getPointId(), currentSetPoint ) )
+    if ( changeAmount > 0.0 ) 
     {
-        std::string description;
-
-        if ( changeAmount > 0.0 )
-        {
-            notifyControlOperation(RaiseSetPoint); 
-            description = "Raise Set Point" + getPhaseString();
-        }
-        else
-        {
-            notifyControlOperation(LowerSetPoint); 
-            description = "Lower Set Point" + getPhaseString();
-        }
-
-        CtiCapController::getInstance()->sendMessageToDispatch(
-                createDispatchMessage( point.getPointId(), description ) );
-
-        const long pointOffset=
-            point.getControlOffset() ?
-                point.getControlOffset() :
-                point.getPointOffset() % 10000;
-
-        const double newSetPoint = currentSetPoint + changeAmount;
-
-        std::string commandString = "putvalue analog " + CtiNumStr( pointOffset ) + " " + CtiNumStr( newSetPoint );
-
-        CtiRequestMsg *request = createPorterRequestMsg( point.getPaoId(), commandString );
-        request->setSOE(5);
-
-        CtiCapController::getInstance()->manualCapBankControl( request );
-
-        CtiCapController::submitEventLogEntry( EventLogEntry( description, getPaoId(), capControlIvvcSetPointOperation ) );
+        submitControlCommands( _controlPolicy->AdjustSetPoint( changeAmount ),
+                               RaiseSetPoint,
+                               "Raise Set Point",
+                               capControlIvvcSetPointOperation );
     }
+    else
+    {
+        submitControlCommands( _controlPolicy->AdjustSetPoint( changeAmount ),
+                               LowerSetPoint,
+                               "Lower Set Point",
+                               capControlIvvcSetPointOperation );
+    }
+    // sendCapControlOperationMessage( ... <new message type?> )
+}
+catch ( PointAttribute & missingAttribute )
+{
+    throw MissingPointAttribute( getPaoId(),
+                                 missingAttribute,
+                                 getPaoType(),
+                                 isTimeForMissingAttributeComplain()  );
+}
+
+
+void VoltageRegulator::submitControlCommands( ControlPolicy::ControlRequest   & blob,
+                                              const ControlOperation            operation,
+                                              const std::string               & opDescription,
+                                              const CtiCCEventType_t            eventType )
+{
+    notifyControlOperation( operation );
+
+    std::string fullDescription = opDescription + getPhaseString();
+
+    blob.signal->setText( fullDescription );
+    blob.signal->setAdditionalInfo( "Voltage Regulator Name: " + getPaoName() );
+
+    CtiCapController::getInstance()->sendMessageToDispatch( blob.signal );
+
+    CtiCapController::submitEventLogEntry(
+                        EventLogEntry( fullDescription, getPaoId(), eventType ) );
+
+    CtiCapController::getInstance()->manualCapBankControl( blob.request );
 }
 
 
@@ -526,8 +581,8 @@ double VoltageRegulator::requestVoltageChange( const double changeAmount,
     else    // set point calculations...
     {
         const double currentVoltage       = getVoltage();
-        const double currentSetPoint      = getSetPoint();
-        const double currentHalfBandwidth = getSetPointBandwidth() / 2.0;
+        const double currentSetPoint      = _controlPolicy->getSetPointValue();
+        const double currentHalfBandwidth = _controlPolicy->getSetPointBandwidth() / 2.0;
 
         const bool withinBandwidth =
             ( ( ( currentSetPoint - currentHalfBandwidth ) < currentVoltage ) &&
@@ -574,53 +629,31 @@ double VoltageRegulator::getVoltage()
 }
 
 
-double VoltageRegulator::getSetPoint()
-{
-    double    value = 0.0;
-    LitePoint point = getPointByAttribute( PointAttribute::ForwardSetPoint );
-
-    if ( getPointValue( point.getPointId(), value ) )
-    {
-        return value;
-    }
-
-    return 0.0;
-}
-
-
-/*
-    This guy should return the entire bandwidth window from [-Vb/2 to +Vb/2]
-*/
-double VoltageRegulator::getSetPointBandwidth()
-{
-    double    value = 0.0;
-    LitePoint point = getPointByAttribute( PointAttribute::ForwardBandwidth );
-
-    if ( getPointValue( point.getPointId(), value ) )
-    {
-        return value;
-    }
-
-    return 0.0;
-}
-
-
 void VoltageRegulator::canExecuteVoltageRequest( const double changeAmount ) //const
+try
 {
     if ( changeAmount != 0.0 )
     {
         if ( getControlMode() == ManualTap ) 
         {
-            getPointByAttribute( ( changeAmount > 0.0 )
+            _controlPolicy->getPointByAttribute(
+                                changeAmount > 0.0
                                     ? PointAttribute::TapUp
-                                    : PointAttribute::TapDown ); 
+                                    : PointAttribute::TapDown );
         }
         else
         {
-            getPointByAttribute( PointAttribute::ForwardSetPoint ); 
-            getPointByAttribute( PointAttribute::ForwardBandwidth ); 
+            _controlPolicy->getPointByAttribute( PointAttribute::ForwardSetPoint ); 
+            _controlPolicy->getPointByAttribute( PointAttribute::ForwardBandwidth ); 
         }
     }
+}
+catch ( PointAttribute & missingAttribute )
+{
+    throw MissingPointAttribute( getPaoId(),
+                                 missingAttribute,
+                                 getPaoType(),
+                                 isTimeForMissingAttributeComplain()  );
 }
 
 
