@@ -12,11 +12,12 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.DateFormattingService;
@@ -109,9 +110,11 @@ public class DailyUsageModel extends BareReportModelBase<DailyUsageModel.ModelRo
         	Date range1 = d1;
         	Date range2 = DateUtils.addHours(d1, 1);
         	
+        	Range<Date> dateRange = new Range<Date>(range1, true, range2, false);
         	// get rph data for range
-        	List<PointValueHolder> pvhList = rphDao.getPointData(pointId, range1, range2, Clusivity.INCLUSIVE_EXCLUSIVE, Order.FORWARD);
-        	
+			List<PointValueHolder> pvhList = rphDao.getPointData(pointId,
+					dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), Order.FORWARD);
+	
         	Integer rphCount = pvhList.size();
         	Double hourTotal = 0.0;
         	Double hourAvg = 0.0;

@@ -1,9 +1,11 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -11,8 +13,9 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.CachingPointFormattingService;
@@ -72,11 +75,18 @@ public class DeviceReadingsModel extends FilteredReportModelBase<DeviceReadingsM
         List<DisplayablePao> displayableDevices = paoLoadingService.getDisplayableDevices(devices);
         
         ListMultimap<PaoIdentifier, PointValueQualityHolder> intermediateResults;
-        
         if (getAll) {
-            intermediateResults = rawPointHistoryDao.getAttributeData(displayableDevices, attribute, getStartDate(), getStopDate(), excludeDisabledDevices, Clusivity.EXCLUSIVE_INCLUSIVE, Order.REVERSE, null);
+        	Range<Date> dateRange = new Range<Date>( getStartDate(), false, getStopDate(), true);
+			intermediateResults = rawPointHistoryDao.getAttributeData(
+					displayableDevices, attribute, excludeDisabledDevices,
+					dateRange.translate(CtiUtilities.INSTANT_FROM_DATE)
+					/*Clusivity.EXCLUSIVE_INCLUSIVE*/, Order.REVERSE, null);
         } else {
-            intermediateResults = rawPointHistoryDao.getLimitedAttributeData(displayableDevices, attribute, null, null, 1, excludeDisabledDevices, Clusivity.EXCLUSIVE_INCLUSIVE, Order.REVERSE, null);
+            Range<Instant> instantRange =
+                new Range<Date>(null, false, null, true).translate(CtiUtilities.INSTANT_FROM_DATE);
+            intermediateResults =
+                rawPointHistoryDao.getLimitedAttributeData(displayableDevices, attribute, 1, excludeDisabledDevices,
+                    instantRange, Order.REVERSE, null);
         }
         CachingPointFormattingService cachingPointFormattingService = pointFormattingService.getCachedInstance();            
         for (DisplayablePao displayablePao : displayableDevices) {

@@ -20,12 +20,13 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Range;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -72,15 +73,15 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 	    int estimatedSize = 0;
 
 	    EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.PEAK_DEMAND);
+	    Range<Date> dateRange = new Range<Date>(startDate, true, endDate, true);
 	    // load up results for each attribute
-	    for (BuiltInAttribute attribute : attributesToLoad) {
+        for (BuiltInAttribute attribute : attributesToLoad) {
+            ListMultimap<PaoIdentifier, PointValueQualityHolder> resultsForAttribute =
+                rawPointHistoryDao.getAttributeData(meters, attribute, false,
+                    dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), Order.FORWARD, null);
 
-	        ListMultimap<PaoIdentifier, PointValueQualityHolder> resultsForAttribute = 
-	            rawPointHistoryDao.getAttributeData(meters, attribute, startDate, endDate, 
-	                                                false, Clusivity.INCLUSIVE_INCLUSIVE, Order.FORWARD, null);
-
-	        resultsPerAttribute.put(attribute, resultsForAttribute);
-	        estimatedSize += resultsForAttribute.size();
+            resultsPerAttribute.put(attribute, resultsForAttribute);
+            estimatedSize += resultsForAttribute.size();
 	    }
 
 	    // build the actual MeterRead objects in the order they are to be output getPaoList returns the meters in
@@ -176,12 +177,14 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         int estimatedSize = 0;
 
         EnumSet<BuiltInAttribute> attributesToLoad = blockProcessingService.getAttributeSet();
+        Range<Date> dateRange = new Range<Date>(startDate, true, endDate, true);
         // load up results for each attribute
         for (BuiltInAttribute attribute : attributesToLoad) {
 
             ListMultimap<PaoIdentifier, PointValueQualityHolder> resultsForAttribute;
-            resultsForAttribute = rawPointHistoryDao.getAttributeData(meters, attribute, startDate, endDate,
-                                                                       false, Clusivity.INCLUSIVE_INCLUSIVE, Order.FORWARD, null);
+            resultsForAttribute =
+                rawPointHistoryDao.getAttributeData(meters, attribute, false,
+                    dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), Order.FORWARD, null);
 
             resultsPerAttribute.put(attribute, resultsForAttribute);
             estimatedSize += resultsForAttribute.size();

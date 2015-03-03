@@ -14,8 +14,9 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.google.common.collect.ListMultimap;
@@ -70,9 +71,11 @@ public class MeterUsageModel extends FilteredReportModelBase<MeterUsageModel.Met
     	
         Iterable<? extends YukonPao> devices = getYukonPaoList();
         List<YukonMeter> meters = meterDao.getMetersForYukonPaos(devices);
-        
+        Range<Date> dateRange = new Range<Date>( getStartDate(), false, getStopDate(), true);
         ListMultimap<PaoIdentifier, PointValueQualityHolder> intermediateResults = 
-        	rawPointHistoryDao.getAttributeData(meters, attribute, getStartDate(), getStopDate(), excludeDisabledDevices, Clusivity.EXCLUSIVE_INCLUSIVE, Order.FORWARD, null);
+        		rawPointHistoryDao.getAttributeData(meters, attribute,excludeDisabledDevices, 
+						dateRange.translate(CtiUtilities.INSTANT_FROM_DATE),
+						Order.FORWARD, null);
            
         for (YukonMeter meter : meters) {
         	Double previousReading = null;

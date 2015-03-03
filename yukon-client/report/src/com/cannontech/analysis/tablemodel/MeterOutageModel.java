@@ -18,12 +18,13 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Range;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -111,9 +112,10 @@ public class MeterOutageModel extends FilteredReportModelBase<MeterOutageModel.M
     public void doLoadData() {
         Iterable<? extends YukonPao> devices = getYukonPaoList();
         List<YukonMeter> meters = getMetersForYukonPaos(devices);
-
+        Range<Date> dateRange = new Range<Date>( getStartDate(), true, getStopDate(), true);
         ListMultimap<PaoIdentifier, PointValueQualityHolder> intermediateResults;
-        intermediateResults = rawPointHistoryDao.getAttributeData(meters, attribute, getStartDate(), getStopDate(), false, Clusivity.INCLUSIVE_INCLUSIVE, getOrderDirection(), null);
+        intermediateResults = rawPointHistoryDao.getAttributeData(meters, attribute,false, 
+        		dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), getOrderDirection(), null);
 
         for (YukonMeter meter : meters) {
             List<PointValueQualityHolder> values = intermediateResults.get(meter.getPaoIdentifier());

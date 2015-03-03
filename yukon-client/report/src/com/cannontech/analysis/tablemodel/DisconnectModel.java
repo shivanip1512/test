@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.meter.model.PlcMeter;
@@ -15,19 +16,19 @@ import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Range;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
@@ -167,9 +168,16 @@ public class DisconnectModel extends FilteredReportModelBase<DisconnectModel.Dis
 
         ListMultimap<PaoIdentifier, PointValueQualityHolder> intermediateResults;
         if (showHistory) {
-            intermediateResults = rawPointHistoryDao.getAttributeData(meters, attribute, getStartDate(), getStopDate(), false, Clusivity.EXCLUSIVE_INCLUSIVE, Order.FORWARD, null);
+            Range<Date> dateRange = new Range<Date>(getStartDate(), false, getStopDate(), true);
+            intermediateResults =
+                rawPointHistoryDao.getAttributeData(meters, attribute, false,
+                    dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), Order.FORWARD, null);
         } else {
-            intermediateResults = rawPointHistoryDao.getLimitedAttributeData(meters, attribute, null, null, 1, false, Clusivity.EXCLUSIVE_INCLUSIVE, Order.REVERSE, null);
+            Range<Instant> instantRange =
+                new Range<Date>(null, false, null, true).translate(CtiUtilities.INSTANT_FROM_DATE);
+            intermediateResults =
+                rawPointHistoryDao.getLimitedAttributeData(meters, attribute, 1, false, instantRange, Order.REVERSE,
+                    null);
         }
 
         for (DisconnectMeter meter : meters) {
