@@ -78,11 +78,6 @@ void ApplyInvalidateNotUpdated(const long key, CtiPortSPtr Port, void* d)
     }
 }
 
-void ApplyHaltLog(const long key, CtiPortSPtr Port, void* d)
-{
-    Port->haltLog();
-}
-
 CtiPortManager::CtiPortManager(CTI_PORTTHREAD_FUNC_FACTORY_PTR fn) :
 _portThreadFuncFactory(fn)
 {}
@@ -366,15 +361,6 @@ INT CtiPortManager::writeQueueWithPriority(OUTMESS *OutMessage, int priority)
     return pPort->writeQueueWithPriority(OutMessage, priority);
 }
 
-
-void CtiPortManager::haltLogs()
-{
-    // Reset everyone's Updated flag.
-    if(!_smartMap.empty())
-    {
-        apply(ApplyHaltLog, NULL);
-    }
-}
 
 void CtiPortManager::RefreshPooledPortEntries(bool &rowFound, Cti::RowReader& rdr)
 {

@@ -111,7 +111,9 @@ public:
 
     INT writeShareQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority, HANDLE hQuit);
 
-    void haltLog();
+    //  Each port must start their log manager in their port thread (PortThread, PortDialbackThread, etc).
+    //  The unsolicited ports are started by UnsolicitedHandler::startLog, and do not use this method.
+    void startLog();
 
     std::string getSharedPortType() const;
     INT getSharedSocketNumber() const;

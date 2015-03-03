@@ -62,6 +62,8 @@ void PortPoolDialoutThread(void *pid)
 
     CTILOG_INFO(dout, "PortPoolDialoutThread for port: "<< ParentPort->getPortID() <<" / "<< ParentPort->getName() <<" - Started");
 
+    ParentPort->startLog();
+
     sgPoolDebugLevel = gConfigParms.getValueAsULong("PORTPOOL_DEBUGLEVEL", 0, 16);
 
     while(!PorterQuit)
@@ -112,7 +114,7 @@ void PortPoolDialoutThread(void *pid)
             if(tempDev)
             {
                 CTILOG_DEBUG(dout, "Port "<< ParentPort->getName() <<" read an outmessage for "<< tempDev->getName() <<" at priority "<< OutMessage->Priority <<" retries = "<< OutMessage->Retry <<
-                		endl <<"Port has "<< QueEntries <<" pending OUTMESS requests");
+                        endl <<"Port has "<< QueEntries <<" pending OUTMESS requests");
             }
         }
 

@@ -46,8 +46,6 @@ public:
     INT writeQueue(OUTMESS *OutMessage);
     INT writeQueueWithPriority(OUTMESS *OutMessage, INT Priority);
 
-    void haltLogs();
-
     std::vector<CtiPortSPtr> getPorts() const;
 
     coll_type::lock_t &getLock()

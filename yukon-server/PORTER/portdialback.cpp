@@ -45,6 +45,8 @@ void PortDialbackThread(void *pid)
 
     CTILOG_INFO(dout, "PortDialbackThread for port: "<< Port->getPortID() <<" / "<< Port->getName() <<" - Started");
 
+    Port->startLog();
+
     while(!PorterQuit)
     {
         try

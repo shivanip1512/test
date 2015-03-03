@@ -102,6 +102,8 @@ void PortThread(void *pid)
 
         SetThreadName(-1, thread_name.c_str());
 
+        Port->startLog();
+
         bool timesyncPreference = false;
 
         /* and wait for something to come in */

@@ -369,18 +369,6 @@ void CtiPort::DecodeDatabaseReader(Cti::RowReader &rdr)
     _tblPortBase.DecodeDatabaseReader(rdr);
 
     setValid();
-
-    if(gLogPorts && !_portLogManager.isStarted())
-    {
-        const string comlogdir = gLogDirectory + "\\Comm";
-
-        // Create a subdirectory called Comm beneath Log.
-        CreateDirectoryEx( gLogDirectory.c_str(), comlogdir.c_str(), NULL);
-
-        _portLogManager.setOutputPath(comlogdir);
-        _portLogManager.setOutputFile(getName());
-        _portLogManager.start();
-    }
 }
 
 CtiPort::~CtiPort()
@@ -402,13 +390,21 @@ CtiPort::~CtiPort()
         CloseHandle( _postEvent );
         _postEvent = INVALID_HANDLE_VALUE;
     }
-
-    haltLog();
 }
 
-void CtiPort::haltLog()
+void CtiPort::startLog()
 {
-    //TODO: findout if we need to do anything here?
+    if(gLogPorts && !_portLogManager.isStarted())
+    {
+        const string comlogdir = gLogDirectory + "\\Comm";
+
+        // Create a subdirectory called Comm beneath Log.
+        CreateDirectoryEx( gLogDirectory.c_str(), comlogdir.c_str(), NULL);
+
+        _portLogManager.setOutputPath(comlogdir);
+        _portLogManager.setOutputFile(getName());
+        _portLogManager.start();
+    }
 }
 
 YukonError_t CtiPort::outInMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMessage* > &traceList)

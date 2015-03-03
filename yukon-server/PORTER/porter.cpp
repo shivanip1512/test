@@ -1090,8 +1090,6 @@ void APIENTRY PorterCleanUp (ULONG Reason)
 
         CTILOG_INFO(dout, "_statisticsThread shutdown");
     }
-
-    PortManager.haltLogs();
 }
 
 
