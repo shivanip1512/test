@@ -40,7 +40,7 @@ public class LookupTableBean {
         this.name = table.getName();
         this.inputType = table.getInput().getInputType();
 
-        if (inputType == InputType.TIME) {
+        if (inputType == InputType.TIME_LOOKUP) {
             this.timeInputMax = (LocalTime) table.getInput().getMax();
             setTimeEntries(TimeTableEntryBean.toBeanMap(table.getEntries()));
         } else {
@@ -52,7 +52,7 @@ public class LookupTableBean {
     }
 
     public int getNumberOfEntries() {
-        if (inputType == InputType.TIME) {
+        if (inputType == InputType.TIME_LOOKUP) {
             return timeEntries.size();
         }
         return entries.size();
@@ -78,7 +78,7 @@ public class LookupTableBean {
     public static ImmutableList<FormulaLookupTable<Double>> toLookupTables(List<LookupTableBean> beans) {
         List<FormulaLookupTable<Double>> tables = new ArrayList<>();
         for (LookupTableBean bean : beans) {
-            if (bean.inputType != InputType.TIME) {
+            if (bean.inputType != InputType.TIME_LOOKUP) {
                 tables.add(bean.toFormulaLookupTable());
             }
         }
@@ -88,7 +88,7 @@ public class LookupTableBean {
     public static ImmutableList<FormulaLookupTable<LocalTime>> toTimeLookupTables(List<LookupTableBean> beans) {
         List<FormulaLookupTable<LocalTime>> tables = new ArrayList<>();
         for (LookupTableBean bean : beans) {
-            if (bean.inputType == InputType.TIME) {
+            if (bean.inputType == InputType.TIME_LOOKUP) {
                 tables.add(bean.toFormulaTimeLookupTable());
             }
         }
@@ -190,7 +190,7 @@ public class LookupTableBean {
     }
 
     public boolean isTimeInput() {
-        return inputType == InputType.TIME;
+        return inputType == InputType.TIME_LOOKUP;
     }
 
     public boolean isHumidityType() {

@@ -166,7 +166,17 @@ public class EstimatedLoadController {
 
     @RequestMapping(value="formula/edit", method=RequestMethod.POST)
     public String doEdit(ModelMap model, FormulaBean formulaBean, BindingResult bindingResult, FlashScope flashScope) {
-
+        
+        // Clean up Time-Of-Day min/max, they are disabled inputs so they are not
+        // included in the request.
+        for (FunctionBean func : formulaBean.getFunctions()) {
+            InputType type = func.getInputType();
+            if (type == InputType.TIME_FUNCTION) {
+                func.setInputMin(0.0);
+                func.setInputMax(24.0);
+            }
+        }
+        
         formulaBeanValidator.validate(formulaBean, bindingResult);
         if (bindingResult.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);

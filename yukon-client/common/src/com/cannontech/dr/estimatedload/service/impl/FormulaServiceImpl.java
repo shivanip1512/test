@@ -83,50 +83,68 @@ public class FormulaServiceImpl implements FormulaService {
      */
     private double getDoubleInputValue(Formula formula, FormulaInput<Double> input,
             EstimatedLoadCalculationInfo calcInfo) throws EstimatedLoadException {
-        if (formula.getType() == Formula.Type.APPLIANCE_CATEGORY) {
-            // All appliance category inputs can be obtained by point value lookup.
+
+        // All appliance category inputs are either retrieved via point lookup or are TIME_FUNCTION time-of-day type.
+        // Any weather data values are retrieved via point lookup, identically to the POINT input type. 
+        if (input.getInputType() == InputType.POINT || input.getInputType().isWeatherData()) {
             try {
                 return dynamicDataSource.getPointValue(input.getPointId()).getValue();
             } catch (DynamicDataAccessException e) {
                 throw new InputValueNotFoundException(formula.getName());
             }
-        } else if (formula.getType() == Formula.Type.GEAR) {
-            if (input.getInputType() == InputType.POINT) {
-                // Look up point inputs for gear formulas the same way.
-                try {
-                    return dynamicDataSource.getPointValue(input.getPointId()).getValue();
-                } catch (DynamicDataAccessException e) {
-                    throw new InputValueNotFoundException(formula.getName());
-                }
-            } else {
-                // Find the control percent or ramp rate values for these gear formula inputs. 
-                LMProgramDirectGear gear = gearDao.getByGearId(calcInfo.getGearId());
-                if (input.getInputType() == InputType.CONTROL_PERCENT) {
-                    // If control percent is the input it can be retrieved directly from the LMProgramDirectGear.
-                    return gear.getMethodRate();
-                } else if (input.getInputType() == InputType.RAMP_RATE) {
-                    if (gear.getControlMethod() == GearControlMethod.SimpleThermostatRamping) {
-                        // Simple thermostat gear's ramp rate is stored as degrees/hr in a single database field.
-                        try {
-                            return gearDao.getSimpleThermostatGearRampRate(calcInfo.getGearId());
-                        } catch (DataAccessException e) {
-                            throw new InputValueNotFoundException(formula.getName());
-                        }
-                    } else if (gear.getControlMethod() == GearControlMethod.ThermostatRamping) {
-                        // Thermostat ramping gear's ramp rate is stored in two fields, valueD and valueTd.
-                        try {
-                            ThermostatRampRateValues rampRateValues = gearDao.getThermostatGearRampRateValues(
-                                    calcInfo.getGearId());
-                            return rampRateValues.getRampRate();
-                        } catch (DataAccessException e) {
-                            throw new InputValueNotFoundException(formula.getName());
-                        }
+        } else if (input.getInputType() == InputType.TIME_FUNCTION) {
+            // This input type is used only by time-of-day inputs, not for time-based lookup tables.  
+            // 
+            LocalTime now = new LocalTime();
+            return calculateTimeOfDayValue(now, input.getTimeOfDayInterval());
+        }
+        else {
+            // At this point we know this must be a gear input.
+            // Find the control percent or ramp rate values for these gear formula inputs. 
+            LMProgramDirectGear gear = gearDao.getByGearId(calcInfo.getGearId());
+            if (input.getInputType() == InputType.CONTROL_PERCENT) {
+                // If control percent is the input it can be retrieved directly from the LMProgramDirectGear.
+                return gear.getMethodRate();
+            } else if (input.getInputType() == InputType.RAMP_RATE) {
+                if (gear.getControlMethod() == GearControlMethod.SimpleThermostatRamping) {
+                    // Simple thermostat gear's ramp rate is stored as degrees/hr in a single database field.
+                    try {
+                        return gearDao.getSimpleThermostatGearRampRate(calcInfo.getGearId());
+                    } catch (DataAccessException e) {
+                        throw new InputValueNotFoundException(formula.getName());
+                    }
+                } else if (gear.getControlMethod() == GearControlMethod.ThermostatRamping) {
+                    // Thermostat ramping gear's ramp rate is stored in two fields, valueD and valueTd.
+                    try {
+                        ThermostatRampRateValues rampRateValues = gearDao.getThermostatGearRampRateValues(
+                                calcInfo.getGearId());
+                        return rampRateValues.getRampRate();
+                    } catch (DataAccessException e) {
+                        throw new InputValueNotFoundException(formula.getName());
                     }
                 }
             }
         }
+
         // Should not be able to reach this point, but if so throw input not found exception.
         throw new InputValueNotFoundException(formula.getName());
+    }
+
+    /**
+     * This method calculates a double-value representation of the current time of day.
+     * The returned value will increase in a stepped fashion, not linearly.
+     * The size of the step will depend on the size of the interval in the FormulaInput.
+     * A 60 minute interval means the value increments by 1.0, a 30 minute interval means the value
+     * increments by 0.5, a 15 minute interval means the value increments by 0.25 and so on.
+     * 
+     * @param intervalSize The time-of-day interval size given in minutes.
+     * @return A floating point value between 0.0 and 24.0 representing the time of day.
+     */
+    private double calculateTimeOfDayValue(LocalTime now, int intervalSize) {
+        int minuteOfDay = (now.getHourOfDay() * 60) + now.getMinuteOfHour();
+        int currentIntervalCeiling = (minuteOfDay / intervalSize) + 1;
+        
+        return currentIntervalCeiling * (intervalSize / 60.0);
     }
 
     @Override

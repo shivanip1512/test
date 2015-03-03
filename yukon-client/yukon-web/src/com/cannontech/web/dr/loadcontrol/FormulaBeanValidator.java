@@ -65,7 +65,7 @@ public class FormulaBeanValidator extends SimpleValidator<FormulaBean> {
                 YukonValidationUtils.checkIsBlankOrExceedsMaxLength(errors, "tables["+ i +"].name", table.getName(), 
                                                                     false, 32);
                 
-                if (table.getInputType() == InputType.TIME) {
+                if (table.getInputType() == InputType.TIME_LOOKUP) {
                     if(!table.getTimeEntries().isEmpty()) {
                         LocalTime tableMax = Collections.max(table.getTimeEntries()).getKey();
                         if (table.getTimeInputMax() == null) {

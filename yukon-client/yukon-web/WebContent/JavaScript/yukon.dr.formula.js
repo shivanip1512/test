@@ -114,30 +114,35 @@ yukon.dr.formula = (function() {
 
         _rowIndex++;
     },
+    
     /**
-     * This is called when value in Input drop down is changed. It calls method
-     * to update the input formula fields
-     */
-    _formulaInputSelectChange = function() {
-        // FormulaInput type
-        // com.cannontech.dr.estimatedload.FormulaInput
-        var inputVal = $(this).val();
-        var tableId = this.id.split("_").pop();
-        _updateFormulaInputs(inputVal, tableId);
-    },
-
-    /**
-     * Show and hide the weather station drop down based on selection in Input
-     * drop down.
+     * Show and hide inputs based on input type.
      * @param {Object} inputVal - Value selected in input drop down.
      * @param {Object} tableId - Id of table.
      */
     _updateFormulaInputs = function(inputVal, tableId) {
+        
+        var select = $('#formulaInputSelect_' + tableId);
+        var functionContainer = select.closest('.js-drFormula-function');
+        var min = functionContainer.find('.js-input-min');
+        var max = functionContainer.find('.js-input-max');
+        
         if (inputVal === 'POINT') {
             $("#formulaPointPicker_" + tableId).fadeIn(150);
             $("#formulaWeatherStationTemp_" + tableId).hide();
             $("#formulaWeatherStationHumidity_" + tableId).hide();
+            min.prop('disabled', false);
+            max.prop('disabled', false);
+        } else if (inputVal == 'TIME_FUNCTION') {
+            $("#formulaPointPicker_" + tableId).hide();
+            $("#formulaWeatherStationTemp_" + tableId).hide();
+            $("#formulaWeatherStationHumidity_" + tableId).hide();
+            min.val('0.0').prop('disabled', true);
+            max.val('24.0').prop('disabled', true);
         } else {
+            // Temp or humidity
+            min.prop('disabled', false);
+            max.prop('disabled', false);
             $("#formulaPointPicker_" + tableId).hide();
             if (inputVal === 'TEMP_C' || inputVal == 'TEMP_F') {
                 $("#formulaWeatherStationTemp_" + tableId).fadeIn(150);
@@ -151,85 +156,14 @@ yukon.dr.formula = (function() {
             }
         }
     },
-
-    /**
-     * Hides and show the input fields based on the selection in Input drop
-     * down. If Time is selected the time specific input fields are displayed
-     * else normal inputs are displayed.
-     */
-    _formulaInputSelectChangeTable = function() {
-        var inputVal = $(this).val();
-        var tableId = this.id.split("_").pop();
-        if (inputVal === 'TIME') {
-            // Hide & disable all normal inputs
-            // show all time inputs
-            $(".js-drFormula-notTimeInput_" + tableId).prop("disabled", true)
-                    .hide();
-            $(".js-drFormula-timeInput_" + tableId).prop("disabled", false)
-                    .show();
-        } else {
-            // Hide & disable all time inputs
-            // show all normal inputs
-            $(".js-drFormula-timeInput_" + tableId).prop("disabled", true)
-                    .hide();
-            $(".js-drFormula-notTimeInput_" + tableId).prop("disabled", false)
-                    .show();
-        }
-    },
-
-    /** Loads the point picker when point picker link is clicked. */
-    _pointPickerClick = function() {
-        var tableId = this.id.split("_").pop();
-        $("#picker-pointPicker-btn").data("table-id", tableId).click();
-    },
-
-    /** Removes the lookup table when remove button is clicked */
-    _removeBtnClick = function() {
-        $(this).parents(".js-drFormula-removeable").slideUp(150).promise()
-                .done(function() {
-                    this.remove();
-                });
-    },
-
-    /** Create structure for lookup table */
-    _addTableBtnClick = function() {
-        var $newRow = $('#tableRow_-1').clone().removeAttr("id");
-        var tableId = _rowIndex;
-
-        $newRow.find(".tableIndex").val(tableId);
-        $newRow.find(".js-drFormula-appendTableIdData").each(function() {
-            $(this).data("table-id", tableId);
-        });
-        $newRow.find(".js-drFormula-newEntryButton").data("table-id", tableId);
-        $newRow.find(".js-drFormula-timeInput_").removeClass(
-                "js-drFormula-timeInput_").addClass(
-                "js-drFormula-timeInput_" + tableId);
-        $newRow.find(".js-drFormula-notTimeInput_").removeClass(
-                "js-drFormula-notTimeInput_").addClass(
-                "js-drFormula-notTimeInput_" + tableId);
-
-        $newRow.find(".js-drFormula-appendTableId").each(function() {
-            this.id = this.id + tableId;
-        }).promise().done(
-                function() {
-                    $newRow.hide().appendTo('#formulaTables').slideDown(150);
-                    var $inputSelect = $("#formulaInputSelect_" + tableId);
-                    $inputSelect.addClass("js-drFormula-formulaInputSelect");
-                    _updateFormulaInputs($inputSelect.val(), tableId);
-                    // add entry to this row
-                    _addTableEntryBtnClick.call($newRow
-                            .find(".js-drFormula-newEntryButton"));
-                });
-
-        _rowIndex++;
-    },
-
+    
     /** Create structure for lookup table entry */
-    _addTableEntryBtnClick = function() {
+    _addTableEntryBtnClick = function (ev) {
+        
         var tableId = $(this).data("table-id");
         var entryId = $(this).data("entry-id-next");
 
-        var isTimeInput = $("#formulaInputSelect_" + tableId).val() === 'TIME';
+        var isTimeInput = $("#formulaInputSelect_" + tableId).val() === 'TIME_LOOKUP';
 
         var $newRow = $('#tableEntry_-1_-1').clone();
 
@@ -255,16 +189,14 @@ yukon.dr.formula = (function() {
             $newRow.find(".js-drFormula-notTimeInput_" + tableId).show();
             $newRow.find(".js-drFormula-timeInput_" + tableId).hide();
         }
-
-        $newRow.children().each(
-                function() {
-                    this.id = this.id + tableId + "_" + entryId;
-                    // Setup the remove button
-                    $(this).find(".js-drFormula-removeEntry").data("table-id",
-                            tableId).data("entry-id", entryId);
-
-                });
-
+        
+        $newRow.children().each(function () {
+            this.id = this.id + tableId + "_" + entryId;
+            // Setup the remove button
+            $(this).find(".js-drFormula-removeEntry").data("table-id",
+                    tableId).data("entry-id", entryId);
+        });
+        
         $newRow.insertBefore(
                 "#tableEntries_" + tableId + " .js-drFormula-inputMax")
                 .slideDown(150).promise().done(
@@ -286,35 +218,14 @@ yukon.dr.formula = (function() {
                                         ".js-drFormula-removeEntry").show();
                             }
                         });
-
+        
         $("#tableEntryKey_" + tableId + "_" + entryId + " > input").focus();
-
+        
         // update the add button
         entryId++;
         $(this).data("entry-id-next", entryId);
     },
-
-    /**
-     * This is called when remove button is clicked for lookup table entries. It
-     * remove the lookup entry from lookup table.
-     */
-    _removeTableEntryBtnClick = function() {
-        var entryId = $(this).data("entry-id");
-        var tableId = $(this).data("table-id");
-
-        $("#tableEntry_" + tableId + "_" + entryId).slideUp(
-                150,
-                function() {
-                    this.remove();
-                    var numberEntries = $(
-                            ".js-drFormula-tableEntryKey_" + tableId).size();
-                    if (numberEntries === 1) {
-                        $("#tableEntries_" + tableId).find(
-                                ".js-drFormula-removeEntry").hide();
-                    }
-                });
-    },
-
+    
     /**
      * Disable the fields before the form is submitted.
      * @param {Object} e - jquery event object.
@@ -328,7 +239,7 @@ yukon.dr.formula = (function() {
                     var inputVal = $this.val();
                     var tableId = this.id.split("_").pop();
 
-                    if (inputVal === 'TIME') {
+                    if (inputVal === 'TIME_LOOKUP') {
                         $(".js-drFormula-notTimeInput_" + tableId)
                                 .find("input").prop('disabled', true);
                     } else {
@@ -402,24 +313,96 @@ yukon.dr.formula = (function() {
             _rowIndex = $("#formulaRowIndex").val();
 
             $('#display_tabs').tabs().show();
+            
             $("#assignments").on("click", ".js-drFormula-remove",
                     _removeAssignmentBtnClick).on("click",
                     ".js-drFormula-undo", _undoBtnClick);
+            
             $("#newFunctionBtn").click(_newFunctionBtnClick);
-            $("#formulaFunctions, #formulaTables").on("change",
-                    ".js-drFormula-formulaInputSelect",
-                    _formulaInputSelectChange).on("click",
-                    ".js-drFormula-pointPicker", _pointPickerClick);
-            $("#formulaFunctions, #formulaTables").on("click",
-                    ".js-drFormula-remove", _removeBtnClick);
-            $("#newTableBtn").click(_addTableBtnClick);
-            $("#formulaTables").on("click", ".js-drFormula-removeEntry",
-                    _removeTableEntryBtnClick).on("change",
-                    ".js-drFormula-formulaInputSelect",
-                    _formulaInputSelectChangeTable).on("click",
-                    ".js-drFormula-newEntryButton", _addTableEntryBtnClick);
+            
+            $("#formulaFunctions, #formulaTables").on("change", ".js-drFormula-formulaInputSelect", function (ev) {
+                // FormulaInput type
+                // com.cannontech.dr.estimatedload.FormulaInput
+                var inputVal = $(this).val();
+                var tableId = this.id.split("_").pop();
+                _updateFormulaInputs(inputVal, tableId);
+                
+            }).on("click", ".js-drFormula-pointPicker", function (ev) {
+                var tableId = this.id.split("_").pop();
+                $("#picker-pointPicker-btn").data("table-id", tableId).click();
+            });
+            
+            $("#formulaFunctions, #formulaTables").on("click", ".js-drFormula-remove", function (ev) {
+                $(this).parents(".js-drFormula-removeable").slideUp(150).promise()
+                .done(function() { this.remove(); });
+            });
+            
+            $("#newTableBtn").click(function() {
+                
+                var $newRow = $('#tableRow_-1').clone().removeAttr("id");
+                var tableId = _rowIndex;
+                
+                $newRow.find(".tableIndex").val(tableId);
+                $newRow.find(".js-drFormula-appendTableIdData").each(function() {
+                    $(this).data("table-id", tableId);
+                });
+                $newRow.find(".js-drFormula-newEntryButton").data("table-id", tableId);
+                $newRow.find(".js-drFormula-timeInput_").removeClass(
+                        "js-drFormula-timeInput_").addClass(
+                        "js-drFormula-timeInput_" + tableId);
+                $newRow.find(".js-drFormula-notTimeInput_").removeClass(
+                        "js-drFormula-notTimeInput_").addClass(
+                        "js-drFormula-notTimeInput_" + tableId);
+                
+                $newRow.find(".js-drFormula-appendTableId").each(function () {
+                    this.id = this.id + tableId;
+                }).promise().done(function () {
+                    $newRow.hide().appendTo('#formulaTables').slideDown(150);
+                    var $inputSelect = $("#formulaInputSelect_" + tableId);
+                    $inputSelect.addClass("js-drFormula-formulaInputSelect");
+                    _updateFormulaInputs($inputSelect.val(), tableId);
+                    // add entry to this row
+                    _addTableEntryBtnClick.call($newRow.find(".js-drFormula-newEntryButton"));
+                });
+                
+                _rowIndex++;
+            });
+            
+            $("#formulaTables").on("click", ".js-drFormula-removeEntry", function (ev) {
+                
+                var entryId = $(this).data("entry-id");
+                var tableId = $(this).data("table-id");
+                
+                $("#tableEntry_" + tableId + "_" + entryId).slideUp(150, function () {
+                    this.remove();
+                    var numberEntries = $(".js-drFormula-tableEntryKey_" + tableId).size();
+                    if (numberEntries === 1) {
+                        $("#tableEntries_" + tableId).find(".js-drFormula-removeEntry").hide();
+                    }
+                });
+            }).on("change", ".js-drFormula-formulaInputSelect", function (ev) {
+                
+                var inputVal = $(this).val();
+                var tableId = this.id.split("_").pop();
+                if (inputVal === 'TIME_LOOKUP') {
+                    // Hide & disable all normal inputs
+                    // show all time inputs
+                    $(".js-drFormula-notTimeInput_" + tableId).prop("disabled", true)
+                            .hide();
+                    $(".js-drFormula-timeInput_" + tableId).prop("disabled", false)
+                            .show();
+                } else {
+                    // Hide & disable all time inputs
+                    // show all normal inputs
+                    $(".js-drFormula-timeInput_" + tableId).prop("disabled", true)
+                            .hide();
+                    $(".js-drFormula-notTimeInput_" + tableId).prop("disabled", false)
+                            .show();
+                }
+            }).on("click", ".js-drFormula-newEntryButton", _addTableEntryBtnClick);
+            
             $("#formulaForm").submit(_beforeFormSubmit);
-
+            
             _initialized = true;
         },
 

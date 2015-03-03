@@ -223,9 +223,9 @@ public class FormulaDaoImpl implements FormulaDao {
         entriesWhereClause.append("(SELECT EstimatedLoadLookupTableId FROM EstimatedLoadLookupTable ");
         if (whereClause != null) {
             entriesWhereClause.append(whereClause);
-            entriesWhereClause.append("AND InputType").neq_k(InputType.TIME).append(")"); 
+            entriesWhereClause.append("AND InputType").neq_k(InputType.TIME_LOOKUP).append(")"); 
         } else {
-            entriesWhereClause.append("WHERE InputType").neq_k(InputType.TIME).append(")");
+            entriesWhereClause.append("WHERE InputType").neq_k(InputType.TIME_LOOKUP).append(")");
         }
         Map<Integer, Map<String, Double>> tableEntries = getTableEntries(entriesWhereClause);
 
@@ -235,9 +235,9 @@ public class FormulaDaoImpl implements FormulaDao {
         sql.append("FROM").append(lookupTableName);
         if (whereClause != null) {
             sql.append(whereClause);
-            sql.append("AND InputType").neq_k(InputType.TIME);
+            sql.append("AND InputType").neq_k(InputType.TIME_LOOKUP);
         } else {
-            sql.append("WHERE InputType").neq_k(InputType.TIME);
+            sql.append("WHERE InputType").neq_k(InputType.TIME_LOOKUP);
         }
 
         LookupTableRowHandler lookupTableRowMapper = new LookupTableRowHandler(tableEntries);
@@ -264,9 +264,9 @@ public class FormulaDaoImpl implements FormulaDao {
         entriesWhereClause.append("(SELECT EstimatedLoadLookupTableId FROM EstimatedLoadLookupTable ");
         if (whereClause != null) {
             entriesWhereClause.append(whereClause);
-            entriesWhereClause.append("AND InputType").eq_k(InputType.TIME).append(")"); 
+            entriesWhereClause.append("AND InputType").eq_k(InputType.TIME_LOOKUP).append(")"); 
         } else {
-            entriesWhereClause.append("WHERE InputType").eq_k(InputType.TIME).append(")");
+            entriesWhereClause.append("WHERE InputType").eq_k(InputType.TIME_LOOKUP).append(")");
         }
         Map<Integer, Map<String, Double>> tableEntries = getTableEntries(entriesWhereClause);
         
@@ -276,9 +276,9 @@ public class FormulaDaoImpl implements FormulaDao {
         sql.append("FROM").append(lookupTableName);
         if (whereClause != null) {
             sql.append(whereClause);
-            sql.append("AND InputType").eq_k(InputType.TIME);
+            sql.append("AND InputType").eq_k(InputType.TIME_LOOKUP);
         } else {
-            sql.append("WHERE InputType").eq_k(InputType.TIME);
+            sql.append("WHERE InputType").eq_k(InputType.TIME_LOOKUP);
         }
 
         LookupTableRowHandler lookupTableRowMapper = new LookupTableRowHandler(tableEntries);
@@ -498,7 +498,7 @@ public class FormulaDaoImpl implements FormulaDao {
 
             Integer tableId = rs.getInt("EstimatedLoadLookupTableId");
             Integer formulaId = rs.getInt("EstimatedLoadFormulaId");
-            if (inputType == InputType.TIME) {
+            if (inputType == InputType.TIME_LOOKUP) {
                 FormulaInput<LocalTime> formulaInput = mapFormulaInput(rs, inputType, LocalTime.class);
                 PropertyEditor typeConverter = formulaInput.getInputType().makeTypeConverter();
                 ImmutableMap.Builder<LocalTime, Double> entries = ImmutableMap.builder();

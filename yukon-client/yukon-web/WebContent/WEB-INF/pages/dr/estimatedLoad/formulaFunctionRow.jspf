@@ -3,6 +3,8 @@
 
 <c:set var="dummyRow" value="${functionIndex lt 0}"/>
 
+<c:set var="func" value="${formulaBean.functions[functionIndex]}"/>
+
 <div id="functionRow_${functionIndex}" class="setting js-drFormula-removeable js-drFormula-function"
     style="${dummyRow ? 'display:none' : ''}">
     <input type="hidden" name="functions[${functionIndex}].formulaId"
@@ -129,11 +131,12 @@
             </cti:displayForPageEditModes>
         </div>
         <div class="column two">
+            <c:set var="disabled" value="${func.inputType == 'TIME_FUNCTION'}"/>
             <tags:nameValueStacked nameKey=".inputMin">
-                <tags:inputBindOptional pathOrName="functions[${functionIndex}].inputMin" bindPath="${not dummyRow}"/>
+                <tags:inputBindOptional disabled="${disabled}" inputClass="js-input-min" pathOrName="functions[${functionIndex}].inputMin" bindPath="${not dummyRow}"/>
             </tags:nameValueStacked>
             <tags:nameValueStacked nameKey=".inputMax">
-                <tags:inputBindOptional pathOrName="functions[${functionIndex}].inputMax" bindPath="${not dummyRow}"/>
+                <tags:inputBindOptional disabled="${disabled}" inputClass="js-input-max" pathOrName="functions[${functionIndex}].inputMax" bindPath="${not dummyRow}"/>
             </tags:nameValueStacked>
         </div>
         <div class="column three nogutter">

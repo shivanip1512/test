@@ -18,7 +18,7 @@ public final class FormulaInput<T extends Comparable<? super T>> {
         TEMP_C,
         TEMP_F,
         HUMIDITY,
-        TIME {
+        TIME_LOOKUP {
             // Use a ReadableInstant property editor when converting Time values
             @Override
             public PropertyEditorSupport makeTypeConverter() {
@@ -27,7 +27,8 @@ public final class FormulaInput<T extends Comparable<? super T>> {
         },
         CONTROL_PERCENT,
         RAMP_RATE,
-        POINT;
+        POINT,
+        TIME_FUNCTION;  // This input type operates on Double values, not ReadableInstant values used by lookup tables.
 
         @Override
         public String getFormatKey() {
@@ -39,15 +40,15 @@ public final class FormulaInput<T extends Comparable<? super T>> {
         }
         
         public static Set<InputType> getApplianceCategoryFunctionInputs() {
-            return EnumSet.of(TEMP_C, TEMP_F, HUMIDITY, POINT);
+            return EnumSet.of(TEMP_C, TEMP_F, HUMIDITY, TIME_FUNCTION, POINT);
         }
 
         public static Set<InputType> getApplianceCategoryTableInputs() {
-            return EnumSet.of(TEMP_C, TEMP_F, HUMIDITY, TIME, POINT);
+            return EnumSet.of(TEMP_C, TEMP_F, HUMIDITY, TIME_LOOKUP, POINT);
         }
 
         public static Set<InputType> getGearInputs() {
-            return EnumSet.of(CONTROL_PERCENT, RAMP_RATE, POINT);
+            return EnumSet.of(CONTROL_PERCENT, RAMP_RATE, TIME_FUNCTION, POINT);
         }
 
         public PropertyEditor makeTypeConverter() {
@@ -73,12 +74,18 @@ public final class FormulaInput<T extends Comparable<? super T>> {
     private final T min;
     private final T max;
     private final Integer pointId;
+    private final Integer timeOfDayInterval;
 
     public FormulaInput(InputType inputType, T min, T max, Integer pointId) {
+        this(inputType, min, max, pointId, 60);  // For now, the only valid interval size is 60 minutes.
+    }
+    
+    public FormulaInput(InputType inputType, T min, T max, Integer pointId, Integer timeOfDayInterval) {
         this.inputType = inputType;
         this.min = min;
         this.max = max;
         this.pointId = pointId;
+        this.timeOfDayInterval = timeOfDayInterval;
     }
 
     public InputType getInputType() {
@@ -95,5 +102,9 @@ public final class FormulaInput<T extends Comparable<? super T>> {
 
     public Integer getPointId() {
         return pointId;
+    }
+
+    public Integer getTimeOfDayInterval() {
+        return timeOfDayInterval;
     }
 }
