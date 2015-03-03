@@ -18,9 +18,10 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
@@ -66,14 +67,13 @@ public class RfnOutagesWidget extends AdvancedWidgetControllerBase {
     public String outageData(ModelMap model, int deviceId) throws ServletRequestBindingException {
 
         YukonMeter meter = meterDao.getForId(deviceId);
-        ListMultimap<PaoIdentifier, PointValueQualityHolder> data = rphDao.getAttributeData(Collections.singleton(meter), 
-                                BuiltInAttribute.OUTAGE_LOG, 
-                                new Instant().minus(Duration.standardDays(100)).toDate(), 
-                                new Date(), 
-                                false, 
-                                Clusivity.INCLUSIVE_INCLUSIVE, 
-                                Order.REVERSE,
-                                null);
+        Date startDate = new Instant().minus(Duration.standardDays(100)).toDate();
+        Date stopDate =  new Date();
+        Range<Date> dateRange = new Range<Date>(startDate, true, stopDate, true);
+        
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> data =
+            rphDao.getAttributeData(Collections.singleton(meter), BuiltInAttribute.OUTAGE_LOG, false,
+                dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), Order.REVERSE, null);
         
         Iterable<RfnOutageLog> logs = Iterables.transform(data.get(meter.getPaoIdentifier()), new Function<PointValueQualityHolder, RfnOutageLog>() {
             @Override

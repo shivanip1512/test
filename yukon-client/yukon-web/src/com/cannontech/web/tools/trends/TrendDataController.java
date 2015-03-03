@@ -1,6 +1,7 @@
 package com.cannontech.web.tools.trends;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,9 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.GraphDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -105,12 +107,12 @@ public class TrendDataController {
             Map<String, Object> valueMap = new HashMap<>();
             valueMap.put("name", serie.getLabel());
             List<Object[]> values = new ArrayList<>();
-            
-            List<PointValueHolder> data = rawPointHistoryDao.getPointData(serie.getPointID(), 
-                    new Instant().minus(Duration.standardDays(365 * 2)).toDate(), 
-                    new Instant().toDate(), 
-                    Clusivity.INCLUSIVE_INCLUSIVE, 
-                    Order.FORWARD);
+            Date startDate = new Instant().minus(Duration.standardDays(365 * 2)).toDate();
+            Date stopDate = new Instant().toDate();
+            Range<Date> dateRange = new Range<Date>(startDate, true, stopDate, true);
+			List<PointValueHolder> data = rawPointHistoryDao.getPointData(
+					serie.getPointID(),dateRange.translate(CtiUtilities.INSTANT_FROM_DATE),
+					Order.FORWARD);
             for (PointValueHolder pvh : data) {
                 Object[] value = new Object[] {pvh.getPointDataTimeStamp().getTime(), pvh.getValue()};
                 values.add(value);

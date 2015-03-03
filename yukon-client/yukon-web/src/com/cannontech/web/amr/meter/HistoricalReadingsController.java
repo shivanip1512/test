@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -26,10 +27,11 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dao.RawPointHistoryDao.OrderBy;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -209,10 +211,9 @@ public class HistoricalReadingsController {
             DateTime startDate = new DateTime(userContext.getJodaTimeZone());
             startDate = startDate.minusDays(30);
             DateTime endDate = new DateTime(userContext.getJodaTimeZone());
-            data = rawPointHistoryDao.getLimitedPointData(pointId, 
-                    startDate.toDate(), 
-                    endDate.toDate(), 
-                    Clusivity.INCLUSIVE_EXCLUSIVE, 
+            Range<Date> dateRange = new Range<Date>(startDate.toDate(), true, endDate.toDate(), false);
+            data = rawPointHistoryDao.getLimitedPointData(pointId,
+                    dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), 
                     false, 
                     order, 
                     MAX_ROWS_DISPLAY);
@@ -221,17 +222,15 @@ public class HistoricalReadingsController {
             DateTime startDate = new DateTime(userContext.getJodaTimeZone());
             startDate = startDate.minusDays(30);
             DateTime endDate = new DateTime(userContext.getJodaTimeZone());
-            data = rawPointHistoryDao.getPointData(pointId, 
-                    startDate.toDate(), 
-                    endDate.toDate(), 
-                    Clusivity.INCLUSIVE_EXCLUSIVE, 
+            Range<Date> dateRange = new Range<Date>(startDate.toDate(), true, endDate.toDate(), false);
+            data = rawPointHistoryDao.getPointData(pointId,
+                    dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), 
                     order); 
         }else if(period.equals(ALL)){
             Instant startDate = new Instant(0);
-            data = rawPointHistoryDao.getPointData(pointId, 
-                    startDate.toDate(), 
-                    null, 
-                    Clusivity.INCLUSIVE_INCLUSIVE, 
+            Range<Date> dateRange = new Range<Date>(startDate.toDate(), true, null, true);
+            data = rawPointHistoryDao.getPointData(pointId,  
+                    dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), 
                     order);
         }
         data = sort(data, order, orderBy);

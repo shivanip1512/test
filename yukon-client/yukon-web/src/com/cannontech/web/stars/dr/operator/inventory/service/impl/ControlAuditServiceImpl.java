@@ -18,9 +18,10 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -161,16 +162,16 @@ public class ControlAuditServiceImpl implements ControlAuditService {
 
     private ListMultimap<PaoIdentifier, PointValueQualityHolder> getPointData(Date start, Date end,
             ListMultimap<BuiltInAttribute, YukonPao> paosByAttribute) {
-
+    	Range<Date> dateRange = new Range<Date>(start, true, end, false);
         ListMultimap<PaoIdentifier, PointValueQualityHolder> r1Data =
-            rphDao.getAttributeData(paosByAttribute.get(r1), r1, start, end, true, Clusivity.INCLUSIVE_EXCLUSIVE,
-                Order.FORWARD, null);
+            rphDao.getAttributeData(paosByAttribute.get(r1), r1, true,
+                dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), Order.FORWARD, null);
         ListMultimap<PaoIdentifier, PointValueQualityHolder> r2Data =
-            rphDao.getAttributeData(paosByAttribute.get(r2), r2, start, end, true, Clusivity.INCLUSIVE_EXCLUSIVE,
-                Order.FORWARD, null);
+            rphDao.getAttributeData(paosByAttribute.get(r2), r2, true,
+                dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), Order.FORWARD, null);
         ListMultimap<PaoIdentifier, PointValueQualityHolder> r3Data =
-            rphDao.getAttributeData(paosByAttribute.get(r3), r3, start, end, true, Clusivity.INCLUSIVE_EXCLUSIVE,
-                Order.FORWARD, null);
+            rphDao.getAttributeData(paosByAttribute.get(r3), r3, true,
+                dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), Order.FORWARD, null);
 
         ListMultimap<PaoIdentifier, PointValueQualityHolder> all = ArrayListMultimap.create();
         all.putAll(r1Data);

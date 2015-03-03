@@ -43,9 +43,9 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -187,8 +187,7 @@ public class ControlAuditServiceTest {
         }).anyTimes();
 
         rphDao = createNiceMock(RawPointHistoryDao.class);
-        rphDao.getAttributeData(anyObject(Iterable.class), anyObject(Attribute.class), anyObject(Date.class),
-            anyObject(Date.class), anyBoolean(), anyObject(Clusivity.class), anyObject(Order.class),
+        rphDao.getAttributeData(anyObject(Iterable.class), anyObject(Attribute.class), anyBoolean(), anyObject(Range.class), anyObject(Order.class),
             anyObject(Set.class));
         expectLastCall().andAnswer(new IAnswer<ListMultimap<PaoIdentifier, PointValueQualityHolder>>() {
             @Override

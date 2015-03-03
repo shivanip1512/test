@@ -10,5 +10,5 @@ public interface ControlAuditService {
      * over the interval specified.
      */
     public ControlAuditResult runAudit(AuditSettings settings);
-    
+
 }
