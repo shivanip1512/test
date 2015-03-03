@@ -1047,7 +1047,9 @@ BOOST_AUTO_TEST_CASE(test_dev_mct_decodeReadDataForKey)
         BOOST_CHECK_EQUAL(freezeDay, 0);
         BOOST_CHECK_EQUAL(freezeConfigTimestamp, Then);
 
-        BOOST_CHECK(scopedPaoInfo.dpi->dirtyEntries.empty());
+        BOOST_CHECK(scopedPaoInfo.dpi->dirtyEntries.count(mct.getID()));
+        BOOST_CHECK(scopedPaoInfo.dpi->dirtyEntries[mct.getID()].count(Dpi::Key_MCT_ScheduledFreezeDay));
+        scopedPaoInfo.dpi->dirtyEntries.clear();
     }
 
     //  Decode a new value at a new time, confirm both values change

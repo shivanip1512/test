@@ -304,11 +304,14 @@ void MctDevice::decodeReadDataForKey(const CtiTableDynamicPaoInfo::PaoInfoKeys k
         {
             const long day = begin[0];
 
+            //  only update the config timestamp if the value changes
             if( getDynamicInfo(key) != day )
             {
-                setDynamicInfo(key, day);
                 setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeConfigTimestamp, CtiTime::now());
             }
+
+            //  Always re-set the value so users can report based on the UpdateTime field
+            setDynamicInfo(key, day);
 
             return;
         }
