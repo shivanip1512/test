@@ -27,7 +27,7 @@ namespace {
 struct DynamicPaoInfoManager_Singleton : DynamicPaoInfoManager {};
 }
 
-std::auto_ptr<DynamicPaoInfoManager> gDynamicPaoInfoManager(new DynamicPaoInfoManager_Singleton);
+std::unique_ptr<DynamicPaoInfoManager> gDynamicPaoInfoManager = std::make_unique<DynamicPaoInfoManager_Singleton>();
 
 namespace {
 //  !!!  Any changes to these std::strings will require a DB update - this is what the DB keys on  !!!
@@ -37,7 +37,7 @@ const std::map<Applications, std::string> OwnerMap =
         (Application_Porter,   "porter"  )
         (Application_Scanner,  "scanner" );
 
-const std::auto_ptr<DynamicPaoInfoManager> &instance = gDynamicPaoInfoManager;
+const auto &instance = gDynamicPaoInfoManager;
 
 /**
  * Delete indexed infoKeys from DynamicPaoInfo
@@ -363,7 +363,7 @@ Database::id_set DynamicPaoInfoManager::writeInfo( void )
 
     // insert/update CtiTableDynamicPaoInfo items
     {
-        DynInfoRefSet::iterator dirtyItr = instance->dirtyInfo.begin();
+        auto dirtyItr = instance->dirtyInfo.begin();
 
         while( dirtyItr != instance->dirtyInfo.end() )
         {
@@ -479,8 +479,13 @@ void DynamicPaoInfoManager::setInfo(DynInfoSPtr &newInfo)
 
         oldInfo = newInfo;
 
-        dirtyInfo.insert(newInfo);
+        setDirty(newInfo);
     }
+}
+
+void DynamicPaoInfoManager::setDirty(const DynInfoSPtr &dirty)
+{
+    dirtyInfo.insert(dirty);
 }
 
 void DynamicPaoInfoManager::setInfo(const long paoId, PaoInfoKeys k, const std::string value)    {  instance->setInfo(boost::make_shared<CtiTableDynamicPaoInfo>(paoId, k, value));  }

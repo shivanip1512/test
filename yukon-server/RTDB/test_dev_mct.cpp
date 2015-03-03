@@ -5,6 +5,9 @@
 #include "rte_ccu.h"
 #include "ctidate.h"
 
+#include "rtdb_test_helpers.h"
+#include "boost_test_helpers.h"
+
 using namespace Cti::Protocols;
 
 BOOST_AUTO_TEST_SUITE( test_dev_mct )
@@ -34,6 +37,7 @@ struct test_MctDevice : Cti::Devices::MctDevice
     using MctDevice::findLastScheduledFreeze;
     using MctDevice::getOperation;
     using MctDevice::ResultDecode;
+    using MctDevice::decodeReadDataForKey;
 
     CtiRouteSPtr rte;
 
@@ -989,6 +993,87 @@ BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
     }
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()
+
+
+BOOST_AUTO_TEST_CASE(test_dev_mct_decodeReadDataForKey)
+{
+    using Dpi = CtiTableDynamicPaoInfo;
+
+    Cti::Test::Override_DynamicPaoInfoManager scopedPaoInfo;
+
+    test_MctDevice mct;
+
+    unsigned char freeze_days[] = { 0, 15 };
+
+    BOOST_CHECK( ! mct.hasDynamicInfo(Dpi::Key_MCT_ScheduledFreezeDay) );
+    BOOST_CHECK( ! mct.hasDynamicInfo(Dpi::Key_MCT_ScheduledFreezeConfigTimestamp) );
+
+    //  Decode a new value
+    {
+        const CtiTime Now(CtiDate(1, 2, 2013), 12, 34, 56);
+        Cti::Test::Override_CtiTime_Now scopedTimeOverride(Now);
+
+        mct.decodeReadDataForKey(Dpi::Key_MCT_ScheduledFreezeDay, freeze_days + 0, freeze_days + 1);
+
+        unsigned freezeDay;
+        CtiTime  freezeConfigTimestamp;
+
+        BOOST_CHECK( mct.getDynamicInfo(Dpi::Key_MCT_ScheduledFreezeDay, freezeDay) );
+        BOOST_CHECK( mct.getDynamicInfo(Dpi::Key_MCT_ScheduledFreezeConfigTimestamp, freezeConfigTimestamp) );
+
+        BOOST_CHECK_EQUAL(freezeDay, 0);
+        BOOST_CHECK_EQUAL(freezeConfigTimestamp, Now);
+
+        BOOST_CHECK(scopedPaoInfo.dpi->dirtyEntries.count(mct.getID()));
+        BOOST_CHECK(scopedPaoInfo.dpi->dirtyEntries[mct.getID()].count(Dpi::Key_MCT_ScheduledFreezeDay));
+        BOOST_CHECK(scopedPaoInfo.dpi->dirtyEntries[mct.getID()].count(Dpi::Key_MCT_ScheduledFreezeConfigTimestamp));
+        scopedPaoInfo.dpi->dirtyEntries.clear();
+    }
+
+    //  Decode the same value again at a new time, confirm neither value changes
+    {
+        const CtiTime Then(CtiDate(1, 2, 2013), 12, 34, 56);
+        const CtiTime Now (CtiDate(1, 2, 2013), 12, 35, 56);
+        Cti::Test::Override_CtiTime_Now scopedTimeOverride(Now);
+
+        mct.decodeReadDataForKey(Dpi::Key_MCT_ScheduledFreezeDay, freeze_days + 0, freeze_days + 1);
+
+        unsigned freezeDay;
+        CtiTime  freezeConfigTimestamp;
+
+        BOOST_CHECK( mct.getDynamicInfo(Dpi::Key_MCT_ScheduledFreezeDay, freezeDay) );
+        BOOST_CHECK( mct.getDynamicInfo(Dpi::Key_MCT_ScheduledFreezeConfigTimestamp, freezeConfigTimestamp) );
+
+        BOOST_CHECK_EQUAL(freezeDay, 0);
+        BOOST_CHECK_EQUAL(freezeConfigTimestamp, Then);
+
+        BOOST_CHECK(scopedPaoInfo.dpi->dirtyEntries.empty());
+    }
+
+    //  Decode a new value at a new time, confirm both values change
+    {
+        const CtiTime Then(CtiDate(1, 2, 2013), 12, 34, 56);
+        const CtiTime Now (CtiDate(1, 2, 2013), 12, 36, 56);
+        Cti::Test::Override_CtiTime_Now scopedTimeOverride(Now);
+
+        mct.decodeReadDataForKey(Dpi::Key_MCT_ScheduledFreezeDay, freeze_days + 1, freeze_days + 2);
+
+        unsigned freezeDay;
+        CtiTime  freezeConfigTimestamp;
+
+        BOOST_CHECK( mct.getDynamicInfo(Dpi::Key_MCT_ScheduledFreezeDay, freezeDay) );
+        BOOST_CHECK( mct.getDynamicInfo(Dpi::Key_MCT_ScheduledFreezeConfigTimestamp, freezeConfigTimestamp) );
+
+        BOOST_CHECK_EQUAL(freezeDay, 15);
+        BOOST_CHECK_EQUAL(freezeConfigTimestamp, Now);
+
+        BOOST_CHECK(scopedPaoInfo.dpi->dirtyEntries.count(mct.getID()));
+        BOOST_CHECK(scopedPaoInfo.dpi->dirtyEntries[mct.getID()].count(Dpi::Key_MCT_ScheduledFreezeDay));
+        BOOST_CHECK(scopedPaoInfo.dpi->dirtyEntries[mct.getID()].count(Dpi::Key_MCT_ScheduledFreezeConfigTimestamp));
+        scopedPaoInfo.dpi->dirtyEntries.clear();
+    }
+}
+
 
 struct executeRequest_helper
 {

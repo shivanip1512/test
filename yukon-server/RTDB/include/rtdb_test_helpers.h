@@ -59,28 +59,38 @@ public:
 
 struct test_DynamicPaoInfoManager : DynamicPaoInfoManager
 {
-    virtual void loadInfo(const long id)
+    void loadInfo(const long id) override
     {
         loadedPaos.insert(id);
+    }
+
+    std::map<long, std::set<PaoInfoKeys>> dirtyEntries;
+
+    void setDirty(const DynInfoSPtr &dirty) override
+    {
+        dirtyEntries[dirty->getPaoID()].insert(dirty->getKey());
     }
 };
 
 class Override_DynamicPaoInfoManager
 {
-    std::auto_ptr<DynamicPaoInfoManager> _oldDynamicPaoInfoManager;
+    std::unique_ptr<DynamicPaoInfoManager> _oldDynamicPaoInfoManager;
 
 public:
 
+    test_DynamicPaoInfoManager *dpi;
+
     Override_DynamicPaoInfoManager()
     {
-        _oldDynamicPaoInfoManager = gDynamicPaoInfoManager;
+        dpi = new test_DynamicPaoInfoManager;
 
-        gDynamicPaoInfoManager.reset(new test_DynamicPaoInfoManager);
+        _oldDynamicPaoInfoManager.reset(dpi);
+        _oldDynamicPaoInfoManager.swap(gDynamicPaoInfoManager);
     }
 
     ~Override_DynamicPaoInfoManager()
     {
-        gDynamicPaoInfoManager = _oldDynamicPaoInfoManager;
+        _oldDynamicPaoInfoManager.swap(gDynamicPaoInfoManager);
     }
 };
 

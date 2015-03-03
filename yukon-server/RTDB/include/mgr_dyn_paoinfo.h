@@ -74,16 +74,17 @@ public:
 
 protected:
 
+    typedef boost::shared_ptr<CtiTableDynamicPaoInfo> DynInfoSPtr;
+    typedef boost::weak_ptr  <CtiTableDynamicPaoInfo> DynInfoWPtr;
+
     DynamicPaoInfoManager();
 
     virtual void loadInfo(const long paoId);
+    virtual void setDirty(const DynInfoSPtr &dirty);
 
     Database::id_set loadedPaos;
 
 private:
-
-    typedef boost::shared_ptr<CtiTableDynamicPaoInfo> DynInfoSPtr;
-    typedef boost::weak_ptr<CtiTableDynamicPaoInfo>   DynInfoWPtr;
 
     typedef std::map<PaoInfoKeys, DynInfoSPtr> PaoInfoMap;
     typedef std::map<long, PaoInfoMap> PaoIdToPaoInfoMap;
@@ -133,7 +134,7 @@ private:
     Database::id_set paosToReload;
 };
 
-extern IM_EX_DYNPAOINFO std::auto_ptr<DynamicPaoInfoManager> gDynamicPaoInfoManager;  //  auto_ptr so it can be overridden for unit tests
+extern IM_EX_DYNPAOINFO std::unique_ptr<DynamicPaoInfoManager> gDynamicPaoInfoManager;  //  unique_ptr so it can be overridden for unit tests
 
 // explicit instantiation
 template IM_EX_DYNPAOINFO void DynamicPaoInfoManager::setInfo<unsigned long> (const long paoId, PaoInfoKeysIndexed k, const std::vector<unsigned long> &values);
