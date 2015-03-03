@@ -47,6 +47,11 @@ UnsolicitedHandler::UnsolicitedHandler(CtiPortSPtr &port, CtiDeviceManager &devi
     _shutdown(false),
     _portLogManager("porthandler" + std::to_string(++portHandlerCount))
 {
+    _portLogManager.setToStdOut      ( false );  // Not to std out.
+    _portLogManager.setOwnerInfo     ( CompileInfo );
+    _portLogManager.setRetentionDays ( gLogRetention );
+    _portLogManager.setOutputFormat( Cti::Logging::LogFormat_CommLog );
+
     _portLog = _portLogManager.getLogger();
 
     UnsolicitedPortsQueue.addClient(this);
@@ -70,11 +75,7 @@ void UnsolicitedHandler::startLog()
         // Create a subdirectory called Comm beneath Log.
         CreateDirectoryEx(gLogDirectory.data(), comlogdir.data(), NULL);
 
-        _portLogManager.setToStdOut      ( false );  // Not to std out.
-        _portLogManager.setOwnerInfo     ( CompileInfo );
         _portLogManager.setOutputPath    ( comlogdir );
-        _portLogManager.setRetentionDays ( gLogRetention );
-        _portLogManager.setOutputFormat  ( Cti::Logging::LogFormat_CommLog );
         _portLogManager.setOutputFile    ( describePort() );
         _portLogManager.start();
     }
