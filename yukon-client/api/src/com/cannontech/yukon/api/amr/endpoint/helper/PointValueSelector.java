@@ -18,8 +18,6 @@ import com.cannontech.yukon.api.amr.endpoint.helper.parsers.ValueParser;
 
 public class PointValueSelector {
     private SelectorType selectorType;
-    private Instant startDate;
-    private Instant stopDate;
     private Range<Instant> instantRange;
 	private Order order;
     private Integer numberOfRows;
@@ -29,23 +27,6 @@ public class PointValueSelector {
         SelectorType type = SelectorType.getByName(pointValueNode.getLocalName());
         return type.parseValueSelector(pointValueNode);
     }
-
-    public Instant getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Instant startDate) {
-        this.startDate = startDate;
-    }
-
-    public Instant getStopDate() {
-        return stopDate;
-    }
-
-    public void setStopDate(Instant stopDate) {
-        this.stopDate = stopDate;
-    }
-
     
     public Range<Instant> getInstantRange() {
 		return instantRange;
@@ -85,9 +66,8 @@ public class PointValueSelector {
 
     @Override
     public String toString() {
-        return "PointValueSelector [selectorType=" + selectorType + ", startDate=" + startDate
-               + ", stopDate=" + stopDate + ", DateRange=" + instantRange + ", order=" + order
-               + ", numberOfRows=" + numberOfRows + ", label=" + label + "]";
+        return "PointValueSelector [selectorType=" + selectorType + ", DateRange=" + instantRange + ", order=" + order
+            + ", numberOfRows=" + numberOfRows + ", label=" + label + "]";
     }
 
     public enum SelectorType {

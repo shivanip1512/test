@@ -18,10 +18,8 @@ public class AllAfterParser extends ValueParser {
         String orderString = template.evaluateAsString("@order");
         Order order = OrderHelper.getOrderByName(orderString, Order.FORWARD);
 
-        selector.setStartDate(startDate);
-        selector.setStopDate(new Instant());
         selector.setNumberOfRows(limit);
-        Range<Instant> dateRange = new Range<Instant>(selector.getStartDate(), inclusive, selector.getStopDate(), true);
+        Range<Instant> dateRange = new Range<Instant>(startDate, inclusive, new Instant(), true);
         selector.setInstantRange(dateRange);
         selector.setOrder(order);
     }

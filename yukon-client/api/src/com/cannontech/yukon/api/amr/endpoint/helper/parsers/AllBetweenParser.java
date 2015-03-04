@@ -24,9 +24,6 @@ public class AllBetweenParser extends ValueParser {
 
         String orderString = template.evaluateAsString("@order");
         Order order = OrderHelper.getOrderByName(orderString, Order.FORWARD);
-
-        selector.setStartDate(startDate);
-        selector.setStopDate(stopDate);
         Range<Instant> dateRange = new Range<Instant>(startDate, fromInclusive, stopDate, toInclusive);
         selector.setInstantRange(dateRange);
         selector.setNumberOfRows(limit);

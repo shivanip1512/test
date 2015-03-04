@@ -18,9 +18,8 @@ public class AllBeforeParser extends ValueParser {
         String orderString = template.evaluateAsString("@order");
         Order order = OrderHelper.getOrderByName(orderString, Order.REVERSE);
 
-        selector.setStopDate(stopDate);
         selector.setNumberOfRows(limit);
-        Range<Instant> dateRange = new Range<Instant>(selector.getStartDate(), true, selector.getStopDate(), inclusive);
+        Range<Instant> dateRange = new Range<Instant>(null, true, stopDate, inclusive);
         selector.setInstantRange(dateRange);
         selector.setOrder(order);
     }

@@ -10,8 +10,7 @@ import com.cannontech.yukon.api.amr.endpoint.helper.PointValueSelector;
 public class AllParser extends ValueParser {
     @Override
     public void parseOther(SimpleXPathTemplate template, PointValueSelector selector) {
-        selector.setStopDate(new Instant());
-        Range<Instant> dateRange = new Range<Instant>(selector.getStartDate(), false, selector.getStopDate(), true);
+        Range<Instant> dateRange = new Range<Instant>(null, false, new Instant(), true);
         selector.setInstantRange(dateRange);
         selector.setNumberOfRows(null);
         selector.setOrder(Order.FORWARD);
