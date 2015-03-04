@@ -743,8 +743,9 @@ YukonError_t DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevi
 
     if( Device->getType() == TYPE_TAPTERM )
     {
-        CtiDeviceTapPagingTerminal *pTap = (CtiDeviceTapPagingTerminal *)Device.get();
-        if(pTap->devicePacingExceeded())        // Check if the pacing rate has been exceeded.
+        // Check if the pacing rate has been exceeded.
+        auto &tap = static_cast<Cti::Devices::TapPagingTerminal &>(*Device);
+        if( tap.devicePacingExceeded() )
         {
             //  Requeue the OM at the head of its priority so it will be examined next
             if(int result = Port->writeQueueWithPriority(OutMessage, std::min<int>(MAXPRIORITY, OutMessage->Priority + 1), PortThread))
@@ -1589,7 +1590,8 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
                             }
                             else
                             {
-                                if( ((CtiDeviceTapPagingTerminal*)IED)->blockedByPageRate() )
+                                auto &tap = static_cast<Cti::Devices::TapPagingTerminal &>(*IED);
+                                if( tap.blockedByPageRate() )
                                 {
                                     IED->setLogOnNeeded(true);      // We have zero queue entries!
                                 }
@@ -3662,11 +3664,6 @@ YukonError_t TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, lis
                 }
             }
         }
-    }
-    //This will never ever be called. Is that desired behavior? JMO 6/20/2006
-    else if(status == ClientErrors::None && aIEDDevice->getCurrentState() == CtiDeviceIED::StateAbort)
-    {
-        status = ClientErrors::Abnormal;
     }
 
     return status;

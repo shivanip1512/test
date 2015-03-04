@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_tap
-*
-* Date:   7/23/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tap.cpp-arc  $
-* REVISION     :  $Revision: 1.36.2.1 $
-* DATE         :  $Date: 2008/11/13 17:23:42 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "cparms.h"
@@ -33,17 +20,39 @@
 #include "verification_objects.h"
 #include "dev_tap.h"
 
+#define TAPTIME_T2      1
+#define TAPTIME_T3      10
+
+#define TAPCOUNT_N1     3
+#define TAPCOUNT_N2     3
+
+#define CHAR_CR         0x0D
+#define CHAR_LF         0x0A
+#define CHAR_ESC        0x1B
+#define CHAR_STX        0x02
+#define CHAR_ETX        0x03
+#define CHAR_US         0x1F
+#define CHAR_ETB        0x17
+#define CHAR_EOT        0x04
+#define CHAR_SUB        0x1A
+#define CHAR_ACK        0x06
+#define CHAR_NAK        0x15
+#define CHAR_RS         0x1e
+
 using namespace std;
 using namespace boost::posix_time;
 
 static int pagesPerMinute  = gConfigParms.getValueAsInt("PAGES_PER_MINUTE", 0);
 
-CtiDeviceTapPagingTerminal::~CtiDeviceTapPagingTerminal()
+namespace Cti {
+namespace Devices {
+
+TapPagingTerminal::~TapPagingTerminal()
 {
-    CtiDeviceTapPagingTerminal::freeDataBins();  //  qualified to prevent virtual dispatch
+    TapPagingTerminal::freeDataBins();  //  qualified to prevent virtual dispatch
 }
 
-YukonError_t CtiDeviceTapPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t TapPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     YukonError_t nRet = ClientErrors::None;
     /*
@@ -127,7 +136,7 @@ YukonError_t CtiDeviceTapPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, Cti
     return nRet;
 }
 
-INT CtiDeviceTapPagingTerminal::allocateDataBins(OUTMESS *oMess)
+INT TapPagingTerminal::allocateDataBins(OUTMESS *oMess)
 {
     if(_outMessage == NULL)
     {
@@ -153,7 +162,7 @@ INT CtiDeviceTapPagingTerminal::allocateDataBins(OUTMESS *oMess)
     return ClientErrors::None;
 }
 
-INT CtiDeviceTapPagingTerminal::freeDataBins()
+INT TapPagingTerminal::freeDataBins()
 {
     if(_pageBuffer != NULL)
     {
@@ -168,56 +177,53 @@ INT CtiDeviceTapPagingTerminal::freeDataBins()
     return ClientErrors::None;
 }
 
-CHAR  CtiDeviceTapPagingTerminal::getPagePrefix() const
+CHAR  TapPagingTerminal::getPagePrefix() const
 {
     return _pagePrefix;
 }
-CHAR& CtiDeviceTapPagingTerminal::getPagePrefix()
+CHAR& TapPagingTerminal::getPagePrefix()
 {
     return _pagePrefix;
 }
-CtiDeviceTapPagingTerminal& CtiDeviceTapPagingTerminal::setPagePrefix(const CHAR aCh)
+void TapPagingTerminal::setPagePrefix(const CHAR aCh)
 {
     _pagePrefix = aCh;
-    return *this;
 }
 
-UINT  CtiDeviceTapPagingTerminal::getPageCount() const
+UINT  TapPagingTerminal::getPageCount() const
 {
     return _pageCount;
 }
-UINT& CtiDeviceTapPagingTerminal::getPageCount()
+UINT& TapPagingTerminal::getPageCount()
 {
     return _pageCount;
 }
-CtiDeviceTapPagingTerminal& CtiDeviceTapPagingTerminal::setPageCount(const UINT aInt)
+void TapPagingTerminal::setPageCount(const UINT aInt)
 {
     _pageCount = aInt;
-    return *this;
 }
 
-UINT CtiDeviceTapPagingTerminal::getPageLength() const
+UINT TapPagingTerminal::getPageLength() const
 {
     return _pageLength;
 }
 
-CtiDeviceTapPagingTerminal& CtiDeviceTapPagingTerminal::setPageLength(const UINT aInt)
+void TapPagingTerminal::setPageLength(const UINT aInt)
 {
     _pageLength = aInt;
-    return *this;
 }
 
-BOOL CtiDeviceTapPagingTerminal::isValidPageBuffer() const
+BOOL TapPagingTerminal::isValidPageBuffer() const
 {
     return( _pageBuffer != NULL );
 }
 
-CHAR* CtiDeviceTapPagingTerminal::getPageBuffer()
+CHAR* TapPagingTerminal::getPageBuffer()
 {
     return _pageBuffer;
 }
 
-CHAR  CtiDeviceTapPagingTerminal::getPageBuffer(const INT i) const
+CHAR  TapPagingTerminal::getPageBuffer(const INT i) const
 {
     CHAR ch = '\0';
 
@@ -229,17 +235,7 @@ CHAR  CtiDeviceTapPagingTerminal::getPageBuffer(const INT i) const
     return ch;
 }
 
-//This should no longer be used!
-/*
-CtiDeviceTapPagingTerminal& CtiDeviceTapPagingTerminal::setPageBuffer(const CHAR* copyBuffer, const INT len)
-{
-    setPageLength(len);
-    ::memcpy(_pageBuffer, copyBuffer, len);
-    return *this;
-}
-*/
-
-string CtiDeviceTapPagingTerminal::getDescription(const CtiCommandParser & parse) const
+string TapPagingTerminal::getDescription(const CtiCommandParser & parse) const
 {
     string trelay;
 
@@ -248,7 +244,7 @@ string CtiDeviceTapPagingTerminal::getDescription(const CtiCommandParser & parse
     return trelay;
 }
 
-YukonError_t CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer, YukonError_t commReturnValue, CtiMessageList &traceList)
+YukonError_t TapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
     YukonError_t status = commReturnValue;
 
@@ -504,7 +500,7 @@ YukonError_t CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer, 
  * It uses the current state and the Xfer InBuffer to get us to the next point
  * in the sequence.
  *-----------------------------------------------------------------------------*/
-YukonError_t CtiDeviceTapPagingTerminal::generateCommandHandshake(CtiXfer  &xfer, CtiMessageList &traceList)
+YukonError_t TapPagingTerminal::generateCommandHandshake(CtiXfer  &xfer, CtiMessageList &traceList)
 {
     YukonError_t status = ClientErrors::None;
 
@@ -703,7 +699,7 @@ YukonError_t CtiDeviceTapPagingTerminal::generateCommandHandshake(CtiXfer  &xfer
 
 
 
-INT CtiDeviceTapPagingTerminal::traceOut (PCHAR Message, ULONG Count, CtiMessageList &traceList)
+INT TapPagingTerminal::traceOut (PCHAR Message, ULONG Count, CtiMessageList &traceList)
 {
     ULONG i;
     string outStr;
@@ -739,7 +735,7 @@ INT CtiDeviceTapPagingTerminal::traceOut (PCHAR Message, ULONG Count, CtiMessage
     return ClientErrors::None;
 }
 
-INT CtiDeviceTapPagingTerminal::traceIn(PCHAR  Message, ULONG  Count, CtiMessageList &traceList, BOOL CompletedMessage)
+INT TapPagingTerminal::traceIn(PCHAR  Message, ULONG  Count, CtiMessageList &traceList, BOOL CompletedMessage)
 {
     ULONG i;
     if(Count && Message != NULL)
@@ -781,7 +777,7 @@ INT CtiDeviceTapPagingTerminal::traceIn(PCHAR  Message, ULONG  Count, CtiMessage
 }
 
 
-INT CtiDeviceTapPagingTerminal::printChar( string &Str, CHAR Char )
+INT TapPagingTerminal::printChar( string &Str, CHAR Char )
 {
     switch(Char)
     {
@@ -853,7 +849,7 @@ INT CtiDeviceTapPagingTerminal::printChar( string &Str, CHAR Char )
 }
 
 
-YukonError_t CtiDeviceTapPagingTerminal::generateCommand(CtiXfer  &xfer, CtiMessageList &traceList)
+YukonError_t TapPagingTerminal::generateCommand(CtiXfer  &xfer, CtiMessageList &traceList)
 {
     INT   i;
     YukonError_t status = ClientErrors::None;
@@ -1056,7 +1052,7 @@ YukonError_t CtiDeviceTapPagingTerminal::generateCommand(CtiXfer  &xfer, CtiMess
     return status;
 }
 
-YukonError_t CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, YukonError_t commReturnValue, CtiMessageList &traceList)
+YukonError_t TapPagingTerminal::decodeResponse(CtiXfer  &xfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
     YukonError_t status = commReturnValue;
 
@@ -1206,7 +1202,7 @@ YukonError_t CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, YukonErr
 }
 
 
-YukonError_t CtiDeviceTapPagingTerminal::generateCommandDisconnect (CtiXfer  &xfer, CtiMessageList &traceList)
+YukonError_t TapPagingTerminal::generateCommandDisconnect (CtiXfer  &xfer, CtiMessageList &traceList)
 {
     INT   i;
     YukonError_t status = ClientErrors::None;
@@ -1330,7 +1326,7 @@ YukonError_t CtiDeviceTapPagingTerminal::generateCommandDisconnect (CtiXfer  &xf
     return status;
 }
 
-YukonError_t CtiDeviceTapPagingTerminal::decodeResponseDisconnect (CtiXfer &xfer, YukonError_t commReturnValue, CtiMessageList &traceList)
+YukonError_t TapPagingTerminal::decodeResponseDisconnect (CtiXfer &xfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
     YukonError_t status = commReturnValue;
 
@@ -1423,7 +1419,7 @@ YukonError_t CtiDeviceTapPagingTerminal::decodeResponseDisconnect (CtiXfer &xfer
 }
 
 
-CtiDeviceIED& CtiDeviceTapPagingTerminal::setInitialState (const LONG oldid)
+CtiDeviceIED& TapPagingTerminal::setInitialState (const LONG oldid)
 {
     if( oldid > 0 && getUniqueIdentifier() == oldid)
     {
@@ -1451,7 +1447,7 @@ CtiDeviceIED& CtiDeviceTapPagingTerminal::setInitialState (const LONG oldid)
     return *this;
 }
 
-CHAR CtiDeviceTapPagingTerminal::incrementPagePrefix()
+CHAR TapPagingTerminal::incrementPagePrefix()
 {
     CHAR prefix = getPagePrefix();
 
@@ -1467,17 +1463,16 @@ CHAR CtiDeviceTapPagingTerminal::incrementPagePrefix()
     return prefix;
 }
 
-CtiDeviceTapPagingTerminal& CtiDeviceTapPagingTerminal::setSendFiller(bool yesno)
+void TapPagingTerminal::setSendFiller(bool yesno)
 {
     _sendFiller = yesno;
-    return *this;
 }
-bool CtiDeviceTapPagingTerminal::getSendFiller() const
+bool TapPagingTerminal::getSendFiller() const
 {
     return _sendFiller;
 }
 
-CtiDeviceTapPagingTerminal::CtiDeviceTapPagingTerminal() :
+TapPagingTerminal::TapPagingTerminal() :
 _allowPrefix(true),
 _pagesPerMinute(0),
 _sendFiller(true),
@@ -1491,7 +1486,7 @@ _outMessage(NULL),
 _pacingReport(false)
 {}
 
-ULONG CtiDeviceTapPagingTerminal::getUniqueIdentifier() const
+ULONG TapPagingTerminal::getUniqueIdentifier() const
 {
     ULONG CSum = 0;
 
@@ -1522,12 +1517,12 @@ ULONG CtiDeviceTapPagingTerminal::getUniqueIdentifier() const
     return CSum;
 }
 
-bool CtiDeviceTapPagingTerminal::blockedByPageRate() const
+bool TapPagingTerminal::blockedByPageRate() const
 {
     return (_pagesPerMinute >= pagesPerMinute && pagesPerMinute > 0);
 }
 
-bool CtiDeviceTapPagingTerminal::devicePacingExceeded()
+bool TapPagingTerminal::devicePacingExceeded()
 {
     bool toofast = false;
 
@@ -1560,19 +1555,18 @@ bool CtiDeviceTapPagingTerminal::devicePacingExceeded()
     return toofast;
 }
 
-bool CtiDeviceTapPagingTerminal::allowPrefix() const
+bool TapPagingTerminal::allowPrefix() const
 {
     return _allowPrefix;
 }
 
-CtiDeviceTapPagingTerminal& CtiDeviceTapPagingTerminal::setAllowPrefix(bool val)
+void TapPagingTerminal::setAllowPrefix(bool val)
 {
     _allowPrefix = val;
-    return *this;
 }
 
 
-void CtiDeviceTapPagingTerminal::updatePageCountData(UINT addition)
+void TapPagingTerminal::updatePageCountData(UINT addition)
 {
     CtiPointAccumulatorSPtr pAccumPoint;
     ULONG curPulseValue;
@@ -1598,7 +1592,7 @@ void CtiDeviceTapPagingTerminal::updatePageCountData(UINT addition)
     return;
 }
 
-CtiMessage* CtiDeviceTapPagingTerminal::rsvpToDispatch(bool clearMessage)
+CtiMessage* TapPagingTerminal::rsvpToDispatch(bool clearMessage)
 {
     CtiPointAccumulatorSPtr pAccumPoint;
     FLOAT PValue;
@@ -1648,7 +1642,7 @@ CtiMessage* CtiDeviceTapPagingTerminal::rsvpToDispatch(bool clearMessage)
     return returnMsg;
 }
 
-void CtiDeviceTapPagingTerminal::getVerificationObjects(queue< CtiVerificationBase * > &work_queue)
+void TapPagingTerminal::getVerificationObjects(queue< CtiVerificationBase * > &work_queue)
 {
     while( !_verification_objects.empty() )
     {
@@ -1658,3 +1652,5 @@ void CtiDeviceTapPagingTerminal::getVerificationObjects(queue< CtiVerificationBa
     }
 }
 
+}
+}

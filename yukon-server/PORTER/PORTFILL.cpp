@@ -222,7 +222,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                     switch(TransmitterDevice->getType())
                     {
                     case TYPE_SNPP:
-                        CTILOG_INFO(dout, "SNPP filler");
+                        CTILOG_WARN(dout, "SNPP filler is not implemented on route "<< Route->getName() <<" for transmitter "<< TransmitterDevice->getName());
                         break;
                     case TYPE_WCTP:
                         {
@@ -378,23 +378,23 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                         }
                     case TYPE_TAPTERM:
                         {
-                            CtiDeviceTapPagingTerminal *tapTRX = (CtiDeviceTapPagingTerminal *)TransmitterDevice.get();
+                            auto &tap = static_cast<Cti::Devices::TapPagingTerminal &>(*TransmitterDevice);
 
-                            if(!tapTRX->isInhibited() && tapTRX->getSendFiller())
+                            if( ! tap.isInhibited() && tap.getSendFiller() )
                             {
-                                if(gsUID != 0)
+                                if( gsUID )
                                 {
-                                    CTILOG_INFO(dout, "VERSACOM Filler message on route "<< Route->getName() <<" for transmitter "<< TransmitterDevice->getName());
+                                    CTILOG_INFO(dout, "VERSACOM Filler message on route "<< Route->getName() <<" for transmitter "<< tap.getName());
 
-                                    OutMessage.DeviceID = tapTRX->getID();
-                                    OutMessage.TargetID = tapTRX->getID();
+                                    OutMessage.DeviceID = tap.getID();
+                                    OutMessage.TargetID = tap.getID();
                                     OutMessage.Priority = MAXPRIORITY;
                                     OutMessage.Buffer.VSt.UtilityID = (BYTE)gsUID; // All Call
                                     OutMessage.Retry    = 2;
                                     OutMessage.InLength = -1;
                                     OutMessage.Sequence = 0;
-                                    OutMessage.Port = tapTRX->getPortID();
-                                    OutMessage.Remote = tapTRX->getAddress();
+                                    OutMessage.Port = tap.getPortID();
+                                    OutMessage.Remote = tap.getAddress();
                                     OutMessage.Buffer.VSt.CommandType  = VFILLER;
 
                                     /*
@@ -408,7 +408,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                                      * be added into the list upon completion of the Execute!
                                      */
 
-                                    CtiProtocolVersacom  Versacom(tapTRX->getType());
+                                    CtiProtocolVersacom  Versacom(tap.getType());
 
                                     // Someone else did all the parsing and is just needs building
                                     // Prime the Protocol device with the vstruct, and call the update routine
@@ -468,9 +468,9 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                                     }
                                 }
 
-                                if(gsSPID != 0)
+                                if( gsSPID )
                                 {
-                                    CTILOG_INFO(dout, "EXPRESSCOM Filler message on route "<< Route->getName() <<" for transmitter "<< TransmitterDevice->getName());
+                                    CTILOG_INFO(dout, "EXPRESSCOM Filler message on route "<< Route->getName() <<" for transmitter "<< tap.getName());
 
                                     CtiCommandParser parse( "putconfig xcom sync" );
                                     CtiProtocolExpresscom  xcom;
@@ -478,9 +478,9 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                                     string byteString;
 
                                     // Add code here to send a sync page expresscom style.
-                                    OutMessage.DeviceID = tapTRX->getID();
-                                    OutMessage.Port     = tapTRX->getPortID();
-                                    OutMessage.Remote   = tapTRX->getAddress();
+                                    OutMessage.DeviceID = tap.getID();
+                                    OutMessage.Port     = tap.getPortID();
+                                    OutMessage.Remote   = tap.getAddress();
                                     OutMessage.TimeOut  = 2;
                                     OutMessage.InLength = -1;
 

@@ -450,8 +450,6 @@ YukonError_t CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg             
                 }
             case TYPE_TAPTERM:
                 {
-                    CtiDeviceTapPagingTerminal *TapDev = (CtiDeviceTapPagingTerminal *)(_transmitterDevice.get());
-
                     /* Calculate the length */
                     Length                              = 29;
 
@@ -806,8 +804,6 @@ YukonError_t CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
             case TYPE_WCTP:
             case TYPE_TAPTERM:
                 {
-                    CtiDeviceTapPagingTerminal *TapDev = (CtiDeviceTapPagingTerminal *)(_transmitterDevice.get());
-
                     /* Build the message */
                     Length = prot305.buildNumericPageMessage(NewOutMessage->Buffer.TAPSt.Message);
 
@@ -1124,26 +1120,20 @@ void CtiRouteXCU::enablePrefix(bool enable)
 {
     if(_transmitterDevice)      // This is the pointer which refers this rte to its transmitter device.
     {
-        CtiDeviceWctpTerminal *WctpDev = 0;
-        CtiDeviceTapPagingTerminal *TapDev = 0;
-
         switch(_transmitterDevice->getType())
         {
-        case TYPE_WCTP:
+            case TYPE_WCTP:
             {
-                WctpDev = (CtiDeviceWctpTerminal *)(_transmitterDevice.get());
-                WctpDev->setAllowPrefix(enable);
-                break;
+                auto &wctp = static_cast<CtiDeviceWctpTerminal &>(*_transmitterDevice);
+                return wctp.setAllowPrefix(enable);
             }
-        case TYPE_TAPTERM:
+            case TYPE_TAPTERM:
             {
-                TapDev = (CtiDeviceTapPagingTerminal *)(_transmitterDevice.get());
-                TapDev->setAllowPrefix(enable);
-                break;
+                auto &tap = static_cast<Cti::Devices::TapPagingTerminal &>(*_transmitterDevice);
+                return tap.setAllowPrefix(enable);
             }
         }
     }
-    return;
 }
 
 LONG CtiRouteXCU::getTrxDeviceID() const

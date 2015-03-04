@@ -7,10 +7,12 @@
 #include "encryption_oneway_message.h"
 
 
-class IM_EX_DEVDB CtiDeviceTapPagingTerminal  : public Cti::Devices::DevicePaging,
-                                                protected OneWayMsgEncryption
+namespace Cti {
+namespace Devices {
+
+class IM_EX_DEVDB TapPagingTerminal : public DevicePaging, protected OneWayMsgEncryption
 {
-    typedef Cti::Devices::DevicePaging Inherited;
+   typedef DevicePaging Inherited;
 
    UINT                          _idByteCount;  // How many bytes should a guy wait for after the CR (def. to 10)
 
@@ -34,21 +36,21 @@ protected:
 
 public:
 
-   CtiDeviceTapPagingTerminal();
-   virtual ~CtiDeviceTapPagingTerminal();
+   TapPagingTerminal();
+   virtual ~TapPagingTerminal();
 
    CHAR  incrementPagePrefix();
 
    CHAR  getPagePrefix() const;
    CHAR& getPagePrefix();
-   CtiDeviceTapPagingTerminal& setPagePrefix(const CHAR aCh);
+   void  setPagePrefix(const CHAR aCh);
 
    UINT  getPageCount() const;
    UINT& getPageCount();
-   CtiDeviceTapPagingTerminal& setPageCount(const UINT aInt);
+   void  setPageCount(const UINT aInt);
 
    UINT getPageLength() const;
-   CtiDeviceTapPagingTerminal& setPageLength(const UINT aInt);
+   void setPageLength(const UINT aInt);
 
    BOOL  isValidPageBuffer() const;
    CHAR* getPageBuffer();
@@ -56,10 +58,10 @@ public:
 
   // CtiDeviceTapPagingTerminal& setPageBuffer(const CHAR* copyBuffer, const INT len);
 
-   CtiDeviceTapPagingTerminal& setSendFiller(bool yesno);
+   void setSendFiller(bool yesno);
    bool getSendFiller() const;
 
-   virtual ULONG getUniqueIdentifier() const;
+   ULONG getUniqueIdentifier() const override;
    YukonError_t ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
    std::string getDescription(const CtiCommandParser & parse) const;
@@ -76,7 +78,7 @@ public:
    INT allocateDataBins (OUTMESS *outMess) override;
    INT freeDataBins() override;
 
-   virtual CtiDeviceIED& setInitialState(const LONG oldid);
+   CtiDeviceIED& setInitialState(const LONG oldid) override;
 
    INT traceOut(PCHAR Message, ULONG Count, CtiMessageList &traceList);
    INT traceIn(PCHAR Message, ULONG Count, CtiMessageList &traceList, BOOL CompletedMessage = FALSE);
@@ -85,35 +87,14 @@ public:
    bool devicePacingExceeded();
    bool blockedByPageRate() const;
    bool allowPrefix() const;
-   CtiDeviceTapPagingTerminal& setAllowPrefix(bool val = false);
+   void setAllowPrefix(bool val);
    void updatePageCountData(UINT addition);
 
-   virtual CtiMessage* rsvpToDispatch(bool clearMessage = true);
+   CtiMessage* rsvpToDispatch(bool clearMessage = true) override;
 
    void getVerificationObjects(std::queue< CtiVerificationBase * > &work_queue);
 
 };
 
-
-#define TAPTIME_T1      2
-#define TAPTIME_T2      1
-#define TAPTIME_T3      10
-#define TAPTIME_T4      4
-#define TAPTIME_T5      8
-
-#define TAPCOUNT_N1     3
-#define TAPCOUNT_N2     3
-#define TAPCOUNT_N3     3
-
-#define CHAR_CR         0x0D
-#define CHAR_LF         0x0A
-#define CHAR_ESC        0x1B
-#define CHAR_STX        0x02
-#define CHAR_ETX        0x03
-#define CHAR_US         0x1F
-#define CHAR_ETB        0x17
-#define CHAR_EOT        0x04
-#define CHAR_SUB        0x1A
-#define CHAR_ACK        0x06
-#define CHAR_NAK        0x15
-#define CHAR_RS         0x1e
+}
+}

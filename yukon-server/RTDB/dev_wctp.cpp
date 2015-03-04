@@ -102,10 +102,9 @@ bool CtiDeviceWctpTerminal::allowPrefix() const
     return _allowPrefix;
 }
 
-CtiDeviceWctpTerminal& CtiDeviceWctpTerminal::setAllowPrefix(bool val)
+void CtiDeviceWctpTerminal::setAllowPrefix(bool val)
 {
     _allowPrefix = val;
-    return *this;
 }
 
 bool CtiDeviceWctpTerminal::devicePacingExceeded()

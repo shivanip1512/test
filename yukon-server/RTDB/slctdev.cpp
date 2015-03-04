@@ -180,7 +180,7 @@ const DeviceLookup deviceFactory = boost::assign::map_list_of
     (TYPE_REPEATER800,  MakeDeviceFunc(makeDevice<Repeater800Device>))
     (TYPE_REPEATER850,  MakeDeviceFunc(makeDevice<Repeater850Device>))
     (TYPE_REPEATER900,  MakeDeviceFunc(makeDevice<Repeater900Device>))
-    (TYPE_TAPTERM,      MakeDeviceFunc(makeDevice<CtiDeviceTapPagingTerminal>))
+    (TYPE_TAPTERM,      MakeDeviceFunc(makeDevice<TapPagingTerminal>))
     (TYPE_SNPP,         MakeDeviceFunc(makeDevice<CtiDeviceSnppPagingTerminal>))
     (TYPE_RDS,          MakeDeviceFunc(makeDevice<RDSTransmitter>))
     (TYPE_TNPP,         MakeDeviceFunc(makeDevice<CtiDeviceTnppPagingTerminal>))
