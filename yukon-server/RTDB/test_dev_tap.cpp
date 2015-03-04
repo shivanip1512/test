@@ -28,263 +28,233 @@ BOOST_AUTO_TEST_CASE(test_dev_tap_incrementPagePrefix)
     BOOST_CHECK_EQUAL(tap.incrementPagePrefix(), 'd');
     BOOST_CHECK_EQUAL(tap.incrementPagePrefix(), 'a');
 }
-/*
+
 BOOST_AUTO_TEST_CASE(test_dev_tap_early_hangup)
 {
     Cti::Devices::TapPagingTerminal tap;
+
+    using TapRow    = Cti::Test::StringRow<21>;
+    using TapReader = Cti::Test::TestReader<TapRow> ;
+
+    TapRow keys = {
+        "paobjectid",   "category",         "paoclass",         "paoname",          "type",
+        "disableflag",  "deviceid",         "alarminhibit",     "controlinhibit",   "portid",
+        "phonenumber",  "minconnecttime",   "maxconnecttime",   "linesettings",     "baudrate",
+        "password",     "slaveaddress",     "pagernumber",      "sender",           "securitycode",
+        "postpath"};
+    TapRow values = {
+        "96",           "DEVICE",           "TRANSMITTER",      "USA Mobility",     "TAP TERMINAL",
+        "N",            "96",               "N",                "N",                "7",
+        "18002506325",  "0",                "10",               "7E1",              "0",
+        "(none)",       "Master",           "7632140090",       "(none)",           "(none)",
+        "(none)"};
+
+    std::vector<TapRow> rows { values };
+
+    TapReader reader(keys, rows);
+
+    if( reader() )
+    {
+        tap.DecodeDatabaseReader(reader);
+    }
+
     /*
-YukonError_t TapPagingTerminal::decodeResponseDisconnect (CtiXfer &xfer, YukonError_t commReturnValue, CtiMessageList &traceList)
-{
-    if( commReturnValue == ClientErrors::ReadTimeout )
-    {
-        //  Remote end hung up on us - success!
-        setCurrentState(StateComplete);
+    from YUK-13880:
 
-        return ClientErrors::None;
-    }
-    else if( commReturnValue )
-    {
-        CTILOG_ERROR(dout, getName() <<" status "<< status);
+    11/13/2014 11:01:03 USA Mobility SENT: "<CR>"
+    11/13/2014 11:01:05 USA Mobility RECV: "<CR><LF> ID="
+    11/13/2014 11:01:05 USA Mobility SENT: "<ESC>PG1<CR>"
+    11/13/2014 11:01:06 USA Mobility RECV: "<CR><ACK><CR><CR><ESC>[p<CR>"
+    11/13/2014 11:01:06 USA Mobility SENT: "<STX>7632140090<CR>he0921484b2g<CR><ETX>553<CR>"
+    11/13/2014 11:01:07 USA Mobility RECV: "<CR><ACK><CR>"
+    11/13/2014 11:01:07 USA Mobility SENT: "<EOT><CR>"
+    Com 4 modem hangup on 18002506325
+    */
 
-        return commReturnValue;
-    }
+    OUTMESS OutMessage;
+    const std::string message = "he0921484b2g";
+    std::copy(
+            message.begin(),
+            message.end(),
+            OutMessage.Buffer.TAPSt.Message);
+    OutMessage.Buffer.TAPSt.Length = message.length();
 
-    // Communications must have been successful
-    if(gConfigParms.isTrue("DEBUG_TAPTERM_STATE_MACHINE"))
-    {
-        CTILOG_DEBUG(dout, "Current state "<< getCurrentState() <<". Previous State "<< getPreviousState());
-    }
-
-    setPreviousState( getCurrentState() );    // Leave a breadcrumb for those who follow to get us back here if needed
-
-
-//-----
-
-    tap.allocateDataBins(OutMessage);
+    tap.allocateDataBins(&OutMessage);
     tap.setInitialState(0);
 
-    if( (status = InitializeHandshake (Port, Device, traceList)) == ClientErrors::None )
+    CtiXfer transfer;
+    BYTE    inBuffer[512], outBuffer[256];
+    ULONG   bytesReceived = 0;
+    CtiDeviceBase::CtiMessageList traceList;
 
-//-----
-
-YukonError_t InitializeHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, list< CtiMessage* > &traceList)
-{
-    CtiXfer        transfer;
-    BYTE           inBuffer[512];
-    BYTE           outBuffer[256];
-    YukonError_t   status = ClientErrors::None;
-    ULONG          bytesReceived (0);
-
-    CtiDeviceIED *aIEDDevice = (CtiDeviceIED *)dev.get();
-
-    // initialize the transfer structure
-    transfer.setInBuffer( inBuffer );
+    transfer.setInBuffer ( inBuffer );
     transfer.setOutBuffer( outBuffer );
     transfer.setInCountActual( &bytesReceived );
-    transfer.setTraceMask(TraceFlag, TraceErrorsOnly);
 
-    while( status == ClientErrors::None &&
-           !((aIEDDevice->getCurrentState() == CtiDeviceIED::StateHandshakeAbort) ||
-             (aIEDDevice->getCurrentState() == CtiDeviceIED::StateHandshakeComplete)))
+    struct Transaction
     {
-        status = aIEDDevice->generateCommandHandshake (transfer, traceList);
-        status = aPortRecord->outInMess(transfer, dev, traceList);
+        Cti::Test::byte_str outbound;
+        Cti::Test::byte_str inbound;
+    };
 
-        if( transfer.doTrace(status) )
+    auto fillXfer = [](const Transaction trx, CtiXfer &transfer, const int pos) -> YukonError_t {
+
+        auto outBuf = transfer.getOutBuffer();
+
+        auto outExp = trx.outbound.begin();
+
+        if( transfer.getOutCount() != trx.outbound.size() )
         {
-            aPortRecord->traceXfer(transfer, traceList, dev, status);
+            BOOST_ERROR(
+                    "Outbound size mismatch at line " << pos << ", "
+                    << transfer.getOutCount() << " != " << trx.outbound.size());
         }
 
-        if( deviceCanSurviveThisStatus(status) )
+        for( int i = transfer.getOutCount(); i && outExp != trx.outbound.end(); i-- )
         {
-            status = aIEDDevice->decodeResponseHandshake (transfer, status, traceList);
+            if( *outBuf != *outExp )
+            {
+                BOOST_ERROR(
+                        "Outbound mismatch at line " << pos << ", "
+                        << static_cast<unsigned>(*outBuf) << " != " << static_cast<unsigned>(*outExp));
+            }
+            outBuf++;
+            outExp++;
         }
 
-        DisplayTraceList(aPortRecord, traceList, true);
+        YukonError_t result = ClientErrors::None;
+
+        auto inBuf = transfer.getInBuffer();
+        auto inbound = trx.inbound.begin();
+
+        /*
+        if( transfer.getInCountExpected() != trx.inbound.size() )
+        {
+            BOOST_ERROR(
+                    "Inbound size mismatch at line " << pos << ", "
+                    << transfer.getInCountExpected() << " != " << trx.inbound.size());
+        }
+        */
+
+        int inActual = 0;
+
+        for( int i = transfer.getInCountExpected(); i && inbound != trx.inbound.end(); i-- )
+        {
+            *inBuf++ = *inbound++;
+            inActual++;
+        }
+
+        transfer.setInCountActual(inActual);
+
+        if( transfer.getInCountActual() < transfer.getInCountExpected() )
+        {
+            return ClientErrors::ReadTimeout;
+        }
+
+        return ClientErrors::None;
+    };
+
+    //  InitializeHandshake
+    {
+        std::vector<Transaction> transactions = {
+            //  <CR>            <CR><LF> ID=
+            {"0d",              "0d 0a 20 49 44 3d"},
+            //  <ESC>PG1<CR>    <CR>
+            {"1b 50 47 31 0d",  "0d"},
+            //                  <ACK>
+            {"",                "06"},
+            //                  <CR>
+            {"",                "0d"},
+            //                  <CR>
+            {"",                "0d"},
+            //                  <ESC>
+            {"",                "1b"},
+            //                  [p<CR>
+            {"",                "5b 70 0d"}};
+
+        YukonError_t   status = ClientErrors::None;
+
+        for( auto trx : transactions )
+        {
+            BOOST_REQUIRE( status == ClientErrors::None );
+            BOOST_REQUIRE( tap.getCurrentState() != CtiDeviceIED::StateHandshakeAbort );
+            BOOST_REQUIRE( tap.getCurrentState() != CtiDeviceIED::StateHandshakeComplete );
+
+            status = tap.generateCommandHandshake (transfer, traceList);
+
+            status = fillXfer(trx, transfer, __LINE__);
+
+            status = tap.decodeResponseHandshake (transfer, status, traceList);
+        }
+
+        BOOST_REQUIRE_EQUAL( status, ClientErrors::None );
+        BOOST_REQUIRE_EQUAL( tap.getCurrentState(), CtiDeviceIED::StateHandshakeComplete );
     }
 
-
-    // check our return
-    if(status == ClientErrors::None && aIEDDevice->getCurrentState() == CtiDeviceIED::StateHandshakeAbort)
+    //  PerformRequestedCmd
     {
-        status = ClientErrors::Abnormal;
+        std::vector<Transaction> transactions = {
+            //  <STX>7632140090<CR>he0921484b2g<CR><ETX>553<CR>
+            {"02 37 36 33 32 31 34 30 30 39 30 0d"
+             " 68 65 30 39 32 31 34 38 34 62 32 67 0d 03"
+             " 35 35 33 0d",
+                            //  <CR>
+                                "0d"},
+            //                  <ACK>
+            {"",                "06"},
+            //                  <CR>
+            {"",                "0d"}};
+
+        YukonError_t   status = ClientErrors::None;
+
+        for( auto trx : transactions )
+        {
+            BOOST_REQUIRE( status == ClientErrors::None );
+            BOOST_REQUIRE( tap.getCurrentState() != CtiDeviceIED::StateScanAbort );
+            BOOST_REQUIRE( tap.getCurrentState() != CtiDeviceIED::StateScanComplete );
+
+            status = tap.generateCommand ( transfer , traceList);
+
+            status = fillXfer(trx, transfer, __LINE__);
+
+            status = tap.decodeResponse (transfer, status, traceList);
+
+        }
+
+        BOOST_REQUIRE_EQUAL( status, ClientErrors::None );
+        BOOST_REQUIRE_EQUAL( tap.getCurrentState(), CtiDeviceIED::StateScanComplete );
     }
 
-    return status;
-}
-//-----
+    tap.setLogOnNeeded(true);
+
+    //  TerminateHandshake
     {
-        status = PerformRequestedCmd (Port, Device, NULL, NULL, traceList);
-//-----
-            YukonError_t   status = ClientErrors::None;
-    CtiXfer        transfer;
-    BYTE           inBuffer[2048];
-    BYTE           outBuffer[2048];
-    ULONG          bytesReceived=0;
+        YukonError_t   status = ClientErrors::None;
 
-    INT            infLoopPrevention = 0;
+        std::vector<Transaction> transactions = {
+            // <EOT><CR>
+            {"04 0d",           ""}};
 
-    #ifdef _DEBUG
-    memset(inBuffer, 0, sizeof(inBuffer));
-    #endif
-
-    CtiDeviceIED *aIED = (CtiDeviceIED *)dev.get();
-
-    // initialize the transfer structure
-    transfer.setInBuffer( inBuffer );
-    transfer.setOutBuffer( outBuffer );
-    transfer.setInCountActual( &bytesReceived );
-    transfer.setTraceMask(TraceFlag, TraceErrorsOnly);
-
-    try
-    {
-        do
+        for( auto trx : transactions )
         {
-            status = aIED->generateCommand ( transfer , traceList);
-            status = aPortRecord->outInMess( transfer, dev, traceList );
-            if( transfer.doTrace( status ) )
-            {
-                aPortRecord->traceXfer(transfer, traceList, dev, status);
-            }
+            BOOST_REQUIRE( status == ClientErrors::None );
+            BOOST_REQUIRE( tap.getCurrentState() != CtiDeviceIED::StateAbort );
+            BOOST_REQUIRE( tap.getCurrentState() != CtiDeviceIED::StateComplete );
+            BOOST_REQUIRE( tap.getCurrentState() != CtiDeviceIED::StateCompleteNoHUP );
 
-            if( deviceCanSurviveThisStatus(status) )
-            {
-                status = aIED->decodeResponse (transfer, status, traceList);
-            }
+            status = tap.generateCommandDisconnect(transfer, traceList);
 
-            // check if we are sending load profile to scanner
-            if(!status && aIED->getCurrentState() == CtiDeviceIED::StateScanReturnLoadProfile)
-            {
-                if( aInMessage )
-                {
-                    status = ReturnLoadProfileData ( aPortRecord, dev, *aInMessage, aOutMessage, traceList);
-                }
-            }
+            status = fillXfer(trx, transfer, __LINE__);
 
-            if(aOutMessage) processCommStatus(status, aOutMessage->DeviceID, aOutMessage->TargetID, aOutMessage->Retry > 0, dev);
-
-            if( status )
-            {
-                CTILOG_ERROR(dout, aIED->getName() <<" status = "<< status <<" "<< GetErrorString( status ));
-            }
-
-            if(!(++infLoopPrevention % INF_LOOP_COUNT))  // If we go INF_LOOP_COUNT loops we're considering this infinite...
-            {
-                CTILOG_WARN(dout, "Possible infinite loop on device "<< aIED->getName() <<" - breaking loop, forcing abort state.");
-
-                status = ClientErrors::Abnormal;
-            }
-
-            DisplayTraceList(aPortRecord, traceList, true);
-
-        } while( status == ClientErrors::None &&
-                 !((aIED->getCurrentState() == CtiDeviceIED::StateScanAbort) ||
-                   (aIED->getCurrentState() == CtiDeviceIED::StateScanComplete)));
-
-        if( (status == ClientErrors::None && aIED->getCurrentState() == CtiDeviceIED::StateScanAbort) ||
-            (PorterDebugLevel & PORTER_DEBUG_VERBOSE && status) )
-        {
-            CTILOG_WARN(dout, aIED->getName() <<" status was returned as "<< status <<".  This may be a ied state or an actual error status. - State set to abort");
-
-            status = ClientErrors::Abnormal;
+            status = tap.decodeResponseDisconnect (transfer, status, traceList);
         }
 
-        DisplayTraceList(aPortRecord, traceList, true);
-
-    }
-    catch(...)
-    {
-        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Port "<< aPortRecord->getName());
-    }
-
-    return status;
-
-//-----
-
-        YukonError_t dcstat = TerminateHandshake (Port, Device, traceList);
-//-----
-
-YukonError_t TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, list< CtiMessage* > &traceList)
-{
-    CtiXfer        transfer;
-    BYTE           inBuffer[512];
-    BYTE           outBuffer[256];
-    YukonError_t   status = ClientErrors::None;
-    ULONG          bytesReceived (0);
-
-    CtiDeviceIED *aIEDDevice = (CtiDeviceIED *)dev.get();
-
-    // initialize the transfer structure
-    transfer.setInBuffer( inBuffer );
-    transfer.setOutBuffer( outBuffer );
-    transfer.setInCountActual( &bytesReceived );
-    transfer.setTraceMask(TraceFlag, TraceErrorsOnly);
-
-    do
-    {
-        status = aIEDDevice->generateCommandDisconnect(transfer, traceList);
-        status = aPortRecord->outInMess(transfer, dev, traceList);
-
-        if( transfer.doTrace(status) )
-        {
-            aPortRecord->traceXfer(transfer, traceList, dev, status);
-        }
-
-        if( deviceCanSurviveThisStatus(status) )
-        {
-            status = aIEDDevice->decodeResponseDisconnect (transfer, status, traceList);
-        }
-
-    } while( status == ClientErrors::None &&
-             !((aIEDDevice->getCurrentState() == CtiDeviceIED::StateAbort) ||
-               (aIEDDevice->getCurrentState() == CtiDeviceIED::StateComplete) ||
-               (aIEDDevice->getCurrentState() == CtiDeviceIED::StateCompleteNoHUP)));
-
-    // check our return
-    if(status == ClientErrors::None)
-    {
-        if( aPortRecord->isDialup() )
-        {
-            if(aIEDDevice->getCurrentState() == CtiDeviceIED::StateCompleteNoHUP)
-            {
-                aPortRecord->setShouldDisconnect( FALSE );
-            }
-            else
-            {
-                aPortRecord->setShouldDisconnect( TRUE );
-            }
-        }
-        else if( aIEDDevice->getCurrentState() == CtiDeviceIED::StateComplete   // The device did the disconnect.
-              || aIEDDevice->getCurrentState() == CtiDeviceIED::StateAbort)
-        {
-            switch(aIEDDevice->getType())
-            {
-            case TYPE_TAPTERM:
-                {
-                    // Since an EOT was done on this port by this device, all devices on this port need to logon the next loop.
-                    // Sweep the port and tag them so.
-                    vector<CtiDeviceManager::ptr_type> devices;
-
-                    DeviceManager.getDevicesByPortID(aPortRecord->getPortID(), devices);
-
-                    for_each(devices.begin(), devices.end(), TAPNeedsLogon());
-
-                    break;
-                }
-            }
-        }
-    }
-
-    return status;
-}
-
-        if(status == ClientErrors::None)
-            status = dcstat;
+        BOOST_CHECK_EQUAL( status, ClientErrors::ReadTimeout );
+        BOOST_CHECK_EQUAL( tap.getCurrentState(), CtiDeviceIED::StateDecode_1 );
     }
 
     tap.freeDataBins();
 }
-        */
 
 BOOST_AUTO_TEST_SUITE_END()
 
