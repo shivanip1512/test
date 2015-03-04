@@ -121,11 +121,12 @@
 <c:if test="${empty certUpdates}">
     <div class="js-no-cert-updates empty-list"><i:inline key=".cert.updates.none"/></div>
 </c:if>
+<div data-url="<cti:url var="dataUrl" value="/stars/gateways/"/>" data-static> 
 <table id="cert-table" class="compact-results-table ${clazz}">
     <thead>
         <tr>
-            <th><i:inline key="yukon.common.timestamp"/></th>
-            <th><i:inline key=".cert"/></th>
+            <tags:sort column="${TIMESTAMP}"/>
+            <tags:sort column="${CERTIFICATE}"/>
             <th><i:inline key=".cert.update.gateways"/></th>
             <th><i:inline key="yukon.common.status"/></th>
             <th class="tar"><i:inline key="yukon.common.pending"/></th>
@@ -170,7 +171,7 @@
         
     </tbody>
 </table>
-
+</div>
 <cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
     <div class="page-action-area">
         <cti:button icon="icon-plus-green" nameKey="cert.update" data-popup="#gateway-cert-popup" classes="M0"/>

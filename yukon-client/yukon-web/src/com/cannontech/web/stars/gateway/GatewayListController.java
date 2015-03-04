@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -19,7 +21,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.DefaultSort;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.rfn.message.gateway.DataType;
 import com.cannontech.common.rfn.model.CertificateUpdate;
 import com.cannontech.common.rfn.model.NmCommunicationException;
@@ -33,9 +39,14 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Ordering;
+import com.google.common.collect.ImmutableMap.Builder;
 
 @Controller
 @CheckRoleProperty({YukonRoleProperty.INFRASTRUCTURE_ADMIN, 
@@ -54,20 +65,41 @@ public class GatewayListController {
     @Autowired private ServerDatabaseCache cache;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
+    private Map<SortBy, Comparator<CertificateUpdate>> sorters;
+    
+    @PostConstruct
+    public void initialize() {
+        Builder<SortBy, Comparator<CertificateUpdate>> builder = ImmutableMap.builder();
+        builder.put(SortBy.TIMESTAMP, getTimestampComparator());
+        builder.put(SortBy.CERTIFICATE, getCertificateFileNameComparator());
+        sorters = builder.build();
+    }
+    
     @RequestMapping(value = {"/gateways", "/gateways/"}, method = RequestMethod.GET)
-    public String gateways(ModelMap model, FlashScope flashScope, YukonUserContext userContext) {
+    public String gateways(ModelMap model, FlashScope flashScope, YukonUserContext userContext,  @DefaultSort(dir=Direction.desc, sort="TIMESTAMP") SortingParameters sorting) {
         
         List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
         Collections.sort(gateways);
         model.addAttribute("gateways", gateways);
         
         List<CertificateUpdate> certUpdates = certificateUpdateService.getAllCertificateUpdates();
-        Collections.sort(certUpdates, new Comparator<CertificateUpdate>() {
-            @Override
-            public int compare(CertificateUpdate o1, CertificateUpdate o2) {
-                return o2.getTimestamp().compareTo(o1.getTimestamp());
-            }
-        });
+
+        Direction dir = sorting.getDirection();
+        SortBy sortBy = SortBy.valueOf(sorting.getSort().toUpperCase());
+        Comparator<CertificateUpdate> comparator = sorters.get(sortBy);
+        if (dir == Direction.desc) {
+            Collections.sort(certUpdates, Collections.reverseOrder(comparator));
+        } else {
+            Collections.sort(certUpdates, comparator);
+        }
+
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        for (SortBy column : SortBy.values()) {
+            String text = accessor.getMessage(column);
+            SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
+            model.addAttribute(column.name(), col);
+        }
+
         model.addAttribute("certUpdates", certUpdates);
         
         helper.addText(model, userContext);
@@ -146,6 +178,40 @@ public class GatewayListController {
         }
         
         return json;
+    }
+    
+    private static Comparator<CertificateUpdate> getTimestampComparator() {
+        Ordering<Instant> normalComparer = Ordering.natural().nullsLast();
+        Ordering<CertificateUpdate> dateOrdering =
+            normalComparer.onResultOf(new Function<CertificateUpdate, Instant>() {
+                @Override
+                public Instant apply(CertificateUpdate from) {
+                    return from.getTimestamp();
+                }
+            });
+        Ordering<CertificateUpdate> result = dateOrdering.compound(getCertificateFileNameComparator());
+        return result;
+    }
+
+    private static Comparator<CertificateUpdate> getCertificateFileNameComparator() {
+        Ordering<String> normalStringComparer = Ordering.natural();
+        Ordering<CertificateUpdate> certFileNameOrdering =
+            normalStringComparer.onResultOf(new Function<CertificateUpdate, String>() {
+                @Override
+                public String apply(CertificateUpdate from) {
+                    return from.getFileName();
+                }
+            });
+        return certFileNameOrdering;
+    }
+
+    public enum SortBy implements DisplayableEnum {
+        TIMESTAMP,
+        CERTIFICATE;
+        @Override
+        public String getFormatKey() {
+            return "yukon.web.modules.operator.gateways.certUpdate.tableheader." + name();
+        }
     }
     
 }
