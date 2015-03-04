@@ -76,6 +76,7 @@ test_dev_dlcbase.obj \
 test_dev_dnp.obj \
 test_dev_grp.obj \
 test_dev_ccu721.obj \
+test_dev_lcr3102.obj \
 test_dev_mct.obj \
 test_dev_mct2xx.obj \
 test_dev_mct210.obj \
@@ -101,7 +102,7 @@ test_dev_rfn420focus_al.obj \
 test_dev_rtm.obj \
 test_dev_rds.obj \
 test_dev_single.obj \
-test_lcr3102.obj \
+test_dev_tap.obj \
 test_mgr_point.obj \
 test_pt_base.obj \
 test_rte_ccu.obj \
