@@ -155,7 +155,7 @@ INT TapPagingTerminal::allocateDataBins(OUTMESS *oMess)
     if(_pageBuffer == NULL)
     {
         _pageBuffer = (CHAR*) _outMessage->Buffer.TAPSt.Message;//point pointer to new message structure.
-        setPageLength(_outMessage->Buffer.TAPSt.Length);
+        _pageLength = _outMessage->Buffer.TAPSt.Length;
 
     }
 
@@ -175,52 +175,6 @@ INT TapPagingTerminal::freeDataBins()
     }
 
     return ClientErrors::None;
-}
-
-CHAR  TapPagingTerminal::getPagePrefix() const
-{
-    return _pagePrefix;
-}
-CHAR& TapPagingTerminal::getPagePrefix()
-{
-    return _pagePrefix;
-}
-void TapPagingTerminal::setPagePrefix(const CHAR aCh)
-{
-    _pagePrefix = aCh;
-}
-
-UINT  TapPagingTerminal::getPageCount() const
-{
-    return _pageCount;
-}
-UINT& TapPagingTerminal::getPageCount()
-{
-    return _pageCount;
-}
-void TapPagingTerminal::setPageCount(const UINT aInt)
-{
-    _pageCount = aInt;
-}
-
-UINT TapPagingTerminal::getPageLength() const
-{
-    return _pageLength;
-}
-
-void TapPagingTerminal::setPageLength(const UINT aInt)
-{
-    _pageLength = aInt;
-}
-
-BOOL TapPagingTerminal::isValidPageBuffer() const
-{
-    return( _pageBuffer != NULL );
-}
-
-CHAR* TapPagingTerminal::getPageBuffer()
-{
-    return _pageBuffer;
 }
 
 CHAR  TapPagingTerminal::getPageBuffer(const INT i) const
@@ -896,12 +850,12 @@ YukonError_t TapPagingTerminal::generateCommand(CtiXfer  &xfer, CtiMessageList &
 
             pageCharCount = 1-sendCnt;  // Don't count this clutter as billable characters.
 
-            if( gDoPrefix && allowPrefix())
+            if( gDoPrefix && _allowPrefix )
             {
                 /* Stick a little TAPTerm fakey in there */
                 out[sendCnt++] = incrementPagePrefix();
 
-                ::sprintf(faker, "%05d", (getPageCount()++ & 0x0000ffff));
+                ::sprintf(faker, "%05d", (_pageCount++ & 0x0000ffff));
 
                 for(i = 0; i < 5; i++)
                 {
@@ -921,7 +875,7 @@ YukonError_t TapPagingTerminal::generateCommand(CtiXfer  &xfer, CtiMessageList &
 
             /* And now load up the message */
 
-            for(i = 0; i < getPageLength(); i++)
+            for(i = 0; i < _pageLength; i++)
             {
                 /* Check if this is a SUB character */
                 if(getPageBuffer(i) < 0x20)
@@ -1449,33 +1403,28 @@ CtiDeviceIED& TapPagingTerminal::setInitialState (const LONG oldid)
 
 CHAR TapPagingTerminal::incrementPagePrefix()
 {
-    CHAR prefix = getPagePrefix();
+    CHAR prefix = _pagePrefix;
 
-    if( ((CHAR)(getPagePrefix() + 1)) < 'e' )
+    if( _pagePrefix < 'd' )
     {
-        setPagePrefix( (getPagePrefix() + 1) );
+        _pagePrefix++;
     }
     else
     {
-        setPagePrefix( 'a' );
-    }
+        _pagePrefix = 'a';
+     }
 
     return prefix;
 }
 
-void TapPagingTerminal::setSendFiller(bool yesno)
-{
-    _sendFiller = yesno;
-}
 bool TapPagingTerminal::getSendFiller() const
 {
-    return _sendFiller;
+    return true;
 }
 
 TapPagingTerminal::TapPagingTerminal() :
 _allowPrefix(true),
 _pagesPerMinute(0),
-_sendFiller(true),
 _idByteCount(20),
 _pageCount(0),
 _pagePrefix('a'),
@@ -1553,11 +1502,6 @@ bool TapPagingTerminal::devicePacingExceeded()
     }
 
     return toofast;
-}
-
-bool TapPagingTerminal::allowPrefix() const
-{
-    return _allowPrefix;
 }
 
 void TapPagingTerminal::setAllowPrefix(bool val)

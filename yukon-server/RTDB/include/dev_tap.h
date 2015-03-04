@@ -14,11 +14,9 @@ class IM_EX_DEVDB TapPagingTerminal : public DevicePaging, protected OneWayMsgEn
 {
    typedef DevicePaging Inherited;
 
-   UINT                          _idByteCount;  // How many bytes should a guy wait for after the CR (def. to 10)
+   UINT     _idByteCount;  // How many bytes should a guy wait for after the CR (def. to 10)
 
-   bool                          _sendFiller;
-
-   CtiTime   _pacingTimeStamp;       // This is a timestamp from which we began the pacing process.
+   CtiTime  _pacingTimeStamp;     // This is a timestamp from which we began the pacing process.
    int      _pagesPerMinute;      // This is a count of pages since the _pacingTimeStamp.         Used with CPARM: PAGING_BATCH_SIZE
    bool     _pacingReport;
    bool     _allowPrefix;
@@ -26,39 +24,25 @@ class IM_EX_DEVDB TapPagingTerminal : public DevicePaging, protected OneWayMsgEn
 protected:
 
    std::queue< CtiVerificationBase * >  _verification_objects;
-   UINT                          _pageCount;    // Used to count the number of pages sent out (0-n)
-   CHAR                          _pagePrefix;   // Used to fake the TAPTERM into thining it is a new message (a-d)
-   UINT                          _pageLength;
-   CHAR                          *_pageBuffer;
-   OUTMESS                       *_outMessage;
+   UINT      _pageCount;    // Used to count the number of pages sent out (0-n)
+   CHAR      _pagePrefix;   // Used to fake the TAPTERM into thining it is a new message (a-d)
+   UINT      _pageLength;
+   CHAR     *_pageBuffer;
+   OUTMESS  *_outMessage;
 
-   std::string                     _inStr;
+   std::string _inStr;
+
+   CHAR  incrementPagePrefix();
+   CHAR  getPageBuffer(const INT i) const;
+
+   INT traceOut(PCHAR Message, ULONG Count, CtiMessageList &traceList);
+   INT traceIn(PCHAR Message, ULONG Count, CtiMessageList &traceList, BOOL CompletedMessage = FALSE);
 
 public:
 
    TapPagingTerminal();
    virtual ~TapPagingTerminal();
 
-   CHAR  incrementPagePrefix();
-
-   CHAR  getPagePrefix() const;
-   CHAR& getPagePrefix();
-   void  setPagePrefix(const CHAR aCh);
-
-   UINT  getPageCount() const;
-   UINT& getPageCount();
-   void  setPageCount(const UINT aInt);
-
-   UINT getPageLength() const;
-   void setPageLength(const UINT aInt);
-
-   BOOL  isValidPageBuffer() const;
-   CHAR* getPageBuffer();
-   CHAR  getPageBuffer(const INT i) const;
-
-  // CtiDeviceTapPagingTerminal& setPageBuffer(const CHAR* copyBuffer, const INT len);
-
-   void setSendFiller(bool yesno);
    bool getSendFiller() const;
 
    ULONG getUniqueIdentifier() const override;
@@ -80,13 +64,9 @@ public:
 
    CtiDeviceIED& setInitialState(const LONG oldid) override;
 
-   INT traceOut(PCHAR Message, ULONG Count, CtiMessageList &traceList);
-   INT traceIn(PCHAR Message, ULONG Count, CtiMessageList &traceList, BOOL CompletedMessage = FALSE);
-
    INT printChar( std::string &Str, CHAR Char );
    bool devicePacingExceeded();
    bool blockedByPageRate() const;
-   bool allowPrefix() const;
    void setAllowPrefix(bool val);
    void updatePageCountData(UINT addition);
 
