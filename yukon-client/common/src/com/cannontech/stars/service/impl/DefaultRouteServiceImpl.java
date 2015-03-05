@@ -39,6 +39,7 @@ import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.service.DefaultRouteService;
 
 public class DefaultRouteServiceImpl implements DefaultRouteService {
+    
     private static final Logger log = YukonLogManager.getLogger(DefaultRouteServiceImpl.class);
     
     @Autowired private DBPersistentDao dbPersistentDao;
@@ -49,51 +50,55 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
     @Autowired private PaoDao paoDao;
     
     @Override
-    public int getDefaultRouteId(EnergyCompany energyCompany) {
-        Set<Integer> permittedPaoIds = paoPermissionService.getPaoIdsForUserPermission(energyCompany.getUser(), Permission.DEFAULT_ROUTE);
-        if(permittedPaoIds.isEmpty()) {
-            log.info("no permitted PAOs found for default route for energy company " + energyCompany.getName());
+    public int getDefaultRouteId(EnergyCompany ec) {
+        
+        LiteYukonUser user = ec.getUser();
+        Set<Integer> permittedPaoIds = paoPermissionService.getPaoIdsForUserPermission(user, Permission.DEFAULT_ROUTE);
+        if (permittedPaoIds.isEmpty()) {
+            log.info("no permitted PAOs found for default route for energy company " + ec.getName());
             return INVALID_ROUTE_ID;
         }
-
+        
         List<Integer> serialGroupIds = getPermittedSerialGroupIds(permittedPaoIds);
-
+        
         // get a serial group whose serial number is set to 0, the route id of this group is the default route id
         if (serialGroupIds.isEmpty()) {
-            log.info("no serial group IDs for default route found for energy company " + energyCompany.getName());
+            log.info("no serial group IDs for default route found for energy company " + ec.getName());
             return INVALID_ROUTE_ID;
         }
-
+        
         // get versacom serial groups
         SqlStatementBuilder sql2 = new SqlStatementBuilder();
         sql2.append("SELECT LMGV.RouteId");
         sql2.append("FROM YukonPAObject PAO");
         sql2.append("  JOIN LMGroupVersacom LMGV ON PAO.PAObjectId = LMGV.DeviceId");
         sql2.append("WHERE LMGV.DeviceId").in(serialGroupIds);
-
+        
         List<Integer> versacomDefaultRouteIds = jdbcTemplate.query(sql2, RowMapper.INTEGER);
         if (versacomDefaultRouteIds.size() > 0) {
             return versacomDefaultRouteIds.get(0);
         }
-
+        
         // get expresscom serial groups 
         SqlStatementBuilder sql3 = new SqlStatementBuilder();
         sql3.append("SELECT LMGE.RouteId");
         sql3.append("FROM YukonPAObject PAO");
         sql3.append("  JOIN LMGroupExpresscom LMGE ON PAO.PAObjectId = LMGE.LMGroupId");
         sql3.append("WHERE LMGE.LmGroupId").in(serialGroupIds);
-
+        
         List<Integer> expresscomDefaultRouteIds = jdbcTemplate.query(sql3, RowMapper.INTEGER);
         if (expresscomDefaultRouteIds.size() > 0) {
             return expresscomDefaultRouteIds.get(0);
         }
-
-        log.info("no default route id found for energy company " + energyCompany.getName());
+        
+        log.info("no default route id found for energy company " + ec.getName());
+        
         return INVALID_ROUTE_ID;
     }
-
+    
     @Override
     public void updateDefaultRoute(EnergyCompany energyCompany, int newRouteId, LiteYukonUser user) {
+        
         int currentRouteId = getDefaultRouteId(energyCompany);
         if (currentRouteId != newRouteId) {
             if (newRouteId == INVALID_ROUTE_ID) {
@@ -111,51 +116,55 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
             dbChangeManager.processDbChange(DbChangeType.UPDATE, 
                                             DbChangeCategory.ENERGY_COMPANY_ROUTE, 
                                             energyCompany.getId());
-
+            
             // Logging Default Route Id
             starsEventLogService.energyCompanyDefaultRouteChanged(user, energyCompany.getName(),
                                                                   currentRouteId, newRouteId);
         }
     }
-
-    private void updateExistingDefaultRoute(EnergyCompany energyCompany, int routeID) {
-        Set<Integer> permittedPaoIds = paoPermissionService.getPaoIdsForUserPermission(energyCompany.getUser(), Permission.DEFAULT_ROUTE);
+    
+    private void updateExistingDefaultRoute(EnergyCompany ec, int routeId) {
+        
+        LiteYukonUser user = ec.getUser();
+        Set<Integer> permittedPaoIds = paoPermissionService.getPaoIdsForUserPermission(user, Permission.DEFAULT_ROUTE);
         if (!permittedPaoIds.isEmpty()) {
             List<Integer> routeGroupIds = getPermittedSerialGroupIds(permittedPaoIds);
             if (routeGroupIds.size() == 0) {
                 throw new RuntimeException("Not able to find the default route group");
             }
-
+            
             if (routeGroupIds.size() > 1) {
                 log.warn("Expected one group ID, got multiple, continuing with first: " + routeGroupIds);
             }
-
+            
             int groupId = routeGroupIds.get(0);
-            LMGroupExpressCom expresscomGroup = (LMGroupExpressCom)LMFactory.createLoadManagement(PaoType.LM_GROUP_EXPRESSCOMM);
-            expresscomGroup.setLMGroupID(groupId);
-            dbPersistentDao.performDBChange(expresscomGroup, TransactionType.RETRIEVE);
-
-            com.cannontech.database.db.device.lm.LMGroupExpressCom expressComGroupDb = expresscomGroup.getLMGroupExpressComm();
-            expressComGroupDb.setRouteID(routeID);
-            dbPersistentDao.performDBChange(expresscomGroup, TransactionType.UPDATE);
+            LMGroupExpressCom ecomGroup = (LMGroupExpressCom)LMFactory.createLoadManagement(PaoType.LM_GROUP_EXPRESSCOMM);
+            ecomGroup.setLMGroupID(groupId);
+            dbPersistentDao.performDBChange(ecomGroup, TransactionType.RETRIEVE);
+            
+            com.cannontech.database.db.device.lm.LMGroupExpressCom expressComGroupDb = ecomGroup.getLMGroupExpressComm();
+            expressComGroupDb.setRouteID(routeId);
+            dbPersistentDao.performDBChange(ecomGroup, TransactionType.UPDATE);
         }
     }
-
-    private List<Integer> getPermittedSerialGroupIds(Set<Integer> permittedPaoIDs) {
+    
+    private List<Integer> getPermittedSerialGroupIds(Set<Integer> permittedPaoIds) {
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT exc.LMGroupID");
         sql.append("FROM LMGroupExpressCom exc");
         sql.append("  JOIN GenericMacro macro ON macro.ChildID = exc.LMGroupID");
         sql.append("WHERE macro.MacroType").eq(MacroTypes.GROUP);
         sql.append("  AND exc.SerialNumber = '0'");
-        sql.append("  AND macro.OwnerID").in(permittedPaoIDs);
-        
+        sql.append("  AND macro.OwnerID").in(permittedPaoIds);
         List<Integer> routeGroupIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
+        
         return routeGroupIds;
     }
-
+    
     @Override
     public void setupNewDefaultRoute(String ecName, LiteYukonUser ecUser, int newRouteId) {
+        
         if (newRouteId == INVALID_ROUTE_ID) {
             return;
         }
@@ -164,6 +173,7 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
         String nameOfDefaultRoute = ecName + " Default Route";
         List<Integer> paoObjectIds = getDeviceGroupByName(nameOfDefaultRoute);
         LMGroupPlcExpressCom expresscomGroup;
+        
         if (paoObjectIds.size() == 0) {
             //  Creates the expresscom if it doesn't exist.
             expresscomGroup = (LMGroupPlcExpressCom) LMFactory.createLoadManagement(PaoType.LM_GROUP_EXPRESSCOMM);
@@ -180,12 +190,13 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
             expresscomGroup.setDeviceID(deviceID);
             dbPersistentDao.performDBChange(expresscomGroup, TransactionType.RETRIEVE);
         }
-
+        
         // Checks to see if the MacroGroup Exists
         String nameOfSerialGroup = ecName + " Serial Group";
         List<Integer> macroGroupIds = getDeviceGroupByName(nameOfSerialGroup);
         MacroGroup serialGroup;
         PaoType macroGroupType = PaoType.MACRO_GROUP;
+        
         if (macroGroupIds.size() == 0) {
             // Creates a macrogroup if it doesn't exist.
             serialGroup = (MacroGroup) LMFactory.createLoadManagement(macroGroupType);  
@@ -210,23 +221,28 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
         PaoIdentifier pao = new PaoIdentifier(serialGroup.getPAObjectID(), paoType);
         paoPermissionService.addPermission(ecUser, pao, Permission.DEFAULT_ROUTE, true);
     }
-
+    
     private List<Integer> getDeviceGroupByName(String nameOfDefaultRoute) {
+        
         SqlStatementBuilder sql1 = new SqlStatementBuilder();
         sql1.append("SELECT PAO.PAObjectId");
         sql1.append("FROM YukonPAObject PAO");
         sql1.append("WHERE PAO.Category").eq_k(PaoCategory.DEVICE);
         sql1.append(  "AND PAO.PAOClass").eq_k(PaoClass.GROUP);
         sql1.append(  "AND PAO.PAOName").eq(nameOfDefaultRoute);
-
         List<Integer> paoObjectIds = jdbcTemplate.query(sql1, RowMapper.INTEGER);
+        
         return paoObjectIds;
     }
     
     @Override
-    public void removeDefaultRoute(final EnergyCompany energyCompany) {
-        Set<Integer> permittedPaoIds = paoPermissionService.getPaoIdsForUserPermission(energyCompany.getUser(), Permission.DEFAULT_ROUTE);
+    public void removeDefaultRoute(final EnergyCompany ec) {
+        
+        LiteYukonUser user = ec.getUser();
+        Set<Integer> permittedPaoIds = paoPermissionService.getPaoIdsForUserPermission(user, Permission.DEFAULT_ROUTE);
+        
         if (!permittedPaoIds.isEmpty()) {
+            
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("SELECT exc.LMGroupID, macro.OwnerID");
             sql.append("FROM LMGroupExpressCom exc");
@@ -241,33 +257,35 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
                 public void processRow(YukonResultSet rs) throws SQLException {
                     int defaultRouteGroupId = rs.getInt("LMGroupID");
                     int serialGroupId = rs.getInt("OwnerId");
-                    /*Load groups are only assigned to users, so for now we only have to worry about removing from
-                     * the user.
-                     */
+                    /* Load groups are only assigned to users, so for now we only have to worry about removing from
+                     * the user. */
                     PaoType paoType = PaoType.MACRO_GROUP;
                     PaoIdentifier pao = new PaoIdentifier(serialGroupId, paoType);
-                    paoPermissionService.removePermission(energyCompany.getUser(), pao, Permission.DEFAULT_ROUTE);
+                    paoPermissionService.removePermission(user, pao, Permission.DEFAULT_ROUTE);
                     
                     MacroGroup grpSerial = (MacroGroup) LMFactory.createLoadManagement(PaoType.MACRO_GROUP);
                     grpSerial.setDeviceID(serialGroupId);
                     dbPersistentDao.performDBChange(grpSerial, TransactionType.DELETE);
                     
-                    LMGroupExpressCom grpDftRoute = (LMGroupExpressCom) LMFactory.createLoadManagement(PaoType.LM_GROUP_EXPRESSCOMM);
+                    LMGroupExpressCom grpDftRoute = 
+                            (LMGroupExpressCom) LMFactory.createLoadManagement(PaoType.LM_GROUP_EXPRESSCOMM);
                     grpDftRoute.setLMGroupID(defaultRouteGroupId);
                     dbPersistentDao.performDBChange(grpDftRoute, TransactionType.DELETE);
                 }
             });
         }
     }
-
+    
     @Override
     public LiteYukonPAObject getDefaultRoute(EnergyCompany energyCompany) {
+        
         int routeId = getDefaultRouteId(energyCompany);
         LiteYukonPAObject liteRoute = null;
         if (routeId != CtiUtilities.NONE_ZERO_ID && routeId != INVALID_ROUTE_ID) {
             liteRoute = paoDao.getLiteYukonPAO(routeId);
         }
+        
         return liteRoute;
     }
-
+    
 }
