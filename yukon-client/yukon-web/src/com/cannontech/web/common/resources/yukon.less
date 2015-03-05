@@ -287,12 +287,12 @@ input[type=radio] {
     box-shadow: inset 0 0 15px #bbb !important;
 }
 
-.switch-btn:not(.inverse) .switch-btn-checkbox:checked ~ .yes .b-label,
-.switch-btn.inverse .switch-btn-checkbox:not(:checked) ~ .yes .b-label {
+.switch-btn:not(.inverse) .switch-btn-checkbox:checked ~ .yes:not(.no-color) .b-label,
+.switch-btn.inverse .switch-btn-checkbox:not(:checked) ~ .yes:not(.no-color) .b-label {
     color: @green;
 }
-.switch-btn:not(.inverse) .switch-btn-checkbox:not(:checked) ~ .no .b-label ,
-.switch-btn.inverse .switch-btn-checkbox:checked ~ .no .b-label {
+.switch-btn:not(.inverse) .switch-btn-checkbox:not(:checked) ~ .no:not(.no-color) .b-label ,
+.switch-btn.inverse .switch-btn-checkbox:checked ~ .no:not(.no-color) .b-label {
     color: @red;
 }
 
@@ -997,7 +997,7 @@ hr.dashed,
     
     &:hover .collection-picker-label { text-decoration: underline; }
     
-    .button { margin-left: 0;}
+    .button { margin-left: 0; }
     
     .collection-picker-label {
         color: #777;

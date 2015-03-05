@@ -366,7 +366,7 @@ yukon.ui = (function () {
             buttons.push({
                 text : options.cancelText, 
                 click : function (ev) { $(this).dialog('close'); }, 
-                'class' : 'js-secondary-action ' + options.cancelClass 
+                'class': 'js-secondary-action ' + (options.cancelClass || '')
             });
             
             if (options['delete'] && options.mode !== 'CREATE') {
@@ -753,7 +753,7 @@ yukon.ui = (function () {
                 
                 // Set a create/edit/view mode if possible
                 if (trigger.is('[data-mode]')) {
-                    var mode = trigger.attr('data-mode');
+                    var mode = trigger.data('mode');
                     popup.attr('data-mode', mode).data('mode', mode);
                 }
                 
