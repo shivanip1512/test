@@ -2615,15 +2615,11 @@
                 <name>Read Usage</name>
                 <cmd text="getvalue kWh" />
                 <pointRef name="kWh" />
-                <pointRef name="kWh (Channel 2)" />
-                <pointRef name="kWh (Channel 3)" />
             </command>
             <command id="READ_USAGE_FROZEN" enabled="false">
                 <name>Read Usage (Frozen)</name>
                 <cmd text="getvalue kWh frozen" />
                 <pointRef name="kWh" />
-                <pointRef name="kWh (Channel 2)" />
-                <pointRef name="kWh (Channel 3)" />
             </command>
             <command id="READ_KW_DEMAND_VOLTAGE_BLINK_COUNT">
                 <name>Read kW Demand, Voltage, Blink Count</name>
