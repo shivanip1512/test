@@ -73,6 +73,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     private static final Logger log = YukonLogManager.getLogger(DeviceConfigurationDaoImpl.class);
     
     public static final int DEFAULT_DNP_CONFIG_ID = -1;
+    public static final int DEFAULT_REGULATOR_CONFIG_ID = -2;
     
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
@@ -712,7 +713,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     @Override
     @Transactional
     public void deleteConfiguration(int deviceConfigurationId) throws InvalidConfigurationRemovalException {
-        if (DEFAULT_DNP_CONFIG_ID == deviceConfigurationId) {
+        if (DEFAULT_DNP_CONFIG_ID == deviceConfigurationId ||DEFAULT_REGULATOR_CONFIG_ID == deviceConfigurationId) {
             throw new InvalidConfigurationRemovalException("Cannot remove the default DNP configuration.");
         }
         
@@ -918,6 +919,11 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     public DeviceConfiguration getDefaultDNPConfiguration() {
         return getDeviceConfiguration(DEFAULT_DNP_CONFIG_ID);
     }
+
+    @Override
+    public DeviceConfiguration getDefaultRegulatorConfiguration() {
+        return getDeviceConfiguration(DEFAULT_DNP_CONFIG_ID);
+    }
     
     @Override
     public DNPConfiguration getDnpConfiguration(DeviceConfiguration config) {
@@ -968,8 +974,8 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
 
         // Only add the devices whose type is supported by the configuration
         if (!isTypeSupportedByConfiguration(configuration, device.getPaoIdentifier().getPaoType())) {
-            throw new InvalidDeviceTypeException("Device type: " 
-                    + device.getPaoIdentifier().getPaoType().name() 
+            throw new InvalidDeviceTypeException("Device type: "
+                    + device.getPaoIdentifier().getPaoType().name()
                     + " is invalid for config: " + configuration.getName());
         }
         
@@ -1026,6 +1032,6 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     @Override
     public boolean isConfigurationDeletable(int configId) {
         // A configuration is deletable if it isn't the default DNP configuration and has no assigned devices.
-        return configId != DEFAULT_DNP_CONFIG_ID && getNumberOfDevicesForConfiguration(configId) == 0;
+        return configId != DEFAULT_DNP_CONFIG_ID && configId != DEFAULT_REGULATOR_CONFIG_ID && getNumberOfDevicesForConfiguration(configId) == 0;
     }
 }

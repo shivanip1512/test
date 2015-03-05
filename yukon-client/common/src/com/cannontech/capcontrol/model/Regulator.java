@@ -17,6 +17,7 @@ public class Regulator {
     private int keepAliveConfig;
     private int keepAliveTimer;
     private boolean disabled;
+    private int configId;
     private Map<RegulatorPointMapping, Integer> mappings = new LinkedHashMap<>();
 
     public Integer getId() {
@@ -66,6 +67,12 @@ public class Regulator {
     }
     public void setDisabled(boolean disabled) {
         this.disabled = disabled;
+    }
+    public int getConfigId() {
+        return configId;
+    }
+    public void setConfigId(int configId) {
+        this.configId = configId;
     }
     public Map<RegulatorPointMapping, Integer> getMappings() {
         return mappings;

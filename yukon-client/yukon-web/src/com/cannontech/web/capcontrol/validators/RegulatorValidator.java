@@ -7,6 +7,8 @@ import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.exception.OrphanedRegulatorException;
 import com.cannontech.capcontrol.model.Regulator;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -16,6 +18,7 @@ import com.cannontech.yukon.IDatabaseCache;
 
 public class RegulatorValidator extends SimpleValidator<Regulator> {
 
+    @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private PaoDao paoDao;
     @Autowired private ZoneDao zoneDao;
@@ -50,6 +53,11 @@ public class RegulatorValidator extends SimpleValidator<Regulator> {
         YukonValidationUtils.checkIsPositiveInt(errors, "keepAliveTimer", regulator.getKeepAliveTimer());
         YukonValidationUtils.checkIsPositiveDouble(errors, "voltChangePerTap", regulator.getVoltChangePerTap());
 
+        LightDeviceConfiguration config = new LightDeviceConfiguration(regulator.getConfigId(), null, null);
+        if (!deviceConfigurationDao.isTypeSupportedByConfiguration(config, regulator.getType())) {
+            errors.rejectValue("configId", "yukon.web.modules.capcontrol.regulator.error.invalidConfig");
+        }
+
         if (idSpecified) {
             try {
                 //Throws an exception if regulator is not attached to a zone.
@@ -69,4 +77,5 @@ public class RegulatorValidator extends SimpleValidator<Regulator> {
             } catch (OrphanedRegulatorException e) {}
         }
     }
-};
+
+}

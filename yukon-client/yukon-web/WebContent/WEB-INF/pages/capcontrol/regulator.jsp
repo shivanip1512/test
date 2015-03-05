@@ -49,6 +49,26 @@
                     </c:if>
                 </cti:displayForPageEditModes>
             </tags:nameValue2>
+            <tags:nameValue2 nameKey=".config">
+                <cti:displayForPageEditModes modes="VIEW">
+                    <form:hidden path="configId"/>
+                    <spring:bind path="configId">
+                        <c:forEach var="config" items="${availableConfigs}">
+                            <c:if test="${config.configurationId == status.value}">
+                                ${fn:escapeXml(config.name)}
+                            </c:if>
+                        </c:forEach>
+                    </spring:bind>
+                </cti:displayForPageEditModes>
+                <cti:displayForPageEditModes modes="CREATE,EDIT">
+                    <form:select path="configId" cssErrorClass="error">
+                        <c:forEach var="config" items="${availableConfigs}">
+                            <form:option value="${config.configurationId}">${fn:escapeXml(config.name)}</form:option>
+                        </c:forEach>
+                    </form:select>
+                    <form:errors path="configId" element="div" cssClass="error"/>
+                </cti:displayForPageEditModes>
+            </tags:nameValue2>
             <cti:displayForPageEditModes modes="VIEW,EDIT">
             <tags:nameValue2 nameKey=".zone">
                 <c:if test="${empty zone}">
@@ -83,19 +103,18 @@
                                 <td><i:inline key="${mapping.key}"/></td>
                                 <td id="paoName${idx}"></td>
                                 <td>
-                                    <spring:bind path="mappings[${mapping.key}]">
-                                        <tags:pickerDialog type="filterablePointPicker"
-                                                           id="picker${idx}"
-                                                           anchorStyleClass="${status.error ? 'error' : 'error'}"
-                                                           extraArgs="${mapping.key.filterType}"
-                                                           extraDestinationFields="deviceName:paoName${idx};pointId:pointId${idx};"
-                                                           allowEmptySelection="true"
-                                                           selectionProperty="pointName"
-                                                           initialId="${mapping.value != 0 ? mapping.value : ''}"
-                                                           linkType="selection" viewOnlyMode="${mode == 'VIEW'}"/>
-                                       <c:if test="${status.error}"><br><form:errors path="mappings[${mapping.key}]" cssClass="clear db error"/></c:if>
-                                   </spring:bind>
-                                    <input id="pointId${idx}" type="hidden" name="mappings[${mapping.key}]" value="${mapping.value}"/>
+                                    <tags:pickerDialog type="filterablePointPicker"
+                                                       id="picker${idx}"
+                                                       extraArgs="${mapping.key.filterType}"
+                                                       extraDestinationFields="deviceName:paoName${idx};pointId:pointId${idx};"
+                                                       allowEmptySelection="true"
+                                                       selectionProperty="pointName"
+                                                       initialId="${mapping.value != 0 ? mapping.value : ''}"
+                                                       linkType="selection"
+                                                       buttonStyleClass="fn"
+                                                       viewOnlyMode="${mode == 'VIEW'}"/>
+                                   <form:errors path="mappings[${mapping.key}]" element="div" cssClass="error"/>
+                                   <input id="pointId${idx}" type="hidden" name="mappings[${mapping.key}]" value="${mapping.value}"/>
                                 </td>
                             </tr>
                         </c:forEach>

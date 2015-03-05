@@ -222,7 +222,14 @@ public interface DeviceConfigurationDao {
     DeviceConfiguration getDefaultDNPConfiguration();
 
     /**
+     * Get the default Regulator configuration from the database
+     * @return a fully populated {@link DeviceConfiguration} containing the default Regulator configuration data.
+     */
+    DeviceConfiguration getDefaultRegulatorConfiguration();
+
+    /**
      * Get the DNP configuration data out of a device configuration if the data is present.
+     * 
      * @param configuration the configuration the DNP data is coming out of
      * @return a DNPConfiguration model object containing the DNP category data of the configuration.S
      */

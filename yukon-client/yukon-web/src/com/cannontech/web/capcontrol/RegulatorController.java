@@ -1,6 +1,8 @@
 package com.cannontech.web.capcontrol;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -22,10 +24,14 @@ import com.cannontech.capcontrol.exception.OrphanedRegulatorException;
 import com.cannontech.capcontrol.model.Regulator;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.service.VoltageRegulatorService;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
+import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.capcontrol.VoltageRegulator;
@@ -44,6 +50,7 @@ public class RegulatorController {
 
     @Autowired private CapControlCreationService creationService;
     @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private RegulatorValidator regulatorValidator;
     @Autowired private VoltageRegulatorService voltageRegulatorService;
@@ -66,6 +73,13 @@ public class RegulatorController {
         voltageRegulator = (VoltageRegulator) dbPersistentDao.retrieveDBPersistent(voltageRegulator);
 
         Regulator regulator = Regulator.fromDbPersistent(voltageRegulator);
+        LightDeviceConfiguration config;
+        try {
+            config = deviceConfigurationDao.getConfigurationForDevice(voltageRegulator);
+        } catch (NotFoundException e) {
+            config = deviceConfigurationDao.getDefaultRegulatorConfiguration();
+        }
+        regulator.setConfigId(config.getConfigurationId());
 
         return regulator;
     }
@@ -81,6 +95,12 @@ public class RegulatorController {
         }
 
         model.addAttribute("regulatorTypes", PaoType.getRegulatorTypes());
+
+        Set<LightDeviceConfiguration> availableConfigs = new HashSet<>();
+        for (PaoType type : PaoType.getRegulatorTypes()) {
+            availableConfigs.addAll(deviceConfigurationDao.getAllConfigurationsByType(type));
+        }
+        model.addAttribute("availableConfigs", availableConfigs);
 
         if (regulator.getId() != null) {
             try {
@@ -125,12 +145,9 @@ public class RegulatorController {
     @RequestMapping(value={""}, method=RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String save(
-            HttpServletResponse response,
-            ModelMap model,
             @ModelAttribute("regulator") Regulator regulator,
             BindingResult bindingResult,
-            RedirectAttributes redirectAttributes,
-            YukonUserContext context) {
+            RedirectAttributes redirectAttributes) {
 
         regulatorValidator.validate(regulator, bindingResult);
 
@@ -140,9 +157,8 @@ public class RegulatorController {
 
             if (regulator.getId() == null) {
                 return "redirect:regulators/create";
-            } else {
-                return "redirect:regulators/" + regulator.getId() + "/edit";
             }
+            return "redirect:regulators/" + regulator.getId() + "/edit";
         }
 
         VoltageRegulator voltageRegulator = regulator.asDbPersistent();
@@ -155,6 +171,13 @@ public class RegulatorController {
         }
 
         dbPersistentDao.performDBChange(voltageRegulator, TransactionType.UPDATE);
+
+        LightDeviceConfiguration config = new LightDeviceConfiguration(regulator.getConfigId(), null, null);
+        try {
+            deviceConfigurationDao.assignConfigToDevice(config, voltageRegulator);
+        } catch (InvalidDeviceTypeException e) {
+            // Already validated that the device config is assignable in the regulatorValidator
+        }
 
         return "redirect:regulators/" + voltageRegulator.getPAObjectID();
     }
