@@ -27,6 +27,8 @@
 #include "PointResponseDao.h"
 #include "ThreadStatusKeeper.h"
 #include "ExecutorFactory.h"
+#include "mgr_config.h"
+
 
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/predicate.hpp>
@@ -95,6 +97,7 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore() :
     _voltageRegulatorManager->setAttributeService( _attributeService.get() );
     _voltageRegulatorManager->setPointDataHandler( & _pointDataHandler );
 
+    Cti::ConfigManager::initialize();
 }
 
 /*--------------------------------------------------------------------------

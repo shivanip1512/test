@@ -312,7 +312,11 @@ static const std::map<std::string, int> device_lookups = boost::assign::map_list
     ("cbc expresscom",     TYPEEXPRESSCOMCBC)
     ("cbc fp-2800",        TYPEFISHERPCBC)
     ("cbc versacom",       TYPEVERSACOMCBC)
-    ("load tap changer",   TYPELTC)
+    
+    //  --- Voltage Regulators ---
+    ("ltc",                TYPE_LOAD_TAP_CHANGER)
+    ("go_regulator",       TYPE_GANG_OPERATED_REGULATOR)
+    ("po_regulator",       TYPE_PHASE_OPERATED_REGULATOR)
 
     //  --- Cooper PLC ---
     ("ccu-700",            TYPE_CCU700)
@@ -512,7 +516,11 @@ static const std::set<string> unsupported_devices = boost::assign::list_of
     ("lcr-6200 rfn")
     ("lcr-6600 rfn")
     ("weather location")
-    ("ecobee smart si");
+    ("ecobee smart si")
+    ("ltc")
+    ("go_regulator")
+    ("po_regulator")
+        ;
 
 /**
  * Check if the device is known and unsupported
@@ -549,10 +557,6 @@ INT resolveCapControlType(const string& _typeStr)
     else if(typeStr == "ccspecialarea")
     {
         nRet = TYPE_CC_SPECIALAREA;
-    }
-    else if(typeStr == "ltc" || typeStr == "go_regulator" || typeStr == "po_regulator")
-    {
-        nRet = TYPE_CC_VOLTAGEREGULATOR;
     }
     else
     {
@@ -908,7 +912,9 @@ bool resolveIsDeviceTypeSingle(INT Type)
         case TYPE_RFN430SL3:
         case TYPE_RFN430SL4:
         case TYPELCR3102:
-        case TYPELTC:
+        case TYPE_LOAD_TAP_CHANGER:
+        case TYPE_GANG_OPERATED_REGULATOR:
+        case TYPE_PHASE_OPERATED_REGULATOR:
         case TYPE_MODBUS:
         case TYPELMT2:
         case TYPECBC6510:

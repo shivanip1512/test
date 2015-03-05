@@ -1769,7 +1769,9 @@ CcDbReloadInfo CtiCapController::resolveCapControlType(CtiDBChangeMsg *dbChange)
                 reloadInfo.objecttype = Cti::CapControl::Feeder;
                 break;
             }
-        case TYPE_CC_VOLTAGEREGULATOR:
+        case TYPE_LOAD_TAP_CHANGER:
+        case TYPE_GANG_OPERATED_REGULATOR:
+        case TYPE_PHASE_OPERATED_REGULATOR:
             {
                 reloadInfo.objecttype = Cti::CapControl::VoltageRegulatorType;
 

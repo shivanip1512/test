@@ -56,7 +56,6 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
         ("MCT-440-2132B")
         ("MCT-440-2133B")
         ("LCR-3102")
-        ("LOAD TAP CHANGER")
         ("CAP BANK")
         ("CBC VERSACOM")
         ("CBC EXPRESSCOM")
@@ -162,11 +161,13 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
         (empty)
         (empty)
         (empty)
-        (empty)
+        ("LTC")
+        ("GO_REGULATOR")
+        ("PO_REGULATOR")
         ("MACRO GROUP")
         ("SYSTEM")
         ("VIRTUAL SYSTEM")
-            .repeat(9849, empty);
+            .repeat(9848, empty);
 
     std::vector<std::string> results;
 

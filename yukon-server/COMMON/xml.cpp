@@ -475,7 +475,11 @@ DeviceTypes resolvePaoIdXmlType( const std::string & type )
         ("CBC_EXPRESSCOM",              TYPEEXPRESSCOMCBC)
         ("CBC_FP_2800",                 TYPEFISHERPCBC)
 //    ("cbc versacom",                TYPEVERSACOMCBC)
-        ("LOAD_TAP_CHANGER",            TYPELTC)
+
+        //  --- Voltage Regulator ---
+        ("LOAD_TAP_CHANGER",            TYPE_LOAD_TAP_CHANGER)
+        ("GANG_OPERATED",               TYPE_GANG_OPERATED_REGULATOR)
+        ("PHASE_OPERATED",              TYPE_PHASE_OPERATED_REGULATOR)
 
         //  --- Cooper PLC ---
 //    ("ccu-700",                     TYPE_CCU700)

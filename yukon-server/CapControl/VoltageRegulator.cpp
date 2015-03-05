@@ -85,17 +85,17 @@ VoltageRegulator::VoltageRegulator(Cti::RowReader & rdr)
         We have data from the Regulator table - this will only be the case if we are an LTC.
     */
 
-    if ( ! rdr["KeepAliveTimer"].isNull() )
-    {
-        rdr["KeepAliveTimer"]   >> _keepAliveTimer;
-    }
-
-    if ( ! rdr["KeepAliveConfig"].isNull() )
-    {
-        rdr["KeepAliveConfig"]  >> _keepAliveConfig;
-    }
-
-    rdr["VoltChangePerTap"] >> _voltChangePerTap;
+//    if ( ! rdr["KeepAliveTimer"].isNull() )
+//    {
+//        rdr["KeepAliveTimer"]   >> _keepAliveTimer;
+//    }
+//
+//    if ( ! rdr["KeepAliveConfig"].isNull() )
+//    {
+//        rdr["KeepAliveConfig"]  >> _keepAliveConfig;
+//    }
+//
+//    rdr["VoltChangePerTap"] >> _voltChangePerTap;
 }
 
 
@@ -454,6 +454,8 @@ VoltageRegulator::OperatingMode VoltageRegulator::getOperatingMode()
 
 bool VoltageRegulator::isTimeToSendKeepAlive()
 {
+    _keepAliveTimer = getKeepAliveTimer();
+
     return ( ( _keepAliveTimer != 0 ) && ( CtiTime::now() >= _nextKeepAliveSendTime ) );
 }
 
@@ -488,58 +490,58 @@ std::string VoltageRegulator::getPhaseString() const
 
 long VoltageRegulator::getKeepAliveConfig()
 {
-    return _keepAliveConfig;
+///    return _keepAliveConfig;
 
-///    Config::DeviceConfigSPtr    deviceConfig = getDeviceConfig( this );
-///
-///    if ( deviceConfig )
-///    {
-///        if ( boost::optional<double>    keepAliveConfig =
-///             deviceConfig->findValue<double>( Cti::Config::RegulatorStrings::heartbeatValue ) )
-///        {
-///            return *keepAliveConfig;
-///        }
-///    }
-///
-///    return 0;
+    Config::DeviceConfigSPtr    deviceConfig = getDeviceConfig( this );
+
+    if ( deviceConfig )
+    {
+        if ( boost::optional<double>    keepAliveConfig =
+             deviceConfig->findValue<double>( Cti::Config::RegulatorStrings::heartbeatValue ) )
+        {
+            return *keepAliveConfig;
+        }
+    }
+
+    return 0;
 }
 
 
 long VoltageRegulator::getKeepAliveTimer()
 {
-    return _keepAliveTimer;
+///    return _keepAliveTimer;
 
-///    Config::DeviceConfigSPtr    deviceConfig = getDeviceConfig( this );
-///
-///    if ( deviceConfig )
-///    {
-///        if ( boost::optional<double>    keepAliveTimer =
-///             deviceConfig->findValue<double>( Cti::Config::RegulatorStrings::heartbeatPeriod ) )
-///        {
-///            return *keepAliveTimer;
-///        }
-///    }
-///
-///    return 0;
+    Config::DeviceConfigSPtr    deviceConfig = getDeviceConfig( this );
+
+    if ( deviceConfig )
+    {
+        if ( boost::optional<double>    keepAliveTimer =
+             deviceConfig->findValue<double>( Cti::Config::RegulatorStrings::heartbeatPeriod ) )
+        {
+            return *keepAliveTimer;
+        }
+    }
+
+    return 0;
 }
 
 
 double VoltageRegulator::getVoltageChangePerTap() const
 {
-    return _voltChangePerTap;
+///    return _voltChangePerTap;
 
-///    Config::DeviceConfigSPtr    deviceConfig = getDeviceConfig( this );
-///
-///    if ( deviceConfig )
-///    {
-///        if ( boost::optional<double>    voltageChange =
-///             deviceConfig->findValue<double>( Cti::Config::RegulatorStrings::voltageChangePerTap ) )
-///        {
-///            return *voltageChange;
-///        }
-///    }
-///
-///    return 0.75;
+    Config::DeviceConfigSPtr    deviceConfig = getDeviceConfig( this );
+
+    if ( deviceConfig )
+    {
+        if ( boost::optional<double>    voltageChange =
+             deviceConfig->findValue<double>( Cti::Config::RegulatorStrings::voltageChangePerTap ) )
+        {
+            return *voltageChange;
+        }
+    }
+
+    return 0.75;
 }
 
 

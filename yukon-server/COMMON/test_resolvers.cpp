@@ -623,8 +623,14 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     tempName = "lcr-3102";
     devType = TYPELCR3102;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
-    tempName = "load tap changer";
-    devType = TYPELTC;
+    tempName = "ltc";
+    devType = TYPE_LOAD_TAP_CHANGER;
+    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
+    tempName = "go_regulator";
+    devType = TYPE_GANG_OPERATED_REGULATOR;
+    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
+    tempName = "po_regulator";
+    devType = TYPE_PHASE_OPERATED_REGULATOR;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
 }
 

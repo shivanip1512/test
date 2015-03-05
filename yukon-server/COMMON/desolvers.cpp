@@ -173,7 +173,9 @@ string desolveDeviceType( int aType )
 
         case TYPELCR3102:       Ret = "lcr-3102";       break;
 
-        case TYPELTC:           Ret = "load tap changer";   break;
+        case TYPE_LOAD_TAP_CHANGER:             Ret = "ltc";   break;
+        case TYPE_GANG_OPERATED_REGULATOR:      Ret = "go_regulator";   break;
+        case TYPE_PHASE_OPERATED_REGULATOR:     Ret = "po_regulator";   break;
 
         case TYPE_SIXNET:       Ret = "sixnet";         break;
 

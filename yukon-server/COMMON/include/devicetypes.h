@@ -48,8 +48,6 @@ enum DeviceTypes {
 
     TYPELCR3102,
 
-    TYPELTC,
-
     TYPECAPBANK,
     TYPEVERSACOMCBC,
     TYPEEXPRESSCOMCBC,
@@ -180,7 +178,11 @@ enum DeviceTypes {
     TYPE_CC_AREA,
     TYPE_CC_SUBSTATION,
     TYPE_CC_SPECIALAREA,
-    TYPE_CC_VOLTAGEREGULATOR,
+
+    // Voltage Regulators
+    TYPE_LOAD_TAP_CHANGER,
+    TYPE_GANG_OPERATED_REGULATOR,
+    TYPE_PHASE_OPERATED_REGULATOR,
 
     // A macro device that can contain other devices - basically a generalized group of devices
     TYPE_MACRO,
