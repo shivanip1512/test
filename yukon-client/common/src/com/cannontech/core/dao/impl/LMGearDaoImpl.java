@@ -5,9 +5,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.LMGearDao;
@@ -24,7 +28,8 @@ import com.google.common.collect.Maps;
 
 public class LMGearDaoImpl implements LMGearDao {
     
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    private ChunkingSqlTemplate chunkingSqlTemplate;
     private final static String beatThePeakTableName = "LMBeatThePeakGear";
     private final static String tableName = "LMProgramDirectGear";
     
@@ -42,6 +47,11 @@ public class LMGearDaoImpl implements LMGearDao {
         }
     };
     
+    @PostConstruct
+    public void init() {
+        chunkingSqlTemplate = new ChunkingSqlTemplate(jdbcTemplate);
+    }
+    
     @Override
     public void insertContainer(BeatThePeakGearContainer tgc){
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -50,7 +60,7 @@ public class LMGearDaoImpl implements LMGearDao {
         params.addValue( "GearId", tgc.getGearId() );
         params.addValue( "AlertLevel" , tgc.getAlertLevel() );
 
-        yukonJdbcTemplate.update(sql);
+        jdbcTemplate.update(sql);
     }
     
     @Override
@@ -61,7 +71,7 @@ public class LMGearDaoImpl implements LMGearDao {
         params.addValue("AlertLevel", btpGearContainer.getAlertLevel());
         sql.append("WHERE GearId").eq(btpGearContainer.getGearId());
 
-        yukonJdbcTemplate.update(sql);
+        jdbcTemplate.update(sql);
     }
     
     @Override
@@ -71,7 +81,7 @@ public class LMGearDaoImpl implements LMGearDao {
         sql.append("FROM").append(beatThePeakTableName);
         sql.append("WHERE GearId").eq(gearId);
         
-        BeatThePeakGearContainer btpgearContainer = yukonJdbcTemplate.queryForObject(sql, beatThePeakGearRowMapper);
+        BeatThePeakGearContainer btpgearContainer = jdbcTemplate.queryForObject(sql, beatThePeakGearRowMapper);
         
         return btpgearContainer;
     }
@@ -81,7 +91,7 @@ public class LMGearDaoImpl implements LMGearDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM").append(beatThePeakTableName);
         sql.append("WHERE GearId").eq(gearId);
-        yukonJdbcTemplate.update(sql);
+        jdbcTemplate.update(sql);
     }
 
     @Override
@@ -91,7 +101,7 @@ public class LMGearDaoImpl implements LMGearDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(gearMapper.getBaseQuery());
 
-        List<LMProgramDirectGear> gears = yukonJdbcTemplate.query(sql, gearMapper);
+        List<LMProgramDirectGear> gears = jdbcTemplate.query(sql, gearMapper);
 
         Map<Integer, LMProgramDirectGear> gearMap = Maps.newHashMap();
         for (LMProgramDirectGear gear : gears) {
@@ -105,11 +115,18 @@ public class LMGearDaoImpl implements LMGearDao {
     public Map<Integer, LMProgramDirectGear> getByGearIds(Iterable<Integer> gearIds) {
         LMProgramDirectGearRowMapper gearMapper = new LMProgramDirectGearRowMapper();
 
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append(gearMapper.getBaseQuery());
-        sql.append("WHERE GearId").in(gearIds);
-
-        List<LMProgramDirectGear> gears = yukonJdbcTemplate.query(sql, gearMapper);
+        SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append(gearMapper.getBaseQuery());
+                sql.append("WHERE GearId").in(subList);
+                return sql;
+            }
+            
+        };
+        
+        List<LMProgramDirectGear> gears = chunkingSqlTemplate.query(sqlFragmentGenerator, gearIds, gearMapper);
 
         Map<Integer, LMProgramDirectGear> gearMap = Maps.newHashMap();
         for (LMProgramDirectGear gear : gears) {
@@ -171,7 +188,7 @@ public class LMGearDaoImpl implements LMGearDao {
         sql.append("FROM LMThermoStatGear");
         sql.append("WHERE GearId").eq(gearId);
         
-        return yukonJdbcTemplate.queryForLimitedResults(sql, new YukonRowMapper<ThermostatRampRateValues>() {
+        return jdbcTemplate.queryForLimitedResults(sql, new YukonRowMapper<ThermostatRampRateValues>() {
             @Override
             public ThermostatRampRateValues mapRow(YukonResultSet rs) throws SQLException {
                 return new ThermostatRampRateValues(rs.getInt("ValueD"), rs.getInt("ValueTd"));
@@ -185,7 +202,7 @@ public class LMGearDaoImpl implements LMGearDao {
         sql.append("FROM LMThermoStatGear");
         sql.append("WHERE GearId").eq(gearId);
         
-        return yukonJdbcTemplate.queryForLimitedResults(sql, new YukonRowMapper<Double>() {
+        return jdbcTemplate.queryForLimitedResults(sql, new YukonRowMapper<Double>() {
             @Override
             public Double mapRow(YukonResultSet rs) throws SQLException {
                 return rs.getDouble("RampRate");
@@ -199,7 +216,7 @@ public class LMGearDaoImpl implements LMGearDao {
         sql.append("FROM LMProgramDirectGear");
         sql.append("WHERE GearId").eq(gearId);
         
-        return yukonJdbcTemplate.queryForString(sql);
+        return jdbcTemplate.queryForString(sql);
     }
     
     @Override
@@ -211,7 +228,7 @@ public class LMGearDaoImpl implements LMGearDao {
         sql.append("where GearId >= 0");
         sql.append("order by DeviceId");
         
-        return yukonJdbcTemplate.query(sql, new YukonRowMapper<LiteGear>() {
+        return jdbcTemplate.query(sql, new YukonRowMapper<LiteGear>() {
             @Override
             public LiteGear mapRow(YukonResultSet rs) throws SQLException {
                 LiteGear gear = new LiteGear(rs.getInt("GearId"));

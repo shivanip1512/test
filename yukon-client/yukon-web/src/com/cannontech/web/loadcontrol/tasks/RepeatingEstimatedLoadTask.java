@@ -217,7 +217,7 @@ public class RepeatingEstimatedLoadTask extends YukonTaskBase {
         } else if (result instanceof LmServerNotConnectedException) {
             estimatedLoadEventLogService.notConnectedToLmServer();
         } else if (result instanceof NoAppCatFormulaException) {
-            int appCatId = ((ApplianceCategoryInfoNotFoundException) result).getApplianceCategoryId();
+            int appCatId = ((NoAppCatFormulaException) result).getApplianceCategoryId();
             String applianceCategoryName = applianceCategoryDao.getById(appCatId).getName();
             estimatedLoadEventLogService.noApplianceCategoryFormula(applianceCategoryName, programName);
         } else if (result instanceof NoGearFormulaException) {
