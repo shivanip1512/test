@@ -1282,94 +1282,101 @@ YukonError_t TapPagingTerminal::generateCommandDisconnect (CtiXfer  &xfer, CtiMe
 
 YukonError_t TapPagingTerminal::decodeResponseDisconnect (CtiXfer &xfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
-    YukonError_t status = commReturnValue;
-
-    if( status == ClientErrors::None )     // Communications must have been successful
+    if( commReturnValue == ClientErrors::ReadTimeout )
     {
-        if(gConfigParms.isTrue("DEBUG_TAPTERM_STATE_MACHINE"))
-        {
-            CTILOG_DEBUG(dout, "Current state "<< getCurrentState() <<". Previous State "<< getPreviousState());
-        }
+        //  Remote end hung up on us - success!
+        setCurrentState(StateComplete);
 
-        setPreviousState( getCurrentState() );    // Leave a breadcrumb for those who follow to get us back here if needed
+        return ClientErrors::None;
+    }
+    else if( commReturnValue )
+    {
+        CTILOG_ERROR(dout, getName() <<" status "<< commReturnValue);
 
-        switch( getCurrentState() )
-        {
+        return commReturnValue;
+    }
+
+    //  At this point, commReturnValue is guaranteed to be ClientErrors::None
+
+    if(gConfigParms.isTrue("DEBUG_TAPTERM_STATE_MACHINE"))
+    {
+        CTILOG_DEBUG(dout, "Current state "<< getCurrentState() <<". Previous State "<< getPreviousState());
+    }
+
+    setPreviousState( getCurrentState() );    // Leave a breadcrumb for those who follow to get us back here if needed
+
+    switch( getCurrentState() )
+    {
         case StateDecode_1:     // Looking for a CHAR_ESC
+        {
+            if( (xfer.getInCountActual()) > 0 )
             {
-                if( (xfer.getInCountActual()) > 0 )
+                if( xfer.getInBuffer()[0] != CHAR_ESC )
                 {
-                    if( xfer.getInBuffer()[0] != CHAR_ESC )
-                    {
-                        setCurrentState( StateAbsorb );
-                    }
-                    else
-                    {
-                        setCurrentState(StateGenerate_2);
-                    }
-
-                    if(xfer.doTrace(commReturnValue))
-                    {
-                        traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, FALSE);
-                    }
+                    setCurrentState( StateAbsorb );
                 }
-                else // We will retry the operation
+                else
                 {
-                    setCurrentState( StateRepeat );
-                    if(xfer.doTrace(commReturnValue))
-                    {
-                        traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, FALSE);
-                    }
+                    setCurrentState(StateGenerate_2);
                 }
 
-                break;
+                if(xfer.doTrace(commReturnValue))
+                {
+                    traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, FALSE);
+                }
             }
+            else // We will retry the operation
+            {
+                setCurrentState( StateRepeat );
+                if(xfer.doTrace(commReturnValue))
+                {
+                    traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, FALSE);
+                }
+            }
+
+            break;
+        }
         case StateDecode_2:     // Looking for a CHAR_ESC
+        {
+            if( (xfer.getInCountActual()) > 0 )
             {
-                if( (xfer.getInCountActual()) > 0 )
-                {
-                    setCurrentState( StateComplete );
-                    if(xfer.doTrace(commReturnValue))
-                    {
-                        traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, TRUE);
-                    }
-                }
-                else // We will retry the operation
-                {
-                    setCurrentState( StateRepeat );
-                    if(xfer.doTrace(commReturnValue))
-                    {
-                        traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, FALSE);
-                    }
-                }
-
-                break;
-            }
-        case StateComplete:
-        case StateCompleteNoHUP:
-            {
-                break;
-            }
-        default:
-            {
-                CTILOG_ERROR(dout, getName() <<" failed at state "<< getCurrentState());
-
-                setLogOnNeeded(true);
-                setCurrentState(StateAbort);
+                setCurrentState( StateComplete );
                 if(xfer.doTrace(commReturnValue))
                 {
                     traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, TRUE);
                 }
-                break;
             }
+            else // We will retry the operation
+            {
+                setCurrentState( StateRepeat );
+                if(xfer.doTrace(commReturnValue))
+                {
+                    traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, FALSE);
+                }
+            }
+
+            break;
+        }
+        case StateComplete:
+        case StateCompleteNoHUP:
+        {
+            break;
+        }
+        default:
+        {
+            CTILOG_ERROR(dout, getName() <<" failed at state "<< getCurrentState());
+
+            setLogOnNeeded(true);
+            setCurrentState(StateAbort);
+            if(xfer.doTrace(commReturnValue))
+            {
+                traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, TRUE);
+            }
+            break;
         }
     }
-    else
-    {
-        CTILOG_ERROR(dout, getName() <<" status "<< status);
-    }
 
-    return status;
+    return commReturnValue;
 }
 
 

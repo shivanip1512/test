@@ -249,8 +249,8 @@ BOOST_AUTO_TEST_CASE(test_dev_tap_early_hangup)
             status = tap.decodeResponseDisconnect (transfer, status, traceList);
         }
 
-        BOOST_CHECK_EQUAL( status, ClientErrors::ReadTimeout );
-        BOOST_CHECK_EQUAL( tap.getCurrentState(), CtiDeviceIED::StateDecode_1 );
+        BOOST_CHECK_EQUAL( status, ClientErrors::None );
+        BOOST_CHECK_EQUAL( tap.getCurrentState(), CtiDeviceIED::StateComplete );
     }
 
     tap.freeDataBins();
