@@ -7,7 +7,7 @@ public enum MspSearchField {
 	FACILITY_ID("Facility ID", "GetMetersByFacilityId"),
 	ACCOUNT_NUMBER("Account Number", "GetMeterByAccountNumber"),
 	CUSTOMER_ID("Customer ID", "GetMeterByCustId"),
-	CIS_SEARCH("CIS Search", "GetMeterBySearchString"),
+	CIS_SEARCH("CIS Search", "GetMetersBySearchString"),
 	;
 	
 	private final String name;
