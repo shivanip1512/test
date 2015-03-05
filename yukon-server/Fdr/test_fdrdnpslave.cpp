@@ -1,6 +1,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include "fdrdnpslave.h"
+#include "desolvers.h"
 
 #include "boost_test_helpers.h"
 
@@ -27,13 +28,13 @@ struct Test_FdrDnpSlave : Cti::Fdr::DnpSlave
 
 struct Test_ServerConnection : Cti::Fdr::ServerConnection
 {
-    std::vector<int> message;
+    std::vector<std::vector<unsigned>> messages;
 
     bool queueMessage(char *buf, unsigned len, int priority)
     {
-        std::vector<unsigned char> tmp(buf, buf + len);
+        auto unsigned_buf = reinterpret_cast<const unsigned char *>(buf);
 
-        message.assign(tmp.begin(), tmp.end());
+        messages.emplace_back(unsigned_buf, unsigned_buf + len);
 
         return true;
     }
@@ -71,7 +72,8 @@ BOOST_AUTO_TEST_CASE( test_datalink_request )
     const byte_str expected(
             "05 64 05 0b 02 00 1e 00 ce 0f");
 
-    BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+    BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+    BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 }
 
 BOOST_AUTO_TEST_CASE( test_datalink_reset )
@@ -102,7 +104,8 @@ BOOST_AUTO_TEST_CASE( test_datalink_reset )
     const byte_str expected(
             "05 64 05 00 02 00 1e 00 8d 3f");
 
-    BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+    BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+    BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 }
 
 BOOST_AUTO_TEST_CASE( test_getMessageSize )
@@ -265,7 +268,141 @@ BOOST_AUTO_TEST_CASE( test_scan_request )
     13 00 00 00 - value 19
     */
 
-    BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+    BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+    BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+}
+
+
+BOOST_AUTO_TEST_CASE( test_scan_request_multiple_packet )
+{
+    Test_FdrDnpSlave dnpSlave;
+
+    CtiFDRManager *fdrManager = new CtiFDRManager("DNP slave, but this is just a test");
+
+    CtiFDRPointList fdrPointList;
+
+    fdrPointList.setPointList(fdrManager);
+
+    dnpSlave.setSendToList(fdrPointList);
+
+    //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
+    fdrPointList.setPointList(0);
+
+    unsigned pointid = 37;
+
+    for( auto pointtype : { PulseAccumulatorPointType, StatusPointType, AnalogPointType } )
+    {
+        for( int pointoffset = 1; pointoffset <= 40; ++pointoffset, ++pointid )
+        //  Pulse Accumulator offset 17, point ID 42
+        {
+            //Initialize the interface to have a point in a group.
+            CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
+
+            fdrPoint->setPointID(pointid);
+            fdrPoint->setPaoID(52);
+            fdrPoint->setOffset(pointoffset);
+            fdrPoint->setPointType(PulseAccumulatorPointType);
+            fdrPoint->setValue(
+                    pointtype == StatusPointType
+                        ? pointoffset % 2
+                        : pointoffset);
+
+            CtiFDRDestination pointDestination(
+                    fdrPoint.get(),
+                    "MasterId:2;SlaveId:30;"
+                        "POINTTYPE:" + desolvePointType(pointtype) + ";"
+                        "Offset:" + std::to_string(pointoffset), "Test Destination");
+
+            vector<CtiFDRDestination> destinationList;
+
+            destinationList.push_back(pointDestination);
+
+            fdrPoint->setDestinationList(destinationList);
+
+            fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+
+            dnpSlave.translateSinglePoint(fdrPoint, true);
+        }
+    }
+
+    const byte_str request(
+            "05 64 17 c4 1e 00 02 00 78 b5 "
+            "c0 ca 01 32 01 06 3c 02 06 3c 03 06 3c 04 06 3c 9d f5 "
+            "01 06 75 e1");
+
+    Test_ServerConnection connection;
+
+    dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+    BOOST_REQUIRE_EQUAL(connection.messages.size(), 3);
+
+    auto msgItr = connection.messages.begin();
+
+    {
+        const byte_str expected(
+                "05 64 ff 44 02 00 1e 00 f9 09 "
+                "40 ca 81 00 00 1e 01 28 28 00 00 00 00 01 00 00 d9 a9 "
+                "00 01 00 00 02 00 00 00 02 00 00 03 00 00 00 03 9c 16 "
+                "00 00 04 00 00 00 04 00 00 05 00 00 00 05 00 00 f7 ce "
+                "06 00 00 00 06 00 00 07 00 00 00 07 00 00 08 00 3d eb "
+                "00 00 08 00 00 09 00 00 00 09 00 00 0a 00 00 00 fe e4 "
+                "0a 00 00 0b 00 00 00 0b 00 00 0c 00 00 00 0c 00 a3 a5 "
+                "00 0d 00 00 00 0d 00 00 0e 00 00 00 0e 00 00 0f 31 62 "
+                "00 00 00 0f 00 00 10 00 00 00 10 00 00 11 00 00 0a 44 "
+                "00 11 00 00 12 00 00 00 12 00 00 13 00 00 00 13 f6 fc "
+                "00 00 14 00 00 00 14 00 00 15 00 00 00 15 00 00 c6 5c "
+                "16 00 00 00 16 00 00 17 00 00 00 17 00 00 18 00 31 cb "
+                "00 00 18 00 00 19 00 00 00 19 00 00 1a 00 00 00 0f 9d "
+                "1a 00 00 1b 00 00 00 1b 00 00 1c 00 00 00 1c 00 8d 4c "
+                "00 1d 00 00 00 1d 00 00 1e 00 00 00 1e 00 00 1f 52 7d "
+                "00 00 00 1f 00 00 20 00 00 00 20 00 00 21 00 00 9f b0 "
+                "00 21 00 00 22 00 00 00 22 00 5b 4f");
+
+        BOOST_CHECK_EQUAL_RANGES(expected, *msgItr);
+    }
+    msgItr++;
+    {
+        const byte_str expected(
+                "05 64 ff 44 02 00 1e 00 f9 09 "
+                "01 00 23 00 00 00 23 00 00 24 00 00 00 24 00 00 b6 c6 "
+                "25 00 00 00 25 00 00 26 00 00 00 26 00 00 27 00 d3 10 "
+                "00 00 27 00 00 28 00 00 00 01 02 28 28 00 00 00 a2 0b "
+                "80 01 00 00 02 00 80 03 00 00 04 00 80 05 00 00 50 eb "
+                "06 00 80 07 00 00 08 00 80 09 00 00 0a 00 80 0b db 2d "
+                "00 00 0c 00 80 0d 00 00 0e 00 80 0f 00 00 10 00 4b fb "
+                "80 11 00 00 12 00 80 13 00 00 14 00 80 15 00 00 6c b3 "
+                "16 00 80 17 00 00 18 00 80 19 00 00 1a 00 80 1b dd 22 "
+                "00 00 1c 00 80 1d 00 00 1e 00 80 1f 00 00 20 00 93 4c "
+                "80 21 00 00 22 00 80 23 00 00 24 00 80 25 00 00 28 5b "
+                "26 00 80 27 00 00 14 01 28 28 00 00 00 00 01 00 7f d9 "
+                "00 00 01 00 00 02 00 00 00 02 00 00 03 00 00 00 96 58 "
+                "03 00 00 04 00 00 00 04 00 00 05 00 00 00 05 00 7c d0 "
+                "00 06 00 00 00 06 00 00 07 00 00 00 07 00 00 08 6f ea "
+                "00 00 00 08 00 00 09 00 00 00 09 00 00 0a 00 00 43 77 "
+                "00 0a 00 00 0b 00 00 00 0b 00 d0 cd");
+
+        BOOST_CHECK_EQUAL_RANGES(expected, *msgItr);
+    }
+    msgItr++;
+    {
+        const byte_str expected(
+                "05 64 cf 44 02 00 1e 00 ba 80 "
+                "82 00 0c 00 00 00 0c 00 00 0d 00 00 00 0d 00 00 47 8d "
+                "0e 00 00 00 0e 00 00 0f 00 00 00 0f 00 00 10 00 13 24 "
+                "00 00 10 00 00 11 00 00 00 11 00 00 12 00 00 00 4b 07 "
+                "12 00 00 13 00 00 00 13 00 00 14 00 00 00 14 00 1a 38 "
+                "00 15 00 00 00 15 00 00 16 00 00 00 16 00 00 17 5f d4 "
+                "00 00 00 17 00 00 18 00 00 00 18 00 00 19 00 00 17 4f "
+                "00 19 00 00 1a 00 00 00 1a 00 00 1b 00 00 00 1b c3 89 "
+                "00 00 1c 00 00 00 1c 00 00 1d 00 00 00 1d 00 00 62 b3 "
+                "1e 00 00 00 1e 00 00 1f 00 00 00 1f 00 00 20 00 36 f7 "
+                "00 00 20 00 00 21 00 00 00 21 00 00 22 00 00 00 58 8d "
+                "22 00 00 23 00 00 00 23 00 00 24 00 00 00 24 00 11 4e "
+                "00 25 00 00 00 25 00 00 26 00 00 00 26 00 00 27 fa f5 "
+                "00 00 00 27 00 00 28 00 00 00 41 12");
+
+        BOOST_CHECK_EQUAL_RANGES(expected, *msgItr);
+    }
 }
 
 
@@ -324,7 +461,8 @@ BOOST_AUTO_TEST_CASE( test_control_close )
                 "c0 c1 81 00 00 0c 01 17 01 00 40 01 00 00 00 00 40 06 "
                 "00 00 00 00 00 ff ff");
 
-        BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
         BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
 
@@ -356,7 +494,8 @@ BOOST_AUTO_TEST_CASE( test_control_close )
                 "c0 c1 81 00 00 0c 01 17 01 00 41 01 e8 03 00 00 c5 65 "
                 "00 00 00 00 00 ff ff");
 
-        BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
         BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
 
@@ -388,7 +527,8 @@ BOOST_AUTO_TEST_CASE( test_control_close )
                 "c0 c1 81 00 00 0c 01 17 01 00 42 01 e8 03 00 00 95 f6 "
                 "00 00 00 00 00 ff ff");
 
-        BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
         BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
 
@@ -420,7 +560,8 @@ BOOST_AUTO_TEST_CASE( test_control_close )
                 "c0 c1 81 00 00 0c 01 17 01 00 01 01 00 00 00 00 da 1d "
                 "00 00 00 00 00 ff ff");
 
-        BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
         BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
 
@@ -452,7 +593,8 @@ BOOST_AUTO_TEST_CASE( test_control_close )
                 "c0 c1 81 00 00 0c 01 17 01 00 03 01 00 00 00 00 6d 3b "
                 "00 00 00 00 00 ff ff");
 
-        BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
         BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
 
@@ -523,7 +665,8 @@ BOOST_AUTO_TEST_CASE( test_control_open )
                 "c0 c1 81 00 00 0c 01 17 01 00 80 01 00 00 00 00 be b9 "
                 "00 00 00 00 00 ff ff");
 
-        BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
         BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
 
@@ -555,7 +698,8 @@ BOOST_AUTO_TEST_CASE( test_control_open )
                 "c0 c1 81 00 00 0c 01 17 01 00 81 01 00 00 00 00 59 0c "
                 "00 00 00 00 00 ff ff");
 
-        BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
         BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
 
@@ -587,7 +731,8 @@ BOOST_AUTO_TEST_CASE( test_control_open )
                 "c0 c1 81 00 00 0c 01 17 01 00 02 01 00 00 00 00 8a 8e "
                 "00 00 00 00 00 ff ff");
 
-        BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
         BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
 
@@ -619,7 +764,8 @@ BOOST_AUTO_TEST_CASE( test_control_open )
                 "c0 c1 81 00 00 0c 01 17 01 00 04 01 00 00 00 00 53 e5 "
                 "00 00 00 00 00 ff ff");
 
-        BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
         BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
 
@@ -688,7 +834,8 @@ BOOST_AUTO_TEST_CASE( test_control_request_shortIndexShortQuantity )
             "c0 c1 81 00 00 0c 01 17 01 00 41 01 00 00 00 00 a7 b3 "
             "00 00 00 00 00 ff ff");
 
-    BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+    BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+    BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 }
 
 
@@ -745,7 +892,8 @@ BOOST_AUTO_TEST_CASE( test_control_request_visualTD_MCT )
             "c0 c2 81 00 00 0c 01 17 01 01 41 01 00 00 00 00 ed 5e "
             "00 00 00 00 00 ff ff");
 
-    BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+    BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+    BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 }
 
 
@@ -802,7 +950,8 @@ BOOST_AUTO_TEST_CASE( test_control_request_visualTD_CBC )
             "c0 c3 81 00 00 0c 01 17 01 00 41 01 00 00 00 00 97 6f "
             "00 00 00 00 00 ff ff");
 
-    BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+    BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+    BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 }
 
 
@@ -859,7 +1008,8 @@ BOOST_AUTO_TEST_CASE( test_control_request_controlDisabled )
             "c0 c1 81 00 00 0c 01 17 01 00 41 01 00 00 00 00 a7 b3 "
             "00 00 00 00 04 87 26");
 
-    BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+    BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+    BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 }
 
 
@@ -910,9 +1060,7 @@ BOOST_AUTO_TEST_CASE( test_control_request_invalidObject )
 
     dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
 
-    const std::vector<unsigned char> expected;  //  empty
-
-    BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+    BOOST_CHECK(connection.messages.empty());
 }
 
 
@@ -936,7 +1084,8 @@ BOOST_AUTO_TEST_CASE( test_control_noPoints )
             "c0 c1 81 00 00 0c 01 17 01 00 41 01 00 00 00 00 a7 b3 "
             "00 00 00 00 04 87 26");
 
-    BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+    BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+    BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 }
 
 
