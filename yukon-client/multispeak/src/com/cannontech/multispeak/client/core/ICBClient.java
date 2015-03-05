@@ -22,6 +22,8 @@ import com.cannontech.msp.beans.v3.GetMetersByEALocation;
 import com.cannontech.msp.beans.v3.GetMetersByEALocationResponse;
 import com.cannontech.msp.beans.v3.GetMetersByFacilityID;
 import com.cannontech.msp.beans.v3.GetMetersByFacilityIDResponse;
+import com.cannontech.msp.beans.v3.GetMetersBySearchString;
+import com.cannontech.msp.beans.v3.GetMetersBySearchStringResponse;
 import com.cannontech.msp.beans.v3.GetMethods;
 import com.cannontech.msp.beans.v3.GetMethodsResponse;
 import com.cannontech.msp.beans.v3.GetServiceLocationByMeterNo;
@@ -227,5 +229,17 @@ public interface ICBClient {
      */
     public CDStateChangedNotificationResponse cdStateChangedNotification(MultispeakVendor mspVendor, String uri,
             CDStateChangedNotification cdStateChangedNotification) throws MultispeakWebServiceClientException;
+
+    /**
+     * Gets Meters by SearchString.
+     * 
+     * @param MSP vendor details
+     * @param String the URI of the CB Server
+     * @param GetMetersBySearchString the GetMetersBySearchString used as input.
+     * @return GetMetersBySearchStringResponse
+     * @throws MultispeakWebServiceClientException
+     */
+    GetMetersBySearchStringResponse getMetersBySearchString(MultispeakVendor mspVendor, String uri,
+            GetMetersBySearchString getMetersBySearchString) throws MultispeakWebServiceClientException;
 
 }

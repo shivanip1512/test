@@ -208,4 +208,14 @@ public interface MspObjectDao {
      * @throws MultispeakWebServiceClientException
      */
     public List<String> getMethods(MultispeakVendor mspVendor, String service) throws MultispeakWebServiceClientException;
+
+    /**
+     * Returns a list of the MeterNumber(s) for the give search String .
+     * If the interface/method is not supported by mspVendor, or if no object is found,
+     * an empty List<Meter> object is returned.
+     * @param searchString The searchString to get the Meter information for.
+     * @param mspVendor The MultiSpeak Vendor to ask for the information from.
+     * @return
+     */
+    public List<Meter> getMetersBySearchString(String searchString, MultispeakVendor mspVendor);
 }

@@ -21,7 +21,7 @@ public class CisSearchMspMeterSearchMethodResultProvider extends MspMeterSearchM
         List<String> meterNumbers = new ArrayList<String>();
 
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
-        List<Meter> meters = mspObjectDao.getMspMetersByServiceLocation(filterValue, mspVendor);
+        List<Meter> meters = mspObjectDao.getMetersBySearchString(filterValue, mspVendor);
         for (Meter meter : meters) {
             meterNumbers.add(meter.getMeterNo());
         }
