@@ -2770,6 +2770,12 @@
             <attribute name="USAGE">
                 <basicLookup point="kWh" />
             </attribute>
+            <attribute name="DELIVERED_KWH">
+                <basicLookup point="kWh" />
+            </attribute>
+            <attribute name="RECEIVED_KWH">
+                <basicLookup point="kWh (Channel 2)" />
+            </attribute>
             <attribute name="PEAK_DEMAND">
                 <basicLookup point="Peak kW" />
             </attribute>
