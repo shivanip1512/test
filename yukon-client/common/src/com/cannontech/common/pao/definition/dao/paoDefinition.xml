@@ -2630,7 +2630,7 @@
             </command>
             <command id="READ_USAGE_FROZEN" enabled="false">
                 <name>Read Usage (Frozen Channels 1, 2, 3)</name>
-                <cmd text="getvalue kWh frozen"/>
+                <cmd text="getvalue usage frozen"/>
                 <pointRef name="kWh"/>
                 <pointRef name="kWh (Channel 2)"/>
                 <pointRef name="kWh (Channel 3)"/>
