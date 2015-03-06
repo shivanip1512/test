@@ -12,483 +12,355 @@
 #include <boost/assign.hpp>
 #include <boost/algorithm/string.hpp>
 
-using std::transform;
-using std::endl;
 using std::string;
+using boost::algorithm::to_lower_copy;
+using boost::algorithm::trim_copy;
 
 
 INT resolveRouteType( const string& _routeStr)
 {
-    INT Ret = 0;
-    string routeStr = _routeStr;
-    CtiToLower(routeStr);
+    string routeStr = trim_copy(to_lower_copy(_routeStr));
 
-    in_place_trim(routeStr);
-    if(routeStr == "ccu")
+    static const std::map<std::string, CtiRoute_t>  routeLookup
     {
-        Ret = RouteTypeCCU;
-    }
-    else if(routeStr == "tcu")
+        { "ccu",                    RouteTypeCCU },
+        { "tcu",                    RouteTypeTCU },
+        { "macro",                  RouteTypeMacro },
+        { "lcu",                    RouteTypeLCU },
+        { "versacom",               RouteTypeVersacom },
+        { "expresscom",             RouteTypeExpresscom },
+        { "tap paging",             RouteTypeTap },
+        { "tappaging",              RouteTypeTap },
+        { "rds terminal route",     RouteTypeRDS },
+        { "snpp terminal route",    RouteTypeSNPP },
+        { "wctp terminal route",    RouteTypeWCTP },
+        { "tnpp terminal route",    RouteTypeTNPP },
+        { "rtc route",              RouteTypeRTC },
+        { "series 5 lmi",           RouteTypeSeriesVLMI }
+    };
+
+    if ( const auto result = Cti::mapFind( routeLookup, routeStr ) )
     {
-        Ret = RouteTypeTCU;
-    }
-    else if(routeStr == "macro")
-    {
-        Ret = RouteTypeMacro;
-    }
-    else if(routeStr == "lcu")
-    {
-        Ret = RouteTypeLCU;
-    }
-    else if(routeStr == "versacom")
-    {
-        Ret = RouteTypeVersacom;
-    }
-    else if(routeStr == "expresscom")
-    {
-        Ret = RouteTypeExpresscom;
-    }
-    else if(routeStr == "tap paging" || routeStr == "tappaging")
-    {
-        Ret = RouteTypeTap;
-    }
-    else if(routeStr == "rds terminal route")
-    {
-        Ret = RouteTypeRDS;
-    }
-    else if(routeStr == "snpp terminal route")
-    {
-        Ret = RouteTypeSNPP;
-    }
-    else if(routeStr == "wctp terminal route")
-    {
-        Ret = RouteTypeWCTP;
-    }
-    else if(routeStr == "tnpp terminal route")
-    {
-        Ret = RouteTypeTNPP;
-    }
-    else if(routeStr == "rtc route")
-    {
-        Ret = RouteTypeRTC;
-    }
-    else if(routeStr == "series 5 lmi")
-    {
-        Ret = RouteTypeSeriesVLMI;
-    }
-    else
-    {
-        Ret = RouteTypeInvalid;
+        return *result;
     }
 
-    return Ret;
+    return RouteTypeInvalid;
 }
 
 INT resolveAmpUseType(const string& _ampStr)
 {
-    int autype = RouteAmpAlternating;
-    string ampStr = _ampStr;
-    CtiToLower(ampStr);
+    string ampStr = trim_copy(to_lower_copy(_ampStr));
 
-    in_place_trim(ampStr);
+    static const std::map<std::string, CtiAmpUsage_t>  ampLookup
+    {
+        { "alternating",        RouteAmpAlternating },
+        { "alt w/failover",     RouteAmpAltFail },
+        { "default 1 fail 2",   RouteAmpDefault1Fail2 },
+        { "default 2 fail 1",   RouteAmpDefault2Fail1 },
+        { "amp 1",              RouteAmp1 },
+        { "amp 2",              RouteAmp2 }
+    };
 
-    if( ampStr == "alternating" )
+    if ( const auto result = Cti::mapFind( ampLookup, ampStr ) )
     {
-        autype = RouteAmpAlternating;
-    }
-    else if(ampStr == "alt w/failover")
-    {
-        autype = RouteAmpAltFail;
-    }
-    else if(ampStr == "default 1 fail 2")
-    {
-        autype = (RouteAmpDefault1Fail2);
-    }
-    else if(ampStr == "default 2 fail 1")
-    {
-        autype = (RouteAmpDefault2Fail1);
-    }
-    else if(ampStr == "amp 1")
-    {
-        autype = (RouteAmp1);
-    }
-    else if(ampStr == "amp 2")
-    {
-        autype = (RouteAmp2);
-    }
-    else
-    {
-        autype = (RouteAmpDefault2Fail1);
+        return *result;
     }
 
-    return autype;
+    return RouteAmpDefault2Fail1;
 }
 
 CtiPointType_t resolvePointType(const string& _pointStr)
 {
-    static const string analog = "analog";
-    static const string status = "status";
-    static const string pulseaccumulator  = "pulseaccumulator";
-    static const string pulse_accumulator = "pulse accumulator";
-    static const string accumulator       = "accumulator";
-    static const string demandaccumulator  = "demandaccumulator";
-    static const string demand_accumulator = "demand accumulator";
-    static const string calculated   = "calculated";
-    static const string calcanalog   = "calcanalog";
-    static const string calcstatus   = "calcstatus";
-    static const string system       = "system";
-    static const string statusoutput = "statusoutput";
-    static const string analogoutput = "analogoutput";
+    string pointStr = trim_copy(to_lower_copy(_pointStr));
 
-    CtiPointType_t Ret;
-    string pointStr = _pointStr;
-    CtiToLower(pointStr);
-    in_place_trim(pointStr);
+    static const std::map<std::string, CtiPointType_t>  pointTypeLookup
+    {
+        { "analog",             AnalogPointType },
+        { "status",             StatusPointType },
+        { "pulseaccumulator",   PulseAccumulatorPointType },
+        { "pulse accumulator",  PulseAccumulatorPointType },
+        { "accumulator",        PulseAccumulatorPointType },
+        { "demandaccumulator",  DemandAccumulatorPointType },
+        { "demand accumulator", DemandAccumulatorPointType },
+        { "calculated",         CalculatedPointType },
+        { "calcanalog",         CalculatedPointType },
+        { "calcstatus",         CalculatedStatusPointType },
+        { "system",             SystemPointType },
+        { "statusoutput",       StatusOutputPointType },
+        { "analogoutput",       AnalogOutputPointType }
+    };
 
-    if(pointStr == analog)
+    if ( const auto result = Cti::mapFind( pointTypeLookup, pointStr ) )
     {
-        Ret = AnalogPointType;
-    }
-    else if(pointStr == status)
-    {
-        Ret = StatusPointType;
-    }
-    else if(pointStr == pulseaccumulator  ||
-            pointStr == pulse_accumulator ||    // This WILL go away over time I hope!
-            pointStr == accumulator)            // This WILL go away over time I hope!
-    {
-        Ret = PulseAccumulatorPointType;
-    }
-    else if(pointStr == demandaccumulator ||
-            pointStr == demand_accumulator)     // This WILL go away over time I hope!
-    {
-        Ret = DemandAccumulatorPointType;
-    }
-    else if(pointStr == calculated || pointStr == calcanalog)
-    {
-        Ret = CalculatedPointType;
-    }
-    else if(pointStr == calcstatus)
-    {
-        Ret = CalculatedStatusPointType;
-    }
-    else if(pointStr == system)
-    {
-        Ret = SystemPointType;
-    }
-    else if(pointStr == statusoutput)
-    {
-        Ret = StatusOutputPointType;
-    }
-    else if(pointStr == analogoutput)
-    {
-        Ret = AnalogOutputPointType;
-    }
-    else
-    {
-        Ret = InvalidPointType;
+        return *result;
     }
 
-    return Ret;
+    return InvalidPointType;
 }
 
 INT resolvePointArchiveType(const string& _archiveStr)
 {
-    INT Ret = ArchiveTypeNone;
-    string archiveStr = _archiveStr;
-    CtiToLower(archiveStr);
-    in_place_trim(archiveStr);
+    string archiveStr = trim_copy(to_lower_copy(_archiveStr));
 
-    if(archiveStr == "none")
+    static const std::map<std::string, CtiArchiveType_t>  archiveTypeLookup
     {
-        Ret = ArchiveTypeNone;
-    }
-    else if(archiveStr == "on change")
+        { "on change",      ArchiveTypeOnChange },
+        { "on timer",       ArchiveTypeOnTimer },
+        { "on update",      ArchiveTypeOnUpdate },
+        { "time&update",    ArchiveTypeOnTimerAndUpdated },
+        { "timer|update",   ArchiveTypeOnTimerOrUpdated }
+    };
+
+    if ( const auto result = Cti::mapFind( archiveTypeLookup, archiveStr ) )
     {
-        Ret = ArchiveTypeOnChange;
-    }
-    else if(archiveStr == "on timer")
-    {
-        Ret = ArchiveTypeOnTimer;
-    }
-    else if(archiveStr == "on update")
-    {
-        Ret = ArchiveTypeOnUpdate;
-    }
-    else if(archiveStr == "time&update")       // This should help catch interval ending reads.
-    {
-        Ret = ArchiveTypeOnTimerAndUpdated;
-    }
-    else if(archiveStr == "timer|update")       // Every interval (big interval) or every update (infrequent point).
-    {
-        Ret = ArchiveTypeOnTimerOrUpdated;
+        return *result;
     }
 
-    return Ret;
+    return ArchiveTypeNone;
 }
 
 INT resolvePAOType(const string& category, const string& typeStr)
 {
-    INT result = 0;
+    static const std::map<INT, std::function<INT(const std::string&)>>  subcategoryLookup
+    {
+        { PAO_CATEGORY_DEVICE,          resolveDeviceType },
+        { PAO_CATEGORY_PORT,            resolvePortType },
+        { PAO_CATEGORY_ROUTE,           resolveRouteType },
+        { PAO_CATEGORY_LOAD_MANAGEMENT, resolveLoadManagementType },
+        { PAO_CATEGORY_CAP_CONTROL,     resolveCapControlType }
+    };
 
-    INT categoryInt = resolvePAOCategory(category);
-
-    if(categoryInt == PAO_CATEGORY_DEVICE)
+    if ( const auto result = Cti::mapFind( subcategoryLookup, resolvePAOCategory(category) ) )
     {
-        result= resolveDeviceType(typeStr);
-    }
-    else if(categoryInt == PAO_CATEGORY_PORT)
-    {
-        result= resolvePortType(typeStr);
-    }
-    else if(categoryInt == PAO_CATEGORY_ROUTE)
-    {
-        result= resolveRouteType(typeStr);
-    }
-    else if(categoryInt == PAO_CATEGORY_LOAD_MANAGEMENT)
-    {
-        result= resolveLoadManagementType(typeStr);
-    }
-    else if(categoryInt == PAO_CATEGORY_CAP_CONTROL)
-    {
-        result= resolveCapControlType(typeStr);
+        return (*result)(typeStr);
     }
 
-    return result;
+    return 0;
 }
-
 
 INT resolvePAOCategory(const string& _category)
 {
-    INT result = -1;
-    string category = _category;
-    CtiToLower(category);
-    in_place_trim(category);
+    string category = trim_copy(to_lower_copy(_category));
 
-    if(category == ("device"))
+    static const std::map<std::string, CtiPaoCategory_t>  paoCategoryLookup
     {
-        result = PAO_CATEGORY_DEVICE;
-    }
-    else if(category == ("port"))
+        { "device",         PAO_CATEGORY_DEVICE },
+        { "port",           PAO_CATEGORY_PORT },
+        { "route",          PAO_CATEGORY_ROUTE },
+        { "loadmanagement", PAO_CATEGORY_LOAD_MANAGEMENT },
+        { "capcontrol",     PAO_CATEGORY_CAP_CONTROL }
+    };
+
+    if ( const auto result = Cti::mapFind( paoCategoryLookup, category ) )
     {
-        result = PAO_CATEGORY_PORT;
-    }
-    else if(category == ("route"))
-    {
-        result = PAO_CATEGORY_ROUTE;
-    }
-    else if(category == ("loadmanagement"))
-    {
-        result = PAO_CATEGORY_LOAD_MANAGEMENT;
-    }
-    else if(category == ("capcontrol"))
-    {
-        result = PAO_CATEGORY_CAP_CONTROL;
+        return *result;
     }
 
-    return result;
+    return -1;
 }
 
 
-static const std::map<std::string, int> device_lookups = boost::assign::map_list_of<std::string, int>
+static const std::map<std::string, int> device_lookups
+{
     //  --- GridSmart ---
-    ("capacitor bank neutral monitor",  TYPE_NEUTRAL_MONITOR)
-    ("faulted circuit indicator",       TYPE_FCI)
+    { "capacitor bank neutral monitor",  TYPE_NEUTRAL_MONITOR },
+    { "faulted circuit indicator",       TYPE_FCI },
 
     //  --- Capacitor Control ---
-    ("cap bank",           TYPECAPBANK)
-    ("cbc 6510",           TYPECBC6510)
-    ("cbc 7010",           TYPECBC7010)
-    ("cbc 7011",           TYPECBC7010)
-    ("cbc 7012",           TYPECBC7010)
-    ("cbc 7020",           TYPECBC7020)
-    ("cbc 7022",           TYPECBC7020)
-    ("cbc 7023",           TYPECBC7020)
-    ("cbc 7024",           TYPECBC7020)
-    ("cbc 7030",           TYPECBC7020)
-    ("cbc 8020",           TYPECBC8020)
-    ("cbc 8024",           TYPECBC8020)
-    ("cbc dnp",            TYPECBCDNP)
-    ("cbc expresscom",     TYPEEXPRESSCOMCBC)
-    ("cbc fp-2800",        TYPEFISHERPCBC)
-    ("cbc versacom",       TYPEVERSACOMCBC)
+    { "cap bank",           TYPECAPBANK },
+    { "cbc 6510",           TYPECBC6510 },
+    { "cbc 7010",           TYPECBC7010 },
+    { "cbc 7011",           TYPECBC7010 },
+    { "cbc 7012",           TYPECBC7010 },
+    { "cbc 7020",           TYPECBC7020 },
+    { "cbc 7022",           TYPECBC7020 },
+    { "cbc 7023",           TYPECBC7020 },
+    { "cbc 7024",           TYPECBC7020 },
+    { "cbc 7030",           TYPECBC7020 },
+    { "cbc 8020",           TYPECBC8020 },
+    { "cbc 8024",           TYPECBC8020 },
+    { "cbc dnp",            TYPECBCDNP },
+    { "cbc expresscom",     TYPEEXPRESSCOMCBC },
+    { "cbc fp-2800",        TYPEFISHERPCBC },
+    { "cbc versacom",       TYPEVERSACOMCBC },
     
     //  --- Voltage Regulators ---
-    ("ltc",                TYPE_LOAD_TAP_CHANGER)
-    ("go_regulator",       TYPE_GANG_OPERATED_REGULATOR)
-    ("po_regulator",       TYPE_PHASE_OPERATED_REGULATOR)
+    { "ltc",                TYPE_LOAD_TAP_CHANGER },
+    { "go_regulator",       TYPE_GANG_OPERATED_REGULATOR },
+    { "po_regulator",       TYPE_PHASE_OPERATED_REGULATOR },
 
     //  --- Cooper PLC ---
-    ("ccu-700",            TYPE_CCU700)
-    ("ccu-710a",           TYPE_CCU710)
-    ("ccu-711",            TYPE_CCU711)
-    ("ccu-721",            TYPE_CCU721)
-    ("lcr-3102",           TYPELCR3102)
-    ("lmt-2",              TYPELMT2)
-    ("mct broadcast",      TYPEMCTBCAST)
-    ("mct-210",            TYPEMCT210)
-    ("mct-212",            TYPEMCT212)
-    ("mct-213",            TYPEMCT213)
-    ("mct-224",            TYPEMCT224)
-    ("mct-226",            TYPEMCT226)
-    ("mct-240",            TYPEMCT240)
-    ("mct-242",            TYPEMCT242)
-    ("mct-248",            TYPEMCT248)
-    ("mct-250",            TYPEMCT250)
-    ("mct-310",            TYPEMCT310)
-    ("mct-310ct",          TYPEMCT310)
-    ("mct-310id",          TYPEMCT310ID)
-    ("mct-310idl",         TYPEMCT310IDL)
-    ("mct-310il",          TYPEMCT310IL)
-    ("mct-318",            TYPEMCT318)
-    ("mct-318l",           TYPEMCT318L)
-    ("mct-360",            TYPEMCT360)
-    ("mct-370",            TYPEMCT370)
-    ("mct-410cl",          TYPEMCT410CL)
-    ("mct-410fl",          TYPEMCT410FL)
-    ("mct-410gl",          TYPEMCT410GL)
-    ("mct-410il",          TYPEMCT410IL)
-    ("mct-420cl",          TYPEMCT420CL)
-    ("mct-420cd",          TYPEMCT420CD)
-    ("mct-420fl",          TYPEMCT420FL)
-    ("mct-420fd",          TYPEMCT420FD)
-    ("mct-430a",           TYPEMCT430A)
-    ("mct-430a3",          TYPEMCT430A3)
-    ("mct-430s4",          TYPEMCT430S4)
-    ("mct-430sl",          TYPEMCT430SL)
-    ("mct-470",            TYPEMCT470)
-    ("mct-440-2131b",      TYPEMCT440_2131B)
-    ("mct-440-2132b",      TYPEMCT440_2132B)
-    ("mct-440-2133b",      TYPEMCT440_2133B)
-    ("repeater 800",       TYPE_REPEATER800)
-    ("repeater 801",       TYPE_REPEATER800)
-    ("repeater 850",       TYPE_REPEATER850)
-    ("repeater 902",       TYPE_REPEATER900)
-    ("repeater 921",       TYPE_REPEATER900)
-    ("repeater",           TYPE_REPEATER900)
+    { "ccu-700",            TYPE_CCU700 },
+    { "ccu-710a",           TYPE_CCU710 },
+    { "ccu-711",            TYPE_CCU711 },
+    { "ccu-721",            TYPE_CCU721 },
+    { "lcr-3102",           TYPELCR3102 },
+    { "lmt-2",              TYPELMT2 },
+    { "mct broadcast",      TYPEMCTBCAST },
+    { "mct-210",            TYPEMCT210 },
+    { "mct-212",            TYPEMCT212 },
+    { "mct-213",            TYPEMCT213 },
+    { "mct-224",            TYPEMCT224 },
+    { "mct-226",            TYPEMCT226 },
+    { "mct-240",            TYPEMCT240 },
+    { "mct-242",            TYPEMCT242 },
+    { "mct-248",            TYPEMCT248 },
+    { "mct-250",            TYPEMCT250 },
+    { "mct-310",            TYPEMCT310 },
+    { "mct-310ct",          TYPEMCT310 },
+    { "mct-310id",          TYPEMCT310ID },
+    { "mct-310idl",         TYPEMCT310IDL },
+    { "mct-310il",          TYPEMCT310IL },
+    { "mct-318",            TYPEMCT318 },
+    { "mct-318l",           TYPEMCT318L },
+    { "mct-360",            TYPEMCT360 },
+    { "mct-370",            TYPEMCT370 },
+    { "mct-410cl",          TYPEMCT410CL },
+    { "mct-410fl",          TYPEMCT410FL },
+    { "mct-410gl",          TYPEMCT410GL },
+    { "mct-410il",          TYPEMCT410IL },
+    { "mct-420cl",          TYPEMCT420CL },
+    { "mct-420cd",          TYPEMCT420CD },
+    { "mct-420fl",          TYPEMCT420FL },
+    { "mct-420fd",          TYPEMCT420FD },
+    { "mct-430a",           TYPEMCT430A },
+    { "mct-430a3",          TYPEMCT430A3 },
+    { "mct-430s4",          TYPEMCT430S4 },
+    { "mct-430sl",          TYPEMCT430SL },
+    { "mct-470",            TYPEMCT470 },
+    { "mct-440-2131b",      TYPEMCT440_2131B },
+    { "mct-440-2132b",      TYPEMCT440_2132B },
+    { "mct-440-2133b",      TYPEMCT440_2133B },
+    { "repeater 800",       TYPE_REPEATER800 },
+    { "repeater 801",       TYPE_REPEATER800 },
+    { "repeater 850",       TYPE_REPEATER850 },
+    { "repeater 902",       TYPE_REPEATER900 },
+    { "repeater 921",       TYPE_REPEATER900 },
+    { "repeater",           TYPE_REPEATER900 },
 
     //  --- Receivers ---
-    ("page receiver",      TYPE_PAGING_RECEIVER)
+    { "page receiver",      TYPE_PAGING_RECEIVER },
 
     //  --- RF mesh meters ---
-    ("rfn-410fl",          TYPE_RFN410FL)
-    ("rfn-410fx",          TYPE_RFN410FX)
-    ("rfn-410fd",          TYPE_RFN410FD)
+    { "rfn-410fl",          TYPE_RFN410FL },
+    { "rfn-410fx",          TYPE_RFN410FX },
+    { "rfn-410fd",          TYPE_RFN410FD },
 
-    ("rfn-420fl",          TYPE_RFN420FL)
-    ("rfn-420fx",          TYPE_RFN420FX)
-    ("rfn-420fd",          TYPE_RFN420FD)
+    { "rfn-420fl",          TYPE_RFN420FL },
+    { "rfn-420fx",          TYPE_RFN420FX },
+    { "rfn-420fd",          TYPE_RFN420FD },
 
-    ("rfn-420frx",         TYPE_RFN420FRX)
-    ("rfn-420frd",         TYPE_RFN420FRD)
+    { "rfn-420frx",         TYPE_RFN420FRX },
+    { "rfn-420frd",         TYPE_RFN420FRD },
 
-    ("rfn-410cl",          TYPE_RFN410CL)
-    ("rfn-420cl",          TYPE_RFN420CL)
-    ("rfn-420cd",          TYPE_RFN420CD)
+    { "rfn-410cl",          TYPE_RFN410CL },
+    { "rfn-420cl",          TYPE_RFN420CL },
+    { "rfn-420cd",          TYPE_RFN420CD },
 
-    ("rfn-430a3d",         TYPE_RFN430A3D)
-    ("rfn-430a3t",         TYPE_RFN430A3T)
-    ("rfn-430a3k",         TYPE_RFN430A3K)
-    ("rfn-430a3r",         TYPE_RFN430A3R)
+    { "rfn-430a3d",         TYPE_RFN430A3D },
+    { "rfn-430a3t",         TYPE_RFN430A3T },
+    { "rfn-430a3k",         TYPE_RFN430A3K },
+    { "rfn-430a3r",         TYPE_RFN430A3R },
 
-    ("rfn-430kv",          TYPE_RFN430KV)
+    { "rfn-430kv",          TYPE_RFN430KV },
 
-    ("rfn-430sl0",         TYPE_RFN430SL0)
-    ("rfn-430sl1",         TYPE_RFN430SL1)
-    ("rfn-430sl2",         TYPE_RFN430SL2)
-    ("rfn-430sl3",         TYPE_RFN430SL3)
-    ("rfn-430sl4",         TYPE_RFN430SL4)
+    { "rfn-430sl0",         TYPE_RFN430SL0 },
+    { "rfn-430sl1",         TYPE_RFN430SL1 },
+    { "rfn-430sl2",         TYPE_RFN430SL2 },
+    { "rfn-430sl3",         TYPE_RFN430SL3 },
+    { "rfn-430sl4",         TYPE_RFN430SL4 },
 
     //  --- RF DA nodes ---
-    ("rfn-1200",           TYPE_RFN1200)
+    { "rfn-1200",           TYPE_RFN1200 },
 
     //  --- RTU devices ---
-    ("rtu-dart",           TYPE_DARTRTU)
-    ("rtu-dnp",            TYPE_DNPRTU)
-    ("rtu-ilex",           TYPE_ILEXRTU)
-    ("rtu-lmi",            TYPE_SERIESVLMIRTU)
-    ("rtu-modbus",         TYPE_MODBUS)
-    ("rtu-ses92",          TYPE_SES92RTU)
-    ("rtu-welco",          TYPE_WELCORTU)
+    { "rtu-dart",           TYPE_DARTRTU },
+    { "rtu-dnp",            TYPE_DNPRTU },
+    { "rtu-ilex",           TYPE_ILEXRTU },
+    { "rtu-lmi",            TYPE_SERIESVLMIRTU },
+    { "rtu-modbus",         TYPE_MODBUS },
+    { "rtu-ses92",          TYPE_SES92RTU },
+    { "rtu-welco",          TYPE_WELCORTU },
 
-    //  --- GRE (Great River Energy) transmitters ---
-    ("rtc",                TYPE_RTC)
-    ("rtm",                TYPE_RTM)
+    //  --- GRE { Great River Energy }, transmitters ---
+    { "rtc",                TYPE_RTC },
+    { "rtm",                TYPE_RTM },
 
-    //  --- GRE (Great River Energy) Load Management groups ---
-    ("golay group",        TYPE_LMGROUP_GOLAY)
-    ("sa-105 group",       TYPE_LMGROUP_SA105)
-    ("sa-205 group",       TYPE_LMGROUP_SA205)
-    ("sa-305 group",       TYPE_LMGROUP_SA305)
-    ("sa-digital group",   TYPE_LMGROUP_SADIGITAL)
+    //  --- GRE { Great River Energy }, Load Management groups ---
+    { "golay group",        TYPE_LMGROUP_GOLAY },
+    { "sa-105 group",       TYPE_LMGROUP_SA105 },
+    { "sa-205 group",       TYPE_LMGROUP_SA205 },
+    { "sa-305 group",       TYPE_LMGROUP_SA305 },
+    { "sa-digital group",   TYPE_LMGROUP_SADIGITAL },
 
     //  --- Load Management ---
-    ("ci customer",        TYPE_CI_CUSTOMER)
-    ("lm control area",    TYPE_LM_CONTROL_AREA)
-    ("lm curtail program", TYPE_LMPROGRAM_CURTAILMENT)
-    ("lm direct program",  TYPE_LMPROGRAM_DIRECT)
-    ("lm energy exchange", TYPE_LMPROGRAM_ENERGYEXCHANGE)
-    ("lm sep program",     TYPE_LMPROGRAM_DIRECT)
-    ("ecobee program",     TYPE_LMPROGRAM_DIRECT)
-    ("digi sep group",     TYPE_LMGROUP_DIGI_SEP)
-    ("ecobee group",       TYPE_LMGROUP_ECOBEE)
-    ("emetcon group",      TYPE_LMGROUP_EMETCON)
-    ("expresscom group",   TYPE_LMGROUP_EXPRESSCOM)
-    ("rfn expresscom group",TYPE_LMGROUP_RFN_EXPRESSCOM)
-    ("mct group",          TYPE_LMGROUP_MCT)
-    ("point group",        TYPE_LMGROUP_POINT)
-    ("ripple group",       TYPE_LMGROUP_RIPPLE)
-    ("versacom group",     TYPE_LMGROUP_VERSACOM)
+    { "ci customer",        TYPE_CI_CUSTOMER },
+    { "lm control area",    TYPE_LM_CONTROL_AREA },
+    { "lm curtail program", TYPE_LMPROGRAM_CURTAILMENT },
+    { "lm direct program",  TYPE_LMPROGRAM_DIRECT },
+    { "lm energy exchange", TYPE_LMPROGRAM_ENERGYEXCHANGE },
+    { "lm sep program",     TYPE_LMPROGRAM_DIRECT },
+    { "ecobee program",     TYPE_LMPROGRAM_DIRECT },
+    { "digi sep group",     TYPE_LMGROUP_DIGI_SEP },
+    { "ecobee group",       TYPE_LMGROUP_ECOBEE },
+    { "emetcon group",      TYPE_LMGROUP_EMETCON },
+    { "expresscom group",   TYPE_LMGROUP_EXPRESSCOM },
+    { "rfn expresscom group",TYPE_LMGROUP_RFN_EXPRESSCOM },
+    { "mct group",          TYPE_LMGROUP_MCT },
+    { "point group",        TYPE_LMGROUP_POINT },
+    { "ripple group",       TYPE_LMGROUP_RIPPLE },
+    { "versacom group",     TYPE_LMGROUP_VERSACOM },
 
     //  --- System ---
-    ("macro group",        TYPE_MACRO)
-    ("script",             0)
-    ("simple",             0)
-    ("system",             TYPE_SYSTEM)
-    ("virtual system",     TYPE_VIRTUAL_SYSTEM)
+    { "macro group",        TYPE_MACRO },
+    { "script",             0 },
+    { "simple",             0 },
+    { "system",             TYPE_SYSTEM },
+    { "virtual system",     TYPE_VIRTUAL_SYSTEM },
 
     //  --- Transmitters ---
-    ("lcu-415",            TYPE_LCU415)
-    ("lcu-eastriver",      TYPE_LCU415ER)
-    ("lcu-lg",             TYPE_LCU415LG)
-    ("lcu-t3026",          TYPE_LCUT3026)
-    ("rds terminal",       TYPE_RDS)
-    ("snpp terminal",      TYPE_SNPP)
-    ("tap terminal",       TYPE_TAPTERM)
-    ("tcu-5000",           TYPE_TCU5000)
-    ("tcu-5500",           TYPE_TCU5500)
-    ("tnpp terminal",      TYPE_TNPP)
-    ("wctp terminal",      TYPE_WCTP)
+    { "lcu-415",            TYPE_LCU415 },
+    { "lcu-eastriver",      TYPE_LCU415ER },
+    { "lcu-lg",             TYPE_LCU415LG },
+    { "lcu-t3026",          TYPE_LCUT3026 },
+    { "rds terminal",       TYPE_RDS },
+    { "snpp terminal",      TYPE_SNPP },
+    { "tap terminal",       TYPE_TAPTERM },
+    { "tcu-5000",           TYPE_TCU5000 },
+    { "tcu-5500",           TYPE_TCU5500 },
+    { "tnpp terminal",      TYPE_TNPP },
+    { "wctp terminal",      TYPE_WCTP },
 
     //  --- IEDs and electronic meters ---
-    ("alpha a1",           TYPE_ALPHA_A1)
-    ("alpha a3",           TYPE_ALPHA_A3)
-    ("alpha power plus",   TYPE_ALPHA_PPLUS)
-    ("davis weather",      TYPE_DAVIS)
-    ("dct-501",            TYPEDCT501)
-    ("dr-87",              TYPE_DR87)
-    ("focus",              TYPE_FOCUS)
-    ("ipc-410fl",          TYPE_IPC_410FL)
-    ("ipc-420fd",          TYPE_IPC_420FD)
-    ("ipc-430s4e",         TYPE_IPC_430S4E)
-    ("ipc-430sl",          TYPE_IPC_430SL)
-    ("fulcrum",            TYPE_FULCRUM)
-    ("ion-7330",           TYPE_ION7330)
-    ("ion-7700",           TYPE_ION7700)
-    ("ion-8300",           TYPE_ION8300)
-    ("kv",                 TYPE_KV2)
-    ("kv2",                TYPE_KV2)
-    ("landis-gyr s4",      TYPE_LGS4)
-    ("quantum",            TYPE_QUANTUM)
-    ("sentinel",           TYPE_SENTINEL)
-    ("sixnet",             TYPE_SIXNET)
-    ("transdata mark-v",   TYPE_TDMARKV)
-    ("vectron",            TYPE_VECTRON);
+    { "alpha a1",           TYPE_ALPHA_A1 },
+    { "alpha a3",           TYPE_ALPHA_A3 },
+    { "alpha power plus",   TYPE_ALPHA_PPLUS },
+    { "davis weather",      TYPE_DAVIS },
+    { "dct-501",            TYPEDCT501 },
+    { "dr-87",              TYPE_DR87 },
+    { "focus",              TYPE_FOCUS },
+    { "ipc-410fl",          TYPE_IPC_410FL },
+    { "ipc-420fd",          TYPE_IPC_420FD },
+    { "ipc-430s4e",         TYPE_IPC_430S4E },
+    { "ipc-430sl",          TYPE_IPC_430SL },
+    { "fulcrum",            TYPE_FULCRUM },
+    { "ion-7330",           TYPE_ION7330 },
+    { "ion-7700",           TYPE_ION7700 },
+    { "ion-8300",           TYPE_ION8300 },
+    { "kv",                 TYPE_KV2 },
+    { "kv2",                TYPE_KV2 },
+    { "landis-gyr s4",      TYPE_LGS4 },
+    { "quantum",            TYPE_QUANTUM },
+    { "sentinel",           TYPE_SENTINEL },
+    { "sixnet",             TYPE_SIXNET },
+    { "transdata mark-v",   TYPE_TDMARKV },
+    { "vectron",            TYPE_VECTRON }
+};
 
 
 INT resolveDeviceType(const string& _typeStr)
 {
-    string typestr = boost::trim_copy(boost::to_lower_copy(_typeStr));
+    string typestr = trim_copy(to_lower_copy(_typeStr));
 
     if( const boost::optional<int> deviceType = Cti::mapFind(device_lookups, typestr) )
     {
@@ -505,296 +377,198 @@ INT resolveDeviceType(const string& _typeStr)
 
 //  --- Known unsupported Devices ---
 //  Do not report an error ("Unsupported DEVICE type ...") if we try to resolve any of these
-static const std::set<string> unsupported_devices = boost::assign::list_of
-    ("digi gateway")
-    ("rf gateway")
-    ("zigbee endpoint")
-    ("rfn-440-2131td")
-    ("rfn-440-2132td")
-    ("rfn-440-2133td")
-    ("rfw-meter")
-    ("lcr-6200 rfn")
-    ("lcr-6600 rfn")
-    ("weather location")
-    ("ecobee smart si")
-    ("ltc")
-    ("go_regulator")
-    ("po_regulator")
-        ;
+static const std::set<string> unsupported_devices
+{
+    { "digi gateway" },
+    { "rf gateway" },
+    { "zigbee endpoint" },
+    { "rfn-440-2131td" },
+    { "rfn-440-2132td" },
+    { "rfn-440-2133td" },
+    { "rfw-meter" },
+    { "lcr-6200 rfn" },
+    { "lcr-6600 rfn" },
+    { "weather location" },
+    { "ecobee smart si" },
+    { "ltc" },
+    { "go_regulator" },
+    { "po_regulator" }
+};
 
 /**
  * Check if the device is known and unsupported
  */
 bool isKnownUnsupportedDevice(const string& typeStr)
 {
-    return unsupported_devices.count( boost::to_lower_copy(typeStr) );
+    return unsupported_devices.count( to_lower_copy(typeStr) );
 }
 
 
 INT resolveCapControlType(const string& _typeStr)
 {
-    INT nRet = 0;
-    string typeStr = _typeStr;
-    CtiToLower(typeStr);
-    in_place_trim(typeStr);
+    string typeStr = trim_copy(to_lower_copy(_typeStr));
 
-    if(typeStr == "ccarea")
+    static const std::map<std::string, DeviceTypes>  deviceTypeLookup
     {
-        nRet = TYPE_CC_AREA;
-    }
-    else if(typeStr == "ccsubstation")
+        { "ccarea",         TYPE_CC_AREA },
+        { "ccsubstation",   TYPE_CC_SUBSTATION },
+        { "ccsubbus",       TYPE_CC_SUBSTATION_BUS },
+        { "ccfeeder",       TYPE_CC_FEEDER },
+        { "ccspecialarea",  TYPE_CC_SPECIALAREA }
+    };
+
+    if ( const auto result = Cti::mapFind( deviceTypeLookup, typeStr ) )
     {
-        nRet = TYPE_CC_SUBSTATION;
-    }
-    else if(typeStr == "ccsubbus")
-    {
-        nRet = TYPE_CC_SUBSTATION_BUS;
-    }
-    else if(typeStr == "ccfeeder")
-    {
-        nRet = TYPE_CC_FEEDER;
-    }
-    else if(typeStr == "ccspecialarea")
-    {
-        nRet = TYPE_CC_SPECIALAREA;
-    }
-    else
-    {
-        CTILOG_ERROR(dout, "Unsupported CAP CONTROL type \"" << typeStr << "\"");
+        return *result;
     }
 
-    return nRet;
+    CTILOG_ERROR(dout, "Unsupported CAP CONTROL type \"" << typeStr << "\"");
+
+    return 0;
 }
 
 INT resolveLoadManagementType(const string& _typeStr)
 {
-    INT nRet = 0;
-    string typeStr = _typeStr;
-    CtiToLower(typeStr);
-    in_place_trim(typeStr);
+    string typeStr = trim_copy(to_lower_copy(_typeStr));
 
-    if(typeStr == "lm direct program" ||
-       typeStr == "lm sep program" ||
-       typeStr == "ecobee program")
+    static const std::map<std::string, DeviceTypes>  deviceTypeLookup
     {
-        nRet = TYPE_LMPROGRAM_DIRECT;
-    }
-    else if(typeStr == "lm curtail program")
+        { "lm direct program",  TYPE_LMPROGRAM_DIRECT },
+        { "lm sep program",     TYPE_LMPROGRAM_DIRECT },
+        { "ecobee program",     TYPE_LMPROGRAM_DIRECT },
+        { "lm curtail program", TYPE_LMPROGRAM_CURTAILMENT },
+        { "lm control area",    TYPE_LM_CONTROL_AREA },
+        { "ci customer",        TYPE_CI_CUSTOMER },
+        { "lm energy exchange", TYPE_LMPROGRAM_ENERGYEXCHANGE }
+    };
+
+    if ( const auto result = Cti::mapFind( deviceTypeLookup, typeStr ) )
     {
-        nRet = TYPE_LMPROGRAM_CURTAILMENT;
-    }
-    else if(typeStr == "lm control area")
-    {
-        nRet = TYPE_LM_CONTROL_AREA;
-    }
-    else if(typeStr == "ci customer")
-    {
-        nRet = TYPE_CI_CUSTOMER;
-    }
-    else if(typeStr == "lm energy exchange")
-    {
-        nRet = TYPE_LMPROGRAM_ENERGYEXCHANGE;
-    }
-    else
-    {
-        CTILOG_ERROR(dout, "Unsupported LOAD MANAGEMENT type \"" << typeStr << "\"");
+        return *result;
     }
 
-    return nRet;
+    CTILOG_ERROR(dout, "Unsupported LOAD MANAGEMENT type \"" << typeStr << "\"");
+
+    return 0;
 }
-
 
 INT resolveScanType(const string& _typeStr)
 {
-    INT nRet = 0;
-    string typeStr = _typeStr;
-    CtiToLower(typeStr);
-    in_place_trim(typeStr);
+    string typeStr = trim_copy(to_lower_copy(_typeStr));
 
+    static const std::map<std::string, CtiScanRate_t>  scanRateLookup
+    {
+        { "general",        ScanRateGeneral },
+        { "accumulator",    ScanRateAccum },
+        { "integrity",      ScanRateIntegrity },
+        { "status",         ScanRateGeneral },
+        { "exception",      ScanRateGeneral },
+        { "loadprofile",    ScanRateLoadProfile }
+    };
 
-    if(typeStr == "general")
+    if ( const auto result = Cti::mapFind( scanRateLookup, typeStr ) )
     {
-        nRet = ScanRateGeneral;
-    }
-    else if(typeStr == "accumulator")
-    {
-        nRet = ScanRateAccum;
-    }
-    else if(typeStr == "integrity")
-    {
-        nRet = ScanRateIntegrity;
-    }
-    else if(typeStr == "status")
-    {
-        nRet = ScanRateGeneral;
-    }
-    else if(typeStr == "exception")
-    {
-        nRet = ScanRateGeneral;
-    }
-    else if(typeStr == "loadprofile")
-    {
-        nRet = ScanRateLoadProfile;
-    }
-    else
-    {
-        CTILOG_ERROR(dout, "Unsupported scan rate type \"" << typeStr << "\"");
-        nRet = ScanRateInvalid;
+        return *result;
     }
 
-    return nRet;
+    CTILOG_ERROR(dout, "Unsupported scan rate type \"" << typeStr << "\"");
+
+    return ScanRateInvalid;
 }
 
 LONG resolveDeviceWindowType(const string& _windowStr)
 {
-    INT nRet = 0;
-    string windowStr = _windowStr;
-    CtiToLower(windowStr);
-    in_place_trim(windowStr);
+    string windowStr = trim_copy(to_lower_copy(_windowStr));
 
+    static const std::map<std::string, CtiDeviceWindow_t>  windowLookup
+    {
+        { DEVICE_WINDOW_TYPE_SCAN,              DeviceWindowScan },
+        { DEVICE_WINDOW_TYPE_PEAK,              DeviceWindowPeak },
+        { DEVICE_WINDOW_TYPE_ALTERNATE_RATE,    DeviceWindowAlternateRate }
+    };
 
-    if(windowStr == DEVICE_WINDOW_TYPE_SCAN)
+    if ( const auto result = Cti::mapFind( windowLookup, windowStr ) )
     {
-        nRet = DeviceWindowScan;
-    }
-    else if(windowStr == DEVICE_WINDOW_TYPE_PEAK)
-    {
-        nRet = DeviceWindowPeak;
-    }
-    else if(windowStr == DEVICE_WINDOW_TYPE_ALTERNATE_RATE)
-    {
-        nRet = DeviceWindowAlternateRate;
-    }
-    else
-    {
-        CTILOG_ERROR(dout, "Unsupported device window type \"" << windowStr << "\"");
-        nRet = DeviceWindowInvalid;
+        return *result;
     }
 
-    return nRet;
+    CTILOG_ERROR(dout, "Unsupported device window type \"" << windowStr << "\"");
+
+    return DeviceWindowInvalid;
 }
-
 
 INT resolvePAOClass(const string& _classStr)
 {
-    INT nRet = 0;
-    string classStr = _classStr;
-    CtiToLower(classStr);
-    in_place_trim(classStr);
+    string classStr = trim_copy(to_lower_copy(_classStr));
 
-    /* The mantra of a professor I once had... Make the common case fast! */
-    if(classStr == "transmitter")
+    static const std::map<std::string, CtiPAOClass_t>  paoClassLookup
     {
-        nRet = PAOClassTransmitter;
-    }
-    else if(classStr == "rtu")
+        { "transmitter",    PAOClassTransmitter },
+        { "rtu",            PAOClassRTU },
+        { "ied",            PAOClassIED },
+        { "carrier",        PAOClassCarrier },
+        { "meter",          PAOClassMeter },
+        { "rfmesh",         PAOClassRFMesh },
+        { "gridadvisor",    PAOClassGridAdvisor },
+        { "group",          PAOClassGroup },
+        { "system",         PAOClassSystem },
+        { "capcontrol",     PAOClassCapControl },
+        { "loadmanagement", PAOClassLoadManagement },
+        { "virtual",        PAOClassVirtual },
+        { "port",           PAOClassPort },
+        { "route",          PAOClassRoute },
+        { "schedule",       PAOClassMACS }
+    };
+
+    if ( const auto result = Cti::mapFind( paoClassLookup, classStr ) )
     {
-        nRet = PAOClassRTU;
-    }
-    else if(classStr == "ied")
-    {
-        nRet = PAOClassIED;
-    }
-    else if(classStr == "carrier")
-    {
-        nRet = PAOClassCarrier;
-    }
-    else if(classStr == "meter")
-    {
-        nRet = PAOClassMeter;
-    }
-    else if(classStr == "rfmesh")
-    {
-        nRet = PAOClassRFMesh;
-    }
-    else if(classStr == "gridadvisor")
-    {
-        nRet = PAOClassGridAdvisor;
-    }
-    else if(classStr == "group")
-    {
-        nRet = PAOClassGroup;
-    }
-    else if(classStr == "system")
-    {
-        nRet = PAOClassSystem;
-    }
-    else if(classStr == "capcontrol")
-    {
-        nRet = PAOClassCapControl;
-    }
-    else if(classStr == "loadmanagement")
-    {
-        nRet = PAOClassLoadManagement;
-    }
-    else if(classStr == "virtual")
-    {
-        nRet = PAOClassVirtual;
-    }
-    else if(classStr == "port")
-    {
-        nRet = PAOClassPort;
-    }
-    else if(classStr == "route")
-    {
-        nRet = PAOClassRoute;
-    }
-    else if(classStr == "schedule")
-    {
-        nRet = PAOClassMACS;
-    }
-    else
-    {
-        CTILOG_ERROR(dout, "Unsupported device class \"" << classStr << "\"");
-        nRet = PAOClassInvalid;
+        return *result;
     }
 
-    return nRet;
+    CTILOG_ERROR(dout, "Unsupported device class \"" << classStr << "\"");
+
+    return PAOClassInvalid;
 }
 
 INT resolveProtocol(const string& _str)
 {
-    INT nRet = 0;
-    string str = _str;
-    CtiToLower(str);
-    in_place_trim(str);
+    string str = trim_copy(to_lower_copy(_str));
 
-    if(str == "idlc")
+    static const std::map<std::string, CtiProtocolWrap_t>  protocolLookup
     {
-        nRet = ProtocolWrapIDLC;
-    }
-    else if(str == "none")
+        { "idlc",    ProtocolWrapIDLC },
+        { "none",    ProtocolWrapNone }
+    };
+
+    if ( const auto result = Cti::mapFind( protocolLookup, str ) )
     {
-        nRet = ProtocolWrapNone;
-    }
-    else
-    {
-        CTILOG_ERROR(dout, "Unknown port protocol wrap " << str);
+        return *result;
     }
 
-    return nRet;
+    CTILOG_ERROR(dout, "Unknown port protocol wrap " << str);
+
+    return 0;
 }
-
-const std::map<std::string, int> PortTypes = boost::assign::map_list_of
-    ("local serial port",        PortTypeLocalDirect    )
-    ("local dialup",             PortTypeLocalDialup    )
-    ("terminal server",          PortTypeTServerDirect  )
-    ("tcp",                      PortTypeTcp            )
-    ("udp",                      PortTypeUdp            )
-    ("terminal server dialup",   PortTypeTServerDialup  )
-    ("local dialback",           PortTypeLocalDialBack  )
-    ("terminal server dialback", PortTypeTServerDialBack)
-    ("dialout pool",             PortTypePoolDialout    )
-    ("rfn-1200",                 PortTypeRfDa           );
-
 
 INT resolvePortType(const string& _str)
 {
-    string str = _str;
-    CtiToLower(str);
-    in_place_trim(str);
+    string str = trim_copy(to_lower_copy(_str));
 
-    if( const boost::optional<int> portType = Cti::mapFind(PortTypes, str) )
+    const std::map<std::string, int> PortTypes
+    {
+        { "local serial port",        PortTypeLocalDirect     },
+        { "local dialup",             PortTypeLocalDialup     },
+        { "terminal server",          PortTypeTServerDirect   },
+        { "tcp",                      PortTypeTcp             },
+        { "udp",                      PortTypeUdp             },
+        { "terminal server dialup",   PortTypeTServerDialup   },
+        { "local dialback",           PortTypeLocalDialBack   },
+        { "terminal server dialback", PortTypeTServerDialBack },
+        { "dialout pool",             PortTypePoolDialout     },
+        { "rfn-1200",                 PortTypeRfDa            }
+    };
+
+    if( const auto portType = Cti::mapFind(PortTypes, str) )
     {
         return *portType;
     }
@@ -1125,148 +899,53 @@ INT resolveAWordTime(INT Seconds)
 
 string   resolveDBChangeType(INT type)
 {
-    string rStr;
-
-    switch(type)
+    static const std::map<CtiDBChangedType_t, std::string>  lookup
     {
-    case ChangeTypeAdd:
-        {
-            rStr = (" ADDED TO");
-            break;
-        }
-    case ChangeTypeDelete:
-        {
-            rStr = (" DELETED FROM");
-            break;
-        }
-    case ChangeTypeUpdate:
-        {
-            rStr = (" UPDATED IN");
-            break;
-        }
-    default:
-        {
-            rStr = (" CHANGED IN");
-            break;
-        }
+        { ChangeTypeAdd,    " ADDED TO" },
+        { ChangeTypeDelete, " DELETED FROM" },
+        { ChangeTypeUpdate, " UPDATED IN" }
+    };
+    
+    if ( const auto result = Cti::mapFind( lookup, static_cast<CtiDBChangedType_t>(type) ) )
+    {
+        return *result;
     }
 
-    return rStr;
+    return " CHANGED IN";
 }
 
 string   resolveDBChanged(INT dbnum)
 {
-    string rStr;
-    switch(dbnum)
+    static const std::map<CtiDBChanged_t, std::string>  lookup
     {
-    case ChangePAODb:
-        {
-            rStr = (" PAO DB");
-            break;
-        }
-    case ChangePointDb:
-        {
-            rStr = (" POINT DB");
-            break;
-        }
-    case ChangeStateGroupDb:
-        {
-            rStr = (" GROUP DB");
-            break;
-        }
-    case ChangeNotificationGroupDb:
-        {
-            rStr = (" NOTIFICATIONGROUP/DESTINATION DB");
-            break;
-        }
-    case ChangeNotificationRecipientDb:
-        {
-            rStr = (" GROUPRECIPIENT DB");
-            break;
-        }
-    case ChangeAlarmCategoryDb:
-        {
-            rStr = (" ALARM Category DB");
-            break;
-        }
-    case ChangeCustomerContactDb:
-        {
-            rStr = (" Customer Contact DB");
-            break;
-        }
-    case ChangeGraphDb:
-        {
-            rStr = (" Graph DB");
-            break;
-        }
-    case ChangeHolidayScheduleDb:
-        {
-            rStr = (" Holiday Schedule DB");
-            break;
-        }
-    case ChangeEnergyCompanyDb:
-        {
-            rStr = (" Energy Company DB");
-            break;
-        }
-    case ChangeYukonUserDb:
-        {
-            rStr = (" Yukon User DB");
-            break;
-        }
-    case ChangeCustomerDb:
-        {
-            rStr = (" Yukon Customer DB");
-            break;
-        }
-    case ChangeCustomerAccountDb:
-        {
-            rStr = (" Yukon Customer Account DB");
-            break;
-        }
-    case ChangeYukonImageDb:
-        {
-            rStr = (" Yukon Image DB");
-            break;
-        }
-    case ChangeBaselineDb:
-        {
-            rStr = (" Yukon Baseline DB");
-            break;
-        }
-    case ChangeConfigDb:
-        {
-        rStr = (" Yukon Config DB");
-        break;
-        }
-    case ChangeTagDb:
-        {
-        rStr = (" Yukon Tag DB");
-        break;
-    }
-    case ChangeCICustomerDb:
-        {
-        rStr = (" Yukon CI Customer DB");
-        break;
-    }
-    case ChangeLMConstraintDb:
-        {
-        rStr = (" Yukon LM Constraint DB");
-        break;
-    }
-    case ChangeSeasonScheduleDb:
-        {
-        rStr = (" Yukon Season Schedule DB");
-        break;
-        }
-    default:
-        {
-            rStr = (" DATABASE");
-            break;
-        }
+        { ChangePAODb,                      " PAO DB" },
+        { ChangePointDb,                    " POINT DB" },
+        { ChangeStateGroupDb,               " GROUP DB" },
+        { ChangeNotificationGroupDb,        " NOTIFICATIONGROUP/DESTINATION DB" },
+        { ChangeNotificationRecipientDb,    " GROUPRECIPIENT DB" },
+        { ChangeAlarmCategoryDb,            " ALARM Category DB" },
+        { ChangeCustomerContactDb,          " Customer Contact DB" },
+        { ChangeGraphDb,                    " Graph DB" },
+        { ChangeHolidayScheduleDb,          " Holiday Schedule DB" },
+        { ChangeEnergyCompanyDb,            " Energy Company DB" },
+        { ChangeYukonUserDb,                " Yukon User DB" },
+        { ChangeCustomerDb,                 " Yukon Customer DB" },
+        { ChangeCustomerAccountDb,          " Yukon Customer Account DB" },
+        { ChangeYukonImageDb,               " Yukon Image DB" },
+        { ChangeBaselineDb,                 " Yukon Baseline DB" },
+        { ChangeConfigDb,                   " Yukon Config DB" },
+        { ChangeTagDb,                      " Yukon Tag DB" },
+        { ChangeCICustomerDb,               " Yukon CI Customer DB" },
+        { ChangeLMConstraintDb,             " Yukon LM Constraint DB" },
+        { ChangeSeasonScheduleDb,           " Yukon Season Schedule DB" }
+    };
+
+    if ( const auto result = Cti::mapFind( lookup, static_cast<CtiDBChanged_t>(dbnum) ) )
+    {
+        return *result;
     }
 
-    return rStr;
+    return " DATABASE";
 }
 
 INT resolveSlaveAddress(const INT DeviceType, const string& _str)
@@ -1388,10 +1067,6 @@ INT resolveSlaveAddress(const INT DeviceType, const string& _str)
             break;
         }
     case TYPE_ALPHA_A1:
-        {
-            slaveAddress = 0;
-            break;
-        }
     case TYPE_DAVIS:
         {
             slaveAddress = 0;
@@ -1433,29 +1108,26 @@ INT resolveSlaveAddress(const INT DeviceType, const string& _str)
     return slaveAddress;
 }
 
-
-static const std::map<std::string, CtiControlType_t> ControlTypes =
-    boost::assign::map_list_of
-        ("normal",    ControlType_Normal)
-        ("latch",     ControlType_Latch)
-        ("pseudo",    ControlType_Pseudo)
-        ("sbo pulse", ControlType_SBOPulse)
-        ("sbo latch", ControlType_SBOLatch);
-
 CtiControlType_t  resolveControlType(const string& _str)
 {
-    string str = _str;
-    CtiToLower(str);
-    in_place_trim(str);
+    string str = trim_copy(to_lower_copy(_str));
 
-    std::map<std::string, CtiControlType_t>::const_iterator itr = ControlTypes.find(str);
-
-    if( itr == ControlTypes.end() )
+    static const std::map<std::string, CtiControlType_t> ControlTypes
     {
-        CTILOG_ERROR(dout, "Unknown control type \"" << str << "\"");
-        return ControlType_Invalid;
+        { "normal",    ControlType_Normal },
+        { "latch",     ControlType_Latch },
+        { "pseudo",    ControlType_Pseudo },
+        { "sbo pulse", ControlType_SBOPulse },
+        { "sbo latch", ControlType_SBOLatch }
+    };
+
+    if( const auto controlType = Cti::mapFind(ControlTypes, str) )
+    {
+        return *controlType;
     }
 
-    return itr->second;
+    CTILOG_ERROR(dout, "Unknown control type \"" << str << "\"");
+
+    return ControlType_Invalid;
 }
 
