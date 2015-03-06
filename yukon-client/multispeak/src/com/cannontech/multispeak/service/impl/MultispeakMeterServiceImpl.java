@@ -110,6 +110,7 @@ import com.cannontech.msp.beans.v3.CDStateChangedNotification;
 import com.cannontech.msp.beans.v3.ConnectDisconnectEvent;
 import com.cannontech.msp.beans.v3.ErrorObject;
 import com.cannontech.msp.beans.v3.ExtensionsItem;
+import com.cannontech.msp.beans.v3.ExtensionsList;
 import com.cannontech.msp.beans.v3.FormattedBlock;
 import com.cannontech.msp.beans.v3.FormattedBlockNotification;
 import com.cannontech.msp.beans.v3.FormattedBlockNotificationResponse;
@@ -2043,10 +2044,11 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      * Helper method to load extension value from extensionItems for
      * extensionName
      */
-    private String getExtensionValue(List<ExtensionsItem> extensionItems, String extensionName, String defaultValue) {
+    private String getExtensionValue(ExtensionsList extensionsList, String extensionName, String defaultValue) {
         log.debug("Attempting to load extension value for key:" + extensionName);
-        if (extensionItems != null) {
-            for (ExtensionsItem eItem : extensionItems) {
+        
+        if (extensionsList != null && extensionsList.getExtensionsItem() != null) {
+            for (ExtensionsItem eItem : extensionsList.getExtensionsItem()) {
                 String extName = eItem.getExtName();
                 if (extName.equalsIgnoreCase(extensionName)) {
                     return eItem.getExtValue();
@@ -2064,12 +2066,11 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      */
     private String getMeterTemplate(Meter mspMeter, String defaultTemplateName) {
 
-        if (mspMeter.getAMRDeviceType() != null) {
+        if (StringUtils.isNotBlank(mspMeter.getAMRDeviceType())) {
             return mspMeter.getAMRDeviceType();
         }
 
-        List<ExtensionsItem> extensionItems = mspMeter.getExtensionsList().getExtensionsItem();
-        return getExtensionValue(extensionItems, EXTENSION_DEVICE_TEMPLATE_STRING, defaultTemplateName);
+        return getExtensionValue(mspMeter.getExtensionsList(), EXTENSION_DEVICE_TEMPLATE_STRING, defaultTemplateName);
     }
 
     /**
@@ -2086,9 +2087,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             if (extensionName.equalsIgnoreCase("meterno")) { // specific field
                 return mspMeter.getMeterNo();
             } else { // use extensions
-
-                List<ExtensionsItem> extensionItems = mspMeter.getExtensionsList().getExtensionsItem();
-                return getExtensionValue(extensionItems, extensionName, null);
+                return getExtensionValue(mspMeter.getExtensionsList(), extensionName, null);
             }
         }
         return null;
@@ -2123,9 +2122,8 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             String mspMethod, MultispeakVendor mspVendor) {
         boolean updateAltGroup = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.MSP_ENABLE_ALTGROUP_EXTENSION);
         if (updateAltGroup) {
-            List<ExtensionsItem> extensionItems = mspServiceLocation.getExtensionsList().getExtensionsItem();
             String extensionName = configurationSource.getString(MasterConfigStringKeysEnum.MSP_ALTGROUP_EXTENSION, "altGroup");
-            String altGroup = getExtensionValue(extensionItems, extensionName, null);
+            String altGroup = getExtensionValue(mspServiceLocation.getExtensionsList(), extensionName, null);
             if (!StringUtils.isBlank(altGroup)) {
 
                 // Remove from all alt group membership groups
@@ -2344,7 +2342,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
             if (mspMeter != null) {
                 log.debug("Attempting to load extension value for substation name from multispeak _meter_.");
-                extensionValue = getExtensionValue(mspMeter.getExtensionsList().getExtensionsItem(), extensionName, null);
+                extensionValue = getExtensionValue(mspMeter.getExtensionsList(), extensionName, null);
                 if (StringUtils.isNotBlank(extensionValue)) {
                     return extensionValue;
                 }
@@ -2357,7 +2355,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             }
 
             if (mspServiceLocation != null) {
-                extensionValue = getExtensionValue(mspServiceLocation.getExtensionsList().getExtensionsItem(), extensionName, null);
+                extensionValue = getExtensionValue(mspServiceLocation.getExtensionsList(), extensionName, null);
                 if (StringUtils.isNotBlank(extensionValue)) {
                     return extensionValue;
                 }
