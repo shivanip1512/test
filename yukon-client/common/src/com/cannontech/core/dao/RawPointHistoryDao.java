@@ -42,16 +42,22 @@ public interface RawPointHistoryDao {
     public enum OrderBy {
         TIMESTAMP, VALUE
     }
-
-    
+   
+    /**
+     * Method to get a list of point values for a given point and time period.
+     * StartDate is always exclusive, stopDate is inclusive.
+     * Ordering is always timestamp asc, changeid asc
+     * @param pointId - Id of point to get values for
+     * @param startDate - Start time of period (this is always the first argument in SQL, either > or >=)
+     * @param stopDate - End time of period (this is always the second argument in SQL, either < or <=)
+     * @return List of values for the point
+     */
     public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate);
 
     /**
      * Method to get a list of point values for a given point and time period.
      * @param pointId - Id of point to get values for
-     * @param startDate - Start time of period (this is always the first argument in SQL, either > or >=)
-     * @param stopDate - End time of period (this is always the second argument in SQL, either < or <=)
-     * @param clusivity - determines whether each end of range is inclusive or exclusive
+     * @param instantRange - time period, also defines clusivity
      * @param order - controls ordering by timestamp and changeid
      * @return List of values for the point
      */
@@ -73,9 +79,7 @@ public interface RawPointHistoryDao {
      * To return a list with maxRows closest to startDate, use reverseOrder of false.
      * To return a list with maxRows closest to stopDate, use reverseOrder of true.
      * @param pointId - Id of point to get values for
-     * @param startDate - Start time of period (this is always the first argument in SQL, either > or >=)
-     * @param stopDate - End time of period (this is always the second argument in SQL, either < or <=)
-     * @param clusivity - determines whether each end of range is inclusive or exclusive
+     * @param instantRange - time period, also defines clusivity
      * @param order - controls ordering by timestamp and changeid
      * @param maxRows - Maximum number of rows to return
      * @return List of values for the point
@@ -88,10 +92,8 @@ public interface RawPointHistoryDao {
      *
      * @param paos The Iterable of PAOs
      * @param attribute The Attribute to return, this can either be a regular or a mapped attribute
-     * @param startDate The lower limit for the timestamp of the values to return, may be null
-     * @param stopDate The upper limit for the timestamp of the values to return, may be null
      * @param excludeDisabledPaos True if disabled PAOs should be omitted from the result
-     * @param clusivity - determines whether each end of range is inclusive or exclusive
+     * @param instantRange - time period, also defines clusivity
      * @param order - controls ordering by timestamp (only affects the iteration order of the values)
      * @param excludeQualities - if not null and not empty, rows with point qualities in this set will be discarded
      * @return
@@ -150,11 +152,9 @@ public interface RawPointHistoryDao {
      *
      * @param paos The Iterable of PAOs
      * @param attribute The Attribute to return, this can either be a regular or a mapped attribute
-     * @param startDate The lower limit for the timestamp of the values to return, may be null
-     * @param stopDate The upper limit for the timestamp of the values to return, may be null
      * @param maxRows The maximum number of rows to return for each PAO
      * @param excludeDisabledPaos True if disabled PAOs should be omitted from the result
-     * @param clusivity - determines whether each end of range is inclusive or exclusive
+     * @param instantRange - time period, also defines clusivity
      * @param order - controls ordering by timestamp (only affects the iteration order of the values)
      * @param excludeQualities - if not null and not empty, rows with point qualities in this set will be discarded
      * @return
