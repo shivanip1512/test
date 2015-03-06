@@ -23,6 +23,8 @@ public class RegulatorValidator extends SimpleValidator<Regulator> {
     @Autowired private PaoDao paoDao;
     @Autowired private ZoneDao zoneDao;
 
+    private static final String basekey = "yukon.web.modules.capcontrol.regulator.error.";
+
     public RegulatorValidator() {
         super(Regulator.class);
     }
@@ -55,7 +57,7 @@ public class RegulatorValidator extends SimpleValidator<Regulator> {
 
         LightDeviceConfiguration config = new LightDeviceConfiguration(regulator.getConfigId(), null, null);
         if (!deviceConfigurationDao.isTypeSupportedByConfiguration(config, regulator.getType())) {
-            errors.rejectValue("configId", "yukon.web.modules.capcontrol.regulator.error.invalidConfig");
+            errors.rejectValue("configId", basekey + "invalidConfig");
         }
 
         if (idSpecified) {
@@ -65,13 +67,13 @@ public class RegulatorValidator extends SimpleValidator<Regulator> {
 
                 Integer pointId = regulator.getMappings().get(RegulatorPointMapping.VOLTAGE_Y);
                 if (pointId == null || pointId < 0) {
-                    errors.rejectValue("mappings[" + RegulatorPointMapping.VOLTAGE_Y.name() + "]", "yukon.web.modules.capcontrol.regulator.error.noVoltageY");
+                    errors.rejectValue("mappings[" + RegulatorPointMapping.VOLTAGE_Y.name() + "]", basekey + "noVoltageY");
                 }
 
                 PaoType existingPaoType = dbCache.getAllPaosMap().get(regulator.getId()).getPaoType();
 
                 if (existingPaoType != regulator.getType()) {
-                    errors.rejectValue("type", "yukon.web.modules.capcontrol.regulators.error.invalidType");
+                    errors.rejectValue("type", basekey + "invalidType");
                 }
 
             } catch (OrphanedRegulatorException e) {}

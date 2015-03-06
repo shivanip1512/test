@@ -2,7 +2,13 @@ package com.cannontech.common.device.config.model;
 
 import java.io.Serializable;
 
-public class LightDeviceConfiguration implements Serializable {
+import org.springframework.context.MessageSourceResolvable;
+
+import com.cannontech.common.i18n.Displayable;
+import com.cannontech.common.util.StringUtils;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
+
+public class LightDeviceConfiguration implements Displayable, Serializable {
     private final static long serialVersionUID = 1L;
     
     private final Integer configurationId;
@@ -62,6 +68,11 @@ public class LightDeviceConfiguration implements Serializable {
         } else if (!name.equals(other.name))
             return false;
         return true;
+    }
+
+    @Override
+    public MessageSourceResolvable getMessage() {
+        return new YukonMessageSourceResolvable(null, StringUtils.escapeXmlAndJavascript(name));
     }
 
 }

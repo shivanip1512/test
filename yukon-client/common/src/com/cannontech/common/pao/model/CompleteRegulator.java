@@ -7,7 +7,7 @@ import com.google.common.base.Objects;
 
 @YukonPao(idColumnName = "RegulatorId", paoTypes = { PaoType.LOAD_TAP_CHANGER, PaoType.GANG_OPERATED,
     PaoType.PHASE_OPERATED })
-public class CompleteRegulator extends CompleteYukonPao {
+public class CompleteRegulator extends CompleteDevice {
     private int keepAliveTimer;
     private int keepAliveConfig;
     private double voltChangePerTap = 0.75;
