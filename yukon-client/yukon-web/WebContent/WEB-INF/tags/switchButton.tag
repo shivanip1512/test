@@ -20,7 +20,7 @@
 <%@ attribute name="offNameKey" description="i18n key used for the off button." %> 
 
 <%@ attribute name="classes" description="CSS class names applied to the outer label element." %>
-<%@ attribute name="color" type="java.lang.Boolean" description="If 'true' buttons will have red and green text color.
+<%@ attribute name="color" type="java.lang.Boolean" description="If 'true', buttons will have red and green text color.
                                                                  Default: 'true'." %>
 
 <%@ attribute name="onClasses" description="CSS class names applied to the on button." %>
