@@ -7,7 +7,9 @@ import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Ordering;
 
 public class CollationUtils {
+    
     public static Ordering<String> getCaseInsensitiveOrdering(YukonUserContext userContext) {
+        
         final Collator collator = Collator.getInstance(userContext.getLocale());
         collator.setStrength(Collator.PRIMARY);
         // Collator does not implement Comparator<String>, so this is a workaround
@@ -18,5 +20,17 @@ public class CollationUtils {
             }
         });
         return ordering;
+    }
+    
+    public static Comparator<DisplayableEnum> enumComparator(MessageSourceAccessor accessor) { 
+    
+        return new Comparator<DisplayableEnum>() {
+            @Override
+            public int compare(DisplayableEnum o1, DisplayableEnum o2) {
+                String name1 = accessor.getMessage(o1);
+                String name2 = accessor.getMessage(o2);
+                return name1.compareToIgnoreCase(name2);
+            }
+        };
     }
 }

@@ -22,9 +22,9 @@ public class StatusTextUpdaterHandler implements DeviceReconfigUpdaterHandler {
         int itemsProcessed = inventoryConfigTask.getNumberOfItemsProcessed();
         
         if( itemsProcessed == inventoryConfigTask.getNumberOfItems()) {
-            return messageSourceAccessor.getMessage("yukon.web.modules.operator.deviceReconfigStatus.complete");
+            return messageSourceAccessor.getMessage("yukon.web.modules.operator.inventory.config.schedule.status.complete");
         } else {
-            return messageSourceAccessor.getMessage("yukon.web.modules.operator.deviceReconfigStatus.inProgress");
+            return messageSourceAccessor.getMessage("yukon.web.modules.operator.inventory.config.schedule.status.inProgress");
         }
         
     }

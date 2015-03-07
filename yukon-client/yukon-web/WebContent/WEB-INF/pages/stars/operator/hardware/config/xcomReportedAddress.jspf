@@ -24,12 +24,12 @@
 </div>
 <div class="reportedConfig relay">
     <table class="compact-results-table">
-		<tr>
-		  <th><i:inline key=".relay"/></th>
-		  <th><i:inline key=".program"/></th>
-		  <th><i:inline key=".splinter"/></th>
-		</tr>
-		<tbody>
+        <tr>
+          <th><i:inline key=".relay"/></th>
+          <th><i:inline key=".program"/></th>
+          <th><i:inline key=".splinter"/></th>
+        </tr>
+        <tbody>
             <c:forEach items="${reportedConfig.relaysSorted}" var="expressComRelay">
             <tr>
                 <td>${expressComRelay.relayNumber}</td>
@@ -42,7 +42,7 @@
                         identifier="${deviceId}/RELAY_SPLINTER/${expressComRelay.relayNumber}"/>
                 </td>
             </tr>
-	        </c:forEach>
+            </c:forEach>
         </tbody>
     </table>
 </div>

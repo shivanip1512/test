@@ -5,25 +5,25 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:url value="/stars/operator/inventory/deviceReconfig/save" var="deviceReconfigOptionsURl"/>
-<cti:standardPage module="operator" page="deviceReconfig">
-
+<cti:standardPage module="operator" page="inventory.config.schedule">
+    
     <div class="column-12-12">
         <div class="column one">
             <tags:sectionContainer2 nameKey="setupContainer">
-                <form:form id="saveForm" commandName="deviceReconfigOptions" action="${deviceReconfigOptionsURl}" method="post">
+                <cti:url var="url" value="/stars/operator/inventory/deviceReconfig/save"/>
+                <form:form id="saveForm" commandName="deviceReconfigOptions" action="${url}" method="post">
                     <cti:csrfToken/>
                     <div class="stacked">
                         <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
                         <tags:selectedInventory inventoryCollection="${inventoryCollection}" id="inventoryCollection"/>
                     </div>
                     
-                    <tags:sectionContainer2 nameKey="configurationOptions">
-                        <tags:nameValueContainer2>
-                            <tags:inputNameValue nameKey=".name" path="name" size="35" maxlength="250"/>
-                            <tags:checkboxNameValue nameKey=".sendInServiceLabel" checkBoxDescriptionNameKey=".sendInService" path="sendInService"/>
-                        </tags:nameValueContainer2>
-                    </tags:sectionContainer2>
+                    <tags:nameValueContainer2 tableClass="with-form-controls">
+                        <tags:inputNameValue nameKey=".taskName" path="name" size="35" maxlength="250"/>
+                        <tags:nameValue2 excludeColon="true">
+                            <tags:checkbox path="sendInService" descriptionNameKey=".sendInService"/>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
                     
                     <div class="page-action-area">
                         <cti:button nameKey="save" type="submit" classes="primary action"/>

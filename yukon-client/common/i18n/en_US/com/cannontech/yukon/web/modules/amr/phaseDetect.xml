@@ -37,7 +37,7 @@
     <entry key="yukon.web.modules.amr.phaseDetect.home.routes.routeName">Routes</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.home.routes.pageDescription">Select Routes</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.home.routes.devicesSelected">Devices Selected</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.home.routes.deviceCount">Device Count</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.home.routes.deviceCount">Devices</entry>
 
     <!-- phaseDetect/broadcastRouteSelection.jsp -->
     <entry key="yukon.web.modules.amr.phaseDetect.routeSelection.pageName">Phase Detection</entry>

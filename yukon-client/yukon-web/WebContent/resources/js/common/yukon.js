@@ -627,16 +627,16 @@ yukon.ui = (function () {
                             this.disabled = true;
                         });
                     }
-              
+                    
                     // if this is a busy button, add the spinner icon and use the busy text
                     if (button.is('[data-busy]')) {
                         mod.busy(button);
                     }
-                
+                    
                     // if this is a submit button, trigger the submit event on the form
                     if (button.is(':submit')) {
                         form = $(this.form);
-                    
+                        
                         // insert the name and or value of the button into the form action
                         if (typeof button.attr('name') != 'undefined' && button.attr('name').length != 0) {
                             form.prepend('<input name="'+ button.attr('name') + '" value="' + button.attr('value') 
@@ -647,18 +647,18 @@ yukon.ui = (function () {
                 }
                 return false;
             });
-    
+            
             /** Prevent forms from submitting via enter key */
-            $(document).on('keydown', 'form.js-preventSubmitViaEnterKey', function (e) {
+            $(document).on('keydown', 'form.js-no-submit-on-enter', function (e) {
                 // allow override submission elements
-                if ($(e.target).hasClass('js-allowSubmitViaEnterKey')) {
+                if ($(e.target).hasClass('js-submit-on-enter')) {
                     return true;
                 }
                 if (e.keyCode == yg.keys.enter) {
                     return false;
                 }
             });
-    
+            
             /** Close dialogs when clicking .js-close elements or the yukon.dialog.ok event fires. */
             $(document).on('click', '.js-close', function (ev) {
                 var dialog = $(ev.target).closest('.ui-dialog');
@@ -667,7 +667,7 @@ yukon.ui = (function () {
             $(document).on('yukon.dialog.ok', function (ev) {
                 $(ev.target).closest('.ui-dialog-content').dialog('close');
             });
-
+            
             /** Format phone numbers initially and on input blur */
             $('input.js-format-phone').each(function (idx, elem) {
                 mod.formatPhone(elem);

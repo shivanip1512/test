@@ -153,13 +153,13 @@ public class InventoryFilterController {
             inventory = inventoryOperationsFilterService.getInventory(filterModel.getFilterMode(), 
                                 filterModel.getFilterRules(), energyCompanyTimeZone, userContext);
         } catch (InvalidSerialNumberRangeDataException e) {
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.filterSelection.error.invalidSerialNumbers"));
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.inventory.filter.error.invalidSerialNumbers"));
             setupFilterSelectionModelMap(modelMap, userContext);
             return "operator/inventory/setupFilterRules.jsp";
         }
         
         if(inventory.isEmpty()) {
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.filterSelection.error.noInventory"));
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.inventory.filter.error.noInventory"));
             setupFilterSelectionModelMap(modelMap, userContext);
             return "operator/inventory/setupFilterRules.jsp";
         }
@@ -307,7 +307,7 @@ public class InventoryFilterController {
         datePropertyEditorFactory.setupLocalDatePropertyEditor(binder, userContext, BlankMode.CURRENT);
         
         if (binder.getTarget() != null) {
-            MessageCodesResolver msgCodesResolver = new YukonMessageCodeResolver("yukon.web.modules.operator.filterSelection.");
+            MessageCodesResolver msgCodesResolver = new YukonMessageCodeResolver("yukon.web.modules.operator.inventory.filter.");
             binder.setMessageCodesResolver(msgCodesResolver);
         }
     }

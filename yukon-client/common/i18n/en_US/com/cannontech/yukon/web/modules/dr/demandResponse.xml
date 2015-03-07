@@ -2,6 +2,40 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
+<!-- hardware addressing -->
+<entry key="yukon.dr.config.xcomAddress.title">ExpressCom Address</entry>
+<entry key="yukon.dr.config.notReadable">Not Readable</entry>
+<entry key="yukon.dr.config.serviceProvider">Service Provider</entry>
+<entry key="yukon.dr.config.geo">GEO</entry>
+<entry key="yukon.dr.config.substation">Substation</entry>
+<entry key="yukon.dr.config.feeder">Feeder</entry>
+<entry key="yukon.dr.config.zip">ZIP</entry>
+<entry key="yukon.dr.config.userAddress">User Address</entry>
+<entry key="yukon.dr.config.deviceClass">Device Class</entry>
+<entry key="yukon.dr.config.utilityEnrollmentGroup">Utility Enrollment Group</entry>
+<entry key="yukon.dr.config.randomStartTimeMinutes">Random Start Time Minutes</entry>
+<entry key="yukon.dr.config.randomStopTimeMinutes">Random Stop Time Minutes</entry>
+<entry key="yukon.dr.config.versaComAddresses.title">VersaCom Address</entry>
+<entry key="yukon.dr.config.utility">Utility</entry>
+<entry key="yukon.dr.config.section">Section</entry>
+<entry key="yukon.dr.config.class">Class</entry>
+<entry key="yukon.dr.config.division">Division</entry>
+<entry key="yukon.dr.config.slotAddresses.title">Slot Addresses</entry>
+<entry key="yukon.dr.config.sa305Addresses.title">SA 305 Address</entry>
+<entry key="yukon.dr.config.utility">Utility</entry>
+<entry key="yukon.dr.config.group">Group</entry>
+<entry key="yukon.dr.config.rate">Rate</entry>
+<entry key="yukon.dr.config.rateMember">Member</entry>
+<entry key="yukon.dr.config.rateFamily">Family</entry>
+<entry key="yukon.dr.config.operationalAddress.title">Operational Address</entry>
+<entry key="yukon.dr.config.relays.title">Relays</entry>
+<entry key="yukon.dr.config.relay">Relay</entry>
+<entry key="yukon.dr.config.coldLoadPickup">Cold Load Pickup</entry>
+<entry key="yukon.dr.config.tamperDetect">Tamper Detect</entry>
+<entry key="yukon.dr.config.program">Program</entry>
+<entry key="yukon.dr.config.splinter">Splinter</entry>
+<entry key="yukon.dr.config.secs">(secs)</entry>
+
 <!-- Module Wide Keys -->
 <entry key="yukon.web.modules.dr.assetAvailability.title">Asset Availability</entry>
 <entry key="yukon.web.modules.dr.assetAvailability.pingComplete">Complete</entry>

@@ -34,7 +34,7 @@ public class HardwareSummary {
     }
 
     public int getNumRelays() {
-        return getInventoryIdentifier().getHardwareType().getNumRelays();
+        return getInventoryIdentifier().getHardwareType().getHardwareConfigType().getNumRelays();
     }
 
     public void setInventoryIdentifier(InventoryIdentifier inventoryIdentifier) {

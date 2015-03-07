@@ -656,9 +656,9 @@ public class OperatorHardwareController {
         String defaultRoute;
         try {
             defaultRoute = paoDao.getYukonPAOName(defaultRouteService.getDefaultRouteId(energyCompany));
-            defaultRoute = accessor.getMessage("yukon.web.modules.operator.hardware.defaultRoute") + defaultRoute;
+            defaultRoute = accessor.getMessage("yukon.common.route.default", defaultRoute);
         } catch(NotFoundException e) {
-            defaultRoute = accessor.getMessage("yukon.web.modules.operator.hardware.defaultRouteNone");
+            defaultRoute = accessor.getMessage("yukon.common.route.default.none");
         }
         model.addAttribute("defaultRoute", defaultRoute);
         

@@ -338,12 +338,19 @@
     <!-- HardwareConfig Types -->
 	<entry key="yukon.web.dr.consumer.hardwareConfigType.EXPRESSCOM">ExpressCom</entry>
 	<entry key="yukon.web.dr.consumer.hardwareConfigType.EXPRESSCOM.invalidSerialNumber">Serial number must be a positive integer value.</entry>
+    <entry key="yukon.web.dr.consumer.hardwareConfigType.NOT_CONFIGURABLE">Not Configurable</entry>
     <entry key="yukon.web.dr.consumer.hardwareConfigType.NOT_CONFIGURABLE.invalidSerialNumber">Serial number is invalid.</entry>
+    <entry key="yukon.web.dr.consumer.hardwareConfigType.VERSACOM">VersaCom</entry>
     <entry key="yukon.web.dr.consumer.hardwareConfigType.VERSACOM.invalidSerialNumber">Serial number is invalid.</entry>
+    <entry key="yukon.web.dr.consumer.hardwareConfigType.SA205">SA 205</entry>
     <entry key="yukon.web.dr.consumer.hardwareConfigType.SA205.invalidSerialNumber">Serial number is invalid.</entry>
+    <entry key="yukon.web.dr.consumer.hardwareConfigType.SA305">SA 305</entry>
     <entry key="yukon.web.dr.consumer.hardwareConfigType.SA305.invalidSerialNumber">Serial number is invalid.</entry>
+    <entry key="yukon.web.dr.consumer.hardwareConfigType.SA_SIMPLE">SA Simple</entry>
     <entry key="yukon.web.dr.consumer.hardwareConfigType.SA_SIMPLE.invalidSerialNumber">Serial number is invalid.</entry>
+    <entry key="yukon.web.dr.consumer.hardwareConfigType.SEP">SEP</entry>
     <entry key="yukon.web.dr.consumer.hardwareConfigType.SEP.invalidSerialNumber">Serial number is invalid.</entry>
+    <entry key="yukon.web.dr.consumer.hardwareConfigType.ECOBEE">EcoBee</entry>
     <entry key="yukon.web.dr.consumer.hardwareConfigType.ECOBEE.invalidSerialNumber">Serial number is invalid.</entry>
     <!-- savedSchedules.jsp -->
     <entry key="yukon.dr.consumer.savedSchedules.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>

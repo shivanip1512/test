@@ -160,10 +160,9 @@
 
 <entry key="yukon.web.picker.customerAccountPicker.dialogTitle">Select Account</entry>
 
+<entry key="yukon.web.picker.lmHardwareBasePicker.dialogTitle">Select Assets</entry>
 <entry key="yukon.web.picker.lmHardwareBase.manufacturerSerialNumber">Serial Number</entry>
-<entry key="yukon.web.picker.lmHardwareBase.inventoryId">Inventory ID</entry>
-
-<entry key="yukon.web.picker.lmHardwareBasePicker.dialogTitle">Select Inventory</entry>
+<entry key="yukon.web.picker.lmHardwareBase.inventoryId">Id</entry>
 
 <!-- Device Configuration Category Picker -->
 <entry key="yukon.web.picker.categoryPicker.dialogTitle">Select Category</entry>

@@ -1,23 +1,21 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+<cti:msgScope paths="yukon.web.widgets.commandScheduleWidget">
 <c:choose>
     <c:when test="${empty schedules}">
-        <div class="empty-list">
-            <i:inline key="yukon.web.widgets.commandScheduleWidget.noSchedules"/>
-        </div>
+        <div class="empty-list"><i:inline key=".noSchedules"/></div>
     </c:when>
     <c:otherwise>
-        <table class="compact-results-table">
+        <table class="compact-results-table dashed">
             <thead>
                 <tr>
-                    <th><i:inline key="yukon.web.widgets.commandScheduleWidget.start"/></th>
-                    <th><i:inline key="yukon.web.widgets.commandScheduleWidget.runPeriod"/></th>
-                    <th><i:inline key="yukon.web.widgets.commandScheduleWidget.delayPeriod"/></th>
-                    <th class="enabledColumn"><i:inline key="yukon.web.widgets.commandScheduleWidget.enabled"/></th>
+                    <th><i:inline key=".start"/></th>
+                    <th><i:inline key=".runPeriod"/></th>
+                    <th><i:inline key=".delayPeriod"/></th>
+                    <th><i:inline key=".enabled"/></th>
                 </tr>
             </thead>
             <tfoot></tfoot>
@@ -25,10 +23,10 @@
                 <c:forEach var="schedule" items="${schedules}">
                     <tr>
                         <td>
-                            <cti:url var="editUrl" value="/stars/operator/inventory/commandSchedule">
+                            <cti:url var="url" value="/stars/operator/inventory/commandSchedule">
                                 <cti:param name="scheduleId" value="${schedule.commandScheduleId}" />
                             </cti:url>
-                            <a href="${editUrl}">
+                            <a href="${url}">
                                 <span><cti:formatCron value="${schedule.startTimeCronString}"/></span>
                             </a>
                         </td>
@@ -41,13 +39,15 @@
                             <span><cti:formatPeriod type="S" value="${schedule.delayPeriod}"/></span>
                         </td>
                         
-                        <td class="enabledColumn">
+                        <td>
                             <c:choose>
                                 <c:when test="${schedule.enabled}">
-                                    <tags:widgetActionRefreshImage method="disable" nameKey="disable" scheduleId="${schedule.commandScheduleId}" icon="icon-enabled" btnClass="fr"/>
+                                    <tags:widgetActionRefreshImage method="disable" nameKey="disable" 
+                                        scheduleId="${schedule.commandScheduleId}" icon="icon-enabled" btnClass="fr"/>
                                 </c:when>
                                 <c:when test="${not schedule.enabled}">
-                                    <tags:widgetActionRefreshImage method="enable" nameKey="enable" scheduleId="${schedule.commandScheduleId}" icon="icon-disabled" btnClass="fr"/> 
+                                    <tags:widgetActionRefreshImage method="enable" nameKey="enable" 
+                                        scheduleId="${schedule.commandScheduleId}" icon="icon-disabled" btnClass="fr"/> 
                                 </c:when>
                             </c:choose>
                         </td>
@@ -66,3 +66,4 @@
         <cti:button nameKey="create" icon="icon-plus-green" type="submit"/>
     </form>
 </div>
+</cti:msgScope>

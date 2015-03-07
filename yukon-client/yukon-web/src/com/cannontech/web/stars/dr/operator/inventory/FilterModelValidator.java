@@ -28,7 +28,7 @@ public class FilterModelValidator extends SimpleValidator<FilterModel> {
                     if (rule.getDeviceStateDateFrom() != null && rule.getDeviceStateDateTo() != null && 
                             rule.getDeviceStateDateFrom().isAfter(rule.getDeviceStateDateTo())) {
                         YukonValidationUtils.rejectValues(errors,
-                                                          "yukon.web.modules.operator.filterSelection.error.invalidDeviceStatusDateRange",
+                                                          "yukon.web.modules.operator.inventory.filter.error.invalidDeviceStatusDateRange",
                                                           "deviceStateDateFrom",
                                                           "deviceStateDateTo");
                     }
@@ -42,11 +42,11 @@ public class FilterModelValidator extends SimpleValidator<FilterModel> {
                 case SERIAL_NUMBER_RANGE:
                     
                     if (rule.getSerialNumberFrom() < 0 || rule.getSerialNumberTo() < 0) {
-                        errors.reject("yukon.web.modules.operator.filterSelection.error.serialNumberRangeLtZero");
+                        errors.reject("yukon.web.modules.operator.inventory.filter.error.serialNumberRangeLtZero");
                     }
                     
                     if (rule.getSerialNumberFrom() > rule.getSerialNumberTo()) {
-                        errors.reject("yukon.web.modules.operator.filterSelection.error.invalidSerialNumberRange");
+                        errors.reject("yukon.web.modules.operator.inventory.filter.error.invalidSerialNumberRange");
                     }
                     break;
                     

@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.operator.inventory;
+package com.cannontech.web.stars.dr.operator.inventory.configuration;
 
 import java.util.Iterator;
 
@@ -69,7 +69,7 @@ public class ResendLmConfigController {
             AbstractInventoryTask task = resultsCache.getResult(taskId);
             task.cancel();
             int processed = task.getCompletedItems(); 
-            flash.setWarning(new YukonMessageSourceResolvable("yukon.web.modules.operator.resendConfig.canceled", processed));
+            flash.setWarning(new YukonMessageSourceResolvable("yukon.web.modules.operator.inventory.config.send.canceled", processed));
         } else {
             inventoryCollectionFactory.addCollectionToModelMap(request, model);
             return "redirect:/stars/operator/inventory/inventoryActions";
@@ -91,13 +91,13 @@ public class ResendLmConfigController {
         Iterator<InventoryIdentifier> inventory;
         
         if (type == NewOperationType.SUCCESS) {
-            code = "yukon.web.modules.operator.resendConfig.successCollectionDescription";
+            code = "yukon.web.modules.operator.inventory.config.send.successCollectionDescription";
             inventory = task.getSuccessful().iterator();
         } else if (type == NewOperationType.FAILED) {
-            code = "yukon.web.modules.operator.resendConfig.failedCollectionDescription";
+            code = "yukon.web.modules.operator.inventory.config.send.failedCollectionDescription";
             inventory = task.getFailed().iterator();
         } else {
-            code = "yukon.web.modules.operator.resendConfig.unsupportedCollectionDescription";
+            code = "yukon.web.modules.operator.inventory.config.send.unsupportedCollectionDescription";
             inventory = task.getUnsupported().iterator();
         }
         

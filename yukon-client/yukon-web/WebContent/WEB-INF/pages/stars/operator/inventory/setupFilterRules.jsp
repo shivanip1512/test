@@ -7,12 +7,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="operator" page="filterSelection">
-
-    <cti:msg key="yukon.common.calendarcontrol.months" var="months" />
-    <cti:msg key="yukon.common.calendarcontrol.days" var="days" />
-    <cti:msg key="yukon.common.calendarcontrol.clear" var="clear" />
-    <cti:msg key="yukon.common.calendarcontrol.close" var="close" />
+<cti:standardPage module="operator" page="inventory.filter">
 
     <script type="text/javascript">
         function removeRule(row) {
@@ -21,10 +16,8 @@
         }
     </script>
     
-    <tags:simpleDialog id="addRuleDialog"/>
-
-    <cti:url var="applyFilterUrl" value="/stars/operator/inventory/applyFilter"/>
-    <form:form id="selectionForm" cssClass="js-preventSubmitViaEnterKey" commandName="filterModel" action="${applyFilterUrl}" method="post">
+    <cti:url var="url" value="/stars/operator/inventory/applyFilter"/>
+    <form:form id="selectionForm" cssClass="js-no-submit-on-enter" commandName="filterModel" action="${url}" method="post">
         <cti:csrfToken/>
         <input type="hidden" name="removeRule" id="removeRule">
         <div class="stacked">
@@ -32,19 +25,13 @@
             <tags:selectWithItems items="${filterModes}" itemLabel="displayName" path="filterMode" itemValue="value"/>
             <i:inline key=".filterModeSuffix"/>
         </div>
-        <tags:boxContainer2 nameKey="filterRules">
+        <tags:sectionContainer2 nameKey="filterRules">
             <c:choose>
                 <c:when test="${empty filterModel.filterRules}">
                     <span class="empty-list"><i:inline key=".noRules"/></span>
                 </c:when>
                 <c:otherwise>
                     <table class="compact-results-table with-form-controls">
-                        <thead>
-                            <tr>
-                                <th colspan="2"><i:inline key=".tableHeader.rules"/></th>
-                            </tr>
-                        </thead>
-                        
                         <tbody>
                             <c:forEach items="${filterModel.filterRules}" var="rule" varStatus="row">
                                 <tr>
@@ -62,11 +49,11 @@
                                                         <form:options items="${applianceTypes}" itemLabel="name" itemValue="applianceCategoryId"/>
                                                     </form:select>
                                                 </c:when>
-        
+                                                
                                                 <c:when test="${rule.ruleType eq 'ASSIGNED'}">
                                                     <i:inline key=".assigned"/>
                                                 </c:when>
-        
+                                                
                                                 <c:when test="${rule.ruleType eq 'CUSTOMER_TYPE'}">
                                                     <form:select path="filterRules[${row.index}].modelCustomerType">
                                                         <cti:msg2 var="residentialLabel" key=".filterEntry.residential"/>
@@ -81,7 +68,7 @@
                                                                                path="filterRules[${row.index}].deviceStatusId" 
                                                                                defaultItemValue="0" defaultItemLabel="${none}" />
                                                 </c:when>
-        
+                                                
                                                 <c:when test="${rule.ruleType eq 'DEVICE_STATUS_DATE_RANGE'}">
                                                     <div class="clearfix">
                                                         <dt:date path="filterRules[${row.index}].deviceStateDateFrom" id="deviceStateDateFrom_${row.index}" hideErrors="true"/>
@@ -91,13 +78,12 @@
                                                     <div><form:errors path="filterRules[${row.index}].deviceStateDateFrom" cssClass="error"/></div>
                                                     <div><form:errors path="filterRules[${row.index}].deviceStateDateTo" cssClass="error"/></div>
                                                 </c:when>
-        
-                                                                                        
+                                                
                                                 <c:when test="${rule.ruleType eq 'DEVICE_TYPE'}">
                                                     <tags:yukonListEntrySelect energyCompanyId="${energyCompanyId}" listName="DEVICE_TYPE" 
                                                                                path="filterRules[${row.index}].deviceType" />
                                                 </c:when>
-        
+                                                
                                                 <c:when test="${rule.ruleType eq 'FIELD_INSTALL_DATE'}">
                                                     <dt:date path="filterRules[${row.index}].fieldInstallDate" />
                                                 </c:when>
@@ -176,11 +162,11 @@
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </c:when>
-        
+                                                
                                                 <c:when test="${rule.ruleType eq 'UNENROLLED'}">
                                                     <i:inline key=".unenrolled"/>
                                                 </c:when>
-        
+                                                
                                                 <c:when test="${rule.ruleType eq 'WAREHOUSE'}">
                                                     <cti:checkRolesAndProperties value="ADMIN_MULTI_WAREHOUSE">
                                                             <form:select path="filterRules[${row.index}].warehouseId">
@@ -194,7 +180,7 @@
                                             </c:choose>
                                             </div>
                                             <div class="column two nogutter">
-                                                <cti:button nameKey="delete" href="javascript:removeRule(${row.index})" icon="icon-cross" classes="fr"/>
+                                                <cti:button renderMode="buttonImage" href="javascript:removeRule(${row.index})" icon="icon-cross" classes="fr"/>
                                             </div>
                                         </div>
                                     </td>
@@ -205,14 +191,14 @@
                 </c:otherwise>
             </c:choose>
             <div class="action-area">
-                <cti:button nameKey="add" type="submit" name="addButton" classes="js-allowSubmitViaEnterKey" icon="icon-add"/>
-                <select name="ruleType" class="js-allowSubmitViaEnterKey fr">
-                    <c:forEach items="${ruleTypes}" var="ruleType">
-                        <option value="${ruleType}"><cti:formatObject value="${ruleType}"/></option>
+                <cti:button nameKey="add" type="submit" name="addButton" classes="js-submit-on-enter right" icon="icon-add"/>
+                <select name="ruleType" class="js-submit-on-enter fr left">
+                    <c:forEach var="type" items="${ruleTypes}">
+                        <option value="${type}"><cti:msg2 key="${type}"/></option>
                     </c:forEach>
                 </select>
             </div>
-        </tags:boxContainer2>
+        </tags:sectionContainer2>
         
         <div class="page-action-area">
             <c:choose>

@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:msgScope paths="yukon.web.modules.operator.resendConfig">
+<cti:msgScope paths="yukon.web.modules.operator.inventory.config.send">
     <tags:boxContainer2 nameKey="failedItems" id="failedItems">
         <table class="compact-results-table">
             <tr>

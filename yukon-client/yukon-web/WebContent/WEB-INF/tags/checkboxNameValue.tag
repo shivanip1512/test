@@ -3,7 +3,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<%@ attribute name="nameKey" required="true" %>
+<%@ attribute name="nameKey" %>
 <%@ attribute name="path" required="true" %>
 <%@ attribute name="onclick" %>
 <%@ attribute name="id" description="Note: Setting an id will cause the name to act as a label for the checkbox." %>

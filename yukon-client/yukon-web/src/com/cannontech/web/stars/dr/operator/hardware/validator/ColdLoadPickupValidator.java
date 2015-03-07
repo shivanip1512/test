@@ -4,13 +4,13 @@ import org.springframework.validation.Errors;
 
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.web.stars.dr.operator.hardware.model.HardwareConfigurationDto;
+import com.cannontech.web.stars.dr.operator.hardware.model.HardwareConfig;
 
 public class ColdLoadPickupValidator extends
-        SimpleValidator<HardwareConfigurationDto> {
+        SimpleValidator<HardwareConfig> {
 
     @Override
-    protected void doValidation(HardwareConfigurationDto target, Errors errors) {
+    protected void doValidation(HardwareConfig target, Errors errors) {
         String[] coldLoadPickup = target.getColdLoadPickup();
         for (int index = 0; index < coldLoadPickup.length; index++) {
             YukonValidationUtils.checkExceedsMaxLength(errors,
@@ -20,6 +20,6 @@ public class ColdLoadPickupValidator extends
     }
 
     public ColdLoadPickupValidator() {
-        super(HardwareConfigurationDto.class);
+        super(HardwareConfig.class);
     }
 }

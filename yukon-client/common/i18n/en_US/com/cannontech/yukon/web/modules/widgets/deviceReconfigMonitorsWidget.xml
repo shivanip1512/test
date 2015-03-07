@@ -5,7 +5,7 @@
     <entry key="yukon.web.widgets.deviceReconfigMonitorsWidget.title">Inventory Config Tasks</entry>
     <entry key="yukon.web.widgets.deviceReconfigMonitorsWidget.taskName">Name</entry>
     <entry key="yukon.web.widgets.deviceReconfigMonitorsWidget.status">Status</entry>
-    <entry key="yukon.web.widgets.deviceReconfigMonitorsWidget.deviceCount">Inventory</entry>
+    <entry key="yukon.web.widgets.deviceReconfigMonitorsWidget.deviceCount">Devices</entry>
     <entry key="yukon.web.widgets.deviceReconfigMonitorsWidget.remove">Remove</entry>
     <entry key="yukon.web.widgets.deviceReconfigMonitorsWidget.delete.hoverText">Delete: {0}</entry>
     <entry key="yukon.web.widgets.deviceReconfigMonitorsWidget.delete.confirmText">Are you sure you want to delete {0}?</entry>

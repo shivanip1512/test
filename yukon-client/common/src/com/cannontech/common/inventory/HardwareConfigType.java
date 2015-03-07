@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.ImmutableSet;
 
 public enum HardwareConfigType implements DisplayableEnum {
+    
     NOT_CONFIGURABLE(0, PaoTag.DIRECT_PROGRAM_ENROLLMENT, true),
     EXPRESSCOM(1, PaoTag.DIRECT_PROGRAM_ENROLLMENT, true) {
         /**
@@ -32,12 +33,12 @@ public enum HardwareConfigType implements DisplayableEnum {
     SEP(6, PaoTag.SEP_PROGRAM_ENROLLMENT, false),
     ECOBEE(7, PaoTag.ECOBEE_PROGRAM_ENROLLMENT, false)
     ;
-
+    
     private int hardwareConfigTypeId;
     private PaoTag enrollmentTag;
     private boolean supportsVirtualEnrollment;
     private final static String keyPrefix = "yukon.web.dr.consumer.hardwareConfigType.";
-
+    
     private final static ImmutableSet<HardwareConfigType> saTypes = ImmutableSet.of(SA_SIMPLE, SA205, SA305);
     private final static ImmutableSet<HardwareConfigType> supportsServiceInOut = ImmutableSet.of(EXPRESSCOM, VERSACOM);
     
@@ -49,20 +50,19 @@ public enum HardwareConfigType implements DisplayableEnum {
         }
         lookupById = idBuilder.build();
     }
-
+    
     public static HardwareConfigType getForId(int hardwareConfigTypeId) throws IllegalArgumentException {
         HardwareConfigType deviceType = lookupById.get(hardwareConfigTypeId);
         Validate.notNull(deviceType, Integer.toString(hardwareConfigTypeId));
         return deviceType;
     }
-
+    
     private HardwareConfigType(int hardwareConfigTypeId, PaoTag enrollmentTag, boolean supportsVirtualEnrollment) {
         this.hardwareConfigTypeId = hardwareConfigTypeId;
         this.enrollmentTag = enrollmentTag;
         this.supportsVirtualEnrollment = supportsVirtualEnrollment;
-        
     }
-      
+    
     /**
      * Override this method to change the serial number validation for a specific enum
      * Default is an string value is valid. EnergyCompanySettingType.SERIAL_NUMBER_VALIDATION is expected
@@ -96,10 +96,22 @@ public enum HardwareConfigType implements DisplayableEnum {
     public String getFormatKey() {
         return keyPrefix + name();
     }
-
-    /*Return i18n key for validation error check.*/
     
     public String getValidationErrorKey() {
         return getFormatKey() + ".invalidSerialNumber";
     }
+    
+    public boolean isHasTamperDetect() {
+        return this.isSA();
+    }
+    
+    public boolean isHasProgramSplinter() {
+        return this == EXPRESSCOM;
+    }
+    
+    public int getNumRelays() {
+        return this == ECOBEE ? 1 :
+               this == EXPRESSCOM ? 8 : 4;
+    }
+    
 }

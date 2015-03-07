@@ -5,17 +5,13 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="operator" page="inventoryActions">
-
-    <div class="notes stacked clearfix">
-        <div>
-            <tags:selectedInventory inventoryCollection="${inventoryCollection}" id="inventoryCollection"/>
-        </div>
-        <div>
-            <span class="strong-label-small dib fl"><i:inline key=".instructionsLabel"/></span>
-            <span class="dib fl" style="margin-left: 5px;"><i:inline key=".instructions" /></span>
-        </div>
+    
+    <div class="stacked-md"><tags:selectedInventory inventoryCollection="${inventoryCollection}"/></div>
+    <div class="stacked-md">
+        <span class="label label-info"><i:inline key="yukon.common.note"/></span>&nbsp;
+        <i:inline key=".instructions"/>
     </div>
-
+    
     <tags:sectionContainer2 nameKey="actionsContainer">
         <div class="column-12-12 clear">
             <div class="column one stacked">

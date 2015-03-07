@@ -30,6 +30,6 @@ public enum FilterRuleType implements DisplayableEnum {
     
     @Override
     public String getFormatKey() {
-        return "yukon.web.modules.operator.filterSelection.filterRuleType." + name();
+        return "yukon.web.modules.operator.inventory.filter.filterRuleType." + name();
     }
 }

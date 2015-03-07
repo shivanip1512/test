@@ -1329,7 +1329,7 @@
                     </page>
                     <page name="zbProblemDevices" type="BASIC">
                     </page>
-                    <page name="filterSelection" type="DETAIL">
+                    <page name="inventory.filter" type="DETAIL">
                         <link>/stars/operator/inventory/setupFilterRules</link>
                     </page>
                     <page name="commandSchedule.CREATE" type="BASIC" hideFavorite="true">
@@ -1341,29 +1341,24 @@
                     <page name="inventoryActions" type="DETAIL">
                         <link>/stars/operator/inventory/inventoryActions?${local:convertMapToQueryHtml(inventoryCollection.collectionParameters)}</link>
                         <pages>
-                            <page name="deviceReconfig" type="BASIC">
+                            <page name="deleteInventory" type="BASIC"/>
+                            <page name="changeType" type="BASIC"/>
+                            <page name="changeStatus" type="BASIC"/>
+                            <page name="changeServiceCompany" type="BASIC"/>
+                            <page name="changeWarehouse" type="BASIC"/>
+                            <page name="inventory.config" type="BASIC">
+                                <link>/stars/operator/inventory/inventoryConfiguration?${local:convertMapToQueryHtml(inventoryCollection.collectionParameters)}</link>
+                                <pages>
+                                    <page name="inventory.config.new" type="BASIC"/>
+                                    <page name="inventory.config.schedule" type="BASIC"/>
+                                    <page name="inventory.config.send" type="BASIC"/>
+                                </pages>
                             </page>
-                            <page name="deleteInventory" type="BASIC">
-                            </page>
-                            <page name="changeType" type="BASIC">
-                            </page>
-                            <page name="changeStatus" type="BASIC">
-                            </page>
-                            <page name="changeServiceCompany" type="BASIC">
-                            </page>
-                            <page name="changeWarehouse" type="BASIC">
-                            </page>
-                            <page name="inventoryConfiguration" type="BASIC">
-                            </page>
-                            <page name="saveToFile" type="BASIC">
-                            </page>
-                            <page name="resendConfig" type="BASIC">
-                            </page>
-                            <page name="controlAudit" type="BASIC">
-                            </page>
+                            <page name="saveToFile" type="BASIC"/>
+                            <page name="controlAudit" type="BASIC"/>
                         </pages>
                     </page>
-                    <page name="deviceReconfigStatus" type="DETAIL_CHILD">
+                    <page name="inventory.config.schedule.status" type="DETAIL_CHILD">
                         <labelArgument>${taskName}</labelArgument>
                     </page>
                     <page name="optOutAdmin" type="BASIC">

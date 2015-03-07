@@ -29,7 +29,7 @@
     <entry key="yukon.web.modules.amr.porterResponseMonitor.title">Porter Response Monitoring</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.info.title">Info</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.monitoring">Monitoring</entry>
-    <entry key="yukon.web.modules.amr.porterResponseMonitor.deviceCount">Device Count</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.deviceCount">Devices</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.supportedDevices">Supported Devices</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.calculatePointCount.label">Calculate</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.attribute">Attribute</entry>

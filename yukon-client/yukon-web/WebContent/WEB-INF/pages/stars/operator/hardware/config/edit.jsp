@@ -54,10 +54,11 @@ updateSub = function (data) {
 
 <cti:url var="submitUrl" value="/stars/operator/hardware/config/commit"/>
 
-<div class="column-16-8 clearfix">
-    <div class="column one">
+<form:form id="editForm" name="editForm" action="${submitUrl}" commandName="configuration">
     
-        <form:form id="editForm" name="editForm" action="${submitUrl}" commandName="configuration">
+    <div class="column-16-8 clearfix stacked">
+        <div class="column one">
+        
             <cti:csrfToken/>
             <input id="actionInput" type="hidden" name="action" value=""/>
             <tags:hidden path="accountId"/>
@@ -117,92 +118,94 @@ updateSub = function (data) {
                     </table>
                 </c:if>
             </tags:sectionContainer2>
-        
-            <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                <cti:checkEnergyCompanySetting value="TRACK_HARDWARE_ADDRESSING" energyCompanyId="${energyCompanyId}">
-                    <br>
-                    <dr:hardwareAddressingInfo/>
-                </cti:checkEnergyCompanySetting>
-            </cti:checkRolesAndProperties>
-        
-            <div class="page-action-area stacked">
-                <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                    <c:if test="${fn:length(enrollments) > 0}">
-                        <c:if test="${configurable}">
-                            <cti:msg2 key=".config.description" var="configTitle"/>
-                            <cti:button type="submit" nameKey="config" onclick="$('#actionInput').val('config');" title="${configTitle}" classes="action primary"/>
-                            <cti:msg2 key=".saveToBatch.description" var="saveToBatchTitle"/>
-                            <cti:button type="submit" nameKey="saveToBatch" onclick="$('#actionInput').val('saveToBatch');" title="${saveToBatchTitle}"/>
-                        </c:if>
-                        <cti:msg2 key=".saveConfigOnly.description" var="saveConfigOnlyTitle"/>
-                        <cti:button type="submit" nameKey="saveConfigOnly" onclick="$('#actionInput').val('saveConfigOnly');" title="${saveConfigOnlyTitle}"/>
-                    </c:if>
-                </cti:checkRolesAndProperties>
-                <cti:url var="cancelUrl" value="/stars/operator/hardware/list">
-                    <cti:param name="accountId" value="${accountId}"/>
-                </cti:url>
+        </div>
+        <c:if test="${canEnableDisable}">
+            <div class="column two nogutter">
+                <c:if test="${configurable}">
+                    <tags:sectionContainer2 nameKey="serviceStatus">
+                        <div class="stacked">
+                            <c:choose>
+                                <c:when test="${showStaticServiceStatus}">
+                                    <i:inline key="${inService}"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <cti:pointValue pointId="${serviceStatusPointId}" format="VALUE" colorForStatus="true"/>
+                                    <cti:pointValue pointId="${serviceStatusPointId}" format="DATE"/>
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
+                        <div class="action-area">
+                            <cti:url var="enableUrl" value="/stars/operator/hardware/config/enable">
+                               <cti:param name="accountId" value="${accountId}"/>
+                               <cti:param name="inventoryId" value="${param.inventoryId}"/>
+                            </cti:url>
+                            <cti:button href="${enableUrl}" icon="icon-accept" nameKey="enable"/>
+                            <cti:url var="disableUrl" value="/stars/operator/hardware/config/disable">
+                               <cti:param name="accountId" value="${accountId}"/>
+                               <cti:param name="inventoryId" value="${param.inventoryId}"/>
+                            </cti:url>
+                            <cti:button href="${disableUrl}" icon="icon-delete" nameKey="disable"/>
+                        </div>
+                    </tags:sectionContainer2>
+                </c:if>
             </div>
-        </form:form>
-        
-        <c:if test="${showDeviceReportedConfig}">
-            <!-- Reported Addressing -->
-            <tags:sectionContainer2 nameKey="deviceReportedConfig">
-                <div class="stacked">
-                    <c:choose>
-                        <c:when test="${not empty reportedConfig}">
-                            <div class="hint">
-                                <span class="fr"><i:inline key=".configReportedAt"/><cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/TIMESTAMP"/></span>
-                            </div>
-                            <c:if test="${hardware.hardwareType.hardwareConfigType == 'EXPRESSCOM'}">
-                                <%@ include file="xcomReportedAddress.jspf" %>
-                            </c:if>
-                            <c:if test="${hardware.hardwareType.hardwareConfigType == 'SEP'}">
-                                <%@ include file="sepReportedAddress.jspf" %>
-                            </c:if>
-                        </c:when>
-                        <c:otherwise><i:inline key=".noDeviceReportedConfig"/></c:otherwise>
-                    </c:choose>
-                </div>
-                <div class="page-action-area">
-                    <div class="fl">
-                        <cti:button id="rf-read-now" nameKey="readNow" busy="true" icon="icon-read"/>
-                        <span id="rf-command-status" class="dn error"></span>
-                    </div>
-                </div>
-            </tags:sectionContainer2>
         </c:if>
     </div>
-    <c:if test="${canEnableDisable}">
-        <div class="column two nogutter">
-            <c:if test="${configurable}">
-                <tags:sectionContainer2 nameKey="serviceStatus">
-                    <div class="stacked">
-                        <c:choose>
-                            <c:when test="${showStaticServiceStatus}">
-                                <i:inline key="${inService}"/>
-                            </c:when>
-                            <c:otherwise>
-                                <cti:pointValue pointId="${serviceStatusPointId}" format="VALUE" colorForStatus="true"/>
-                                <cti:pointValue pointId="${serviceStatusPointId}" format="DATE"/>
-                            </c:otherwise>
-                        </c:choose>
-                    </div>
-                    <div class="action-area">
-                        <cti:url var="enableUrl" value="/stars/operator/hardware/config/enable">
-                           <cti:param name="accountId" value="${accountId}"/>
-                           <cti:param name="inventoryId" value="${param.inventoryId}"/>
-                        </cti:url>
-                        <cti:button href="${enableUrl}" icon="icon-accept" nameKey="enable"/>
-                        <cti:url var="disableUrl" value="/stars/operator/hardware/config/disable">
-                           <cti:param name="accountId" value="${accountId}"/>
-                           <cti:param name="inventoryId" value="${param.inventoryId}"/>
-                        </cti:url>
-                        <cti:button href="${disableUrl}" icon="icon-delete" nameKey="disable"/>
-                    </div>
-                </tags:sectionContainer2>
+    
+    <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+        <cti:checkEnergyCompanySetting value="TRACK_HARDWARE_ADDRESSING" energyCompanyId="${energyCompanyId}">
+            <dr:hardwareAddressingInfo type="${hardware.hardwareType.hardwareConfigType}"/>
+        </cti:checkEnergyCompanySetting>
+    </cti:checkRolesAndProperties>
+    
+    <div class="page-action-area stacked-md">
+        <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+            <c:if test="${fn:length(enrollments) > 0}">
+                <c:if test="${configurable}">
+                    <cti:msg2 key=".config.description" var="configTitle"/>
+                    <cti:button type="submit" nameKey="config" onclick="$('#actionInput').val('config');" title="${configTitle}" classes="action primary"/>
+                    <cti:msg2 key=".saveToBatch.description" var="saveToBatchTitle"/>
+                    <cti:button type="submit" nameKey="saveToBatch" onclick="$('#actionInput').val('saveToBatch');" title="${saveToBatchTitle}"/>
+                </c:if>
+                <cti:msg2 key=".saveConfigOnly.description" var="saveConfigOnlyTitle"/>
+                <cti:button type="submit" nameKey="saveConfigOnly" onclick="$('#actionInput').val('saveConfigOnly');" title="${saveConfigOnlyTitle}"/>
             </c:if>
+        </cti:checkRolesAndProperties>
+        <cti:url var="cancelUrl" value="/stars/operator/hardware/list">
+            <cti:param name="accountId" value="${accountId}"/>
+        </cti:url>
+    </div>
+</form:form>
+        
+<c:if test="${showDeviceReportedConfig}">
+    <!-- Reported Addressing -->
+    <tags:sectionContainer2 nameKey="deviceReportedConfig">
+        <div class="stacked">
+            <c:choose>
+                <c:when test="${not empty reportedConfig}">
+                    <em class="fr">
+                        <i:inline key=".configReportedAt"/>
+                        <cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/TIMESTAMP"/>
+                    </em>
+                    <cti:msgScope paths=",yukon.dr.config">
+                        <c:if test="${hardware.hardwareType.hardwareConfigType == 'EXPRESSCOM'}">
+                            <%@ include file="xcomReportedAddress.jspf" %>
+                        </c:if>
+                        <c:if test="${hardware.hardwareType.hardwareConfigType == 'SEP'}">
+                            <%@ include file="sepReportedAddress.jspf" %>
+                        </c:if>
+                    </cti:msgScope>
+                </c:when>
+                <c:otherwise><i:inline key=".noDeviceReportedConfig"/></c:otherwise>
+            </c:choose>
         </div>
-    </c:if>
-</div>
+        <div class="page-action-area">
+            <div class="fl">
+                <cti:button id="rf-read-now" nameKey="readNow" busy="true" icon="icon-read"/>
+                <span id="rf-command-status" class="dn error"></span>
+            </div>
+        </div>
+    </tags:sectionContainer2>
+</c:if>
 
 </cti:standardPage>

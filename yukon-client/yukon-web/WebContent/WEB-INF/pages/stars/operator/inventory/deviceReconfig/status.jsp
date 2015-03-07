@@ -3,7 +3,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="operator" page="deviceReconfigStatus">
+<cti:standardPage module="operator" page="inventory.config.schedule.status">
 
     <cti:url var="newOperationFailed" value="/stars/operator/inventory/deviceReconfig/newOperation">
         <cti:param name="type" value="FAIL"/>

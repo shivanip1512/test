@@ -35,7 +35,7 @@ public class ResendLmConfigHelper extends InventoryActionsHelper {
     
     public class ResendLmConfigTask extends CollectionBasedInventoryTask {
         
-        private static final String failureKey = "yukon.web.modules.operator.resendConfig.failureMessage";
+        private static final String failureKey = "yukon.web.modules.operator.inventory.config.send.failureMessage";
         
         private Set<InventoryIdentifier> unsupported = Sets.newHashSet();
         private Set<InventoryIdentifier> successful = Sets.newHashSet();

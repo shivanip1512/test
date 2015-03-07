@@ -136,9 +136,9 @@ public class AddHardwareByRangeController {
         try {
             int defaultRouteId = defaultRouteService.getDefaultRouteId(energyCompany);
             defaultRoute = paoDao.getYukonPAOName(defaultRouteId);
-            defaultRoute = accessor.getMessage("yukon.web.modules.operator.hardware.defaultRoute") + defaultRoute;
+            defaultRoute = accessor.getMessage("yukon.common.route.default") + defaultRoute;
         } catch(NotFoundException e) {
-            defaultRoute = accessor.getMessage("yukon.web.modules.operator.hardware.defaultRouteNone");
+            defaultRoute = accessor.getMessage("yukon.common.route.default.none");
         }
         
         HardwareType hardwareType = InventoryDao.getHardwareTypeById(abr.getHardwareTypeId());

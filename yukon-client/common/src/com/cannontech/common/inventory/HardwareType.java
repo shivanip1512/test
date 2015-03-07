@@ -29,11 +29,11 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     /* These are real MCTs that exist as yukon paos. Because they are paos ie. (MCT-470, MCT-410) they do not
      * have a yukon definition, so it is defined as zero.*/
     YUKON_METER(CtiUtilities.NONE_ZERO_ID, MCT, METER, null, false, false, false),
-
+    
     /* These are meters that only exist in stars in the MeterHardwareBase table. 
      * They do not represent MCT's or link to pao tables.*/
     NON_YUKON_METER(YUK_DEF_ID_DEV_TYPE_NON_YUKON_METER, InventoryCategory.NON_YUKON_METER, METER, null, false, false, false),
-
+    
     /* Switches */
     LCR_6600_ZIGBEE(YUK_DEF_ID_DEV_TYPE_LCR_6600_ZIGBEE, TWO_WAY_RECEIVER, SWITCH, SEP, false, false, false),
     LCR_6600_EXPRESSCOM(YUK_DEF_ID_DEV_TYPE_LCR_6600_XCOM, ONE_WAY_RECEIVER, SWITCH, EXPRESSCOM, false, true, false),
@@ -58,7 +58,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     SA_205(YUK_DEF_ID_DEV_TYPE_SA205, ONE_WAY_RECEIVER, SWITCH, SA205, false, true, false),
     SA_305(YUK_DEF_ID_DEV_TYPE_SA305, ONE_WAY_RECEIVER, SWITCH, SA305, false, true, false),
     SA_SIMPLE(YUK_DEF_ID_DEV_TYPE_SA_SIMPLE, ONE_WAY_RECEIVER, SWITCH, HardwareConfigType.SA_SIMPLE, false, true, false),
-
+    
     /* Thermostats */
     EXPRESSSTAT(YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT, ONE_WAY_RECEIVER, THERMOSTAT, EXPRESSCOM, true, true, true),
     COMMERCIAL_EXPRESSSTAT(YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT, ONE_WAY_RECEIVER, THERMOSTAT, EXPRESSCOM, true, true, true),
@@ -176,7 +176,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     private final boolean supportsSchedules;
     private final boolean supportsOptOut;
     private final boolean supportsManualAdjustment;
-
+    
     private HardwareType(int definitionId, 
                          InventoryCategory inventoryCategory,
                          HardwareClass hardwareClass,
@@ -192,7 +192,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
         this.supportsOptOut = supportsOptOut;
         this.supportsManualAdjustment = supportsManualAdjustment;
     }
-
+    
     public int getDefinitionId() {
         return definitionId;
     }
@@ -204,7 +204,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     public HardwareClass getHardwareClass() {
         return hardwareClass;
     }
-
+    
     public HardwareConfigType getHardwareConfigType() {
         return hardwareConfigType;
     }
@@ -212,7 +212,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     public boolean isSupportsSchedules() {
         return supportsSchedules;
     }
-
+    
     public boolean isSupportsOptOut() {
         return supportsOptOut;
     }
@@ -220,14 +220,14 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     public boolean isSupportsManualAdjustment() {
         return supportsManualAdjustment;
     }
-
+    
     /**
      * Overloaded method to get the enum value for a definitionId
      * @param definitionId - Definition id to get enum for
      * @return Enum value
      */
     public static HardwareType valueOf(int definitionId) {
-
+        
         HardwareType[] values = HardwareType.values();
         for (HardwareType type : values) {
             int typeDefinitionId = type.getDefinitionId();
@@ -235,9 +235,9 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
                 return type;
             }
         }
-
+        
         throw new IllegalArgumentException("No HardwareType found for definitionId: " + definitionId);
-
+        
     }
     
     @Override
@@ -275,7 +275,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     public boolean isZigbee() {
         return zigbeeTypes.contains(this);
     }
-
+    
     /**
      * Returns true if this hardware type is a ZigBee endpoint (non gateway ZigBee device).
      */
@@ -326,19 +326,19 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     }
     
     /**
-	 * Returns true if this hardware type supports receiving messages
-	 */
-	public boolean isSupportsTextMessages() {
-		return supportsTextMessages.contains(this);
-	}
-
+     * Returns true if this hardware type supports receiving messages
+     */
+    public boolean isSupportsTextMessages() {
+        return supportsTextMessages.contains(this);
+    }
+    
     /**
      * Returns set of all hardware types that support the 'add by range' action.
      */
     public static Set<HardwareType> getSupportsAddByRange() {
         return supportsAddByRange;
     }
-
+    
     /**
      * Returns true if this hardware type is a meter(MeterHardwareBase or MCT).
      */
@@ -359,31 +359,16 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     public boolean isTwoWay() {
         return getInventoryCategory() == TWO_WAY_RECEIVER;
     }
-
+    
     public boolean isExpressCom() {
         return hardwareConfigType == EXPRESSCOM;
     }
     
-    public int getNumRelays() {
-        return isEcobee() ? 1 :
-               isExpressCom() ? 8 : 4;
-    }
-
-    public boolean isHasTamperDetect() {
-        return hardwareConfigType == SA205
-            || hardwareConfigType == SA305
-            || hardwareConfigType == HardwareConfigType.SA_SIMPLE;
-    }
-
-    public boolean isHasProgramSplinter() {
-        return hardwareConfigType == EXPRESSCOM;
-    }
-
     public boolean isConfigurable() {
         return hardwareConfigType != HardwareConfigType.SA_SIMPLE
             && hardwareConfigType != null;
     }
-
+    
     /**
      * Returns a new HashSet<HardwareType> of hardware types that
      * have the lm hardware class specified.
@@ -399,30 +384,27 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
         }
         return classSet;
     }
-
+    
     public boolean isEnrollable() {
         return hardwareClass == SWITCH || hardwareClass == THERMOSTAT;
     }
-
-    /**
-     * I18N key for the display text for this action
-     */
+    
     @Override
     public String getFormatKey() {
         return keyPrefix + name();
     }
-
+    
     public static ImmutableSet<HardwareType> getZigbeeEndpointTypes() {
         return zigbeeEndpointTypes;
     }
-
+    
     /**
      * Checks if a device has the capability of having auto mode enabled.
      */
     public boolean isAutoModeEnableable() {
         return autoModeEnableTypes.contains(this);
     }
-
+    
     /**
      * Returns true if this hardware type is a Utility Pro type of thermostat.
      */

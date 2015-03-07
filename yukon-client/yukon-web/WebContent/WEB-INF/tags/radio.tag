@@ -21,7 +21,7 @@
                                       Note: the 'yukon.web.components.button' and 'yukon.common' scopes are added internally." %>
 <%@ attribute name="label" description="Text used for the button. Html escaped internally." %>
 
-<%@ attribute name="classes" description="CSS class names applied to the outer label element." %>
+<%@ attribute name="classes" description="CSS class names applied to the button element." %>
 <%@ attribute name="id" description="The html id attribute of the radio input." %>
 
 <cti:default var="checked" value="${false}"/>

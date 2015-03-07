@@ -62,8 +62,6 @@
     <entry key="yukon.web.modules.operator.hardware.actions">Actions</entry>
     <entry key="yukon.web.modules.operator.hardware.altTrackingNumber">Alt Tracking Number</entry>
     <entry key="yukon.web.modules.operator.hardware.checkInventoryButton.label">Check Inventory</entry>
-    <entry key="yukon.web.modules.operator.hardware.defaultRouteNone">Default - (none)</entry>
-    <entry key="yukon.web.modules.operator.hardware.defaultRoute">Default - </entry>
     <entry key="yukon.web.modules.operator.hardware.deleteDevice.label">Delete</entry>
     <entry key="yukon.web.modules.operator.hardware.deleteDevice">Delete Device {0}</entry>
     <entry key="yukon.web.modules.operator.hardware.deleteMessageDeviceName">Device {0} will be removed from the account.  What would you like to do with it?</entry>

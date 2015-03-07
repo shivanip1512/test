@@ -17,18 +17,19 @@ public class InventoryCollectionTag extends SimpleTagSupport {
 
     @Override
     public void doTag() throws JspException, IOException {
-
+        
         JspWriter out = getJspContext().getOut();
-
+        
         // Write out all of the parameters as hidden fields
         if (yukonCollection != null) {
             Map<String, String> collectionParameters = yukonCollection.getCollectionParameters();
             for (String name : collectionParameters.keySet()) {
                 String value = collectionParameters.get(name);
-                out.write("<input type=\"hidden\" name=\"" + name + "\" value=\"" + StringEscapeUtils.escapeXml(value) + "\" >");
+                out.write("<input type=\"hidden\" name=\"" + name 
+                        + "\" value=\"" + StringEscapeUtils.escapeXml10(value) + "\" >");
             }
         }
-
+        
     }
     
     public void setInventoryCollection(InventoryCollection yukonCollection) {

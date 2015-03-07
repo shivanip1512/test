@@ -16,6 +16,6 @@ public enum FilterMode implements DisplayableEnum {
     
     @Override
     public String getFormatKey() {
-        return "yukon.web.modules.operator.filterSelection.filterMode." + name();
+        return "yukon.web.modules.operator.inventory.filter.filterMode." + name();
     }
 }

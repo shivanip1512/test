@@ -8,9 +8,14 @@
 <%@ attribute name="paramMap" type="java.util.Map" %>
 <%@ attribute name="hideEnabled" type="java.lang.Boolean" %>
 <%@ attribute name="title" %>
+
 <%@ attribute name="helpText" description="The text to put inside of a help popup." %>
 <%@ attribute name="helpUrl" description="A url used to load a help popup with content before showing." %>
+
 <%@ attribute name="container" description="container type: 'box' or 'section'. Default:'box'" %>
+<%@ attribute name="classes" description="CSS class names applied to the container." %>
+
+<cti:default var="classes" value=""/>
 
 <cti:includeScript link="/JavaScript/yukon.widget.js"/>
 
@@ -55,7 +60,7 @@
     <c:if test="${empty container or container eq 'box'}">
         <tags:boxContainer title="${containerTitle}" 
                 id="widget-titled-container-${widgetParameters.widgetId}" 
-                styleClass="widget-container" 
+                styleClass="widget-container ${classes}" 
                 showInitially="true" 
                 hideEnabled="${empty pageScope.hideEnabled ? true : pageScope.hideEnabled}" 
                 helpText="${pageScope.helpText}"
@@ -75,7 +80,7 @@
     <c:if test="${container eq 'section'}">
         <tags:sectionContainer title="${containerTitle}" 
                 id="widget-titled-container-${widgetParameters.widgetId}" 
-                styleClass="widget-container" 
+                styleClass="widget-container ${classes}" 
                 helpText="${pageScope.helpText}"
                 helpUrl="${pageScope.helpUrl}">
             <div id="widget-container-${widgetParameters.widgetId}" style="height: ${widgetParameters.height};">

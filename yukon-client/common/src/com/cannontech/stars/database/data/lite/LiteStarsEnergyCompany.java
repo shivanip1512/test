@@ -63,6 +63,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompany {
+    
     private DBPersistentDao dbPersistentDao;
     private DbChangeManager dbChangeManager;
     private ECMappingDao ecMappingDao;

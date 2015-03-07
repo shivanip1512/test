@@ -4,17 +4,17 @@ import org.springframework.validation.Errors;
 
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.web.stars.dr.operator.hardware.model.AddressingInfo;
-import com.cannontech.web.stars.dr.operator.hardware.model.HardwareConfigurationDto;
+import com.cannontech.web.stars.dr.operator.hardware.model.HardwareConfig;
 
 public class HardwareConfigurationDtoValidator extends
-        SimpleValidator<HardwareConfigurationDto> {
+        SimpleValidator<HardwareConfig> {
 
     public HardwareConfigurationDtoValidator() {
-        super(HardwareConfigurationDto.class);
+        super(HardwareConfig.class);
     }
 
     @Override
-    protected void doValidation(HardwareConfigurationDto target, Errors errors) {
+    protected void doValidation(HardwareConfig target, Errors errors) {
         AddressingInfo addressingInfo = target.getAddressingInfo();
         if (addressingInfo != null) {
             addressingInfo.validate(errors);

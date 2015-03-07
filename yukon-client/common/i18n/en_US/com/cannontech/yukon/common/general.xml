@@ -107,6 +107,7 @@
 <entry key="yukon.common.name">Name</entry>
 <entry key="yukon.common.networkManager">Network Manager</entry>
 <entry key="yukon.common.none">None</entry>
+<entry key="yukon.common.note">Note</entry>
 <entry key="yukon.common.noPhase">No Phase</entry>
 <entry key="yukon.common.okButton">OK</entry>
 <entry key="yukon.common.operationSuccess">Operation Successful</entry>
@@ -134,6 +135,8 @@
 <entry key="yukon.common.requestFailed">Request Failed</entry>
 <entry key="yukon.common.right">Right</entry>
 <entry key="yukon.common.route">Route</entry>
+<entry key="yukon.common.route.default">Default - {0}</entry>
+<entry key="yukon.common.route.default.none">Default - (none)</entry>
 <entry key="yukon.common.save">Save</entry>
 <entry key="yukon.common.search">Search</entry>
 <entry key="yukon.common.search.noResultsFound">No results found.</entry>

@@ -1,4 +1,4 @@
-<%@ tag body-content="empty" trimDirectiveWhitespaces="true" %>
+<%@ tag body-content="empty" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
@@ -6,37 +6,35 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
-<%@ attribute name="id" required="true" type="java.lang.String" %>
+<%@ attribute name="id" %>
 <%@ attribute name="inventoryCollection" required="true" type="java.lang.Object" %>
 
-<c:set value="${inventoryCollection.count}" var="count"/>
+<cti:uniqueIdentifier prefix="selected-inventory-" var="thisId"/>
+<cti:default var="id" value="${thisId}"/>
+<c:set var="count" value="${inventoryCollection.count}"/>
 
+<cti:msgScope paths=",yukon.common.collection.inventory.selectedInventoryPopup">
 <%-- CREATE URL --%>
 <c:if test="${count > 0}">
-    <cti:url var="selectedInventoryTableUrl" value="/stars/operator/inventory/selectedInventoryTable">
-        <c:forEach var="inventoryCollectionParam" items="${pageScope.inventoryCollection.collectionParameters}">
-            <cti:param name="${inventoryCollectionParam.key}" value="${fn:escapeXml(inventoryCollectionParam.value)}"/>
+    <cti:url var="url" value="/stars/operator/inventory/selectedInventoryTable">
+        <c:forEach var="entry" items="${pageScope.inventoryCollection.collectionParameters}">
+            <cti:param name="${entry.key}" value="${fn:escapeXml(entry.value)}"/>
         </c:forEach>
     </cti:url>
-
-    <cti:msg2 var="popupTitle" key="yukon.common.collection.inventory.selectedInventoryPopup.popupTitle"/>
-    <div id="${id}" data-title="${popupTitle}" data-width="450" data-height="300" data-url="${selectedInventoryTableUrl}" class="dn"></div>
+    <div id="${id}-popup" class="dn"
+        data-title="<cti:msg2 key=".popupTitle"/>"
+        data-width="450" 
+        data-height="300" 
+        data-url="${url}"></div>
 </c:if>
-
-<span class="strong-label-small">
-    <i:inline key="yukon.common.collection.inventory.selectedInventoryPopup.linkLabel"/>
-</span>
-<span class="smallLink">
+<div id="${id}">
+    <strong><i:inline key=".linkLabel"/>:</strong>&nbsp;
+    <span class="badge js-count">${count}</span>&nbsp;
     <i:inline key="${inventoryCollection.description}"/>
     <c:if test="${count > 0}">
-        <div class="dib">
-            <cti:msg2 var="magTitle" key="yukon.common.collection.inventory.selectedInventoryPopup.magnifierTitle"/>
-            <a href="javascript:void(0);" title="${magTitle}" class="dib" data-popup="#${id}"><i class="icon icon-magnifier"></i></a>
-        </div>
+        <cti:msg2 var="magTitle" key=".magnifierTitle"/>
+        <a href="javascript:void(0);" title="${magTitle}" class="dib" data-popup="#${id}-popup"
+            data-popup-toggle><cti:icon icon="icon-magnifier"/></a>
     </c:if>
-</span>
-
-<br>
-<span class="strong-label-small">
-    <cti:msg key="yukon.common.collection.inventory.selectedInventoryPopup.count" argument="${count}"/>
-</span>
+</div>
+</cti:msgScope>

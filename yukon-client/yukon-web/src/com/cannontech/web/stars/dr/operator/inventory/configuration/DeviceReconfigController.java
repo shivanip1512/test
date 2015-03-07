@@ -61,7 +61,7 @@ public class DeviceReconfigController {
 
         @Override
         protected void doValidation(DeviceReconfigOptions target, Errors errors) {
-            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "yukon.web.modules.operator.deviceReconfig.error.required.name");
+            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "yukon.web.modules.operator.inventory.config.schedule.error.required.name");
             YukonValidationUtils.checkExceedsMaxLength(errors, "name", target.getName(), 250);
         }
     }
@@ -102,7 +102,7 @@ public class DeviceReconfigController {
         try {
             inventoryConfigTaskDao.create(deviceReconfigOptions.getName(), deviceReconfigOptions.isSendInService(), inventoryCollectionFactory.createCollection(request), energyCompanyId, userContext.getYukonUser());
         } catch (DataIntegrityViolationException e) {
-            bindingResult.rejectValue("name", "yukon.web.modules.operator.deviceReconfig.error.unavailable.name");
+            bindingResult.rejectValue("name", "yukon.web.modules.operator.inventory.config.schedule.error.unavailable.name");
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             setupModelMap(request, modelMap, userContext);
@@ -112,7 +112,7 @@ public class DeviceReconfigController {
         /* Log Event */
         inventoryConfigEventLogService.taskCreated(userContext.getYukonUser(), deviceReconfigOptions.getName());
         
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.deviceReconfig.creationSuccessful", deviceReconfigOptions.getName()));
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.inventory.config.schedule.creationSuccessful", deviceReconfigOptions.getName()));
         
         return "redirect:../home";
     }
@@ -166,7 +166,7 @@ public class DeviceReconfigController {
         InventoryConfigTask task = inventoryConfigTaskDao.getById(taskId);
         inventoryConfigTaskDao.delete(taskId);
         inventoryConfigEventLogService.taskDeleted(userContext.getYukonUser(), task.getTaskName());
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.deviceReconfig.deletionSuccessful", task.getTaskName()));
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.inventory.config.schedule.deletionSuccessful", task.getTaskName()));
         return "redirect:/stars/operator/inventory/home";
     }
     
