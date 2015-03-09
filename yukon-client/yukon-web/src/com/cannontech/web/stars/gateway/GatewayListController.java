@@ -32,7 +32,6 @@ import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayCertificateUpdateService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
-import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -40,7 +39,6 @@ import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
-import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
@@ -76,7 +74,8 @@ public class GatewayListController {
     }
     
     @RequestMapping(value = {"/gateways", "/gateways/"}, method = RequestMethod.GET)
-    public String gateways(ModelMap model, FlashScope flashScope, YukonUserContext userContext,  @DefaultSort(dir=Direction.desc, sort="TIMESTAMP") SortingParameters sorting) {
+    public String gateways(ModelMap model, FlashScope flashScope, YukonUserContext userContext,
+            @DefaultSort(dir = Direction.desc, sort = "TIMESTAMP") SortingParameters sorting) {
         
         List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
         Collections.sort(gateways);
@@ -85,7 +84,7 @@ public class GatewayListController {
         List<CertificateUpdate> certUpdates = certificateUpdateService.getAllCertificateUpdates();
 
         Direction dir = sorting.getDirection();
-        SortBy sortBy = SortBy.valueOf(sorting.getSort().toUpperCase());
+        SortBy sortBy = SortBy.valueOf(sorting.getSort());
         Comparator<CertificateUpdate> comparator = sorters.get(sortBy);
         if (dir == Direction.desc) {
             Collections.sort(certUpdates, Collections.reverseOrder(comparator));
@@ -181,7 +180,7 @@ public class GatewayListController {
     }
     
     private static Comparator<CertificateUpdate> getTimestampComparator() {
-        Ordering<Instant> normalComparer = Ordering.natural().nullsLast();
+        Ordering<Instant> normalComparer = Ordering.natural();
         Ordering<CertificateUpdate> dateOrdering =
             normalComparer.onResultOf(new Function<CertificateUpdate, Instant>() {
                 @Override
@@ -206,8 +205,7 @@ public class GatewayListController {
     }
 
     public enum SortBy implements DisplayableEnum {
-        TIMESTAMP,
-        CERTIFICATE;
+        TIMESTAMP, CERTIFICATE;
         @Override
         public String getFormatKey() {
             return "yukon.web.modules.operator.gateways.certUpdate.tableheader." + name();
