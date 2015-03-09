@@ -4,8 +4,6 @@
 #include "ZoneManager.h"
 #include "ZoneLoader.h"
 
-#include <boost/assign/list_of.hpp>
-
 using Cti::CapControl::Zone;
 using Cti::CapControl::ZoneLoader;
 using Cti::CapControl::ZoneManager;
@@ -25,11 +23,9 @@ struct simple_zone_setup
 
             if (Id < 0)
             {
-                long Ids[] = { 100, 110, 115 };
-
-                for (int i = 0; i < sizeof(Ids)/ sizeof(*Ids); i++)
+                for (int id : { 100, 110, 115 })
                 {
-                    loadSingle(Ids[i], zones);
+                    loadSingle(id, zones);
                 }
             }
             else
@@ -224,11 +220,9 @@ struct complex_zone_setup
 
             if (Id < 0)
             {
-                long Ids[] = { 101, 103, 104, 106, 107, 108, 109 };
-
-                for (int i = 0; i < sizeof(Ids)/ sizeof(*Ids); i++)
+                for (int id : { 101, 103, 104, 106, 107, 108, 109 })
                 {
-                    loadSingle(Ids[i], zones);
+                    loadSingle(id, zones);
                 }
             }
             else
@@ -279,15 +273,15 @@ BOOST_FIXTURE_TEST_SUITE(test_ZoneManager_complex, complex_zone_setup)
 BOOST_AUTO_TEST_CASE(test_ZoneManager_zone_subsets_by_subbus)
 {
     Zone::IdSet results
-        = boost::assign::list_of
-            ( 101 )
-            ( 103 )
-            ( 104 )
-            ( 106 )
-            ( 107 )
-            ( 108 )
-            ( 109 )
-        ;
+    {
+        101,
+        103,
+        104,
+        106,
+        107,
+        108,
+        109
+    };
 
     Zone::IdSet subset = zoneManager.getZoneIdsBySubbus( 35 );
 
@@ -300,14 +294,14 @@ BOOST_AUTO_TEST_CASE(test_ZoneManager_all_children_of_zone)
     // Get all children of ID 101
     {
         Zone::IdSet results
-            = boost::assign::list_of
-                ( 103 )
-                ( 104 )
-                ( 106 )
-                ( 107 )
-                ( 108 )
-                ( 109 )
-            ;
+        {
+            103,
+            104,
+            106,
+            107,
+            108,
+            109
+        };
 
         Zone::IdSet subset = zoneManager.getAllChildrenOfZone( 101 );
 
@@ -317,10 +311,10 @@ BOOST_AUTO_TEST_CASE(test_ZoneManager_all_children_of_zone)
     // Get all children of ID 103
     {
         Zone::IdSet results
-            = boost::assign::list_of
-                ( 104 )
-                ( 109 )
-            ;
+        {
+            104,
+            109
+        };
 
         Zone::IdSet subset = zoneManager.getAllChildrenOfZone( 103 );
 
@@ -330,10 +324,10 @@ BOOST_AUTO_TEST_CASE(test_ZoneManager_all_children_of_zone)
     // Get all children of ID 107
     {
         Zone::IdSet results
-            = boost::assign::list_of
-                ( 106 )
-                ( 108 )
-            ;
+        {
+            106,
+            108
+        };
 
         Zone::IdSet subset = zoneManager.getAllChildrenOfZone( 107 );
 
@@ -366,15 +360,15 @@ BOOST_AUTO_TEST_CASE(test_ZoneManager_all_children_of_zone)
 BOOST_AUTO_TEST_CASE(test_ZoneManager_all_children_of_zone_with_zone_reload_and_reconfiguration)
 {
     Zone::IdSet results
-        = boost::assign::list_of
-            ( 101 )
-            ( 103 )
-            ( 104 )
-            ( 106 )
-            ( 107 )
-            ( 108 )
-            ( 109 )
-        ;
+    {
+        101,
+        103,
+        104,
+        106,
+        107,
+        108,
+        109
+    };
 
     Zone::IdSet subset = zoneManager.getZoneIdsBySubbus( 35 );
 

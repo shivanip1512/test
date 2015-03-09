@@ -257,14 +257,10 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapUp_Fail, phase_ope
 
 BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapUp_Success, phase_operated_voltage_regulator_fixture_direct_tap)
 {
-    double returnVoltage;
-
     regulator->loadAttributes( &attributes );
 
 
-    BOOST_CHECK_NO_THROW( returnVoltage = regulator->adjustVoltage( 0.75 ) );
-
-    BOOST_REQUIRE_EQUAL( 0.75, returnVoltage );
+    BOOST_CHECK_EQUAL( 0.75, regulator->adjustVoltage( 0.75 ) );
 
 
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
@@ -311,14 +307,10 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapDown_Fail, phase_o
 
 BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapDown_Success, phase_operated_voltage_regulator_fixture_direct_tap)
 {
-    double returnVoltage;
-
     regulator->loadAttributes( &attributes );
 
 
-    BOOST_CHECK_NO_THROW( returnVoltage = regulator->adjustVoltage( -0.75 ) );
-
-    BOOST_REQUIRE_EQUAL( -0.75, returnVoltage );
+    BOOST_CHECK_EQUAL( -0.75, regulator->adjustVoltage( -0.75 ) );
 
 
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
@@ -1044,15 +1036,11 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_QueryAutoRemoteStatus
 
 BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapUp_Success_with_Phase_A_info, phase_operated_voltage_regulator_fixture_direct_tap)
 {
-    double returnVoltage;
-
     regulator->loadAttributes( &attributes );
     regulator->setPhase( Cti::CapControl::Phase_A );
 
 
-    BOOST_CHECK_NO_THROW( returnVoltage = regulator->adjustVoltage( 0.75 ) );
-
-    BOOST_REQUIRE_EQUAL( 0.75, returnVoltage );
+    BOOST_CHECK_EQUAL( 0.75, regulator->adjustVoltage( 0.75 ) );
 
 
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
@@ -1100,8 +1088,6 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_RaiseSetPoint_Fail, p
 
 BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_RaiseSetPoint_Success, phase_operated_voltage_regulator_fixture_setpoint)
 {
-    double returnVoltage;
-
     regulator->loadAttributes( &attributes );
 
 
@@ -1110,10 +1096,8 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_RaiseSetPoint_Success
     regulator->handlePointData( &setPointData );
 
 
-    BOOST_CHECK_NO_THROW( returnVoltage = regulator->adjustVoltage( 0.75 ) );
+    BOOST_CHECK_EQUAL( 0.75, regulator->adjustVoltage( 0.75 ) );
 
-
-    BOOST_REQUIRE_EQUAL( 0.75, returnVoltage );
 
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 
@@ -1160,8 +1144,6 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_LowerSetPoint_Fail, p
 
 BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_LowerSetPoint_Success, phase_operated_voltage_regulator_fixture_setpoint)
 {
-    double returnVoltage;
-
     regulator->loadAttributes( &attributes );
 
 
@@ -1170,10 +1152,8 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_LowerSetPoint_Success
     regulator->handlePointData( &setPointData );
 
 
-    BOOST_CHECK_NO_THROW( returnVoltage = regulator->adjustVoltage( -0.75 ) );
+    BOOST_CHECK_EQUAL( -0.75, regulator->adjustVoltage( -0.75 ) );
 
-
-    BOOST_REQUIRE_EQUAL( -0.75, returnVoltage );
 
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 

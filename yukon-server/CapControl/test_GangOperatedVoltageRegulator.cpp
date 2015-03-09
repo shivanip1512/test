@@ -238,15 +238,11 @@ BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_TapUp_Fail, gang_opera
 
 BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_TapUp_Success, gang_operated_voltage_regulator_fixture_direct_tap)
 {
-    double returnVoltage;
-
     regulator->loadAttributes( &attributes );
 
 
-    BOOST_CHECK_NO_THROW( returnVoltage = regulator->adjustVoltage( 0.75 ) );
+    BOOST_CHECK_EQUAL( 0.75, regulator->adjustVoltage( 0.75 ) );
 
-
-    BOOST_REQUIRE_EQUAL( 0.75, returnVoltage );
 
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 
@@ -293,15 +289,11 @@ BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_TapDown_Fail, gang_ope
 
 BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_TapDown_Success, gang_operated_voltage_regulator_fixture_direct_tap)
 {
-    double returnVoltage;
-
     regulator->loadAttributes( &attributes );
 
 
-    BOOST_CHECK_NO_THROW( returnVoltage = regulator->adjustVoltage( -0.75 ) );
+    BOOST_CHECK_EQUAL( -0.75, regulator->adjustVoltage( -0.75 ) );
 
-
-    BOOST_REQUIRE_EQUAL( -0.75, returnVoltage );
 
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 
@@ -564,8 +556,6 @@ BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_RaiseSetPoint_Fail, ga
 
 BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_RaiseSetPoint_Success, gang_operated_voltage_regulator_fixture_setpoint)
 {
-    double returnVoltage;
-
     regulator->loadAttributes( &attributes );
 
 
@@ -574,10 +564,8 @@ BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_RaiseSetPoint_Success,
     regulator->handlePointData( &setPointData );
 
 
-    BOOST_CHECK_NO_THROW( returnVoltage = regulator->adjustVoltage( 0.75 ) );
+    BOOST_REQUIRE_EQUAL( 0.75, regulator->adjustVoltage( 0.75 ) );
 
-
-    BOOST_REQUIRE_EQUAL( 0.75, returnVoltage );
 
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 
@@ -624,8 +612,6 @@ BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_LowerSetPoint_Fail, ga
 
 BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_LowerSetPoint_Success, gang_operated_voltage_regulator_fixture_setpoint)
 {
-    double returnVoltage;
-
     regulator->loadAttributes( &attributes );
 
 
@@ -634,10 +620,8 @@ BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_LowerSetPoint_Success,
     regulator->handlePointData( &setPointData );
 
 
-    BOOST_CHECK_NO_THROW( returnVoltage = regulator->adjustVoltage( -0.75 ) );
+    BOOST_REQUIRE_EQUAL( -0.75, regulator->adjustVoltage( -0.75 ) );
 
-
-    BOOST_REQUIRE_EQUAL( -0.75, returnVoltage );
 
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 
