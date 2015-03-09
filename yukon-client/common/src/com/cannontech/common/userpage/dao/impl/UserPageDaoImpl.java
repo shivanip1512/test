@@ -109,9 +109,25 @@ public class UserPageDaoImpl implements UserPageDao {
 
         UserPage page = new UserPage(pageData.userPageId, userPageKey, module, name, arguments, pageData.isFavorite,
             new Instant());
-        page = save(page);
 
-        maintainHistory(page.getUserId());
+        if (!isUserPageInHistory(page)) {
+            maintainHistory(page.getUserId());
+        }
+        page = save(page);
+        
+    }
+    
+    /**
+     * Checks if the currently accessed page exists in UserPage table.
+     */
+    private boolean isUserPageInHistory(UserPage page) {
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT COUNT(*)");
+    	sql.append("FROM UserPage WHERE USERID ").eq(page.getUserId());
+    	sql.append( "AND PagePath ").eq(page.getKey().getPath());
+    	
+    	int count = jdbcTemplate.queryForInt(sql); 
+    	return count > 0;
     }
 
     private PageData findPageData(Key userPageKey) {
@@ -197,6 +213,7 @@ public class UserPageDaoImpl implements UserPageDao {
      */
     private UserPage save(UserPage page) {
         int userPageId = userPageTemplate.save(page);
+        
         List<String> labelArguments = page.getArguments();
         page = new UserPage(userPageId, page.getKey(), page.getModule(), page.getName(), labelArguments,
             page.isFavorite(), page.getLastAccess());
@@ -215,7 +232,6 @@ public class UserPageDaoImpl implements UserPageDao {
             sql.values(id, page.getId(), index, labelArgument);
             jdbcTemplate.update(sql);
         }
-
         return page;
     }
 
@@ -239,7 +255,7 @@ public class UserPageDaoImpl implements UserPageDao {
         sql.append("    from UserPage up");
         sql.append("    where up.UserId").eq(userId);
         sql.append("  ) t");
-        sql.append("  where t.RowNumber").lte(MAX_HISTORY);
+        sql.append("  where t.RowNumber").lte(MAX_HISTORY-1);
         sql.append("  or t.Favorite").eq(true);
         sql.append("  union");
         sql.append("  select t2.UserPageId from (");
