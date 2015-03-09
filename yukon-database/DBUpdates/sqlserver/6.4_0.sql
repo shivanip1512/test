@@ -163,7 +163,7 @@ SET PagePath = '/capcontrol/schedules/assignments'
 WHERE PagePath = '/capcontrol/schedule/scheduleAssignments';
 /* End YUK-14006 */
 
-/* Start YUK-14006 */
+/* Start YUK-14066 */
 INSERT INTO DeviceConfiguration VALUES (-2, 'Default Regulator Configuration', null);
 
 INSERT INTO DeviceConfigDeviceTypes VALUES (-10, -2, 'LTC');
@@ -232,7 +232,7 @@ BEGIN
     DEALLOCATE regulator_curs;
 END;
 /* @end-block */
-/* End YUK-14006 */
+/* End YUK-14066 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
