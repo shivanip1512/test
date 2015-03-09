@@ -13,14 +13,21 @@
 #include <boost/algorithm/string.hpp>
 
 using std::string;
-using boost::algorithm::to_lower_copy;
-using boost::algorithm::trim_copy;
 
+namespace   {
+
+std::string sanitizeInput( const std::string & input )
+{
+    using boost::algorithm::to_lower_copy;
+    using boost::algorithm::trim_copy;
+
+    return trim_copy( to_lower_copy( input ) );
+}
+
+}
 
 INT resolveRouteType( const string& _routeStr)
 {
-    string routeStr = trim_copy(to_lower_copy(_routeStr));
-
     static const std::map<std::string, CtiRoute_t>  routeLookup
     {
         { "ccu",                    RouteTypeCCU },
@@ -39,7 +46,7 @@ INT resolveRouteType( const string& _routeStr)
         { "series 5 lmi",           RouteTypeSeriesVLMI }
     };
 
-    if ( const auto result = Cti::mapFind( routeLookup, routeStr ) )
+    if ( const auto result = Cti::mapFind( routeLookup, sanitizeInput( _routeStr ) ) )
     {
         return *result;
     }
@@ -49,8 +56,6 @@ INT resolveRouteType( const string& _routeStr)
 
 INT resolveAmpUseType(const string& _ampStr)
 {
-    string ampStr = trim_copy(to_lower_copy(_ampStr));
-
     static const std::map<std::string, CtiAmpUsage_t>  ampLookup
     {
         { "alternating",        RouteAmpAlternating },
@@ -61,7 +66,7 @@ INT resolveAmpUseType(const string& _ampStr)
         { "amp 2",              RouteAmp2 }
     };
 
-    if ( const auto result = Cti::mapFind( ampLookup, ampStr ) )
+    if ( const auto result = Cti::mapFind( ampLookup, sanitizeInput( _ampStr ) ) )
     {
         return *result;
     }
@@ -71,8 +76,6 @@ INT resolveAmpUseType(const string& _ampStr)
 
 CtiPointType_t resolvePointType(const string& _pointStr)
 {
-    string pointStr = trim_copy(to_lower_copy(_pointStr));
-
     static const std::map<std::string, CtiPointType_t>  pointTypeLookup
     {
         { "analog",             AnalogPointType },
@@ -90,7 +93,7 @@ CtiPointType_t resolvePointType(const string& _pointStr)
         { "analogoutput",       AnalogOutputPointType }
     };
 
-    if ( const auto result = Cti::mapFind( pointTypeLookup, pointStr ) )
+    if ( const auto result = Cti::mapFind( pointTypeLookup, sanitizeInput( _pointStr ) ) )
     {
         return *result;
     }
@@ -100,8 +103,6 @@ CtiPointType_t resolvePointType(const string& _pointStr)
 
 INT resolvePointArchiveType(const string& _archiveStr)
 {
-    string archiveStr = trim_copy(to_lower_copy(_archiveStr));
-
     static const std::map<std::string, CtiArchiveType_t>  archiveTypeLookup
     {
         { "on change",      ArchiveTypeOnChange },
@@ -111,7 +112,7 @@ INT resolvePointArchiveType(const string& _archiveStr)
         { "timer|update",   ArchiveTypeOnTimerOrUpdated }
     };
 
-    if ( const auto result = Cti::mapFind( archiveTypeLookup, archiveStr ) )
+    if ( const auto result = Cti::mapFind( archiveTypeLookup, sanitizeInput( _archiveStr ) ) )
     {
         return *result;
     }
@@ -130,9 +131,9 @@ INT resolvePAOType(const string& category, const string& typeStr)
         { PAO_CATEGORY_CAP_CONTROL,     resolveCapControlType }
     };
 
-    if ( const auto result = Cti::mapFind( subcategoryLookup, resolvePAOCategory(category) ) )
+    if ( const auto resolver = Cti::mapFind( subcategoryLookup, resolvePAOCategory(category) ) )
     {
-        return (*result)(typeStr);
+        return (*resolver)(typeStr);
     }
 
     return 0;
@@ -140,8 +141,6 @@ INT resolvePAOType(const string& category, const string& typeStr)
 
 INT resolvePAOCategory(const string& _category)
 {
-    string category = trim_copy(to_lower_copy(_category));
-
     static const std::map<std::string, CtiPaoCategory_t>  paoCategoryLookup
     {
         { "device",         PAO_CATEGORY_DEVICE },
@@ -151,7 +150,7 @@ INT resolvePAOCategory(const string& _category)
         { "capcontrol",     PAO_CATEGORY_CAP_CONTROL }
     };
 
-    if ( const auto result = Cti::mapFind( paoCategoryLookup, category ) )
+    if ( const auto result = Cti::mapFind( paoCategoryLookup, sanitizeInput( _category ) ) )
     {
         return *result;
     }
@@ -282,11 +281,11 @@ static const std::map<std::string, int> device_lookups
     { "rtu-ses92",          TYPE_SES92RTU },
     { "rtu-welco",          TYPE_WELCORTU },
 
-    //  --- GRE { Great River Energy }, transmitters ---
+    //  --- GRE (Great River Energy) transmitters ---
     { "rtc",                TYPE_RTC },
     { "rtm",                TYPE_RTM },
 
-    //  --- GRE { Great River Energy }, Load Management groups ---
+    //  --- GRE (Great River Energy) Load Management groups ---
     { "golay group",        TYPE_LMGROUP_GOLAY },
     { "sa-105 group",       TYPE_LMGROUP_SA105 },
     { "sa-205 group",       TYPE_LMGROUP_SA205 },
@@ -360,14 +359,14 @@ static const std::map<std::string, int> device_lookups
 
 INT resolveDeviceType(const string& _typeStr)
 {
-    string typestr = trim_copy(to_lower_copy(_typeStr));
+    string typestr = sanitizeInput( _typeStr );
 
     if( const boost::optional<int> deviceType = Cti::mapFind(device_lookups, typestr) )
     {
         return *deviceType;
     }
 
-    if( ! isKnownUnsupportedDevice(_typeStr) )
+    if( ! isKnownUnsupportedDevice(typestr) )
     {
         CTILOG_ERROR(dout, "Unsupported DEVICE type \"" << typestr << "\"");
     }
@@ -375,38 +374,38 @@ INT resolveDeviceType(const string& _typeStr)
     return 0;
 }
 
-//  --- Known unsupported Devices ---
-//  Do not report an error ("Unsupported DEVICE type ...") if we try to resolve any of these
-static const std::set<string> unsupported_devices
-{
-    { "digi gateway" },
-    { "rf gateway" },
-    { "zigbee endpoint" },
-    { "rfn-440-2131td" },
-    { "rfn-440-2132td" },
-    { "rfn-440-2133td" },
-    { "rfw-meter" },
-    { "lcr-6200 rfn" },
-    { "lcr-6600 rfn" },
-    { "weather location" },
-    { "ecobee smart si" },
-    { "ltc" },
-    { "go_regulator" },
-    { "po_regulator" }
-};
-
 /**
  * Check if the device is known and unsupported
  */
 bool isKnownUnsupportedDevice(const string& typeStr)
 {
-    return unsupported_devices.count( to_lower_copy(typeStr) );
+    //  --- Known unsupported Devices ---
+    //  Do not report an error ("Unsupported DEVICE type ...") if we try to resolve any of these
+    static const std::set<string> unsupported_devices
+    {
+        "digi gateway",
+        "rf gateway",
+        "zigbee endpoint",
+        "rfn-440-2131td",
+        "rfn-440-2132td",
+        "rfn-440-2133td",
+        "rfw-meter",
+        "lcr-6200 rfn",
+        "lcr-6600 rfn",
+        "weather location",
+        "ecobee smart si",
+        "ltc",
+        "go_regulator",
+        "po_regulator"
+    };
+
+    return unsupported_devices.count( sanitizeInput( typeStr ) );
 }
 
 
 INT resolveCapControlType(const string& _typeStr)
 {
-    string typeStr = trim_copy(to_lower_copy(_typeStr));
+    string typeStr = sanitizeInput( _typeStr );
 
     static const std::map<std::string, DeviceTypes>  deviceTypeLookup
     {
@@ -429,7 +428,7 @@ INT resolveCapControlType(const string& _typeStr)
 
 INT resolveLoadManagementType(const string& _typeStr)
 {
-    string typeStr = trim_copy(to_lower_copy(_typeStr));
+    string typeStr = sanitizeInput( _typeStr );
 
     static const std::map<std::string, DeviceTypes>  deviceTypeLookup
     {
@@ -454,7 +453,7 @@ INT resolveLoadManagementType(const string& _typeStr)
 
 INT resolveScanType(const string& _typeStr)
 {
-    string typeStr = trim_copy(to_lower_copy(_typeStr));
+    string typeStr = sanitizeInput( _typeStr );
 
     static const std::map<std::string, CtiScanRate_t>  scanRateLookup
     {
@@ -478,7 +477,7 @@ INT resolveScanType(const string& _typeStr)
 
 LONG resolveDeviceWindowType(const string& _windowStr)
 {
-    string windowStr = trim_copy(to_lower_copy(_windowStr));
+    string windowStr = sanitizeInput( _windowStr );
 
     static const std::map<std::string, CtiDeviceWindow_t>  windowLookup
     {
@@ -499,7 +498,7 @@ LONG resolveDeviceWindowType(const string& _windowStr)
 
 INT resolvePAOClass(const string& _classStr)
 {
-    string classStr = trim_copy(to_lower_copy(_classStr));
+    string classStr = sanitizeInput( _classStr );
 
     static const std::map<std::string, CtiPAOClass_t>  paoClassLookup
     {
@@ -532,7 +531,7 @@ INT resolvePAOClass(const string& _classStr)
 
 INT resolveProtocol(const string& _str)
 {
-    string str = trim_copy(to_lower_copy(_str));
+    string str = sanitizeInput( _str );
 
     static const std::map<std::string, CtiProtocolWrap_t>  protocolLookup
     {
@@ -552,8 +551,6 @@ INT resolveProtocol(const string& _str)
 
 INT resolvePortType(const string& _str)
 {
-    string str = trim_copy(to_lower_copy(_str));
-
     const std::map<std::string, int> PortTypes
     {
         { "local serial port",        PortTypeLocalDirect     },
@@ -568,7 +565,7 @@ INT resolvePortType(const string& _str)
         { "rfn-1200",                 PortTypeRfDa            }
     };
 
-    if( const auto portType = Cti::mapFind(PortTypes, str) )
+    if( const auto portType = Cti::mapFind(PortTypes, sanitizeInput( _str ) ) )
     {
         return *portType;
     }
@@ -579,164 +576,164 @@ INT resolvePortType(const string& _str)
 
 bool resolveIsDeviceTypeSingle(INT Type)
 {
-    bool bRet = false;
-
-    switch(Type)
+    static const std::set<DeviceTypes>  targetableDevices
     {
-        case TYPE_CCU721:
-        case TYPE_CCU711:
-        case TYPE_CCU710:
-        case TYPE_CCU700:
-        case TYPE_REPEATER800:
-        case TYPE_REPEATER850:
-        case TYPE_REPEATER900:
-        case TYPE_ILEXRTU:
-        case TYPE_WELCORTU:
-        case TYPE_SES92RTU:
-        case TYPE_DNPRTU:
-        case TYPE_DARTRTU:
-        case TYPE_SERIESVRTU:
-        case TYPE_SERIESVLMIRTU:
-        case TYPE_ION7330:
-        case TYPE_ION7700:
-        case TYPE_ION8300:
-        case TYPE_LCU415:
-        case TYPE_LCU415LG:
-        case TYPE_LCU415ER:
-        case TYPE_LCUT3026:
-        case TYPE_TAPTERM:
-        case TYPE_SNPP:
-        case TYPE_RDS:
-        case TYPE_TNPP:
-        case TYPE_WCTP:
-        case TYPE_TCU5000:
-        case TYPE_TCU5500:
-        case TYPE_TDMARKV:
-        case TYPE_DAVIS:
-        case TYPE_ALPHA_A1:
-        case TYPE_ALPHA_PPLUS:
-        case TYPE_FULCRUM:
-        case TYPE_QUANTUM:
-        case TYPE_VECTRON:
-        case TYPE_LGS4:
-        case TYPE_IPC_430S4E:
-        case TYPE_DR87:
-        case TYPE_KV2:
-        case TYPE_ALPHA_A3:
-        case TYPE_SENTINEL:
-        case TYPE_IPC_430SL:
-        case TYPE_FOCUS:
-        case TYPE_IPC_410FL:
-        case TYPE_IPC_420FD:
-        case TYPE_SIXNET:
-        case TYPEDCT501:
-        case TYPEMCT210:
-        case TYPEMCT212:
-        case TYPEMCT213:
-        case TYPEMCT224:
-        case TYPEMCT226:
-        case TYPEMCT240:
-        case TYPEMCT242:
-        case TYPEMCT248:
-        case TYPEMCT250:
-        case TYPEMCT310:
-        case TYPEMCT310ID:
-        case TYPEMCT310IL:
-        case TYPEMCT310IDL:
-        case TYPEMCT318:
-        case TYPEMCT318L:
-        case TYPEMCT360:
-        case TYPEMCT370:
-        case TYPEMCT410CL:
-        case TYPEMCT410FL:
-        case TYPEMCT410GL:
-        case TYPEMCT410IL:
-        case TYPEMCT420CL:
-        case TYPEMCT420CD:
-        case TYPEMCT420FL:
-        case TYPEMCT420FD:
-        case TYPEMCT430A:
-        case TYPEMCT430A3:
-        case TYPEMCT430S4:
-        case TYPEMCT430SL:
-        case TYPEMCT470:
-        case TYPEMCT440_2131B:
-        case TYPEMCT440_2132B:
-        case TYPEMCT440_2133B:
-        case TYPE_RFN1200:
-        case TYPE_RFN410FL:
-        case TYPE_RFN410FX:
-        case TYPE_RFN410FD:
-        case TYPE_RFN420FL:
-        case TYPE_RFN420FX:
-        case TYPE_RFN420FD:
-        case TYPE_RFN420FRX:
-        case TYPE_RFN420FRD:
-        case TYPE_RFN410CL:
-        case TYPE_RFN420CL:
-        case TYPE_RFN420CD:
-        case TYPE_RFN430A3D:
-        case TYPE_RFN430A3T:
-        case TYPE_RFN430A3K:
-        case TYPE_RFN430A3R:
-        case TYPE_RFN430KV:
-        case TYPE_RFN430SL0:
-        case TYPE_RFN430SL1:
-        case TYPE_RFN430SL2:
-        case TYPE_RFN430SL3:
-        case TYPE_RFN430SL4:
-        case TYPELCR3102:
-        case TYPE_LOAD_TAP_CHANGER:
-        case TYPE_GANG_OPERATED_REGULATOR:
-        case TYPE_PHASE_OPERATED_REGULATOR:
-        case TYPE_MODBUS:
-        case TYPELMT2:
-        case TYPECBC6510:
-        case TYPECBC7020:
-        case TYPECBC8020:
-        case TYPECBCDNP:
-        case TYPE_RTC:
-        case TYPE_RTM:
-        case TYPE_PAGING_RECEIVER:
-        case TYPE_FCI:
-        case TYPE_NEUTRAL_MONITOR:
-        {
-            bRet = true;
-            break;
-        }
-        case TYPE_SYSTEM:
-        case TYPE_VIRTUAL_SYSTEM:
-        case TYPEVERSACOMCBC:
-        case TYPECBC7010:
-        case TYPEEXPRESSCOMCBC:
-        case TYPEFISHERPCBC:
-        case TYPE_LMGROUP_EMETCON:
-        case TYPE_LMGROUP_POINT:
-        case TYPE_LMGROUP_RIPPLE:
-        case TYPE_LMGROUP_VERSACOM:
-        case TYPE_LMGROUP_EXPRESSCOM:
-        case TYPE_LMGROUP_RFN_EXPRESSCOM:
-        case TYPE_LMGROUP_DIGI_SEP:
-        case TYPE_LMGROUP_ECOBEE:
-        case TYPE_LMGROUP_MCT:
-        case TYPE_LMGROUP_GOLAY:
-        case TYPE_LMGROUP_SADIGITAL:
-        case TYPE_LMGROUP_SA105:
-        case TYPE_LMGROUP_SA205:
-        case TYPE_LMGROUP_SA305:
-        case TYPEMCTBCAST:
-        case TYPE_MACRO:
-        {
-            bRet = false;
-            break;
-        }
-        default:
-        {
-            CTILOG_ERROR(dout, "Unable to determine whether device type " << Type <<  " is a targetable device type!");
-        }
+        TYPE_CCU721,
+        TYPE_CCU711,
+        TYPE_CCU710,
+        TYPE_CCU700,
+        TYPE_REPEATER800,
+        TYPE_REPEATER850,
+        TYPE_REPEATER900,
+        TYPE_ILEXRTU,
+        TYPE_WELCORTU,
+        TYPE_SES92RTU,
+        TYPE_DNPRTU,
+        TYPE_DARTRTU,
+        TYPE_SERIESVRTU,
+        TYPE_SERIESVLMIRTU,
+        TYPE_ION7330,
+        TYPE_ION7700,
+        TYPE_ION8300,
+        TYPE_LCU415,
+        TYPE_LCU415LG,
+        TYPE_LCU415ER,
+        TYPE_LCUT3026,
+        TYPE_TAPTERM,
+        TYPE_SNPP,
+        TYPE_RDS,
+        TYPE_TNPP,
+        TYPE_WCTP,
+        TYPE_TCU5000,
+        TYPE_TCU5500,
+        TYPE_TDMARKV,
+        TYPE_DAVIS,
+        TYPE_ALPHA_A1,
+        TYPE_ALPHA_PPLUS,
+        TYPE_FULCRUM,
+        TYPE_QUANTUM,
+        TYPE_VECTRON,
+        TYPE_LGS4,
+        TYPE_IPC_430S4E,
+        TYPE_DR87,
+        TYPE_KV2,
+        TYPE_ALPHA_A3,
+        TYPE_SENTINEL,
+        TYPE_IPC_430SL,
+        TYPE_FOCUS,
+        TYPE_IPC_410FL,
+        TYPE_IPC_420FD,
+        TYPE_SIXNET,
+        TYPEDCT501,
+        TYPEMCT210,
+        TYPEMCT212,
+        TYPEMCT213,
+        TYPEMCT224,
+        TYPEMCT226,
+        TYPEMCT240,
+        TYPEMCT242,
+        TYPEMCT248,
+        TYPEMCT250,
+        TYPEMCT310,
+        TYPEMCT310ID,
+        TYPEMCT310IL,
+        TYPEMCT310IDL,
+        TYPEMCT318,
+        TYPEMCT318L,
+        TYPEMCT360,
+        TYPEMCT370,
+        TYPEMCT410CL,
+        TYPEMCT410FL,
+        TYPEMCT410GL,
+        TYPEMCT410IL,
+        TYPEMCT420CL,
+        TYPEMCT420CD,
+        TYPEMCT420FL,
+        TYPEMCT420FD,
+        TYPEMCT430A,
+        TYPEMCT430A3,
+        TYPEMCT430S4,
+        TYPEMCT430SL,
+        TYPEMCT470,
+        TYPEMCT440_2131B,
+        TYPEMCT440_2132B,
+        TYPEMCT440_2133B,
+        TYPE_RFN1200,
+        TYPE_RFN410FL,
+        TYPE_RFN410FX,
+        TYPE_RFN410FD,
+        TYPE_RFN420FL,
+        TYPE_RFN420FX,
+        TYPE_RFN420FD,
+        TYPE_RFN420FRX,
+        TYPE_RFN420FRD,
+        TYPE_RFN410CL,
+        TYPE_RFN420CL,
+        TYPE_RFN420CD,
+        TYPE_RFN430A3D,
+        TYPE_RFN430A3T,
+        TYPE_RFN430A3K,
+        TYPE_RFN430A3R,
+        TYPE_RFN430KV,
+        TYPE_RFN430SL0,
+        TYPE_RFN430SL1,
+        TYPE_RFN430SL2,
+        TYPE_RFN430SL3,
+        TYPE_RFN430SL4,
+        TYPELCR3102,
+        TYPE_LOAD_TAP_CHANGER,
+        TYPE_GANG_OPERATED_REGULATOR,
+        TYPE_PHASE_OPERATED_REGULATOR,
+        TYPE_MODBUS,
+        TYPELMT2,
+        TYPECBC6510,
+        TYPECBC7020,
+        TYPECBC8020,
+        TYPECBCDNP,
+        TYPE_RTC,
+        TYPE_RTM,
+        TYPE_PAGING_RECEIVER,
+        TYPE_FCI,
+        TYPE_NEUTRAL_MONITOR
+    };
+
+    static const std::set<DeviceTypes>  nontargetableDevices
+    {
+        TYPE_SYSTEM,
+        TYPE_VIRTUAL_SYSTEM,
+        TYPEVERSACOMCBC,
+        TYPECBC7010,
+        TYPEEXPRESSCOMCBC,
+        TYPEFISHERPCBC,
+        TYPE_LMGROUP_EMETCON,
+        TYPE_LMGROUP_POINT,
+        TYPE_LMGROUP_RIPPLE,
+        TYPE_LMGROUP_VERSACOM,
+        TYPE_LMGROUP_EXPRESSCOM,
+        TYPE_LMGROUP_RFN_EXPRESSCOM,
+        TYPE_LMGROUP_DIGI_SEP,
+        TYPE_LMGROUP_ECOBEE,
+        TYPE_LMGROUP_MCT,
+        TYPE_LMGROUP_GOLAY,
+        TYPE_LMGROUP_SADIGITAL,
+        TYPE_LMGROUP_SA105,
+        TYPE_LMGROUP_SA205,
+        TYPE_LMGROUP_SA305,
+        TYPEMCTBCAST,
+        TYPE_MACRO
+    };
+
+    if ( targetableDevices.count( static_cast<DeviceTypes>(Type) ) )
+    {
+        return true;
     }
 
-    return bRet;
+    if ( ! nontargetableDevices.count( static_cast<DeviceTypes>(Type) ) )
+    {
+        CTILOG_ERROR(dout, "Unable to determine whether device type " << Type <<  " is a targetable device type!");
+    }
+
+    return false;
 }
 
 INT resolveRelayUsage(const string& _str)
@@ -1110,7 +1107,7 @@ INT resolveSlaveAddress(const INT DeviceType, const string& _str)
 
 CtiControlType_t  resolveControlType(const string& _str)
 {
-    string str = trim_copy(to_lower_copy(_str));
+    string str = sanitizeInput( _str );
 
     static const std::map<std::string, CtiControlType_t> ControlTypes
     {
