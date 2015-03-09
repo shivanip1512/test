@@ -150,16 +150,14 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
 
     private void createDatabaseChangeListener() {
         asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.SERVICE_COMPANY, EnumSet.of(DbChangeType.ADD, DbChangeType.UPDATE), new DatabaseChangeEventListener() {
-            
             @Override
             public void eventReceived(DatabaseChangeEvent event) {
+                serviceCompanyCache.remove(event.getPrimaryKey());
                 ServiceCompanyDto companyDto = getCompanyById(event.getPrimaryKey());
                 serviceCompanyCache.put(companyDto.getCompanyId(), companyDto);
-                
             }
         });
         asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.SERVICE_COMPANY, EnumSet.of(DbChangeType.DELETE), new DatabaseChangeEventListener() {
-            
             @Override
             public void eventReceived(DatabaseChangeEvent event) {
                 serviceCompanyCache.remove(event.getPrimaryKey());
@@ -170,7 +168,19 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
     // CRUD
     @Override
     public ServiceCompanyDto getCompanyById(int serviceCompanyId) {
-        return serviceCompanyCache.get(serviceCompanyId);
+        ServiceCompanyDto serviceCompanyDto = serviceCompanyCache.get(serviceCompanyId);
+        if (serviceCompanyDto != null) {
+            return serviceCompanyDto;
+        } else {
+            
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.appendFragment(selectBase);
+            sql.append("WHERE CompanyId").eq(serviceCompanyId);
+
+            ServiceCompanyDto serviceCompany = jdbcTemplate.queryForObject(sql, new ServiceCompanyDtoRowMapper());
+            populateServiceCompany(serviceCompany);
+            return serviceCompany;
+        }
     }
 
     @Override
