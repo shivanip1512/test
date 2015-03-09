@@ -39,17 +39,17 @@
         
         <c:if test="${not empty pageScope.helpText or not empty pageScope.helpUrl}">
             <cti:icon icon="icon-help" classes="cp" 
-                data-popup="#section-container-info-popup-${thisId}"
+                data-popup="#section-container-info-popup-${id}"
                 data-popup-toggle=""/>
         </c:if>
         <div class="controls">${controls}</div>
     </div>
     <%-- Body --%>
-    <div id="${thisId}_content" class="content clearfix ${hideMe}"><jsp:doBody/></div>
+    <div id="${id}_content" class="content clearfix ${hideMe}"><jsp:doBody/></div>
 </div>
 <%-- Help Popup --%>
 <c:if test="${not empty pageScope.helpText or not empty pageScope.helpUrl}">
-    <div id="section-container-info-popup-${thisId}" class="dn" 
+    <div id="section-container-info-popup-${id}" class="dn" 
             data-title="${pageScope.title}" 
             <c:if test="${not empty pageScope.helpUrl}">data-url="${helpUrl}"</c:if>
             data-width="600">${helpText}</div>
