@@ -48,7 +48,6 @@ import com.cannontech.stars.database.data.lite.LiteMeterHardwareBase;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.hardware.model.InventoryBase;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
@@ -92,7 +91,6 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
 
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
-    @Autowired private LMHardwareConfigurationDao lmHardwareConfigurationDao;
     @Autowired private ThermostatScheduleDao thermostatScheduleDao;
     @Autowired private LMHardwareEventDao hardwareEventDao;
     @Autowired private ECMappingDao ecMappingDao;

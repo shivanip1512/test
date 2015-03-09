@@ -1,6 +1,7 @@
 package com.cannontech.stars.dr.hardware.service;
 
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
+import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
@@ -85,4 +86,11 @@ public interface LmHardwareCommandStrategy {
      * @throws {@link CommandCompletionException} 
      */
     public void sendBroadcastCommand(LmCommand command) throws CommandCompletionException;
+    
+    /**
+     * This method will return true if config command. It will throw an exception if device is not configured correctly.
+     * 
+     * @throws {@link BadConfigurationException} 
+     */
+    public boolean canSendConfig(LmHardwareCommand command) throws BadConfigurationException;
 }

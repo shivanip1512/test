@@ -1504,10 +1504,12 @@
     <bean class="com.cannontech.web.updater.deviceReconfig.handler.ItemsProcessedUpdaterHandler"/>
     <bean class="com.cannontech.web.updater.deviceReconfig.handler.NewOperationForFailedUpdaterHandler"/>
     <bean class="com.cannontech.web.updater.deviceReconfig.handler.NewOperationForSuccessUpdaterHandler"/>
+    <bean class="com.cannontech.web.updater.deviceReconfig.handler.NewOperationForUnsupportedUpdaterHandler"/>
     <bean class="com.cannontech.web.updater.deviceReconfig.handler.ProgressUpdaterHandler"/>
     <bean class="com.cannontech.web.updater.deviceReconfig.handler.StatusClassUpdaterHandler"/>
     <bean class="com.cannontech.web.updater.deviceReconfig.handler.StatusTextUpdaterHandler"/>
     <bean class="com.cannontech.web.updater.deviceReconfig.handler.SuccessCountUpdaterHandler"/>
+    <bean class="com.cannontech.web.updater.deviceReconfig.handler.UnsupportedCountUpdaterHandler"/>
 
     <bean id="commandScheduleValidator" class="com.cannontech.web.stars.dr.operator.inventory.CommandScheduleValidator"/>
     <bean id="filterModelValidator" class="com.cannontech.web.stars.dr.operator.inventory.FilterModelValidator"/>

@@ -1,7 +1,5 @@
 package com.cannontech.stars.dr.hardwareConfig;
 
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,9 +13,7 @@ import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
-import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
@@ -25,11 +21,9 @@ import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
 import com.cannontech.stars.dr.hardware.service.LmHardwareCommandService;
 import com.cannontech.stars.dr.hardware.service.impl.PorterExpressComCommandBuilder;
-import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.user.YukonUserContext;
-import com.google.common.collect.Lists;
 
 public class HardwareConfigServiceImpl implements HardwareConfigService {
     private final static Logger log = YukonLogManager.getLogger(HardwareConfigServiceImpl.class);
@@ -85,26 +79,6 @@ public class HardwareConfigServiceImpl implements HardwareConfigService {
         logEvent(accountId, energyCompanyId,
                  liteHw.getManufacturerSerialNumber(),
                  ActivityLogActions.HARDWARE_ENABLE_ACTION, userContext);
-    }
-
-    @Override
-    public List<String> getConfigCommands(int inventoryId, int energyCompanyId, boolean includeInService) {
-        LiteLmHardwareBase liteHw = (LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(inventoryId);
-        LiteStarsEnergyCompany lsec = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyId);
-        boolean hardwareAddressing = ecSettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, lsec.getEnergyCompanyId());
-
-        List<String> retVal = Lists.newArrayList();
-
-        if (enrollmentDao.isEnrolled(inventoryId)) {
-            if (includeInService) {
-                retVal.addAll(xcomCommandBuilder.getEnableCommands(liteHw, true));
-            }
-            List<String> commands = xcomCommandBuilder.getConfigCommands(liteHw, hardwareAddressing, null);
-            retVal.addAll(commands);
-        } else {
-            retVal.addAll(xcomCommandBuilder.getDisableCommands(liteHw));
-        }
-        return retVal;
     }
 
     private void addSwitchCommand(int energyCompanyId, int accountId, int inventoryId, String commandType) {

@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
+import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
@@ -260,6 +261,26 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
     @Override
     public void cancelTextMessage(YukonCancelTextMessage message) {
         throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public boolean canSendConfig(LmHardwareCommand command) throws BadConfigurationException{
+        List<String> commands = Lists.newArrayList();
+        YukonEnergyCompany yec = ecDao.getEnergyCompanyByInventoryId(command.getDevice().getInventoryID());
+        boolean trackAddressing =
+            energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING,
+                yec.getEnergyCompanyId());
+        Integer optionalGroupId = null;
+        Integer param = command.findParam(LmHardwareCommandParam.OPTIONAL_GROUP_ID, Integer.class);
+        if (param != null) {
+            optionalGroupId = param;
+        }
+        commands = xcomCommandBuilder.getConfigCommands(command.getDevice(), trackAddressing, optionalGroupId);
+        if (commands.isEmpty()) {
+            throw new BadConfigurationException(
+                "Addressing Group not is assigned.  If no groups are available in the Assigned Group column, please verify that your programs are valid Yukon LM Programs with assigned load groups.");
+        }
+        return true;
     }
     
 }

@@ -18,6 +18,7 @@ import org.springframework.jms.core.JmsTemplate;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.device.commands.exception.SystemConfigurationException;
+import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
@@ -99,7 +100,7 @@ public class ZigbeeCommandStrategy implements LmHardwareCommandStrategy {
             List<Integer> lmGroupIds = gatewayDeviceDao.getLMGroupIdByEndPointId(device.getDeviceID());
             
             if (lmGroupIds.isEmpty()) {
-                throw new CommandCompletionException("Device is not Enrolled in any program.");
+                throw new BadConfigurationException("Device is not Enrolled in any program.");
             }
             
             //Grabbing only the first GroupId the device is assigned to.
@@ -364,5 +365,15 @@ public class ZigbeeCommandStrategy implements LmHardwareCommandStrategy {
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
         jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.setPubSubDomain(false);
+    }
+
+    @Override
+    public boolean canSendConfig(LmHardwareCommand command) throws BadConfigurationException {
+        LiteLmHardwareBase device = command.getDevice();
+        List<Integer> lmGroupIds = gatewayDeviceDao.getLMGroupIdByEndPointId(device.getDeviceID());
+        if (lmGroupIds.isEmpty()) {
+            throw new BadConfigurationException("Device is not Enrolled in any program.");
+        }
+        return true;
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
+import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
@@ -88,8 +89,8 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
     private int getGroupId(int inventoryId) {
         List<LMHardwareConfiguration> hardwareConfig = lmHardwareConfigDao.getForInventoryId(inventoryId);
         if(hardwareConfig.size() != 1) {
-            throw new IllegalStateException(hardwareConfig.size()
-                                            + " groups. Ecobee only supports one and only one group per device.");
+            throw new BadConfigurationException("Ecobee only supports one and only one group per device. "
+                + hardwareConfig.size() + " groups found.");
         }
         return hardwareConfig.get(0).getAddressingGroupId();
     }
@@ -124,5 +125,11 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
     @Override
     public void cancelTextMessage(YukonCancelTextMessage message) {
         throw new UnsupportedOperationException("No support for text message");
+    }
+
+    @Override
+    public boolean canSendConfig(LmHardwareCommand command) throws BadConfigurationException {
+        getGroupId(command.getDevice().getInventoryID());
+        return true;
     }
 }

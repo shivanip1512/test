@@ -214,11 +214,11 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
                                 log.error(e.getMessage(), e);
                             }
                         } else if (appInventoryId == inventoryId && addressingGroupId == 0) {
-                            throw new BadConfigurationException("Unable to config since no Addressing Group is assigned.  If no groups are available in the Assigned Group column, please verify that your programs are valid Yukon LM Programs with assigned load groups.");
+                            throw new BadConfigurationException("Addressing Group is not assigned.  If no groups are available in the Assigned Group column, please verify that your programs are valid Yukon LM Programs with assigned load groups.");
                         }
                     }
                     if (configFound == false) {
-                        throw new BadConfigurationException("Unable to config since no Addressing Group is assigned.  If no groups are available in the Assigned Group column, please verify that your programs are valid Yukon LM Programs with assigned load groups.");
+                        throw new BadConfigurationException("Addressing Group is not assigned.  If no groups are available in the Assigned Group column, please verify that your programs are valid Yukon LM Programs with assigned load groups.");
                     }
                 } else {
                     throw new BadConfigurationException("Unable to find STARS account info for device: " + device.getDeviceLabel());

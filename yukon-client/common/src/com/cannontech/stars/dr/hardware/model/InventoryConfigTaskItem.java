@@ -2,7 +2,7 @@ package com.cannontech.stars.dr.hardware.model;
 
 public class InventoryConfigTaskItem {
     public static enum Status {
-        UNPROCESSED, SUCCESS, FAIL
+        UNPROCESSED, SUCCESS, FAIL, UNSUPPORTED
     }
 
     private InventoryConfigTask inventoryConfigTask;

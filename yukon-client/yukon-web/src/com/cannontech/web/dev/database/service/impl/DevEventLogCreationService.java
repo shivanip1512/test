@@ -463,14 +463,12 @@ public class DevEventLogCreationService {
                 String taskName = devEventLog.getIndicatorString() + "TaskName";
                 String serialNumber = "1234432";
                 int inventoryId = 123321;
-                int commandRequestExecutionIdentifier = 123;
-
                 inventoryConfigEventLogService.taskCreated(yukonUser, taskName);
                 inventoryConfigEventLogService.taskDeleted(yukonUser, taskName);
                 inventoryConfigEventLogService.itemConfigSucceeded(yukonUser, serialNumber,
-                    inventoryId, commandRequestExecutionIdentifier);
+                    inventoryId);
                 inventoryConfigEventLogService.itemConfigFailed(yukonUser, serialNumber,
-                    inventoryId, commandRequestExecutionIdentifier);
+                    inventoryId);
             }
         });
         executables.put(LogType.METERING, new DevEventLogExecutable() {

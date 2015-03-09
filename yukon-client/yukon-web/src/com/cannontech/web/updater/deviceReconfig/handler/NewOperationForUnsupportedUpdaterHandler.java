@@ -8,7 +8,7 @@ import com.cannontech.stars.dr.hardware.model.InventoryConfigTaskItem.Status;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.deviceReconfig.DeviceReconfigMonitorUpdaterType;
 
-public class NewOperationForFailedUpdaterHandler implements DeviceReconfigUpdaterHandler {
+public class NewOperationForUnsupportedUpdaterHandler implements DeviceReconfigUpdaterHandler {
 
     private InventoryConfigTaskDao inventoryConfigTaskDao;
 
@@ -19,7 +19,7 @@ public class NewOperationForFailedUpdaterHandler implements DeviceReconfigUpdate
         int itemsProcessed = inventoryConfigTask.getNumberOfItemsProcessed();
         
         if (itemsProcessed == inventoryConfigTask.getNumberOfItems()) {
-            if (inventoryConfigTaskDao.getTaskItemCount(taskId, Status.FAIL) > 0) {
+            if (inventoryConfigTaskDao.getTaskItemCount(taskId, Status.UNSUPPORTED) > 0) {
                 return "visible";
             }
             return "hidden";
@@ -30,7 +30,7 @@ public class NewOperationForFailedUpdaterHandler implements DeviceReconfigUpdate
 
     @Override
     public DeviceReconfigMonitorUpdaterType getUpdaterType() {
-        return DeviceReconfigMonitorUpdaterType.NEW_OPERATION_FOR_FAILED;
+        return DeviceReconfigMonitorUpdaterType.NEW_OPERATION_FOR_UNSUPPORTED;
     }
     
     @Autowired

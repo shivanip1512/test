@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.stars.dr.hardware.dao.InventoryConfigTaskDao;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTask;
+import com.cannontech.stars.dr.hardware.model.InventoryConfigTaskItem.Status;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.deviceReconfig.DeviceReconfigMonitorUpdaterType;
 
@@ -18,7 +19,7 @@ public class NewOperationForSuccessUpdaterHandler implements DeviceReconfigUpdat
         int itemsProcessed = inventoryConfigTask.getNumberOfItemsProcessed();
         
         if (itemsProcessed == inventoryConfigTask.getNumberOfItems()) {
-            if (inventoryConfigTaskDao.getSuccessCount(taskId) > 0) {
+            if (inventoryConfigTaskDao.getTaskItemCount(taskId, Status.SUCCESS) > 0) {
                 return "visible";
             }
             return "hidden";

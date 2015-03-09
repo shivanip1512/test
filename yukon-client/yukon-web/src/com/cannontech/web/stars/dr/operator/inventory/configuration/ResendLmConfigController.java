@@ -55,7 +55,7 @@ public class ResendLmConfigController {
     @RequestMapping(value="do", params="start")
     public String startTask(HttpServletRequest request, YukonUserContext context, ModelMap model) throws ServletRequestBindingException {
         InventoryCollection collection = inventoryCollectionFactory.createCollection(request);
-        ResendLmConfigTask task = helper.new ResendLmConfigTask(collection, context);
+        ResendLmConfigTask task = helper.new ResendLmConfigTask(collection, context, false);
         String taskId = helper.startTask(task);
         
         model.addAttribute("taskId", taskId);

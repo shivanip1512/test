@@ -14,6 +14,7 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.device.commands.impl.CommandRequestExecutionDefaults;
+import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
@@ -192,6 +193,12 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
     @Override
     public void cancelTextMessage(YukonCancelTextMessage message) {
         throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public boolean canSendConfig(LmHardwareCommand command) throws BadConfigurationException {
+        commandBuilder.getCommandAsHexStringByteArray(command);
+        return true;
     }
     
 }

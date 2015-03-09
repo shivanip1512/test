@@ -70,5 +70,13 @@ public interface LmHardwareCommandService {
      * Will send a command to the entire LM network.
      */
     void sendBroadcastCommand(LmCommand command);
+
+    /**
+     * Will attempt to send a configuration command to the device. If autoConfig is true config command will be send 5
+     * minutes after in-service command is sent if FORCE_IN_SERVICE = true.
+     * 
+     * @throws {@link CommandCompletionException}
+     */
+    void sendConfigCommand(LmHardwareCommand command, boolean autoConfig) throws CommandCompletionException;
     
 }

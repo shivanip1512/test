@@ -14,7 +14,11 @@
         <cti:param name="type" value="SUCCESS"/>
         <cti:param name="taskId" value="${task.inventoryConfigTaskId}"/>
     </cti:url>
-
+    
+    <cti:url var="newOperationUnsupported" value="/stars/operator/inventory/deviceReconfig/newOperation">
+        <cti:param name="type" value="UNSUPPORTED"/>
+        <cti:param name="taskId" value="${task.inventoryConfigTaskId}"/>
+    </cti:url>
         
     <div class="note stacked">
         <span class="strong-label-small"><i:inline key=".notesLabel"/></span>
@@ -48,6 +52,20 @@
     <div>
         <cti:classUpdater type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/NEW_OPERATION_FOR_SUCCESS">
             <a href="${newOperationSuccess}"><i:inline key=".newOperation"/></a>
+        </cti:classUpdater>
+    </div>
+    
+    <tags:nameValueContainer2>
+        
+        <tags:nameValue2 nameKey=".unsupportedCount">
+            <cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/UNSUPPORTED_COUNT" styleClass="success fwb"/>
+        </tags:nameValue2>
+        
+    </tags:nameValueContainer2>
+
+    <div>
+        <cti:classUpdater type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/NEW_OPERATION_FOR_UNSUPPORTED">
+            <a href="${newOperationUnsupported}"><i:inline key=".newOperation"/></a>
         </cti:classUpdater>
     </div>
     

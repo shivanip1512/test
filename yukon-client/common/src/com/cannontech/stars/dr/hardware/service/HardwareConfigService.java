@@ -8,7 +8,6 @@ import java.util.TimeZone;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import javax.annotation.PostConstruct;
 
@@ -22,18 +21,13 @@ import org.joda.time.ReadablePeriod;
 import org.quartz.CronExpression;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.device.commands.CommandCompletionCallback;
-import com.cannontech.common.device.commands.CommandRequestExecutionTemplate;
-import com.cannontech.common.device.commands.CommandRequestRoute;
 import com.cannontech.common.device.commands.CommandRequestRouteExecutor;
 import com.cannontech.common.device.commands.WaitableCommandCompletionCallbackFactory;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
-import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallback;
-import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.events.loggers.InventoryConfigEventLogService;
+import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
@@ -44,7 +38,11 @@ import com.cannontech.stars.dr.hardware.model.CommandSchedule;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTask;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTaskItem;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTaskItem.Status;
+import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
+import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
+import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.google.common.collect.Lists;
 
@@ -61,93 +59,55 @@ public class HardwareConfigService {
     @Autowired private InventoryConfigTaskDao inventoryConfigTaskDao;
     @Autowired private LmHardwareCommandRequestExecutor lmHardwareCommandRequestExecutor;
     @Autowired private WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory;
+    @Autowired private LmHardwareCommandService commandService;
+    @Autowired private YukonListDao yukonListDao;
 
     private ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
 
     private class EnergyCompanyRunnable implements Runnable {
         int energyCompanyId;
-        boolean hadErrors;
 
         private EnergyCompanyRunnable(int energyCompanyId) {
             this.energyCompanyId = energyCompanyId;
         }
 
-        private void blockingCommandExecute(CommandRequestExecutionTemplate<CommandRequestRoute> template,
-                final LiteLmHardwareBase hardware, String command) throws CommandCompletionException {
-            CommandCompletionCallback<CommandRequestRoute> callback =
-                new CommandCompletionCallbackAdapter<CommandRequestRoute>() {
-                    @Override
-                    public void receivedLastError(CommandRequestRoute command, SpecificDeviceErrorDescription error) {
-                        hadErrors = true;
-                    }
-                };
-            hadErrors = false;
-            WaitableCommandCompletionCallback<CommandRequestRoute> waitableCallback =
-                waitableCommandCompletionCallbackFactory.createWaitable(callback);
-            lmHardwareCommandRequestExecutor.executeWithTemplate(template, hardware, command, waitableCallback);
-            try {
-                waitableCallback.waitForCompletion();
-            } catch (InterruptedException interruptedException) {
-                hadErrors = true;
-                log.error("interrupted waiting for command completion", interruptedException);
-            } catch (TimeoutException timeoutException) {
-                hadErrors = true;
-                log.error("timed out waiting for command completion", timeoutException);
-            }
-        }
-
-        private void processItem(InventoryConfigTaskItem item, Duration delayBetweenCommands)
+        private void processItem(InventoryConfigTaskItem item)
                 throws InterruptedException {
-            log.trace("processing item " + item);
-            Status status = Status.FAIL;
-            int inventoryId = item.getInventoryId();
-            LiteLmHardwareBase hardware = inventoryBaseDao.getHardwareByInventoryId(inventoryId);
+            log.debug("Configuration task" + item);
+            LiteLmHardwareBase hardware = inventoryBaseDao.getHardwareByInventoryId(item.getInventoryId());
+            HardwareType type = HardwareType.valueOf(yukonListDao.getYukonListEntry(hardware.getLmHardwareTypeID()).getYukonDefID());
             LiteYukonUser user = item.getInventoryConfigTask().getUser();
 
-            CommandRequestExecutionTemplate<CommandRequestRoute> template =
-                commandRequestRouteExecutor.getExecutionTemplate(DeviceRequestType.INVENTORY_RECONFIG, user);
             try {
-                List<String> commands =
-                    hardwareConfigService.getConfigCommands(inventoryId, energyCompanyId,
-                        item.getInventoryConfigTask().isSendInService());
-                log.trace(item.getInventoryId() + " needs " + commands.size() + " commands");
-                if (!commands.isEmpty()) {
-                    status = Status.SUCCESS;
-                    for (String command : commands) {
-                        log.trace("processing command [" + command + "]");
-                        blockingCommandExecute(template, hardware, command);
-                        if (hadErrors) {
-                            log.error("error(s) executing command [" + command + "]; inventory id=" + inventoryId
-                                + "; CMRE id=" + template.getContextId().getId());
-                            status = Status.FAIL;
-                            break;
-                        }
-                        Thread.sleep(delayBetweenCommands.getMillis());
-                    }
-                } else {
-                    log.debug("no commands");
-                }
-            } catch (CommandCompletionException cce) {
-                log.error("exception executing command; inventory id=" + inventoryId + "; CMRE id="
-                    + template.getContextId().getId() + "; msg=[" + cce.getMessage() + "]");
-                status = Status.FAIL;
-            } catch (InterruptedException ie) {
-                throw ie;
-            } catch (Exception exception) {
-                log.error("unexpected error configuring device; inventory id=" + inventoryId + "; CMRE id="
-                    + template.getContextId().getId() + "; msg=[" + exception.getMessage() + "]");
-                status = Status.FAIL;
-            }
-            inventoryConfigTaskDao.markComplete(item, status);
-            if (status == Status.SUCCESS) {
-                inventoryConfigEventLogService.itemConfigSucceeded(user, hardware.getManufacturerSerialNumber(),
-                    inventoryId, template.getContextId().getId());
-            } else {
-                inventoryConfigEventLogService.itemConfigFailed(user, hardware.getManufacturerSerialNumber(),
-                    inventoryId, template.getContextId().getId());
-            }
-        }
+                if (type.isConfigurable()) {
+                    YukonEnergyCompany yec = ecDao.getEnergyCompanyByInventoryId(hardware.getInventoryID());
 
+                    LmHardwareCommand command = new LmHardwareCommand();
+                    command.setDevice(hardware);
+                    command.setType(LmHardwareCommandType.CONFIG);
+                    command.setUser(yec.getEnergyCompanyUser());
+                    command.getParams().put(LmHardwareCommandParam.BULK, true);
+                    boolean sendInService = item.getInventoryConfigTask().isSendInService();
+                    if (sendInService) {
+                        command.getParams().put(LmHardwareCommandParam.FORCE_IN_SERVICE, true);
+                    }
+                    commandService.sendConfigCommand(command, true);
+                    inventoryConfigTaskDao.markComplete(item, Status.SUCCESS);
+                    inventoryConfigEventLogService.itemConfigSucceeded(user, hardware.getManufacturerSerialNumber(),
+                        hardware.getInventoryID());
+                } else {
+                    inventoryConfigTaskDao.markComplete(item, Status.UNSUPPORTED);
+                    inventoryConfigEventLogService.itemConfigUnsupported(user, hardware.getManufacturerSerialNumber(),
+                        hardware.getInventoryID());
+                }
+            } catch (CommandCompletionException e) {
+                log.error("Unable to send config command inventory id=" + item.getInventoryId(), e);
+                inventoryConfigTaskDao.markComplete(item, Status.FAIL);
+                inventoryConfigEventLogService.itemConfigFailed(user, hardware.getManufacturerSerialNumber(),
+                    hardware.getInventoryID());
+            } 
+        }
+        
         private boolean processItems() throws InterruptedException {
             log.trace("processing a chunk of work for ecId = " + energyCompanyId);
             TimeZone ecTimeZone = ecService.getDefaultTimeZone(energyCompanyId);
@@ -200,8 +160,17 @@ public class HardwareConfigService {
                     int actualNumItems = 0;
                     for (InventoryConfigTaskItem item : items) {
                         actualNumItems++;
-                        processItem(item, delayBetweenCommands);
+                        processItem(item);
                         workProcessed = true;
+                        if (delayBetweenCommands != null) {
+                            log.debug("Waiting " + delayBetweenCommands.getStandardSeconds() + " seconds.");
+                            try {
+                                Thread.sleep(delayBetweenCommands.getMillis());
+                            } catch (InterruptedException e) {
+                                // ignore
+                            }
+                            log.debug("Done");
+                        }
                     }
                     log.debug("proccessed " + actualNumItems + " items");
                 }

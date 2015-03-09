@@ -215,20 +215,11 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
     }
 
     @Override
-    public int getFailedCount(int taskId) {
+    public int getTaskItemCount(int taskId, Status status) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*) FROM InventoryConfigTaskItem");
         sql.append("WHERE InventoryConfigTaskId").eq(taskId);
-        sql.append(  "AND Status").eq(Status.FAIL);
-        return yukonJdbcTemplate.queryForInt(sql);
-    }
-
-    @Override
-    public int getSuccessCount(int taskId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT COUNT(*) FROM InventoryConfigTaskItem");
-        sql.append("WHERE InventoryConfigTaskId").eq(taskId);
-        sql.append(  "AND Status").eq(Status.SUCCESS);
+        sql.append(  "AND Status").eq(status);
         return yukonJdbcTemplate.queryForInt(sql);
     }
 

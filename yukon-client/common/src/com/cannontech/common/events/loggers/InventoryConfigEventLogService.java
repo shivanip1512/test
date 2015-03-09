@@ -15,12 +15,15 @@ public interface InventoryConfigEventLogService {
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.inventoryConfig")
     public void itemConfigSucceeded(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
             @Arg(ArgEnum.serialNumber) String serialNumber,
-            @Arg(ArgEnum.inventoryId) int inventoryId,
-            @Arg(ArgEnum.commandRequestExecutionId) int commandRequestExecutionId);
+            @Arg(ArgEnum.inventoryId) int inventoryId);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.inventoryConfig")
     public void itemConfigFailed(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
             @Arg(ArgEnum.serialNumber) String serialNumber,
-            @Arg(ArgEnum.inventoryId) int inventoryId,
-            @Arg(ArgEnum.commandRequestExecutionId) int commandRequestExecutionId);
+            @Arg(ArgEnum.inventoryId) int inventoryId);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.inventoryConfig")
+    public void itemConfigUnsupported(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+            @Arg(ArgEnum.serialNumber) String serialNumber,
+            @Arg(ArgEnum.inventoryId) int inventoryId);
 }

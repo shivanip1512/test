@@ -3,34 +3,22 @@ package com.cannontech.web.updater.deviceReconfig.handler;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.stars.dr.hardware.dao.InventoryConfigTaskDao;
-import com.cannontech.stars.dr.hardware.model.InventoryConfigTask;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTaskItem.Status;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.deviceReconfig.DeviceReconfigMonitorUpdaterType;
 
-public class NewOperationForFailedUpdaterHandler implements DeviceReconfigUpdaterHandler {
+public class UnsupportedCountUpdaterHandler implements DeviceReconfigUpdaterHandler {
 
     private InventoryConfigTaskDao inventoryConfigTaskDao;
 
     @Override
     public String handle(int taskId, YukonUserContext userContext) {
-
-        InventoryConfigTask inventoryConfigTask = inventoryConfigTaskDao.getById(taskId);
-        int itemsProcessed = inventoryConfigTask.getNumberOfItemsProcessed();
-        
-        if (itemsProcessed == inventoryConfigTask.getNumberOfItems()) {
-            if (inventoryConfigTaskDao.getTaskItemCount(taskId, Status.FAIL) > 0) {
-                return "visible";
-            }
-            return "hidden";
-        }
-        
-        return "hidden";
+        return Integer.toString(inventoryConfigTaskDao.getTaskItemCount(taskId, Status.UNSUPPORTED));
     }
 
     @Override
     public DeviceReconfigMonitorUpdaterType getUpdaterType() {
-        return DeviceReconfigMonitorUpdaterType.NEW_OPERATION_FOR_FAILED;
+        return DeviceReconfigMonitorUpdaterType.UNSUPPORTED_COUNT;
     }
     
     @Autowired

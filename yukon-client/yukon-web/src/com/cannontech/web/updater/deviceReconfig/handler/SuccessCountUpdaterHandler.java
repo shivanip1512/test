@@ -3,6 +3,7 @@ package com.cannontech.web.updater.deviceReconfig.handler;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.stars.dr.hardware.dao.InventoryConfigTaskDao;
+import com.cannontech.stars.dr.hardware.model.InventoryConfigTaskItem.Status;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.deviceReconfig.DeviceReconfigMonitorUpdaterType;
 
@@ -12,7 +13,7 @@ public class SuccessCountUpdaterHandler implements DeviceReconfigUpdaterHandler 
 
     @Override
     public String handle(int taskId, YukonUserContext userContext) {
-        return Integer.toString(inventoryConfigTaskDao.getSuccessCount(taskId));
+        return Integer.toString(inventoryConfigTaskDao.getTaskItemCount(taskId, Status.SUCCESS));
     }
 
     @Override
