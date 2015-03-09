@@ -163,6 +163,77 @@ SET PagePath = '/capcontrol/schedules/assignments'
 WHERE PagePath = '/capcontrol/schedule/scheduleAssignments';
 /* End YUK-14006 */
 
+/* Start YUK-14006 */
+INSERT INTO DeviceConfiguration VALUES (-2, 'Default Regulator Configuration', null);
+
+INSERT INTO DeviceConfigDeviceTypes VALUES (-10, -2, 'LTC');
+INSERT INTO DeviceConfigDeviceTypes VALUES (-11, -2, 'GO_REGULATOR');
+INSERT INTO DeviceConfigDeviceTypes VALUES (-12, -2, 'PO_REGULATOR');
+
+INSERT INTO DeviceConfigCategory VALUES (-2, 'regulatorCategory', 'Default Regulator Category', null);
+
+INSERT INTO DeviceConfigCategoryMap VALUES(-2, -2);
+
+INSERT INTO DeviceConfigCategoryItem VALUES (-1, -2, 'voltageChangePerTap', '0.75');
+INSERT INTO DeviceConfigCategoryItem VALUES (-2, -2, 'heartbeatPeriod', '0');
+INSERT INTO DeviceConfigCategoryItem VALUES (-3, -2, 'heartbeatValue', '0');
+INSERT INTO DeviceConfigCategoryItem VALUES (-4, -2, 'voltageControlMode', 'DIRECT_TAP');
+
+/* @start-block */
+DECLARE
+    @configNumber                   NUMERIC = 1,
+    @newConfigId                    NUMERIC,
+    @newConfigCategoryId            NUMERIC,
+    @newConfigCategoryItemId        NUMERIC,
+    @newConfigDeviceTypeId          NUMERIC,
+    @keepAliveTimer                 NUMERIC,
+    @keepAliveConfig                NUMERIC,
+    @voltChangePerTap               NUMERIC(18,5);
+    
+    DECLARE regulator_curs CURSOR FOR (SELECT DISTINCT KeepAliveTimer, KeepAliveConfig, VoltChangePerTap FROM Regulator);
+BEGIN
+    OPEN regulator_curs;
+    FETCH FROM regulator_curs INTO @keepAliveTimer, @keepAliveConfig, @voltChangePerTap;
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+        SET @newConfigId = (SELECT MAX(DeviceConfigurationId) + 1 FROM DeviceConfiguration);
+        INSERT INTO DeviceConfiguration (DeviceConfigurationId, Name, Description)
+        VALUES (@NewConfigId, 'Generated Regulator Config ' + CAST(@configNumber AS VARCHAR(32)), NULL);
+        
+        SET @newConfigCategoryId = (SELECT MAX(DeviceConfigCategoryId) + 1 FROM DeviceConfigCategory);
+        INSERT INTO DeviceConfigCategory  (DeviceConfigCategoryId, CategoryType, Name, Description)
+        VALUES (@newConfigCategoryId, 'regulatorCategory', 'Generated Regulator Config Category ' + CAST(@configNumber AS VARCHAR(32)), NULL);
+        
+        INSERT INTO DeviceConfigCategoryMap (DeviceConfigurationId, DeviceConfigCategoryId)
+        VALUES (@newConfigId, @newConfigCategoryId);
+        
+        SET @newConfigCategoryItemId = (SELECT MAX(DeviceConfigCategoryItemId) FROM DeviceConfigCategoryItem);
+        INSERT INTO DeviceConfigCategoryItem VALUES (@newConfigCategoryItemId + 1, @newConfigCategoryId, 'voltageChangePerTap', @voltChangePerTap);
+        INSERT INTO DeviceConfigCategoryItem VALUES (@newConfigCategoryItemId + 2, @newConfigCategoryId, 'heartbeatPeriod', @keepAliveTimer);
+        INSERT INTO DeviceConfigCategoryItem VALUES (@newConfigCategoryItemId + 3, @newConfigCategoryId, 'heartbeatValue', @keepAliveConfig);
+        INSERT INTO DeviceConfigCategoryItem VALUES (@newConfigCategoryItemId + 4, @newConfigCategoryId, 'voltageControlMode', 'DIRECT_TAP');
+
+        SET @newConfigDeviceTypeId = (SELECT MAX(DeviceConfigDeviceTypeId) FROM DeviceConfigDeviceTypes);
+        INSERT INTO DeviceConfigDeviceTypes VALUES (@newConfigDeviceTypeId + 1, @newConfigId, 'LTC');
+        INSERT INTO DeviceConfigDeviceTypes VALUES (@newConfigDeviceTypeId + 2, @newConfigId, 'GO_REGULATOR');
+        INSERT INTO DeviceConfigDeviceTypes VALUES (@newConfigDeviceTypeId + 3, @newConfigId, 'PO_REGULATOR');
+
+        INSERT INTO DeviceConfigurationDeviceMap (DeviceId, DeviceConfigurationId)
+           (SELECT RegulatorId, @newConfigId FROM Regulator
+            WHERE KeepAliveTimer = @keepAliveTimer
+              AND KeepAliveConfig = @keepAliveConfig
+              AND VoltChangePerTap = @voltChangePerTap);
+
+        SET @configNumber = @configNumber + 1;
+
+       FETCH FROM regulator_curs INTO @keepAliveTimer, @keepAliveConfig, @voltChangePerTap;
+    END
+    CLOSE regulator_curs;
+    DEALLOCATE regulator_curs;
+END;
+/* @end-block */
+/* End YUK-14006 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

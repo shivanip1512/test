@@ -127,6 +127,78 @@ SET PagePath = '/capcontrol/schedules/assignments'
 WHERE PagePath = '/capcontrol/schedule/scheduleAssignments';
 /* End YUK-14006 */
 
+/* Start YUK-14006 */
+INSERT INTO DeviceConfiguration VALUES (-2, 'Default Regulator Configuration', null);
+
+INSERT INTO DeviceConfigDeviceTypes VALUES (-10, -2, 'LTC');
+INSERT INTO DeviceConfigDeviceTypes VALUES (-11, -2, 'GO_REGULATOR');
+INSERT INTO DeviceConfigDeviceTypes VALUES (-12, -2, 'PO_REGULATOR');
+
+INSERT INTO DeviceConfigCategory VALUES (-2, 'regulatorCategory', 'Default Regulator Category', null);
+
+INSERT INTO DeviceConfigCategoryMap VALUES(-2, -2);
+
+INSERT INTO DeviceConfigCategoryItem VALUES (-1, -2, 'voltageChangePerTap', '0.75');
+INSERT INTO DeviceConfigCategoryItem VALUES (-2, -2, 'heartbeatPeriod', '0');
+INSERT INTO DeviceConfigCategoryItem VALUES (-3, -2, 'heartbeatValue', '0');
+INSERT INTO DeviceConfigCategoryItem VALUES (-4, -2, 'voltageControlMode', 'DIRECT_TAP');
+
+/* @start-block */
+DECLARE
+    v_configNumber                   NUMBER := 1;
+    v_newConfigId                    NUMBER;
+    v_newConfigCategoryId            NUMBER;
+    v_newConfigCategoryItemId        NUMBER;
+    v_newConfigDeviceTypeId          NUMBER;
+    v_keepAliveTimer                 NUMBER;
+    v_keepAliveConfig                NUMBER;
+    v_voltChangePerTap               NUMBER;
+    
+    CURSOR regulator_curs IS SELECT DISTINCT KeepAliveTimer, KeepAliveConfig, VoltChangePerTap 
+                             FROM Regulator R
+                             ORDER BY KeepAliveTimer ASC, KeepAliveConfig ASC, VoltChangePerTap ASC;
+BEGIN
+    OPEN regulator_curs;
+    LOOP
+        FETCH regulator_curs into v_keepAliveTimer, v_keepAliveConfig, v_voltChangePerTap;
+        EXIT WHEN regulator_curs%NOTFOUND;
+        
+        SELECT MAX(DeviceConfigurationId) + 1 INTO v_newConfigId FROM DeviceConfiguration;
+        INSERT INTO DeviceConfiguration (DeviceConfigurationId, Name, Description)
+        VALUES (v_NewConfigId, 'Generated Regulator Config ' || v_configNumber, NULL);
+        
+        SELECT MAX(DeviceConfigCategoryId) + 1 INTO v_newConfigCategoryId FROM DeviceConfigCategory;
+        INSERT INTO DeviceConfigCategory  (DeviceConfigCategoryId, CategoryType, Name, Description)
+        VALUES (v_newConfigCategoryId, 'regulatorCategory', 'Generated Regulator Config Category ' || v_configNumber, NULL);
+        
+        INSERT INTO DeviceConfigCategoryMap (DeviceConfigurationId, DeviceConfigCategoryId)
+        VALUES (v_newConfigId, v_newConfigCategoryId);
+        
+        SELECT MAX(DeviceConfigCategoryItemId) INTO v_newConfigCategoryItemId FROM DeviceConfigCategoryItem;
+        INSERT INTO DeviceConfigCategoryItem VALUES (v_newConfigCategoryItemId + 1, v_newConfigCategoryId, 'voltageChangePerTap', v_voltChangePerTap);
+        INSERT INTO DeviceConfigCategoryItem VALUES (v_newConfigCategoryItemId + 2, v_newConfigCategoryId, 'heartbeatPeriod', v_keepAliveTimer);
+        INSERT INTO DeviceConfigCategoryItem VALUES (v_newConfigCategoryItemId + 3, v_newConfigCategoryId, 'heartbeatValue', v_keepAliveConfig);
+        INSERT INTO DeviceConfigCategoryItem VALUES (v_newConfigCategoryItemId + 4, v_newConfigCategoryId, 'voltageControlMode', 'DIRECT_TAP');
+
+        SELECT MAX(DeviceConfigDeviceTypeId) INTO v_newConfigDeviceTypeId FROM DeviceConfigDeviceTypes;
+        INSERT INTO DeviceConfigDeviceTypes VALUES (v_newConfigDeviceTypeId + 1, v_newConfigId, 'LTC');
+        INSERT INTO DeviceConfigDeviceTypes VALUES (v_newConfigDeviceTypeId + 2, v_newConfigId, 'GO_REGULATOR');
+        INSERT INTO DeviceConfigDeviceTypes VALUES (v_newConfigDeviceTypeId + 3, v_newConfigId, 'PO_REGULATOR');
+
+        INSERT INTO DeviceConfigurationDeviceMap (DeviceId, DeviceConfigurationId)
+           (SELECT RegulatorId, v_newConfigId FROM Regulator
+            WHERE KeepAliveTimer = v_keepAliveTimer
+              AND KeepAliveConfig = v_keepAliveConfig
+              AND VoltChangePerTap = v_voltChangePerTap);
+
+        v_configNumber := v_configNumber + 1;
+    END LOOP;
+    CLOSE regulator_curs;
+END;
+/
+/* @end-block */
+/* End YUK-14006 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
