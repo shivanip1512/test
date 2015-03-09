@@ -90,7 +90,7 @@ public class ResendLmConfigHelper extends InventoryActionsHelper {
                                 if(forceInService){
                                     command.getParams().put(LmHardwareCommandParam.FORCE_IN_SERVICE, true);
                                 }
-                                commandService.sendConfigCommand(command, forceInService);
+                                commandService.sendConfigCommand(command, true);
                                 successful.add(identifier);
                                 successCount++;
                                 inventoryConfigEventLogService.itemConfigSucceeded(context.getYukonUser(),
