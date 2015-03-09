@@ -1,6 +1,6 @@
 package com.cannontech.common.pao;
 
-import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Preconditions.checkArgument;
 
 import java.util.Set;
 
@@ -195,9 +195,9 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     CAP_CONTROL_AREA(CapControlTypes.CAP_CONTROL_AREA, CapControlType.AREA.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
     CAP_CONTROL_SPECIAL_AREA(CapControlTypes.CAP_CONTROL_SPECIAL_AREA, CapControlType.SPECIAL_AREA.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
     CAP_CONTROL_SUBSTATION(CapControlTypes.CAP_CONTROL_SUBSTATION, CapControlType.SUBSTATION.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
-    LOAD_TAP_CHANGER(CapControlTypes.CAP_CONTROL_LTC, CapControlType.LTC.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
-    GANG_OPERATED(CapControlTypes.GANG_OPERATED_REGULATOR, CapControlType.GO_REGULATOR.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
-    PHASE_OPERATED(CapControlTypes.PHASE_OPERATED_REGULATOR, CapControlType.PO_REGULATOR.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
+    LOAD_TAP_CHANGER(CapControlTypes.CAP_CONTROL_LTC, CapControlType.LTC.getDbValue(), PaoCategory.DEVICE, PaoClass.CAPCONTROL),
+    GANG_OPERATED(CapControlTypes.GANG_OPERATED_REGULATOR, CapControlType.GO_REGULATOR.getDbValue(), PaoCategory.DEVICE, PaoClass.CAPCONTROL),
+    PHASE_OPERATED(CapControlTypes.PHASE_OPERATED_REGULATOR, CapControlType.PO_REGULATOR.getDbValue(), PaoCategory.DEVICE, PaoClass.CAPCONTROL),
     
     FAULT_CI(DeviceTypes.FAULT_CI, "Faulted Circuit Indicator", PaoCategory.DEVICE, PaoClass.GRID),
     NEUTRAL_MONITOR(DeviceTypes.NEUTRAL_MONITOR, "Capacitor Bank Neutral Monitor", PaoCategory.DEVICE, PaoClass.GRID),

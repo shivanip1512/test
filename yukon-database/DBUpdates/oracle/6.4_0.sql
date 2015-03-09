@@ -199,6 +199,15 @@ END;
 /* @end-block */
 /* End YUK-14066 */
 
+/* Start YUK-14142 */
+UPDATE YukonPAObject
+SET Category = 'DEVICE'
+WHERE Type IN ('PO_REGULATOR', 'GO_REGULATOR', 'LTC');
+
+INSERT INTO Device (DeviceId, AlarmInhibit, ControlInhibit) 
+(SELECT PAObjectId, 'N', 'N' FROM YukonPAObject WHERE Type IN ('PO_REGULATOR', 'GO_REGULATOR', 'LTC'));
+/* End YUK-14142 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
