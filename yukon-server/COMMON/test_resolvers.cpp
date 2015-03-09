@@ -385,91 +385,64 @@ BOOST_AUTO_TEST_CASE(test_resolveProtocol)
 
 BOOST_AUTO_TEST_CASE(test_resolveDBChangeType)
 {
-    // enumeration runs from [0, 2]
-    const std::vector<std::string>  expected
-    {
-        " CHANGED IN",      // -4
-        " CHANGED IN",
-        " CHANGED IN",
-        " CHANGED IN",
-        " ADDED TO",        //  0
-        " DELETED FROM",
-        " UPDATED IN",
-        " CHANGED IN",
-        " CHANGED IN",      //  4
-        " CHANGED IN"
-    };
-
-    std::vector<std::string>  output;
-
-    for ( int i = -4; i <= 5; ++i )
-    {
-        output.push_back( resolveDBChangeType(i) );
-    }
-
-    BOOST_CHECK_EQUAL_RANGES( output, expected );
+    BOOST_CHECK_EQUAL(resolveDBChangeType(-3),  " CHANGED IN");
+    BOOST_CHECK_EQUAL(resolveDBChangeType(-2),  " CHANGED IN");
+    BOOST_CHECK_EQUAL(resolveDBChangeType(-1),  " CHANGED IN");
+    BOOST_CHECK_EQUAL(resolveDBChangeType( 0),  " ADDED TO");
+    BOOST_CHECK_EQUAL(resolveDBChangeType( 1),  " DELETED FROM");
+    BOOST_CHECK_EQUAL(resolveDBChangeType( 2),  " UPDATED IN");
+    BOOST_CHECK_EQUAL(resolveDBChangeType( 3),  " CHANGED IN");
+    BOOST_CHECK_EQUAL(resolveDBChangeType( 4),  " CHANGED IN");
+    BOOST_CHECK_EQUAL(resolveDBChangeType( 5),  " CHANGED IN");
 }
 
 BOOST_AUTO_TEST_CASE(test_resolveDBChanged)
 {
-    // enumeration runs from [-1, 35]
-    const std::vector<std::string>  expected
-    {
-        " DATABASE",                            // -4
-        " DATABASE",
-        " DATABASE",
-        " DATABASE",
-        " PAO DB",                              //  0
-        " POINT DB",
-        " GROUP DB",
-        " NOTIFICATIONGROUP/DESTINATION DB",
-        " GROUPRECIPIENT DB",                   //  4
-        " ALARM Category DB",
-        " Customer Contact DB",
-        " Graph DB",
-        " Holiday Schedule DB",                 //  8
-        " Energy Company DB",
-        " Yukon User DB",
-        " Yukon Customer DB",
-        " Yukon Customer Account DB",           // 12
-        " Yukon Image DB",
-        " Yukon Baseline DB",
-        " Yukon Config DB",
-        " Yukon Tag DB",                        // 16
-        " Yukon CI Customer DB",
-        " Yukon LM Constraint DB",
-        " DATABASE",
-        " Yukon Season Schedule DB",            // 20
-        " DATABASE",
-        " DATABASE",
-        " DATABASE",
-        " DATABASE",                            // 24
-        " DATABASE",
-        " DATABASE",
-        " DATABASE",
-        " DATABASE",                            // 28
-        " DATABASE",
-        " DATABASE",
-        " DATABASE",
-        " DATABASE",                            // 32
-        " DATABASE",
-        " DATABASE",
-        " DATABASE",
-        " DATABASE",                            // 36
-        " DATABASE",
-        " DATABASE",
-        " DATABASE",
-        " DATABASE"                             // 40
-    };
-
-    std::vector<std::string>  output;
-
-    for ( int i = -4; i <= 40; ++i )
-    {
-        output.push_back( resolveDBChanged(i) );
-    }
-
-    BOOST_CHECK_EQUAL_RANGES( output, expected );
+    BOOST_CHECK_EQUAL(resolveDBChanged(-4), " DATABASE");
+    BOOST_CHECK_EQUAL(resolveDBChanged(-3), " DATABASE");
+    BOOST_CHECK_EQUAL(resolveDBChanged(-2), " DATABASE");
+    BOOST_CHECK_EQUAL(resolveDBChanged(-1), " DATABASE");
+    BOOST_CHECK_EQUAL(resolveDBChanged( 0), " PAO DB");
+    BOOST_CHECK_EQUAL(resolveDBChanged( 1), " POINT DB");
+    BOOST_CHECK_EQUAL(resolveDBChanged( 2), " GROUP DB");
+    BOOST_CHECK_EQUAL(resolveDBChanged( 3), " NOTIFICATIONGROUP/DESTINATION DB");
+    BOOST_CHECK_EQUAL(resolveDBChanged( 4), " GROUPRECIPIENT DB");
+    BOOST_CHECK_EQUAL(resolveDBChanged( 5), " ALARM Category DB");
+    BOOST_CHECK_EQUAL(resolveDBChanged( 6), " Customer Contact DB");
+    BOOST_CHECK_EQUAL(resolveDBChanged( 7), " Graph DB");
+    BOOST_CHECK_EQUAL(resolveDBChanged( 8), " Holiday Schedule DB");
+    BOOST_CHECK_EQUAL(resolveDBChanged( 9), " Energy Company DB");
+    BOOST_CHECK_EQUAL(resolveDBChanged(10), " Yukon User DB");
+    BOOST_CHECK_EQUAL(resolveDBChanged(11), " Yukon Customer DB");
+    BOOST_CHECK_EQUAL(resolveDBChanged(12), " Yukon Customer Account DB");
+    BOOST_CHECK_EQUAL(resolveDBChanged(13), " Yukon Image DB");
+    BOOST_CHECK_EQUAL(resolveDBChanged(14), " Yukon Baseline DB");
+    BOOST_CHECK_EQUAL(resolveDBChanged(15), " Yukon Config DB");
+    BOOST_CHECK_EQUAL(resolveDBChanged(16), " Yukon Tag DB");
+    BOOST_CHECK_EQUAL(resolveDBChanged(17), " Yukon CI Customer DB");
+    BOOST_CHECK_EQUAL(resolveDBChanged(18), " Yukon LM Constraint DB");
+    BOOST_CHECK_EQUAL(resolveDBChanged(19), " DATABASE");
+    BOOST_CHECK_EQUAL(resolveDBChanged(20), " Yukon Season Schedule DB");
+    BOOST_CHECK_EQUAL(resolveDBChanged(21), " DATABASE");
+    BOOST_CHECK_EQUAL(resolveDBChanged(22), " DATABASE");
+    BOOST_CHECK_EQUAL(resolveDBChanged(23), " DATABASE");
+    BOOST_CHECK_EQUAL(resolveDBChanged(24), " DATABASE");
+    BOOST_CHECK_EQUAL(resolveDBChanged(25), " DATABASE");
+    BOOST_CHECK_EQUAL(resolveDBChanged(26), " DATABASE");
+    BOOST_CHECK_EQUAL(resolveDBChanged(27), " DATABASE");
+    BOOST_CHECK_EQUAL(resolveDBChanged(28), " DATABASE");
+    BOOST_CHECK_EQUAL(resolveDBChanged(29), " DATABASE");
+    BOOST_CHECK_EQUAL(resolveDBChanged(30), " DATABASE");
+    BOOST_CHECK_EQUAL(resolveDBChanged(31), " DATABASE");
+    BOOST_CHECK_EQUAL(resolveDBChanged(32), " DATABASE");
+    BOOST_CHECK_EQUAL(resolveDBChanged(33), " DATABASE");
+    BOOST_CHECK_EQUAL(resolveDBChanged(34), " DATABASE");
+    BOOST_CHECK_EQUAL(resolveDBChanged(35), " DATABASE");
+    BOOST_CHECK_EQUAL(resolveDBChanged(36), " DATABASE");
+    BOOST_CHECK_EQUAL(resolveDBChanged(37), " DATABASE");
+    BOOST_CHECK_EQUAL(resolveDBChanged(38), " DATABASE");
+    BOOST_CHECK_EQUAL(resolveDBChanged(39), " DATABASE");
+    BOOST_CHECK_EQUAL(resolveDBChanged(40), " DATABASE");
 }
 
 BOOST_AUTO_TEST_CASE(test_resolvePAOType)
