@@ -190,7 +190,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
             String description = rs.getString("Description");
             List<DeviceConfigCategoryItem> categoryItems = itemsByCategoryId.get(categoryId);
             
-            DeviceConfigCategory category = 
+            DeviceConfigCategory category =
                 new DeviceConfigCategory(categoryId, categoryType, categoryName, description, categoryItems);
             
             categoriesById.put(categoryId, category);
@@ -306,7 +306,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         categorySql.append("SELECT DCC.Name, DCC.CategoryType, DCC.DeviceConfigCategoryId");
         categorySql.append("FROM DeviceConfigCategory DCC");
         
-        List<DisplayableConfigurationCategory> displayables = 
+        List<DisplayableConfigurationCategory> displayables =
             jdbcTemplate.query(categorySql, new YukonRowMapper<DisplayableConfigurationCategory>() {
                 @Override
                 public DisplayableConfigurationCategory mapRow(YukonResultSet rs) throws SQLException {
@@ -316,9 +316,9 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
                     
                     // mapper has the names of the configurations per categoryId.
                     return new DisplayableConfigurationCategory(
-                        categoryId, 
-                        name, 
-                        type, 
+                        categoryId,
+                        name,
+                        type,
                         mapper.configurationsByCategoryId.get(categoryId));
                 }
         });
@@ -373,9 +373,9 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         configSql.append("FROM DeviceConfiguration");
         configSql.append("WHERE DeviceConfigurationId").eq(configId);
         
-        DeviceConfiguration configuration = 
+        DeviceConfiguration configuration =
             jdbcTemplate.queryForObject(
-                configSql, 
+                configSql,
                 new ConfigurationRowMapper(
                     configurationToCategoryRowMapper.configurationToCategoryMap,
                     configurationToDeviceTypesRowMapper.configurationToDeviceTypesMap,
@@ -615,17 +615,17 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         Set<PaoType> supportedDeviceTypes = getSupportedTypesForConfiguration(configId);
         
         // Get the list of categories supported BEFORE the removal of the type.
-        Set<DeviceCategories.Category> currentCategories = 
+        Set<DeviceCategories.Category> currentCategories =
             paoDefinitionDao.getCategoriesForPaoTypes(supportedDeviceTypes);
 
         // Remove the pao type.
         supportedDeviceTypes.remove(paoType);
         
         // Get the list of categories that will exist AFTER the removal of the type.
-        Set<DeviceCategories.Category> categoriesPostRemoval = 
+        Set<DeviceCategories.Category> categoriesPostRemoval =
             paoDefinitionDao.getCategoriesForPaoTypes(supportedDeviceTypes);
         
-        // Return the difference between the sets. 
+        // Return the difference between the sets.
         return getCategoryTypeDifference(currentCategories, categoriesPostRemoval);
     }
     
@@ -634,21 +634,21 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         Set<PaoType> supportedDeviceTypes = getSupportedTypesForConfiguration(configId);
 
         // Get the list of categories supported BEFORE the addition of the type.
-        Set<DeviceCategories.Category> currentCategories = 
+        Set<DeviceCategories.Category> currentCategories =
             paoDefinitionDao.getCategoriesForPaoTypes(supportedDeviceTypes);
         
         // Add the new type.
         supportedDeviceTypes.addAll(paoTypes);
         
         // Get the list of categories that will exist AFTER the addition of the type.
-        Set<DeviceCategories.Category> categoriesPostAddition = 
+        Set<DeviceCategories.Category> categoriesPostAddition =
                 paoDefinitionDao.getCategoriesForPaoTypes(supportedDeviceTypes);
         
         // Return the difference between the sets. Pass them in opposite order, since the post-add set should be bigger
         return getCategoryTypeDifference(categoriesPostAddition, currentCategories);
     }
     
-    private Set<CategoryType> getCategoryTypeDifference(Set<DeviceCategories.Category> baseSet, 
+    private Set<CategoryType> getCategoryTypeDifference(Set<DeviceCategories.Category> baseSet,
                                                         Set<DeviceCategories.Category> comparisonSet) {
         SetView<DeviceCategories.Category> difference = Sets.difference(baseSet, comparisonSet);
         
@@ -899,7 +899,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         try {
             return jdbcTemplate.queryForObject(sql, new LightConfigurationRowMapper());
         } catch(IncorrectResultSizeDataAccessException e) {
-            throw new NotFoundException("No configuration exists for device with id " + 
+            throw new NotFoundException("No configuration exists for device with id " +
                                         device.getPaoIdentifier().getPaoId());
         }
     }
@@ -937,7 +937,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
             return null;
         }
         
-        DNPConfiguration dnpConfiguration = 
+        DNPConfiguration dnpConfiguration =
             new DNPConfiguration(config.getConfigurationId(), config.getName(), config.getDescription());
         
         for (DeviceConfigCategoryItem item : dnpCategory.getDeviceConfigurationItems()) {
@@ -965,7 +965,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     
     @Override
     @Transactional
-    public void assignConfigToDevice(LightDeviceConfiguration configuration, YukonDevice device) 
+    public void assignConfigToDevice(LightDeviceConfiguration configuration, YukonDevice device)
             throws InvalidDeviceTypeException {
         if (configuration == null || device == null) {
             throw new InvalidDeviceTypeException("Unable to assign device configuration with a null " +
@@ -998,8 +998,8 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     @Transactional
     public void unassignConfig(YukonDevice device) throws InvalidDeviceTypeException {
         if (paoDefinitionDao.isDnpConfigurationType(device.getPaoIdentifier().getPaoType())) {
-            throw new InvalidDeviceTypeException("Device type: " 
-                    + device.getPaoIdentifier().getPaoType().name() 
+            throw new InvalidDeviceTypeException("Device type: "
+                    + device.getPaoIdentifier().getPaoType().name()
                     + " cannot be unassigned from a configuration.");
         }
         
@@ -1024,7 +1024,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         try {
             return jdbcTemplate.queryForString(sql);
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("No item with name " + itemName + " exists for category type " + 
+            throw new NotFoundException("No item with name " + itemName + " exists for category type " +
                                         categoryType.value() + " on config with id " + configId);
         }
     }
