@@ -94,9 +94,7 @@ public class FormulaServiceImpl implements FormulaService {
             }
         } else if (input.getInputType() == InputType.TIME_FUNCTION) {
             // This input type is used only by time-of-day inputs, not for time-based lookup tables.  
-            // 
-            LocalTime now = new LocalTime();
-            return calculateTimeOfDayValue(now, input.getTimeOfDayInterval());
+            return calculateTimeOfDayValue(LocalTime.now(), input.getTimeOfDayInterval());
         }
         else {
             // At this point we know this must be a gear input.

@@ -76,10 +76,26 @@ public final class FormulaInput<T extends Comparable<? super T>> {
     private final Integer pointId;
     private final Integer timeOfDayInterval;
 
+    /**
+     *  Overloaded to provide a default timeOfDayInterval size of 60 minutes for code calling the original constructor.
+     *  At some future time, timeOfDayInterval is going to be user-supplied and this constructor may not be needed.
+     * @param inputType What kind of formula input this is: point, temperature, humidity, time, etc.
+     * @param min The minimum allowable value.
+     * @param max The maximum allowable value.
+     * @param pointId The PointId of an input point, if the POINT InputType is used.
+     */
     public FormulaInput(InputType inputType, T min, T max, Integer pointId) {
         this(inputType, min, max, pointId, 60);  // For now, the only valid interval size is 60 minutes.
     }
-    
+
+    /**
+     * Allows a user-supplied timeOfDayInterval size to be used when creating the FormulaInput.
+     * @param inputType What kind of formula input this is: point, temperature, humidity, time, etc.
+     * @param min The minimum allowable value.
+     * @param max The maximum allowable value.
+     * @param pointId The PointId of an input point, if the POINT InputType is used.
+     * @param timeOfDayInterval Interval size in minutes for time-of-day calculation, if the TIME_FUNCTION InputType is used.
+     */
     public FormulaInput(InputType inputType, T min, T max, Integer pointId, Integer timeOfDayInterval) {
         this.inputType = inputType;
         this.min = min;
