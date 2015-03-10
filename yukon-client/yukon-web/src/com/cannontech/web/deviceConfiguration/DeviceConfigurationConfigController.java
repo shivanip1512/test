@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.dao.InvalidConfigurationRemovalException;
 import com.cannontech.common.device.config.model.DeviceConfigCategory;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.model.jaxb.CategoryType;
@@ -252,8 +253,17 @@ public class DeviceConfigurationConfigController {
                                       FlashScope flashScope,
                                       int configId,
                                       PaoType paoType) {
-        deviceConfigurationService.removeSupportedDeviceType(configId, paoType);
-        
+
+        try {
+            deviceConfigurationService.removeSupportedDeviceType(configId, paoType);
+        } catch (InvalidConfigurationRemovalException e) {
+
+            String key = baseKey + ".config.removeTypeFailed";
+            flashScope.setConfirm(new YukonMessageSourceResolvable(key, paoType.getDbString()));
+
+            return "redirect:view?configId=" + configId;
+        }
+
         String key = baseKey + ".config.removeTypeSuccess";
         flashScope.setConfirm(new YukonMessageSourceResolvable(key, paoType.getDbString()));
         
@@ -263,11 +273,19 @@ public class DeviceConfigurationConfigController {
     
     @RequestMapping("delete")
     public String delete(ModelMap model, FlashScope flashScope, int configId) {
-        deviceConfigurationService.deleteConfiguration(configId);
-        
+
+        try {
+            deviceConfigurationService.deleteConfiguration(configId);
+        } catch (InvalidConfigurationRemovalException e) {
+
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".config.deleteFailed"));
+
+            return "redirect:view?configId=" + configId;
+        }
+
         flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".config.deleteSuccess"));
-        
         model.clear();
+
         return "redirect:/deviceConfiguration/home";
     }
     

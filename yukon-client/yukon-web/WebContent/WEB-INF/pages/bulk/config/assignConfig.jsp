@@ -10,7 +10,8 @@
         <c:choose>
             <c:when test="${fn:length(existingConfigs) > 0}">
                 <div class="page-action-area">
-                    <form id="assignConfigForm" method="post" action="/bulk/config/doAssignConfig">
+                    <cti:url var="assignUrl"  value="/bulk/config/doAssignConfig" />
+                    <form id="assignConfigForm" method="post" action="${assignUrl}">
                         <cti:csrfToken/>
                         <%-- DEVICE COLLECTION --%>
                         <cti:deviceCollection deviceCollection="${deviceCollection}" />

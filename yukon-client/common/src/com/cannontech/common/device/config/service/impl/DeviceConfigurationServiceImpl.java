@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.dao.InvalidConfigurationRemovalException;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.DeviceConfigCategory;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
@@ -40,7 +41,8 @@ public class DeviceConfigurationServiceImpl implements DeviceConfigurationServic
     }
     
     @Override
-    public void deleteConfiguration(int deviceConfigurationId) {
+    public void deleteConfiguration(int deviceConfigurationId) throws InvalidConfigurationRemovalException {
+
         deviceConfigurationDao.deleteConfiguration(deviceConfigurationId);
         
         dbChangeManager.processDbChange(deviceConfigurationId,
@@ -113,7 +115,9 @@ public class DeviceConfigurationServiceImpl implements DeviceConfigurationServic
     }
     
     @Override
-    public void removeSupportedDeviceType(int deviceConfigurationId, PaoType paoType) {
+    public void removeSupportedDeviceType(int deviceConfigurationId, PaoType paoType)
+            throws InvalidConfigurationRemovalException {
+
         List<Integer> unassignedDeviceIds =
             deviceConfigurationDao.removeSupportedDeviceType(deviceConfigurationId, paoType);
 

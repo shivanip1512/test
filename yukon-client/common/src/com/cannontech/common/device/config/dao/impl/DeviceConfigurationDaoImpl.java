@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
 import javax.xml.XMLConstants;
@@ -62,7 +63,9 @@ import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
@@ -75,6 +78,22 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     public static final int DEFAULT_DNP_CONFIG_ID = -1;
     public static final int DEFAULT_REGULATOR_CONFIG_ID = -2;
     
+    public static final Map<Integer, Set<PaoType>> requiredConfigs = ImmutableMap.of(
+        DEFAULT_DNP_CONFIG_ID, ImmutableSet.of(PaoType.CBC_7020,
+                                               PaoType.CBC_7022,
+                                               PaoType.CBC_7023,
+                                               PaoType.CBC_7024,
+                                               PaoType.CBC_8020,
+                                               PaoType.CBC_8024,
+                                               PaoType.CBC_DNP,
+                                               PaoType.RTU_DART,
+                                               PaoType.RTU_DNP),
+
+        DEFAULT_REGULATOR_CONFIG_ID, PaoType.getRegulatorTypes()
+    );
+
+    private Map<Integer, Set<PaoType>> validConfigAssignments = new ConcurrentHashMap<>();
+
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
@@ -428,6 +447,11 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     
     @Override
     public Set<PaoType> getSupportedTypesForConfiguration(int deviceConfigurationId) {
+
+        if (validConfigAssignments.containsKey(deviceConfigurationId)) {
+            return validConfigAssignments.get(deviceConfigurationId);
+        }
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PaoType");
         sql.append("FROM DeviceConfigDeviceTypes");
@@ -440,7 +464,11 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
             }
         });
         
-        return Sets.newHashSet(supportedTypes);
+        Set<PaoType> supportedPaoTypes = ImmutableSet.copyOf(supportedTypes);
+
+        validConfigAssignments.put(deviceConfigurationId, supportedPaoTypes);
+
+        return supportedPaoTypes;
     }
     
     private ItemByCategoryRowMapper getItemsForConfiguration(Integer configId) {
@@ -554,13 +582,28 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
             
             jdbcTemplate.update(sql);
         }
+
+        Set<PaoType> existingAssignments = validConfigAssignments.get(deviceConfigurationId);
+
+        ImmutableSet.Builder<PaoType> supportedPaoTypes = ImmutableSet.builder();
+        supportedPaoTypes.addAll(existingAssignments);
+        supportedPaoTypes.addAll(paoTypes);
+
+        validConfigAssignments.put(deviceConfigurationId, supportedPaoTypes.build());
     }
 
     @Override
     @Transactional
-    public List<Integer> removeSupportedDeviceType(int deviceConfigurationId, PaoType paoType) {
+    public List<Integer> removeSupportedDeviceType(int deviceConfigurationId, PaoType paoType)
+            throws InvalidConfigurationRemovalException {
         // Get the categories that will be different following the removal of this pao type (if any.)
         Set<CategoryType> difference = getCategoryDifferenceForPaoTypeRemove(paoType, deviceConfigurationId);
+
+        if (requiredConfigs.containsKey(deviceConfigurationId)) {
+            if (requiredConfigs.get(deviceConfigurationId).contains(paoType)) {
+                throw new InvalidConfigurationRemovalException("A Default configuration must support its types");
+            }
+        }
 
         Set<String> categoryTypes = new HashSet<>();
         for (CategoryType categoryType : difference) {
@@ -607,6 +650,11 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
 
         jdbcTemplate.update(unassignSql);
         
+        Set<PaoType> supportedTypes = new HashSet<>(validConfigAssignments.get(deviceConfigurationId));
+        supportedTypes.remove(paoType);
+
+        validConfigAssignments.put(deviceConfigurationId, ImmutableSet.copyOf(supportedTypes));
+
         return unassignedDeviceIds;
     }
 
@@ -713,7 +761,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     @Override
     @Transactional
     public void deleteConfiguration(int deviceConfigurationId) throws InvalidConfigurationRemovalException {
-        if (DEFAULT_DNP_CONFIG_ID == deviceConfigurationId ||DEFAULT_REGULATOR_CONFIG_ID == deviceConfigurationId) {
+        if (requiredConfigs.containsKey(deviceConfigurationId)) {
             throw new InvalidConfigurationRemovalException("Cannot remove the default DNP configuration.");
         }
         
@@ -906,13 +954,10 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     
     @Override
     public boolean isTypeSupportedByConfiguration(LightDeviceConfiguration configuration, PaoType paoType) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT COUNT(*)");
-        sql.append("FROM DeviceConfigDeviceTypes");
-        sql.append("WHERE DeviceConfigurationId").eq(configuration.getConfigurationId());
-        sql.append("   AND PaoType").eq(paoType);
-        
-        return jdbcTemplate.queryForInt(sql) == 1;
+
+        Set<PaoType> supportedTypes = getSupportedTypesForConfiguration(configuration.getConfigurationId());
+
+        return supportedTypes.contains(paoType);
     }
     
     @Override
@@ -1031,7 +1076,8 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
 
     @Override
     public boolean isConfigurationDeletable(int configId) {
-        // A configuration is deletable if it isn't the default DNP configuration and has no assigned devices.
-        return configId != DEFAULT_DNP_CONFIG_ID && configId != DEFAULT_REGULATOR_CONFIG_ID && getNumberOfDevicesForConfiguration(configId) == 0;
+        // A configuration is deletable if it isn't the default DNP configuration or Regulator configuration
+        // and has no assigned devices.
+        return !requiredConfigs.keySet().contains(configId) && getNumberOfDevicesForConfiguration(configId) == 0;
     }
 }

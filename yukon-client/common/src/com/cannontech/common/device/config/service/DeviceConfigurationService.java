@@ -1,5 +1,6 @@
 package com.cannontech.common.device.config.service;
 
+import com.cannontech.common.device.config.dao.InvalidConfigurationRemovalException;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.DeviceConfigCategory;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
@@ -22,9 +23,12 @@ public interface DeviceConfigurationService {
     /**
      * Makes the DAO call to remove the specified device configuration from the database, then sends
      * a DBChange message corresponding to the deletion.
+     *
      * @param deviceConfigurationId the identifier of the configuration being removed.
+     * @throws InvalidConfigurationRemovalException if the configuration cannot be deleted
+     *         because it is a required default configuration
      */
-    void deleteConfiguration(int deviceConfigurationId);
+    void deleteConfiguration(int deviceConfigurationId) throws InvalidConfigurationRemovalException;
 
     /**
      * Makes the DAO call to save the provided category, then sends a DBChange message corresponding to the save.
@@ -43,10 +47,13 @@ public interface DeviceConfigurationService {
     /**
      * Makes the DAO call to remove a pao type from the list of supported pao types for a configuration, then sends
      * a DBChange message corresponding to the devices that were implicitly unassigned as a result.
+     *
      * @param deviceConfigurationId the identifier of the configuration whose supported types are being updated
      * @param paoType the pao type being removed from the configuration.
+     * @throws InvalidConfigurationRemovalException if the configuration must support the PaoType
+     *         because it is a required default configuration
      */
-    void removeSupportedDeviceType(int deviceConfigurationId, PaoType paoType);
+    void removeSupportedDeviceType(int deviceConfigurationId, PaoType paoType) throws InvalidConfigurationRemovalException;
 
     /**
      * Assign a configuration to a device.
