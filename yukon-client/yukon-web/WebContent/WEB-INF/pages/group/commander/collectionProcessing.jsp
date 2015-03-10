@@ -29,7 +29,7 @@
             <c:if test="${!isSmtpConfigured}">
                 <tags:nameValueContainer2 tableClass="with-form-controls name-collapse">
                     <tags:nameValue2 nameKey="yukon.common.email.send">
-                        <tags:switchButton offNameKey="no" onNameKey="yes" name="sendEmail" classes="fn"
+                        <tags:switchButton offNameKey=".no.label" onNameKey=".yes.label" name="sendEmail" classes="fn"
                             toggleGroup="email-address"/>
                         <input type="text" name="emailAddress" value="${email}" size="40" disabled
                             data-toggle-group="email-address">

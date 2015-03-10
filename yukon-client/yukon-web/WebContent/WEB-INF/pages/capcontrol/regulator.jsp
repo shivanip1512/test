@@ -8,12 +8,16 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="capcontrol" page="regulator.${mode}">
+    
     <cti:includeScript link="/JavaScript/yukon.da.regulator.js"/>
-    <cti:url var="action" value="/capcontrol/regulators"/>
     <tags:setFormEditMode mode="${mode}"/>
+    
+    <cti:url var="action" value="/capcontrol/regulators"/>
     <form:form id="regulator-form" commandName="regulator" action="${action}" method="POST" data-pao-type-map="${paoTypeMap}">
+        
         <cti:csrfToken/>
         <form:hidden path="id"/>
+        
         <cti:displayForPageEditModes modes="VIEW">
             <form:hidden path="type" id="regulator-type"/>
         </cti:displayForPageEditModes>
@@ -39,7 +43,7 @@
                 </c:if>
             </tags:nameValue2>
             <tags:nameValue2 nameKey="yukon.common.status">
-                <tags:switchButton path="disabled" inverse="true" onNameKey="enabled" offNameKey="disabled"/>
+                <tags:switchButton path="disabled" inverse="true" onNameKey=".enabled" offNameKey=".disabled"/>
             </tags:nameValue2>
             </cti:displayForPageEditModes>
         </tags:nameValueContainer2>

@@ -71,7 +71,8 @@
             </tags:nameValue2>
             <tags:nameValue2 excludeColon="true">
                 <label>
-                    <tags:switchButton path="disabled" inverse="true" onNameKey="enabled" offNameKey="disabled"/>
+                    <tags:switchButton path="disabled" inverse="true" onNameKey=".enabled" offNameKey=".disabled"
+                            offClasses="M0"/>
                 </label>
             </tags:nameValue2>
         </tags:nameValueContainer2>

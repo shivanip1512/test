@@ -38,7 +38,7 @@
             <tags:inputNameValue nameKey=".model" path="model"/>
         </c:if>
         <tags:nameValue2 nameKey=".status">
-            <tags:switchButton path="disabled" onNameKey="enabled" offNameKey="disabled" inverse="true"/>
+            <tags:switchButton path="disabled" onNameKey=".enabled" offNameKey=".disabled" inverse="true"/>
         </tags:nameValue2>
     </tags:nameValueContainer2>
 </form:form>
