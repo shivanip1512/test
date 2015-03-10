@@ -88,7 +88,7 @@ public interface LmHardwareCommandStrategy {
     public void sendBroadcastCommand(LmCommand command) throws CommandCompletionException;
     
     /**
-     * This method will return true if config command. It will throw an exception if device is not configured correctly.
+     * This method will return true if it is  possible to send config command. Throws exception if device is not configured correctly.
      * 
      * @throws {@link BadConfigurationException} 
      */

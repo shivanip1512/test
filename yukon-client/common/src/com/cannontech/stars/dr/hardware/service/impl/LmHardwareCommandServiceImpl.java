@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 
-import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
@@ -58,7 +57,6 @@ import com.google.common.collect.ImmutableMap.Builder;
 public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
     
     private static final Logger log = YukonLogManager.getLogger(LmHardwareCommandServiceImpl.class);
-    private static final LogHelper logHelper = LogHelper.getInstance(log);
     
     @Autowired private YukonListDao yukonListDao;
     @Autowired private EnergyCompanyDao ecDao;
@@ -80,7 +78,7 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
             builder.put(strategy.getType(), strategy);
         }
         strategies = builder.build();
-        logHelper.debug("supported strategies: %s", strategies.keySet());
+        log.debug("supported strategies: "+strategies.keySet());
     }
     
     @Override
@@ -150,11 +148,7 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
                         try {
                             sendCommand(command);
                         } catch (CommandCompletionException e) {
-                            try {
-                                throw e;
-                            } catch (CommandCompletionException e1) {
-                                log.error("Unable to send config command", e);
-                            }
+                            log.error("Unable to send config command", e);
                         }
                     }
                 };
@@ -252,12 +246,10 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         for (HardwareStrategyType strategyType : strategies.keySet()) {
             LmHardwareCommandStrategy impl = strategies.get(strategyType);
             if (impl.canHandle(type)) {
-                logHelper.debug("Strategy found for device of type %s", type);
                 return strategyType;
             }
         }
         
-        logHelper.debug("No strategy found for device of type %s", type);
         throw new CommandCompletionException("No command strategy found for type: " + type);
     }
     

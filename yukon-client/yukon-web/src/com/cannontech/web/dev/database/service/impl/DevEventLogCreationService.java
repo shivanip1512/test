@@ -467,7 +467,7 @@ public class DevEventLogCreationService {
                 inventoryConfigEventLogService.taskDeleted(yukonUser, taskName);
                 inventoryConfigEventLogService.itemConfigSucceeded(yukonUser, serialNumber,
                     inventoryId);
-                inventoryConfigEventLogService.itemConfigFailed(yukonUser, serialNumber,
+                inventoryConfigEventLogService.itemConfigFailed(yukonUser, serialNumber, "error",
                     inventoryId);
             }
         });

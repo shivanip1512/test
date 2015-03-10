@@ -20,6 +20,7 @@ public interface InventoryConfigEventLogService {
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.inventoryConfig")
     public void itemConfigFailed(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
             @Arg(ArgEnum.serialNumber) String serialNumber,
+            @Arg(ArgEnum.message) String error,
             @Arg(ArgEnum.inventoryId) int inventoryId);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.inventoryConfig")

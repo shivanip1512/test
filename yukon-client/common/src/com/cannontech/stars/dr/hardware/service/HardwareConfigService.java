@@ -104,7 +104,7 @@ public class HardwareConfigService {
                 log.error("Unable to send config command inventory id=" + item.getInventoryId(), e);
                 inventoryConfigTaskDao.markComplete(item, Status.FAIL);
                 inventoryConfigEventLogService.itemConfigFailed(user, hardware.getManufacturerSerialNumber(),
-                    hardware.getInventoryID());
+                    e.getMessage(), hardware.getInventoryID());
             } 
         }
         

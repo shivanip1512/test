@@ -101,10 +101,10 @@ public class ResendLmConfigHelper extends InventoryActionsHelper {
                                 inventoryConfigEventLogService.itemConfigUnsupported(context.getYukonUser(),
                                     lmhb.getManufacturerSerialNumber(), lmhb.getInventoryID());
                             }
-                        } catch (CommandCompletionException cce) {
-                            fail(failureKey, identifier, cce);
+                        } catch (CommandCompletionException e) {
+                            fail(failureKey, identifier, e);
                             inventoryConfigEventLogService.itemConfigFailed(context.getYukonUser(),
-                                lmhb.getManufacturerSerialNumber(), lmhb.getInventoryID());
+                                lmhb.getManufacturerSerialNumber(), e.getMessage(), lmhb.getInventoryID());
                         } finally {
                             completedItems ++;
                         }
