@@ -121,7 +121,7 @@
 <c:if test="${empty certUpdates}">
     <div class="js-no-cert-updates empty-list"><i:inline key=".cert.updates.none"/></div>
 </c:if>
-<div data-url="<cti:url var="dataUrl" value="/stars/gateways/"/>" data-static> 
+<div data-url="<cti:url value="/stars/gateways/"/>" data-static> 
 <table id="cert-table" class="compact-results-table ${clazz}">
     <thead>
         <tr>
