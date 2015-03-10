@@ -367,9 +367,9 @@
     <entry key="yukon.web.modules.operator.inventory.config.schedule.status.progress">Progress</entry>
     <entry key="yukon.web.modules.operator.inventory.config.schedule.status.inProgress">In Progress</entry>
     <entry key="yukon.web.modules.operator.inventory.config.schedule.status.complete">Complete</entry>
-    <entry key="yukon.web.modules.operator.inventory.config.schedule.status.successCount">Successfully Paged</entry>
+    <entry key="yukon.web.modules.operator.inventory.config.schedule.status.successCount">Successful</entry>
     <entry key="yukon.web.modules.operator.inventory.config.schedule.status.unsupportedCount">Unsupported</entry>
-    <entry key="yukon.web.modules.operator.inventory.config.schedule.status.failedCount">Failed To Page</entry>
+    <entry key="yukon.web.modules.operator.inventory.config.schedule.status.failedCount">Failed</entry>
     <entry key="yukon.web.modules.operator.inventory.config.schedule.status.notesLabel">Note:</entry>
     <entry key="yukon.web.modules.operator.inventory.config.schedule.status.notes">Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.</entry>
     <entry key="yukon.web.modules.operator.inventory.config.schedule.status.newOperation">New Action</entry>
