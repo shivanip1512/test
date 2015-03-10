@@ -16,7 +16,7 @@ import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
-public class DeviceConfigurationServiceImpl implements DeviceConfigurationService {    
+public class DeviceConfigurationServiceImpl implements DeviceConfigurationService {
     private static final String CONFIG_OBJECT_TYPE = "config";
     private static final String DEVICE_OBJECT_TYPE = "device";
     private static final String CATEGORY_OBJECT_TYPE = "category";
@@ -30,10 +30,10 @@ public class DeviceConfigurationServiceImpl implements DeviceConfigurationServic
         
         int configId = deviceConfigurationDao.saveConfigurationBase(deviceConfigurationId, name, description);
         
-        dbChangeManager.processDbChange(configId, 
-                                        DBChangeMsg.CHANGE_CONFIG_DB, 
-                                        DBChangeMsg.CAT_DEVICE_CONFIG, 
-                                        CONFIG_OBJECT_TYPE, 
+        dbChangeManager.processDbChange(configId,
+                                        DBChangeMsg.CHANGE_CONFIG_DB,
+                                        DBChangeMsg.CAT_DEVICE_CONFIG,
+                                        CONFIG_OBJECT_TYPE,
                                         changeType);
         
         return configId;
@@ -43,10 +43,10 @@ public class DeviceConfigurationServiceImpl implements DeviceConfigurationServic
     public void deleteConfiguration(int deviceConfigurationId) {
         deviceConfigurationDao.deleteConfiguration(deviceConfigurationId);
         
-        dbChangeManager.processDbChange(deviceConfigurationId, 
-                                        DBChangeMsg.CHANGE_CONFIG_DB, 
-                                        DBChangeMsg.CAT_DEVICE_CONFIG, 
-                                        CONFIG_OBJECT_TYPE, 
+        dbChangeManager.processDbChange(deviceConfigurationId,
+                                        DBChangeMsg.CHANGE_CONFIG_DB,
+                                        DBChangeMsg.CAT_DEVICE_CONFIG,
+                                        CONFIG_OBJECT_TYPE,
                                         DbChangeType.DELETE);
     }
     
@@ -56,10 +56,10 @@ public class DeviceConfigurationServiceImpl implements DeviceConfigurationServic
         
         int categoryId = deviceConfigurationDao.saveCategory(category);
         
-        dbChangeManager.processDbChange(categoryId, 
-                                        DBChangeMsg.CHANGE_CONFIG_DB, 
-                                        DBChangeMsg.CAT_DEVICE_CONFIG, 
-                                        CATEGORY_OBJECT_TYPE, 
+        dbChangeManager.processDbChange(categoryId,
+                                        DBChangeMsg.CHANGE_CONFIG_DB,
+                                        DBChangeMsg.CAT_DEVICE_CONFIG,
+                                        CATEGORY_OBJECT_TYPE,
                                         changeType);
         
         return categoryId;
@@ -69,10 +69,10 @@ public class DeviceConfigurationServiceImpl implements DeviceConfigurationServic
     public void deleteCategory(int categoryId) {
         deviceConfigurationDao.deleteCategory(categoryId);
         
-        dbChangeManager.processDbChange(categoryId, 
-                                        DBChangeMsg.CHANGE_CONFIG_DB, 
-                                        DBChangeMsg.CAT_DEVICE_CONFIG, 
-                                        CATEGORY_OBJECT_TYPE, 
+        dbChangeManager.processDbChange(categoryId,
+                                        DBChangeMsg.CHANGE_CONFIG_DB,
+                                        DBChangeMsg.CAT_DEVICE_CONFIG,
+                                        CATEGORY_OBJECT_TYPE,
                                         DbChangeType.DELETE);
     }
     
@@ -83,10 +83,10 @@ public class DeviceConfigurationServiceImpl implements DeviceConfigurationServic
         
         boolean isConfigUpdate = deviceConfigurationDao.findConfigurationForDevice(device) != null;
         
-        dbChangeManager.processDbChange(device.getPaoIdentifier().getPaoId(), 
-                                        DBChangeMsg.CHANGE_CONFIG_DB, 
-                                        DBChangeMsg.CAT_DEVICE_CONFIG, 
-                                        DEVICE_OBJECT_TYPE, 
+        dbChangeManager.processDbChange(device.getPaoIdentifier().getPaoId(),
+                                        DBChangeMsg.CHANGE_CONFIG_DB,
+                                        DBChangeMsg.CAT_DEVICE_CONFIG,
+                                        DEVICE_OBJECT_TYPE,
                                         isConfigUpdate ? DbChangeType.UPDATE : DbChangeType.ADD);
     }
 
@@ -94,10 +94,10 @@ public class DeviceConfigurationServiceImpl implements DeviceConfigurationServic
     public void unassignConfig(YukonDevice device) throws InvalidDeviceTypeException {
         deviceConfigurationDao.unassignConfig(device);
         
-        dbChangeManager.processDbChange(device.getPaoIdentifier().getPaoId(), 
-                                        DBChangeMsg.CHANGE_CONFIG_DB, 
-                                        DBChangeMsg.CAT_DEVICE_CONFIG, 
-                                        DEVICE_OBJECT_TYPE, 
+        dbChangeManager.processDbChange(device.getPaoIdentifier().getPaoId(),
+                                        DBChangeMsg.CHANGE_CONFIG_DB,
+                                        DBChangeMsg.CAT_DEVICE_CONFIG,
+                                        DEVICE_OBJECT_TYPE,
                                         DbChangeType.DELETE);
     }
     
@@ -106,23 +106,23 @@ public class DeviceConfigurationServiceImpl implements DeviceConfigurationServic
         deviceConfigurationDao.changeCategoryAssignment(deviceConfigurationId, newCategoryId, categoryType);
 
         dbChangeManager.processDbChange(deviceConfigurationId,
-                                        DBChangeMsg.CHANGE_CONFIG_DB, 
-                                        DBChangeMsg.CAT_DEVICE_CONFIG, 
-                                        CONFIG_OBJECT_TYPE, 
+                                        DBChangeMsg.CHANGE_CONFIG_DB,
+                                        DBChangeMsg.CAT_DEVICE_CONFIG,
+                                        CONFIG_OBJECT_TYPE,
                                         DbChangeType.UPDATE);
     }
     
     @Override
     public void removeSupportedDeviceType(int deviceConfigurationId, PaoType paoType) {
-        List<Integer> unassignedDeviceIds = 
+        List<Integer> unassignedDeviceIds =
             deviceConfigurationDao.removeSupportedDeviceType(deviceConfigurationId, paoType);
 
         for (Integer deviceId : unassignedDeviceIds) {
             // Send db change messages for all of the devices that were implicitly unassigned.
             dbChangeManager.processDbChange(deviceId,
-                                            DBChangeMsg.CHANGE_CONFIG_DB, 
-                                            DBChangeMsg.CAT_DEVICE_CONFIG, 
-                                            DEVICE_OBJECT_TYPE, 
+                                            DBChangeMsg.CHANGE_CONFIG_DB,
+                                            DBChangeMsg.CAT_DEVICE_CONFIG,
+                                            DEVICE_OBJECT_TYPE,
                                             DbChangeType.DELETE);
         }
     }
