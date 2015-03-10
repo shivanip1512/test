@@ -2,7 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
 
-<f:subview id="ptAnalogEditor" rendered="#{ptEditorForm.visibleTabs['PointAccum']}" >
+<f:subview id="ptAccumulatorEditor" rendered="#{ptEditorForm.visibleTabs['PointAccum']}" >
 
 	<h:panelGrid id="body" columns="2" styleClass="gridLayout" columnClasses="gridCell, gridCell" >
 	
