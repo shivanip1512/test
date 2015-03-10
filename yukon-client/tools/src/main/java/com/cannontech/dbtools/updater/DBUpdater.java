@@ -167,7 +167,7 @@ public class DBUpdater extends MessageFrameAdaptor {
             System.out.println("An intermediate file is generated in the " + CtiUtilities.getClientLogDir());
             System.out.println("directory for each DBUpdate file found.");
             System.out.println("");
-            System.out.println(" DBUpdater " + IRunnableDBTool.PROP_VALUE + "=<SRC_PATH> [verbose= true | false][nightly= true | false]");
+            System.out.println(" DBUpdater " + IRunnableDBTool.PROP_VALUE + "=<SRC_PATH> [verbose= true | false][ignoreError= true | false]");
             System.out.println("");
             System.out.println("   " + IRunnableDBTool.PROP_VALUE
                     + "   : directory that contains the script files for updating the DB");
@@ -188,7 +188,7 @@ public class DBUpdater extends MessageFrameAdaptor {
         // get all the files in the log DIR
         FileVersion[] fileVers = updateDB.getDBUpdateFiles(CtiUtilities.getClientLogDir());
         
-		final boolean isNightlyCheck = (System.getProperty(CMD_LINE_PARAM_NAMES[2]) != null) ? Boolean
+		final boolean ignoreErrors  = (System.getProperty(CMD_LINE_PARAM_NAMES[2]) != null) ? Boolean
 				.parseBoolean(System.getProperty(CMD_LINE_PARAM_NAMES[2]).trim()) : false;
 
         Connection conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
@@ -207,7 +207,7 @@ public class DBUpdater extends MessageFrameAdaptor {
                 validLines = updateDB.readFile(sqlFile);
                 isIgnoreAllErrors = false;
                 isIgnoreBlockErrors = false;
-                if (isNightlyCheck) {
+                if (ignoreErrors) {
                     isIgnoreAllErrors = true;
                     isIgnoreBlockErrors = true;
                 }
