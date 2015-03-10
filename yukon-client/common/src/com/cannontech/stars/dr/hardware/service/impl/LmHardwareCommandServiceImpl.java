@@ -66,19 +66,21 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
     @Autowired private SelectionListService selectionListService;
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
-
+    
     //@Autowired by setter
     private JmsTemplate jmsTemplate;
-
+    
     private ImmutableMap<HardwareStrategyType, LmHardwareCommandStrategy> strategies = ImmutableMap.of();
+    
     @Autowired
     public void setStrategies(List<LmHardwareCommandStrategy> strategyList) {
+        
         Builder<HardwareStrategyType, LmHardwareCommandStrategy> builder = ImmutableMap.builder();
         for (LmHardwareCommandStrategy strategy : strategyList) {
             builder.put(strategy.getType(), strategy);
         }
         strategies = builder.build();
-        log.debug("supported strategies: "+strategies.keySet());
+        log.debug(String.format("Supported Strategies: %s", strategies.keySet()));
     }
     
     @Override
@@ -91,12 +93,13 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         
         impl.doManualAdjustment(event, stat, user);
     }
-
+    
     @Override
     public ThermostatScheduleUpdateResult doScheduleUpdate(CustomerAccount account,
-                                                           AccountThermostatSchedule ats,
-                                                           ThermostatScheduleMode mode,
-                                                           Thermostat stat, LiteYukonUser user) throws CommandCompletionException {
+            AccountThermostatSchedule ats,
+            ThermostatScheduleMode mode,
+            Thermostat stat, LiteYukonUser user) throws CommandCompletionException {
+        
         HardwareType type = stat.getType();
         HardwareStrategyType foundStrategy = getStrategy(type);
         LmHardwareCommandStrategy impl = strategies.get(foundStrategy);
@@ -112,19 +115,18 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         sendConfigCommand(command, autoConfig);
     }
     
-    
     @Override
     public void sendConfigCommand(final LmHardwareCommand command,  boolean autoConfig) throws CommandCompletionException {
-
+        
         //validate if it is possible to send a config message to this device
         canSendConfig(command);
         
         EnergyCompany ec = ecDao.getEnergyCompanyByInventoryId(command.getDevice().getInventoryID());
         LiteLmHardwareBase device = command.getDevice();
-
+        
         int inventoryId = device.getInventoryID();
         int unavailable = YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL;
-
+        
         HardwareType type = HardwareType.valueOf(yukonListDao.getYukonListEntry(device.getLmHardwareTypeID()).getYukonDefID());
         boolean supportsServiceInOut = type.getHardwareConfigType().isSupportsServiceInOut();
         boolean forceInService = false;
@@ -148,9 +150,9 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
                         try {
                             sendCommand(command);
                         } catch (CommandCompletionException e) {
-                            log.error("Unable to send config command", e);
+                                log.error("Unable to send config command", e);
+                            }
                         }
-                    }
                 };
                
                 log.debug("Sendings config command in 5 minutes.");
@@ -160,17 +162,18 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
             // Only send the config command
             sendCommand(command);
         }
-
+        
         // Add "Config" to hardware events
         int event = selectionListService.getListEntry(ec, YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID();
         int config = selectionListService.getListEntry(ec, YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).getEntryID();
         addHardwareEvents(ec.getId(), inventoryId, event, config);
-
+        
         int available = selectionListService.getListEntry(ec, YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).getEntryID();
         inventoryBaseDao.updateCurrentState(inventoryId, available);
     }
     
     private void sendCommand(LmHardwareCommand command) throws CommandCompletionException{
+        
         LiteLmHardwareBase device = command.getDevice();
         HardwareType type = HardwareType.valueOf(yukonListDao.getYukonListEntry(device.getLmHardwareTypeID()).getYukonDefID());
         HardwareStrategyType strategy = getStrategy(type);
@@ -298,11 +301,12 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
     
     @Override
     public void cancelTextMessage(YukonCancelTextMessage message) {
+        
         Map<Integer, HardwareSummary> hardwareSummary =
             inventoryDao.findHardwareSummariesById(message.getInventoryIds());
         Map<HardwareType, Set<Integer>> hardwareTypeToInventoryIds =
             getHardwareTypeToInventoryIdsMap(message.getInventoryIds(), hardwareSummary);
-
+        
         for (HardwareType hardwareType : hardwareTypeToInventoryIds.keySet()) {
             boolean isSupportsCancelTextMessages = false;
             if (hardwareType.isZigbee() && hardwareType.isSupportsTextMessages()) {
@@ -357,4 +361,5 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         }
         return hardwareTypeToInventoryIds;
     }
+    
 }

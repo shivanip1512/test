@@ -20,12 +20,12 @@ public class NewOperationForUnsupportedUpdaterHandler implements DeviceReconfigU
         
         if (itemsProcessed == inventoryConfigTask.getNumberOfItems()) {
             if (inventoryConfigTaskDao.getTaskItemCount(taskId, Status.UNSUPPORTED) > 0) {
-                return "visible";
+                return "di";
             }
-            return "hidden";
+            return "dn";
         }
         
-        return "hidden";
+        return "dn";
     }
 
     @Override

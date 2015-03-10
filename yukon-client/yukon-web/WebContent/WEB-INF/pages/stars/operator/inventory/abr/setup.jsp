@@ -15,12 +15,12 @@ $(document).on('click', 'a.js-failed-items', function() {
         url: 'viewFailed',
         data: {"taskId": '${task.taskId}'}
     }).done(function (data, textStatus, jqXHR) {
-        $('#failedContainer').html(data);
+        $('#failed-container').html(data);
     });
 });
 
 function taskFinished() {
-    $('#cancelTaskBtn').hide();
+    $('#cancel-task-btn').hide();
     $('#homeLink').show();
 }
 </script>
@@ -119,7 +119,7 @@ function taskFinished() {
                         <c:set var="buttonClass" value="dn"/>
                         <c:set var="linkClass" value="db"/>
                     </c:if>
-                    <cti:button nameKey="cancel" type="submit" name="cancel" id="cancelTaskBtn" classes="${buttonClass}"/>
+                    <cti:button nameKey="cancel" type="submit" name="cancel" id="cancel-task-btn" classes="${buttonClass}"/>
                     <a id="homeLink" href="/stars/operator/inventory/home" class="${linkClass}"><i:inline key=".inventoryHome"/></a>
                 </div>
                 <cti:dataUpdaterEventCallback function="taskFinished" id="INVENTORY_TASK/${task.taskId}/IS_COMPLETE" />
@@ -128,5 +128,5 @@ function taskFinished() {
         </form>
     </cti:displayForPageEditModes>
     
-    <div id="failedContainer"></div>
+    <div id="failed-container"></div>
 </cti:standardPage>

@@ -63,7 +63,7 @@ ul.schedules > li {position: relative; float: left; display: block; clear: both;
 .manualThermostat .thermostatModes {margin: 0 18px;}
 .manualThermostat h2 {font-weight: bold;}
 .manualThermostat li {padding-left: 20px; cursor: pointer; list-style: none;}
-.manualThermostat .pipes li {padding-left: 8px;}
+.manualThermostat .list-piped li {padding-left: 8px;}
 .manualThermostat .mode.selected, .manualThermostat .state.selected {background: transparent url(../../Icons/triangle-right.gif) 5px 3px no-repeat;}
 .manualThermostat .temperature {border-radius: 8px;}
 .manualThermostat .unit.selected {color: black; text-decoration: none; cursor: default;}

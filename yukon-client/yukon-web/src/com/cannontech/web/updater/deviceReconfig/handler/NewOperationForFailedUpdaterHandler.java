@@ -9,9 +9,9 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.deviceReconfig.DeviceReconfigMonitorUpdaterType;
 
 public class NewOperationForFailedUpdaterHandler implements DeviceReconfigUpdaterHandler {
-
+    
     private InventoryConfigTaskDao inventoryConfigTaskDao;
-
+    
     @Override
     public String handle(int taskId, YukonUserContext userContext) {
 
@@ -20,14 +20,14 @@ public class NewOperationForFailedUpdaterHandler implements DeviceReconfigUpdate
         
         if (itemsProcessed == inventoryConfigTask.getNumberOfItems()) {
             if (inventoryConfigTaskDao.getTaskItemCount(taskId, Status.FAIL) > 0) {
-                return "visible";
+                return "di";
             }
-            return "hidden";
+            return "dn";
         }
         
-        return "hidden";
+        return "dn";
     }
-
+    
     @Override
     public DeviceReconfigMonitorUpdaterType getUpdaterType() {
         return DeviceReconfigMonitorUpdaterType.NEW_OPERATION_FOR_FAILED;

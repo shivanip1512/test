@@ -33,16 +33,20 @@ import com.cannontech.web.stars.dr.operator.inventory.service.impl.ResendLmConfi
 @CheckRoleProperty(YukonRoleProperty.SN_UPDATE_RANGE)
 public class ResendLmConfigController {
     
-    @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;
+    @Autowired private InventoryCollectionFactoryImpl collectionFactory;
     @Autowired private ResendLmConfigHelper helper;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
-    @Autowired private MemoryCollectionProducer memoryCollectionProducer;
+    @Autowired private MemoryCollectionProducer collectionProducer;
+    
     private RecentResultsCache<AbstractInventoryTask> resultsCache;
+    private final static String key = "yukon.web.modules.operator.inventory.config.send.";
+    public enum NewOperationType { SUCCESS, FAILED, UNSUPPORTED }
     
     @RequestMapping("view")
-    public String view(HttpServletRequest request, ModelMap model, String taskId, LiteYukonUser user) throws ServletRequestBindingException {
+    public String view(HttpServletRequest request, ModelMap model, String taskId, LiteYukonUser user) 
+    throws ServletRequestBindingException {
         
-        inventoryCollectionFactory.addCollectionToModelMap(request, model);
+        collectionFactory.addCollectionToModelMap(request, model);
         
         if (taskId != null) {
             ResendLmConfigTask task = (ResendLmConfigTask) resultsCache.getResult(taskId);
@@ -53,58 +57,67 @@ public class ResendLmConfigController {
     }
     
     @RequestMapping(value="do", params="start")
-    public String startTask(HttpServletRequest request, YukonUserContext context, ModelMap model) throws ServletRequestBindingException {
-        InventoryCollection collection = inventoryCollectionFactory.createCollection(request);
-        ResendLmConfigTask task = helper.new ResendLmConfigTask(collection, context, false);
+    public String startTask(HttpServletRequest request, YukonUserContext context, ModelMap model, boolean inService) 
+    throws ServletRequestBindingException {
+        
+        InventoryCollection collection = collectionFactory.createCollection(request);
+        ResendLmConfigTask task = helper.new ResendLmConfigTask(collection, context, inService);
         String taskId = helper.startTask(task);
         
         model.addAttribute("taskId", taskId);
-        inventoryCollectionFactory.addCollectionToModelMap(request, model);
+        collectionFactory.addCollectionToModelMap(request, model);
+        
         return "redirect:view";
     }
     
     @RequestMapping(value="do", params="cancel")
-    public String cancel(ModelMap model, HttpServletRequest request, FlashScope flash, String taskId) throws ServletRequestBindingException {
+    public String cancel(ModelMap model, HttpServletRequest request, FlashScope flash, String taskId) 
+    throws ServletRequestBindingException {
+        
         if (StringUtils.isNotBlank(taskId)) {
             AbstractInventoryTask task = resultsCache.getResult(taskId);
             task.cancel();
             int processed = task.getCompletedItems(); 
-            flash.setWarning(new YukonMessageSourceResolvable("yukon.web.modules.operator.inventory.config.send.canceled", processed));
+            flash.setWarning(new YukonMessageSourceResolvable(key + "canceled", processed));
         } else {
-            inventoryCollectionFactory.addCollectionToModelMap(request, model);
+            collectionFactory.addCollectionToModelMap(request, model);
             return "redirect:/stars/operator/inventory/inventoryActions";
         }
         return "redirect:../home";
     }
     
-    @RequestMapping("viewFailed")
-    public String viewFailed(ModelMap model, String taskId, YukonUserContext context) {
+    @RequestMapping("view-failed")
+    public String viewFailed(ModelMap model, String taskId) {
+        
         ResendLmConfigTask task = (ResendLmConfigTask) resultsCache.getResult(taskId);
         model.addAttribute("failed", task.getFailureReasons());
+        
         return "operator/inventory/resendConfig/failed.jsp";
     }
     
     @RequestMapping("newOperation")
     public String newOperation(ModelMap model, String taskId, YukonUserContext context, NewOperationType type) {
+        
         ResendLmConfigTask task = (ResendLmConfigTask) resultsCache.getResult(taskId);
         String code;
         Iterator<InventoryIdentifier> inventory;
         
         if (type == NewOperationType.SUCCESS) {
-            code = "yukon.web.modules.operator.inventory.config.send.successCollectionDescription";
+            code = key + "successCollectionDescription";
             inventory = task.getSuccessful().iterator();
         } else if (type == NewOperationType.FAILED) {
-            code = "yukon.web.modules.operator.inventory.config.send.failedCollectionDescription";
+            code = key + "failedCollectionDescription";
             inventory = task.getFailed().iterator();
         } else {
-            code = "yukon.web.modules.operator.inventory.config.send.unsupportedCollectionDescription";
+            code = key + "unsupportedCollectionDescription";
             inventory = task.getUnsupported().iterator();
         }
         
         String description = resolver.getMessageSourceAccessor(context).getMessage(code);
-        InventoryCollection temporaryCollection = memoryCollectionProducer.createCollection(inventory, description);
+        InventoryCollection temporaryCollection = collectionProducer.createCollection(inventory, description);
         model.addAttribute("inventoryCollection", temporaryCollection);
         model.addAllAttributes(temporaryCollection.getCollectionParameters());
+        
         return "redirect:../inventoryActions";
     }
     
@@ -113,9 +126,4 @@ public class ResendLmConfigController {
         this.resultsCache = resultsCache;
     }
     
-    public enum NewOperationType {
-        SUCCESS,
-        FAILED,
-        UNSUPPORTED
-    }
 }

@@ -8,6 +8,7 @@ import com.cannontech.web.stars.dr.operator.inventory.service.AbstractInventoryT
 import com.cannontech.web.updater.RecentResultUpdateBackingService;
 
 public class InventoryTaskBackingService extends RecentResultUpdateBackingService {
+    
     private RecentResultsCache<AbstractInventoryTask> resultsCache;
     private enum DataType {
         NEW_OPERATION_FOR_SUCCESS,
@@ -24,7 +25,7 @@ public class InventoryTaskBackingService extends RecentResultUpdateBackingServic
     public boolean isValueAvailableImmediately(String fullIdentifier, long afterDate, YukonUserContext userContext) {
         return true;
     }
-
+    
     @Override
     public Object getResultValue(String resultId, String resultTypeStr) {
         AbstractInventoryTask result = resultsCache.getResult(resultId);
@@ -42,11 +43,11 @@ public class InventoryTaskBackingService extends RecentResultUpdateBackingServic
         } else if (type == DataType.UNSUPPORTED_COUNT) {
             return result.getUnsupportedCount();
         } else if (type == DataType.NEW_OPERATION_FOR_SUCCESS) {
-            return result.isComplete() && result.getSuccessCount() > 0 ? "db" : "dn";
+            return result.isComplete() && result.getSuccessCount() > 0 ? "" : "dn";
         } else if (type == DataType.NEW_OPERATION_FOR_FAILED) {
-            return result.isComplete() && result.getFailedCount() > 0 ? "db" : "dn";
+            return result.isComplete() && result.getFailedCount() > 0 ? "" : "dn";
         } else if (type == DataType.NEW_OPERATION_FOR_UNSUPPORTED) {
-            return result.isComplete() && result.getUnsupportedCount() > 0 ? "db" : "dn";
+            return result.isComplete() && result.getUnsupportedCount() > 0 ? "" : "dn";
         } else {
             return result.isComplete();
         }

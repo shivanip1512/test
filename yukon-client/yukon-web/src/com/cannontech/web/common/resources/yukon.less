@@ -14,7 +14,6 @@
     LISTS
     CONTAINERS
     FLASHSCOPES
-    PIPES
     COLOR CODING
     DIALOGS
     FIELD HELPER
@@ -565,8 +564,24 @@ ul.disc li {list-style-type: disc; margin-left: 25px;}
 .grouped-list .group {font-weight: bold;}
 .grouped-list .groupedItem {list-style: none;}
 
-.simple-list, .labeled-image-stack, .editable-list, .property-list {padding: 0;margin:0;list-style: none;}
+.simple-list, 
+.labeled-image-stack, 
+.editable-list, 
+.property-list,
+.list-piped {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
 .no-icon-list {list-style-type: none;}
+
+.list-piped li { float: left;}
+.list-piped li + li::before { 
+    content: " | ";
+    padding-right: 5px;
+    padding-left: 11px;
+}
 
 .property-list li {float:left; margin-right: 5px;}
 
@@ -659,11 +674,6 @@ ul.disc li {list-style-type: disc; margin-left: 25px;}
 .simple-input-image:hover {border-color: @primary-color;}
 .simple-input-image a {display: inline-block;}
 .simple-input-image a img {max-width: 200px;padding: 4px;}
-
-/* PIPES */
-ul.pipes {overflow:hidden; display:inline-block;}
-ul.pipes li {display:inline; border-left:solid 1px #ccc; margin:0 0 0 -1px; padding:2px 7px 2px 5px;}
-ul.pipes li.first {padding-left:0;}
 
 /* used to diplay a pipe next to something when that thing is selected */
 .pipe-selector {position: relative;}

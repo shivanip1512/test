@@ -85,7 +85,7 @@
                 </div>
 
                 <div class="temperatureUnit clear">
-                    <ul class="pipes">
+                    <ul class="list-piped">
                         <li class="unit <c:if test="${temperatureUnit == 'C'}">selected</c:if>" unit="C"><i:inline key="yukon.web.defaults.celsius" /></li>
                         <li class="unit <c:if test="${temperatureUnit == 'F'}">selected</c:if>" unit="F"><i:inline key="yukon.web.defaults.fahrenheit" /></li>
                     </ul>

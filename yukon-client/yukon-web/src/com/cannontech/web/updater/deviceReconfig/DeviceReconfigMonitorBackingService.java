@@ -37,7 +37,7 @@ public class DeviceReconfigMonitorBackingService implements UpdateBackingService
     
     @PostConstruct
     public void init() throws Exception {
-
+        
         this.handlersMap = new HashMap<DeviceReconfigMonitorUpdaterType, DeviceReconfigUpdaterHandler>();
         for (DeviceReconfigUpdaterHandler handler : this.handlers) {
             this.handlersMap.put(handler.getUpdaterType(), handler);
