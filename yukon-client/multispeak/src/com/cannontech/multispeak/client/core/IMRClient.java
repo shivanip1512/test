@@ -36,6 +36,8 @@ import com.cannontech.msp.beans.v3.InitiateDisconnectedStatus;
 import com.cannontech.msp.beans.v3.InitiateDisconnectedStatusResponse;
 import com.cannontech.msp.beans.v3.InitiateMeterReadByMeterNoAndType;
 import com.cannontech.msp.beans.v3.InitiateMeterReadByMeterNoAndTypeResponse;
+import com.cannontech.msp.beans.v3.InitiateMeterReadByMeterNumber;
+import com.cannontech.msp.beans.v3.InitiateMeterReadByMeterNumberResponse;
 import com.cannontech.msp.beans.v3.InitiateUsageMonitoring;
 import com.cannontech.msp.beans.v3.InitiateUsageMonitoringResponse;
 import com.cannontech.msp.beans.v3.InsertMeterInMeterGroup;
@@ -90,6 +92,11 @@ public interface IMRClient {
      */
     public InitiateMeterReadByMeterNoAndTypeResponse initiateMeterReadByMeterNoAndType(MultispeakVendor mspVendor,
             String uri, InitiateMeterReadByMeterNoAndType initiateMeterReadByMeterNoAndType)
+            throws MultispeakWebServiceClientException;
+
+    
+    public InitiateMeterReadByMeterNumberResponse initiateMeterReadByMeterNumber(MultispeakVendor mspVendor,
+            String uri, InitiateMeterReadByMeterNumber initiateMeterReadByMeterNumber)
             throws MultispeakWebServiceClientException;
 
     /**

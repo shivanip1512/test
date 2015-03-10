@@ -43,6 +43,8 @@ import com.cannontech.msp.beans.v3.InitiateDisconnectedStatus;
 import com.cannontech.msp.beans.v3.InitiateDisconnectedStatusResponse;
 import com.cannontech.msp.beans.v3.InitiateMeterReadByMeterNoAndType;
 import com.cannontech.msp.beans.v3.InitiateMeterReadByMeterNoAndTypeResponse;
+import com.cannontech.msp.beans.v3.InitiateMeterReadByMeterNumber;
+import com.cannontech.msp.beans.v3.InitiateMeterReadByMeterNumberResponse;
 import com.cannontech.msp.beans.v3.InitiateUsageMonitoring;
 import com.cannontech.msp.beans.v3.InitiateUsageMonitoringResponse;
 import com.cannontech.msp.beans.v3.InsertMeterInMeterGroup;
@@ -120,6 +122,20 @@ public class MRClient implements IMRClient {
         }
     }
 
+    @Override
+    public InitiateMeterReadByMeterNumberResponse initiateMeterReadByMeterNumber(MultispeakVendor mspVendor,
+            String uri, InitiateMeterReadByMeterNumber initiateMeterReadByMeterNumber)
+            throws MultispeakWebServiceClientException {
+        try {
+            messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
+
+            return (InitiateMeterReadByMeterNumberResponse) webServiceTemplate.marshalSendAndReceive(uri,
+                initiateMeterReadByMeterNumber, new CustomWebServiceMsgCallback().addRequestHeader(mspVendor));
+        } catch (WebServiceException | XmlMappingException ex) {
+            throw new MultispeakWebServiceClientException(ex.getMessage());
+        }
+    }
+    
     @Override
     public InitiateDemandResetResponse initiateDemandReset(MultispeakVendor mspVendor, String uri,
             InitiateDemandReset initiateDemandReset) throws MultispeakWebServiceClientException {
