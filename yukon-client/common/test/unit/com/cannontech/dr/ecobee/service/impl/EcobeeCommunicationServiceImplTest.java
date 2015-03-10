@@ -125,7 +125,30 @@ public class EcobeeCommunicationServiceImplTest {
                 impl.readDeviceData(testCase.getSerialNumbers(), testCase.getDateRange());
         AssertEqual(deviceReadings, expectedResponse);
     }
-
+    
+    @Test
+    public void test_readDeviceData_enoughDevicesForTwoMessages() throws Exception {
+        TestCase testCase = new TestCase();
+        testCase.setTimeZone(DateTimeZone.forOffsetHoursMinutes(2, 30));
+        String[] serialNumbers = getEnoughSerialNumbersForTwoMessages();
+        testCase.setSerialNumbers(serialNumbers);
+        testCase.setStartDate(dateTimeFormatter.parseDateTime("5/1/2014 18:00:00"));
+        testCase.setEndDate(dateTimeFormatter.parseDateTime("5/2/2014 18:00:00"));
+        
+        List<EcobeeDeviceReadings> expectedResponse = setupMockForTestCase(testCase);
+        List<EcobeeDeviceReadings> deviceReadings = 
+                impl.readDeviceData(testCase.getSerialNumbers(), testCase.getDateRange());
+        AssertEqual(deviceReadings, expectedResponse);
+    }
+    
+    private String[] getEnoughSerialNumbersForTwoMessages() {
+        String[] serialNumbers = new String[26];
+        for (int i = 1; i <= 26; i++) {
+            serialNumbers[i-1] = Integer.toString(i);
+        }
+        return serialNumbers;
+    }
+    
     private List<EcobeeDeviceReadings> setupMockForTestCase(TestCase testCase) throws Exception {
         RestTemplate restTemplateMock = EasyMock.createMock(RestTemplate.class);
 
@@ -230,7 +253,7 @@ public class EcobeeCommunicationServiceImplTest {
         Assert.assertNotNull(allDeviceReadings1);
         Assert.assertNotNull(allDeviceReadings2);
 
-        Assert.assertTrue("Expected number of device readings is different from ammount returned",
+        Assert.assertTrue("Expected number of device readings is different from amount returned",
                           allDeviceReadings1.size() == allDeviceReadings2.size());
         for (int i=0; i < allDeviceReadings1.size(); i++) {
             EcobeeDeviceReadings deviceReadings1 = allDeviceReadings1.get(i);
@@ -243,7 +266,7 @@ public class EcobeeCommunicationServiceImplTest {
 
             List<EcobeeDeviceReading> readings1 = deviceReadings1.getReadings();
             List<EcobeeDeviceReading> readings2 = deviceReadings2.getReadings();
-            Assert.assertTrue("Different number of readigns returned than was expected",
+            Assert.assertTrue("Different number of readings returned than was expected",
                               readings1.size() == readings2.size());
             for (int j=0; j < readings1.size(); j++) {
                 EcobeeDeviceReading ecobeeDeviceReading1 = readings1.get(j);

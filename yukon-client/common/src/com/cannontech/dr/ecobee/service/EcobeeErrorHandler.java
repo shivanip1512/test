@@ -20,6 +20,8 @@ public class EcobeeErrorHandler implements ResponseErrorHandler {
     public void handleError(ClientHttpResponse response) throws IOException {
         //log the status for troubleshooting
         log.info(response.getStatusCode() + " - " + response.getStatusText());
+        //It would be nice to debug log the response body here, but we can't consume the stream twice
+        //(here and during message parsing).
     }
 
     @Override

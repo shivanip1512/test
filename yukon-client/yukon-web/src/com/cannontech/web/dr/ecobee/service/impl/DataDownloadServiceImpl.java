@@ -49,74 +49,80 @@ public class DataDownloadServiceImpl implements DataDownloadService {
             
             @Override
             public void run() {
-                
-                try (FileWriter output = new FileWriter(file)) {
-                    
-                    DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss").withZone(timeZone);
-                    String headerFormat = "%s,%s,%s,%s,%s,%s,%s,%s\n";
-                    String dataFormat = "%s,%s,%s,%s,%s,%s,%d,%s\n";
-                    output.write(String.format(headerFormat, "Serial Number", 
-                            "Date", 
-                            "Outdoor Temp",
-                            "Indoor Temp", 
-                            "Set Cool Temp", 
-                            "Set Heat Temp", 
-                            "Runtime Seconds", 
-                            "Event Activity"));
-                    
-                    // readDeviceData should only be sent 25 serial numbers at a time
-                    for (List<String> batch : Lists.partition(serialNumbers, 25)) {
-                        
-                        List<EcobeeDeviceReadings> batchedReads = new ArrayList<>();
-                        try {
-                            batchedReads = commService.readDeviceData(batch, dateRange);
-                        } catch (EcobeeCommunicationException e) {
-                            // TODO Add retry mechanism
-                            log.error("Unable to retreive data from ecobee service.", e);
-                            result.setComplete(true);
-                            result.setSuccessful(false);
-                            break;
-                        }
-                        
-                        for (EcobeeDeviceReadings deviceReadings : batchedReads) {
-                            
-                            for (EcobeeDeviceReading deviceReading : deviceReadings.getReadings()) {
-                                String dateStr = timeFormatter.print(deviceReading.getDate());
-                                int runtimeSeconds = deviceReading.getRuntimeSeconds();
-                                if (0 > runtimeSeconds) {
-                                    log.debug("runtimeSeconds=" + runtimeSeconds + ", converting to absolute value");
-                                    runtimeSeconds = Math.abs(runtimeSeconds);
-                                }
-                                
-                                String dataRow = String.format(dataFormat,
-                                    deviceReadings.getSerialNumber(),
-                                    dateStr,
-                                    formatNullable(deviceReading.getOutdoorTempInF()),
-                                    formatNullable(deviceReading.getIndoorTempInF()),
-                                    formatNullable(deviceReading.getSetCoolTempInF()),
-                                    formatNullable(deviceReading.getSetHeatTempInF()),
-                                    runtimeSeconds,
-                                    deviceReading.getEventActivity());
-                                
-                                output.write(dataRow);
-                            }
-                            result.addCompleted(batch.size());
-                        }
-                    }
-                    
-                    result.setSuccessful(true);
-                    
-                } catch (IOException e) {
-                    log.error("Unable to write ecobee data file.", e);
-                    result.setComplete(true);
-                    result.setSuccessful(false);
-                }
+                runTask(serialNumbers, dateRange, timeZone, file, result);
             }
         };
         
         executor.execute(task);
         
         return resultKey;
+    }
+    
+    private void runTask(List<String> serialNumbers, Range<Instant> dateRange, DateTimeZone timeZone, File file, 
+                         EcobeeReadResult result) {
+        
+        try (FileWriter output = new FileWriter(file)) {
+            
+            DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss").withZone(timeZone);
+            String headerFormat = "%s,%s,%s,%s,%s,%s,%s,%s\n";
+            String dataFormat = "%s,%s,%s,%s,%s,%s,%d,%s\n";
+            output.write(String.format(headerFormat, "Serial Number", 
+                    "Date", 
+                    "Outdoor Temp",
+                    "Indoor Temp", 
+                    "Set Cool Temp", 
+                    "Set Heat Temp", 
+                    "Runtime Seconds", 
+                    "Event Activity"));
+            
+            // readDeviceData should only be sent 25 serial numbers at a time
+            for (List<String> batch : Lists.partition(serialNumbers, 25)) {
+                
+                List<EcobeeDeviceReadings> batchedReads = new ArrayList<>();
+                try {
+                    batchedReads = commService.readDeviceData(batch, dateRange);
+                } catch (EcobeeCommunicationException e) {
+                    // TODO Add retry mechanism
+                    log.error("Unable to retreive data from ecobee service.", e);
+                    result.setComplete();
+                    result.setSuccessful(false);
+                    break;
+                }
+                
+                for (EcobeeDeviceReadings deviceReadings : batchedReads) {
+                    
+                    for (EcobeeDeviceReading deviceReading : deviceReadings.getReadings()) {
+                        String dateStr = timeFormatter.print(deviceReading.getDate());
+                        int runtimeSeconds = deviceReading.getRuntimeSeconds();
+                        if (0 > runtimeSeconds) {
+                            log.debug("runtimeSeconds=" + runtimeSeconds + ", converting to absolute value");
+                            runtimeSeconds = Math.abs(runtimeSeconds);
+                        }
+                        
+                        String dataRow = String.format(dataFormat,
+                            deviceReadings.getSerialNumber(),
+                            dateStr,
+                            formatNullable(deviceReading.getOutdoorTempInF()),
+                            formatNullable(deviceReading.getIndoorTempInF()),
+                            formatNullable(deviceReading.getSetCoolTempInF()),
+                            formatNullable(deviceReading.getSetHeatTempInF()),
+                            runtimeSeconds,
+                            deviceReading.getEventActivity());
+                        
+                        output.write(dataRow);
+                    }
+                    result.incrementCompleted();
+                }
+            }
+            
+            result.setSuccessful(true);
+            result.setComplete();
+            
+        } catch (IOException e) {
+            log.error("Unable to write ecobee data file.", e);
+            result.setComplete();
+            result.setSuccessful(false);
+        }
     }
     
     private static String formatNullable(Float num) {

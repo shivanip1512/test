@@ -76,9 +76,11 @@ public class EcobeeReadResult implements Completable {
         return isComplete;
     }
     
-    public void setComplete(boolean isComplete) {
-        this.isComplete = isComplete;
-        endDate = Instant.now();
+    public void setComplete() {
+        if (!this.isComplete) {
+            this.isComplete = true;
+            endDate = Instant.now();
+        }
     }
     
     public boolean isSuccessful() {
