@@ -23,6 +23,7 @@ import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
@@ -44,108 +45,119 @@ import com.google.common.collect.Lists;
 @Controller
 @CheckRoleProperty(YukonRoleProperty.DEVICE_RECONFIG)
 public class DeviceReconfigController {
-
-    @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;
+    
+    @Autowired private InventoryCollectionFactoryImpl collectionFactory;
     @Autowired private CommandScheduleDao commandScheduleDao;
-    @Autowired private InventoryConfigEventLogService inventoryConfigEventLogService;
-    @Autowired private InventoryConfigTaskDao inventoryConfigTaskDao;
-    @Autowired private MemoryCollectionProducer memoryCollectionProducer;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private InventoryConfigEventLogService configEventLogService;
+    @Autowired private InventoryConfigTaskDao configTaskDao;
+    @Autowired private MemoryCollectionProducer collectionProducer;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private EnergyCompanyDao ecDao;
-
+    
+    private static final String key = "yukon.web.modules.operator.inventory.config.schedule.";
+    
     private class OptionsValidator extends SimpleValidator<DeviceReconfigOptions> {
-
+        
         OptionsValidator() {
             super(DeviceReconfigOptions.class);
         }
-
+        
         @Override
         protected void doValidation(DeviceReconfigOptions target, Errors errors) {
-            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "yukon.web.modules.operator.inventory.config.schedule.error.required.name");
+            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", key + "error.required.name");
             YukonValidationUtils.checkExceedsMaxLength(errors, "name", target.getName(), 250);
         }
     }
-
+    
     @RequestMapping(value="/operator/inventory/deviceReconfig/setup", method=RequestMethod.GET)
-    public void setup(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
+    public void setup(HttpServletRequest request, ModelMap model, YukonUserContext userContext) 
+    throws ServletRequestBindingException {
         
-        DeviceReconfigOptions deviceReconfigOptions = new DeviceReconfigOptions();
-        modelMap.addAttribute("deviceReconfigOptions", deviceReconfigOptions);
-
-        setupModelMap(request, modelMap, userContext);
+        DeviceReconfigOptions options = new DeviceReconfigOptions();
+        model.addAttribute("deviceReconfigOptions", options);
+        
+        setupModelMap(request, model, userContext);
     }
     
-    private void setupModelMap(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
-        inventoryCollectionFactory.addCollectionToModelMap(request, modelMap);
+    private void setupModelMap(HttpServletRequest request, ModelMap model, YukonUserContext userContext) 
+    throws ServletRequestBindingException {
+        
+        collectionFactory.addCollectionToModelMap(request, model);
         
         EnergyCompany energyCompany = ecDao.getEnergyCompany(userContext.getYukonUser());
         List<CommandSchedule> schedules = commandScheduleDao.getAll(energyCompany.getId());
-        modelMap.addAttribute("schedules", schedules);
+        model.addAttribute("schedules", schedules);
     }
     
     @RequestMapping(value="/operator/inventory/deviceReconfig/save", method=RequestMethod.POST)
-    public String save(@ModelAttribute("deviceReconfigOptions") DeviceReconfigOptions deviceReconfigOptions, BindingResult bindingResult, 
-                       HttpServletRequest request, ModelMap modelMap, FlashScope flashScope, YukonUserContext userContext) throws ServletRequestBindingException {
-
-        int energyCompanyId = ecDao.getEnergyCompany(userContext.getYukonUser()).getId();
+    public String save(@ModelAttribute("deviceReconfigOptions") DeviceReconfigOptions options, BindingResult result, 
+                       HttpServletRequest request, ModelMap model, FlashScope flash, YukonUserContext userContext) 
+    throws ServletRequestBindingException {
+        
+        LiteYukonUser user = userContext.getYukonUser();
+        int energyCompanyId = ecDao.getEnergyCompany(user).getId();
         OptionsValidator validator = new OptionsValidator();
-        validator.validate(deviceReconfigOptions, bindingResult);
-
-        if(bindingResult.hasErrors()) {
+        validator.validate(options, result);
+        
+        if (result.hasErrors()) {
             /* Add errors to flash scope */
-            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
-            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            setupModelMap(request, modelMap, userContext);
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
+            flash.setMessage(messages, FlashScopeMessageType.ERROR);
+            setupModelMap(request, model, userContext);
+            
             return "operator/inventory/deviceReconfig/setup.jsp";
         }
-
+        
         try {
-            inventoryConfigTaskDao.create(deviceReconfigOptions.getName(), deviceReconfigOptions.isSendInService(), inventoryCollectionFactory.createCollection(request), energyCompanyId, userContext.getYukonUser());
+            configTaskDao.create(options.getName(), options.isSendInService(), 
+                    collectionFactory.createCollection(request), energyCompanyId, user);
         } catch (DataIntegrityViolationException e) {
-            bindingResult.rejectValue("name", "yukon.web.modules.operator.inventory.config.schedule.error.unavailable.name");
-            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
-            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            setupModelMap(request, modelMap, userContext);
+            
+            result.rejectValue("name", key + "error.unavailable.name");
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
+            flash.setMessage(messages, FlashScopeMessageType.ERROR);
+            setupModelMap(request, model, userContext);
+            
             return "operator/inventory/deviceReconfig/setup.jsp";
         }
         
         /* Log Event */
-        inventoryConfigEventLogService.taskCreated(userContext.getYukonUser(), deviceReconfigOptions.getName());
+        configEventLogService.taskCreated(user, options.getName());
         
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.inventory.config.schedule.creationSuccessful", deviceReconfigOptions.getName()));
+        flash.setConfirm(new YukonMessageSourceResolvable(key + "creationSuccessful", options.getName()));
         
         return "redirect:../home";
     }
     
     @RequestMapping(value="/operator/inventory/deviceReconfig/save", method=RequestMethod.POST, params="cancelButton")
-    public String cancel(@ModelAttribute("deviceReconfigOptions") DeviceReconfigOptions deviceReconfigOptions, HttpServletRequest request, ModelMap modelMap) 
-        throws ServletRequestBindingException {
-
-        inventoryCollectionFactory.addCollectionToModelMap(request, modelMap);
+    public String cancel(HttpServletRequest request, ModelMap model) 
+    throws ServletRequestBindingException {
+        
+        collectionFactory.addCollectionToModelMap(request, model);
         
         return "redirect:/stars/operator/inventory/inventoryActions";
     }
     
     @RequestMapping(value="/operator/inventory/deviceReconfig/status", method=RequestMethod.GET)
-    public String status(HttpServletRequest request, ModelMap modelMap, int taskId) throws ServletRequestBindingException {
+    public String status(ModelMap model, int taskId) throws ServletRequestBindingException {
         
-        InventoryConfigTask task = inventoryConfigTaskDao.getById(taskId);
-        modelMap.addAttribute("task", task);
-        modelMap.addAttribute("taskName", task.getTaskName());
+        InventoryConfigTask task = configTaskDao.getById(taskId);
+        model.addAttribute("task", task);
+        model.addAttribute("taskName", task.getTaskName());
         
         return "operator/inventory/deviceReconfig/status.jsp";
     }
     
     @RequestMapping(value="/operator/inventory/deviceReconfig/newOperation", method=RequestMethod.GET)
-    public String newOperation(HttpServletRequest request, ModelMap modelMap, int taskId, String type, YukonUserContext userContext) {
+    public String newOperation(ModelMap model, int taskId, String type, YukonUserContext userContext) {
         
-        InventoryConfigTask task = inventoryConfigTaskDao.getById(taskId);
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        InventoryConfigTask task = configTaskDao.getById(taskId);
+        MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
         
         List<InventoryIdentifier> inventory = Lists.newArrayList();
         String descriptionHint = "";
         Status status = Status.valueOf(type);
-        inventory = inventoryConfigTaskDao.getSuccessFailList(taskId, status); 
+        inventory = configTaskDao.getSuccessFailList(taskId, status); 
         
         if (status == Status.SUCCESS) {
             String successList = messageSourceAccessor.getMessage("yukon.common.collection.inventory.successList");
@@ -155,18 +167,21 @@ public class DeviceReconfigController {
             descriptionHint = task.getTaskName() + " " + failedList;
         }
         
-        InventoryCollection temporaryCollection = memoryCollectionProducer.createCollection(inventory.iterator(), descriptionHint);
-        modelMap.addAllAttributes(temporaryCollection.getCollectionParameters());
+        InventoryCollection tempCollection = collectionProducer.createCollection(inventory.iterator(), descriptionHint);
+        model.addAllAttributes(tempCollection.getCollectionParameters());
         
         return "redirect:/stars/operator/inventory/inventoryActions";
     }
     
     @RequestMapping(value="/operator/inventory/inventoryActions/deviceReconfig/delete", method=RequestMethod.POST)
-    public String delete(HttpServletRequest request, ModelMap modelMap, int taskId, YukonUserContext userContext, FlashScope flashScope) throws ServletRequestBindingException {
-        InventoryConfigTask task = inventoryConfigTaskDao.getById(taskId);
-        inventoryConfigTaskDao.delete(taskId);
-        inventoryConfigEventLogService.taskDeleted(userContext.getYukonUser(), task.getTaskName());
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.inventory.config.schedule.deletionSuccessful", task.getTaskName()));
+    public String delete(int taskId, YukonUserContext userContext, FlashScope flash) 
+    throws ServletRequestBindingException {
+        
+        InventoryConfigTask task = configTaskDao.getById(taskId);
+        configTaskDao.delete(taskId);
+        configEventLogService.taskDeleted(userContext.getYukonUser(), task.getTaskName());
+        flash.setConfirm(new YukonMessageSourceResolvable(key + "deletionSuccessful", task.getTaskName()));
+        
         return "redirect:/stars/operator/inventory/home";
     }
     
