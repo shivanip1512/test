@@ -149,7 +149,7 @@ public class LMProgramListPanel extends DataInputPanel implements AddRemovePanel
         IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
         synchronized (cache) {
             List<LiteYukonPAObject> groups = cache.getAllLoadManagement();
-            Collections.sort(groups, LiteComparators.liteStringComparator);
+            
             Vector<LiteYukonPAObject> newList = new Vector<LiteYukonPAObject>(getAddRemovePanel().leftListGetModel().getSize());
 
             for (LiteYukonPAObject group : groups) {

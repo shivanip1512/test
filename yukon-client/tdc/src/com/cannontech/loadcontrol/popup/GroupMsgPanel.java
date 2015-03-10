@@ -46,10 +46,7 @@ public class GroupMsgPanel extends DataInputPanel {
                 IDatabaseCache cache = DefaultDatabaseCache.getInstance();
                 synchronized (cache) {
                     List<LiteYukonPAObject> routes = cache.getAllRoutes();
-
-                    // sort routes by name
-                    Collections.sort(routes, LiteComparators.liteStringComparator);
-
+                   
                     for (LiteYukonPAObject route : routes) {
                         ivjJComboBoxAltRoute.addItem(route);
                     }

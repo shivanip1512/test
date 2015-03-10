@@ -289,8 +289,7 @@ public final class PaoDaoImpl implements PaoDao {
         List<LiteYukonPAObject> routeList = new ArrayList<>(10);
         synchronized (databaseCache) {
             List<LiteYukonPAObject> routes = databaseCache.getAllRoutes();
-            Collections.sort(routes, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
-
+            
             for (LiteYukonPAObject litePao : routes) {
                 for (int j = 0; j < routeTypes.length; j++) {
                     if (litePao.getPaoType() != routeTypes[j]) {

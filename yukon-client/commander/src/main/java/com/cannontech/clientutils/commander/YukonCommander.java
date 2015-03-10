@@ -390,8 +390,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 
             synchronized (cache) {
                 List<LiteYukonPAObject> allLM = cache.getAllLoadManagement();
-                java.util.Collections.sort(allLM, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
-
+                
                 List<LiteYukonPAObject> lmGroups = new ArrayList<>(allLM.size());
                 for (LiteYukonPAObject liteYukonPAObject : allLM) {
                     if (liteYukonPAObject.getPaoType() == PaoType.LM_GROUP_EXPRESSCOMM 

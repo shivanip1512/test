@@ -646,8 +646,7 @@ private javax.swing.JComboBox getDeviceComboBox() {
 			synchronized( cache )
 			{
 				java.util.List devices = cache.getAllDevices();
-				Collections.sort( devices, LiteComparators.liteStringComparator );
-
+				
 				for (int i = 0; i < devices.size(); i++)
 				{
 					LiteYukonPAObject pao = (LiteYukonPAObject)devices.get(i);

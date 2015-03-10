@@ -726,7 +726,6 @@ public class LMScenarioProgramSettingsPanel extends DataInputPanel {
 
         synchronized (cache) {
             List<LiteYukonPAObject> progs = cache.getAllLoadManagement();
-            Collections.sort(progs, LiteComparators.liteStringComparator);
             allGears.addAll(lmGearDao.getAllLiteGears());
             Vector<Integer> programsInAControlArea = LMControlAreaProgram.getAllProgramsInControlAreas();
             try {

@@ -183,7 +183,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         
         List<LiteYukonPAObject> feeders = new ArrayList<>();
         
-        for (LiteYukonPAObject pao : getAllPaosMap().values()) {
+        for (LiteYukonPAObject pao : getAllYukonPAObjects()) {
             if (pao.getPaoType() == PaoType.CAP_CONTROL_FEEDER) {
                 feeders.add(pao);
             }
@@ -197,7 +197,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         
         List<LiteYukonPAObject> buses = new ArrayList<>();
         
-        for (LiteYukonPAObject pao : getAllPaosMap().values()) {
+        for (LiteYukonPAObject pao : getAllYukonPAObjects()) {
             PaoType type = pao.getPaoType();
             if (type == PaoType.CAP_CONTROL_SUBBUS) {
                 buses.add(pao);
@@ -212,7 +212,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         
         List<LiteYukonPAObject> subs = new ArrayList<>();
         
-        for (LiteYukonPAObject pao : getAllPaosMap().values()) {
+        for (LiteYukonPAObject pao : getAllYukonPAObjects()) {
             if (pao.getPaoType() == PaoType.CAP_CONTROL_SUBSTATION) {
                 subs.add(pao);
             }
@@ -274,7 +274,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         if (allDevices == null) {
             allDevices = new ArrayList<>();
             
-            for (LiteYukonPAObject pao : getAllPaosMap().values()) {
+            for (LiteYukonPAObject pao : getAllYukonPAObjects()) {
                 if (pao.getPaoType().getPaoCategory() == PaoCategory.DEVICE) {
                     allDevices.add(pao);
                 }
@@ -572,7 +572,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     
     @Override
     public synchronized List<LiteYukonPAObject> getAllYukonPAObjects() {
-        return new ArrayList<>(getAllPaosMap().values());
+        List<LiteYukonPAObject> allPaos = new ArrayList<>(getAllPaosMap().values());
+        Collections.sort(allPaos, PaoUtils.NAME_COMPARE); 
+        return allPaos;
     }
     
     @Override
@@ -615,7 +617,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     
     @Override
     public synchronized List<LiteYukonPAObject> getAllRoutes() {
-        return new ArrayList<>(getAllRoutesMap().values());
+        List<LiteYukonPAObject> allRoutePaos = new ArrayList<>(getAllRoutesMap().values());
+        Collections.sort(allRoutePaos, PaoUtils.NAME_COMPARE); 
+        return allRoutePaos;
     }
     
     @Override

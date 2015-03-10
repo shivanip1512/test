@@ -266,7 +266,6 @@ public class ReportFuncs {
             return mappingList;
         } else if( filter.equals(ReportFilter.ROUTE)){
             List<LiteYukonPAObject> allRoutes = cache.getAllRoutes();
-            Collections.sort(allRoutes, LiteComparators.liteStringComparator);
             return allRoutes;
         } else if( filter.equals(ReportFilter.LMCONTROLAREA)){
         	
@@ -288,7 +287,6 @@ public class ReportFuncs {
                         trans.add(lPao);
                 }
             }
-            Collections.sort(trans, LiteComparators.liteStringComparator);
             return trans;
             
         } else if( filter.equals(ReportFilter.RECEIVER)) {
@@ -301,7 +299,6 @@ public class ReportFuncs {
                         receivers.add(lPao);
                 }
             }
-            Collections.sort(receivers, LiteComparators.liteStringComparator);
             return receivers;
             
         } else if( filter.equals(ReportFilter.RTU)) {
@@ -316,20 +313,16 @@ public class ReportFuncs {
                     }
                 }
             }
-            Collections.sort(rtus, LiteComparators.liteStringComparator);
             return rtus;
             
         } else if( filter.equals(ReportFilter.CAPCONTROLSUBBUS)) {
             List<LiteYukonPAObject> capControlSubBuses = cache.getAllCapControlSubBuses();
-            Collections.sort(capControlSubBuses, LiteComparators.liteStringComparator);
             return capControlSubBuses;
         } else if( filter.equals(ReportFilter.CAPCONTROLSUBSTATION)) {
             List<LiteYukonPAObject> capControlSubstations = cache.getAllCapControlSubStations();
-            Collections.sort(capControlSubstations, LiteComparators.liteStringComparator);
             return capControlSubstations;
         } else if( filter.equals(ReportFilter.CAPCONTROLFEEDER)) {
             List<LiteYukonPAObject> capControlFeeders = cache.getAllCapControlFeeders();
-            Collections.sort(capControlFeeders, LiteComparators.liteStringComparator);
             return capControlFeeders;
         } else if( filter.equals(ReportFilter.CAPBANK)) {
             List <LiteYukonPAObject> allPaos = cache.getAllYukonPAObjects();
@@ -342,7 +335,6 @@ public class ReportFuncs {
                     }
                 }
             }
-            Collections.sort(caps, LiteComparators.liteStringComparator);
             return caps;
             
         } else if (filter.equals(ReportFilter.AREA)) {
@@ -356,7 +348,6 @@ public class ReportFuncs {
                     }
                 }
             }
-            Collections.sort(areas, LiteComparators.liteStringComparator);
             return areas;
         }
         else if( filter.equals(ReportFilter.SCHEDULE)) {
@@ -369,7 +360,6 @@ public class ReportFuncs {
                         schedules.add(lPao);
                 }
             }
-            Collections.sort(schedules, LiteComparators.liteStringComparator);
             return schedules;   
 
         }

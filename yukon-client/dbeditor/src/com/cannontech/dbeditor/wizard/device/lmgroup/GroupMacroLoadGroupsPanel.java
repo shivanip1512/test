@@ -63,8 +63,7 @@ public class GroupMacroLoadGroupsPanel extends DataInputPanel implements AddRemo
                 Vector<LiteYukonPAObject> availableDevices = null;
                 synchronized (cache) {
                     List<LiteYukonPAObject> allDevices = cache.getAllLoadManagement();
-                    Collections.sort(allDevices, LiteComparators.liteStringComparator);
-
+                    
                     availableDevices = new Vector<LiteYukonPAObject>();
                     for (LiteYukonPAObject liteYukonPAObject : allDevices) {
                         if (liteYukonPAObject.getPaoType().isLoadGroup() && liteYukonPAObject.getPaoType() != PaoType.MACRO_GROUP) {
@@ -291,8 +290,7 @@ public class GroupMacroLoadGroupsPanel extends DataInputPanel implements AddRemo
         synchronized (cache) {
             Vector<GenericMacro> macroGroupsVector = ((MacroGroup) val).getMacroGroupVector();
             List<LiteYukonPAObject> allDevices = cache.getAllLoadManagement();
-            Collections.sort(allDevices, LiteComparators.liteStringComparator);
-
+            
             assignedGroups = new Vector<LiteYukonPAObject>();
             int childID;
             for (int i = 0; i < macroGroupsVector.size(); i++) {

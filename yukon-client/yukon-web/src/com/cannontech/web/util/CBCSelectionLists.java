@@ -316,8 +316,7 @@ public class CBCSelectionLists {
 		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		synchronized(cache) {
 			List<LiteYukonPAObject> ports = cache.getAllPorts();
-			Collections.sort( ports, LiteComparators.liteStringComparator );
-
+			
 			selItems = new SelectItem[ports.size()];
 			for( int i = 0; i < ports.size(); i++ ) {
 				LiteYukonPAObject litePort = ports.get(i);
@@ -348,8 +347,7 @@ public class CBCSelectionLists {
 		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		synchronized(cache) {
 			List<LiteYukonPAObject> routes = cache.getAllRoutes();
-			Collections.sort( routes, LiteComparators.liteStringComparator );
-
+			
 			selItems = new SelectItem[routes.size()];
 			for( int i = 0; i < routes.size(); i++ ) {
 				LiteYukonPAObject liteRoute = routes.get(i);

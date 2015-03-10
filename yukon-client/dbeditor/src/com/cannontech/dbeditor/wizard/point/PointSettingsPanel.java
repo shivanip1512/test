@@ -245,8 +245,7 @@ public class PointSettingsPanel extends DataInputPanel implements CaretListener 
         IDatabaseCache cache = DefaultDatabaseCache.getInstance();
         synchronized (cache) {
             List<LiteYukonPAObject> devices = cache.getAllLoadManagement();
-            java.util.Collections.sort(devices, LiteComparators.liteStringComparator);
-
+            
             for (LiteYukonPAObject device : devices) {
                 if (device.getPaoType().isLoadManagement()) {
                     getDeviceComboBox().addItem(device);

@@ -388,8 +388,7 @@ public void setValueCore(Object val, DatabaseTypes flagDB )
         
     		java.util.List<LiteYukonPAObject> devices = new ArrayList<LiteYukonPAObject>( cache.getAllDevices() ); 
     		devices.removeAll( cache.getAllLMGroups() );
-    		java.util.Collections.sort( devices, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
-            for (int i = 0; i < devices.size(); i++)
+    		for (int i = 0; i < devices.size(); i++)
                 getDeviceComboBox().addItem(devices.get(i));
             
 

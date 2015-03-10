@@ -229,8 +229,7 @@ public abstract class AbstractDeviceTreeModel extends DBTreeModel {
 
         synchronized (cache) {
             List devices = getCacheList(cache);
-            Collections.sort(devices, LiteComparators.liteStringComparator);
-
+            
             DBTreeNode rootNode = (DBTreeNode) getRoot();
             rootNode.removeAllChildren();
 

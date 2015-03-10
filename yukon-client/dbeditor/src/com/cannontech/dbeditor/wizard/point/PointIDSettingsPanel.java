@@ -346,8 +346,7 @@ public class PointIDSettingsPanel extends DataInputPanel implements JCValueListe
         IDatabaseCache cache = DefaultDatabaseCache.getInstance();
         synchronized (cache) {
             List<LiteYukonPAObject> devices = cache.getAllDevices();
-            Collections.sort(devices, LiteComparators.liteStringComparator);
-
+            
             if (getDeviceComboBox().getModel().getSize() > 0)
                 getDeviceComboBox().removeAllItems();
 
@@ -372,8 +371,7 @@ public class PointIDSettingsPanel extends DataInputPanel implements JCValueListe
         IDatabaseCache cache = DefaultDatabaseCache.getInstance();
         synchronized (cache) {
             List<LiteYukonPAObject> devices = cache.getAllLoadManagement();
-            java.util.Collections.sort(devices, LiteComparators.liteStringComparator);
-
+            
             if (getDeviceComboBox().getModel().getSize() > 0)
                 getDeviceComboBox().removeAllItems();
 

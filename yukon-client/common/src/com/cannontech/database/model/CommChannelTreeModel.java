@@ -71,8 +71,7 @@ public class CommChannelTreeModel extends DBTreeModel {
             List<LiteYukonPAObject> ports = cache.getAllPorts();
 
             Collections.sort(devices, LiteComparators.liteYukonPAObjectPortComparator);
-            Collections.sort(ports, LiteComparators.liteStringComparator);
-
+            
             DBTreeNode rootNode = (DBTreeNode) getRoot();
             rootNode.removeAllChildren();
 

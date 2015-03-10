@@ -296,8 +296,7 @@ private void initialize() {
 	synchronized(cache)
 	{
 		List<LiteYukonPAObject> allPorts = cache.getAllPorts();
-		Collections.sort( allPorts, LiteComparators.liteStringComparator );
-
+		
 		availablePorts = new java.util.Vector( allPorts.size() );
 
 		//do not add other POOLED ports or non-dialup ports

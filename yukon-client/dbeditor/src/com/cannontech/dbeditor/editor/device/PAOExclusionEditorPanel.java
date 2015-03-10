@@ -318,8 +318,7 @@ public class PAOExclusionEditorPanel extends DataInputPanel implements AddRemove
         IDatabaseCache cache = DefaultDatabaseCache.getInstance();
         synchronized (cache) {
             List<LiteYukonPAObject> paos = cache.getAllYukonPAObjects();
-            Collections.sort(paos, LiteComparators.liteStringComparator);
-
+            
             for (PAOExclusion currPaoExclusion : currExcluded) {
                 for (LiteYukonPAObject litePAO : paos) {
                     if (litePAO.getYukonID() == currPaoExclusion.getExcludedPaoID() && litePAO.getLiteID() != PaoUtils.LITEPAOBJECT_NONE.getLiteID()) {

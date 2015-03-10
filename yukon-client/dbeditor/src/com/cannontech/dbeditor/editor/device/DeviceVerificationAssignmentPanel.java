@@ -394,8 +394,7 @@ public class DeviceVerificationAssignmentPanel extends DataInputPanel {
         IDatabaseCache cache = DefaultDatabaseCache.getInstance();
         synchronized (cache) {
             List<LiteYukonPAObject> devices = cache.getAllDevices();
-            java.util.Collections.sort(devices, LiteComparators.liteStringComparator);
-
+            
             try {
                 for (LiteYukonPAObject dev : devices) {
                     if (dev.getPaoType() == PaoType.RTC) {

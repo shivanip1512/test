@@ -174,8 +174,7 @@ public class LMGroupPointEditorPanel extends DataInputPanel implements
 
         synchronized (cache) {
             List<LiteYukonPAObject> devices = cache.getAllYukonPAObjects();
-            java.util.Collections.sort(devices, LiteComparators.liteStringComparator);
-
+            
             for (LiteYukonPAObject liteDevice : devices) {
 
                 // only do RTUs, MCTs and CAPBANKCONTROLLERS for now!
