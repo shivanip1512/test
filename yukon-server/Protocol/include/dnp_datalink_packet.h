@@ -88,6 +88,8 @@ namespace DatalinkPacket {
 
 #pragma pack( pop )
 
+    IM_EX_PROT bool isEntirePacket( const dl_packet &packet, unsigned long in_recv );
+
 };
 };
 };

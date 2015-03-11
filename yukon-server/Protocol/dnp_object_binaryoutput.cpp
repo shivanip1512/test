@@ -318,11 +318,42 @@ int BinaryOutputControl::getSerializedLen(void) const
 
 int BinaryOutputControl::getStatus( void ) const
 {
-    int retVal;
+    return _crob_or_pcb.block.status;
+}
 
-    retVal = _crob_or_pcb.block.status;
+auto BinaryOutputControl::getControlCode() const -> ControlCode
+{
+    return static_cast<ControlCode>(_crob_or_pcb.block.control_code.code);
+}
 
-    return retVal;
+auto BinaryOutputControl::getTripClose() const -> TripClose
+{
+    return static_cast<TripClose>(_crob_or_pcb.block.control_code.trip_close);
+}
+
+unsigned long BinaryOutputControl::getOnTime() const
+{
+    return _crob_or_pcb.block.on_time;
+}
+
+unsigned long BinaryOutputControl::getOffTime() const
+{
+    return _crob_or_pcb.block.off_time;
+}
+
+unsigned char BinaryOutputControl::getCount() const
+{
+    return _crob_or_pcb.block.count;
+}
+
+bool BinaryOutputControl::getQueue() const
+{
+    return _crob_or_pcb.block.control_code.queue;
+}
+
+bool BinaryOutputControl::getClear() const
+{
+    return _crob_or_pcb.block.control_code.clear;
 }
 
 }

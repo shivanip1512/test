@@ -30,6 +30,19 @@ unsigned calcPacketLength( unsigned headerLen )
     return packetLength;
 }
 
+IM_EX_PROT bool isEntirePacket( const dl_packet &packet, unsigned long in_recv )
+{
+    if( in_recv >= HeaderLength )
+    {
+        if( calcPacketLength(packet.header.fmt.len) <= in_recv )
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 }
 }
 }

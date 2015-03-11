@@ -10,12 +10,12 @@ class IM_EX_PROT DnpSlaveProtocol
 {
 public:
 
-    void setAddresses(unsigned short dstAddr, unsigned short srcAddr);
-
     enum class Commands
     {
         Class1230Read,
         SetDigitalOut_Direct,
+        LinkStatus,
+        ResetLink,
         Complete,
         Invalid
     };
@@ -59,7 +59,11 @@ public:
         bool online;
     };
 
-    void setCommand( Commands command, int seqNumber, std::vector<input_point> inputPoints );
+    std::vector<unsigned char> createDatalinkConfirmation();
+    std::vector<unsigned char> createDatalinkAck();
+
+    std::pair<Commands, DNP::ObjectBlockPtr> identifyRequest(const char* data, unsigned int size);
+    void setCommand( Commands command, std::vector<input_point> inputPoints );
 
     YukonError_t decode( CtiXfer &xfer );
     YukonError_t generate( CtiXfer &xfer );
@@ -67,9 +71,12 @@ public:
 
     bool isTransactionComplete() const;
 
+    unsigned short getSrcAddr() const;
+    unsigned short getDstAddr() const;
+
 private:
 
-    DNP::ApplicationLayer _app_layer;
+    DNP::ApplicationLayer _application;
     DNP::TransportLayer   _transport;
     DNP::DatalinkLayer    _datalink { DNP::DatalinkLayer::Slave() };
 

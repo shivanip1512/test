@@ -126,12 +126,6 @@ ObjectBlock::ObjectBlock( QualifierType type, int group, int variation ) :
 }
 
 
-ObjectBlock::~ObjectBlock()
-{
-    erase();
-}
-
-
 int ObjectBlock::getGroup(void) const
 {
     return _group;
@@ -515,9 +509,8 @@ int ObjectBlock::restore( const unsigned char *buf, int len )
 
             case NoIndex_NoRange:
             {
-                CTILOG_ERROR(dout, "Invalid qualifier block type NoIndex_NoRange for response");
+                qty = 0;
 
-                pos = len;
                 break;
             }
 
@@ -622,7 +615,9 @@ int ObjectBlock::restore( const unsigned char *buf, int len )
     }
 
     if( bitpos > 0 )
+    {
         pos++;
+    }
 
     return pos;
 }

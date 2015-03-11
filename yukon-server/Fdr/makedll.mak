@@ -354,7 +354,7 @@ fdrtristatesub.dll: fdrtristatesub.obj Makefile $(OBJ)\fdrtristatesub.res
 fdrdnpslave.dll: fdrdnpslave.obj Makefile $(OBJ)\fdrdnpslave.res
                 @%cd $(OBJ)
                 @echo Building  ..\$@
-                $(CC) $(DLLFLAGS) fdrdnpslave.obj $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib Ws2_32.lib /Fe..\$@ fdrdnpslave.res
+                $(CC) $(DLLFLAGS) fdrdnpslave.obj $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib $(COMPILEBASE)\lib\ctiprot.lib Ws2_32.lib /Fe..\$@ fdrdnpslave.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)

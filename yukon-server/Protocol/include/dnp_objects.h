@@ -64,7 +64,7 @@ class ObjectBlock;
 using ObjectPtr      = std::unique_ptr<const Object>;
 using ObjectBlockPtr = std::unique_ptr<const ObjectBlock>;
 
-class ObjectBlock
+class IM_EX_PROT ObjectBlock
 {
     bool _unsolicited;
 
@@ -111,7 +111,8 @@ class ObjectBlock
 public:
 
     ObjectBlock();  //  for restoring a serialized object
-    ~ObjectBlock();
+    ObjectBlock(const ObjectBlock &) = delete;
+    ObjectBlock &operator=(const ObjectBlock &) = delete;
 
     static ObjectBlockPtr makeRangedBlock     (ObjectPtr obj, const unsigned rangeStart);  //  can add vector overload when necessary
 

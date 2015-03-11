@@ -127,12 +127,6 @@ private:
     void eraseOutboundObjectBlocks( void );
     void eraseInboundObjectBlocks( void );
 
-    enum
-    {
-        ReqHeaderSize = 2,
-        RspHeaderSize = 4
-    };
-
 public:
     ApplicationLayer();
     ApplicationLayer(const ApplicationLayer &) = delete;
@@ -164,6 +158,14 @@ public:
     std::string getInternalIndications( void ) const;
     bool hasDeviceRestarted() const;
     bool needsTime() const;
+
+    static std::vector<std::unique_ptr<ObjectBlock>> restoreObjectBlocks(const unsigned char *buf, const unsigned len);
+
+    enum
+    {
+        ReqHeaderSize = 2,
+        RspHeaderSize = 4
+    };
 
     enum FunctionCode
     {

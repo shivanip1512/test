@@ -58,7 +58,7 @@ public:
 
 #pragma pack( push, 1 )
 
-class BinaryOutputControl : public Object
+class IM_EX_PROT BinaryOutputControl : public Object
 {
 private:
     union crobu
@@ -158,6 +158,13 @@ public:
     int getSerializedLen(void) const;
 
     int getStatus( void ) const;
+    ControlCode   getControlCode() const;
+    TripClose     getTripClose()   const;
+    unsigned long getOnTime()      const;
+    unsigned long getOffTime()     const;
+    unsigned char getCount()       const;
+    bool          getQueue()       const;
+    bool          getClear()       const;
 };
 
 #pragma pack( pop )

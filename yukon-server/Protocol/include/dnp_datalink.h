@@ -79,8 +79,6 @@ private:
     packet_t _packet, _control_packet;
 
     enum PrimaryControlFunction;
-    enum SecondaryControlFunction;
-
     void constructDataPacket( packet_t &p, unsigned char *buf, unsigned long len );
 
     bool isControlPending( void ) const;
@@ -89,41 +87,18 @@ private:
     YukonError_t decodeControl  ( CtiXfer &xfer, YukonError_t status );
     int  decodePacket   ( CtiXfer &xfer, packet_t &p, unsigned long received );
 
-    void constructPrimaryControlPacket  ( packet_t &p, PrimaryControlFunction   function, bool fcv, bool fcb );
-    void constructSecondaryControlPacket( packet_t &p, SecondaryControlFunction function, bool dfc );
+    packet_t constructPrimaryControlPacket( PrimaryControlFunction function, bool fcv, bool fcb );
 
     void sendPacket( packet_t &packet, CtiXfer &xfer );
     void recvPacket( packet_t &packet, CtiXfer &xfer );
 
-    bool isValidDataPacket( const packet_t &p ) const;
-    bool isValidAckPacket ( const packet_t &p ) const;
-
-    static bool isEntirePacket( const packet_t &p, unsigned long received );
+    static bool isValidAckPacket ( const packet_t &p );
 
     static bool areFramingBytesValid( const packet_t &p );
 
     static bool isHeaderCRCValid( const DatalinkPacket::dlp_header &header );
     static bool isDataBlockCRCValid( const unsigned char *block, unsigned length );
     static bool arePacketCRCsValid( const packet_t &packet );
-
-    void putPacketPayload( const packet_t &p, unsigned char *buf, int *len );
-
-    enum PrimaryControlFunction
-    {
-        Control_PrimaryResetLink           = 0x0,
-        Control_PrimaryResetProcess        = 0x1,
-        Control_PrimaryTestLink            = 0x2,
-        Control_PrimaryUserDataConfirmed   = 0x3,  //  these two really should only go along with data packets,
-        Control_PrimaryUserDataUnconfirmed = 0x4,  //    but it's overkill to seperate them.
-        Control_PrimaryLinkStatus          = 0x9
-    };
-
-    enum SecondaryControlFunction
-    {
-        Control_SecondaryACK               = 0x0,
-        Control_SecondaryNACK              = 0x1,
-        Control_SecondaryLinkStatus        = 0xb
-    };
 
     enum MiscNumeric
     {
@@ -142,6 +117,8 @@ public:
     DatalinkLayer &operator=(const DatalinkLayer &) = delete;
 
     void setAddresses( unsigned short dst, unsigned short src);
+    unsigned short getSrcAddress() const;
+    unsigned short getDstAddress() const;
     void setDatalinkConfirm();
 
     void setToOutput( unsigned char *buf, unsigned int len );
@@ -155,7 +132,28 @@ public:
 
     std::vector<unsigned char> getInPayload() const;
 
+    static void putPacketPayload( const packet_t &p, unsigned char *buf, int *len );
+
     IM_EX_PROT static bool isPacketValid(const unsigned char *buf, const size_t len);
+
+    enum PrimaryControlFunction
+    {
+        Control_PrimaryResetLink           = 0x0,
+        Control_PrimaryResetProcess        = 0x1,
+        Control_PrimaryTestLink            = 0x2,
+        Control_PrimaryUserDataConfirmed   = 0x3,  //  these two really should only go along with data packets,
+        Control_PrimaryUserDataUnconfirmed = 0x4,  //    but it's overkill to seperate them.
+        Control_PrimaryLinkStatus          = 0x9
+    };
+
+    enum SecondaryControlFunction
+    {
+        Control_SecondaryACK               = 0x0,
+        Control_SecondaryNACK              = 0x1,
+        Control_SecondaryLinkStatus        = 0xb
+    };
+
+    packet_t constructSecondaryControlPacket( SecondaryControlFunction function, bool dfc );
 
     IM_EX_PROT static unsigned short crc(const unsigned char *buf, const int len);
 

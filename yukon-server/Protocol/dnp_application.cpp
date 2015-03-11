@@ -135,24 +135,37 @@ void ApplicationLayer::processResponse( void )
 
     //  ACH:  if class_1 || class_2 || class_3, we need to do something...  pass it up to the protocol layer, eh?
 
-    int processed = 0;
-
     //  OR'ing them all together should catch all of the interesting indications from all frames
     _iin.raw |= _response.ind.raw;
 
-    while( processed < _response.buf_len )
+    for( auto &ob : restoreObjectBlocks(_response.buf, _response.buf_len) )
+    {
+        if( _response.func_code == ResponseUnsolicited )
+        {
+            ob->setUnsolicited();
+        }
+
+        _in_object_blocks.push(std::move(ob));
+    }
+}
+
+
+std::vector<std::unique_ptr<ObjectBlock>> ApplicationLayer::restoreObjectBlocks(const unsigned char *buf, const unsigned len)
+{
+    std::vector<std::unique_ptr<ObjectBlock>> blocks;
+
+    int processed = 0;
+
+    while( processed < len )
     {
         auto tmpOB = std::make_unique<ObjectBlock>();
 
-        processed += tmpOB->restore(&(_response.buf[processed]), _response.buf_len - processed);
+        processed += tmpOB->restore(buf + processed, len - processed);
 
-        if( _response.func_code == ResponseUnsolicited )
-        {
-            tmpOB->setUnsolicited();
-        }
-
-        _in_object_blocks.push(std::move(tmpOB));
+        blocks.push_back(std::move(tmpOB));
     }
+
+    return blocks;
 }
 
 

@@ -4,17 +4,14 @@
 
 #include "dnp_object_analoginput.h"
 #include "dnp_object_binaryinput.h"
+#include "dnp_object_binaryoutput.h"
 #include "dnp_object_counter.h"
+#include "dnp_object_class.h"
 
 namespace Cti {
 namespace Protocols {
 
 using namespace Cti::Protocols::DNP;
-
-void DnpSlaveProtocol::setAddresses( unsigned short dstAddr, unsigned short srcAddr )
-{
-    _datalink.setAddresses(dstAddr, srcAddr);
-}
 
 YukonError_t DnpSlaveProtocol::decode( CtiXfer &xfer )
 {
@@ -38,13 +35,170 @@ YukonError_t DnpSlaveProtocol::decode( CtiXfer &xfer )
         return retVal;
     }
 
-    return _app_layer.decode(_transport);
+    return _application.decode(_transport);
 }
 
-void DnpSlaveProtocol::setCommand( Commands command, int seqNumber, std::vector<input_point> inputPoints )
-{
-    _app_layer.setSequenceNumber(seqNumber);
 
+auto DnpSlaveProtocol::identifyRequest( const char* data, unsigned int size ) -> std::pair<Commands, ObjectBlockPtr>
+{
+    std::pair<Commands, DNP::ObjectBlockPtr> Invalid = { Commands::Invalid, nullptr };
+
+    if( ! data )
+    {
+        return Invalid;
+    }
+
+    const DatalinkPacket::dl_packet &packet = *reinterpret_cast<const DatalinkPacket::dl_packet *>(data);
+
+    if( ! DatalinkPacket::isEntirePacket(packet, size) )
+    {
+        return Invalid;
+    }
+    if( packet.header.fmt.control.p.direction == 0 )
+    {
+        return Invalid;
+    }
+
+    _datalink.setAddresses(packet.header.fmt.source, packet.header.fmt.destination);
+
+    if( packet.header.fmt.control.p.functionCode == DatalinkLayer::Control_PrimaryLinkStatus )
+    {
+        return { Commands::LinkStatus, nullptr };
+    }
+    if( packet.header.fmt.control.p.functionCode == DatalinkLayer::Control_PrimaryResetLink )
+    {
+        return { Commands::ResetLink, nullptr };
+    }
+
+    if( packet.header.fmt.control.p.functionCode != DatalinkLayer::Control_PrimaryUserDataUnconfirmed )
+    {
+        return Invalid;
+    }
+
+    unsigned char buf[DatalinkPacket::PayloadLengthMax];
+    int len = 0;
+
+    DatalinkLayer::putPacketPayload(packet, buf, &len);
+
+    if( len < Transport::TransportPacket::HeaderLen )
+    {
+        return Invalid;
+    }
+
+    Transport::TransportPacket transport_packet(buf[0], buf + 1, buf + len);
+
+    if( ! transport_packet.isFirst() ||
+        ! transport_packet.isFinal() )
+    {
+        return Invalid;
+    }
+
+    auto application_payload = transport_packet.payload();
+
+    if( application_payload.size() <= ApplicationLayer::ReqHeaderSize )
+    {
+        return Invalid;
+    }
+
+    _application.setSequenceNumber(application_payload[0] & 0x0f);
+
+    //  ideally, this would be done with the actual application layer ingesting the payload and beginning the request
+    switch( application_payload[1] )
+    {
+        default:
+        {
+            return Invalid;
+        }
+        case ApplicationLayer::RequestRead:
+        {
+            auto blocks =
+                    ApplicationLayer::restoreObjectBlocks(
+                            application_payload.data() + 2,
+                            application_payload.size() - 2);
+
+            if( blocks.size() == 4
+                && blocks[0]->getGroup()     == Class::Group
+                && blocks[0]->getVariation() == Class::Class1
+                && blocks[1]->getGroup()     == Class::Group
+                && blocks[1]->getVariation() == Class::Class2
+                && blocks[2]->getGroup()     == Class::Group
+                && blocks[2]->getVariation() == Class::Class3
+                && blocks[3]->getGroup()     == Class::Group
+                && blocks[3]->getVariation() == Class::Class0 )
+            {
+                //  nothing, this is an actual class 1230 poll
+            }
+            else
+            {
+                Cti::FormattedTable tbl;
+
+                tbl.setCell(0, 0) << "Index";
+                tbl.setCell(0, 1) << "Group";
+                tbl.setCell(0, 2) << "Variation";
+
+                unsigned idx = 0;
+
+                for( const auto &block : blocks )
+                {
+                    tbl.setCell(idx + 1, 0) << idx;
+                    tbl.setCell(idx + 1, 1) << block->getGroup();
+                    tbl.setCell(idx + 1, 2) << block->getVariation();
+                    ++idx;
+                }
+
+                CTILOG_WARN(dout, "Unknown read, returning class 1230 poll anyway" << tbl);
+            }
+
+            return { Commands::Class1230Read, nullptr };
+        }
+        case ApplicationLayer::RequestDirectOp:
+        {
+            auto blocks =
+                    ApplicationLayer::restoreObjectBlocks(
+                            application_payload.data() + 2,
+                            application_payload.size() - 2);
+
+            if( blocks.size() == 1
+                && blocks[0]->getGroup()     == BinaryOutputControl::Group
+                && blocks[0]->getVariation() == BinaryOutputControl::BOC_ControlRelayOutputBlock )
+            {
+                return { Commands::SetDigitalOut_Direct, ObjectBlockPtr{ std::move(blocks[0]) } };
+            }
+        }
+    }
+
+    return Invalid;
+}
+
+
+std::vector<unsigned char> DnpSlaveProtocol::createDatalinkConfirmation()
+{
+    auto packet =
+            _datalink.constructSecondaryControlPacket(
+                    Cti::Protocols::DNP::DatalinkLayer::Control_SecondaryLinkStatus,
+                    true);
+
+    auto buf = reinterpret_cast<unsigned char *>(&packet);
+
+    //  guaranteed to be 10, but this is the proper method
+    return std::vector<unsigned char> { buf, buf + DatalinkPacket::calcPacketLength(packet.header.fmt.len) };
+}
+
+std::vector<unsigned char> DnpSlaveProtocol::createDatalinkAck()
+{
+    auto packet =
+            _datalink.constructSecondaryControlPacket(
+                    Cti::Protocols::DNP::DatalinkLayer::Control_SecondaryACK,
+                    true);
+
+    auto buf = reinterpret_cast<unsigned char *>(&packet);
+
+    //  guaranteed to be 10, but this is the proper method
+    return std::vector<unsigned char> { buf, buf + DatalinkPacket::calcPacketLength(packet.header.fmt.len) };
+}
+
+void DnpSlaveProtocol::setCommand( Commands command, std::vector<input_point> inputPoints )
+{
     _command = command;
 
     switch( _command )
@@ -98,7 +252,7 @@ void DnpSlaveProtocol::setCommand( Commands command, int seqNumber, std::vector<
             if( ! digitals.empty() )    dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(digitals)));
             if( ! counters.empty() )    dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(counters)));
 
-            _app_layer.setCommand(
+            _application.setCommand(
                     ApplicationLayer::ResponseResponse,
                     std::move(dobs));
 
@@ -124,7 +278,7 @@ void DnpSlaveProtocol::setCommand( Commands command, int seqNumber, std::vector<
                 boc->setStatus(
                         p.din.status);
 
-                _app_layer.setCommand(
+                _application.setCommand(
                         ApplicationLayer::ResponseResponse,
                         ObjectBlock::makeIndexedBlock(
                                 std::move(boc),
@@ -147,7 +301,7 @@ void DnpSlaveProtocol::setCommand( Commands command, int seqNumber, std::vector<
     }
 
     //  finalize the request
-    _app_layer.initForSlaveOutput();
+    _application.initForSlaveOutput();
 }
 
 
@@ -157,7 +311,7 @@ YukonError_t DnpSlaveProtocol::generate( CtiXfer &xfer )
 
     if( _transport.isTransactionComplete() )
     {
-        retVal = _app_layer.generate(_transport);
+        retVal = _application.generate(_transport);
 
         if( retVal )
         {
@@ -185,7 +339,7 @@ void DnpSlaveProtocol::setTransactionComplete()
 {
     _command = Commands::Complete;
 
-    _app_layer.completeSlave();
+    _application.completeSlave();
     _transport.setIoStateComplete();
     _datalink .setIoStateComplete();
 }
@@ -193,6 +347,16 @@ void DnpSlaveProtocol::setTransactionComplete()
 bool DnpSlaveProtocol::isTransactionComplete( void ) const
 {
     return _command == Commands::Complete || _command == Commands::Invalid;
+}
+
+unsigned short DnpSlaveProtocol::getSrcAddr() const
+{
+    return _datalink.getSrcAddress();
+}
+
+unsigned short DnpSlaveProtocol::getDstAddr() const
+{
+    return _datalink.getDstAddress();
 }
 
 }

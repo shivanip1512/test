@@ -273,6 +273,63 @@ BOOST_AUTO_TEST_CASE( test_scan_request )
 }
 
 
+BOOST_AUTO_TEST_CASE( test_scan_request_class1230 )
+{
+    Test_FdrDnpSlave dnpSlave;
+
+    CtiFDRManager *fdrManager = new CtiFDRManager("DNP slave, but this is just a test");
+
+    CtiFDRPointList fdrPointList;
+
+    fdrPointList.setPointList(fdrManager);
+
+    dnpSlave.setSendToList(fdrPointList);
+
+    //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
+    fdrPointList.setPointList(0);
+
+    //  Pulse Accumulator offset 17, point ID 42
+    {
+        //Initialize the interface to have a point in a group.
+        CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
+
+        fdrPoint->setPointID(42);
+        fdrPoint->setPaoID(52);
+        fdrPoint->setOffset(17);
+        fdrPoint->setPointType(PulseAccumulatorPointType);
+        fdrPoint->setValue(19);
+
+        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:2;SlaveId:30;POINTTYPE:PulseAccumulator;Offset:1", "Test Destination");
+
+        vector<CtiFDRDestination> destinationList;
+
+        destinationList.push_back(pointDestination);
+
+        fdrPoint->setDestinationList(destinationList);
+
+        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+
+        dnpSlave.translateSinglePoint(fdrPoint, true);
+    }
+
+    const byte_str request(
+            "05 64 14 c4 1e 00 02 00 28 26 "
+            "c0 ca 01 3c 02 06 3c 03 06 3c 04 06 3c 01 06 93 96");
+
+    Test_ServerConnection connection;
+
+    dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+    const byte_str expected(
+            "05 64 16 44 02 00 1e 00 be 68 "
+            "c0 ca 81 00 00 14 01 28 01 00 00 00 00 13 00 00 00 1c "
+            "00 ff ff");
+
+    BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+    BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+}
+
+
 BOOST_AUTO_TEST_CASE( test_scan_request_multiple_packet )
 {
     Test_FdrDnpSlave dnpSlave;

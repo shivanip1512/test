@@ -54,6 +54,10 @@ void DatalinkLayer::setAddresses( unsigned short dst, unsigned short src)
 }
 
 
+unsigned short DatalinkLayer::getSrcAddress() const  {  return _src;  }
+unsigned short DatalinkLayer::getDstAddress() const  {  return _dst;  }
+
+
 void DatalinkLayer::setDatalinkConfirm()
 {
     _dl_confirm = true;
@@ -235,7 +239,7 @@ YukonError_t DatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
                 //  a possible optimization could be that all control packets are known
                 //    to be DatalinkPacket::HeaderLength long, so we don't need the isEntirePacket()
                 //    check here in addition to processControl()
-                if( isEntirePacket(_packet, _in_recv) )
+                if( DatalinkPacket::isEntirePacket(_packet, _in_recv) )
                 {
                     //  see above note about CRC checking
                     if( !_dl_confirm && !arePacketCRCsValid(_packet) )
@@ -292,7 +296,7 @@ YukonError_t DatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
             {
                 _in_recv += decodePacket(xfer, _packet, _in_recv);
 
-                if( isEntirePacket(_packet, _in_recv) )
+                if( DatalinkPacket::isEntirePacket(_packet, _in_recv) )
                 {
                     //  check to see if there's a control message that needs to be worked on
                     if( processControl(_packet) )
@@ -394,8 +398,10 @@ void DatalinkLayer::constructDataPacket( DatalinkLayer::packet_t &packet, unsign
 }
 
 
-void DatalinkLayer::constructPrimaryControlPacket( DatalinkLayer::packet_t &packet, PrimaryControlFunction function, bool fcv, bool fcb )
+auto DatalinkLayer::constructPrimaryControlPacket( PrimaryControlFunction function, bool fcv, bool fcb ) -> packet_t
 {
+    packet_t packet;
+
     packet.header.fmt.framing[0] = 0x05;
     packet.header.fmt.framing[1] = 0x64;
 
@@ -404,7 +410,7 @@ void DatalinkLayer::constructPrimaryControlPacket( DatalinkLayer::packet_t &pack
     packet.header.fmt.destination = _dst;
     packet.header.fmt.source      = _src;
 
-    packet.header.fmt.control.p.direction = 1;  //  from the master
+    packet.header.fmt.control.p.direction = ! _slave_response;
     packet.header.fmt.control.p.primary   = 1;  //  this is a primary message
 
     packet.header.fmt.control.p.functionCode = function;
@@ -413,11 +419,15 @@ void DatalinkLayer::constructPrimaryControlPacket( DatalinkLayer::packet_t &pack
 
     //  tack on the CRC
     packet.header.fmt.crc = crc(packet.header.raw, 8);
+
+    return packet;
 }
 
 
-void DatalinkLayer::constructSecondaryControlPacket( DatalinkLayer::packet_t &packet, SecondaryControlFunction function, bool dfc )
+auto DatalinkLayer::constructSecondaryControlPacket( SecondaryControlFunction function, bool dfc ) -> packet_t
 {
+    packet_t packet;
+
     packet.header.fmt.framing[0] = 0x05;
     packet.header.fmt.framing[1] = 0x64;
 
@@ -426,7 +436,7 @@ void DatalinkLayer::constructSecondaryControlPacket( DatalinkLayer::packet_t &pa
     packet.header.fmt.destination = _dst;
     packet.header.fmt.source      = _src;
 
-    packet.header.fmt.control.s.direction = 1;  //  from the master
+    packet.header.fmt.control.s.direction = ! _slave_response;
     packet.header.fmt.control.s.primary   = 0;  //  secondary control
     packet.header.fmt.control.s.dfc       = !dfc; //  (negative logic - 1 means stop, 0 means go)
     packet.header.fmt.control.s.zpad      = 0;
@@ -435,6 +445,8 @@ void DatalinkLayer::constructSecondaryControlPacket( DatalinkLayer::packet_t &pa
 
     //  tack on the CRC
     packet.header.fmt.crc = crc(packet.header.raw, 8);
+
+    return packet;
 }
 
 
@@ -485,7 +497,8 @@ bool DatalinkLayer::processControl( const DatalinkLayer::packet_t &packet )
 
     if( arePacketCRCsValid(packet) )
     {
-        if( packet.header.fmt.control.p.direction == 0 )  //  incoming message
+        //  make sure it matches the direction we're configured for
+        if( packet.header.fmt.control.p.direction == _slave_response )
         {
             if( packet.header.fmt.control.p.primary == 1 )  //  primary control message
             {
@@ -624,7 +637,7 @@ YukonError_t DatalinkLayer::generateControl( CtiXfer &xfer )
         {
             _fcb_out = true;
 
-            constructPrimaryControlPacket(_control_packet, Control_PrimaryResetLink, false, false);
+            _control_packet = constructPrimaryControlPacket(Control_PrimaryResetLink, false, false);
 
             sendPacket(_control_packet, xfer);
 
@@ -640,7 +653,7 @@ YukonError_t DatalinkLayer::generateControl( CtiXfer &xfer )
 
         case State_Control_Request_LinkStatus_Out:
         {
-            constructPrimaryControlPacket(_control_packet, Control_PrimaryLinkStatus, true, _fcb_out);
+            _control_packet = constructPrimaryControlPacket(Control_PrimaryLinkStatus, true, _fcb_out);
 
             sendPacket(_control_packet, xfer);
 
@@ -650,7 +663,7 @@ YukonError_t DatalinkLayer::generateControl( CtiXfer &xfer )
         case State_Control_Reply_ResetLink:
         case State_Control_Reply_Ack:
         {
-            constructSecondaryControlPacket(_control_packet, Control_SecondaryACK, true);
+            _control_packet = constructSecondaryControlPacket(Control_SecondaryACK, true);
 
             sendPacket(_control_packet, xfer);
 
@@ -659,7 +672,7 @@ YukonError_t DatalinkLayer::generateControl( CtiXfer &xfer )
 
         case State_Control_Reply_Nack:
         {
-            constructSecondaryControlPacket(_control_packet, Control_SecondaryNACK, true);
+            _control_packet = constructSecondaryControlPacket(Control_SecondaryNACK, true);
 
             sendPacket(_control_packet, xfer);
 
@@ -668,7 +681,7 @@ YukonError_t DatalinkLayer::generateControl( CtiXfer &xfer )
 
         case State_Control_Reply_NonFCBAck:
         {
-            constructSecondaryControlPacket(_control_packet, Control_SecondaryACK, true);
+            _control_packet = constructSecondaryControlPacket(Control_SecondaryACK, true);
 
             sendPacket(_control_packet, xfer);
 
@@ -677,7 +690,7 @@ YukonError_t DatalinkLayer::generateControl( CtiXfer &xfer )
 
         case State_Control_Reply_LinkStatus:
         {
-            constructSecondaryControlPacket(_control_packet, Control_SecondaryLinkStatus, true);
+            _control_packet = constructSecondaryControlPacket(Control_SecondaryLinkStatus, true);
 
             sendPacket(_control_packet, xfer);
 
@@ -722,7 +735,7 @@ YukonError_t DatalinkLayer::decodeControl( CtiXfer &xfer, YukonError_t status )
                 //  this sucks - i need an intermediary.
                 _in_recv += _in_actual;
 
-                if( isEntirePacket(_control_packet, _in_recv) )
+                if( DatalinkPacket::isEntirePacket(_control_packet, _in_recv) )
                 {
                     if( isValidAckPacket(_control_packet) )
                     {
@@ -757,7 +770,7 @@ YukonError_t DatalinkLayer::decodeControl( CtiXfer &xfer, YukonError_t status )
 
             case State_Control_Request_LinkStatus_In:
             {
-                if( isEntirePacket(_control_packet, _in_recv) )
+                if( DatalinkPacket::isEntirePacket(_control_packet, _in_recv) )
                 {
                     if( arePacketCRCsValid(_control_packet) &&
                         _control_packet.header.fmt.control.s.direction    == 0 &&
@@ -872,32 +885,7 @@ int DatalinkLayer::decodePacket( CtiXfer &xfer, packet_t &p, unsigned long recei
 }
 
 
-bool DatalinkLayer::isValidDataPacket( const DatalinkLayer::packet_t &packet ) const
-{
-    bool retVal = false;
-
-    if( arePacketCRCsValid( packet ) )
-    {
-        if( packet.header.fmt.control.p.primary   == 1 &&
-            packet.header.fmt.control.p.direction == 0 )
-        {
-            if( !packet.header.fmt.control.p.fcv ||
-                (packet.header.fmt.control.p.fcv && packet.header.fmt.control.p.fcb == _fcb_in) )
-            {
-                if( packet.header.fmt.control.p.functionCode == Control_PrimaryUserDataConfirmed ||
-                    packet.header.fmt.control.p.functionCode == Control_PrimaryUserDataUnconfirmed )
-                {
-                    retVal = true;
-                }
-            }
-        }
-    }
-
-    return retVal;
-}
-
-
-bool DatalinkLayer::isValidAckPacket( const DatalinkLayer::packet_t &packet ) const
+bool DatalinkLayer::isValidAckPacket( const DatalinkLayer::packet_t &packet )
 {
     bool retVal = false;
 
@@ -948,20 +936,6 @@ void DatalinkLayer::setIoStateComplete()
 YukonError_t DatalinkLayer::errorCondition()
 {
     return _errorCondition;
-}
-
-
-bool DatalinkLayer::isEntirePacket( const DatalinkLayer::packet_t &packet, unsigned long in_recv )
-{
-    if( in_recv >= DatalinkPacket::HeaderLength )
-    {
-        if( DatalinkPacket::calcPacketLength(packet.header.fmt.len) <= in_recv )
-        {
-            return true;
-        }
-    }
-
-    return false;
 }
 
 
