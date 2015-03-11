@@ -28,18 +28,6 @@ public final class CCYukonPAOFactory {
             retBase = new CapControlFeeder();
             break;
 
-        case LOAD_TAP_CHANGER:
-            retBase = new VoltageRegulator(PaoType.LOAD_TAP_CHANGER);
-            break;
-
-        case GANG_OPERATED:
-            retBase = new VoltageRegulator(PaoType.GANG_OPERATED);
-            break;
-
-        case PHASE_OPERATED:
-            retBase = new VoltageRegulator(PaoType.PHASE_OPERATED);
-            break;
-
         default:
             retBase = DeviceFactory.createDevice(paoType);
         }

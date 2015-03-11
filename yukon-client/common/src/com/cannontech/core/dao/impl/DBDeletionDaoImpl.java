@@ -8,7 +8,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DBDeletionDao;
 import com.cannontech.core.dao.MACScheduleDao;
-import com.cannontech.database.data.capcontrol.VoltageRegulator;
 import com.cannontech.database.data.config.ConfigTwoWay;
 import com.cannontech.database.data.device.lm.LMProgramDirectBase;
 import com.cannontech.database.data.holiday.HolidaySchedule;
@@ -116,16 +115,6 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 
     private byte createDeleteStringForPaoType(final DBDeleteResult dbRes)
     {
-        Integer theID = Integer.valueOf(dbRes.getItemID());
-        String str = null;
-    
-        if( (str = VoltageRegulator.usedVoltageRegulator(theID)) != null )
-       {
-           dbRes.getDescriptionMsg().append(CR_LF + "because it is utilized by the Zone named '" + str + "'");
-           return DBDeletionDao.STATUS_DISALLOW;
-       }
-    
-        //this device is deleteable
         return STATUS_ALLOW;
     }
 

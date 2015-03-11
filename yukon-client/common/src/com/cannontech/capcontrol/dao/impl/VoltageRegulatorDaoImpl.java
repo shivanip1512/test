@@ -82,7 +82,7 @@ public class VoltageRegulatorDaoImpl implements VoltageRegulatorDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PAObjectID, PAOName, Type, Description");
         sql.append("FROM YukonPAObject");
-        sql.append("  WHERE Category").eq(PaoCategory.CAPCONTROL);
+        sql.append("  WHERE Category").eq(PaoCategory.DEVICE);
         sql.append("    AND PAOClass").eq(PaoClass.CAPCONTROL);
         sql.append("    AND PAObjectID not in (SELECT RegulatorId FROM RegulatorToZoneMapping)");
         sql.append("    AND Type").in(regulatorTypes);

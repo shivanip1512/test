@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.capcontrol.RegulatorPointMapping;
-import com.cannontech.capcontrol.creation.service.CapControlCreationService;
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.exception.OrphanedRegulatorException;
 import com.cannontech.capcontrol.model.Regulator;
@@ -27,14 +26,9 @@ import com.cannontech.capcontrol.service.VoltageRegulatorService;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.JsonUtils;
-import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.database.TransactionType;
-import com.cannontech.database.data.capcontrol.VoltageRegulator;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -48,47 +42,26 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class RegulatorController {
 
-    @Autowired private CapControlCreationService creationService;
-    @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private RegulatorValidator regulatorValidator;
-    @Autowired private VoltageRegulatorService voltageRegulatorService;
+    @Autowired private VoltageRegulatorService regulatorService;
     @Autowired private ZoneDao zoneDao;
 
     @RequestMapping(value="{id}", method=RequestMethod.GET)
     public String view(ModelMap model, @PathVariable int id, YukonUserContext context) {
 
-        Regulator regulator = getRegulatorById(id);
+        Regulator regulator = regulatorService.getRegulatorById(id);
 
         model.addAttribute("mode",  PageEditMode.VIEW);
         return setUpModelMap(model, regulator, context);
-    }
-
-    private Regulator getRegulatorById(int id) {
-
-        PaoType type = dbCache.getAllPaosMap().get(id).getPaoType();
-        VoltageRegulator voltageRegulator = new VoltageRegulator(type);
-        voltageRegulator.setCapControlPAOID(id);
-        voltageRegulator = (VoltageRegulator) dbPersistentDao.retrieveDBPersistent(voltageRegulator);
-
-        Regulator regulator = Regulator.fromDbPersistent(voltageRegulator);
-        LightDeviceConfiguration config;
-        try {
-            config = deviceConfigurationDao.getConfigurationForDevice(voltageRegulator);
-        } catch (NotFoundException e) {
-            config = deviceConfigurationDao.getDefaultRegulatorConfiguration();
-        }
-        regulator.setConfigId(config.getConfigurationId());
-
-        return regulator;
     }
 
     private String setUpModelMap(ModelMap model, Regulator regulator, YukonUserContext context) {
 
         if (!model.containsAttribute("regulator")) {
             Map<RegulatorPointMapping, Integer> sortedMappings =
-                    voltageRegulatorService.sortMappingsAllKeys(regulator.getMappings(), context);
+                    regulatorService.sortMappingsAllKeys(regulator.getMappings(), context);
 
             regulator.setMappings(sortedMappings);
             model.addAttribute("regulator", regulator);
@@ -126,7 +99,7 @@ public class RegulatorController {
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String edit(ModelMap model, @PathVariable int id, YukonUserContext context) {
 
-        Regulator regulator = getRegulatorById(id);
+        Regulator regulator = regulatorService.getRegulatorById(id);
 
         model.addAttribute("mode",  PageEditMode.EDIT);
         return setUpModelMap(model, regulator, context);
@@ -152,34 +125,32 @@ public class RegulatorController {
         regulatorValidator.validate(regulator, bindingResult);
 
         if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute("regulator", regulator);
-            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.regulator", bindingResult);
-
-            if (regulator.getId() == null) {
-                return "redirect:regulators/create";
-            }
-            return "redirect:regulators/" + regulator.getId() + "/edit";
+            return bindAndForward(regulator, bindingResult, redirectAttributes);
         }
 
-        VoltageRegulator voltageRegulator = regulator.asDbPersistent();
+        int id;
+        try {
+            id = regulatorService.save(regulator);
+        } catch (InvalidDeviceTypeException e) {
+            //Something happened to make the config invalid since validation.
+            bindingResult.rejectValue("configId", "yukon.web.modules.capcontrol.regulator.error.invalidConfig");
+
+            return bindAndForward(regulator, bindingResult, redirectAttributes);
+        }
+
+        return "redirect:regulators/" + id;
+    }
+
+    private String bindAndForward(Regulator regulator, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+
+        redirectAttributes.addFlashAttribute("regulator", regulator);
+        redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.regulator", bindingResult);
 
         if (regulator.getId() == null) {
-            PaoIdentifier identifier = creationService.createCapControlObject(regulator.getType(),
-                regulator.getName(),
-                regulator.isDisabled());
-            voltageRegulator.setCapControlPAOID(identifier.getPaoId());
+            return "redirect:regulators/create";
         }
 
-        dbPersistentDao.performDBChange(voltageRegulator, TransactionType.UPDATE);
-
-        LightDeviceConfiguration config = new LightDeviceConfiguration(regulator.getConfigId(), null, null);
-        try {
-            deviceConfigurationDao.assignConfigToDevice(config, voltageRegulator);
-        } catch (InvalidDeviceTypeException e) {
-            // Already validated that the device config is assignable in the regulatorValidator
-        }
-
-        return "redirect:regulators/" + voltageRegulator.getPAObjectID();
+        return "redirect:regulators/" + regulator.getId() + "/edit";
     }
 
     @RequestMapping(value="{id}", method = RequestMethod.DELETE)
@@ -200,13 +171,9 @@ public class RegulatorController {
           //The regulator is an orphan, which is what we need when deleting
         }
 
+        regulatorService.delete(id);
 
-        PaoType type = pao.getPaoType();
-        VoltageRegulator regulator = new VoltageRegulator(type);
-        regulator.setCapControlPAOID(id);
-        regulator = (VoltageRegulator) dbPersistentDao.retrieveDBPersistent(regulator);
-
-        dbPersistentDao.performDBChange(regulator, TransactionType.DELETE);
         return "redirect:/capcontrol/tier/areas";
     }
+
 }

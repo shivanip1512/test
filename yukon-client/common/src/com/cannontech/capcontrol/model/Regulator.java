@@ -4,8 +4,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.cannontech.capcontrol.RegulatorPointMapping;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.database.data.capcontrol.VoltageRegulator;
+import com.cannontech.common.pao.model.CompleteRegulator;
 
 public class Regulator {
 
@@ -81,35 +82,34 @@ public class Regulator {
         this.mappings = mappings;
     }
 
-    public VoltageRegulator asDbPersistent() {
+    public CompleteRegulator asCompletePao() {
 
-        VoltageRegulator voltageRegulator = new VoltageRegulator(getType());
+        CompleteRegulator complete = new CompleteRegulator();
 
-        voltageRegulator.setCapControlPAOID(getId());
-        voltageRegulator.setDisabled(isDisabled());
-        voltageRegulator.setKeepAliveConfig(getKeepAliveConfig());
-        voltageRegulator.setKeepAliveTimer(getKeepAliveTimer());
-        voltageRegulator.setName(getName());
-        voltageRegulator.setPAODescription(getDescription());
-        voltageRegulator.setVoltChangePerTap(getVoltChangePerTap());
-        voltageRegulator.setPointMappings(getMappings());
+        complete.setDescription(description);
+        complete.setDisabled(disabled);
+        complete.setKeepAliveConfig(keepAliveConfig);
+        complete.setKeepAliveTimer(keepAliveTimer);
+        complete.setPaoIdentifier(PaoIdentifier.of(id, type));
+        complete.setPaoName(name);
+        complete.setStatistics("");
+        complete.setVoltChangePerTap(voltChangePerTap);
 
-        return voltageRegulator;
+        return complete;
     }
 
-    public static Regulator fromDbPersistent(VoltageRegulator voltageRegulator) {
+    public static Regulator fromCompletePao(CompleteRegulator complete) {
 
         Regulator regulator = new Regulator();
 
-        regulator.setType(voltageRegulator.getPaoType());
-        regulator.setId(voltageRegulator.getPAObjectID());
-        regulator.setDisabled(voltageRegulator.isDisabled());
-        regulator.setKeepAliveConfig(voltageRegulator.getKeepAliveConfig());
-        regulator.setKeepAliveTimer(voltageRegulator.getKeepAliveTimer());
-        regulator.setName(voltageRegulator.getPAOName());
-        regulator.setDescription(voltageRegulator.getPAODescription());
-        regulator.setVoltChangePerTap(voltageRegulator.getVoltChangePerTap());
-        regulator.setMappings(voltageRegulator.getPointMappings());
+        regulator.setType(complete.getPaoType());
+        regulator.setId(complete.getPaObjectId());
+        regulator.setDisabled(complete.isDisabled());
+        regulator.setKeepAliveConfig(complete.getKeepAliveConfig());
+        regulator.setKeepAliveTimer(complete.getKeepAliveTimer());
+        regulator.setName(complete.getPaoName());
+        regulator.setDescription(complete.getDescription());
+        regulator.setVoltChangePerTap(complete.getVoltChangePerTap());
 
         return regulator;
     }

@@ -75,11 +75,11 @@ import com.google.common.collect.TreeMultimap;
 public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     private static final Logger log = YukonLogManager.getLogger(DeviceConfigurationDaoImpl.class);
     
-    public static final int DEFAULT_DNP_CONFIG_ID = -1;
-    public static final int DEFAULT_REGULATOR_CONFIG_ID = -2;
+    private static final int defaultDnpConfigId = -1;
+    private static final int defaultRegulatorConfigId = -2;
     
     public static final Map<Integer, Set<PaoType>> requiredConfigs = ImmutableMap.of(
-        DEFAULT_DNP_CONFIG_ID, ImmutableSet.of(PaoType.CBC_7020,
+        defaultDnpConfigId, ImmutableSet.of(PaoType.CBC_7020,
                                                PaoType.CBC_7022,
                                                PaoType.CBC_7023,
                                                PaoType.CBC_7024,
@@ -89,7 +89,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
                                                PaoType.RTU_DART,
                                                PaoType.RTU_DNP),
 
-        DEFAULT_REGULATOR_CONFIG_ID, PaoType.getRegulatorTypes()
+        defaultRegulatorConfigId, PaoType.getRegulatorTypes()
     );
 
     private Map<Integer, Set<PaoType>> validConfigAssignments = new ConcurrentHashMap<>();
@@ -762,7 +762,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     @Transactional
     public void deleteConfiguration(int deviceConfigurationId) throws InvalidConfigurationRemovalException {
         if (requiredConfigs.containsKey(deviceConfigurationId)) {
-            throw new InvalidConfigurationRemovalException("Cannot remove the default DNP configuration.");
+            throw new InvalidConfigurationRemovalException("Cannot remove a default configuration.");
         }
         
         // Delete the category associations first.
@@ -962,12 +962,12 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     
     @Override
     public DeviceConfiguration getDefaultDNPConfiguration() {
-        return getDeviceConfiguration(DEFAULT_DNP_CONFIG_ID);
+        return getDeviceConfiguration(defaultDnpConfigId);
     }
 
     @Override
     public DeviceConfiguration getDefaultRegulatorConfiguration() {
-        return getDeviceConfiguration(DEFAULT_DNP_CONFIG_ID);
+        return getDeviceConfiguration(defaultRegulatorConfigId);
     }
     
     @Override

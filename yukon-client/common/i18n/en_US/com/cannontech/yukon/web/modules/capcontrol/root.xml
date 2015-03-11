@@ -18,8 +18,8 @@
     <entry key="yukon.web.modules.capcontrol.zoneType">Type</entry>
     <entry key="yukon.web.modules.capcontrol.noPreviousOperation">No Previous Operation</entry>
     <entry key="yukon.web.modules.capcontrol.voltReductionActive">Voltage Reduction is Active</entry>
-    <entry key="yukon.web.modules.capcontrol.enabled">ENABLED</entry>
-    <entry key="yukon.web.modules.capcontrol.disabled">DISABLED</entry>
+    <entry key="yukon.web.modules.capcontrol.enabled">Enabled</entry>
+    <entry key="yukon.web.modules.capcontrol.disabled">Disabled</entry>
     <entry key="yukon.web.modules.capcontrol.pending">Pending</entry>
     <entry key="yukon.web.modules.capcontrol.local">Local</entry>
     <entry key="yukon.web.modules.capcontrol.local.flag">-L</entry>
@@ -590,6 +590,7 @@
     <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.DESCRIPTION">Any description desired for the object</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.KEEP ALIVE TIMER">Time interval to resend keep alive message (in seconds)</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.VOLT CHANGE PER TAP">Voltage Change per Tap&lt;br&gt;(Default:0.75)</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.CONFIGURATION">Configuration to assign to the Regulator.&lt;br&gt;If not present, the default configuration will be used.</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.POINT_MAPPING.REGULATOR NAME">Parent regulator to map the point to</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.POINT_MAPPING.ACTION">Options: Add, Update, or Remove</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.POINT_MAPPING.MAPPING">Attribute the point will be associated with on the parent regulator&lt;br&gt;Options: Auto/Remote Control, Auto Block Enable, Raise Tap Position, Lower Tap Position, Tap Position, Terminate, Voltage X, Voltage Y, Keep Alive, Keep Alive Timer</entry>

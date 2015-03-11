@@ -49,7 +49,7 @@ public interface DeviceConfigurationDao {
     /**
      * Determines whether or not the specified configuration is deletable or not.
      * @param configId the identifier of the configuration being checked.
-     * @return true if the configId passed in isn't the default DNP configuration ID and has no entries in the
+     * @return true if the configId passed in isn't a default configuration and has no entries in the
      *    DeviceConfigurationDeviceMap table, false otherwise.
      */
     boolean isConfigurationDeletable(int configId);
