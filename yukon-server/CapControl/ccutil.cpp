@@ -148,8 +148,7 @@ bool isQualityOk(unsigned quality)
 }
 
 MissingPointAttribute::MissingPointAttribute(const long ID, const PointAttribute & attribute, string paoType, bool complainFlag)
-    : std::exception(),
-      _description("Missing Point Attribute: '")
+    : _description("Missing Point Attribute: '")
 {
     _complain = complainFlag;
     _description += attribute.name() + "' on "+ paoType +" with ID: " + CtiNumStr(ID);
@@ -167,8 +166,7 @@ const bool MissingPointAttribute::complain( ) const
 
 
 NoPointAttributeValue::NoPointAttributeValue(const long ID, const PointAttribute & attribute, string paoType)
-    : std::exception(),
-      _description("No Point Attribute Value for: '")
+    : _description("No Point Attribute Value for: '")
 {
     _description += attribute.name() + "' on "+ paoType +" with ID: " + CtiNumStr(ID);
 }

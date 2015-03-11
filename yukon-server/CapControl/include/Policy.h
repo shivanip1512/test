@@ -42,7 +42,7 @@ struct FailedAttributeLookup : public std::exception
 {
     FailedAttributeLookup( const PointAttribute & attribute );
 
-    virtual const char * what( ) const;
+    const char * what() const override;
 
     const PointAttribute & attribute() const;
 
@@ -57,7 +57,7 @@ struct UninitializedPointValue : public std::exception
 {
     UninitializedPointValue( const PointAttribute & attribute );
 
-    virtual const char * what( ) const;
+    const char * what() const override;
 
     const PointAttribute & attribute() const;
 

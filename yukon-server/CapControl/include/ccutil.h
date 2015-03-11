@@ -100,8 +100,8 @@ public:
 
     MissingPointAttribute(const long ID, const PointAttribute & attribute, std::string paoType, bool complainFlag = true);
 
-    virtual const char * what( ) const;
-    const bool complain( ) const;
+    const char * what() const override;
+    const bool complain() const;
 
 private:
 
@@ -116,7 +116,7 @@ public:
 
     NoPointAttributeValue(const long ID, const PointAttribute & attribute, std::string paoType);
 
-    virtual const char * what( ) const;
+    const char * what() const override;
 
 private:
 

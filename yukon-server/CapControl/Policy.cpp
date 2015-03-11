@@ -61,8 +61,7 @@ Policy::IDSet Policy::getRegistrationPointIDs() const
 
 
 FailedAttributeLookup::FailedAttributeLookup( const PointAttribute & attribute )
-    :   std::exception(),
-        _attribute( attribute ),
+    :   _attribute( attribute ),
         _description( "Failed Point Attribute Lookup: '" + _attribute.name() + "'" )
 {
     // empty
@@ -80,8 +79,7 @@ const PointAttribute & FailedAttributeLookup::attribute() const
 
 
 UninitializedPointValue::UninitializedPointValue( const PointAttribute & attribute )
-    :   std::exception(),
-        _attribute( attribute ),
+    :   _attribute( attribute ),
         _description( "Uninitialized Point Value for Attribute: '" + _attribute.name() + "'" )
 {
     // empty
