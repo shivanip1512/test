@@ -109,6 +109,20 @@ private:
     bool    _complain;
 };
 
+class NoPointAttributeValue : public std::exception
+{
+
+public:
+
+    NoPointAttributeValue(const long ID, const PointAttribute & attribute, std::string paoType);
+
+    virtual const char * what( ) const;
+
+private:
+
+    std::string _description;
+};
+
 void static sendCapControlOperationMessage( Cti::Messaging::CapControl::CapControlOperationMessage * message )
 {
     using namespace Cti::Messaging;

@@ -10,12 +10,7 @@
 #include "mgr_config.h"
 #include "config_data_regulator.h"
 
-
-
 #include "StandardControlPolicy.h"
-
-
-
 
 using namespace boost::posix_time;
 using namespace Cti::Messaging::CapControl;
@@ -165,12 +160,12 @@ VoltageRegulator::IDSet VoltageRegulator::getRegistrationPoints()
         IDs.insert( getDisabledStatePointId() );
     }
 
-    for ( const long ID : _controlPolicy->getRegistrationPointIDs() )
+    for ( const auto ID : _controlPolicy->getRegistrationPointIDs() )
     {
         IDs.insert( ID );
     }
 
-    for each ( const AttributeMap::value_type & attribute in _attributes  )
+    for ( const auto & attribute : _attributes )
     {
         IDs.insert( attribute.second.getPointId() );
     }
@@ -185,7 +180,7 @@ LitePoint VoltageRegulator::getPointByAttribute(const PointAttribute & attribute
     {
         return _controlPolicy->getPointByAttribute( attribute );
     } 
-    catch ( PointAttribute & att )
+    catch ( FailedAttributeLookup & )
     {
         // ... continue on to the local map lookup
     }
@@ -275,10 +270,10 @@ try
     sendCapControlOperationMessage(
         CapControlOperationMessage::createRaiseTapMessage( getPaoId(), CtiTime() ) );
 }
-catch ( PointAttribute & missingAttribute )
+catch ( FailedAttributeLookup & missingAttribute )
 {
     throw MissingPointAttribute( getPaoId(),
-                                 missingAttribute,
+                                 missingAttribute.attribute(),
                                  getPaoType(),
                                  isTimeForMissingAttributeComplain()  );
 }
@@ -295,10 +290,10 @@ try
     sendCapControlOperationMessage(
         CapControlOperationMessage::createLowerTapMessage( getPaoId(), CtiTime() ) );
 }
-catch ( PointAttribute & missingAttribute )
+catch ( FailedAttributeLookup & missingAttribute )
 {
     throw MissingPointAttribute( getPaoId(),
-                                 missingAttribute,
+                                 missingAttribute.attribute(),
                                  getPaoType(),
                                  isTimeForMissingAttributeComplain()  );
 }
@@ -323,12 +318,18 @@ try
     }
     // sendCapControlOperationMessage( ... <new message type?> )
 }
-catch ( PointAttribute & missingAttribute )
+catch ( FailedAttributeLookup & missingAttribute )
 {
     throw MissingPointAttribute( getPaoId(),
-                                 missingAttribute,
+                                 missingAttribute.attribute(),
                                  getPaoType(),
                                  isTimeForMissingAttributeComplain()  );
+}
+catch ( UninitializedPointValue & noValue )
+{
+    throw NoPointAttributeValue( getPaoId(),
+                                 noValue.attribute(),
+                                 getPaoType() );
 }
 
 
@@ -337,19 +338,22 @@ void VoltageRegulator::submitControlCommands( ControlPolicy::ControlRequest   & 
                                               const std::string               & opDescription,
                                               const CtiCCEventType_t            eventType )
 {
+    auto & signal  = blob.first;
+    auto & request = blob.second;
+
     notifyControlOperation( operation );
 
     std::string fullDescription = opDescription + getPhaseString();
 
-    blob.signal->setText( fullDescription );
-    blob.signal->setAdditionalInfo( "Voltage Regulator Name: " + getPaoName() );
+    signal->setText( fullDescription );
+    signal->setAdditionalInfo( "Voltage Regulator Name: " + getPaoName() );
 
-    CtiCapController::getInstance()->sendMessageToDispatch( blob.signal );
+    CtiCapController::getInstance()->sendMessageToDispatch( signal.release() );
 
     CtiCapController::submitEventLogEntry(
                         EventLogEntry( fullDescription, getPaoId(), eventType ) );
 
-    CtiCapController::getInstance()->manualCapBankControl( blob.request );
+    CtiCapController::getInstance()->manualCapBankControl( request.release() );
 }
 
 
@@ -650,10 +654,10 @@ try
         }
     }
 }
-catch ( PointAttribute & missingAttribute )
+catch ( FailedAttributeLookup & missingAttribute )
 {
     throw MissingPointAttribute( getPaoId(),
-                                 missingAttribute,
+                                 missingAttribute.attribute(),
                                  getPaoType(),
                                  isTimeForMissingAttributeComplain()  );
 }

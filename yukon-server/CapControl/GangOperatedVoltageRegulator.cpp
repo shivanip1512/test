@@ -65,7 +65,7 @@ void GangOperatedVoltageRegulator::loadAttributes(AttributeService * service)
     {
         PointAttribute::VoltageY,
         PointAttribute::AutoRemoteControl,
-        PointAttribute::KeepAlive,
+        PointAttribute::KeepAlive
     };
 
     for each ( const PointAttribute attribute in attributes )

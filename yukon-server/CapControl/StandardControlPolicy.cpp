@@ -60,20 +60,20 @@ ControlPolicy::ControlRequest StandardControlPolicy::AdjustSetPoint( const doubl
     };
 }
 
-CtiSignalMsg * StandardControlPolicy::makeSignalTemplate( const long ID )
+std::unique_ptr<CtiSignalMsg> StandardControlPolicy::makeSignalTemplate( const long ID )
 {
-    return new CtiSignalMsg( ID,
-                             0,
-                             "",
-                             "",
-                             CapControlLogType,
-                             SignalEvent,
-                             "cap control" );
+    return std::make_unique<CtiSignalMsg>( ID,
+                                           0,
+                                           "",
+                                           "",
+                                           CapControlLogType,
+                                           SignalEvent,
+                                           "cap control" );
 }
 
-CtiRequestMsg * StandardControlPolicy::makeRequestTemplate( const long ID, const std::string & command )
+std::unique_ptr<CtiRequestMsg> StandardControlPolicy::makeRequestTemplate( const long ID, const std::string & command )
 {
-    CtiRequestMsg * request = new CtiRequestMsg( ID, command );
+    auto request = std::make_unique<CtiRequestMsg>( ID, command );
 
     request->setMessagePriority( _MSG_PRIORITY );
     request->setSOE( 5 );
@@ -83,22 +83,13 @@ CtiRequestMsg * StandardControlPolicy::makeRequestTemplate( const long ID, const
 
 double StandardControlPolicy::getSetPointValue()
 {
-    double currentSetPoint = 120.0;     // sensible default in the case of no reading...
-
-    pointValues.getPointValue( getPointByAttribute( PointAttribute::ForwardSetPoint ).getPointId(), currentSetPoint );
-
-    return currentSetPoint;
+    return getValueByAttribute( PointAttribute::ForwardSetPoint );
 }
 
 double StandardControlPolicy::getSetPointBandwidth()
 {
-    double currentBandwidth = 2.0;      // sensible default in the case of no reading...
-
-    pointValues.getPointValue( getPointByAttribute( PointAttribute::ForwardBandwidth ).getPointId(), currentBandwidth );
-
-    return currentBandwidth;
+    return getValueByAttribute( PointAttribute::ForwardBandwidth );
 }
-
 
 
 }

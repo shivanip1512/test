@@ -564,7 +564,14 @@ void IVVCStrategy::execute()
         busPtr = store->findSubBusByPAObjectID( (*b)->getPaoId());
         if (busPtr != NULL && busPtr->getStrategyId() == getStrategyId())
         {
-            _ivvcAlgorithm.execute( *b, busPtr, this, true);
+            try
+            {
+                _ivvcAlgorithm.execute(*b, busPtr, this, true); 
+            }
+            catch ( ... )
+            {
+                CTILOG_UNKNOWN_EXCEPTION_ERROR( dout );
+            }
         }
         else
         {

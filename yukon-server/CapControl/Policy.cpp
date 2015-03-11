@@ -10,7 +10,7 @@ namespace CapControl    {
 
 void Policy::loadAttributes( AttributeService & service, const long paoID )
 {
-    for ( const PointAttribute & attribute : supportedAttributes )
+    for ( const auto & attribute : supportedAttributes )
     {
         LitePoint point = service.getPointByPaoAndAttribute( paoID, attribute );
 
@@ -28,10 +28,22 @@ LitePoint Policy::getPointByAttribute( const PointAttribute & attribute ) const
 
     if ( ! point )
     {
-        throw attribute;
+        throw FailedAttributeLookup( attribute );
     }
 
     return *point;
+}
+
+double Policy::getValueByAttribute( const PointAttribute & attribute ) const
+{
+    double currentValue;
+
+    if ( ! pointValues.getPointValue( getPointByAttribute( attribute ).getPointId(), currentValue ) )
+    {
+        throw UninitializedPointValue( attribute );
+    }
+
+    return currentValue;
 }
 
 void Policy::updatePointData( CtiPointDataMsg * message )
@@ -45,6 +57,44 @@ void Policy::updatePointData( CtiPointDataMsg * message )
 Policy::IDSet Policy::getRegistrationPointIDs() const
 {
     return pointIDs;
+}
+
+
+FailedAttributeLookup::FailedAttributeLookup( const PointAttribute & attribute )
+    :   std::exception(),
+        _attribute( attribute ),
+        _description( "Failed Point Attribute Lookup: '" + _attribute.name() + "'" )
+{
+    // empty
+}
+
+const char * FailedAttributeLookup::what() const
+{
+    return _description.c_str();
+}
+
+const PointAttribute & FailedAttributeLookup::attribute() const
+{
+    return _attribute;
+}
+
+
+UninitializedPointValue::UninitializedPointValue( const PointAttribute & attribute )
+    :   std::exception(),
+        _attribute( attribute ),
+        _description( "Uninitialized Point Value for Attribute: '" + _attribute.name() + "'" )
+{
+    // empty
+}
+
+const char * UninitializedPointValue::what() const
+{
+    return _description.c_str();
+}
+
+const PointAttribute & UninitializedPointValue::attribute() const
+{
+    return _attribute;
 }
 
 }

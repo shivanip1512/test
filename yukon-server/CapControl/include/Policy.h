@@ -6,6 +6,7 @@
 #include <vector>
 #include <map>
 #include <set>
+#include <exception>
 
 class CtiPointDataMsg;
 
@@ -19,6 +20,7 @@ struct Policy
     void loadAttributes( AttributeService & service, const long paoID );
 
     LitePoint getPointByAttribute( const PointAttribute & attribute ) const;
+    double    getValueByAttribute( const PointAttribute & attribute ) const;
 
     void updatePointData( CtiPointDataMsg * message );
 
@@ -33,6 +35,36 @@ protected:
     AttributeMap        pointMapping;
     IDSet               pointIDs;
     PointValueHolder    pointValues;
+};
+
+
+struct FailedAttributeLookup : public std::exception
+{
+    FailedAttributeLookup( const PointAttribute & attribute );
+
+    virtual const char * what( ) const;
+
+    const PointAttribute & attribute() const;
+
+protected:
+
+    const PointAttribute &  _attribute;
+    std::string             _description;
+};
+
+
+struct UninitializedPointValue : public std::exception
+{
+    UninitializedPointValue( const PointAttribute & attribute );
+
+    virtual const char * what( ) const;
+
+    const PointAttribute & attribute() const;
+
+protected:
+
+    const PointAttribute &  _attribute;
+    std::string             _description;
 };
 
 }

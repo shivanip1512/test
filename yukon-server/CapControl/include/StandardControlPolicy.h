@@ -9,7 +9,6 @@ namespace CapControl    {
 
 struct StandardControlPolicy : ControlPolicy
 {
-
     StandardControlPolicy();
 
     ControlRequest TapUp() override;
@@ -25,10 +24,9 @@ protected:
 
     ControlRequest manualTapControl( const LitePoint & point );
 
-    CtiSignalMsg * makeSignalTemplate( const long ID );
+    std::unique_ptr<CtiSignalMsg>   makeSignalTemplate( const long ID );
 
-    CtiRequestMsg * makeRequestTemplate( const long ID, const std::string & command );
-
+    std::unique_ptr<CtiRequestMsg>  makeRequestTemplate( const long ID, const std::string & command );
 };
 
 }

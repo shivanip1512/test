@@ -166,6 +166,20 @@ const bool MissingPointAttribute::complain( ) const
 }
 
 
+NoPointAttributeValue::NoPointAttributeValue(const long ID, const PointAttribute & attribute, string paoType)
+    : std::exception(),
+      _description("No Point Attribute Value for: '")
+{
+    _description += attribute.name() + "' on "+ paoType +" with ID: " + CtiNumStr(ID);
+}
+
+
+const char * NoPointAttributeValue::what( ) const
+{
+    return _description.c_str();
+}
+
+
 typedef boost::bimap<std::string, Phase> PhaseLookup;
 
 const string String_A = "A";
