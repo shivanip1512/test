@@ -1,6 +1,5 @@
 package com.cannontech.core.dao.impl;
 
-import java.sql.SQLException;
 import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,7 @@ import com.cannontech.stars.dr.program.dao.ProgramDao;
  * Creation date: (6/14/2002 3:25:50 PM)
  * @author: jdayton
  */
-public class DBDeletionDaoImpl implements DBDeletionDao 
+public class DBDeletionDaoImpl implements DBDeletionDao
 {
 	private static final String CR_LF = System.getProperty("line.separator");
 	@Autowired private MACScheduleDao macScheduleDao;
@@ -47,7 +46,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 	 * @return java.lang.String
 	 * @param pointID int
 	 */
-	private byte createDeleteStringForCommPort(final DBDeleteResult dbRes) throws java.sql.SQLException
+    private byte createDeleteStringForCommPort(final DBDeleteResult dbRes)
 	{
 		Integer theID = new Integer( dbRes.getItemID() );
 	
@@ -70,11 +69,11 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 	private byte createDeleteStringForDevice(final DBDeleteResult dbRes) throws java.sql.SQLException
 	{
 		Integer theID = new Integer( dbRes.getItemID() );
-	   	String str = null;   
+		String str = null;
 	
 	   /* Some day we could consolidate all these seperate delete statements into one
 	    * statement. Do this when performance becomes an issue and put it into the
-	    * DeviceBase class 
+	    * DeviceBase class
 	    */
 		if( (str = com.cannontech.database.data.device.DeviceBase.hasRoute(theID)) != null )
 		{
@@ -105,7 +104,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 		return STATUS_ALLOW;
 	}
 
-    private byte createDeleteStringForLmProgram(final DBDeleteResult dbRes) throws SQLException {
+    private byte createDeleteStringForLmProgram(final DBDeleteResult dbRes) {
         int programId = dbRes.getItemID();
         if(programDao.getByProgramIds(Collections.singletonList(programId)).size() > 0) {
             dbRes.getDescriptionMsg().append(CR_LF + "because it is currently in use as a STARS assigned program."
@@ -115,10 +114,10 @@ public class DBDeletionDaoImpl implements DBDeletionDao
         return STATUS_ALLOW;
     }
 
-    private byte createDeleteStringForPaoType(final DBDeleteResult dbRes) throws java.sql.SQLException
+    private byte createDeleteStringForPaoType(final DBDeleteResult dbRes)
     {
         Integer theID = Integer.valueOf(dbRes.getItemID());
-        String str = null;   
+        String str = null;
     
         if( (str = VoltageRegulator.usedVoltageRegulator(theID)) != null )
        {
@@ -130,13 +129,13 @@ public class DBDeletionDaoImpl implements DBDeletionDao
         return STATUS_ALLOW;
     }
 
-	private byte createDeleteStringForRoute(final DBDeleteResult dbRes) throws java.sql.SQLException
+    private byte createDeleteStringForRoute(final DBDeleteResult dbRes)
 	{
 		Integer theID = new Integer( dbRes.getItemID() );
-	   	String str = null;   
+		String str = null;
 		/* Some day we could consolidate all these seperate delete statements into one
 		* statement. Do this when performance becomes an issue and put it into the
-		* DeviceBase class 
+		* DeviceBase class
 		*/
 		if( (str = RouteBase.hasDevice(theID)) != null )
 		{
@@ -180,7 +179,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 	
 	   /* Some day we could consolidate all these seperate delete statements into one
 	    * statement. Do this when performance becomes an issue and put it into the
-	    * NotificationBase class 
+	    * NotificationBase class
 	    */
 		if( com.cannontech.database.data.notification.NotificationGroup.hasAlarmCategory( theID ) )
 		{
@@ -203,7 +202,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 	 * @return java.lang.String
 	 * @param pointID int
 	 */
-	private byte createDeleteStringForContact(final DBDeleteResult dbRes) throws java.sql.SQLException
+    private byte createDeleteStringForContact(final DBDeleteResult dbRes)
 	{
 		Integer theID = new Integer( dbRes.getItemID() );
 	
@@ -218,7 +217,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 		return STATUS_ALLOW;
 	}
 	
-	private byte createDeleteStringForBaseline(final DBDeleteResult dbRes) throws java.sql.SQLException
+    private byte createDeleteStringForBaseline(final DBDeleteResult dbRes)
 		{
 			Integer theID = new Integer( dbRes.getItemID() );
 	
@@ -246,9 +245,9 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 	
 		//this object is deleteable
 		return STATUS_ALLOW;
-	}	
+	}
 	
-	private byte createDeleteStringForTOU(final DBDeleteResult dbRes) throws java.sql.SQLException
+    private byte createDeleteStringForTOU(final DBDeleteResult dbRes)
 	{
 		/*Integer theID = new Integer( dbRes.getItemID() );
 	
@@ -309,7 +308,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 		return STATUS_ALLOW;
 	}
 
-	private byte createDeleteStringForTag(final DBDeleteResult dbRes) throws java.sql.SQLException
+    private byte createDeleteStringForTag(final DBDeleteResult dbRes)
 	{
 		dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "This tag and ALL references to it in the system will be removed.") );
 		return STATUS_CONFIRM;
@@ -328,7 +327,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 	   	      
 	   /* Some day we could consolidate all these seperate delete statements into one
 	    * statement. Do this when performance becomes an issue and put it into the
-	    * PointBase class 
+	    * PointBase class
 	    */
 		if( com.cannontech.database.data.point.PointBase.hasCapControlSubstationBus( ptID ) )
 		{
@@ -398,7 +397,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 	 * @return java.lang.String
 	 * @param pointID int
 	 */
-	private byte createDeleteStringForLogin(final DBDeleteResult dbRes) throws java.sql.SQLException
+    private byte createDeleteStringForLogin(final DBDeleteResult dbRes)
 	{
 /*
 		if( loginID == UserUtils.USER_YUKON_ID ) //this id is the default
@@ -420,7 +419,8 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.DBDeletionDao#getDeleteInfo(com.cannontech.database.db.DBPersistent, java.lang.String)
      */
-	public DBDeleteResult getDeleteInfo( DBPersistent toDelete, final String nodeName )
+    @Override
+    public DBDeleteResult getDeleteInfo( DBPersistent toDelete, final String nodeName )
 	{
 		DBDeleteResult delRes = new DBDeleteResult();
 
@@ -439,7 +439,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 			delRes.getUnableDelMsg().append("You cannot delete the contact '" + nodeName + "'");
 			delRes.setItemID( ((com.cannontech.database.data.customer.Contact) toDelete).getContact().getContactID().intValue() );
 			delRes.setDelType( DBDeletionDaoImpl.CONTACT_TYPE );
-		}		
+		}
 		else if (toDelete instanceof com.cannontech.database.data.notification.NotificationGroup)
 		{
 			delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + "'?");
@@ -487,7 +487,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 				delRes.setDelType( DBDeletionDaoImpl.BASELINE_TYPE );
 			}
 			else
-			{	
+			{
 				delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + "'?");
 				delRes.getUnableDelMsg().append("You cannot delete the baseline '" + nodeName + "'");
 				delRes.setDelType( DBDeletionDaoImpl.BASELINE_TYPE );
@@ -518,7 +518,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 			delRes.setDelType( DBDeletionDaoImpl.TAG_TYPE );
 		}
 		else if (toDelete instanceof LMProgramDirectBase) {
-		    delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + 
+		    delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName +
 		            "' and all of its points?" + CR_LF + CR_LF +
 		            "*The delete process will take extra time if several points are present." + CR_LF +
 		            "*All points history will also be deleted.");
@@ -529,7 +529,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 		}
 		else if( toDelete instanceof com.cannontech.database.data.pao.YukonPAObject )
 		{
-			delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + 
+			delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName +
 								"' and all of its points?" + CR_LF + CR_LF +
 								"*The delete process will take extra time if several points are present." + CR_LF +
 								"*All points history will also be deleted.");
@@ -541,7 +541,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 /*
 		else if( toDelete instanceof com.cannontech.database.db.notification.AlarmCategory )
 		{
-			delRes.getConfirmMessage().append("You can not delete alarm categories using the DatabaseEditor"); 
+			delRes.getConfirmMessage().append("You can not delete alarm categories using the DatabaseEditor");
 			delRes.getUnableDelMsg().append("You cannot delete the AlarmCategory '" + nodeName + "'");
 			delRes.setItemID( ((com.cannontech.database.db.notification.AlarmCategory) toDelete).getAlarmCategoryID().intValue() );
 
@@ -556,7 +556,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 			delRes.getUnableDelMsg().append("You cannot delete the customer '" + nodeName + "'");
 			delRes.setItemID( ((com.cannontech.database.data.customer.Customer) toDelete).getCustomerID().intValue() );
 			delRes.setDelType( DBDeletionDaoImpl.CUSTOMER_TYPE );
-	 	}		
+		}
 		else if (toDelete instanceof com.cannontech.database.data.user.YukonUser)
 		{
          	delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + "'?");
@@ -591,17 +591,17 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 			delRes.getUnableDelMsg().append("You cannot delete the season schedule '" + nodeName + "'");
 			delRes.setItemID( ((SeasonSchedule) toDelete).getScheduleID().intValue() );
 			delRes.setDelType( DBDeletionDaoImpl.SEASON_SCHEDULE );
-		}		
+		}
 		else if (toDelete instanceof LMProgramConstraint)
 		{
 			delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + "'?");
 			delRes.getUnableDelMsg().append("You cannot delete the Program Constraint '" + nodeName + "'");
 			delRes.setItemID( ((LMProgramConstraint) toDelete).getConstraintID().intValue() );
 			delRes.setDelType( DBDeletionDaoImpl.LMPROG_CONSTR_TYPE );
-		}		
+		}
 		else
 		{
-			delRes.getConfirmMessage().append("You can not delete this object using the DatabaseEditor"); 
+			delRes.getConfirmMessage().append("You can not delete this object using the DatabaseEditor");
 			delRes.getUnableDelMsg().append("You cannot delete object named '" + nodeName + "'");
 						
 			delRes.setDeletable( false );
@@ -614,7 +614,8 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.DBDeletionDao#deletionAttempted(com.cannontech.core.dao.DBDeleteResult)
      */
-	public byte deletionAttempted( final DBDeleteResult dbRes ) throws java.sql.SQLException
+    @Override
+    public byte deletionAttempted( final DBDeleteResult dbRes ) throws java.sql.SQLException
 	{
 		if (dbRes.getDelType() == POINT_TYPE) {
 			return createDeleteStringForPoints(dbRes);
@@ -655,7 +656,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 		else if(dbRes.getDelType() == LOGIN_TYPE) {
 			return createDeleteStringForLogin(dbRes);
 		}
-		else if(dbRes.getDelType() == SEASON_SCHEDULE) {	
+		else if(dbRes.getDelType() == SEASON_SCHEDULE) {
 			return createDeleteStringForSeasonSchedule(dbRes);
 		}
 		else if(dbRes.getDelType() == HOLIDAY_SCHEDULE)	{

@@ -61,6 +61,7 @@ public class VoltageRegulatorDaoImpl implements VoltageRegulatorDao {
     public List<LiteCapControlObject> getOrphans() {
         
         ParameterizedRowMapper<LiteCapControlObject> rowMapper = new ParameterizedRowMapper<LiteCapControlObject>() {
+            @Override
             public LiteCapControlObject mapRow(ResultSet rs, int rowNum) throws SQLException {
                 
                 LiteCapControlObject lco = new LiteCapControlObject();
