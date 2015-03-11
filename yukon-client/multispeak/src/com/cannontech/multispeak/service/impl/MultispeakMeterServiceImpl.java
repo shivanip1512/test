@@ -2047,7 +2047,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     private String getExtensionValue(ExtensionsList extensionsList, String extensionName, String defaultValue) {
         log.debug("Attempting to load extension value for key:" + extensionName);
         
-        if (extensionsList != null && extensionsList.getExtensionsItem() != null) {
+        if (extensionsList != null) {
             for (ExtensionsItem eItem : extensionsList.getExtensionsItem()) {
                 String extName = eItem.getExtName();
                 if (extName.equalsIgnoreCase(extensionName)) {
