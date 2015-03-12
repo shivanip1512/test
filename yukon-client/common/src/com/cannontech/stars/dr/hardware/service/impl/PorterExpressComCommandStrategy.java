@@ -40,7 +40,6 @@ import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.DefaultRouteService;
 import com.google.common.collect.Lists;
 
@@ -146,8 +145,8 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
         
         List<String> commands = Lists.newArrayList();
         LiteLmHardwareBase device = parameters.getDevice();
-        YukonEnergyCompany yec = ecDao.getEnergyCompanyByInventoryId(device.getInventoryID());
-        boolean trackAddressing = ecSettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, yec.getEnergyCompanyId());
+        EnergyCompany ec = ecDao.getEnergyCompany(device.getEnergyCompanyId());
+        boolean trackAddressing = ecSettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, ec.getId());
         
         LiteYukonUser user = parameters.getUser();
         if (parameters.getType() == LmHardwareCommandType.CONFIG) {
@@ -211,8 +210,8 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
         log.debug("Sending porter ExpressCom broadcast command: " + command.getType());
         
         if (command.getType() == LmHardwareCommandType.CANCEL_TEMP_OUT_OF_SERVICE) {
-            EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(command.getUser());
-            int routeId = defaultRouteService.getDefaultRouteId(energyCompany);
+            EnergyCompany ec = ecDao.getEnergyCompanyByOperator(command.getUser());
+            int routeId = defaultRouteService.getDefaultRouteId(ec);
             Integer spid = (Integer) command.getParams().get(LmHardwareCommandParam.SPID);
             String xcomCommand = xcomCommandBuilder.getBroadcastCancelAllOptOuts(spid);
             
@@ -272,8 +271,7 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
     public void verifyCanSendConfig(LmHardwareCommand command) throws BadConfigurationException {
         
         List<String> commands = Lists.newArrayList();
-        int inventoryId = command.getDevice().getInventoryID();
-        int ecId = ecDao.getEnergyCompanyByInventoryId(inventoryId).getId();
+        int ecId = command.getDevice().getEnergyCompanyId();
         boolean trackAddressing = ecSettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, ecId);
         
         Integer optionalGroupId = null;

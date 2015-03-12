@@ -113,8 +113,8 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         // Throw a CommandCompletionException if it is not possible to configure this device.
         verifyCanSendConfig(command);
         
-        EnergyCompany ec = ecDao.getEnergyCompanyByInventoryId(command.getDevice().getInventoryID());
         LiteLmHardwareBase device = command.getDevice();
+        EnergyCompany ec = ecDao.getEnergyCompany(device.getEnergyCompanyId());
         
         boolean autoConfig = ecSettingDao.getBoolean(EnergyCompanySettingType.AUTOMATIC_CONFIGURATION, ec.getId());
         
@@ -217,7 +217,7 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         
         // Add "Activation Completed" to hardware events
         LiteLmHardwareBase device = command.getDevice();
-        EnergyCompany ec = ecDao.getEnergyCompanyByInventoryId(device.getInventoryID());
+        EnergyCompany ec = ecDao.getEnergyCompany(device.getEnergyCompanyId());
         int event = selectionListService.getListEntry(ec, YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID();
         int complete = selectionListService.getListEntry(ec, YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID();
         addHardwareEvents(ec.getId(), device.getInventoryID(), event, complete);
@@ -233,7 +233,7 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         
         // Add "Termination" to hardware events
         LiteLmHardwareBase device = command.getDevice();
-        EnergyCompany ec = ecDao.getEnergyCompanyByInventoryId(device.getInventoryID());
+        EnergyCompany ec = ecDao.getEnergyCompany(device.getEnergyCompanyId());
         int event = selectionListService.getListEntry(ec, YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID();
         int termination = selectionListService.getListEntry(ec, YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).getEntryID();
         addHardwareEvents(ec.getId(), device.getInventoryID(), event, termination);
