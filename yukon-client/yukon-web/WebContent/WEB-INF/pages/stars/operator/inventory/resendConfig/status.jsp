@@ -22,7 +22,12 @@
         
         <div class="page-action-area">
             <cti:button nameKey="start" type="submit" name="start" classes="action primary"/>
-            <cti:button nameKey="cancel" type="submit" name="cancel"/>
+            <cti:url var="url" value="/stars/operator/inventory/inventoryConfiguration">
+                <c:forEach items="${inventoryCollection.collectionParameters}" var="entry">
+                    <cti:param name="${entry.key}" value="${entry.value}"/>
+                </c:forEach>
+            </cti:url>
+            <cti:button nameKey="cancel" href="${url}"/>
         </div>
         
     </form>

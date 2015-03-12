@@ -10,25 +10,25 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.deviceReconfig.DeviceReconfigMonitorUpdaterType;
 
 public class StatusTextUpdaterHandler implements DeviceReconfigUpdaterHandler {
-
+    
     private InventoryConfigTaskDao inventoryConfigTaskDao;
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
-
+    private YukonUserContextMessageSourceResolver messageResolver;
+    
     @Override
     public String handle(int taskId, YukonUserContext userContext) {
-
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         InventoryConfigTask inventoryConfigTask = inventoryConfigTaskDao.getById(taskId);
         int itemsProcessed = inventoryConfigTask.getNumberOfItemsProcessed();
         
         if( itemsProcessed == inventoryConfigTask.getNumberOfItems()) {
-            return messageSourceAccessor.getMessage("yukon.web.modules.operator.inventory.config.schedule.status.complete");
+            return accessor.getMessage("yukon.web.modules.operator.complete");
         } else {
-            return messageSourceAccessor.getMessage("yukon.web.modules.operator.inventory.config.schedule.status.inProgress");
+            return accessor.getMessage("yukon.web.modules.operator.inProgress");
         }
         
     }
-
+    
     @Override
     public DeviceReconfigMonitorUpdaterType getUpdaterType() {
         return DeviceReconfigMonitorUpdaterType.STATUS_TEXT;
@@ -41,7 +41,7 @@ public class StatusTextUpdaterHandler implements DeviceReconfigUpdaterHandler {
     
     @Autowired
     public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
+        this.messageResolver = messageSourceResolver;
     }
     
 }

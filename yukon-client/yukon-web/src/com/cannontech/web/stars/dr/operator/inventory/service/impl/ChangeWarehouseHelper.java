@@ -4,6 +4,7 @@ import javax.servlet.http.HttpSession;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.operator.inventory.service.CollectionBasedInventoryTask;
@@ -17,7 +18,7 @@ public class ChangeWarehouseHelper extends InventoryActionsHelper {
         
         public ChangeWarehouseTask(InventoryCollection collection, YukonUserContext context, int warehouseId) {
             this.collection = collection;
-            this.context = context;
+            this.userContext = context;
             this.warehouseId = warehouseId;
         }
         
@@ -44,9 +45,9 @@ public class ChangeWarehouseHelper extends InventoryActionsHelper {
                     for (InventoryIdentifier inv : collection.getList()) {
                         if (canceled) break;
                         try {
-                            hardwareService.changeWarehouse(context, inv, warehouseId);
+                            hardwareService.changeWarehouse(userContext, inv, warehouseId);
                             successCount++;
-                        } catch (ObjectInOtherEnergyCompanyException e) {
+                        } catch (ObjectInOtherEnergyCompanyException|StarsDeviceSerialNumberAlreadyExistsException e) {
                             /* Inventory was probably in a member energy comany */
                             log.error("Unable to change warehouse: " + inv, e);
                             failedCount++;

@@ -186,7 +186,7 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
         } else if (!trackAddressing) {
             Integer optionalGroupId = null;
             Object param = parameters.findParam(LmHardwareCommandParam.OPTIONAL_GROUP_ID,
-                    LmHardwareCommandParam.OPTIONAL_GROUP_ID.getClass());
+                    LmHardwareCommandParam.OPTIONAL_GROUP_ID.getClazz());
             if (param != null) {
                 optionalGroupId = (Integer) param;
                 if (optionalGroupId > 0) {

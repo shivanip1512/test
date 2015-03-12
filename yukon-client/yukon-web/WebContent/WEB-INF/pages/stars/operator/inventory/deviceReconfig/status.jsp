@@ -25,7 +25,7 @@
         
 <div class="stacked-md">
     <span class="label label-info"><i:inline key="yukon.common.note"/></span>&nbsp;
-    <i:inline key=".notes"/>
+    <i:inline key=".inventory.actions.note"/>
 </div>
     
     <table class="name-value-container">

@@ -11,12 +11,11 @@ import com.cannontech.common.inventory.YukonInventory;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.MethodNotImplementedException;
-import com.cannontech.common.util.Pair;
-import com.cannontech.core.dynamic.impl.SimplePointValue;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.InventorySearchResult;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
+import com.cannontech.stars.dr.hardware.model.DeviceAndPointValue;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -25,6 +24,7 @@ import com.cannontech.stars.model.LiteLmHardware;
 import com.google.common.collect.Maps;
 
 public class MockInventoryDao implements InventoryDao {
+    
     private Map<Integer, Integer> inventoryToDeviceMap = Maps.newHashMap();
     
     public void setInventoryToDeviceMap(Map<Integer, Integer> inventoryToDeviceMap) {
@@ -158,7 +158,7 @@ public class MockInventoryDao implements InventoryDao {
     }
 
     @Override
-    public List<Pair<LiteLmHardware, SimplePointValue>> getZigbeeProblemDevices(String inWarehouseMsg) {
+    public List<DeviceAndPointValue> getZigbeeProblemDevices(String inWarehouseMsg) {
         throw new MethodNotImplementedException();
     }
 
@@ -202,6 +202,11 @@ public class MockInventoryDao implements InventoryDao {
 
     @Override
     public List<InventoryIdentifier> getYukonInventoryForDeviceIds(List<Integer> deviceIds) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public DisplayableLmHardware getDisplayableLMHardware(int inventoryId) {
         throw new MethodNotImplementedException();
     }
 

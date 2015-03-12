@@ -1,20 +1,20 @@
 package com.cannontech.stars.dr.hardware.model;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 /** 
  * Class representing the command and parameters for a load management command to
  * be sent to the entire network via broadcast messaging.
  */
 public class LmCommand {
+    
     protected LmHardwareCommandType type;
     protected LiteYukonUser user;
-    protected Map<LmHardwareCommandParam, Object> params = Maps.newHashMap();
+    protected Map<LmHardwareCommandParam, Object> params = new HashMap<>();
     
-
     public void setType(LmHardwareCommandType type) {
         this.type = type;
     }
@@ -49,6 +49,7 @@ public class LmCommand {
      * @see {@link LmHardwareCommandParam#getClazz()}
      */
     public <T extends Object> T findParam(LmHardwareCommandParam param, Class<T> returnAs) {
+        
         Object o = params.get(param);
         if (o != null) {
             return returnAs.cast(o);
@@ -63,9 +64,10 @@ public class LmCommand {
     public ImmutableMap<LmHardwareCommandParam, Object> optionsCopy() {
         return ImmutableMap.copyOf(params);
     }
-
+    
     @Override
     public String toString() {
         return String.format("LmHardwareCommand [type=%s, user=%s, params=%s]", type, user, params);
     }
+    
 }

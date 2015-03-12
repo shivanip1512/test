@@ -1341,17 +1341,18 @@
                     <page name="inventoryActions" type="DETAIL">
                         <link>/stars/operator/inventory/inventoryActions?${local:convertMapToQueryHtml(inventoryCollection.collectionParameters)}</link>
                         <pages>
-                            <page name="deleteInventory" type="BASIC"/>
-                            <page name="changeType" type="BASIC"/>
-                            <page name="changeStatus" type="BASIC"/>
-                            <page name="changeServiceCompany" type="BASIC"/>
-                            <page name="changeWarehouse" type="BASIC"/>
-                            <page name="inventory.config" type="BASIC">
+                            <page name="deleteInventory" type="BASIC" hideFavorite="true"/>
+                            <page name="changeType" type="BASIC" hideFavorite="true"/>
+                            <page name="changeStatus" type="BASIC" hideFavorite="true"/>
+                            <page name="changeServiceCompany" type="BASIC" hideFavorite="true"/>
+                            <page name="changeWarehouse" type="BASIC" hideFavorite="true"/>
+                            <page name="inventory.config" type="BASIC" hideFavorite="true">
                                 <link>/stars/operator/inventory/inventoryConfiguration?${local:convertMapToQueryHtml(inventoryCollection.collectionParameters)}</link>
                                 <pages>
-                                    <page name="inventory.config.new" type="BASIC"/>
-                                    <page name="inventory.config.schedule" type="BASIC"/>
-                                    <page name="inventory.config.send" type="BASIC"/>
+                                    <page name="inventory.config.new" type="BASIC" hideFavorite="true"/>
+                                    <page name="inventory.config.new.status" type="BASIC" hideFavorite="true"/>
+                                    <page name="inventory.config.schedule" type="BASIC" hideFavorite="true"/>
+                                    <page name="inventory.config.send" type="BASIC" hideFavorite="true"/>
                                 </pages>
                             </page>
                             <page name="saveToFile" type="BASIC"/>

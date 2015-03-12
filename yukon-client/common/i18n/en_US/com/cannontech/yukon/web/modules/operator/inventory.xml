@@ -33,6 +33,7 @@
     <entry key="yukon.web.modules.operator.inventory.lastName">Last Name</entry>
     <entry key="yukon.web.modules.operator.inventory.workOrderNumber">Work Order #</entry>
     <entry key="yukon.web.modules.operator.inventory.altTrackingNumber">Alt Tracking #</entry>
+    <entry key="yukon.web.modules.operator.inventory.actions.note">Processing will continue if you wish to navigate away from this page at any time.</entry>
 
     <!-- /inventory/inventoryList.jsp -->
     <entry key="yukon.web.modules.operator.inventory.list.pageName">Asset Search</entry>
@@ -76,9 +77,6 @@
     <entry key="yukon.web.modules.operator.abr.setup.route">Route</entry>
     <entry key="yukon.web.modules.operator.abr.settings.title">Settings</entry>
     <entry key="yukon.web.modules.operator.abr.progress.title">Progress</entry>
-    <entry key="yukon.web.modules.operator.abr.progress">Progress</entry>
-    <entry key="yukon.web.modules.operator.abr.successful">Successful</entry>
-    <entry key="yukon.web.modules.operator.abr.failed">Failed</entry>
     <entry key="yukon.web.modules.operator.abr.failedItems.title">Failed Items</entry>
     <entry key="yukon.web.modules.operator.abr.serialNumber">Serial Number</entry>
     <entry key="yukon.web.modules.operator.abr.reason">Failure Reason</entry>
@@ -224,8 +222,6 @@
     <entry key="yukon.web.modules.operator.inventory.config.schedule.taskName">Task Name</entry>
     <entry key="yukon.web.modules.operator.inventory.config.schedule.sendInService">Send In-Service Command</entry>
     <entry key="yukon.web.modules.operator.inventory.config.schedule.sendInServiceLabel">In-Service Command</entry>
-    <entry key="yukon.web.modules.operator.inventory.config.schedule.scheduleEnabled">Enabled</entry>
-    <entry key="yukon.web.modules.operator.inventory.config.schedule.scheduleDisabled">Disabled</entry>
     <entry key="yukon.web.modules.operator.inventory.config.schedule.error.required.name">Name of the asset configuration task cannot be empty.</entry>
     <entry key="yukon.web.modules.operator.inventory.config.schedule.error.unavailable.name">Name already in use.</entry>
     <entry key="yukon.web.modules.operator.inventory.config.schedule.error.tooLong.name">Name must be 250 characters or less.</entry>
@@ -235,17 +231,27 @@
     <!-- /inventory/config/new.jsp -->
     <entry key="yukon.web.modules.operator.inventory.config.new.pageTitle">New Configuration</entry>
     <entry key="yukon.web.modules.operator.inventory.config.new.pageHeading">New Configuration</entry>
-    <entry key="yukon.web.modules.operator.inventory.config.new.crumbTitle">New Configuration</entry>
+    <entry key="yukon.web.modules.operator.inventory.config.new.crumbTitle">New</entry>
     <entry key="yukon.web.modules.operator.inventory.config.new.configType">Configuration Type</entry>
     <entry key="yukon.web.modules.operator.inventory.config.new.multiConfigWarning">The devices chosen have mulitple configuration types. Choose the type that applies the to devices you want to configure. Devices not
     using this configuration type will be ignored.</entry>
     <entry key="yukon.web.modules.operator.inventory.config.new.inService">Send In Service Command</entry>
+    <entry key="yukon.web.modules.operator.inventory.config.new.group">Group</entry>
     <entry key="yukon.web.modules.operator.inventory.config.new.route">Use Route</entry>
     <entry key="yukon.web.modules.operator.inventory.config.new.route.device">On Device</entry>
     <entry key="yukon.web.modules.operator.inventory.config.new.route.specific">Specific Route</entry>
+    <entry key="yukon.web.modules.operator.inventory.config.new.batch.label">Save to Batch</entry>
     <entry key="yukon.web.modules.operator.inventory.config.new.typeMismatch.java.lang.Integer">Must be an integer.</entry>
     <entry key="yukon.web.modules.operator.inventory.config.new.typeMismatch.config.addressingInfo.program">Must be an integer.</entry>
     <entry key="yukon.web.modules.operator.inventory.config.new.typeMismatch.config.addressingInfo.splinter">Must be an integer.</entry>
+    <entry key="yukon.web.modules.operator.inventory.config.new.successful.description">New Configuration Success List</entry>
+    <entry key="yukon.web.modules.operator.inventory.config.new.failed.description">New Configuration Failed List</entry>
+    <entry key="yukon.web.modules.operator.inventory.config.new.unsupported.description">New Configuration Unsupported List</entry>
+    
+    <!-- /inventory/config/new.jsp -->
+    <entry key="yukon.web.modules.operator.inventory.config.new.status.pageTitle">New Configuration Status</entry>
+    <entry key="yukon.web.modules.operator.inventory.config.new.status.pageHeading">New Configuration Status</entry>
+    <entry key="yukon.web.modules.operator.inventory.config.new.status.crumbTitle">Status</entry>
     
     <!-- /inventory/inventoryOperations/inventoryActions.jsp -->
     <entry key="yukon.web.modules.operator.inventoryActions.pageTitle">Asset Actions</entry>
@@ -364,15 +370,6 @@
     <entry key="yukon.web.modules.operator.inventory.config.schedule.status.pageName">Asset Configuration Results</entry>
     <entry key="yukon.web.modules.operator.inventory.config.schedule.status.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.operator.inventory.config.schedule.status.statusContainer.title">{0} Configuration Result Details</entry>
-    <entry key="yukon.web.modules.operator.inventory.config.schedule.status.progress">Progress</entry>
-    <entry key="yukon.web.modules.operator.inventory.config.schedule.status.inProgress">In Progress</entry>
-    <entry key="yukon.web.modules.operator.inventory.config.schedule.status.complete">Complete</entry>
-    <entry key="yukon.web.modules.operator.inventory.config.schedule.status.successCount">Successful</entry>
-    <entry key="yukon.web.modules.operator.inventory.config.schedule.status.unsupportedCount">Unsupported</entry>
-    <entry key="yukon.web.modules.operator.inventory.config.schedule.status.failedCount">Failed</entry>
-    <entry key="yukon.web.modules.operator.inventory.config.schedule.status.notesLabel">Note:</entry>
-    <entry key="yukon.web.modules.operator.inventory.config.schedule.status.notes">Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.</entry>
-    <entry key="yukon.web.modules.operator.inventory.config.schedule.status.newOperation">New Action</entry>
     <entry key="yukon.web.modules.operator.inventory.config.schedule.status.confirmDelete.message">Are you sure you want to delete task "{0}"?</entry>
     
     <!-- /inventory/contolAudit/audit.jsp -->

@@ -129,15 +129,6 @@ public class DeviceReconfigController {
         return "redirect:../home";
     }
     
-    @RequestMapping(value="/operator/inventory/deviceReconfig/save", method=RequestMethod.POST, params="cancelButton")
-    public String cancel(HttpServletRequest request, ModelMap model) 
-    throws ServletRequestBindingException {
-        
-        collectionFactory.addCollectionToModelMap(request, model);
-        
-        return "redirect:/stars/operator/inventory/inventoryActions";
-    }
-    
     @RequestMapping(value="/operator/inventory/deviceReconfig/status", method=RequestMethod.GET)
     public String status(ModelMap model, int taskId) throws ServletRequestBindingException {
         

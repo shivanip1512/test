@@ -48,7 +48,7 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
     }
 
     @Override
-    public void sendCommand(LmHardwareCommand command, int ecId) throws CommandCompletionException {
+    public void sendCommand(LmHardwareCommand command) throws CommandCompletionException {
         LiteLmHardwareBase device = command.getDevice();
         String serialNumber = device.getManufacturerSerialNumber();
 
@@ -128,7 +128,7 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
     }
 
     @Override
-    public void verifyCanSendConfig(LmHardwareCommand command, int ecId) throws BadConfigurationException {
+    public void verifyCanSendConfig(LmHardwareCommand command) throws BadConfigurationException {
         getGroupId(command.getDevice().getInventoryID());
     }
 }

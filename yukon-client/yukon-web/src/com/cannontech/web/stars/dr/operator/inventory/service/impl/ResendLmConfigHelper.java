@@ -1,6 +1,6 @@
 package com.cannontech.web.stars.dr.operator.inventory.service.impl;
 
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +10,8 @@ import com.cannontech.common.device.commands.exception.CommandCompletionExceptio
 import com.cannontech.common.events.loggers.InventoryConfigEventLogService;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
@@ -20,34 +20,34 @@ import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
 import com.cannontech.stars.dr.hardware.service.LmHardwareCommandService;
-import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.stars.dr.operator.inventory.model.AssetActionFailure;
 import com.cannontech.web.stars.dr.operator.inventory.service.CollectionBasedInventoryTask;
 import com.cannontech.web.stars.dr.operator.inventory.service.InventoryActionsHelper;
-import com.google.common.collect.Sets;
 
 public class ResendLmConfigHelper extends InventoryActionsHelper {
 
-    @Autowired ProgramEnrollmentService enrollmentService;
-    @Autowired InventoryBaseDao inventoryBaseDao;
-    @Autowired InventoryDao inventoryDao;
-    @Autowired LmHardwareCommandService commandService;
-    @Autowired EnergyCompanyDao ecDao;
-    @Autowired private InventoryConfigEventLogService inventoryConfigEventLogService;
+    @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private InventoryDao inventoryDao;
+    @Autowired private LmHardwareCommandService commandService;
+    @Autowired private InventoryConfigEventLogService eventLog;
+    @Autowired private EnergyCompanySettingDao ecSettingDao;
     
     public class ResendLmConfigTask extends CollectionBasedInventoryTask {
         
         private static final String failureKey = "yukon.web.modules.operator.inventory.config.send.failureMessage";
         
-        private Set<InventoryIdentifier> unsupported = Sets.newHashSet();
-        private Set<InventoryIdentifier> successful = Sets.newHashSet();
-        private Set<InventoryIdentifier> failed = Sets.newHashSet();
-        private Set<ResendLmConfigFailure> failureReasons = Sets.newHashSet();
-        private final boolean forceInService; 
+        private Set<InventoryIdentifier> unsupported = new HashSet<>();
+        private Set<InventoryIdentifier> successful = new HashSet<>();
+        private Set<InventoryIdentifier> failed = new HashSet<>();
+        private Set<AssetActionFailure> failures = new HashSet<>();
+        
+        private final boolean forceInService;
         
         public ResendLmConfigTask(InventoryCollection collection, YukonUserContext context,boolean forceInService) {
             this.collection = collection;
-            this.context = context;
+            this.userContext = context;
             this.forceInService = forceInService;
         }
         
@@ -59,8 +59,8 @@ public class ResendLmConfigHelper extends InventoryActionsHelper {
             return failed;
         }
         
-        public Set<ResendLmConfigFailure> getFailureReasons() {
-            return failureReasons;
+        public Set<AssetActionFailure> getFailures() {
+            return failures;
         }
         
         public Set<InventoryIdentifier> getUnsupported() {
@@ -73,87 +73,72 @@ public class ResendLmConfigHelper extends InventoryActionsHelper {
                 @Override
                 public void run() {
                     for (InventoryIdentifier identifier : collection.getList()) {
+                        
                         if (canceled) break;
+                        
+                        int inventoryId = identifier.getInventoryId();
                         LiteLmHardwareBase lmhb = null;
+                        
                         try {
-                            lmhb = inventoryBaseDao.getHardwareByInventoryId(identifier.getInventoryId());
+                            lmhb = inventoryBaseDao.getHardwareByInventoryId(inventoryId);
                         } catch (NotFoundException e) {
-                            // ignore
+                            // handled below
                         }
-                        try {
-                            if (lmhb != null && identifier.getHardwareType().isConfigurable()) {                                
+                        
+                        LiteYukonUser user = userContext.getYukonUser();
+                        
+                        if (lmhb != null && identifier.getHardwareType().isConfigurable()) {
+                            
+                            String sn = lmhb.getManufacturerSerialNumber();
+                            
+                            try {
+                                
                                 LmHardwareCommand command = new LmHardwareCommand();
                                 command.setDevice(lmhb);
                                 command.setType(LmHardwareCommandType.CONFIG);
-                                command.setUser(context.getYukonUser());
+                                command.setUser(user);
                                 command.getParams().put(LmHardwareCommandParam.BULK, true);
-                                if(forceInService){
+                                
+                                if (forceInService) {
                                     command.getParams().put(LmHardwareCommandParam.FORCE_IN_SERVICE, true);
                                 }
+                                
                                 commandService.sendConfigCommand(command);
+                                
                                 successful.add(identifier);
                                 successCount++;
-                                inventoryConfigEventLogService.itemConfigSucceeded(context.getYukonUser(),
-                                    lmhb.getManufacturerSerialNumber());
-                            } else {
-                                unsupported.add(identifier);
-                                unsupportedCount++;
-                                inventoryConfigEventLogService.itemConfigUnsupported(context.getYukonUser(),
-                                    lmhb.getManufacturerSerialNumber());
+                                
+                                eventLog.itemConfigSucceeded(user, sn);
+                            
+                            } catch (CommandCompletionException e) {
+                                
+                                failed.add(identifier);
+                                failedCount++;
+                                
+                                DisplayableLmHardware lmHardware = inventoryDao.getDisplayableLMHardware(inventoryId);
+                                YukonMessageSourceResolvable reason = 
+                                        new YukonMessageSourceResolvable(failureKey, e.getMessage());
+                                AssetActionFailure failure = new AssetActionFailure(identifier, lmHardware, reason);
+                                failures.add(failure);
+                                
+                                eventLog.itemConfigFailed(user, sn, e.getMessage());
+                                
+                            } finally {
+                                completedItems++;
                             }
-                        } catch (CommandCompletionException e) {
-                            fail(failureKey, identifier, e);
-                            inventoryConfigEventLogService.itemConfigFailed(context.getYukonUser(),
-                                lmhb.getManufacturerSerialNumber(), e.getMessage());
-                        } finally {
-                            completedItems ++;
+                            
+                        } else {
+                            
+                            unsupported.add(identifier);
+                            unsupportedCount++;
+                            completedItems++;
+                            
+                            String sn = lmhb != null ? lmhb.getManufacturerSerialNumber() : "";
+                            eventLog.itemConfigUnsupported(user, sn);
                         }
                     }
                 }
             };
-        }
-        
-        private void fail(String key, InventoryIdentifier identifier, Exception e) {
-            failed.add(identifier);
-            
-            DisplayableLmHardware lmHardware = inventoryDao.getDisplayableLMHardware(Collections.singletonList(identifier)).get(0);
-            
-            YukonMessageSourceResolvable failureReason = new YukonMessageSourceResolvable(key, e.getMessage());
-            ResendLmConfigFailure failure = new ResendLmConfigFailure(identifier, lmHardware, failureReason);
-            failureReasons.add(failure);
-            failedCount++;
-        }
-        
-        /**
-         * Class for viewing the failure reasons 
-         */
-        public class ResendLmConfigFailure {
-            private YukonMessageSourceResolvable failureReason;
-            private InventoryIdentifier identifier;
-            private DisplayableLmHardware lmHardware;
-            public ResendLmConfigFailure(InventoryIdentifier identifier, DisplayableLmHardware lmHardware, YukonMessageSourceResolvable failureReason) {
-                this.identifier = identifier;
-                this.lmHardware = lmHardware;
-                this.failureReason = failureReason;
-            }
-            public YukonMessageSourceResolvable getFailureReason() {
-                return failureReason;
-            }
-            public void setFailureReason(YukonMessageSourceResolvable failureReason) {
-                this.failureReason = failureReason;
-            }
-            public InventoryIdentifier getIdentifier() {
-                return identifier;
-            }
-            public void setIdentifier(InventoryIdentifier identifier) {
-                this.identifier = identifier;
-            }
-            public DisplayableLmHardware getLmHardware() {
-                return lmHardware;
-            }
-            public void setLmHardware(DisplayableLmHardware lmHardware) {
-                this.lmHardware = lmHardware;
-            }
         }
         
     }

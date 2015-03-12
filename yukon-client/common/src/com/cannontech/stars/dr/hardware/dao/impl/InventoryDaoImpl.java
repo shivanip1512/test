@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,6 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -45,7 +45,6 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dynamic.impl.SimplePointValue;
 import com.cannontech.database.PagingExtractor;
 import com.cannontech.database.RowMapper;
-import com.cannontech.database.StringRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -65,6 +64,7 @@ import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.dr.hardware.dao.DisplayableLmHardwareRowMapper;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
+import com.cannontech.stars.dr.hardware.model.DeviceAndPointValue;
 import com.cannontech.stars.dr.hardware.model.HardwareStatus;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
@@ -113,17 +113,17 @@ public class InventoryDaoImpl implements InventoryDao {
     }
 
     @Override
-    public List<Pair<LiteLmHardware, SimplePointValue>> getZigbeeProblemDevices(final String inWarehouseMsg) {
+    public List<DeviceAndPointValue> getZigbeeProblemDevices(final String inWarehouseMsg) {
         AttributeDefinition definition =
             paoDefinitionDao.getAttributeLookup(PaoType.ZIGBEE_ENDPOINT, BuiltInAttribute.ZIGBEE_LINK_STATUS);
         int pointOffset = definition.getPointTemplate().getOffset();
         PointType pointType = definition.getPointTemplate().getPointType();
-
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT Inventory.EnergyCompanyId, Inventory.AccountId, Inventory.InventoryID, Inventory.DeviceID, Inventory.ManufacturerSerialNumber, ");
         sql.append("Inventory.LMHardwareTypeID, Inventory.DeviceLabel, RPH1.POINTID, RPH1.TIMESTAMP, Inventory.PointType, RPH1.Value");
         sql.append("FROM RAWPOINTHISTORY RPH1,");
-
+        
         sql.append("  (SELECT ECTA.EnergyCompanyID, IB.AccountId, IB.InventoryID, IB.DeviceID, HB.ManufacturerSerialNumber, ");
         sql.append("          IB.DeviceLabel, HB.LMHardwareTypeID, P.PointId, P.PointType");
         sql.append("   FROM InventoryBase IB");
@@ -136,7 +136,7 @@ public class InventoryDaoImpl implements InventoryDao {
         sql.append("     AND (YPO.type").eq_k(PaoType.ZIGBEE_ENDPOINT).append("OR YPO.TYPE").eq_k(PaoType.DIGIGATEWAY).append(
             ")");
         sql.append("  ) Inventory,");
-
+        
         sql.append("  (SELECT PointId, MAX(timestamp) latestTime");
         sql.append("    FROM RawPointHistory rph");
         sql.append("    WHERE PointId in (");
@@ -151,12 +151,12 @@ public class InventoryDaoImpl implements InventoryDao {
         sql.append("    )");
         sql.append("    group by PointId");
         sql.append("  ) RPH2");
-
+        
         sql.append("WHERE RPH1.PointId = RPH2.PointId");
         sql.append("  AND RPH1.timestamp = RPH2.latestTime");
         sql.append("  AND Inventory.PointId = RPH1.PointId");
         sql.append("  AND RPH1.Value").neq_k(Commissioned.CONNECTED.getRawState());
-
+        
         sql.append("UNION");
         sql.append("(SELECT Inventory.EnergyCompanyID, Inventory.AccountID, Inventory.InventoryID, Inventory.DeviceID, Inventory.ManufacturerSerialNumber,");
         sql.append("Inventory.LMHardwareTypeID, Inventory.DeviceLabel, Inventory.POINTID, NULL as TIMESTAMP, Inventory.POINTTYPE, NULL as Value");
@@ -172,10 +172,10 @@ public class InventoryDaoImpl implements InventoryDao {
             ")");
         sql.append("   ) Inventory");
         sql.append("WHERE Inventory.POINTID not in (SELECT POINTID from RAWPOINTHISTORY))");
-
-        return jdbcTemplate.query(sql, new YukonRowMapper<Pair<LiteLmHardware, SimplePointValue>>() {
+        
+        return jdbcTemplate.query(sql, new YukonRowMapper<DeviceAndPointValue>() {
             @Override
-            public Pair<LiteLmHardware, SimplePointValue> mapRow(YukonResultSet rs) throws SQLException {
+            public DeviceAndPointValue mapRow(YukonResultSet rs) throws SQLException {
                 LiteLmHardware hw = new LiteLmHardware();
                 InventoryIdentifier id =
                     new InventoryIdentifier(rs.getInt("InventoryId"),
@@ -191,7 +191,7 @@ public class InventoryDaoImpl implements InventoryDao {
                     hw.setLabel(rs.getString("DeviceLabel"));
                 }
                 hw.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
-
+                
                 int pointId = rs.getInt("PointId");
                 Date timestamp = rs.getDate("Timestamp");
                 int pointType = rs.getEnum("PointType", PointType.class).getPointTypeId();
@@ -201,15 +201,15 @@ public class InventoryDaoImpl implements InventoryDao {
                     pointValue = Commissioned.DISCONNECTED.getRawState();
                 }
                 SimplePointValue pvh = new SimplePointValue(pointId, timestamp, pointType, pointValue);
-
-                return new Pair<>(hw, pvh);
+                
+                return DeviceAndPointValue.of(hw, pvh);
             }
         });
     }
-
+    
     @Override
     public List<HardwareSummary> getAllHardwareSummaryForAccount(int accountId, Set<HardwareType> hardwareTypes) {
-
+        
         SqlStatementBuilder hardwareTypeSelection = new SqlStatementBuilder();
         hardwareTypeSelection.append("SELECT entryid");
         hardwareTypeSelection.append("FROM YukonListEntry");
@@ -613,20 +613,31 @@ public class InventoryDaoImpl implements InventoryDao {
 
         return jdbcTemplate.query(sql, RowMapper.INTEGER);
     }
-
+    
     @Override
     public List<DisplayableLmHardware> getDisplayableLMHardware(List<? extends YukonInventory> yukonInventory) {
         DisplayableLmHardwareRowMapper mapper = new DisplayableLmHardwareRowMapper();
-
+        
         Iterable<Integer> inventoryIds = InventoryUtils.convertYukonInventoryToIds(yukonInventory);
-
+        
         SqlStatementBuilder sql = new SqlStatementBuilder(mapper.getBaseQuery().getSql());
         sql.append("WHERE lmhw.inventoryId").in(inventoryIds);
         sql.appendFragment(mapper.getOrderBy());
-
+        
         return jdbcTemplate.query(sql, mapper);
     }
-
+    
+    @Override
+    public DisplayableLmHardware getDisplayableLMHardware(int inventoryId) {
+        
+        DisplayableLmHardwareRowMapper mapper = new DisplayableLmHardwareRowMapper();
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder(mapper.getBaseQuery().getSql());
+        sql.append("WHERE lmhw.inventoryId").eq(inventoryId);
+        
+        return jdbcTemplate.queryForObject(sql, mapper);
+    }
+    
     @Override
     public List<Integer> getInventoryIdsByAccount(int accountId) {
         List<Integer> inventoryIds = new ArrayList<>();
@@ -687,6 +698,7 @@ public class InventoryDaoImpl implements InventoryDao {
 
     @Override
     public Map<Integer, Integer> getDeviceIds(Iterable<Integer> inventoryIds) {
+        
         SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
@@ -697,23 +709,21 @@ public class InventoryDaoImpl implements InventoryDao {
                 return sql;
             }
         };
-
-        List<Pair<Integer, Integer>> idsList =
-            chunkingSqlTemplate.query(sqlFragmentGenerator, inventoryIds, new YukonRowMapper<Pair<Integer, Integer>>() {
-                @Override
-                public Pair<Integer, Integer> mapRow(YukonResultSet rs) throws SQLException {
-                    int deviceId = rs.getInt("DeviceId");
-                    int inventoryId = rs.getInt("InventoryId");
-                    return new Pair<>(inventoryId, deviceId);
-                }
-            });
-        Map<Integer, Integer> idsMap = Maps.newHashMap();
-        for (Pair<Integer, Integer> pair : idsList) {
-            idsMap.put(pair.getFirst(), pair.getSecond());
-        }
-        return idsMap;
+        
+        Map<Integer, Integer> inventoryIdToDeviceId = new HashMap<>();
+        
+        chunkingSqlTemplate.query(sqlFragmentGenerator, inventoryIds, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                int inventoryId = rs.getInt("InventoryId");
+                int deviceId = rs.getInt("DeviceId");
+                inventoryIdToDeviceId.put(inventoryId, deviceId);
+            }
+        });
+        
+        return inventoryIdToDeviceId;
     }
-
+    
     @Override
     public int getAccountIdForInventory(int inventoryId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -884,24 +894,24 @@ public class InventoryDaoImpl implements InventoryDao {
         PagingExtractor<InventorySearchResult> extractor = new PagingExtractor<>(start, pageCount, mapper);
         List<InventorySearchResult> resultList =
             (List<InventorySearchResult>) jdbcTemplate.query(selectData.append(sql), extractor);
-
+        
         results.setResultList(resultList);
         results.setBounds(start, pageCount, total);
-
+        
         return results;
     }
-
+    
     @Override
     public int getCategoryIdForTypeId(int hardwareTypeId, YukonEnergyCompany ec) {
-
+        
         HardwareType hardwareType = getHardwareTypeById(hardwareTypeId);
-
+        
         /* The category id is the entry id of the yukon list entry for this category in this energy company. */
         int categoryDefId = hardwareType.getInventoryCategory().getDefinitionId();
         YukonListEntry categoryEntryOfEnergyCompany = selectionListService.getListEntry(ec, categoryDefId);
         return categoryEntryOfEnergyCompany.getEntryID();
     }
-
+    
     @Override
     public List<String> getThermostatLabels(List<Integer> thermostatIds) {
         List<String> deviceLabels = chunkingSqlTemplate.query(new SqlFragmentGenerator<Integer>() {
@@ -911,14 +921,14 @@ public class InventoryDaoImpl implements InventoryDao {
                 sql.append("SELECT IB.DeviceLabel");
                 sql.append("FROM InventoryBase IB");
                 sql.append("WHERE IB.inventoryId").in(subList);
-
+                
                 return sql;
             }
-        }, thermostatIds, new StringRowMapper());
-
+        }, thermostatIds, RowMapper.STRING);
+        
         return deviceLabels;
     }
-
+    
     @Override
     public String getMeterNumberForDevice(int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -927,10 +937,10 @@ public class InventoryDaoImpl implements InventoryDao {
         sql.append("WHERE Deviceid").eq(deviceId);
         return jdbcTemplate.queryForString(sql);
     }
-
+    
     @Override
     public LiteLmHardware getLiteLmHardwareByInventory(final YukonInventory inventory) {
-
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT IB.InventoryId, IB.DeviceId, LMHB.ManufacturerSerialNumber, IB.DeviceLabel, ECIM.EnergyCompanyId, IB.AccountId, CA.AccountNumber");
         sql.append("FROM InventoryBase IB");
@@ -938,9 +948,9 @@ public class InventoryDaoImpl implements InventoryDao {
         sql.append("JOIN EcToInventoryMapping ECIM on ECIM.InventoryId = IB.InventoryId");
         sql.append("JOIN CustomerAccount CA on CA.AccountId = IB.AccountId");
         sql.append("WHERE IB.InventoryId").eq(inventory.getInventoryIdentifier().getInventoryId());
-
+        
         return jdbcTemplate.queryForObject(sql, new YukonRowMapper<LiteLmHardware>() {
-
+            
             @Override
             public LiteLmHardware mapRow(YukonResultSet rs) throws SQLException {
                 LiteLmHardware lmh = new LiteLmHardware();

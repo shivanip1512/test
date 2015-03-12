@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -39,12 +40,11 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatSchedulePeriod;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.StarsUtils;
-import com.cannontech.stars.util.WebClientException;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 
 /**
- * Helper class to build up ExpressCom command strings for LM hardware devices.
+ * Helper class to build up command strings for ExpressCom, VersaCom, or SA devices.
  */
 public class PorterExpressComCommandBuilder {
     
@@ -58,21 +58,20 @@ public class PorterExpressComCommandBuilder {
     private static final String VERSACOM_FILE = "versacom.txt";
     private static final String PROBLEM_FILE = "problem.txt";
     
-    @Autowired private StarsCustAccountInformationDao caiDao;
+    @Autowired private StarsCustAccountInformationDao accountInfoDao;
     @Autowired private LMHardwareConfigurationDao configDao;
     @Autowired private PaoDao paoDao;
     @Autowired private YukonListDao yukonListDao;
     
     /**
      * Builds up a list of commands to enable the device (in-service commands)
-     * @throws WebClientException
      */
-    public List<String> getEnableCommands(LiteLmHardwareBase liteHw, boolean willAlsoConfig) {
+    public List<String> getEnableCommands(LiteLmHardwareBase lmhb, boolean willAlsoConfig) {
+        
         List<String> commands = Lists.newArrayList();
-        String sn = liteHw.getManufacturerSerialNumber();
-
-        HardwareType type = HardwareType.valueOf(yukonListDao.getYukonListEntry(liteHw.getLmHardwareTypeID()).getYukonDefID());
-        HardwareConfigType configType = type.getHardwareConfigType();
+        String sn = lmhb.getManufacturerSerialNumber();
+        
+        HardwareConfigType configType = getConfigType(lmhb);
         
         if (configType == HardwareConfigType.VERSACOM) {
             commands.add("putconfig vcom service in serial " + sn);
@@ -81,22 +80,22 @@ public class PorterExpressComCommandBuilder {
         } else if (configType == HardwareConfigType.SA205) {
             // To enable a SA205 switch, just reconfig it using the saved configuration.
             if (!willAlsoConfig) {
-                commands.add(getConfigCommands(liteHw, true, null).get(0));
+                commands.add(getConfigCommands(lmhb, true, null).get(0));
             }
         } else if (configType == HardwareConfigType.SA305) {
             // To enable a SA305 switch, we need to tell the switch to use map 1 instead of map 0
             // and then reset values in relay map 1 to their defaults just to be neat and tidy.
             // Tell the switch to use relay map 0 instead of relay map1.
-            int utility = liteHw.getLMConfiguration().getSA305().getUtility();
+            int utility = lmhb.getLMConfiguration().getSA305().getUtility();
             commands.add("putconfig sa305 serial " + sn + " utility " + utility + " use relay map 0");
-
+            
             // puts relay 1 back to its default values
             commands.add("putconfig sa305 serial " + sn + " utility " + utility + " lorm1=40");
             commands.add("putconfig sa305 serial " + sn + " utility " + utility + " horm1=65");
         } else {
             throw new BadConfigurationException("No In-Service commands for device with config type: " + configType.name());
         }
-
+        
         return commands;
     }
     
@@ -106,8 +105,8 @@ public class PorterExpressComCommandBuilder {
     public List<String> getDisableCommands(LiteLmHardwareBase lmhb) {
         
         List<String> commands = Lists.newArrayList();
-        HardwareType type = HardwareType.valueOf(yukonListDao.getYukonListEntry(lmhb.getLmHardwareTypeID()).getYukonDefID());
-        HardwareConfigType configType = type.getHardwareConfigType();
+        
+        HardwareConfigType configType = getConfigType(lmhb);
         String sn = lmhb.getManufacturerSerialNumber();
         
         if (configType == HardwareConfigType.VERSACOM) {
@@ -134,28 +133,27 @@ public class PorterExpressComCommandBuilder {
         return commands;
     }
     
-    public List<String> getOptOutCommands(LiteLmHardwareBase inventory, 
+    public List<String> getOptOutCommands(LiteLmHardwareBase lmhb, 
                                           Duration duration, 
                                           boolean useHardwareAddressing,
                                           boolean restoreFirst) {
-        String serialNumber = inventory.getManufacturerSerialNumber();
         
+        String sn = lmhb.getManufacturerSerialNumber();
         String durationInHours = String.valueOf(duration.getStandardHours());
-
-        if (StringUtils.isBlank(serialNumber)) {
+        
+        if (StringUtils.isBlank(sn)) {
             throw new IllegalArgumentException("Cannot send opt out command. " +
                     "The serial # of inventory with id: " + 
-                    inventory.getInventoryID() + " is empty." );
+                    lmhb.getInventoryID() + " is empty." );
         }
         
         // Build the command
         
         StringBuffer cmd = new StringBuffer();
         cmd.append("putconfig serial ");
-        cmd.append(inventory.getManufacturerSerialNumber());
+        cmd.append(sn);
         
-        HardwareType type = HardwareType.valueOf(yukonListDao.getYukonListEntry(inventory.getLmHardwareTypeID()).getYukonDefID());
-        HardwareConfigType configType = type.getHardwareConfigType();
+        HardwareConfigType configType = getConfigType(lmhb);
         if (configType == HardwareConfigType.VERSACOM) {
             // Versacom
             cmd.append(" vcom service out temp offhours ");
@@ -180,7 +178,7 @@ public class PorterExpressComCommandBuilder {
                 throw new IllegalStateException("The utility ID of the SA305 switch is unknown");
             }
             
-            int utilityId = inventory.getLMConfiguration().getSA305().getUtility();
+            int utilityId = lmhb.getLMConfiguration().getSA305().getUtility();
             cmd.append(" sa305 utility ");
             cmd.append(utilityId);
             cmd.append(" override ");
@@ -190,21 +188,21 @@ public class PorterExpressComCommandBuilder {
         return Lists.newArrayList(cmd.toString());
     }
     
-    public List<String> getCancelOptOutCommands(LiteLmHardwareBase inventory, boolean useHardwareAddressing) {
-        String serialNumber = inventory.getManufacturerSerialNumber();
-
-        if (StringUtils.isBlank(serialNumber)) {
+    public List<String> getCancelOptOutCommands(LiteLmHardwareBase lmhb, boolean useHardwareAddressing) {
+        
+        String sn = lmhb.getManufacturerSerialNumber();
+        
+        if (StringUtils.isBlank(sn)) {
             throw new IllegalArgumentException("Cannot send cancel opt out command. " +
                     "The serial # of inventory with id: " + 
-                    inventory.getInventoryID() + " is empty." );
+                    lmhb.getInventoryID() + " is empty." );
         }
         
         StringBuffer cmd = new StringBuffer();
         cmd.append("putconfig serial ");
-        cmd.append(inventory.getManufacturerSerialNumber());
+        cmd.append(sn);
         
-        HardwareType type = HardwareType.valueOf(yukonListDao.getYukonListEntry(inventory.getLmHardwareTypeID()).getYukonDefID());
-        HardwareConfigType configType = type.getHardwareConfigType();
+        HardwareConfigType configType = getConfigType(lmhb);
         if (configType == HardwareConfigType.VERSACOM) {
             // Versacom
             cmd.append(" vcom service in temp");
@@ -221,7 +219,7 @@ public class PorterExpressComCommandBuilder {
                 throw new IllegalStateException("The utility ID of the SA305 switch is unknown");
             }
             
-            int utilityId = inventory.getLMConfiguration().getSA305().getUtility();
+            int utilityId = lmhb.getLMConfiguration().getSA305().getUtility();
             cmd.append(" sa305 utility ");
             cmd.append(utilityId);
             cmd.append(" override 0");
@@ -234,163 +232,22 @@ public class PorterExpressComCommandBuilder {
     /**
      *  Builds up the commands from the information stored in the LMConfiguration
      */
-    public List<String> getConfigCommands(LiteLmHardwareBase liteHw, boolean useHardwareAddressing, Integer groupId) throws BadConfigurationException {
+    public List<String> getConfigCommands(LiteLmHardwareBase lmhb, boolean useHardwareAddressing, Integer groupId) 
+    throws BadConfigurationException {
         
         List<String> commands = Lists.newArrayList();
-        String[] coldLoads = new String[4];
-        String[] tamperDetects = new String[2];
-        String sn = liteHw.getManufacturerSerialNumber();
-        LiteLMConfiguration config = liteHw.getLMConfiguration();
-    
+        String sn = lmhb.getManufacturerSerialNumber();
+        LiteLMConfiguration config = lmhb.getLMConfiguration();
+        
         if (useHardwareAddressing) {
             if (config == null) {
                 throw new BadConfigurationException("There is no configuration saved for serial #" + sn + ".");
             }
-    
-            String freezer = config.getColdLoadPickup();
-            if (freezer.compareTo(CtiUtilities.STRING_NONE) != 0 && freezer.length() > 0) {
-                coldLoads = StarsUtils.splitString(freezer, ",");
-            }
-    
-            String tamperDetect = config.getTamperDetect();
-            if (tamperDetect.compareTo(CtiUtilities.STRING_NONE) != 0 && tamperDetect.length() > 0) {
-                tamperDetects = StarsUtils.splitString(tamperDetect, ",");
-            }
-    
-            if (config.getExpressCom() != null) {
-                String program = null;
-                String splinter = null;
-                String load = null;
-                String[] programs = config.getExpressCom().getProgram().split(",");
-                String[] splinters = config.getExpressCom().getSplinter().split(",");
-    
-                for (int loadNo = 1; loadNo <= 8; loadNo++) {
-                    int prog = 0;
-                    if (programs.length >= loadNo && programs[loadNo - 1].length() > 0) {
-                        prog = Integer.parseInt(programs[loadNo - 1]);
-                    }
-                    int splt = 0;
-                    if (splinters.length >= loadNo && splinters[loadNo - 1].length() > 0) {
-                        splt = Integer.parseInt(splinters[loadNo - 1]);
-                    }
-    
-                    if (prog > 0 || splt > 0) {
-                        if (program == null) {
-                            program = String.valueOf(prog);
-                        } else {
-                            program += "," + String.valueOf(prog);
-                        }
-                        if (splinter == null) {
-                            splinter = String.valueOf(splt);
-                        } else {
-                            splinter += "," + String.valueOf(splt);
-                        }
-                        if (load == null) {
-                            load = String.valueOf(loadNo);
-                        } else {
-                            load += "," + String.valueOf(loadNo);
-                        }
-                    }
-                }
-    
-                String command = "putconfig xcom serial " + sn
-                + " assign"
-                + " S "+ config.getExpressCom().getServiceProvider()
-                + " G "+ config.getExpressCom().getGEO()
-                + " B " + config.getExpressCom().getSubstation()
-                + " F " + config.getExpressCom().getFeeder()
-                + " Z " + config.getExpressCom().getZip()
-                + " U " + config.getExpressCom().getUserAddress();
-                if (load != null) {
-                    command += " P " + program + " R " + splinter + " Load " + load;
-                }
-                commands.add(command);
-    
-                // Cold load pickup needs to be in a separate command for each individual value.
-                for (int j = 0; j < coldLoads.length; j++) {
-                    /*
-                     * putconfig xcom coldload rx=Z....
-                     * r=Z sets all cold load times out to Z
-                     * r1=Z sets relay 1 to Z.
-                     * r1 to r15 are valid for the 15 possible relays, and
-                     * multiple may be in the same message. r= and rx= may not
-                     * be used at the same time.
-                     * 
-                     * putconfig xcom coldload r1=3 r2=33 r4=333. 
-                     * This sets relay 1, 2, and 4.
-                     * 
-                     * Z may be in minutes, hours or seconds. so the following
-                     * four commands are identical. Minutes is the default.
-                     * r1=1h, r1=60m, r1=3600s, r1=60
-                     * 
-                     * Expresscom can send at most:
-                     * 32767 seconds or 546 minutes or 9 hours.
-                     */
-                    if (coldLoads[j].length() > 0) {
-                        commands.add("putconfig xcom serial " + sn + " coldload r" + (j + 1) + "=" + coldLoads[j]);
-                    }
-                }
-            } else if (config.getVersaCom() != null) {
-                String command = "putconfig vcom serial " + sn 
-                             + " assign" + " U " + config.getVersaCom().getUtilityID()
-                             + " S " + config.getVersaCom().getSection()
-                             + " C 0x" + Integer.toHexString(config.getVersaCom().getClassAddress())
-                             + " D 0x" + Integer.toHexString(config.getVersaCom().getDivisionAddress());
-                commands.add(command);
-            } else if (config.getSA205() != null) {
-                String command = "putconfig sa205 serial " + sn 
-                             + " assign" + " 1=" + config.getSA205().getSlot1()
-                             + ",2=" + config.getSA205().getSlot2()
-                             + ",3=" + config.getSA205().getSlot3()
-                             + ",4=" + config.getSA205().getSlot4()
-                             + ",5=" + config.getSA205().getSlot5()
-                             + ",6=" + config.getSA205().getSlot6();
-                commands.add(command);
-    
-                // Cold load pickup needs to be in a separate command for each individual value.
-                for (int j = 0; j < coldLoads.length; j++) {
-                    if (coldLoads[j].length() > 0) {
-                        commands.add("putconfig sa205 serial " + sn + " coldload f" + (j + 1) + "=" + coldLoads[j]);
-                    }
-                }
-    
-                // Tamper detect also needs to be in a separate command for each value.
-                for (int j = 0; j < tamperDetects.length; j++) {
-                    if (tamperDetects[j].length() > 0) {
-                        commands.add("putconfig sa205 serial " + sn + " tamper f" + (j + 1) + "=" + tamperDetects[j]);
-                    }
-                }
-            }
-    
-            else if (config.getSA305() != null) {
-                int utility = config.getSA305().getUtility();
-                String cmd = "putconfig sa305 serial " + sn + " utility " + utility
-                             + " assign" + " g=" + config.getSA305().getGroup()
-                             + " d=" + config.getSA305().getDivision()
-                             + " s=" + config.getSA305().getSubstation()
-                             + " f=" + config.getSA305().getRateFamily()
-                             + " m=" + config.getSA305().getRateMember();
-                commands.add(cmd);
-    
-                // Cold load pickup needs to be in a separate command for each individual value.
-                for (int j = 0; j < coldLoads.length; j++) {
-                    if (coldLoads[j].length() > 0) {
-                        String command = "putconfig sa305 serial " + sn + " utility " + utility + " coldload f" + (j + 1) + "=" + coldLoads[j];
-                        commands.add(command);
-                    }
-                }
-    
-                // Tamper detect also needs to be in a separate command for each value.
-                for (int j = 0; j < tamperDetects.length; j++) {
-                    if (tamperDetects[j].length() > 0) {
-                        String command = "putconfig sa305 serial " + sn + " utility " + utility + " tamper f" + (j + 1) + "=" + tamperDetects[j];
-                        commands.add(command);
-                    }
-                }
-            } else {
-                throw new BadConfigurationException("Unsupported configuration type for serial #" + sn + ".");
-            }
+            
+            commands.addAll(getCommandsForConfig(sn, config));
+            
         } else if (groupId != null) {
+            
             try {
                 String groupName = paoDao.getYukonPAOName(groupId.intValue());
                 String command = "putconfig serial " + sn + " template '" + groupName + "'";
@@ -399,14 +256,15 @@ public class PorterExpressComCommandBuilder {
                 log.error(e.getMessage(), e);
             }
         } else {
-            if (liteHw.getAccountID() > 0) {
+            
+            if (lmhb.getAccountID() > 0) {
                 
-                LiteAccountInfo liteAcctInfo = caiDao.getByAccountId(liteHw.getAccountID());
-
+                LiteAccountInfo liteAcctInfo = accountInfoDao.getByAccountId(lmhb.getAccountID());
+                
                 for (LiteStarsAppliance liteApp : liteAcctInfo.getAppliances()) {
                     
                     int appInventoryId = liteApp.getInventoryID();
-                    int inventoryId = liteHw.getInventoryID();
+                    int inventoryId = lmhb.getInventoryID();
                     int addressingGroupId = liteApp.getAddressingGroupID();
                     
                     if (appInventoryId == inventoryId && addressingGroupId > 0) {
@@ -418,12 +276,178 @@ public class PorterExpressComCommandBuilder {
                             log.error(e.getMessage(), e);
                         }
                     } else if (appInventoryId == inventoryId && addressingGroupId == 0) {
-                        throw new BadConfigurationException("Addressing Group is not assigned.  If no groups are available in the Assigned Group column, please verify that your programs are valid Yukon LM Programs with assigned load groups.");
+                        throw new BadConfigurationException("Addressing Group is not assigned.  " 
+                                + "If no groups are available in the Assigned Group column, " 
+                                + "please verify that your programs are valid Yukon LM Programs with assigned load groups.");
                     }
                 }
             }
         }
+        
+        return commands;
+    }
     
+    /** Returns the commands needed to apply the configuration provided */
+    public List<String> getCommandsForConfig(String sn, LiteLMConfiguration config) {
+        
+        List<String> commands = new ArrayList<>();
+        
+        String[] coldLoads = new String[4];
+        String[] tamperDetects = new String[2];
+        String freezer = config.getColdLoadPickup();
+        if (freezer.compareTo(CtiUtilities.STRING_NONE) != 0 && freezer.length() > 0) {
+            coldLoads = StarsUtils.splitString(freezer, ",");
+        }
+        
+        String tamperDetect = config.getTamperDetect();
+        if (tamperDetect.compareTo(CtiUtilities.STRING_NONE) != 0 && tamperDetect.length() > 0) {
+            tamperDetects = StarsUtils.splitString(tamperDetect, ",");
+        }
+        
+        if (config.getExpressCom() != null) {
+            
+            String program = null;
+            String splinter = null;
+            String load = null;
+            String[] programs = config.getExpressCom().getProgram().split(",");
+            String[] splinters = config.getExpressCom().getSplinter().split(",");
+            
+            for (int loadNo = 1; loadNo <= 8; loadNo++) {
+                int prog = 0;
+                if (programs.length >= loadNo && programs[loadNo - 1].length() > 0) {
+                    prog = Integer.parseInt(programs[loadNo - 1]);
+                }
+                int splt = 0;
+                if (splinters.length >= loadNo && splinters[loadNo - 1].length() > 0) {
+                    splt = Integer.parseInt(splinters[loadNo - 1]);
+                }
+                
+                if (prog > 0 || splt > 0) {
+                    if (program == null) {
+                        program = String.valueOf(prog);
+                    } else {
+                        program += "," + String.valueOf(prog);
+                    }
+                    if (splinter == null) {
+                        splinter = String.valueOf(splt);
+                    } else {
+                        splinter += "," + String.valueOf(splt);
+                    }
+                    if (load == null) {
+                        load = String.valueOf(loadNo);
+                    } else {
+                        load += "," + String.valueOf(loadNo);
+                    }
+                }
+            }
+            
+            String command = "putconfig xcom serial " + sn
+            + " assign"
+            + " S "+ config.getExpressCom().getServiceProvider()
+            + " G "+ config.getExpressCom().getGEO()
+            + " B " + config.getExpressCom().getSubstation()
+            + " F " + config.getExpressCom().getFeeder()
+            + " Z " + config.getExpressCom().getZip()
+            + " U " + config.getExpressCom().getUserAddress();
+            if (load != null) {
+                command += " P " + program + " R " + splinter + " Load " + load;
+            }
+            
+            commands.add(command);
+            
+            // Cold load pickup needs to be in a separate command for each individual value.
+            for (int j = 0; j < coldLoads.length; j++) {
+                /*
+                 * putconfig xcom coldload rx=Z....
+                 * r=Z sets all cold load times out to Z
+                 * r1=Z sets relay 1 to Z.
+                 * r1 to r15 are valid for the 15 possible relays, and
+                 * multiple may be in the same message. r= and rx= may not
+                 * be used at the same time.
+                 * 
+                 * putconfig xcom coldload r1=3 r2=33 r4=333. 
+                 * This sets relay 1, 2, and 4.
+                 * 
+                 * Z may be in minutes, hours or seconds. so the following
+                 * four commands are identical. Minutes is the default.
+                 * r1=1h, r1=60m, r1=3600s, r1=60
+                 * 
+                 * Expresscom can send at most:
+                 * 32767 seconds or 546 minutes or 9 hours.
+                 */
+                if (coldLoads[j].length() > 0) {
+                    commands.add("putconfig xcom serial " + sn + " coldload r" + (j + 1) + "=" + coldLoads[j]);
+                }
+            }
+        } else if (config.getVersaCom() != null) {
+            
+            String command = "putconfig vcom serial " + sn 
+                         + " assign" + " U " + config.getVersaCom().getUtilityID()
+                         + " S " + config.getVersaCom().getSection()
+                         + " C 0x" + Integer.toHexString(config.getVersaCom().getClassAddress())
+                         + " D 0x" + Integer.toHexString(config.getVersaCom().getDivisionAddress());
+            
+            commands.add(command);
+            
+        } else if (config.getSA205() != null) {
+            
+            String command = "putconfig sa205 serial " + sn 
+                         + " assign" + " 1=" + config.getSA205().getSlot1()
+                         + ",2=" + config.getSA205().getSlot2()
+                         + ",3=" + config.getSA205().getSlot3()
+                         + ",4=" + config.getSA205().getSlot4()
+                         + ",5=" + config.getSA205().getSlot5()
+                         + ",6=" + config.getSA205().getSlot6();
+            
+            commands.add(command);
+            
+            // Cold load pickup needs to be in a separate command for each individual value.
+            for (int j = 0; j < coldLoads.length; j++) {
+                if (coldLoads[j].length() > 0) {
+                    commands.add("putconfig sa205 serial " + sn + " coldload f" + (j + 1) + "=" + coldLoads[j]);
+                }
+            }
+            
+            // Tamper detect also needs to be in a separate command for each value.
+            for (int j = 0; j < tamperDetects.length; j++) {
+                if (tamperDetects[j].length() > 0) {
+                    commands.add("putconfig sa205 serial " + sn + " tamper f" + (j + 1) + "=" + tamperDetects[j]);
+                }
+            }
+            
+        } else if (config.getSA305() != null) {
+            
+            int utility = config.getSA305().getUtility();
+            String cmd = "putconfig sa305 serial " + sn + " utility " + utility
+                         + " assign" + " g=" + config.getSA305().getGroup()
+                         + " d=" + config.getSA305().getDivision()
+                         + " s=" + config.getSA305().getSubstation()
+                         + " f=" + config.getSA305().getRateFamily()
+                         + " m=" + config.getSA305().getRateMember();
+            
+            commands.add(cmd);
+            
+            // Cold load pickup needs to be in a separate command for each individual value.
+            for (int j = 0; j < coldLoads.length; j++) {
+                if (coldLoads[j].length() > 0) {
+                    String command = "putconfig sa305 serial " + sn + " utility " + utility 
+                            + " coldload f" + (j + 1) + "=" + coldLoads[j];
+                    commands.add(command);
+                }
+            }
+            
+            // Tamper detect also needs to be in a separate command for each value.
+            for (int j = 0; j < tamperDetects.length; j++) {
+                if (tamperDetects[j].length() > 0) {
+                    String command = "putconfig sa305 serial " + sn + " utility " + utility 
+                            + " tamper f" + (j + 1) + "=" + tamperDetects[j];
+                    commands.add(command);
+                }
+            }
+        } else {
+            throw new BadConfigurationException("Unsupported configuration type for serial #" + sn + ".");
+        }
+        
         return commands;
     }
     
@@ -455,14 +479,13 @@ public class PorterExpressComCommandBuilder {
                                        AccountThermostatSchedule ats, 
                                        TimeOfWeek timeOfWeek,
                                        ThermostatScheduleMode mode) {
-
         
-        ListMultimap<TimeOfWeek, AccountThermostatScheduleEntry> entriesByTimeOfWeekMap = ats.getEntriesByTimeOfWeekMultimap();
-        List<AccountThermostatScheduleEntry> entries = entriesByTimeOfWeekMap.get(timeOfWeek);
-
+        ListMultimap<TimeOfWeek, AccountThermostatScheduleEntry> timeOfWeekToEntry = ats.getEntriesByTimeOfWeekMultimap();
+        List<AccountThermostatScheduleEntry> entries = timeOfWeekToEntry.get(timeOfWeek);
+        
         StringBuilder command = new StringBuilder();
         command.append("putconfig xcom schedule ");
-
+        
         String timeOfWeekCommand = timeOfWeek.getCommandString();
         if (mode == ThermostatScheduleMode.ALL) {
             command.append("all ");
@@ -471,20 +494,20 @@ public class PorterExpressComCommandBuilder {
         }
         
         int count = 1;
-        for(ThermostatSchedulePeriod period : ats.getThermostatType().getPeriodStyle().getAllPeriods()){
+        for (ThermostatSchedulePeriod period : ats.getThermostatType().getPeriodStyle().getAllPeriods()) {
             
             AccountThermostatScheduleEntry entry = entries.get(period.getEntryIndex());
             LocalTime startTime = entry.getStartTimeLocalTime();
-
+            
             Temperature coolTemp = entry.getCoolTemp();
             Temperature heatTemp = entry.getHeatTemp();
-
+            
             if (period.isPsuedo()) {
                 // sending two time/temp values
                 command.append("HH:MM,");
                 command.append("ff,");
                 command.append("ff");
-
+                
             } else {
                 
                 String startTimeString = startTime.toString("HH:mm");
@@ -500,7 +523,7 @@ public class PorterExpressComCommandBuilder {
         }
         
         command.append(" serial " + stat.getSerialNumber());
-
+        
         return command.toString();
     }
     
@@ -511,10 +534,10 @@ public class PorterExpressComCommandBuilder {
      * @return The command string
      */
     public String buildManualCommand(Thermostat thermostat, ThermostatManualEvent event) {
-
+        
         StringBuilder command = new StringBuilder();
         command.append("putconfig xcom setstate ");
-
+        
         if (event.isRunProgram()) {
             // Run scheduled program
             command.append(" run");
@@ -534,16 +557,16 @@ public class PorterExpressComCommandBuilder {
                 heatTemperatureInF = event.getPreviousHeatTemperature().toFahrenheit().toIntValue();
             
             // The command was sent from an autoModeEnabled page.  Send both temperatures.
-            if(thermostat.getType().isAutoModeEnableable() && event.isAutoModeEnabledCommand()) {
+            if (thermostat.getType().isAutoModeEnableable() && event.isAutoModeEnabledCommand()) {
                 command.append(" heattemp ").append(heatTemperatureInF);
                 command.append(" cooltemp ").append(coolTemperatureInF);
-
+                
             } else if (thermostat.getType().isUtilityProType() && mode == ThermostatMode.HEAT) {
                 command.append(" heattemp ").append(heatTemperatureInF);
             
             } else if (thermostat.getType().isUtilityProType() && mode == ThermostatMode.COOL) {
                 command.append(" cooltemp ").append(coolTemperatureInF);
-
+                
             } else {
                 int temperatureInF = (mode == ThermostatMode.HEAT) ? heatTemperatureInF : coolTemperatureInF;
                 command.append(" temp ").append(temperatureInF);
@@ -553,16 +576,16 @@ public class PorterExpressComCommandBuilder {
             if (fanState != null) {
                 command.append(" fan ").append(fanState.getCommandString());
             }
-
+            
             if (event.isHoldTemperature()) {
                 command.append(" hold");
             }
         }
-
+        
         String serialNumber = thermostat.getSerialNumber();
         command.append(" serial ");
         command.append(serialNumber);
-
+        
         return command.toString();
     }
     
@@ -575,9 +598,10 @@ public class PorterExpressComCommandBuilder {
      * Parameter options corresponds to the infoString field of the switch command queue.
      * It takes the format of "GroupID:XX;RouteID:XX"
      */
-    public  void fileWriteConfigCommand(YukonEnergyCompany yec, LiteLmHardwareBase liteHw, boolean forceInService, String options) {
+    public void fileWriteConfigCommand(YukonEnergyCompany yec, LiteLmHardwareBase lmhb, boolean forceInService, 
+            String options) {
         
-        String sn = liteHw.getManufacturerSerialNumber();
+        String sn = lmhb.getManufacturerSerialNumber();
         Integer optGroupId = null;
         
         if (options != null) {
@@ -592,32 +616,35 @@ public class PorterExpressComCommandBuilder {
                 }
             }
         }
-    
+        
         String loadGroupName = null;
         if (optGroupId != null) {
+            
             try {
                 loadGroupName = paoDao.getYukonPAOName(optGroupId);
             } catch (NotFoundException e) {
                 log.error(e.getMessage(), e);
             }
+            
         } else {
-            optGroupId = configDao.getForInventoryId(liteHw.getInventoryID()).get(0).getAddressingGroupId();
+            
+            optGroupId = configDao.getForInventoryId(lmhb.getInventoryID()).get(0).getAddressingGroupId();
             if (optGroupId > 0) {
                 loadGroupName = paoDao.getYukonPAOName(optGroupId);
             }
         }
-    
+        
         final String fs = System.getProperty("file.separator");
         File ecDir = new File(StarsUtils.getFileWriteSwitchConfigDir() + fs + yec.getName());
         if (!ecDir.exists()) {
             ecDir.mkdirs();
         }
-    
+        
         File file;
         String command = null;
-    
-        HardwareType type = HardwareType.valueOf(yukonListDao.getYukonListEntry(liteHw.getLmHardwareTypeID()).getYukonDefID());
-        HardwareConfigType configType = type.getHardwareConfigType();
+        
+        HardwareConfigType configType = getConfigType(lmhb);
+        
         if (configType == HardwareConfigType.VERSACOM) {
             file = new File(ecDir, VERSACOM_FILE);
             command = "1," + sn + "," + loadGroupName;
@@ -634,30 +661,29 @@ public class PorterExpressComCommandBuilder {
             file = new File(ecDir, PROBLEM_FILE);
             command = sn;
         }
-    
+        
         if (loadGroupName == null) {
             file = new File(ecDir, PROBLEM_FILE);
             command = sn + ": Unable to find a load group in Yukon with the specified groupID of " + optGroupId;
         }
-    
+        
         fileWriteReceiverConfigLine(file, command);
     }
     
-    public void fileWriteDisableCommand(YukonEnergyCompany yec, LiteLmHardwareBase liteHw) {
+    public void fileWriteDisableCommand(YukonEnergyCompany yec, LiteLmHardwareBase lmhb) {
         
-        String sn = liteHw.getManufacturerSerialNumber();
+        String sn = lmhb.getManufacturerSerialNumber();
         
         final String fs = System.getProperty("file.separator");
         File ecDir = new File(StarsUtils.getFileWriteSwitchConfigDir() + fs + yec.getName());
         if (!ecDir.exists()) {
             ecDir.mkdirs();
         }
-    
+        
         File file;
         String command = null;
-    
-        HardwareType type = HardwareType.valueOf(yukonListDao.getYukonListEntry(liteHw.getLmHardwareTypeID()).getYukonDefID());
-        HardwareConfigType configType = type.getHardwareConfigType();
+        
+        HardwareConfigType configType = getConfigType(lmhb);
         
         if (configType == HardwareConfigType.VERSACOM) {
             file = new File(ecDir, VERSACOM_FILE);
@@ -679,10 +705,10 @@ public class PorterExpressComCommandBuilder {
         fileWriteReceiverConfigLine(file, command);
     }
     
-    public void fileWriteEnableCommand(YukonEnergyCompany yec, LiteLmHardwareBase liteHw) {
+    public void fileWriteEnableCommand(YukonEnergyCompany yec, LiteLmHardwareBase lmhb) {
         
-        String sn = liteHw.getManufacturerSerialNumber();
-    
+        String sn = lmhb.getManufacturerSerialNumber();
+        
         final String fs = System.getProperty("file.separator");
         File ecDir = new File(StarsUtils.getFileWriteSwitchConfigDir() + fs + yec.getName());
         if (!ecDir.exists()) {
@@ -691,9 +717,8 @@ public class PorterExpressComCommandBuilder {
         
         File file;
         String command = null;
-    
-        HardwareType type = HardwareType.valueOf(yukonListDao.getYukonListEntry(liteHw.getLmHardwareTypeID()).getYukonDefID());
-        HardwareConfigType configType = type.getHardwareConfigType();
+        
+        HardwareConfigType configType = getConfigType(lmhb);
         
         if (configType == HardwareConfigType.VERSACOM) {
             file = new File(ecDir, VERSACOM_FILE);
@@ -711,7 +736,7 @@ public class PorterExpressComCommandBuilder {
             file = new File(ecDir, PROBLEM_FILE);
             command = sn;
         }
-    
+        
         fileWriteReceiverConfigLine(file, command);
     }
     
@@ -725,7 +750,7 @@ public class PorterExpressComCommandBuilder {
             CTILogger.error(e.getMessage(), e);
             return;
         }
-    
+        
         PrintWriter fw = null;
         try {
             fw = new PrintWriter(new FileWriter(commFile, true));
@@ -737,6 +762,16 @@ public class PorterExpressComCommandBuilder {
                 fw.close();
             }
         }
+    }
+    
+    /** Returns the hardware configuration type based on the device type. */
+    private HardwareConfigType getConfigType(LiteLmHardwareBase lmhb) {
+        
+        int hardwareDefId = yukonListDao.getYukonListEntry(lmhb.getLmHardwareTypeID()).getYukonDefID();
+        HardwareType type = HardwareType.valueOf(hardwareDefId);
+        HardwareConfigType configType = type.getHardwareConfigType();
+        
+        return configType;
     }
     
 }

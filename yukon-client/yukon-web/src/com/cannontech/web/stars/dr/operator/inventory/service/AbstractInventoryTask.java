@@ -14,7 +14,7 @@ public abstract class AbstractInventoryTask implements Completable, CancelStatus
     protected int successCount;
     protected int failedCount;
     protected int unsupportedCount;
-    protected YukonUserContext context;
+    protected YukonUserContext userContext;
     protected String taskId;
     protected boolean canceled = false;
     

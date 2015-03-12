@@ -27,7 +27,12 @@
                     
                     <div class="page-action-area">
                         <cti:button nameKey="save" type="submit" classes="primary action"/>
-                        <cti:button nameKey="cancel" name="cancelButton" type="submit"/>
+                        <cti:url var="url" value="/stars/operator/inventory/inventoryConfiguration">
+                            <c:forEach items="${inventoryCollection.collectionParameters}" var="entry">
+                                <cti:param name="${entry.key}" value="${entry.value}"/>
+                            </c:forEach>
+                        </cti:url>
+                        <cti:button nameKey="cancel" href="${url}"/>
                     </div>
                 </form:form>
                 
@@ -36,47 +41,49 @@
                 
         <div class="column two nogutter">
             <tags:sectionContainer2 nameKey="pagingSettings">
-                <c:choose>
-                    <c:when test="${empty schedules}">
-                        <div>
-                            <i:inline key="yukon.web.widgets.commandScheduleWidget.noSchedules"/>
-                        </div>
-                    </c:when>
-                
-                    <c:otherwise>
-                    
-                        <table class="compact-results-table">
-                            <thead>
-                                <tr>
-                                    <th><i:inline key="yukon.web.widgets.commandScheduleWidget.start"/></th>
-                                    <th><i:inline key="yukon.web.widgets.commandScheduleWidget.runPeriod"/></th>
-                                    <th><i:inline key="yukon.web.widgets.commandScheduleWidget.delayPeriod"/></th>
-                                    <th><i:inline key="yukon.web.widgets.commandScheduleWidget.enabled"/></th>
-                                </tr>
-                            </thead>
-                            <tfoot></tfoot>
-                            <tbody>
-                                <c:forEach var="schedule" items="${schedules}">
+                <cti:msgScope paths=",widgets.commandScheduleWidget">
+                    <c:choose>
+                        <c:when test="${empty schedules}">
+                            <div class="empty-list">
+                                <i:inline key=".noSchedules"/>
+                            </div>
+                        </c:when>
+                        
+                        <c:otherwise>
+                        
+                            <table class="compact-results-table">
+                                <thead>
                                     <tr>
-                                        <td><span><cti:formatCron value="${schedule.startTimeCronString}"/></span></td>
-                                        <td><span><cti:formatPeriod type="HM_SHORT" value="${schedule.runPeriod}"/></span></td>
-                                        <td><span><cti:formatPeriod type="S" value="${schedule.delayPeriod}"/></span></td>
-                                        <td>
-                                            <c:choose>
-                                                <c:when test="${schedule.enabled}">
-                                                    <span class="success"><i:inline key=".scheduleEnabled"/></span>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <span class="error"><i:inline key=".scheduleDisabled"/></span>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </td>
+                                        <th><i:inline key=".start"/></th>
+                                        <th class="tar"><i:inline key=".runPeriod"/></th>
+                                        <th class="tar"><i:inline key=".delayPeriod"/></th>
+                                        <th></th>
                                     </tr>
-                                </c:forEach>
-                            </tbody>
-                        </table>
-                    </c:otherwise>
-                </c:choose>
+                                </thead>
+                                <tfoot></tfoot>
+                                <tbody>
+                                    <c:forEach var="schedule" items="${schedules}">
+                                        <tr>
+                                            <td><span><cti:formatCron value="${schedule.startTimeCronString}"/></span></td>
+                                            <td class="tar"><span><cti:formatPeriod type="HM_SHORT" value="${schedule.runPeriod}"/></span></td>
+                                            <td class="tar"><span><cti:formatPeriod type="S_SHORT" value="${schedule.delayPeriod}"/></span></td>
+                                            <td>
+                                                <c:choose>
+                                                    <c:when test="${schedule.enabled}">
+                                                        <span class="success"><i:inline key="yukon.common.enabled"/></span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="error"><i:inline key="yukon.common.disabled"/></span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </c:otherwise>
+                    </c:choose>
+                </cti:msgScope>
             </tags:sectionContainer2>
         </div>
         

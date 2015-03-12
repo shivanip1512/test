@@ -13,10 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.core.dynamic.impl.SimplePointValue;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.database.data.lite.LiteState;
@@ -25,7 +23,7 @@ import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.model.LiteLmHardware;
+import com.cannontech.stars.dr.hardware.model.DeviceAndPointValue;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.util.WebFileUtils;
@@ -47,11 +45,11 @@ public class ZbProblemDevicesController {
     public String view(ModelMap model, YukonUserContext context) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         String inWarehouseMsg = accessor.getMessage("yukon.web.modules.operator.zbProblemDevices.inWarehouse");
-        List<Pair<LiteLmHardware, SimplePointValue>> devices = inventoryDao.getZigbeeProblemDevices(inWarehouseMsg);
+        List<DeviceAndPointValue> devices = inventoryDao.getZigbeeProblemDevices(inWarehouseMsg);
         model.addAttribute("devices", devices);
         List<Integer> inventoryIds = Lists.newArrayList();
-        for (Pair<LiteLmHardware, SimplePointValue> device : devices) {
-            inventoryIds.add(device.first.getInventoryIdentifier().getInventoryId());
+        for (DeviceAndPointValue device : devices) {
+            inventoryIds.add(device.getDevice().getInventoryIdentifier().getInventoryId());
         }
         Map<Integer, Integer> inventoryIdsToAccountIds = 
                 customerAccountDao.getAccountIdsByInventoryIds(inventoryIds);
@@ -88,14 +86,14 @@ public class ZbProblemDevicesController {
         headerRow[4] = accessor.getMessage("yukon.web.modules.operator.zbProblemDevices.timestamp");
         
         List<String[]> dataRows = Lists.newArrayList();
-        List<Pair<LiteLmHardware, SimplePointValue>> devices = inventoryDao.getZigbeeProblemDevices(inWarehouseMsg);
-        for(Pair<LiteLmHardware, SimplePointValue> pair : devices) {
+        List<DeviceAndPointValue> devices = inventoryDao.getZigbeeProblemDevices(inWarehouseMsg);
+        for(DeviceAndPointValue device : devices) {
             String[] dataRow = new String[5];
-            dataRow[0] = pair.first.getSerialNumber();
-            dataRow[1] = accessor.getMessage(pair.first.getIdentifier().getHardwareType());
-            dataRow[2] = pair.first.getLabel();
+            dataRow[0] = device.getDevice().getSerialNumber();
+            dataRow[1] = accessor.getMessage(device.getDevice().getIdentifier().getHardwareType());
+            dataRow[2] = device.getDevice().getLabel();
             
-            PointValueHolder pointValue = pair.second;
+            PointValueHolder pointValue = device.getPointValue();
             String value = pointFormattingService.getValueString(pointValue, PointFormattingService.Format.VALUE, context);
             dataRow[3] = value;
             String timestamp = pointFormattingService.getValueString(pointValue, PointFormattingService.Format.DATE, context);

@@ -91,7 +91,7 @@ public class ZigbeeCommandStrategy implements LmHardwareCommandStrategy {
     }
     
     @Override
-    public void sendCommand(LmHardwareCommand parameters, int ecId) throws CommandCompletionException {
+    public void sendCommand(LmHardwareCommand parameters) throws CommandCompletionException {
         
         /** There is nothing to send for In-Service and Out-of-Service commands for ZigBee devices. */
         if (parameters.getType() == LmHardwareCommandType.CONFIG) {
@@ -368,7 +368,7 @@ public class ZigbeeCommandStrategy implements LmHardwareCommandStrategy {
     }
 
     @Override
-    public void verifyCanSendConfig(LmHardwareCommand command, int ecId) throws BadConfigurationException {
+    public void verifyCanSendConfig(LmHardwareCommand command) throws BadConfigurationException {
         LiteLmHardwareBase device = command.getDevice();
         List<Integer> lmGroupIds = gatewayDeviceDao.getLMGroupIdByEndPointId(device.getDeviceID());
         if (lmGroupIds.isEmpty()) {

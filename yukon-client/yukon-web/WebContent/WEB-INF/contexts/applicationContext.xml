@@ -769,6 +769,9 @@
                 <entry key="DEVICE_RECONFIG">
                     <ref local="deviceReconfigMonitorBackingService"/>
                 </entry>
+                <entry key="NEW_CONFIG">
+                    <ref local="newConfigBackingService"/>
+                </entry>
                 <entry key="ARCHIVE_DATA_ANALYSIS_LP_READ">
                     <ref local="adaProfileReadBackingService"/>
                 </entry>
@@ -1500,6 +1503,10 @@
 
     <bean id="deviceReconfigMonitorBackingService" class="com.cannontech.web.updater.deviceReconfig.DeviceReconfigMonitorBackingService"/>
 
+    <bean id="newConfigBackingService" class="com.cannontech.web.updater.config.NewConfigBackingService">
+        <property name="resultsCache" ref="inventoryTaskResultsCache"/>
+    </bean>
+
     <bean class="com.cannontech.web.updater.deviceReconfig.handler.FailedCountUpdaterHandler"/>
     <bean class="com.cannontech.web.updater.deviceReconfig.handler.ItemsProcessedUpdaterHandler"/>
     <bean class="com.cannontech.web.updater.deviceReconfig.handler.NewOperationForFailedUpdaterHandler"/>
@@ -1595,6 +1602,9 @@
         <property name="resultsCache" ref="inventoryTaskResultsCache"/>
     </bean>
     <bean id="resendLmConfigHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.ResendLmConfigHelper">
+        <property name="resultsCache" ref="inventoryTaskResultsCache"/>
+    </bean>
+    <bean id="newLmConfigHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.NewLmConfigHelper">
         <property name="resultsCache" ref="inventoryTaskResultsCache"/>
     </bean>
 

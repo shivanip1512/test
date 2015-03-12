@@ -52,7 +52,7 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
     @Autowired private RfnDeviceDao rfnDeviceDao;
 
     @Override
-    public void sendCommand(final LmHardwareCommand parameters, int ecId) throws CommandCompletionException {
+    public void sendCommand(final LmHardwareCommand parameters) throws CommandCompletionException {
         // make sure you have a (non-system) paobject to send command to
         if (parameters.getDevice().getDeviceID() == 0) {
             log.warn("Attempted to send command to a RF device with no linked PAO");
@@ -196,7 +196,7 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
     }
 
     @Override
-    public void verifyCanSendConfig(LmHardwareCommand command, int ecId) throws BadConfigurationException {
+    public void verifyCanSendConfig(LmHardwareCommand command) throws BadConfigurationException {
         commandBuilder.getCommandAsHexStringByteArray(command);
     }
     

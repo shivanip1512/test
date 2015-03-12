@@ -15,6 +15,8 @@
     <entry key="yukon.common.durationFormatting.pattern.H">%H_FULL%</entry>
     <entry key="yukon.common.durationFormatting.pattern.M">%M_FULL%</entry>
     <entry key="yukon.common.durationFormatting.pattern.S">%S_FULL%</entry>
+    <entry key="yukon.common.durationFormatting.pattern.S_ABBR">%S_ABBR%</entry>
+    <entry key="yukon.common.durationFormatting.pattern.S_SHORT">%S_SHORT%</entry>
     <entry key="yukon.common.durationFormatting.pattern.HM_ABBR">%H_ABBR% %M_ABBR%</entry>
     <entry key="yukon.common.durationFormatting.pattern.HM_SHORT">%H%:%M%</entry>
     <entry key="yukon.common.durationFormatting.pattern.MS_ABBR">%M_ABBR% %S_ABBR%</entry>

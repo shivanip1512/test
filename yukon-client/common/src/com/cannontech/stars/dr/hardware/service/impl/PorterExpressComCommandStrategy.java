@@ -18,6 +18,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompanyFactory;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -39,6 +40,7 @@ import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.DefaultRouteService;
 import com.google.common.collect.Lists;
 
@@ -52,7 +54,7 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
     @Autowired private PorterExpressComCommandBuilder xcomCommandBuilder;
     @Autowired private CustomerEventDao customerEventDao;
     @Autowired private EnergyCompanyDao ecDao;
-    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    @Autowired private EnergyCompanySettingDao ecSettingDao;
     @Autowired private LiteStarsEnergyCompanyFactory energyCompanyFactory;
     @Autowired private DefaultRouteService defaultRouteService;
 
@@ -100,12 +102,12 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
                 if (ecDao.isEnergyCompanyOperator(user)) {
                     ecId = ecDao.getEnergyCompanyByOperator(user).getId();
                 } else {
-                    ecId = ecDao.getEnergyCompanyByAccountId(account.getAccountId()).getEnergyCompanyId();
+                    ecId = ecDao.getEnergyCompanyByAccountId(account.getAccountId()).getId();
                 }
                 // We have to update the schedule mode for Utility Pro thermostats every
                 // time we update the schedule if 5-2 mode is enabled
 
-                boolean mode52Enabled = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_WEEKEND, ecId);
+                boolean mode52Enabled = ecSettingDao.getBoolean(EnergyCompanySettingType.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_WEEKEND, ecId);
                 
                 if (mode52Enabled) {
                     String serialString = " serial " + stat.getSerialNumber();
@@ -140,12 +142,14 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
     }
     
     @Override
-    public void sendCommand(LmHardwareCommand parameters, int ecId) throws CommandCompletionException {
+    public void sendCommand(LmHardwareCommand parameters) throws CommandCompletionException {
         
         List<String> commands = Lists.newArrayList();
-
-        boolean trackAddressing = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, ecId);
+        LiteLmHardwareBase device = parameters.getDevice();
+        YukonEnergyCompany yec = ecDao.getEnergyCompanyByInventoryId(device.getInventoryID());
+        boolean trackAddressing = ecSettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, yec.getEnergyCompanyId());
         
+        LiteYukonUser user = parameters.getUser();
         if (parameters.getType() == LmHardwareCommandType.CONFIG) {
             
             Integer optionalGroupId = null;
@@ -153,25 +157,25 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
             if (param != null) {
                 optionalGroupId = param;
             }
-            commands = xcomCommandBuilder.getConfigCommands(parameters.getDevice(), trackAddressing, optionalGroupId);
+            commands = xcomCommandBuilder.getConfigCommands(device, trackAddressing, optionalGroupId);
             
         } else if (parameters.getType() == LmHardwareCommandType.IN_SERVICE) {
             
-            commands = xcomCommandBuilder.getEnableCommands(parameters.getDevice(), false);
+            commands = xcomCommandBuilder.getEnableCommands(device, false);
             
         } else if (parameters.getType() == LmHardwareCommandType.OUT_OF_SERVICE) {
             
-            commands = xcomCommandBuilder.getDisableCommands(parameters.getDevice());
+            commands = xcomCommandBuilder.getDisableCommands(device);
             
         } else if (parameters.getType() == LmHardwareCommandType.TEMP_OUT_OF_SERVICE) {
             
             Duration duration = parameters.findParam(LmHardwareCommandParam.DURATION, Duration.class);
-            boolean restoreFirst = rolePropertyDao.checkProperty(YukonRoleProperty.EXPRESSCOM_TOOS_RESTORE_FIRST, parameters.getUser());
-            commands = xcomCommandBuilder.getOptOutCommands(parameters.getDevice(), duration, trackAddressing, restoreFirst);
+            boolean restoreFirst = rolePropertyDao.checkProperty(YukonRoleProperty.EXPRESSCOM_TOOS_RESTORE_FIRST, user);
+            commands = xcomCommandBuilder.getOptOutCommands(device, duration, trackAddressing, restoreFirst);
             
         } else if (parameters.getType() == LmHardwareCommandType.CANCEL_TEMP_OUT_OF_SERVICE) {
             
-            commands = xcomCommandBuilder.getCancelOptOutCommands(parameters.getDevice(), trackAddressing);
+            commands = xcomCommandBuilder.getCancelOptOutCommands(device, trackAddressing);
             
         }
         
@@ -182,26 +186,28 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
                 throw new CommandCompletionException("The route to send the command is not specified.");
             }
             for (String command : commands) {
-                executor.executeOnRoute(command, optionalRouteId, parameters.getUser());
+                executor.executeOnRoute(command, optionalRouteId, user);
             }
         } else {
             for (String command : commands) {
-                executor.execute(parameters.getDevice().getInventoryID(), command, parameters.getUser());
+                executor.execute(device.getInventoryID(), command, user);
             }
         }
     }
-
+    
     @Override
     public boolean canBroadcast(LmCommand command) {
+        
         if (command.getType() == LmHardwareCommandType.CANCEL_TEMP_OUT_OF_SERVICE) {
             return true;
         }
         // No other broadcast commands are implemented for the porter ExpressCom command strategy.
         return false;
     }
-
+    
     @Override
     public void sendBroadcastCommand(LmCommand command) throws CommandCompletionException {
+        
         log.debug("Sending porter ExpressCom broadcast command: " + command.getType());
         
         if (command.getType() == LmHardwareCommandType.CANCEL_TEMP_OUT_OF_SERVICE) {
@@ -217,7 +223,7 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
                 throw new CommandCompletionException("Error executing porter ExpressCom broadcast command.");
             }
         }
-
+        
     }
     
     @Override
@@ -261,22 +267,27 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
     public void cancelTextMessage(YukonCancelTextMessage message) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
-
+    
     @Override
-    public void verifyCanSendConfig(LmHardwareCommand command,  int ecId) throws BadConfigurationException{
+    public void verifyCanSendConfig(LmHardwareCommand command) throws BadConfigurationException {
+        
         List<String> commands = Lists.newArrayList();
-
-        boolean trackAddressing =
-            energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, ecId);
+        int inventoryId = command.getDevice().getInventoryID();
+        int ecId = ecDao.getEnergyCompanyByInventoryId(inventoryId).getId();
+        boolean trackAddressing = ecSettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, ecId);
+        
         Integer optionalGroupId = null;
         Integer param = command.findParam(LmHardwareCommandParam.OPTIONAL_GROUP_ID, Integer.class);
         if (param != null) {
             optionalGroupId = param;
         }
+        
         commands = xcomCommandBuilder.getConfigCommands(command.getDevice(), trackAddressing, optionalGroupId);
+        
         if (commands.isEmpty()) {
-            throw new BadConfigurationException(
-                "Addressing Group not is assigned.  If no groups are available in the Assigned Group column, please verify that your programs are valid Yukon LM Programs with assigned load groups.");
+            throw new BadConfigurationException("Addressing Group not is assigned.  " 
+                        + "If no groups are available in the Assigned Group column, " 
+                        + "please verify that your programs are valid Yukon LM Programs with assigned load groups.");
         }
     }
     

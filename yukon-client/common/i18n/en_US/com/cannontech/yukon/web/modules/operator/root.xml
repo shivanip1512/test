@@ -3,11 +3,21 @@
 <properties>
 
     <entry key="yukon.web.modules.operator.moduleName">Assets</entry>
-    <entry key="yukon.web.modules.operator.serialNumber">Serial Number</entry>
-    <entry key="yukon.web.modules.operator.deviceType">Device Type</entry>
+    
     <entry key="yukon.web.modules.operator.accountNumber">Account Number</entry>
-    <entry key="yukon.web.modules.operator.newOperation">New Inventory Action</entry>
+    <entry key="yukon.web.modules.operator.complete">Complete</entry>
+    <entry key="yukon.web.modules.operator.deviceType">Device Type</entry>
     <entry key="yukon.web.modules.operator.download">Download</entry>
+    <entry key="yukon.web.modules.operator.failed">Failed</entry>
+    <entry key="yukon.web.modules.operator.failedCount">Failed</entry>
+    <entry key="yukon.web.modules.operator.inProgress">In Progress</entry>
+    <entry key="yukon.web.modules.operator.newOperation">New Action</entry>
+    <entry key="yukon.web.modules.operator.progress">Progress</entry>
+    <entry key="yukon.web.modules.operator.notesLabel">Note:</entry>
+    <entry key="yukon.web.modules.operator.serialNumber">Serial Number</entry>
+    <entry key="yukon.web.modules.operator.successCount">Successful</entry>
+    <entry key="yukon.web.modules.operator.successful">Successful</entry>
+    <entry key="yukon.web.modules.operator.unsupportedCount">Unsupported</entry>
     
     <entry key="yukon.web.modules.operator.create.account">Create Account</entry>
     <entry key="yukon.web.modules.operator.create.device">Create Device</entry>

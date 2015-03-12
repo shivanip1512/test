@@ -64,6 +64,7 @@
 <entry key="yukon.common.device.selection.address.selected">address range: {0} to {1}</entry>
 <entry key="yukon.common.device.selection.file">File</entry>
 <entry key="yukon.common.device.selection.file.selected">file: {0}</entry>
+<entry key="yukon.common.devices">device(s)</entry>
 <entry key="yukon.common.deviceName">Device Name</entry>
 <entry key="yukon.common.deviceType">Device Type</entry>
 <entry key="yukon.common.disable">Disable</entry>

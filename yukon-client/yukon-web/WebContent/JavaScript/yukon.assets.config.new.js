@@ -1,7 +1,7 @@
 yukon.namespace('yukon.assets.newConfig');
 
 /**
- * TODO
+ * Module for the new config collection action page.
  * @module yukon.assets.newConfig
  * @requires JQUERY
  * @requires yukon

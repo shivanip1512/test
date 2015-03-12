@@ -46,6 +46,10 @@
                             <form:option value="${type}"><i:inline key="${type}"/></form:option>
                         </c:forEach>
                     </form:select>
+                    <span>
+                        <span class="js-config-device-count">${configToDevices[settings.config.type]}</span>
+                        <i:inline key="yukon.common.devices"/>
+                    </span>
                 </c:otherwise>
             </c:choose>
         </tags:nameValue2>
@@ -54,7 +58,7 @@
             <tags:nameValue2 nameKey=".route">
                 <tags:switchButton path="specificRoute" onNameKey=".route.specific" offNameKey=".route.device" 
                     color="false" toggleGroup="specific-route" offClasses="M0"/>
-                <select data-toggle-group="specific-route" disabled>
+                <select name="routeId" data-toggle-group="specific-route" disabled>
                     <c:choose>
                         <c:when test="${not empty defaultRoute}">
                             <option value="0">
@@ -72,16 +76,34 @@
             </tags:nameValue2>
         </c:if>
         
+        <c:if test="${!trackHardware}">
+            <tags:nameValue2 nameKey=".group">
+                <select name="groupId">
+                    <c:forEach var="group" items="${groups}">
+                        <option value="${group.id}">${fn:escapeXml(group.name)}</option>
+                    </c:forEach>
+                </select>
+            </tags:nameValue2>
+        </c:if>
+        
         <tags:nameValue2 excludeColon="true">
             <label><form:checkbox path="inService"/><i:inline key=".inService"/></label>
         </tags:nameValue2>
     </tags:nameValueContainer2>
     
-    <dr:hardwareAddressingInfo type="${settings.config.type}" path="config."/>
+    <c:if test="${trackHardware}">
+        <dr:hardwareAddressingInfo type="${settings.config.type}" path="config."/>
+    </c:if>
     
     <div class="page-action-area">
-        <cti:button nameKey="start" classes="action primary" type="submit"/>
-        <cti:button nameKey="cancel"/>
+        <cti:button name="action" value="send" nameKey="send" classes="action primary" type="submit"/>
+        <cti:button name="action" value="batch" nameKey="batch" classes="action primary" type="submit"/>
+        <cti:url var="url" value="/stars/operator/inventory/inventoryConfiguration">
+            <c:forEach items="${inventoryCollection.collectionParameters}" var="entry">
+                <cti:param name="${entry.key}" value="${entry.value}"/>
+            </c:forEach>
+        </cti:url>
+        <cti:button nameKey="cancel" href="${url}"/>
     </div>
 </form:form>
 

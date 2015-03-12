@@ -63,7 +63,7 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private InventoryDao inventoryDao;
-    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    @Autowired private EnergyCompanySettingDao ecSettingDao;
     @Autowired private SelectionListService selectionListService;
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
     
@@ -110,50 +110,53 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
     @Override
     public void sendConfigCommand(final LmHardwareCommand command) throws CommandCompletionException {
         
-        EnergyCompany ec = ecDao.getEnergyCompanyByInventoryId(command.getDevice().getInventoryID());
-        boolean autoConfig = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.AUTOMATIC_CONFIGURATION, ec.getId());
-        //verify if it is possible to send a config message to this device
-        verifyCanSendConfig(command, ec.getId());
+        // Throw a CommandCompletionException if it is not possible to configure this device.
+        verifyCanSendConfig(command);
         
+        EnergyCompany ec = ecDao.getEnergyCompanyByInventoryId(command.getDevice().getInventoryID());
         LiteLmHardwareBase device = command.getDevice();
         
-        int inventoryId = device.getInventoryID();
-        int unavailable = YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL;
+        boolean autoConfig = ecSettingDao.getBoolean(EnergyCompanySettingType.AUTOMATIC_CONFIGURATION, ec.getId());
         
-        HardwareType type = HardwareType.valueOf(yukonListDao.getYukonListEntry(device.getLmHardwareTypeID()).getYukonDefID());
-        boolean supportsServiceInOut = type.getHardwareConfigType().isSupportsServiceInOut();
-        boolean forceInService = false;
-        Boolean param = command.findParam(LmHardwareCommandParam.FORCE_IN_SERVICE, Boolean.class);
-        if (param != null) {
-            forceInService = param;
-        }
-        boolean unavailableOrForceInService = inventoryBaseDao.getDeviceStatus(inventoryId) == unavailable || forceInService;
-        if (unavailableOrForceInService && supportsServiceInOut) {
-            // Send an in service command first
+        int inventoryId = device.getInventoryID();
+        int unavailableStatus = YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL;
+        
+        int hardwareDefId = yukonListDao.getYukonListEntry(device.getLmHardwareTypeID()).getYukonDefID();
+        HardwareType type = HardwareType.valueOf(hardwareDefId);
+        Boolean forceInServiceParam = command.findParam(LmHardwareCommandParam.FORCE_IN_SERVICE, Boolean.class);
+        
+        boolean supportsInService = type.getHardwareConfigType().isSupportsServiceInOut();
+        boolean forceInService = forceInServiceParam != null && forceInServiceParam == true;
+        boolean unavailable = inventoryBaseDao.getDeviceStatus(inventoryId) == unavailableStatus;
+        
+        boolean sendInService = supportsInService && (forceInService || unavailable || autoConfig);
+        
+        if (sendInService) {
+            // Send an in service command first, schedule config command for 5 min later.
             LmHardwareCommand inservice = new LmHardwareCommand();
             inservice.setDevice(device);
             inservice.setType(LmHardwareCommandType.IN_SERVICE);
             inservice.setUser(command.getUser());
             inservice.setParams(command.optionsCopy());
+            
             sendInServiceCommand(inservice);
-            if (autoConfig) {
-                Runnable runner = new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            sendCommand(command, ec.getId());
-                        } catch (CommandCompletionException e) {
-                                log.error("Unable to send config command", e);
-                            }
-                        }
-                };
-               
-                log.debug("Sendings config command in 5 minutes.");
-                scheduledExecutor.schedule(runner, 5, TimeUnit.MINUTES);
-            }
+            
+            Runnable runner = new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        sendCommand(command);
+                    } catch (CommandCompletionException e) {
+                        log.error("Unable to send config command", e);
+                    }
+                }
+            };
+           
+            log.debug("Sendings config command in 5 minutes.");
+            scheduledExecutor.schedule(runner, 5, TimeUnit.MINUTES);
         } else {
             // Only send the config command
-            sendCommand(command, ec.getId());
+            sendCommand(command);
         }
         
         // Add "Config" to hardware events
@@ -165,21 +168,25 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         inventoryBaseDao.updateCurrentState(inventoryId, available);
     }
     
-    private void sendCommand(LmHardwareCommand command, int ecId) throws CommandCompletionException{
+    private void sendCommand(LmHardwareCommand command) throws CommandCompletionException{
         
         LiteLmHardwareBase device = command.getDevice();
-        HardwareType type = HardwareType.valueOf(yukonListDao.getYukonListEntry(device.getLmHardwareTypeID()).getYukonDefID());
+        int hardwareDefId = yukonListDao.getYukonListEntry(device.getLmHardwareTypeID()).getYukonDefID();
+        HardwareType type = HardwareType.valueOf(hardwareDefId);
         HardwareStrategyType strategy = getStrategy(type);
         final LmHardwareCommandStrategy impl = strategies.get(strategy);
+        
         try {
-            log.debug("Send " +command.getType()+ " device id:" + command.getDevice().getDeviceID() + " command:" + command);
-            impl.sendCommand(command, ecId);
-            log.debug(command.getType()+ " was sent");
+            log.debug("Send " + command.getType() 
+                    + " device id:" + command.getDevice().getDeviceID() 
+                    + " command:" + command);
+            impl.sendCommand(command);
+            log.debug(command.getType() + " was sent");
         } catch (CommandCompletionException e) {
-            log.error("Unable to send "+command.getType()+" command", e);
+            log.error("Unable to send " + command.getType() + " command", e);
             throw e;
         } catch (Exception e2) {
-            log.error("Unable to send "+command.getType()+" command", e2);
+            log.error("Unable to send " + command.getType() + " command", e2);
             throw new CommandCompletionException("Unable to send "+command.getType()+" command", e2);
         }
     }
@@ -188,14 +195,16 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
      * Throws CommandCompletionException if verification failed
      * Error example: Device is not Enrolled in any program.
      */
-    private void verifyCanSendConfig(LmHardwareCommand command, int ecId) throws CommandCompletionException {
+    private void verifyCanSendConfig(LmHardwareCommand command) throws CommandCompletionException {
         
         LiteLmHardwareBase device = command.getDevice();
-        HardwareType type = HardwareType.valueOf(yukonListDao.getYukonListEntry(device.getLmHardwareTypeID()).getYukonDefID());
+        int hardwareDefId = yukonListDao.getYukonListEntry(device.getLmHardwareTypeID()).getYukonDefID();
+        HardwareType type = HardwareType.valueOf(hardwareDefId);
         HardwareStrategyType strategy = getStrategy(type);
         final LmHardwareCommandStrategy impl = strategies.get(strategy);
+        
         try {
-            impl.verifyCanSendConfig(command, ecId);
+            impl.verifyCanSendConfig(command);
         } catch (BadConfigurationException e) {
             throw new CommandCompletionException("Unable to send " + command.getType() + " command. " + e.getMessage(), e);
         }
@@ -204,11 +213,11 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
     @Override
     public void sendInServiceCommand(LmHardwareCommand command) throws CommandCompletionException {
         
-        LiteLmHardwareBase device = command.getDevice();
-        EnergyCompany ec = ecDao.getEnergyCompanyByInventoryId(device.getInventoryID());
-        sendCommand(command, ec.getId());
+        sendCommand(command);
         
         // Add "Activation Completed" to hardware events
+        LiteLmHardwareBase device = command.getDevice();
+        EnergyCompany ec = ecDao.getEnergyCompanyByInventoryId(device.getInventoryID());
         int event = selectionListService.getListEntry(ec, YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID();
         int complete = selectionListService.getListEntry(ec, YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID();
         addHardwareEvents(ec.getId(), device.getInventoryID(), event, complete);
@@ -220,12 +229,11 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
     @Override
     public void sendOutOfServiceCommand(LmHardwareCommand command) throws CommandCompletionException {
         
-        LiteLmHardwareBase device = command.getDevice();
-        EnergyCompany ec = ecDao.getEnergyCompanyByInventoryId(device.getInventoryID());
-        
-        sendCommand(command, ec.getId());
+        sendCommand(command);
         
         // Add "Termination" to hardware events
+        LiteLmHardwareBase device = command.getDevice();
+        EnergyCompany ec = ecDao.getEnergyCompanyByInventoryId(device.getInventoryID());
         int event = selectionListService.getListEntry(ec, YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID();
         int termination = selectionListService.getListEntry(ec, YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).getEntryID();
         addHardwareEvents(ec.getId(), device.getInventoryID(), event, termination);
@@ -237,10 +245,7 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
     @Override
     public void sendOptOutCommand(LmHardwareCommand command) throws CommandCompletionException {
         
-        LiteLmHardwareBase device = command.getDevice();
-        EnergyCompany ec = ecDao.getEnergyCompanyByInventoryId(device.getInventoryID());
-        
-        sendCommand(command, ec.getId());
+        sendCommand(command);
     }
 
     private HardwareStrategyType getStrategy(HardwareType type) throws CommandCompletionException {

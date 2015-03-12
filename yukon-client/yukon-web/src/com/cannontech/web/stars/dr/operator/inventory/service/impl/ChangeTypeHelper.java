@@ -5,6 +5,7 @@ import java.util.Set;
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.service.NotSupportedException;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.user.YukonUserContext;
@@ -23,7 +24,7 @@ public class ChangeTypeHelper extends InventoryActionsHelper {
         
         public ChangeTypeTask(InventoryCollection collection, YukonUserContext context, YukonListEntry typeEntry) {
             this.collection = collection;
-            this.context = context;
+            this.userContext = context;
             this.typeEntry = typeEntry;
         }
         
@@ -54,14 +55,14 @@ public class ChangeTypeHelper extends InventoryActionsHelper {
                     for (InventoryIdentifier inv : collection.getList()) {
                         if (canceled) break;
                         try {
-                            hardwareService.changeType(context, inv, typeEntry);
+                            hardwareService.changeType(userContext, inv, typeEntry);
                             successful.add(inv);
                             successCount++;
                         } catch (NotSupportedException nse) {
                             /* Original hardware type does not support the 'change type' action */
                             unsupported.add(inv);
                             unsupportedCount++;
-                        } catch (ObjectInOtherEnergyCompanyException e) {
+                        } catch (ObjectInOtherEnergyCompanyException|StarsDeviceSerialNumberAlreadyExistsException e) {
                             /* Inventory was probably in a member energy comany */
                             failed.add(inv);
                             failedCount++;

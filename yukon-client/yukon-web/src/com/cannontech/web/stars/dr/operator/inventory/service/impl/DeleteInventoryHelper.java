@@ -12,7 +12,7 @@ public class DeleteInventoryHelper extends InventoryActionsHelper {
         
         public DeleteInventoryTask(InventoryCollection collection, YukonUserContext context) {
             this.collection = collection;
-            this.context = context;
+            this.userContext = context;
         }
         
         public Runnable getProcessor() {
@@ -22,7 +22,7 @@ public class DeleteInventoryHelper extends InventoryActionsHelper {
                     for (InventoryIdentifier inv : collection.getList()) {
                         if (canceled) break;
                         try {
-                            hardwareService.deleteHardware(context.getYukonUser(), true, inv.getInventoryId());
+                            hardwareService.deleteHardware(userContext.getYukonUser(), true, inv.getInventoryId());
                             successCount++;
                         } catch (Exception e) {
                             log.error("Unable to delete inventory: " + inv, e);

@@ -28,7 +28,7 @@ public class AddByRangeHelper extends InventoryActionsHelper {
         private HardwareType type;
         
         public AddByRangeTask(YukonUserContext context, HardwareType type, AddByRange abr) {
-            this.context = context;
+            this.userContext = context;
             this.type = type;
             this.abr = abr;
             start = Long.parseLong(abr.getFrom());
@@ -67,7 +67,8 @@ public class AddByRangeHelper extends InventoryActionsHelper {
                     for (long sn = start; sn <= end; sn++) {
                         if (canceled) break;
                         try {
-                            InventoryIdentifier identifier = hardwareService.createForAddByRangeTask(abr, sn, context.getYukonUser());
+                            InventoryIdentifier identifier = hardwareService.createForAddByRangeTask(abr, sn, 
+                                    userContext.getYukonUser());
                             successful.add(identifier);
                             successCount++;
                         } catch (ObjectInOtherEnergyCompanyException e) {

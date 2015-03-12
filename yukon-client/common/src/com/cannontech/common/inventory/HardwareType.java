@@ -98,37 +98,55 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     
     private final static ImmutableSet<HardwareType> schedulableTypes;
     private final static ImmutableSet<HardwareType> manualAdjustmentTypes;
+    private final static ImmutableSet<HardwareType> routedTypes;
     
     static {
-        Builder<HardwareType> builder = ImmutableSet.builder();
-        builder.add(UTILITY_PRO_ZIGBEE);
-        builder.add(LCR_6200_ZIGBEE);
-        builder.add(LCR_6600_ZIGBEE);
-        zigbeeEndpointTypes = builder.build();
+        Builder<HardwareType> b = ImmutableSet.builder();
+        b.add(UTILITY_PRO_ZIGBEE);
+        b.add(LCR_6200_ZIGBEE);
+        b.add(LCR_6600_ZIGBEE);
+        zigbeeEndpointTypes = b.build();
         
-        builder.add(DIGI_GATEWAY);
-        zigbeeTypes = builder.build();
+        b.add(DIGI_GATEWAY);
+        zigbeeTypes = b.build();
         
-        builder = ImmutableSet.builder();
-        builder.add(LCR_6600_EXPRESSCOM);
-        builder.add(LCR_6200_EXPRESSCOM);
-        builder.add(LCR_5000_EXPRESSCOM);
-        builder.add(LCR_5000_VERSACOM);
-        builder.add(LCR_4000);
-        builder.add(LCR_3000);
-        builder.add(LCR_2000);
-        builder.add(LCR_1000);
-        builder.add(SA_205);
-        builder.add(SA_305);
-        builder.add(SA_SIMPLE);
-        builder.add(EXPRESSSTAT);
-        builder.add(COMMERCIAL_EXPRESSSTAT);
-        builder.add(EXPRESSSTAT_HEAT_PUMP);
-        builder.add(UTILITY_PRO);
-        builder.add(UTILITY_PRO_G2);
-        builder.add(UTILITY_PRO_G3);
-        supportsChangeType = builder.build();
-        supportsAddByRange = builder.build();
+        b = ImmutableSet.builder();
+        b.add(LCR_6600_EXPRESSCOM);
+        b.add(LCR_6200_EXPRESSCOM);
+        b.add(LCR_5000_EXPRESSCOM);
+        b.add(LCR_5000_VERSACOM);
+        b.add(LCR_4000);
+        b.add(LCR_3000);
+        b.add(LCR_2000);
+        b.add(LCR_1000);
+        b.add(SA_205);
+        b.add(SA_305);
+        b.add(SA_SIMPLE);
+        b.add(EXPRESSSTAT);
+        b.add(COMMERCIAL_EXPRESSSTAT);
+        b.add(EXPRESSSTAT_HEAT_PUMP);
+        b.add(UTILITY_PRO);
+        b.add(UTILITY_PRO_G2);
+        b.add(UTILITY_PRO_G3);
+        supportsChangeType = b.build();
+        supportsAddByRange = b.build();
+        
+        routedTypes = ImmutableSet.of(
+                LCR_6600_EXPRESSCOM,
+                LCR_6200_EXPRESSCOM,
+                LCR_5000_EXPRESSCOM,
+                LCR_5000_VERSACOM,
+                LCR_4000,
+                LCR_4600,
+                LCR_4700,
+                LCR_3000,
+                LCR_3100,
+                LCR_3102,
+                LCR_2000,
+                LCR_1000,
+                SA_205,
+                SA_305, 
+                SA_SIMPLE);
         
         rfTypes = ImmutableSet.of(LCR_6200_RFN, LCR_6600_RFN);
         
@@ -246,6 +264,10 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     }
     
     /* HELPERS */
+    
+    public boolean isRoutable() {
+        return routedTypes.contains(this);
+    }
     
     public boolean isRf() {
         return rfTypes.contains(this);

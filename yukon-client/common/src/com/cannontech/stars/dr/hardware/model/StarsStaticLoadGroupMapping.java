@@ -1,15 +1,23 @@
 package com.cannontech.stars.dr.hardware.model;
 
-import com.cannontech.common.util.CtiUtilities;
 
 public class StarsStaticLoadGroupMapping {
 
+    private String loadGroupName;
     private int loadGroupID;
-    private int applianceCategoryID = CtiUtilities.NONE_ZERO_ID;
+    private int applianceCategoryID;
     private String zipCode = "";
-    private int consumptionTypeID = CtiUtilities.NONE_ZERO_ID;
-    private int switchTypeID = CtiUtilities.NONE_ZERO_ID;
-
+    private int consumptionTypeID;
+    private int switchTypeID;
+    
+    public String getLoadGroupName() {
+        return loadGroupName;
+    }
+    
+    public void setLoadGroupName(String loadGroupName) {
+        this.loadGroupName = loadGroupName;
+    }
+    
     public int getLoadGroupID() {
         return loadGroupID;
     }

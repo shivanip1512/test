@@ -90,7 +90,7 @@ public class ResendLmConfigController {
     public String viewFailed(ModelMap model, String taskId) {
         
         ResendLmConfigTask task = (ResendLmConfigTask) resultsCache.getResult(taskId);
-        model.addAttribute("failed", task.getFailureReasons());
+        model.addAttribute("failed", task.getFailures());
         
         return "operator/inventory/resendConfig/failed.jsp";
     }

@@ -5,7 +5,7 @@
     <entry key="yukon.web.widgets.commandScheduleWidget.title">Command Schedules</entry>
     <entry key="yukon.web.widgets.commandScheduleWidget.start">Start</entry>
     <entry key="yukon.web.widgets.commandScheduleWidget.runPeriod">Duration</entry>
-    <entry key="yukon.web.widgets.commandScheduleWidget.delayPeriod">Delay(Seconds)</entry>
+    <entry key="yukon.web.widgets.commandScheduleWidget.delayPeriod">Delay</entry>
     <entry key="yukon.web.widgets.commandScheduleWidget.remove">Remove</entry>
     <entry key="yukon.web.widgets.commandScheduleWidget.delete">Click to delete.</entry>
     <entry key="yukon.web.widgets.commandScheduleWidget.create">Create</entry>

@@ -142,12 +142,12 @@ public class HardwareConfig {
         }
     }
     
-    public StarsLMConfiguration getStarsLMConfiguration(HardwareType hardwareType) {
+    public StarsLMConfiguration getStarsLMConfiguration() {
         
         StarsLMConfiguration config = new StarsLMConfiguration();
         config.setColdLoadPickup(StringUtils.join(coldLoadPickup, ','));
         
-        if (hardwareType.getHardwareConfigType().isHasTamperDetect()) {
+        if (type.isHasTamperDetect()) {
             config.setTamperDetect(StringUtils.join(tamperDetect, ','));
         }
         

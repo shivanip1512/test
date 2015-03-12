@@ -299,9 +299,8 @@ public class OperatorHardwareConfigController {
         // Manually bind the configuration so we can create the correct type
         // based on hardwareConfigType.
         HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
-        HardwareType type = hardware.getHardwareType();
-        HardwareConfigType hardwareConfigType = type.getHardwareConfigType();
-        AssignedHardwareConfig configuration = new AssignedHardwareConfig(hardwareConfigType);
+        HardwareConfigType configType = hardware.getHardwareType().getHardwareConfigType();
+        AssignedHardwareConfig configuration = new AssignedHardwareConfig(configType);
         
         BindingResult result = SpringWebUtil.bind(model, request, configuration, "configuration", 
                 "yukon.web.modules.operator.hardwareConfig.");
@@ -334,7 +333,7 @@ public class OperatorHardwareConfigController {
                     new HardwareConfigurationDtoValidator();
                 validator.validate(configuration, result);
                 coldLoadPickupValidator.validate(configuration, result);
-                if (type.getHardwareConfigType().isHasTamperDetect()) {
+                if (configType.isHasTamperDetect()) {
                     tamperDetectValidator.validate(configuration, result);
                 }
                 if (result.hasErrors()) {
@@ -343,7 +342,7 @@ public class OperatorHardwareConfigController {
                     return prepareForEdit(false, model, configuration,
                                             result, userContext, accountInfo);
                 }
-                hardwareConfig.setStarsLMConfiguration(configuration.getStarsLMConfiguration(type));
+                hardwareConfig.setStarsLMConfiguration(configuration.getStarsLMConfiguration());
             }
             LiteLmHardwareBase liteHw = (LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(inventoryId);
             LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(accountInfo.getEnergyCompanyId());

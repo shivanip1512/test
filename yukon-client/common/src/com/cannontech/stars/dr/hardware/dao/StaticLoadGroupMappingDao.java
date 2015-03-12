@@ -6,9 +6,12 @@ import com.cannontech.stars.dr.hardware.model.StarsStaticLoadGroupMapping;
 
 public interface StaticLoadGroupMappingDao {
 
-    public StarsStaticLoadGroupMapping getStaticLoadGroupMapping(
-            StarsStaticLoadGroupMapping criteria);
+    StarsStaticLoadGroupMapping getStaticLoadGroupMapping(StarsStaticLoadGroupMapping criteria);
 
-    public List<Integer> getLoadGroupIdsForApplianceCategory(
-            int applianceCategoryId);
+    List<Integer> getLoadGroupIdsForApplianceCategory(int applianceCategoryId);
+
+    List<StarsStaticLoadGroupMapping> getAll();
+
+    List<Integer> getAllIds();
+    
 }
