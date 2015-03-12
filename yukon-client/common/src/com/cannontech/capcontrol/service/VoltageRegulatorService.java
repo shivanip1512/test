@@ -131,7 +131,7 @@ public class VoltageRegulatorService {
 
         //remove voltage Y CcMonitorBankList entry, if one exists and is different from the new one
         boolean isNewVoltageYPoint = false;
-        if(voltageYPointId > 0) {
+        if (voltageYPointId > 0) {
             isNewVoltageYPoint = ccMonitorBankListDao.deleteNonMatchingRegulatorPoint(completeRegulator.getPaObjectId(), voltageYPointId);
         } else {
             ccMonitorBankListDao.removeByDeviceId(completeRegulator.getPaObjectId(), null);
@@ -145,7 +145,7 @@ public class VoltageRegulatorService {
         }
 
         //add voltage_y CcMonitorBankList entry, if a point is assigned
-        if(isNewVoltageYPoint && zone != null) {
+        if (isNewVoltageYPoint && zone != null) {
             Phase phase = Phase.ALL;
             for (RegulatorToZoneMapping regToZone : zone.getRegulators()) {
                 if (regToZone.getRegulatorId() == completeRegulator.getPaObjectId()) {
