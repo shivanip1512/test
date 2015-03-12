@@ -10,8 +10,6 @@ import org.springframework.aop.framework.Advised;
 import org.springframework.aop.support.AopUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.BootstrapUtils;
-import com.cannontech.services.jms.ServerEmbeddedBroker;
 
 public class AmqConnectionFactoryService {
 
@@ -47,15 +45,6 @@ public class AmqConnectionFactoryService {
     }
 
     public ActiveMQConnection createConnection() throws JMSException, InterruptedException {
-        // FIXME:
-        // YUK-13147 
-        // This is a part temporary fix to prevent client connection from starting the vm transport.
-        // https://issues.apache.org/jira/browse/AMQ-5086
-        final String applicationName = BootstrapUtils.getApplicationName();
-        if (applicationName.equals("ServiceManager")) {
-            ServerEmbeddedBroker.waitForBrokerToStart(logger);
-        }
-
         ActiveMQConnection connection = (ActiveMQConnection) connectionFactory.createConnection();
         connection.setProducerWindowSize(_1MB);        
         return connection;

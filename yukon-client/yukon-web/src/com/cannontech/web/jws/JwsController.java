@@ -65,10 +65,10 @@ public class JwsController {
      * because of this we don't have the version number in the request. YUK-13456
      * I believe this is due to jar indexing and java web start's amazing support for it. INDEX.LIST
      */
-    @RequestMapping("/activemq-broker-5.9.1.jar")
+    @RequestMapping("/activemq-broker-5.11.1.jar")
     public void getActivemqJar(HttpServletResponse response) throws IOException {
         try {
-            Files.copy(jarFileBase.resolve("activemq-broker-5.9.1-amq-4906.jar"), response.getOutputStream());
+            Files.copy(jarFileBase.resolve("activemq-broker-5.11.1.jar"), response.getOutputStream());
         } catch (ClientAbortException e) {
             log.debug("Got Exception while downloading Web Start JAR (this can be ignored): " + e);
         }

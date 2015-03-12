@@ -19,10 +19,10 @@
     
     <fileset dir="${yukon.lib}" id="yukon.lib.files">
         <include name="activation.jar"/>
-        <include name="activemq-broker-5.9.1-amq-4906.jar"/>
-        <include name="activemq-client-5.9.1.jar"/>
-        <include name="activemq-kahadb-store-5.9.1.jar"/>
-        <include name="activemq-openwire-legacy-5.9.1.jar"/>
+        <include name="activemq-broker-5.11.1.jar"/>
+        <include name="activemq-client-5.11.1.jar"/>
+        <include name="activemq-kahadb-store-5.11.1.jar"/>
+        <include name="activemq-openwire-legacy-5.11.1.jar"/>
         <include name="activemq-protobuf-1.1.jar"/>
         <include name="aopalliance-1.0.jar"/>
         <include name="asm-attrs.jar"/>
@@ -49,7 +49,7 @@
         <include name="geronimo-j2ee-management_1.1_spec-1.0.1.jar"/>
         <include name="geronimo-jms_1.1_spec-1.1.1.jar"/>
         <include name="guava-13.0.1.jar"/>
-        <include name="hawtbuf-1.9.jar"/>
+        <include name="hawtbuf-1.11.jar"/>
     	<include name="httpclient-4.3.4.jar"/>
         <include name="httpcore-4.3.2.jar"/>
         <include name="i18n-en_US.jar"/>
@@ -77,7 +77,7 @@
         <include name="org.osgi.core-4.1.0.jar"/>
         <include name="quartz-2.2.1.jar"/>
         <include name="saaj.jar"/>
-        <include name="slf4j-api-1.7.5.jar"/>
+        <include name="slf4j-api-1.7.10.jar"/>
         <include name="slf4j-log4j12-1.7.2.jar"/>
         <include name="spring-xml-2.1.4.RELEASE.jar"/>
         <include name="stax2-api-3.1.4.jar"/>
