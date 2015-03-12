@@ -42,21 +42,23 @@
         </tags:sectionContainer2>
     </div>
     <div class="column two nogutter">
-        <tags:sectionContainer2 nameKey="newConfig">
-            <table class="link-table">
-                <tr>
-                    <td class="wsnw">
-                        <cti:url var="url" value="actions/config/new">
-                            <c:forEach var="entry" items="${inventoryCollection.collectionParameters}">
-                                <cti:param name="${entry.key}" value="${entry.value}"/>
-                            </c:forEach>
-                        </cti:url>
-                        <a href="${url}"><i:inline key=".newConfig.label"/></a>
-                    </td>
-                    <td><i:inline key=".newConfig.description"/></td>
-                </tr>
-            </table>
-        </tags:sectionContainer2>
+        <c:if test="${showNewConfig}">
+            <tags:sectionContainer2 nameKey="newConfig">
+                <table class="link-table">
+                    <tr>
+                        <td class="wsnw">
+                            <cti:url var="url" value="actions/config/new">
+                                <c:forEach var="entry" items="${inventoryCollection.collectionParameters}">
+                                    <cti:param name="${entry.key}" value="${entry.value}"/>
+                                </c:forEach>
+                            </cti:url>
+                            <a href="${url}"><i:inline key=".newConfig.label"/></a>
+                        </td>
+                        <td><i:inline key=".newConfig.description"/></td>
+                    </tr>
+                </table>
+            </tags:sectionContainer2>
+        </c:if>
     </div>
 </div>
 

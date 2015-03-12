@@ -18,6 +18,7 @@ import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -40,8 +41,8 @@ public class InventoryActionsController {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     
-    private static final int MAX_SELECTED_INVENTORY_DISPLAYED = 1000;
-    private static final String JSP_DIRECTORY = "operator/inventory/";
+    private static final int maxInventory = 1000;
+    private static final String view = "operator/inventory/";
 
     /* Inventory Actions */
     @RequestMapping("inventoryActions")
@@ -63,27 +64,30 @@ public class InventoryActionsController {
         boolean showSaveToFile = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.ENABLE_INVENTORY_SAVE_TO_FILE);
         modelMap.addAttribute("showSaveToFile", showSaveToFile);
         
-        return JSP_DIRECTORY + "inventoryActions.jsp";
+        return view + "inventoryActions.jsp";
     }
     
     /* Inventory Configuration */
     @RequestMapping("inventoryConfiguration")
-    public String inventoryConfiguration(HttpServletRequest request,
-    									 ModelMap modelMap,
-    									 YukonUserContext userContext) throws ServletRequestBindingException {
-    	//secure this action
-    	rolePropertyDao.checkProperty(YukonRoleProperty.DEVICE_RECONFIG, userContext.getYukonUser());
-    	
-    	InventoryCollection yukonCollection = inventoryCollectionFactory.createCollection(request);
+    public String inventoryConfiguration(HttpServletRequest request, ModelMap model,
+                                         YukonUserContext userContext) throws ServletRequestBindingException {
+        LiteYukonUser user = userContext.getYukonUser();
+        rolePropertyDao.checkProperty(YukonRoleProperty.DEVICE_RECONFIG, user);
+        
+        boolean showNewConfig = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.SN_CONFIG_RANGE, user);
+        model.addAttribute("showNewConfig", showNewConfig);
+        
+        InventoryCollection yukonCollection = inventoryCollectionFactory.createCollection(request);
         
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
         String displayHint = accessor.getMessage("yukon.common.device.bulk.bulkAction.collection.idList");
         
         InventoryCollection memoryCollection = memoryCollectionProducer.createCollection(yukonCollection.iterator(), displayHint);
         
-        modelMap.addAttribute("inventoryCollection", memoryCollection);
-        modelMap.addAllAttributes(memoryCollection.getCollectionParameters());
-    	return JSP_DIRECTORY + "inventoryConfiguration.jsp";
+        model.addAttribute("inventoryCollection", memoryCollection);
+        model.addAllAttributes(memoryCollection.getCollectionParameters());
+        
+        return view + "inventoryConfiguration.jsp";
     }
     
     /* Inventory Collection Popup Table */
@@ -92,7 +96,7 @@ public class InventoryActionsController {
         
         InventoryCollection yukonCollection = inventoryCollectionFactory.createCollection(request);
         int totalInventoryCount = yukonCollection.getCount();
-        List<InventoryIdentifier> inventoryToLoad = yukonCollection.getSubList(0, MAX_SELECTED_INVENTORY_DISPLAYED);
+        List<InventoryIdentifier> inventoryToLoad = yukonCollection.getSubList(0, maxInventory);
 
         List<DisplayableLmHardware> displayableLmHardware = inventoryDao.getDisplayableLMHardware(inventoryToLoad);
         
@@ -105,12 +109,12 @@ public class InventoryActionsController {
             inventoryInfoList.add(row);
         }
         
-        if (totalInventoryCount > MAX_SELECTED_INVENTORY_DISPLAYED) {
-            modelMap.addAttribute("resultsLimitedTo", MAX_SELECTED_INVENTORY_DISPLAYED);
+        if (totalInventoryCount > maxInventory) {
+            modelMap.addAttribute("resultsLimitedTo", maxInventory);
         }
         modelMap.addAttribute("inventoryInfoList", inventoryInfoList);
         
-        return JSP_DIRECTORY + "selectedInventoryPopup.jsp";
+        return view + "selectedInventoryPopup.jsp";
     }
     
 }
