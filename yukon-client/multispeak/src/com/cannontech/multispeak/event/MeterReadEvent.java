@@ -1,11 +1,4 @@
-/*
- * Created on Jul 11, 2005
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 package com.cannontech.multispeak.event;
-
-
 
 import java.util.List;
 
@@ -96,15 +89,14 @@ public class MeterReadEvent extends MultispeakEvent {
           readChangeNotification.setTransactionID(getTransactionID());
           readChangeNotification.setChangedMeterReads(arrayOfMeterRead);
           ReadingChangedNotificationResponse response = cbClient.readingChangedNotification(getMspVendor(), getResponseUrl(), readChangeNotification);
-          if (response != null) {
+          if (response != null && response.getReadingChangedNotificationResult() != null) {
               List<ErrorObject> responseErrorObjects = response.getReadingChangedNotificationResult().getErrorObject();
               if (CollectionUtils.isNotEmpty(responseErrorObjects)) {
                   YukonSpringHook.getBean(MultispeakFuncs.class).logErrorObjects(getResponseUrl(), "ReadingChangedNotification",
                                                                                  responseErrorObjects);
               }
           } else {
-              CTILogger.info("Response not recieved for (" + getResponseUrl() + "): Meter Number " + getDevice().getMeterRead()
-                             .getObjectID());
+              CTILogger.info("Response not recieved (or is null) for (" + getResponseUrl() + "): Meter Number " + getDevice().getMeterRead().getObjectID());
           }
         } catch (MultispeakWebServiceClientException e) {
             CTILogger.error("TargetService: " + getResponseUrl() + " - ReadingChangedNotification ("
