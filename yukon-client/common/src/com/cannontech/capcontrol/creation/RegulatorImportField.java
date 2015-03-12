@@ -14,6 +14,8 @@ public enum RegulatorImportField {
 
     TYPE(InputType.VALUE_DEPENDENT, "TYPE", RegulatorType.class, false, true, "ACTION", ImportAction.ADD),
 
+    CONFIGURATION(InputType.OPTIONAL, "CONFIGURATION", String.class),
+
     DESCRIPTION(InputType.OPTIONAL, "DESCRIPTION", String.class),
     DISABLED(InputType.OPTIONAL, "DISABLED", StrictBoolean.class),
     KEEP_ALIVE_TIMER(InputType.OPTIONAL, "KEEP ALIVE TIMER", Integer.class),
@@ -21,7 +23,7 @@ public enum RegulatorImportField {
     VOLT_CHANGE_PER_TAP(InputType.OPTIONAL, "VOLT CHANGE PER TAP", Double.class),
     ;
 
-    public enum InputType{ REQUIRED, VALUE_DEPENDENT, OPTIONAL};
+    public enum InputType {REQUIRED, VALUE_DEPENDENT, OPTIONAL}
 
     private InputType inputType;
     private String name;

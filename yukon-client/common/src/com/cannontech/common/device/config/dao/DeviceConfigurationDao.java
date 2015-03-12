@@ -208,6 +208,15 @@ public interface DeviceConfigurationDao {
     LightDeviceConfiguration getConfigurationForDevice(YukonDevice device) throws NotFoundException;
 
     /**
+     * Get the LightDeviceConfiguration with the supplied name
+     *
+     * @return a {@link LightDeviceConfiguration} object representing the configuration with that name if it
+     *         exists
+     * @throws NotFoundException if no configuration exists with that name
+     */
+    LightDeviceConfiguration getLightDeviceConfigurationByName(String name) throws NotFoundException;
+
+    /**
      * Check if a configuration supports a given pao type.
      * @param configuration the configuration being checked.
      * @param paoType the pao type being checked.

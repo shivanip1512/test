@@ -16,6 +16,8 @@ public enum CsvImportResultType implements DisplayableEnum{
     CONDITIONAL_BAD_DATA(false),
     HAS_DEPENDENCIES(false),
     INVALID_CHARS(false),
+    INVALID_CONFIG_ADD(false),
+    INVALID_CONFIG_UPDATE(false),
     ;
     
     private boolean success;

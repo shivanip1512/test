@@ -55,25 +55,6 @@
                 </form>
             </tags:sectionContainer2>
 
-            <c:if test="${!empty results}">
-                <tags:boxContainer2 nameKey="resultContainer">
-                    <ol style="list-style-type:decimal; padding-left: 35px">
-                        <c:forEach var="result" items="${results}">
-                            <c:choose>
-                                <c:when test="${result.success}">
-                                    <c:set var="fontColor" value="success"/>
-                                </c:when>
-                                <c:otherwise>
-                                    <c:set var="fontColor" value="error"/>
-                                </c:otherwise>
-                            </c:choose>
-                            <li>
-                                 <span class="${fontColor}"><i:inline key="${result.importResultMessage}"/></span>
-                            </li>
-                        </c:forEach>
-                    </ol>
-                </tags:boxContainer2>
-            </c:if>
         </div>
 
         <div class="column two nogutter">
@@ -110,4 +91,23 @@
             </c:forEach>
         </div>
     </div>
+    <c:if test="${not empty results}">
+        <tags:boxContainer2 nameKey="resultContainer">
+            <ol style="list-style-type:decimal; padding-left: 35px">
+                <c:forEach var="result" items="${results}">
+                    <c:choose>
+                        <c:when test="${result.success}">
+                            <c:set var="fontColor" value="success"/>
+                        </c:when>
+                        <c:otherwise>
+                            <c:set var="fontColor" value="error"/>
+                        </c:otherwise>
+                    </c:choose>
+                    <li>
+                         <span class="${fontColor}"><i:inline key="${result.importResultMessage}"/></span>
+                    </li>
+                </c:forEach>
+            </ol>
+        </tags:boxContainer2>
+    </c:if>
 </cti:standardPage>

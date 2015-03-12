@@ -2,6 +2,7 @@ package com.cannontech.capcontrol.creation.service.impl;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.capcontrol.creation.RegulatorImportField;
@@ -17,15 +18,22 @@ import com.cannontech.common.csvImport.ImportResult;
 import com.cannontech.common.csvImport.ImportRow;
 import com.cannontech.common.csvImport.ImportValidationResult;
 import com.cannontech.common.csvImport.types.RegulatorType;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
+import com.cannontech.common.device.config.model.DeviceConfiguration;
+import com.cannontech.common.device.config.model.LightDeviceConfiguration;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.model.CompleteRegulator;
 import com.cannontech.common.pao.service.PaoPersistenceService;
+import com.cannontech.core.dao.NotFoundException;
 import com.google.common.collect.Lists;
 
 public class RegulatorImportServiceImpl implements RegulatorImportService {
     private static ImportFileFormat importFormat;
     
+    @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private PaoPersistenceService paoPersistenceService;
     @Autowired private VoltageRegulatorDao regulatorDao;
     @Autowired private RegulatorImportHelper regulatorImportHelper;
@@ -122,7 +130,81 @@ public class RegulatorImportServiceImpl implements RegulatorImportService {
 
         RegulatorType type = RegulatorType.valueOf(row.getValue("TYPE"));
         paoPersistenceService.createPaoWithDefaultPoints(regulator, type.getPaoType());
+
+        String configName = row.getValueMap().get(RegulatorImportField.CONFIGURATION.name());
+
+        ConfigStatus attchmentStatus = attachConfig(configName, regulator, ImportAction.ADD);
+
+        switch (attchmentStatus) {
+        case OK:
+        case BLANK:
+            return new CsvImportResult(ImportAction.ADD, CsvImportResultType.SUCCESS, name);
+        case NO_SUCH_CONFIG:
+        case UNSUPPORTED_CONFIG:
+            return new CsvImportResult(ImportAction.ADD, CsvImportResultType.INVALID_CONFIG_ADD, name, configName);
+
+        }
         return new CsvImportResult(ImportAction.ADD, CsvImportResultType.SUCCESS, name);
+
+    }
+
+    private enum ConfigStatus {OK, BLANK, NO_SUCH_CONFIG, UNSUPPORTED_CONFIG}
+
+    private ConfigStatus attachConfig(String configName, CompleteRegulator regulator, ImportAction action) {
+
+        SimpleDevice device = SimpleDevice.of(regulator.getPaoIdentifier());
+
+        ConfigStatus result = ConfigStatus.OK;
+        LightDeviceConfiguration config;
+        DeviceConfiguration defaultConfig = deviceConfigurationDao.getDefaultRegulatorConfiguration();
+
+        if (StringUtils.isBlank(configName)) {
+            //For a blank row in an update, do no action.
+            //For a blank row in an add, use the default config.
+            result = ConfigStatus.BLANK;
+            if (action == ImportAction.UPDATE) return result;
+
+            config = defaultConfig;
+
+        } else {
+
+            try {
+                config = deviceConfigurationDao.getLightDeviceConfigurationByName(configName);
+            } catch (NotFoundException e) {
+                //No conifg with that name found
+                result = ConfigStatus.NO_SUCH_CONFIG;
+                if (action == ImportAction.UPDATE) return result;
+
+                config = defaultConfig;
+            }
+
+            if (!deviceConfigurationDao.isTypeSupportedByConfiguration(config, device.getDeviceType())) {
+
+                result = ConfigStatus.UNSUPPORTED_CONFIG;
+                if (action == ImportAction.UPDATE) return result;
+
+                config = defaultConfig;
+            }
+        }
+
+
+        try {
+            deviceConfigurationDao.assignConfigToDevice(config, device);
+            return result;
+        } catch (InvalidDeviceTypeException e) {
+            if (action == ImportAction.UPDATE) {
+                return ConfigStatus.UNSUPPORTED_CONFIG;
+            }
+
+            try {
+                deviceConfigurationDao.assignConfigToDevice(defaultConfig, device);
+            } catch (InvalidDeviceTypeException e1) {
+                //The default config must be supported. Something is very wrong.
+                throw new RuntimeException(e1);
+            }
+
+            return ConfigStatus.UNSUPPORTED_CONFIG;
+        }
     }
     
     private CsvImportResult updateRegulator(ImportRow row) {
@@ -137,7 +219,21 @@ public class RegulatorImportServiceImpl implements RegulatorImportService {
         setOptionalColumns(regulator, row);
 
         paoPersistenceService.updatePao(regulator);
-        return new CsvImportResult(ImportAction.UPDATE, CsvImportResultType.SUCCESS, name);
+        
+        String configName = row.getValueMap().get(RegulatorImportField.CONFIGURATION.name());
+        
+        ConfigStatus attchmentStatus = attachConfig(configName, regulator, ImportAction.UPDATE);
+
+        switch (attchmentStatus) {
+        case OK:
+        case BLANK:
+            return new CsvImportResult(ImportAction.ADD, CsvImportResultType.SUCCESS, name);
+        case NO_SUCH_CONFIG:
+        case UNSUPPORTED_CONFIG:
+            return new CsvImportResult(ImportAction.ADD, CsvImportResultType.INVALID_CONFIG_UPDATE, name, configName);
+
+        }
+        return new CsvImportResult(ImportAction.ADD, CsvImportResultType.SUCCESS, name);
     }
     
     private CsvImportResult removeRegulator(ImportRow row) {
