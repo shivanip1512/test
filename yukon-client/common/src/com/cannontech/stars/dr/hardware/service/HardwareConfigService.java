@@ -42,7 +42,6 @@ import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.google.common.collect.Lists;
 
@@ -65,10 +64,10 @@ public class HardwareConfigService {
     private ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
 
     private class EnergyCompanyRunnable implements Runnable {
-        int energyCompanyId;
+        int ecId;
 
-        private EnergyCompanyRunnable(int energyCompanyId) {
-            this.energyCompanyId = energyCompanyId;
+        private EnergyCompanyRunnable(int ecId) {
+            this.ecId = ecId;
         }
 
         private void processItem(InventoryConfigTaskItem item)
@@ -80,44 +79,40 @@ public class HardwareConfigService {
 
             try {
                 if (type.isConfigurable()) {
-                    YukonEnergyCompany yec = ecDao.getEnergyCompanyByInventoryId(hardware.getInventoryID());
-
                     LmHardwareCommand command = new LmHardwareCommand();
                     command.setDevice(hardware);
                     command.setType(LmHardwareCommandType.CONFIG);
-                    command.setUser(yec.getEnergyCompanyUser());
+                    command.setUser(user);
                     command.getParams().put(LmHardwareCommandParam.BULK, true);
                     boolean sendInService = item.getInventoryConfigTask().isSendInService();
                     if (sendInService) {
                         command.getParams().put(LmHardwareCommandParam.FORCE_IN_SERVICE, true);
                     }
-                    commandService.sendConfigCommand(command, true);
+                    commandService.sendConfigCommand(command);
                     inventoryConfigTaskDao.markComplete(item, Status.SUCCESS);
-                    inventoryConfigEventLogService.itemConfigSucceeded(user, hardware.getManufacturerSerialNumber(),
-                        hardware.getInventoryID());
+                    inventoryConfigEventLogService.itemConfigSucceeded(user, hardware.getManufacturerSerialNumber());
                 } else {
                     inventoryConfigTaskDao.markComplete(item, Status.UNSUPPORTED);
-                    inventoryConfigEventLogService.itemConfigUnsupported(user, hardware.getManufacturerSerialNumber(),
-                        hardware.getInventoryID());
+                    inventoryConfigEventLogService.itemConfigUnsupported(user, hardware.getManufacturerSerialNumber());
                 }
             } catch (CommandCompletionException e) {
                 log.error("Unable to send config command inventory id=" + item.getInventoryId(), e);
                 inventoryConfigTaskDao.markComplete(item, Status.FAIL);
                 inventoryConfigEventLogService.itemConfigFailed(user, hardware.getManufacturerSerialNumber(),
-                    e.getMessage(), hardware.getInventoryID());
+                    e.getMessage());
             } 
         }
         
         private boolean processItems() throws InterruptedException {
-            log.trace("processing a chunk of work for ecId = " + energyCompanyId);
-            TimeZone ecTimeZone = ecService.getDefaultTimeZone(energyCompanyId);
+            log.trace("processing a chunk of work for ecId = " + ecId);
+            TimeZone ecTimeZone = ecService.getDefaultTimeZone(ecId);
             DateTimeZone energyCompanyTimeZone = DateTimeZone.forTimeZone(ecTimeZone);
 
             boolean workProcessed = false;
-            List<InventoryConfigTask> tasks = inventoryConfigTaskDao.getUnfinished(energyCompanyId);
+            List<InventoryConfigTask> tasks = inventoryConfigTaskDao.getUnfinished(ecId);
             log.trace("tasks has " + tasks.size() + " items");
             if (!tasks.isEmpty()) {
-                List<CommandSchedule> schedules = commandScheduleDao.getAllEnabled(energyCompanyId);
+                List<CommandSchedule> schedules = commandScheduleDao.getAllEnabled(ecId);
                 List<CommandSchedule> activeSchedules = Lists.newArrayList();
                 DateTime now = new DateTime(energyCompanyTimeZone);
                 for (CommandSchedule schedule : schedules) {
@@ -155,8 +150,7 @@ public class HardwareConfigService {
                             ? (int) Math.round(60.0 * 1000.0 / delayBetweenCommands.getMillis() / 2.0) : 100;
                     numItems = Math.max(Math.min(numItems, 100), 1);
                     log.trace("getting no more than " + numItems + " items");
-                    Iterable<InventoryConfigTaskItem> items =
-                        inventoryConfigTaskDao.getItems(numItems, energyCompanyId);
+                    Iterable<InventoryConfigTaskItem> items = inventoryConfigTaskDao.getItems(numItems, ecId);
                     int actualNumItems = 0;
                     for (InventoryConfigTaskItem item : items) {
                         actualNumItems++;

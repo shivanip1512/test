@@ -55,7 +55,7 @@ public interface LmHardwareCommandStrategy {
      * Attempts to send a command to a dr device using the provided parameters.
      * @throws {@link CommandCompletionException}
      */
-    public void sendCommand(LmHardwareCommand parameters) throws CommandCompletionException;
+    public void sendCommand(LmHardwareCommand parameters, int ecId) throws CommandCompletionException;
     
     /**
      * Will attempt to send a text message to a thermostat
@@ -88,9 +88,9 @@ public interface LmHardwareCommandStrategy {
     public void sendBroadcastCommand(LmCommand command) throws CommandCompletionException;
     
     /**
-     * This method will return true if it is  possible to send config command. Throws exception if device is not configured correctly.
+     * Throws exception if device is not configured correctly.
      * 
      * @throws {@link BadConfigurationException} 
      */
-    public boolean canSendConfig(LmHardwareCommand command) throws BadConfigurationException;
+    public void verifyCanSendConfig(LmHardwareCommand command, int ecId) throws BadConfigurationException;
 }

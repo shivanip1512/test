@@ -39,7 +39,6 @@ import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.DefaultRouteService;
 import com.google.common.collect.Lists;
 
@@ -141,11 +140,11 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
     }
     
     @Override
-    public void sendCommand(LmHardwareCommand parameters) throws CommandCompletionException {
+    public void sendCommand(LmHardwareCommand parameters, int ecId) throws CommandCompletionException {
         
         List<String> commands = Lists.newArrayList();
-        YukonEnergyCompany yec = ecDao.getEnergyCompanyByInventoryId(parameters.getDevice().getInventoryID());
-        boolean trackAddressing = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, yec.getEnergyCompanyId());
+
+        boolean trackAddressing = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, ecId);
         
         if (parameters.getType() == LmHardwareCommandType.CONFIG) {
             
@@ -264,12 +263,11 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
     }
 
     @Override
-    public boolean canSendConfig(LmHardwareCommand command) throws BadConfigurationException{
+    public void verifyCanSendConfig(LmHardwareCommand command,  int ecId) throws BadConfigurationException{
         List<String> commands = Lists.newArrayList();
-        YukonEnergyCompany yec = ecDao.getEnergyCompanyByInventoryId(command.getDevice().getInventoryID());
+
         boolean trackAddressing =
-            energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING,
-                yec.getEnergyCompanyId());
+            energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, ecId);
         Integer optionalGroupId = null;
         Integer param = command.findParam(LmHardwareCommandParam.OPTIONAL_GROUP_ID, Integer.class);
         if (param != null) {
@@ -280,7 +278,6 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
             throw new BadConfigurationException(
                 "Addressing Group not is assigned.  If no groups are available in the Assigned Group column, please verify that your programs are valid Yukon LM Programs with assigned load groups.");
         }
-        return true;
     }
     
 }

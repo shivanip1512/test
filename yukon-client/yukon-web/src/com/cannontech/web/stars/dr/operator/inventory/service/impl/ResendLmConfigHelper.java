@@ -90,21 +90,21 @@ public class ResendLmConfigHelper extends InventoryActionsHelper {
                                 if(forceInService){
                                     command.getParams().put(LmHardwareCommandParam.FORCE_IN_SERVICE, true);
                                 }
-                                commandService.sendConfigCommand(command, true);
+                                commandService.sendConfigCommand(command);
                                 successful.add(identifier);
                                 successCount++;
                                 inventoryConfigEventLogService.itemConfigSucceeded(context.getYukonUser(),
-                                    lmhb.getManufacturerSerialNumber(), lmhb.getInventoryID());
+                                    lmhb.getManufacturerSerialNumber());
                             } else {
                                 unsupported.add(identifier);
                                 unsupportedCount++;
                                 inventoryConfigEventLogService.itemConfigUnsupported(context.getYukonUser(),
-                                    lmhb.getManufacturerSerialNumber(), lmhb.getInventoryID());
+                                    lmhb.getManufacturerSerialNumber());
                             }
                         } catch (CommandCompletionException e) {
                             fail(failureKey, identifier, e);
                             inventoryConfigEventLogService.itemConfigFailed(context.getYukonUser(),
-                                lmhb.getManufacturerSerialNumber(), e.getMessage(), lmhb.getInventoryID());
+                                lmhb.getManufacturerSerialNumber(), e.getMessage());
                         } finally {
                             completedItems ++;
                         }
