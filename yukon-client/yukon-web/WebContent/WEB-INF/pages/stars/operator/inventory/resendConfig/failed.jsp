@@ -20,7 +20,7 @@
                     </cti:url>
                     <tr>
                         <td><a href="${url}">${failure.lmHardware}</a></td>
-                        <td><i:inline key="${failure.failureReason}"/></td>
+                        <td><i:inline key="${failure.reason}"/></td>
                     </tr>
                 </c:forEach>
             </tbody>
