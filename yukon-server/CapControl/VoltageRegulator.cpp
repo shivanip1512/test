@@ -57,7 +57,6 @@ VoltageRegulator::VoltageRegulator()
     _nextKeepAliveSendTime(CtiTime(neg_infin)),
     _voltChangePerTap(0.75),
     _controlPolicy( std::make_unique<StandardControlPolicy>() )
-//    _controlPolicy( new StandardControlPolicy )
 {
     // empty...
 }
@@ -76,21 +75,7 @@ VoltageRegulator::VoltageRegulator(Cti::RowReader & rdr)
     _voltChangePerTap(0.75),
     _controlPolicy( std::make_unique<StandardControlPolicy>() )
 {
-    /*
-        We have data from the Regulator table - this will only be the case if we are an LTC.
-    */
-
-//    if ( ! rdr["KeepAliveTimer"].isNull() )
-//    {
-//        rdr["KeepAliveTimer"]   >> _keepAliveTimer;
-//    }
-//
-//    if ( ! rdr["KeepAliveConfig"].isNull() )
-//    {
-//        rdr["KeepAliveConfig"]  >> _keepAliveConfig;
-//    }
-//
-//    rdr["VoltChangePerTap"] >> _voltChangePerTap;
+    // empty...
 }
 
 
@@ -265,7 +250,8 @@ try
     submitControlCommands( _controlPolicy->TapUp(),
                            RaiseTap,
                            "Raise Tap Position",
-                           capControlIvvcTapOperation );
+                           capControlIvvcTapOperation,
+                           getVoltageChangePerTap() );
 
     sendCapControlOperationMessage(
         CapControlOperationMessage::createRaiseTapMessage( getPaoId(), CtiTime() ) );
@@ -285,7 +271,8 @@ try
     submitControlCommands( _controlPolicy->TapDown(),
                            LowerTap,
                            "Lower Tap Position",
-                           capControlIvvcTapOperation );
+                           capControlIvvcTapOperation,
+                           -getVoltageChangePerTap() );
 
     sendCapControlOperationMessage(
         CapControlOperationMessage::createLowerTapMessage( getPaoId(), CtiTime() ) );
@@ -307,16 +294,17 @@ try
         submitControlCommands( _controlPolicy->AdjustSetPoint( changeAmount ),
                                RaiseSetPoint,
                                "Raise Set Point",
-                               capControlIvvcSetPointOperation );
+                               capControlIvvcSetPointOperation,
+                               changeAmount );
     }
     else
     {
         submitControlCommands( _controlPolicy->AdjustSetPoint( changeAmount ),
                                LowerSetPoint,
                                "Lower Set Point",
-                               capControlIvvcSetPointOperation );
+                               capControlIvvcSetPointOperation,
+                               changeAmount );
     }
-    // sendCapControlOperationMessage( ... <new message type?> )
 }
 catch ( FailedAttributeLookup & missingAttribute )
 {
@@ -336,7 +324,8 @@ catch ( UninitializedPointValue & noValue )
 void VoltageRegulator::submitControlCommands( ControlPolicy::ControlRequest   & blob,
                                               const ControlOperation            operation,
                                               const std::string               & opDescription,
-                                              const CtiCCEventType_t            eventType )
+                                              const CtiCCEventType_t            eventType,
+                                              const double                      changeAmount )
 {
     auto & signal  = blob.first;
     auto & request = blob.second;
@@ -350,8 +339,11 @@ void VoltageRegulator::submitControlCommands( ControlPolicy::ControlRequest   & 
 
     CtiCapController::getInstance()->sendMessageToDispatch( signal.release() );
 
-    CtiCapController::submitEventLogEntry(
-                        EventLogEntry( fullDescription, getPaoId(), eventType ) );
+    EventLogEntry   eventLog( fullDescription, getPaoId(), eventType );
+    eventLog.aVar      = changeAmount;              // 'value' is a long... we want a double so using 'aVar'
+    eventLog.ipAddress = desolvePhase( _phase );    // 'AdditionalInfo' column
+
+    CtiCapController::submitEventLogEntry( eventLog );
 
     CtiCapController::getInstance()->manualCapBankControl( request.release() );
 }
@@ -494,8 +486,6 @@ std::string VoltageRegulator::getPhaseString() const
 
 long VoltageRegulator::getKeepAliveConfig()
 {
-///    return _keepAliveConfig;
-
     Config::DeviceConfigSPtr    deviceConfig = getDeviceConfig( this );
 
     if ( deviceConfig )
@@ -513,8 +503,6 @@ long VoltageRegulator::getKeepAliveConfig()
 
 long VoltageRegulator::getKeepAliveTimer()
 {
-///    return _keepAliveTimer;
-
     Config::DeviceConfigSPtr    deviceConfig = getDeviceConfig( this );
 
     if ( deviceConfig )
@@ -532,8 +520,6 @@ long VoltageRegulator::getKeepAliveTimer()
 
 double VoltageRegulator::getVoltageChangePerTap() const
 {
-///    return _voltChangePerTap;
-
     Config::DeviceConfigSPtr    deviceConfig = getDeviceConfig( this );
 
     if ( deviceConfig )

@@ -39,6 +39,8 @@
 #include "millisecond_timer.h"
 #include "module_util.h"
 
+#include "mgr_config.h"
+
 extern void refreshGlobalCParms();
 
 extern unsigned long _CC_DEBUG;
@@ -1941,6 +1943,13 @@ void CtiCapController::parseMessage(CtiMessage *message)
                         CcDbReloadInfo reloadInfo(dbChange->getId(), dbChange->getTypeOfChange(), Cti::CapControl::MonitorPoint);
 
                         CtiCCSubstationBusStore::getInstance()->insertDBReloadList(reloadInfo);
+                    }
+                    else if ( dbChange && dbChange->getDatabase() == ChangeConfigDb )
+                    {
+                        Cti::ConfigManager::handleDbChange( dbChange->getId(),
+                                                            dbChange->getCategory(),
+                                                            dbChange->getObjectType(),
+                                                            dbChange->getTypeOfChange() );
                     }
                 }
                 break;

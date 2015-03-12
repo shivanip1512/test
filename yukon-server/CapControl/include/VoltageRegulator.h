@@ -183,7 +183,8 @@ protected:
     void submitControlCommands( ControlPolicy::ControlRequest & blob,
                                 const ControlOperation          operation,
                                 const std::string             & opDescription,
-                                const CtiCCEventType_t          eventType );
+                                const CtiCCEventType_t          eventType,
+                                const double                    changeAmount );
 };
 
 // this is added to use voltageRegulator with boost::ptr_vector, since it is an abstract class
