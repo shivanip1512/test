@@ -158,11 +158,11 @@ public class ImportController {
         
         model.addAttribute("resultsId", resultsId);
         
-        return "redirect:/bulk/import/import-results";
+        return "redirect:/bulk/import/importResults";
     }
     
     // VIEW RESULTS
-    @RequestMapping("import-results")
+    @RequestMapping("importResults")
     public String importResults(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
         
         // result info
