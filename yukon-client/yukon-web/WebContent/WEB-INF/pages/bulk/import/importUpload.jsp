@@ -10,7 +10,7 @@
 <cti:includeScript link="/JavaScript/yukon.tools.import.upload.js"/>
 
 <div class="stacked">
-    <strong><i:inline key=".importUpload.noteLabel"/></strong>
+    <strong class="label label-info"><i:inline key=".importUpload.noteLabel"/></strong>
     <i:inline key=".importUpload.noteText"/>
 </div>
 
