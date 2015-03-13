@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/9/2015 3:22:52 PM                          */
+/* Created on:     3/13/2015 10:15:00 AM                        */
 /*==============================================================*/
 
 
@@ -2915,7 +2915,7 @@ create table DeviceConfigCategory (
 go
 
 INSERT INTO DeviceConfigCategory VALUES (0, 'dnp', 'Default DNP Category', null);
-INSERT INTO DeviceConfigCategory VALUES (-2, 'regulatorCategory', 'Default Regulator Category', null);
+INSERT INTO DeviceConfigCategory VALUES (1, 'regulatorCategory', 'Default Regulator Category', null);
 
 alter table DeviceConfigCategory
    add constraint AK_DeviceConfigCategory_Name unique (Name)
@@ -2940,10 +2940,10 @@ INSERT INTO DeviceConfigCategoryItem VALUES (3, 0, 'localTime', 'false');
 INSERT INTO DeviceConfigCategoryItem VALUES (4, 0, 'enableUnsolicitedMessagesClass1', 'true');
 INSERT INTO DeviceConfigCategoryItem VALUES (5, 0, 'enableUnsolicitedMessagesClass2', 'true');
 INSERT INTO DeviceConfigCategoryItem VALUES (6, 0, 'enableUnsolicitedMessagesClass3', 'true');
-INSERT INTO DeviceConfigCategoryItem VALUES (-1, -2, 'voltageChangePerTap', '0.75');
-INSERT INTO DeviceConfigCategoryItem VALUES (-2, -2, 'heartbeatPeriod', '0');
-INSERT INTO DeviceConfigCategoryItem VALUES (-3, -2, 'heartbeatValue', '0');
-INSERT INTO DeviceConfigCategoryItem VALUES (-4, -2, 'voltageControlMode', 'DIRECT_TAP');
+INSERT INTO DeviceConfigCategoryItem VALUES (7, 1, 'voltageChangePerTap', '0.75');
+INSERT INTO DeviceConfigCategoryItem VALUES (8, 1, 'heartbeatPeriod', '0');
+INSERT INTO DeviceConfigCategoryItem VALUES (9, 1, 'heartbeatValue', '0');
+INSERT INTO DeviceConfigCategoryItem VALUES (10, 1, 'voltageControlMode', 'DIRECT_TAP');
 
 alter table DeviceConfigCategoryItem
    add constraint AK_DevConCatItem_CatIdItemName unique (DeviceConfigCategoryId, ItemName)
@@ -2960,7 +2960,7 @@ create table DeviceConfigCategoryMap (
 go
 
 INSERT INTO DeviceConfigCategoryMap VALUES(-1, 0);
-INSERT INTO DeviceConfigCategoryMap VALUES(-2, -2);
+INSERT INTO DeviceConfigCategoryMap VALUES(-2, 1);
 
 /*==============================================================*/
 /* Table: DeviceConfigDeviceTypes                               */
@@ -2983,9 +2983,9 @@ INSERT INTO DeviceConfigDeviceTypes VALUES (6, -1, 'CBC 8024');
 INSERT INTO DeviceConfigDeviceTypes VALUES (7, -1, 'CBC DNP');
 INSERT INTO DeviceConfigDeviceTypes VALUES (8, -1, 'RTU-DART');
 INSERT INTO DeviceConfigDeviceTypes VALUES (9, -1, 'RTU-DNP');
-INSERT INTO DeviceConfigDeviceTypes VALUES (-10, -2, 'LTC');
-INSERT INTO DeviceConfigDeviceTypes VALUES (-11, -2, 'GO_REGULATOR');
-INSERT INTO DeviceConfigDeviceTypes VALUES (-12, -2, 'PO_REGULATOR');
+INSERT INTO DeviceConfigDeviceTypes VALUES (10, -2, 'LTC');
+INSERT INTO DeviceConfigDeviceTypes VALUES (11, -2, 'GO_REGULATOR');
+INSERT INTO DeviceConfigDeviceTypes VALUES (12, -2, 'PO_REGULATOR');
 
 alter table DeviceConfigDeviceTypes
    add constraint AK_DevConDevTypes_CatIdDevType unique (DeviceConfigurationId, PaoType)

@@ -128,20 +128,31 @@ WHERE PagePath = '/capcontrol/schedule/scheduleAssignments';
 /* End YUK-14006 */
 
 /* Start YUK-14066 */
-INSERT INTO DeviceConfiguration VALUES (-2, 'Default Regulator Configuration', null);
+/* @start-block */
+DECLARE
+    v_configId   NUMBER;
+    v_categoryId NUMBER;
+BEGIN
+    SELECT MAX(DeviceConfigurationId) + 1 INTO v_configId FROM DeviceConfiguration;
+    SELECT MAX(DeviceConfigCategoryId) + 1 INTO v_categoryId FROM DeviceConfigCategory;
 
-INSERT INTO DeviceConfigDeviceTypes VALUES (-10, -2, 'LTC');
-INSERT INTO DeviceConfigDeviceTypes VALUES (-11, -2, 'GO_REGULATOR');
-INSERT INTO DeviceConfigDeviceTypes VALUES (-12, -2, 'PO_REGULATOR');
+    INSERT INTO DeviceConfiguration VALUES (v_configId, 'Default Regulator Configuration', null);    
+    
+    INSERT INTO DeviceConfigCategory VALUES (v_categoryId, 'regulatorCategory', 'Default Regulator Category', null);    
 
-INSERT INTO DeviceConfigCategory VALUES (-2, 'regulatorCategory', 'Default Regulator Category', null);
+    INSERT INTO DeviceConfigCategoryMap VALUES(v_configId, v_categoryId);
 
-INSERT INTO DeviceConfigCategoryMap VALUES(-2, -2);
+    INSERT INTO DeviceConfigDeviceTypes VALUES ((SELECT MAX(DeviceConfigDeviceTypeId) + 1 FROM DeviceConfigDeviceTypes), v_configId, 'LTC');
+    INSERT INTO DeviceConfigDeviceTypes VALUES ((SELECT MAX(DeviceConfigDeviceTypeId) + 1 FROM DeviceConfigDeviceTypes), v_configId, 'GO_REGULATOR');
+    INSERT INTO DeviceConfigDeviceTypes VALUES ((SELECT MAX(DeviceConfigDeviceTypeId) + 1 FROM DeviceConfigDeviceTypes), v_configId, 'PO_REGULATOR');
 
-INSERT INTO DeviceConfigCategoryItem VALUES (-1, -2, 'voltageChangePerTap', '0.75');
-INSERT INTO DeviceConfigCategoryItem VALUES (-2, -2, 'heartbeatPeriod', '0');
-INSERT INTO DeviceConfigCategoryItem VALUES (-3, -2, 'heartbeatValue', '0');
-INSERT INTO DeviceConfigCategoryItem VALUES (-4, -2, 'voltageControlMode', 'DIRECT_TAP');
+    INSERT INTO DeviceConfigCategoryItem VALUES ((SELECT MAX(DeviceConfigCategoryItemId) + 1 FROM DeviceConfigCategoryItem), v_categoryId, 'voltageChangePerTap', '0.75');
+    INSERT INTO DeviceConfigCategoryItem VALUES ((SELECT MAX(DeviceConfigCategoryItemId) + 1 FROM DeviceConfigCategoryItem), v_categoryId, 'heartbeatPeriod', '0');
+    INSERT INTO DeviceConfigCategoryItem VALUES ((SELECT MAX(DeviceConfigCategoryItemId) + 1 FROM DeviceConfigCategoryItem), v_categoryId, 'heartbeatValue', '0');
+    INSERT INTO DeviceConfigCategoryItem VALUES ((SELECT MAX(DeviceConfigCategoryItemId) + 1 FROM DeviceConfigCategoryItem), v_categoryId, 'voltageControlMode', 'DIRECT_TAP');
+END;
+/
+/* @end-block */
 
 /* @start-block */
 DECLARE
@@ -212,4 +223,4 @@ INSERT INTO Device (DeviceId, AlarmInhibit, ControlInhibit)
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('6.4', '31-JAN-2015', 'Latest Update', 0, SYSDATE);*/
+INSERT INTO CTIDatabase VALUES ('6.4', '13-MAR-2015', 'Latest Update', 0, SYSDATE);
