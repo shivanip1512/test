@@ -166,21 +166,19 @@ WHERE PagePath = '/capcontrol/schedule/scheduleAssignments';
 /* Start YUK-14066 */
 /* @start-block */
 DECLARE
-    @configId   NUMERIC,
     @categoryId NUMERIC;
 BEGIN
-    SET @configId = (SELECT MAX(DeviceConfigurationId) + 1 FROM DeviceConfiguration);
     SET @categoryId = (SELECT MAX(DeviceConfigCategoryId) + 1 FROM DeviceConfigCategory);
 
-    INSERT INTO DeviceConfiguration VALUES (@configId, 'Default Regulator Configuration', null);    
+    INSERT INTO DeviceConfiguration VALUES (-2, 'Default Regulator Configuration', null);    
     
     INSERT INTO DeviceConfigCategory VALUES (@categoryId, 'regulatorCategory', 'Default Regulator Category', null);    
 
-    INSERT INTO DeviceConfigCategoryMap VALUES(@configId, @categoryId);
+    INSERT INTO DeviceConfigCategoryMap VALUES(-2, @categoryId);
 
-    INSERT INTO DeviceConfigDeviceTypes VALUES ((SELECT MAX(DeviceConfigDeviceTypeId) + 1 FROM DeviceConfigDeviceTypes), @configId, 'LTC');
-    INSERT INTO DeviceConfigDeviceTypes VALUES ((SELECT MAX(DeviceConfigDeviceTypeId) + 1 FROM DeviceConfigDeviceTypes), @configId, 'GO_REGULATOR');
-    INSERT INTO DeviceConfigDeviceTypes VALUES ((SELECT MAX(DeviceConfigDeviceTypeId) + 1 FROM DeviceConfigDeviceTypes), @configId, 'PO_REGULATOR');
+    INSERT INTO DeviceConfigDeviceTypes VALUES ((SELECT MAX(DeviceConfigDeviceTypeId) + 1 FROM DeviceConfigDeviceTypes), -2, 'LTC');
+    INSERT INTO DeviceConfigDeviceTypes VALUES ((SELECT MAX(DeviceConfigDeviceTypeId) + 1 FROM DeviceConfigDeviceTypes), -2, 'GO_REGULATOR');
+    INSERT INTO DeviceConfigDeviceTypes VALUES ((SELECT MAX(DeviceConfigDeviceTypeId) + 1 FROM DeviceConfigDeviceTypes), -2, 'PO_REGULATOR');
 
     INSERT INTO DeviceConfigCategoryItem VALUES ((SELECT MAX(DeviceConfigCategoryItemId) + 1 FROM DeviceConfigCategoryItem), @categoryId, 'voltageChangePerTap', '0.75');
     INSERT INTO DeviceConfigCategoryItem VALUES ((SELECT MAX(DeviceConfigCategoryItemId) + 1 FROM DeviceConfigCategoryItem), @categoryId, 'heartbeatPeriod', '0');
