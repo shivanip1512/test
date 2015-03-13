@@ -48,7 +48,6 @@ import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
-import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.google.common.collect.ImmutableMap;
@@ -116,8 +115,6 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         LiteLmHardwareBase device = command.getDevice();
         EnergyCompany ec = ecDao.getEnergyCompany(device.getEnergyCompanyId());
         
-        boolean autoConfig = ecSettingDao.getBoolean(EnergyCompanySettingType.AUTOMATIC_CONFIGURATION, ec.getId());
-        
         int inventoryId = device.getInventoryID();
         int unavailableStatus = YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL;
         
@@ -129,7 +126,7 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         boolean forceInService = forceInServiceParam != null && forceInServiceParam == true;
         boolean unavailable = inventoryBaseDao.getDeviceStatus(inventoryId) == unavailableStatus;
         
-        boolean sendInService = supportsInService && (forceInService || unavailable || autoConfig);
+        boolean sendInService = supportsInService && (forceInService || unavailable);
         
         if (sendInService) {
             // Send an in service command first, schedule config command for 5 min later.
