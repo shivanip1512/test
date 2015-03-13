@@ -251,10 +251,10 @@ public class RegulatorImportServiceImpl implements RegulatorImportService {
         switch (attchmentStatus) {
         case OK:
         case BLANK:
-            return new CsvImportResult(ImportAction.ADD, CsvImportResultType.SUCCESS, name);
+            return new CsvImportResult(ImportAction.UPDATE, CsvImportResultType.SUCCESS, name);
         case NO_SUCH_CONFIG:
         case UNSUPPORTED_CONFIG:
-            return new CsvImportResult(ImportAction.ADD, CsvImportResultType.INVALID_CONFIG_UPDATE, name, configName);
+            return new CsvImportResult(ImportAction.UPDATE, CsvImportResultType.INVALID_CONFIG_UPDATE, name, configName);
 
         }
         return new CsvImportResult(ImportAction.ADD, CsvImportResultType.SUCCESS, name);

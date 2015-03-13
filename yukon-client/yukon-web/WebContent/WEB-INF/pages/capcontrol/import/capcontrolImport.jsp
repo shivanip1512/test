@@ -26,7 +26,7 @@
     }
     </script>
 
-    <div class="column-10-14">
+    <div class="column-10-14 clearfix stacked">
         <div class="column one">
             <tags:sectionContainer2 nameKey="importContainer" styleClass="stacked">
                 <cti:url var="cbcFileUrl" value="/capcontrol/import/cbcFile"/>

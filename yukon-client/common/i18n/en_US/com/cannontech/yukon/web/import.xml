@@ -11,8 +11,8 @@
     <entry key="yukon.web.import.result.CONDITIONAL_BAD_DATA">Invalid Value - {0} failed. The value "{1}" is not permitted for {2} objects</entry>
     <entry key="yukon.web.import.result.HAS_DEPENDENCIES">Object Has Dependencies - {0} failed for "{1}"</entry>
     <entry key="yukon.web.import.result.INVALID_CHARS">Name cannot include any of the following characters: / \ , ' " |</entry>
-    <entry key="yukon.web.import.result.INVALID_CONFIG_ADD">Unable to attach configuration "{1}" to {0}. Using the default configuration instead</entry>
-    <entry key="yukon.web.import.result.INVALID_CONFIG_UPDATE">Unable to attach configuration "{1}" to {0}. Existing configuration still in use</entry>
+    <entry key="yukon.web.import.result.INVALID_CONFIG_ADD">Unable to attach configuration "{2}" to {1}. Using the default configuration instead.</entry>
+    <entry key="yukon.web.import.result.INVALID_CONFIG_UPDATE">Unable to attach configuration "{2}" to {1}. Existing configuration still in use.</entry>
     
     <!-- Import Errors -->
     <entry key="yukon.web.import.error.noImportFile">No import file was selected.</entry>
