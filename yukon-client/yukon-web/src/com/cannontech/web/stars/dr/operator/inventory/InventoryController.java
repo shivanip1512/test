@@ -174,10 +174,10 @@ public class InventoryController {
         try {
             int defaultRouteId = defaultRouteService.getDefaultRouteId(energyCompany);
             defaultRoute = paoDao.getYukonPAOName(defaultRouteId);
-            defaultRoute = messageSourceAccessor.getMessage("yukon.web.modules.operator.hardware.defaultRoute")
+            defaultRoute = messageSourceAccessor.getMessage("yukon.common.route.default")
                     + defaultRoute;
         } catch(NotFoundException e) {
-            defaultRoute = messageSourceAccessor.getMessage("yukon.web.modules.operator.hardware.defaultRouteNone");
+            defaultRoute = messageSourceAccessor.getMessage("yukon.common.route.default.none");
         }
         model.addAttribute("defaultRoute", defaultRoute);
         
@@ -388,10 +388,10 @@ public class InventoryController {
         try {
             int defaultRouteId = defaultRouteService.getDefaultRouteId(energyCompany);
             defaultRoute = paoDao.getYukonPAOName(defaultRouteId);
-            defaultRoute = messageSourceAccessor.getMessage("yukon.web.modules.operator.hardware.defaultRoute")
+            defaultRoute = messageSourceAccessor.getMessage("yukon.common.route.default")
                     + defaultRoute;
         } catch(NotFoundException e) {
-            defaultRoute = messageSourceAccessor.getMessage("yukon.web.modules.operator.hardware.defaultRouteNone");
+            defaultRoute = messageSourceAccessor.getMessage("yukon.common.route.default.none");
         }
         model.addAttribute("defaultRoute", defaultRoute);
         

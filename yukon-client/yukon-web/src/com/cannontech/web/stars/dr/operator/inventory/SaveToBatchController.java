@@ -76,9 +76,9 @@ public class SaveToBatchController {
         int ecDefaultRouteId = -1;    // All routeId's must be positive.  If this value persists   
         try {                         // beyond the try block below, then there is no default route.
             ecDefaultRoute = paoDao.getYukonPAOName(defaultRouteService.getDefaultRouteId(energyCompany));
-            ecDefaultRoute = accessor.getMessage("yukon.web.modules.operator.hardware.defaultRoute") + ecDefaultRoute;
+            ecDefaultRoute = accessor.getMessage("yukon.common.route.default") + ecDefaultRoute;
         } catch(NotFoundException e) {
-            ecDefaultRoute = accessor.getMessage("yukon.web.modules.operator.hardware.defaultRouteNone");
+            ecDefaultRoute = accessor.getMessage("yukon.common.route.default.none");
         }
         List<LiteYukonPAObject> routes = ecDao.getAllRoutes(energyCompany);
         model.addAttribute("routes", routes);
