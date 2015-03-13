@@ -10,16 +10,19 @@ import com.google.common.collect.ImmutableSet.Builder;
 
 public enum RegulatorPointMapping implements DisplayableEnum {
     
-    AUTO_REMOTE_CONTROL("Auto/Remote Control", PointType.Status, PointType.CalcStatus),
-    AUTO_BLOCK_ENABLE("Auto Block Enable", PointType.Status, PointType.CalcStatus),
-    TAP_UP("Raise Tap Position", PointType.Status, PointType.CalcStatus),
-    TAP_DOWN("Lower Tap Position", PointType.Status, PointType.CalcStatus),
-    TAP_POSITION("Tap Position", PointType.Analog, PointType.CalcAnalog),
-    TERMINATE("Terminate", PointType.Status, PointType.CalcStatus),
-    VOLTAGE_X("Voltage X", PointType.Analog, PointType.CalcAnalog),
-    VOLTAGE_Y("Voltage Y", PointType.Analog, PointType.CalcAnalog),
-    KEEP_ALIVE("Keep Alive", PointType.Analog, PointType.CalcAnalog),
-    KEEP_ALIVE_TIMER("Keep Alive Timer", PointType.Analog, PointType.CalcAnalog);
+    AUTO_REMOTE_CONTROL(PointType.Status, PointType.CalcStatus),
+    AUTO_BLOCK_ENABLE(PointType.Status, PointType.CalcStatus),
+    TAP_UP(PointType.Status, PointType.CalcStatus),
+    TAP_DOWN(PointType.Status, PointType.CalcStatus),
+    TAP_POSITION(PointType.Analog, PointType.CalcAnalog),
+    TERMINATE(PointType.Status, PointType.CalcStatus),
+    VOLTAGE_X(PointType.Analog, PointType.CalcAnalog),
+    VOLTAGE_Y(PointType.Analog, PointType.CalcAnalog),
+    KEEP_ALIVE(PointType.Analog, PointType.CalcAnalog),
+    KEEP_ALIVE_TIMER(PointType.Analog, PointType.CalcAnalog),
+    FORWARD_SET_POINT(PointType.Analog, PointType.CalcAnalog),
+    FORWARD_BANDWIDTH(PointType.Analog, PointType.CalcAnalog),
+    ;
     
     private final static ImmutableSet<RegulatorPointMapping> phaseAndGangRegulatorMappings;
     private final static ImmutableSet<RegulatorPointMapping> ltcRegulatorMappings;
@@ -33,6 +36,8 @@ public enum RegulatorPointMapping implements DisplayableEnum {
         b.add(TAP_UP);
         b.add(TAP_POSITION);
         b.add(VOLTAGE_Y);
+        b.add(FORWARD_SET_POINT);
+        b.add(FORWARD_BANDWIDTH);
         ltcRegulatorMappings = b.build();
         
         b.add(AUTO_BLOCK_ENABLE);
@@ -47,11 +52,9 @@ public enum RegulatorPointMapping implements DisplayableEnum {
     }
     
     private PointType[] pointTypes;
-    private String description;
     
-    private RegulatorPointMapping(String description, PointType... pointTypes) {
+    private RegulatorPointMapping(PointType... pointTypes) {
         this.pointTypes = pointTypes;
-        this.description = description;
     }
     
     public PointType[] getPointTypes() {
@@ -60,13 +63,6 @@ public enum RegulatorPointMapping implements DisplayableEnum {
     
     public FilterType getFilterType() {
         return FilterType.getForPointType(pointTypes[0]);
-    }
-    
-    /**
-     * Still needed until we can i18n (or delete!) JSF
-     */
-    public String getDescription() {
-        return description;
     }
 
     @Override

@@ -69,7 +69,7 @@ public class ExtraPaoPointAssignmentDaoImpl implements ExtraPaoPointAssignmentDa
         try {
             return yukonJdbcTemplate.queryForInt(sql);
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Point not does not exist for pao: " + pao + " and attribute: " + regulatorPointMapping.getDescription(), e);
+            throw new NotFoundException("Point not does not exist for pao: " + pao + " and attribute: " + regulatorPointMapping.name(), e);
         }
     }
 

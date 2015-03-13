@@ -627,6 +627,8 @@
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.VOLTAGE_Y">Voltage Load</entry>
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.KEEP_ALIVE">Keep Alive</entry>
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.KEEP_ALIVE_TIMER">Keep Alive Timer</entry>
+    <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.FORWARD_SET_POINT">Set Point</entry>
+    <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.FORWARD_BANDWIDTH">Set Point Bandwidth</entry>
 
     <entry key="yukon.web.modules.capcontrol.regulator.pageName">Regulators</entry>
     <entry key="yukon.web.modules.capcontrol.regulator.VIEW.pageTitle">Regulator: {0}</entry>
