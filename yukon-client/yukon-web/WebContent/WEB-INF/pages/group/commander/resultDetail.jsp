@@ -87,7 +87,7 @@
         <br>
         <div class="fwb">Successfully Executed: <span class="success"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/SUCCESS_COUNT"/></span></div>
         
-        <div id="successActionsDiv" style="padding:10px;display:none;">
+        <div id="js-success-actions" style="padding:10px;display:none;">
         
             <%-- device collection action --%>
             <cti:link href="/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.successResults" class="small">
@@ -106,7 +106,7 @@
         <br>
         <div class="fwb">Failed To Execute: <span class="error"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/FAILURE_COUNT"/></span></div>
         
-        <div id="errorActionsDiv" style="padding:10px;display:none;">
+        <div id="js-error-actions" style="padding:10px;display:none;">
         
             <%-- canceled? --%>
             <div id="cmdCanceldMsg" style="display:none;">
@@ -150,7 +150,7 @@
         
     </tags:sectionContainer>
     
-    <cti:dataUpdaterCallback function="yukon.ui.progressbar.toggleElementsWhenTrue(['allDevicesActionsDiv','successActionsDiv','errorActionsDiv','creResultsDiv'],true)" initialize="true" value="COMMANDER/${result.key}/IS_COMPLETE" />
+    <cti:dataUpdaterCallback function="yukon.ui.progressbar.toggleElementsWhenTrue(['allDevicesActionsDiv','js-success-actions','js-error-actions','creResultsDiv'],true)" initialize="true" value="COMMANDER/${result.key}/IS_COMPLETE" />
     <cti:dataUpdaterCallback function="yukon.ui.progressbar.toggleElementsWhenTrue(['cancelCommandsDiv'],false)" initialize="true" value="COMMANDER/${result.key}/IS_COMPLETE" />
       
 </cti:standardPage>

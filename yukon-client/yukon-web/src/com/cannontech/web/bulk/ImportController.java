@@ -14,7 +14,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Controller;
@@ -22,6 +21,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.callbackResult.ImportUpdateCallbackResult;
@@ -55,7 +55,7 @@ public class ImportController {
             @Override
             public int compare(BulkImportMethod o1, BulkImportMethod o2) {
                 int cmp = o1.getType().name().compareTo(o2.getType().name());
-                if(cmp == 0) {
+                if (cmp == 0) {
                     cmp = o2.getName().compareTo(o1.getName());
                 }
                 return cmp;
@@ -64,47 +64,36 @@ public class ImportController {
     }
     
     // UPLOAD
-    @RequestMapping("upload")
-    public String upload(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
-        
-        String importTypeSelector = ServletRequestUtils.getStringParameter(request, "importTypeSelector");
+    @RequestMapping(value="upload", method=RequestMethod.GET)
+    public String upload(ModelMap model, HttpServletRequest request) {
         
         // method columns
-        addColumnInfoToMav(model);
-        
-        // errors
-        String errors = ServletRequestUtils.getStringParameter(request, "fileErrorKeys", "");
-        model.addAttribute("fileErrorKeysList", StringUtils.split(errors, "||"));
-        
-        // options
-        Boolean ignoreInvalidCols = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidCols", true);
-        model.addAttribute("ignoreInvalidCols", ignoreInvalidCols);
+        addColumnInfoToModel(model);
         
         model.addAttribute("bulkImportTypes", BulkImportType.values());
-        
-        model.addAttribute("importTypeSelector", importTypeSelector);
         
         return "import/importUpload.jsp";
     }
     
-    // PARSE
-    @RequestMapping("parseUpload")
+    @RequestMapping(value="upload", method=RequestMethod.POST)
     public String parseUpload(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
         
-        String importTypeSelector = ServletRequestUtils.getStringParameter(request, "importTypeSelector");
-        
         // options 
+        String importTypeSelector = ServletRequestUtils.getStringParameter(request, "importTypeSelector");
         Boolean ignoreInvalidCols = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidCols", false);
         
         // detect file
         BulkFileUpload bulkFileUpload = BulkFileUploadUtils.getBulkFileUpload(request);
         
         if (bulkFileUpload.hasErrors()) {
-            // error mav
+            
             model.addAttribute("ignoreInvalidCols", ignoreInvalidCols);
             model.addAttribute("importTypeSelector", importTypeSelector);
-            model.addAttribute("fileErrorKeys", StringUtils.join(bulkFileUpload.getErrors(), "||"));
-            return "redirect:/bulk/import/upload";
+            model.addAttribute("fileErrors", bulkFileUpload.getErrors());
+            addColumnInfoToModel(model);
+            model.addAttribute("bulkImportTypes", BulkImportType.values());
+            
+            return "import/importUpload.jsp";
         }
         
         // init file info
@@ -119,23 +108,25 @@ public class ImportController {
         model.addAttribute("fileInfoId", fileInfoId);
         model.addAttribute("bulkImportType", importTypeSelector);
         
-        return "redirect:/bulk/import/importConfirm";
+        return "redirect:/bulk/import/import-confirm";
     }
     
     // CONFIRM
-    @RequestMapping("importConfirm")
+    @RequestMapping("import-confirm")
     public String importConfirm(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
         
-        BulkImportType bulkImportType = BulkImportType.valueOf(ServletRequestUtils.getStringParameter(request, "bulkImportType"));
+        String type = ServletRequestUtils.getStringParameter(request, "bulkImportType");
+        BulkImportType bulkImportType = BulkImportType.valueOf(type);
         
         // get file info
         String fileInfoId = ServletRequestUtils.getRequiredStringParameter(request, "fileInfoId");
         BulkImportFileInfo bulkImportFileInfo = bulkImportFileInfoMap.get(fileInfoId);
         
-        ParsedBulkImportFileInfo parsedResult = bulkImportService.createParsedBulkImportFileInfo(bulkImportFileInfo, bulkImportType);
+        ParsedBulkImportFileInfo parsedResult = 
+                bulkImportService.createParsedBulkImportFileInfo(bulkImportFileInfo, bulkImportType);
         model.addAttribute("parsedResult", parsedResult);
         model.addAttribute("bulkImportType", bulkImportType);
-
+        
         // header errors
         if (parsedResult.hasErrors()) {
             
@@ -143,7 +134,9 @@ public class ImportController {
             model.addAttribute("importTypeSelector", bulkImportType);
             model.addAttribute("headersErrorResolverList", parsedResult.getErrorResolvers());
             model.addAttribute("bulkImportTypes", BulkImportType.values());
-            addColumnInfoToMav(model);
+            
+            addColumnInfoToModel(model);
+            
             return "import/importUpload.jsp";
         }
         
@@ -151,24 +144,25 @@ public class ImportController {
     }
     
     // DO IMPORT
-    @RequestMapping("doImport")
-    public String doImport(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException, IOException {
+    @RequestMapping("parse")
+    public String parse(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException, IOException {
         
         BulkImportType bulkImportType = BulkImportType.valueOf(ServletRequestUtils.getStringParameter(request, "bulkImportType"));
-     
+        
         // open file as csv
         String fileInfoId = ServletRequestUtils.getRequiredStringParameter(request, "fileInfoId");
         BulkImportFileInfo bulkImportFileInfo = bulkImportFileInfoMap.get(fileInfoId);
-        ParsedBulkImportFileInfo parsedResult = bulkImportService.createParsedBulkImportFileInfo(bulkImportFileInfo, bulkImportType);
+        ParsedBulkImportFileInfo parsedResult = 
+                bulkImportService.createParsedBulkImportFileInfo(bulkImportFileInfo, bulkImportType);
         String resultsId = bulkImportService.startBulkImport(parsedResult);
         
         model.addAttribute("resultsId", resultsId);
         
-        return "redirect:/bulk/import/importResults";
+        return "redirect:/bulk/import/import-results";
     }
     
     // VIEW RESULTS
-    @RequestMapping("importResults")
+    @RequestMapping("import-results")
     public String importResults(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
         
         // result info
@@ -183,7 +177,7 @@ public class ImportController {
         return "import/importResults.jsp";
     }
     
-    private void addColumnInfoToMav(ModelMap model) {
+    private void addColumnInfoToModel(ModelMap model) {
         
         Map<BulkImportMethod, Set<BulkFieldColumnHeader>> requiredFieldsByMethod = new HashMap<>();
         Map<BulkImportMethod, Set<BulkFieldColumnHeader>> updateableFieldsByMethod  = new HashMap<>();

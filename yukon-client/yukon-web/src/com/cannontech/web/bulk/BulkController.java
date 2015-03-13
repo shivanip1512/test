@@ -199,13 +199,12 @@ public class BulkController {
         return "selectedDevicesPopup.jsp";
     }
 
-    @RequestMapping("processingExceptionErrorsRefresh")
-    public String processingExceptionErrorsRefresh(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
-
-        String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
-        BackgroundProcessResultHolder bulkUpdateOperationResults = recentResultsCache.getResult(resultsId);
+    @RequestMapping("processing-errors")
+    public String processingErrors(ModelMap model, String resultsId) {
         
+        BackgroundProcessResultHolder bulkUpdateOperationResults = recentResultsCache.getResult(resultsId);
         model.addAttribute("exceptionRowNumberMap", bulkUpdateOperationResults.getProcessingExceptionRowNumberMap());
+        
         return "processingExceptionErrorsList.jsp";
     }
     

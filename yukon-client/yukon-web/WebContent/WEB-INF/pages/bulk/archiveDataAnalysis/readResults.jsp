@@ -26,7 +26,7 @@
                 <cti:dataUpdaterValue type="ARCHIVE_DATA_ANALYSIS_LP_READ" identifier="${resultId}/SUCCESS_COUNT"/>
             </span>
         </div>
-        <div id="successActionsDiv" style="padding:10px;display:none;">
+        <div id="js-success-actions" style="padding:10px;display:none;">
             <cti:link href="/bulk/collectionActions" key="yukon.web.modules.tools.bulk.analysis.readResults.collectionActionOnDevicesLabel" class="small">
                 <cti:mapParam value="${result.successDeviceCollection.collectionParameters}"/>
             </cti:link>
@@ -48,6 +48,6 @@
         </div>
     </tags:sectionContainer2>
     
-    <cti:dataUpdaterCallback function="yukon.ui.progressbar.toggleElementsWhenTrue(['successActionsDiv', 'failureActionsDiv'], true)" initialize="true" value="ARCHIVE_DATA_ANALYSIS_LP_READ/${resultId}/IS_COMPLETE"/>
+    <cti:dataUpdaterCallback function="yukon.ui.progressbar.toggleElementsWhenTrue(['js-success-actions', 'failureActionsDiv'], true)" initialize="true" value="ARCHIVE_DATA_ANALYSIS_LP_READ/${resultId}/IS_COMPLETE"/>
 
 </cti:standardPage>

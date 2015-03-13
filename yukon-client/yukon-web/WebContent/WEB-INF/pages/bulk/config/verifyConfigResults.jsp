@@ -33,7 +33,7 @@
 		    <br><br>
 		    <div class="fwb">${successLabel} <span class="success">${successCollection.deviceCount}</span></div>
 		    <c:if test="${successCollection.deviceCount > 0}">
-		        <div id="successActionsDiv" style="padding:10px;">
+		        <div id="js-success-actions" style="padding:10px;">
 		    
 		        <%-- device collection action --%>
 		        <cti:link href="/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.successResults" class="small">
@@ -49,7 +49,7 @@
 		    <div class="fwb">${failureLabel} <span class="error">${failureCollection.deviceCount}</span></div>
 		    
 		    <c:if test="${failureCollection.deviceCount > 0}">
-			    <div id="errorActionsDiv" style="padding:10px;">
+			    <div id="js-error-actions" style="padding:10px;">
 			    
 			        <%-- device collection action --%>
 			        <cti:link href="/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.failureResults" class="small">
@@ -64,7 +64,7 @@
 		    <div class="fwb">${unsupportedLabel} <span class="error">${unsupportedCollection.deviceCount}</span></div>
 		    
 		    <c:if test="${unsupportedCollection.deviceCount > 0}">
-		        <div id="errorActionsDiv" style="padding:10px;">
+		        <div id="js-error-actions" style="padding:10px;">
 		        
 		            <%-- device collection action --%>
 		            <cti:link href="/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.failureResults" class="small">

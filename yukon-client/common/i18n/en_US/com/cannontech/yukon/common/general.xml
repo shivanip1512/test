@@ -77,8 +77,10 @@
 <entry key="yukon.common.email.send">Send Email</entry>
 <entry key="yukon.common.enable">Enable</entry>
 <entry key="yukon.common.enabled">Enabled</entry>
+<entry key="yukon.common.error">Error</entry>
 <entry key="yukon.common.expandAll">Expand All</entry>
 <entry key="yukon.common.failed">Failed</entry>
+<entry key="yukon.common.failures.view">View Failures</entry>
 <entry key="yukon.common.false">False</entry>
 <entry key="yukon.common.file">File</entry>
 <entry key="yukon.common.file1">File 1</entry>

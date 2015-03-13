@@ -2,6 +2,9 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
+    <entry key="yukon.common.device.bulk.lineNumber">Line #</entry>
+    <entry key="yukon.common.device.bulk.line">Line {0}</entry>
+
     <entry key="yukon.web.modules.tools.bulk.home.pageName">Bulk Operations</entry>
     
     <!-- BULK OPERATIONS HOME PAGE bulkHome.jsp -->
@@ -263,7 +266,6 @@
     <entry key="yukon.common.device.bulk.massChangeResults.processingExceptionLabel">Failed To Change</entry>
     
     <entry key="yukon.common.device.bulk.massChangeResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
-    <entry key="yukon.common.device.bulk.massChangeResults.processingExceptionErrorListLabel">View Failure Reasons</entry>
     
     <entry key="yukon.common.device.bulk.massChangeResults.noProcessingExceptionErrorListLabel">No processing errors.</entry>
 
@@ -308,7 +310,6 @@
     <entry key="yukon.common.device.bulk.assignConfigResults.processingExceptionLabel">Failed To Assign Config</entry>
     
     <entry key="yukon.common.device.bulk.assignConfigResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
-    <entry key="yukon.common.device.bulk.assignConfigResults.processingExceptionErrorListLabel">View Failure Reasons</entry>
     
     <entry key="yukon.common.device.bulk.assignConfigResults.noProcessingExceptionErrorListLabel">No processing errors.</entry>
     
@@ -341,7 +342,6 @@
     <entry key="yukon.common.device.bulk.unassignConfigResults.processingExceptionLabel">Failed To Unassign Config</entry>
     
     <entry key="yukon.common.device.bulk.unassignConfigResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
-    <entry key="yukon.common.device.bulk.unassignConfigResults.processingExceptionErrorListLabel">View Failure Reasons</entry>
     
     <entry key="yukon.common.device.bulk.unassignConfigResults.noProcessingExceptionErrorListLabel">No processing errors.</entry>
     
@@ -451,7 +451,6 @@
     <entry key="yukon.common.device.bulk.massDeleteResults.processingExceptionLabel">Failed To Delete</entry>
     
     <entry key="yukon.common.device.bulk.massDeleteResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
-    <entry key="yukon.common.device.bulk.massDeleteResults.processingExceptionErrorListLabel">View Failure Reasons</entry>
     
     <!-- CHANGE DEVICE TYPE -->
     <!-- ******************************************************************************************************************** -->
@@ -483,7 +482,6 @@
     <entry key="yukon.common.device.bulk.changeDeviceTypeResults.processingExceptionLabel">Failed To Change Device Type</entry>
     
     <entry key="yukon.common.device.bulk.changeDeviceTypeResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
-    <entry key="yukon.common.device.bulk.changeDeviceTypeResults.processingExceptionErrorListLabel">View Failure Reasons</entry>
     
     <entry key="yukon.common.device.bulk.changeDeviceTypeResults.noProcessingExceptionErrorListLabel">No processing errors.</entry>
     
@@ -540,7 +538,6 @@
     <entry key="yukon.common.device.bulk.addPointsResults.processingExceptionLabel">Failed To Add Points To Devices</entry>
     
     <entry key="yukon.common.device.bulk.addPointsResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
-    <entry key="yukon.common.device.bulk.addPointsResults.processingExceptionErrorListLabel">View Failure Reasons</entry>
     
     <entry key="yukon.common.device.bulk.addPointsResults.noProcessingExceptionErrorListLabel">No processing errors.</entry>
     
@@ -594,7 +591,6 @@
     <entry key="yukon.common.device.bulk.updatePointsResults.processingExceptionLabel">Failed To Update Points</entry>
     
     <entry key="yukon.common.device.bulk.updatePointsResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
-    <entry key="yukon.common.device.bulk.updatePointsResults.processingExceptionErrorListLabel">View Failure Reasons</entry>
     
     <entry key="yukon.common.device.bulk.updatePointsResults.noProcessingExceptionErrorListLabel">No processing errors.</entry>
     
@@ -644,7 +640,6 @@
     <entry key="yukon.common.device.bulk.removePointsResults.processingExceptionLabel">Failed To Remove Points From Devices</entry>
     
     <entry key="yukon.common.device.bulk.removePointsResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
-    <entry key="yukon.common.device.bulk.removePointsResults.processingExceptionErrorListLabel">View Failure Reasons</entry>
     
     <entry key="yukon.common.device.bulk.removePointsResults.noProcessingExceptionErrorListLabel">No processing errors.</entry>
     
@@ -749,7 +744,6 @@
     <entry key="yukon.common.device.bulk.updateResults.processingExceptionLabel">Failed To Update</entry>
     
     <entry key="yukon.common.device.bulk.updateResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
-    <entry key="yukon.common.device.bulk.updateResults.processingExceptionErrorListLabel">View Failure Reasons</entry>
     
     <entry key="yukon.common.device.bulk.updateResults.noProcessingExceptionErrorListLabel">No processing errors.</entry>
     
@@ -844,9 +838,9 @@
     <entry key="yukon.web.modules.tools.bulk.importConfirm.contextualPageName">Confirmation</entry>
     <entry key="yukon.common.device.bulk.importConfirm.header">Confirm you wish to perform the import, and set the following fields:</entry>
     
-    <entry key="yukon.common.device.bulk.importConfirm.rows">Number of devices to import:</entry>
-    <entry key="yukon.common.device.bulk.importConfirm.importMethodLabel">Import Method:</entry>
-    <entry key="yukon.common.device.bulk.importConfirm.optionalFieldsLabel">Additional fields to configure:</entry>
+    <entry key="yukon.common.device.bulk.importConfirm.rows">Number of devices to import</entry>
+    <entry key="yukon.common.device.bulk.importConfirm.importMethodLabel">Import Method</entry>
+    <entry key="yukon.common.device.bulk.importConfirm.optionalFieldsLabel">Additional fields to configure</entry>
     
     <entry key="yukon.common.device.bulk.importConfirm.cancelButton">Cancel</entry>
     <entry key="yukon.common.device.bulk.importConfirm.importButton">Import</entry>
@@ -869,7 +863,6 @@
     <entry key="yukon.common.device.bulk.importResults.processingExceptionLabel">Failed To Import</entry>
     
     <entry key="yukon.common.device.bulk.importResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
-    <entry key="yukon.common.device.bulk.importResults.processingExceptionErrorListLabel">View Failure Reasons</entry>
     
     <entry key="yukon.common.device.bulk.importResults.noProcessingExceptionErrorListLabel">No processing errors.</entry>
     

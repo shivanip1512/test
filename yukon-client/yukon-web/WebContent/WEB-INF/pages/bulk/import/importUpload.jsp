@@ -14,7 +14,7 @@
     <i:inline key=".importUpload.noteText"/>
 </div>
 
-<cti:url var="url" value="/bulk/import/parseUpload"/>
+<cti:url var="url" value="/bulk/import/upload"/>
 <form id="uploadForm" method="post" action="${url}" enctype="multipart/form-data">
     
     <cti:csrfToken/>
@@ -49,9 +49,9 @@
             </tags:nameValueContainer2>
             
             <%-- file errors --%>
-            <c:if test="${not empty fileErrorKeysList}">
+            <c:if test="${not empty fileErrors}">
                 <div class="js-file-validation">
-                    <c:forEach var="key" items="${fileErrorKeysList}">
+                    <c:forEach var="key" items="${fileErrors}">
                         <div class="error"><i:inline key="${key}"/></div>
                     </c:forEach>
                 </div>

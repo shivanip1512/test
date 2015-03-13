@@ -105,7 +105,7 @@ $(function() {
         <%-- SUCCESS --%>
         <div class="stacked">
             <div class="fwb stacked">${successSectionTitle} <span class="success"><cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${resultKey}/SUCCESS_COUNT"/></span></div>
-            <div id="successActionsDiv" class="dn result">
+            <div id="js-success-actions" class="dn result">
                 <div>
                     <cti:url var="bulkSuccessUrl" value="/bulk/collectionActions">
                         <cti:mapParam value="${resultWrapper.result.successCollection.collectionParameters}"/>
@@ -123,7 +123,7 @@ $(function() {
         <%-- PROCESSING EXCEPTION --%>
         <div class="stacked">
             <div class="fwb stacked">${failedSectionTitle} <span class="error"><cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${resultKey}/FAILURE_COUNT"/></span></div>
-            <div id="errorActionsDiv" class="dn result">
+            <div id="js-error-actions" class="dn result">
                 <div>
                     <cti:url var="bulkUrl" value="/bulk/collectionActions">
                         <cti:mapParam value="${resultWrapper.result.failureCollection.collectionParameters}"/>
@@ -152,7 +152,7 @@ $(function() {
         
     </tags:sectionContainer>
     
-    <cti:dataUpdaterCallback function="yukon.ui.progressbar.toggleElementsWhenTrue(['allDevicesActionsDiv','creResultsDiv','successActionsDiv','errorActionsDiv','unsupportedActionsDiv'],true)" initialize="true" value="GROUP_METER_READ/${resultKey}/IS_COMPLETE"/>
+    <cti:dataUpdaterCallback function="yukon.ui.progressbar.toggleElementsWhenTrue(['allDevicesActionsDiv','creResultsDiv','js-success-actions','js-error-actions','unsupportedActionsDiv'],true)" initialize="true" value="GROUP_METER_READ/${resultKey}/IS_COMPLETE"/>
 
 </cti:msgScope>
 </cti:standardPage>

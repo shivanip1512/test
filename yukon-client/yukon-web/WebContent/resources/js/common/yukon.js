@@ -494,6 +494,17 @@ yukon.ui = (function () {
             /** Add placeholder functionality if needed */
             if (!Modernizr.input.placeholder) $('input, textarea').placeholder();
             
+            $(document).on('change', '.file-upload input[type="file"]', function () {
+                var input = $(this),
+                    container = input.closest('.file-upload'),
+                    nameInput = container.find('.file-name'),
+                    value = input.val();
+                
+                //Windwows adds C:\fakepath\ for security reasons
+                value = value.replace('C:\\fakepath\\', '');
+                nameInput.text(value);
+            });
+            
             /** Sorting Handler: Sort a table by column. */
             $(document).on('click', '.sortable', function (ev) {
                 
@@ -520,17 +531,6 @@ yukon.ui = (function () {
                 }
             });
             
-            $(document).on('change', '.file-upload input[type="file"]', function () {
-                var input = $(this),
-                    container = input.closest('.file-upload'),
-                    nameInput = container.find('.file-name'),
-                    value = input.val();
-
-                //Windwows adds C:\fakepath\ for security reasons
-                value = value.replace('C:\\fakepath\\', '');
-                nameInput.text(value);
-            });
-
             /** Paging Handler: Get the next or previous page, or change page size. */
             $(document).on('click', '.paging-area .previous-page .button,' 
                     + ' .paging-area .next-page .button, .paging-area .page-size a', function (ev) {
@@ -583,6 +583,23 @@ yukon.ui = (function () {
                 return false; // return false to stop form submissions
             });
             
+            /** Show or hide an element when something is clicked. */
+            $(document).on('click', '[data-show-hide]', function (ev) {
+                var trigger = $(this);
+                var target = $(trigger.data('showHide'));
+                if (target.is('[data-url]')) {
+                    if (target.is(':visible')) {
+                        target.toggle();
+                    } else {
+                        target.load(target.data('url'), function () {
+                            target.toggle();
+                        });
+                    }
+                } else {
+                    target.toggle();
+                }
+            });
+            
             /** Toggle buttons in a button group */
             $(document).on('click', '.button-group-toggle .button', function (ev) { 
                 
@@ -606,14 +623,14 @@ yukon.ui = (function () {
             
             /** Elements that navigate on click */
             $(document).on('click', '[data-href]', function (ev) { window.location = $(this).attr('data-href'); });
-        
+            
             /** Page blockers */
             $(document).on('click', '.js-blocker', mod.block);
             $(document).on('resize', '#modal-glass', mod.blockPage);
-        
+            
             /** Clear page blocker */
             $(document).on('click', '.js-clearBlocker', mod.unblockPage);
-    
+            
             /** Disable a form element after clicked */
             $(document).on('click', '.js-disable-after-click', function (ev) {
                 

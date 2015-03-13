@@ -47,7 +47,7 @@
                 <cti:dataUpdaterValue type="ROUTELOCATE" identifier="${resultId}/LOCATED_COUNT"/>
             </span>
         </div>
-        <div id="successActionsDiv" class="clearfix stacked">
+        <div id="js-success-actions" class="clearfix stacked">
             <%-- device collection action --%>
             <cti:link href="/bulk/collectionActions" key="yukon.web.modules.tools.bulk.routeLocateResults.collectionActionOnDevicesLabel" class="small">
                 <cti:mapParam value="${result.successDeviceCollection.collectionParameters}"/>
@@ -65,7 +65,7 @@
         <div id="commandsCanceledDiv" class="dn error">
             <cti:msg key="yukon.web.modules.tools.bulk.routeLocateResults.commandsCanceled" />
         </div>
-        <div id="errorActionsDiv" class="clearfix stacked">
+        <div id="js-error-actions" class="clearfix stacked">
             <%-- device collection action --%>
             <cti:link href="/bulk/collectionActions" key="yukon.web.modules.tools.bulk.routeLocateResults.collectionActionOnDevicesLabel" class="small">
                 <cti:mapParam value="${result.failureDeviceCollection.collectionParameters}"/>
@@ -75,6 +75,6 @@
     </tags:bulkActionContainer>
 
     <cti:dataUpdaterCallback function="yukon.bulk.routeLocate.results.complete" initialize="true" isComplete="ROUTELOCATE/${resultId}/IS_COMPLETE" isCanceled="ROUTELOCATE/${resultId}/IS_CANCELED"/>
-    <cti:dataUpdaterCallback function="yukon.ui.progressbar.toggleElementsWhenTrue(['AllDevicesActionsDiv','successActionsDiv','errorActionsDiv'],true)" initialize="true" value="ROUTELOCATE/${resultId}/IS_COMPLETE" />
-    <cti:dataUpdaterCallback function="yukon.ui.progressbar.toggleElementsWhenTrue(['AllDevicesActionsDiv','successActionsDiv','errorActionsDiv'],true)" initialize="true" value="ROUTELOCATE/${resultId}/IS_CANCELED" />
+    <cti:dataUpdaterCallback function="yukon.ui.progressbar.toggleElementsWhenTrue(['AllDevicesActionsDiv','js-success-actions','js-error-actions'],true)" initialize="true" value="ROUTELOCATE/${resultId}/IS_COMPLETE" />
+    <cti:dataUpdaterCallback function="yukon.ui.progressbar.toggleElementsWhenTrue(['AllDevicesActionsDiv','js-success-actions','js-error-actions'],true)" initialize="true" value="ROUTELOCATE/${resultId}/IS_CANCELED" />
  </cti:standardPage>
