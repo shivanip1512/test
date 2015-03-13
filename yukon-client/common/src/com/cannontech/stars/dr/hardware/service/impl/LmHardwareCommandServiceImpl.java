@@ -152,7 +152,7 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
                 }
             };
            
-            log.debug("Sendings config command in 5 minutes.");
+            log.debug("Sending config command in 5 minutes.");
             scheduledExecutor.schedule(runner, 5, TimeUnit.MINUTES);
         } else {
             // Only send the config command
