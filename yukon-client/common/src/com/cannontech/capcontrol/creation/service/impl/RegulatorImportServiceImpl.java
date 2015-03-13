@@ -150,6 +150,30 @@ public class RegulatorImportServiceImpl implements RegulatorImportService {
 
     private enum ConfigStatus {OK, BLANK, NO_SUCH_CONFIG, UNSUPPORTED_CONFIG}
 
+    /**
+     * Attach the the named configuration to the regulator.
+     * If the named configuration does not exist:
+     * <ul>
+     *     <li>For {@link ImportAction#ADD}: the Default Configuration is used</li>
+     *     <li>For {@link ImportAction#UPDATE}: No change is made to the assigned configuration</li>
+     *     </ul>
+     *     @return 
+     *     <ul>
+     *     <li>{@link ConfigStatus#OK} for a successful assignment of the specified configuration.</li>
+     *     <li>{@link ConfigStatus#BLANK} for an empty configuration column. 
+     *         <ul>
+     *             <li>{@link ImportAction#ADD}:The default configuration is assigned.</li>
+     *             <li>{@link ImportAction#UPDATE}:The configuration assignment is not changed.</li>
+     *         </ul>
+     *     </li>
+     *     <li>{@link ConfigStatus#NO_SUCH_CONFIG} for a non-existent configuration name. 
+     *         Same behavior as {@link ConfigStatus#BLANK}
+     *     </li>
+     *     <li>{@link ConfigStatus#UNSUPPORTED_CONFIG} for a configuration that does not support the regulator type.
+     *         Same behavior as {@link ConfigStatus#BLANK} 
+     *     </li>
+     * </ul>
+     */
     private ConfigStatus attachConfig(String configName, CompleteRegulator regulator, ImportAction action) {
 
         SimpleDevice device = SimpleDevice.of(regulator.getPaoIdentifier());
