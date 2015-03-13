@@ -567,7 +567,7 @@
     <entry key="yukon.web.modules.tools.configs.config.removeAllTypes">The list of supported device types for a configuration cannot be empty.</entry>
     <entry key="yukon.web.modules.tools.configs.config.confirmSupportedTypeRemove.message">Any {0} devices assigned and sent this configuration will be in an incomplete state. Are you sure you want to remove {0}?</entry>
     <entry key="yukon.web.modules.tools.configs.config.removeTypeSuccess">{0} was successfully removed from the supported device types for the device configuration.</entry>
-    <entry key="yukon.web.modules.tools.configs.config.removeTypeFailure">Unable to remove required device types from default configuration.</entry>
+    <entry key="yukon.web.modules.tools.configs.config.removeTypeFailed">Unable to remove required device types from default configuration.</entry>
     <entry key="yukon.web.modules.tools.configs.config.removedCategoryTypes">Removing this device type will remove the following category types from the configuration:</entry>
     <entry key="yukon.web.modules.tools.configs.config.editCategory.title">Edit Category</entry>    
     <entry key="yukon.web.modules.tools.configs.config.createCategory.title">Create Category</entry>    

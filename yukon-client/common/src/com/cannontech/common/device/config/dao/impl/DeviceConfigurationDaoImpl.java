@@ -660,7 +660,8 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
 
     @Override
     public Set<CategoryType> getCategoryDifferenceForPaoTypeRemove(PaoType paoType, int configId) {
-        Set<PaoType> supportedDeviceTypes = getSupportedTypesForConfiguration(configId);
+
+        Set<PaoType> supportedDeviceTypes = new HashSet<>(getSupportedTypesForConfiguration(configId));
         
         // Get the list of categories supported BEFORE the removal of the type.
         Set<DeviceCategories.Category> currentCategories =
@@ -679,7 +680,8 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     
     @Override
     public Set<CategoryType> getCategoryDifferenceForPaoTypesAdd(Set<PaoType> paoTypes, int configId) {
-        Set<PaoType> supportedDeviceTypes = getSupportedTypesForConfiguration(configId);
+
+        Set<PaoType> supportedDeviceTypes = new HashSet<>(getSupportedTypesForConfiguration(configId));
 
         // Get the list of categories supported BEFORE the addition of the type.
         Set<DeviceCategories.Category> currentCategories =

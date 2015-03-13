@@ -259,7 +259,7 @@ public class DeviceConfigurationConfigController {
         } catch (InvalidConfigurationRemovalException e) {
 
             String key = baseKey + ".config.removeTypeFailed";
-            flashScope.setConfirm(new YukonMessageSourceResolvable(key, paoType.getDbString()));
+            flashScope.setError(new YukonMessageSourceResolvable(key, paoType.getDbString()));
 
             return "redirect:view?configId=" + configId;
         }
