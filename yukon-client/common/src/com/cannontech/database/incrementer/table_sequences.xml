@@ -277,13 +277,13 @@
         <table name="ArchiveDataAnalysisSlot" identitycolumn="SlotId"/>
       </sequence>
       <sequence name="archiveValuesExportFormat">
-        <table name="ArchiveValuesExportFormat" identitycolumn="FormatID"/>
+        <table name="ArchiveValuesExportFormat" identitycolumn="FormatID" initsequence="true"/>
       </sequence>
       <sequence name="archiveValuesExportAttribute">
-        <table name="ArchiveValuesExportAttribute" identitycolumn="AttributeID"/>
+        <table name="ArchiveValuesExportAttribute" identitycolumn="AttributeID" initsequence="true"/>
       </sequence>
       <sequence name="archiveValuesExportField">
-        <table name="ArchiveValuesExportField" identitycolumn="FieldID"/>
+        <table name="ArchiveValuesExportField" identitycolumn="FieldID" initsequence="true"/>
       </sequence>
       <sequence name="YukonMessageId">
         <table name="ExternalToYukonMessageIdMapping" identitycolumn="YukonMessageId"/>
