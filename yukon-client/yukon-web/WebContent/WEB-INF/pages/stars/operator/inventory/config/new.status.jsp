@@ -13,7 +13,7 @@
     <i:inline key=".inventory.actions.note"/>
 </div>
     
-<table class="name-value-table">
+<table class="name-value-table natural-width">
     
     <%-- PROGRESS --%>
     <tr>
