@@ -7,12 +7,12 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="gateways.list">
-    
+
 <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
     <div id="page-buttons" class="dn">
         <cti:button icon="icon-plus-green" nameKey="create" data-popup="#gateway-create-popup"/>
     </div>
-
+    
     <div id="gateway-create-popup" class="dn" 
         data-title="<cti:msg2 key=".create.title"/>" data-url="gateways/create" 
         data-width="570" data-min-width="570" data-dialog data-event="yukon:assets:gateway:save" 
@@ -89,16 +89,13 @@
                             </span>
                         </td>
                         <td class="action-column">
-                            <cm:dropdown>
+                            <cm:dropdown data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}">
                                 <cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
-                                    <cm:dropdownOption icon="icon-connect" key=".connect" classes="js-gw-connect"
-                                        data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}"/>
-                                    <cm:dropdownOption icon="icon-disconnect" key=".disconnect" classes="js-gw-disconnect"
-                                        data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}"/>
+                                    <cm:dropdownOption icon="icon-connect" key=".connect" classes="js-gw-connect"/>
+                                    <cm:dropdownOption icon="icon-disconnect" key=".disconnect" classes="js-gw-disconnect"/>
                                     <li class="divider"></li>
                                 </cti:checkRolesAndProperties>
                                 <cm:dropdownOption icon="icon-table-row-insert" key=".collectData" 
-                                    data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}"
                                     classes="js-gw-collect-data"/>
                             </cm:dropdown>
                         </td>

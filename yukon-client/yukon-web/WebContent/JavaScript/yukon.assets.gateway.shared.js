@@ -28,8 +28,9 @@ yukon.assets.gateway.shared = (function () {
             /** User clicked the connect option, send connect request. */
             $(document).on('click', '.js-gw-connect', function (ev) {
                 
-                var id = $(this).data('id'),
-                    name = $(this).data('name');
+                var trigger = $(this).closest('.dropdown-menu').data('trigger'),
+                    id = trigger.data('id'),
+                    name = trigger.data('name');
                 
                 yukon.ui.alertPending(_text['connect.pending'].replace('{0}', name));
                 
@@ -46,8 +47,9 @@ yukon.assets.gateway.shared = (function () {
             /** User clicked the disconnect option, send disconnect request. */
             $(document).on('click', '.js-gw-disconnect', function (ev) {
                 
-                var id = $(this).data('id'),
-                    name = $(this).data('name');
+                var trigger = $(this).closest('.dropdown-menu').data('trigger'),
+                    id = trigger.data('id'),
+                    name = trigger.data('name');
                 
                 yukon.ui.alertPending(_text['disconnect.pending'].replace('{0}', name));
                 $.ajax({ url: yukon.url('/stars/gateways/' + id + '/disconnect') })
@@ -60,12 +62,13 @@ yukon.assets.gateway.shared = (function () {
                 });
             });
             
-            /** User clicked the collect data option, send collect data request. */
+            /** User clicked the collect data option, show collect data dialog. */
             $(document).on('click', '.js-gw-collect-data', function (ev) {
                 
                 var popup = $('#gateway-collect-data-popup'),
-                    name = $(this).data('name'),
-                    target = ev.currentTarget;
+                    trigger = $(this).closest('.dropdown-menu').data('trigger'),
+                    name = trigger.data('name'),
+                    target = trigger;
                 
                 popup.load(yukon.url('/stars/gateways/collect-data/options'), function () {
                     popup.dialog({
@@ -76,6 +79,7 @@ yukon.assets.gateway.shared = (function () {
                 });
             });
             
+            /** User clicked 'OK' on collect data dialog, send collect data request. */
             $(document).on('yukon:assets:gateway:collect:data', function (ev) {
                 
                 var popup = $('#gateway-collect-data-popup'),

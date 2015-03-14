@@ -25,32 +25,31 @@
 
 <d:confirm on="#gateway-delete" nameKey="delete.confirm"/>
 
-<div id="page-actions" class="dn">
-    <cm:dropdownOption icon="icon-table-row-insert" key=".collectData" classes="js-gw-collect-data"
-        data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}"/>
-    <cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
-        <li class="divider"></li>
-        <cm:dropdownOption icon="icon-connect" key=".connect" classes="js-gw-connect"
-            data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}"/>
-        <cm:dropdownOption icon="icon-disconnect" key=".disconnect" classes="js-gw-disconnect"
-            data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}"/>
-    </cti:checkRolesAndProperties>
-    <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE, INFRASTRUCTURE_DELETE">
-        <li class="divider"></li>
-    </cti:checkRolesAndProperties>
-    <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
-        <cm:dropdownOption icon="icon-pencil" key="components.button.edit.label" data-popup="#gateway-edit-popup"/>
-    </cti:checkRolesAndProperties>
-    <cti:checkRolesAndProperties value="INFRASTRUCTURE_DELETE">
-        <cm:dropdownOption icon="icon-cross" key="components.button.delete.label" id="gateway-delete"
-            data-ok-event="yukon:assets:gateways:delete"/>
-    </cti:checkRolesAndProperties>
+<div id="page-buttons" class="dn">
+    <cm:dropdown type="button" data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}">
+        <cm:dropdownOption icon="icon-table-row-insert" key=".collectData" classes="js-gw-collect-data"/>
+        <cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
+            <li class="divider"></li>
+            <cm:dropdownOption icon="icon-connect" key=".connect" classes="js-gw-connect"/>
+            <cm:dropdownOption icon="icon-disconnect" key=".disconnect" classes="js-gw-disconnect"/>
+        </cti:checkRolesAndProperties>
+        <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE, INFRASTRUCTURE_DELETE">
+            <li class="divider"></li>
+        </cti:checkRolesAndProperties>
+        <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
+            <cm:dropdownOption icon="icon-pencil" key="components.button.edit.label" data-popup="#gateway-edit-popup"/>
+        </cti:checkRolesAndProperties>
+        <cti:checkRolesAndProperties value="INFRASTRUCTURE_DELETE">
+            <cm:dropdownOption icon="icon-cross" key="components.button.delete.label" id="gateway-delete"
+                data-ok-event="yukon:assets:gateways:delete"/>
+        </cti:checkRolesAndProperties>
+    </cm:dropdown>
 </div>
 
 <div id="gateway-edit-popup" data-dialog class="dn" data-title="<cti:msg2 key=".edit.title"/>"
         data-url="${gateway.paoIdentifier.paoId}/edit"
         data-id="${gateway.paoIdentifier.paoId}"
-        data-width="565" 
+        data-width="580" 
         data-event="yukon:assets:gateway:save" 
         data-load-event="yukon:assets:gateway:edit:load" 
         data-ok-text="<cti:msg2 key="components.button.save.label"/>"></div>

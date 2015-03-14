@@ -35,10 +35,13 @@ yukon.assets.gateway.list = (function () {
                 row = $('[data-gateway="' + paoId + '"]');
                 
                 if (data != null) {
+                    
                     timestamp = moment(data.lastCommTimestamp).tz(_tz).format(_timeFormat);
                     percent = data.collectionPercent.toFixed(2);
                     
                     if (!row.data('loaded')) {
+                        // This gateway didn't have data at page load.
+                        // Replace the 'loading' row with a 'loaded' template row and fill in with data.
                         clone = $('.js-loaded-row').clone();
                         clone.attr('data-gateway', paoId)
                         .removeClass('js-loaded-row')
