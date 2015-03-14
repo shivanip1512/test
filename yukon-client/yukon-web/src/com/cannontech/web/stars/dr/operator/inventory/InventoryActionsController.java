@@ -37,7 +37,7 @@ public class InventoryActionsController {
     @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;
     @Autowired private MemoryCollectionProducer memoryCollectionProducer;
     @Autowired private InventoryDao inventoryDao;
-    @Autowired private ConfigurationSource configurationSource;
+    @Autowired private ConfigurationSource configSource;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     
@@ -58,10 +58,10 @@ public class InventoryActionsController {
         modelMap.addAttribute("inventoryCollection", memoryCollection);
         modelMap.addAllAttributes(memoryCollection.getCollectionParameters());
         
-        boolean digiEnabled = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DIGI_ENABLED);
+        boolean digiEnabled = configSource.getBoolean(MasterConfigBooleanKeysEnum.DIGI_ENABLED);
         modelMap.addAttribute("digiEnabled", digiEnabled);
         
-        boolean showSaveToFile = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.ENABLE_INVENTORY_SAVE_TO_FILE);
+        boolean showSaveToFile = configSource.getBoolean(MasterConfigBooleanKeysEnum.ENABLE_INVENTORY_SAVE_TO_FILE);
         modelMap.addAttribute("showSaveToFile", showSaveToFile);
         
         return view + "inventoryActions.jsp";
@@ -74,7 +74,7 @@ public class InventoryActionsController {
         LiteYukonUser user = userContext.getYukonUser();
         rolePropertyDao.checkProperty(YukonRoleProperty.DEVICE_RECONFIG, user);
         
-        boolean showNewConfig = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.SN_CONFIG_RANGE, user);
+        boolean showNewConfig =  configSource.getBoolean(MasterConfigBooleanKeysEnum.SEND_INDIVIDUAL_SWITCH_CONFIG, false);
         model.addAttribute("showNewConfig", showNewConfig);
         
         InventoryCollection yukonCollection = inventoryCollectionFactory.createCollection(request);
