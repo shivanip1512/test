@@ -3,20 +3,20 @@
 
 <c:set var="dummyEntryRow" value="${entryIndex lt 0}"/>
 
-<div id="tableEntry_${tableIndex}_${entryIndex}" class="column-10-14 section clearfix stacked"
+<div id="table-entry_${tableIndex}_${entryIndex}" class="column-10-14 section clearfix stacked"
     style="${dummyEntryRow ? 'display:none' : ''}">
-    <div class="column one js-drFormula-tableEntryKey_${dummyEntryRow ? '' : tableIndex}">
-        <div class="js-drFormula-timeInput_${dummyEntryRow ? '' : tableIndex}"
+    <div class="column one js-formula-table-entry-key_${dummyEntryRow ? '' : tableIndex}">
+        <div class="js-formula-time-input_${dummyEntryRow ? '' : tableIndex}"
             style="${timeInput ? '' : 'display:none'}">
             <tags:inputBindOptional
-                id="tableEntryKey_${tableIndex}_${entryIndex}"
+                id="table-entry-key_${tableIndex}_${entryIndex}"
                 bindPath="${not dummyEntryRow}"
                 pathOrName="tables[${dummyEntryRow ? '' : tableIndex}].timeEntries[${dummyEntryRow ? '' : entryIndex}].key"/>
         </div>
-        <div class="js-drFormula-notTimeInput_${dummyEntryRow ? '' : tableIndex}"
+        <div class="js-formula-not-time-input_${dummyEntryRow ? '' : tableIndex}"
             style="${timeInput ? 'display:none' : ''}">
             <tags:inputBindOptional
-                id="tableEntryKey_${tableIndex}_${entryIndex}"
+                id="table-entry-key_${tableIndex}_${entryIndex}"
                 bindPath="${not dummyEntryRow}"
                 pathOrName="tables[${dummyEntryRow ? '' : tableIndex}].entries[${dummyEntryRow ? '' : entryIndex}].key"/>
         </div>
@@ -25,13 +25,13 @@
         <div class="output-column">
              <i class="input-output-arrow icon icon-arrow-join-right fl"></i>
              <div class="fr">
-                <div class="js-drFormula-timeInput_${dummyEntryRow ? '' : tableIndex}"
+                <div class="js-formula-time-input_${dummyEntryRow ? '' : tableIndex}"
                     style="${timeInput ? '' : 'display:none'}">
                     <tags:inputBindOptional
                         bindPath="${not dummyEntryRow}"
                         pathOrName="tables[${dummyEntryRow ? '' : tableIndex}].timeEntries[${dummyEntryRow ? '' : entryIndex}].value"/>
                 </div>
-                <div class="js-drFormula-notTimeInput_${dummyEntryRow ? '' : tableIndex}"
+                <div class="js-formula-not-time-input_${dummyEntryRow ? '' : tableIndex}"
                     style="${timeInput ? 'display:none' : ''}">
                     <tags:inputBindOptional
                         bindPath="${not dummyEntryRow}"
@@ -43,7 +43,7 @@
             <cti:button nameKey="removeEntry"
                     icon="icon-cross"
                     renderMode="image"
-                    classes="js-drFormula-removeEntry"
+                    classes="js-formula-remove-entry"
                     data-table-id="${dummyEntryRow ? '' : tableIndex}"
                     data-entry-id="${dummyEntryRow ? '0' : entryIndex}"/>
         </div>

@@ -1,26 +1,23 @@
-<input id="assignmentInput_${assignmentId}" type="hidden" name="assignments" value="${assignmentId}"/> 
-<div id="assignmentAdd_${assignmentId}" class="column-8-8-8 js-drFormula-removeable js-drFormula-show-on-hover-target clearfix">
-    <div class="column one js-drFormula-name">${fn:escapeXml(assignments[assignmentId].gearName)}</div>
-    <div class="column two js-drFormula-control-method"><i:inline key="${assignments[assignmentId].controlMethod}"/></div>
+<input id="assignment-input_${assignmentId}" type="hidden" name="assignments" value="${assignmentId}"/> 
+<div id="assignment-add_${assignmentId}" class="column-8-8-8 clearfix form-control has-show-on-hover js-formula-removeable">
+    <div class="column one js-formula-name">${fn:escapeXml(assignments[assignmentId].gearName)}</div>
+    <div class="column two js-formula-control-method"><i:inline key="${assignments[assignmentId].controlMethod}"/></div>
     <div class="column three nogutter">
-        <span class="js-drFormula-program">${fn:escapeXml(gearPrograms[assignments[assignmentId].deviceId].paoName)}</span>
+        <span class="js-formula-program">${fn:escapeXml(gearPrograms[assignments[assignmentId].deviceId].paoName)}</span>
         <cti:displayForPageEditModes modes="EDIT">
-            <div class="js-drFormula-show-on-hover fr" style="display:none">
-               <cti:button 
-                    data-assign-id="${assignmentId}"
-                    nameKey="remove"
-                    renderMode="image"
-                    icon="icon-cross"
-                    classes="js-drFormula-remove"/>
-            </div>
+           <cti:button data-assign-id="${assignmentId}"
+                nameKey="remove"
+                renderMode="buttonImage"
+                icon="icon-cross"
+                classes="show-on-hover fr js-formula-remove"/>
         </cti:displayForPageEditModes>
     </div>
 </div>
-<div id="assignmentRemove_${assignmentId}" class="column-24" style="display:none">
+<div id="assignment-remove_${assignmentId}" class="column-24 clearfix form-control dn">
     <div class="column one nogutter">
-        <div class="fl undorow"><i:inline key=".gearWillBeUnassigned"/></div>
-        <div class="fr undorow">
-            <a class="js-drFormula-undo" data-assign-id="${assignmentId}" href="javascript:void(0)">
+        <div class="fl"><i:inline key=".gearWillBeUnassigned"/></div>
+        <div class="fr">
+            <a class="js-formula-undo" data-assign-id="${assignmentId}" href="javascript:void(0)">
                 <i:inline key=".undo"/>
             </a>
         </div>

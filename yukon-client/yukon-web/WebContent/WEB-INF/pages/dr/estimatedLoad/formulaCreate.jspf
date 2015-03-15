@@ -1,10 +1,12 @@
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
 <tags:setFormEditMode mode="${mode}"/>
 <form:form id="formulaForm" commandName="formulaBean" action="create">
     <cti:csrfToken/>
     <div class="column-12-12 clearfix">
         <div class="column one">
             <tags:sectionContainer2 nameKey="formulaSettings">
-                <tags:nameValueContainer2>
+                <tags:nameValueContainer2 tableClass="with-form-controls">
                     <tags:hidden path="formulaId"/>
                     <tags:inputNameValue nameKey=".name" path="name" size="35" maxlength="32"/>
                     <tags:selectNameValue

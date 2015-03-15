@@ -41,17 +41,17 @@
                              function="yukon.weather.updateWeatherInputFields"
                              initialize="true"
                              value="WEATHER_STATION/${weatherLocation.paoIdentifier.paoId}/JSON_META_DATA" />
-                            <span id="temperatureField_${weatherLocation.paoIdentifier.paoId}" class="js-drFormula-temperature-field">
+                            <span id="temperatureField_${weatherLocation.paoIdentifier.paoId}" class="js-formula-temperature-field">
                                 <cti:dataUpdaterValue identifier="${weatherLocation.paoIdentifier.paoId}/TEMPERATURE" type="WEATHER_STATION"/>
                             </span>
                         </td>
                         <td>
-                            <span id="humidityField_${weatherLocation.paoIdentifier.paoId}" class="js-drFormula-humidity-field">
+                            <span id="humidityField_${weatherLocation.paoIdentifier.paoId}" class="js-formula-humidity-field">
                                 <cti:dataUpdaterValue identifier="${weatherLocation.paoIdentifier.paoId}/HUMIDITY" type="WEATHER_STATION"/>
                             </span>
                         </td>
                         <td>
-                            <span id="timestampField_${weatherLocation.paoIdentifier.paoId}" class="js-drFormula-timestamp-field">
+                            <span id="timestampField_${weatherLocation.paoIdentifier.paoId}" class="js-formula-timestamp-field">
                                <cti:dataUpdaterValue identifier="${weatherLocation.paoIdentifier.paoId}/TIMESTAMP" type="WEATHER_STATION"/>
                             </span>
                             <cti:button id="deleteWeatherLocation_${weatherLocation.paoIdentifier.paoId}"

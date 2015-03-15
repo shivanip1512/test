@@ -3,11 +3,11 @@
 
 <c:set var="dummyEntryRow" value="${entryIndex lt 0}"/>
 
-<div id="tableEntry_${tableIndex}_${entryIndex}" class="column-10-14 section clearfix stacked"
+<div id="table-entry_${tableIndex}_${entryIndex}" class="column-10-14 section clearfix stacked"
     style="${dummyEntryRow ? 'display:none' : ''}">
-    <div class="column one js-drFormula-tableEntryKey_${dummyEntryRow ? '' : tableIndex}">
+    <div class="column one js-formula-table-entry-key_${dummyEntryRow ? '' : tableIndex}">
         <tags:inputBindOptional
-            id="tableEntryKey_${tableIndex}_${entryIndex}"
+            id="table-entry-key_${tableIndex}_${entryIndex}"
             bindPath="${not dummyEntryRow}"
             pathOrName="tables[${dummyEntryRow ? '' : tableIndex}].timeEntries[${dummyEntryRow ? '' : entryIndex}].key"/>
     </div>
@@ -24,7 +24,7 @@
             <cti:button nameKey="remove"
                     icon="icon-cross"
                     renderMode="image"
-                    classes="js-drFormula-removeEntry"
+                    classes="js-formula-remove-entry"
                     data-table-id="${dummyEntryRow ? '' : tableIndex}"
                     data-entry-id="${dummyEntryRow ? '0' : entryIndex}"/>
         </div>

@@ -1,18 +1,18 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<input id="formulaRowIndex" type="hidden" value="${fn:length(formulaBean.functions)}"/>
+<input id="formula-row-index" type="hidden" value="${fn:length(formulaBean.functions)}"/>
 
 <c:set var="formulaId" value="${formulaBean.formulaId}"/>
 <form:form id="formulaForm" commandName="formulaBean" action="edit?formulaId=${formulaBean.formulaId}">
     <cti:csrfToken/>
-    <div class="column-12-12 clearfix">
+    <div class="column-10-14 clearfix">
         <div class="column one">
-            <tags:sectionContainer2 nameKey="formulaSettings">
+            <tags:sectionContainer2 nameKey="formulaSettings" styleClass="with-form-controls">
                 <tags:nameValueContainer2>
                     <tags:hidden path="formulaType"/>
                     <tags:hidden path="calculationType"/>
-                    <tags:inputNameValue nameKey=".name" path="name" size="40"/>
+                    <tags:inputNameValue nameKey=".name" path="name"/>
                     <tags:nameValue2 nameKey=".formulaType">
                         <i:inline key="${formulaBean.formulaType}"/>
                     </tags:nameValue2>
@@ -48,7 +48,7 @@
                     </c:if>
                 </div>
                <c:if test="${empty formulaBean.assignments}">
-                   <span id="noAssignments" class="empty-list"><i:inline key=".noAssignments"/></span>
+                   <span id="no-assignments" class="empty-list"><i:inline key=".noAssignments"/></span>
                </c:if>
                <cti:displayForPageEditModes modes="EDIT">
                    <div class="action-area">
@@ -71,7 +71,7 @@
     </div>
 
     <tags:sectionContainer2 nameKey="functions">
-        <div id="formulaFunctions">
+        <div id="formula-functions">
             <div class="setting">
                 <tags:nameValueStacked nameKey=".functionIntercept">
                     <tags:input path="functionIntercept"/>
@@ -85,7 +85,7 @@
         <cti:displayForPageEditModes modes="EDIT">
             <hr>
             <div class="action-area">
-                <cti:button id="newFunctionBtn" icon="icon-plus-green" nameKey="newFunction"/>
+                <cti:button id="new-function-btn" icon="icon-plus-green" nameKey="newFunction"/>
             </div>
         </cti:displayForPageEditModes>
     </tags:sectionContainer2>
@@ -95,7 +95,8 @@
         </cti:displayForPageEditModes>
         <cti:displayForPageEditModes modes="EDIT">
             <cti:button nameKey="save" type="submit" classes="primary action"/>
-            <cti:button nameKey="delete" id="deleteBtn" href="delete?formulaId=${formulaBean.formulaId}"/>
+            <cti:button nameKey="delete" id="deleteBtn" href="delete?formulaId=${formulaBean.formulaId}"
+                classes="delete"/>
             <cti:button nameKey="cancel" href="view?formulaId=${formulaBean.formulaId}"/>
             <d:confirm nameKey="confirmDelete" on="#deleteBtn" argument="${formulaBean.name}"/>
         </cti:displayForPageEditModes>
@@ -114,7 +115,7 @@
     <!-- all 'pickers' on this page use this picker -->
     <div style="display:none">
         <tags:pickerDialog id="pointPicker" type="analogPointPicker" linkType="selection"
-            selectionProperty="pointName" endAction="yukon.dr.formula.pickerClose" />
+            selectionProperty="pointName" endAction="yukon.dr.formula.pointChosen" />
     </div>
 
     <c:set var="functionIndex" value="-1"/>

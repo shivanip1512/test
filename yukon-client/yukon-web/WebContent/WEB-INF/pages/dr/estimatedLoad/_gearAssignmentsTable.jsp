@@ -31,7 +31,7 @@
                                     </cti:url>
                                     <a href="${programUrl}">${fn:escapeXml(gearPrograms[gearAssignment.gear.deviceId].paoName)}</a>
                                  </td>
-                                 <td id="formulaPickerRowGear_${gearAssignment.gear.yukonID}">
+                                 <td id="formula-picker-row-gear_${gearAssignment.gear.yukonID}">
                                      <%@ include file="_gearFormulaPicker.jsp" %>
                                  </td>
                          </tr>

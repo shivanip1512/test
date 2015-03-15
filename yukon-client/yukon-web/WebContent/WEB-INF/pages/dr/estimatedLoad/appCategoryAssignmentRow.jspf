@@ -1,27 +1,25 @@
-<input id="assignmentInput_${assignmentId}" type="hidden" name="assignments" value="${assignmentId}"/> 
-<div id="assignmentAdd_${assignmentId}" style="${assignmentId eq -1 ? 'display:none' : ''}"
-    class="column-8-8-8 js-drFormula-removeable js-drFormula-show-on-hover-target js-drFormula-appendAssignId clearfix">
-    <div class="column one js-drFormula-name">${fn:escapeXml(assignments[assignmentId].name)}</div>
-    <div class="column two js-drFormula-type"><i:inline key="${assignments[assignmentId].applianceType}"/></div>
+<input id="assignment-input_${assignmentId}" type="hidden" name="assignments" value="${assignmentId}"/> 
+<div id="assignment-add_${assignmentId}" style="${assignmentId eq -1 ? 'display:none' : ''}"
+    class="column-8-8-8 clearfix form-control has-show-on-hover js-formula-removeable">
+    <div class="column one js-formula-name">${fn:escapeXml(assignments[assignmentId].name)}</div>
+    <div class="column two js-formula-type"><i:inline key="${assignments[assignmentId].applianceType}"/></div>
     <div class="column three nogutter">
-        <span class="js-drFormula-average-load">
+        <span class="js-formula-average-load">
             <i:inline key=".loadInKw" arguments="${assignments[assignmentId].applianceLoad}"/>
         </span>
         <cti:displayForPageEditModes modes="EDIT">
-            <div class="js-drFormula-show-on-hover fr" style="display:none">
-                <cti:button data-assign-id="${assignmentId}"
-                    nameKey="remove" renderMode="image"
-                    icon="icon-cross"
-                    classes="js-drFormula-remove"/>
-            </div>
+            <cti:button data-assign-id="${assignmentId}"
+                nameKey="remove" renderMode="buttonImage"
+                icon="icon-cross"
+                classes="js-formula-remove show-on-hover fr"/>
         </cti:displayForPageEditModes>
     </div>
 </div>
-<div id="assignmentRemove_${assignmentId}" class="column-24" style="display:none">
+<div id="assignment-remove_${assignmentId}" class="column-24 clearfix form-control dn">
     <div class="column one nogutter">
-        <div class="fl undorow"><i:inline key=".appCatWillBeUnassigned"/></div>
-        <div class="fr undorow">
-            <a class="js-drFormula-undo" data-assign-id="${assignmentId}" href="javascript:void(0)">
+        <div class="fl"><i:inline key=".appCatWillBeUnassigned"/></div>
+        <div class="fr">
+            <a class="js-formula-undo" data-assign-id="${assignmentId}" href="javascript:void(0)">
                 <i:inline key=".undo"/>
             </a>
         </div>

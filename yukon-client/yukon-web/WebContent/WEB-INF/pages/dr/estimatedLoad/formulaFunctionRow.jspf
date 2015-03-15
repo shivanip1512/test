@@ -1,16 +1,17 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <c:set var="dummyRow" value="${functionIndex lt 0}"/>
 
 <c:set var="func" value="${formulaBean.functions[functionIndex]}"/>
 
-<div id="functionRow_${functionIndex}" class="setting js-drFormula-removeable js-drFormula-function"
+<div id="function-row_${functionIndex}" class="setting js-formula-removeable js-formula-function"
     style="${dummyRow ? 'display:none' : ''}">
     <input type="hidden" name="functions[${functionIndex}].formulaId"
         value="${formulaBean.formulaId}"/>
-    <input type='hidden' id="inputPointId_${dummyRow ? '' : functionIndex}"
-        class="js-drFormula-appendTableId"
+    <input type='hidden' id="input-point-id_${dummyRow ? '' : functionIndex}"
+        class="js-formula-append-table-id"
         name="functions[${functionIndex}].inputPointId"
         value="${formulaBean.functions[functionIndex].inputPointId}"/>
     <div class="column-8-8-8 clearfix">
@@ -24,16 +25,16 @@
                     <div class="column-12-12">
                         <div class="column one">
                             <select name="functions[].inputType"
-                                id="formulaInputSelect_"
-                                class="js-drFormula-appendTableId">
+                                id="formula-input-select_"
+                                class="js-formula-append-table-id">
                                 <c:forEach var="fInput" items="${formulaInputs}">
                                     <option value="${fInput}"><cti:msg2 key="${fInput}"/></option>
                                 </c:forEach>
                             </select>
                         </div>
                         <div class="column two nogutter">
-                            <div id="formulaWeatherStationTemp_"
-                                style="display:none" class="js-drFormula-appendTableId">
+                            <div id="formula-weather-temp_"
+                                style="display:none" class="js-formula-append-table-id">
                                  <select name="functions[].inputPointId" class="input-select">
                                      <c:forEach var="weatherLocation" items="${weatherLocations}">
                                          <option value="${weatherLocation.tempPoint.liteID}">
@@ -42,8 +43,8 @@
                                      </c:forEach> 
                                  </select> 
                             </div>
-                            <div id="formulaWeatherStationHumidity_"
-                                style="display:none" class="js-drFormula-appendTableId">
+                            <div id="formula-weather-humidity_"
+                                style="display:none" class="js-formula-append-table-id">
                                  <select name="functions[].inputPointId" class="input-select">
                                      <c:forEach var="weatherLocation" items="${weatherLocations}">
                                          <option value="${weatherLocation.humidityPoint.liteID}">
@@ -52,31 +53,28 @@
                                      </c:forEach>
                                  </select> 
                             </div>
-                             <div id="formulaPointPicker_" style="display:none"
-                                 class="js-drFormula-appendTableId"> 
-                                 <button id="formulaPointPickerBtn_" role="button"
-                                     type="button"
-                                     class="button naked js-drFormula-pointPicker js-drFormula-appendTableId">
-                                     <span id="formulaPointPickerLbl_"
-                                         class="b-label js-drFormula-appendTableId">
-                                         <i:inline key=".noPointSelected"/>
-                                     </span>
-                                     <i class="icon icon-database-add"></i>
-                                 </button> 
-                             </div>
-                         </div>
-                     </div>
+                            <div id="formulaPointPicker_" style="display:none" class="js-formula-append-table-id">
+                                <button id="formula-point-picker-btn_" role="button" type="button"
+                                    class="button naked js-formula-point-picker js-formula-append-table-id">
+                                    <i class="icon icon-database-add"></i>
+                                    <span id="formula-point-picker-label_" class="b-label js-formula-append-table-id">
+                                        <i:inline key=".noPointSelected"/>
+                                    </span>
+                                </button> 
+                            </div>
+                        </div>
+                    </div>
                 </c:if>
                 <c:if test="${not dummyRow}">
                     <div class="column-12-12">
                         <div class="column one">
-                            <tags:selectWithItems id="formulaInputSelect_${functionIndex}"
+                            <tags:selectWithItems id="formula-input-select_${functionIndex}"
                                  items="${formulaInputs}" 
                                  path="functions[${functionIndex}].inputType" 
-                                 inputClass="fl js-drFormula-formulaInputSelect"/> 
+                                 inputClass="fl js-formula-formula-input-select"/> 
                         </div>
                         <div class="column two nogutter">
-                            <div id="formulaWeatherStationTemp_${functionIndex}" style="${formulaBean.functions[functionIndex].tempType ? '' : 'display:none'}">
+                            <div id="formula-weather-temp_${functionIndex}" style="${formulaBean.functions[functionIndex].tempType ? '' : 'display:none'}">
                                  <form:select path="functions[${functionIndex}].inputPointId" cssClass="input-select"> 
                                      <c:forEach var="weatherLocation" items="${weatherLocations}"> 
                                          <form:option value="${weatherLocation.tempPoint.liteID}"> 
@@ -85,7 +83,7 @@
                                      </c:forEach> 
                                  </form:select> 
                             </div>
-                            <div id="formulaWeatherStationHumidity_${functionIndex}" style="${formulaBean.functions[functionIndex].humidityType ? '' : 'display:none'}">
+                            <div id="formula-weather-humidity_${functionIndex}" style="${formulaBean.functions[functionIndex].humidityType ? '' : 'display:none'}">
                                  <form:select path="functions[${functionIndex}].inputPointId" cssClass="input-select"> 
                                      <c:forEach var="weatherLocation" items="${weatherLocations}"> 
                                          <form:option value="${weatherLocation.humidityPoint.liteID}"> 
@@ -95,10 +93,10 @@
                                  </form:select> 
                             </div>
                             <div id="formulaPointPicker_${functionIndex}" style="${formulaBean.functions[functionIndex].pointType ? '' : 'display:none'}">
-                                <button id="formulaPointPickerBtn_${functionIndex}"
+                                <button id="formula-point-picker-btn_${functionIndex}"
                                     role="button" type="button"
-                                    class="button naked js-drFormula-pointPicker">
-                                    <span id="formulaPointPickerLbl_${functionIndex}" class="b-label">
+                                    class="button naked js-formula-point-picker">
+                                    <span id="formula-point-picker-label_${functionIndex}" class="b-label">
                                        <c:if test="${formulaBean.functions[functionIndex].pointType}">
                                            ${fn:escapeXml(pointNames[formulaBean.functions[functionIndex].inputPointId])}
                                        </c:if>
@@ -141,7 +139,7 @@
         </div>
         <div class="column three nogutter">
             <cti:displayForPageEditModes modes="EDIT">
-                <cti:button nameKey="remove" icon="icon-cross" classes="fr js-drFormula-remove"/>
+                <cti:button nameKey="remove" icon="icon-cross" classes="fr js-formula-remove"/>
             </cti:displayForPageEditModes>
             <tags:nameValueStacked nameKey=".quadratic">
                 <tags:inputBindOptional pathOrName="functions[${functionIndex}].quadratic" bindPath="${not dummyRow}"/>

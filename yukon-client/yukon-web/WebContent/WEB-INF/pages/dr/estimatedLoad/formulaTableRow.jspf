@@ -3,12 +3,12 @@
 
 <c:set var="dummyRow" value="${tableIndex lt 0}"/>
 
-<div id="tableRow_${tableIndex}" class="setting js-drFormula-removeable js-drFormula-table" style="${dummyRow ? 'display:none' : ''}">
+<div id="table-row_${tableIndex}" class="setting js-formula-removeable js-formula-table" style="${dummyRow ? 'display:none' : ''}">
     <input type="hidden" name="tables[${tableIndex}].formulaId"
         value="${formulaBean.formulaId}"/>
     <c:set var="pointId" value="${formulaBean.tables[tableIndex].inputPointId}"/>
-    <input type='hidden' id="inputPointId_${dummyRow ? '' : tableIndex}"
-        class="js-drFormula-appendTableId"
+    <input type='hidden' id="input-point-id_${dummyRow ? '' : tableIndex}"
+        class="js-formula-append-table-id"
         name="tables[${tableIndex}].inputPointId"
         value="${formulaBean.tables[tableIndex].pointType ? pointId : ''}"/>
 
@@ -22,15 +22,15 @@
             <tags:nameValueStacked nameKey=".input">
                 <cti:displayForPageEditModes modes="EDIT">
                     <c:if test="${not dummyRow}">
-                        <tags:selectWithItems id="formulaInputSelect_${tableIndex}"
-                            inputClass="js-drFormula-formulaInputSelect input-select"
+                        <tags:selectWithItems id="formula-input-select_${tableIndex}"
+                            inputClass="js-formula-formula-input-select input-select"
                             items="${formulaInputs}"
                             path="tables[${tableIndex}].inputType"/>
                     </c:if>
                     <c:if test="${dummyRow}">
                         <select name="tables[].inputType"
-                            id="formulaInputSelect_"
-                            class="js-drFormula-appendTableId input-select">
+                            id="formula-input-select_"
+                            class="js-formula-append-table-id input-select">
                             <c:forEach var="fInput" items="${formulaInputs}">
                                 <option value="${fInput}"><cti:msg2 key="${fInput}"/></option>
                             </c:forEach>
@@ -56,21 +56,21 @@
             <cti:displayForPageEditModes modes="EDIT">
                 <c:if test="${dummyRow}">
                     <div id="formulaPointPicker_"
-                        style="display:none" class="js-drFormula-appendTableId"> 
+                        style="display:none" class="js-formula-append-table-id"> 
                          <tags:nameValueStacked nameKey=".point">
-                             <button id="formulaPointPickerBtn_" role="button"
+                             <button id="formula-point-picker-btn_" role="button"
                                  type="button"
-                                 class="button naked js-drFormula-pointPicker js-drFormula-appendTableId">
-                                 <span id="formulaPointPickerLbl_"
-                                     class="b-label js-drFormula-appendTableId">
+                                 class="button naked js-formula-point-picker js-formula-append-table-id">
+                                 <span id="formula-point-picker-label_"
+                                     class="b-label js-formula-append-table-id">
                                      <i:inline key=".noPointSelected"/>
                                  </span>
                                  <i class="icon icon-database-add"></i>
                              </button> 
                          </tags:nameValueStacked>
                      </div>
-                   <div id="formulaWeatherStationTemp_"
-                        style="display:none" class="js-drFormula-appendTableId">
+                   <div id="formula-weather-temp_"
+                        style="display:none" class="js-formula-append-table-id">
                         <tags:nameValueStacked nameKey=".weatherLocation">
                              <select name="tables[].inputPointId" class="input-select">
                                  <c:forEach var="weatherLocation" items="${weatherLocations}">
@@ -81,8 +81,8 @@
                              </select> 
                          </tags:nameValueStacked>
                     </div>
-                    <div id="formulaWeatherStationHumidity_"
-                        style="display:none" class="js-drFormula-appendTableId">
+                    <div id="formula-weather-humidity_"
+                        style="display:none" class="js-formula-append-table-id">
                         <tags:nameValueStacked nameKey=".weatherLocation">
                              <select name="tables[].inputPointId" class="input-select">
                                  <c:forEach var="weatherLocation" items="${weatherLocations}">
@@ -95,7 +95,7 @@
                     </div>
                 </c:if>
                 <c:if test="${not dummyRow}">
-                     <div id="formulaWeatherStationTemp_${tableIndex}"
+                     <div id="formula-weather-temp_${tableIndex}"
                         style="${formulaBean.tables[tableIndex].tempType ? '' : 'display:none'}">
                         <tags:nameValueStacked nameKey=".weatherLocation">
                              <form:select path="tables[${tableIndex}].inputPointId" cssClass="input-select">
@@ -107,7 +107,7 @@
                              </form:select>
                          </tags:nameValueStacked>
                     </div>
-                    <div id="formulaWeatherStationHumidity_${tableIndex}"
+                    <div id="formula-weather-humidity_${tableIndex}"
                         style="${formulaBean.tables[tableIndex].humidityType ? '' : 'display:none'}">
                         <tags:nameValueStacked nameKey=".weatherLocation">
                              <form:select path="tables[${tableIndex}].inputPointId" cssClass="input-select"> 
@@ -122,10 +122,10 @@
                     <div id="formulaPointPicker_${tableIndex}"
                         style="${formulaBean.tables[tableIndex].pointType ? '' : 'display:none'}">
                         <tags:nameValueStacked nameKey=".point">
-                            <button id="formulaPointPickerBtn_${tableIndex}"
+                            <button id="formula-point-picker-btn_${tableIndex}"
                                 role="button" type="button"
-                                class="button naked js-drFormula-pointPicker">
-                                <span id="formulaPointPickerLbl_${tableIndex}" class="b-label">
+                                class="button naked js-formula-point-picker">
+                                <span id="formula-point-picker-label_${tableIndex}" class="b-label">
                                    <c:if test="${formulaBean.tables[tableIndex].pointType}">
                                        ${fn:escapeXml(pointNames[formulaBean.tables[tableIndex].inputPointId])}
                                    </c:if>
@@ -174,7 +174,7 @@
                         <i:inline key=".entries"/>
                         <cti:displayForPageEditModes modes="EDIT">
                             <cti:button nameKey="removeTable" icon="icon-cross"
-                                 classes="fr js-drFormula-remove"/>
+                                 classes="fr js-formula-remove"/>
                          </cti:displayForPageEditModes>
                     </h4>
                 </div>
@@ -185,8 +185,8 @@
                 </div>
                 <div class="lite-container">
                     <div class="scroll-md">
-                        <div id="tableEntries_${dummyRow ? '' : tableIndex}"
-                            class="clearfix separated-sections no-lines js-drFormula-tableEntries js-drFormula-appendTableId">
+                        <div id="table-entries_${dummyRow ? '' : tableIndex}"
+                            class="clearfix separated-sections no-lines js-formula-table-entries js-formula-append-table-id">
                             <c:if test="${not dummyRow}">
                                 <c:if test="${not formulaBean.tables[tableIndex].timeInput}">
                                     <c:forEach items="${formulaBean.tables[tableIndex].entries}"
@@ -205,15 +205,15 @@
                                      </c:forEach>
                                 </c:if>
                             </c:if>
-                            <div class="js-drFormula-inputMax column-10-14 section clearfix stacked">
+                            <div class="js-formula-input-max column-10-14 section clearfix stacked">
                                 <div class="column one">
-                                    <div class="js-drFormula-timeInput_${dummyRow ? '' : tableIndex}"
+                                    <div class="js-formula-time-input_${dummyRow ? '' : tableIndex}"
                                      style="${formulaBean.tables[tableIndex].timeInput ? '' : 'display:none'}">
                                         <tags:inputBindOptional
                                             pathOrName="tables[${tableIndex}].timeInputMax"
                                             bindPath="${not dummyRow}"/>
                                     </div>
-                                    <div class="js-drFormula-notTimeInput_${dummyRow ? '' : tableIndex}"
+                                    <div class="js-formula-not-time-input_${dummyRow ? '' : tableIndex}"
                                         style="${formulaBean.tables[tableIndex].timeInput ? 'display:none' : ''}">
                                         <tags:inputBindOptional
                                             pathOrName="tables[${tableIndex}].inputMax"
@@ -226,7 +226,7 @@
                     </div>
                 </div>
                 <div class="action-area stacked">
-                    <cti:button classes="js-drFormula-newEntryButton"
+                    <cti:button classes="js-formula-new-entry-btn"
                         icon="icon-plus-green"
                         nameKey="newEntry"
                         data-table-id="${tableIndex}"

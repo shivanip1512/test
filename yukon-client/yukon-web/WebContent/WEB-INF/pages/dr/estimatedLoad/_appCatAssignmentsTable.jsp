@@ -37,7 +37,7 @@
                                  </td>
                                  <td><i:inline key="${appCat.applianceType}"/></td>
                                  <td><i:inline key=".loadInKw" arguments="${appCat.applianceLoad}"/></td>
-                                 <td id="formulaPickerRowAppCat_${appCat.applianceCategoryId}">
+                                 <td id="formula-picker-row-app-cat_${appCat.applianceCategoryId}">
                                     <%@ include file="_appCatFormulaPicker.jsp" %>
                                  </td>
                          </tr>
