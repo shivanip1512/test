@@ -1,5 +1,10 @@
 package com.cannontech.web.stars.dr.operator.inventory.configuration.model;
 
+/**
+ * Used as select options on the 'send new config' page. 
+ * Options are either addressing groups or static load group mapping groups based
+ * on if static load group mappings exist in the database.
+ */
 public class Group {
     
     private int id;
