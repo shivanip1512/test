@@ -12,7 +12,7 @@
     <entry key="yukon.dr.estimatedLoad.inputType.TEMP_C">Temperature (°C)</entry>
     <entry key="yukon.dr.estimatedLoad.inputType.HUMIDITY">Humidity</entry>
     <entry key="yukon.dr.estimatedLoad.inputType.TIME_LOOKUP">Time</entry>
-    <entry key="yukon.dr.estimatedLoad.inputType.TIME_FUNCTION">Time-of-Day</entry>
+    <entry key="yukon.dr.estimatedLoad.inputType.TIME_FUNCTION">Time of day</entry>
     <entry key="yukon.dr.estimatedLoad.inputType.CONTROL_PERCENT">Control %</entry>
     <entry key="yukon.dr.estimatedLoad.inputType.RAMP_RATE">Ramp Rate</entry>
     <entry key="yukon.dr.estimatedLoad.inputType.POINT">Point</entry>
