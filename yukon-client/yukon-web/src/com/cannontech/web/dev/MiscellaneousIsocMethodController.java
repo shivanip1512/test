@@ -17,10 +17,10 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.security.annotation.AuthorizeByCparm;
+import com.cannontech.web.security.annotation.CheckCparm;
 
 @Controller
-@AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
+@CheckCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
 public class MiscellaneousIsocMethodController {
     
     private static final Logger log = YukonLogManager.getLogger(MiscellaneousIsocMethodController.class);

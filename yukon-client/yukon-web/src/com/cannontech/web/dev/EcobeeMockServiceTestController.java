@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.security.annotation.AuthorizeByCparm;
+import com.cannontech.web.security.annotation.CheckCparm;
 import com.cannontech.web.security.annotation.IgnoreCsrfCheck;
 import com.google.common.collect.ImmutableList;
 
 @Controller
 @RequestMapping("/ecobee/*")
-@AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
+@CheckCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
 public class EcobeeMockServiceTestController {
 	private static final List<String> status = ImmutableList.of("SUCCESS(0)",
 			"AUTHENTICATION_FAILED(1)", "NOT_AUTHORIZED(2)",

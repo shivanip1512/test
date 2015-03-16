@@ -70,12 +70,12 @@ import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
-import com.cannontech.web.security.annotation.AuthorizeByCparm;
+import com.cannontech.web.security.annotation.CheckCparm;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
 @Controller
-@AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
+@CheckCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
 public class DeveloperController {
     private final Logger log = YukonLogManager.getLogger(DeveloperController.class);
 

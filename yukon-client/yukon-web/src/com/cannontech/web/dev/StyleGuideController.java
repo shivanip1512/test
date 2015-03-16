@@ -39,14 +39,14 @@ import com.cannontech.util.Validator;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dev.model.Person;
 import com.cannontech.web.group.DisableNodeCallback;
-import com.cannontech.web.security.annotation.AuthorizeByCparm;
+import com.cannontech.web.security.annotation.CheckCparm;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
 @Controller
-@AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
+@CheckCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
 public class StyleGuideController {
     
     @Autowired private DeviceGroupService deviceGroupService;

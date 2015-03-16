@@ -16,12 +16,12 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.service.LmHardwareCommandService;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
-import com.cannontech.web.security.annotation.AuthorizeByCparm;
+import com.cannontech.web.security.annotation.CheckCparm;
 import com.google.common.collect.Sets;
 
 
 @Controller
-@AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
+@CheckCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
 public class MiscellaneousControlMessageSender {
 
     @Autowired ProgramDao programDao;

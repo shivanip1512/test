@@ -65,7 +65,7 @@ import com.cannontech.web.dev.model.PointInjectionStatus;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.input.type.PeriodType;
-import com.cannontech.web.security.annotation.AuthorizeByCparm;
+import com.cannontech.web.security.annotation.CheckCparm;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -74,7 +74,7 @@ import com.google.common.util.concurrent.RateLimiter;
 
 @Controller
 @RequestMapping("/bulkPointInjection/*")
-@AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
+@CheckCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
 public class BulkPointDataInjectionController {
     private final Logger log = YukonLogManager.getLogger(BulkPointDataInjectionController.class);
 

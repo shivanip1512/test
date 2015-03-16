@@ -23,12 +23,12 @@ import com.cannontech.dr.ecobee.message.HierarchyResponse;
 import com.cannontech.dr.ecobee.message.SetRequest;
 import com.cannontech.dr.ecobee.message.StandardResponse;
 import com.cannontech.dr.ecobee.message.partial.Status;
-import com.cannontech.web.security.annotation.AuthorizeByCparm;
+import com.cannontech.web.security.annotation.CheckCparm;
 import com.cannontech.web.security.annotation.IgnoreCsrfCheck;
 
 @Controller
 @RequestMapping("/mockecobee")
-@AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
+@CheckCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
 public class EcobeeMockApiController {
     @Autowired private EcobeeMockApiService ecobeeMockApiService;
     @Autowired private EcobeeDataConfiguration ecobeeDataConfiguration;

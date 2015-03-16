@@ -19,14 +19,14 @@ import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.dev.model.Population;
-import com.cannontech.web.security.annotation.AuthorizeByCparm;
+import com.cannontech.web.security.annotation.CheckCparm;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
 @Controller
-@AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
+@CheckCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
 public class TablesController {
     
     private static List<Population> cities;

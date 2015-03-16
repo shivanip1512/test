@@ -10,7 +10,7 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.system.GlobalSettingType;
-import com.cannontech.web.security.annotation.AuthorizeByCparm;
+import com.cannontech.web.security.annotation.CheckCparm;
 import com.cannontech.web.security.annotation.CheckEnergyCompanySetting;
 import com.cannontech.web.security.annotation.CheckFalseRoleProperty;
 import com.cannontech.web.security.annotation.CheckGlobalSetting;
@@ -23,7 +23,7 @@ public class WebSecurityAnnotationProcessor {
     @Autowired private WebSecurityChecker webSecurityChecker;
 
     public void processMethod(Method method) throws Exception {
-        check(AnnotationUtils.findAnnotation(method, AuthorizeByCparm.class));
+        check(AnnotationUtils.findAnnotation(method, CheckCparm.class));
         check(AnnotationUtils.findAnnotation(method, CheckRole.class));
         check(AnnotationUtils.findAnnotation(method, CheckGlobalSetting.class));
         check(AnnotationUtils.findAnnotation(method, CheckEnergyCompanySetting.class));
@@ -32,7 +32,7 @@ public class WebSecurityAnnotationProcessor {
     }
 
     public void processClass(Class<?> clazz) throws Exception {
-        check(AnnotationUtils.findAnnotation(clazz, AuthorizeByCparm.class));
+        check(AnnotationUtils.findAnnotation(clazz, CheckCparm.class));
         check(AnnotationUtils.findAnnotation(clazz, CheckRole.class));
         check(AnnotationUtils.findAnnotation(clazz, CheckGlobalSetting.class));
         check(AnnotationUtils.findAnnotation(clazz, CheckEnergyCompanySetting.class));
@@ -40,7 +40,7 @@ public class WebSecurityAnnotationProcessor {
         check(AnnotationUtils.findAnnotation(clazz, CheckFalseRoleProperty.class));
     }
 
-    private void check(AuthorizeByCparm annotation) {
+    private void check(CheckCparm annotation) {
         if (annotation != null) {
             MasterConfigBooleanKeysEnum configKey = annotation.value();
             boolean expecting = annotation.expecting();

@@ -62,7 +62,7 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.collection.InventoryCollectionFactoryImpl;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
-import com.cannontech.web.security.annotation.AuthorizeByCparm;
+import com.cannontech.web.security.annotation.CheckCparm;
 import com.cannontech.web.stars.dr.operator.hardware.model.HardwareConfig;
 import com.cannontech.web.stars.dr.operator.hardware.validator.ColdLoadPickupValidator;
 import com.cannontech.web.stars.dr.operator.hardware.validator.TamperDetectValidator;
@@ -75,7 +75,7 @@ import com.cannontech.web.stars.dr.operator.inventory.service.impl.NewLmConfigHe
 import com.cannontech.web.util.SpringWebUtil;
 import com.google.common.collect.ImmutableSet;
 
-@AuthorizeByCparm(MasterConfigBooleanKeysEnum.SEND_INDIVIDUAL_SWITCH_CONFIG)
+@CheckCparm(MasterConfigBooleanKeysEnum.SEND_INDIVIDUAL_SWITCH_CONFIG)
 @Controller
 public class NewConfigController {
     

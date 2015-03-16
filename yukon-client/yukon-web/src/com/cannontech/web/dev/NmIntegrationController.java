@@ -49,13 +49,13 @@ import com.cannontech.web.dev.service.YsmJmxQueryService;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.input.EnumPropertyEditor;
-import com.cannontech.web.security.annotation.AuthorizeByCparm;
+import com.cannontech.web.security.annotation.CheckCparm;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
 @Controller
 @RequestMapping("/rfn/*")
-@AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
+@CheckCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
 public class NmIntegrationController {
 
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;

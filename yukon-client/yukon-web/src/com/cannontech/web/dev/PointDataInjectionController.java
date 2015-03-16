@@ -27,12 +27,12 @@ import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
-import com.cannontech.web.security.annotation.AuthorizeByCparm;
+import com.cannontech.web.security.annotation.CheckCparm;
 import com.cannontech.web.util.TextView;
 
 @Controller
 @RequestMapping("/pointInjection/*")
-@AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
+@CheckCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
 public class PointDataInjectionController {
     
     private static final Logger log = YukonLogManager.getLogger(PointDataInjectionController.class);

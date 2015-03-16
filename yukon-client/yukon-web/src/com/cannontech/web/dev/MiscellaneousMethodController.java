@@ -12,10 +12,10 @@ import com.cannontech.core.dao.EnergyCompanyNotFoundException;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.security.annotation.AuthorizeByCparm;
+import com.cannontech.web.security.annotation.CheckCparm;
 
 @Controller
-@AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
+@CheckCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
 public class MiscellaneousMethodController {
 	private final Logger log = YukonLogManager.getLogger(MiscellaneousMethodController.class);
 	

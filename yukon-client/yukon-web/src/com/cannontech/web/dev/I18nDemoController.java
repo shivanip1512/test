@@ -7,12 +7,12 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
-import com.cannontech.web.security.annotation.AuthorizeByCparm;
+import com.cannontech.web.security.annotation.CheckCparm;
 import com.cannontech.web.taglib.MessageScopeHelper;
 
 @Controller
 @RequestMapping("/i18nDemo/*")
-@AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
+@CheckCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
 public class I18nDemoController {
     
     public static class ScopePeeker {

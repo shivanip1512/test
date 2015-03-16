@@ -52,13 +52,13 @@ import com.cannontech.web.dev.database.service.DevCapControlCreationService;
 import com.cannontech.web.dev.database.service.DevRolePropUpdaterService;
 import com.cannontech.web.dev.database.service.DevStarsCreationService;
 import com.cannontech.web.dev.database.service.impl.DevEventLogCreationService;
-import com.cannontech.web.security.annotation.AuthorizeByCparm;
+import com.cannontech.web.security.annotation.CheckCparm;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping("/setupDatabase/*")
-@AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
+@CheckCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
 public class SetupDevDbMethodController {
     
     private static final Logger log = YukonLogManager.getLogger(SetupDevDbMethodController.class);

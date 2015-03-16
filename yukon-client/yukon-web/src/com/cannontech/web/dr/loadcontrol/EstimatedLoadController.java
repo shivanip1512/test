@@ -56,14 +56,14 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
-import com.cannontech.web.security.annotation.AuthorizeByCparm;
+import com.cannontech.web.security.annotation.CheckCparm;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.google.common.base.Function;
 import com.google.common.collect.Ordering;
 
 @Controller
 @RequestMapping("/estimatedLoad/*")
-@AuthorizeByCparm(MasterConfigBooleanKeysEnum.ENABLE_ESTIMATED_LOAD)
+@CheckCparm(MasterConfigBooleanKeysEnum.ENABLE_ESTIMATED_LOAD)
 @CheckRole(YukonRole.DEMAND_RESPONSE)
 public class EstimatedLoadController {
 

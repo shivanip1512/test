@@ -25,10 +25,10 @@ import com.cannontech.web.PageEditMode;
 import com.cannontech.web.admin.energyCompany.general.model.EnergyCompanyInfoFragment;
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.security.annotation.AuthorizeByCparm;
+import com.cannontech.web.security.annotation.CheckCparm;
 
 @Controller
-@AuthorizeByCparm(MasterConfigBooleanKeysEnum.ENABLE_SETTLEMENTS)
+@CheckCparm(MasterConfigBooleanKeysEnum.ENABLE_SETTLEMENTS)
 @RequestMapping("/energyCompany/settlement/*")
 public class SettlementController { 
     @Autowired private SettlementService settlementService;
