@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.i18n.CollationUtils;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.HardwareConfigType;
@@ -34,7 +35,6 @@ import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.common.version.VersionTools;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -62,7 +62,7 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.collection.InventoryCollectionFactoryImpl;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.security.annotation.AuthorizeByCparm;
 import com.cannontech.web.stars.dr.operator.hardware.model.HardwareConfig;
 import com.cannontech.web.stars.dr.operator.hardware.validator.ColdLoadPickupValidator;
 import com.cannontech.web.stars.dr.operator.hardware.validator.TamperDetectValidator;
@@ -75,7 +75,7 @@ import com.cannontech.web.stars.dr.operator.inventory.service.impl.NewLmConfigHe
 import com.cannontech.web.util.SpringWebUtil;
 import com.google.common.collect.ImmutableSet;
 
-@CheckRoleProperty(YukonRoleProperty.SN_UPDATE_RANGE)
+@AuthorizeByCparm(MasterConfigBooleanKeysEnum.SEND_INDIVIDUAL_SWITCH_CONFIG)
 @Controller
 public class NewConfigController {
     
@@ -300,7 +300,6 @@ public class NewConfigController {
             binder.setMessageCodesResolver(resolver);
         }
     }
-    
     
     @Resource(name="inventoryTaskResultsCache")
     public void setResultsCache(RecentResultsCache<AbstractInventoryTask> resultsCache) {

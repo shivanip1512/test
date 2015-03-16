@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -70,11 +72,12 @@ public class ConfigBean
          * 
          */
         RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
+        ConfigurationSource configSource = YukonSpringHook.getBean(ConfigurationSource.class);
         hasResetPermission = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, getCurrentUser())
-                            && rolePropertyDao.checkProperty(YukonRoleProperty.SN_CONFIG_RANGE, getCurrentUser());
+                            && configSource.getBoolean(MasterConfigBooleanKeysEnum.SEND_INDIVIDUAL_SWITCH_CONFIG);
         return hasResetPermission;
     }
-
+    
     public void setHasResetPermission(boolean hasResetPermission) 
     {
         this.hasResetPermission = hasResetPermission;

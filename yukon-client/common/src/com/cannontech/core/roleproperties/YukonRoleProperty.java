@@ -8,8 +8,11 @@ import com.cannontech.web.input.type.InputType;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
+/**
+ * Enumeration of user group roles and permissions.
+ * Note: Yukon Grp associated role properties moved to GlobalSettings enum.
+ */
 public enum YukonRoleProperty {
-    // Yukon Grp associated role properties moved to GlobalSettings
     
     DYNAMIC_BILLING_FILE_SETUP(APPLICATION_BILLING, APPLICATION_BILLING.getBasePropertyId(), booleanType()),
     VERSACOM_SERIAL_MODEL(COMMANDER, COMMANDER.getBasePropertyId() - 1, booleanType()),
@@ -46,7 +49,7 @@ public enum YukonRoleProperty {
     MINIMUM_PASSWORD_AGE(PASSWORD_POLICY, PASSWORD_POLICY.getBasePropertyId() - 3, integerType()),
     MINIMUM_PASSWORD_LENGTH(PASSWORD_POLICY, PASSWORD_POLICY.getBasePropertyId() - 2, integerType()),
     PASSWORD_HISTORY(PASSWORD_POLICY, PASSWORD_POLICY.getBasePropertyId() -1, integerType()),
-
+    
     POLICY_QUALITY_CHECK(PASSWORD_POLICY, PASSWORD_POLICY.getBasePropertyId() - 50, integerType()),
     POLICY_RULE_UPPERCASE_CHARACTERS(PASSWORD_POLICY, PASSWORD_POLICY.getBasePropertyId() - 51, booleanType()),
     POLICY_RULE_LOWERCASE_CHARACTERS(PASSWORD_POLICY, PASSWORD_POLICY.getBasePropertyId() - 52, booleanType()),
@@ -74,7 +77,7 @@ public enum YukonRoleProperty {
     SCAN_NOW_ENABLED(TRENDING, TRENDING.getBasePropertyId() - 3, booleanType()),
     MINIMUM_SCAN_FREQUENCY(TRENDING, TRENDING.getBasePropertyId() - 5, integerType()),
     MAXIMUM_DAILY_SCANS(TRENDING, TRENDING.getBasePropertyId() - 6, integerType()),
-
+    
     HOME_URL(WEB_CLIENT, WEB_CLIENT.getBasePropertyId(), stringType()),
     STYLE_SHEET(WEB_CLIENT, WEB_CLIENT.getBasePropertyId() - 2, stringType()),
     HEADER_LOGO(WEB_CLIENT, WEB_CLIENT.getBasePropertyId() - 5, stringType()),
@@ -188,7 +191,7 @@ public enum YukonRoleProperty {
     ADMIN_EVENT_LOGS(OPERATOR_ADMINISTRATOR, OPERATOR_ADMINISTRATOR.getBasePropertyId() - 18, booleanType()),
     
     CURTAILMENT_ROLE_EXISTS(CI_CURTAILMENT, CI_CURTAILMENT.getBasePropertyId(), booleanType()),
-
+    
     OPERATOR_CONSUMER_INFO_ACCOUNT_RESIDENCE(CONSUMER_INFO, CONSUMER_INFO.getBasePropertyId() - 2, booleanType()),
     OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING(CONSUMER_INFO, CONSUMER_INFO.getBasePropertyId() - 3, booleanType()),
     OPERATOR_CONSUMER_INFO_METERING_INTERVAL_DATA(CONSUMER_INFO, CONSUMER_INFO.getBasePropertyId() - 4, booleanType()),
@@ -213,21 +216,20 @@ public enum YukonRoleProperty {
     OPERATOR_OPT_OUT_PERIOD(CONSUMER_INFO, CONSUMER_INFO.getBasePropertyId() - 57, stringType()),
     OPERATOR_DISABLE_SWITCH_SENDING(CONSUMER_INFO, CONSUMER_INFO.getBasePropertyId() - 58, booleanType()),
     OPERATOR_ALLOW_ACCOUNT_EDITING(CONSUMER_INFO, CONSUMER_INFO.getBasePropertyId() - 63, booleanType()),
-
+    
     OPERATOR_OPT_OUT_TODAY_ONLY(CONSUMER_INFO, CONSUMER_INFO.getBasePropertyId(1) - 94, booleanType()),
     OPERATOR_OPT_OUT_ADMIN_STATUS(CONSUMER_INFO, CONSUMER_INFO.getBasePropertyId(1) - 95, booleanType()),
     OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE(CONSUMER_INFO, CONSUMER_INFO.getBasePropertyId(1) - 96, booleanType()),
     OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT(CONSUMER_INFO, CONSUMER_INFO.getBasePropertyId(1) - 97, booleanType()),
     OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS(CONSUMER_INFO, CONSUMER_INFO.getBasePropertyId(1) - 98, booleanType()),
-    /*
-    NOTICE: Property IDs for CONSUMER_INFO were split into 2 spaces. Note the (1) in getBasePropertyId.
-    */
+    
+    // NOTICE: Property IDs for CONSUMER_INFO were split into 2 spaces. Note the (1) in getBasePropertyId.
     
     OPERATOR_ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY(CONSUMER_INFO, CONSUMER_INFO.getBasePropertyId() - 64, booleanType()),
     OPERATOR_ACCOUNT_SEARCH(CONSUMER_INFO, CONSUMER_INFO.getBasePropertyId() - 65, booleanType()),
     OPERATOR_SURVEY_EDIT(CONSUMER_INFO, CONSUMER_INFO.getBasePropertyId() - 66, booleanType()),
     OPERATOR_OPT_OUT_SURVEY_EDIT(CONSUMER_INFO, CONSUMER_INFO.getBasePropertyId() - 67, booleanType()),
-
+    
     BULK_IMPORT_OPERATION(DEVICE_ACTIONS, DEVICE_ACTIONS.getBasePropertyId(), booleanType()),
     BULK_UPDATE_OPERATION(DEVICE_ACTIONS, DEVICE_ACTIONS.getBasePropertyId() - 1, booleanType()),
     DEVICE_GROUP_EDIT(DEVICE_ACTIONS, DEVICE_ACTIONS.getBasePropertyId() - 2, booleanType()),
@@ -244,15 +246,14 @@ public enum YukonRoleProperty {
     ARCHIVED_DATA_EXPORT(DEVICE_ACTIONS, DEVICE_ACTIONS.getBasePropertyId() - 13, booleanType()),
     GROUP_DISCONNECT_CONTROL(DEVICE_ACTIONS, DEVICE_ACTIONS.getBasePropertyId() - 14, booleanType()),  
     GROUP_DEMAND_RESET(DEVICE_ACTIONS, DEVICE_ACTIONS.getBasePropertyId() - 15, booleanType()),  
-
+    
     OPERATOR_ESUBSTATION_DRAWINGS_VIEW(OPERATOR_ESUBSTATION_DRAWINGS, OPERATOR_ESUBSTATION_DRAWINGS.getBasePropertyId(), booleanType()),
     OPERATOR_ESUBSTATION_DRAWINGS_EDIT(OPERATOR_ESUBSTATION_DRAWINGS, OPERATOR_ESUBSTATION_DRAWINGS.getBasePropertyId() - 1, booleanType()),
     OPERATOR_ESUBSTATION_DRAWINGS_CONTROL(OPERATOR_ESUBSTATION_DRAWINGS, OPERATOR_ESUBSTATION_DRAWINGS.getBasePropertyId() - 2, booleanType()),
     OPERATOR_ESUBSTATION_DRAWINGS_HOME_URL(OPERATOR_ESUBSTATION_DRAWINGS, OPERATOR_ESUBSTATION_DRAWINGS.getBasePropertyId() - 3, stringType()),
-
+    
     SN_ADD_RANGE(INVENTORY, INVENTORY.getBasePropertyId() - 1, booleanType()),
     SN_UPDATE_RANGE(INVENTORY, INVENTORY.getBasePropertyId() - 2, booleanType()),
-    SN_CONFIG_RANGE(INVENTORY, INVENTORY.getBasePropertyId() - 3, booleanType()),
     SN_DELETE_RANGE(INVENTORY, INVENTORY.getBasePropertyId() - 4, booleanType()),
     INVENTORY_CREATE_HARDWARE(INVENTORY, INVENTORY.getBasePropertyId() - 5, booleanType()),
     EXPRESSCOM_TOOS_RESTORE_FIRST(INVENTORY, INVENTORY.getBasePropertyId() - 6, booleanType()),
@@ -306,27 +307,27 @@ public enum YukonRoleProperty {
         }
         lookup = builder.build();
     }
-
+    
     public static YukonRoleProperty getForId(int rolePropertyId) throws IllegalArgumentException {
         YukonRoleProperty yukonRoleProperty = lookup.get(rolePropertyId);
         checkArgument(yukonRoleProperty != null, Integer.toString(rolePropertyId));
         return yukonRoleProperty;
     }
-
+    
     private YukonRoleProperty(YukonRole role, int propertyId, InputType<?> type) {
         this.role = role;
         this.propertyId = propertyId;
         this.type = type;
     }
-
+    
     public YukonRole getRole() {
         return role;
     }
-
+    
     public int getPropertyId() {
         return propertyId;
     }
-
+    
     public InputType<?> getType() {
         return type;
     }
@@ -335,4 +336,5 @@ public enum YukonRoleProperty {
     public String toString() {
         return name() + " (" + getPropertyId() + ")";
     }
+    
 }

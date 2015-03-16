@@ -267,7 +267,6 @@ public class DevRolePropUpdaterServiceImpl extends DevObjectCreationBase impleme
                 if (canAddRole(group, YukonRole.INVENTORY)) {
                     setRoleProperty(group, YukonRoleProperty.SN_ADD_RANGE,true);
                     setRoleProperty(group, YukonRoleProperty.SN_UPDATE_RANGE,true);
-                    setRoleProperty(group, YukonRoleProperty.SN_CONFIG_RANGE,true);
                     setRoleProperty(group, YukonRoleProperty.SN_DELETE_RANGE,true);
                     setRoleProperty(group, YukonRoleProperty.INVENTORY_CREATE_HARDWARE,true);
                     setRoleProperty(group, YukonRoleProperty.EXPRESSCOM_TOOS_RESTORE_FIRST,true);
