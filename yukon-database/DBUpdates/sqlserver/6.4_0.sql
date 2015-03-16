@@ -174,7 +174,7 @@ BEGIN
     
     INSERT INTO DeviceConfigCategory VALUES (@categoryId, 'regulatorCategory', 'Default Regulator Category', null);    
 
-    INSERT INTO DeviceConfigCategoryMap VALUES(-2, @categoryId);
+    INSERT INTO DeviceConfigCategoryMap VALUES (-2, @categoryId);
 
     INSERT INTO DeviceConfigDeviceTypes VALUES ((SELECT MAX(DeviceConfigDeviceTypeId) + 1 FROM DeviceConfigDeviceTypes), -2, 'LTC');
     INSERT INTO DeviceConfigDeviceTypes VALUES ((SELECT MAX(DeviceConfigDeviceTypeId) + 1 FROM DeviceConfigDeviceTypes), -2, 'GO_REGULATOR');
