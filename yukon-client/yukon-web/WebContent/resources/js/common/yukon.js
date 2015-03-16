@@ -527,6 +527,7 @@ yukon.ui = (function () {
             /** Add placeholder functionality if needed. */
             if (!Modernizr.input.placeholder) $('input, textarea').placeholder();
             
+            /** Fix file path on all yukon <tags:file> usage in windows. */
             $(document).on('change', '.file-upload input[type="file"]', function () {
                 var input = $(this),
                     container = input.closest('.file-upload'),
