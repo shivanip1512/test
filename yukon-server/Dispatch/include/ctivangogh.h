@@ -219,7 +219,7 @@ public:
     void  writeSignalsToDB(bool justdoit = false);
     void  refreshCParmGlobals(bool force = false);
     INT   checkDataStateQuality(CtiMessage *pMsg, CtiMultiWrapper &aWrap);
-    INT   checkPointDataStateQuality(CtiPointDataMsg *pData, CtiMultiWrapper &aWrap);
+    INT   checkPointDataStateQuality(CtiPointDataMsg &pData, CtiMultiWrapper &aWrap);
     INT   checkMultiDataStateQuality(CtiMultiMsg *pMulti, CtiMultiWrapper &aWrap);
     INT   commandMsgUpdateFailedHandler(CtiCommandMsg *pCmd, CtiMultiWrapper &aWrap);
     INT   checkSignalStateQuality(CtiSignalMsg  *pSig, CtiMultiWrapper &aWrap);

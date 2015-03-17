@@ -331,7 +331,7 @@ struct ClientErrors
         InvalidSSPEC,          // Hardware has an insufficient SSPEC/firmware revision
         VerifySSPEC,           // Need to verify SSPEC/firmware revision
 
-        z_271,
+        InvalidFutureData,
         UnsupportedDevice,
 
         PortNotInitialized,

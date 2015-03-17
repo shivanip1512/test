@@ -25,10 +25,16 @@ public class RfnRestoreEventArchiveRequestProcessor extends RfnEventConditionDat
         
         long eventTimestamp = event.getTimeStamp();
         PointQuality pointQuality = PointQuality.Normal;
-
-        if (event.getTimeStamp() == 0) {  //outage was too long, and firmware unable to know what time really is
+        long Now = Instant.now().getMillis();
+        long Year = 365 * 86400 * 1000;
+        
+        //outage was too long, and firmware unable to know what time really is
+        if (event.getTimeStamp() == 0 
+            || event.getTimeStamp() > Now + Year 
+            || event.getTimeStamp() < Now - Year)
+        {
             // adjust the eventTimestamp to "now" and estimated quality
-            eventTimestamp = Instant.now().getMillis();
+            eventTimestamp = Now;
             pointQuality = PointQuality.Estimated;
         }
 

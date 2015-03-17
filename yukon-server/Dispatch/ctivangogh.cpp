@@ -2301,12 +2301,16 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
 
 YukonError_t CtiVanGogh::processMessage(CtiMessage *pMsg)
 {
-    YukonError_t status = ClientErrors::None;
     CtiMultiWrapper MultiWrapper;
 
     CtiServerExclusion guard(_server_exclusion);
 
-    checkDataStateQuality(pMsg, MultiWrapper);
+    if( const auto status = checkDataStateQuality(pMsg, MultiWrapper) )
+    {
+        //  bail out if we can't find the ID or if the pointdata is invalid
+        return status;
+    }
+
     checkForStalePoints(MultiWrapper);
     /*
      *  Order here is important since the processMessageData routine writes into the RTDB the current values
@@ -2322,7 +2326,7 @@ YukonError_t CtiVanGogh::processMessage(CtiMessage *pMsg)
         processMessageData((CtiMessage*)MultiWrapper.getMulti());
     }
 
-    return status;
+    return ClientErrors::None;
 }
 
 INT CtiVanGogh::postMOAUploadToConnection(CtiServer::ptr_type &CM, int flags)
@@ -2803,20 +2807,16 @@ void CtiVanGogh::refreshCParmGlobals(bool force)
  */
 INT CtiVanGogh::checkDataStateQuality(CtiMessage *pMsg, CtiMultiWrapper &aWrap)
 {
-    INT status   = ClientErrors::None;
-
     switch(pMsg->isA())
     {
     case MSG_PCRETURN:
     case MSG_MULTI:
         {
-            status = checkMultiDataStateQuality((CtiMultiMsg*)pMsg, aWrap);
-            break;
+            return checkMultiDataStateQuality((CtiMultiMsg*)pMsg, aWrap);
         }
     case MSG_POINTDATA:
         {
-            status = checkPointDataStateQuality((CtiPointDataMsg*)pMsg, aWrap);
-            break;
+            return checkPointDataStateQuality(static_cast<CtiPointDataMsg &>(*pMsg), aWrap);
         }
     case MSG_COMMAND:
         {
@@ -2824,19 +2824,17 @@ INT CtiVanGogh::checkDataStateQuality(CtiMessage *pMsg, CtiMultiWrapper &aWrap)
 
             if(pCmd->getOperation() == CtiCommandMsg::UpdateFailed)
             {
-                status = commandMsgUpdateFailedHandler(pCmd, aWrap);
+                return commandMsgUpdateFailedHandler(pCmd, aWrap);
             }
-            else
-            {
-                // Make sure nobody is doing something odd.  CGP 3/18/2002
-                commandMsgHandler(pCmd);
-            }
-            break;
+
+            // Make sure nobody is doing something odd.  CGP 3/18/2002
+            commandMsgHandler(pCmd);
+
+            return ClientErrors::None;
         }
     case MSG_SIGNAL:
         {
-            status = checkSignalStateQuality((CtiSignalMsg*)pMsg, aWrap);
-            break;
+            return checkSignalStateQuality((CtiSignalMsg*)pMsg, aWrap);
         }
     case MSG_TAG:
         {
@@ -2844,21 +2842,18 @@ INT CtiVanGogh::checkDataStateQuality(CtiMessage *pMsg, CtiMultiWrapper &aWrap)
             // Process instances for removal requests.
             _tagManager.verifyTagMsg(*((CtiTagMsg*)pMsg));
 
-            break;
+            return ClientErrors::None;
         }
     case MSG_LMCONTROLHISTORY:
         {
             // Pick this up here so that the dyn Tags may be modified....
             processControlMessage((CtiLMControlHistoryMsg*)pMsg);
-            break;
-        }
-    default:
-        {
-            break;
+
+            return ClientErrors::None;
         }
     }
 
-    return status;
+    return ClientErrors::None;
 }
 /*
  *  Could recurse.  Does not worry about self referential loops... Don't do it.
@@ -2914,14 +2909,21 @@ INT CtiVanGogh::checkSignalStateQuality(CtiSignalMsg  *pSig, CtiMultiWrapper &aW
  *
  * CtiServerExclusion guard(_server_exclusion); must have been grabbed already.
  *----------------------------------------------------------------------------*/
-INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrapper &aWrap)
+INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg &pData, CtiMultiWrapper &aWrap)
 {
-    if( ! pData )
+    static CtiTime Sanity = CtiTime::now() + 86400 * 365;
+
+    if( pData.getTime() > Sanity )
     {
-        return ClientErrors::None;
+        Sanity = CtiTime::now() + 86400 * 365;
+
+        if( pData.getTime() > Sanity )
+        {
+            return ClientErrors::InvalidFutureData;
+        }
     }
 
-    CtiPointSPtr pPoint = PointMgr.getCachedPoint(pData->getId());
+    CtiPointSPtr pPoint = PointMgr.getCachedPoint(pData.getId());
 
     if ( ! pPoint )
     {
@@ -2935,21 +2937,21 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
         return ClientErrors::IdNotFound;
     }
 
-    if(pData->getType() == InvalidPointType)
+    if(pData.getType() == InvalidPointType)
     {
-        pData->setType(pPoint->getType());
+        pData.setType(pPoint->getType());
     }
-    else if(pPoint->getType() != pData->getType())
+    else if(pPoint->getType() != pData.getType())
     {
         Cti::FormattedList itemlist;
-        itemlist <<"Point Type mismatch. Received point data message indicated a type for point "<< pData->getId() <<" which does not match the memory image held by dispatch";
+        itemlist <<"Point Type mismatch. Received point data message indicated a type for point "<< pData.getId() <<" which does not match the memory image held by dispatch";
         itemlist.add("Memory Image point type") << pPoint->getType();
-        itemlist.add("Message point type")      << pData->getType();
+        itemlist.add("Message point type")      << pData.getType();
 
         itemlist <<"Point \""<< pPoint->getName() <<"\" is attached to "<< resolveDeviceName( *pPoint );
-        if(pData->getConnectionHandle() != NULL)
+        if(pData.getConnectionHandle() != NULL)
         {
-            CtiServer::ptr_type pCM = mConnectionTable.find((long)pData->getConnectionHandle());
+            CtiServer::ptr_type pCM = mConnectionTable.find((long)pData.getConnectionHandle());
 
             if(pCM)
             {
@@ -2960,27 +2962,27 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
 
         CTILOG_WARN(dout, itemlist);
 
-        pData->setType(pPoint->getType());
+        pData.setType(pPoint->getType());
     }
 
 
     // We need to make sure there is no pending pointdata on this pointid.
     // Arrival of a pointdata message eliminates a pending data msg.  If this is a delayed point, it will overwrite anyway!
-    if( pDyn->inDelayedData() && !(pData->getTags() & TAG_POINT_DELAYED_UPDATE) )
+    if( pDyn->inDelayedData() && !(pData.getTags() & TAG_POINT_DELAYED_UPDATE) )
     {
         pDyn->setInDelayedData(false);
-        removePointDataFromPending(pData->getId());
+        removePointDataFromPending(pData.getId());
     }
 
     if( pDyn->getDispatch().getTags() & TAG_ATTRIB_CONTROL_AVAILABLE &&     // This is a controllable point.
         !(pDyn->getDispatch().getTags() & TAG_CONTROL_PENDING) &&           // This point is not expecting a control point change.
-        !(pData->getTags() & TAG_POINT_DELAYED_UPDATE) &&                   // This data message is not delayed point data (future).
-        pData->getValue() != pDyn->getValue() )                             // The point value has changed
+        !(pData.getTags() & TAG_POINT_DELAYED_UPDATE) &&                   // This data message is not delayed point data (future).
+        pData.getValue() != pDyn->getValue() )                             // The point value has changed
     {
         // The value changed.  Any control in progress was just terminated manually.
-        CtiPendable *pendable = CTIDBG_new CtiPendable(pData->getId(), CtiPendable::CtiPendableAction_ControlStatusChanged);
+        CtiPendable *pendable = CTIDBG_new CtiPendable(pData.getId(), CtiPendable::CtiPendableAction_ControlStatusChanged);
         pendable->_tags = pDyn->getDispatch().getTags();
-        pendable->_value = pData->getValue();
+        pendable->_value = pData.getValue();
         _pendingOpThread.push( pendable );
     }
 
@@ -2989,19 +2991,19 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
      *  the point is added to the pending list as a "pendingPointData".  Any subsequent change via pointdata
      *  pulls this pending operation from the list (per above)!
      */
-    if(pData->getTags() & TAG_POINT_DELAYED_UPDATE)
+    if(pData.getTags() & TAG_POINT_DELAYED_UPDATE)
     {
         if(gDispatchDebugLevel & DISPATCH_DEBUG_DELAYED_UPDATE)
         {
-            CTILOG_DEBUG(dout, "Delayed update \""<< pData->getTime() <<"\" is indicated on point data for "<< resolveDeviceName(*pPoint) <<" / "<< pPoint->getName());
+            CTILOG_DEBUG(dout, "Delayed update \""<< pData.getTime() <<"\" is indicated on point data for "<< resolveDeviceName(*pPoint) <<" / "<< pPoint->getName());
         }
 
         pDyn->setInDelayedData(true);
 
-        CtiPendingPointOperations *pendingPointData = CTIDBG_new CtiPendingPointOperations(pData->getId());
+        CtiPendingPointOperations *pendingPointData = CTIDBG_new CtiPendingPointOperations(pData.getId());
         pendingPointData->setType(CtiPendingPointOperations::pendingPointData);
-        pendingPointData->setTime( pData->getTime() );
-        pendingPointData->setPointData( (CtiPointDataMsg*)pData->replicateMessage() );
+        pendingPointData->setTime( pData.getTime() );
+        pendingPointData->setPointData( (CtiPointDataMsg*)pData.replicateMessage() );
 
         addToPendingSet(pendingPointData);
     }
@@ -3035,13 +3037,13 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
                 }
             }
 
-            if(pData->getTime() < pDyn->getTimeStamp())
+            if(pData.getTime() < pDyn->getTimeStamp())
             {
-                pData->setTags(TAG_POINT_OLD_TIMESTAMP);
+                pData.setTags(TAG_POINT_OLD_TIMESTAMP);
             }
             else
             {
-                pData->resetTags(TAG_POINT_OLD_TIMESTAMP); // No one else may set this but us!
+                pData.resetTags(TAG_POINT_OLD_TIMESTAMP); // No one else may set this but us!
             }
 
             //  checked here to avoid calling the point manager inside processStalePoint()
