@@ -481,7 +481,10 @@ yukon.ui = (function () {
             mod.initChosen();
             
             /** Initialize any tabbed containers on page load. */
-            $('.js-init-tabs').tabs().show().removeClass('js-init-tabs');
+            $('.js-init-tabs').each(function (idx, elem) {
+                elem = $(elem);
+                elem.tabs({'active': elem.data('selectedTab')}).show().removeClass('js-init-tabs');
+            });
                 
             /** Add fancy tooltip support (tipsy)
              *  To give an item a custom tooltip, give it an attribute 'data-tooltip'

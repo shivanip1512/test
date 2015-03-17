@@ -2114,13 +2114,7 @@
         <name>classes</name>
         <required>false</required>
         <rtexprvalue>true</rtexprvalue>
-        <description>Class names applied to the div.</description>
-    </attribute>
-    <attribute>
-        <name>mode</name>
-        <required>false</required>
-        <rtexprvalue>true</rtexprvalue>
-        <description>Values: 'section' - looks like a section container, or 'box' (default) - looks like a box container.</description>
+        <description>CSS Class names applied to the container div.</description>
     </attribute>
     <attribute>
         <name>id</name>
@@ -2129,7 +2123,7 @@
         <description>The id to use for the top-level HTML element.</description>
     </attribute>
        <description>
-        Organizes content into columns using cti:dataGridCell tags.
+            Contains a collection of "cti:tab"
         </description>
   </tag>
   
@@ -2141,13 +2135,13 @@
         <name>selectorName</name>
         <required>true</required>
         <rtexprvalue>true</rtexprvalue>
-        <description>Tab name</description>
+        <description>Text for tab name</description>
     </attribute>
     <attribute>
-        <name>cssClass</name>
+        <name>classes</name>
         <required>false</required>
         <rtexprvalue>true</rtexprvalue>
-        <description>CSS class of the tab div</description>
+        <description>CSS classes of the content div.</description>
     </attribute>
     <attribute>
         <name>initiallySelected</name>
@@ -2162,7 +2156,7 @@
         <description>Tab li element id. If not specified a unique value will be used.</description>
     </attribute>
     <description>
-        Tab content
+        Must be inside a "cti:tabs"
     </description>
   </tag>
  

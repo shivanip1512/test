@@ -14,25 +14,18 @@ import org.apache.commons.lang3.StringUtils;
 
 public class TabsTag extends BodyTagSupport {
     
-    private enum Mode{ box, section };
-
-    private Mode mode = Mode.section;
-    private String classes = "tabbed-container js-init-tabs";
+    private String classes = "";
     private String id="";
-    private String selectedTabName = "";
+    private int selectedTabIndex = 0;
     private List<String> tabNames = new ArrayList<String>();
     private List<String> tabIds = new ArrayList<String>();
     
     public void addTab(String name, String id, boolean initiallySelected) {
-        this.tabNames.add(name);
-        this.tabIds.add(id);
+        tabNames.add(name);
+        tabIds.add(id);
         if (initiallySelected) {
-            this.selectedTabName = name;
+            selectedTabIndex = tabNames.size() - 1;
         }
-    }
-    
-    public void setMode(String newMode) {
-        this.mode = Mode.valueOf(newMode);
     }
     
     public void setClasses(String classes) {
@@ -62,25 +55,15 @@ public class TabsTag extends BodyTagSupport {
         JspWriter out = pageContext.getOut();
         try {
             
-            if (mode == Mode.section) {
-                classes += " section";
-            }
-            
-            out.print("<div class=\"dn "+ classes +"\"");
+            out.print("<div class=\"dn tabbed-container js-init-tabs " + classes + "\"");
             if (!StringUtils.isEmpty(id)) {
                 out.print(" id=\"" + id + "\"");
             }
-            out.println(">");
+            out.print(" data-selected-tab=\"" + selectedTabIndex + "\">");
             
             out.println("<ul>");
-            int selectedTabIndex = getSelectedTabIndex();
             for (int i = 0; i < tabIds.size(); i++) {
-                out.println("<li");
-                if (i == selectedTabIndex) {
-                    out.println(" data-selected=\"" + i + "\"");
-                }
-                out.println(">");
-                out.println("<a href=\"#" + tabIds.get(i) + "\">" + tabNames.get(i) + "</a></li>");
+                out.println("<li><a href=\"#" + tabIds.get(i) + "\">" + tabNames.get(i) + "</a></li>");
             }
             out.println("</ul>");
             
@@ -93,17 +76,6 @@ public class TabsTag extends BodyTagSupport {
         return EVAL_PAGE;
     }
     
-    private int getSelectedTabIndex() {
-        int selectedTabIndex = 0;
-        for (int idx = 0; idx < tabIds.size(); idx++) {
-            if (tabNames.get(idx).equals(this.selectedTabName)) {
-                selectedTabIndex = idx;
-                break;
-            }
-        }
-        return selectedTabIndex;
-    }
-
     @Override
     public String getId() {
         return id;

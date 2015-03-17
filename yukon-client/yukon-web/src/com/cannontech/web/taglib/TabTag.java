@@ -7,7 +7,7 @@ import javax.servlet.jsp.JspException;
 public class TabTag extends YukonTagSupport {
     
     private String selectorName = "";
-    private String cssClass = "";
+    private String classes = "";
     private String tabId;
     private boolean initiallySelected = false;
     
@@ -20,7 +20,7 @@ public class TabTag extends YukonTagSupport {
         parent.addTab(selectorName, id, initiallySelected);
         
         // tab content
-        getJspContext().getOut().println("<div id=\"" + id + "\" class=\"" + cssClass + "\">");
+        getJspContext().getOut().println("<div id=\"" + id + "\" class=\"" + classes + "\">");
         getJspBody().invoke(getJspContext().getOut());
         getJspContext().getOut().println("</div>");
         
@@ -30,8 +30,8 @@ public class TabTag extends YukonTagSupport {
         this.selectorName = selectorName;
     }
 
-    public void setCssClass(String cssClass) {
-        this.cssClass = cssClass;
+    public void setClasses(String classes) {
+        this.classes = classes;
     }
  
     public void setTabId(String tabId) {
