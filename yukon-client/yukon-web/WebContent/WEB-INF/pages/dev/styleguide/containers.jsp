@@ -87,8 +87,8 @@ $(function () {
         </div>
         <div class="column three">
             <cti:tabs>
-                <cti:tab selectorName="Tab 1">tab 1 contents</cti:tab>
-                <cti:tab selectorName="Tab 2">tab 2 contents</cti:tab>
+                <cti:tab selectorName="Tab 1">tab 1 should start hidden</cti:tab>
+                <cti:tab selectorName="Tab 2" initiallySelected="true">tab 2 should be active first</cti:tab>
             </cti:tabs>
         </div>
         <div class="column four nogutter">
