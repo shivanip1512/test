@@ -7,23 +7,23 @@
 <cti:standardPage module="dr" page="estimatedLoad">
     <cti:includeScript link="/JavaScript/yukon.dr.formula.js"/>
 
-    <cti:tabbedContentSelector mode="section">
+    <cti:tabs>
         <cti:msg2 var="formulasTab" key='.formulas'/>
-        <cti:tabbedContentSelectorContent selectorName="${formulasTab}">
+        <cti:tab selectorName="${formulasTab}">
            <%@ include file="_formulasTable.jsp" %>
             <div class="action-area">
                <cti:button icon="icon-plus-green" nameKey="newFormula" href="formula/create"/>
             </div>
-        </cti:tabbedContentSelectorContent>
+        </cti:tab>
 
         <cti:msg2 var="assignmentsTab" key='.assignments'/>
-        <cti:tabbedContentSelectorContent selectorName="${assignmentsTab}">
+        <cti:tab selectorName="${assignmentsTab}">
            <tags:sectionContainer2 nameKey="applianceCategories">
                <%@ include file="_appCatAssignmentsTable.jsp" %>
             </tags:sectionContainer2>
             <tags:sectionContainer2 nameKey="gears">
                <%@ include file="_gearAssignmentsTable.jsp" %>
             </tags:sectionContainer2>
-        </cti:tabbedContentSelectorContent>
-    </cti:tabbedContentSelector>
+        </cti:tab>
+    </cti:tabs>
 </cti:standardPage>

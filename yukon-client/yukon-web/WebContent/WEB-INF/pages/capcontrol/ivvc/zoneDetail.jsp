@@ -238,9 +238,9 @@
     </div>
 
     <div class="column two nogutter">
-        <cti:tabbedContentSelector>
+        <cti:tabs>
             <cti:msg2 var="tabName" key=".voltageProfile.title" />
-            <cti:tabbedContentSelectorContent selectorName="${tabName}">
+            <cti:tab selectorName="${tabName}">
                 <c:set var="chartId" value="zone_${zoneId}_chart" />
                 <cti:url var="chartJsonDataUrl" value="/capcontrol/ivvc/zone/chart">
                     <cti:param name="zoneId" value="${zoneId}" />
@@ -251,17 +251,17 @@
 
                 <cti:dataUpdaterCallback function="yukon.flot.reloadChartIfExpired({chartId:'${chartId}', dataUrl:'${chartJsonDataUrl}'})"
                     initialize="false" largestTime="CAPCONTROL/${zoneId}/IVVC_LARGEST_GRAPH_TIME_FOR_ZONE"/>
-            </cti:tabbedContentSelectorContent>
+            </cti:tab>
             <cti:msg2 var="voltagePointsTab" key=".voltagePoints.title" />
-            <cti:tabbedContentSelectorContent selectorName="${voltagePointsTab}">
+            <cti:tab selectorName="${voltagePointsTab}">
                 <div class="scroll-lg">
                     <cti:url var="zoneVoltagePointsUrl" value="/capcontrol/ivvc/zone/voltagePoints">
                        <cti:param name="zoneId" value="${zoneId}"/>
                    </cti:url>
                     <%@ include file="voltagePoints.jspf" %>
                 </div>
-            </cti:tabbedContentSelectorContent>
-        </cti:tabbedContentSelector>
+            </cti:tab>
+        </cti:tabs>
         <tags:boxContainer2 nameKey="ivvcEvents" hideEnabled="true" showInitially="true">
             <input id="ivvc-most-recent-update" type="hidden" value="${mostRecentDateTime}">
             <div class="scroll-lg">

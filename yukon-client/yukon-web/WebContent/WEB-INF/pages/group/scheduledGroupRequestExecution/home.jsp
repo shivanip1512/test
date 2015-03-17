@@ -51,10 +51,10 @@
         </form>
                             
         <%-- TABS --%>
-        <cti:tabbedContentSelector>
+        <cti:tabs>
                 
             <%-- ATTRIBUTE TAB --%>
-            <cti:tabbedContentSelectorContent selectorName="${attibuteRequestTypeLabel}" initiallySelected="${empty requestType || requestType == 'SCHEDULED_GROUP_ATTRIBUTE_READ'}">
+            <cti:tab selectorName="${attibuteRequestTypeLabel}" initiallySelected="${empty requestType || requestType == 'SCHEDULED_GROUP_ATTRIBUTE_READ'}">
                 
                 <form id="scheduledGroupRequestExecutionForm_attr" action="<cti:url value="/group/scheduledGroupRequestExecution/schedule"/>" method="post" >
                   <cti:csrfToken/>
@@ -142,10 +142,10 @@
                             classes="delete"/>
                     </cti:displayForPageEditModes>
                 </div>
-            </cti:tabbedContentSelectorContent>
+            </cti:tab>
             
             <%-- COMMAND TAB --%>
-            <cti:tabbedContentSelectorContent selectorName="${commandRequestTypeLabel}" initiallySelected="${requestType == 'SCHEDULED_GROUP_COMMAND'}">
+            <cti:tab selectorName="${commandRequestTypeLabel}" initiallySelected="${requestType == 'SCHEDULED_GROUP_COMMAND'}">
             
                 <form id="scheduledGroupRequestExecutionForm_cmd" action="<cti:url value="/group/scheduledGroupRequestExecution/schedule"/>" method="post" >
                     <cti:csrfToken/>
@@ -224,8 +224,8 @@
                          </cti:displayForPageEditModes>
                    </div>
                 </form>
-            </cti:tabbedContentSelectorContent>
+            </cti:tab>
         
-        </cti:tabbedContentSelector>
+        </cti:tabs>
             
 </cti:standardPage>

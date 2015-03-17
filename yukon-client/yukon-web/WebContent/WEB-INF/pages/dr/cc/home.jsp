@@ -13,9 +13,9 @@
     
     <div class="column-24">
         <div class="column one nogutter">
-            <cti:tabbedContentSelector id="cicurtailment_tab_container" mode="section">
+            <cti:tabs>
                 <cti:msg2 var="programsName" key=".ccurtPrograms"/>
-                <cti:tabbedContentSelectorContent selectorName="${programsName}" initiallySelected="true">
+                <cti:tab selectorName="${programsName}" initiallySelected="true">
                 <h2><i:inline key=".ccurtAvailable"/></h2>
                 <div class="column one">
                     <table class="compact-results-table" id="programs">
@@ -72,9 +72,9 @@
                     </c:choose>
                     </c:forEach>
                 </div>
-                </cti:tabbedContentSelectorContent>
+                </cti:tab>
                 <cti:msg2 var="setupName" key=".setup"/>
-                <cti:tabbedContentSelectorContent selectorName="${setupName}" initiallySelected="false">
+                <cti:tab selectorName="${setupName}" initiallySelected="false">
                     <table class="compact-results-table" id="programs">
                         <thead>
                             <tr></tr>
@@ -92,11 +92,11 @@
                             </tr>
                         </tbody>
                     </table>
-                 </cti:tabbedContentSelectorContent>
+                 </cti:tab>
                 <cti:msg2 var="trendName" key=".ccurtTrends"/>
-                <cti:tabbedContentSelectorContent selectorName="${trendName}" initiallySelected="false">
-                </cti:tabbedContentSelectorContent>
-            </cti:tabbedContentSelector>
+                <cti:tab selectorName="${trendName}" initiallySelected="false">
+                </cti:tab>
+            </cti:tabs>
         </div>
     </div>
 </cti:msgScope>

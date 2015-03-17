@@ -13,7 +13,7 @@ public class TabTag extends YukonTagSupport {
     
     @Override
     public void doTag() throws JspException, IOException {
-        String id = tabId != null ? tabId : UniqueIdentifierTag.generateIdentifier(getJspContext(), "tabbedContentSelectorContent_");
+        String id = tabId != null ? tabId : UniqueIdentifierTag.generateIdentifier(getJspContext(), "tab-");
         
         // tell container tag about ourself
         TabsTag parent = getParent(TabsTag.class);

@@ -13,20 +13,20 @@
 
     <tags:simpleDialog id="sharedPopupDialog"/>
     
-    <cti:tabbedContentSelector>
+    <cti:tabs>
     
    		<%-- EXPORT TAB --%>
-		<cti:tabbedContentSelectorContent selectorName="${exportConfig}" initiallySelected="${exportTab}">
+		<cti:tab selectorName="${exportConfig}" initiallySelected="${exportTab}">
 			<%@ include file="export.jspf" %>
-		</cti:tabbedContentSelectorContent>
+		</cti:tab>
 		
 		
 		<%-- IMPORT TAB --%>
-		<cti:tabbedContentSelectorContent selectorName="${importConfig}" initiallySelected="${importTab}">
+		<cti:tab selectorName="${importConfig}" initiallySelected="${importTab}">
 			<%@ include file="loadImport.jspf" %>
-		</cti:tabbedContentSelectorContent>
+		</cti:tab>
     
-    </cti:tabbedContentSelector>
+    </cti:tabs>
     
     
 </cti:standardPage>

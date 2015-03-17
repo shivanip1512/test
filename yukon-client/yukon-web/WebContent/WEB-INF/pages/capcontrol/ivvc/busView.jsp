@@ -228,9 +228,9 @@
         
         <div class="column two nogutter">
         
-            <cti:tabbedContentSelector>
+            <cti:tabs>
                 <cti:msg2 var="tabName" key=".voltageProfile.title" />
-                <cti:tabbedContentSelectorContent selectorName="${tabName}">
+                <cti:tab selectorName="${tabName}">
                     <c:set var="chartId" value="sub_${subBusId}_chart" />
                     <cti:url var="chartJsonDataUrl" value="/capcontrol/ivvc/bus/chart">
                         <cti:param name="subBusId" value="${subBusId}" />
@@ -241,9 +241,9 @@
 
                     <cti:dataUpdaterCallback function="yukon.flot.reloadChartIfExpired({chartId:'${chartId}', dataUrl:'${chartJsonDataUrl}'})"
                                              initialize="false" largestTime="CAPCONTROL/${subBusId}/IVVC_LARGEST_GRAPH_TIME_FOR_SUBBUS"/>
-                </cti:tabbedContentSelectorContent>
+                </cti:tab>
                 <cti:msg2 var="voltagePointsTab" key=".voltagePoints.title" />
-                <cti:tabbedContentSelectorContent selectorName="${voltagePointsTab}">
+                <cti:tab selectorName="${voltagePointsTab}">
                     <div class="scroll-lg">
                         <c:forEach items="${zoneVoltagePointsHolders}" var="zoneVoltagePointsHolder">
                             <c:set var="zoneName" value="${zoneVoltagePointsHolder.zoneName}"/>
@@ -257,8 +257,8 @@
                             <br>
                         </c:forEach>
                     </div>
-                </cti:tabbedContentSelectorContent>
-            </cti:tabbedContentSelector>
+                </cti:tab>
+            </cti:tabs>
             
             <tags:boxContainer2 nameKey="ivvcAnalysisContainer">
                 <div id="ivvcAnalysisMsg" class="wsn">

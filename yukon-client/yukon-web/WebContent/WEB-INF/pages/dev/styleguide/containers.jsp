@@ -86,10 +86,10 @@ $(function () {
             </div>
         </div>
         <div class="column three">
-            <cti:tabbedContentSelector mode="section">
-                <cti:tabbedContentSelectorContent selectorName="Tab 1">tab 1 contents</cti:tabbedContentSelectorContent>
-                <cti:tabbedContentSelectorContent selectorName="Tab 2">tab 2 contents</cti:tabbedContentSelectorContent>
-            </cti:tabbedContentSelector>
+            <cti:tabs>
+                <cti:tab selectorName="Tab 1">tab 1 contents</cti:tab>
+                <cti:tab selectorName="Tab 2">tab 2 contents</cti:tab>
+            </cti:tabs>
         </div>
         <div class="column four nogutter">
             <tags:sectionContainer title="Section Container">section container contents</tags:sectionContainer>

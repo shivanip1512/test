@@ -2107,7 +2107,7 @@
   </tag>
   
   <tag>
-    <name>tabbedContentSelector</name>
+    <name>tabs</name>
     <tag-class>com.cannontech.web.taglib.TabsTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -2134,7 +2134,7 @@
   </tag>
   
   <tag>
-    <name>tabbedContentSelectorContent</name>
+    <name>tab</name>
     <tag-class>com.cannontech.web.taglib.TabTag</tag-class>
     <body-content>scriptless</body-content>
      <attribute>

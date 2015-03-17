@@ -14,9 +14,9 @@
 <cti:msgScope paths="yukon.web.modules.commercialcurtailment.ccurtSetup">
     <div class="column-16-8">
         <div class="column one nogutter">
-            <cti:tabbedContentSelector id="cicurtailment_tab_container" mode="section">
+            <cti:tabs>
                 <cti:msg2 var="programsName" key=".ccurtPrograms"/>
-                <cti:tabbedContentSelectorContent selectorName="${programsName}" initiallySelected="true">
+                <cti:tab selectorName="${programsName}" initiallySelected="true">
             <h:form>
                 <h2><i:inline key=".ccurtAvailable"/></h2>
 
@@ -58,10 +58,10 @@
                     <jsp:include page="include/operatorEventList.jsp"/>
                 </t:aliasBean>
             </h:form>
-                </cti:tabbedContentSelectorContent>
+                </cti:tab>
 
                 <cti:msg2 var="setupName" key=".setup"/>
-                <cti:tabbedContentSelectorContent selectorName="${setupName}" initiallySelected="false">
+                <cti:tab selectorName="${setupName}" initiallySelected="false">
                     <table class="link-table">
                         <tr>
                             <td><a href="<cti:url value="/cc/programList.jsf"/>"><i:inline key=".programList"/></a></td>
@@ -76,11 +76,11 @@
                             <td><i:inline key=".customer"/></td>
                         </tr>
                     </table>
-                </cti:tabbedContentSelectorContent>
+                </cti:tab>
                 <cti:msg2 var="trendName" key=".ccurtTrends"/>
-                <cti:tabbedContentSelectorContent selectorName="${trendName}" initiallySelected="false">
-                </cti:tabbedContentSelectorContent>
-            </cti:tabbedContentSelector>
+                <cti:tab selectorName="${trendName}" initiallySelected="false">
+                </cti:tab>
+            </cti:tabs>
 
         </div>
     </div>

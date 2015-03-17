@@ -8,9 +8,9 @@
 
     <div class="column-12-12">
         <div class="column one section">
-            <cti:tabbedContentSelector mode="section">
+            <cti:tabs>
                 <cti:msg2 var="favoritesTab" key=".favorites" />
-                <cti:tabbedContentSelectorContent selectorName="${favoritesTab}">
+                <cti:tab selectorName="${favoritesTab}">
                     <c:if test="${empty favorites}">
                         <span class="empty-list"><i:inline key=".favorites.emptyList" /></span>
                     </c:if>
@@ -39,9 +39,9 @@
                             </ul>
                         </c:forEach>
                     </c:if>
-                </cti:tabbedContentSelectorContent>
+                </cti:tab>
                 <cti:msg2 var="historyTab" key=".history" />
-                <cti:tabbedContentSelectorContent selectorName="${historyTab}">
+                <cti:tab selectorName="${historyTab}">
                     <c:if test="${empty history}">
                         <span class="empty-list"><i:inline key=".history.emptyList" /></span>
                     </c:if>
@@ -52,8 +52,8 @@
                             </c:forEach>
                         </ol>
                     </c:if>
-                </cti:tabbedContentSelectorContent>
-            </cti:tabbedContentSelector>
+                </cti:tab>
+            </cti:tabs>
         </div>
         <div class="column two nogutter">
             <tags:widget bean="subscribedMonitorsWidget" container="section"/>

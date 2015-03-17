@@ -105,9 +105,9 @@ $(function() {
 <div class="column-12-12 clearfix">
     <div class="column one">
         <tags:sectionContainer2 nameKey="bundle">
-            <cti:tabbedContentSelector mode="section">
+            <cti:tabs>
                 <cti:msg2 key=".supportBundle.createNewHeading" var="createNewHeading"/>
-                <cti:tabbedContentSelectorContent selectorName="${createNewHeading}" >
+                <cti:tab selectorName="${createNewHeading}" >
                     <form:form id="createBundleForm" commandName="supportBundle" action="${createBundleURL}" method="POST">
                         <cti:csrfToken/>
                         <tags:nameValueContainer2>
@@ -147,10 +147,10 @@ $(function() {
                             </c:if>
                         </div>
                     </form:form>
-                </cti:tabbedContentSelectorContent>
+                </cti:tab>
                 <cti:msg2 key='.supportBundle.previousHeading' var="previousHeading"/>
                 <cti:url value="/support/downloadBundle" var="downloadBundleURl"/>
-                <cti:tabbedContentSelectorContent selectorName="${previousHeading}" >
+                <cti:tab selectorName="${previousHeading}" >
                     <form id="previousBundlesForm" action="${downloadBundleURl}" method="POST">
                         <cti:csrfToken/>
                         <c:if test="${empty bundleList}">
@@ -190,8 +190,8 @@ $(function() {
                             <input type="hidden" name="fileName" />
                         </form>
                     </div>
-                </cti:tabbedContentSelectorContent>
-            </cti:tabbedContentSelector>
+                </cti:tab>
+            </cti:tabs>
         </tags:sectionContainer2>
     </div>
 

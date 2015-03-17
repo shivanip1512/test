@@ -16,10 +16,10 @@
 <cti:includeScript link="/JavaScript/yukon.ami.billing.js"/>
 <cti:includeScript link="/JavaScript/yukon.ami.billing.dynamic.js"/>
 
-<cti:tabbedContentSelector id="billing_tab_container" mode="section">
+<cti:tabs id="billing_tab_container">
 
     <cti:msg key="yukon.web.billing.tab.generation.title" var="tabGen" />
-    <cti:tabbedContentSelectorContent selectorName="${tabGen}" initiallySelected="${showTabGeneration}">
+    <cti:tab selectorName="${tabGen}" initiallySelected="${showTabGeneration}">
         <div id="billing_generation_settings" class="clearfix stacked">
             <jsp:include page="_settings.jsp"></jsp:include>
         </div>
@@ -28,16 +28,16 @@
                 <jsp:include page="../amr/scheduledBilling/_jobs.jsp"></jsp:include>
             </div>
         </tags:sectionContainer2>
-    </cti:tabbedContentSelectorContent>
+    </cti:tab>
     
     <cti:checkRolesAndProperties value="DYNAMIC_BILLING_FILE_SETUP">
         <cti:msg key="yukon.web.billing.tab.setup.title" var="tab_setup" />
-        <cti:tabbedContentSelectorContent selectorName="${tab_setup}" initiallySelected="${showTabSetup}">
+        <cti:tab selectorName="${tab_setup}" initiallySelected="${showTabSetup}">
             <div id="billing_setup_overview">
                 <jsp:include page="../amr/dynamicBilling/_overview.jsp"></jsp:include>
             </div>
-        </cti:tabbedContentSelectorContent>
+        </cti:tab>
     </cti:checkRolesAndProperties>
-</cti:tabbedContentSelector>
+</cti:tabs>
 
 </cti:standardPage>
