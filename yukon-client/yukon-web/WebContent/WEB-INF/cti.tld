@@ -2108,7 +2108,7 @@
   
   <tag>
     <name>tabbedContentSelector</name>
-    <tag-class>com.cannontech.web.taglib.TabbedContentSelectorTag</tag-class>
+    <tag-class>com.cannontech.web.taglib.TabsTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
         <name>classes</name>

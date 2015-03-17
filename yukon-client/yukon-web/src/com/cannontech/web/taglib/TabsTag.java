@@ -12,7 +12,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import org.apache.commons.lang3.StringUtils;
 
 
-public class TabbedContentSelectorTag extends BodyTagSupport {
+public class TabsTag extends BodyTagSupport {
     
     private enum Mode{ box, section };
 

@@ -16,7 +16,7 @@ public class TabTag extends YukonTagSupport {
         String id = tabId != null ? tabId : UniqueIdentifierTag.generateIdentifier(getJspContext(), "tabbedContentSelectorContent_");
         
         // tell container tag about ourself
-        TabbedContentSelectorTag parent = getParent(TabbedContentSelectorTag.class);
+        TabsTag parent = getParent(TabsTag.class);
         parent.addTab(selectorName, id, initiallySelected);
         
         // tab content
