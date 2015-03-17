@@ -393,6 +393,8 @@ bool isKnownUnsupportedDevice(const string& typeStr)
         "lcr-6200 rfn",
         "lcr-6600 rfn",
         "weather location",
+        "ecobee3",
+        "ecobee smart",
         "ecobee smart si",
         "ltc",
         "go_regulator",
