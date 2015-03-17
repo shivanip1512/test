@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import javax.servlet.jsp.JspException;
 
-public class TabbedContentSelectorContentTag extends YukonTagSupport {
+public class TabTag extends YukonTagSupport {
     
     private String selectorName = "";
     private String cssClass = "";

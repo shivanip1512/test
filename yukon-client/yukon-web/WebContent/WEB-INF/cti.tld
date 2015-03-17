@@ -2135,7 +2135,7 @@
   
   <tag>
     <name>tabbedContentSelectorContent</name>
-    <tag-class>com.cannontech.web.taglib.TabbedContentSelectorContentTag</tag-class>
+    <tag-class>com.cannontech.web.taglib.TabTag</tag-class>
     <body-content>scriptless</body-content>
      <attribute>
         <name>selectorName</name>
