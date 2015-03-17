@@ -91,14 +91,14 @@ private:
 
     unsigned writeRawPointHistory(boost::ptr_deque<CtiTableRawPointHistory> &rowsToWrite);
 
-    int checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, const CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch &dpd, CtiSignalMsg *&pSig );
-    void checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, const CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch &dpd, CtiSignalMsg *&pSig );
+    void checkNumericReasonability(CtiPointDataMsg &pData, CtiMultiWrapper &aWrap, const CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch &dpd, CtiSignalMsg *&pSig );
+    void checkNumericLimits(int alarm, CtiPointDataMsg &pData, CtiMultiWrapper &aWrap, const CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch &dpd, CtiSignalMsg *&pSig );
     INT getNumericLimitFromHighLow(int alarmOffset, int alarm);
 
-    void checkStatusUCOS(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, const CtiPointBase &point, CtiDynamicPointDispatchSPtr &pDyn, CtiSignalMsg *&pSig );
-    void checkStatusCommandFail(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, const CtiPointBase &point, CtiDynamicPointDispatchSPtr &pDyn, CtiSignalMsg *&pSig );
-    void checkStatusState(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, const CtiPointBase &point, CtiDynamicPointDispatch &dpd, CtiSignalMsg *&pSig );
-    void tagSignalAsAlarm(const CtiPointBase &point, CtiSignalMsg *&pSig, int alarm, CtiPointDataMsg *pData = 0);
+    void checkStatusUCOS(int alarm, const CtiPointDataMsg &pData, CtiMultiWrapper &aWrap, const CtiPointBase &point, CtiDynamicPointDispatchSPtr &pDyn, CtiSignalMsg *&pSig );
+    void checkStatusCommandFail(int alarm, const CtiPointDataMsg &pData, CtiMultiWrapper &aWrap, const CtiPointBase &point, CtiDynamicPointDispatchSPtr &pDyn, CtiSignalMsg *&pSig );
+    void checkStatusState(int alarm, const CtiPointDataMsg &pData, CtiMultiWrapper &aWrap, const CtiPointBase &point, CtiDynamicPointDispatch &dpd, CtiSignalMsg *&pSig );
+    void tagSignalAsAlarm(const CtiPointBase &point, CtiSignalMsg *&pSig, int alarm, const CtiPointDataMsg *pData);
     void updateDynTagsForSignalMsg( const CtiPointBase &point, CtiSignalMsg *&pSig, int alarm_condition, bool condition_active );
 
     bool ablementDevice(Cti::DeviceBaseLite &dLite, UINT setmask, UINT tagmask);
@@ -218,14 +218,14 @@ public:
     void  updateRuntimeDispatchTable(bool force = false);
     void  writeSignalsToDB(bool justdoit = false);
     void  refreshCParmGlobals(bool force = false);
-    INT   checkDataStateQuality(CtiMessage *pMsg, CtiMultiWrapper &aWrap);
-    INT   checkPointDataStateQuality(CtiPointDataMsg &pData, CtiMultiWrapper &aWrap);
-    INT   checkMultiDataStateQuality(CtiMultiMsg *pMulti, CtiMultiWrapper &aWrap);
-    INT   commandMsgUpdateFailedHandler(CtiCommandMsg *pCmd, CtiMultiWrapper &aWrap);
-    INT   checkSignalStateQuality(CtiSignalMsg  *pSig, CtiMultiWrapper &aWrap);
-    void  checkForStatusAlarms(CtiPointDataMsg  *pData, CtiMultiWrapper &aWrap, const CtiPointBase &point);
-    void  checkForNumericAlarms(CtiPointDataMsg  *pData, CtiMultiWrapper &aWrap, const CtiPointBase &point);
-    INT   markPointNonUpdated(const CtiPointBase &point, CtiMultiWrapper &aWrap);
+    YukonError_t checkDataStateQuality(CtiMessage *pMsg, CtiMultiWrapper &aWrap);
+    YukonError_t checkPointDataStateQuality(CtiPointDataMsg &pData, CtiMultiWrapper &aWrap);
+    YukonError_t checkMultiDataStateQuality(CtiMultiMsg *pMulti, CtiMultiWrapper &aWrap);
+    YukonError_t commandMsgUpdateFailedHandler(CtiCommandMsg *pCmd, CtiMultiWrapper &aWrap);
+    YukonError_t checkSignalStateQuality(CtiSignalMsg  *pSig, CtiMultiWrapper &aWrap);
+    void  checkForStatusAlarms (const CtiPointDataMsg &pData, CtiMultiWrapper &aWrap, const CtiPointBase &point);
+    void  checkForNumericAlarms(CtiPointDataMsg &pData, CtiMultiWrapper &aWrap, const CtiPointBase &point);
+    YukonError_t markPointNonUpdated(const CtiPointBase &point, CtiMultiWrapper &aWrap);
     CtiServer::ptr_type getPorterConnection();
     CtiServer::ptr_type getScannerConnection();
     void  validateConnections();
