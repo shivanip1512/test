@@ -111,7 +111,7 @@ public class UserPageDaoImpl implements UserPageDao {
             new Instant());
 
         if (!isUserPageInHistory(page)) {
-            maintainHistory(page.getUserId());
+            pruneHistory(page.getUserId());
         }
         page = save(page);
         
@@ -243,9 +243,9 @@ public class UserPageDaoImpl implements UserPageDao {
     }
 
     /**
-     * Deletes all but the most recent MAX_HISTORY elements for a userId that are not favorites.
+     * Deletes all but the most recent MAX_HISTORY-1 elements for a userId that are not favorites.
      */
-    private void maintainHistory(int userId) {
+    private void pruneHistory(int userId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("delete from UserPage");
         sql.append("where UserId").eq(userId);
