@@ -52,5 +52,5 @@
         </div>
         <div class="column two nogutter trend-container pr" data-trend="${trendId}"><div class="glass"></div></div>
     </div>
-    <cti:includeScript link="/JavaScript/yukon.trends.js"/>
+    <cti:includeScript link="/JavaScript/yukon.tools.trends.js"/>
 </cti:standardPage>

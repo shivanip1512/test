@@ -7,13 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.http.HttpSession;
-
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -27,6 +24,7 @@ import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -42,7 +40,7 @@ import com.google.common.collect.ImmutableSet;
 public class TrendDataController {
     
     @Autowired private GraphDao graphDao;
-    @Autowired private RawPointHistoryDao rawPointHistoryDao;
+    @Autowired private RawPointHistoryDao rphDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
     public enum LegacySeriesType {
@@ -96,23 +94,34 @@ public class TrendDataController {
     }
     
     @RequestMapping("/trends/{id}/data")
-    public @ResponseBody Map<String, Object> trend(HttpSession session, ModelMap model, YukonUserContext userContext, @PathVariable int id) {
-
+    public @ResponseBody Map<String, Object> trend(YukonUserContext userContext, @PathVariable int id) {
+        
         boolean showRightAxis = false;
         LiteGraphDefinition trend = graphDao.getLiteGraphDefinition(id);
         List<GraphDataSeries> series = graphDao.getGraphDataSeries(trend.getGraphDefinitionID());
         List<Map<String, Object>> seriesData = new ArrayList<>();
         
         for (GraphDataSeries serie : series) {
+            
             Map<String, Object> valueMap = new HashMap<>();
             valueMap.put("name", serie.getLabel());
             List<Object[]> values = new ArrayList<>();
+            
             Date startDate = new Instant().minus(Duration.standardDays(365 * 2)).toDate();
             Date stopDate = new Instant().toDate();
             Range<Date> dateRange = new Range<Date>(startDate, true, stopDate, true);
-			List<PointValueHolder> data = rawPointHistoryDao.getPointData(
-					serie.getPointID(),dateRange.translate(CtiUtilities.INSTANT_FROM_DATE),
-					Order.FORWARD);
+            Range<Instant> instantRange = dateRange.translate(CtiUtilities.INSTANT_FROM_DATE);
+            
+            List<PointValueHolder> data = rphDao.getPointData(serie.getPointID(), instantRange, Order.FORWARD);
+            
+            /** If this is a status point we need to turn data grouping off. */
+            if (!data.isEmpty()) {
+                PointType pointType = PointType.getForId(data.get(0).getType());
+                if (pointType.isStatus()) {
+                    valueMap.put("dataGrouping", ImmutableMap.of("enabled", false));
+                }
+            }
+            
             for (PointValueHolder pvh : data) {
                 Object[] value = new Object[] {pvh.getPointDataTimeStamp().getTime(), pvh.getValue()};
                 values.add(value);
@@ -146,22 +155,31 @@ public class TrendDataController {
         yAxis.add(primaryAxis);
         
         if (showRightAxis) {
-            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-            String left = accessor.getMessage("yukon.web.modules.tools.trend.axis", accessor.getMessage("yukon.common.left"));
-            String right = accessor.getMessage("yukon.web.modules.tools.trend.axis", accessor.getMessage("yukon.common.right"));
-            Map<String, Object> secondaryAxis = new HashMap<>();
-            secondaryAxis.put("labels", labels);
-            secondaryAxis.put("opposite", true);
-            yAxis.add(secondaryAxis);
-            
-            for (Map<String, Object> serieData : seriesData) {
-                boolean isRight = (Integer)serieData.get("yAxis") == 1;
-                serieData.put("name", serieData.get("name") + " - " + (isRight ? right : left));
-            }
+            addRightAxis(userContext, seriesData, yAxis, labels);
         }
         json.put("yAxis", yAxis);
         
         return json;
+    }
+    
+    /** Add a secondary Y axis to the right side of the graph */
+    private void addRightAxis(YukonUserContext userContext, List<Map<String, Object>> seriesData, 
+            List<Map<String, Object>> yAxis, 
+            ImmutableMap<String, ImmutableMap<String, String>> labels) {
+        
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        String left = accessor.getMessage("yukon.web.modules.tools.trend.axis", accessor.getMessage("yukon.common.left"));
+        String right = accessor.getMessage("yukon.web.modules.tools.trend.axis", accessor.getMessage("yukon.common.right"));
+        
+        Map<String, Object> secondaryAxis = new HashMap<>();
+        secondaryAxis.put("labels", labels);
+        secondaryAxis.put("opposite", true);
+        yAxis.add(secondaryAxis);
+        
+        for (Map<String, Object> serieData : seriesData) {
+            boolean isRight = (Integer)serieData.get("yAxis") == 1;
+            serieData.put("name", serieData.get("name") + " - " + (isRight ? right : left));
+        }
     }
     
 }

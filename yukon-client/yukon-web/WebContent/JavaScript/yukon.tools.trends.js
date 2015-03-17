@@ -1,4 +1,4 @@
-yukon.namespace('yukon.trending');
+yukon.namespace('yukon.tools.trends');
 
 /**
  * Module to manage the trends page, uses highstock library to display svg trends
@@ -6,16 +6,18 @@ yukon.namespace('yukon.trending');
  * @require JQUERY
  * @require highstock 1.3.9
  */
-yukon.trends = (function() {
+yukon.tools.trends = (function () {
     
     var mod = {
         
         init: function (trendId) {
+            
             var trendList;
             
             Highcharts.setOptions(yg.highcharts_options);
             yukon.ui.elementGlass.show('[data-trend]');
-            $.getJSON(yukon.url('/tools/trends/' + trendId + '/data'), function(trend) {
+            
+            $.getJSON(yukon.url('/tools/trends/' + trendId + '/data'), function (trend) {
                 
                 var labels = JSON.parse(decodeURIComponent($('#label-json').html())),
                     labelFormat = '%Y-%m-%d %l:%M:%S %p',
@@ -36,7 +38,7 @@ yukon.trends = (function() {
                         height: 600 + 18 * trend.series.length,
                         
                         events: {
-                            load: function(event) {
+                            load: function (ev) {
                                 yukon.ui.elementGlass.hide('[data-trend]');
                             }
                         }
@@ -63,19 +65,11 @@ yukon.trends = (function() {
                     },
                     
                     plotOptions: {
-                        // We may want to turn grouping off but it's on by default for performance.
-//                        line: {
-//                            dataGrouping: {
-//                                enabled: false
-//                            }
-//                        },
-                        
                         series: {
                             dataGrouping: {
                                 dateTimeLabelFormats: dateTimeLabelFormats
                             }
                         }
-                        
                     },
                     
                     rangeSelector : {
@@ -132,35 +126,37 @@ yukon.trends = (function() {
             });
             
             trendList = $('.trend-list li.selected');
-            if (0 < trendList.length) {
+            if (trendList.length) {
                 $('.trend-list').scrollTo(trendList);
             }
-            $(document).on('click', '.js-print', function(e) {
+            $(document).on('click', '.js-print', function (ev) {
                 var chart = $('[data-trend]').highcharts();
                 chart.print();
             });
-            $(document).on('click', '.js-dl-png', function(e) {
+            $(document).on('click', '.js-dl-png', function (ev) {
                 var chart = $('[data-trend]').highcharts();
                 chart.exportChart({type: 'image/png'});
             });
-            $(document).on('click', '.js-dl-jpg', function(e) {
+            $(document).on('click', '.js-dl-jpg', function (ev) {
                 var chart = $('[data-trend]').highcharts();
                 chart.exportChart({type: 'image/jpeg'});
             });
-            $(document).on('click', '.js-dl-pdf', function(e) {
+            $(document).on('click', '.js-dl-pdf', function (ev) {
                 var chart = $('[data-trend]').highcharts();
                 chart.exportChart({type: 'application/pdf'});
             });
-            $(document).on('click', '.js-dl-svg', function(e) {
+            $(document).on('click', '.js-dl-svg', function (ev) {
                 var chart = $('[data-trend]').highcharts();
                 chart.exportChart({type: 'image/svg+xml'});
             });
-            $(document).on('click', '.js-dl-csv', function(e) {
+            $(document).on('click', '.js-dl-csv', function (ev) {
+                
                 var chart = $('[data-trend]').highcharts(),
                     ex = chart.series[0].xAxis.getExtremes(),
                     trendId = $(this).closest('li').data('trendId');
                 
-                window.location = yukon.url('/tools/trends/' + trendId + '/csv?' + 'from=' + new Date(ex.min).getTime() + '&to=' + new Date(ex.max).getTime()); 
+                window.location = yukon.url('/tools/trends/' + trendId + '/csv?' 
+                + 'from=' + new Date(ex.min).getTime() + '&to=' + new Date(ex.max).getTime()); 
             });
         }
     };
@@ -169,12 +165,13 @@ yukon.trends = (function() {
 }());
 
 $(function () {
-    var trendData = $('[data-trend]'),
-        trends;
-    if (0 < trendData.length) {
-        trends = trendData.data('trend');
-        if ('' !== trends) {
-            yukon.trends.init(trends);
+    
+    var trendId, trendData = $('[data-trend]');
+    
+    if (trendData.length) {
+        trendId = trendData.data('trend');
+        if (trendId) {
+            yukon.tools.trends.init(trendId);
         }
     }
 });
