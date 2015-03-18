@@ -8,46 +8,69 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="capcontrol" page="regulator.${mode}">
-    
+
     <cti:includeScript link="/JavaScript/yukon.da.regulator.js"/>
     <tags:setFormEditMode mode="${mode}"/>
-    
+
     <cti:url var="action" value="/capcontrol/regulators"/>
     <form:form id="regulator-form" commandName="regulator" action="${action}" method="POST" data-pao-type-map="${paoTypeMap}">
-        
+
         <cti:csrfToken/>
         <form:hidden path="id"/>
-        
-        <cti:displayForPageEditModes modes="VIEW">
-            <form:hidden path="type" id="regulator-type"/>
-        </cti:displayForPageEditModes>
-        <tags:nameValueContainer2 tableClass="natural-width stacked-md">
-            <tags:nameValue2 nameKey=".name">
-                <tags:input path="name"/>
-            </tags:nameValue2>
-            <tags:nameValue2 nameKey=".description">
-                <tags:input path="description"/>
-            </tags:nameValue2>
-            <tags:selectNameValue nameKey=".type" items="${regulatorTypes}" path="type" id="regulator-type" />
-            <tags:selectNameValue nameKey=".config" items="${availableConfigs}" path="configId" itemValue="configurationId" />
-            <cti:displayForPageEditModes modes="VIEW,EDIT">
-            <tags:nameValue2 nameKey=".zone">
-                <c:if test="${empty zone}">
-                    <span class="empty-list"><i:inline key="yukon.common.none"/></span>
-                </c:if>
-                <c:if test="${not empty zone}">
-                    <cti:url var="zoneUrl" value="/capcontrol/ivvc/zone/detail">
-                        <cti:param name="zoneId" value="${zone.id}" />
-                    </cti:url>
-                    <a href="${zoneUrl}">${fn:escapeXml(zone.name)}</a>
-                </c:if>
-            </tags:nameValue2>
-            <tags:nameValue2 nameKey="yukon.common.status">
-                <tags:switchButton path="disabled" inverse="true" onNameKey=".enabled" offNameKey=".disabled"/>
-            </tags:nameValue2>
-            </cti:displayForPageEditModes>
-        </tags:nameValueContainer2>
+
+        <div class="column-12-12 clearfix stacked-md ">
+            <div class="column one">
+                <tags:nameValueContainer2 tableClass="natural-width">
+
+                    <tags:nameValue2 nameKey=".name">
+                        <tags:input path="name"/>
+                    </tags:nameValue2>
+
+                    <tags:nameValue2 nameKey=".description">
+                        <tags:input path="description"/>
+                    </tags:nameValue2>
+
+                    <c:if test="${empty zone}">
+                        <tags:selectNameValue nameKey=".type" items="${regulatorTypes}" path="type" id="regulator-type" />
+                    </c:if>
+                    <c:if test="${not empty zone}">
+                        <tags:nameValue2 nameKey=".type">
+                            <form:hidden path="type" id="regulator-type"/>
+                            <i:inline key="${regulator.type}"/>
+                        </tags:nameValue2>
+                    </c:if>
+
+                    <cti:displayForPageEditModes modes="VIEW,EDIT">
+
+                        <tags:selectNameValue nameKey=".config" items="${availableConfigs}" path="configId" itemValue="configurationId" />
+
+                        <tags:nameValue2 nameKey=".zone">
+                            <c:if test="${empty zone}">
+                                <span class="empty-list"><i:inline key="yukon.common.none"/></span>
+                            </c:if>
+                            <c:if test="${not empty zone}">
+                                <cti:url var="zoneUrl" value="/capcontrol/ivvc/zone/detail">
+                                    <cti:param name="zoneId" value="${zone.id}" />
+                                </cti:url>
+                                <a href="${zoneUrl}">${fn:escapeXml(zone.name)}</a>
+                            </c:if>
+                        </tags:nameValue2>
+                    </cti:displayForPageEditModes>
+
+                    <tags:nameValue2 nameKey="yukon.common.status">
+                        <tags:switchButton path="disabled" inverse="true" onNameKey=".enabled" offNameKey=".disabled"/>
+                    </tags:nameValue2>
+
+                </tags:nameValueContainer2>
+            </div>
+
+            <div class="column two nogutter">
+                <%--Events Table Here --%>
+            </div>
+        </div>
+
         <tags:sectionContainer2 nameKey="mappings">
+
             <table class="compact-results-table js-mappings-table dashed">
                 <thead>
                     <tr>
@@ -63,9 +86,16 @@
                 <tbody>
                     <c:forEach var="mapping" items="${regulator.mappings}" varStatus="index">
                         <c:set var="idx" value="${index.index}"></c:set>
+
                         <tr data-mapping="${mapping.key}">
+
+                            <%-- Attribute --%>
                             <td><i:inline key="${mapping.key}"/></td>
+
+                            <%-- Device Name --%>
                             <td id="paoName${idx}"></td>
+
+                            <%-- Point Name --%>
                             <td>
                                 <tags:pickerDialog type="filterablePointPicker"
                                                    id="picker${idx}"
@@ -80,7 +110,9 @@
                                <form:errors path="mappings[${mapping.key}]" element="div" cssClass="error"/>
                                <input id="pointId${idx}" type="hidden" name="mappings[${mapping.key}]" value="${mapping.value}"/>
                             </td>
+
                             <cti:displayForPageEditModes modes="VIEW">
+                                <%-- Point Value --%>
                                 <td>
                                     <c:if test="${not empty mapping.value && mapping.value != 0}">
                                         <cti:pointStatus pointId="${mapping.value}" statusPointOnly="true"/>
@@ -95,29 +127,44 @@
                 </tbody>
             </table>
         </tags:sectionContainer2>
+
         <div class="page-action-area">
+
             <cti:displayForPageEditModes modes="VIEW">
                 <cti:url var="editUrl" value="/capcontrol/regulators/${regulator.id}/edit" />
                 <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
             </cti:displayForPageEditModes>
+
             <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <cti:button nameKey="save" type="submit" classes="primary action"/>
             </cti:displayForPageEditModes>
+
             <cti:displayForPageEditModes modes="EDIT">
-                <c:set var="disabled" value="false" />
-                <c:if test="${not empty zone}">
-                    <c:set var="disabled" value="true" />
+                <c:if test="${empty zone}">
+                    <c:set var="deleteDisabled" value="false" />
+                    <c:set var="deleteTitle" value="" />
                 </c:if>
-                <cti:button nameKey="delete" classes="delete js-delete" disabled="${disabled}" data-ok-event="yukon:da:regulator:delete" />
+                <c:if test="${not empty zone}">
+                    <c:set var="deleteDisabled" value="true" />
+                    <cti:msg2 var="deleteTitle" key=".delete.hovertext"/>
+                </c:if>
+
+                <cti:button nameKey="delete" classes="delete js-delete" data-ok-event="yukon:da:regulator:delete"
+                    disabled="${deleteDisabled}" title="${deleteTitle}"/>
                 <d:confirm on=".js-delete" nameKey="confirmDelete" argument="${regulator.name}"/>
+
                 <cti:url var="viewUrl" value="/capcontrol/regulators/${regulator.id}" />
                 <cti:button nameKey="cancel" href="${viewUrl}"/>
+
             </cti:displayForPageEditModes>
+
             <cti:displayForPageEditModes modes="CREATE">
                 <cti:button nameKey="cancel" href="javascript:window.history.back()"/>
             </cti:displayForPageEditModes>
         </div>
     </form:form>
+
     <cti:url var="url" value="/capcontrol/regulators/${regulator.id}" />
     <form:form id="delete-regulator" method="DELETE" action="${url}"></form:form>
+
 </cti:standardPage>

@@ -649,8 +649,9 @@
     <entry key="yukon.web.modules.capcontrol.regulator.type">Type</entry>
     <entry key="yukon.web.modules.capcontrol.regulator.zone">Parent Zone</entry>
     <entry key="yukon.web.modules.capcontrol.regulator.mappings.title">Point Mappings</entry>
+    <entry key="yukon.web.modules.capcontrol.regulator.delete.hovertext">Regulator cannot be deleted while it is attached to a zone.</entry>
     <entry key="yukon.web.modules.capcontrol.regulator.error.invalidType">Unable to change device type</entry>
-    <entry key="yukon.web.modules.capcontrol.regulator.error.invalidConfig">Config is not assignable for selected device type</entry>
-    <entry key="yukon.web.modules.capcontrol.regulator.error.noVoltageY">Voltage Y is required when attached to a zone</entry>
+    <entry key="yukon.web.modules.capcontrol.regulator.error.invalidConfig">Configuration is not assignable for selected device type.</entry>
+    <entry key="yukon.web.modules.capcontrol.regulator.error.noVoltageY">Voltage Load is required when attached to a zone.</entry>
     
 </properties>
