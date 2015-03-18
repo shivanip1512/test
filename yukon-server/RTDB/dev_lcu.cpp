@@ -2198,7 +2198,7 @@ bool CtiDeviceLCU::popControlledGroupInfo(LONG &LMGIDControl, UINT &TrxID)
     return got_one;
 }
 
-void CtiDeviceLCU::resetForScan(int scantype)
+void CtiDeviceLCU::resetForScan(const CtiScanRate_t scantype)
 {
     if(isScanFlagSet(scantype))
     {

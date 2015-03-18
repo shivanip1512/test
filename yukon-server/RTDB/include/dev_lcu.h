@@ -173,6 +173,6 @@ public:
 
     void pushControlledGroupInfo(LONG LMGIDControl, UINT TrxID);
     bool popControlledGroupInfo(LONG &LMGIDControl, UINT &TrxID);
-    virtual void resetForScan(int scantype);
+    void resetForScan(const CtiScanRate_t scantype) override;
 
 };

@@ -1724,7 +1724,7 @@ YukonError_t CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParse
 }
 
 
-bool CtiDeviceWelco::clearedForScan(int scantype)
+bool CtiDeviceWelco::clearedForScan(const CtiScanRate_t scantype)
 {
     bool status = false;
 
@@ -1747,12 +1747,10 @@ bool CtiDeviceWelco::clearedForScan(int scantype)
         }
     }
 
-    status = validatePendingStatus(status, scantype);
-
-    return status;
+    return validateClearedForScan(status, scantype);
 }
 
-void CtiDeviceWelco::resetForScan(int scantype)
+void CtiDeviceWelco::resetForScan(const CtiScanRate_t scantype)
 {
     if(isScanFlagSet(scantype))
     {

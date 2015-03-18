@@ -89,7 +89,7 @@ protected:
     BOOL                       _useScanFlags;          // Do we really need to deal with the ScanData?
     CtiTableDeviceScanData     _scanData;
 
-    bool validatePendingStatus(bool status, int scantype, CtiTime &now = CtiTime());
+    bool validateClearedForScan(bool clearedForScan, const CtiScanRate_t scantype);
 
     virtual Cti::Protocols::Interface *getProtocol();
 
@@ -153,7 +153,7 @@ public:
 
     virtual LONG getScanRate(int a) const;
 
-    unsigned long getTardyTime(int scantype) const;
+    long getTardyInterval(int scantype) const;
 
     void DecodeDatabaseReader(Cti::RowReader &rdr) override;
     virtual void DecodeScanRateDatabaseReader(Cti::RowReader &rdr);
@@ -228,13 +228,13 @@ public:
     virtual void invalidateScanRates();
     virtual void deleteNonUpdatedScanRates();
 
-    virtual bool clearedForScan(int scantype);
-    virtual void resetForScan(int scantype);
+    virtual bool clearedForScan(const CtiScanRate_t scantype);
+    virtual void resetForScan  (const CtiScanRate_t scantype);
     virtual bool processAdditionalRoutes( const INMESS &InMessage, int nRet ) const;
     virtual bool hasLongScanRate(const std::string &cmd) const;
 
     CtiTime getNextWindowOpen() const;
-    static int desolveScanRateType( const std::string &cmd );
+    static CtiScanRate_t desolveScanRateType( const std::string &cmd );
     bool removeWindowType( int window_type = -1 );              // Default Argument removes ALL windows.
 
     int getGroupMessageCount(long userID, long comID);

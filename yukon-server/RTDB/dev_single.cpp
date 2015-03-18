@@ -1145,7 +1145,7 @@ void CtiDeviceSingle::deleteNonUpdatedScanRates()
     return;
 }
 
-bool CtiDeviceSingle::clearedForScan(int scantype)
+bool CtiDeviceSingle::clearedForScan(const CtiScanRate_t scantype)
 {
     bool status = false;
 
@@ -1173,12 +1173,10 @@ bool CtiDeviceSingle::clearedForScan(int scantype)
         }
     }
 
-    status = validatePendingStatus(status, scantype);
-
-    return status;
+    return validateClearedForScan(status, scantype);
 }
 
-void CtiDeviceSingle::resetForScan(int scantype = -1)
+void CtiDeviceSingle::resetForScan(const CtiScanRate_t scantype)
 {
     resetScanFlag(scantype);        // Clears ALL scan flags!
 }
@@ -1670,73 +1668,75 @@ bool CtiDeviceSingle::processAdditionalRoutes( const INMESS &InMessage, int nRet
 }
 
 
-bool CtiDeviceSingle::validatePendingStatus(bool status, int scantype, CtiTime &now)
+bool CtiDeviceSingle::validateClearedForScan(bool clearedForScan, const CtiScanRate_t scantype)
 {
-    if(!status)     // In this case we need to make sure we have not gone tardy on this scan type
+    const CtiTime Now;
+
+    if( ! clearedForScan )     // In this case we need to make sure we have not gone tardy on this scan type
     {
-        if( gScanForceDevices.find(getID()) != gScanForceDevices.end() )
+        if( gScanForceDevices.count(getID()) )
         {
-            status = true;
+            clearedForScan = true;
         }
         else
         {
-            if(getScanData().getLastCommunicationTime(scantype) + getTardyTime(scantype) < now )
+            const auto lastCommTime  = getScanData().getLastCommunicationTime(scantype);
+            const auto tardyInterval = getTardyInterval(scantype);
+            if(lastCommTime + tardyInterval < Now )
             {
-                CTILOG_WARN(dout, getName() <<"'s pending flags ("<< scantype <<") reset due to timeout on prior scan ("<< getScanData().getLastCommunicationTime(scantype) <<" + "<< getTardyTime(scantype) <<" < "<< now << ")");
+                CTILOG_WARN(dout, getName() <<"'s pending flags ("<< scantype <<") reset due to timeout on prior scan ("<< lastCommTime <<" + "<< tardyInterval <<" < "<< Now << ")");
 
                 resetForScan(scantype);
-                getScanData().setLastCommunicationTime(scantype, now);
-                status = true;
+                getScanData().setLastCommunicationTime(scantype, Now);
+                clearedForScan = true;
             }
         }
     }
     else            // We are about to submit a scan of some form for the device.  Mark out the time!
     {
-        getScanData().setLastCommunicationTime(scantype, now);
+        getScanData().setLastCommunicationTime(scantype, Now);
     }
 
-    return status;
+    return clearedForScan;
 }
 
 
-unsigned long CtiDeviceSingle::getTardyTime(int scantype) const
+long CtiDeviceSingle::getTardyInterval(int scantype) const
 {
-    const unsigned long minTardyTime = gConfigParms.getValueAsInt("SCANNER_MAX_TARDY_TIME", 60);
+    const long minTardyInterval = gConfigParms.getValueAsInt("SCANNER_MAX_TARDY_TIME", 60);
 
-    unsigned long tardyTime = getScanRate(scantype);
+    long tardyInterval = getScanRate(scantype);
 
-    if( tardyTime < minTardyTime )
+    if( tardyInterval < minTardyInterval )
     {
-        tardyTime = minTardyTime;
+        tardyInterval = minTardyInterval;
     }
     else if( scantype == ScanRateGeneral ||
              scantype == ScanRateIntegrity )
     {
-        tardyTime = tardyTime * 2 + 1;
+        tardyInterval = tardyInterval * 2 + 1;
     }
     else if( scantype == ScanRateAccum )
     {
-        tardyTime = tardyTime + tardyTime / 2;
+        tardyInterval = tardyInterval + tardyInterval / 2;
     }
 
-    return min(tardyTime, 7200UL);
+    return min(tardyInterval, 7200L);
 }
 
 bool CtiDeviceSingle::hasLongScanRate(const string &cmd) const
 {
-    bool bret = false;
-
     if( useScanFlags() )
     {
-        int scanratetype = desolveScanRateType(cmd);
+        const int scanratetype = desolveScanRateType(cmd);
 
         if(getScanRate(scanratetype) > 3600)
         {
-            bret = true;
+            return true;
         }
     }
 
-    return bret;
+    return false;
 }
 
 
@@ -1801,10 +1801,10 @@ BOOL CtiDeviceSingle::scheduleSignaledAlternateScan( int rate ) const
 /*
  * This method allows the command string to re-discover the scan type that was asked for.
  */
-int CtiDeviceSingle::desolveScanRateType( const string &cmd )
+CtiScanRate_t CtiDeviceSingle::desolveScanRateType( const string &cmd )
 {
     // First decide what scan rate we are.
-    int scanratetype = ScanRateInvalid;
+    auto scanratetype = ScanRateInvalid;
 
     if(findStringIgnoreCase(cmd," general") || findStringIgnoreCase(cmd," status"))
     {

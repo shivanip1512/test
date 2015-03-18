@@ -311,7 +311,7 @@ public:
    LONG               DeviceIDofLMGroup;           // 091300 CGP Helps us track lm command's success
    UINT               TrxID;                       // 091300 CGP Helps us track lm command's success
 
-   ULONG              ExpirationTime;               // 102703 CGP.  The PortThread will discard this message if it tries to execute after this time (and it is non-zero).
+   time_t             ExpirationTime;               // The PortThread will discard this message if it tries to execute after this time (and it is non-zero).
 
    PIL_ECHO           Request;
 

@@ -65,15 +65,15 @@ BOOST_AUTO_TEST_CASE(test_is_device_address_global)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_getTardyTime)
+BOOST_AUTO_TEST_CASE(test_getTardyInterval)
 {
     test_CtiDeviceSingle test;
 
-    BOOST_CHECK_EQUAL( 5400, test.getTardyTime(ScanRateAccum));
-    BOOST_CHECK_EQUAL(  601, test.getTardyTime(ScanRateIntegrity));
-    BOOST_CHECK_EQUAL(   60, test.getTardyTime(ScanRateGeneral));
-    BOOST_CHECK_EQUAL( 7200, test.getTardyTime(ScanRateLoadProfile));
-    BOOST_CHECK_EQUAL(   60, test.getTardyTime(17));
+    BOOST_CHECK_EQUAL( 5400, test.getTardyInterval(ScanRateAccum));
+    BOOST_CHECK_EQUAL(  601, test.getTardyInterval(ScanRateIntegrity));
+    BOOST_CHECK_EQUAL(   60, test.getTardyInterval(ScanRateGeneral));
+    BOOST_CHECK_EQUAL( 7200, test.getTardyInterval(ScanRateLoadProfile));
+    BOOST_CHECK_EQUAL(   60, test.getTardyInterval(17));
 }
 
 BOOST_AUTO_TEST_CASE(test_intervalsPerDay)

@@ -181,21 +181,14 @@ static void applyGenerateScanRequests(const long key, CtiDeviceSPtr pBase, void 
         CTILOG_DEBUG(dout, "Looking at "<< pBase->getName());
     }
 
-    //  poor man's lambda, fix me when C++11-able
-    struct setOutMessageExpiration
-    {
-        setOutMessageExpiration(CtiTime expirationTime_) : expirationTime(expirationTime_) {}
-
-        const CtiTime expirationTime;
-
-        void operator()(CtiOutMessage *om)
+    auto fillEmptyExpirationTimeWith =
+        [](const time_t expirationTime, CtiOutMessage *om)
         {
             if( om && ! om->ExpirationTime )
             {
-                om->ExpirationTime = expirationTime.seconds();
+                om->ExpirationTime = expirationTime;
             }
-        }
-    };
+        };
 
     if(pBase->isSingle() && !pBase->isInhibited())
     {
@@ -216,7 +209,11 @@ static void applyGenerateScanRequests(const long key, CtiDeviceSPtr pBase, void 
             DeviceRecord->resetScanFlag(CtiDeviceSingle::ScanException);   // Results should be forced though the exception system
             nRet = DeviceRecord->initiateAccumulatorScan(scanOMs);
 
-            for_each(scanOMs.begin(), scanOMs.end(), setOutMessageExpiration(TimeNow.seconds() + DeviceRecord->getTardyTime(ScanRateAccum)));
+            const auto defaultAccumExpiration = TimeNow.seconds() + DeviceRecord->getTardyInterval(ScanRateAccum);
+            for_each(scanOMs.begin(), scanOMs.end(),
+                    [=](CtiOutMessage *om){
+                        fillEmptyExpirationTimeWith(defaultAccumExpiration, om);
+                    });
 
             outList.splice(outList.end(), scanOMs);
         }
@@ -236,7 +233,11 @@ static void applyGenerateScanRequests(const long key, CtiDeviceSPtr pBase, void 
             DeviceRecord->resetScanFlag(CtiDeviceSingle::ScanException);   // Results should be forced though the exception system
             DeviceRecord->initiateIntegrityScan(scanOMs);
 
-            for_each(scanOMs.begin(), scanOMs.end(), setOutMessageExpiration(TimeNow.seconds() + DeviceRecord->getTardyTime(ScanRateIntegrity)));
+            const auto defaultIntegrityExpiration = TimeNow.seconds() + DeviceRecord->getTardyInterval(ScanRateIntegrity);
+            for_each(scanOMs.begin(), scanOMs.end(),
+                    [=](CtiOutMessage *om){
+                        fillEmptyExpirationTimeWith(defaultIntegrityExpiration, om);
+                    });
 
             outList.splice(outList.end(), scanOMs);
         }
@@ -261,7 +262,11 @@ static void applyGenerateScanRequests(const long key, CtiDeviceSPtr pBase, void 
 
                 DeviceRecord->setScanFlag(CtiDeviceSingle::ScanException);   // Results need NOT be forced though the exception system
 
-                for_each(scanOMs.begin(), scanOMs.end(), setOutMessageExpiration(TimeNow.seconds() + DeviceRecord->getTardyTime(ScanRateGeneral)));
+                const auto defaultExceptionExpiration = TimeNow.seconds() + DeviceRecord->getTardyInterval(ScanRateGeneral);
+                for_each(scanOMs.begin(), scanOMs.end(),
+                        [=](CtiOutMessage *om){
+                            fillEmptyExpirationTimeWith(defaultExceptionExpiration, om);
+                        });
 
                 outList.splice(outList.end(), scanOMs);
             }

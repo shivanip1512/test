@@ -50,44 +50,40 @@ void DnpDevice::resetDNPScansPending( void )
     setScanFlag(ScanRateAccum, false);
 }
 
-bool DnpDevice::clearedForScan(int scantype)
+bool DnpDevice::clearedForScan(const CtiScanRate_t scantype)
 {
+    if( ! useScanFlags() )
+    {
+        return true;
+    }
+
     bool status = false;
 
-    if( useScanFlags() )
+    switch(scantype)
     {
-        switch(scantype)
+        case ScanRateGeneral:
         {
-            case ScanRateGeneral:
-            {
-                status = !(isScanFlagSet(ScanRateGeneral) || isScanFlagSet(ScanRateIntegrity) || isScanFlagSet(ScanRateAccum));
-                break;
-            }
-            case ScanRateIntegrity:
-            {
-                status = !(isScanFlagSet(ScanRateIntegrity) || isScanFlagSet(ScanRateAccum));
-                break;
-            }
-            case ScanRateAccum:
-            {
-                status = !isScanFlagSet(ScanRateAccum);
-                break;
-            }
-            case ScanRateLoadProfile:
-            {
-               status = true;
-               break;
-            }
+            status = !(isScanFlagSet(ScanRateGeneral) || isScanFlagSet(ScanRateIntegrity) || isScanFlagSet(ScanRateAccum));
+            break;
         }
-
-        status = validatePendingStatus(status, scantype);
+        case ScanRateIntegrity:
+        {
+            status = !(isScanFlagSet(ScanRateIntegrity) || isScanFlagSet(ScanRateAccum));
+            break;
+        }
+        case ScanRateAccum:
+        {
+            status = !isScanFlagSet(ScanRateAccum);
+            break;
+        }
+        case ScanRateLoadProfile:
+        {
+           status = true;
+           break;
+        }
     }
-    else
-    {
-        status = true;
-    }
 
-    return status;
+    return validateClearedForScan(status, scantype);
 }
 
 

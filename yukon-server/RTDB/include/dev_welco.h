@@ -51,7 +51,7 @@ public:
 
    virtual YukonError_t executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
-   virtual bool clearedForScan(int scantype);
-   virtual void resetForScan(int scantype);
+   bool clearedForScan(const CtiScanRate_t scantype) override;
+   void resetForScan  (const CtiScanRate_t scantype) override;
 
 };
