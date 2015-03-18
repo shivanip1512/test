@@ -1,5 +1,6 @@
 package com.cannontech.graph.exportdata;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 
@@ -342,7 +343,7 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines
 					valueFormat.setMinimumFractionDigits(serie.getDecimalPlaces());
 
 					// label the export file columns with their device + model name
-					exportArray[csvRowLength * (validIndex+2)]  = (serie.getLabel());
+					exportArray[csvRowLength * (validIndex+2)] = StringEscapeUtils.escapeCsv(serie.getLabel());
 
 					for( int x = 1; x < ts_KeyArray.length + 1;x++ )	//go one extra for the header row?
 					{
