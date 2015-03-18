@@ -50,7 +50,24 @@ $(function () {
 });
 </script>
 <style>
-    .ui-resizable-handle {border: 1px solid red; position: absolute; bottom:0; height: 20px; background: blue;}
+    .ui-resizable-handle { 
+        border: 1px solid #ccc;
+        position: absolute;
+        bottom:0;
+        height: 20px;
+        background: #f3f3f3;
+    }
+
+    .ui-resizable-handle:before {
+        content: '';
+        position: absolute;
+        margin-left: 50%;
+        width: 16px;
+        height: 16px;
+        background-image: url(../../WebConfig/yukon/Icons/icons.png);
+        background-position: -176px -48px;
+    }
+
     .full-height {height:100%;}
 </style>
 <tags:sectionContainer title="Sizable Scrolling container">
