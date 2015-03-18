@@ -2,6 +2,7 @@ package com.cannontech.amr.rfn.service.processor.impl;
 
 import java.util.List;
 
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
@@ -25,19 +26,20 @@ public class RfnRestoreEventArchiveRequestProcessor extends RfnEventConditionDat
         
         long eventTimestamp = event.getTimeStamp();
         PointQuality pointQuality = PointQuality.Normal;
-        long Now = Instant.now().getMillis();
-        long Year = 365 * 86400 * 1000;
         
-        //outage was too long, and firmware unable to know what time really is
-        if (event.getTimeStamp() == 0 
-            || event.getTimeStamp() > Now + Year 
-            || event.getTimeStamp() < Now - Year)
-        {
-            // adjust the eventTimestamp to "now" and estimated quality
-            eventTimestamp = Now;
+        Instant eventTime = new Instant(eventTimestamp);
+        Instant now = Instant.now();
+        Duration year = Duration.standardDays(365);
+        
+        // Set time to now if unset or greater than one year before or after now.
+        // The outage was too long, and the firmware didn'tknow what the real time was.
+        if (eventTimestamp == 0 
+                || eventTime.isAfter(now.plus(year))
+                || eventTime.isBefore(now.minus(year))) {
+            eventTimestamp = now.getMillis();
             pointQuality = PointQuality.Estimated;
         }
-
+        
         rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.OUTAGE_STATUS, eventTimestamp,
                                                        OutageStatus.GOOD.getRawState(), pointQuality);
         
@@ -54,7 +56,7 @@ public class RfnRestoreEventArchiveRequestProcessor extends RfnEventConditionDat
             }
             rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.OUTAGE_LOG, eventTimestamp, durationInSeconds, outageLogPointQuality);
         }
-
+        
         Long count = (Long) getEventDataWithType(event, RfnConditionDataType.COUNT);
         rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.RFN_OUTAGE_RESTORE_COUNT, eventTimestamp, count, pointQuality);
     }
@@ -63,4 +65,5 @@ public class RfnRestoreEventArchiveRequestProcessor extends RfnEventConditionDat
     public RfnConditionType getRfnConditionType() {
         return RfnConditionType.RESTORE;
     }
+    
 }
