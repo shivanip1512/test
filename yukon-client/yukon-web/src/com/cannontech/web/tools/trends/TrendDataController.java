@@ -107,11 +107,9 @@ public class TrendDataController {
             valueMap.put("name", serie.getLabel());
             List<Object[]> values = new ArrayList<>();
             
-            Date startDate = new Instant().minus(Duration.standardDays(365 * 2)).toDate();
-            Date stopDate = new Instant().toDate();
-            Range<Date> dateRange = new Range<Date>(startDate, true, stopDate, true);
-            Range<Instant> instantRange = dateRange.translate(CtiUtilities.INSTANT_FROM_DATE);
-            
+            Instant end = Instant.now();
+            Instant start = end.minus(Duration.standardDays(365 * 2));
+            Range<Instant> instantRange = new Range<>(start, true, end, true);
             List<PointValueHolder> data = rphDao.getPointData(serie.getPointID(), instantRange, Order.FORWARD);
             
             /** If this is a status point we need to turn data grouping off. */
