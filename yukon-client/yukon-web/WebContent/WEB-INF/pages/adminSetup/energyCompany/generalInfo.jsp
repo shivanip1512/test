@@ -178,7 +178,7 @@ $(function() {
                                         <c:if test="${fn:length(operatorUserGroups) > 1}">
                                             <td>
                                                 <cti:button nameKey="remove" type="submit" name="removeOperatorUserGroup" 
-                                                    value="${userGroup.userGroupId}" class="fr MR0"
+                                                    value="${userGroup.userGroupId}" classes="fr MR0"
                                                     renderMode="buttonImage" icon="icon-cross"/>
                                             </td>
                                         </c:if>
