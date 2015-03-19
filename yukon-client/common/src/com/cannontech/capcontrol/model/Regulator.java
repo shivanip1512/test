@@ -90,7 +90,9 @@ public class Regulator {
         complete.setDisabled(disabled);
         complete.setKeepAliveConfig(keepAliveConfig);
         complete.setKeepAliveTimer(keepAliveTimer);
-        complete.setPaoIdentifier(PaoIdentifier.of(id, type));
+        if (id != null) {
+            complete.setPaoIdentifier(PaoIdentifier.of(id, type));
+        }
         complete.setPaoName(name);
         complete.setStatistics("");
         complete.setVoltChangePerTap(voltChangePerTap);

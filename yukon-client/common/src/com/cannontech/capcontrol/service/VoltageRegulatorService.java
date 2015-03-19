@@ -98,7 +98,7 @@ public class VoltageRegulatorService {
         CompleteRegulator completeRegulator = regulator.asCompletePao();
 
         if (regulator.getId() == null) {
-            paoPersistenceService.createPaoWithDefaultPoints(completeRegulator, completeRegulator.getPaoType());
+            paoPersistenceService.createPaoWithDefaultPoints(completeRegulator, regulator.getType());
         } else {
             paoPersistenceService.updatePao(completeRegulator);
         }
