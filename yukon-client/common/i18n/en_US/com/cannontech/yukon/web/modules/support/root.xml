@@ -261,7 +261,17 @@
     <entry key="yukon.web.modules.support.deviceDef.info.tags.valueSupport.yes">Yes</entry>
     <entry key="yukon.web.modules.support.deviceDef.info.tags.valueSupport.no">No</entry>
     <entry key="yukon.web.modules.support.deviceDef.info.tags.values">Values</entry>
+    
     <entry key="yukon.web.modules.support.indexes.pageName">Manage Indexes</entry>
+    <entry key="yukon.web.modules.support.indexes.name">Name</entry>
+    <entry key="yukon.web.modules.support.indexes.created">Created</entry>
+    <entry key="yukon.web.modules.support.indexes.customerAccount">Customer Accounts</entry>
+    <entry key="yukon.web.modules.support.indexes.loginGroup">Login Groups</entry>
+    <entry key="yukon.web.modules.support.indexes.pao">Point Attachable Objects</entry>
+    <entry key="yukon.web.modules.support.indexes.point">Points</entry>
+    <entry key="yukon.web.modules.support.indexes.siteSearch">Site Search</entry>
+    <entry key="yukon.web.modules.support.indexes.user">Users</entry>
+    <entry key="yukon.web.modules.support.indexes.userGroup">User Groups</entry>
     
     <!-- siteMap.jsp -->
     <entry key="yukon.web.modules.support.siteMap.pageName">Site Map</entry>

@@ -62,11 +62,10 @@
     <entry key="yukon.web.modules.adminSetup.generalInfo.EDIT.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.VIEW.pageName">General Info</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.VIEW.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.adminSetup.generalInfo.infoContainer.title">Energy Company Information</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.infoContainer.title">Energy Company Info</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.membersContainer.title">Member Energy Companies</entry>
-    <entry key="yukon.web.modules.adminSetup.generalInfo.userGroupsContainer.title">User Groups</entry>
-    <entry key="yukon.web.modules.adminSetup.generalInfo.operatorGroups">Operator Groups</entry>
-    <entry key="yukon.web.modules.adminSetup.generalInfo.customerGroups">Residential Customer Groups</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.operatorGroups.title">Operator Groups</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.customerGroups.title">Residential Customer Groups</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.noCustomerGroups">No Residential Customer Groups</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.operatorGroupsUpdatedSuccessful">Operator Groups Updated Successfully</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.operatorGroupsInUse">Operator Users in Selected Group Are Assigned to This Energy Company</entry>
@@ -87,7 +86,6 @@
     <entry key="yukon.web.modules.adminSetup.generalInfo.zipCode">Zip Code</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.county">County</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.companyName">Company Name</entry>
-    <entry key="yukon.web.modules.adminSetup.generalInfo.remove">Remove</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.noMembers">No Member Energy Companies</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.updateSuccessful">General Info Updated Successfully</entry>
     
