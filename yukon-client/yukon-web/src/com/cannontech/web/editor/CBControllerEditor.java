@@ -30,6 +30,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -439,7 +440,7 @@ public class CBControllerEditor implements ICBControllerModel {
          try {
              PointUtil.insertIntoDB(pointVector);
          } 
-         catch (TransactionException e) {
+         catch (PersistenceException e) {
              fcsMessage.setDetail("ERROR creating points for CBC:CBCControlEditor" + e.getMessage());
          }
          

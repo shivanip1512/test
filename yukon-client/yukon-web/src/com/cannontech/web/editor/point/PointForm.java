@@ -19,6 +19,7 @@ import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AlarmCatDao;
+import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
@@ -313,7 +314,7 @@ public class PointForm extends DBEditorForm {
             CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
             capControlForm.getPointTreeForm().resetPointList();
             getWizData().reset();
-        }catch (TransactionException e){
+        }catch (PersistenceException e){
             fcsMessage.setDetail("ERROR creating point -- PointForm.create" + e.getMessage());
             edType =  "";
         }

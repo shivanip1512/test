@@ -33,11 +33,11 @@ import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SimpleCallback;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
-import com.cannontech.database.Transaction;
-import com.cannontech.database.TransactionException;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.capcontrol.CapBankControllerDNP;
@@ -59,7 +59,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOFactory;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointUtil;
-import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.RfnAddress;
 import com.cannontech.device.range.DlcAddressRangeService;
 import com.cannontech.message.DbChangeManager;
@@ -70,18 +69,19 @@ import com.google.common.collect.Maps;
 
 public class DeviceUpdateServiceImpl implements DeviceUpdateService {
 
-    @Autowired private DeviceDao deviceDao;
-    @Autowired private PaoDao paoDao;
-    @Autowired private RouteDiscoveryService routeDiscoveryService;
     @Autowired private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
-    @Autowired private PaoDefinitionService paoDefinitionService;
-    @Autowired private PointService pointService;
-    @Autowired private PointCreationService pointCreationService;
     @Autowired private DbChangeManager dbChangeManager;
-    @Autowired private DlcAddressRangeService dlcAddressRangeService;
+    @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private DeviceConfigurationService deviceConfigurationService;
+    @Autowired private DeviceDao deviceDao;
+    @Autowired private DlcAddressRangeService dlcAddressRangeService;
+    @Autowired private PaoDao paoDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private PaoDefinitionService paoDefinitionService;
+    @Autowired private PointCreationService pointCreationService;
+    @Autowired private PointService pointService;
+    @Autowired private RouteDiscoveryService routeDiscoveryService;
 
     private final Logger log = YukonLogManager.getLogger(DeviceUpdateServiceImpl.class);
 
@@ -163,10 +163,8 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
 
         // Load the device to change
         try {
-            Transaction<?> t = Transaction.createTransaction(Transaction.RETRIEVE, yukonPAObject);
-
-            yukonPAObject = (DeviceBase) t.execute();
-        } catch (TransactionException e) {
+            dbPersistentDao.retrieveDBPersistent(yukonPAObject);
+        } catch (PersistenceException e) {
             throw new DataRetrievalFailureException("Could not load device from db", e);
         }
 
@@ -175,9 +173,8 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
 
         // Save the changes
         try {
-            Transaction<?> t = Transaction.createTransaction(Transaction.UPDATE, changedDevice);
-            t.execute();
-        } catch (TransactionException e) {
+            dbPersistentDao.performDBChangeWithNoMsg(changedDevice, TransactionType.UPDATE);
+        } catch (PersistenceException e) {
             throw new PersistenceException("Could not save device type change", e);
         }
 
@@ -206,7 +203,6 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     @Transactional
     public DeviceBase changeDeviceType(DeviceBase currentDevice, PaoDefinition newDefinition) {
 
@@ -215,11 +211,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         // get a deep copy of the current device
         try {
             oldDevice = (DeviceBase) CtiUtilities.copyObject(currentDevice);
-
-            Transaction t = Transaction.createTransaction(Transaction.DELETE_PARTIAL, ((DBPersistent) currentDevice));
-
-            currentDevice = (DeviceBase) t.execute();
-
+            dbPersistentDao.performDBChangeWithNoMsg(currentDevice, TransactionType.DELETE_PARTIAL);
         } catch (Exception e) {
             CTILogger.error(e);
             CTILogger.info("*** An exception occured when trying to change type of " + currentDevice
@@ -319,58 +311,52 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         }
 
         try {
-            Transaction t = Transaction.createTransaction(Transaction.ADD_PARTIAL, ((DBPersistent) newDevice));
-            newDevice = (DeviceBase) t.execute();
+            dbPersistentDao.performDBChangeWithNoMsg(newDevice, TransactionType.ADD_PARTIAL);
 
             this.removePoints(oldDevice, newDefinition);
             this.addPoints(oldDevice, newDefinition);
             this.transferPoints(oldDevice, newDefinition);
 
-        } catch (TransactionException e) {
+        } catch (PersistenceException e) {
             CTILogger.error(e.getMessage(), e);
 
         }
-
         return newDevice;
     }
 
     /**
      * Helper method to remove unsupported points from a device that is being
      * changed into another device type
-     * 
+     * Sends DBChangeMsg for each deleted point.
      * @param device - Device to change type
      * @param newDefinition - Definition of new device type
-     * @throws TransactionException
+     * @throws PersistenceException 
      */
-    private void removePoints(DeviceBase device, PaoDefinition newDefinition) throws TransactionException {
+    private void removePoints(DeviceBase device, PaoDefinition newDefinition) throws PersistenceException {
 
         SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
-        Set<PointIdentifier> removeTemplates =
-            paoDefinitionService.getPointTemplatesToRemove(yukonDevice, newDefinition);
-
-        SimpleDevice meter = deviceDao.getYukonDeviceForDevice(device);
+        Set<PointIdentifier> removeTemplates = paoDefinitionService.getPointTemplatesToRemove(yukonDevice, newDefinition);
 
         for (PointIdentifier identifier : removeTemplates) {
-            LitePoint litePoint = pointService.getPointForPao(meter, identifier);
+            LitePoint litePoint = pointService.getPointForPao(yukonDevice, identifier);
 
             log.debug("Remove point: deviceId=" + device.getPAObjectID() + litePoint.getPointName() + " type="
                 + litePoint.getPointType() + " offset=" + litePoint.getPointOffset());
 
             PointBase point = (PointBase) LiteFactory.convertLiteToDBPers(litePoint);
-            Transaction<?> t = Transaction.createTransaction(Transaction.DELETE, point);
-            t.execute();
+            dbPersistentDao.performDBChange(point, TransactionType.DELETE);
         }
     }
 
     /**
      * Helper method to add supported points to a device that is being changed
      * into another device type
-     * 
+     * Sends DBChangeMsg for each added point.
      * @param device - Device to change type
      * @param newDefinition - Definition of new device type
-     * @throws TransactionException
+     * @throws PersistenceException
      */
-    private void addPoints(DeviceBase device, PaoDefinition newDefinition) throws TransactionException {
+    private void addPoints(DeviceBase device, PaoDefinition newDefinition) throws PersistenceException {
 
         SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
         Set<PointTemplate> addTemplates = paoDefinitionService.getPointTemplatesToAdd(yukonDevice, newDefinition);
@@ -380,28 +366,23 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
                 + template.getPointType().getPointTypeId() + " offset=" + template.getOffset());
 
             PointBase point = pointCreationService.createPoint(yukonDevice.getPaoIdentifier(), template);
-
-            Transaction<?> t = Transaction.createTransaction(Transaction.INSERT, point);
-            t.execute();
+            dbPersistentDao.performDBChange(point, TransactionType.INSERT);
         }
-
     }
 
     /**
      * Helper method to transfer supported points from a device that is being
      * changed into another device type
-     * 
+     * Sends DBChangeMsg for each transfered (aka changed) point. (ala call to changePointType) 
      * @param device - Device to change type
      * @param newDefinition - Definition of new device type
-     * @throws TransactionException
+     * @throws PersistenceException
      */
-    private void transferPoints(DeviceBase device, PaoDefinition newDefinition) throws TransactionException {
+    private void transferPoints(DeviceBase device, PaoDefinition newDefinition) throws PersistenceException {
 
         SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
         Iterable<PointTemplateTransferPair> transferTemplates =
             paoDefinitionService.getPointTemplatesToTransfer(yukonDevice, newDefinition);
-
-        SimpleDevice meter = deviceDao.getYukonDeviceForDevice(device);
 
         for (PointTemplateTransferPair pair : transferTemplates) {
 
@@ -411,14 +392,12 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
                 + pair.newDefinitionTemplate.getPointType().getPointTypeId() + " new offset="
                 + pair.newDefinitionTemplate.getOffset());
 
-            LitePoint litePoint = pointService.getPointForPao(meter, pair.oldDefinitionTemplate);
+            LitePoint litePoint = pointService.getPointForPao(yukonDevice, pair.oldDefinitionTemplate);
             PointBase point = (PointBase) LiteFactory.convertLiteToDBPers(litePoint);
 
-            Transaction<PointBase> t = Transaction.createTransaction(Transaction.RETRIEVE, point);
-            point = t.execute();
-
+            dbPersistentDao.retrieveDBPersistent(point);
             point = PointUtil.changePointType(point, pair.newDefinitionTemplate);
+            // changePointType(...) - Handles sending of DBChangeMsg for each transferred (aka changed) point. 
         }
-
     }
 }

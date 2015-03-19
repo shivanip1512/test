@@ -6,8 +6,8 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.capcontrol.CapBankControllerDNP;
@@ -43,7 +43,7 @@ public class CBCCopyUtils {
 		}
 		try {
 			PointUtil.insertIntoDB(dbPersistentVector);
-		} catch (TransactionException e) {
+		} catch (PersistenceException e) {
 			CTILogger.error("Could not copy points. copyAllPointsForPAO () "
 					+ e.getMessage());
 		}

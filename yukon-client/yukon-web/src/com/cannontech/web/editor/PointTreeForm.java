@@ -16,6 +16,7 @@ import org.apache.myfaces.custom.tree2.TreeNodeBase;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -243,7 +244,7 @@ public class PointTreeForm {
         FacesMessage fcsMessage = new FacesMessage();
          try {
              PointUtil.insertIntoDB(pointVector);
-         } catch (TransactionException e) {
+         } catch (PersistenceException e) {
              fcsMessage.setDetail("ERROR creating points for CBC:CBCControlEditor" + e.getMessage());
          } finally {
              if (fcsMessage.getDetail() != null) {

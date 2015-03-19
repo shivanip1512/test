@@ -9,14 +9,13 @@ import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.database.Transaction;
-import com.cannontech.database.TransactionException;
-import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.multi.MultiDBPersistent;
-import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.point.Point;
 import com.cannontech.database.db.point.PointAlarming;
@@ -24,17 +23,16 @@ import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.point.calculation.CalcBase;
 import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.database.db.state.StateGroupUtils;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.Lists;
 
 public class PointUtil {
 
-    private static PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
-    private static PointDao pointDao = YukonSpringHook.getBean("pointDao", PointDao.class);
+    private static DBPersistentDao dbPersistentDao = YukonSpringHook.getBean(DBPersistentDao.class);
+    private static PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
+    private static PointDao pointDao = YukonSpringHook.getBean(PointDao.class);
 
-    public static PointBase createPoint(int type, String name, Integer paoId, boolean disabled) throws TransactionException {
+    public static PointBase createPoint(int type, String name, Integer paoId, boolean disabled) throws PersistenceException {
         MultiDBPersistent dbPersistentVector = new MultiDBPersistent();
         PointBase point = null;
 
@@ -111,22 +109,15 @@ public class PointUtil {
         return point;
     }
 
-    public static void insertIntoDB(DBPersistent pointVector) throws TransactionException {
+    public static void insertIntoDB(DBPersistent pointVector) throws PersistenceException {
         if (pointVector != null) {
             try {
-                pointVector = Transaction.createTransaction(Transaction.INSERT, pointVector).execute();
-
-                DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange) pointVector,
-                                                                                                   DbChangeType.ADD);
-                // make sure we update the cache
-                for (int i = 0; i < dbChange.length; i++)
-                    DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
-
-            } catch (TransactionException e) {
+                dbPersistentDao.performDBChange(pointVector, TransactionType.INSERT);
+            } catch (PersistenceException e) {
                 throw e;
             }
         } else {
-            throw new TransactionException("Trying to INSERT empty - insertIntoDB - PointUtil");
+            throw new PersistenceException("Trying to INSERT empty - insertIntoDB - PointUtil");
         }
     }
 
@@ -134,12 +125,13 @@ public class PointUtil {
      * Helper method to change pointBase to the newPointTemplate type.
      * If the pointBase type and the newPointTemplate type are the same, pointBase is returned unchanged.
      * Else, the pointBase object is returned with the newPointTemplate data set.
+     * Sends DBChangeMsg for each point that actually has 'changes'. 
      * @param pointBase
      * @param newPointTemplate
      * @return
-     * @throws TransactionException
+     * @throws PersistenceException
      */
-    public static PointBase changePointType(PointBase pointBase, PointTemplate newPointTemplate) throws TransactionException {
+    public static PointBase changePointType(PointBase pointBase, PointTemplate newPointTemplate) throws PersistenceException {
 
         int oldType = PointTypes.getType(pointBase.getPoint().getPointType());
 
@@ -151,8 +143,7 @@ public class PointUtil {
             Point savePoint = pointBase.getPoint();
 
             // Delete partial point data so type can be changed.
-            Transaction<PointBase> t = Transaction.createTransaction(Transaction.DELETE_PARTIAL, pointBase);
-            pointBase = t.execute();
+            dbPersistentDao.performDBChangeWithNoMsg(pointBase, TransactionType.DELETE_PARTIAL);
 
             // Create a new point for new point type
             pointBase = PointFactory.createPoint(newPointTemplate.getPointType().getPointTypeId());
@@ -166,18 +157,13 @@ public class PointUtil {
             pointBase.getPoint().setPointType(PointTypes.getType(newPointTemplate.getPointType().getPointTypeId()));
 
             // Add the updated (partial) point information.
-            t = Transaction.createTransaction(Transaction.ADD_PARTIAL, pointBase);
-
-            pointBase = t.execute();
+            dbPersistentDao.performDBChangeWithNoMsg(pointBase, TransactionType.ADD_PARTIAL);
         }
 
         PointTemplate existingPointTemplate = createPointTemplate(pointBase);
         if (!existingPointTemplate.equals(newPointTemplate)) {
-
             applyPointTemplate(pointBase, newPointTemplate);
-
-            Transaction<PointBase> t = Transaction.createTransaction(Transaction.UPDATE, pointBase);
-            pointBase = t.execute();
+            dbPersistentDao.performDBChange(pointBase, TransactionType.UPDATE);
         }
 
         return pointBase;
