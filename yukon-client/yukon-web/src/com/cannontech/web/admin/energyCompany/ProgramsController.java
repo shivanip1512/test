@@ -29,7 +29,6 @@ import com.cannontech.web.admin.energyCompany.general.model.EnergyCompanyInfoFra
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentHelper;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.google.common.base.Function;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
@@ -48,9 +47,6 @@ public class ProgramsController {
             return from.getApplianceCategoryId();
         }
     };
-    private Map<String, SortBy> sorters = ImmutableMap.of(
-            "program", SortBy.PROGRAM_NAME, 
-            "category", SortBy.APPLIANCE_CATEGORY_NAME);
     
     private String baseKey = "yukon.web.modules.adminSetup.applianceCategory.PROGRAMS";
     
@@ -60,14 +56,17 @@ public class ProgramsController {
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(ecInfo, model);
         int ecId = ecInfo.getEnergyCompanyId();
         ecService.verifyViewPageAccess(userContext.getYukonUser(), ecId);
-
+        
         List<UiFilter<AssignedProgram>> filters = Lists.newArrayList();
-        SortBy sortBy = SortBy.PROGRAM_NAME;
         Iterable<Integer> categoryIds = applianceCategoryDao.getApplianceCategoryIdsByEC(ecId);
+        
+        SortingParameters sorting = SortingParameters.of(SortBy.PROGRAM_NAME.name(), Direction.asc);
+        PagingParameters paging = PagingParameters.of(25, 1);
+        
         SearchResults<AssignedProgram> programs =
-            assignedProgramService.filter(categoryIds, UiFilterList.wrap(filters), sortBy, false, 0, 25);
+            assignedProgramService.filter(categoryIds, UiFilterList.wrap(filters), sorting, paging);
         model.addAttribute("assignedPrograms", programs);
-
+        
         categoryIds = Iterables.transform(programs.getResultList(), idFromCategory);
         Map<Integer, ApplianceCategory> categories = applianceCategoryDao.getByApplianceCategoryIds(categoryIds);
         model.addAttribute("applianceCategoriesById", categories);
@@ -75,9 +74,9 @@ public class ProgramsController {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         String programHeader = accessor.getMessage(baseKey + ".programNameHeader.linkText");
         String categoryHeader = accessor.getMessage(baseKey + ".applianceCategoryNameHeader.linkText");
-        model.addAttribute("program", SortableColumn.of(Direction.asc, true, programHeader, "program"));
-        model.addAttribute("category", SortableColumn.of(Direction.asc, false, categoryHeader, "category"));
-
+        model.addAttribute("program", SortableColumn.of(sorting, programHeader, SortBy.PROGRAM_NAME.name()));
+        model.addAttribute("category", SortableColumn.of(sorting, categoryHeader, SortBy.APPLIANCE_CATEGORY_NAME.name()));
+        
         return "applianceCategory/programs.jsp";
     }
     
@@ -92,25 +91,19 @@ public class ProgramsController {
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(ecInfo, model);
         int ecId = ecInfo.getEnergyCompanyId();
         ecService.verifyViewPageAccess(userContext.getYukonUser(), ecId);
-
+        
         List<UiFilter<AssignedProgram>> filters = Lists.newArrayList();
         if (StringUtils.isNotBlank(filterBy)) filters.add(new AssignedProgramNameFilter(filterBy));
         
-        boolean desc = false;
-        SortBy sortBy = SortBy.PROGRAM_NAME;
-        if (sorting != null) {
-            sortBy = sorters.get(sorting.getSort());
-            desc = sorting.getDirection() == Direction.desc;
+        if (sorting == null) {
+            sorting = SortingParameters.of(SortBy.PROGRAM_NAME.name(), Direction.asc);
         }
         
-        Direction dir = desc ? Direction.desc : Direction.asc;
-
         Iterable<Integer> categoryIds = applianceCategoryDao.getApplianceCategoryIdsByEC(ecId);
         SearchResults<AssignedProgram> assignedPrograms =
-            assignedProgramService.filter(categoryIds, UiFilterList.wrap(filters), sortBy, desc, paging.getStartIndex(), 
-                    paging.getItemsPerPage());
+            assignedProgramService.filter(categoryIds, UiFilterList.wrap(filters), sorting, paging);
         model.addAttribute("assignedPrograms", assignedPrograms);
-
+        
         categoryIds = Iterables.transform(assignedPrograms.getResultList(), idFromCategory);
         Map<Integer, ApplianceCategory> categories = applianceCategoryDao.getByApplianceCategoryIds(categoryIds);
         model.addAttribute("applianceCategoriesById", categories);
@@ -118,9 +111,10 @@ public class ProgramsController {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         String programHeader = accessor.getMessage(baseKey + ".programNameHeader.linkText");
         String categoryHeader = accessor.getMessage(baseKey + ".applianceCategoryNameHeader.linkText");
-        model.addAttribute("program", SortableColumn.of(dir, sortBy == SortBy.PROGRAM_NAME, programHeader, "program"));
-        model.addAttribute("category", SortableColumn.of(dir, sortBy != SortBy.PROGRAM_NAME, categoryHeader, "category"));
+        model.addAttribute("program", SortableColumn.of(sorting, programHeader, SortBy.PROGRAM_NAME.name()));
+        model.addAttribute("category", SortableColumn.of(sorting, categoryHeader, SortBy.APPLIANCE_CATEGORY_NAME.name()));
         
         return "applianceCategory/programs.list.jsp";
     }
+    
 }

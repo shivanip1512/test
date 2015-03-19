@@ -26,6 +26,7 @@ var yg = {
         ok: '<cti:msg2 key="yukon.web.components.button.ok.label"/>',
         save: '<cti:msg2 key="yukon.web.components.button.save.label"/>',
         view: '<cti:msg2 key="yukon.web.components.button.view.label"/>',
+        filter: '<cti:msg2 key="yukon.web.components.button.filter.label"/>',
         yes: '<cti:msg2 key="yukon.web.defaults.yes"/>',
         no: '<cti:msg2 key="yukon.web.defaults.no"/>',
         confirm: '<cti:msg2 key="yukon.web.defaults.confirm"/>'

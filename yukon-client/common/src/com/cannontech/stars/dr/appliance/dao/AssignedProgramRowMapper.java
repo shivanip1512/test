@@ -13,9 +13,10 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.stars.dr.appliance.model.AssignedProgram;
 import com.cannontech.stars.webconfiguration.model.WebConfiguration;
 
-public class AssignedProgramRowMapper extends
-        AbstractRowMapperWithBaseQuery<AssignedProgram> {
+public class AssignedProgramRowMapper extends AbstractRowMapperWithBaseQuery<AssignedProgram> {
+    
     public enum SortBy {
+        
         PROGRAM_NAME {
             @Override
             protected String getOrderBy(boolean sortDescending) {
@@ -32,19 +33,19 @@ public class AssignedProgramRowMapper extends
             protected String getOrderBy(boolean sortDescending) {
                 return "LOWER(ac.description)" + (sortDescending ? " DESC" : "");
             }};
-
+            
         protected abstract String getOrderBy(boolean sortDescending);
     };
-
+    
     private SortBy sortBy;
     private boolean sortDescending;
     private Map<Integer, WebConfiguration> webConfigurations;
     private Integer highestProgramOrder;
-
+    
     public AssignedProgramRowMapper() {
         this(SortBy.PROGRAM_ORDER, false, -1, null);
     }
-
+    
     public AssignedProgramRowMapper(SortBy sortBy, boolean sortDescending,
                                     Integer highestProgramOrder,
             Map<Integer, WebConfiguration> webConfigurations) {
@@ -53,7 +54,7 @@ public class AssignedProgramRowMapper extends
         this.highestProgramOrder = highestProgramOrder;
         this.webConfigurations = webConfigurations;
     }
-
+    
     @Override
     public SqlFragmentSource getBaseQuery() {
         SqlStatementBuilder retVal = new SqlStatementBuilder();
@@ -71,14 +72,14 @@ public class AssignedProgramRowMapper extends
         retVal.append("WHERE p.applianceCategoryId").neq(0);
         return retVal;
     }
-
+    
     @Override
     public SqlFragmentSource getOrderBy() {
         SqlStatementBuilder retVal = new SqlStatementBuilder("ORDER BY");
         retVal.append(sortBy.getOrderBy(sortDescending));
         return retVal;
     }
-
+    
     @Override
     public AssignedProgram mapRow(YukonResultSet rs) throws SQLException {
         
@@ -88,7 +89,7 @@ public class AssignedProgramRowMapper extends
         String programName = programId == 0 ? null : rs.getString("paoName");
         int chanceOfControlId = rs.getInt("chanceOfControlId");
         int programOrder = rs.getInt("programOrder");
-
+        
         Integer webConfigurationId = rs.getInt("webSettingsId");
         WebConfiguration webConfiguration = null;
         if (webConfigurations != null) {
@@ -98,7 +99,7 @@ public class AssignedProgramRowMapper extends
         boolean isLast = highestProgramOrder != null && programOrder == highestProgramOrder;
         
         Integer alternateProgramId = rs.getNullableInt("seasonalProgramId");
-
+        
         AssignedProgram assignedProgram = new AssignedProgram(applianceCategoryId, 
                                                               assignedProgramId, 
                                                               programId, 
@@ -109,7 +110,8 @@ public class AssignedProgramRowMapper extends
                                                               isLast, 
                                                               webConfigurationId, 
                                                               webConfiguration);
-
+        
         return assignedProgram;
     }
+    
 }

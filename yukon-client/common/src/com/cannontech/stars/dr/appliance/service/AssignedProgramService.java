@@ -1,16 +1,27 @@
 package com.cannontech.stars.dr.appliance.service;
 
 import com.cannontech.common.bulk.filter.UiFilter;
+import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.stars.dr.appliance.dao.AssignedProgramRowMapper.SortBy;
 import com.cannontech.stars.dr.appliance.model.AssignedProgram;
 
 public interface AssignedProgramService {
-    public SearchResults<AssignedProgram> filter(Iterable<Integer> applianceCategoryIds,
-            UiFilter<AssignedProgram> filter, SortBy sortBy, boolean sortDescending,
-            int startIndex, int count);
-
-    public SearchResults<AssignedProgram> filter(int applianceCategoryId,
-            UiFilter<AssignedProgram> filter, SortBy sortBy, boolean sortDescending,
-            int startIndex, int count);
+    
+    /**
+     * Get search results for a collection of appliance categories. 
+     * If paging is null, the results will not be paged.
+     * If sorting is null, results are sorted by program order, descending.
+     */
+    SearchResults<AssignedProgram> filter(Iterable<Integer> categoryIds,
+            UiFilter<AssignedProgram> filter, SortingParameters sorting, PagingParameters paging);
+    
+    /**
+     * Get search results for a single appliance category. 
+     * If paging is null, the results will not be paged.
+     * If sorting is null, results are sorted by program order, descending.
+     */
+    SearchResults<AssignedProgram> filter(int categoryId,
+            UiFilter<AssignedProgram> filter, SortingParameters sorting, PagingParameters paging);
+    
 }

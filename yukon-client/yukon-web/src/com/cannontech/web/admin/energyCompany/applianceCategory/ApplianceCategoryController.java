@@ -31,7 +31,8 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
-import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.Move;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.validator.SimpleValidator;
@@ -78,7 +79,7 @@ import com.google.common.collect.Lists;
 public class ApplianceCategoryController {
     
     private final static String baseKey = "yukon.web.modules.adminSetup.applianceCategory";
-
+    
     @Autowired private AssignedProgramDao assignedProgramDao;
     @Autowired private AssignedProgramService assignedProgramService;
     @Autowired private ApplianceCategoryDao applianceCategoryDao;
@@ -92,7 +93,7 @@ public class ApplianceCategoryController {
     @Autowired private ProgramToAlternateProgramDao ptapDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-
+    
     private final Validator detailsValidator = new SimpleValidator<ApplianceCategory>(ApplianceCategory.class) {
         @Override
         public void doValidation(ApplianceCategory target, Errors errors) {
@@ -108,7 +109,7 @@ public class ApplianceCategoryController {
             YukonValidationUtils.checkExceedsMaxLength(errors, "description", target.getDescription(), 500);
         }
     };
-
+    
     private final Validator assignedProgramValidator = new SimpleValidator<AssignProgramBackingBean>(AssignProgramBackingBean.class) {
         @Override
         public void doValidation(AssignProgramBackingBean assignedProgram, Errors errors) {
@@ -118,7 +119,7 @@ public class ApplianceCategoryController {
                     "assignedProgram.displayName",
                     baseKey + ".editAssignedProgram.empty");
             }
-
+            
             AssignedProgram ap = assignedProgram.getAssignedProgram();
             if (!assignedProgram.isMultiple()) {
                 String alternateDisplayName = ap.getWebConfiguration().getAlternateDisplayName();
@@ -150,20 +151,20 @@ public class ApplianceCategoryController {
             }
         }
     };
-
+    
     @RequestMapping("list")
     public String list(ModelMap model, YukonUserContext userContext, EnergyCompanyInfoFragment ecInfo) {
         
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(ecInfo, model);
         int ecId = ecInfo.getEnergyCompanyId();
         ecService.verifyViewPageAccess(userContext.getYukonUser(), ecId);
-
+        
         List<ApplianceCategory> categories = applianceCategoryDao.getApplianceCategoriesByEcId(ecId);
         model.addAttribute("applianceCategories", categories);
-
+        
         return "applianceCategory/list.jsp";
     }
-
+    
     @RequestMapping("view")
     public String view(ModelMap model, 
                        int applianceCategoryId, 
@@ -175,29 +176,26 @@ public class ApplianceCategoryController {
         ecService.verifyViewPageAccess(userContext.getYukonUser(), ecId);
         
         ApplianceCategory category = applianceCategoryDao.getById(applianceCategoryId);
-
+        
         // default the filtering and sorting options 
         UiFilter<AssignedProgram> filter = UiFilterList.wrap(new ArrayList<UiFilter<AssignedProgram>>());
+        
         SortBy sortBy = category.isConsumerSelectable() ? SortBy.PROGRAM_ORDER : SortBy.PROGRAM_NAME;
         
-        boolean desc = sortBy == SortBy.PROGRAM_NAME;
+        SortingParameters sorting = SortingParameters.of(sortBy.name(), Direction.asc);
         
-        SearchResults<AssignedProgram> assignedPrograms =
-            assignedProgramService.filter(category.getApplianceCategoryId(), filter, sortBy, desc, 0, 10);
-        model.addAttribute("assignedPrograms", assignedPrograms);
+        model.addAttribute("assignedPrograms", assignedProgramService.filter(applianceCategoryId, filter, sorting, null));
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         
         String programName = accessor.getMessage(baseKey + ".programName");
-        SortableColumn nameColumn = SortableColumn.of(com.cannontech.common.model.Direction.desc, 
-                sortBy == SortBy.PROGRAM_NAME, programName, "name");
+        SortableColumn nameColumn = SortableColumn.of(sorting, programName, SortBy.PROGRAM_NAME.name());
         model.addAttribute("nameColumn", nameColumn);
         
         String displayOrder = accessor.getMessage(baseKey + ".displayOrder");
-        SortableColumn orderColumn = SortableColumn.of(com.cannontech.common.model.Direction.desc, 
-                sortBy == SortBy.PROGRAM_ORDER, displayOrder, "order");
+        SortableColumn orderColumn = SortableColumn.of(sorting, displayOrder, SortBy.PROGRAM_ORDER.name());
         model.addAttribute("orderColumn", orderColumn);
-
+        
         return edit(PageEditMode.VIEW, model, category, userContext, ecId);
     }
     
@@ -206,7 +204,6 @@ public class ApplianceCategoryController {
             YukonUserContext userContext,
             int applianceCategoryId, 
             int ecId, 
-            PagingParameters paging,
             SortingParameters sorting,
             String filterBy) {
         
@@ -218,37 +215,25 @@ public class ApplianceCategoryController {
         UiFilter<AssignedProgram> filter = UiFilterList.wrap(filters);
         
         ApplianceCategory category = applianceCategoryDao.getById(applianceCategoryId);
-        SortBy sortBy;
-        boolean desc;
-        if (category.isConsumerSelectable()) {
-            sortBy = SortBy.PROGRAM_ORDER;
-            desc = false;
-        } else {
-            sortBy = SortBy.PROGRAM_NAME;
-            desc = true;
-        }
-        if (sorting != null) {
-            if (sorting.getSort().equalsIgnoreCase("name")) {
-                sortBy = SortBy.PROGRAM_NAME;
+        
+        if (sorting == null) {
+            if (category.isConsumerSelectable()) {
+                sorting = SortingParameters.of(SortBy.PROGRAM_ORDER.name(), Direction.asc);
             } else {
-                sortBy = SortBy.PROGRAM_ORDER;
+                sorting = SortingParameters.of(SortBy.PROGRAM_NAME.name(), Direction.asc);
             }
-            desc = sorting.getDirection() == com.cannontech.common.model.Direction.desc;
         }
         
         SearchResults<AssignedProgram> assignedPrograms =
-            assignedProgramService.filter(category.getApplianceCategoryId(), 
-                    filter, sortBy, desc, paging.getStartIndex(), paging.getItemsPerPage());
+            assignedProgramService.filter(category.getApplianceCategoryId(), filter, sorting, null);
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         
         String programName = accessor.getMessage(baseKey + ".programName");
-        SortableColumn nameColumn = SortableColumn.of(desc ? com.cannontech.common.model.Direction.desc : com.cannontech.common.model.Direction.asc, 
-                sortBy == SortBy.PROGRAM_NAME, programName, "name");
+        SortableColumn nameColumn = SortableColumn.of(sorting, programName, SortBy.PROGRAM_NAME.name());
         
         String displayOrder = accessor.getMessage(baseKey + ".displayOrder");
-        SortableColumn orderColumn = SortableColumn.of(desc ? com.cannontech.common.model.Direction.desc : com.cannontech.common.model.Direction.asc, 
-                sortBy == SortBy.PROGRAM_ORDER, displayOrder, "order");
+        SortableColumn orderColumn = SortableColumn.of(sorting, displayOrder, SortBy.PROGRAM_ORDER.name());
         
         model.addAttribute("applianceCategory", category);
         model.addAttribute("isEditable", category.getEnergyCompanyId() == ecId);
@@ -259,7 +244,7 @@ public class ApplianceCategoryController {
         
         return "applianceCategory/ac.programs.list.jsp";
     }
-
+    
     @RequestMapping("create")
     public String create(ModelMap model, YukonUserContext userContext, EnergyCompanyInfoFragment ecInfo) {
         
@@ -576,13 +561,11 @@ public class ApplianceCategoryController {
         
         return "redirect:view";
     }
-
-    public enum Direction {up,down}
     
     @RequestMapping("moveProgram")
     public String moveProgram(int applianceCategoryId,
                               int assignedProgramId, 
-                              @RequestParam(required=true) Direction direction, 
+                              @RequestParam(required=true) Move direction, 
                               int ecId,
                               YukonUserContext userContext) {
         
@@ -590,15 +573,15 @@ public class ApplianceCategoryController {
         ApplianceCategory applianceCategory = applianceCategoryDao.getById(applianceCategoryId);
         ecService.verifyEditPageAccess(userContext.getYukonUser(), applianceCategory.getEnergyCompanyId());
         
-        if (direction == Direction.up) {
+        if (direction == Move.up) {
             applianceCategoryService.moveAssignedProgramUp(applianceCategoryId, assignedProgramId, userContext);
-        } else if (direction == Direction.down) {
+        } else if (direction == Move.down) {
             applianceCategoryService.moveAssignedProgramDown(applianceCategoryId, assignedProgramId, userContext);
         }
         
         return "forward:programs-list";
     }
-
+    
     /**
      * Ensure that the appliance category's energy company is the given ecId.
      */
@@ -608,7 +591,7 @@ public class ApplianceCategoryController {
             throw new NotAuthorizedException("appliance category has been tampered with");
         }
     }
-
+    
     /**
      * Make sure the assigned program really is for the given appliance category.
      */
@@ -618,7 +601,7 @@ public class ApplianceCategoryController {
             throw new NotAuthorizedException("assigned program has been tampered with");
         }
     }
-
+    
     public static class ChanceOfControl {
         private final int chanceOfControlId;
         private final String name;

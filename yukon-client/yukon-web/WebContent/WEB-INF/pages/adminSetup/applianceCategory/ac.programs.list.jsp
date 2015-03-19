@@ -50,6 +50,5 @@
         </c:forEach>
     </tbody>
 </table>
-<tags:pagingResultsControls result="${assignedPrograms}"/>
 
 </cti:msgScope>

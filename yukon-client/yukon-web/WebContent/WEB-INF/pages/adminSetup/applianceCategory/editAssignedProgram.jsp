@@ -42,7 +42,7 @@
     <form:hidden id="programNameInput" path="assignedProgram.programName"/>
     <form:hidden path="assignedProgram.programOrder"/>
     
-    <tags:nameValueContainer2>
+    <tags:nameValueContainer2 tableClass="with-form-controls">
         
         <tags:nameValue2 nameKey=".applianceCategory">${fn:escapeXml(applianceCategory.name)}</tags:nameValue2>
         
@@ -68,7 +68,7 @@
                     </cti:displayForPageEditModes>
                 </spring:bind>
             </tags:nameValue2>
-
+            
             <tags:nameValue2 nameKey=".shortName" rowId="program-short-name">
                 <spring:bind path="assignedProgram.shortName">
                     <cti:displayForPageEditModes modes="VIEW">${fn:escapeXml(status.value)}</cti:displayForPageEditModes>
@@ -82,17 +82,17 @@
                     </cti:displayForPageEditModes>
                 </spring:bind>
             </tags:nameValue2>
-
+            
             <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <tags:nameValue2 nameKey=".displayNameKey" rowId="program-display-name-key">
                 </tags:nameValue2>
             </cti:displayForPageEditModes>
         </c:if>
-
+        
         <tags:nameValue2 nameKey=".description">
             <tags:textarea path="assignedProgram.description" cols="40" rows="3"/>
         </tags:nameValue2>
-
+        
         <tags:nameValue2 nameKey=".chanceOfControl">
             <cti:displayForPageEditModes modes="VIEW">${fn:escapeXml(chanceOfControl)}</cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT,CREATE">

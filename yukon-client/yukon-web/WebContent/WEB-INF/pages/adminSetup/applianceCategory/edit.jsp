@@ -157,7 +157,8 @@
                 <cti:param name="ecId" value="${ecId}"/>
                 <cti:param name="filterBy" value="${filterBy}"/>
             </cti:url>
-            <div id="assigned-programs" data-url="${programsUrl}" data-category="${applianceCategoryId}" data-ec="${ecId}">
+            <div id="assigned-programs" class="scroll-md"
+                     data-url="${programsUrl}" data-category="${applianceCategoryId}" data-ec="${ecId}">
                 <c:choose>
                     <c:when test="${empty assignedPrograms.resultList}"><i:inline key=".noAssignedPrograms"/></c:when>
                     <c:otherwise><%@ include file="ac.programs.list.jsp" %></c:otherwise>
@@ -179,7 +180,7 @@
                             multiSelectMode="true" 
                             type="applianceCategoryProgramPicker"/>
                     </form>
-    
+                    
                     <c:if test="${canAddVirtual}">
                         <cti:url var="createVirtualProgramUrl" value="createVirtualProgram">
                             <cti:param name="ecId" value="${param.ecId}"/>
@@ -194,7 +195,8 @@
                 <c:if test="${!applianceCategory.consumerSelectable}">
                     <c:set var ="filtered" value="${empty filterBy ? false : true}"/>
                     <div class="button-group fr">
-                        <cti:button nameKey="filter" icon="icon-filter" data-popup=".js-filter-popup" classes="js-filter fl ${filtered ? 'left' : ''}"/>
+                        <cti:button nameKey="filter" icon="icon-filter" data-popup=".js-filter-popup" 
+                            classes="js-filter fl ${filtered ? 'left' : ''}"/>
                         <cti:button renderMode="buttonImage" classes="js-clear-filter fr right ${filtered ? '' : 'dn'}" icon="icon-cross"/>
                     </div>
                     <div class="dn js-filter-popup" data-dialog data-title="<cti:msg2 key=".assignedPrograms.filterBy.title"/>" 

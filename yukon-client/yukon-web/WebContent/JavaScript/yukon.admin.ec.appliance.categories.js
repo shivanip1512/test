@@ -214,7 +214,7 @@ yukon.admin.ec.ac = (function () {
                     applianceCategoryId: container.data('category'),
                     ecId: container.data('ec'),
                     filterBy: $('#program-filter').val(),
-                    sort: 'name',
+                    sort: 'PROGRAM_NAME',
                     dir: $('#assigned-programs .sortable').is('desc') ? 'asc' : 'desc'
                 };
                 container.load('programs-list', params);
@@ -224,11 +224,15 @@ yukon.admin.ec.ac = (function () {
                     filterBy: $('#program-filter').val()
                 }));
                 $('.js-filter-popup').dialog('close');
-                if (params.filterBy.trim().length > 0) {
-                    $('.js-filter').addClass('left');
+                
+                var filter = params.filterBy.trim();
+                if (filter.length > 0) {
+                    $('.js-filter').addClass('left')
+                    .find('.b-label').text(yg.text.filter + ': ' + filter);
                     $('.js-clear-filter').show();
                 } else {
-                    $('.js-filter').removeClass('left');
+                    $('.js-filter').removeClass('left')
+                    .find('.b-label').text(yg.text.filter);
                     $('.js-clear-filter').hide();
                 }
             });

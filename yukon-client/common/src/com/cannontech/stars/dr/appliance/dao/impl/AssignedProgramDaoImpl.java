@@ -99,7 +99,7 @@ public class AssignedProgramDaoImpl implements AssignedProgramDao {
     }
 
     @Override
-    public int getHighestProgramOrderForApplianceCategory(int applianceCategoryId) {
+    public int getHighestProgramOrder(int applianceCategoryId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT MAX(programOrder) FROM lmProgramWebPublishing");
         sql.append("WHERE applianceCategoryId").eq(applianceCategoryId);
