@@ -167,8 +167,8 @@
                                             <span data-tooltip="[data-point-updated='${pointId}']">
                                                 <cti:pointStatus pointId="${pointId}" statusPointOnly="true"/>
                                                 <cti:pointValue pointId="${pointId}" format="VALUE"/>
-                                                <cti:pointValue pointId="${pointId}" format="UNIT"/>
-                                                <cti:pointValue pointId="${pointId}" format="SHORT_QUALITY"/>
+                                                <cti:pointValue pointId="${pointId}" format="UNIT" unavailableValue=""/>
+                                                <cti:pointValue pointId="${pointId}" format="SHORT_QUALITY" unavailableValue=""/>
                                             </span>
                                             <div class="dn" data-point-updated="${pointId}">
                                                 <cti:pointValue pointId="${pointId}" format="DATE"/>
@@ -210,8 +210,8 @@
                                                 <span data-tooltip="[data-point-updated='${pointId}']">
                                                     <cti:pointStatus pointId="${pointId}" statusPointOnly="true"/>
                                                     <cti:pointValue pointId="${pointId}" format="VALUE"/>
-                                                    <cti:pointValue pointId="${pointId}" format="UNIT"/>
-                                                    <cti:pointValue pointId="${pointId}" format="SHORT_QUALITY"/>
+                                                    <cti:pointValue pointId="${pointId}" format="UNIT" unavailableValue=""/>
+                                                    <cti:pointValue pointId="${pointId}" format="SHORT_QUALITY" unavailableValue=""/>
                                                 </span>
                                                 <div class="dn" data-point-updated="${pointId}">
                                                     <cti:pointValue pointId="${pointId}" format="DATE"/>
@@ -240,7 +240,7 @@
     <div class="column two nogutter">
         <cti:tabs>
             <cti:msg2 var="tabName" key=".voltageProfile.title" />
-            <cti:tab selectorName="${tabName}">
+            <cti:tab title="${tabName}">
                 <c:set var="chartId" value="zone_${zoneId}_chart" />
                 <cti:url var="chartJsonDataUrl" value="/capcontrol/ivvc/zone/chart">
                     <cti:param name="zoneId" value="${zoneId}" />
@@ -253,7 +253,7 @@
                     initialize="false" largestTime="CAPCONTROL/${zoneId}/IVVC_LARGEST_GRAPH_TIME_FOR_ZONE"/>
             </cti:tab>
             <cti:msg2 var="voltagePointsTab" key=".voltagePoints.title" />
-            <cti:tab selectorName="${voltagePointsTab}">
+            <cti:tab title="${voltagePointsTab}">
                 <div class="scroll-lg">
                     <cti:url var="zoneVoltagePointsUrl" value="/capcontrol/ivvc/zone/voltagePoints">
                        <cti:param name="zoneId" value="${zoneId}"/>
