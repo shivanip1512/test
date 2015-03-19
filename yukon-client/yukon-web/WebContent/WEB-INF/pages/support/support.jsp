@@ -107,7 +107,7 @@ $(function() {
         <tags:sectionContainer2 nameKey="bundle">
             <cti:tabs>
                 <cti:msg2 key=".supportBundle.createNewHeading" var="createNewHeading"/>
-                <cti:tab selectorName="${createNewHeading}" >
+                <cti:tab title="${createNewHeading}" >
                     <form:form id="createBundleForm" commandName="supportBundle" action="${createBundleURL}" method="POST">
                         <cti:csrfToken/>
                         <tags:nameValueContainer2>
@@ -150,7 +150,7 @@ $(function() {
                 </cti:tab>
                 <cti:msg2 key='.supportBundle.previousHeading' var="previousHeading"/>
                 <cti:url value="/support/downloadBundle" var="downloadBundleURl"/>
-                <cti:tab selectorName="${previousHeading}" >
+                <cti:tab title="${previousHeading}" >
                     <form id="previousBundlesForm" action="${downloadBundleURl}" method="POST">
                         <cti:csrfToken/>
                         <c:if test="${empty bundleList}">

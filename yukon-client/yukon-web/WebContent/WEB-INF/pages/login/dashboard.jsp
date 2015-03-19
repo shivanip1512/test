@@ -10,7 +10,7 @@
         <div class="column one section">
             <cti:tabs>
                 <cti:msg2 var="favoritesTab" key=".favorites" />
-                <cti:tab selectorName="${favoritesTab}">
+                <cti:tab title="${favoritesTab}">
                     <c:if test="${empty favorites}">
                         <span class="empty-list"><i:inline key=".favorites.emptyList" /></span>
                     </c:if>
@@ -41,7 +41,7 @@
                     </c:if>
                 </cti:tab>
                 <cti:msg2 var="historyTab" key=".history" />
-                <cti:tab selectorName="${historyTab}">
+                <cti:tab title="${historyTab}">
                     <c:if test="${empty history}">
                         <span class="empty-list"><i:inline key=".history.emptyList" /></span>
                     </c:if>

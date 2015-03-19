@@ -54,7 +54,7 @@
         <cti:tabs>
                 
             <%-- ATTRIBUTE TAB --%>
-            <cti:tab selectorName="${attibuteRequestTypeLabel}" initiallySelected="${empty requestType || requestType == 'SCHEDULED_GROUP_ATTRIBUTE_READ'}">
+            <cti:tab title="${attibuteRequestTypeLabel}" selected="${empty requestType || requestType == 'SCHEDULED_GROUP_ATTRIBUTE_READ'}">
                 
                 <form id="scheduledGroupRequestExecutionForm_attr" action="<cti:url value="/group/scheduledGroupRequestExecution/schedule"/>" method="post" >
                   <cti:csrfToken/>
@@ -145,7 +145,7 @@
             </cti:tab>
             
             <%-- COMMAND TAB --%>
-            <cti:tab selectorName="${commandRequestTypeLabel}" initiallySelected="${requestType == 'SCHEDULED_GROUP_COMMAND'}">
+            <cti:tab title="${commandRequestTypeLabel}" selected="${requestType == 'SCHEDULED_GROUP_COMMAND'}">
             
                 <form id="scheduledGroupRequestExecutionForm_cmd" action="<cti:url value="/group/scheduledGroupRequestExecution/schedule"/>" method="post" >
                     <cti:csrfToken/>

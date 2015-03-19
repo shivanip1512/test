@@ -16,13 +16,13 @@
     <cti:tabs>
     
    		<%-- EXPORT TAB --%>
-		<cti:tab selectorName="${exportConfig}" initiallySelected="${exportTab}">
+		<cti:tab title="${exportConfig}" selected="${exportTab}">
 			<%@ include file="export.jspf" %>
 		</cti:tab>
 		
 		
 		<%-- IMPORT TAB --%>
-		<cti:tab selectorName="${importConfig}" initiallySelected="${importTab}">
+		<cti:tab title="${importConfig}" selected="${importTab}">
 			<%@ include file="loadImport.jspf" %>
 		</cti:tab>
     

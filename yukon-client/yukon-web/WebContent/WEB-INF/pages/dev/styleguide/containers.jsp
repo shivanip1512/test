@@ -84,6 +84,20 @@ $(function () {
 </tags:sectionContainer>
 
 
+<tags:sectionContainer title="Tabs">
+    <cti:tabs>
+        <cti:tab title="First">First Content</cti:tab>
+        <cti:tab title="Second">Second Content</cti:tab>
+        <cti:tab title="Third">Third Content</cti:tab>
+    </cti:tabs>
+    <cti:tabs>
+        <cti:tab title="First">First Content</cti:tab>
+        <cti:tab title="Second" selected="true" >Second Content</cti:tab>
+        <cti:tab title="Third">Third Content</cti:tab>
+    </cti:tabs>
+
+
+</tags:sectionContainer>
 <tags:sectionContainer title="Containers Side by Side Test">
     <div class="column-6-6-6-6">
         <div class="column one">
@@ -104,8 +118,8 @@ $(function () {
         </div>
         <div class="column three">
             <cti:tabs>
-                <cti:tab selectorName="Tab 1">tab 1 should start hidden</cti:tab>
-                <cti:tab selectorName="Tab 2" initiallySelected="true">tab 2 should be active first</cti:tab>
+                <cti:tab title="Tab 1">tab 1 should start hidden</cti:tab>
+                <cti:tab title="Tab 2" selected="true">tab 2 should be active first</cti:tab>
             </cti:tabs>
         </div>
         <div class="column four nogutter">

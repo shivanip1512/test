@@ -230,7 +230,7 @@
         
             <cti:tabs>
                 <cti:msg2 var="tabName" key=".voltageProfile.title" />
-                <cti:tab selectorName="${tabName}">
+                <cti:tab title="${tabName}">
                     <c:set var="chartId" value="sub_${subBusId}_chart" />
                     <cti:url var="chartJsonDataUrl" value="/capcontrol/ivvc/bus/chart">
                         <cti:param name="subBusId" value="${subBusId}" />
@@ -243,7 +243,7 @@
                                              initialize="false" largestTime="CAPCONTROL/${subBusId}/IVVC_LARGEST_GRAPH_TIME_FOR_SUBBUS"/>
                 </cti:tab>
                 <cti:msg2 var="voltagePointsTab" key=".voltagePoints.title" />
-                <cti:tab selectorName="${voltagePointsTab}">
+                <cti:tab title="${voltagePointsTab}">
                     <div class="scroll-lg">
                         <c:forEach items="${zoneVoltagePointsHolders}" var="zoneVoltagePointsHolder">
                             <c:set var="zoneName" value="${zoneVoltagePointsHolder.zoneName}"/>

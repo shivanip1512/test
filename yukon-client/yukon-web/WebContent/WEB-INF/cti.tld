@@ -2132,7 +2132,7 @@
     <tag-class>com.cannontech.web.taglib.TabTag</tag-class>
     <body-content>scriptless</body-content>
      <attribute>
-        <name>selectorName</name>
+        <name>title</name>
         <required>true</required>
         <rtexprvalue>true</rtexprvalue>
         <description>Text for tab name</description>
@@ -2144,7 +2144,7 @@
         <description>CSS classes of the content div.</description>
     </attribute>
     <attribute>
-        <name>initiallySelected</name>
+        <name>selected</name>
         <required>false</required>
         <rtexprvalue>true</rtexprvalue>
         <description>Tab selected</description>

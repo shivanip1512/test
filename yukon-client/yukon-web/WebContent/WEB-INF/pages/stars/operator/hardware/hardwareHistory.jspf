@@ -6,7 +6,7 @@
 
 <cti:tabs>
     <cti:msg2 key=".deviceStatusHistory.tab" var="statusTitle"/>
-    <cti:tab selectorName="${statusTitle}">
+    <cti:tab title="${statusTitle}">
         <c:choose>
             <c:when test="${empty deviceStatusHistory}">
                 <span class="empty-list"><i:inline key=".deviceStatusHistory.none"/></span>
@@ -38,7 +38,7 @@
     </cti:tab>
     
     <cti:msg2 key=".hardwareHistory.tab" var="hardwareTitle"/>
-    <cti:tab selectorName="${hardwareTitle}">
+    <cti:tab title="${hardwareTitle}">
             <c:choose>
                 <c:when test="${empty hardwareHistory}">
                     <span class="empty-list"><i:inline key=".hardwareHistory.none"/></span>
@@ -69,7 +69,7 @@
 
     <c:if test="${showThermostatHistory}">
         <cti:msg2 key=".commandHistory.tab" var="commandTitle"/>
-        <cti:tab selectorName="${commandTitle}">
+        <cti:tab title="${commandTitle}">
             <jsp:include page="/WEB-INF/pages/stars/operator/operatorThermostat/history/commandHistory.jsp" />
         </cti:tab>
     </c:if>

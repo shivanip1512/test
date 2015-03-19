@@ -9,7 +9,7 @@
 
     <cti:tabs>
         <cti:msg2 var="formulasTab" key='.formulas'/>
-        <cti:tab selectorName="${formulasTab}">
+        <cti:tab title="${formulasTab}">
            <%@ include file="_formulasTable.jsp" %>
             <div class="action-area">
                <cti:button icon="icon-plus-green" nameKey="newFormula" href="formula/create"/>
@@ -17,7 +17,7 @@
         </cti:tab>
 
         <cti:msg2 var="assignmentsTab" key='.assignments'/>
-        <cti:tab selectorName="${assignmentsTab}">
+        <cti:tab title="${assignmentsTab}">
            <tags:sectionContainer2 nameKey="applianceCategories">
                <%@ include file="_appCatAssignmentsTable.jsp" %>
             </tags:sectionContainer2>

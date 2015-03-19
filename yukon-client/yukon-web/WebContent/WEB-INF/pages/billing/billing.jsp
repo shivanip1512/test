@@ -19,7 +19,7 @@
 <cti:tabs id="billing_tab_container">
 
     <cti:msg key="yukon.web.billing.tab.generation.title" var="tabGen" />
-    <cti:tab selectorName="${tabGen}" initiallySelected="${showTabGeneration}">
+    <cti:tab title="${tabGen}" selected="${showTabGeneration}">
         <div id="billing_generation_settings" class="clearfix stacked">
             <jsp:include page="_settings.jsp"></jsp:include>
         </div>
@@ -32,7 +32,7 @@
     
     <cti:checkRolesAndProperties value="DYNAMIC_BILLING_FILE_SETUP">
         <cti:msg key="yukon.web.billing.tab.setup.title" var="tab_setup" />
-        <cti:tab selectorName="${tab_setup}" initiallySelected="${showTabSetup}">
+        <cti:tab title="${tab_setup}" selected="${showTabSetup}">
             <div id="billing_setup_overview">
                 <jsp:include page="../amr/dynamicBilling/_overview.jsp"></jsp:include>
             </div>

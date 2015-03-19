@@ -20,10 +20,10 @@ public class TabsTag extends BodyTagSupport {
     private List<String> tabNames = new ArrayList<String>();
     private List<String> tabIds = new ArrayList<String>();
     
-    public void addTab(String name, String id, boolean initiallySelected) {
+    public void addTab(String name, String id, boolean selected) {
         tabNames.add(name);
         tabIds.add(id);
-        if (initiallySelected) {
+        if (selected) {
             selectedTabIndex = tabNames.size() - 1;
         }
     }

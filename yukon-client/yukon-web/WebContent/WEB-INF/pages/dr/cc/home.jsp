@@ -15,7 +15,7 @@
         <div class="column one nogutter">
             <cti:tabs>
                 <cti:msg2 var="programsName" key=".ccurtPrograms"/>
-                <cti:tab selectorName="${programsName}" initiallySelected="true">
+                <cti:tab title="${programsName}" selected="true">
                 <h2><i:inline key=".ccurtAvailable"/></h2>
                 <div class="column one">
                     <table class="compact-results-table" id="programs">
@@ -74,7 +74,7 @@
                 </div>
                 </cti:tab>
                 <cti:msg2 var="setupName" key=".setup"/>
-                <cti:tab selectorName="${setupName}" initiallySelected="false">
+                <cti:tab title="${setupName}">
                     <table class="compact-results-table" id="programs">
                         <thead>
                             <tr></tr>
@@ -94,7 +94,7 @@
                     </table>
                  </cti:tab>
                 <cti:msg2 var="trendName" key=".ccurtTrends"/>
-                <cti:tab selectorName="${trendName}" initiallySelected="false">
+                <cti:tab title="${trendName}">
                 </cti:tab>
             </cti:tabs>
         </div>
