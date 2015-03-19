@@ -26,7 +26,7 @@ public class TabTag extends YukonTagSupport {
         
     }
     
-    public void settTitle(String title) {
+    public void setTitle(String title) {
         this.title = title;
     }
 
