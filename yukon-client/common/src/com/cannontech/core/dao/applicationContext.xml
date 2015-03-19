@@ -83,6 +83,7 @@
   <bean id="paoScheduleDao" class="com.cannontech.core.schedule.dao.impl.PaoScheduleDaoImpl"/>
   
   <bean id="strategyDao" class="com.cannontech.capcontrol.dao.impl.StrategyDaoImpl"/>
+  <bean class="com.cannontech.capcontrol.dao.impl.RegulatorEventsDaoImpl"/>
   
   <bean id="outageMonitorDao" class="com.cannontech.amr.outageProcessing.dao.impl.OutageMonitorDaoImpl"/>
   

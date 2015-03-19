@@ -33,13 +33,52 @@ yukon.da.regulator = (function () {
      *    PAO_TYPE_2: ['Attr2', 'Attr3']
      *  }
      */
-    _paoTypeMap = {};
+    _paoTypeMap = {},
+
+    _updateRecentEvents = function () {
+
+        $.ajax({
+            url: yukon.url('/capcontrol/regulators/' + $('#regulator-id').val() + '/events'),
+            data: {'lastUpdate': $('#regulator-events-last-update').val()}
+        }).done(function (data) {
+
+            $('#regulator-events-last-update').val(data.timestamp);
+            var templateRow = $('#regulator-events-template-row');
+            var body = $('#regulator-events').find('tbody');
+
+            var events = data.events;
+            
+            if (events.length) {
+                $('.js-ivvc-events-empty').hide();
+                $('.js-ivvc-events-holder').show();
+            }
+            var event, newRow;
+
+            for (var ii = events.length -1; ii >= 0; ii -=1) {
+                event = events[ii];
+                newRow = $(templateRow.clone()).removeAttr('id');
+
+                newRow.find('.js-event-icon').addClass(event.icon);
+                newRow.find('.js-message').html(event.message);
+                newRow.find('.js-user').text(event.user);
+                newRow.find('.js-timestamp').text(event.timestamp);
+
+                body.prepend(newRow);
+                newRow.flash();
+            }
+
+            body.find('tr:gt(20)').remove();
+
+            setTimeout(_updateRecentEvents, 4000);
+
+        });
+    };
 
     var mod = {
 
             init : function () {
-                _paoTypeMap = $('[data-pao-type-map]').data('paoTypeMap');
 
+                _paoTypeMap = yukon.fromJson('#pao-type-map');
                 _showHideMappings();
 
                 $('#regulator-type').on('change', function () {
@@ -49,6 +88,8 @@ yukon.da.regulator = (function () {
                 $(document).on('yukon:da:regulator:delete', function () {
                     $('#delete-regulator').submit();
                 });
+
+                _updateRecentEvents();
             }
     };
     return mod;

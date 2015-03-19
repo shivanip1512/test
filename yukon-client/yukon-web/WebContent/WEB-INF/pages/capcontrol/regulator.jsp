@@ -12,61 +12,89 @@
     <cti:includeScript link="/JavaScript/yukon.da.regulator.js"/>
     <tags:setFormEditMode mode="${mode}"/>
 
+    <cti:toJson id="pao-type-map" object="${paoTypeMap}"/>
+
     <cti:url var="action" value="/capcontrol/regulators"/>
-    <form:form id="regulator-form" commandName="regulator" action="${action}" method="POST" data-pao-type-map="${paoTypeMap}">
+    <form:form id="regulator-form" commandName="regulator" action="${action}" method="POST">
 
         <cti:csrfToken/>
-        <form:hidden path="id"/>
+        <form:hidden id="regulator-id" path="id"/>
 
         <div class="column-12-12 clearfix stacked-md ">
             <div class="column one">
-                <tags:nameValueContainer2 tableClass="natural-width">
+                <tags:sectionContainer2 nameKey="info">
+                    <tags:nameValueContainer2 tableClass="natural-width">
 
-                    <tags:nameValue2 nameKey=".name">
-                        <tags:input path="name"/>
-                    </tags:nameValue2>
-
-                    <tags:nameValue2 nameKey=".description">
-                        <tags:input path="description"/>
-                    </tags:nameValue2>
-
-                    <c:if test="${empty zone}">
-                        <tags:selectNameValue nameKey=".type" items="${regulatorTypes}" path="type" id="regulator-type" />
-                    </c:if>
-                    <c:if test="${not empty zone}">
-                        <tags:nameValue2 nameKey=".type">
-                            <form:hidden path="type" id="regulator-type"/>
-                            <i:inline key="${regulator.type}"/>
+                        <tags:nameValue2 nameKey=".name">
+                            <tags:input path="name"/>
                         </tags:nameValue2>
-                    </c:if>
 
-                    <cti:displayForPageEditModes modes="VIEW,EDIT">
+                        <tags:nameValue2 nameKey=".description">
+                            <tags:input path="description"/>
+                        </tags:nameValue2>
+
+                        <c:if test="${empty zone}">
+                            <tags:selectNameValue nameKey=".type" items="${regulatorTypes}" path="type" id="regulator-type" />
+                        </c:if>
+                        <c:if test="${not empty zone}">
+                            <tags:nameValue2 nameKey=".type">
+                                <form:hidden path="type" id="regulator-type"/>
+                                <i:inline key="${regulator.type}"/>
+                            </tags:nameValue2>
+                        </c:if>
 
                         <tags:selectNameValue nameKey=".config" items="${availableConfigs}" path="configId" itemValue="configurationId" />
 
-                        <tags:nameValue2 nameKey=".zone">
-                            <c:if test="${empty zone}">
-                                <span class="empty-list"><i:inline key="yukon.common.none"/></span>
-                            </c:if>
-                            <c:if test="${not empty zone}">
-                                <cti:url var="zoneUrl" value="/capcontrol/ivvc/zone/detail">
-                                    <cti:param name="zoneId" value="${zone.id}" />
-                                </cti:url>
-                                <a href="${zoneUrl}">${fn:escapeXml(zone.name)}</a>
-                            </c:if>
+                        <cti:displayForPageEditModes modes="VIEW,EDIT">
+
+                            <tags:nameValue2 nameKey=".zone">
+                                <c:if test="${empty zone}">
+                                    <span class="empty-list"><i:inline key="yukon.common.none"/></span>
+                                </c:if>
+                                <c:if test="${not empty zone}">
+                                    <cti:url var="zoneUrl" value="/capcontrol/ivvc/zone/detail">
+                                        <cti:param name="zoneId" value="${zone.id}" />
+                                    </cti:url>
+                                    <a href="${zoneUrl}">${fn:escapeXml(zone.name)}</a>
+                                </c:if>
+                            </tags:nameValue2>
+                        </cti:displayForPageEditModes>
+
+                        <tags:nameValue2 nameKey="yukon.common.status">
+                            <tags:switchButton path="disabled" inverse="true" onNameKey=".enabled" offNameKey=".disabled"/>
                         </tags:nameValue2>
-                    </cti:displayForPageEditModes>
 
-                    <tags:nameValue2 nameKey="yukon.common.status">
-                        <tags:switchButton path="disabled" inverse="true" onNameKey=".enabled" offNameKey=".disabled"/>
-                    </tags:nameValue2>
-
-                </tags:nameValueContainer2>
+                    </tags:nameValueContainer2>
+                </tags:sectionContainer2>
             </div>
 
             <div class="column two nogutter">
-                <%--Events Table Here --%>
+                <cti:displayForPageEditModes modes="VIEW">
+                    <%--Events Table Here --%>
+                    <tags:sectionContainer2 nameKey="events">
+                        <input type="hidden" value="0" id="regulator-events-last-update">
+                        <div class="empty-list js-ivvc-events-empty">
+                            <i:inline key=".emptylist"/>
+                        </div>
+                        <div class="scroll-md dn js-ivvc-events-holder" style="border-bottom: 1px solid #ccc">
+                            <table id="regulator-events" class="has-alerts full-width dashed">
+                                <thead></thead>
+                                <tfoot></tfoot>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </tags:sectionContainer2>
+                </cti:displayForPageEditModes>
             </div>
+            <table class="dn">
+                <tr id="regulator-events-template-row">
+                    <td><cti:icon icon="js-event-icon"/></td>
+                    <td class="js-message">Unknown Event</td>
+                    <td class="js-user">Unknown User</td>
+                    <td class="js-timestamp">1/1/1970 12:00:00 AM</td>
+                </tr>
+            </table>
         </div>
 
         <tags:sectionContainer2 nameKey="mappings">
@@ -78,6 +106,7 @@
                         <th><i:inline key="yukon.common.deviceName"/></th>
                         <th><i:inline key="yukon.common.pointName"/></th>
                         <cti:displayForPageEditModes modes="VIEW">
+                            <th></th>
                             <th><i:inline key="yukon.common.events.pointValue"/></th>
                         </cti:displayForPageEditModes>
                     </tr>
@@ -113,9 +142,10 @@
 
                             <cti:displayForPageEditModes modes="VIEW">
                                 <%-- Point Value --%>
+                                <td class="state-indicator">
+                                    <cti:pointStatus pointId="${mapping.value}" statusPointOnly="true"/>
                                 <td>
                                     <c:if test="${not empty mapping.value && mapping.value != 0}">
-                                        <cti:pointStatus pointId="${mapping.value}" statusPointOnly="true"/>
                                         <cti:pointValue pointId="${mapping.value}" format="VALUE"/>
                                         <cti:pointValue pointId="${mapping.value}" format="UNIT" unavailableValue=""/>
                                         <cti:pointValue pointId="${mapping.value}" format="SHORT_QUALITY" unavailableValue=""/>

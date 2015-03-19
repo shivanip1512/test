@@ -1,11 +1,14 @@
 package com.cannontech.web.capcontrol;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -15,37 +18,50 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.capcontrol.RegulatorPointMapping;
+import com.cannontech.capcontrol.dao.RegulatorEventsDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.exception.OrphanedRegulatorException;
 import com.cannontech.capcontrol.model.Regulator;
+import com.cannontech.capcontrol.model.RegulatorEvent;
+import com.cannontech.capcontrol.model.RegulatorEvent.EventType;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.service.VoltageRegulatorService;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.capcontrol.validators.RegulatorValidator;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.yukon.IDatabaseCache;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 
 @RequestMapping("regulators")
 @Controller
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class RegulatorController {
 
+    @Autowired private DateFormattingService dateFormattingService;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private RegulatorValidator regulatorValidator;
+    @Autowired private RegulatorEventsDao eventsDao;
     @Autowired private VoltageRegulatorService regulatorService;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private ZoneDao zoneDao;
 
     @RequestMapping(value="{id}", method=RequestMethod.GET)
@@ -59,13 +75,17 @@ public class RegulatorController {
 
     private String setUpModelMap(ModelMap model, Regulator regulator, YukonUserContext context) {
 
-        if (!model.containsAttribute("regulator")) {
-            Map<RegulatorPointMapping, Integer> sortedMappings =
-                    regulatorService.sortMappingsAllKeys(regulator.getMappings(), context);
-
-            regulator.setMappings(sortedMappings);
-            model.addAttribute("regulator", regulator);
+        Object modelReg = model.get("regulator");
+        if (modelReg instanceof Regulator) {
+            regulator = (Regulator) modelReg;
         }
+
+        Map<RegulatorPointMapping, Integer> sortedMappings =
+                regulatorService.sortMappingsAllKeys(regulator.getMappings(), context);
+
+        regulator.setMappings(sortedMappings);
+        model.addAttribute("regulator", regulator);
+        
 
         model.addAttribute("regulatorTypes", PaoType.getRegulatorTypes());
 
@@ -84,13 +104,7 @@ public class RegulatorController {
             }
         }
 
-        try {
-            String jsonMap = JsonUtils.toJson(RegulatorPointMapping.getMappingsByPaoType());
-            model.addAttribute("paoTypeMap", jsonMap);
-        } catch (JsonProcessingException e) {
-            //Writing this simple object to JSON should not throw an exception.
-            throw new RuntimeException(e);
-        }
+        model.addAttribute("paoTypeMap", RegulatorPointMapping.getMappingsByPaoType());
 
         return "regulator.jsp";
     }
@@ -174,6 +188,71 @@ public class RegulatorController {
         regulatorService.delete(id);
 
         return "redirect:/capcontrol/tier/areas";
+    }
+
+    private static final Map<RegulatorEvent.EventType, String> classNameForEventType = ImmutableMap.of(
+        EventType.TAP_UP, "icon-bullet-go-up",
+        EventType.TAP_DOWN, "icon-bullet-go-down",
+        EventType.SCAN, "icon-transmit-blue"
+    );
+    
+    private static final String baseKey = "yukon.web.modules.capcontrol.ivvc.eventType";
+
+    @RequestMapping(value="{id}/events")
+    public @ResponseBody Map<String,Object> getEvents(@PathVariable int id, @RequestParam(defaultValue="0") long lastUpdate, YukonUserContext userContext) {
+
+        Map<String,Object> response = new HashMap<>();
+        
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+
+        Instant start = Instant.now();
+        response.put("timestamp", start.getMillis());
+
+        List<RegulatorEvent> events = eventsDao.getForRegulatorIdSinceTimestamp(id, new Instant(lastUpdate));
+
+        List<Map<String, String>> eventsJson = Lists.transform(events, new Function<RegulatorEvent, Map<String, String>>() {
+
+            @Override
+            public Map<String, String> apply(RegulatorEvent event) {
+
+                ImmutableMap.Builder<String, String> eventJson = new ImmutableMap.Builder<>();
+
+                String formattedTime = dateFormattingService.format(event.getTimestamp(), DateFormatEnum.BOTH, userContext);
+                eventJson.put("timestamp", formattedTime);
+
+                String iconClass = classNameForEventType.get(event.getType());
+                eventJson.put("icon", iconClass);
+
+                eventJson.put("user", event.getUserName());
+
+                String key = baseKey + "." + event.getType().name();
+                
+                String message = null;
+
+                switch (event.getType()) {
+                case SCAN:
+                    message = accessor.getMessage(baseKey + ".SCAN", event.getPhase());
+                    break;
+                case TAP_DOWN:
+                case TAP_UP:
+/*                    if (event.getPhase() == Phase.ALL) {
+                        message = accessor.getMessage(key + ".ALL");
+                    } else {*/
+                        String phaseString = accessor.getMessage(event.getPhase());
+                        message = accessor.getMessage(key, phaseString);
+/*                    }*/
+                    break;
+                    
+                }
+
+                eventJson.put("message", message);
+
+                return eventJson.build();
+            }
+        });
+        response.put("events", eventsJson);
+
+        return response;
     }
 
 }
