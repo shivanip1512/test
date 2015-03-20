@@ -135,6 +135,7 @@
                     <c:set var="clazz" value="tar" />
                     <th>&nbsp;</th>
                     <th><i:inline key=".name"/></th>
+                    <th></th>
                     <th><i:inline key=".state"/></th>
                     <th class="${clazz}"><i:inline key=".availableKvars"/></th>
                     <th class="${clazz}"><i:inline key=".unavailableKvars"/></th>
@@ -164,14 +165,14 @@
                         </div>
                     </td>
 
+                    <td class="state-indicator">
+                        <span class="box state-box js-cc-state-updater" data-pao-id="${substationId}">&nbsp;</span>
+                        <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" value="SUBSTATION/${substationId}/STATE_FLAGS"/>
+                    </td>
                     <td class="wsnw">
                         <c:if test="${hasSubstationControl}"><a id="substationState_${substationId}" href="javascript:void(0);" class="subtle-link"></c:if>
-                        <c:if test="${not hasSubstationControl}"><span></c:if>
-                            <span class="box state-box js-cc-state-updater" data-pao-id="${substationId}">&nbsp;</span>
-                            <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" value="SUBSTATION/${substationId}/STATE_FLAGS"/>
                             <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="STATE" />
                         <c:if test="${hasSubstationControl}"></a></c:if>
-                        <c:if test="${not hasSubstationControl}"></span></c:if>
                     </td>
 
                     <td class="tar"><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_AVAILABLE" initialize="false"/></td>

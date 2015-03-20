@@ -17,6 +17,7 @@
             <tr>
                 <th>&nbsp;</th>
                 <th><i:inline key=".name"/></th>
+                <th></th>
                 <th><i:inline key=".state"/></th>
                 <th class="tar"><i:inline key=".availableKvars"/></th>
                 <th class="tar"><i:inline key=".unavailableKvars"/></th>
@@ -43,14 +44,14 @@
                     <td data-tooltip="#station-count-${areaId}" data-row-tooltip>
                         <a href="${substationUrl}">${fn:escapeXml(viewableArea.ccName)}</a>
                     </td>
+                    <td class="state-indicator">
+                        <span class="box state-box js-cc-state-updater" data-pao-id="${areaId}">&nbsp;</span>
+                        <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" value="${areaType.updaterType}/${areaId}/STATE_FLAGS"/>
+                    </td>
                     <td>
                         <c:if test="${hasAreaControl}"><a id="areaState_${areaId}" href="javascript:void(0);" class="subtle-link"></c:if>
-                        <c:if test="${!hasAreaControl}"><span></c:if>
-                            <span class="box state-box js-cc-state-updater" data-pao-id="${areaId}">&nbsp;</span>
-                            <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" value="${areaType.updaterType}/${areaId}/STATE_FLAGS"/>
                             <cti:capControlValue paoId="${areaId}" type="${areaType.updaterType}" format="STATE" />
                         <c:if test="${hasAreaControl}"></a></c:if>
-                        <c:if test="${!hasAreaControl}"></span></c:if>
                     </td>
                     <td class="tar"><cti:capControlValue paoId="${areaId}" type="${areaType.updaterType}" format="KVARS_AVAILABLE" initialize="false"/></td>
                     <td class="tar"><cti:capControlValue paoId="${areaId}" type="${areaType.updaterType}" format="KVARS_UNAVAILABLE" initialize="false"/></td>
