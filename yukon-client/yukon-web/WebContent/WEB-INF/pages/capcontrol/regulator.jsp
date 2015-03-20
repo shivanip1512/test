@@ -144,6 +144,7 @@
                                 <%-- Point Value --%>
                                 <td class="state-indicator">
                                     <cti:pointStatus pointId="${mapping.value}" statusPointOnly="true"/>
+                                </td>
                                 <td>
                                     <c:if test="${not empty mapping.value && mapping.value != 0}">
                                         <cti:pointValue pointId="${mapping.value}" format="VALUE"/>

@@ -18,7 +18,7 @@
             <tbody>
                 <c:forEach var="alarm" items="${alarms}">
                     <tr>
-                        <td><span class="${colorStateBoxes.get(alarm.pointId).get(alarm.condition)}">&nbsp;</span></td>
+                        <td class="state-indicator"><span class="${colorStateBoxes.get(alarm.pointId).get(alarm.condition)}">&nbsp;</span></td>
                         <td class="alarm-text">
                             <div class="clearfix">
                                 <ul class="property-list name-collapse natural-width fl">

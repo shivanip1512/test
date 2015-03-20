@@ -10,7 +10,7 @@
         <tr> 
             <tags:sort column="${ATTRIBUTE}"></tags:sort>
             <tags:sort column="${POINTNAME}"></tags:sort>
-            <th class="state-indicator tar"></th>
+            <th></th>
             <th><i:inline key="yukon.common.value"/></th> 
             <th><i:inline key="yukon.common.timestamp"/></th> 
             <th><i:inline key="yukon.common.quality"/></th>
@@ -30,7 +30,7 @@
                     </c:choose>
                 </td>
                 <td>${fn:escapeXml(pointResultRow.pointName)}</td>
-                <td class="state-indicator tar">
+                <td class="state-indicator">
                    <c:if test="${pointResultRow.paoPointIdentifier.pointIdentifier.pointType.status}">
                        <cti:pointStatus pointId="${pointResultRow.pointId}" />
                    </c:if>

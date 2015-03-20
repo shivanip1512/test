@@ -25,7 +25,7 @@
 <cti:checkRolesAndProperties value="DEVICE_DATA_MONITORING">
 <cti:msgScope paths="widgetClasses.DeviceDataMonitorsWidget">
     <c:if test="${not empty deviceDataMonitors}">
-    <table class="compact-results-table monitor-subs dashed stacked bcs" data-undo-text="${undoText}">
+    <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts" data-undo-text="${undoText}">
         <thead>
             <tr>
                 <th class="subscribe">&nbsp;</th>
@@ -104,7 +104,7 @@
 <cti:checkRolesAndProperties value="OUTAGE_PROCESSING">
 <cti:msgScope paths="widgets.outageMonitorsWidget">
     <c:if test="${not empty outageMonitors}">
-    <table class="compact-results-table monitor-subs dashed stacked bcs" data-removed-text="${removedText}" data-undo-text="${undoText}">
+    <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
                 <th class="subscribe">&nbsp;</th>
@@ -187,7 +187,7 @@
     </c:if>
 
     <c:if test="${not empty tamperFlagMonitors}">
-    <table class="compact-results-table monitor-subs dashed stacked bcs" data-removed-text="${removedText}" data-undo-text="${undoText}">
+    <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
                 <th class="subscribe">&nbsp;</th>
@@ -270,7 +270,7 @@
         <div class="error"><i:inline key="${statusPointMonitorsWidgetError}"/></div>
     </c:if>
     <c:if test="${not empty statusPointMonitors}">
-    <table class="compact-results-table monitor-subs dashed stacked bcs" data-removed-text="${removedText}" data-undo-text="${undoText}">
+    <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
                 <th class="subscribe">&nbsp;</th>
@@ -348,7 +348,7 @@
     </c:if>
 
     <c:if test="${not empty porterResponseMonitors}">
-    <table class="compact-results-table monitor-subs dashed stacked bcs" data-removed-text="${removedText}" data-undo-text="${undoText}">
+    <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
                 <th class="subscribe">&nbsp;</th>
@@ -420,7 +420,7 @@
     </c:if>
 
     <c:if test="${not empty validationMonitors}">
-    <table class="compact-results-table monitor-subs dashed stacked bcs" data-removed-text="${removedText}" data-undo-text="${undoText}">
+    <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
                 <th class="subscribe">&nbsp;</th>

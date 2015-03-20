@@ -11,9 +11,7 @@
     <span id="cc-warning-msg-${paoId}" class="dn">
         <cti:capControlValue paoId="${paoId}" type="${type}" format="WARNING_FLAG_MESSAGE"/> 
     </span>
-    <span data-pao-id="${paoId}" class="dn js-warning-image" data-tooltip="#cc-warning-msg-${paoId}">
-        <cti:icon classes="row-icon" icon="icon-error"/>
-    </span>
+    <cti:icon classes="dn js-warning-image" icon="icon-error" data-pao-id="${paoId}" data-tooltip="#cc-warning-msg-${paoId}"/>
 </c:if>
 
 <c:if test="${alertBox}">

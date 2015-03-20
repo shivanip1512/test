@@ -24,7 +24,9 @@
             <cti:param name="type" value="2" />
             <cti:param name="itemid" value="${bc_areaId}" />
         </cti:url>
+
         <cm:dropdownOption key="components.button.${editKey}.label" icon="icon-pencil" href="${editUrl}" />
+
 
         <c:if test="${showAnalysis}">
             <i:simplePopup titleKey=".analysisTrends" id="analysisTrendsOptions" on="#analysisTrendsButton">
@@ -37,6 +39,10 @@
              <%@ include file="recentEventsOptions.jspf" %>
         </i:simplePopup>
         <cm:dropdownOption id="recentEventsButton" key="modules.capcontrol.recentEvents.label" icon="icon-application-view-columns"/>
+
+        <c:if test="${hasAreaControl}">
+            <cm:dropdownOption linkId="areaState_${bc_areaId}" key="defaults.actions" icon="icon-cog" href="javascript:void(0);" />
+        </c:if>
     </div>
 
     <flot:defaultIncludes/>
@@ -72,11 +78,9 @@
                     <div class="column two nogutter">
                         <tags:nameValueContainer2 tableClass="name-collapse">
                             <tags:nameValue2 nameKey=".state" rowClass="wsnw">
-                                <a id="areaState_${bc_areaId}" href="javascript:void(0);" class="subtle-link">
-                                    <span class="box state-box js-cc-state-updater" data-pao-id="${bc_areaId}">&nbsp;</span>
-                                    <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" value="${type}/${bc_areaId}/STATE_FLAGS"/>
-                                    <cti:capControlValue paoId="${bc_areaId}" type="${type}" format="STATE" />
-                                </a>
+                                <span class="box state-box js-cc-state-updater" data-pao-id="${bc_areaId}">&nbsp;</span>
+                                <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" value="${type}/${bc_areaId}/STATE_FLAGS"/>
+                                <cti:capControlValue paoId="${bc_areaId}" type="${type}" format="STATE" />
                              </tags:nameValue2>
                              <tags:nameValue2 nameKey=".substations">
                                 ${fn:length(subStations)}
@@ -125,11 +129,11 @@
 
     <tags:sectionContainer2 nameKey="substationsContainer"  arguments="${bc_areaName}">
         
-        <table id="subTable" class="compact-results-table">
+        <table id="subTable" class="compact-results-table has-alerts">
             <thead>
                 <tr>
                     <c:set var="clazz" value="tar" />
-                    <th width="16px">&nbsp;</th>
+                    <th>&nbsp;</th>
                     <th><i:inline key=".name"/></th>
                     <th><i:inline key=".state"/></th>
                     <th class="${clazz}"><i:inline key=".availableKvars"/></th>

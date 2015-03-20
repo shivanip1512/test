@@ -121,7 +121,8 @@ function ${widgetParameters.widgetId}_updateDifference() {
     <table class="compact-results-table row-highlighting">
         <thead>
             <tr>
-                <th colspan="2"><i:inline key="components.dialog.devicePoints.pointName"/></th>
+                <th><i:inline key="components.dialog.devicePoints.pointName"/></th>
+                <th></th>
                 <th><i:inline key="components.dialog.devicePoints.value"/></th>
                 <th><i:inline key="components.dialog.devicePoints.timestamp"/></th>
             </tr>
@@ -131,7 +132,7 @@ function ${widgetParameters.widgetId}_updateDifference() {
         <c:forEach var="point" items="${points}">
              <tr>
                  <td>${fn:escapeXml(point.pointName)}</td>
-                 <td class="state-indicator tar">
+                 <td class="state-indicator">
                     <c:if test="${point.paoPointIdentifier.pointIdentifier.pointType.status}">
                         <cti:pointStatus pointId="${point.pointId}"/>
                     </c:if>

@@ -21,10 +21,10 @@
     <c:set var="styleClass" value="with-footer"/>
 </c:if>
 <tags:boxContainer2 nameKey="feedersContainer" hideEnabled="true" showInitially="true" styleClass="${styleClass}">
-    <table id="fdrTable" class="compact-results-table has-actions">
+    <table id="fdrTable" class="compact-results-table has-alerts-multi has-actions">
         <thead>
             <tr>
-                <th width="16px">&nbsp;</th>
+                <th>&nbsp;</th>
                 <th><i:inline key=".name"/></th>
                 <th><i:inline key=".state"/></th>
                 <th><i:inline key=".target"/></th>
@@ -42,7 +42,7 @@
                 <%-- Icons --%>
                 <td>
                     <capTags:warningImg paoId="${feederId}" type="FEEDER"/>
-                    <cti:icon icon="icon-bullet-orange" classes="thin" data-dual-bus-feeder="${feederId}" />
+                    <cti:icon icon="icon-bullet-orange" classes="thin dn" data-dual-bus-feeder="${feederId}" />
                     <cti:dataUpdaterCallback function="yukon.da.updaters.feederDualBus" initialize="true" value="FEEDER/${feederId}/DUALBUS"/>
                 </td>
                 <%-- Name --%>

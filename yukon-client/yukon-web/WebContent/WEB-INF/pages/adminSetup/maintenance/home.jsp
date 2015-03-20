@@ -29,18 +29,17 @@ $(function(){
 	});
 });
 </script>
-							
-	<cti:dataGrid cols="2">
-		<cti:dataGridCell>
-		    <tags:boxContainer2 nameKey="maintenanceJobs" hideEnabled="false">
-		    	<table class="compact-results-table">
-			
+		    	<table class="compact-results-table has-alerts">
+                <thead>
 					<tr>
 						<th>&nbsp;</th>
 						<th><i:inline key=".tableHeader.scheduleName"/></th>
 						<th><i:inline key=".tableHeader.scheduleDescription"/></th>
-						<th><i:inline key=".tableHeader.enabled"/></th>
+						<th class="tar"><i:inline key=".tableHeader.enabled"/></th>
 					</tr>
+                </thead>
+                <tfoot></tfoot>
+                <tbody>
 					<c:forEach var="job" items="${jobs}">
 						<cti:msg2 var="jobNameMsg" key=".${job.beanName}.title"/>
 						<tr>
@@ -68,10 +67,6 @@ $(function(){
 		
 						</tr>
 					</c:forEach>
-					
+                </tbody>
 				</table>
-		    </tags:boxContainer2>
-		</cti:dataGridCell>
-	</cti:dataGrid>
-  
 </cti:standardPage>

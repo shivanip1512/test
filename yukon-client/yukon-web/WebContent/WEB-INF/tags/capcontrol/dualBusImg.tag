@@ -7,8 +7,6 @@
     <cti:capControlValue paoId="${paoId}" type="${type}" format="DUALBUS_MESSAGE"/>
 </span>
 
-<span class="dn js-dual-bus" data-pao-id="${paoId}" data-tooltip="#dual-bus-msg-${paoId}">
-    <cti:icon icon="icon-bullet-orange"/>
-</span>
+<cti:icon icon="icon-bullet-orange" classes="dn fn js-dual-bus" data-pao-id="${paoId}" data-tooltip="#dual-bus-msg-${paoId}"/>
 
 <cti:dataUpdaterCallback function="yukon.da.updaters.dualBus" initialize="true" value="${type}/${paoId}/DUALBUS"/>

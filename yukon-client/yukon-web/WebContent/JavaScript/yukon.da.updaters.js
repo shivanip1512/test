@@ -50,38 +50,38 @@ yukon.da.updaters = (function () {
             warningIcon: function (data) {
                 var result = JSON.parse(data.value),
                     icon = $('.js-warning-image[data-pao-id="' + result.paoId + '"]');
-                icon.toggle(result.value);
+                icon.toggleClass('dn', !result.value);
             },
 
             dualBus: function (data) {
                 var result = JSON.parse(data.value),
                     icon = $('.js-dual-bus[data-pao-id="' + result.paoId  + '"]');
-                icon.toggle(result.value);
+                icon.toggleClass('dn', !result.value);
             },
 
             feederDualBus: function (data) {
                 var result = JSON.parse(data.value),
                     icon = $('[data-dual-bus-feeder=' + result.paoId + ']');
-                icon.toggle(result.value);
+                icon.toggleClass('dn', !result.value);
             },
 
             verification: function (data) {
                 var result = JSON.parse(data.value),
                     icon = $('.js-verification[data-pao-id="' + result.paoId  + '"]');
-                icon.toggle(result.value);
+                icon.toggleClass('dn', !result.value);
             },
 
             regulatorMode: function (data) {
                 var result = JSON.parse(data.value),
                     icons = $('[data-regulator-mode][data-pao-id="' + result.paoId  + '"]');
 
-                icons.hide();
+                icons.addClass('dn');
                 if (result.local) {
-                    icons.filter('[data-regulator-mode="local"]').show();
+                    icons.filter('[data-regulator-mode="local"]').removeClass('dn');
                 } else if (result.warning) {
-                    icons.filter('[data-regulator-mode="warning"]').show();
+                    icons.filter('[data-regulator-mode="warning"]').removeClass('dn');
                 } else {
-                    icons.filter('[data-regulator-mode="normal"]').show();
+                    icons.filter('[data-regulator-mode="normal"]').removeClass('dn');
                 }
             },
 

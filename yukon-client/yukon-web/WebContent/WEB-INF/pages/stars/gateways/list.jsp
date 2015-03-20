@@ -51,7 +51,7 @@
                         <c:set var="data" value="${gateway.data}"/>
                         <c:set var="title"><cti:msg2 key=".connectionStatus.${data.connectionStatus}"/></c:set>
                         <c:set var="clazz" value="${data.connectionStatus == 'CONNECTED' ? 'green' : 'red'}"/>
-                        <td class="js-gw-conn-status" title="${title}">
+                        <td class="state-indicator js-gw-conn-status" title="${title}">
                             <span class="state-box ${clazz}"></span>
                         </td>
                         <cti:url var="gatewayDetailLink" value="gateways/${gateway.paoIdentifier.paoId}"/>

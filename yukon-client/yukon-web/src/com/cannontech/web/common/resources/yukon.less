@@ -475,13 +475,22 @@ table.nowrap td {
 }
 
 /* Use the class when there will be elements before the first icon in a row */
-.row-icon, 
-.compact-results-table tr td:first-child .icon:first-child {
-    margin-left: 0;
-    margin-right: 0; 
+.row-icon,
+.has-alerts td:first-child {
+    width: 24px;
+    .icon, .button, {
+        margin-left: 0;
+        margin-right: 0;
+    }
 }
 
-.has-alerts td:first-child { width: 24px; }
+.has-alerts-multi td:first-child {
+    .icon:not(.dn) {
+        margin-left: 0;
+    }
+}
+
+.state-indicator { width: 1em; }
 
 .with-form-controls tbody td, 
 .form-control {

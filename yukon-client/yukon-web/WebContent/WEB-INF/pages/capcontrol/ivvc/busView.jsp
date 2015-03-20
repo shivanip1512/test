@@ -58,14 +58,30 @@
             addCommandMenuBehavior('a[id^="subbusState"]');
         }
      </script>
-    
+
+    <c:set var="dividerAdded" value="false" />
+
+    <c:if test="${hasSubBusControl}">
+
+        <div class="js-page-additional-actions dn">
+            <c:if test="${not dividerAdded}">
+                <li class="divider">
+                <c:set var="dividerAdded" value="true" />
+            </c:if>
+            <cm:dropdownOption linkId="subbusState_${subBusId}" key="defaults.actions" icon="icon-cog" href="javascript:void(0);" />
+        </div>
+    </c:if>
+
     <c:if test="${hasEditingRole}">
         <div class="js-page-additional-actions dn">
             <cti:url var="editUrl" value="/editor/cbcBase.jsf">
                 <cti:param name="type" value="2"/>
                 <cti:param name="itemid" value="${subBusId}"/>
             </cti:url>
-            <li class="divider">
+            <c:if test="${not dividerAdded}">
+                <li class="divider">
+                <c:set var="dividerAdded" value="true" />
+            </c:if>
             <cm:dropdownOption key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
         </div>
     </c:if>
@@ -128,28 +144,24 @@
             <tags:boxContainer2 nameKey="busDetail" hideEnabled="true" showInitially="true">
                     
                 <table class="compact-results-table">
-                    <thead>
-                        <tr>
-                            <th><i:inline key=".busDetail.table.point"/></th>
-                            <th><i:inline key=".busDetail.table.value"/></th>
-                        </tr>
-                    </thead>
                     <tr>
-                        <td><i:inline key=".busDetail.table.state"/>:&nbsp;</td>
+                        <td><i:inline key=".busDetail.table.state"/></td>
+                        <td class="row-icon">
+                            <capTags:warningImg paoId="${subBusId}" type="SUBBUS"/>
+                        </td>
+                        <td class="state-indicator">
+                            <span class="box state-box js-cc-state-updater" data-pao-id="${subBusId}">&nbsp;</span>
+                            <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" value="SUBBUS/${subBusId}/STATE_FLAGS"/>
+                        </td>
                         <%-- State --%>
                         <td class="wsnw">
-                            <c:if test="${hasSubBusControl}"><a id="subbusState_${subBusId}" href="javascript:void(0);" class="subtle-link"></c:if>
-                            <c:if test="${!hasSubBusControl}"><span></c:if>
-                                <span class="box state-box js-cc-state-updater" data-pao-id="${subBusId}">&nbsp;</span>
-                                <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" value="SUBBUS/${subBusId}/STATE_FLAGS"/>
-                                <cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="STATE"/>
-                            <c:if test="${hasSubBusControl}"></a></c:if>
-                            <c:if test="${!hasSubBusControl}"></span></c:if>
-                            <capTags:warningImg paoId="${subBusId}" type="SUBBUS"/>
+                           <cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="STATE"/>
                         </td>
                     </tr>
                     <tr>
-                        <td><i:inline key=".busDetail.table.volts"/>:&nbsp;</td>
+                        <td><i:inline key=".busDetail.table.volts"/></td>
+                        <td></td>
+                        <td></td>
                         <td>
                             <cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="VOLTS"/>
                             <cti:classUpdater type="SUBBUS" identifier="${subBusId}/VOLT_QUALITY">
@@ -158,7 +170,9 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><i:inline key=".busDetail.table.kvar"/>:&nbsp;</td>
+                        <td><i:inline key=".busDetail.table.kvar"/></td>
+                        <td></td>
+                        <td></td>
                         <td>
                             <cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="KVAR_LOAD"/>
                             <cti:classUpdater type="SUBBUS" identifier="${subBusId}/KVAR_LOAD_QUALITY">
@@ -167,7 +181,9 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><i:inline key=".busDetail.table.kw"/>:&nbsp;</td>
+                        <td><i:inline key=".busDetail.table.kw"/></td>
+                        <td></td>
+                        <td></td>
                         <td>
                             <cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="KW"/>
                             <cti:classUpdater type="SUBBUS" identifier="${subBusId}/WATT_QUALITY">
@@ -177,9 +193,12 @@
                     </tr>
                     <c:forEach items="${allSubBusPoints}" var="point">
                         <tr>
-                            <td>${fn:escapeXml(point.pointName)}:&nbsp;</td>
-                            <td>
+                            <td>${fn:escapeXml(point.pointName)}</td>
+                            <td></td>
+                            <td class="state-indicator">
                                 <cti:pointStatus pointId="${point.liteID}"/>
+                            </td>
+                            <td>
                                 <cti:pointValue pointId="${point.liteID}" format="VALUE"/>
                             </td>
                         </tr>

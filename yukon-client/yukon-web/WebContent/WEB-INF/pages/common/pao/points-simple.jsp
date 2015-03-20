@@ -9,7 +9,8 @@
     <table class="compact-results-table row-highlighting">
         <thead>
             <tr>
-                <th colspan="2"><i:inline key=".pointName"/></th>
+                <th><i:inline key=".pointName"/></th>
+                <th></th>
                 <th><i:inline key=".value"/></th>
                 <th><i:inline key=".timestamp"/></th>
             </tr>
@@ -19,7 +20,7 @@
         <c:forEach var="point" items="${points}">
              <tr>
                  <td>${fn:escapeXml(point.pointName)}</td>
-                 <td class="state-indicator tar">
+                 <td class="state-indicator">
                     <c:if test="${point.paoPointIdentifier.pointIdentifier.pointType.status}">
                         <cti:pointStatus pointId="${point.pointId}"/>
                     </c:if>

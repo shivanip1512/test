@@ -12,10 +12,10 @@
     <span class="empty-list"><i:inline key=".noResults"/></span>
 </c:if>
 <c:if test="${not empty areas}">
-    <table id="areaTable" class="compact-results-table dashed">
+    <table id="areaTable" class="compact-results-table dashed has-alerts">
         <thead>
             <tr>
-                <th width="16px">&nbsp;</th>
+                <th>&nbsp;</th>
                 <th><i:inline key=".name"/></th>
                 <th><i:inline key=".state"/></th>
                 <th class="tar"><i:inline key=".availableKvars"/></th>

@@ -7,6 +7,7 @@
 <%@ attribute name="classes" description="Class attribute applied to the outer 'li' element." %>
 <%@ attribute name="icon" description="Icon class name.  Defaut: icon-blank" %>
 <%@ attribute name="id" description="Id attribute applied to the 'li' element." %>
+<%@ attribute name="linkId" description="Id attribute applied to the 'a' element." %>
 <%@ attribute name="disabled" %>
 <%@ attribute name="href" description="Href attribute applied to the 'a' element." %>
 <%@ attribute name="key" description="Required when 'label' attribute is not used." %>
@@ -20,7 +21,12 @@
 <c:set var="disabled" value="${not empty pageScope.disabled && disabled == 'true' ? 'disabled' : ''}"/>
 
 <li class="${classes}" <c:if test="${not empty pageScope.id}">id="${id}"</c:if> <c:forEach items="${pageScope.attrs}" var="attr">${attr.key}="${attr.value}"</c:forEach>>
-    <a <c:if test="${not empty pageScope.href}">href="${href}"</c:if> <c:if test="${newTab}">target="_blank"</c:if> class="clearfix">
+
+    <a <c:if test="${not empty pageScope.linkId}">id="${linkId}"</c:if> 
+       <c:if test="${not empty pageScope.href}">href="${href}"</c:if>
+       <c:if test="${newTab}">target="_blank"</c:if> 
+       class="clearfix">
+
         <c:choose>
             <c:when test="${not empty pageScope.key}">
                 <cti:icon icon="${icon}" classes="${disabled}"/>

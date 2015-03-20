@@ -101,7 +101,7 @@
                                         <td>${row.device.deviceId}</td>
                                     </c:if>
                                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_VALUE')}">
-                                        <td class="state-indicator tar">
+                                        <td class="state-indicator">
                                             <c:if test="${row.pointType.status}">
                                                 <cti:pointStatus pointId="${row.pointId}"/>
                                             </c:if>

@@ -21,10 +21,10 @@
 
 <tags:boxContainer2 nameKey="busContainer" hideEnabled="true" showInitially="true" styleClass="clear ${styleClass}">
 
-    <table id="subBusTable" class="compact-results-table has-actions row-highlighting">
+    <table id="subBusTable" class="compact-results-table has-alerts-multi has-actions row-highlighting">
         <thead>
             <tr>
-                <th width="16px"></th>
+                <th></th>
                 <th><i:inline key=".name"/></th>
                 <th><i:inline key=".state"/></th>
                 <th><i:inline key=".target"/></th>

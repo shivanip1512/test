@@ -68,6 +68,10 @@ $(function() {
         <cti:param name="itemid" value="${substationId}" />
     </cti:url>
     <cm:dropdownOption  key="components.button.${editKey}.label" icon="icon-pencil" href="${editUrl}" />
+
+    <c:if test="${hasSubstationControl}">
+        <cm:dropdownOption linkId="substationState_${substationId}" key="defaults.actions" icon="icon-cog" href="javascript:void(0);" />
+    </c:if>
 </div>
 
 
@@ -100,13 +104,9 @@ $(function() {
                 <div class="column two nogutter">
                     <tags:nameValueContainer2 tableClass="name-collapse">
                         <tags:nameValue2 nameKey=".state" rowClass="wsnw">
-                                <c:if test="${hasSubstationControl}"><a id="substationState_${substationId}" class="subtle-link" href="javascript:void(0);"></c:if>
-                                <c:if test="${not hasSubstationControl}"><span></c:if>
-                                    <span class="box state-box js-cc-state-updater" data-pao-id="${substationId}">&nbsp;</span>
-                                    <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" value="SUBSTATION/${substationId}/STATE_FLAGS"/>
-                                    <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="STATE"/>
-                                <c:if test="${hasSubstationControl}"></a></c:if>
-                                <c:if test="${not hasSubstationControl}"></span></c:if>
+                            <span class="box state-box js-cc-state-updater" data-pao-id="${substationId}">&nbsp;</span>
+                            <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" value="SUBSTATION/${substationId}/STATE_FLAGS"/>
+                            <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="STATE"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".mapLocationId">
                             <span>${substation.mapLocationId}</span>
