@@ -67,7 +67,7 @@ import com.google.common.collect.Maps;
 @Controller
 @CheckRole({ YukonRole.METERING, YukonRole.APPLICATION_BILLING, YukonRole.SCHEDULER, YukonRole.DEVICE_ACTIONS })
 public class MeterController {
-
+    
     @Autowired private MeterSearchService meterSearchService;
     @Autowired private AttributeService attributeService;
     @Autowired private DeviceDao deviceDao;
@@ -92,7 +92,7 @@ public class MeterController {
     public String start() {
         return "start.jsp";
     }
-
+    
     @RequestMapping("search")
     public String search(HttpServletRequest request, ModelMap model, YukonUserContext userContext,
             SortingParameters sorting, PagingParameters paging) {
@@ -105,14 +105,14 @@ public class MeterController {
         boolean isQuickSearch = StringUtils.isNotBlank(request.getParameter("quickSearch"));
         MeterSearchField sort = isQuickSearch ? MeterSearchField.METERNUMBER : MeterSearchField.PAONAME;
         boolean desc = false;
-
+        
         // Get the order by field
         if (sorting != null) {
             sort = MeterSearchField.valueOf(sorting.getSort());
             desc = sorting.getDirection() == Direction.desc;
         }
         MeterSearchOrderBy orderBy = new MeterSearchOrderBy(sort.toString(), desc);
-
+        
         // all filters
         List<FilterBy> filterByList = new ArrayList<FilterBy>();
         filterByList.addAll(StandardFilterByGenerator.getStandardFilterByList());
@@ -124,7 +124,7 @@ public class MeterController {
         // Perform the search
         SearchResults<YukonMeter> meterSearchResults = 
             meterSearchService.search(queryFilter, orderBy, paging.getStartIndex(), paging.getItemsPerPage());
-
+        
         // Redirect to device home page if only one result is found
         if (meterSearchResults.getHitCount() == 1) {
             YukonMeter meter = meterSearchResults.getResultList().get(0);
@@ -176,9 +176,9 @@ public class MeterController {
     
     @RequestMapping("home")
     public String home(HttpServletRequest request, ModelMap model) throws ServletException {
-
+        
         int deviceId = ServletRequestUtils.getIntParameter(request, "deviceId");
-
+        
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         model.addAttribute("deviceId", deviceId);
         //we are redirecting request for water meter to WaterMeterController.java
@@ -200,7 +200,7 @@ public class MeterController {
         
         boolean highBillSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.HIGH_BILL);
         model.addAttribute("highBillSupported", highBillSupported);
-
+        
         boolean outageSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.OUTAGE) 
             && (availableAttributes.contains(BuiltInAttribute.OUTAGE_LOG) 
                     || availableAttributes.contains(BuiltInAttribute.BLINK_COUNT));
@@ -209,34 +209,34 @@ public class MeterController {
         
         String cisInfoWidgetName = multispeakFuncs.getCisDetailWidget(user);
         model.addAttribute("cisInfoWidgetName", cisInfoWidgetName);
-
+        
         boolean disconnectSupported = disconnectService.supportsDisconnect(Lists.newArrayList(device));
         model.addAttribute("disconnectSupported", disconnectSupported);
        
         boolean touSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.TOU);
         model.addAttribute("touSupported", touSupported);
-
+        
         boolean moveSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.MOVE_SUPPORTED);
         boolean moveEnabled = rolePropertyDao.checkProperty(YukonRoleProperty.MOVE_IN_MOVE_OUT, user);
         model.addAttribute("moveSupported", (moveSupported && moveEnabled));
-
+        
         boolean lpSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.LOAD_PROFILE);
         model.addAttribute("lpSupported", lpSupported);
-
+        
         boolean peakReportSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.PEAK_REPORT);
         model.addAttribute("peakReportSupported", peakReportSupported);
-
+        
         boolean threePhaseVoltageOrCurrentSupported = (paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(),
                                                                                       PaoTag.THREE_PHASE_VOLTAGE) ||
                                                        paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(),
                                                                                       PaoTag.THREE_PHASE_CURRENT));
         model.addAttribute("threePhaseVoltageOrCurrentSupported", threePhaseVoltageOrCurrentSupported);
-
+        
         boolean singlePhaseVoltageSupported = availableAttributes.contains(BuiltInAttribute.VOLTAGE);
         boolean showVoltageAndTou = (DeviceTypesFuncs.isMCT4XX(device.getDeviceType()) || device.getDeviceType().isRfn()) 
                 && (singlePhaseVoltageSupported || threePhaseVoltageOrCurrentSupported);
         model.addAttribute("showVoltageAndTou", showVoltageAndTou);
-
+        
         boolean configSupported = !deviceConfigurationDao.getAllConfigurationsByType(device.getDeviceType()).isEmpty();
         model.addAttribute("configSupported", configSupported);
         
@@ -250,7 +250,7 @@ public class MeterController {
         
         boolean porterCommandRequestsSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.PORTER_COMMAND_REQUESTS);
         model.addAttribute("porterCommandRequestsSupported", porterCommandRequestsSupported);
-
+        
         boolean hasActions = 
                 moveSupported ||
                 (highBillSupported && rolePropertyDao.checkProperty(YukonRoleProperty.HIGH_BILL_COMPLAINT, user)) || 
@@ -260,10 +260,10 @@ public class MeterController {
                 (porterCommandRequestsSupported && rolePropertyDao.checkProperty(YukonRoleProperty.LOCATE_ROUTE, user));
         
         model.addAttribute("hasActions", hasActions);
-
+        
         return "meterHome.jsp";
     }
-
+    
     @RequestMapping("touPreviousReadings")
     public String touPreviousReadings(ModelMap model, int deviceId) {
         
@@ -285,4 +285,5 @@ public class MeterController {
         
         return "touPreviousReadings.jsp";
     }
+    
 }
