@@ -8630,9 +8630,10 @@
             </attribute>
         </attributes>
     </pao>
-
-    <pao id="RFN_COMMON_SENTINEL" abstract="true" inherits="RFN_EVENTS, SUPPORTS_OUTAGE_TAG, OUTAGE_STATUS_BASE,
-        SUPPORTS_DEVICE_CONFIGURATION, RFN_CHANNEL_CONFIGURATION, RFN_TEMPERATURE_ALARM_CONFIGURATION">
+    
+    <pao id="RFN_COMMON_SENTINEL" abstract="true" 
+        inherits="RFN_EVENTS, SUPPORTS_OUTAGE_TAG, OUTAGE_STATUS_BASE, SUPPORTS_DEVICE_CONFIGURATION, 
+            SUPPORTS_COMMANDER_REQUESTS_TAG, RFN_CHANNEL_CONFIGURATION, RFN_TEMPERATURE_ALARM_CONFIGURATION">
         <displayGroup>RFMESH</displayGroup>
         <changeGroup>rfn</changeGroup>
         <points>

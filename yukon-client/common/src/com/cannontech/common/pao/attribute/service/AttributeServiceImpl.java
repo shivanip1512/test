@@ -199,14 +199,12 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     public Set<Attribute> getAvailableAttributes(PaoType paoType) {
+        
         Set<Attribute> result = new HashSet<>();
-
-        // first add type-based attributes
-        Set<AttributeDefinition> definedAttributes = paoDefinitionDao.getDefinedAttributes(paoType);
-        for (AttributeDefinition attributeDefinition : definedAttributes) {
+        for (AttributeDefinition attributeDefinition : paoDefinitionDao.getDefinedAttributes(paoType)) {
             result.add(attributeDefinition.getAttribute());
         }
-
+        
         return result;
     }
 

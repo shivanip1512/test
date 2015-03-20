@@ -20,10 +20,7 @@
 
     <bean id="deviceReadJobLogDao" class="com.cannontech.amr.deviceread.dao.impl.DeviceReadJobLogDaoImpl"/>
 
-    <bean id="meterSearchService"
-        class="com.cannontech.amr.meter.search.service.impl.MeterSearchServiceImpl">
-        <property name="meterSearchDao" ref="meterSearchDao" />
-    </bean>
+    <bean class="com.cannontech.amr.meter.search.service.impl.MeterSearchServiceImpl"/>
 
     <bean id="meterSearchDao" class="com.cannontech.amr.meter.search.dao.impl.MeterSearchDaoImpl"/>
 
