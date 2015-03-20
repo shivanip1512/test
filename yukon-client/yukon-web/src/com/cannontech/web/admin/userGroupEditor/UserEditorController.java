@@ -155,15 +155,15 @@ public class UserEditorController {
         boolean requiresPasswordChanged = user.isAuthenticationChanged()
                 && authService.supportsPasswordSet(user.getAuthCategory());
         if (requiresPasswordChanged) {
-			PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(yukonUser);
-			String generatedPassword = "";
-			try {
-				generatedPassword = passwordPolicy.generatePassword();
-				user.getPassword().setConfirmPassword(generatedPassword);
-				user.getPassword().setPassword(generatedPassword);
-			} catch (ConfigurationException e) {
-				return redirectToView(model, user.getUserId());
-			}          
+            PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(yukonUser);
+            String generatedPassword = "";
+            try {
+                generatedPassword = passwordPolicy.generatePassword();
+                user.getPassword().setConfirmPassword(generatedPassword);
+                user.getPassword().setPassword(generatedPassword);
+            } catch (ConfigurationException e) {
+                return redirectToView(model, user.getUserId());
+            }
             new PasswordValidator(yukonUser, "password.password", "password.confirmPassword")
             .validate(user.getPassword(), result);
             if (result.hasErrors()) {
