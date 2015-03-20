@@ -1338,7 +1338,7 @@
                     <page name="commandSchedule.EDIT" type="DETAIL" hideFavorite="true">
                         <labelArgument>${displayName}</labelArgument>
                     </page>
-                    <page name="inventoryActions" type="DETAIL">
+                    <page name="inventory.actions" type="DETAIL">
                         <link>/stars/operator/inventory/inventoryActions?${local:convertMapToQueryHtml(inventoryCollection.collectionParameters)}</link>
                         <pages>
                             <page name="deleteInventory" type="BASIC" hideFavorite="true"/>

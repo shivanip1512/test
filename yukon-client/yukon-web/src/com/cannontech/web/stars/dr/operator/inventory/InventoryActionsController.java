@@ -43,7 +43,7 @@ public class InventoryActionsController {
     
     private static final int maxInventory = 1000;
     private static final String view = "operator/inventory/";
-
+    
     /* Inventory Actions */
     @RequestMapping("inventoryActions")
     public String inventoryActions(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
@@ -64,7 +64,7 @@ public class InventoryActionsController {
         boolean showSaveToFile = configSource.getBoolean(MasterConfigBooleanKeysEnum.ENABLE_INVENTORY_SAVE_TO_FILE);
         modelMap.addAttribute("showSaveToFile", showSaveToFile);
         
-        return view + "inventoryActions.jsp";
+        return view + "actions.jsp";
     }
     
     /* Inventory Configuration */

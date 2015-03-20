@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="operator" page="inventoryActions">
+<cti:standardPage module="operator" page="inventory.actions">
     
 <div class="stacked-md"><tags:selectedInventory inventoryCollection="${inventoryCollection}"/></div>
 <div class="stacked-md">
