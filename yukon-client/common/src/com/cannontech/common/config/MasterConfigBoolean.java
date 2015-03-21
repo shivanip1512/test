@@ -1,6 +1,6 @@
 package com.cannontech.common.config;
 
-public enum MasterConfigBooleanKeysEnum {
+public enum MasterConfigBoolean {
     
     BULK_IMPORTER_SINGLE_GROUP, // Option to limit membership to only 1 child group per parent group.
     CYME_ENABLED,

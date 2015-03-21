@@ -16,7 +16,7 @@ import com.cannontech.cbc.cyme.model.CymeSimulationStatus;
 import com.cannontech.cbc.cyme.model.SimulationResultSummaryData;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigStringKeysEnum;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
@@ -45,7 +45,7 @@ public class CymeWebServiceImpl implements CymeWebService {
     @Autowired
     public CymeWebServiceImpl(ConfigurationSource configurationSource) {
         baseCymeUrl =
-            configurationSource.getString(MasterConfigStringKeysEnum.CYME_DIST_BASE_URL, "http://localhost:8866");
+            configurationSource.getString(MasterConfigString.CYME_DIST_BASE_URL, "http://localhost:8866");
         log.info(baseCymeUrl);
     }
 

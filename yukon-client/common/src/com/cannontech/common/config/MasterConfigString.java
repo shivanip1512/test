@@ -3,7 +3,7 @@ package com.cannontech.common.config;
 import java.util.HashSet;
 import java.util.Set;
 
-public enum MasterConfigStringKeysEnum {
+public enum MasterConfigString {
 
     AUTHENTICATION_TIMEOUT_STYLE,
     CMEP_UNITS,
@@ -47,10 +47,10 @@ public enum MasterConfigStringKeysEnum {
     YUKON_EXTERNAL_URL,
     ;
     
-    private static final Set<MasterConfigStringKeysEnum> sensitiveData;
+    private static final Set<MasterConfigString> sensitiveData;
     
     static {
-        sensitiveData = new HashSet<MasterConfigStringKeysEnum>();
+        sensitiveData = new HashSet<MasterConfigString>();
         sensitiveData.add(DB_USERNAME);
         sensitiveData.add(DB_PASSWORD);
         sensitiveData.add(DB_SQLSERVER);
@@ -68,14 +68,14 @@ public enum MasterConfigStringKeysEnum {
      * @return true if key is a sensitive value which will be or is encrypted false otherwise
      * 
      */
-    public static boolean isEncryptedKey(MasterConfigStringKeysEnum key) {
+    public static boolean isEncryptedKey(MasterConfigString key) {
         return sensitiveData.contains(key);
     }
     
     /**
      * Returns true if the CPARM key is an encrypted value for example: DB_PASSWORD.
      * 
-     * It is prefered to use {@link #isEncryptedKey(MasterConfigStringKeysEnum)}
+     * It is prefered to use {@link #isEncryptedKey(MasterConfigString)}
      * 
      * @param key
      * @return true if key is a sensitive value which will be or is encrypted false otherwise

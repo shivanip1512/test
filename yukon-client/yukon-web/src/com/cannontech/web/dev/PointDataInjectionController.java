@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.View;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.PointDao;
@@ -32,7 +32,7 @@ import com.cannontech.web.util.TextView;
 
 @Controller
 @RequestMapping("/pointInjection/*")
-@CheckCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
+@CheckCparm(MasterConfigBoolean.DEVELOPMENT_MODE)
 public class PointDataInjectionController {
     
     private static final Logger log = YukonLogManager.getLogger(PointDataInjectionController.class);

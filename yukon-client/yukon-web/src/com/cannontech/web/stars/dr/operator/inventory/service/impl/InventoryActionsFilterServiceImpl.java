@@ -1,10 +1,10 @@
 package com.cannontech.web.stars.dr.operator.inventory.service.impl;
 
-import java.text.ParseException;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
@@ -22,35 +22,43 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.customer.CustomerTypes;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.operator.inventory.model.FilterMode;
+import com.cannontech.web.stars.dr.operator.inventory.model.FilterModel;
 import com.cannontech.web.stars.dr.operator.inventory.model.RuleModel;
-import com.cannontech.web.stars.dr.operator.inventory.service.InventoryOperationsFilterService;
+import com.cannontech.web.stars.dr.operator.inventory.service.InventoryActionsFilterService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-public class InventoryOperationsFilterServiceImpl implements InventoryOperationsFilterService {
+public class InventoryActionsFilterServiceImpl implements InventoryActionsFilterService {
     
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private EnergyCompanyDao ecDao;
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     
+    private static final DatabaseVendor[] oracleTypes = {
+        DatabaseVendor.ORACLE10G,
+        DatabaseVendor.ORACLE11G,
+        DatabaseVendor.ORACLE12C
+    };
+    
     @Override
-    public Set<InventoryIdentifier> getInventory(FilterMode filterMode, List<RuleModel> rules, DateTimeZone timeZone, YukonUserContext userContext) throws ParseException {
-        YukonEnergyCompany ec = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
-        SqlFragmentCollection whereClause;
+    public Set<InventoryIdentifier> getInventory(FilterModel filter, DateTimeZone timeZone, LiteYukonUser user) {
         
-        if (filterMode == FilterMode.AND) {
-            whereClause = SqlFragmentCollection.newAndCollection();
+        YukonEnergyCompany ec = ecDao.getEnergyCompanyByOperator(user);
+        SqlFragmentCollection where;
+        
+        if (filter.getFilterMode() == FilterMode.AND) {
+            where = SqlFragmentCollection.newAndCollection();
         } else {
-            whereClause = SqlFragmentCollection.newOrCollection();
+            where = SqlFragmentCollection.newOrCollection();
         }
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -61,20 +69,20 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
         sql.append(  "JOIN YukonListEntry yle ON yle.EntryID = lmhb.LMHardwareTypeID");
         sql.append(  "JOIN ECToInventoryMapping ecim ON ecim.InventoryId = ib.InventoryId");
         
-        for (RuleModel rule : rules) {
-            whereClause.add(getFragmentForRule(rule, timeZone, userContext));
+        for (RuleModel rule : filter.getFilterRules()) {
+            where.add(getFragmentForRule(rule, timeZone, user));
         }
         
         /* Only retrieve inventory for this energy company */
         sql.append("WHERE ecim.EnergyCompanyId").eq(ec.getEnergyCompanyId());
-        sql.append("AND").append(whereClause);
+        sql.append("AND").append(where);
         
         Set<InventoryIdentifier> result = Sets.newHashSet();
         
         /* Catch BadSqlGrammarException for oracle and DataIntegrityViolationException for sql server
          * when casting serial numbers as numeric when they have letters in them. */
         try {
-            yukonJdbcTemplate.queryInto(sql, new LmHardwareInventoryIdentifierMapper(), result);
+            jdbcTemplate.queryInto(sql, new LmHardwareInventoryIdentifierMapper(), result);
         } catch (BadSqlGrammarException e) {
             if (e.getCause().getMessage().contains("ORA-01722: invalid number")) {
                 throw new InvalidSerialNumberRangeDataException(e);
@@ -88,61 +96,66 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
         return result;
     }
     
-    private SqlFragmentSource getFragmentForRule(RuleModel rule, DateTimeZone timeZone, YukonUserContext userContext) throws ParseException {
+    private SqlFragmentSource getFragmentForRule(RuleModel rule, DateTimeZone timeZone, LiteYukonUser user) {
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
         switch (rule.getRuleType()) {
         
         case APPLIANCE_TYPE:
-            SqlStatementBuilder inventoryIdsByAppType = new SqlStatementBuilder();
-            inventoryIdsByAppType.append("SELECT IB.InventoryId ");
-            inventoryIdsByAppType.append("FROM LMHardwareConfiguration LMHC");
-            inventoryIdsByAppType.append("  JOIN ApplianceBase AB ON AB.ApplianceId = LMHC.ApplianceId");
-            inventoryIdsByAppType.append("WHERE AB.ApplianceCategoryId").eq(rule.getApplianceType());
             
-            sql.append("IB.InventoryId").in(inventoryIdsByAppType);
+            sql.append("IB.InventoryId").in(new SqlStatementBuilder()
+                .append("SELECT IB.InventoryId ")
+                .append("FROM LMHardwareConfiguration LMHC")
+                .append("  JOIN ApplianceBase AB ON AB.ApplianceId = LMHC.ApplianceId")
+                .append("WHERE AB.ApplianceCategoryId").eq(rule.getApplianceType()));
             break;
             
         case ASSIGNED:
+            
             sql.append("IB.AccountId").neq_k(0);
             break;
             
         case CUSTOMER_TYPE:
-            SqlStatementBuilder inventoryIdsFromCustomerTypeSql = new SqlStatementBuilder();
-            inventoryIdsFromCustomerTypeSql.append("SELECT IB.InventoryId");
-            inventoryIdsFromCustomerTypeSql.append("FROM Customer C");
-            inventoryIdsFromCustomerTypeSql.append("  JOIN CustomerAccount CA ON CA.CustomerId = C.CustomerId");
-            inventoryIdsFromCustomerTypeSql.append("  JOIN InventoryBase IB ON IB.AccountId = CA.AccountId");
+            
+            SqlStatementBuilder customerTypeSql = new SqlStatementBuilder();
+            customerTypeSql.append("SELECT IB.InventoryId");
+            customerTypeSql.append("FROM Customer C");
+            customerTypeSql.append("  JOIN CustomerAccount CA ON CA.CustomerId = C.CustomerId");
+            customerTypeSql.append("  JOIN InventoryBase IB ON IB.AccountId = CA.AccountId");
 
             // The customer type is residential
             if (rule.isResidentialCustomerType()) {
-                inventoryIdsFromCustomerTypeSql.append("WHERE C.CustomerTypeId").eq_k(CustomerTypes.CUSTOMER_RESIDENTIAL);
+                customerTypeSql.append("WHERE C.CustomerTypeId").eq_k(CustomerTypes.CUSTOMER_RESIDENTIAL);
             // The customer type is a commercial type
             } else {
-                inventoryIdsFromCustomerTypeSql.append("  JOIN CICustomerBase CICB ON CICB.CustomerId = C.CustomerId");
-                inventoryIdsFromCustomerTypeSql.append("WHERE C.CustomerTypeId").eq_k(CustomerTypes.CUSTOMER_CI);
-                inventoryIdsFromCustomerTypeSql.append("  AND CICB.CiCustType").eq(rule.getCiCustomerTypeId());
+                customerTypeSql.append("  JOIN CICustomerBase CICB ON CICB.CustomerId = C.CustomerId");
+                customerTypeSql.append("WHERE C.CustomerTypeId").eq_k(CustomerTypes.CUSTOMER_CI);
+                customerTypeSql.append("  AND CICB.CiCustType").eq(rule.getCiCustomerTypeId());
             }
             
-            sql.append("IB.InventoryId").in(inventoryIdsFromCustomerTypeSql);
+            sql.append("IB.InventoryId").in(customerTypeSql);
             break;
         
         case DEVICE_STATUS:
+            
             sql.append("IB.CurrentStateId").eq(rule.getDeviceStatusId());
             break;
             
         case DEVICE_STATUS_DATE_RANGE:
-            SqlStatementBuilder inventoryIdsFromDeviceStateDateRangeSql = new SqlStatementBuilder();
-            inventoryIdsFromDeviceStateDateRangeSql.append("SELECT DISTINCT InventoryId");
-            inventoryIdsFromDeviceStateDateRangeSql.append("FROM EventBase EB");
-            inventoryIdsFromDeviceStateDateRangeSql.append("  JOIN EventInventory EI ON EI.EventId = EB.EventId");
-            inventoryIdsFromDeviceStateDateRangeSql.append("WHERE EB.EventTimestamp").gte(rule.getDeviceStateDateFrom().toDateMidnight(timeZone));
-            inventoryIdsFromDeviceStateDateRangeSql.append("  AND EB.EventTimestamp").lt(rule.getDeviceStateDateTo().plusDays(1).toDateMidnight(timeZone));
             
-            sql.append("IB.InventoryId").in(inventoryIdsFromDeviceStateDateRangeSql);
+            DateTime from = rule.getDeviceStateDateFrom().toDateTimeAtStartOfDay(timeZone);
+            DateTime to = rule.getDeviceStateDateTo().plusDays(1).toDateTimeAtStartOfDay(timeZone);
+            sql.append("IB.InventoryId").in(new SqlStatementBuilder()
+                .append("SELECT DISTINCT InventoryId")
+                .append("FROM EventBase EB")
+                .append("  JOIN EventInventory EI ON EI.EventId = EB.EventId")
+                .append("WHERE EB.EventTimestamp").gte(from)
+                .append("  AND EB.EventTimestamp").lt(to));
             break;
             
         case DEVICE_TYPE:
+            
             sql.append("yle.entryId").eq(rule.getDeviceType());
             break;
             
@@ -155,6 +168,7 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
             break;
             
         case LOAD_GROUP:
+            
             List<String> groupIds = Lists.newArrayList(StringUtils.split(rule.getGroupIds(), ","));
             sql.append("(lmhcg.LmGroupId").in(groupIds);
             sql.append("AND lmhcg.GroupEnrollStart IS NOT NULL");
@@ -163,20 +177,20 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
             break;
             
         case POSTAL_CODE:
-            SqlStatementBuilder accountIdsForServiceZipCodeSql = new SqlStatementBuilder();
-            accountIdsForServiceZipCodeSql.append("SELECT Distinct CA.AccountId");
-            accountIdsForServiceZipCodeSql.append("FROM CustomerAccount CA");
-            accountIdsForServiceZipCodeSql.append("  JOIN Customer Cust ON Cust.CustomerId = CA.CustomerId");
-            accountIdsForServiceZipCodeSql.append("  JOIN Contact Cont ON Cont.ContactId = Cust.PrimaryContactId");
-            accountIdsForServiceZipCodeSql.append("  JOIN Address A ON A.AddressId = Cont.AddressId");
-            accountIdsForServiceZipCodeSql.append("  JOIN Address A2 ON CA.BillingAddressId = A2.AddressId");
-            accountIdsForServiceZipCodeSql.append("WHERE A.ZipCode").eq(rule.getPostalCode());
-            accountIdsForServiceZipCodeSql.append("OR A2.ZipCode").eq(rule.getPostalCode());
             
-            sql.append("IB.AccountId").in(accountIdsForServiceZipCodeSql);
+            sql.append("IB.AccountId").in(new SqlStatementBuilder()
+                .append("SELECT Distinct CA.AccountId")
+                .append("FROM CustomerAccount CA")
+                .append("  JOIN Customer Cust ON Cust.CustomerId = CA.CustomerId")
+                .append("  JOIN Contact Cont ON Cont.ContactId = Cust.PrimaryContactId")
+                .append("  JOIN Address A ON A.AddressId = Cont.AddressId")
+                .append("  JOIN Address A2 ON CA.BillingAddressId = A2.AddressId")
+                .append("WHERE A.ZipCode").eq(rule.getPostalCode())
+                .append("OR A2.ZipCode").eq(rule.getPostalCode()));
             break;
             
         case PROGRAM:
+            
             List<String> programIds = Lists.newArrayList(StringUtils.split(rule.getProgramIds(), ","));
             sql.append("(lmhcg.ProgramId").in(programIds);
             sql.append("AND lmhcg.GroupEnrollStart IS NOT NULL");
@@ -185,6 +199,7 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
             break;
             
         case PROGRAM_SIGNUP_DATE:
+            
             LocalDate programSignupDate = new LocalDate(rule.getProgramSignupDate(), timeZone);
             Interval programSignupInterval = programSignupDate.toInterval(timeZone);
             sql.append("(lmhcg.GroupEnrollStart").gte(programSignupInterval.getStart());
@@ -194,22 +209,29 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
             break;
             
         case SERIAL_NUMBER_RANGE:
+            
+            long fromSn = rule.getSerialNumberFrom();
+            long toSn = rule.getSerialNumberTo();
+            
             VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
-            SqlBuilder oracleSql = builder.buildFor(DatabaseVendor.ORACLE12C, DatabaseVendor.ORACLE11G, DatabaseVendor.ORACLE10G);
-            oracleSql.append("(CAST (lmhb.ManufacturerSerialNumber AS NUMBER(19))").gte(rule.getSerialNumberFrom()).append("AND");
-            oracleSql.append("CAST (lmhb.ManufacturerSerialNumber AS NUMBER(19))").lte(rule.getSerialNumberTo()).append(")");
+            SqlBuilder oracleSql = builder.buildFor(oracleTypes);
+            
+            oracleSql.append("(CAST (lmhb.ManufacturerSerialNumber AS NUMBER(19))").gte(fromSn).append("AND");
+            oracleSql.append("CAST (lmhb.ManufacturerSerialNumber AS NUMBER(19))").lte(toSn).append(")");
             
             SqlBuilder otherSql =  builder.buildOther();
-            otherSql.append("(CAST (lmhb.ManufacturerSerialNumber AS BIGINT)").gte(rule.getSerialNumberFrom()).append("AND");
-            otherSql.append("CAST (lmhb.ManufacturerSerialNumber AS BIGINT)").lte(rule.getSerialNumberTo()).append(")");
+            otherSql.append("(CAST (lmhb.ManufacturerSerialNumber AS BIGINT)").gte(fromSn).append("AND");
+            otherSql.append("CAST (lmhb.ManufacturerSerialNumber AS BIGINT)").lte(toSn).append(")");
             
             return builder;
             
         case SERVICE_COMPANY:
+            
             sql.append("IB.InstallationCompanyId").eq(rule.getServiceCompanyId());
             break;
         
         case UNENROLLED:
+            
             sql.append("ib.InventoryId NOT IN (");
             sql.append(  "SELECT InventoryId");
             sql.append(  "FROM LmHardwareControlGroup cg");
@@ -218,16 +240,15 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
             sql.append(  "  AND cg.Type").eq(1);
             sql.append(")");
             break;
-
+        
         case WAREHOUSE:
-            boolean multipleWarehousesEnabled = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MULTI_WAREHOUSE, userContext.getYukonUser());
-            if (multipleWarehousesEnabled) {
-                SqlStatementBuilder inventoryIdsByWarehouseIdSql = new SqlStatementBuilder();
-                inventoryIdsByWarehouseIdSql.append("SELECT ITWM.InventoryId");
-                inventoryIdsByWarehouseIdSql.append("FROM InventoryToWarehouseMapping ITWM");
-                inventoryIdsByWarehouseIdSql.append("WHERE ITWM.WarehouseId").eq(rule.getWarehouseId());
-                
-                sql.append("IB.InventoryId").in(inventoryIdsByWarehouseIdSql);
+            
+            boolean multiple = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MULTI_WAREHOUSE, user);
+            if (multiple) {
+                sql.append("IB.InventoryId").in(new SqlStatementBuilder()
+                    .append("SELECT ITWM.InventoryId")
+                    .append("FROM InventoryToWarehouseMapping ITWM")
+                    .append("WHERE ITWM.WarehouseId").eq(rule.getWarehouseId()));
             } else {
                 sql.append("IB.AccountId").eq_k(0);
             }

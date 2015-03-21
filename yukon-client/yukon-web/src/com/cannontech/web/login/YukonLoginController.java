@@ -12,7 +12,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.exception.AuthenticationThrottleException;
 import com.cannontech.common.exception.BadAuthenticationException;
@@ -42,7 +42,7 @@ public class YukonLoginController extends MultiActionController {
         mav.setViewName("login.jsp");
 
         boolean useOldForgottenPasswordPage =
-            configurationSource.getBoolean(MasterConfigBooleanKeysEnum.USE_OLD_FORGOTTEN_PASSWORD_PAGE);
+            configurationSource.getBoolean(MasterConfigBoolean.USE_OLD_FORGOTTEN_PASSWORD_PAGE);
         mav.addObject("useOldForgottenPasswordPage", useOldForgottenPasswordPage);
         return mav;
     }

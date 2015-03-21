@@ -18,7 +18,7 @@ public interface ConfigurationSource {
      * @throws UnknownKeyException if key didn't exist
      * @return the value of the key, never null
      */
-    public String getRequiredString(MasterConfigStringKeysEnum key) throws UnknownKeyException;
+    public String getRequiredString(MasterConfigString key) throws UnknownKeyException;
 
     /**
      * Returns value of key from the configuration file. Throws an exception if the key did not
@@ -42,12 +42,12 @@ public interface ConfigurationSource {
      * the key did not exist in the file.
      * @return the value of the key, or null if the key didn't exist
      */
-    public String getString(MasterConfigStringKeysEnum key);
+    public String getString(MasterConfigString key);
 
     /**
      * Returns value of key from the configuration file. Returns defaultVlaue if
      * the key did not exist in the file.
-     * Preferred method is {@link #getString(MasterConfigStringKeysEnum, String)}
+     * Preferred method is {@link #getString(MasterConfigString, String)}
      * @param key
      * @param defaultValue string value to return if the key does not exist
      * @return the value of the key, or defaultValue if the key didn't exist
@@ -61,7 +61,7 @@ public interface ConfigurationSource {
      * @param defaultValue String value to return if the key does not exist
      * @return the value of the key, or defaultValue if the key didn't exist
      */
-    public String getString(MasterConfigStringKeysEnum key, String defaultValue);
+    public String getString(MasterConfigString key, String defaultValue);
 
     /**
      * Returns value of key from the configuration file. Throws an exception if the key did not
@@ -113,7 +113,7 @@ public interface ConfigurationSource {
      * @param defaultValue boolean value to return if the key does not exist
      * @return the boolean value of the key, or defaultValue if the key didn't exist
      */
-    public boolean getBoolean(MasterConfigBooleanKeysEnum key, boolean defaultValue);
+    public boolean getBoolean(MasterConfigBoolean key, boolean defaultValue);
 
     /**
      * Returns boolean value of key from the configuration file. Returns false if
@@ -121,7 +121,7 @@ public interface ConfigurationSource {
      * @param key
      * @return the boolean value of the key, or false if the key didn't exist
      */
-    public boolean getBoolean(MasterConfigBooleanKeysEnum key);
+    public boolean getBoolean(MasterConfigBoolean key);
 
     /**
      * <p>Uses the {@link SimplePeriodFormat#getConfigPeriodFormatter()} style to convert the string in the configuration

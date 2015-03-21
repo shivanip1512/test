@@ -1,6 +1,5 @@
 package com.cannontech.web.stars.dr.operator.inventory;
 
-import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.MessageCodesResolver;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -34,13 +32,13 @@ import com.cannontech.common.model.ServiceCompanyDto;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.ServiceCompanyDao;
+import com.cannontech.core.roleproperties.SerialNumberValidation;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.core.roleproperties.SerialNumberValidation;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
@@ -55,7 +53,6 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.common.collection.CollectionCreationException;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
@@ -67,7 +64,7 @@ import com.cannontech.web.stars.dr.operator.inventory.model.FilterModel;
 import com.cannontech.web.stars.dr.operator.inventory.model.FilterRuleType;
 import com.cannontech.web.stars.dr.operator.inventory.model.RuleModel;
 import com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCollectionProducer;
-import com.cannontech.web.stars.dr.operator.inventory.service.InventoryOperationsFilterService;
+import com.cannontech.web.stars.dr.operator.inventory.service.InventoryActionsFilterService;
 import com.cannontech.web.stars.dr.operator.inventory.service.impl.InvalidSerialNumberRangeDataException;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
@@ -76,145 +73,153 @@ import com.google.common.collect.Sets;
 
 @Controller
 @CheckRole(YukonRole.INVENTORY)
-@RequestMapping(value = "/operator/inventory/*")
+@RequestMapping(value="/operator/inventory/*")
 public class InventoryFilterController {
     
     @Autowired private ApplianceCategoryDao applianceCategoryDao;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
-    @Autowired private ECMappingDao ecMappingDao;
-    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    @Autowired private EnergyCompanySettingDao ecSettingDao;
     @Autowired private EnergyCompanyService ecService;
-    @Autowired private FilterModelValidator filterModelValidator;
-    @Autowired private InventoryOperationsFilterService inventoryOperationsFilterService;
-    @Autowired private MemoryCollectionProducer memoryCollectionProducer;
+    @Autowired private FilterModelValidator filterValidator;
+    @Autowired private InventoryActionsFilterService filterService;
+    @Autowired private MemoryCollectionProducer collectionProducer;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ServiceCompanyDao serviceCompanyDao;
-    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private StarsDatabaseCache starsDbCache;
     @Autowired private EnergyCompanyDao ecDao;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private SelectionListService selectionListService;
-
+    
+    private static final String path = "operator/inventory/";
+    private static final String key = "yukon.web.modules.operator.inventory.filter.";
+    
     /* Setup Filter Rules */
-    @RequestMapping(value = "setupFilterRules")
-    public String setupFilterRules(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext, String filterButton) 
-            throws ServletRequestBindingException, CollectionCreationException {
+    @RequestMapping(value="setupFilterRules")
+    public String setupFilterRules(HttpServletRequest req, ModelMap model, LiteYukonUser user) {
         
-        FilterModel filterModel = new FilterModel();
-        setupFilterSelectionModelMap(modelMap, userContext);
-        modelMap.addAttribute("filterModel", filterModel);
-        return "operator/inventory/setupFilterRules.jsp";
+        FilterModel filter = new FilterModel();
+        model.addAttribute("energyCompanyId", ecDao.getEnergyCompanyByOperator(user).getId());
+        model.addAttribute("filterModel", filter);
+        
+        return path + "setupFilterRules.jsp";
     }
     
     /* Add Filter Rule */
-    @RequestMapping(value = "applyFilter", method=RequestMethod.POST, params="addButton")
-    public String addFilterRow(@ModelAttribute("filterModel") FilterModel filterModel, BindingResult bindingResult, FlashScope flashScope,
-                               HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext, String ruleType) {
-        boolean hasErrors = validate(bindingResult, filterModel, modelMap, flashScope, userContext);
-        if(hasErrors) {
-            return "operator/inventory/setupFilterRules.jsp";
-        }
-        /* Add a row and return to filter setup page. */
-        FilterRuleType filterRuleType = FilterRuleType.valueOf(ruleType);
-        RuleModel newRule = new RuleModel(filterRuleType);
+    @RequestMapping(value="applyFilter", method=RequestMethod.POST, params="addButton")
+    public String addFilterRow(@ModelAttribute("filterModel") FilterModel filter, BindingResult result, 
+            FlashScope flash, ModelMap model, LiteYukonUser user, FilterRuleType ruleType) {
         
-        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
-        YukonSelectionList devTypeList = selectionListService.getSelectionList(energyCompany,
-                                                           YukonSelectionListEnum.DEVICE_TYPE.getListName());
+        boolean hasErrors = validate(result, filter, model, flash, user);
+        if (hasErrors) {
+            return path + "setupFilterRules.jsp";
+        }
+        
+        /* Add a row and return to filter setup page. */
+        RuleModel newRule = new RuleModel(ruleType);
+        
+        EnergyCompany ec = ecDao.getEnergyCompanyByOperator(user);
+        LiteStarsEnergyCompany lsec = starsDbCache.getEnergyCompany(ec.getId());
+        String typesListName = YukonSelectionListEnum.DEVICE_TYPE.getListName();
+        YukonSelectionList devTypeList = selectionListService.getSelectionList(lsec, typesListName);
         newRule.setDeviceType(devTypeList.getYukonListEntries().get(0).getEntryID());
         
-        filterModel.getFilterRules().add(newRule);
-
-        setupFilterSelectionModelMap(modelMap, userContext);
-        return "operator/inventory/setupFilterRules.jsp";
+        filter.getFilterRules().add(newRule);
+        model.addAttribute("energyCompanyId", ecDao.getEnergyCompanyByOperator(user).getId());
+        
+        return path + "setupFilterRules.jsp";
     }
     
     /* Cancel */
-    @RequestMapping(value = "applyFilter", method=RequestMethod.POST, params="cancelButton")
-    public String cancel(@ModelAttribute("filterModel") FilterModel filterModel) {
+    @RequestMapping(value="applyFilter", method=RequestMethod.POST, params="cancelButton")
+    public String cancel() {
         return "redirect:home";
     }
     
     /* Apply Filter */
-    @RequestMapping(value = "applyFilter", method=RequestMethod.POST, params="apply")
-    public String applyFilter(@ModelAttribute("filterModel") FilterModel filterModel, BindingResult bindingResult, FlashScope flashScope,
-                              HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ParseException {
-        boolean hasErrors = validate(bindingResult, filterModel, modelMap, flashScope, userContext);
-        if(hasErrors) {
-            return "operator/inventory/setupFilterRules.jsp";
+    @RequestMapping(value="applyFilter", method=RequestMethod.POST, params="apply")
+    public String applyFilter(@ModelAttribute("filterModel") FilterModel filter, BindingResult result, FlashScope flash,
+                              ModelMap model, YukonUserContext userContext) {
+        
+        LiteYukonUser user = userContext.getYukonUser();
+        boolean hasErrors = validate(result, filter, model, flash, user);
+        if (hasErrors) {
+            return path + "setupFilterRules.jsp";
         }
         
         Set<InventoryIdentifier> inventory = null;
         
-        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
+        EnergyCompany ec = ecDao.getEnergyCompanyByOperator(user);
         try {
-            TimeZone ecTimeZone = ecService.getDefaultTimeZone(yukonEnergyCompany.getEnergyCompanyId());
-            DateTimeZone energyCompanyTimeZone = DateTimeZone.forTimeZone(ecTimeZone);
-            inventory = inventoryOperationsFilterService.getInventory(filterModel.getFilterMode(), 
-                                filterModel.getFilterRules(), energyCompanyTimeZone, userContext);
+            TimeZone ecTimeZone = ecService.getDefaultTimeZone(ec.getId());
+            DateTimeZone ecDateTimeZone = DateTimeZone.forTimeZone(ecTimeZone);
+            inventory = filterService.getInventory(filter, ecDateTimeZone, user);
         } catch (InvalidSerialNumberRangeDataException e) {
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.inventory.filter.error.invalidSerialNumbers"));
-            setupFilterSelectionModelMap(modelMap, userContext);
-            return "operator/inventory/setupFilterRules.jsp";
+            flash.setError(new YukonMessageSourceResolvable(key + "error.invalidSerialNumbers"));
+            model.addAttribute("energyCompanyId", ecDao.getEnergyCompanyByOperator(user).getId());
+            
+            return path + "setupFilterRules.jsp";
         }
         
-        if(inventory.isEmpty()) {
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.inventory.filter.error.noInventory"));
-            setupFilterSelectionModelMap(modelMap, userContext);
-            return "operator/inventory/setupFilterRules.jsp";
+        if (inventory.isEmpty()) {
+            flash.setError(new YukonMessageSourceResolvable(key + "error.noInventory"));
+            model.addAttribute("energyCompanyId", ecDao.getEnergyCompanyByOperator(user).getId());
+            
+            return path + "setupFilterRules.jsp";
         }
         
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        String filterDescription = messageSourceAccessor.getMessage("yukon.common.collection.inventory.filterBased");
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        String description = accessor.getMessage("yukon.common.collection.inventory.filterBased");
         
-        InventoryCollection temporaryCollection = memoryCollectionProducer.createCollection(inventory.iterator(), filterDescription);
-        modelMap.addAttribute("inventoryCollection", temporaryCollection);
-        modelMap.addAllAttributes(temporaryCollection.getCollectionParameters());
+        InventoryCollection collection = collectionProducer.createCollection(inventory.iterator(), description);
+        model.addAttribute("inventoryCollection", collection);
+        model.addAllAttributes(collection.getCollectionParameters());
+        
         return "redirect:inventoryActions";
     }
     
-    private boolean validate(BindingResult bindingResult, FilterModel filterModel, ModelMap modelMap, FlashScope flashScope, YukonUserContext userContext){
-        filterModelValidator.validate(filterModel, bindingResult);
-        if(bindingResult.hasErrors()) {
-            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
-            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            setupFilterSelectionModelMap(modelMap, userContext);
+    private boolean validate(BindingResult result, FilterModel filter, ModelMap model, FlashScope flash, 
+            LiteYukonUser user) {
+        
+        filterValidator.validate(filter, result);
+        if (result.hasErrors()) {
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
+            flash.setMessage(messages, FlashScopeMessageType.ERROR);
+            model.addAttribute("energyCompanyId", ecDao.getEnergyCompanyByOperator(user).getId());
         }
-        return bindingResult.hasErrors();
+        return result.hasErrors();
     }
     
-    /* Remove Rule - This guy as no 'params' in the @RequestMapping because the form had to be submitted via javascript for removes. */
-    @RequestMapping(value = "applyFilter", method=RequestMethod.POST)
-    public String remove(@ModelAttribute("filterModel") FilterModel filterModel, BindingResult bindingResult,
-                              ModelMap modelMap, YukonUserContext userContext, int removeRule) {
-        filterModel.getFilterRules().remove(removeRule);
-        setupFilterSelectionModelMap(modelMap, userContext);
-        return "operator/inventory/setupFilterRules.jsp";
-    }
-    
-    public void setupFilterSelectionModelMap(ModelMap modelMap, YukonUserContext userContext) {
-        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
-        modelMap.addAttribute("energyCompanyId", yukonEnergyCompany.getEnergyCompanyId());
+    /* Remove Rule - This guy as no 'params' in the @RequestMapping because the 
+     * form had to be submitted via javascript for removes. */
+    @RequestMapping(value="applyFilter", method=RequestMethod.POST)
+    public String remove(@ModelAttribute("filterModel") FilterModel filter, BindingResult result,
+                              ModelMap model, LiteYukonUser user, int removeRule) {
+        
+        filter.getFilterRules().remove(removeRule);
+        model.addAttribute("energyCompanyId", ecDao.getEnergyCompanyByOperator(user).getId());
+        
+        return path + "setupFilterRules.jsp";
     }
     
     /* Global Model Attributes */
     @ModelAttribute(value="ruleTypes")
-    public List<FilterRuleType> getRuleTypes(YukonUserContext userContext) {
-        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
+    public List<FilterRuleType> getRuleTypes(LiteYukonUser user) {
+        
+        EnergyCompany ec = ecDao.getEnergyCompanyByOperator(user);
         
         List<FilterRuleType> ruleTypes = Lists.newArrayList(FilterRuleType.values());
-        SerialNumberValidation value = energyCompanySettingDao.getEnum(EnergyCompanySettingType.SERIAL_NUMBER_VALIDATION,
-                                                                       SerialNumberValidation.class,
-                                                                       yukonEnergyCompany.getEnergyCompanyId());
+        SerialNumberValidation value = ecSettingDao.getEnum(EnergyCompanySettingType.SERIAL_NUMBER_VALIDATION,
+                SerialNumberValidation.class, ec.getId());
         if (value == SerialNumberValidation.ALPHANUMERIC) {
             ruleTypes.remove(FilterRuleType.SERIAL_NUMBER_RANGE);
         }
         
-        // Only show the warehouse option if multiple warehouses are enabled and more than one exists or mutliple warehouses are 
-        // disabled and thus every inventory not assigned to an account is considered in the warehouse.
-        List<Warehouse> warehouses = getAvailableWarehouses(userContext);
-        boolean multipleWarehousesEnabled = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MULTI_WAREHOUSE, userContext.getYukonUser());
-        if (warehouses.isEmpty() && multipleWarehousesEnabled) {
+        // Only show the warehouse option if multiple warehouses are enabled and more than one exists 
+        // OR mutliple warehouses are disabled and thus every inventory not assigned to an account is 
+        // considered in the warehouse.
+        List<Warehouse> warehouses = getAvailableWarehouses(user);
+        boolean multiple = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MULTI_WAREHOUSE, user);
+        if (warehouses.isEmpty() && multiple) {
             ruleTypes.remove(FilterRuleType.WAREHOUSE);
         }
         
@@ -223,51 +228,52 @@ public class InventoryFilterController {
     
     @ModelAttribute(value="filterModes")
     public List<FilterMode> getFilterModes() {
-        List<FilterMode> filterModes = Arrays.asList(FilterMode.values());
-        return filterModes;
+        return Arrays.asList(FilterMode.values());
     }
     
     @ModelAttribute(value="applianceTypes")
-    public List<ApplianceCategory> getApplianceTypes(YukonUserContext userContext) {
-        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
+    public List<ApplianceCategory> getApplianceTypes(LiteYukonUser user) {
         
-        List<ApplianceCategory> applianceCategories = applianceCategoryDao.getApplianceCategoriesByEcId(energyCompany.getEnergyCompanyId());
+        EnergyCompany ec = ecDao.getEnergyCompanyByOperator(user);
+        List<ApplianceCategory> applianceCategories = applianceCategoryDao.getApplianceCategoriesByEcId(ec.getId());
+        
         return applianceCategories;
     }
-
+    
     @ModelAttribute(value="residentialModelEntryId")
     public int getResidentialModelCustomerTypeId(){
         return RuleModel.RESIDENTIAL_MODEL_ENTRY_ID;
     }
     
     @ModelAttribute(value="ciCustomerTypes")
-    public List<YukonListEntry> getCiCustomerTypes(YukonUserContext userContext) {
-        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
-        return selectionListService.getSelectionList(energyCompany, 
-                                 YukonSelectionListDefs.YUK_LIST_NAME_CI_CUST_TYPE).getYukonListEntries();
+    public List<YukonListEntry> getCiCustomerTypes(LiteYukonUser user) {
+        
+        EnergyCompany ec = ecDao.getEnergyCompanyByOperator(user);
+        YukonSelectionList customerTypes = 
+                selectionListService.getSelectionList(ec, YukonSelectionListDefs.YUK_LIST_NAME_CI_CUST_TYPE);
+        
+        return customerTypes.getYukonListEntries();
     }
-
-    /**
-     * @param userContext
-     * @return
-     */
+    
     @ModelAttribute(value="energyCompanies")
-    public List<YukonEnergyCompany> getEnergyCompanies(YukonUserContext userContext) {
-        List<YukonEnergyCompany> energyCompanies = Lists.newArrayList();
-        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
+    public List<EnergyCompany> getEnergyCompanies(LiteYukonUser user) {
+        
+        List<EnergyCompany> energyCompanies = Lists.newArrayList();
+        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
         energyCompanies.addAll(energyCompany.getDescendants(true));
+        
         return energyCompanies;
     }
     
     @ModelAttribute(value="serviceCompanies")
-    public List<ServiceCompanyDto> getServiceCompanies(YukonUserContext userContext) {
-        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
+    public List<ServiceCompanyDto> getServiceCompanies(LiteYukonUser user) {
+        
+        EnergyCompany ec = ecDao.getEnergyCompanyByOperator(user);
+        LiteStarsEnergyCompany lsec = starsDbCache.getEnergyCompany(ec);
         
         // Get all the parent and child energy company ids of this energy company
-        List<LiteStarsEnergyCompany> memberEnergyCompanies = ECUtils.getAllDescendants(energyCompany);
-        memberEnergyCompanies.addAll(ECUtils.getAllAscendants(energyCompany));
+        List<LiteStarsEnergyCompany> memberEnergyCompanies = ECUtils.getAllDescendants(lsec);
+        memberEnergyCompanies.addAll(ECUtils.getAllAscendants(lsec));
         
         Set<Integer> usableEnergyCompanyIds = 
             Sets.newHashSet(Iterables.transform(memberEnergyCompanies, new Function<LiteStarsEnergyCompany, Integer>() {
@@ -276,19 +282,20 @@ public class InventoryFilterController {
                     return energyCompany.getEnergyCompanyId();
                 }
             }));
-        usableEnergyCompanyIds.add(yukonEnergyCompany.getEnergyCompanyId());
+        usableEnergyCompanyIds.add(ec.getId());
         
         return serviceCompanyDao.getAllServiceCompaniesForEnergyCompanies(usableEnergyCompanyIds);
     }
-
+    
     @ModelAttribute(value="warehouses")
-    public List<Warehouse> getWarehouses(YukonUserContext userContext) {
-        return getAvailableWarehouses(userContext);
+    public List<Warehouse> getWarehouses(LiteYukonUser user) {
+        return getAvailableWarehouses(user);
     }
     
-    private List<Warehouse> getAvailableWarehouses(YukonUserContext userContext) {
-        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
+    private List<Warehouse> getAvailableWarehouses(LiteYukonUser user) {
+        
+        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(user);
+        LiteStarsEnergyCompany energyCompany = starsDbCache.getEnergyCompany(yukonEnergyCompany);
         List<Warehouse> warehouses = energyCompany.getAllWarehousesDownward();
         
         return warehouses;
@@ -303,12 +310,13 @@ public class InventoryFilterController {
         binder.registerCustomEditor(Date.class, "filterRules.programSignupDate", dateValidationType.getPropertyEditor());
         binder.registerCustomEditor(Date.class, "filterRules.deviceStateDateFrom", dateValidationType.getPropertyEditor());
         binder.registerCustomEditor(Date.class, "filterRules.deviceStateDateTo", dateValidationType.getPropertyEditor());
-
+        
         datePropertyEditorFactory.setupLocalDatePropertyEditor(binder, userContext, BlankMode.CURRENT);
         
         if (binder.getTarget() != null) {
-            MessageCodesResolver msgCodesResolver = new YukonMessageCodeResolver("yukon.web.modules.operator.inventory.filter.");
+            MessageCodesResolver msgCodesResolver = new YukonMessageCodeResolver(key);
             binder.setMessageCodesResolver(msgCodesResolver);
         }
     }
+    
 }

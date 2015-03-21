@@ -16,7 +16,7 @@ import org.geojson.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigStringKeysEnum;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -60,7 +60,7 @@ public class PaoLocationServiceImpl implements PaoLocationService {
     
     @Autowired
     public PaoLocationServiceImpl(ConfigurationSource configSource) {
-        projection = configSource.getString(MasterConfigStringKeysEnum.MAP_PROJECTION, "EPSG:4326");
+        projection = configSource.getString(MasterConfigString.MAP_PROJECTION, "EPSG:4326");
     }
     
     @Override

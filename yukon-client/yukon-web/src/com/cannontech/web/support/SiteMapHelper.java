@@ -9,7 +9,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.userpage.model.SiteMapCategory;
@@ -91,8 +91,8 @@ public class SiteMapHelper {
                 permissions += ((YukonRoleProperty) permission).name() + " ";
             } else if (permission instanceof GlobalSettingType) {
                 permissions += ((GlobalSettingType) permission).name() + " ";
-            } else if (permission instanceof MasterConfigBooleanKeysEnum) {
-                permissions += ((MasterConfigBooleanKeysEnum) permission).name() + " ";
+            } else if (permission instanceof MasterConfigBoolean) {
+                permissions += ((MasterConfigBoolean) permission).name() + " ";
             } else if (permission instanceof OtherPermission) {
                 switch((OtherPermission) permission){
                 case EC_OPERATOR:
@@ -124,8 +124,8 @@ public class SiteMapHelper {
                 hasPermission = rolePropertyDao.checkProperty((YukonRoleProperty) permission, user);
             } else if (permission instanceof GlobalSettingType) {
                 hasPermission = globalSettingDao.getBoolean((GlobalSettingType) permission);
-            } else if (permission instanceof MasterConfigBooleanKeysEnum) {
-                hasPermission = configurationSource.getBoolean((MasterConfigBooleanKeysEnum) permission);
+            } else if (permission instanceof MasterConfigBoolean) {
+                hasPermission = configurationSource.getBoolean((MasterConfigBoolean) permission);
             } else if (permission instanceof OtherPermission) {
                 switch((OtherPermission) permission){
                 case EC_OPERATOR:

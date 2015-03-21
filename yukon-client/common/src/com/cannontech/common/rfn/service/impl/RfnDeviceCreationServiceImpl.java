@@ -19,7 +19,7 @@ import org.springframework.util.CollectionUtils;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigStringKeysEnum;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.constants.YukonDefinition;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
@@ -99,7 +99,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
             }
         });
         
-        templatePrefix = configurationSource.getString(MasterConfigStringKeysEnum.RFN_METER_TEMPLATE_PREFIX, "*RfnTemplate_");
+        templatePrefix = configurationSource.getString(MasterConfigString.RFN_METER_TEMPLATE_PREFIX, "*RfnTemplate_");
     }
     
     @Override

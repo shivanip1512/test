@@ -22,7 +22,7 @@ import ro.isdc.wro.extensions.processor.css.YUICssCompressorProcessor;
 import com.asual.lesscss.LessEngine;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.web.admin.theme.dao.ThemeDao;
 import com.cannontech.web.admin.theme.model.Theme;
 import com.cannontech.web.admin.theme.model.ThemePropertyType;
@@ -65,7 +65,7 @@ public class ThemeableResourceCache {
     
     @PostConstruct
     private void init() throws Exception {
-        debug = config.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE);
+        debug = config.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE);
         reloadAll();
     }
 

@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -63,7 +63,7 @@ import com.google.common.collect.Ordering;
 
 @Controller
 @RequestMapping("/estimatedLoad/*")
-@CheckCparm(MasterConfigBooleanKeysEnum.ENABLE_ESTIMATED_LOAD)
+@CheckCparm(MasterConfigBoolean.ENABLE_ESTIMATED_LOAD)
 @CheckRole(YukonRole.DEMAND_RESPONSE)
 public class EstimatedLoadController {
 

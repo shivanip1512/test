@@ -81,7 +81,7 @@ public class MasterConfigMap implements ConfigurationSource {
                     tempWriter.append("#(DEPRECATED) ").append(line);
                     log.warn("Line " + lineNum + ": Deprecated key found while reading Master Config file: " + key + ". Marking as disabled in master.cfg");
                 } else {
-                    if (MasterConfigStringKeysEnum.isEncryptedKey(key)
+                    if (MasterConfigString.isEncryptedKey(key)
                             && !MasterConfigCryptoUtils.isEncrypted(value)) {
                         // Found a value that needs to be encrypted
                         updateFile = true;
@@ -94,7 +94,7 @@ public class MasterConfigMap implements ConfigurationSource {
                         configMap.put(key, value);
                         tempWriter.append(line);
                     }
-                    if (MasterConfigStringKeysEnum.isEncryptedKey(key)) {
+                    if (MasterConfigString.isEncryptedKey(key)) {
                         log.debug("Found line match: " + key + " [encrypted value]"); // Do no log entire line here because it contains sensitive data
                     } else {
                         log.debug("Found line match: " + line);
@@ -114,7 +114,7 @@ public class MasterConfigMap implements ConfigurationSource {
     }
 
     @Override
-    public String getRequiredString(MasterConfigStringKeysEnum key) throws UnknownKeyException {
+    public String getRequiredString(MasterConfigString key) throws UnknownKeyException {
         return getRequiredString(key.name());
     }
 
@@ -142,12 +142,12 @@ public class MasterConfigMap implements ConfigurationSource {
     }
 
     @Override
-    public String getString(MasterConfigStringKeysEnum key) {
+    public String getString(MasterConfigString key) {
         return getString(key.name());
     }
 
     @Override
-    public String getString(MasterConfigStringKeysEnum key, String defaultValue) {
+    public String getString(MasterConfigString key, String defaultValue) {
         return getString(key.name(), defaultValue);
     }
 
@@ -195,7 +195,7 @@ public class MasterConfigMap implements ConfigurationSource {
     }
 
     @Override
-    public boolean getBoolean(MasterConfigBooleanKeysEnum key, boolean defaultValue) {
+    public boolean getBoolean(MasterConfigBoolean key, boolean defaultValue) {
     	String string = getString(key.name());
     	if (string == null) {
     	    return defaultValue;
@@ -204,7 +204,7 @@ public class MasterConfigMap implements ConfigurationSource {
     }
 
     @Override
-    public boolean getBoolean(MasterConfigBooleanKeysEnum key) {
+    public boolean getBoolean(MasterConfigBoolean key) {
         return getBoolean(key, false);
     }
 
@@ -234,7 +234,7 @@ public class MasterConfigMap implements ConfigurationSource {
      */
     private String getValueFromMap(String key) {
         String value = configMap.get(key);
-        if (MasterConfigStringKeysEnum.isEncryptedKey(key) &&
+        if (MasterConfigString.isEncryptedKey(key) &&
                 MasterConfigCryptoUtils.isEncrypted(value)) {
             // Found an encrypted value
             value = MasterConfigCryptoUtils.decryptValue(value);

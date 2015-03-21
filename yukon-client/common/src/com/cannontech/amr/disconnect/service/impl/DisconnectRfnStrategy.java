@@ -13,7 +13,7 @@ import com.cannontech.amr.disconnect.model.FilteredDevices;
 import com.cannontech.amr.disconnect.service.DisconnectCallback;
 import com.cannontech.amr.disconnect.service.DisconnectRfnService;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigStringKeysEnum;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.config.RfnMeterDisconnectArming;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
@@ -38,7 +38,7 @@ public class DisconnectRfnStrategy implements DisconnectStrategy {
    
     @Autowired
     public DisconnectRfnStrategy(ConfigurationSource configurationSource) {
-        String arm = configurationSource.getString(MasterConfigStringKeysEnum.RFN_METER_DISCONNECT_ARMING, "FALSE");
+        String arm = configurationSource.getString(MasterConfigString.RFN_METER_DISCONNECT_ARMING, "FALSE");
         mode = RfnMeterDisconnectArming.getForCparm(arm);
     }
 

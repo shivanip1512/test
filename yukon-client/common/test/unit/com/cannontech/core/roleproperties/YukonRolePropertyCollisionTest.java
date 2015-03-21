@@ -5,7 +5,7 @@ import java.util.HashSet;
 
 import org.junit.Test;
 
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.google.common.collect.Sets;
 
 public class YukonRolePropertyCollisionTest {
@@ -18,7 +18,7 @@ public class YukonRolePropertyCollisionTest {
         addAll(enumText, YukonRoleProperty.class);
         addAll(enumText, YukonRole.class);
         addAll(enumText, YukonRoleCategory.class);
-        addAll(enumText, MasterConfigBooleanKeysEnum.class);
+        addAll(enumText, MasterConfigBoolean.class);
     }
 
     private <T extends Enum<T>> void addAll(HashSet<String> enumText,

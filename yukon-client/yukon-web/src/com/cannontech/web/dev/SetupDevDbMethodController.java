@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -58,7 +58,7 @@ import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping("/setupDatabase/*")
-@CheckCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
+@CheckCparm(MasterConfigBoolean.DEVELOPMENT_MODE)
 public class SetupDevDbMethodController {
     
     private static final Logger log = YukonLogManager.getLogger(SetupDevDbMethodController.class);

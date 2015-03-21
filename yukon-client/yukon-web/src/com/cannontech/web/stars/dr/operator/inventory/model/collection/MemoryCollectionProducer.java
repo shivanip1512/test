@@ -26,7 +26,8 @@ import com.google.common.collect.Lists;
 
 public class MemoryCollectionProducer implements CollectionProducer<InventoryCollectionType, InventoryCollection> {
     
-    private ConcurrentMap<String, InventoryCollection> memoryMap = new ConcurrentHashMap<String, InventoryCollection>();
+    private ConcurrentMap<String, InventoryCollection> cache = new ConcurrentHashMap<>();
+    private static final String keyBase = "yukon.common.collection.inventory.";
     
     @Override
     public InventoryCollectionType getSupportedType() {
@@ -36,36 +37,40 @@ public class MemoryCollectionProducer implements CollectionProducer<InventoryCol
     private String getParameterName(String shortName) {
         return getSupportedType().getParameterName(shortName);
     }
-
+    
     @Override
-    public InventoryCollection createCollection(HttpServletRequest request) throws ServletRequestBindingException, CollectionCreationException {
+    public InventoryCollection createCollection(HttpServletRequest req) throws CollectionCreationException {
+        
         String keyName = getSupportedType().getParameterName("key");
+        try {
+            String key = ServletRequestUtils.getRequiredStringParameter(req, keyName);
+            return cache.get(key);
+        } catch (ServletRequestBindingException e) {
+            throw new CollectionCreationException("Required param not found in request: " + keyName, e);
+        }
         
-        String key = ServletRequestUtils.getRequiredStringParameter(request, keyName);
-        
-        return memoryMap.get(key);
     }
     
-    public InventoryCollection createCollection(Iterator<InventoryIdentifier> inventories, final String descriptionHint) {
-        final String key = UUID.randomUUID().toString();
+    public InventoryCollection createCollection(Iterator<InventoryIdentifier> identifiers, final String description) {
         
-        final List<InventoryIdentifier> inventoryList = Lists.newArrayList(inventories);
+        final String key = UUID.randomUUID().toString();
+        final List<InventoryIdentifier> inventoryList = Lists.newArrayList(identifiers);
         
         ListBasedInventoryCollection value = new ListBasedInventoryCollection() {
             
             public Map<String, String> getCollectionParameters() {
-
+                
                 Map<String, String> paramMap = new HashMap<String, String>();
-
+                
                 paramMap.put("collectionType", getSupportedType().name());
                 paramMap.put(getParameterName("key"), key);
-                if (StringUtils.isNotBlank(descriptionHint)) {
-                    paramMap.put(getParameterName("description"), descriptionHint);
+                if (StringUtils.isNotBlank(description)) {
+                    paramMap.put(getParameterName("description"), description);
                 }
-
+                
                 return paramMap;
             }
-
+            
             public List<InventoryIdentifier> getList() {
                 return inventoryList;
             }
@@ -74,21 +79,21 @@ public class MemoryCollectionProducer implements CollectionProducer<InventoryCol
             public int getCount() {
                 return inventoryList.size();
             }
-
+            
             @Override
             public MessageSourceResolvable getDescription() {
-                if (descriptionHint != null) {
-                    return new YukonMessageSourceResolvable("yukon.common.collection.inventory.description", descriptionHint);
+                if (description != null) {
+                    return new YukonMessageSourceResolvable(keyBase + "description", description);
                 } else {
-                    return new YukonMessageSourceResolvable("yukon.common.collection.inventory.temporary");
+                    return new YukonMessageSourceResolvable(keyBase + "temporary");
                 }
             }
-
+            
         };
-        memoryMap.put(key, value);
+        cache.put(key, value);
         
         return value;
         
     }
-
+    
 }

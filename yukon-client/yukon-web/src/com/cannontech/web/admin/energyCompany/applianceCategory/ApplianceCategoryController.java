@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -296,7 +296,7 @@ public class ApplianceCategoryController {
                                                        ApplianceCategoryIcon.OTHER, userContext);
             model.addAttribute("icons", icons);
         }
-        model.addAttribute("canAddVirtual", configurationSource.getBoolean(MasterConfigBooleanKeysEnum.VIRTUAL_PROGRAMS));
+        model.addAttribute("canAddVirtual", configurationSource.getBoolean(MasterConfigBoolean.VIRTUAL_PROGRAMS));
         
         return "applianceCategory/edit.jsp";
     }

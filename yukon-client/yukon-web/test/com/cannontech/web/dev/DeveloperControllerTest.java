@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.springframework.ui.ModelMap;
 
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 
 public class DeveloperControllerTest {
     /**
@@ -27,7 +27,7 @@ public class DeveloperControllerTest {
     public void test_dbChangeMaps() {
 
         ConfigurationSource configSource = createMock(ConfigurationSource.class);
-        expect(configSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)).andReturn(true);
+        expect(configSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE)).andReturn(true);
         replay(configSource);
 
         DeveloperController controller = new DeveloperController(configSource);

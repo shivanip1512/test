@@ -1,7 +1,5 @@
 package com.cannontech.web.stars.dr.operator.inventory.configuration;
 
-import java.util.Iterator;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -57,22 +55,20 @@ public class ResendLmConfigController {
     }
     
     @RequestMapping(value="do", params="start")
-    public String startTask(HttpServletRequest request, YukonUserContext context, ModelMap model, boolean inService) 
-    throws ServletRequestBindingException {
+    public String startTask(HttpServletRequest req, YukonUserContext context, ModelMap model, boolean inService) {
         
-        InventoryCollection collection = collectionFactory.createCollection(request);
+        InventoryCollection collection = collectionFactory.createCollection(req);
         ResendLmConfigTask task = helper.new ResendLmConfigTask(collection, context, inService);
         String taskId = helper.startTask(task);
         
         model.addAttribute("taskId", taskId);
-        collectionFactory.addCollectionToModelMap(request, model);
+        collectionFactory.addCollectionToModelMap(req, model);
         
         return "redirect:view";
     }
     
     @RequestMapping(value="do", params="cancel")
-    public String cancel(ModelMap model, HttpServletRequest request, FlashScope flash, String taskId) 
-    throws ServletRequestBindingException {
+    public String cancel(ModelMap model, HttpServletRequest req, FlashScope flash, String taskId) {
         
         if (StringUtils.isNotBlank(taskId)) {
             AbstractInventoryTask task = resultsCache.getResult(taskId);
@@ -80,9 +76,10 @@ public class ResendLmConfigController {
             int processed = task.getCompletedItems(); 
             flash.setWarning(new YukonMessageSourceResolvable(key + "canceled", processed));
         } else {
-            collectionFactory.addCollectionToModelMap(request, model);
+            collectionFactory.addCollectionToModelMap(req, model);
             return "redirect:/stars/operator/inventory/inventoryActions";
         }
+        
         return "redirect:../home";
     }
     
@@ -100,21 +97,21 @@ public class ResendLmConfigController {
         
         ResendLmConfigTask task = (ResendLmConfigTask) resultsCache.getResult(taskId);
         String code;
-        Iterator<InventoryIdentifier> inventory;
+        Iterable<InventoryIdentifier> inventory;
         
         if (type == NewOperationType.SUCCESS) {
             code = key + "successCollectionDescription";
-            inventory = task.getSuccessful().iterator();
+            inventory = task.getSuccessful();
         } else if (type == NewOperationType.FAILED) {
             code = key + "failedCollectionDescription";
-            inventory = task.getFailed().iterator();
+            inventory = task.getFailed();
         } else {
             code = key + "unsupportedCollectionDescription";
-            inventory = task.getUnsupported().iterator();
+            inventory = task.getUnsupported();
         }
         
         String description = resolver.getMessageSourceAccessor(context).getMessage(code);
-        InventoryCollection temporaryCollection = collectionProducer.createCollection(inventory, description);
+        InventoryCollection temporaryCollection = collectionProducer.createCollection(inventory.iterator(), description);
         model.addAttribute("inventoryCollection", temporaryCollection);
         model.addAllAttributes(temporaryCollection.getCollectionParameters());
         

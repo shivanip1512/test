@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -136,7 +136,7 @@ public class RoleAndPropertyDescriptionService {
             }
 
             try {
-                MasterConfigBooleanKeysEnum key = MasterConfigBooleanKeysEnum.valueOf(someEnumName);
+                MasterConfigBoolean key = MasterConfigBoolean.valueOf(someEnumName);
                 boolean configValue = configurationSource.getBoolean(key);
 
                 UserChecker propertyChecker = configValue ? UserCheckerBase.TRUE : UserCheckerBase.FALSE;

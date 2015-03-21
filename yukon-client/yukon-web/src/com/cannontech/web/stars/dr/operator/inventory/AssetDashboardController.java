@@ -7,12 +7,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -63,8 +62,7 @@ public class AssetDashboardController {
     }
     
     @RequestMapping("upload-file")
-    public String fileUpload(HttpServletRequest req, ModelMap model, FlashScope flash, YukonUserContext userContext) 
-    throws ServletRequestBindingException {
+    public String fileUpload(HttpServletRequest req, ModelMap model, FlashScope flash, YukonUserContext userContext) {
         
         try {
             InventoryCollection collection = collectionFactory.createCollection(req);
@@ -93,15 +91,15 @@ public class AssetDashboardController {
             int ecId = ec.getId();
             model.addAttribute("energyCompanyId", ecId);
             
-            MessageSourceAccessor messageSourceAccessor = resolver.getMessageSourceAccessor(userContext);
-            String title = messageSourceAccessor.getMessage(key + "fileUploadTitle");
+            MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
+            String title = accessor.getMessage(key + "fileUploadTitle");
             model.addAttribute("fileUploadTitle", title);
             
             MeteringType type = ecSettingsDao.getEnum(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION, 
                     MeteringType.class, ecId);
             model.addAttribute("showAddMeter", type == MeteringType.yukon);
             
-            boolean showLinks = configSource.getBoolean(MasterConfigBooleanKeysEnum.DIGI_ENABLED);
+            boolean showLinks = configSource.getBoolean(MasterConfigBoolean.DIGI_ENABLED);
             model.addAttribute("showLinks", showLinks);
             
             boolean showSearch = rolePropertyDao.checkProperty(YukonRoleProperty.INVENTORY_SEARCH, user);
@@ -123,7 +121,7 @@ public class AssetDashboardController {
             model.addAttribute("showAccountCreate", showAccountCreate);
             
             /** Actions Dropdown Button */
-            if(showHardwareCreate || showAccountCreate) {
+            if (showHardwareCreate || showAccountCreate) {
                 model.addAttribute("showActions", true);
             }
             

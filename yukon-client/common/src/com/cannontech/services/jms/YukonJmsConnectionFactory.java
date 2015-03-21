@@ -1,6 +1,6 @@
 package com.cannontech.services.jms;
 
-import static com.cannontech.common.config.MasterConfigStringKeysEnum.*;
+import static com.cannontech.common.config.MasterConfigString.*;
 
 import javax.jms.ConnectionFactory;
 

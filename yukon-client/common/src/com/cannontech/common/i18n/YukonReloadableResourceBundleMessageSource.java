@@ -5,7 +5,7 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import javax.annotation.PostConstruct;
 
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 
 public class YukonReloadableResourceBundleMessageSource extends ReloadableResourceBundleMessageSource {
     
@@ -13,7 +13,7 @@ public class YukonReloadableResourceBundleMessageSource extends ReloadableResour
 
     @PostConstruct
     public void init() throws Exception {
-        boolean devMode = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE);
+        boolean devMode = configurationSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE);
         if(devMode) {
             setCacheSeconds(10); // using a value of 10 instead of 1 dramatically increases performance, but you'll have to wait up to 10 sec to see xml/property changes.
         } else {

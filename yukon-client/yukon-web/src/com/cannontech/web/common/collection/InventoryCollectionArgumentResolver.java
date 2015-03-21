@@ -9,15 +9,17 @@ import org.springframework.web.context.request.NativeWebRequest;
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 
 public class InventoryCollectionArgumentResolver {
-    @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;
-
+    
+    @Autowired private InventoryCollectionFactoryImpl collectionFactory;
+    
     protected boolean supportsParameter(MethodParameter parameter) {
         Class<?> parameterType = parameter.getParameterType();
         return parameterType.isAssignableFrom(InventoryCollection.class);
     }
-
-    protected Object resolveArgument(NativeWebRequest webRequest) throws Exception {
+    
+    protected Object resolveArgument(NativeWebRequest webRequest) {
         HttpServletRequest nativeRequest = (HttpServletRequest) webRequest.getNativeRequest();
-        return inventoryCollectionFactory.createCollection(nativeRequest);
+        return collectionFactory.createCollection(nativeRequest);
     }
+    
 }

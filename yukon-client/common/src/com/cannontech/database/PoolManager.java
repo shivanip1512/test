@@ -1,17 +1,17 @@
 package com.cannontech.database;
 
-import static com.cannontech.common.config.MasterConfigBooleanKeysEnum.DB_JAVA_TEST_ON_BORROW;
-import static com.cannontech.common.config.MasterConfigBooleanKeysEnum.DB_JAVA_TEST_ON_RETURN;
-import static com.cannontech.common.config.MasterConfigBooleanKeysEnum.DB_JAVA_TEST_WHILE_IDLE;
-import static com.cannontech.common.config.MasterConfigBooleanKeysEnum.DB_SSL_ENABLED;
-import static com.cannontech.common.config.MasterConfigStringKeysEnum.DB_JAVA_DRIVER;
-import static com.cannontech.common.config.MasterConfigStringKeysEnum.DB_JAVA_URL;
-import static com.cannontech.common.config.MasterConfigStringKeysEnum.DB_JAVA_VALIDATION_QUERY;
-import static com.cannontech.common.config.MasterConfigStringKeysEnum.DB_PASSWORD;
-import static com.cannontech.common.config.MasterConfigStringKeysEnum.DB_SQLSERVER;
-import static com.cannontech.common.config.MasterConfigStringKeysEnum.DB_SQLSERVER_HOST;
-import static com.cannontech.common.config.MasterConfigStringKeysEnum.DB_TYPE;
-import static com.cannontech.common.config.MasterConfigStringKeysEnum.DB_USERNAME;
+import static com.cannontech.common.config.MasterConfigBoolean.DB_JAVA_TEST_ON_BORROW;
+import static com.cannontech.common.config.MasterConfigBoolean.DB_JAVA_TEST_ON_RETURN;
+import static com.cannontech.common.config.MasterConfigBoolean.DB_JAVA_TEST_WHILE_IDLE;
+import static com.cannontech.common.config.MasterConfigBoolean.DB_SSL_ENABLED;
+import static com.cannontech.common.config.MasterConfigString.DB_JAVA_DRIVER;
+import static com.cannontech.common.config.MasterConfigString.DB_JAVA_URL;
+import static com.cannontech.common.config.MasterConfigString.DB_JAVA_VALIDATION_QUERY;
+import static com.cannontech.common.config.MasterConfigString.DB_PASSWORD;
+import static com.cannontech.common.config.MasterConfigString.DB_SQLSERVER;
+import static com.cannontech.common.config.MasterConfigString.DB_SQLSERVER_HOST;
+import static com.cannontech.common.config.MasterConfigString.DB_TYPE;
+import static com.cannontech.common.config.MasterConfigString.DB_USERNAME;
 
 import java.sql.Connection;
 import java.sql.SQLException;

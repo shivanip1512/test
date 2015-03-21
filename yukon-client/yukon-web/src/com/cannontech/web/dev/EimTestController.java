@@ -38,7 +38,7 @@ import org.springframework.ws.soap.SoapHeader;
 import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.SoapMessage;
 
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.google.common.collect.Lists;
@@ -46,7 +46,7 @@ import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping("/eimTest/*")
-@CheckCparm(MasterConfigBooleanKeysEnum.ENABLE_WEB_DEBUG_PAGES)
+@CheckCparm(MasterConfigBoolean.ENABLE_WEB_DEBUG_PAGES)
 public class EimTestController implements ApplicationContextAware {
     
     @Autowired private WebServiceTemplate webServiceTemplate;

@@ -19,7 +19,7 @@ import com.cannontech.billing.model.CMEP_MEPMD01Record;
 import com.cannontech.billing.model.CMEP_MEPMD01Record.DataEntry;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigStringKeysEnum;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -156,7 +156,7 @@ public class CMEP_MEPMD01Format extends FileFormatBase  {
      * Gets the CMEP units from master.cfg.  If this CPARM doesn't exist it will use the KVARHREG CMEP unit.
      */
     private List<CMEPUnitEnum> getCMEPUnits() {
-        String cmepUnitsStr = configurationSource.getString(MasterConfigStringKeysEnum.CMEP_UNITS, "KWHREG,KW");
+        String cmepUnitsStr = configurationSource.getString(MasterConfigString.CMEP_UNITS, "KWHREG,KW");
         List<String> cmepUnitsStrs = Lists.newArrayList(StringUtils.split(cmepUnitsStr, ','));
         List<CMEPUnitEnum> cmepUnits = 
             Lists.transform(cmepUnitsStrs, new Function<String, CMEPUnitEnum>() {

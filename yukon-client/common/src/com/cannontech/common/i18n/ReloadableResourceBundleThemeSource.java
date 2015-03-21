@@ -7,7 +7,7 @@ import org.springframework.ui.context.support.ResourceBundleThemeSource;
 import javax.annotation.PostConstruct;
 
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.util.CtiUtilities;
 
 public class ReloadableResourceBundleThemeSource extends ResourceBundleThemeSource {
@@ -23,7 +23,7 @@ public class ReloadableResourceBundleThemeSource extends ResourceBundleThemeSour
         String yukonBase = CtiUtilities.getYukonBase();
         setBasenamePrefix("file:" + yukonBase + "/" + "Server/Config/Themes/");
         
-        boolean devMode = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE);
+        boolean devMode = configurationSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE);
         if(devMode) {
             this.cacheSeconds = 1;
         } else {

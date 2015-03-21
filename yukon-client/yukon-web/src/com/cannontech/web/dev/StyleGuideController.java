@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.JsonUtils;
@@ -46,7 +46,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
 @Controller
-@CheckCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
+@CheckCparm(MasterConfigBoolean.DEVELOPMENT_MODE)
 public class StyleGuideController {
     
     @Autowired private DeviceGroupService deviceGroupService;

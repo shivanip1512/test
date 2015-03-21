@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -91,7 +91,7 @@ public class EnergyCompanyController {
             /* For super users show all energy companies. */
             companies = Lists.newArrayList(ecDao.getAllEnergyCompanies());
             
-            if (!configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEFAULT_ENERGY_COMPANY_EDIT)) {
+            if (!configurationSource.getBoolean(MasterConfigBoolean.DEFAULT_ENERGY_COMPANY_EDIT)) {
                 Iterator<EnergyCompany> iter = companies.iterator();
                 while (iter.hasNext()) {
                     YukonEnergyCompany ec = iter.next();

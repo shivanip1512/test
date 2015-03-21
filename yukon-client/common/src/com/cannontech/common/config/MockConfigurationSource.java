@@ -13,12 +13,12 @@ public class MockConfigurationSource implements ConfigurationSource {
     }
 
     @Override
-    public boolean getBoolean(MasterConfigBooleanKeysEnum key, boolean defaultValue) {
+    public boolean getBoolean(MasterConfigBoolean key, boolean defaultValue) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean getBoolean(MasterConfigBooleanKeysEnum developmentMode) {
+    public boolean getBoolean(MasterConfigBoolean developmentMode) {
         throw new UnsupportedOperationException();
     }
 
@@ -38,7 +38,7 @@ public class MockConfigurationSource implements ConfigurationSource {
     }
 
     @Override
-    public String getRequiredString(MasterConfigStringKeysEnum key) throws UnknownKeyException {
+    public String getRequiredString(MasterConfigString key) throws UnknownKeyException {
         throw new UnsupportedOperationException();
     }
 
@@ -58,7 +58,7 @@ public class MockConfigurationSource implements ConfigurationSource {
     }
 
     @Override
-    public String getString(MasterConfigStringKeysEnum key, String defaultValue) {
+    public String getString(MasterConfigString key, String defaultValue) {
         throw new UnsupportedOperationException();
     }
 
@@ -78,7 +78,7 @@ public class MockConfigurationSource implements ConfigurationSource {
     }
 
     @Override
-    public String getString(MasterConfigStringKeysEnum key) {
+    public String getString(MasterConfigString key) {
         throw new UnsupportedOperationException();
     }
 

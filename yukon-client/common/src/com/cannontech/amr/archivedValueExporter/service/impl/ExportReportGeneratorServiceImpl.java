@@ -34,7 +34,7 @@ import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRange;
 import com.cannontech.amr.archivedValueExporter.service.ExportReportGeneratorService;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigStringKeysEnum;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -109,7 +109,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                                                                          PointQuality.Unreasonable);
     @PostConstruct
     private void pointQualities() {
-        String qualityList = configSource.getString(MasterConfigStringKeysEnum.EXCLUDED_POINT_QUALITIES);
+        String qualityList = configSource.getString(MasterConfigString.EXCLUDED_POINT_QUALITIES);
         if (StringUtils.isNotEmpty(qualityList)) {
             String[] strings = qualityList.split("\\s*,\\s*");
             Builder<PointQuality> b = ImmutableSet.builder();

@@ -16,7 +16,7 @@ import org.springframework.util.StringUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigStringKeysEnum;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.exception.FileCreationException;
 import com.cannontech.common.fileExportHistory.ExportHistoryEntry;
 import com.cannontech.common.fileExportHistory.FileExportType;
@@ -317,7 +317,7 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
 	 * related File Export History page.
 	 */
 	private String getNotificationBody(ExportHistoryEntry historyEntry) {
-		String baseUrl = configurationSource.getString(MasterConfigStringKeysEnum.YUKON_EXTERNAL_URL, defaultYukonExternalUrl);
+		String baseUrl = configurationSource.getString(MasterConfigString.YUKON_EXTERNAL_URL, defaultYukonExternalUrl);
 		
 		int historyId = historyEntry == null ? 0 : historyEntry.getId();
 		String historyLink = baseUrl + HISTORY_URL_PART + historyId + "&exportType=" + historyEntry.getType();

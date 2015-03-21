@@ -4,11 +4,11 @@ import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
@@ -21,7 +21,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.collection.InventoryCollectionFactoryImpl;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -34,23 +34,24 @@ import com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeDeviceS
 @CheckRoleProperty(YukonRoleProperty.SN_UPDATE_RANGE)
 public class ChangeDeviceStatusController {
 
-    @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;
+    @Autowired private InventoryCollectionFactoryImpl collectionFactory;
     @Autowired private ChangeDeviceStatusHelper helper;
     @Autowired private EnergyCompanyDao ecDao;
-    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private StarsDatabaseCache starsDbCache;
     @Autowired private SelectionListService selectionListService;
     private RecentResultsCache<AbstractInventoryTask> resultsCache;
 
     @RequestMapping("view")
-    public String view(HttpServletRequest request, ModelMap model, String taskId, LiteYukonUser user) throws ServletRequestBindingException {
-        YukonEnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
+    public String view(HttpServletRequest request, ModelMap model, String taskId, LiteYukonUser user) {
         
-        YukonSelectionList list = selectionListService.getSelectionList(energyCompany, 
-                                                YukonSelectionListEnum.DEVICE_STATUS.getListName());
-        List<YukonListEntry> deviceStatusTypes = list.getYukonListEntries();
+        EnergyCompany ec = ecDao.getEnergyCompanyByOperator(user);
+        
+        String statusListName = YukonSelectionListEnum.DEVICE_STATUS.getListName();
+        YukonSelectionList statusList = selectionListService.getSelectionList(ec, statusListName);
+        List<YukonListEntry> deviceStatusTypes = statusList.getYukonListEntries();
         
         model.addAttribute("deviceStatusTypes", deviceStatusTypes);
-        inventoryCollectionFactory.addCollectionToModelMap(request, model);
+        collectionFactory.addCollectionToModelMap(request, model);
         
         if (taskId != null) {
             ChangeDeviceStatusTask task = (ChangeDeviceStatusTask) resultsCache.getResult(taskId);
@@ -61,19 +62,22 @@ public class ChangeDeviceStatusController {
     }
 
     @RequestMapping(value="do", params="start")
-    public String startTask(HttpServletRequest request, YukonUserContext context, ModelMap model, int deviceStatusEntryId) throws ServletRequestBindingException {
-        InventoryCollection collection = inventoryCollectionFactory.createCollection(request);
-        ChangeDeviceStatusTask task = helper.new ChangeDeviceStatusTask(collection, context, deviceStatusEntryId, request.getSession());
+    public String startTask(HttpServletRequest req, YukonUserContext context, ModelMap model, int deviceStatusEntryId) {
+        
+        HttpSession session = req.getSession();
+        InventoryCollection collection = collectionFactory.createCollection(req);
+        ChangeDeviceStatusTask task = helper.new ChangeDeviceStatusTask(collection, context, deviceStatusEntryId, session);
         String taskId = helper.startTask(task);
         
         model.addAttribute("taskId", taskId);
-        inventoryCollectionFactory.addCollectionToModelMap(request, model);
+        collectionFactory.addCollectionToModelMap(req, model);
+        
         return "redirect:view";
     }
     
     @RequestMapping(value="do", params="cancel")
-    public String cancel(HttpServletRequest request, YukonUserContext context, ModelMap model) throws ServletRequestBindingException {
-        inventoryCollectionFactory.addCollectionToModelMap(request, model);
+    public String cancel(HttpServletRequest request, YukonUserContext context, ModelMap model) {
+        collectionFactory.addCollectionToModelMap(request, model);
         return "redirect:/stars/operator/inventory/inventoryActions";
     }
     

@@ -27,7 +27,7 @@ import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
@@ -173,7 +173,7 @@ public void start() {
             
             // Load possible cParm for controlling single vs multi child group membership in parent group
             ConfigurationSource configurationSource = YukonSpringHook.getBean("configurationSource", ConfigurationSource.class);
-            singleGroup = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.BULK_IMPORTER_SINGLE_GROUP);
+            singleGroup = configurationSource.getBoolean(MasterConfigBoolean.BULK_IMPORTER_SINGLE_GROUP);
             
 			do {
 				java.util.Date now = null;

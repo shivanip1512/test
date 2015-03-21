@@ -29,8 +29,8 @@ import com.cannontech.cbc.cyme.model.SimulationLoadFactor;
 import com.cannontech.cbc.cyme.profile.CymeLoadProfile;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
-import com.cannontech.common.config.MasterConfigStringKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.config.UnknownKeyException;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -280,7 +280,7 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService {
     public void startLoadProfileSimulation(final YukonPao substationBusPao) {
         if (isCymeEnabled(substationBusPao.getPaoIdentifier())) {
             // Grab simulation Data. From File for now
-            String path = configurationSource.getString(MasterConfigStringKeysEnum.CYME_SIM_FILE, null );
+            String path = configurationSource.getString(MasterConfigString.CYME_SIM_FILE, null );
             if (path == null) {
                 throw new UnknownKeyException("Missing File path Cparm CYME_SIM_FILE. Could not continue simulation.");
             }
@@ -507,7 +507,7 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService {
      * @return the value of the CYME_ENABLED Cparm in Master.cfg.
      */
     private boolean isCymeCparmEnabled() {
-        boolean enabled = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.CYME_ENABLED,false);
+        boolean enabled = configurationSource.getBoolean(MasterConfigBoolean.CYME_ENABLED,false);
         if (!enabled) {
             logger.debug("CYME_ENABLED CPARM is false.");
         }

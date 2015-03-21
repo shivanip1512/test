@@ -6,6 +6,13 @@ import org.joda.time.LocalDate;
 
 public class RuleModel {
     
+
+    public RuleModel() {}
+    
+    public RuleModel(FilterRuleType ruleType) {
+        this.ruleType = ruleType;
+    }
+    
     /* NOTE: The Residential customer type is not currently a yukonListEntry.  Because of this,
      * we use the RESIDENTIAL_ENTRY_ID constant as a mock id, that allows us to create a yukonListEntry
      * that can be used with the CICustomerType yukonListEntries to create a customer type drop down. */
@@ -60,11 +67,6 @@ public class RuleModel {
     /* Warehouse */
     private int warehouseId;
     
-    public RuleModel() {}
-    public RuleModel(FilterRuleType ruleType) {
-        this.ruleType = ruleType;
-    }
-
     public FilterRuleType getRuleType() {
         return ruleType;
     }

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlParameterSink;
@@ -20,7 +20,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckCparm;
 
 @Controller
-@CheckCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
+@CheckCparm(MasterConfigBoolean.DEVELOPMENT_MODE)
 public class MiscellaneousIsocMethodController {
     
     private static final Logger log = YukonLogManager.getLogger(MiscellaneousIsocMethodController.class);

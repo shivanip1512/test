@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigStringKeysEnum;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.support.service.SupportBundleService;
 import com.cannontech.support.service.SupportBundleWriter;
@@ -208,11 +208,11 @@ public class SupportBundleServiceImpl implements SupportBundleService {
 
     @Override
     public Status uploadViaSftp(File file) {
-        String ftpUser = configurationSource.getString(MasterConfigStringKeysEnum.SUPPORT_BUNDLE_FTP_UPLOAD_USER,
+        String ftpUser = configurationSource.getString(MasterConfigString.SUPPORT_BUNDLE_FTP_UPLOAD_USER,
                                                        DEFAULT_FTP_USER);
-        String ftpPassword = configurationSource.getString(MasterConfigStringKeysEnum.SUPPORT_BUNDLE_FTP_UPLOAD_PASSWORD,
+        String ftpPassword = configurationSource.getString(MasterConfigString.SUPPORT_BUNDLE_FTP_UPLOAD_PASSWORD,
                                                            DEFAULT_FTP_PASSWORD);
-        String ftpHost = configurationSource.getString(MasterConfigStringKeysEnum.SUPPORT_BUNDLE_FTP_UPLOAD_HOST,
+        String ftpHost = configurationSource.getString(MasterConfigString.SUPPORT_BUNDLE_FTP_UPLOAD_HOST,
                                                        DEFAULT_FTP_HOST);
         SftpWriter ftp = new SftpWriter(ftpUser, ftpPassword, ftpHost);
         Status ftpStatus = ftp.sendFile(file);

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.dr.ecobee.message.AuthenticationRequest;
 import com.cannontech.dr.ecobee.message.AuthenticationResponse;
 import com.cannontech.dr.ecobee.message.BaseResponse;
@@ -28,7 +28,7 @@ import com.cannontech.web.security.annotation.IgnoreCsrfCheck;
 
 @Controller
 @RequestMapping("/mockecobee")
-@CheckCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
+@CheckCparm(MasterConfigBoolean.DEVELOPMENT_MODE)
 public class EcobeeMockApiController {
     @Autowired private EcobeeMockApiService ecobeeMockApiService;
     @Autowired private EcobeeDataConfiguration ecobeeDataConfiguration;

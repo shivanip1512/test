@@ -29,7 +29,7 @@ import org.springframework.core.io.Resource;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigStringKeysEnum;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.FormattingTemplateProcessor;
 import com.cannontech.common.util.Range;
@@ -211,7 +211,7 @@ public class RfnPerformanceVerificationEmailTask extends YukonTaskBase {
 
         String formattedDate = dateTimeFormatter.print(now);
 
-        String baseUrl = configurationSource.getString(MasterConfigStringKeysEnum.YUKON_EXTERNAL_URL);
+        String baseUrl = configurationSource.getString(MasterConfigString.YUKON_EXTERNAL_URL);
         if (baseUrl == null){
             baseUrl = "http://localhost:8080";
             log.error("Expected master.cfg entry for YUKON_EXTERNAL_URL. None was found. Defaulting to " + baseUrl);

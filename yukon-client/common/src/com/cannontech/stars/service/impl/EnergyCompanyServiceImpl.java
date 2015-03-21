@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.events.loggers.StarsEventLogService;
 import com.cannontech.common.exception.BadConfigurationException;
@@ -202,7 +202,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Override
     public boolean canEditEnergyCompany(LiteYukonUser user, int ecId) {
         EnergyCompany energyCompany = ecDao.getEnergyCompany(ecId);
-        if (!configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEFAULT_ENERGY_COMPANY_EDIT)
+        if (!configurationSource.getBoolean(MasterConfigBoolean.DEFAULT_ENERGY_COMPANY_EDIT)
                 && energyCompany.isDefaultEc()) {
             return false;
         }
@@ -276,7 +276,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Override
     public void verifyViewPageAccess(LiteYukonUser user, int ecId) {
         EnergyCompany energyCompany = ecDao.getEnergyCompany(ecId);
-        if (!configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEFAULT_ENERGY_COMPANY_EDIT)) {
+        if (!configurationSource.getBoolean(MasterConfigBoolean.DEFAULT_ENERGY_COMPANY_EDIT)) {
             if (energyCompany.isDefaultEc()) {
                 throw new NotAuthorizedException("default energy company is not editable");
             }

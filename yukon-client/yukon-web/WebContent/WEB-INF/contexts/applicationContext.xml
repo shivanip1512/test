@@ -22,8 +22,8 @@
     <bean id="inventoryCollectionFactory" class="com.cannontech.web.common.collection.InventoryCollectionFactoryImpl">
         <property name="collectionProducerList">
             <list>
-                <bean class="com.cannontech.web.stars.dr.operator.inventory.model.collection.InventoryIdListCollectionProducer"/>
-                <bean class="com.cannontech.web.stars.dr.operator.inventory.model.collection.InventoryFileUploadCollectionProducer"/>
+                <bean class="com.cannontech.web.stars.dr.operator.inventory.model.collection.IdListCollectionProducer"/>
+                <bean class="com.cannontech.web.stars.dr.operator.inventory.model.collection.FileUploadCollectionProducer"/>
                 <ref bean="memoryCollectionProducer"/>
             </list>
         </property>
@@ -1451,7 +1451,7 @@
 
     <bean id="memoryCollectionProducer" class="com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCollectionProducer"/>
 
-    <bean id="inventoryOperationsFilterService" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.InventoryOperationsFilterServiceImpl"/>
+    <bean class="com.cannontech.web.stars.dr.operator.inventory.service.impl.InventoryActionsFilterServiceImpl"/>
 
     <bean id="zigbeeDeviceService" class="com.cannontech.web.stars.dr.operator.hardware.service.impl.ZigbeeDeviceServiceImpl"/>
 

@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 
 public class YsmJmxQueryService {
 
@@ -28,7 +28,7 @@ public class YsmJmxQueryService {
     
     public Object get(ObjectName name, String attribute) throws Exception {
         
-        if (config.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE, false)) {
+        if (config.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE, false)) {
             try {
                 
                 MBeanServerConnection mbeanConn = jmxConnector.getMBeanServerConnection();
@@ -56,7 +56,7 @@ public class YsmJmxQueryService {
     
     @PostConstruct
     public void init() {
-        if (config.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE, false)) {
+        if (config.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE, false)) {
             try {
                 serviceUrl = new JMXServiceURL(service);
                 jmxConnector = JMXConnectorFactory.connect(serviceUrl, null);

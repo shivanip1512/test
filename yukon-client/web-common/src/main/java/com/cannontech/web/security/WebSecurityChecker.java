@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestBindingException;
 
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -25,7 +25,7 @@ public class WebSecurityChecker {
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
     @Autowired private EnergyCompanyDao ecDao;
     
-    public void authorizeByCparm(MasterConfigBooleanKeysEnum configKey, boolean expecting) {
+    public void authorizeByCparm(MasterConfigBoolean configKey, boolean expecting) {
     	
         boolean result = configurationSource.getBoolean(configKey);
         if (result != expecting) {

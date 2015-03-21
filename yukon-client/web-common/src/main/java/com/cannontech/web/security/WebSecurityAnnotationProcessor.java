@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
 
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
@@ -42,7 +42,7 @@ public class WebSecurityAnnotationProcessor {
 
     private void check(CheckCparm annotation) {
         if (annotation != null) {
-            MasterConfigBooleanKeysEnum configKey = annotation.value();
+            MasterConfigBoolean configKey = annotation.value();
             boolean expecting = annotation.expecting();
             webSecurityChecker.authorizeByCparm(configKey, expecting);
         }

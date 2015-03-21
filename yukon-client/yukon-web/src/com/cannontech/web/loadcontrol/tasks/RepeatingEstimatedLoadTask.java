@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.events.loggers.EstimatedLoadEventLogService;
 import com.cannontech.common.exception.PointDataException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -78,7 +78,7 @@ public class RepeatingEstimatedLoadTask extends YukonTaskBase {
     @Autowired 
     public RepeatingEstimatedLoadTask(ConfigurationSource configurationSource) {
         this.estimatedLoadEnabled
-            = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.ENABLE_ESTIMATED_LOAD, false);
+            = configurationSource.getBoolean(MasterConfigBoolean.ENABLE_ESTIMATED_LOAD, false);
     }
 
     @Override

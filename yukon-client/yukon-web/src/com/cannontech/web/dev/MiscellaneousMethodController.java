@@ -7,7 +7,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.core.dao.EnergyCompanyNotFoundException;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -15,7 +15,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckCparm;
 
 @Controller
-@CheckCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
+@CheckCparm(MasterConfigBoolean.DEVELOPMENT_MODE)
 public class MiscellaneousMethodController {
 	private final Logger log = YukonLogManager.getLogger(MiscellaneousMethodController.class);
 	

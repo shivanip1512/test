@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
@@ -24,13 +23,14 @@ import com.cannontech.web.stars.dr.operator.inventory.service.impl.DeleteInvento
 @CheckRoleProperty(YukonRoleProperty.SN_DELETE_RANGE)
 public class DeleteInventoryController {
     
-    @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;
+    @Autowired private InventoryCollectionFactoryImpl collectionFactory;
     @Autowired private DeleteInventoryHelper helper;
     private RecentResultsCache<AbstractInventoryTask> resultsCache;
 
     @RequestMapping("view")
-    public String view(HttpServletRequest request, ModelMap model, String taskId) throws ServletRequestBindingException {
-        inventoryCollectionFactory.addCollectionToModelMap(request, model);
+    public String view(HttpServletRequest req, ModelMap model, String taskId) {
+        
+        collectionFactory.addCollectionToModelMap(req, model);
         
         if (taskId != null) {
             DeleteInventoryTask task = (DeleteInventoryTask) resultsCache.getResult(taskId);
@@ -39,21 +39,23 @@ public class DeleteInventoryController {
         
         return "operator/inventory/deleteInventory.jsp";
     }
-
+    
     @RequestMapping(value="delete", params="start")
-    public String delete(HttpServletRequest request, YukonUserContext context, ModelMap model) throws ServletRequestBindingException {
-        InventoryCollection collection = inventoryCollectionFactory.createCollection(request);
+    public String delete(HttpServletRequest req, YukonUserContext context, ModelMap model) {
+        
+        InventoryCollection collection = collectionFactory.createCollection(req);
         DeleteInventoryTask task = helper.new DeleteInventoryTask(collection, context);
         String taskId = helper.startTask(task);
         
         model.addAttribute("taskId", taskId);
-        inventoryCollectionFactory.addCollectionToModelMap(request, model);
+        collectionFactory.addCollectionToModelMap(req, model);
+        
         return "redirect:view";
     }
     
     @RequestMapping(value="delete", params="cancel")
-    public String cancel(HttpServletRequest request, YukonUserContext context, ModelMap model) throws ServletRequestBindingException {
-        inventoryCollectionFactory.addCollectionToModelMap(request, model);
+    public String cancel(HttpServletRequest req, ModelMap model) {
+        collectionFactory.addCollectionToModelMap(req, model);
         return "redirect:/stars/operator/inventory/inventoryActions";
     }
     

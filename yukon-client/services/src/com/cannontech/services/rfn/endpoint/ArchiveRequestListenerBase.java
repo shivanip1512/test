@@ -16,7 +16,7 @@ import com.cannontech.amr.rfn.model.CalculationData;
 import com.cannontech.amr.rfn.service.RfnChannelDataConverter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
 import com.cannontech.common.rfn.Acknowledgeable;
 import com.cannontech.common.rfn.endpoint.IgnoredTemplateException;
@@ -110,7 +110,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
                 try {
                     rfnDevice = processCreation(request, rfnIdentifier);
                 } catch (RuntimeException e) {
-                    boolean isDev = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE);
+                    boolean isDev = configurationSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE);
                     boolean isAcknowledgeable = e.getCause() instanceof Acknowledgeable;
                     if (isDev || isAcknowledgeable) {
                         log.info("Exception:" + e.getMessage());

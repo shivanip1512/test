@@ -48,9 +48,9 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.service.ChangeDeviceTypeService;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.MasterConfigHelper;
-import com.cannontech.common.config.MasterConfigStringKeysEnum;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
@@ -1422,7 +1422,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         
         if (StringUtils.isBlank(manufacturer) || StringUtils.isBlank(model)) {
             // if either is empty, attempt to parse from the templateMeter.paoName
-            String templatePrefix = configurationSource.getString(MasterConfigStringKeysEnum.RFN_METER_TEMPLATE_PREFIX, "*RfnTemplate_");
+            String templatePrefix = configurationSource.getString(MasterConfigString.RFN_METER_TEMPLATE_PREFIX, "*RfnTemplate_");
             
             // Format is *RfnTemplate_manufacturer_model
             String nameToStripRfnIdentifierFrom = templateMeter.getName();
@@ -2120,9 +2120,9 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     @Override
     public boolean updateAltGroup(ServiceLocation mspServiceLocation, String meterNumber, YukonDevice yukonDevice,
             String mspMethod, MultispeakVendor mspVendor) {
-        boolean updateAltGroup = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.MSP_ENABLE_ALTGROUP_EXTENSION);
+        boolean updateAltGroup = configurationSource.getBoolean(MasterConfigBoolean.MSP_ENABLE_ALTGROUP_EXTENSION);
         if (updateAltGroup) {
-            String extensionName = configurationSource.getString(MasterConfigStringKeysEnum.MSP_ALTGROUP_EXTENSION, "altGroup");
+            String extensionName = configurationSource.getString(MasterConfigString.MSP_ALTGROUP_EXTENSION, "altGroup");
             String altGroup = getExtensionValue(mspServiceLocation.getExtensionsList(), extensionName, null);
             if (!StringUtils.isBlank(altGroup)) {
 
@@ -2335,9 +2335,9 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     private String getSubstationNameFromMspObjects(Meter mspMeter, ServiceLocation mspServiceLocation,
             MultispeakVendor mspVendor) {
 
-        boolean useExtension = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.MSP_ENABLE_SUBSTATIONNAME_EXTENSION);
+        boolean useExtension = configurationSource.getBoolean(MasterConfigBoolean.MSP_ENABLE_SUBSTATIONNAME_EXTENSION);
         if (useExtension) { // custom for DEMCO/SEDC integration
-            String extensionName = configurationSource.getString(MasterConfigStringKeysEnum.MSP_SUBSTATIONNAME_EXTENSION, "readPath");
+            String extensionName = configurationSource.getString(MasterConfigString.MSP_SUBSTATIONNAME_EXTENSION, "readPath");
             String extensionValue;
 
             if (mspMeter != null) {
@@ -2380,7 +2380,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      */
     private List<YukonMeter> searchForMetersByPaoName(String filterValue) {
 
-        boolean exactSearch = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.MSP_EXACT_SEARCH_PAONAME);
+        boolean exactSearch = configurationSource.getBoolean(MasterConfigBoolean.MSP_EXACT_SEARCH_PAONAME);
         List<YukonMeter> meters = Lists.newArrayList();
         if (exactSearch) {
             YukonMeter meter = meterDao.findForPaoName(filterValue);

@@ -32,7 +32,7 @@ import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.rfn.message.RfnArchiveStartupNotification;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -55,7 +55,7 @@ import com.google.common.collect.Lists;
 
 @Controller
 @RequestMapping("/rfn/*")
-@CheckCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
+@CheckCparm(MasterConfigBoolean.DEVELOPMENT_MODE)
 public class NmIntegrationController {
 
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;

@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
@@ -32,20 +31,21 @@ import com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeWarehou
 @CheckRoleProperty(YukonRoleProperty.SN_UPDATE_RANGE)
 public class ChangeWarehouseController {
 
-    @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;
+    @Autowired private InventoryCollectionFactoryImpl collectionFactory;
     @Autowired private ChangeWarehouseHelper helper;
     @Autowired private EnergyCompanyDao ecDao;
-    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private StarsDatabaseCache starsDbCache;
     private RecentResultsCache<AbstractInventoryTask> resultsCache;
 
     @RequestMapping("view")
-    public String view(HttpServletRequest request, ModelMap model, String taskId, LiteYukonUser user) throws ServletRequestBindingException {
+    public String view(HttpServletRequest req, ModelMap model, String taskId, LiteYukonUser user) {
+        
         YukonEnergyCompany ec = ecDao.getEnergyCompanyByOperator(user);
-        LiteStarsEnergyCompany lec = starsDatabaseCache.getEnergyCompany(ec);
+        LiteStarsEnergyCompany lec = starsDbCache.getEnergyCompany(ec);
         
         List<Warehouse> warehouses = lec.getWarehouses();
         model.addAttribute("warehouses", warehouses);
-        inventoryCollectionFactory.addCollectionToModelMap(request, model);
+        collectionFactory.addCollectionToModelMap(req, model);
         
         if (taskId != null) {
             ChangeWarehouseTask task = (ChangeWarehouseTask) resultsCache.getResult(taskId);
@@ -54,21 +54,23 @@ public class ChangeWarehouseController {
         
         return "operator/inventory/changeWarehouse.jsp";
     }
-
+    
     @RequestMapping(value="do", params="start")
-    public String changeType(HttpServletRequest request, YukonUserContext context, ModelMap model, int warehouseId) throws ServletRequestBindingException {
-        InventoryCollection collection = inventoryCollectionFactory.createCollection(request);
+    public String changeType(HttpServletRequest req, YukonUserContext context, ModelMap model, int warehouseId) {
+        
+        InventoryCollection collection = collectionFactory.createCollection(req);
         ChangeWarehouseTask task = helper.new ChangeWarehouseTask(collection, context, warehouseId);
         String taskId = helper.startTask(task);
         
         model.addAttribute("taskId", taskId);
-        inventoryCollectionFactory.addCollectionToModelMap(request, model);
+        collectionFactory.addCollectionToModelMap(req, model);
+        
         return "redirect:view";
     }
     
     @RequestMapping(value="do", params="cancel")
-    public String cancel(HttpServletRequest request, YukonUserContext context, ModelMap model) throws ServletRequestBindingException {
-        inventoryCollectionFactory.addCollectionToModelMap(request, model);
+    public String cancel(HttpServletRequest req, ModelMap model) {
+        collectionFactory.addCollectionToModelMap(req, model);
         return "redirect:/stars/operator/inventory/inventoryActions";
     }
     

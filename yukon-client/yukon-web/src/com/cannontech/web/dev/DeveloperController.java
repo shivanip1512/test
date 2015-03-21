@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
@@ -75,7 +75,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
 @Controller
-@CheckCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
+@CheckCparm(MasterConfigBoolean.DEVELOPMENT_MODE)
 public class DeveloperController {
     private final Logger log = YukonLogManager.getLogger(DeveloperController.class);
 
@@ -98,7 +98,7 @@ public class DeveloperController {
     public DeveloperController(ConfigurationSource configurationSource) {
         Map<String, Integer> mutableDatabaseFields = new TreeMap<>();
         Map<String, String> mutableCategoryFields = new TreeMap<>();
-        if (configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)) {
+        if (configurationSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE)) {
             try {
                 DBChangeMsg obj = new DBChangeMsg();
                 Class<?> objClass = obj.getClass();

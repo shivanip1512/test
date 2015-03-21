@@ -1,6 +1,5 @@
 package com.cannontech.web.stars.dr.operator.inventory.model.collection;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -38,12 +37,12 @@ import com.cannontech.web.common.collection.CollectionCreationException;
 import com.cannontech.web.common.collection.CollectionProducer;
 import com.google.common.collect.Maps;
 
-public class InventoryFileUploadCollectionProducer implements CollectionProducer<InventoryCollectionType, InventoryCollection> {
+public class FileUploadCollectionProducer implements CollectionProducer<InventoryCollectionType, InventoryCollection> {
     
-    private InventoryDao inventoryDao;
-    private MemoryCollectionProducer memoryCollectionProducer;
+    @Autowired private InventoryDao inventoryDao;
+    @Autowired private MemoryCollectionProducer collectionProducer;
     
-    private Logger logger = YukonLogManager.getLogger(InventoryFileUploadCollectionProducer.class);
+    private Logger logger = YukonLogManager.getLogger(FileUploadCollectionProducer.class);
     
     private static enum ColumnHeader {
         SERIAL_NUMBER,
@@ -57,43 +56,41 @@ public class InventoryFileUploadCollectionProducer implements CollectionProducer
     }
     
     @Override
-    public InventoryCollection createCollection(HttpServletRequest request) throws ServletRequestBindingException {
-
+    public InventoryCollection createCollection(HttpServletRequest req) throws CollectionCreationException {
+        
         try {
-            boolean isMultipart = ServletFileUpload.isMultipartContent(request);
-
+            
+            boolean isMultipart = ServletFileUpload.isMultipartContent(req);
+            
             if (!isMultipart) {
-                throw new RuntimeException("Not multipart");
+                throw new CollectionCreationException("Not multipart");
             }
-            MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
-
+            MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) req;
+            
             MultipartFile dataFile = mRequest.getFile(getSupportedType().getParameterName("dataFile"));
             if (dataFile == null || StringUtils.isBlank(dataFile.getOriginalFilename())) {
                 throw new CollectionCreationException("noFile");
             }
-            return handleInitialRequest(request, dataFile);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            String ecIdParam = getSupportedType().getParameterName("energyCompanyId");
+            int ecId = ServletRequestUtils.getRequiredIntParameter(req, ecIdParam);
+            
+            InputStream inputStream = dataFile.getInputStream();
+            
+            CloseableIterator<InventoryIdentifier> iter = getInventoryIterator(inputStream, ecId);
+            InventoryCollection collection = collectionProducer.createCollection(iter, dataFile.getOriginalFilename());
+            CtiUtilities.close(iter);
+            
+            return collection;
+            
+        } catch (IOException | ServletRequestBindingException e) {
+            throw new CollectionCreationException("Unable to create collection.", e);
         }
-
+        
     }
-
-    private InventoryCollection handleInitialRequest(HttpServletRequest request, MultipartFile dataFile) throws ServletRequestBindingException, IOException, FileNotFoundException {
-        int energyCompanyId = ServletRequestUtils.getRequiredIntParameter(request, getSupportedType().getParameterName("energyCompanyId"));
-        InventoryCollection collection;
+    
+    private CloseableIterator<InventoryIdentifier> getInventoryIterator(InputStream inputStream, final int ecId) 
+    throws IOException {
         
-        InputStream inputStream = dataFile.getInputStream();
-        
-        CloseableIterator<InventoryIdentifier> inventoryIterator = getInventoryIterator(inputStream, energyCompanyId);
-        
-        collection = memoryCollectionProducer.createCollection(inventoryIterator, dataFile.getOriginalFilename());
-        
-        CtiUtilities.close(inventoryIterator);
-
-        return collection;
-    }
-
-    private CloseableIterator<InventoryIdentifier> getInventoryIterator(InputStream inputStream, final int energyCompanyId) throws IOException {
         /* Create an iterator to iterate through the file line by line */
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
         CSVReader csvReader = new CSVReader(inputStreamReader);
@@ -104,7 +101,7 @@ public class InventoryFileUploadCollectionProducer implements CollectionProducer
         
         final Map<ColumnHeader, Integer> columnHeaderIndexMap = Maps.newEnumMap(ColumnHeader.class);
         
-        for(int i = 0; i < columnHeaders.length; i++) {
+        for (int i = 0; i < columnHeaders.length; i++) {
             try {
                 ColumnHeader columnHeader = ColumnHeader.valueOf(columnHeaders[i]);
                 columnHeaderIndexMap.put(columnHeader, i);
@@ -113,7 +110,7 @@ public class InventoryFileUploadCollectionProducer implements CollectionProducer
             }
         }
         
-        ObjectMapper<String[], InventoryIdentifier> yukonInventoryMapper = new ObjectMapper<String[], InventoryIdentifier>() {
+        ObjectMapper<String[], InventoryIdentifier> inventoryMapper = new ObjectMapper<String[], InventoryIdentifier>() {
             
             @Override
             public InventoryIdentifier map(String[] from) throws ObjectMappingException {
@@ -123,7 +120,7 @@ public class InventoryFileUploadCollectionProducer implements CollectionProducer
                 String accountNumber = from[columnHeaderIndexMap.get(ColumnHeader.ACCOUNT_NUMBER)];
                 
                 try {
-                    YukonInventory yukonInventory = inventoryDao.getYukonInventory(serialNumber, energyCompanyId);
+                    YukonInventory yukonInventory = inventoryDao.getYukonInventory(serialNumber, ecId);
                     
                     boolean accountNumberOK = inventoryDao.checkAccountNumber(yukonInventory.getInventoryIdentifier().getInventoryId(), accountNumber);
                     boolean deviceTypeOK = inventoryDao.checkdeviceType(yukonInventory.getInventoryIdentifier().getInventoryId(), deviceType);
@@ -141,18 +138,9 @@ public class InventoryFileUploadCollectionProducer implements CollectionProducer
             }
         };
             
-        Iterator<InventoryIdentifier> inventoryIterator = new MappingIterator<String[], InventoryIdentifier>(iterator, yukonInventoryMapper);
+        Iterator<InventoryIdentifier> inventoryIterator = 
+                new MappingIterator<String[], InventoryIdentifier>(iterator, inventoryMapper);
         return CloseableIteratorWrapper.getCloseableIterator(inventoryIterator);
-    }
-
-    @Autowired
-    public void setInventoryDao(InventoryDao inventoryDao) {
-        this.inventoryDao = inventoryDao;
-    }
-    
-    @Autowired
-    public void setMemoryCollectionProducer(MemoryCollectionProducer memoryCollectionProducer) {
-        this.memoryCollectionProducer = memoryCollectionProducer;
     }
     
 }

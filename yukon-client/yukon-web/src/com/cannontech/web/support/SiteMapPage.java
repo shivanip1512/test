@@ -1,6 +1,6 @@
 package com.cannontech.web.support;
 
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.userpage.model.SiteMapCategory;
 import com.cannontech.common.util.MatchStyle;
@@ -55,7 +55,7 @@ public enum SiteMapPage implements DisplayableEnum {
     ACTIVE_LOAD_GROUPS(SiteMapCategory.DR, "yukon.web.modules.dr.home.activeLoadGroupsQuickSearch", "/dr/loadGroup/list?state=active",
             MatchStyle.all, YukonRole.DEMAND_RESPONSE),
     ESTIMATED_LOAD(SiteMapCategory.DR, "yukon.web.modules.dr.estimatedLoad.pageName", "/dr/estimatedLoad/home",
-            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.ENABLE_ESTIMATED_LOAD, YukonRole.DEMAND_RESPONSE),
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBoolean.ENABLE_ESTIMATED_LOAD, YukonRole.DEMAND_RESPONSE),
     AREAS(SiteMapCategory.VV, "yukon.web.modules.capcontrol.areas.pageName", "/capcontrol/tier/areas",
             MatchStyle.all, YukonRoleProperty.CAP_CONTROL_ACCESS),
     IVVC_SCHEDULES(SiteMapCategory.VV, "yukon.web.modules.capcontrol.schedules.pageName", "/capcontrol/schedules",
@@ -89,9 +89,9 @@ public enum SiteMapPage implements DisplayableEnum {
     STARS_IMPORT(SiteMapCategory.ASSETS, "yukon.web.menu.import", "/stars/operator/account/accountImport",
             MatchStyle.all, YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT),
     ENROLLMENT_MIGRATION(SiteMapCategory.ASSETS, "yukon.web.migrateEnrollmentInformation", "/operator/Consumer/MigrateEnrollment.jsp",
-            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.ENABLE_MIGRATE_ENROLLMENT),
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBoolean.ENABLE_MIGRATE_ENROLLMENT),
     ENABLE_GENERIC_UPLOAD(SiteMapCategory.ASSETS, "yukon.web.genericUpload", "/operator/Consumer/GenericUpload.jsp",
-            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.ENABLE_GENERIC_UPLOAD),
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBoolean.ENABLE_GENERIC_UPLOAD),
     STARS_REPORTS(SiteMapCategory.ASSETS, "yukon.web.menu.config.reporting.reports.stars", "/analysis/Reports.jsp?groupType=STARS",
             MatchStyle.all, YukonRoleProperty.STARS_REPORTS_GROUP),
     SERVICE_ORDER_LIST(SiteMapCategory.ASSETS, "yukon.web.serviceOrderList", "/operator/WorkOrder/WOFilter.jsp",
@@ -130,7 +130,7 @@ public enum SiteMapPage implements DisplayableEnum {
     CCURT_REPORTS(SiteMapCategory.ADMIN, "yukon.web.menu.config.reporting.reports.cni", "/analysis/Reports.jsp?groupType=CCURT",
             MatchStyle.all, YukonRoleProperty.CI_CURTAILMENT_REPORTS_GROUP),
     SETTLEMENT_REPORTS(SiteMapCategory.ADMIN, "yukon.web.menu.config.reporting.reports.settlement", "/analysis/Reports.jsp?groupType=SETTLEMENT",
-            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.ENABLE_SETTLEMENTS, YukonRoleProperty.ADMIN_REPORTS_GROUP),
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBoolean.ENABLE_SETTLEMENTS, YukonRoleProperty.ADMIN_REPORTS_GROUP),
     THEMES(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.config.themes.pageName", "/adminSetup/config/themes",
             MatchStyle.all, YukonRoleProperty.ADMIN_SUPER_USER),
     SURVEYS(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.survey.list.pageName", "/stars/survey/list",
@@ -200,27 +200,27 @@ public enum SiteMapPage implements DisplayableEnum {
             MatchStyle.all, YukonRoleProperty.ADMIN_DATABASE_MIGRATION),
 
     DEVELOPMENT(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.home.pageName", "/dev",
-            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE),
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBoolean.DEVELOPMENT_MODE),
     UI_DEMO(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.styleguide.pageName", "/dev/styleguide",
-            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE),
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBoolean.DEVELOPMENT_MODE),
     POINT_INJECTION(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.pointInjection.pageName", "/dev/pointInjection/main",
-            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE),
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBoolean.DEVELOPMENT_MODE),
     BULK_POINT_INJECTION(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.bulkPointInjection.pageName", "/dev/bulkPointInjection/home",
-            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE),
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBoolean.DEVELOPMENT_MODE),
     SETUP_DATABASE(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.setupDatabase.pageName", "/dev/setupDatabase/main",
-            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE),
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBoolean.DEVELOPMENT_MODE),
     MISC_METHODS(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.miscellaneousMethod.pageName", "/dev/miscellaneousMethod/main",
-            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE),
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBoolean.DEVELOPMENT_MODE),
     RFN_TEST(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.rfnTest.pageName", "/dev/rfn/viewBase",
-            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE),
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBoolean.DEVELOPMENT_MODE),
     ECOBEE_TEST(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.ecobee.mockTest.pageName", "/dev/ecobee/viewBase",
-                    MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE),
+                    MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBoolean.DEVELOPMENT_MODE),
     EIM_TEST(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.webServices.eimTest.pageName", "/dev/eimTest/main",
-            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE, MasterConfigBooleanKeysEnum.ENABLE_WEB_DEBUG_PAGES),
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBoolean.DEVELOPMENT_MODE, MasterConfigBoolean.ENABLE_WEB_DEBUG_PAGES),
     LOAD_CONTROL_TEST(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.webServices.loadControl.pageName", "/debug/loadControlService/inputs/home",
-            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE, MasterConfigBooleanKeysEnum.ENABLE_WEB_DEBUG_PAGES),
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBoolean.DEVELOPMENT_MODE, MasterConfigBoolean.ENABLE_WEB_DEBUG_PAGES),
     ACCOUNT_TEST(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.webServices.account.pageName", "/debug/accountService/inputs/home",
-            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE, MasterConfigBooleanKeysEnum.ENABLE_WEB_DEBUG_PAGES),
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBoolean.DEVELOPMENT_MODE, MasterConfigBoolean.ENABLE_WEB_DEBUG_PAGES),
     ;
 
     public enum OtherPermission { 

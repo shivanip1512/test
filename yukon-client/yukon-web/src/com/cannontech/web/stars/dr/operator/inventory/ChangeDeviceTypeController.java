@@ -9,13 +9,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListEnum;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.util.RecentResultsCache;
@@ -42,23 +42,24 @@ import com.google.common.collect.Lists;
 @CheckRoleProperty(YukonRoleProperty.SN_UPDATE_RANGE)
 public class ChangeDeviceTypeController {
 
-    @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;
+    @Autowired private InventoryCollectionFactoryImpl collectionFactory;
     @Autowired private ChangeTypeHelper helper;
     @Autowired private EnergyCompanyDao ecDao;
-    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private StarsDatabaseCache starsDbCache;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
-    @Autowired private MemoryCollectionProducer memoryCollectionProducer;
+    @Autowired private MemoryCollectionProducer collectionProducer;
     @Autowired private YukonListDao yukonListDao;
     @Autowired private SelectionListService selectionListService;
    
     private RecentResultsCache<AbstractInventoryTask> resultsCache;
 
     @RequestMapping("view")
-    public String view(HttpServletRequest request, ModelMap model, String taskId, LiteYukonUser user) throws ServletRequestBindingException {
+    public String view(HttpServletRequest request, ModelMap model, String taskId, LiteYukonUser user) {
+        
         EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
         
-        YukonSelectionList list = selectionListService.getSelectionList(energyCompany,
-                                                YukonSelectionListEnum.DEVICE_TYPE.getListName());
+        String typesListName = YukonSelectionListEnum.DEVICE_TYPE.getListName();
+        YukonSelectionList list = selectionListService.getSelectionList(energyCompany, typesListName);
         List<YukonListEntry> deviceTypes = list.getYukonListEntries();
         List<YukonListEntry> validEntries = Lists.newArrayList();
         
@@ -70,7 +71,7 @@ public class ChangeDeviceTypeController {
         }
         
         model.addAttribute("validEntries", validEntries);
-        inventoryCollectionFactory.addCollectionToModelMap(request, model);
+        collectionFactory.addCollectionToModelMap(request, model);
         
         if (taskId != null) {
             ChangeTypeTask task = (ChangeTypeTask) resultsCache.getResult(taskId);
@@ -79,41 +80,52 @@ public class ChangeDeviceTypeController {
         
         return "operator/inventory/changeType.jsp";
     }
-
+    
     @RequestMapping(value="do", params="start")
-    public String changeType(HttpServletRequest request, YukonUserContext context, ModelMap model, Integer entry) throws ServletRequestBindingException {
-        InventoryCollection collection = inventoryCollectionFactory.createCollection(request);      
+    public String changeType(HttpServletRequest request, YukonUserContext context, ModelMap model, Integer entry) {
+        
+        InventoryCollection collection = collectionFactory.createCollection(request);
         YukonListEntry typeEntry = yukonListDao.getYukonListEntry(entry);
         ChangeTypeTask task = helper.new ChangeTypeTask(collection, context, typeEntry);
         String taskId = helper.startTask(task);
         
         model.addAttribute("taskId", taskId);
-        inventoryCollectionFactory.addCollectionToModelMap(request, model);
+        collectionFactory.addCollectionToModelMap(request, model);
+        
         return "redirect:view";
     }
     
     @RequestMapping("newOperation")
     public String newOperation(ModelMap model, YukonUserContext context, String taskId, String type) {
+        
         Status status = Status.valueOf(type);
         ChangeTypeTask task = (ChangeTypeTask) resultsCache.getResult(taskId);
+        
         if (status == Status.SUCCESS) {
-            addCollectionToModel(model, taskId, task.getSuccessful().iterator(), "successCollectionDescription", context);
+            Iterator<InventoryIdentifier> successful = task.getSuccessful().iterator();
+            addCollectionToModel(model, successful, "successCollectionDescription", context);
         } else {
-            addCollectionToModel(model, taskId, task.getUnsupported().iterator(), "unsupportedCollectionDescription", context);
+            Iterator<InventoryIdentifier> unsupported = task.getUnsupported().iterator();
+            addCollectionToModel(model, unsupported, "unsupportedCollectionDescription", context);
         }
+        
         return "redirect:../inventoryActions";
     }
     
-    private void addCollectionToModel(ModelMap model, String taskId, Iterator<InventoryIdentifier> iterator, String key, YukonUserContext context) {
-        String descriptionHint = resolver.getMessageSourceAccessor(context).getMessage("yukon.web.modules.operator.changeType." + key);
-        InventoryCollection temporaryCollection = memoryCollectionProducer.createCollection(iterator, descriptionHint);
-        model.addAttribute("inventoryCollection", temporaryCollection);
-        model.addAllAttributes(temporaryCollection.getCollectionParameters());
+    private void addCollectionToModel(ModelMap model, Iterator<InventoryIdentifier> iterator, 
+            String key, YukonUserContext context) {
+        
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
+        String descriptionHint = accessor.getMessage("yukon.web.modules.operator.changeType." + key);
+        InventoryCollection collection = collectionProducer.createCollection(iterator, descriptionHint);
+        
+        model.addAttribute("inventoryCollection", collection);
+        model.addAllAttributes(collection.getCollectionParameters());
     }
     
     @RequestMapping(value="do", params="cancel")
-    public String cancel(HttpServletRequest request, YukonUserContext context, ModelMap model) throws ServletRequestBindingException {
-        inventoryCollectionFactory.addCollectionToModelMap(request, model);
+    public String cancel(HttpServletRequest request, ModelMap model) {
+        collectionFactory.addCollectionToModelMap(request, model);
         return "redirect:/stars/operator/inventory/inventoryActions";
     }
     

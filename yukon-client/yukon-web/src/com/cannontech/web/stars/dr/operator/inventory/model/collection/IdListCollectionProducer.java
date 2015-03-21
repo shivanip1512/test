@@ -19,43 +19,50 @@ import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.common.collection.CollectionCreationException;
 import com.cannontech.web.common.collection.CollectionProducer;
 
-public class InventoryIdListCollectionProducer  implements CollectionProducer<InventoryCollectionType, InventoryCollection>{
-
-    private InventoryDao inventoryDao;
+public class IdListCollectionProducer implements CollectionProducer<InventoryCollectionType, InventoryCollection> {
+    
+    @Autowired private InventoryDao inventoryDao;
     
     public InventoryCollectionType getSupportedType() {
         return InventoryCollectionType.idList;
     }
-
-    public InventoryCollection createCollection(HttpServletRequest request) throws ServletRequestBindingException {
-
-        final String ids = ServletRequestUtils.getStringParameter(request, getSupportedType().getParameterName("ids"));
+    
+    public InventoryCollection createCollection(HttpServletRequest req) throws CollectionCreationException {
+        
+        String param = getSupportedType().getParameterName("ids");
+        final String ids;
+        try {
+             ids = ServletRequestUtils.getStringParameter(req, param);
+        } catch (ServletRequestBindingException e) {
+            throw new CollectionCreationException("Missing request param: " + param, e);
+        }
         
         final List<Integer> idList = ServletUtil.getIntegerListFromString(ids);
         
         return new ListBasedInventoryCollection() {
-
+            
             public Map<String, String> getCollectionParameters() {
-
-                Map<String, String> paramMap = new HashMap<String, String>();
-
-                paramMap.put("collectionType", getSupportedType().name());
-                paramMap.put(getSupportedType().getParameterName("ids"), ids);
-
-                return paramMap;
+                
+                Map<String, String> params = new HashMap<>();
+                
+                params.put("collectionType", getSupportedType().name());
+                params.put(param, ids);
+                
+                return params;
             }
-
+            
             public List<InventoryIdentifier> getList() {
-
+                
                 List<InventoryIdentifier> inventoryList = new ArrayList<InventoryIdentifier>();
-
+                
                 for (int id : idList) {
                     InventoryIdentifier inventory = inventoryDao.getYukonInventory(id);
                     inventoryList.add(inventory);
                 }
-
+                
                 return inventoryList;
             }
             
@@ -63,18 +70,13 @@ public class InventoryIdListCollectionProducer  implements CollectionProducer<In
             public int getCount() {
                 return idList.size();
             }
-
+            
             @Override
             public MessageSourceResolvable getDescription() {
                 return new YukonMessageSourceResolvable("yukon.common.collection.inventory.idList");
             }
-
+            
         };
-    }
-    
-    @Autowired
-    public void setInventoryDao(InventoryDao inventoryDao) {
-        this.inventoryDao = inventoryDao;
     }
     
 }

@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.web.util.TagUtils;
 
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 
 @Configurable(value="getBooleanConfigParamTagPrototype", autowire=Autowire.BY_NAME)
 public class GetBooleanConfigParamTag extends YukonTagSupport {
@@ -27,7 +27,7 @@ public class GetBooleanConfigParamTag extends YukonTagSupport {
             throw new IllegalArgumentException("value is required");
         }
         
-        MasterConfigBooleanKeysEnum type = MasterConfigBooleanKeysEnum.valueOf(param);
+        MasterConfigBoolean type = MasterConfigBoolean.valueOf(param);
         boolean result = configSource.getBoolean(type);
         
         if (StringUtils.isBlank(var)) {

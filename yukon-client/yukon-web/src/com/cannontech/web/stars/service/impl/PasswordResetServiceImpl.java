@@ -15,7 +15,7 @@ import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigStringKeysEnum;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.core.dao.ContactDao;
@@ -111,7 +111,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         String passwordResetKey = getPasswordKey(user);
 
         String defaultYukonExternalUrl = ServletUtil.getDefaultYukonExternalUrl(request);
-        String baseurl = configurationSource.getString(MasterConfigStringKeysEnum.YUKON_EXTERNAL_URL,
+        String baseurl = configurationSource.getString(MasterConfigString.YUKON_EXTERNAL_URL,
             defaultYukonExternalUrl.toString()) + request.getContextPath() + "/login/change-password?k=" + passwordResetKey;
 
         return baseurl;

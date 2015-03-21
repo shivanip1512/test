@@ -18,7 +18,7 @@ import com.cannontech.clientutils.ClientApplicationRememberMe;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigHelper;
-import com.cannontech.common.config.MasterConfigStringKeysEnum;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.config.RemoteLoginSession;
 import com.cannontech.common.exception.AuthenticationThrottleException;
 import com.cannontech.common.exception.BadAuthenticationException;
@@ -214,7 +214,7 @@ public class ClientSession {
                     ConfigurationSource configuration = MasterConfigHelper.getConfiguration();
                     // test the config by getting something that should always exist
                     // (if we don't do this here, it will fail deep inside the context startup)
-                    configuration.getRequiredString(MasterConfigStringKeysEnum.DB_USERNAME);
+                    configuration.getRequiredString(MasterConfigString.DB_USERNAME);
 
                     PoolManager.setConfigurationSource(configuration);
                     // force load of the application context

@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
 
@@ -32,12 +32,12 @@ public class SpringRedirectServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        boolean devMode = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE, false);
+        boolean devMode = configurationSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE, false);
         if (devMode) {
             throw new UnavailableException("A request with url of "
                     + SPRING_LEADING_URL
                     + "/* has been accessed. Since you are a developer ("
-                    + MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE.name()
+                    + MasterConfigBoolean.DEVELOPMENT_MODE.name()
                     + " is TRUE), please remedy this by removing "
                     + SPRING_LEADING_URL + " from the accessed link.");
         }

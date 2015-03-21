@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
@@ -32,20 +31,21 @@ import com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeService
 @CheckRoleProperty(YukonRoleProperty.SN_UPDATE_RANGE)
 public class ChangeServiceCompanyController {
 
-    @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;
+    @Autowired private InventoryCollectionFactoryImpl collectionFactory;
     @Autowired private ChangeServiceCompanyHelper helper;
     @Autowired private EnergyCompanyDao ecDao;
-    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private StarsDatabaseCache starsDbCache;
     private RecentResultsCache<AbstractInventoryTask> resultsCache;
 
     @RequestMapping("view")
-    public String view(HttpServletRequest request, ModelMap model, String taskId, LiteYukonUser user) throws ServletRequestBindingException {
+    public String view(HttpServletRequest req, ModelMap model, String taskId, LiteYukonUser user) {
+        
         YukonEnergyCompany ec = ecDao.getEnergyCompanyByOperator(user);
-        LiteStarsEnergyCompany lec = starsDatabaseCache.getEnergyCompany(ec);
+        LiteStarsEnergyCompany lec = starsDbCache.getEnergyCompany(ec);
         
         List<LiteServiceCompany> sc = lec.getServiceCompanies();
         model.addAttribute("serviceCompanies", sc);
-        inventoryCollectionFactory.addCollectionToModelMap(request, model);
+        collectionFactory.addCollectionToModelMap(req, model);
         
         if (taskId != null) {
             ChangeServiceCompanyTask task = (ChangeServiceCompanyTask) resultsCache.getResult(taskId);
@@ -54,21 +54,23 @@ public class ChangeServiceCompanyController {
         
         return "operator/inventory/changeServiceCompany.jsp";
     }
-
+    
     @RequestMapping(value="do", params="start")
-    public String changeType(HttpServletRequest request, YukonUserContext context, ModelMap model, int serviceCompanyId) throws ServletRequestBindingException {
-        InventoryCollection collection = inventoryCollectionFactory.createCollection(request);
+    public String changeType(HttpServletRequest request, YukonUserContext context, ModelMap model, int serviceCompanyId) {
+        
+        InventoryCollection collection = collectionFactory.createCollection(request);
         ChangeServiceCompanyTask task = helper.new ChangeServiceCompanyTask(collection, context, serviceCompanyId);
         String taskId = helper.startTask(task);
         
         model.addAttribute("taskId", taskId);
-        inventoryCollectionFactory.addCollectionToModelMap(request, model);
+        collectionFactory.addCollectionToModelMap(request, model);
+        
         return "redirect:view";
     }
     
     @RequestMapping(value="do", params="cancel")
-    public String cancel(HttpServletRequest request, YukonUserContext context, ModelMap model) throws ServletRequestBindingException {
-        inventoryCollectionFactory.addCollectionToModelMap(request, model);
+    public String cancel(HttpServletRequest request, ModelMap model) {
+        collectionFactory.addCollectionToModelMap(request, model);
         return "redirect:/stars/operator/inventory/inventoryActions";
     }
     

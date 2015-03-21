@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.user.checker.AggregateAndUserChecker;
@@ -327,7 +327,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
 
     // Refresh the modules for development mode
     private void refreshModules() {
-        boolean devMode = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE, false);
+        boolean devMode = configurationSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE, false);
         if(devMode) {
             // refresh the cached module configuration on each call if we're in development mode
             this.processConfigFile();

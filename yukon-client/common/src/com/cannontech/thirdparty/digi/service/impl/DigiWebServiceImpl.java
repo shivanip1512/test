@@ -18,7 +18,7 @@ import org.springframework.web.client.RestOperations;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -77,7 +77,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
 
     @PostConstruct
     public void initialize() {
-        digiEnabled = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DIGI_ENABLED);
+        digiEnabled = configurationSource.getBoolean(MasterConfigBoolean.DIGI_ENABLED);
         if (digiEnabled) {
             digiBaseUrl = configurationSource.getString("DIGI_WEBSERVICE_URL", "http://my.idigi.com/");
             digiEndPointReadUrl = digiBaseUrl + "ws/XbeeCore";

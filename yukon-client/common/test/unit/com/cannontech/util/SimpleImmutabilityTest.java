@@ -84,11 +84,11 @@ import com.cannontech.common.bulk.service.BulkImportType;
 import com.cannontech.common.bulk.service.FdrImportAction;
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.GraphType;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.MasterConfigDeprecatedKey;
 import com.cannontech.common.config.MasterConfigDoubleKeysEnum;
 import com.cannontech.common.config.MasterConfigIntegerKeysEnum;
-import com.cannontech.common.config.MasterConfigStringKeysEnum;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.constants.SelectionListCategory;
 import com.cannontech.common.constants.YukonDefinition;
 import com.cannontech.common.constants.YukonSelectionListEnum;
@@ -353,11 +353,11 @@ public class SimpleImmutabilityTest {
             HardwareType.class,
             ImportAction.class,
             InventoryCollectionType.class,
-            MasterConfigBooleanKeysEnum.class,
+            MasterConfigBoolean.class,
             MasterConfigDeprecatedKey.class,
             MasterConfigDoubleKeysEnum.class,
             MasterConfigIntegerKeysEnum.class,
-            MasterConfigStringKeysEnum.class,
+            MasterConfigString.class,
             MatchStyle.class,
             MonthYear.class,
             OptionalField.class,

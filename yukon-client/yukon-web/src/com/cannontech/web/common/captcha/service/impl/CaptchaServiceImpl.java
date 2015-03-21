@@ -8,7 +8,7 @@ import net.tanesha.recaptcha.ReCaptchaResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigStringKeysEnum;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.web.common.captcha.model.Captcha;
@@ -26,8 +26,8 @@ public class CaptchaServiceImpl implements CaptchaService{
     
     @PostConstruct 
     public void init() {
-        RECAPTCHA_PUBLIC_KEY = configurationSource.getString(MasterConfigStringKeysEnum.RECAPTCHA_PUBLIC_KEY, "6LcLps0SAAAAAH-sva1H7pRvCWiDddeA0yO_CbHB");
-        RECAPTCHA_PRIVATE_KEY = configurationSource.getString(MasterConfigStringKeysEnum.RECAPTCHA_PRIVATE_KEY, "6LcLps0SAAAAAM40wM_-kRx-FCYeEA72XVpQwGl8");
+        RECAPTCHA_PUBLIC_KEY = configurationSource.getString(MasterConfigString.RECAPTCHA_PUBLIC_KEY, "6LcLps0SAAAAAH-sva1H7pRvCWiDddeA0yO_CbHB");
+        RECAPTCHA_PRIVATE_KEY = configurationSource.getString(MasterConfigString.RECAPTCHA_PRIVATE_KEY, "6LcLps0SAAAAAM40wM_-kRx-FCYeEA72XVpQwGl8");
     }
     
     @Override

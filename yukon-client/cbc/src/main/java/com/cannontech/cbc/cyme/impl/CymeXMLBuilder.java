@@ -21,7 +21,7 @@ import com.cannontech.cbc.cyme.exception.CymeConfigurationException;
 import com.cannontech.cbc.cyme.exception.CymeMissingDataException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigStringKeysEnum;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.config.UnknownKeyException;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -58,7 +58,7 @@ public class CymeXMLBuilder {
         String reportName = null;
         //Get the name of the report to request from Cyme
         try {
-            reportName = configurationSource.getRequiredString(MasterConfigStringKeysEnum.CYME_REPORT_NAME);
+            reportName = configurationSource.getRequiredString(MasterConfigString.CYME_REPORT_NAME);
         } catch (UnknownKeyException e) {
             throw new CymeConfigurationException("Missing the type of the report for CYME to generate. Add CPARM CYME_REPORT_NAME to the master.cfg file.");  
         }

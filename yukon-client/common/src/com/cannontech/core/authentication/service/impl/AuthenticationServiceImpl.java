@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigStringKeysEnum;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.common.user.UserAuthenticationInfo;
@@ -304,7 +304,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @PostConstruct
     public void init() throws Exception {
         String authenticationTimeoutStyleEnumStr =
-                configurationSource.getString(MasterConfigStringKeysEnum.AUTHENTICATION_TIMEOUT_STYLE, "STATIC");
+                configurationSource.getString(MasterConfigString.AUTHENTICATION_TIMEOUT_STYLE, "STATIC");
         AuthenticationTimeoutStyleEnum authenticationTimeoutStyle =
                 AuthenticationTimeoutStyleEnum.valueOf(authenticationTimeoutStyleEnumStr);
         

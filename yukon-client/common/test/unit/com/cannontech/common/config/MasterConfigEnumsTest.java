@@ -23,11 +23,11 @@ public class MasterConfigEnumsTest {
             deprecatedKeys.add(key.name());
         }
 
-        for (MasterConfigStringKeysEnum key : MasterConfigStringKeysEnum.values()) {
+        for (MasterConfigString key : MasterConfigString.values()) {
             stringKeys.add(key.name());
         }
 
-        for (MasterConfigBooleanKeysEnum key : MasterConfigBooleanKeysEnum.values()) {
+        for (MasterConfigBoolean key : MasterConfigBoolean.values()) {
             booleanKeys.add(key.name());
         }
 

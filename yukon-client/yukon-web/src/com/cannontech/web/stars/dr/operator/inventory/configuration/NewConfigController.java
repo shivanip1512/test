@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.i18n.CollationUtils;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.HardwareConfigType;
@@ -75,7 +74,7 @@ import com.cannontech.web.stars.dr.operator.inventory.service.impl.NewLmConfigHe
 import com.cannontech.web.util.SpringWebUtil;
 import com.google.common.collect.ImmutableSet;
 
-@CheckCparm(MasterConfigBooleanKeysEnum.SEND_INDIVIDUAL_SWITCH_CONFIG)
+@CheckCparm(MasterConfigBoolean.SEND_INDIVIDUAL_SWITCH_CONFIG)
 @Controller
 public class NewConfigController {
     
@@ -272,21 +271,21 @@ public class NewConfigController {
         
         NewLmConfigTask task = (NewLmConfigTask) resultsCache.getResult(taskId);
         String code;
-        Iterator<InventoryIdentifier> inventory;
+        Iterable<InventoryIdentifier> inventory;
         
         if (type == NewAction.SUCCESSFUL) {
             code = key + "successful.description";
-            inventory = task.getSuccessful().iterator();
+            inventory = task.getSuccessful();
         } else if (type == NewAction.FAILED) {
             code = key + "failed.description";
-            inventory = task.getFailed().iterator();
+            inventory = task.getFailed();
         } else {
             code = key + "unsupported.description";
-            inventory = task.getUnsupported().iterator();
+            inventory = task.getUnsupported();
         }
         
         String description = messageResolver.getMessageSourceAccessor(userContext).getMessage(code);
-        InventoryCollection collection = collectionProducer.createCollection(inventory, description);
+        InventoryCollection collection = collectionProducer.createCollection(inventory.iterator(), description);
         model.addAttribute("inventoryCollection", collection);
         model.addAllAttributes(collection.getCollectionParameters());
         
