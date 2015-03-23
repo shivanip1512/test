@@ -6,18 +6,6 @@ import com.cannontech.common.model.Phase;
 
 public class RegulatorEvent {
 
-    protected RegulatorEvent(int regulatorId, Instant timestamp, EventType type, Phase phase, String userName) {
-        this.regulatorId = regulatorId;
-        this.timestamp = timestamp;
-        this.type = type;
-        this.phase = phase;
-        this.userName = userName;
-    }
-
-    public static RegulatorEvent of(int regulatorId, Instant timestamp, EventType type, Phase phase, String userName) {
-        return new RegulatorEvent(regulatorId, timestamp, type, phase, userName);
-    }
-
     public static enum EventType {
         TAP_UP,
         TAP_DOWN,
@@ -31,6 +19,17 @@ public class RegulatorEvent {
     private final Phase phase;
     private final String userName;
 
+    protected RegulatorEvent(int regulatorId, Instant timestamp, EventType type, Phase phase, String userName) {
+        this.regulatorId = regulatorId;
+        this.timestamp = timestamp;
+        this.type = type;
+        this.phase = phase;
+        this.userName = userName;
+    }
+
+    public static RegulatorEvent of(int regulatorId, Instant timestamp, EventType type, Phase phase, String userName) {
+        return new RegulatorEvent(regulatorId, timestamp, type, phase, userName);
+    }
 
     public int getRegulatorId() {
         return regulatorId;

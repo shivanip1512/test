@@ -55,6 +55,14 @@ import com.google.common.collect.Lists;
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class RegulatorController {
 
+    private static final Map<RegulatorEvent.EventType, String> classNameForEventType = ImmutableMap.of(
+        EventType.TAP_UP, "icon-bullet-go-up",
+        EventType.TAP_DOWN, "icon-bullet-go-down",
+        EventType.SCAN, "icon-transmit-blue"
+    );
+
+    private static final String eventTypeBaseKey = "yukon.web.modules.capcontrol.ivvc.eventType";
+
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private IDatabaseCache dbCache;
@@ -190,14 +198,6 @@ public class RegulatorController {
         return "redirect:/capcontrol/tier/areas";
     }
 
-    private static final Map<RegulatorEvent.EventType, String> classNameForEventType = ImmutableMap.of(
-        EventType.TAP_UP, "icon-bullet-go-up",
-        EventType.TAP_DOWN, "icon-bullet-go-down",
-        EventType.SCAN, "icon-transmit-blue"
-    );
-
-    private static final String baseKey = "yukon.web.modules.capcontrol.ivvc.eventType";
-
     @RequestMapping(value="{id}/events")
     public @ResponseBody Map<String,Object> getEvents(@PathVariable int id, @RequestParam(defaultValue="0") long lastUpdate, YukonUserContext userContext) {
 
@@ -225,13 +225,13 @@ public class RegulatorController {
 
                 eventJson.put("user", event.getUserName());
 
-                String key = baseKey + "." + event.getType().name();
+                String key = eventTypeBaseKey + "." + event.getType().name();
 
                 String message = null;
 
                 switch (event.getType()) {
                 case SCAN:
-                    message = accessor.getMessage(baseKey + ".SCAN", event.getPhase());
+                    message = accessor.getMessage(eventTypeBaseKey + ".SCAN", event.getPhase());
                     break;
                 case TAP_DOWN:
                 case TAP_UP:
