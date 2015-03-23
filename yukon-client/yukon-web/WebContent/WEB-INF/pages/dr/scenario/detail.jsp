@@ -46,7 +46,7 @@
                         <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.kwSavings">
                             <div data-pao="${scenarioId}">
                                 <cti:icon icon="icon-loading-bars" classes="js-est-load-calculating push-down-4"/>
-                                <cti:button classes="js-est-load-error-btn dn vam ML0" renderMode="buttonImage" 
+                                <cti:button classes="js-est-load-error-btn dn fn vat M0" renderMode="buttonImage" 
                                     icon="icon-error" data-popup="[data-scenario-id=${scenarioId}]"/>
                                 <span class="js-kw-savings dib push-down-3"></span>
                                 <cti:url var="url" value="/dr/estimatedLoad/summary-error">
