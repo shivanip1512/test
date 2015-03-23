@@ -141,14 +141,14 @@
                                     </td>
                                     
                                     <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
-                                        <td data-pao="${controlAreaId}">
+                                        <td data-pao="${controlAreaId}" class="wsnw">
                                             <cti:dataUpdaterCallback
                                                 function="yukon.dr.estimatedLoad.displayValue"
                                                 value="ESTIMATED_LOAD/${controlAreaId}/CONTROL_AREA"/>
+                                            <cti:icon icon="icon-loading-bars" classes="js-est-load-calculating push-down-4"/>
                                             <cti:button classes="js-est-load-error-btn dn vam ML0" renderMode="buttonImage" 
                                                 icon="icon-error" data-popup="[data-control-area-id=${controlAreaId}]"/>&nbsp;
                                             <span class="js-kw-savings dib push-down-3"></span>
-                                            <cti:icon icon="icon-loading-bars" classes="js-est-load-calculating push-down-4 fr"/>
                                             <cti:url var="url" value="/dr/estimatedLoad/summary-error">
                                                 <cti:param name="paoId" value="${controlAreaId}"/>
                                             </cti:url>

@@ -74,14 +74,14 @@
                                     <td><a href="${scenarioUrl}">${fn:escapeXml(scenario.name)}</a>
                                     </td>
                                     <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
-                                        <td data-pao="${scenarioId}">
+                                        <td data-pao="${scenarioId}" class="wsnw">
                                             <cti:dataUpdaterCallback
                                                 function="yukon.dr.estimatedLoad.displayValue"
                                                 value="ESTIMATED_LOAD/${scenarioId}/SCENARIO"/>
+                                            <cti:icon icon="icon-loading-bars" classes="js-est-load-calculating push-down-4"/>
                                             <cti:button classes="js-est-load-error-btn dn vam ML0" renderMode="buttonImage" 
                                                 icon="icon-error" data-popup="[data-scenario-id=${scenarioId}]"/>&nbsp;
                                             <span class="js-kw-savings dib push-down-3"></span>
-                                            <cti:icon icon="icon-loading-bars" classes="js-est-load-calculating push-down-4 fr"/>
                                             <cti:url var="url" value="/dr/estimatedLoad/summary-error">
                                                 <cti:param name="paoId" value="${scenarioId}"/>
                                             </cti:url>

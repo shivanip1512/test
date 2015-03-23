@@ -78,10 +78,10 @@
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".info.kwSavings">
                                 <div data-pao="${programId}" class="js-est-load-kw-savings">
+                                    <cti:icon icon="icon-loading-bars" classes="js-est-load-calculating push-down-4"/>
                                     <cti:button classes="js-est-load-error-btn dn vam ML0" renderMode="buttonImage" 
                                         icon="icon-error" data-popup="[data-program-id=${programId}]"/>
                                     <span class="js-kw-savings dib push-down-3"></span>
-                                    <cti:icon icon="icon-loading-bars" classes="js-est-load-calculating push-down-4 fr"/>
                                     <cti:url var="url" value="/dr/estimatedLoad/program-error">
                                         <cti:param name="programId" value="${programId}"/>
                                     </cti:url>

@@ -31,7 +31,7 @@ yukon.dr.estimatedLoad = (function () {
                     
                 } else if (status == 'calc') {
                     
-                    row.find('.js-est-load-calculating').removeClass('dn');
+                    // Do nothing here, waiting for an error or success state.
                     
                 } else if (status == 'success') {
                     
