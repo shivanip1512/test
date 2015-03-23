@@ -514,13 +514,19 @@ void CtiCalcLogicService::_outputThread()
     {
         while( true )
         {
+            std::vector<std::unique_ptr<CtiMultiMsg>> outboxEntries;
+
             //  while there's nothing to send
-            while( ! entries )
+            while( outboxEntries.empty() )
             {
-                if(calcThread)
+                if( calcThread )
                 {
                     CtiLockGuard<CtiCriticalSection> outboxGuard(calcThread->outboxMux);
-                    entries = calcThread->outboxEntries( );
+
+                    while( calcThread->outboxEntries( ) )
+                    {
+                        outboxEntries.emplace_back(calcThread->getOutboxEntry());
+                    }
                 }
 
                 Cti::WorkerThread::interruptionPoint();
@@ -540,17 +546,11 @@ void CtiCalcLogicService::_outputThread()
                 }
             }
 
+            for( auto &entry : outboxEntries )
             {
-                CtiLockGuard<CtiCriticalSection> outboxGuard(calcThread->outboxMux);
-
-                for( ; calcThread->outboxEntries( ); )
+                if( entry && entry->getCount() > 0 )
                 {
-                    auto_ptr<CtiMultiMsg> toSend( calcThread->getOutboxEntry() );
-
-                    if( toSend.get() && toSend->getCount() > 0 )
-                    {
-                        dispatchConnection->WriteConnQue( toSend.release() );
-                    }
+                    dispatchConnection->WriteConnQue( entry.release() );
                 }
             }
         }
