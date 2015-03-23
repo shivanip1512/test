@@ -28,7 +28,7 @@ public:
 
     virtual void invokeResultHandler( ResultHandler & rh ) const;
 
-    virtual const ApplicationServiceIdentifiers &getApplicationServiceId() const;
+    virtual ASID getApplicationServiceId() const;
 
     unsigned short getDnpSlaveAddress() const;
 

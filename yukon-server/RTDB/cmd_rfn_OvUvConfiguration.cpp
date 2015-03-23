@@ -55,9 +55,9 @@ RfnCommand::Bytes RfnOvUvConfigurationCommand::getCommandHeader()
 
 
 // Event manager message
-const Messaging::Rfn::ApplicationServiceIdentifiers &RfnOvUvConfigurationCommand::getApplicationServiceId() const
+auto RfnOvUvConfigurationCommand::getApplicationServiceId() const -> ASID
 {
-    return ApplicationServiceIdentifiers::EventManager;
+    return ASID::EventManager;
 }
 
 

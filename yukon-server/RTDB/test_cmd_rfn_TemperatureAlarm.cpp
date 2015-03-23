@@ -43,8 +43,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetApplicationServiceIdenti
     cmd;
 
     BOOST_CHECK_EQUAL(
-            cmd.getApplicationServiceId().value,
-            RfnCommand::ApplicationServiceIdentifiers::EventManager.value);
+            static_cast<unsigned>(cmd.getApplicationServiceId()),
+            0x06);
 }
 
 

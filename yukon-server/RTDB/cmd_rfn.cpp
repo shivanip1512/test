@@ -68,9 +68,9 @@ double RfnCommand::adjustByScalingFactor(double value, double scalingFactor) con
 }
 
 // Defaults to Advanced Metrology, which operates via Channel Manager
-const Messaging::Rfn::ApplicationServiceIdentifiers &RfnCommand::getApplicationServiceId() const
+auto RfnCommand::getApplicationServiceId() const -> ASID
 {
-    return ApplicationServiceIdentifiers::ChannelManager;
+    return ASID::ChannelManager;
 }
 
 // Convert type-length-value vector to a byte vector

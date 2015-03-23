@@ -57,7 +57,7 @@ public:
     static void registerE2eDtHandler(Indication::Callback callback);
     static void registerDnpHandler  (Indication::Callback callback, const RfnIdentifier rfnid);
 
-    static void sendE2eDt    (const Request &msg, const ApplicationServiceIdentifiers &asid, Confirm::Callback callback);
+    static void sendE2eDt    (const Request &msg, const ApplicationServiceIdentifiers asid, Confirm::Callback callback);
     static void sendE2eAp_Dnp(const Request &msg, Confirm::Callback callback);
 
 protected:

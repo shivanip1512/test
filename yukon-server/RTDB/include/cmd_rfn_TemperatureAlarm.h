@@ -60,7 +60,7 @@ protected:
 
     RfnTemperatureAlarmCommand( const Operation operation, const AlarmConfiguration & configuration );
 
-    virtual const ApplicationServiceIdentifiers &getApplicationServiceId() const;
+    virtual ASID getApplicationServiceId() const;
 
     virtual unsigned char getCommandCode() const;
 

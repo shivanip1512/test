@@ -57,7 +57,7 @@ public:
         UnderVoltage    = 2023
     };
 
-    virtual const ApplicationServiceIdentifiers &getApplicationServiceId() const;
+    ASID getApplicationServiceId() const override;
 
     virtual RfnCommandResult decodeCommand( const CtiTime now,
                                             const RfnResponsePayload & response );

@@ -50,9 +50,9 @@ RfnTemperatureAlarmCommand::RfnTemperatureAlarmCommand( const Operation operatio
 
 
 // Event manager message
-const Messaging::Rfn::ApplicationServiceIdentifiers &RfnTemperatureAlarmCommand::getApplicationServiceId() const
+auto RfnTemperatureAlarmCommand::getApplicationServiceId() const -> ASID
 {
-    return ApplicationServiceIdentifiers::EventManager;
+    return ASID::EventManager;
 }
 
 

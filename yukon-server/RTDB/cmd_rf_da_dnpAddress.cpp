@@ -15,9 +15,9 @@ namespace Commands {
 
 
 // Defaults to Advanced Metrology, which operates via Channel Manager
-const Messaging::Rfn::ApplicationServiceIdentifiers &RfDaReadDnpSlaveAddressCommand::getApplicationServiceId() const
+auto RfDaReadDnpSlaveAddressCommand::getApplicationServiceId() const -> ASID
 {
-    return ApplicationServiceIdentifiers::HubMeterCommandSet;
+    return ASID::HubMeterCommandSet;
 }
 
 RfnCommand::Bytes RfDaReadDnpSlaveAddressCommand::getCommandHeader()

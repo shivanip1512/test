@@ -102,9 +102,9 @@ public:
     //  to be overridden by children that require a result handler
     virtual void invokeResultHandler(ResultHandler &rh) const;
 
-    typedef Messaging::Rfn::ApplicationServiceIdentifiers ApplicationServiceIdentifiers;
+    using ASID = Messaging::Rfn::ApplicationServiceIdentifiers;
 
-    virtual const ApplicationServiceIdentifiers &getApplicationServiceId() const;
+    virtual ASID getApplicationServiceId() const;
 
 protected:
 

@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rf_da_dnpAddress )
 {
     RfDaReadDnpSlaveAddressCommand cmd;
 
-    BOOST_CHECK_EQUAL( cmd.getApplicationServiceId().value, 0x81 );
+    BOOST_CHECK_EQUAL( static_cast<unsigned>(cmd.getApplicationServiceId()), 0x81 );
 
     // execute
     {

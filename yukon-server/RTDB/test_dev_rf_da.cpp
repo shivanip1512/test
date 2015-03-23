@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfDa_getconfig_dnp_address )
 
             Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
-            BOOST_CHECK_EQUAL( command->getApplicationServiceId().value, 0x81 );
+            BOOST_CHECK_EQUAL( static_cast<unsigned>(command->getApplicationServiceId()), 0x81 );
 
             std::vector<unsigned char> exp = boost::assign::list_of
                     (0x35);

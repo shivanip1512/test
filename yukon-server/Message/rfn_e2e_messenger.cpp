@@ -57,22 +57,23 @@ void E2eMessenger::registerDnpHandler(Indication::Callback callback, const RfnId
 
 namespace {
 
-bool operator==(const unsigned char value, const ApplicationServiceIdentifiers &asid)
-{
-    return value == asid.value;
-}
+using ASIDs = ApplicationServiceIdentifiers;
 
 bool isE2eDt(const unsigned char &asid)
 {
-    return (asid == ApplicationServiceIdentifiers::ChannelManager)
-        || (asid == ApplicationServiceIdentifiers::E2EDT)
-        || (asid == ApplicationServiceIdentifiers::EventManager)
-        || (asid == ApplicationServiceIdentifiers::HubMeterCommandSet);
+    static const std::set<unsigned char> e2eDtAsids {
+        static_cast<unsigned char>(ASIDs::ChannelManager),
+        static_cast<unsigned char>(ASIDs::E2EDT),
+        static_cast<unsigned char>(ASIDs::EventManager),
+        static_cast<unsigned char>(ASIDs::HubMeterCommandSet),
+    };
+
+    return e2eDtAsids.count(asid);
 }
 
 bool isDnp3(const unsigned char &asid)
 {
-    return asid == ApplicationServiceIdentifiers::E2EAP_DNP3;
+    return asid == static_cast<unsigned char>(ASIDs::E2EAP_DNP3);
 }
 
 }
@@ -138,18 +139,17 @@ void E2eMessenger::handleRfnE2eDataIndicationMsg(const SerializedMessage &msg)
 
 namespace {
 
-    typedef E2eDataConfirmMsg::ReplyType RT;
+    using RT = E2eDataConfirmMsg::ReplyType;
+    using CE = ClientErrors;
 
-    const std::map<E2eDataConfirmMsg::ReplyType::type, YukonError_t> ConfirmErrors = boost::assign::map_list_of
-        (RT::DESTINATION_DEVICE_ADDRESS_UNKNOWN     , ClientErrors::E2eUnknownAddress             )
-        (RT::DESTINATION_NETWORK_UNAVAILABLE        , ClientErrors::E2eNetworkUnavailable         )
-        (RT::PMTU_LENGTH_EXCEEDED                   , ClientErrors::E2eRequestPacketTooLarge      )
-        (RT::E2E_PROTOCOL_TYPE_NOT_SUPPORTED        , ClientErrors::E2eProtocolUnsupported        )
-        (RT::NETWORK_SERVER_IDENTIFIER_INVALID      , ClientErrors::E2eInvalidNetworkServerId     )
-        (RT::APPLICATION_SERVICE_IDENTIFIER_INVALID , ClientErrors::E2eInvalidApplicationServiceId)
-        (RT::NETWORK_LOAD_CONTROL                   , ClientErrors::E2eNetworkLoadControl         )
-        ;
-
+    const std::map<RT::type, YukonError_t> ConfirmErrors = {
+        { RT::DESTINATION_DEVICE_ADDRESS_UNKNOWN     , CE::E2eUnknownAddress              },
+        { RT::DESTINATION_NETWORK_UNAVAILABLE        , CE::E2eNetworkUnavailable          },
+        { RT::PMTU_LENGTH_EXCEEDED                   , CE::E2eRequestPacketTooLarge       },
+        { RT::E2E_PROTOCOL_TYPE_NOT_SUPPORTED        , CE::E2eProtocolUnsupported         },
+        { RT::NETWORK_SERVER_IDENTIFIER_INVALID      , CE::E2eInvalidNetworkServerId      },
+        { RT::APPLICATION_SERVICE_IDENTIFIER_INVALID , CE::E2eInvalidApplicationServiceId },
+        { RT::NETWORK_LOAD_CONTROL                   , CE::E2eNetworkLoadControl          }};
 }
 
 
@@ -181,11 +181,11 @@ void E2eMessenger::handleRfnE2eDataConfirmMsg(const SerializedMessage &msg, Conf
 }
 
 
-void E2eMessenger::sendE2eDt(const Request &req, const ApplicationServiceIdentifiers &asid, Confirm::Callback callback)
+void E2eMessenger::sendE2eDt(const Request &req, const ApplicationServiceIdentifiers asid, Confirm::Callback callback)
 {
     E2eDataRequestMsg msg;
 
-    msg.applicationServiceId = asid.value;
+    msg.applicationServiceId = static_cast<unsigned char>(asid);
     msg.priority      = req.priority;
     msg.rfnIdentifier = req.rfnIdentifier;
     msg.protocol      = E2eMsg::Application;
@@ -199,7 +199,7 @@ void E2eMessenger::sendE2eAp_Dnp(const Request &req, Confirm::Callback callback)
 {
     E2eDataRequestMsg msg;
 
-    msg.applicationServiceId = ApplicationServiceIdentifiers::E2EAP_DNP3.value;
+    msg.applicationServiceId = static_cast<unsigned char>(ApplicationServiceIdentifiers::E2EAP_DNP3);
     msg.priority      = req.priority;
     msg.rfnIdentifier = req.rfnIdentifier;
     msg.protocol      = E2eMsg::Application;
