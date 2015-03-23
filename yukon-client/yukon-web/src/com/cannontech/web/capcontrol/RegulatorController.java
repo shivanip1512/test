@@ -195,20 +195,20 @@ public class RegulatorController {
         EventType.TAP_DOWN, "icon-bullet-go-down",
         EventType.SCAN, "icon-transmit-blue"
     );
-    
+
     private static final String baseKey = "yukon.web.modules.capcontrol.ivvc.eventType";
 
     @RequestMapping(value="{id}/events")
     public @ResponseBody Map<String,Object> getEvents(@PathVariable int id, @RequestParam(defaultValue="0") long lastUpdate, YukonUserContext userContext) {
 
         Map<String,Object> response = new HashMap<>();
-        
+
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
 
         Instant start = Instant.now();
         response.put("timestamp", start.getMillis());
 
-        List<RegulatorEvent> events = eventsDao.getForRegulatorIdSinceTimestamp(id, new Instant(lastUpdate));
+        List<RegulatorEvent> events = eventsDao.getForIdSinceTimestamp(id, new Instant(lastUpdate));
 
         List<Map<String, String>> eventsJson = Lists.transform(events, new Function<RegulatorEvent, Map<String, String>>() {
 
@@ -226,7 +226,7 @@ public class RegulatorController {
                 eventJson.put("user", event.getUserName());
 
                 String key = baseKey + "." + event.getType().name();
-                
+
                 String message = null;
 
                 switch (event.getType()) {
@@ -235,14 +235,9 @@ public class RegulatorController {
                     break;
                 case TAP_DOWN:
                 case TAP_UP:
-/*                    if (event.getPhase() == Phase.ALL) {
-                        message = accessor.getMessage(key + ".ALL");
-                    } else {*/
-                        String phaseString = accessor.getMessage(event.getPhase());
-                        message = accessor.getMessage(key, phaseString);
-/*                    }*/
+                    String phaseString = accessor.getMessage(event.getPhase());
+                    message = accessor.getMessage(key, phaseString);
                     break;
-                    
                 }
 
                 eventJson.put("message", message);

@@ -8,5 +8,5 @@ import com.cannontech.capcontrol.model.RegulatorEvent;
 
 public interface RegulatorEventsDao {
 
-    List<RegulatorEvent> getForRegulatorIdSinceTimestamp(int regulatorId, Instant since);
+    List<RegulatorEvent> getForIdSinceTimestamp(int regulatorId, Instant since);
 }

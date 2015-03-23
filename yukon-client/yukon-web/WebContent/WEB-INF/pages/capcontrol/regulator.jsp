@@ -90,9 +90,9 @@
             <table class="dn">
                 <tr id="regulator-events-template-row">
                     <td><cti:icon icon="js-event-icon"/></td>
-                    <td class="js-message">Unknown Event</td>
-                    <td class="js-user">Unknown User</td>
-                    <td class="js-timestamp">1/1/1970 12:00:00 AM</td>
+                    <td class="js-message"><%-- <strong>Unknown Event</strong> --%></td>
+                    <td class="js-user"><%-- Unknown User --%></td>
+                    <td class="js-timestamp"><%-- 1/1/1970 12:00:00 AM --%></td>
                 </tr>
             </table>
         </div>

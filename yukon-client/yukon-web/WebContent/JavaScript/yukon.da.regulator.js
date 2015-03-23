@@ -17,29 +17,31 @@ yukon.da.regulator = (function () {
     var _showHideMappings = function (mappings) {
 
         var paoType = $('#regulator-type').val(),
-            mappings = _paoTypeMap[paoType],
+            mappings = _paoTypeToAttributes[paoType],
             table = $(document).find('.js-mappings-table');
         table.find('[data-mapping]').hide().find('input').prop('disabled', true);
 
-        for (var i = 0, length = mappings.length; i < length; i += 1) {
-            table.find('[data-mapping="' + mappings[i] + '"]').show().find('input').prop('disabled', false);
-        }
+        mappings.forEach(function (mapping, idx) {
+            table.find('[data-mapping="' + mapping + '"]').show().find('input').prop('disabled', false);
+        });
     },
 
     /**
+     * @type {Object.<string, string>}
+     *
      * Object mapping PaoTypes to supported attributes. ex:
      * 
      *  { PAO_TYPE_1: ['Attr1', 'Attr2'],
      *    PAO_TYPE_2: ['Attr2', 'Attr3']
      *  }
      */
-    _paoTypeMap = {},
+    _paoTypeToAttributes = {},
 
     _updateRecentEvents = function () {
 
         $.ajax({
             url: yukon.url('/capcontrol/regulators/' + $('#regulator-id').val() + '/events'),
-            data: {'lastUpdate': $('#regulator-events-last-update').val()}
+            data: { 'lastUpdate': $('#regulator-events-last-update').val() }
         }).done(function (data) {
 
             $('#regulator-events-last-update').val(data.timestamp);
@@ -47,16 +49,15 @@ yukon.da.regulator = (function () {
             var body = $('#regulator-events').find('tbody');
 
             var events = data.events;
-            
+
             if (events.length) {
                 $('.js-ivvc-events-empty').hide();
                 $('.js-ivvc-events-holder').show();
             }
-            var event, newRow;
 
-            for (var ii = events.length -1; ii >= 0; ii -=1) {
-                event = events[ii];
-                newRow = $(templateRow.clone()).removeAttr('id');
+            events.reverse().forEach( function (event, idx) {
+
+                var newRow = $(templateRow.clone()).removeAttr('id');
 
                 newRow.find('.js-event-icon').addClass(event.icon);
                 newRow.find('.js-message').html(event.message);
@@ -65,7 +66,7 @@ yukon.da.regulator = (function () {
 
                 body.prepend(newRow);
                 newRow.flash();
-            }
+            });
 
             body.find('tr:gt(20)').remove();
 
@@ -78,7 +79,7 @@ yukon.da.regulator = (function () {
 
             init : function () {
 
-                _paoTypeMap = yukon.fromJson('#pao-type-map');
+                _paoTypeToAttributes = yukon.fromJson('#pao-type-map');
                 _showHideMappings();
 
                 $('#regulator-type').on('change', function () {

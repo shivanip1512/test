@@ -14,7 +14,7 @@ import com.google.common.collect.ImmutableList;
 public class RegulatorEventsDaoImpl implements RegulatorEventsDao {
 
     @Override
-    public List<RegulatorEvent> getForRegulatorIdSinceTimestamp(int regulatorId, Instant start) {
+    public List<RegulatorEvent> getForIdSinceTimestamp(int regulatorId, Instant start) {
         //TODO JOE Actually get this from the DB
 
         double chance_to_get_events = 0.99;
