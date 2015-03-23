@@ -102,8 +102,8 @@ public class EstimatedLoadServiceImpl implements EstimatedLoadService {
         double connectedLoad = loadCalcInfo.getAverageKwLoad() * summary.getActiveSize();
         double diversifiedLoad = connectedLoad * applianceCategoryFormulaOutput;
         double maxKwSavings = diversifiedLoad * gearFormulaOutput;
-        return new PartialEstimatedLoadReductionAmount(connectedLoad, diversifiedLoad, maxKwSavings);
         
+        return new PartialEstimatedLoadReductionAmount(connectedLoad, diversifiedLoad, maxKwSavings);
     }
 
     /**
@@ -153,30 +153,29 @@ public class EstimatedLoadServiceImpl implements EstimatedLoadService {
                         int gearId = backingServiceHelper.findCurrentGearId(controllingProgramId);
                         controllingProgramPartialAmount = calculatePartialProgramLoadReductionAmount(
                                 controllingProgramBase.getPaoIdentifier(), gearId, controllingProgramSummary);
+
+                        //Which devices are in common between the calculating program and the controlling program?
+                        int inventoryInCommon = estimatedLoadDao.getOverlappingEnrollmentSize(
+                                program.getPaoId(), controllingProgramId, previousControllingProgramIds);
+                        // Remember previous controlling program ids so their overlaps can be excluded from future sets.
+                        previousControllingProgramIds.add(controllingProgramId);
+                        
+                        // Determine what fraction of the controlling program's Max kW Savings 
+                        // will contribute to the calculation program's kW Savings Now value.
+                        double reductionAmount = controllingProgramPartialAmount.getMaxKwSavings() 
+                                * ((double) inventoryInCommon / controllingProgramSummary.getActiveSize());
+                        reductionFromControllingPrograms += reductionAmount;
                     } catch (EstimatedLoadException e) {
-                        /* There is a problem calculating the partial estimated load values for this currently
-                           controlling program.  Rather than throw out everything for this calculation, we'll skip
-                           any contribution it may have had to kW Savings Now and continue on. */
+                        // There is a problem calculating the partial estimated load values for this currently
+                        //   controlling program.  Rather than throw out everything for this calculation, we'll skip
+                        //   any contribution it may have had to kW Savings Now and continue on.
                         if (log.isDebugEnabled()) {
                             log.debug("The kW Savings Now calculation for the LM program: " + program + " may contain "
                                     + "inaccuracy because estimated load amounts could not be calculated for a program "
                                     + "that has overlapping enrollments. "
                                     + "The program in error is: " + controllingProgramBase);
                         }
-                        continue;
                     }
-                    
-                    //Which devices are in common between the calculating program and the controlling program?
-                    int inventoryInCommon = estimatedLoadDao.getOverlappingEnrollmentSize(
-                            program.getPaoId(), controllingProgramId, previousControllingProgramIds);
-                    // Remember previous controlling program ids so their overlaps can be excluded from future sets.
-                    previousControllingProgramIds.add(controllingProgramId);
-                    
-                    // Determine what fraction of the controlling program's Max kW Savings 
-                    // will contribute to the calculation program's kW Savings Now value.
-                    double reductionAmount = controllingProgramPartialAmount.getMaxKwSavings() 
-                            * ((double) inventoryInCommon / controllingProgramSummary.getActiveSize());
-                    reductionFromControllingPrograms += reductionAmount;
                 }
             }
         }

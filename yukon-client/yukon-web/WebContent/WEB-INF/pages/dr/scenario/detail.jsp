@@ -27,39 +27,39 @@
 
     <div class="column-12-12">
         <div class="column one">
-        <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
-            <tags:sectionContainer2 nameKey="heading.info">
-            <tags:nameValueContainer2>
-                <cti:dataUpdaterCallback
-                    function="yukon.dr.estimatedLoad.displaySummaryValue"
-                    identifier="ESTIMATED_LOAD/${scenarioId}/SCENARIO"/>
-               <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.connectedLoad">
-                        <div data-pao="${scenarioId}">
-                            <cti:icon icon="icon-error" classes="dn"/>
-                            <span class="js-connected-load">
-                                <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
-                            </span>
-                        </div>
-                    </tags:nameValue2>
-                    <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.diversifiedLoad">
-                        <div data-pao="${scenarioId}">
-                            <cti:icon icon="icon-error" classes="dn"/>
-                            <span class="js-diversified-load">
-                                <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
-                            </span>
-                        </div>
-                    </tags:nameValue2>
-                    <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.kwSavings">
-                        <div data-pao="${scenarioId}">
-                            <cti:icon icon="icon-error" classes="dn"/>
-                            <span class="js-kw-savings">
-                                <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
-                            </span>
-                        </div>
-                    </tags:nameValue2>
-                </tags:nameValueContainer2>
-            </tags:sectionContainer2>
-        </cti:checkRolesAndProperties>
+            <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
+                <tags:sectionContainer2 nameKey="heading.info">
+                    <tags:nameValueContainer2>
+                        <cti:dataUpdaterCallback
+                            function="yukon.dr.estimatedLoad.displayValue"
+                            value="ESTIMATED_LOAD/${scenarioId}/SCENARIO"/>
+                        <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.connectedLoad">
+                            <div data-pao="${scenarioId}">
+                                <span class="js-connected-load"></span>
+                            </div>
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.diversifiedLoad">
+                            <div data-pao="${scenarioId}">
+                                <span class="js-diversified-load"></span>
+                            </div>
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.kwSavings">
+                            <div data-pao="${scenarioId}">
+                                <cti:button classes="js-est-load-error-btn dn vam ML0" renderMode="buttonImage" 
+                                    icon="icon-error" data-popup="[data-scenario-id=${scenarioId}]"/>
+                                <span class="js-kw-savings dib push-down-3"></span>
+                                <cti:icon icon="icon-loading-bars" classes="js-est-load-calculating push-down-4 fr"/>
+                                <cti:url var="url" value="/dr/estimatedLoad/summary-error">
+                                    <cti:param name="paoId" value="${scenarioId}"/>
+                                </cti:url>
+                                <div data-url="${url}" 
+                                    data-scenario-id="${scenarioId}" data-height="235" data-width="575" 
+                                    class="dn"/>
+                            </div>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
+                </tags:sectionContainer2>
+            </cti:checkRolesAndProperties>
         </div>
         
         <div class="fr column two nogutter">

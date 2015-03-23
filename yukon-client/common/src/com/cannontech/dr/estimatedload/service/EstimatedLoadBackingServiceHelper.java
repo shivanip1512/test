@@ -69,4 +69,20 @@ public interface EstimatedLoadBackingServiceHelper {
      */
     MessageSourceResolvable resolveException(EstimatedLoadException e, YukonUserContext userContext);
 
+    /**
+     * Receives an EstimatedLoadException and returns the string that corresponds to that error's severity level.
+     * Errors are classified as setup errors, validation errors, or runtime errors in order of increasing severity.
+     * @param e The exception whose corresponding icon is requested.
+     * @return The string that represents the icon.
+     */
+    String findIconStringForException(EstimatedLoadException e);
+
+    /**
+     * Receives an EstimatedLoadException and returns an i18n key corresponding to the message that will be displayed
+     * on the error button displayed on estimated load pages.
+     * @param e The exception whose corresponding button text is requested.
+     * @return The text that will appear on the button.
+     */
+    String findButtonTextForException(EstimatedLoadException exception, YukonUserContext userContext);
+
 }

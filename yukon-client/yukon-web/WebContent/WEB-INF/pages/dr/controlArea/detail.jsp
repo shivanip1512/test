@@ -49,30 +49,30 @@
                     
                     <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
                         <cti:dataUpdaterCallback
-                            function="yukon.dr.estimatedLoad.displaySummaryValue"
+                            function="yukon.dr.estimatedLoad.displayValue"
                             value="ESTIMATED_LOAD/${controlAreaId}/CONTROL_AREA"/>
                         <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.connectedLoad">
                             <div data-pao="${controlAreaId}">
-                                <cti:icon icon="icon-error" classes="dn"/>
-                                <span class="js-connected-load">
-                                    <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
-                                </span>
+                                <span class="js-connected-load"></span>
                             </div>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.diversifiedLoad">
                             <div data-pao="${controlAreaId}">
-                                <cti:icon icon="icon-error" classes="dn"/>
-                                <span class="js-diversified-load">
-                                    <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
-                                </span>
+                                <span class="js-diversified-load"></span>
                             </div>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.kwSavings">
                             <div data-pao="${controlAreaId}">
-                                <cti:icon icon="icon-error" classes="dn"/>
-                                <span class="js-kw-savings">
-                                    <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
-                                </span>
+                                <cti:button classes="js-est-load-error-btn dn vam ML0" renderMode="buttonImage" 
+                                    icon="icon-error" data-popup="[data-control-area-id=${controlAreaId}]"/>
+                                <span class="js-kw-savings dib push-down-3"></span>
+                                <cti:icon icon="icon-loading-bars" classes="js-est-load-calculating push-down-4 fr"/>
+                                <cti:url var="url" value="/dr/estimatedLoad/summary-error">
+                                    <cti:param name="paoId" value="${controlAreaId}"/>
+                                </cti:url>
+                                <div data-url="${url}" 
+                                    data-control-area-id="${controlAreaId}" data-height="235" data-width="575" 
+                                    class="dn"/>
                             </div>
                         </tags:nameValue2>
                     </cti:checkRolesAndProperties>

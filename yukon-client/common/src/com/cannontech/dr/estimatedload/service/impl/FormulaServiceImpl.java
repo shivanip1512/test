@@ -90,7 +90,7 @@ public class FormulaServiceImpl implements FormulaService {
             try {
                 return dynamicDataSource.getPointValue(input.getPointId()).getValue();
             } catch (DynamicDataAccessException e) {
-                throw new InputValueNotFoundException(formula.getName());
+                throw new InputValueNotFoundException(formula.getName(), formula.getFormulaId());
             }
         } else if (input.getInputType() == InputType.TIME_FUNCTION) {
             // This input type is used only by time-of-day inputs, not for time-based lookup tables.  
@@ -109,7 +109,7 @@ public class FormulaServiceImpl implements FormulaService {
                     try {
                         return gearDao.getSimpleThermostatGearRampRate(calcInfo.getGearId());
                     } catch (DataAccessException e) {
-                        throw new InputValueNotFoundException(formula.getName());
+                        throw new InputValueNotFoundException(formula.getName(), formula.getFormulaId());
                     }
                 } else if (gear.getControlMethod() == GearControlMethod.ThermostatRamping) {
                     // Thermostat ramping gear's ramp rate is stored in two fields, valueD and valueTd.
@@ -118,14 +118,14 @@ public class FormulaServiceImpl implements FormulaService {
                                 calcInfo.getGearId());
                         return rampRateValues.getRampRate();
                     } catch (DataAccessException e) {
-                        throw new InputValueNotFoundException(formula.getName());
+                        throw new InputValueNotFoundException(formula.getName(), formula.getFormulaId());
                     }
                 }
             }
         }
 
         // Should not be able to reach this point, but if so throw input not found exception.
-        throw new InputValueNotFoundException(formula.getName());
+        throw new InputValueNotFoundException(formula.getName(), formula.getFormulaId());
     }
 
     /**

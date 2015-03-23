@@ -30,6 +30,10 @@ public final class InputOutOfRangeException extends EstimatedLoadException {
         return formula;
     }
 
+    public int getFormulaId() {
+        return formula.getFormulaId();
+    }
+    
     public Type getType() {
         return type;
     }

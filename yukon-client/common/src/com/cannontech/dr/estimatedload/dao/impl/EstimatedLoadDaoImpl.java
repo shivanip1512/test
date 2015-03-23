@@ -63,7 +63,7 @@ public class EstimatedLoadDaoImpl implements EstimatedLoadDao{
     }
 
     @Override
-    public int getGearIdForProgramAndGearNumber(int lmProgramId, int gearNumber) throws EstimatedLoadException {
+    public int getGearIdForProgramAndGearNumber(int lmProgramId, int gearNumber) throws GearNotFoundException {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT GearId");
         sql.append("FROM LmProgramDirectGear");

@@ -99,7 +99,7 @@
                     </cti:checkRolesAndProperties>
                 </cti:url>
                 <div data-url="${url}" data-static>
-                    <table class="compact-results-table has-actions">
+                    <table class="compact-results-table has-actions with-form-controls">
                         <thead>
                             <tr>
                                 <tags:sort column="${NAME}"/>
@@ -144,14 +144,20 @@
                                     </cti:checkRolesAndProperties>
                                     <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
                                         <td data-pao="${programId}">
-                                            <cti:icon icon="icon-error" classes="dn"/>
-                                            <span class="js-kw-savings">
-                                                <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
-                                            </span>
                                             <cti:dataUpdaterCallback
-                                                function="yukon.dr.estimatedLoad.displayProgramValue"
+                                                function="yukon.dr.estimatedLoad.displayValue"
                                                 value="ESTIMATED_LOAD/${programId}/PROGRAM"
                                                 initialize="true"/>
+                                            <cti:button classes="js-est-load-error-btn dn vam ML0" renderMode="buttonImage" 
+                                                icon="icon-error" data-popup="[data-program-id=${programId}]"/>&nbsp;
+                                            <span class="js-kw-savings dib"></span>
+                                            <cti:icon icon="icon-loading-bars" classes="js-est-load-calculating push-down-4 fr"/>
+                                            <cti:url var="url" value="/dr/estimatedLoad/program-error">
+                                                <cti:param name="programId" value="${programId}"/>
+                                            </cti:url>
+                                            <div data-url="${url}" 
+                                                data-program-id="${programId}" data-height="235" data-width="575" 
+                                                class="dn"/>
                                         </td>
                                     </cti:checkRolesAndProperties>
                                     <td><dr:programListActions pao="${program}"/></td>
@@ -164,5 +170,7 @@
             </c:otherwise>
         </c:choose>
     </tags:sectionContainer>
+
+        
     
 </cti:msgScope>

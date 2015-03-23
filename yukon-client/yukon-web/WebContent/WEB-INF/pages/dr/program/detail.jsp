@@ -62,26 +62,32 @@
                     
                     <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
                         <cti:dataUpdaterCallback
-                            function="yukon.dr.estimatedLoad.displayProgramValue"
+                            function="yukon.dr.estimatedLoad.displayValue"
                             value="ESTIMATED_LOAD/${programId}/PROGRAM"
                             initialize="true"/>
                         <cti:msgScope paths="modules.dr.estimatedLoad">
                             <tags:nameValue2 nameKey=".info.connectedLoad">
                                 <div data-pao="${programId}">
-                                    <cti:icon icon="icon-error" classes="dn"/>
-                                    <span class="js-connected-load"><i:inline key=".calculating"/></span>
+                                    <span class="js-connected-load"></span>
                                 </div>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".info.diversifiedLoad">
                                 <div data-pao="${programId}">
-                                    <cti:icon icon="icon-error" classes="dn"/>
-                                    <span class="js-diversified-load"><i:inline key=".calculating"/></span>
+                                    <span class="js-diversified-load"></span>
                                 </div>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".info.kwSavings">
-                                <div data-pao="${programId}">
-                                    <cti:icon icon="icon-error" classes="dn"/>
-                                    <span class="js-kw-savings"><i:inline key=".calculating"/></span>
+                                <div data-pao="${programId}" class="js-est-load-kw-savings">
+                                    <cti:button classes="js-est-load-error-btn dn vam ML0" renderMode="buttonImage" 
+                                        icon="icon-error" data-popup="[data-program-id=${programId}]"/>
+                                    <span class="js-kw-savings dib push-down-3"></span>
+                                    <cti:icon icon="icon-loading-bars" classes="js-est-load-calculating push-down-4 fr"/>
+                                    <cti:url var="url" value="/dr/estimatedLoad/program-error">
+                                        <cti:param name="programId" value="${programId}"/>
+                                    </cti:url>
+                                    <div data-url="${url}" 
+                                        data-program-id="${programId}" data-height="235" data-width="575" 
+                                        class="dn"/>
                                 </div>
                             </tags:nameValue2>
                         </cti:msgScope>

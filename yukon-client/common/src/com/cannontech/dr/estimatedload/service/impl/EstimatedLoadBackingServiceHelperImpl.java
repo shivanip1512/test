@@ -1,6 +1,7 @@
 package com.cannontech.dr.estimatedload.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,15 +47,19 @@ import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.message.util.ConnectionException;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 
 public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBackingServiceHelper {
     private final Logger log = YukonLogManager.getLogger(EstimatedLoadBackingServiceHelperImpl.class);
 
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private LoadControlClientConnection clientConnection;
+    @Autowired private EnergyCompanyDao energyCompanyDao;
     @Autowired private EstimatedLoadService estimatedLoadService;
     @Autowired private EstimatedLoadDao estimatedLoadDao;
     @Autowired private ControlAreaDao controlAreaDao;
@@ -64,6 +69,48 @@ public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBacki
     private static final int CACHE_SECONDS_TO_LIVE = 120;
     private final Cache<MultiKey, EstimatedLoadResult> cache = CacheBuilder.newBuilder()
             .expireAfterWrite(CACHE_SECONDS_TO_LIVE, TimeUnit.SECONDS).build();
+    private final static Map<Class<? extends EstimatedLoadException>, ButtonInfo> exceptionToButtonInfo;
+    private final static String baseKey = "yukon.web.modules.dr.estimatedLoad.";
+    
+    static {
+        Builder<Class<? extends EstimatedLoadException>, ButtonInfo> builder = ImmutableMap.builder();
+        builder.put(ApplianceCategoryInfoNotFoundException.class, ButtonInfo.INFO);
+        builder.put(ApplianceCategoryNotFoundException.class, ButtonInfo.INFO);
+        builder.put(NoAppCatFormulaException.class, ButtonInfo.INFO);
+        builder.put(NoGearFormulaException.class, ButtonInfo.INFO);
+        builder.put(InputOutOfRangeException.class, ButtonInfo.WARN);
+        builder.put(InputValueNotFoundException.class, ButtonInfo.WARN);
+        builder.put(GearNotFoundException.class, ButtonInfo.ERROR);
+        builder.put(LmDataNotFoundException.class, ButtonInfo.ERROR);
+        builder.put(LmServerNotConnectedException.class, ButtonInfo.ERROR);
+        exceptionToButtonInfo = builder.build();
+    }
+    
+    public enum ButtonInfo {
+        INFO(1, "icon-information", baseKey + "button.invalidConfig"),
+        WARN(2, "icon-error", baseKey + "button.invalidInput"),
+        ERROR(3, "icon-exclamation", baseKey + "button.commsError");
+        
+        int severity;
+        String icon;
+        String buttonKey;
+        
+        ButtonInfo(int level, String iconText, String description) {
+            this.severity = level;
+            this.icon = iconText;
+            this.buttonKey = description;
+        };
+        
+        public int getSeverityLevel() {
+            return severity;
+        }
+        public String getIcon() {
+            return icon;
+        }
+        public String getButtonKey() {
+            return buttonKey;
+        }
+    }
 
     @Override
     public EstimatedLoadResult findProgramValue(final int programId, boolean blocking) {
@@ -147,11 +194,23 @@ public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBacki
     public EstimatedLoadSummary getControlAreaValue(PaoIdentifier paoId, boolean blocking) {
         Set<Integer> programIdsForControlArea = controlAreaDao.getProgramIdsForControlArea(paoId.getPaoId());
         List<EstimatedLoadResult> programResults = new ArrayList<>();
+        Set<Integer> programsInError = new HashSet<>();
+        ButtonInfo buttonInfo = ButtonInfo.INFO;
+        int highestSeverity = 0;
         
         for (Integer programId : programIdsForControlArea) {
-            programResults.add(findProgramValue(programId, blocking));
+            EstimatedLoadResult result = findProgramValue(programId, blocking);
+            if (result instanceof EstimatedLoadException) {
+                programsInError.add(programId);
+                ButtonInfo info = exceptionToButtonInfo.get(((EstimatedLoadException) result).getClass());
+                if (info.getSeverityLevel() > highestSeverity) {
+                    highestSeverity = info.getSeverityLevel();
+                    buttonInfo = info;
+                }
+            }
+            programResults.add(result);
         }
-        return sumEstimatedLoadAmounts(paoId, programResults);
+        return createSummary(paoId, programResults, programsInError, buttonInfo);
     }
 
     @Override
@@ -159,22 +218,37 @@ public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBacki
         Map<Integer, ScenarioProgram> programsForScenario = scenarioDao.findScenarioProgramsForScenario(
                 paoId.getPaoId());
         List<EstimatedLoadResult> programAmounts = new ArrayList<>();
+        Set<Integer> programsInError = new HashSet<>();
+        ButtonInfo buttonInfo = ButtonInfo.INFO;  // Start with the lowest severity.
+        int highestSeverity = 0;
         
         for (Integer programId : programsForScenario.keySet()) {
             int startGearNumber = programsForScenario.get(programId).getStartGear();
             EstimatedLoadResult result = null;
+            Integer startGearId = null;
             try {
-                int startGearId = estimatedLoadDao.getGearIdForProgramAndGearNumber(programId, startGearNumber);
-                result = getProgramValue(programId, startGearId, blocking);
-            } catch (EstimatedLoadException e) {
-                // There was an exception finding the gearId, so the resulting EstimatedLoadException
-                // is the result for this programId and should be added to the summary. 
+                startGearId = estimatedLoadDao.getGearIdForProgramAndGearNumber(programId, startGearNumber);
+            } catch (GearNotFoundException e) {
+                // Could not look up the start gear for this scenario program.  This precludes being able to 
+                // calculate estimated load values but should still be reported as an error in the summary.
                 result = e;
             }
-            
+            if (startGearId != null) {
+                // Found a startGearId, calculate estimated load levels for this scenario program.
+                result = getProgramValue(programId, startGearId, blocking);
+            }
+            if (result instanceof EstimatedLoadException) {
+                // Need to know the most severe error among the constituent programs to display it at the top level.
+                programsInError.add(programId);
+                ButtonInfo info = exceptionToButtonInfo.get(result.getClass());
+                if (info.getSeverityLevel() > highestSeverity) {
+                    highestSeverity = info.getSeverityLevel();
+                    buttonInfo = info;
+                }            
+            }
             programAmounts.add(result); 
         }
-        return sumEstimatedLoadAmounts(paoId, programAmounts);
+        return createSummary(paoId, programAmounts, programsInError, buttonInfo);
     }
     
     /** This method takes a Set of EstimatedLoadReductionAmount objects and sums up each of the four estimated load
@@ -183,12 +257,14 @@ public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBacki
      * 
      * @param paoId The PaoIdentifier of the control area or scenario whose programs are summed.
      * @param programResults The estimated load amounts for each program in the control area/scenario.
-     * @param errors The list of errors that occurred when evaluating each program.
+     * @param programsInError A set of ProgramId values for the programs in an error state, used for error info popup.
      * @return The sum of all EstimatedLoadReductionAmount in the set of programAmounts 
      * as a single EstimatedLoadReductionAmount.
      * @throws EstimatedLoadException 
      */
-    private EstimatedLoadSummary sumEstimatedLoadAmounts(PaoIdentifier paoId, List<EstimatedLoadResult> programResults) {
+    private EstimatedLoadSummary createSummary(PaoIdentifier paoId, List<EstimatedLoadResult> programResults, 
+            Set<Integer> programsInError, ButtonInfo buttonInfo) {
+        
         int totalPrograms = programResults.size();
         int contributing = 0;
         int calculating = 0;
@@ -213,7 +289,7 @@ public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBacki
             }
         }
         
-        return new EstimatedLoadSummary(totalPrograms, contributing, calculating, error,
+        return new EstimatedLoadSummary(totalPrograms, contributing, calculating, error, programsInError, buttonInfo,
                 new EstimatedLoadAmount(sumConnectedLoad, sumDiversifiedLoad, sumMaxKwSavings, sumNowKwSavings));
     }
 
@@ -282,6 +358,18 @@ public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBacki
         } else {
             return new YukonMessageSourceResolvable("yukon.web.modules.dr.estimatedLoad.calcErrors.unknownError");
         }
+    }
+
+    
+    @Override
+    public String findIconStringForException(EstimatedLoadException e) {
+        return exceptionToButtonInfo.get(e.getClass()).getIcon();
+    }
+
+    @Override
+    public String findButtonTextForException(EstimatedLoadException e, YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        return accessor.getMessage(exceptionToButtonInfo.get(e.getClass()).getButtonKey());
     }
 
 }

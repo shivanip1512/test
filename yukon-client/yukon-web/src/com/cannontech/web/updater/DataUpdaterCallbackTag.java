@@ -74,6 +74,7 @@ public class DataUpdaterCallbackTag extends YukonTagSupport implements DynamicAt
         out.print("\n</script>");
     }
     
+    @Override
     public void setDynamicAttribute(String uri, String localName, Object value) throws JspException {
         identifierAttributes.put(localName, value);
     }

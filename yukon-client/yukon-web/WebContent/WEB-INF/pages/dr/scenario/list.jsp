@@ -1,4 +1,4 @@
-<%@ page trimDirectiveWhitespaces="true" %>
+*<%@ page trimDirectiveWhitespaces="true" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
@@ -74,14 +74,20 @@
                                     <td><a href="${scenarioUrl}">${fn:escapeXml(scenario.name)}</a>
                                     </td>
                                     <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
-                                        <cti:dataUpdaterCallback
-                                            function="yukon.dr.estimatedLoad.displaySummaryValue"
-                                            identifier="ESTIMATED_LOAD/${scenarioId}/SCENARIO"/>
                                         <td data-pao="${scenarioId}">
-                                            <cti:icon icon="icon-error" classes="dn"/>
-                                            <span class="js-kw-savings">
-                                                <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
-                                            </span>
+                                            <cti:dataUpdaterCallback
+                                                function="yukon.dr.estimatedLoad.displayValue"
+                                                value="ESTIMATED_LOAD/${scenarioId}/SCENARIO"/>
+                                            <cti:button classes="js-est-load-error-btn dn vam ML0" renderMode="buttonImage" 
+                                                icon="icon-error" data-popup="[data-scenario-id=${scenarioId}]"/>&nbsp;
+                                            <span class="js-kw-savings dib push-down-3"></span>
+                                            <cti:icon icon="icon-loading-bars" classes="js-est-load-calculating push-down-4 fr"/>
+                                            <cti:url var="url" value="/dr/estimatedLoad/summary-error">
+                                                <cti:param name="paoId" value="${scenarioId}"/>
+                                            </cti:url>
+                                            <div data-url="${url}" 
+                                                data-scenario-id="${scenarioId}" data-height="235" data-width="575" 
+                                                class="dn"/>
                                         </td>
                                     </cti:checkRolesAndProperties>
                                     <td><dr:scenarioListActions pao="${scenario}"/></td>

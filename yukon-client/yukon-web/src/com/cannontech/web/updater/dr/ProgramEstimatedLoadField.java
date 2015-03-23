@@ -46,13 +46,9 @@ public class ProgramEstimatedLoadField extends EstimatedLoadBackingFieldBase {
     private String createCalculatingJson(int programId, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
-        MessageSourceResolvable calculating = new YukonMessageSourceResolvable(
-                "yukon.web.modules.dr.estimatedLoad.calculating");
-        
-        Map<String, String> calculatingNode = Maps.newHashMapWithExpectedSize(3);
+        Map<String, String> calculatingNode = Maps.newHashMapWithExpectedSize(2);
         calculatingNode.put("paoId", String.valueOf(programId));
         calculatingNode.put("status", "calc");
-        calculatingNode.put("tooltip", accessor.getMessage(calculating));
         try {
             return JsonUtils.toJson(calculatingNode);
         } catch (JsonProcessingException e) {
@@ -66,18 +62,19 @@ public class ProgramEstimatedLoadField extends EstimatedLoadBackingFieldBase {
         MessageSourceResolvable na = new YukonMessageSourceResolvable("yukon.web.defaults.na");
         MessageSourceResolvable exceptionMessage = backingServiceHelper.resolveException(exception, userContext);
 
-        Map<String, String> errorNode = Maps.newHashMapWithExpectedSize(4);
+        Map<String, String> errorNode = Maps.newHashMapWithExpectedSize(5);
         errorNode.put("paoId", String.valueOf(programId));
         errorNode.put("status", "error");
-        errorNode.put("tooltip", accessor.getMessage(exceptionMessage));
-        errorNode.put("value", accessor.getMessage(na));
+        errorNode.put("na", accessor.getMessage(na));
+        errorNode.put("icon", backingServiceHelper.findIconStringForException(exception));
+        errorNode.put("buttonText", backingServiceHelper.findButtonTextForException(exception, userContext));
         try {
             return JsonUtils.toJson(errorNode);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Unable to write map to json", e);
         }
     }
-    
+
     private String createSuccessJson(int programId, EstimatedLoadAmount amount, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
@@ -90,7 +87,7 @@ public class ProgramEstimatedLoadField extends EstimatedLoadBackingFieldBase {
                 amount.getMaxKwSavings(),
                 amount.getNowKwSavings());
         
-        Map<String, String> successNode = Maps.newHashMapWithExpectedSize(4);
+        Map<String, String> successNode = Maps.newHashMapWithExpectedSize(5);
         successNode.put("paoId", String.valueOf(programId));
         successNode.put("status", "success");
         successNode.put("connected", accessor.getMessage(connectedLoad));

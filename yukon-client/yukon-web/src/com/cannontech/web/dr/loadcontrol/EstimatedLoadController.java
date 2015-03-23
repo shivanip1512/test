@@ -2,6 +2,7 @@ package com.cannontech.web.dr.loadcontrol;
 
 import java.beans.PropertyEditor;
 import java.text.Collator;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -22,8 +23,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.common.weather.WeatherDataService;
@@ -36,20 +40,34 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.dr.estimatedload.ApplianceCategoryAssignment;
+import com.cannontech.dr.estimatedload.ApplianceCategoryInfoNotFoundException;
+import com.cannontech.dr.estimatedload.EstimatedLoadAmount;
+import com.cannontech.dr.estimatedload.EstimatedLoadException;
+import com.cannontech.dr.estimatedload.EstimatedLoadResult;
+import com.cannontech.dr.estimatedload.EstimatedLoadSummary;
 import com.cannontech.dr.estimatedload.Formula;
 import com.cannontech.dr.estimatedload.FormulaInput;
 import com.cannontech.dr.estimatedload.FormulaInput.InputType;
 import com.cannontech.dr.estimatedload.GearAssignment;
+import com.cannontech.dr.estimatedload.InputOutOfRangeException;
+import com.cannontech.dr.estimatedload.InputValueNotFoundException;
+import com.cannontech.dr.estimatedload.NoAppCatFormulaException;
+import com.cannontech.dr.estimatedload.NoGearFormulaException;
 import com.cannontech.dr.estimatedload.dao.FormulaDao;
+import com.cannontech.dr.estimatedload.service.EstimatedLoadBackingServiceHelper;
+import com.cannontech.dr.estimatedload.service.impl.EstimatedLoadBackingServiceHelperImpl.ButtonInfo;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.appliance.model.ApplianceTypeEnum;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -72,12 +90,15 @@ public class EstimatedLoadController {
     @Autowired private ApplianceCategoryDao applianceCategoryDao;
     @Autowired private PointDao pointDao;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private EnergyCompanyService ecService; 
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private ObjectFormattingService objectFormatingService;
     @Autowired private PaoDao paoDao;
     @Autowired private AttributeService attributeService;
     @Autowired private WeatherDataService weatherDataService;
     @Autowired private FormulaBeanValidator formulaBeanValidator;
+    @Autowired private EstimatedLoadBackingServiceHelper helper;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     public static enum SortBy {
         NAME, 
@@ -90,6 +111,7 @@ public class EstimatedLoadController {
     }
 
     private String baseKey = "yukon.web.modules.dr.formula.";
+    private String elKey = "yukon.web.modules.dr.estimatedLoad.";
 
     @RequestMapping("home")
     public String home(ModelMap model, YukonUserContext context) {
@@ -99,6 +121,13 @@ public class EstimatedLoadController {
         gearAssignmentsPage(model, context);
 
         return "dr/estimatedLoad/home.jsp";
+    }
+
+    @RequestMapping("assignments")
+    public String assignments(ModelMap model, YukonUserContext context) {
+
+        model.addAttribute("selectAssignmentsTab", true);
+        return home(model, context);
     }
 
     @RequestMapping("listPageAjax")
@@ -276,6 +305,178 @@ public class EstimatedLoadController {
         model.addAttribute("appCatAssignments", appCatAssignments);
 
         return "dr/estimatedLoad/_appCatAssignmentsTable.jsp";
+    }
+    
+    @RequestMapping("program-error")
+    public String programErrorPopup(ModelMap model, YukonUserContext userContext, int programId) {
+        
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        EstimatedLoadResult result = helper.findProgramValue(programId, true);
+        String programName = paoDao.getYukonPAOName(programId);
+        
+        ProgramError error = buildProgramError(userContext, programId, accessor, result, programName);
+        
+        model.addAttribute("title", accessor.getMessage(elKey + "popup.program.title", programName));
+        model.addAttribute("errors", Collections.singleton(error));
+        
+        return "dr/estimatedLoad/programError.jsp";
+    }
+    
+    @RequestMapping("summary-error")
+    public String summaryErrorPopup(ModelMap model, YukonUserContext userContext, int paoId) {
+        
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        String name = paoDao.getYukonPAOName(paoId);
+        model.addAttribute("title", accessor.getMessage(elKey + "popup.program.title", name));
+        
+        EstimatedLoadSummary summary = null;
+        YukonPao pao = paoDao.getYukonPao(paoId);
+
+        if (pao.getPaoIdentifier().getPaoType() == PaoType.LM_CONTROL_AREA) {
+            summary = helper.getControlAreaValue(pao.getPaoIdentifier(), true);
+        } else if (pao.getPaoIdentifier().getPaoType() == PaoType.LM_SCENARIO) {
+            summary = helper.getScenarioValue(pao.getPaoIdentifier(), true);
+        } else {
+            // Not a control area or scenario, so this paoId will not have an estimated load summary.
+            model.addAttribute("initialMessage", accessor.getMessage(elKey + "error.notLoadManagement"));
+            return "dr/estimatedLoad/programError.jsp";
+        }
+        
+        List<ProgramError> errors = new ArrayList<>();
+        if (summary.getTotalPrograms() == 0) {
+            model.addAttribute("initialIcon", ButtonInfo.INFO.getIcon());
+            model.addAttribute("initialMessage", accessor.getMessage(elKey + "error.noPrograms"));
+        } else {
+            model.addAttribute("initialMessage", accessor.getMessage(elKey + "error.summary", summary.getErrors()));
+            for (int programId : summary.getProgramsInError()) {
+                EstimatedLoadResult result = helper.findProgramValue(programId, true);
+                String programName = paoDao.getYukonPAOName(programId);
+                errors.add(buildProgramError(userContext, programId, accessor, result, programName));
+            }
+            model.addAttribute("errors", errors);
+        }
+        return "dr/estimatedLoad/programError.jsp";
+    }
+
+    private ProgramError buildProgramError(YukonUserContext userContext, int programId, MessageSourceAccessor accessor,
+            EstimatedLoadResult result, String programName) {
+        
+        ProgramError error = new ProgramError();
+        error.setProgramId(programId);
+        error.setProgramName(programName);
+        
+        if (result instanceof EstimatedLoadException) {
+            error.setError(true);
+            error.setIcon(helper.findIconStringForException((EstimatedLoadException) result));
+            
+            MessageSourceResolvable resolvable = helper.resolveException((EstimatedLoadException) result, userContext);
+            error.setErrorMessage(accessor.getMessage(resolvable));
+            
+            if (result instanceof ApplianceCategoryInfoNotFoundException) {
+                // Link to the corresponding appliance category
+                LiteYukonUser yukonUser = userContext.getYukonUser();
+                int ecId = ecDao.getEnergyCompany(yukonUser).getId();
+                try {
+                    ecService.verifyViewPageAccess(yukonUser, ecId);  // Throws the NotAuthorizedException if user is not an operator.
+                    int appCatId = ((ApplianceCategoryInfoNotFoundException)result).getApplianceCategoryId();
+                    String appCatName = applianceCategoryDao.getById(appCatId).getDisplayName();
+                    
+                    String linkText = accessor.getMessage(elKey + "link.applianceCategory", appCatName);
+                    String linkValue = "/adminSetup/energyCompany/applianceCategory/view?";
+                    linkValue += "ecId=" + ecId;
+                    linkValue += "&applianceCategoryId=" + appCatId;
+                    
+                    error.setLinkText(linkText);
+                    error.setLinkValue(linkValue);
+                } catch (NotAuthorizedException e) {
+                    // Rather than show an error page, just hide the link by not including linkText.
+                }
+            } else if (result instanceof InputOutOfRangeException) {
+                // Link to the formula detail page
+                String formulaName = ((InputOutOfRangeException) result).getFormula().getName();
+                int formulaId = ((InputOutOfRangeException) result).getFormula().getFormulaId();
+                String linkText = accessor.getMessage(elKey + "link.formula", formulaName);
+                String linkValue = "/dr/estimatedLoad/formula/view?formulaId=" + formulaId;
+                
+                error.setLinkText(linkText);
+                error.setLinkValue(linkValue);
+                
+            } else if (result instanceof InputValueNotFoundException) {
+                // Link to the formula detail page
+                String formulaName = ((InputValueNotFoundException) result).getFormulaName();
+                int formulaId = ((InputValueNotFoundException) result).getFormulaId();
+                String linkText = accessor.getMessage(elKey + "link.formula", formulaName);
+                String linkValue = "/dr/estimatedLoad/formula/view?formulaId=" + formulaId;
+                
+                error.setLinkText(linkText);
+                error.setLinkValue(linkValue);
+
+            } else if (result instanceof NoAppCatFormulaException || result instanceof NoGearFormulaException) {
+                // Link to the formula assignments page
+                String linkText = accessor.getMessage(elKey + "link.assignments");
+                String linkValue = "/dr/estimatedLoad/assignments";
+                
+                error.setLinkText(linkText);
+                error.setLinkValue(linkValue);
+            }
+        } else if (result instanceof EstimatedLoadAmount) {
+            error.setError(false);
+        }
+        return error;
+    }
+    
+    public class ProgramError {
+        
+        private int programId;
+        private boolean error;
+        private String errorMessage;
+        private String programName;
+        private String linkText;
+        private String linkValue;
+        private String icon;
+        
+        public int getProgramId() {
+            return programId;
+        }
+        public void setProgramId(int programId) {
+            this.programId = programId;
+        }
+        public boolean isError() {
+            return error;
+        }
+        public void setError(boolean error) {
+            this.error = error;
+        }
+        public String getErrorMessage() {
+            return errorMessage;
+        }
+        public void setErrorMessage(String errorMessage) {
+            this.errorMessage = errorMessage;
+        }
+        public String getProgramName() {
+            return programName;
+        }
+        public void setProgramName(String programName) {
+            this.programName = programName;
+        }
+        public String getLinkText() {
+            return linkText;
+        }
+        public void setLinkText(String linkText) {
+            this.linkText = linkText;
+        }
+        public String getLinkValue() {
+            return linkValue;
+        }
+        public void setLinkValue(String linkValue) {
+            this.linkValue = linkValue;
+        }
+        public void setIcon(String icon) {
+            this.icon = icon;
+        }
+        public String getIcon() {
+            return icon;
+        }
     }
 
     private void populateFormulaPageModel(ModelMap model, FormulaBean formulaBean) {
