@@ -17,7 +17,7 @@
         </cti:tab>
 
         <cti:msg2 var="assignmentsTab" key='.assignments'/>
-        <cti:tab title="${assignmentsTab}" initiallySelected="${selectAssignmentsTab}">
+        <cti:tab title="${assignmentsTab}" selected="${selectAssignmentsTab}">
            <tags:sectionContainer2 nameKey="applianceCategories">
                <%@ include file="_appCatAssignmentsTable.jsp" %>
             </tags:sectionContainer2>
