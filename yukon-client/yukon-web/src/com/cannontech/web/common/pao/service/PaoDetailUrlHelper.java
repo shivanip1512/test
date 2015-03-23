@@ -26,6 +26,7 @@ public class PaoDetailUrlHelper {
         Builder<PaoTag, Function<YukonPao, String>> urlBuilder = ImmutableMap.builder();
         Builder<PaoTag, String> pageNameBuilder = ImmutableMap.builder();
         urlBuilder.put(PaoTag.METER_DETAIL_DISPLAYABLE, new Function<YukonPao, String>() {
+            @Override
             public String apply(YukonPao pao) {
                 return "/meter/home?deviceId=" + pao.getPaoIdentifier().getPaoId();
             }
@@ -33,6 +34,7 @@ public class PaoDetailUrlHelper {
         pageNameBuilder.put(PaoTag.METER_DETAIL_DISPLAYABLE, "meterDetail.electric");
 
         urlBuilder.put(PaoTag.WATER_METER_DETAIL_DISPLAYABLE, new Function<YukonPao, String>() {
+            @Override
             public String apply(YukonPao pao) {
                 return "/meter/water/home?deviceId=" + pao.getPaoIdentifier().getPaoId();
             }
@@ -40,6 +42,7 @@ public class PaoDetailUrlHelper {
         pageNameBuilder.put(PaoTag.WATER_METER_DETAIL_DISPLAYABLE, "meterDetail.water");
 
         urlBuilder.put(PaoTag.LM_SCENARIO, new Function<YukonPao, String>() {
+            @Override
             public String apply(YukonPao pao) {
                 return "/dr/scenario/detail?scenarioId=" + pao.getPaoIdentifier().getPaoId();
             }
@@ -47,6 +50,7 @@ public class PaoDetailUrlHelper {
         pageNameBuilder.put(PaoTag.LM_SCENARIO, "scenarioDetail");
 
         urlBuilder.put(PaoTag.LM_CONTROL_AREA, new Function<YukonPao, String>() {
+            @Override
             public String apply(YukonPao pao) {
                 return "/dr/controlArea/detail?controlAreaId=" + pao.getPaoIdentifier().getPaoId();
             }
@@ -54,6 +58,7 @@ public class PaoDetailUrlHelper {
         pageNameBuilder.put(PaoTag.LM_CONTROL_AREA, "controlAreaDetail");
 
         urlBuilder.put(PaoTag.LM_PROGRAM, new Function<YukonPao, String>() {
+            @Override
             public String apply(YukonPao pao) {
                 return "/dr/program/detail?programId=" + pao.getPaoIdentifier().getPaoId();
             }
@@ -61,6 +66,7 @@ public class PaoDetailUrlHelper {
         pageNameBuilder.put(PaoTag.LM_PROGRAM, "programDetail");
 
         urlBuilder.put(PaoTag.LM_GROUP, new Function<YukonPao, String>() {
+            @Override
             public String apply(YukonPao pao) {
                 return "/dr/loadGroup/detail?loadGroupId=" + pao.getPaoIdentifier().getPaoId();
             }
@@ -68,6 +74,7 @@ public class PaoDetailUrlHelper {
         pageNameBuilder.put(PaoTag.LM_GROUP, "loadGroupDetail");
         
         urlBuilder.put(PaoTag.ASSET_DETAIL_DISPLAYABLE, new Function<YukonPao, String>() {
+            @Override
             public String apply(YukonPao pao) {
                 return "/stars/operator/inventory/view?deviceId=" + pao.getPaoIdentifier().getPaoId();
             }
@@ -90,7 +97,7 @@ public class PaoDetailUrlHelper {
         
         PaoType type = pao.getPaoIdentifier().getPaoType();
         
-        if (type == PaoType.RFN_GATEWAY) {
+        if (PaoType.getRfGatewayTypes().contains(type)) {
             return "/stars/gateways/" + pao.getPaoIdentifier().getPaoId();
         }
         

@@ -201,6 +201,20 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         }
     }
     
+    @Override
+    public List<RfnDevice> getDevicesByPaoTypes(Iterable<PaoType> paoTypes) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select ypo.PaoName, ypo.PAObjectID, ypo.Type, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
+        sql.append("from YukonPaObject ypo");
+        sql.append(  "join RfnAddress rfn on ypo.PAObjectID = rfn.DeviceId");
+        sql.append("where ypo.Type").in(paoTypes);
+        try {
+            return jdbcTemplate.query(sql, rfnDeviceRowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<RfnDevice>();
+        }
+    }
+    
     @Override 
     public List<RfnDevice> getDevicesByPaoIds(Iterable<Integer> paoIds) {
         SqlStatementBuilder sql = new SqlStatementBuilder();

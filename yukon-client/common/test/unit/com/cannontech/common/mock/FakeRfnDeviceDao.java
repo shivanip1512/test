@@ -50,6 +50,11 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
     public List<RfnDevice> getDevicesByPaoType(PaoType paoType) {
         throw new MethodNotImplementedException();
     }
+    
+    @Override
+    public List<RfnDevice> getDevicesByPaoTypes(Iterable<PaoType> paoTypes) {
+        throw new MethodNotImplementedException();
+    }
 
     @Override
     public Map<Integer, RfnDevice> getPaoIdMappedDevicesByPaoType(PaoType paoType) {

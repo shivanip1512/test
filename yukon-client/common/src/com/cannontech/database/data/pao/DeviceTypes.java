@@ -230,6 +230,8 @@ public interface DeviceTypes extends TypeBase
     public final static int ECOBEE_3 = DEVICE_OFFSET + 172;
     public final static int ECOBEE_SMART = DEVICE_OFFSET + 173;
     
+    public final static int RFN_GATEWAY_2 = DEVICE_OFFSET + 174;
+    
     //all the possible text representation of each device type.
     //If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
     public static final String[] STRING_CCU_710 = {"CCU-710A", "CCU710A"};
@@ -370,4 +372,5 @@ public interface DeviceTypes extends TypeBase
     public static final String[] STRING_ECOBEE_SMART_SI = {"ecobee Smart Si"};
     public static final String[] STRING_ECOBEE_3 = {"ecobee3"};
     public static final String[] STRING_RFN_GATEWAY = {"RFN Gateway"};
+    public static final String[] STRING_RFN_GATEWAY_2 = {"RFN Gateway 2"};
 }

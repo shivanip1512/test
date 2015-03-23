@@ -4524,15 +4524,22 @@
     </pao>
     
     <!-- RF Gateway -->
-    <pao id="RFN_GATEWAY" creatable="false">
+    <pao id="RFN_GATEWAY_BASE" abstract="true" creatable="false">
     <!-- Creatable=false means it cannot be created in DBEditor, nor listed as a type in device configurations...to-date -->
-        <displayName>RFN Gateway</displayName>
         <displayGroup>RFMESH</displayGroup>
         <points></points>
         <attributes></attributes>
         <tags>
             <tag name="DB_EDITOR_INCOMPATIBLE" />
         </tags>
+    </pao>
+    
+    <pao id="RFN_GATEWAY" inherits="RFN_GATEWAY_BASE">
+        <displayName>RFN Gateway</displayName>
+    </pao>
+    
+    <pao id="RFN_GATEWAY_2" inherits="RFN_GATEWAY_BASE">
+        <displayName>RFN Gateway 2</displayName>
     </pao>
     
     <!-- RF LCRs -->

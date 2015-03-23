@@ -40,27 +40,27 @@ public final class RfnGatewayData {
     
     public RfnGatewayData(GatewayDataResponse dataResponse) {
         
-        this.name = dataResponse.getRfnIdentifier().getSensorSerialNumber();
+        name = dataResponse.getRfnIdentifier().getSensorSerialNumber();
         
-        this.hardwareVersion = dataResponse.getHardwareVersion();
-        this.softwareVersion = dataResponse.getSoftwareVersion();
-        this.upperStackVersion = dataResponse.getUpperStackVersion();
-        this.radioVersion = dataResponse.getRadioVersion();
-        this.releaseVersion = dataResponse.getReleaseVersion();
-        this.versionConflicts = dataResponse.getVersionConflicts(); //copy?
-        this.mode = dataResponse.getMode();
-        this.connectionType = dataResponse.getConnectionType();
-        this.ipAddress = dataResponse.getIpAddress();
-        this.port = dataResponse.getPort();
-        this.connectionStatus = dataResponse.getConnectionStatus();
-        this.lastCommStatus = dataResponse.getLastCommStatus();
-        this.lastCommStatusTimestamp = dataResponse.getLastCommStatusTimestamp();
-        this.radios = dataResponse.getRadios(); //copy?
-        this.admin = dataResponse.getAdmin();
-        this.superAdmin = dataResponse.getSuperAdmin();
-        this.collectionSchedule = dataResponse.getCollectionSchedule();
-        this.sequences = dataResponse.getSequences(); //copy?
-        this.routeColor = dataResponse.getRouteColor();
+        hardwareVersion = dataResponse.getHardwareVersion();
+        softwareVersion = dataResponse.getSoftwareVersion();
+        upperStackVersion = dataResponse.getUpperStackVersion();
+        radioVersion = dataResponse.getRadioVersion();
+        releaseVersion = dataResponse.getReleaseVersion();
+        versionConflicts = dataResponse.getVersionConflicts(); //copy?
+        mode = dataResponse.getMode();
+        connectionType = dataResponse.getConnectionType();
+        ipAddress = dataResponse.getIpAddress();
+        port = dataResponse.getPort();
+        connectionStatus = dataResponse.getConnectionStatus();
+        lastCommStatus = dataResponse.getLastCommStatus();
+        lastCommStatusTimestamp = dataResponse.getLastCommStatusTimestamp();
+        radios = dataResponse.getRadios(); //copy?
+        admin = dataResponse.getAdmin();
+        superAdmin = dataResponse.getSuperAdmin();
+        collectionSchedule = dataResponse.getCollectionSchedule();
+        sequences = dataResponse.getSequences(); //copy?
+        routeColor = dataResponse.getRouteColor();
     }
     
     /** Private constructor for builder */
@@ -185,6 +185,164 @@ public final class RfnGatewayData {
                     lastCommStatusTimestamp, radios, admin, superAdmin, collectionSchedule, sequences, routeColor);
     }
     
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((admin == null) ? 0 : admin.hashCode());
+        result = prime * result + ((collectionSchedule == null) ? 0 : collectionSchedule.hashCode());
+        result = prime * result + ((connectionStatus == null) ? 0 : connectionStatus.hashCode());
+        result = prime * result + ((connectionType == null) ? 0 : connectionType.hashCode());
+        result = prime * result + ((hardwareVersion == null) ? 0 : hardwareVersion.hashCode());
+        result = prime * result + ((ipAddress == null) ? 0 : ipAddress.hashCode());
+        result = prime * result + ((lastCommStatus == null) ? 0 : lastCommStatus.hashCode());
+        result = prime * result + (int) (lastCommStatusTimestamp ^ (lastCommStatusTimestamp >>> 32));
+        result = prime * result + ((mode == null) ? 0 : mode.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((port == null) ? 0 : port.hashCode());
+        result = prime * result + ((radioVersion == null) ? 0 : radioVersion.hashCode());
+        result = prime * result + ((radios == null) ? 0 : radios.hashCode());
+        result = prime * result + ((releaseVersion == null) ? 0 : releaseVersion.hashCode());
+        result = prime * result + routeColor;
+        result = prime * result + ((sequences == null) ? 0 : sequences.hashCode());
+        result = prime * result + ((softwareVersion == null) ? 0 : softwareVersion.hashCode());
+        result = prime * result + ((superAdmin == null) ? 0 : superAdmin.hashCode());
+        result = prime * result + ((upperStackVersion == null) ? 0 : upperStackVersion.hashCode());
+        result = prime * result + ((versionConflicts == null) ? 0 : versionConflicts.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        RfnGatewayData other = (RfnGatewayData) obj;
+        if (admin == null) {
+            if (other.admin != null) {
+                return false;
+            }
+        } else if (!admin.equals(other.admin)) {
+            return false;
+        }
+        if (collectionSchedule == null) {
+            if (other.collectionSchedule != null) {
+                return false;
+            }
+        } else if (!collectionSchedule.equals(other.collectionSchedule)) {
+            return false;
+        }
+        if (connectionStatus != other.connectionStatus) {
+            return false;
+        }
+        if (connectionType != other.connectionType) {
+            return false;
+        }
+        if (hardwareVersion == null) {
+            if (other.hardwareVersion != null) {
+                return false;
+            }
+        } else if (!hardwareVersion.equals(other.hardwareVersion)) {
+            return false;
+        }
+        if (ipAddress == null) {
+            if (other.ipAddress != null) {
+                return false;
+            }
+        } else if (!ipAddress.equals(other.ipAddress)) {
+            return false;
+        }
+        if (lastCommStatus != other.lastCommStatus) {
+            return false;
+        }
+        if (lastCommStatusTimestamp != other.lastCommStatusTimestamp) {
+            return false;
+        }
+        if (mode != other.mode) {
+            return false;
+        }
+        if (name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!name.equals(other.name)) {
+            return false;
+        }
+        if (port == null) {
+            if (other.port != null) {
+                return false;
+            }
+        } else if (!port.equals(other.port)) {
+            return false;
+        }
+        if (radioVersion == null) {
+            if (other.radioVersion != null) {
+                return false;
+            }
+        } else if (!radioVersion.equals(other.radioVersion)) {
+            return false;
+        }
+        if (radios == null) {
+            if (other.radios != null) {
+                return false;
+            }
+        } else if (!radios.equals(other.radios)) {
+            return false;
+        }
+        if (releaseVersion == null) {
+            if (other.releaseVersion != null) {
+                return false;
+            }
+        } else if (!releaseVersion.equals(other.releaseVersion)) {
+            return false;
+        }
+        if (routeColor != other.routeColor) {
+            return false;
+        }
+        if (sequences == null) {
+            if (other.sequences != null) {
+                return false;
+            }
+        } else if (!sequences.equals(other.sequences)) {
+            return false;
+        }
+        if (softwareVersion == null) {
+            if (other.softwareVersion != null) {
+                return false;
+            }
+        } else if (!softwareVersion.equals(other.softwareVersion)) {
+            return false;
+        }
+        if (superAdmin == null) {
+            if (other.superAdmin != null) {
+                return false;
+            }
+        } else if (!superAdmin.equals(other.superAdmin)) {
+            return false;
+        }
+        if (upperStackVersion == null) {
+            if (other.upperStackVersion != null) {
+                return false;
+            }
+        } else if (!upperStackVersion.equals(other.upperStackVersion)) {
+            return false;
+        }
+        if (versionConflicts == null) {
+            if (other.versionConflicts != null) {
+                return false;
+            }
+        } else if (!versionConflicts.equals(other.versionConflicts)) {
+            return false;
+        }
+        return true;
+    }
+
     public static class Builder {
         
         private String name;
@@ -220,26 +378,26 @@ public final class RfnGatewayData {
         
         public Builder copyOf(RfnGatewayData oldData) {
             
-            this.name = oldData.getName();
-            this.hardwareVersion = oldData.getHardwareVersion();
-            this.softwareVersion = oldData.getSoftwareVersion();
-            this.upperStackVersion = oldData.getUpperStackVersion();
-            this.radioVersion = oldData.getRadioVersion();
-            this.releaseVersion = oldData.getReleaseVersion();
-            this.versionConflicts = oldData.getVersionConflicts();
-            this.mode = oldData.getMode();
-            this.connectionType = oldData.getConnectionType();
-            this.ipAddress = oldData.getIpAddress();
-            this.port = oldData.getPort();
-            this.connectionStatus = oldData.getConnectionStatus();
-            this.lastCommStatus = oldData.getLastCommStatus();
-            this.lastCommStatusTimestamp = oldData.getLastCommStatusTimestamp();
-            this.radios = oldData.getRadios();
-            this.admin = oldData.getAdmin();
-            this.superAdmin = oldData.getSuperAdmin();
-            this.collectionSchedule = oldData.getCollectionSchedule();
-            this.sequences = oldData.getSequences();
-            this.routeColor = oldData.getRouteColor();
+            name = oldData.getName();
+            hardwareVersion = oldData.getHardwareVersion();
+            softwareVersion = oldData.getSoftwareVersion();
+            upperStackVersion = oldData.getUpperStackVersion();
+            radioVersion = oldData.getRadioVersion();
+            releaseVersion = oldData.getReleaseVersion();
+            versionConflicts = oldData.getVersionConflicts();
+            mode = oldData.getMode();
+            connectionType = oldData.getConnectionType();
+            ipAddress = oldData.getIpAddress();
+            port = oldData.getPort();
+            connectionStatus = oldData.getConnectionStatus();
+            lastCommStatus = oldData.getLastCommStatus();
+            lastCommStatusTimestamp = oldData.getLastCommStatusTimestamp();
+            radios = oldData.getRadios();
+            admin = oldData.getAdmin();
+            superAdmin = oldData.getSuperAdmin();
+            collectionSchedule = oldData.getCollectionSchedule();
+            sequences = oldData.getSequences();
+            routeColor = oldData.getRouteColor();
             
             return this;
         }

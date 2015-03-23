@@ -55,6 +55,7 @@ public class PaoLocationServiceImpl implements PaoLocationService {
         }
         icons.put(PaoType.RFWMETER, Icon.METER_WATER);
         icons.put(PaoType.RFN_GATEWAY, Icon.TRANSMITTER);
+        icons.put(PaoType.RFN_GATEWAY_2, Icon.TRANSMITTER);
         
     }
     

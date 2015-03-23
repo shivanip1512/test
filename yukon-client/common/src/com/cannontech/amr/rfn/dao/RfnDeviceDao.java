@@ -52,10 +52,14 @@ public interface RfnDeviceDao {
     /**
      * Returns List of RfnDevices of the given PaoType. An empty list is returned if no RfnDevices
      * of the given PaoType exist.
-     * @param paoType
-     * @return List
      */
     public List<RfnDevice> getDevicesByPaoType(PaoType paoType);
+    
+    /**
+     * Returns List of RfnDevices of the given PaoTypes. An empty list is returned if no RfnDevices
+     * of the given PaoTypes exist.
+     */
+    public List<RfnDevice> getDevicesByPaoTypes(Iterable<PaoType> paoTypes);
     
     /**
      * Returns a map of paoId to RfnDevice for all devices of the specified PaoType.

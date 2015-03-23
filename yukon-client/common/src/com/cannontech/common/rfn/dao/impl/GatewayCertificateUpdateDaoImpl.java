@@ -49,11 +49,10 @@ public class GatewayCertificateUpdateDaoImpl implements GatewayCertificateUpdate
     @Override
     @Transactional
     public void createEntries(int updateId, GatewayCertificateUpdateStatus status, Collection<Integer> gatewayIds) {
-        
         //If gatewayIds is empty, all gateways are being upgraded
         if (gatewayIds == null || gatewayIds.size() == 0) {
             gatewayIds = new ArrayList<>();
-            List<RfnDevice> devices = rfnDeviceDao.getDevicesByPaoType(PaoType.RFN_GATEWAY);
+            List<RfnDevice> devices = rfnDeviceDao.getDevicesByPaoTypes(PaoType.getRfGatewayTypes());
             for (RfnDevice device : devices) {
                 gatewayIds.add(device.getPaoIdentifier().getPaoId());
             }

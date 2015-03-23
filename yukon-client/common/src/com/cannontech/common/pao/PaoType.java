@@ -1,6 +1,6 @@
 package com.cannontech.common.pao;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.*;
 
 import java.util.Set;
 
@@ -139,6 +139,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     LCR6600_RFN(DeviceTypes.LCR6600_RFN, "LCR-6600 RFN", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     RFN_GATEWAY(DeviceTypes.RFN_GATEWAY, "RF Gateway", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN_GATEWAY_2(DeviceTypes.RFN_GATEWAY_2, "RF Gateway 2", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     ION_7700(DeviceTypes.ION_7700, "ION-7700", PaoCategory.DEVICE, PaoClass.RTU),
     ION_8300(DeviceTypes.ION_8300, "ION-8300", PaoCategory.DEVICE, PaoClass.RTU),
@@ -272,6 +273,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> routableTypes;
     private final static ImmutableSet<PaoType> ecobeeTypes;
     private final static ImmutableSet<PaoType> transmitterTypes;
+    private final static ImmutableSet<PaoType> rfGatewayTypes;
     
     public final static int INVALID = -1;
     
@@ -551,6 +553,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             LCR6200_RFN,
             LCR6600_RFN);
         
+        rfGatewayTypes = ImmutableSet.of(
+            RFN_GATEWAY,
+            RFN_GATEWAY_2);
+        
         Builder<PaoType> capControlTypeBuilder = ImmutableSet.builder();
         for (PaoType paoType : PaoType.values()) {
             if (paoType.isCapControl()) {
@@ -670,16 +676,16 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     }
 
     public boolean isRfn() {
-        return this.paoClass == PaoClass.RFMESH;
+        return paoClass == PaoClass.RFMESH;
     }
     
     public boolean isPlc() {
-        return this.paoClass == PaoClass.CARRIER;
+        return paoClass == PaoClass.CARRIER;
     }
     
     public boolean isTwoWayRfnLcr() {
         return twoWayLcrTypes.contains(this) 
-                && this.isRfn();
+                && isRfn();
     }
     
     public boolean isTwoWayPlcLcr() {
@@ -733,7 +739,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     }
     
     public boolean isLoadGroup() {
-        return this.paoCategory == PaoCategory.DEVICE && this.paoClass == PaoClass.GROUP;
+        return paoCategory == PaoCategory.DEVICE && paoClass == PaoClass.GROUP;
     }
     
     public boolean isRoutable() {
@@ -805,7 +811,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     }
     
     public boolean hasMeterNumber() {
-        return this.isMct() || this.isIed() || this.isRfMeter();
+        return isMct() || isIed() || isRfMeter();
     }
     
     public static ImmutableSet<PaoType> getIedTypes() {
@@ -834,6 +840,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     public static ImmutableSet<PaoType> getTransmitterTypes() {
         return transmitterTypes;
+    }
+    
+    public static ImmutableSet<PaoType> getRfGatewayTypes() {
+        return rfGatewayTypes;
     }
     
     /**

@@ -36,7 +36,9 @@ public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGa
         Set<DataSequence> sequences = data.getSequences();
         int numberOfSequences = sequences.size();
         
-        if (numberOfSequences == 0) return 0.0;
+        if (numberOfSequences == 0) {
+            return 0.0;
+        }
         
         double sumOfCompletionPercentages = 0.0;
         
@@ -98,8 +100,46 @@ public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGa
     }
 
     @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((data == null) ? 0 : data.hashCode());
+        result = prime * result + ((paoLocation == null) ? 0 : paoLocation.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        RfnGateway other = (RfnGateway) obj;
+        if (data == null) {
+            if (other.data != null) {
+                return false;
+            }
+        } else if (!data.equals(other.data)) {
+            return false;
+        }
+        if (paoLocation == null) {
+            if (other.paoLocation != null) {
+                return false;
+            }
+        } else if (!paoLocation.equals(other.paoLocation)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
     public int compareTo(RfnGateway o) {
-        return this.name.compareToIgnoreCase(o.getName());
+        return name.compareToIgnoreCase(o.getName());
     }
     
 }

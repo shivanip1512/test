@@ -9,6 +9,7 @@ public class PaoLocation implements YukonPao {
     private double latitude;
     private double longitude;
     
+    @Override
     public PaoIdentifier getPaoIdentifier() {
         return paoIdentifier;
     }
@@ -89,22 +90,29 @@ public class PaoLocation implements YukonPao {
     
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         PaoLocation other = (PaoLocation) obj;
-        if (Double.doubleToLongBits(latitude) != Double.doubleToLongBits(other.latitude))
+        if (Double.doubleToLongBits(latitude) != Double.doubleToLongBits(other.latitude)) {
             return false;
-        if (Double.doubleToLongBits(longitude) != Double.doubleToLongBits(other.longitude))
+        }
+        if (Double.doubleToLongBits(longitude) != Double.doubleToLongBits(other.longitude)) {
             return false;
+        }
         if (paoIdentifier == null) {
-            if (other.paoIdentifier != null)
+            if (other.paoIdentifier != null) {
                 return false;
-        } else if (!paoIdentifier.equals(other.paoIdentifier))
+            }
+        } else if (!paoIdentifier.equals(other.paoIdentifier)) {
             return false;
+        }
         return true;
     }
     

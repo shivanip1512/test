@@ -54,6 +54,8 @@ import com.google.common.collect.ImmutableSet;
 
 public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     
+    private static final String gateway2ModelString = "RFGateway2";
+
     private static final Logger log = YukonLogManager.getLogger(RfnDeviceCreationServiceImpl.class);
 
     @Autowired private ConfigurationSource configurationSource;
@@ -185,7 +187,14 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     
     @Override
     public RfnDevice createGateway(String name, RfnIdentifier rfnIdentifier) {
-        SimpleDevice device = deviceCreationService.createRfnDeviceByDeviceType(PaoType.RFN_GATEWAY, name, 
+        PaoType gatewayType;
+        if(rfnIdentifier.getSensorModel().equalsIgnoreCase(gateway2ModelString)) {
+            gatewayType = PaoType.RFN_GATEWAY_2;
+        } else {
+            gatewayType = PaoType.RFN_GATEWAY;
+        }
+        
+        SimpleDevice device = deviceCreationService.createRfnDeviceByDeviceType(gatewayType, name, 
                                                                                 rfnIdentifier.getSensorModel(), 
                                                                                 rfnIdentifier.getSensorManufacturer(), 
                                                                                 rfnIdentifier.getSensorSerialNumber(), 
