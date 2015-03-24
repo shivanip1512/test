@@ -9,7 +9,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
@@ -19,10 +21,14 @@ import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
@@ -35,29 +41,36 @@ import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.webconfiguration.dao.WebConfigurationDao;
 import com.cannontech.stars.webconfiguration.model.WebConfiguration;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
+
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private EnergyCompanySettingDao ecSettingDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private WebConfigurationDao webConfigurationDao;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-    private LoadingCache<Integer, ApplianceCategory> computingCache=CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).build(new CacheLoader<Integer, ApplianceCategory>() {
 
-        @Override
-        public ApplianceCategory load(Integer arg0) throws Exception {
-            return null;
-        }
-        
-    });
+    private final Map<Integer, ApplianceCategory> applianceCategoryCache = new ConcurrentHashMap<>();
 
+    @PostConstruct
+    public void init() throws Exception {
+        createDatabaseChangeListener();
+    }
+    
+    private void createDatabaseChangeListener() {
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.APPLIANCE, new DatabaseChangeEventListener() {
+            @Override
+            public void eventReceived(DatabaseChangeEvent event) {
+                applianceCategoryCache.remove(event.getPrimaryKey());
+            }
+        });
+    }
 
+    
     private static class ApplianceCategoryRowMapper extends AbstractRowMapperWithBaseQuery<ApplianceCategory> {
         private final Map<Integer, WebConfiguration> webConfigurations;
         private ApplianceCategoryRowMapper() {
@@ -163,7 +176,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     @Override
     @Transactional(propagation = Propagation.SUPPORTS)
     public ApplianceCategory getById(int applianceCategoryId) {
-        ApplianceCategory cachedApplianceCategory = computingCache.getIfPresent(applianceCategoryId);
+        ApplianceCategory cachedApplianceCategory = applianceCategoryCache.get(applianceCategoryId);
         if (cachedApplianceCategory != null) {
             return cachedApplianceCategory;
         } else {
@@ -176,8 +189,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
             WebConfiguration webConfiguration = webConfigurationDao.getForApplianceCateogry(applianceCategoryId);
             applianceCategory.setWebConfiguration(webConfiguration);
 
-            computingCache.put(applianceCategoryId, applianceCategory);
-
+            applianceCategoryCache.put(applianceCategoryId, applianceCategory);
             return applianceCategory;
         }
     }

@@ -3,7 +3,9 @@ package com.cannontech.stars.webconfiguration.dao.impl;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,28 +15,39 @@ import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.stars.webconfiguration.dao.WebConfigurationDao;
 import com.cannontech.stars.webconfiguration.model.WebConfiguration;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Maps;
 
 public class WebConfigurationDaoImpl implements WebConfigurationDao {
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private LoadingCache<Integer, WebConfiguration> computingCache=CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).build(new CacheLoader<Integer, WebConfiguration>() {
 
-        @Override
-        public WebConfiguration load(Integer arg0) throws Exception {
-            return null;
-        }
-        
-    });
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
 
-    private RowMapperWithBaseQuery<WebConfiguration> rowMapper =
+    private final Map<Integer, WebConfiguration> appCatWeConfigCache = new ConcurrentHashMap<>();
+
+    @PostConstruct
+    public void init() throws Exception {
+        createDatabaseChangeListener();
+    }
+    
+    private void createDatabaseChangeListener() {
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.APPLIANCE, new DatabaseChangeEventListener() {
+            @Override
+            public void eventReceived(DatabaseChangeEvent event) {
+                appCatWeConfigCache.remove(event.getPrimaryKey());
+            }
+        });
+    }
+
+    private final RowMapperWithBaseQuery<WebConfiguration> rowMapper =
         new AbstractRowMapperWithBaseQuery<WebConfiguration>() {
         @Override
         public SqlFragmentSource getBaseQuery() {
@@ -73,7 +86,7 @@ public class WebConfigurationDaoImpl implements WebConfigurationDao {
 
     @Override
     public WebConfiguration getForApplianceCateogry(int applianceCategoryId) {
-        WebConfiguration cachedWebConfiguration = computingCache.getIfPresent(applianceCategoryId);
+        WebConfiguration cachedWebConfiguration = appCatWeConfigCache.get(applianceCategoryId);
         if (cachedWebConfiguration != null) {
             return cachedWebConfiguration;
         } else {
@@ -85,7 +98,7 @@ public class WebConfigurationDaoImpl implements WebConfigurationDao {
 
             WebConfiguration webConfiguration = yukonJdbcTemplate.queryForObject(sql, rowMapper);
 
-            computingCache.put(applianceCategoryId, webConfiguration);
+            appCatWeConfigCache.put(applianceCategoryId, webConfiguration);
             return webConfiguration;
         }
     }
@@ -149,10 +162,5 @@ public class WebConfigurationDaoImpl implements WebConfigurationDao {
             retVal.put(webConfiguration.getConfigurationId(), webConfiguration);
         }
         return retVal;
-    }
-
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
 }
