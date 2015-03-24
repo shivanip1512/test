@@ -207,34 +207,27 @@ public class ExportGui extends javax.swing.JFrame implements java.awt.event.Acti
         }
         
         String string = "";
-        if( getSelectedRunAsButton() == RUN_CONSOLE)
-        {
-            string += "cd "+ CtiUtilities.getJavaRuntimeDirPath();
-            string += "\r\n";       
-            string += CtiUtilities.getJavaWrapperCommand() + " -c " + CtiUtilities.getClientBinDirPath() + ExportFormatTypes.getFormatWrapperConf(getExportProperties().getFormatID());
-        }
-        else if( getSelectedRunAsButton() == RUN_AS_SERVICE)
-        {
-            if( getInstallServiceCheckBox().isSelected())
-            {
-                string += "cd "+ CtiUtilities.getJavaRuntimeDirPath();
-                string += "\r\n";   
-                string += CtiUtilities.getJavaWrapperCommand() + " -i " + CtiUtilities.getClientBinDirPath() + ExportFormatTypes.getFormatWrapperConf(getExportProperties().getFormatID());
+        if (getSelectedRunAsButton() == RUN_CONSOLE) {
+            string += "cd " + CtiUtilities.getJavaRuntimeDirPath();
+            string += "\r\n";
+            string += CtiUtilities.getJavaWrapperCommand() + " -c " + CtiUtilities.getClientBinDirPath()
+                    + ExportFormatTypes.getFormatWrapperConf(getExportProperties().getFormatID());
+        } else if (getSelectedRunAsButton() == RUN_AS_SERVICE) {
+            if (getInstallServiceCheckBox().isSelected()) {
+                string += "cd " + CtiUtilities.getJavaRuntimeDirPath();
+                string += "\r\n";
+                string += CtiUtilities.getJavaWrapperCommand() + " -i " + CtiUtilities.getClientBinDirPath()
+                        + ExportFormatTypes.getFormatWrapperConf(getExportProperties().getFormatID());
+            } else if (getUninstallServiceCheckBox().isSelected()) {
+                string += "cd " + CtiUtilities.getJavaRuntimeDirPath();
+                string += "\r\n";
+                string += CtiUtilities.getJavaWrapperCommand() + " -r " + CtiUtilities.getClientBinDirPath()
+                        + ExportFormatTypes.getFormatWrapperConf(getExportProperties().getFormatID());
             }
-            else if( getUninstallServiceCheckBox().isSelected())
-            {
-                string += "cd "+ CtiUtilities.getJavaRuntimeDirPath();
-                string += "\r\n";   
-                string += CtiUtilities.getJavaWrapperCommand()+ " -r " + CtiUtilities.getClientBinDirPath() + ExportFormatTypes.getFormatWrapperConf(getExportProperties().getFormatID());
-            }
-        
-            if( getStartServiceCheckBox().isSelected())
-            {
+            if (getStartServiceCheckBox().isSelected()) {
                 string += "\r\n";
                 string += "net start \"" + getServiceName() + "\" ";
-            }
-            else if( getStopServiceCheckBox().isSelected())
-            {
+            } else if (getStopServiceCheckBox().isSelected()) {
                 string += "\r\n";
                 string += "net stop \"" + getServiceName() + "\"";
             }
