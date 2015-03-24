@@ -35,9 +35,8 @@ public class RfnRestoreEventArchiveRequestProcessor extends RfnEventConditionDat
         Instant eventTime = new Instant(eventTimestamp);
         Instant now = Instant.now();
         
-        // Set time to now if unset or greater than one year before or after now.
-        // The outage was too long, and the firmware didn'tknow what the real time was.
-        if (eventTimestamp == 0) {
+        if (event.getTimeStamp() == 0) {  //outage was too long, and firmware unable to know what time really is
+            // adjust the eventTimestamp to "now" and estimated quality
             eventTimestamp = now.getMillis();
             pointQuality = PointQuality.Estimated;
         }
@@ -46,8 +45,8 @@ public class RfnRestoreEventArchiveRequestProcessor extends RfnEventConditionDat
             return;
         }
 
-        rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.OUTAGE_STATUS,
-            eventTimestamp, OutageStatus.GOOD.getRawState(), pointQuality);
+        rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.OUTAGE_STATUS, eventTimestamp, 
+                                                       OutageStatus.GOOD.getRawState(), pointQuality);
         
         if (event.getTimeStamp() != 0) { // do not process Outage Log when actual eventTimestamp unknown.
             Long durationInSeconds = RfnInvalidValues.OUTAGE_DURATION.getValue();
@@ -71,5 +70,4 @@ public class RfnRestoreEventArchiveRequestProcessor extends RfnEventConditionDat
     public RfnConditionType getRfnConditionType() {
         return RfnConditionType.RESTORE;
     }
-    
 }
