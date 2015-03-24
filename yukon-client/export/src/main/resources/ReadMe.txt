@@ -8,16 +8,21 @@ Cannon Technologies, Inc.
 
 Export.jar is a standalone java application that may be run :
 1.  As a user interface with main clas com.cannontech.export.gui.ExportGui.java.
-    1a. (default) Start up as a normal java application using \yukon\client\bin\ java -jar export.jar
+    1a. (default) Start up as a normal java application using 
+        cd C:\Yukon\Runtime\bin
+        java -jar C:\Yukon\Client\bin\export.jar
         The default startup will include ONLY formats 0 and 1 as export options.
 
-    1b. Start up as a normal java application using \yukon\client\bin\ java -jar export.jar #
+    1b. Start up as a normal java application using 
+        cd C:Yukon\Runtime\bin
+        java -jar C:\Yukon\Client\bin\export.jar #
         The sharp sign(#) represents the number of format id you wish to use.
         You may choose for multiple formats to be options simply by separating the formatids by spaces
         as in # # #. (eg. 0 3 4 ).
 
 2.  From command line using main class com.cannontech.export.ExportFormatBase.java
-    - \yukon\client\bin\Wrapper.exe -[c/i/r] [*].conf
+    - cd C:\Yukon\Runtime\bin
+    - java -jar C:\Yukon\Client\bin\wrapper.jar -[c/i/r] C:\Yukon\Client\bin\[*].conf
 
 //-------------------------------------------------------------------------------------------------------------//
 Valid FORMATIDs (com.cannontech.export.ExportFormatTypes.java):
@@ -40,14 +45,14 @@ About Yukon Export:
         GUI builds (based on the parameters selected from it) and continually runs the export application
         in console mode based on the time interval entered in the GUI's Run Interval text box.  The Export gui
         will be shut down when the generated batch file starts running.
-        The Wrapper.exe utility is used here with it's console parameter (-c) and it's respective *.conf file
+        The wrapper.jar utility is used here with it's console parameter (-c) and it's respective *.conf file
         for the export format selected.
   (3) - Creates a batch file that installs/removes, starts/stops the Export application as an NT Service.  The
         batch file is generated and uses a *.dat file the GUI builds (based on the parameters selected from it)
         and continually runs (if installed and started) the export application based on the time interval entered
         in the GUI's Run Interval text box.  The Export gui will be shut down when the generated batch file starts
         running.
-        The Wrapper.exe utility is used here with it's install/remove parameter (-i/-r) and it's respective *.conf
+        The wrapper.jar utility is used here with it's install/remove parameter (-i/-r) and it's respective *.conf
         file for the export format selected.
        
 - Depending on the format selected, advanced options may exist.  These options are specific to each format

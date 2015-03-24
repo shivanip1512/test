@@ -10,16 +10,11 @@
 wrapper.java.command=../../Runtime/bin/java
 
 # Java Main class
-wrapper.java.mainclass=org.tanukisoftware.wrapper.WrapperSimpleApp
+#wrapper.java.mainclass=org.tanukisoftware.wrapper.WrapperSimpleApp
 
 # Java Classpath (include wrapper.jar)  Add class path elements as
 #  needed starting from 1
-wrapper.java.classpath.1=wrapper.jar
-wrapper.java.classpath.2=services.jar
-wrapper.java.classpath.3=%YUKON_BASE%/server/web
-
-# Java Library Path (location of Wrapper.DLL or libwrapper.so)
-wrapper.java.library.path.1=
+wrapper.java.classpath.1=services.jar
 
 # Java Additional Parameters
 wrapper.java.additional.1=-Dcti.app.name=YukonServiceManager
@@ -35,10 +30,10 @@ wrapper.java.initmemory=16
 wrapper.java.maxmemory=256
 
 # Application parameters.  Add parameters as needed starting from 1
-wrapper.app.parameter.1=com.cannontech.jmx.JRMPServer
+wrapper.java.app.mainclass=com.cannontech.services.server.YukonServicesServer
 
 # Port which the native wrapper code will attempt to connect to
-wrapper.port=1777
+#wrapper.port=1777
 
 #********************************************************************
 # Wrapper Logging parameters
@@ -50,7 +45,7 @@ wrapper.console.format=PM
 wrapper.console.loglevel=INFO
 
 # Log file to use for wrapper output logging.
-wrapper.logfile=..\Log\appserver.debug.log
+wrapper.logfile=..\\Log\\appserver.debug.log
 
 # Format of output for the log file.  (See docs for formats)
 wrapper.logfile.format=PTM

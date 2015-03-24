@@ -104,10 +104,26 @@
 	    </copy>
    	
 	    <copy todir="dist/wrapper">
-	      <fileset file="../third-party/Wrapper.dll"/>
-	      <fileset file="../third-party/Wrapper.exe"/>
 	      <fileset file="../third-party/wrapper.jar"/>
+		  <fileset file="../third-party/wrapperApp.jar"/>
+	      <fileset file="../third-party/ahessian.jar"/>
+	      <fileset file="../third-party/commons-cli-2-SNAPSHOT.jar"/>
+	      <fileset file="../third-party/commons-collections-3.2.1.jar"/>
+	      <fileset file="../third-party/commons-configuration-1.8.jar"/>
+	      <fileset file="../third-party/commons-io-2.4.jar"/>
+	      <fileset file="../third-party/commons-lang-2.6.jar"/>
+	      <fileset file="../third-party/commons-logging-1.1.3.jar"/>
+	      <fileset file="../third-party/commons-vfs2-2.0.jar"/>
+	      <fileset file="../third-party/groovy-all-1.8.6.jar"/>    	
+		  <fileset file="../third-party/jna-3.4.1.jar"/>    
+		  <fileset file="../third-party/jrexx-1.1.1.jar"/>       
+		  <fileset file="../third-party/netty-3.6.6.Final.jar"/>    
+		  <fileset file="../third-party/platform-3.4.1.jar"/>      
 	    </copy>
+   	
+     	<copy todir="dist/Runtime">
+     	  <fileset file="../yukon-install/JRE"/> 
+        </copy>
    	
        <zip zipfile="sensus-jms-gpuff.zip"
             basedir="dist/" >

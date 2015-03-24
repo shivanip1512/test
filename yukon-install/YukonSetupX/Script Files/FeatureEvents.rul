@@ -27,11 +27,12 @@
 //---------------------------------------------------------------------------  
 export prototype NotificationServer_Installed();
 function NotificationServer_Installed()
-string sPathAndFile, sCMD, sKey;
+string sProg , sCMD , svDir;
 begin
-	sPathAndFile = TARGETDIR + "\\client\\bin\\wrapper.exe";
-	sCMD = "-i notifserver.conf";
-	LaunchApplication(sPathAndFile, sCMD, "", SW_HIDE, 0, LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
+	sProg = "cmd.exe";
+	sCMD = "/c java -jar "+ TARGETDIR ^ "\\Client\\bin\\wrapper.jar" + " -i " + TARGETDIR ^ "\\Client\\bin\\notifserver.conf";
+	svDir = TARGETDIR + "\\Runtime\\bin";
+	LaunchApplication(sProg, sCMD, svDir, SW_HIDE, 0, LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
 end;
 
 //---------------------------------------------------------------------------
@@ -40,12 +41,13 @@ end;
 //--------------------------------------------------------------------------- 
 export prototype NotificationServer_UnInstalling();
 function NotificationServer_UnInstalling()
-string sPathAndFile, sCMD;
+string sProg , sCMD , svDir;
 begin   
 	//remove the Yukon Notification Server
-	sPathAndFile = TARGETDIR + "\\client\\bin\\wrapper.exe";
-	sCMD = "-r notifserver.conf";
-	LaunchApplication(sPathAndFile, sCMD, "", SW_HIDE, 0, LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
+	sProg = "cmd.exe";
+	sCMD = "/c java -jar "+ TARGETDIR ^ "\\Client\\bin\\wrapper.jar" + " -r " + TARGETDIR ^ "\\Client\\bin\\notifserver.conf";
+	svDir = TARGETDIR + "\\Runtime\\bin";
+	LaunchApplication(sProg, sCMD, svDir, SW_HIDE, 0, LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
 end;
 
 //----------------------------------------------------------------------------
@@ -124,12 +126,13 @@ end;
 //--------------------------------------------------------------------------- 
 export prototype YukonServiceManager_Installed();
 function YukonServiceManager_Installed()
-string sPathAndFile, sCMD, sKey;
+string sProg, sCMD, svDir;
 begin
 	//Install as a service
-	sPathAndFile = TARGETDIR + "\\client\\bin\\wrapper.exe";
-	sCMD = "-i appserver.conf";
-	LaunchApplication(sPathAndFile, sCMD, "", SW_HIDE, 0, LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
+	sProg = "cmd.exe";
+	sCMD = "/c java -jar " + TARGETDIR ^ "\\Client\\bin\\wrapper.jar" + " -i " + TARGETDIR ^ "\\Client\\bin\\appserver.conf";
+	svDir = TARGETDIR + "\\Runtime\\bin";
+	LaunchApplication(sProg, sCMD, svDir, SW_HIDE, 0, LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
 end;
 
 //---------------------------------------------------------------------------
@@ -138,12 +141,13 @@ end;
 //--------------------------------------------------------------------------- 
 export prototype YukonServiceManager_UnInstalling();
 function YukonServiceManager_UnInstalling()
-string sPathAndFile, sCMD;
+string sProg, sCMD, svDir;
 begin
 	//remove the Yukon Service Manager
-	sPathAndFile = TARGETDIR + "\\client\\bin\\wrapper.exe";
-	sCMD = "-r appserver.conf";
-	LaunchApplication(sPathAndFile, sCMD, "", SW_HIDE, 0, LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);	
+	sProg = "cmd.exe";
+	sCMD = "/c java -jar " + TARGETDIR ^ "\\Client\\bin\\wrapper.jar" + " -r " + TARGETDIR ^ "\\Client\\bin\\appserver.conf";
+	svDir = TARGETDIR + "\\Runtime\\bin";
+	LaunchApplication(sProg, sCMD, svDir, SW_HIDE, 0, LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
 end;
 
 //---------------------------------------------------------------------------
