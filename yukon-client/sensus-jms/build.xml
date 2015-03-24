@@ -120,11 +120,13 @@
 		  <fileset file="../third-party/netty-3.6.6.Final.jar"/>    
 		  <fileset file="../third-party/platform-3.4.1.jar"/>      
 	    </copy>
-   	
-     	<copy todir="dist/Runtime">
-     	  <fileset file="../yukon-install/JRE"/> 
+    
+        <copy todir="dist/Runtime">
+           <fileset dir="../yukon-install/JRE">
+               <include name="**"/>
+            </fileset>
         </copy>
-   	
+    
        <zip zipfile="sensus-jms-gpuff.zip"
             basedir="dist/" >
        </zip>
