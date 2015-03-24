@@ -578,7 +578,7 @@ int ObjectBlock::restore( const unsigned char *buf, int len )
                 (_group == BinaryOutputControl::Group && _variation == BinaryOutputControl::BOC_PatternMask) ||
                 (_group == InternalIndications::Group && _variation == InternalIndications::II_InternalIndications) )
             {
-                std::tie(tmpObject, objbitlen) = restoreBitObject(buf + pos, bitpos, len - pos);
+                std::tie(tmpObject, objbitlen) = restoreBitObject(buf + pos, len - pos, bitpos);
             }
             else
             {
@@ -692,7 +692,7 @@ ObjectBlock::RestoredObject ObjectBlock::restoreBitObject( const unsigned char *
 
         if( result.first )
         {
-            result.second = result.first->restoreBits(buf, bitoffset, len) + bitoffset;
+            result.second = result.first->restoreBits(buf, bitoffset, len);
 
             if( result.first->isValid() )
             {
