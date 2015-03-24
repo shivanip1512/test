@@ -163,7 +163,7 @@ public class PaoUtils {
     public static final Comparator<LiteYukonPAObject> NAME_COMPARE = new Comparator<LiteYukonPAObject>() {
         @Override
         public int compare(LiteYukonPAObject o1, LiteYukonPAObject o2) {
-            return o1.getPaoName().compareTo(o2.getPaoName());
+            return o1.getPaoName().compareToIgnoreCase(o2.getPaoName());
         }
     };
     
