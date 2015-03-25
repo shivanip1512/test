@@ -217,6 +217,14 @@ INSERT INTO Device (DeviceId, AlarmInhibit, ControlInhibit)
 (SELECT PAObjectId, 'N', 'N' FROM YukonPAObject WHERE Type IN ('PO_REGULATOR', 'GO_REGULATOR', 'LTC'));
 /* End YUK-14142 */
 
+/* Start YUK-14171 */
+DELETE FROM YukonGroupRole
+WHERE RolePropertyId =  -20903;
+  
+DELETE FROM YukonRoleProperty
+WHERE RolePropertyId =  -20903;
+/* End YUK-14171 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

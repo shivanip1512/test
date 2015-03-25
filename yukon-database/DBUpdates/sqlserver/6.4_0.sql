@@ -234,7 +234,7 @@ BEGIN
 
         SET @configNumber = @configNumber + 1;
 
-       FETCH FROM regulator_curs INTO @keepAliveTimer, @keepAliveConfig, @voltChangePerTap;
+        FETCH FROM regulator_curs INTO @keepAliveTimer, @keepAliveConfig, @voltChangePerTap;
     END
     CLOSE regulator_curs;
     DEALLOCATE regulator_curs;
@@ -250,6 +250,14 @@ WHERE Type IN ('PO_REGULATOR', 'GO_REGULATOR', 'LTC');
 INSERT INTO Device (DeviceId, AlarmInhibit, ControlInhibit) 
 (SELECT PAObjectId, 'N', 'N' FROM YukonPAObject WHERE Type IN ('PO_REGULATOR', 'GO_REGULATOR', 'LTC'));
 /* End YUK-14142 */
+
+/* Start YUK-14171 */
+DELETE FROM YukonGroupRole
+WHERE RolePropertyId =  -20903;
+  
+DELETE FROM YukonRoleProperty
+WHERE RolePropertyId =  -20903;
+/* End YUK-14171 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
