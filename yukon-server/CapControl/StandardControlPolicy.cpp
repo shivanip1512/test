@@ -1,10 +1,6 @@
 #include "precompiled.h"
 
 #include "StandardControlPolicy.h"
-#include "msg_signal.h"
-#include "msg_pcrequest.h"
-
-extern unsigned long _MSG_PRIORITY;
 
 
 namespace Cti           {
@@ -12,7 +8,7 @@ namespace CapControl    {
 
 StandardControlPolicy::StandardControlPolicy()
 {
-    supportedAttributes = AttributeList
+    _supportedAttributes = AttributeList
     {
         PointAttribute::TapDown,
         PointAttribute::TapUp,
@@ -22,27 +18,17 @@ StandardControlPolicy::StandardControlPolicy()
     };
 }
 
-ControlPolicy::ControlRequest StandardControlPolicy::TapUp()
+Policy::Action StandardControlPolicy::TapUp()
 {
-    return manualTapControl( getPointByAttribute( PointAttribute::TapUp ) );
+    return makeStandardDigitalControl( getPointByAttribute( PointAttribute::TapUp ) );
 }
 
-ControlPolicy::ControlRequest StandardControlPolicy::TapDown()
+Policy::Action StandardControlPolicy::TapDown()
 {
-    return manualTapControl( getPointByAttribute( PointAttribute::TapDown ) );
+    return makeStandardDigitalControl( getPointByAttribute( PointAttribute::TapDown ) );
 }
 
-ControlPolicy::ControlRequest StandardControlPolicy::manualTapControl( const LitePoint & point )
-{
-    return
-    {
-        makeSignalTemplate( point.getPointId() ),
-        makeRequestTemplate( point.getPaoId(),
-                             point.getStateOneControl() + " select pointid " + std::to_string( point.getPointId() ) )
-    };
-}
-
-ControlPolicy::ControlRequest StandardControlPolicy::AdjustSetPoint( const double changeAmount )
+Policy::Action StandardControlPolicy::AdjustSetPoint( const double changeAmount )
 {
     LitePoint point = getPointByAttribute( PointAttribute::ForwardSetPoint );
 
@@ -54,31 +40,10 @@ ControlPolicy::ControlRequest StandardControlPolicy::AdjustSetPoint( const doubl
 
     return 
     {
-        makeSignalTemplate( point.getPointId() ),
+        makeSignalTemplate( point.getPointId(), 0 ),
         makeRequestTemplate( point.getPaoId(),
                              "putvalue analog " + std::to_string( pointOffset ) + " " + std::to_string( newSetPoint ) )
     };
-}
-
-std::unique_ptr<CtiSignalMsg> StandardControlPolicy::makeSignalTemplate( const long ID )
-{
-    return std::make_unique<CtiSignalMsg>( ID,
-                                           0,
-                                           "",
-                                           "",
-                                           CapControlLogType,
-                                           SignalEvent,
-                                           "cap control" );
-}
-
-std::unique_ptr<CtiRequestMsg> StandardControlPolicy::makeRequestTemplate( const long ID, const std::string & command )
-{
-    auto request = std::make_unique<CtiRequestMsg>( ID, command );
-
-    request->setMessagePriority( _MSG_PRIORITY );
-    request->setSOE( 5 );
-
-    return request;
 }
 
 double StandardControlPolicy::getSetPointValue()
@@ -90,7 +55,6 @@ double StandardControlPolicy::getSetPointBandwidth()
 {
     return getValueByAttribute( PointAttribute::ForwardBandwidth );
 }
-
 
 }
 }

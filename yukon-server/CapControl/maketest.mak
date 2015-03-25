@@ -147,7 +147,13 @@ MsgCapControlServerResponse.obj \
 MsgCapControlShutdown.obj \
 ExecutorFactory.obj \
 Policy.obj \
-StandardControlPolicy.obj
+StandardControlPolicy.obj \
+KeepAlivePolicy.obj \
+CountdownKeepAlivePolicy.obj \
+IncrementingKeepAlivePolicy.obj \
+ScanPolicy.obj \
+LoadOnlyScanPolicy.obj \
+StandardScanPolicy.obj
 
 
 

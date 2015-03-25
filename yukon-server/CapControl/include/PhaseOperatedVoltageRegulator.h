@@ -25,26 +25,7 @@ public:
 
     virtual const VoltageRegulator::Type getType() const;
 
-    virtual void executeIntegrityScan();
-    virtual void executeEnableKeepAlive();
-    virtual void executeDisableKeepAlive();
-    virtual void executeEnableRemoteControl();
-    virtual void executeDisableRemoteControl();
-
-    virtual IDSet getVoltagePointIDs();
-
-    virtual bool            getRecentTapOperation() const { return _recentTapOperation; }
-    virtual OperatingMode   getLastOperatingMode()  const { return _lastOperatingMode; }
-    virtual OperatingMode   getLastCommandedOperatingMode() const { return _lastCommandedOperatingMode; }
-
-protected:
-    
-    long getKeepAliveRefreshRate();
-
-    bool            _recentTapOperation;
-
-    OperatingMode   _lastOperatingMode;
-    OperatingMode   _lastCommandedOperatingMode;
+//    virtual void executeEnableKeepAlive();
 };
 
 }

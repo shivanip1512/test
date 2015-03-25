@@ -55,7 +55,9 @@ VoltageRegulator::VoltageRegulator()
     _keepAliveConfig(0),
     _keepAliveTimer(0),
     _nextKeepAliveSendTime(CtiTime(neg_infin)),
-    _voltChangePerTap(0.75),
+    _lastOperatingMode(UnknownMode),
+    _lastCommandedOperatingMode(UnknownMode),
+    _recentTapOperation(false),
     _controlPolicy( std::make_unique<StandardControlPolicy>() )
 {
     // empty...
@@ -72,7 +74,9 @@ VoltageRegulator::VoltageRegulator(Cti::RowReader & rdr)
     _keepAliveConfig(0),
     _keepAliveTimer(0),
     _nextKeepAliveSendTime(CtiTime(neg_infin)),
-    _voltChangePerTap(0.75),
+    _lastOperatingMode(UnknownMode),
+    _lastCommandedOperatingMode(UnknownMode),
+    _recentTapOperation(false),
     _controlPolicy( std::make_unique<StandardControlPolicy>() )
 {
     // empty...
@@ -89,7 +93,9 @@ VoltageRegulator::VoltageRegulator(const VoltageRegulator & toCopy)
     _keepAliveConfig(0),
     _keepAliveTimer(0),
     _nextKeepAliveSendTime(CtiTime(neg_infin)),
-    _voltChangePerTap(0.75),
+    _lastOperatingMode(UnknownMode),
+    _lastCommandedOperatingMode(UnknownMode),
+    _recentTapOperation(false),
     _controlPolicy( std::make_unique<StandardControlPolicy>() )
 {
     operator=(toCopy);
@@ -120,7 +126,10 @@ VoltageRegulator & VoltageRegulator::operator=(const VoltageRegulator & rhs)
         _keepAliveTimer         = rhs._keepAliveTimer;
         _nextKeepAliveSendTime  = rhs._nextKeepAliveSendTime;
 
-        _voltChangePerTap       = rhs._voltChangePerTap;
+        _lastOperatingMode  = rhs._lastOperatingMode;
+        _lastCommandedOperatingMode = rhs._lastCommandedOperatingMode;
+        _recentTapOperation = rhs._recentTapOperation;
+
     }
 
     return *this;
@@ -133,6 +142,8 @@ void VoltageRegulator::handlePointData(CtiPointDataMsg * message)
     _pointValues.updatePointValue(message);
 
     _controlPolicy->updatePointData( message );
+    _keepAlivePolicy->updatePointData( message );
+    _scanPolicy->updatePointData( message );
 }
 
 
@@ -146,6 +157,16 @@ VoltageRegulator::IDSet VoltageRegulator::getRegistrationPoints()
     }
 
     for ( const auto ID : _controlPolicy->getRegistrationPointIDs() )
+    {
+        IDs.insert( ID );
+    }
+
+    for ( const auto ID : _keepAlivePolicy->getRegistrationPointIDs() )
+    {
+        IDs.insert( ID );
+    }
+
+    for ( const auto ID : _scanPolicy->getRegistrationPointIDs() )
     {
         IDs.insert( ID );
     }
@@ -170,6 +191,23 @@ LitePoint VoltageRegulator::getPointByAttribute(const PointAttribute & attribute
         // ... continue on to the local map lookup
     }
 
+    try
+    {
+        return _keepAlivePolicy->getPointByAttribute( attribute );
+    } 
+    catch ( FailedAttributeLookup & )
+    {
+        // ... continue on to the local map lookup
+    }
+
+    try
+    {
+        return _scanPolicy->getPointByAttribute( attribute );
+    } 
+    catch ( FailedAttributeLookup & )
+    {
+        // ... continue on to the local map lookup
+    }
 
     AttributeMap::const_iterator iter = _attributes.find(attribute);
 
@@ -210,6 +248,8 @@ bool VoltageRegulator::getPointValue(int pointId, double & value)
 void VoltageRegulator::loadPointAttributes(AttributeService * service, const PointAttribute & attribute)
 {
     _controlPolicy->loadAttributes( *service, getPaoId() );
+    _keepAlivePolicy->loadAttributes( *service, getPaoId() );
+    _scanPolicy->loadAttributes( *service, getPaoId() );
 
     LitePoint point = service->getPointByPaoAndAttribute( getPaoId(), attribute );
 
@@ -244,123 +284,6 @@ void VoltageRegulator::setKeepAliveConfig(const long value)
 }
 
 
-void VoltageRegulator::executeTapUpOperation()
-try
-{
-    submitControlCommands( _controlPolicy->TapUp(),
-                           RaiseTap,
-                           "Raise Tap Position",
-                           capControlIvvcTapOperation,
-                           getVoltageChangePerTap() );
-
-    sendCapControlOperationMessage(
-        CapControlOperationMessage::createRaiseTapMessage( getPaoId(), CtiTime() ) );
-}
-catch ( FailedAttributeLookup & missingAttribute )
-{
-    throw MissingPointAttribute( getPaoId(),
-                                 missingAttribute.attribute(),
-                                 getPaoType(),
-                                 isTimeForMissingAttributeComplain()  );
-}
-
-
-void VoltageRegulator::executeTapDownOperation()
-try
-{
-    submitControlCommands( _controlPolicy->TapDown(),
-                           LowerTap,
-                           "Lower Tap Position",
-                           capControlIvvcTapOperation,
-                           -getVoltageChangePerTap() );
-
-    sendCapControlOperationMessage(
-        CapControlOperationMessage::createLowerTapMessage( getPaoId(), CtiTime() ) );
-}
-catch ( FailedAttributeLookup & missingAttribute )
-{
-    throw MissingPointAttribute( getPaoId(),
-                                 missingAttribute.attribute(),
-                                 getPaoType(),
-                                 isTimeForMissingAttributeComplain()  );
-}
-
-
-void VoltageRegulator::executeAdjustSetPointOperation( const double changeAmount )
-try
-{
-    if ( changeAmount > 0.0 ) 
-    {
-        submitControlCommands( _controlPolicy->AdjustSetPoint( changeAmount ),
-                               RaiseSetPoint,
-                               "Raise Set Point",
-                               capControlIvvcSetPointOperation,
-                               changeAmount );
-    }
-    else
-    {
-        submitControlCommands( _controlPolicy->AdjustSetPoint( changeAmount ),
-                               LowerSetPoint,
-                               "Lower Set Point",
-                               capControlIvvcSetPointOperation,
-                               changeAmount );
-    }
-}
-catch ( FailedAttributeLookup & missingAttribute )
-{
-    throw MissingPointAttribute( getPaoId(),
-                                 missingAttribute.attribute(),
-                                 getPaoType(),
-                                 isTimeForMissingAttributeComplain()  );
-}
-catch ( UninitializedPointValue & noValue )
-{
-    throw NoPointAttributeValue( getPaoId(),
-                                 noValue.attribute(),
-                                 getPaoType() );
-}
-
-
-void VoltageRegulator::submitControlCommands( ControlPolicy::ControlRequest   & blob,
-                                              const ControlOperation            operation,
-                                              const std::string               & opDescription,
-                                              const CtiCCEventType_t            eventType,
-                                              const double                      changeAmount )
-{
-    auto & signal  = blob.first;
-    auto & request = blob.second;
-
-    notifyControlOperation( operation );
-
-    std::string fullDescription = opDescription + getPhaseString();
-
-    signal->setText( fullDescription );
-    signal->setAdditionalInfo( "Voltage Regulator Name: " + getPaoName() );
-
-    CtiCapController::getInstance()->sendMessageToDispatch( signal.release() );
-
-    EventLogEntry   eventLog( fullDescription, getPaoId(), eventType );
-    eventLog.aVar      = changeAmount;              // 'value' is a long... we want a double so using 'aVar'
-    eventLog.ipAddress = desolvePhase( _phase );    // 'AdditionalInfo' column
-
-    CtiCapController::submitEventLogEntry( eventLog );
-
-    CtiCapController::getInstance()->manualCapBankControl( request.release() );
-}
-
-
-void VoltageRegulator::executeIntegrityScanHelper( const LitePoint & point )
-{
-    CtiCapController::getInstance()->sendMessageToDispatch( createDispatchMessage( point.getPointId(), "Integrity Scan" ) );
-
-    std::string commandString("scan integrity");
-
-    CtiRequestMsg *request = createPorterRequestMsg( point.getPaoId(), commandString );
-    request->setSOE(5);
-
-    CtiCapController::getInstance()->manualCapBankControl( request );
-    sendCapControlOperationMessage( CapControlOperationMessage::createScanDeviceMessage( point.getPaoId(), CtiTime() ) );
-}
 
 
 void VoltageRegulator::executeDigitalOutputHelper( const LitePoint & point,
@@ -679,6 +602,293 @@ double VoltageRegulator::adjustVoltage( const double changeAmount )
     }
 
     return changeAmount;
+}
+
+
+//////////////  Control Policy Commands 
+
+
+void VoltageRegulator::executeTapUpOperation()
+try
+{
+    submitControlCommands( _controlPolicy->TapUp(),
+                           RaiseTap,
+                           "Raise Tap Position",
+                           capControlIvvcTapOperation,
+                           getVoltageChangePerTap() );
+
+    sendCapControlOperationMessage(
+        CapControlOperationMessage::createRaiseTapMessage( getPaoId(), CtiTime() ) );
+}
+catch ( FailedAttributeLookup & missingAttribute )
+{
+    throw MissingPointAttribute( getPaoId(),
+                                 missingAttribute.attribute(),
+                                 getPaoType(),
+                                 isTimeForMissingAttributeComplain()  );
+}
+
+
+void VoltageRegulator::executeTapDownOperation()
+try
+{
+    submitControlCommands( _controlPolicy->TapDown(),
+                           LowerTap,
+                           "Lower Tap Position",
+                           capControlIvvcTapOperation,
+                           -getVoltageChangePerTap() );
+
+    sendCapControlOperationMessage(
+        CapControlOperationMessage::createLowerTapMessage( getPaoId(), CtiTime() ) );
+}
+catch ( FailedAttributeLookup & missingAttribute )
+{
+    throw MissingPointAttribute( getPaoId(),
+                                 missingAttribute.attribute(),
+                                 getPaoType(),
+                                 isTimeForMissingAttributeComplain()  );
+}
+
+
+void VoltageRegulator::executeAdjustSetPointOperation( const double changeAmount )
+try
+{
+    if ( changeAmount > 0.0 ) 
+    {
+        submitControlCommands( _controlPolicy->AdjustSetPoint( changeAmount ),
+                               RaiseSetPoint,
+                               "Raise Set Point",
+                               capControlIvvcSetPointOperation,
+                               changeAmount );
+    }
+    else
+    {
+        submitControlCommands( _controlPolicy->AdjustSetPoint( changeAmount ),
+                               LowerSetPoint,
+                               "Lower Set Point",
+                               capControlIvvcSetPointOperation,
+                               changeAmount );
+    }
+}
+catch ( FailedAttributeLookup & missingAttribute )
+{
+    throw MissingPointAttribute( getPaoId(),
+                                 missingAttribute.attribute(),
+                                 getPaoType(),
+                                 isTimeForMissingAttributeComplain()  );
+}
+catch ( UninitializedPointValue & noValue )
+{
+    throw NoPointAttributeValue( getPaoId(),
+                                 noValue.attribute(),
+                                 getPaoType() );
+}
+
+
+void VoltageRegulator::submitControlCommands( Policy::Action          & action,
+                                              const ControlOperation    operation,
+                                              const std::string       & opDescription,
+                                              const CtiCCEventType_t    eventType,
+                                              const double              changeAmount )
+{
+    auto & signal  = action.first;
+    auto & request = action.second;
+
+    notifyControlOperation( operation );
+
+    std::string fullDescription = opDescription + getPhaseString();
+
+    signal->setText( fullDescription );
+    signal->setAdditionalInfo( "Voltage Regulator Name: " + getPaoName() );
+
+    CtiCapController::getInstance()->sendMessageToDispatch( signal.release() );
+
+    EventLogEntry   eventLog( fullDescription, getPaoId(), eventType );
+    eventLog.aVar      = changeAmount;              // 'value' is a long... we want a double so using 'aVar'
+    eventLog.ipAddress = desolvePhase( _phase );    // 'AdditionalInfo' column
+
+    CtiCapController::submitEventLogEntry( eventLog );
+
+    CtiCapController::getInstance()->manualCapBankControl( request.release() );
+}
+
+
+//////////////  Scan Policy Commands 
+
+
+void VoltageRegulator::executeIntegrityScan()
+try
+{
+    for ( auto & action : _scanPolicy->IntegrityScan() )
+    {
+        auto & signal  = action.first;
+        auto & request = action.second;
+
+        signal->setText( "Integrity Scan" );
+        signal->setAdditionalInfo( "Voltage Regulator Name: " + getPaoName() );
+
+        CtiCapController::getInstance()->sendMessageToDispatch( signal.release() );
+
+        const long pointPaoID = request->DeviceId();
+
+        CtiCapController::getInstance()->manualCapBankControl( request.release() );
+
+        sendCapControlOperationMessage( 
+            Messaging::CapControl::CapControlOperationMessage::createScanDeviceMessage(
+                pointPaoID, CtiTime() ) );
+    }
+}
+catch ( FailedAttributeLookup & missingAttribute )
+{
+    throw MissingPointAttribute( getPaoId(),
+                                 missingAttribute.attribute(),
+                                 getPaoType(),
+                                 isTimeForMissingAttributeComplain()  );
+}
+
+
+//////////////  KeepAlive Policy Commands 
+
+
+void VoltageRegulator::executeEnableRemoteControl()
+{
+    try
+    {
+        submitRemoteControlCommands( _keepAlivePolicy->EnableRemoteControl( getKeepAliveConfig() ),
+                                     "Enable Remote Control");
+
+        _lastCommandedOperatingMode = RemoteMode;
+    }
+    catch ( FailedAttributeLookup & missingAttribute )
+    {
+        throw MissingPointAttribute( getPaoId(),
+                                     missingAttribute.attribute(),
+                                     getPaoType(),
+                                     isTimeForMissingAttributeComplain()  );
+    }
+
+    executeEnableKeepAlive();
+}
+
+
+void VoltageRegulator::executeDisableRemoteControl()
+{
+    try
+    {
+        submitRemoteControlCommands( _keepAlivePolicy->DisableRemoteControl(),
+                                     "Disable Remote Control");
+
+        _lastCommandedOperatingMode = LocalMode;
+    }
+    catch ( FailedAttributeLookup & missingAttribute )
+    {
+        throw MissingPointAttribute( getPaoId(),
+                                     missingAttribute.attribute(),
+                                     getPaoType(),
+                                     isTimeForMissingAttributeComplain()  );
+    }
+
+    executeDisableKeepAlive();
+}
+
+
+void VoltageRegulator::submitRemoteControlCommands( Policy::Action    & action,
+                                                    const std::string & description )
+{
+    auto & signal = action.first;
+
+    signal->setText( description );
+    signal->setAdditionalInfo( "Voltage Regulator Name: " + getPaoName() );
+
+    CtiCapController::getInstance()->sendMessageToDispatch( signal.release() );
+
+    CtiCapController::submitEventLogEntry(
+        EventLogEntry( description, getPaoId(), capControlIvvcRemoteControlEvent ) );
+}
+
+
+void VoltageRegulator::executeEnableKeepAlive()
+{
+    long keepAlivePeriod = getKeepAliveTimer();
+
+    try
+    {
+        const long delay = submitKeepAliveCommands( _keepAlivePolicy->SendKeepAlive( getKeepAliveConfig() ) );
+        if ( delay > 0 )
+        {
+            keepAlivePeriod = delay;
+        }
+    }
+    catch ( FailedAttributeLookup & missingAttribute )
+    {
+        throw MissingPointAttribute( getPaoId(),
+                                     missingAttribute.attribute(),
+                                     getPaoType(),
+                                     isTimeForMissingAttributeComplain()  );
+    }
+
+    if ( isTimeToSendKeepAlive() )      // update the keep alive timer
+    {
+        _nextKeepAliveSendTime = ( CtiTime::now() + keepAlivePeriod );
+    }
+}
+
+
+void VoltageRegulator::executeDisableKeepAlive()
+{
+    long keepAlivePeriod = getKeepAliveTimer();
+
+    try
+    {
+        const long delay = submitKeepAliveCommands( _keepAlivePolicy->StopKeepAlive() );
+        if ( delay > 0 )
+        {
+            keepAlivePeriod = delay;
+        }
+    }
+    catch ( FailedAttributeLookup & missingAttribute )
+    {
+        throw MissingPointAttribute( getPaoId(),
+                                     missingAttribute.attribute(),
+                                     getPaoType(),
+                                     isTimeForMissingAttributeComplain()  );
+    }
+
+    if ( isTimeToSendKeepAlive() )      // update the keep alive timer
+    {
+        _nextKeepAliveSendTime = ( CtiTime::now() + keepAlivePeriod );
+    }
+}
+
+
+long VoltageRegulator::submitKeepAliveCommands( Policy::Actions & actions )
+{
+    auto & signal  = actions[0].first;
+    auto & request = actions[0].second;
+
+    const long delay = signal->getPointValue();
+
+    signal->setText( "Keep Alive" );
+    signal->setAdditionalInfo( "Voltage Regulator Name: " + getPaoName() );
+
+    CtiCapController::getInstance()->sendMessageToDispatch( signal.release() );
+
+    CtiCapController::getInstance()->manualCapBankControl( request.release() );
+
+    if ( actions.size() > 1 )
+    {
+        auto & signal  = actions[1].first;
+        auto & request = actions[1].second;
+
+        signal->setText( "Auto Block Enable" );
+        signal->setAdditionalInfo( "Voltage Regulator Name: " + getPaoName() );
+
+        CtiCapController::getInstance()->sendMessageToDispatch( signal.release() );
+
+        CtiCapController::getInstance()->manualCapBankControl( request.release() );
+    }
+
+    return delay;
 }
 
 

@@ -12,6 +12,8 @@
 #include "EventTypes.h"
 
 #include "ControlPolicy.h"
+#include "KeepAlivePolicy.h"
+#include "ScanPolicy.h"
 
 #include <map>
 #include <set>
@@ -78,7 +80,7 @@ public:
 
     IDSet getRegistrationPoints();
 
-    virtual IDSet getVoltagePointIDs() = 0;
+//    virtual IDSet getVoltagePointIDs() = 0;
 
     LitePoint getPointByAttribute(const PointAttribute & attribute);
 
@@ -101,11 +103,13 @@ public:
     virtual void executeTapDownOperation();
     virtual void executeAdjustSetPointOperation( const double changeAmount );
 
-    virtual void executeIntegrityScan() = 0;
-    virtual void executeEnableRemoteControl() = 0;
-    virtual void executeDisableRemoteControl() = 0;
-    virtual void executeEnableKeepAlive() = 0;
-    virtual void executeDisableKeepAlive() = 0;
+    virtual void executeIntegrityScan();
+
+    virtual void executeEnableRemoteControl();
+    virtual void executeDisableRemoteControl();
+
+    virtual void executeEnableKeepAlive();
+    virtual void executeDisableKeepAlive();
 
     void setKeepAliveConfig(const long value);
     bool isTimeToSendKeepAlive();
@@ -125,10 +129,6 @@ public:
     ControlOperation getLastControlOperation() const     { return _lastControlOperation; }
     CtiTime          getLastControlOperationTime() const { return _lastControlOperationTime; }
 
-    virtual bool            getRecentTapOperation() const = 0;
-    virtual OperatingMode   getLastOperatingMode() const = 0;
-    virtual OperatingMode   getLastCommandedOperatingMode() const = 0;
-
     ControlMode getControlMode() const;
 
     double getVoltage();
@@ -136,9 +136,20 @@ public:
     long getKeepAliveConfig();
     long getKeepAliveTimer();
 
+    virtual bool          getRecentTapOperation()         const { return _recentTapOperation; }
+    virtual OperatingMode getLastOperatingMode()          const { return _lastOperatingMode; }
+    virtual OperatingMode getLastCommandedOperatingMode() const { return _lastCommandedOperatingMode; }
+
 protected:
 
-    std::unique_ptr<ControlPolicy>  _controlPolicy;
+    bool            _recentTapOperation;
+
+    OperatingMode   _lastOperatingMode;
+    OperatingMode   _lastCommandedOperatingMode;
+
+    std::unique_ptr<ControlPolicy>   _controlPolicy;
+    std::unique_ptr<KeepAlivePolicy> _keepAlivePolicy;
+    std::unique_ptr<ScanPolicy>      _scanPolicy;
 
     Phase   _phase;
 
@@ -158,11 +169,7 @@ protected:
 
     CtiTime         _lastMissingAttributeComplainTime;
 
-    double      _voltChangePerTap;
-
     virtual void loadPointAttributes(AttributeService * service, const PointAttribute & attribute);
-
-    void executeIntegrityScanHelper( const LitePoint & point );
 
     void executeDigitalOutputHelper( const LitePoint & point,
                                      const std::string & textDescription,
@@ -180,11 +187,16 @@ protected:
     void notifyControlOperation(const ControlOperation & operation, const CtiTime & timeStamp = CtiTime() );
 
 
-    void submitControlCommands( ControlPolicy::ControlRequest & blob,
+    void submitControlCommands( Policy::Action                & action,
                                 const ControlOperation          operation,
                                 const std::string             & opDescription,
                                 const CtiCCEventType_t          eventType,
                                 const double                    changeAmount );
+
+    void submitRemoteControlCommands( Policy::Action    & action,
+                                      const std::string & description );
+
+    long submitKeepAliveCommands( Policy::Actions & actions);
 };
 
 // this is added to use voltageRegulator with boost::ptr_vector, since it is an abstract class

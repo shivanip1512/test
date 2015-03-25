@@ -1,14 +1,14 @@
 #pragma once
 
+#include "yukon.h"
+
 #include "AttributeService.h"
 #include "PointValueHolder.h"
-
-#include <vector>
-#include <map>
-#include <set>
-#include <exception>
+#include "msg_signal.h"
+#include "msg_pcrequest.h"
 
 class CtiPointDataMsg;
+
 
 namespace Cti           {
 namespace CapControl    {
@@ -16,6 +16,9 @@ namespace CapControl    {
 struct Policy
 {
     using IDSet = std::set<long>;
+    using Action = std::pair<std::unique_ptr<CtiSignalMsg>,
+                             std::unique_ptr<CtiRequestMsg>>;
+    using Actions = std::vector<Action>;
 
     void loadAttributes( AttributeService & service, const long paoID );
 
@@ -28,13 +31,18 @@ struct Policy
 
 protected:
 
+    std::unique_ptr<CtiSignalMsg>   makeSignalTemplate( const long ID, const long pointValue );
+    std::unique_ptr<CtiRequestMsg>  makeRequestTemplate( const long ID, const std::string & command );
+
+    Action makeStandardDigitalControl( const LitePoint & point );
+
     using AttributeList = std::vector<PointAttribute>;
     using AttributeMap  = std::map<PointAttribute, LitePoint>;
 
-    AttributeList       supportedAttributes;
-    AttributeMap        pointMapping;
-    IDSet               pointIDs;
-    PointValueHolder    pointValues;
+    AttributeList       _supportedAttributes;
+    AttributeMap        _pointMapping;
+    IDSet               _pointIDs;
+    PointValueHolder    _pointValues;
 };
 
 
