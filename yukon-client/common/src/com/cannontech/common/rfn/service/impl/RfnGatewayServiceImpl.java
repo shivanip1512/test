@@ -128,12 +128,17 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         
         // Get RfnGatewayData from cache
         RfnGatewayData gatewayData = dataCache.get(gwDevice.getPaoIdentifier());
+        
+        return buildRfnGateway(gwDevice, gwDevice.getName(), gatewayData);
+    }
+    
+    private RfnGateway buildRfnGateway(RfnDevice gwDevice, String name, RfnGatewayData gatewayData) {
         RfnGateway rfnGateway;
         if (gwDevice.getPaoIdentifier().getPaoType() == PaoType.RFN_GATEWAY_2) {
-            rfnGateway = new RfnGateway2(gwDevice.getName(), gwDevice.getPaoIdentifier(),
+            rfnGateway = new RfnGateway2(name, gwDevice.getPaoIdentifier(),
                                                    gwDevice.getRfnIdentifier(), gatewayData);
         } else {
-            rfnGateway = new RfnGateway(gwDevice.getName(), gwDevice.getPaoIdentifier(),
+            rfnGateway = new RfnGateway(name, gwDevice.getPaoIdentifier(),
                                                    gwDevice.getRfnIdentifier(), gatewayData);
         }
         
@@ -174,20 +179,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             RfnGatewayData gatewayData = dataCache.getIfPresent(gatewayDevice.getPaoIdentifier());
             
             //Create gateway object
-            RfnGateway rfnGateway;
-            if (gatewayDevice.getPaoIdentifier().getPaoType() == PaoType.RFN_GATEWAY_2) {
-                rfnGateway = new RfnGateway2(name, gatewayDevice.getPaoIdentifier(), gatewayDevice.getRfnIdentifier(), 
-                                            gatewayData);
-            } else {
-                rfnGateway = new RfnGateway(name, gatewayDevice.getPaoIdentifier(), gatewayDevice.getRfnIdentifier(), 
-                                            gatewayData);
-            }
-            
-            // Get PaoLocation from PaoLocationDao
-            PaoLocation gatewayLocation = paoLocationDao.getLocation(gatewayDevice.getPaoIdentifier().getPaoId());
-            if (gatewayLocation != null) {
-                rfnGateway.setLocation(gatewayLocation);
-            }
+            RfnGateway rfnGateway = buildRfnGateway(gatewayDevice, name, gatewayData);
             rfnGateways.add(rfnGateway);
         }
         return rfnGateways;

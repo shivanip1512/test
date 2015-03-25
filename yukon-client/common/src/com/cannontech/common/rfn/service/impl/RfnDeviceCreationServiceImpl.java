@@ -188,7 +188,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     @Override
     public RfnDevice createGateway(String name, RfnIdentifier rfnIdentifier) {
         PaoType gatewayType;
-        if(rfnIdentifier.getSensorModel().equalsIgnoreCase(gateway2ModelString)) {
+        if (rfnIdentifier.getSensorModel().equalsIgnoreCase(gateway2ModelString)) {
             gatewayType = PaoType.RFN_GATEWAY_2;
         } else {
             gatewayType = PaoType.RFN_GATEWAY;
