@@ -1,7 +1,6 @@
 package com.cannontech.amr.rfn.dao.impl;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -194,11 +193,8 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         sql.append("from YukonPaObject ypo");
         sql.append(  "join RfnAddress rfn on ypo.PAObjectID = rfn.DeviceId");
         sql.append("where ypo.Type").eq(paoType);
-        try {
-            return jdbcTemplate.query(sql, rfnDeviceRowMapper);
-        } catch (EmptyResultDataAccessException e) {
-            return new ArrayList<RfnDevice>();
-        }
+        
+        return jdbcTemplate.query(sql, rfnDeviceRowMapper);
     }
     
     @Override
@@ -208,11 +204,8 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         sql.append("from YukonPaObject ypo");
         sql.append(  "join RfnAddress rfn on ypo.PAObjectID = rfn.DeviceId");
         sql.append("where ypo.Type").in(paoTypes);
-        try {
-            return jdbcTemplate.query(sql, rfnDeviceRowMapper);
-        } catch (EmptyResultDataAccessException e) {
-            return new ArrayList<RfnDevice>();
-        }
+
+        return jdbcTemplate.query(sql, rfnDeviceRowMapper);
     }
     
     @Override 
@@ -222,11 +215,8 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         sql.append("from YukonPaObject ypo");
         sql.append(  "join RfnAddress rfn on ypo.PAObjectID = rfn.DeviceId");
         sql.append("where PaObjectId").in(paoIds);
-        try {
-            return jdbcTemplate.query(sql, rfnDeviceRowMapper);
-        } catch (EmptyResultDataAccessException e) {
-            return new ArrayList<RfnDevice>();
-        }
+        
+        return jdbcTemplate.query(sql, rfnDeviceRowMapper);
     }
     
     @Override
