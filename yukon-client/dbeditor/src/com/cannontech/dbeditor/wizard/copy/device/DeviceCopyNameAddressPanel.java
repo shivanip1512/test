@@ -19,6 +19,7 @@ import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.wizard.CancelInsertException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
@@ -395,6 +396,8 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
                 ivjNameTextField.setFont(new java.awt.Font("sansserif", 0, 14));
                 ivjNameTextField.setColumns(12);
                 ivjNameTextField.setDocument(new TextFieldDocument(TextFieldDocument.MAX_DEVICE_NAME_LENGTH));
+                ivjNameTextField.setDocument(new TextFieldDocument(TextFieldDocument.MAX_DEVICE_NAME_LENGTH,
+                    PaoUtils.ILLEGAL_NAME_CHARS));
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);
             }
