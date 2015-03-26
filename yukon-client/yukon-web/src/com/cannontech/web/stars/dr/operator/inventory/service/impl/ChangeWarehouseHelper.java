@@ -13,6 +13,7 @@ import com.cannontech.web.stars.dr.operator.inventory.service.InventoryActionsHe
 public class ChangeWarehouseHelper extends InventoryActionsHelper {
 
     public class ChangeWarehouseTask extends CollectionBasedInventoryTask {
+        
         private int warehouseId;
         private HttpSession session;
         
@@ -59,5 +60,5 @@ public class ChangeWarehouseHelper extends InventoryActionsHelper {
             };
         }
     }
-
+    
 }
