@@ -167,24 +167,18 @@ public class PasswordPolicy {
      * IMPORTANT NOTE:  This method will only use NONALPHANUMERIC_CHARACTERS and UNICODE_CHARACTERS characters if
      * it has to to meet the password policy requirements.  If they are not needed, the generated password will only consist
      * of alphanumeric characters.
-     * 
-     * @throws ConfigurationException - Throws a ConfigurationException if there is no way to generate a valid password with this policy.
+     * If the password policy has rules defined that cannot be met (such as requiring more qualityChecks than
+     * policies available),a password meeting at least the policy checks will be created.
      */
-    public String generatePassword() throws ConfigurationException {
+    public String generatePassword() {
 
-        int numberOfPolicies = policyRules.size();
-        if (numberOfPolicies - passwordQualityCheck < 0) {
-            throw new ConfigurationException("The password being generated cannot meet the password policy requirements.  Please reconfigure your password policy settings.");
-        }
-        
         String genPass = PolicyRule.UPPERCASE_CHARACTERS.generateRandomCharacter();
         genPass = genPass.concat(PolicyRule.LOWERCASE_CHARACTERS.generateRandomCharacter());
         genPass = genPass.concat(PolicyRule.BASE_10_DIGITS.generateRandomCharacter());
-        if (numberOfPolicies - passwordQualityCheck  == 0) {
-            if (policyRules.contains(PolicyRule.NONALPHANUMERIC_CHARACTERS)) {
-                genPass = genPass.concat(PolicyRule.NONALPHANUMERIC_CHARACTERS.generateRandomCharacter());
-            }
-        } 
+
+        if (policyRules.contains(PolicyRule.NONALPHANUMERIC_CHARACTERS)) {
+            genPass = genPass.concat(PolicyRule.NONALPHANUMERIC_CHARACTERS.generateRandomCharacter());
+        }
 
         // Fill in the remaining needed characters.  If its less than 0 use 0.
         int numberOfNeededCharacters = Ints.max(passwordQualityCheck - genPass.length(), minPasswordLength - genPass.length(), 0) ;

@@ -6,13 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.naming.ConfigurationException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.tanesha.recaptcha.ReCaptchaException;
 
-import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -74,22 +72,18 @@ public class PasswordController {
     
     @RequestMapping(value="generate-password")
     public TextView generatePassword(HttpServletResponse response, Integer userId, String userGroupName) {
-        
-        LiteYukonUser user = null; 
+
+        LiteYukonUser user = null;
         if (userId != null) {
             user = userDao.getLiteYukonUser(userId);
         }
-        
+
         LiteUserGroup liteUserGroup = userGroupDao.findLiteUserGroupByUserGroupName(userGroupName);
         PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(user, liteUserGroup);
         String generatedPassword = "";
-        try {
-            generatedPassword = passwordPolicy.generatePassword();
-        } catch (ConfigurationException e) {
-            Log.error("No password could be generated for this login.", e);
-        }
+        generatedPassword = passwordPolicy.generatePassword();
         response.setContentType("text/plain; charset=UTF-8");
-        
+
         return new TextView(generatedPassword);
     }
     
