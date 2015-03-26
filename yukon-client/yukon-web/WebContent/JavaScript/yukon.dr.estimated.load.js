@@ -8,7 +8,7 @@ yukon.namespace('yukon.dr.estimatedLoad');
  */
 yukon.dr.estimatedLoad = (function () {
     
-    mod = {
+    var mod = {
 
             /** Display the estimated load values for the paoId requested by the data updater. */
             displayValue : function (msg) {
@@ -20,7 +20,7 @@ yukon.dr.estimatedLoad = (function () {
                 var diversified = row.find('.js-diversified-load');
                 var kwSavings = row.find('.js-kw-savings');
                 
-                if (status == 'error') {
+                if (status === 'error') {
                     
                     row.find('.js-est-load-error-btn .icon').removeClass().addClass('icon ' + data.icon);
                     row.find('.js-est-load-error-btn').removeClass('dn');
@@ -29,21 +29,21 @@ yukon.dr.estimatedLoad = (function () {
                     diversified.text(data.na);
                     kwSavings.text(data.buttonText);
                     
-                } else if (status == 'calc') {
+                } else if (status === 'calc') {
                     
                     // Do nothing here, waiting for an error or success state.
                     
-                } else if (status == 'success') {
+                } else if (status === 'success') {
                     
                     row.find('.js-est-load-error-btn').addClass('dn');
                     row.find('.js-est-load-calculating').addClass('dn');
-                    if (connected.length > 0 && connected.text() != data.connected) {
+                    if (connected.length > 0 && connected.text() !== data.connected) {
                         connected.text(data.connected).flash();
                     }
-                    if (diversified.length > 0 && diversified.text() != data.diversified) {
+                    if (diversified.length > 0 && diversified.text() !== data.diversified) {
                         diversified.text(data.diversified).flash();
                     }
-                    if (kwSavings.length > 0 && kwSavings.text() != data.kwSavings) {
+                    if (kwSavings.length > 0 && kwSavings.text() !== data.kwSavings) {
                         kwSavings.text(data.kwSavings).flash();
                     }
                 }

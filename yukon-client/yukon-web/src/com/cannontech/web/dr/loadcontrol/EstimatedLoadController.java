@@ -27,13 +27,11 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.common.weather.WeatherDataService;
 import com.cannontech.common.weather.WeatherLocation;
 import com.cannontech.core.dao.EnergyCompanyNotFoundException;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.impl.LMGearDaoImpl;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -62,6 +60,7 @@ import com.cannontech.dr.estimatedload.service.impl.EstimatedLoadBackingServiceH
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
+import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
@@ -77,6 +76,8 @@ import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Ordering;
 
 @Controller
@@ -93,7 +94,7 @@ public class EstimatedLoadController {
     @Autowired private EnergyCompanyService ecService; 
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private ObjectFormattingService objectFormatingService;
-    @Autowired private PaoDao paoDao;
+    @Autowired private ServerDatabaseCache cache;
     @Autowired private AttributeService attributeService;
     @Autowired private WeatherDataService weatherDataService;
     @Autowired private FormulaBeanValidator formulaBeanValidator;
@@ -312,7 +313,7 @@ public class EstimatedLoadController {
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         EstimatedLoadResult result = helper.findProgramValue(programId, true);
-        String programName = paoDao.getYukonPAOName(programId);
+        String programName = cache.getAllPaosMap().get(programId).getPaoName();
         
         ProgramError error = buildProgramError(userContext, programId, accessor, result, programName);
         
@@ -326,11 +327,11 @@ public class EstimatedLoadController {
     public String summaryErrorPopup(ModelMap model, YukonUserContext userContext, int paoId) {
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        String name = paoDao.getYukonPAOName(paoId);
+        LiteYukonPAObject pao = cache.getAllPaosMap().get(paoId);
+        String name = pao.getPaoName();
         model.addAttribute("title", accessor.getMessage(elKey + "popup.program.title", name));
         
         EstimatedLoadSummary summary = null;
-        YukonPao pao = paoDao.getYukonPao(paoId);
 
         if (pao.getPaoIdentifier().getPaoType() == PaoType.LM_CONTROL_AREA) {
             summary = helper.getControlAreaValue(pao.getPaoIdentifier(), true);
@@ -350,7 +351,7 @@ public class EstimatedLoadController {
             model.addAttribute("initialMessage", accessor.getMessage(elKey + "error.summary", summary.getErrors()));
             for (int programId : summary.getProgramsInError()) {
                 EstimatedLoadResult result = helper.findProgramValue(programId, true);
-                String programName = paoDao.getYukonPAOName(programId);
+                String programName = cache.getAllPaosMap().get(programId).getPaoName();
                 errors.add(buildProgramError(userContext, programId, accessor, result, programName));
             }
             model.addAttribute("errors", errors);
@@ -358,6 +359,18 @@ public class EstimatedLoadController {
         return "dr/estimatedLoad/programError.jsp";
     }
 
+    /**
+     * This method transforms estimated load results (EstimatedLoadException) into ProgramError objects which are 
+     * used by programError.jsp to display load programs that are in error.  
+     * If applicable, a link is generated which will assist the user in resolving the error.
+     * 
+     * @param userContext Context of the user requesting the popup.
+     * @param programId ProgramId of the program in error.
+     * @param accessor The message accessor that will be used to resolve messages.
+     * @param result The estimated load result being converted to a ProgramError.
+     * @param programName The name of the load program in error.
+     * @return The model object that will be passed to programError.jsp for display.
+     */
     private ProgramError buildProgramError(YukonUserContext userContext, int programId, MessageSourceAccessor accessor,
             EstimatedLoadResult result, String programName) {
         
@@ -533,8 +546,15 @@ public class EstimatedLoadController {
      */
     private Map<Integer, LiteYukonPAObject> getGearPrograms() {
         Map<Integer, LiteYukonPAObject> gearPrograms = new HashMap<>();
-        List<LiteYukonPAObject> programs = paoDao.getLiteYukonPAObjectByType(PaoType.LM_DIRECT_PROGRAM);
-        for(LiteYukonPAObject program : programs) {
+        
+        Iterable<LiteYukonPAObject> programs = Iterables.filter(cache.getAllLMPrograms(), new Predicate<LiteYukonPAObject>() {
+            @Override
+            public boolean apply(LiteYukonPAObject input) {
+                return input.getPaoType() == PaoType.LM_DIRECT_PROGRAM;
+            }
+        });
+        
+        for (LiteYukonPAObject program : programs) {
             gearPrograms.put(program.getLiteID(), program);
         }
         return gearPrograms;

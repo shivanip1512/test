@@ -14,7 +14,7 @@
     ${initialMessage}
 </div>
 <div class="separated-sections">
-    <c:forEach var="error" items="${errors}" varStatus="status">
+    <c:forEach var="error" items="${errors}">
         <div class="section">
             <c:choose>
                 <c:when test="${error.error}">

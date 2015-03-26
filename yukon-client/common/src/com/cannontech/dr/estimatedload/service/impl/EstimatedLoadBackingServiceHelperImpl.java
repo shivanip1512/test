@@ -258,9 +258,8 @@ public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBacki
      * @param paoId The PaoIdentifier of the control area or scenario whose programs are summed.
      * @param programResults The estimated load amounts for each program in the control area/scenario.
      * @param programsInError A set of ProgramId values for the programs in an error state, used for error info popup.
-     * @return The sum of all EstimatedLoadReductionAmount in the set of programAmounts 
-     * as a single EstimatedLoadReductionAmount.
-     * @throws EstimatedLoadException 
+     * @param buttonInfo The button information needed for displaying correct icon depending on the highest error severity.
+     * @return The sum of all EstimatedLoadReductionAmount in the set of programAmounts as a single EstimatedLoadReductionAmount.
      */
     private EstimatedLoadSummary createSummary(PaoIdentifier paoId, List<EstimatedLoadResult> programResults, 
             Set<Integer> programsInError, ButtonInfo buttonInfo) {

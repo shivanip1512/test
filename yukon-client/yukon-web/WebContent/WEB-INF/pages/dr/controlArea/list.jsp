@@ -1,5 +1,3 @@
-<%@ page trimDirectiveWhitespaces="true" %>
-
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
@@ -10,19 +8,19 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="dr" page="controlAreaList">
-
+    
     <tags:simpleDialog id="drDialog"/>
     <cti:includeScript link="/JavaScript/yukon.dr.estimated.load.js"/>
     <cti:includeScript link="/JavaScript/yukon.dr.dataUpdater.showAction.js"/>
-
+    
     <c:set var="baseUrl" value="/dr/controlArea/list"/>
     <cti:url var="baseUrlWithContextPath" value="${baseUrl}"/>
-
+    
     <div id="filter-popup" class="dn" data-title="<cti:msg2 key=".filters"/>">
         <cti:flashScopeMessages/>
-
-        <form:form action="${baseUrlWithContextPath}" commandName="filter" method="get">
         
+        <form:form action="${baseUrlWithContextPath}" commandName="filter" method="get">
+            
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".filter.name">
                     <form:input path="name" size="40"/>
@@ -43,7 +41,7 @@
                     </tags:nameValue2>
                 </cti:checkRolesAndProperties>
             </tags:nameValueContainer2>
-
+            
             <div class="action-area">
                 <cti:button nameKey="filter" type="submit" classes="action primary"/>
                 <cti:button nameKey="showAll" href="${baseUrlWithContextPath}"/>
@@ -71,7 +69,7 @@
                     <cti:param name="priority.max" value="${filter.priority.max}"></cti:param>
                 </cti:url>
                 <div data-url="${url}" data-static>
-                    <table class="compact-results-table has-actions">
+                    <table class="compact-results-table with-form-controls has-actions">
                         <thead>
                             <tr>
                                 <tags:sort column="${CA_NAME}"/>
@@ -145,10 +143,12 @@
                                             <cti:dataUpdaterCallback
                                                 function="yukon.dr.estimatedLoad.displayValue"
                                                 value="ESTIMATED_LOAD/${controlAreaId}/CONTROL_AREA"/>
-                                            <cti:icon icon="icon-loading-bars" classes="js-est-load-calculating push-down-4"/>
-                                            <cti:button classes="js-est-load-error-btn dn fn vat M0" renderMode="buttonImage" 
-                                                icon="icon-error" data-popup="[data-control-area-id=${controlAreaId}]"/>
-                                            <span class="js-kw-savings dib push-down-3"></span>
+                                            <cti:icon icon="icon-loading-bars" 
+                                                classes="js-est-load-calculating push-down-4"/>
+                                            <cti:button classes="js-est-load-error-btn dn fn vat M0" 
+                                                renderMode="buttonImage" icon="icon-error" 
+                                                data-popup="[data-control-area-id=${controlAreaId}]"/>
+                                            <span class="js-kw-savings"></span>
                                             <cti:url var="url" value="/dr/estimatedLoad/summary-error">
                                                 <cti:param name="paoId" value="${controlAreaId}"/>
                                             </cti:url>

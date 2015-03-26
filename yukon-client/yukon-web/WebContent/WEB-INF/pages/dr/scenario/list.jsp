@@ -1,5 +1,3 @@
-*<%@ page trimDirectiveWhitespaces="true" %>
-
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
@@ -53,7 +51,7 @@
                     </c:if>
                 </cti:url>
                 <div data-url="${url}" data-static>
-                    <table class="compact-results-table has-actions">
+                    <table class="compact-results-table with-form-controls has-actions">
                         <thead>
                             <tr>
                                 <th><i:inline key=".heading.name"/></th>
@@ -78,9 +76,11 @@
                                             <cti:dataUpdaterCallback
                                                 function="yukon.dr.estimatedLoad.displayValue"
                                                 value="ESTIMATED_LOAD/${scenarioId}/SCENARIO"/>
-                                            <cti:icon icon="icon-loading-bars" classes="js-est-load-calculating push-down-4"/>
-                                            <cti:button classes="js-est-load-error-btn dn fn vat M0" renderMode="buttonImage" 
-                                                icon="icon-error" data-popup="[data-scenario-id=${scenarioId}]"/>
+                                            <cti:icon icon="icon-loading-bars" 
+                                                classes="js-est-load-calculating push-down-4"/>
+                                            <cti:button classes="js-est-load-error-btn dn fn vat M0" 
+                                                renderMode="buttonImage" icon="icon-error" 
+                                                data-popup="[data-scenario-id=${scenarioId}]"/>
                                             <span class="js-kw-savings dib push-down-3"></span>
                                             <cti:url var="url" value="/dr/estimatedLoad/summary-error">
                                                 <cti:param name="paoId" value="${scenarioId}"/>

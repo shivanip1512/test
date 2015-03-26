@@ -25,8 +25,8 @@ public abstract class EstimatedLoadBackingFieldBase implements EstimatedLoadBack
     protected String createSummaryJson(PaoIdentifier pao, EstimatedLoadSummary summary, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
-        Map<String, String> summaryNode = new HashMap<>();
-        summaryNode.put("paoId", String.valueOf(pao.getPaoId()));
+        Map<String, Object> summaryNode = new HashMap<>();
+        summaryNode.put("paoId", pao.getPaoId());
         
         if (summary.getTotalPrograms() == 0) {
             // There are no programs in this summary. 

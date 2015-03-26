@@ -148,10 +148,12 @@
                                                 function="yukon.dr.estimatedLoad.displayValue"
                                                 value="ESTIMATED_LOAD/${programId}/PROGRAM"
                                                 initialize="true"/>
-                                            <cti:icon icon="icon-loading-bars" classes="js-est-load-calculating push-down-4"/>
-                                            <cti:button classes="js-est-load-error-btn dn fn vat M0" renderMode="buttonImage" 
-                                                icon="icon-error" data-popup="[data-program-id=${programId}]"/>
-                                            <span class="js-kw-savings dib"></span>
+                                            <cti:icon icon="icon-loading-bars" 
+                                                classes="js-est-load-calculating push-down-4"/>
+                                            <cti:button classes="js-est-load-error-btn dn fn vat M0" 
+                                                renderMode="buttonImage" icon="icon-error" 
+                                                data-popup="[data-program-id=${programId}]"/>
+                                            <span class="js-kw-savings"></span>
                                             <cti:url var="url" value="/dr/estimatedLoad/program-error">
                                                 <cti:param name="programId" value="${programId}"/>
                                             </cti:url>

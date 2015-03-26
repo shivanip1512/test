@@ -14,7 +14,7 @@ public interface EstimatedLoadDao {
             throws EstimatedLoadException;
 
     /** Returns the gear id of a specific gear number for an LM program. 
-     * @throws EstimatedLoadException */
+     * @throws GearNotFoundException */
     public int getGearIdForProgramAndGearNumber(int lmProgramId, int gearNumber) throws GearNotFoundException;
 
     /** This method finds the LM program ids of any LM program that also has devices which are enrolled
