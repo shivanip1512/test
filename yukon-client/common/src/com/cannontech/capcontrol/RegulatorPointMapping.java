@@ -1,5 +1,8 @@
 package com.cannontech.capcontrol;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.FilterType;
@@ -10,18 +13,18 @@ import com.google.common.collect.ImmutableSet.Builder;
 
 public enum RegulatorPointMapping implements DisplayableEnum {
     
-    AUTO_REMOTE_CONTROL(PointType.Status, PointType.CalcStatus),
-    AUTO_BLOCK_ENABLE(PointType.Status, PointType.CalcStatus),
-    TAP_UP(PointType.Status, PointType.CalcStatus),
-    TAP_DOWN(PointType.Status, PointType.CalcStatus),
-    TAP_POSITION(PointType.Analog, PointType.CalcAnalog),
-    TERMINATE(PointType.Status, PointType.CalcStatus),
-    VOLTAGE_X(PointType.Analog, PointType.CalcAnalog),
-    VOLTAGE_Y(PointType.Analog, PointType.CalcAnalog),
-    KEEP_ALIVE(PointType.Analog, PointType.CalcAnalog),
-    KEEP_ALIVE_TIMER(PointType.Analog, PointType.CalcAnalog),
-    FORWARD_SET_POINT(PointType.Analog, PointType.CalcAnalog),
-    FORWARD_BANDWIDTH(PointType.Analog, PointType.CalcAnalog),
+    AUTO_REMOTE_CONTROL("Auto Remote Control", PointType.Status, PointType.CalcStatus),
+    AUTO_BLOCK_ENABLE("Auto Block Enable", PointType.Status, PointType.CalcStatus),
+    TAP_UP("Tap Up", PointType.Status, PointType.CalcStatus),
+    TAP_DOWN("Tap Down", PointType.Status, PointType.CalcStatus),
+    TAP_POSITION("Tap Position", PointType.Analog, PointType.CalcAnalog),
+    TERMINATE("Terminate", PointType.Status, PointType.CalcStatus),
+    VOLTAGE_X("Voltage X", PointType.Analog, PointType.CalcAnalog),
+    VOLTAGE_Y("Voltage Y", PointType.Analog, PointType.CalcAnalog),
+    KEEP_ALIVE("Keep Alive", PointType.Analog, PointType.CalcAnalog),
+    KEEP_ALIVE_TIMER("Keep Alive Timer", PointType.Analog, PointType.CalcAnalog),
+    FORWARD_SET_POINT("Forward Set Point", PointType.Analog, PointType.CalcAnalog),
+    FORWARD_BANDWIDTH("Forward Bandwidth", PointType.Analog, PointType.CalcAnalog),
     ;
     
     private final static ImmutableSet<RegulatorPointMapping> phaseAndGangRegulatorMappings;
@@ -52,13 +55,19 @@ public enum RegulatorPointMapping implements DisplayableEnum {
     }
     
     private PointType[] pointTypes;
+    private String mappingString;
     
-    private RegulatorPointMapping(PointType... pointTypes) {
+    private RegulatorPointMapping(String mappingString, PointType... pointTypes) {
+        this.mappingString = mappingString;
         this.pointTypes = pointTypes;
     }
     
     public PointType[] getPointTypes() {
         return pointTypes;
+    }
+    
+    public String getMappingString() {
+        return mappingString;
     }
     
     public FilterType getFilterType() {
@@ -78,5 +87,21 @@ public enum RegulatorPointMapping implements DisplayableEnum {
     public static ImmutableMap<PaoType, ImmutableSet<RegulatorPointMapping>> getMappingsByPaoType() {
         return regulatorPointMappings;
     }
-
+    
+    public static RegulatorPointMapping getForMappingString(String mappingString) {
+        for (RegulatorPointMapping mapping : values()) {
+            if (mapping.mappingString.equals(mappingString)) {
+                return mapping;
+            }
+        }
+        throw new IllegalArgumentException("Invalid regulator point mapping string.");
+    }
+    
+    public static List<String> getMappingStrings() {
+        List<String> mappingStrings = new ArrayList<>();
+        for (RegulatorPointMapping mapping : values()) {
+            mappingStrings.add(mapping.mappingString);
+        }
+        return mappingStrings;
+    }
 }
