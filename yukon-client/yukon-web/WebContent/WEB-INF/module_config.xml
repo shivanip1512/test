@@ -1341,6 +1341,7 @@
                     <page name="inventory.actions" type="DETAIL">
                         <link>/stars/operator/inventory/inventoryActions?${local:convertMapToQueryHtml(inventoryCollection.collectionParameters)}</link>
                         <pages>
+                            <page name="inventory.report" type="BASIC" hideFavorite="true"/>
                             <page name="deleteInventory" type="BASIC" hideFavorite="true"/>
                             <page name="changeType" type="BASIC" hideFavorite="true"/>
                             <page name="changeStatus" type="BASIC" hideFavorite="true"/>

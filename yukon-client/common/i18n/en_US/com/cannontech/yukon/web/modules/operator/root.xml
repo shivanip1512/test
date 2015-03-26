@@ -4,7 +4,10 @@
 
     <entry key="yukon.web.modules.operator.moduleName">Assets</entry>
     
-    <entry key="yukon.web.modules.operator.accountNumber">Account Number</entry>
+    <entry key="yukon.web.modules.operator.accountNumber">Account No</entry>
+    <entry key="yukon.web.modules.operator.type">Type</entry>
+    <entry key="yukon.web.modules.operator.name">Name</entry>
+    <entry key="yukon.web.modules.operator.label">Label</entry>
     <entry key="yukon.web.modules.operator.complete">Complete</entry>
     <entry key="yukon.web.modules.operator.deviceType">Device Type</entry>
     <entry key="yukon.web.modules.operator.download">Download</entry>
@@ -14,7 +17,7 @@
     <entry key="yukon.web.modules.operator.newOperation">New Action</entry>
     <entry key="yukon.web.modules.operator.progress">Progress</entry>
     <entry key="yukon.web.modules.operator.notesLabel">Note:</entry>
-    <entry key="yukon.web.modules.operator.serialNumber">Serial Number</entry>
+    <entry key="yukon.web.modules.operator.serialNumber">Serial No</entry>
     <entry key="yukon.web.modules.operator.successCount">Successful</entry>
     <entry key="yukon.web.modules.operator.successful">Successful</entry>
     <entry key="yukon.web.modules.operator.unsupportedCount">Unsupported</entry>

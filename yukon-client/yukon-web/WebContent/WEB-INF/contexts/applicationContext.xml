@@ -1634,6 +1634,8 @@
 
     <bean id="controlAuditResultsCache" class="com.cannontech.common.util.RecentResultsCache"/>
     <bean class="com.cannontech.web.stars.dr.operator.inventory.service.impl.ControlAuditServiceImpl"/>
+    
+    <bean class="com.cannontech.web.stars.dr.operator.inventory.service.impl.AssetReportServiceImpl"/>
 
     <bean id="assetAvailabilityReadBackingService" class="com.cannontech.web.updater.assetAvailability.AssetAvailabilityReadBackingService"/>
     <bean class="com.cannontech.common.util.RecentResultsCache">

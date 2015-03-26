@@ -88,10 +88,7 @@
 
     <bean id="liteStarsEnergyCompanyFactory" class="com.cannontech.stars.database.data.lite.LiteStarsEnergyCompanyFactory"/>
 
-    <bean id="starsDatabaseCache"
-        class="com.cannontech.stars.database.cache.StarsDatabaseCache">
-        <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
-    </bean>
+    <bean id="starsDatabaseCache" class="com.cannontech.stars.database.cache.StarsDatabaseCache"/>
 
     <bean id="accountCheckerService" class="com.cannontech.stars.core.service.impl.AccountCheckerServiceImpl"/>
     

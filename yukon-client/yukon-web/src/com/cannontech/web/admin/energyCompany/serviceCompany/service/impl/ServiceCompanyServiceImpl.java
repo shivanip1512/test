@@ -18,17 +18,19 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.web.admin.energyCompany.serviceCompany.service.ServiceCompanyService;
 
 public class ServiceCompanyServiceImpl implements ServiceCompanyService {
+    
     @Autowired private AddressDao addressDao;
     @Autowired private ContactDao contactDao;
     @Autowired private ContactNotificationDao contactNotificationDao;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private DesignationCodeDao designationCodeDao;
     @Autowired private ServiceCompanyDao serviceCompanyDao;
-
+    
+    private static final int noServiceCompanyId = 0;
+    
     @Override
     public ServiceCompanyDto getServiceCompany(int serviceCompanyId) {
         ServiceCompanyDto serviceCompany = serviceCompanyDao.getCompanyById(serviceCompanyId);
@@ -153,7 +155,7 @@ public class ServiceCompanyServiceImpl implements ServiceCompanyService {
     @Transactional
     public void deleteServiceCompany(ServiceCompanyDto serviceCompany) {
         // Remove all of the inventory attached to this service company
-        serviceCompanyDao.moveInventory(serviceCompany.getCompanyId(), LiteInventoryBase.NONE_SERVICE_COMPANY_ID);
+        serviceCompanyDao.moveInventory(serviceCompany.getCompanyId(), noServiceCompanyId);
 
         // first delete dependent service company designation codes
         designationCodeDao.bulkDelete(serviceCompany.getDesignationCodes());

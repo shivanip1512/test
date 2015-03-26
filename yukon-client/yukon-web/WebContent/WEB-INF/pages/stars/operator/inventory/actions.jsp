@@ -124,6 +124,18 @@
                     </tr>
                 </c:if>
                 
+                <tr>
+                    <td>
+                        <cti:url value="report" var="url">
+                            <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
+                                <cti:param name="${parm.key}" value="${parm.value}"/>
+                            </c:forEach>
+                        </cti:url>
+                        <a href="${url}"><i:inline key=".report.label"/></a>
+                    </td>
+                    <td><i:inline key=".report.description"/></td>
+                </tr>
+                
             </table>
         </div>
     </div>

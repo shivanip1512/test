@@ -570,8 +570,7 @@ yukon.ui = (function () {
             });
             
             /** Paging Handler: Get the next or previous page, or change page size. */
-            $(document).on('click', '.paging-area .previous-page .button,' 
-                    + ' .paging-area .next-page .button, .paging-area .page-size a', function (ev) {
+            $(document).on('click', yg.selectors.paging, function (ev) {
                 
                 var 
                 target = $(this),
@@ -616,6 +615,7 @@ yukon.ui = (function () {
                 } else {
                     $.get(url, params).done(function (data) {
                         container.html(data);
+                        container.trigger(yg.events.pagingend);
                     });
                 }
                 return false; // return false to stop form submissions
@@ -1350,6 +1350,9 @@ yukon.ui = (function () {
             
             redraw: function (glass) {
                 var container = glass.closest('.js-block-this');
+                if (!container.length) {
+                    container = $(glass).parent();
+                }
                 // resize the glass
                 glass.css('width', container.outerWidth())
                 .css('height', container.outerHeight()).fadeIn(200);

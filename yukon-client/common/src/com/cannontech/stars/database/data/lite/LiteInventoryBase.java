@@ -1,91 +1,83 @@
 package com.cannontech.stars.database.data.lite;
 
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteBase;
 
 public class LiteInventoryBase extends LiteBase {
     
-    public static final int NONE_SERVICE_COMPANY_ID = 0;
-    
-    private int accountID = CtiUtilities.NONE_ZERO_ID;
-    private int categoryID = CtiUtilities.NONE_ZERO_ID;
-    private int installationCompanyID = NONE_SERVICE_COMPANY_ID;
-    private long receiveDate = 0;
-    private long installDate = 0;
-    private long removeDate = 0;
-    private String alternateTrackingNumber = null;
-    private int voltageID = CtiUtilities.NONE_ZERO_ID;
-    private String notes = null;
-    private int deviceID = CtiUtilities.NONE_ZERO_ID;
-    private String deviceLabel = null;
-    private int currentStateID = CtiUtilities.NONE_ZERO_ID;
+    private int accountID;
+    private int categoryID;
+    private int installationCompanyID;
+    private long receiveDate;
+    private long installDate;
+    private long removeDate;
+    private String alternateTrackingNumber;
+    private int voltageID;
+    private String notes;
+    private int deviceID;
+    private String deviceLabel;
+    private int currentStateID;
     private String manufacturerSerialNumber;
-    
     private int energyCompanyId;
-    
     private boolean extended = false;
     
-    public LiteInventoryBase() {
-        super();
-    }
+    public LiteInventoryBase() { }
     
-    public LiteInventoryBase(int inventoryID) {
-        super();
-        setInventoryID(inventoryID);
+    public LiteInventoryBase(int inventoryId) {
+        setInventoryID(inventoryId);
     }
     
     public int getInventoryID() {
         return getLiteID();
     }
     
-    public void setInventoryID(int inventoryID) {
-        setLiteID(inventoryID);
+    public void setInventoryID(int inventoryId) {
+        setLiteID(inventoryId);
     }
-
+    
     public int getAccountID() {
         return accountID;
     }
-
+    
     public String getAlternateTrackingNumber() {
         return alternateTrackingNumber;
     }
-
+    
     public int getCategoryID() {
         return categoryID;
     }
-    
+        
     public String getDeviceLabel() {
         return deviceLabel;
     }
-
+    
     public int getInstallationCompanyID() {
         return installationCompanyID;
     }
-
+    
     public long getInstallDate() {
         return installDate;
     }
-
+    
     public String getNotes() {
         return notes;
     }
-
+    
     public long getReceiveDate() {
         return receiveDate;
     }
-
+    
     public long getRemoveDate() {
         return removeDate;
     }
-
+    
     public void setAccountID(int accountID) {
         this.accountID = accountID;
     }
-
+    
     public void setAlternateTrackingNumber(String alternateTrackingNumber) {
         this.alternateTrackingNumber = alternateTrackingNumber;
     }
-
+    
     public void setCategoryID(int categoryID) {
         this.categoryID = categoryID;
     }

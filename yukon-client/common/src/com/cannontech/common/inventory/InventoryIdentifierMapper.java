@@ -17,8 +17,13 @@ public class InventoryIdentifierMapper implements YukonRowMapper<InventoryIdenti
         int inventoryId = rs.getInt("InventoryId");
         
         /* Both of these being null would mean this is an MCT and type should be 0 */
-        Integer lmHardwareTypeId =  rs.getNullableInt("LmHardwareTypeId");
-        Integer meterTypeId =  rs.getNullableInt("MeterTypeId");
+        Integer lmHardwareTypeId = rs.getNullableInt("LmHardwareTypeId");
+        Integer meterTypeId = null;
+        
+        try {
+            meterTypeId = rs.getNullableInt("MeterTypeId");
+        } catch (SQLException e) { /* Must not be a 'stars' metering system. */ }
+        
         int typeId = 0;
         
         if (lmHardwareTypeId != null) {

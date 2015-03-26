@@ -23,7 +23,7 @@ public class DeviceNameTag extends YukonTagSupport {
     @Autowired private DeviceDao deviceDao;
     @Autowired private PaoLoadingService paoLoadingService;
     
-	private String var = null;
+    private String var = null;
     private int deviceId = 0;
     private boolean deviceIdSet = false;
     private SimpleDevice device = null;
@@ -55,6 +55,7 @@ public class DeviceNameTag extends YukonTagSupport {
     
     @Override
     public void doTag() throws JspException, IOException {
+        
         if (deviceIdSet && device != null) {
             throw new JspException("deviceId and device should not both be set");
         }
@@ -68,7 +69,6 @@ public class DeviceNameTag extends YukonTagSupport {
         
             if (deviceIdSet) {
                 formattedName = deviceDao.getFormattedName(getDeviceId());
-                
             } else {
                 formattedName = paoLoadingService.getDisplayablePao(device).getName();
                 deviceId = device.getDeviceId();
@@ -80,13 +80,11 @@ public class DeviceNameTag extends YukonTagSupport {
         
         JspContext jspContext = getJspContext();
         if (var == null) {
-        	JspWriter out = jspContext.getOut();
-        	out.print("<span class=\"deviceNameTagSpan\" title=\"deviceId: " + deviceId + "\">");
+            JspWriter out = jspContext.getOut();
             out.print(StringEscapeUtils.escapeHtml4(formattedName));
-            out.print("</span>");
         } else {
-        	jspContext.setAttribute(var, formattedName);
+            jspContext.setAttribute(var, formattedName);
         }
     }
-
+    
 }

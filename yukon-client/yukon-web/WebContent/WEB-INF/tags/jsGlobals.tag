@@ -41,7 +41,14 @@ var yg = {
     },
     
     events: {
-        animationend: 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend'
+        animationend: 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',
+        pagingend: 'yukon:paging:end'
+    },
+    
+    // Common selectors in all of Yukon.
+    selectors: {
+        // Any of the paging controls (previous, next, page counts)
+        paging : '.paging-area .previous-page .button, .paging-area .next-page .button, .paging-area .page-size a'
     },
     
     keys: { up: 38, down: 40, left: 37, right: 39, enter: 13, escape: 27 }
