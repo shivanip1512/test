@@ -451,7 +451,7 @@ bool Ccu721Device::buildCommand(CtiOutMessage *&OutMessage, Commands command)
                 CtiRouteSPtr &ccu_route = itr->second;
 
                 //  routes for which this device is the transmitter
-                if( ccu_route && ccu_route->getCommRoute().getTrxDeviceID() == getID() && (ccu_route->isDefaultRoute() == true) )
+                if( ccu_route && (ccu_route->getCommRoute().getTrxDeviceID() == getID()) && ccu_route->isDefaultRoute())
                 {
                     //  if( ccu_route->getType() == RouteTypeCCU )  ?
 
