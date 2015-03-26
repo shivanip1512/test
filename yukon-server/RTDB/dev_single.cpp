@@ -818,7 +818,7 @@ YukonError_t CtiDeviceSingle::ProcessResult(const INMESS   &InMessage,
         }
         else if( CmdStr.find("scan")!=string::npos && hasLongScanRate( CmdStr ))
         {
-            CTILOG_ERROR(dout, "invalid scan rate (cmdstr = "<< CmdStr <<")");
+            CTILOG_WARN(dout, "Retrying long scanrate scan (cmdstr = "<< CmdStr <<")");
         }
         else
         {
