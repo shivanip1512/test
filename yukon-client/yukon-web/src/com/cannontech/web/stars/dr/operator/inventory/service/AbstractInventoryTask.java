@@ -78,4 +78,5 @@ public abstract class AbstractInventoryTask implements Completable, CancelStatus
     public void setUnsupportedCount(int unsupportedCount) {
         this.unsupportedCount = unsupportedCount;
     }
+    
 }
