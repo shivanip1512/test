@@ -121,6 +121,9 @@ static int formatError(ClientData clientData, Tcl_Interp* interp, int argc, cons
 /* Get the base directory yukon is installed in */
 static int getYukonBaseDir(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[]);
 
+//  Workaround to add "clock" back to the interpreter without requiring TCL's init.tcl and the whole TCL library
+static int yukonClock(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[]);
+
 static int CTICreateProcess(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[]);
 
 //MORE............

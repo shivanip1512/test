@@ -113,20 +113,21 @@ static const TclCommandMap caseSensitiveTclCommands = boost::assign::map_list_of
     ("ImportCommandFile", &importCommandFile)
     ("createProcess", &CTICreateProcess);
 
-static const TclCommandMap tclCommands = boost::assign::map_list_of
-    ("holiday", &isHoliday)
-    ("exit", &Exit)
-    ("mcu8100", &mcu8100)
-    ("mcu9000eoi", &mcu9000eoi)
-    ("mcu8100wepco", &mcu8100wepco)
-    ("mcu8100service", &mcu8100service)
-    ("mcu8100program", &mcu8100program)
-    ("PMSI", &pmsi)
-    ("pmsi", &pmsi)
-    ("getDeviceID", &getDeviceID)
-    ("getDeviceName", &getDeviceName)
-    ("formatError", &formatError)
-    ("getYukonBaseDir", &getYukonBaseDir);
+static const TclCommandMap tclCommands {
+    { "clock",          &yukonClock },  //  Workaround to add "clock" back to the interpreter
+    { "holiday",        &isHoliday },
+    { "exit",           &Exit },
+    { "mcu8100",        &mcu8100 },
+    { "mcu9000eoi",     &mcu9000eoi },
+    { "mcu8100wepco",   &mcu8100wepco },
+    { "mcu8100service", &mcu8100service },
+    { "mcu8100program", &mcu8100program },
+    { "PMSI",           &pmsi },
+    { "pmsi",           &pmsi },
+    { "getDeviceID",    &getDeviceID },
+    { "getDeviceName",  &getDeviceName },
+    { "formatError",    &formatError },
+    { "getYukonBaseDir", &getYukonBaseDir }};
 
 typedef CtiSmartMap<CtiFIFOQueue<CtiMessage>> RequestQueues;
 RequestQueues inboundMessageQueues;
@@ -1398,6 +1399,20 @@ int getYukonBaseDir(ClientData clientData, Tcl_Interp* interp, int argc, const c
   string base_dir = gConfigParms.getYukonBase();
   Tcl_Obj* tcl_str = Tcl_NewStringObj(base_dir.c_str(), -1);
   Tcl_SetObjResult(interp, tcl_str);
+  return TCL_OK;
+}
+
+//  Workaround to add "clock" back to the interpreter without requiring TCL's init.tcl and the whole TCL library
+int yukonClock(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
+{
+  if(argc < 2 || std::string("seconds") != argv[1] )
+    {
+      CTILOG_ERROR(dout, "Usage: clock seconds");
+      return TCL_ERROR;
+    }
+
+  Tcl_Obj* tcl_seconds = Tcl_NewIntObj(time(nullptr));
+  Tcl_SetObjResult(interp, tcl_seconds);
   return TCL_OK;
 }
 
