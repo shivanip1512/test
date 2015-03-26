@@ -24,7 +24,7 @@ yukon.support.indexes = (function () {
                 var at = row.find('.js-date').text();
                 
                 date.text(index.date);
-                if (index.date != at) {
+                if (index.date !== at) {
                     date.flash();
                 }
                 
