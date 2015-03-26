@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/17/2015 12:25:20 PM                        */
+/* Created on:     3/26/2015 10:45:06 AM                        */
 /*==============================================================*/
 
 
@@ -7318,6 +7318,21 @@ create table Regulator  (
 );
 
 /*==============================================================*/
+/* Table: RegulatorEvents                                       */
+/*==============================================================*/
+create table RegulatorEvents  (
+   RegulatorEventId     NUMBER                          not null,
+   EventType            VARCHAR2(64)                    not null,
+   RegulatorId          NUMBER                          not null,
+   TimeStamp            DATE                            not null,
+   UserName             VARCHAR2(64)                    not null,
+   SetPointValue        FLOAT,
+   TapPosition          NUMBER,
+   Phase                CHAR(1),
+   constraint PK_RegulatorEvents primary key (RegulatorEventId)
+);
+
+/*==============================================================*/
 /* Table: RegulatorToZoneMapping                                */
 /*==============================================================*/
 create table RegulatorToZoneMapping  (
@@ -12232,6 +12247,11 @@ alter table RawPointHistoryDependentJob
 alter table Regulator
    add constraint FK_Reg_PAO foreign key (RegulatorId)
       references YukonPAObject (PAObjectID)
+      on delete cascade;
+
+alter table RegulatorEvents
+   add constraint FK_RegulatorEvents_Regulator foreign key (RegulatorId)
+      references Regulator (RegulatorId)
       on delete cascade;
 
 alter table RegulatorToZoneMapping

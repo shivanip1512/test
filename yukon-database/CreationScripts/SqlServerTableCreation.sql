@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/17/2015 12:24:31 PM                        */
+/* Created on:     3/26/2015 10:40:00 AM                        */
 /*==============================================================*/
 
 
@@ -7781,6 +7781,22 @@ create table Regulator (
 go
 
 /*==============================================================*/
+/* Table: RegulatorEvents                                       */
+/*==============================================================*/
+create table RegulatorEvents (
+   RegulatorEventId     numeric              not null,
+   EventType            varchar(64)          not null,
+   RegulatorId          numeric              not null,
+   TimeStamp            datetime             not null,
+   UserName             varchar(64)          not null,
+   SetPointValue        float                null,
+   TapPosition          numeric              null,
+   Phase                char(1)              null,
+   constraint PK_RegulatorEvents primary key (RegulatorEventId)
+)
+go
+
+/*==============================================================*/
 /* Table: RegulatorToZoneMapping                                */
 /*==============================================================*/
 create table RegulatorToZoneMapping (
@@ -13326,6 +13342,12 @@ go
 alter table Regulator
    add constraint FK_Reg_PAO foreign key (RegulatorId)
       references YukonPAObject (PAObjectID)
+         on delete cascade
+go
+
+alter table RegulatorEvents
+   add constraint FK_RegulatorEvents_Regulator foreign key (RegulatorId)
+      references Regulator (RegulatorId)
          on delete cascade
 go
 
