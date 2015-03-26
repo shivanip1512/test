@@ -135,7 +135,8 @@ CountdownKeepAlivePolicy.obj \
 IncrementingKeepAlivePolicy.obj \
 ScanPolicy.obj \
 LoadOnlyScanPolicy.obj \
-StandardScanPolicy.obj
+StandardScanPolicy.obj \
+RegulatorEvents.obj
 
 
 

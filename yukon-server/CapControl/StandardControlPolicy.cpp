@@ -56,6 +56,11 @@ double StandardControlPolicy::getSetPointBandwidth()
     return getValueByAttribute( PointAttribute::ForwardBandwidth );
 }
 
+long StandardControlPolicy::getTapPosition()
+{
+    return getValueByAttribute( PointAttribute::TapPosition );
+}
+
 }
 }
 

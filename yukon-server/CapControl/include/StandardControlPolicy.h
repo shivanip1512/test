@@ -18,6 +18,7 @@ struct StandardControlPolicy : ControlPolicy
 
     double getSetPointValue() override;
     double getSetPointBandwidth() override;
+    long getTapPosition() override;
 };
 
 }

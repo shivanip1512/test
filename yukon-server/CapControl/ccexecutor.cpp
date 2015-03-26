@@ -18,6 +18,7 @@
 #include "ExecChangeOpState.h"
 
 #include "MsgCapControlServerResponse.h"
+#include "RegulatorEvents.h"
 
 using Cti::CapControl::VoltageRegulatorManager;
 using Cti::CapControl::createPorterRequestMsg;
@@ -6049,8 +6050,10 @@ void CtiCCCommandExecutor::sendVoltageRegulatorCommands( const long command )
             {
                 commandName += "Integrity Scan";
                 regulator->executeIntegrityScan();
-                CtiCapController::submitEventLogEntry(
-                    EventLogEntry( "Sent Integrity Scan", regulator->getPaoId(), capControlIvvcScanOperation ) );
+                Cti::CapControl::enqueueRegulatorEvent(
+                    Cti::CapControl::RegulatorEvent::makeScanEvent( Cti::CapControl::RegulatorEvent::IntegrityScan,
+                                                                    regulator->getPaoId(),
+                                                                    regulator->getPhase() ) );
                 break;
             }
             case CapControlCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_ENABLE:

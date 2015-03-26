@@ -43,6 +43,15 @@
 
 extern void refreshGlobalCParms();
 
+namespace Cti
+{
+namespace CapControl
+{
+extern void writeRegulatorEventsToDatabase();
+}
+}
+
+
 extern unsigned long _CC_DEBUG;
 extern unsigned long _LINK_STATUS_TIMEOUT;
 extern bool  _ALLOW_PARALLEL_TRUING;
@@ -802,6 +811,8 @@ void CtiCapController::controlLoop()
                     enqueueEventLogEntries(ccEvents);
 
                     writeEventLogsToDatabase();
+
+                    Cti::CapControl::writeRegulatorEventsToDatabase();
                 }
                 catch(...)
                 {

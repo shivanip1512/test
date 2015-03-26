@@ -14,6 +14,7 @@
 #include "ControlPolicy.h"
 #include "KeepAlivePolicy.h"
 #include "ScanPolicy.h"
+#include "RegulatorEvents.h"
 
 #include <map>
 #include <set>
@@ -187,14 +188,15 @@ protected:
     void notifyControlOperation(const ControlOperation & operation, const CtiTime & timeStamp = CtiTime() );
 
 
-    void submitControlCommands( Policy::Action                & action,
-                                const ControlOperation          operation,
-                                const std::string             & opDescription,
-                                const CtiCCEventType_t          eventType,
-                                const double                    changeAmount );
+    void submitControlCommands( Policy::Action                    & action,
+                                const ControlOperation              operation,
+                                const std::string                 & opDescription,
+                                const RegulatorEvent::EventTypes    eventType,
+                                const double                        changeAmount );
 
-    void submitRemoteControlCommands( Policy::Action    & action,
-                                      const std::string & description );
+    void submitRemoteControlCommands( Policy::Action                  & action,
+                                      const std::string               & description,
+                                      const RegulatorEvent::EventTypes  eventType );
 
     long submitKeepAliveCommands( Policy::Actions & actions);
 };

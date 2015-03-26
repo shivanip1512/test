@@ -12,6 +12,9 @@
 
 #include "StandardControlPolicy.h"
 
+#include "RegulatorEvents.h"
+
+
 using namespace boost::posix_time;
 using namespace Cti::Messaging::CapControl;
 
@@ -614,7 +617,7 @@ try
     submitControlCommands( _controlPolicy->TapUp(),
                            RaiseTap,
                            "Raise Tap Position",
-                           capControlIvvcTapOperation,
+                           RegulatorEvent::TapUp,
                            getVoltageChangePerTap() );
 
     sendCapControlOperationMessage(
@@ -635,7 +638,7 @@ try
     submitControlCommands( _controlPolicy->TapDown(),
                            LowerTap,
                            "Lower Tap Position",
-                           capControlIvvcTapOperation,
+                           RegulatorEvent::TapDown,
                            -getVoltageChangePerTap() );
 
     sendCapControlOperationMessage(
@@ -658,7 +661,7 @@ try
         submitControlCommands( _controlPolicy->AdjustSetPoint( changeAmount ),
                                RaiseSetPoint,
                                "Raise Set Point",
-                               capControlIvvcSetPointOperation,
+                               RegulatorEvent::IncreaseSetPoint,
                                changeAmount );
     }
     else
@@ -666,7 +669,7 @@ try
         submitControlCommands( _controlPolicy->AdjustSetPoint( changeAmount ),
                                LowerSetPoint,
                                "Lower Set Point",
-                               capControlIvvcSetPointOperation,
+                               RegulatorEvent::DecreaseSetPoint,
                                changeAmount );
     }
 }
@@ -685,11 +688,11 @@ catch ( UninitializedPointValue & noValue )
 }
 
 
-void VoltageRegulator::submitControlCommands( Policy::Action          & action,
-                                              const ControlOperation    operation,
-                                              const std::string       & opDescription,
-                                              const CtiCCEventType_t    eventType,
-                                              const double              changeAmount )
+void VoltageRegulator::submitControlCommands( Policy::Action                  & action,
+                                              const ControlOperation            operation,
+                                              const std::string               & opDescription,
+                                              const RegulatorEvent::EventTypes  eventType,
+                                              const double                      changeAmount )
 {
     auto & signal  = action.first;
     auto & request = action.second;
@@ -703,11 +706,33 @@ void VoltageRegulator::submitControlCommands( Policy::Action          & action,
 
     CtiCapController::getInstance()->sendMessageToDispatch( signal.release() );
 
-    EventLogEntry   eventLog( fullDescription, getPaoId(), eventType );
-    eventLog.aVar      = changeAmount;              // 'value' is a long... we want a double so using 'aVar'
-    eventLog.ipAddress = desolvePhase( _phase );    // 'AdditionalInfo' column
+    boost::optional<double> newSetPoint;
 
-    CtiCapController::submitEventLogEntry( eventLog );
+    if ( eventType == RegulatorEvent::IncreaseSetPoint ||
+         eventType == RegulatorEvent::DecreaseSetPoint )
+    {
+        try
+        {
+            newSetPoint = _controlPolicy->getSetPointValue() + changeAmount;
+        }
+        catch ( UninitializedPointValue & )
+        {
+            // nothing...  inserts a null
+        }
+    }
+
+    boost::optional<long> tapPosition;
+
+    try
+    {
+        tapPosition = _controlPolicy->getTapPosition();
+    }
+    catch ( UninitializedPointValue & )
+    {
+        // nothing...  inserts a null
+    }
+
+    enqueueRegulatorEvent( RegulatorEvent::makeControlEvent( eventType, getPaoId(), _phase, newSetPoint, tapPosition ) );
 
     CtiCapController::getInstance()->manualCapBankControl( request.release() );
 }
@@ -755,7 +780,8 @@ void VoltageRegulator::executeEnableRemoteControl()
     try
     {
         submitRemoteControlCommands( _keepAlivePolicy->EnableRemoteControl( getKeepAliveConfig() ),
-                                     "Enable Remote Control");
+                                     "Enable Remote Control",
+                                     RegulatorEvent::EnableRemoteControl );
 
         _lastCommandedOperatingMode = RemoteMode;
     }
@@ -776,7 +802,8 @@ void VoltageRegulator::executeDisableRemoteControl()
     try
     {
         submitRemoteControlCommands( _keepAlivePolicy->DisableRemoteControl(),
-                                     "Disable Remote Control");
+                                     "Disable Remote Control",
+                                     RegulatorEvent::DisableRemoteControl );
 
         _lastCommandedOperatingMode = LocalMode;
     }
@@ -792,8 +819,9 @@ void VoltageRegulator::executeDisableRemoteControl()
 }
 
 
-void VoltageRegulator::submitRemoteControlCommands( Policy::Action    & action,
-                                                    const std::string & description )
+void VoltageRegulator::submitRemoteControlCommands( Policy::Action                    & action,
+                                                    const std::string                 & description,
+                                                    const RegulatorEvent::EventTypes    eventType )
 {
     auto & signal = action.first;
 
@@ -802,8 +830,7 @@ void VoltageRegulator::submitRemoteControlCommands( Policy::Action    & action,
 
     CtiCapController::getInstance()->sendMessageToDispatch( signal.release() );
 
-    CtiCapController::submitEventLogEntry(
-        EventLogEntry( description, getPaoId(), capControlIvvcRemoteControlEvent ) );
+    enqueueRegulatorEvent( RegulatorEvent::makeRemoteControlEvent( eventType, getPaoId(), _phase ) );
 }
 
 

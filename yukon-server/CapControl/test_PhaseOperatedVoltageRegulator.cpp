@@ -5,6 +5,7 @@
 #include "PhaseOperatedVoltageRegulator.h"
 #include "mgr_config.h"
 #include "std_helper.h"
+#include "RegulatorEvents.h"
 
 // Objects
 using Cti::CapControl::VoltageRegulator;
@@ -192,7 +193,14 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_IntegrityScan_Fail, p
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
     BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
-    BOOST_CHECK_EQUAL( 0, capController.eventMessages.size() );
+
+    // Validate generated RegulatorEvent messages
+    {
+        std::vector<Cti::CapControl::RegulatorEvent>  events;
+        Cti::CapControl::Test::exportRegulatorEvents( events );
+
+        BOOST_CHECK_EQUAL( 0, events.size() );
+    }
 }
 
 
@@ -241,7 +249,13 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_IntegrityScan_Success
     BOOST_CHECK_EQUAL( "scan integrity", requestMsg->CommandString() );
 
 
-    BOOST_CHECK_EQUAL( 0, capController.eventMessages.size() );
+    // Validate generated RegulatorEvent messages
+    {
+        std::vector<Cti::CapControl::RegulatorEvent>  events;
+        Cti::CapControl::Test::exportRegulatorEvents( events );
+
+        BOOST_CHECK_EQUAL( 0, events.size() );
+    }
 }
 
 
@@ -251,7 +265,14 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapUp_Fail, phase_ope
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
     BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
-    BOOST_CHECK_EQUAL( 0, capController.eventMessages.size() );
+
+    // Validate generated RegulatorEvent messages
+    {
+        std::vector<Cti::CapControl::RegulatorEvent>  events;
+        Cti::CapControl::Test::exportRegulatorEvents( events );
+
+        BOOST_CHECK_EQUAL( 0, events.size() );
+    }
 }
 
 
@@ -286,12 +307,22 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapUp_Success, phase_
                        requestMsg->CommandString() );   // ID of the 'TapUp' LitePoint
 
 
-    BOOST_REQUIRE_EQUAL( 1, capController.eventMessages.size() );
+    // Validate generated RegulatorEvent messages
+    {
+        std::vector<Cti::CapControl::RegulatorEvent>  events;
+        Cti::CapControl::Test::exportRegulatorEvents( events );
 
-    const Cti::CapControl::EventLogEntry eventMsg = capController.eventMessages.front();
+        BOOST_REQUIRE_EQUAL( 1, events.size() );
 
-    BOOST_CHECK_EQUAL( capControlIvvcTapOperation, eventMsg.eventType );
-    BOOST_CHECK_EQUAL( "Raise Tap Position", eventMsg.text );
+        Cti::CapControl::RegulatorEvent event = events.front();
+
+        BOOST_CHECK_EQUAL( Cti::CapControl::RegulatorEvent::TapUp, event.eventType );
+        BOOST_CHECK_EQUAL( 23456,                                  event.regulatorID );
+        BOOST_CHECK_EQUAL( Cti::CapControl::Phase_Unknown,         event.phase );
+
+        BOOST_CHECK( ! event.setPointValue );
+        BOOST_CHECK( ! event.tapPosition );
+    }
 }
 
 
@@ -301,7 +332,14 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapDown_Fail, phase_o
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
     BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
-    BOOST_CHECK_EQUAL( 0, capController.eventMessages.size() );
+
+    // Validate generated RegulatorEvent messages
+    {
+        std::vector<Cti::CapControl::RegulatorEvent>  events;
+        Cti::CapControl::Test::exportRegulatorEvents( events );
+
+        BOOST_CHECK_EQUAL( 0, events.size() );
+    }
 }
 
 
@@ -336,12 +374,22 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapDown_Success, phas
                        requestMsg->CommandString() );   // ID of the 'TapDown' LitePoint
 
 
-    BOOST_REQUIRE_EQUAL( 1, capController.eventMessages.size() );
+    // Validate generated RegulatorEvent messages
+    {
+        std::vector<Cti::CapControl::RegulatorEvent>  events;
+        Cti::CapControl::Test::exportRegulatorEvents( events );
 
-    const Cti::CapControl::EventLogEntry eventMsg = capController.eventMessages.front();
+        BOOST_REQUIRE_EQUAL( 1, events.size() );
 
-    BOOST_CHECK_EQUAL( capControlIvvcTapOperation, eventMsg.eventType );
-    BOOST_CHECK_EQUAL( "Lower Tap Position", eventMsg.text );
+        Cti::CapControl::RegulatorEvent event = events.front();
+
+        BOOST_CHECK_EQUAL( Cti::CapControl::RegulatorEvent::TapDown, event.eventType );
+        BOOST_CHECK_EQUAL( 23456,                                    event.regulatorID );
+        BOOST_CHECK_EQUAL( Cti::CapControl::Phase_Unknown,           event.phase );
+
+        BOOST_CHECK( ! event.setPointValue );
+        BOOST_CHECK( ! event.tapPosition );
+    }
 }
 
 
@@ -351,7 +399,14 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAlive_Fail,
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
     BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
-    BOOST_CHECK_EQUAL( 0, capController.eventMessages.size() );
+
+    // Validate generated RegulatorEvent messages
+    {
+        std::vector<Cti::CapControl::RegulatorEvent>  events;
+        Cti::CapControl::Test::exportRegulatorEvents( events );
+
+        BOOST_CHECK_EQUAL( 0, events.size() );
+    }
 }
 
 
@@ -400,7 +455,13 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromRe
                        requestMsg->CommandString() );       // 'putvalue analog <offset % 10000> <value>'
 
 
-    BOOST_CHECK_EQUAL( 0, capController.eventMessages.size() );
+    // Validate generated RegulatorEvent messages
+    {
+        std::vector<Cti::CapControl::RegulatorEvent>  events;
+        Cti::CapControl::Test::exportRegulatorEvents( events );
+
+        BOOST_CHECK_EQUAL( 0, events.size() );
+    }
 }
 
 
@@ -449,7 +510,13 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromRe
                        requestMsg->CommandString() );       // 'putvalue analog <offset % 10000> <value>'
 
 
-    BOOST_CHECK_EQUAL( 0, capController.eventMessages.size() );
+    // Validate generated RegulatorEvent messages
+    {
+        std::vector<Cti::CapControl::RegulatorEvent>  events;
+        Cti::CapControl::Test::exportRegulatorEvents( events );
+
+        BOOST_CHECK_EQUAL( 0, events.size() );
+    }
 }
 
 
@@ -584,7 +651,13 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
     BOOST_CHECK_EQUAL( "control close select pointid 8100",
                        requestMsg->CommandString() );       // ID of the 'AutoBlock' LitePoint
 
-    BOOST_CHECK_EQUAL( 0, capController.eventMessages.size() );
+    // Validate generated RegulatorEvent messages
+    {
+        std::vector<Cti::CapControl::RegulatorEvent>  events;
+        Cti::CapControl::Test::exportRegulatorEvents( events );
+
+        BOOST_CHECK_EQUAL( 0, events.size() );
+    }
 }
 
 
@@ -719,7 +792,13 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
     BOOST_CHECK_EQUAL( "control close select pointid 8100",
                        requestMsg->CommandString() );       // ID of the 'AutoBlock' LitePoint
 
-    BOOST_CHECK_EQUAL( 0, capController.eventMessages.size() );
+    // Validate generated RegulatorEvent messages
+    {
+        std::vector<Cti::CapControl::RegulatorEvent>  events;
+        Cti::CapControl::Test::exportRegulatorEvents( events );
+
+        BOOST_CHECK_EQUAL( 0, events.size() );
+    }
 }
 
 
@@ -729,7 +808,14 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableKeepAlive_Fail
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
     BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
-    BOOST_CHECK_EQUAL( 0, capController.eventMessages.size() );
+
+    // Validate generated RegulatorEvent messages
+    {
+        std::vector<Cti::CapControl::RegulatorEvent>  events;
+        Cti::CapControl::Test::exportRegulatorEvents( events );
+
+        BOOST_CHECK_EQUAL( 0, events.size() );
+    }
 }
 
 
@@ -763,7 +849,13 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableKeepAlive_Succ
                        requestMsg->CommandString() );   // ID of the 'Terminate' LitePoint
 
 
-    BOOST_CHECK_EQUAL( 0, capController.eventMessages.size() );
+    // Validate generated RegulatorEvent messages
+    {
+        std::vector<Cti::CapControl::RegulatorEvent>  events;
+        Cti::CapControl::Test::exportRegulatorEvents( events );
+
+        BOOST_CHECK_EQUAL( 0, events.size() );
+    }
 }
 
 
@@ -773,7 +865,14 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableRemoteControl_F
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
     BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
-    BOOST_CHECK_EQUAL( 0, capController.eventMessages.size() );
+
+    // Validate generated RegulatorEvent messages
+    {
+        std::vector<Cti::CapControl::RegulatorEvent>  events;
+        Cti::CapControl::Test::exportRegulatorEvents( events );
+
+        BOOST_CHECK_EQUAL( 0, events.size() );
+    }
 }
 
 
@@ -830,12 +929,22 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableRemoteControlFr
                        requestMsg->CommandString() );       // 'putvalue analog <offset % 10000> <value>'
 
 
-    BOOST_REQUIRE_EQUAL( 1, capController.eventMessages.size() );
+    // Validate generated RegulatorEvent messages
+    {
+        std::vector<Cti::CapControl::RegulatorEvent>  events;
+        Cti::CapControl::Test::exportRegulatorEvents( events );
 
-    const Cti::CapControl::EventLogEntry eventMsg = capController.eventMessages.front();
+        BOOST_REQUIRE_EQUAL( 1, events.size() );
 
-    BOOST_CHECK_EQUAL( capControlIvvcRemoteControlEvent, eventMsg.eventType );
-    BOOST_CHECK_EQUAL( "Enable Remote Control", eventMsg.text );
+        Cti::CapControl::RegulatorEvent event = events.front();
+
+        BOOST_CHECK_EQUAL( Cti::CapControl::RegulatorEvent::EnableRemoteControl, event.eventType );
+        BOOST_CHECK_EQUAL( 23456,                                                event.regulatorID );
+        BOOST_CHECK_EQUAL( Cti::CapControl::Phase_Unknown,                       event.phase );
+
+        BOOST_CHECK( ! event.setPointValue );
+        BOOST_CHECK( ! event.tapPosition );
+    }
 }
 
 
@@ -933,12 +1042,22 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableRemoteControlFr
                        requestMsg->CommandString() );       // ID of the 'AutoBlock' LitePoint
 */
 
-    BOOST_REQUIRE_EQUAL( 1, capController.eventMessages.size() );
+    // Validate generated RegulatorEvent messages
+    {
+        std::vector<Cti::CapControl::RegulatorEvent>  events;
+        Cti::CapControl::Test::exportRegulatorEvents( events );
 
-    const Cti::CapControl::EventLogEntry eventMsg = capController.eventMessages.front();
+        BOOST_REQUIRE_EQUAL( 1, events.size() );
 
-    BOOST_CHECK_EQUAL( capControlIvvcRemoteControlEvent, eventMsg.eventType );
-    BOOST_CHECK_EQUAL( "Enable Remote Control", eventMsg.text );
+        Cti::CapControl::RegulatorEvent event = events.front();
+
+        BOOST_CHECK_EQUAL( Cti::CapControl::RegulatorEvent::EnableRemoteControl, event.eventType );
+        BOOST_CHECK_EQUAL( 23456,                                                event.regulatorID );
+        BOOST_CHECK_EQUAL( Cti::CapControl::Phase_Unknown,                       event.phase );
+
+        BOOST_CHECK( ! event.setPointValue );
+        BOOST_CHECK( ! event.tapPosition );
+    }
 }
 
 
@@ -948,7 +1067,14 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableRemoteControl_
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
     BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
-    BOOST_CHECK_EQUAL( 0, capController.eventMessages.size() );
+
+    // Validate generated RegulatorEvent messages
+    {
+        std::vector<Cti::CapControl::RegulatorEvent>  events;
+        Cti::CapControl::Test::exportRegulatorEvents( events );
+
+        BOOST_CHECK_EQUAL( 0, events.size() );
+    }
 }
 
 
@@ -991,12 +1117,22 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableRemoteControl_
                        requestMsg->CommandString() );       // ID of the 'Terminate' LitePoint
 
 
-    BOOST_REQUIRE_EQUAL( 1, capController.eventMessages.size() );
+    // Validate generated RegulatorEvent messages
+    {
+        std::vector<Cti::CapControl::RegulatorEvent>  events;
+        Cti::CapControl::Test::exportRegulatorEvents( events );
 
-    const Cti::CapControl::EventLogEntry eventMsg = capController.eventMessages.front();
+        BOOST_REQUIRE_EQUAL( 1, events.size() );
 
-    BOOST_CHECK_EQUAL( capControlIvvcRemoteControlEvent, eventMsg.eventType );
-    BOOST_CHECK_EQUAL( "Disable Remote Control", eventMsg.text );
+        Cti::CapControl::RegulatorEvent event = events.front();
+
+        BOOST_CHECK_EQUAL( Cti::CapControl::RegulatorEvent::DisableRemoteControl, event.eventType );
+        BOOST_CHECK_EQUAL( 23456,                                                 event.regulatorID );
+        BOOST_CHECK_EQUAL( Cti::CapControl::Phase_Unknown,                        event.phase );
+
+        BOOST_CHECK( ! event.setPointValue );
+        BOOST_CHECK( ! event.tapPosition );
+    }
 }
 
 
@@ -1066,12 +1202,22 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapUp_Success_with_Ph
                        requestMsg->CommandString() );   // ID of the 'TapUp' LitePoint
 
 
-    BOOST_REQUIRE_EQUAL( 1, capController.eventMessages.size() );
+    // Validate generated RegulatorEvent messages
+    {
+        std::vector<Cti::CapControl::RegulatorEvent>  events;
+        Cti::CapControl::Test::exportRegulatorEvents( events );
 
-    const Cti::CapControl::EventLogEntry eventMsg = capController.eventMessages.front();
+        BOOST_REQUIRE_EQUAL( 1, events.size() );
 
-    BOOST_CHECK_EQUAL( capControlIvvcTapOperation, eventMsg.eventType );
-    BOOST_CHECK_EQUAL( "Raise Tap Position - Phase: A", eventMsg.text );
+        Cti::CapControl::RegulatorEvent event = events.front();
+
+        BOOST_CHECK_EQUAL( Cti::CapControl::RegulatorEvent::TapUp, event.eventType );
+        BOOST_CHECK_EQUAL( 23456,                                  event.regulatorID );
+        BOOST_CHECK_EQUAL( Cti::CapControl::Phase_A,               event.phase );
+
+        BOOST_CHECK( ! event.setPointValue );
+        BOOST_CHECK( ! event.tapPosition );
+    }
 }
 
 
@@ -1082,7 +1228,14 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_RaiseSetPoint_Fail, p
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
     BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
-    BOOST_CHECK_EQUAL( 0, capController.eventMessages.size() );
+
+    // Validate generated RegulatorEvent messages
+    {
+        std::vector<Cti::CapControl::RegulatorEvent>  events;
+        Cti::CapControl::Test::exportRegulatorEvents( events );
+
+        BOOST_CHECK_EQUAL( 0, events.size() );
+    }
 }
 
 
@@ -1096,7 +1249,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_RaiseSetPoint_Success
     regulator->handlePointData( &setPointData );
 
 
-    BOOST_CHECK_EQUAL( 0.75, regulator->adjustVoltage( 0.75 ) );
+    BOOST_CHECK_CLOSE( 0.75, regulator->adjustVoltage( 0.75 ),  1e-6 );
 
 
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
@@ -1121,13 +1274,22 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_RaiseSetPoint_Success
     BOOST_CHECK_EQUAL( "putvalue analog 7 120.750000",
                        requestMsg->CommandString() );   // Offset of the 'SetPoint' LitePoint and the new value
 
+    // Validate generated RegulatorEvent messages
+    {
+        std::vector<Cti::CapControl::RegulatorEvent>  events;
+        Cti::CapControl::Test::exportRegulatorEvents( events );
 
-    BOOST_REQUIRE_EQUAL( 1, capController.eventMessages.size() );
+        BOOST_REQUIRE_EQUAL( 1, events.size() );
 
-    const Cti::CapControl::EventLogEntry eventMsg = capController.eventMessages.front();
+        Cti::CapControl::RegulatorEvent event = events.front();
 
-    BOOST_CHECK_EQUAL( capControlIvvcSetPointOperation, eventMsg.eventType );
-    BOOST_CHECK_EQUAL( "Raise Set Point", eventMsg.text );
+        BOOST_CHECK_EQUAL( Cti::CapControl::RegulatorEvent::IncreaseSetPoint, event.eventType );
+        BOOST_CHECK_EQUAL( 23456,                                             event.regulatorID );
+        BOOST_CHECK_EQUAL( Cti::CapControl::Phase_Unknown,                    event.phase );
+        BOOST_CHECK_CLOSE( 120.75,                                           *event.setPointValue,     1e-6 );
+
+        BOOST_CHECK( ! event.tapPosition );
+    }
 }
 
 
@@ -1138,7 +1300,14 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_LowerSetPoint_Fail, p
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
     BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
-    BOOST_CHECK_EQUAL( 0, capController.eventMessages.size() );
+
+    // Validate generated RegulatorEvent messages
+    {
+        std::vector<Cti::CapControl::RegulatorEvent>  events;
+        Cti::CapControl::Test::exportRegulatorEvents( events );
+
+        BOOST_CHECK_EQUAL( 0, events.size() );
+    }
 }
 
 
@@ -1151,8 +1320,12 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_LowerSetPoint_Success
 
     regulator->handlePointData( &setPointData );
 
+    CtiPointDataMsg tapPositionData( 3500, -3.0, NormalQuality, AnalogPointType );
 
-    BOOST_CHECK_EQUAL( -0.75, regulator->adjustVoltage( -0.75 ) );
+    regulator->handlePointData( &tapPositionData );
+
+
+    BOOST_CHECK_CLOSE( -0.75, regulator->adjustVoltage( -0.75 ),    1e-6 );
 
 
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
@@ -1178,12 +1351,21 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_LowerSetPoint_Success
                        requestMsg->CommandString() );   // Offset of the 'SetPoint' LitePoint and the new value
 
 
-    BOOST_REQUIRE_EQUAL( 1, capController.eventMessages.size() );
+    // Validate generated RegulatorEvent messages
+    {
+        std::vector<Cti::CapControl::RegulatorEvent>  events;
+        Cti::CapControl::Test::exportRegulatorEvents( events );
 
-    const Cti::CapControl::EventLogEntry eventMsg = capController.eventMessages.front();
+        BOOST_REQUIRE_EQUAL( 1, events.size() );
 
-    BOOST_CHECK_EQUAL( capControlIvvcSetPointOperation, eventMsg.eventType );
-    BOOST_CHECK_EQUAL( "Lower Set Point", eventMsg.text );
+        Cti::CapControl::RegulatorEvent event = events.front();
+
+        BOOST_CHECK_EQUAL( Cti::CapControl::RegulatorEvent::DecreaseSetPoint, event.eventType );
+        BOOST_CHECK_EQUAL( 23456,                                             event.regulatorID );
+        BOOST_CHECK_EQUAL( Cti::CapControl::Phase_Unknown,                    event.phase );
+        BOOST_CHECK_CLOSE( 119.25,                                           *event.setPointValue,     1e-6 );
+        BOOST_CHECK_EQUAL( -3,                                               *event.tapPosition );
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()
