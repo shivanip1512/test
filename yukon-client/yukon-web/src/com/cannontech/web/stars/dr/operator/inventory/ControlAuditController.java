@@ -18,7 +18,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -91,7 +90,7 @@ public class ControlAuditController {
                     YukonValidationUtils.rejectValues(errors, BASE_ERROR_KEY + ".date.inThePast", "to");
                 }
             }
-
+            
             if (from != null && to != null) {
                 if (from.isAfter(to)) {
                     YukonValidationUtils.rejectValues(errors, BASE_ERROR_KEY + ".date.fromAfterTo", "to", "from");
@@ -101,7 +100,7 @@ public class ControlAuditController {
     };
     
     @RequestMapping("view")
-    public String view(HttpServletRequest request, ModelMap model, String auditId, YukonUserContext context) throws ServletRequestBindingException {
+    public String view(HttpServletRequest request, ModelMap model, String auditId, YukonUserContext context) {
         
         InventoryCollection collection = inventoryCollectionFactory.addCollectionToModelMap(request, model);
         
@@ -122,16 +121,17 @@ public class ControlAuditController {
     
     @RequestMapping("runAudit")
     public String runAudit(@ModelAttribute("settings") AuditSettings settings, BindingResult result,
-                           HttpServletRequest request,
-                           YukonUserContext context, 
+                           HttpServletRequest req,
+                           YukonUserContext userContext, 
                            ModelMap model, 
-                           FlashScope flash) throws ServletRequestBindingException {
+                           FlashScope flash) {
+        
         /** gets the collection and also puts it in the model map, which we need if we fail */
-        InventoryCollection collection = inventoryCollectionFactory.addCollectionToModelMap(request, model);
+        InventoryCollection collection = inventoryCollectionFactory.addCollectionToModelMap(req, model);
 
         /* TODO create custom binder for this stuff */
         settings.setCollection(collection);
-        settings.setContext(context);
+        settings.setContext(userContext);
         
         auditInputValidator.validate(settings, result);
         
@@ -147,14 +147,16 @@ public class ControlAuditController {
         
         model.addAttribute("auditId", audit.getAuditId());
         
-        inventoryCollectionFactory.addCollectionToModelMap(request, model);
+        inventoryCollectionFactory.addCollectionToModelMap(req, model);
         
         return "redirect:view";
     }
     
     @RequestMapping("download")
-    public void download(HttpServletResponse response, YukonUserContext context, String auditId, ResultType type) throws IOException {
-        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
+    public void download(HttpServletResponse resp, YukonUserContext userContext, String auditId, ResultType type) 
+    throws IOException {
+        
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
         
         ControlAuditResult result = resultsCache.getResult(auditId);
         List<AuditRow> devices;
@@ -192,11 +194,12 @@ public class ControlAuditController {
         }
         
         //write out the file
-        WebFileUtils.writeToCSV(response, headerRow, dataRows, "LmControlAudit_" + type + ".csv");
+        WebFileUtils.writeToCSV(resp, headerRow, dataRows, "LmControlAudit_" + type + ".csv");
     }
     
     @RequestMapping("newOperation")
-    public String newOperation(ModelMap model, String auditId, YukonUserContext context, ResultType type) {
+    public String newOperation(ModelMap model, String auditId, YukonUserContext userContext, ResultType type) {
+        
         ControlAuditResult result = resultsCache.getResult(auditId);
         String code = null;
         Iterator<InventoryIdentifier> inventory = null;
@@ -220,7 +223,7 @@ public class ControlAuditController {
             break;
         }
         
-        String description = resolver.getMessageSourceAccessor(context).getMessage(code);
+        String description = resolver.getMessageSourceAccessor(userContext).getMessage(code);
         InventoryCollection temporaryCollection = memoryCollectionProducer.createCollection(inventory, description);
         model.addAttribute("inventoryCollection", temporaryCollection);
         model.addAllAttributes(temporaryCollection.getCollectionParameters());
@@ -234,7 +237,7 @@ public class ControlAuditController {
     
     @RequestMapping("chart")
     public @ResponseBody Map<String, Object> chart(String auditId, YukonUserContext userContext) {
-
+        
         MessageSourceAccessor msa = resolver.getMessageSourceAccessor(userContext);
         String controlledStr = msa.getMessage("yukon.web.modules.operator.controlAudit.controlled");
         String uncontrolledStr = msa.getMessage("yukon.web.modules.operator.controlAudit.uncontrolled");
@@ -248,11 +251,12 @@ public class ControlAuditController {
         labelDataColorMap.put(uncontrolledStr, new FlotPieDatas(result.getUncontrolled().getCount(), "#fb8521")); // .uncontrolled orange (or ffac00?)
         labelDataColorMap.put(unknownStr, new FlotPieDatas(result.getUnknown().getCount(), "#4d90fe")); // .unknown blue
         labelDataColorMap.put(unsupportedStr, new FlotPieDatas(result.getUnsupported().getCount(), "#888888")); // .unsupported gray
-
+        
         Map<String, Object> pieJSONData = flotChartService.getPieGraphDataWithColor(labelDataColorMap, true, false, 1.0);
+        
         return pieJSONData;
     }
-
+    
     @RequestMapping("page")
     public String page(ModelMap model, 
                        ResultType type,
