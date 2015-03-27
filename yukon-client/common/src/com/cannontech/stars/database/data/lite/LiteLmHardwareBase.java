@@ -133,4 +133,9 @@ public class LiteLmHardwareBase extends LiteInventoryBase {
         return isOneWayThermostat() || isTwoWayThermostat();
     }
     
+    @Override
+    public String toString() {
+        return String.format("Hardware [serialNumber=%s, hardwareType=%s, routeId=%s, configurationId=%s]",
+                             manufacturerSerialNumber, lmHardwareTypeID, routeID, configurationID);
+    }
 }
