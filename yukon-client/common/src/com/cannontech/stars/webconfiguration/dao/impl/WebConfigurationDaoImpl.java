@@ -31,7 +31,7 @@ public class WebConfigurationDaoImpl implements WebConfigurationDao {
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
 
-    private final Map<Integer, WebConfiguration> appCatWeConfigCache = new ConcurrentHashMap<>();
+    private final Map<Integer, WebConfiguration> appCatWebConfigCache = new ConcurrentHashMap<>();
 
     @PostConstruct
     public void init() throws Exception {
@@ -42,7 +42,7 @@ public class WebConfigurationDaoImpl implements WebConfigurationDao {
         asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.APPLIANCE, new DatabaseChangeEventListener() {
             @Override
             public void eventReceived(DatabaseChangeEvent event) {
-                appCatWeConfigCache.remove(event.getPrimaryKey());
+                appCatWebConfigCache.remove(event.getPrimaryKey());
             }
         });
     }
@@ -86,7 +86,7 @@ public class WebConfigurationDaoImpl implements WebConfigurationDao {
 
     @Override
     public WebConfiguration getForApplianceCateogry(int applianceCategoryId) {
-        WebConfiguration cachedWebConfiguration = appCatWeConfigCache.get(applianceCategoryId);
+        WebConfiguration cachedWebConfiguration = appCatWebConfigCache.get(applianceCategoryId);
         if (cachedWebConfiguration != null) {
             return cachedWebConfiguration;
         } else {
@@ -98,7 +98,7 @@ public class WebConfigurationDaoImpl implements WebConfigurationDao {
 
             WebConfiguration webConfiguration = yukonJdbcTemplate.queryForObject(sql, rowMapper);
 
-            appCatWeConfigCache.put(applianceCategoryId, webConfiguration);
+            appCatWebConfigCache.put(applianceCategoryId, webConfiguration);
             return webConfiguration;
         }
     }
