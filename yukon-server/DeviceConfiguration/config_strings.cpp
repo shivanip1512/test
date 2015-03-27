@@ -353,4 +353,5 @@ const string RegulatorStrings::voltageControlMode  = "voltageControlMode";
 const string RegulatorStrings::voltageChangePerTap = "voltageChangePerTap";
 const string RegulatorStrings::heartbeatPeriod     = "heartbeatPeriod";
 const string RegulatorStrings::heartbeatValue      = "heartbeatValue";
+const string RegulatorStrings::heartbeatMode       = "heartbeatMode";
 
