@@ -95,8 +95,6 @@ ZoneManager.obj \
 VoltageRegulator.obj \
 VoltageRegulatorLoader.obj \
 VoltageRegulatorManager.obj \
-GangOperatedVoltageRegulator.obj \
-PhaseOperatedVoltageRegulator.obj \
 CapControlPointDatahandler.obj \
 ccutil.obj \
 CapControlDispatchConnection.obj \

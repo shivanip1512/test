@@ -160,6 +160,8 @@ struct phase_operated_voltage_regulator_fixture_core
         fixtureConfig->insertValue( "voltageChangePerTap", "0.75" );
         fixtureConfig->insertValue( "heartbeatPeriod",     "0" );
         fixtureConfig->insertValue( "heartbeatValue",      "0" );
+
+        fixtureConfig->insertValue( "heartbeatMode",       "INCREMENT" );
     }
 };
 

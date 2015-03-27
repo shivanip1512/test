@@ -1109,10 +1109,8 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
                     VoltageRegulatorManager::SharedPtr regulator =
                             store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
 
-                    if ( regulator->isTimeToSendKeepAlive() )
+                    if ( regulator->executePeriodicKeepAlive() )
                     {
-                        regulator->executeEnableKeepAlive();
-
                         if( _CC_DEBUG & CC_DEBUG_IVVC )
                         {
                             CTILOG_DEBUG(dout, "IVVC Algorithm: Voltage Regulator Keep Alive messages sent on bus: "
@@ -1150,10 +1148,8 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
                     VoltageRegulatorManager::SharedPtr regulator =
                             store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
 
-                    if ( regulator->isTimeToSendKeepAlive() )
+                    if ( regulator->executePeriodicKeepAlive() )
                     {
-                        regulator->executeEnableKeepAlive();
-
                         if( _CC_DEBUG & CC_DEBUG_IVVC )
                         {
                             CTILOG_DEBUG(dout, "IVVC Algorithm: Voltage Regulator Keep Alive messages sent on bus: "
@@ -1191,10 +1187,8 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
                     VoltageRegulatorManager::SharedPtr regulator =
                             store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
 
-                    if ( regulator->isTimeToSendKeepAlive() )
+                    if ( regulator->executePeriodicKeepAlive() )
                     {
-                        regulator->executeEnableKeepAlive();
-
                         if( _CC_DEBUG & CC_DEBUG_IVVC )
                         {
                             CTILOG_DEBUG(dout, "IVVC Algorithm: Voltage Regulator Keep Alive messages sent on bus: "

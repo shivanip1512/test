@@ -25,7 +25,7 @@ public:
 
         regulators[25] = VoltageRegulatorManager::SharedPtr(new GangOperatedVoltageRegulator);
         regulators[25]->setPaoId(25);
-        regulators[25]->setPaoType(VoltageRegulator::GangOperatedVoltageRegulator);
+        regulators[25]->setPaoType(VoltageRegulator::LoadTapChanger);
 
         regulators[30] = VoltageRegulatorManager::SharedPtr(new GangOperatedVoltageRegulator);
         regulators[30]->setPaoId(30);

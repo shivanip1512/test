@@ -99,8 +99,6 @@ ZoneManager.obj \
 VoltageRegulator.obj \
 VoltageRegulatorLoader.obj \
 VoltageRegulatorManager.obj \
-GangOperatedVoltageRegulator.obj \
-PhaseOperatedVoltageRegulator.obj \
 ccmonitorpoint.obj \
 cctwowaycbcpoints.obj \
 ccareabase.obj \

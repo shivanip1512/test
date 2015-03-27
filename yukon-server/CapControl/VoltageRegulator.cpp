@@ -11,9 +11,12 @@
 #include "config_data_regulator.h"
 
 #include "StandardControlPolicy.h"
+#include "CountdownKeepAlivePolicy.h"
+#include "IncrementingKeepAlivePolicy.h"
+#include "LoadOnlyScanPolicy.h"
+#include "StandardScanPolicy.h"
 
 #include "RegulatorEvents.h"
-
 
 using namespace boost::posix_time;
 using namespace Cti::Messaging::CapControl;
@@ -47,21 +50,24 @@ const std::string VoltageRegulator::LoadTapChanger                  = "LTC";
 const std::string VoltageRegulator::GangOperatedVoltageRegulator    = "GO_REGULATOR";
 const std::string VoltageRegulator::PhaseOperatedVoltageRegulator   = "PO_REGULATOR";
 
+DEFINE_COLLECTABLE( VoltageRegulator, CTIVOLTAGEREGULATOR_ID )
+
 
 VoltageRegulator::VoltageRegulator()
     : CapControlPao(),
     _phase(Phase_Unknown),
     _updated(true),
-    _mode(VoltageRegulator::RemoteMode),
     _lastControlOperation(VoltageRegulator::None),
     _lastMissingAttributeComplainTime(CtiTime(neg_infin)),
-    _keepAliveConfig(0),
-    _keepAliveTimer(0),
     _nextKeepAliveSendTime(CtiTime(neg_infin)),
     _lastOperatingMode(UnknownMode),
     _lastCommandedOperatingMode(UnknownMode),
     _recentTapOperation(false),
-    _controlPolicy( std::make_unique<StandardControlPolicy>() )
+    _keepAlivePeriod( 0 ),
+    _keepAliveValue( 0 ),
+    _controlPolicy( std::make_unique<StandardControlPolicy>() ),
+    _keepAlivePolicy( std::make_unique<CountdownKeepAlivePolicy>() ),
+    _scanPolicy( std::make_unique<LoadOnlyScanPolicy>() )
 {
     // empty...
 }
@@ -71,78 +77,80 @@ VoltageRegulator::VoltageRegulator(Cti::RowReader & rdr)
     : CapControlPao(rdr),
     _phase(Phase_Unknown),
     _updated(true),
-    _mode(VoltageRegulator::RemoteMode),
     _lastControlOperation(VoltageRegulator::None),
     _lastMissingAttributeComplainTime(CtiTime(neg_infin)),
-    _keepAliveConfig(0),
-    _keepAliveTimer(0),
     _nextKeepAliveSendTime(CtiTime(neg_infin)),
     _lastOperatingMode(UnknownMode),
     _lastCommandedOperatingMode(UnknownMode),
     _recentTapOperation(false),
-    _controlPolicy( std::make_unique<StandardControlPolicy>() )
+    _keepAlivePeriod( 0 ),
+    _keepAliveValue( 0 ),
+    _controlPolicy( std::make_unique<StandardControlPolicy>() ),
+    _keepAlivePolicy( std::make_unique<CountdownKeepAlivePolicy>() ),
+    _scanPolicy( std::make_unique<LoadOnlyScanPolicy>() )
 {
     // empty...
 }
 
 
 VoltageRegulator::VoltageRegulator(const VoltageRegulator & toCopy)
-    : CapControlPao(),
-    _phase(Phase_Unknown),
-    _updated(true),
-    _mode(VoltageRegulator::RemoteMode),
-    _lastControlOperation(VoltageRegulator::None),
-    _lastMissingAttributeComplainTime(CtiTime(neg_infin)),
-    _keepAliveConfig(0),
-    _keepAliveTimer(0),
-    _nextKeepAliveSendTime(CtiTime(neg_infin)),
-    _lastOperatingMode(UnknownMode),
-    _lastCommandedOperatingMode(UnknownMode),
-    _recentTapOperation(false),
-    _controlPolicy( std::make_unique<StandardControlPolicy>() )
+    : CapControlPao(toCopy),
+    _phase(toCopy._phase),
+    _updated(toCopy._updated),
+    _lastControlOperation(toCopy._lastControlOperation),
+    _lastMissingAttributeComplainTime(toCopy._lastMissingAttributeComplainTime),
+    _nextKeepAliveSendTime(toCopy._nextKeepAliveSendTime),
+    _lastOperatingMode(toCopy._lastOperatingMode),
+    _lastCommandedOperatingMode(toCopy._lastCommandedOperatingMode),
+    _recentTapOperation(toCopy._recentTapOperation),
+    _keepAlivePeriod( toCopy._keepAlivePeriod ),
+    _keepAliveValue( toCopy._keepAliveValue )//,
+///    _phase(Phase_Unknown),
+///    _updated(true),
+///    _lastControlOperation(VoltageRegulator::None),
+///    _lastMissingAttributeComplainTime(CtiTime(neg_infin)),
+///    _nextKeepAliveSendTime(CtiTime(neg_infin)),
+///    _lastOperatingMode(UnknownMode),
+///    _lastCommandedOperatingMode(UnknownMode),
+///    _recentTapOperation(false),
+///    _keepAlivePeriod( 0 ),
+///    _keepAliveValue( 0 )//,
+//    _controlPolicy( std::make_unique<StandardControlPolicy>() )
 {
-    operator=(toCopy);
+//    operator=(toCopy);
 }
 
 
-VoltageRegulator & VoltageRegulator::operator=(const VoltageRegulator & rhs)
-{
-    if ( this != &rhs )
-    {
-        CapControlPao::operator=(rhs);
-
-        _phase = rhs._phase;
-
-        _updated    = rhs._updated;
-        _mode       = rhs._mode;
-
-        _lastControlOperation       = rhs._lastControlOperation;
-        _lastControlOperationTime   = rhs._lastControlOperationTime;
-
-        _attributes = rhs._attributes;
-
-        _pointValues = rhs._pointValues;
-
-        _lastMissingAttributeComplainTime = rhs._lastMissingAttributeComplainTime;
-
-        _keepAliveConfig        = rhs._keepAliveConfig;
-        _keepAliveTimer         = rhs._keepAliveTimer;
-        _nextKeepAliveSendTime  = rhs._nextKeepAliveSendTime;
-
-        _lastOperatingMode  = rhs._lastOperatingMode;
-        _lastCommandedOperatingMode = rhs._lastCommandedOperatingMode;
-        _recentTapOperation = rhs._recentTapOperation;
-
-    }
-
-    return *this;
-}
+//VoltageRegulator & VoltageRegulator::operator=(const VoltageRegulator & rhs)
+//{
+//    if ( this != &rhs )
+//    {
+////        CapControlPao::operator=(rhs);
+//
+//        _phase = rhs._phase;
+//
+//        _updated    = rhs._updated;
+//      //  _mode       = rhs._mode;
+//
+//        _lastControlOperation       = rhs._lastControlOperation;
+//        _lastControlOperationTime   = rhs._lastControlOperationTime;
+//
+//        _lastMissingAttributeComplainTime = rhs._lastMissingAttributeComplainTime;
+//
+//        _nextKeepAliveSendTime  = rhs._nextKeepAliveSendTime;
+//
+//        _lastOperatingMode  = rhs._lastOperatingMode;
+//        _lastCommandedOperatingMode = rhs._lastCommandedOperatingMode;
+//        _recentTapOperation = rhs._recentTapOperation;
+//    }
+//
+//    return *this;
+//}
 
 
 void VoltageRegulator::handlePointData(CtiPointDataMsg * message)
 {
     setUpdated(true);
-    _pointValues.updatePointValue(message);
 
     _controlPolicy->updatePointData( message );
     _keepAlivePolicy->updatePointData( message );
@@ -174,11 +182,6 @@ VoltageRegulator::IDSet VoltageRegulator::getRegistrationPoints()
         IDs.insert( ID );
     }
 
-    for ( const auto & attribute : _attributes )
-    {
-        IDs.insert( attribute.second.getPointId() );
-    }
-
     return IDs;
 }
 
@@ -191,7 +194,7 @@ LitePoint VoltageRegulator::getPointByAttribute(const PointAttribute & attribute
     } 
     catch ( FailedAttributeLookup & )
     {
-        // ... continue on to the local map lookup
+        // ... continue on
     }
 
     try
@@ -200,7 +203,7 @@ LitePoint VoltageRegulator::getPointByAttribute(const PointAttribute & attribute
     } 
     catch ( FailedAttributeLookup & )
     {
-        // ... continue on to the local map lookup
+        // ... continue on
     }
 
     try
@@ -209,17 +212,12 @@ LitePoint VoltageRegulator::getPointByAttribute(const PointAttribute & attribute
     } 
     catch ( FailedAttributeLookup & )
     {
-        // ... continue on to the local map lookup
+        // ... continue on
     }
 
-    AttributeMap::const_iterator iter = _attributes.find(attribute);
+    // didn't find anywhere...
 
-    if ( iter == _attributes.end() )
-    {
-        throw MissingPointAttribute( getPaoId(), attribute, getPaoType(), isTimeForMissingAttributeComplain()  );
-    }
-
-    return iter->second;
+    throw MissingPointAttribute( getPaoId(), attribute, getPaoType(), isTimeForMissingAttributeComplain()  );
 }
 
 
@@ -242,24 +240,32 @@ void VoltageRegulator::notifyControlOperation(const ControlOperation & operation
 }
 
 
-bool VoltageRegulator::getPointValue(int pointId, double & value)
+void VoltageRegulator::loadAttributes( AttributeService * service )
 {
-    return _pointValues.getPointValue( pointId, value );
-}
+    // restore stuff from device configuration
 
+    _keepAlivePeriod = getKeepAliveTimer();
+    _keepAliveValue  = getKeepAliveConfig();
 
-void VoltageRegulator::loadPointAttributes(AttributeService * service, const PointAttribute & attribute)
-{
+    std::string currentHeartbeatMode = getHeartbeatMode();
+
+    if ( currentHeartbeatMode == "INCREMENT" )
+    {
+        _keepAlivePolicy = std::make_unique<IncrementingKeepAlivePolicy>();
+    }
+    else if ( currentHeartbeatMode == "NONE" )
+    {
+        _keepAlivePeriod = 0;
+    }
+
+    if ( getPaoType() != VoltageRegulator::LoadTapChanger )
+    {
+        _scanPolicy = std::make_unique<StandardScanPolicy>();
+    }
+
     _controlPolicy->loadAttributes( *service, getPaoId() );
     _keepAlivePolicy->loadAttributes( *service, getPaoId() );
     _scanPolicy->loadAttributes( *service, getPaoId() );
-
-    LitePoint point = service->getPointByPaoAndAttribute( getPaoId(), attribute );
-
-    if (point.getPointType() != InvalidPointType)
-    {
-        _attributes.insert( std::make_pair( attribute, point ) );
-    }
 }
 
 
@@ -281,79 +287,38 @@ bool VoltageRegulator::isTimeForMissingAttributeComplain(CtiTime time)
 }
 
 
-void VoltageRegulator::setKeepAliveConfig(const long value)
+VoltageRegulator::Type VoltageRegulator::getType() const
 {
-    _keepAliveConfig = value;
-}
-
-
-
-
-void VoltageRegulator::executeDigitalOutputHelper( const LitePoint & point,
-                                                   const std::string & textDescription,
-                                                   const int recordEventType )
-{
-    CtiCapController::getInstance()->sendMessageToDispatch( createDispatchMessage( point.getPointId(), textDescription ) );
-
-    if ( recordEventType != capControlNoEvent )
+    if ( getPaoType() == VoltageRegulator::LoadTapChanger )
     {
-        CtiCapController::submitEventLogEntry( EventLogEntry( textDescription, getPaoId(), recordEventType ) );
+        return VoltageRegulator::LoadTapChangerType;
+    }
+    if ( getPaoType() == VoltageRegulator::GangOperatedVoltageRegulator )
+    {
+        return VoltageRegulator::GangOperatedVoltageRegulatorType;
     }
 
-    std::string commandString = point.getStateOneControl() + " select pointid " + CtiNumStr( point.getPointId() );
-
-    CtiRequestMsg * request = createPorterRequestMsg( point.getPaoId(), commandString );
-    request->setSOE(5);
-
-    CtiCapController::getInstance()->manualCapBankControl( request );
+    return VoltageRegulator::PhaseOperatedVoltageRegulatorType;
 }
 
 
-void VoltageRegulator::executeRemoteControlHelper( const LitePoint & point,
-                                                   const int keepAliveValue,
-                                                   const std::string & textDescription,
-                                                   const int recordEventType )
+void VoltageRegulator::updateFlags(const unsigned tapDelay)
 {
-    CtiSignalMsg * signalMsg = createDispatchMessage( point.getPointId(), textDescription );
+    bool recentOperation = ( ( _lastControlOperationTime + 30 ) > CtiTime() );
 
-    signalMsg->setPointValue(keepAliveValue);
-
-    CtiCapController::getInstance()->sendMessageToDispatch( signalMsg );
-
-    if ( recordEventType != capControlNoEvent )
+    if (_recentTapOperation != recentOperation)
     {
-        CtiCapController::submitEventLogEntry( EventLogEntry( textDescription, getPaoId(), recordEventType ) );
+        _recentTapOperation = recentOperation;
+        setUpdated(true);
     }
-}
 
+    OperatingMode currentMode = getOperatingMode();
 
-void VoltageRegulator::executeKeepAliveHelper( const LitePoint & point, const int keepAliveValue )
-{
-    CtiCapController::getInstance()->sendMessageToDispatch( createDispatchMessage( point.getPointOffset(), "Keep Alive" ) );
-
-    const long pointOffset=
-        point.getControlOffset() ?
-            point.getControlOffset() :
-            point.getPointOffset() % 10000;
-
-    std::string commandString = "putvalue analog " + CtiNumStr( pointOffset ) + " " + CtiNumStr( keepAliveValue );
-
-    CtiRequestMsg *request = createPorterRequestMsg( point.getPaoId(), commandString );
-    request->setSOE(5);
-
-    CtiCapController::getInstance()->manualCapBankControl( request );
-}
-
-
-CtiSignalMsg * VoltageRegulator::createDispatchMessage( const long ID, const std::string & text )
-{
-    return new CtiSignalMsg( ID,
-                             0,
-                             text,
-                             std::string("Voltage Regulator Name: " + getPaoName()),
-                             CapControlLogType,
-                             SignalEvent,
-                             std::string("cap control") );
+    if (_lastOperatingMode != currentMode)
+    {
+        _lastOperatingMode = currentMode;
+        setUpdated(true);
+    }
 }
 
 
@@ -361,24 +326,32 @@ CtiSignalMsg * VoltageRegulator::createDispatchMessage( const long ID, const std
     Return the operating mode based on the auto/remote point
 */
 VoltageRegulator::OperatingMode VoltageRegulator::getOperatingMode()
+try
 {
-    double    value = -1.0;
-    LitePoint point = getPointByAttribute( PointAttribute::AutoRemoteControl );
-
-    if ( getPointValue( point.getPointId(), value ) )
+    switch ( _keepAlivePolicy->getOperatingMode() )
     {
-        return ( value == 1.0 ) ? RemoteMode : LocalMode;
+        case KeepAlivePolicy::LocalMode:
+        {
+            return LocalMode;
+        }
+        case KeepAlivePolicy::RemoteMode:
+        {
+            return RemoteMode;
+        }
     }
 
     return UnknownMode;
 }
-
-
-bool VoltageRegulator::isTimeToSendKeepAlive()
+catch ( FailedAttributeLookup & missingAttribute )
 {
-    _keepAliveTimer = getKeepAliveTimer();
-
-    return ( ( _keepAliveTimer != 0 ) && ( CtiTime::now() >= _nextKeepAliveSendTime ) );
+    throw MissingPointAttribute( getPaoId(),
+                                 missingAttribute.attribute(),
+                                 getPaoType(),
+                                 isTimeForMissingAttributeComplain()  );
+}
+catch ( UninitializedPointValue & )
+{
+    return UnknownMode;
 }
 
 
@@ -481,6 +454,23 @@ VoltageRegulator::ControlMode VoltageRegulator::getControlMode() const
 }
 
 
+std::string VoltageRegulator::getHeartbeatMode() const
+{
+    Config::DeviceConfigSPtr    deviceConfig = getDeviceConfig( this );
+
+    if ( deviceConfig )
+    {
+        if ( boost::optional<std::string>   mode =
+             deviceConfig->findValue<std::string>( Config::RegulatorStrings::heartbeatMode ) )
+        {
+            return *mode;
+        }
+    }
+
+    return "NONE";
+}
+
+
 double VoltageRegulator::requestVoltageChange( const double changeAmount,
                                                const bool   isEmergency )
 {
@@ -534,15 +524,19 @@ double VoltageRegulator::requestVoltageChange( const double changeAmount,
 
 
 double VoltageRegulator::getVoltage()
+try
 {
-    double    value = 0.0;
-    LitePoint point = getPointByAttribute( PointAttribute::VoltageY );
-
-    if ( getPointValue( point.getPointId(), value ) )
-    {
-        return value;
-    }
-
+    return _scanPolicy->getValueByAttribute( PointAttribute::VoltageY );
+}
+catch ( FailedAttributeLookup & missingAttribute )
+{
+    throw MissingPointAttribute( getPaoId(),
+                                 missingAttribute.attribute(),
+                                 getPaoType(),
+                                 isTimeForMissingAttributeComplain()  );
+}
+catch ( UninitializedPointValue & )
+{
     return 0.0;
 }
 
@@ -779,7 +773,7 @@ void VoltageRegulator::executeEnableRemoteControl()
 {
     try
     {
-        submitRemoteControlCommands( _keepAlivePolicy->EnableRemoteControl( getKeepAliveConfig() ),
+        submitRemoteControlCommands( _keepAlivePolicy->EnableRemoteControl( _keepAliveValue ),
                                      "Enable Remote Control",
                                      RegulatorEvent::EnableRemoteControl );
 
@@ -834,57 +828,31 @@ void VoltageRegulator::submitRemoteControlCommands( Policy::Action              
 }
 
 
-void VoltageRegulator::executeEnableKeepAlive()
+long VoltageRegulator::executeEnableKeepAlive()
+try
 {
-    long keepAlivePeriod = getKeepAliveTimer();
-
-    try
-    {
-        const long delay = submitKeepAliveCommands( _keepAlivePolicy->SendKeepAlive( getKeepAliveConfig() ) );
-        if ( delay > 0 )
-        {
-            keepAlivePeriod = delay;
-        }
-    }
-    catch ( FailedAttributeLookup & missingAttribute )
-    {
-        throw MissingPointAttribute( getPaoId(),
-                                     missingAttribute.attribute(),
-                                     getPaoType(),
-                                     isTimeForMissingAttributeComplain()  );
-    }
-
-    if ( isTimeToSendKeepAlive() )      // update the keep alive timer
-    {
-        _nextKeepAliveSendTime = ( CtiTime::now() + keepAlivePeriod );
-    }
+    return submitKeepAliveCommands( _keepAlivePolicy->SendKeepAlive( _keepAliveValue ) );
+}
+catch ( FailedAttributeLookup & missingAttribute )
+{
+    throw MissingPointAttribute( getPaoId(),
+                                 missingAttribute.attribute(),
+                                 getPaoType(),
+                                 isTimeForMissingAttributeComplain()  );
 }
 
 
 void VoltageRegulator::executeDisableKeepAlive()
+try
 {
-    long keepAlivePeriod = getKeepAliveTimer();
-
-    try
-    {
-        const long delay = submitKeepAliveCommands( _keepAlivePolicy->StopKeepAlive() );
-        if ( delay > 0 )
-        {
-            keepAlivePeriod = delay;
-        }
-    }
-    catch ( FailedAttributeLookup & missingAttribute )
-    {
-        throw MissingPointAttribute( getPaoId(),
-                                     missingAttribute.attribute(),
-                                     getPaoType(),
-                                     isTimeForMissingAttributeComplain()  );
-    }
-
-    if ( isTimeToSendKeepAlive() )      // update the keep alive timer
-    {
-        _nextKeepAliveSendTime = ( CtiTime::now() + keepAlivePeriod );
-    }
+    submitKeepAliveCommands( _keepAlivePolicy->StopKeepAlive() );
+}
+catch ( FailedAttributeLookup & missingAttribute )
+{
+    throw MissingPointAttribute( getPaoId(),
+                                 missingAttribute.attribute(),
+                                 getPaoType(),
+                                 isTimeForMissingAttributeComplain()  );
 }
 
 
@@ -916,6 +884,21 @@ long VoltageRegulator::submitKeepAliveCommands( Policy::Actions & actions )
     }
 
     return delay;
+}
+
+
+bool VoltageRegulator::executePeriodicKeepAlive()
+{
+    if ( _keepAlivePeriod && ( CtiTime::now() >= _nextKeepAliveSendTime ) )
+    {
+        const long delay = executeEnableKeepAlive();
+
+        _nextKeepAliveSendTime += ( delay ) ? delay : _keepAlivePeriod;
+
+        return true;
+    }
+
+    return false;
 }
 
 

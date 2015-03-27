@@ -32,6 +32,7 @@ namespace CapControl    {
 class VoltageRegulator : public CapControlPao, public UpdatablePao
 {
 public:
+    DECLARE_COLLECTABLE( VoltageRegulator );
 
     enum ControlMode
     {
@@ -66,22 +67,19 @@ public:
     static const std::string GangOperatedVoltageRegulator;
     static const std::string PhaseOperatedVoltageRegulator;
 
-    virtual const Type getType() const = 0;
+    Type getType() const;
 
-    typedef std::map<PointAttribute, LitePoint> AttributeMap;
-    typedef std::set<long>                      IDSet;
+    typedef std::set<long>  IDSet;
 
     VoltageRegulator();
     VoltageRegulator(Cti::RowReader & rdr);
     VoltageRegulator(const VoltageRegulator & toCopy);
 
-    VoltageRegulator &operator=(const VoltageRegulator & rhs);
+//    VoltageRegulator &operator=(const VoltageRegulator & rhs);
 
-    virtual void handlePointData(CtiPointDataMsg * message);
+    void handlePointData(CtiPointDataMsg * message);
 
     IDSet getRegistrationPoints();
-
-//    virtual IDSet getVoltagePointIDs() = 0;
 
     LitePoint getPointByAttribute(const PointAttribute & attribute);
 
@@ -90,30 +88,32 @@ public:
     bool isUpdated() const;
     void setUpdated(const bool updated);
 
-    bool getPointValue(int pointId, double & value);
-
     CtiTime updateMissingAttributeComplainTime();
     bool isTimeForMissingAttributeComplain(CtiTime time = CtiTime());
 
-    virtual void loadAttributes(AttributeService * service) = 0;
-    virtual void updateFlags(const unsigned tapDelay) = 0;
+    void loadAttributes( AttributeService * service );
 
-    virtual VoltageRegulator * replicate() const = 0;
+    void updateFlags(const unsigned tapDelay);
 
-    virtual void executeTapUpOperation();
-    virtual void executeTapDownOperation();
-    virtual void executeAdjustSetPointOperation( const double changeAmount );
+//    virtual VoltageRegulator * replicate() const = 0;
+    VoltageRegulator * replicate() const
+    {
+        return new VoltageRegulator( *this );
+    }
 
-    virtual void executeIntegrityScan();
+    void executeTapUpOperation();
+    void executeTapDownOperation();
+    void executeAdjustSetPointOperation( const double changeAmount );
 
-    virtual void executeEnableRemoteControl();
-    virtual void executeDisableRemoteControl();
+    void executeIntegrityScan();
 
-    virtual void executeEnableKeepAlive();
-    virtual void executeDisableKeepAlive();
+    void executeEnableRemoteControl();
+    void executeDisableRemoteControl();
 
-    void setKeepAliveConfig(const long value);
-    bool isTimeToSendKeepAlive();
+    long executeEnableKeepAlive();
+    void executeDisableKeepAlive();
+
+    bool executePeriodicKeepAlive();
 
     void        setPhase( const Phase phase );
     Phase       getPhase() const;
@@ -123,7 +123,7 @@ public:
     double requestVoltageChange( const double changeAmount,
                                  const bool isEmergency = false );
 
-    void canExecuteVoltageRequest( const double changeAmount ) ;//const;
+    void canExecuteVoltageRequest( const double changeAmount );
 
     double adjustVoltage( const double changeAmount );
 
@@ -131,15 +131,17 @@ public:
     CtiTime          getLastControlOperationTime() const { return _lastControlOperationTime; }
 
     ControlMode getControlMode() const;
+    std::string getHeartbeatMode() const;
+
 
     double getVoltage();
 
     long getKeepAliveConfig();
     long getKeepAliveTimer();
 
-    virtual bool          getRecentTapOperation()         const { return _recentTapOperation; }
-    virtual OperatingMode getLastOperatingMode()          const { return _lastOperatingMode; }
-    virtual OperatingMode getLastCommandedOperatingMode() const { return _lastCommandedOperatingMode; }
+    bool          getRecentTapOperation()         const { return _recentTapOperation; }
+    OperatingMode getLastOperatingMode()          const { return _lastOperatingMode; }
+    OperatingMode getLastCommandedOperatingMode() const { return _lastCommandedOperatingMode; }
 
 protected:
 
@@ -152,38 +154,19 @@ protected:
     std::unique_ptr<KeepAlivePolicy> _keepAlivePolicy;
     std::unique_ptr<ScanPolicy>      _scanPolicy;
 
+    long    _keepAlivePeriod;
+    long    _keepAliveValue;
+
     Phase   _phase;
 
     bool            _updated;
-    OperatingMode   _mode;
 
     ControlOperation    _lastControlOperation;
     CtiTime             _lastControlOperationTime;
 
-    AttributeMap    _attributes;
-
-    PointValueHolder    _pointValues;
-
-    long        _keepAliveConfig;
-    long        _keepAliveTimer;
     CtiTime     _nextKeepAliveSendTime;
 
     CtiTime         _lastMissingAttributeComplainTime;
-
-    virtual void loadPointAttributes(AttributeService * service, const PointAttribute & attribute);
-
-    void executeDigitalOutputHelper( const LitePoint & point,
-                                     const std::string & textDescription,
-                                     const int recordEventType = capControlNoEvent );
-
-    void executeRemoteControlHelper( const LitePoint & point,
-                                     const int keepAliveValue,
-                                     const std::string & textDescription,
-                                     const int recordEventType = capControlNoEvent );
-
-    void executeKeepAliveHelper(const LitePoint & point, const int keepAliveValue);
-
-    CtiSignalMsg * createDispatchMessage( const long ID, const std::string &text );
 
     void notifyControlOperation(const ControlOperation & operation, const CtiTime & timeStamp = CtiTime() );
 

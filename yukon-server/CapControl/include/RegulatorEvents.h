@@ -23,8 +23,6 @@ struct RegulatorEvent
         DisableRemoteControl
     };
 
-    RegulatorEvent();
-
     static RegulatorEvent makeControlEvent( const EventTypes           event,       
                                             const long                 regulatorID, 
                                             const Phase                phase,       
@@ -47,6 +45,10 @@ struct RegulatorEvent
     Phase                   phase;
     boost::optional<double> setPointValue;
     boost::optional<long>   tapPosition;
+
+private:
+
+    RegulatorEvent();
 };
 
 

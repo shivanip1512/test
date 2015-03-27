@@ -19,7 +19,7 @@ namespace CapControl    {
 namespace
 {
 
-CtiValueQueue<RegulatorEvent>   _eventQueue;
+CtiValueQueue<RegulatorEvent>   eventQueue;
 
 std::string desolveEventType( const RegulatorEvent::EventTypes event )
 {
@@ -212,14 +212,14 @@ RegulatorEvent RegulatorEvent::makeRemoteControlEvent( const EventTypes  event,
 
 void enqueueRegulatorEvent( const RegulatorEvent & event )
 {
-    _eventQueue.putQueue( event );
+    eventQueue.putQueue( event );
 }
 
 void writeRegulatorEventsToDatabase()
 {
-    for ( long eventID = GetEventID(); ! _eventQueue.empty(); ++eventID )
+    for ( long eventID = GetEventID(); ! eventQueue.empty(); ++eventID )
     {
-        WriteEntryToDB( eventID, _eventQueue.getQueue() );
+        WriteEntryToDB( eventID, eventQueue.getQueue() );
     }
 }
 
@@ -228,9 +228,9 @@ namespace Test
 
 void exportRegulatorEvents( std::vector<RegulatorEvent> & events )
 {
-    while ( ! _eventQueue.empty() )
+    while ( ! eventQueue.empty() )
     {
-        events.push_back( _eventQueue.getQueue() );
+        events.push_back( eventQueue.getQueue() );
     }
 }
 

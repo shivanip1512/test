@@ -154,6 +154,8 @@ struct gang_operated_voltage_regulator_fixture_core
         fixtureConfig->insertValue( "voltageChangePerTap", "0.75" );
         fixtureConfig->insertValue( "heartbeatPeriod",     "0" );
         fixtureConfig->insertValue( "heartbeatValue",      "123" );
+
+        fixtureConfig->insertValue( "heartbeatMode",       "COUNTDOWN" );
     }
 };
 
@@ -396,7 +398,6 @@ BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_EnableKeepAlive_Fail, 
 BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_EnableKeepAlive_Success, gang_operated_voltage_regulator_fixture_direct_tap)
 {
     regulator->loadAttributes( &attributes );
-    regulator->setKeepAliveConfig(123);    // this is the value we'll look for in the resulting request message
 
 
     BOOST_CHECK_NO_THROW( regulator->executeEnableKeepAlive() );
@@ -515,7 +516,6 @@ BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_EnableRemoteControl_Fa
 BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_EnableRemoteControl_Success, gang_operated_voltage_regulator_fixture_direct_tap)
 {
     regulator->loadAttributes( &attributes );
-    regulator->setKeepAliveConfig(123);    // this is the value we'll look for in the resulting request message
 
 
     BOOST_CHECK_NO_THROW( regulator->executeEnableRemoteControl() );

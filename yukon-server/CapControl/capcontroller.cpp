@@ -1961,6 +1961,11 @@ void CtiCapController::parseMessage(CtiMessage *message)
                                                             dbChange->getCategory(),
                                                             dbChange->getObjectType(),
                                                             dbChange->getTypeOfChange() );
+
+                        // This is a horrible hack... force all regulators to reload whenever we update a device configuration...
+                        CcDbReloadInfo reloadInfo( -1, ChangeTypeUpdate, Cti::CapControl::VoltageRegulatorType );
+                        CtiCCSubstationBusStore::getInstance()->insertDBReloadList( reloadInfo );
+
                     }
                 }
                 break;

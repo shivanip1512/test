@@ -7,17 +7,12 @@ namespace Cti           {
 namespace CapControl    {
 
 KeepAlivePolicy::OperatingMode KeepAlivePolicy::getOperatingMode()
-try
 {
     double value = getValueByAttribute( PointAttribute::AutoRemoteControl );
 
     return ( value == 1.0 )
                 ? RemoteMode
                 : LocalMode;
-}
-catch ( UninitializedPointValue & )
-{
-    return UnknownMode;
 }
 
 Policy::Action KeepAlivePolicy::WriteKeepAliveValue( const long keepAliveValue )
