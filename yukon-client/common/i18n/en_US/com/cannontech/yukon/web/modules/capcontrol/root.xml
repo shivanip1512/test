@@ -659,6 +659,10 @@
 
     <entry key="yukon.web.modules.capcontrol.ivvc.eventType.TAP_UP"><![CDATA[Phase <strong>{0}</strong> Tap Up]]></entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.eventType.TAP_DOWN"><![CDATA[Phase <strong>{0}</strong> Tap Down]]></entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.eventType.SCAN">Integrity Scan</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.eventType.INCREASE_SETPOINT"><![CDATA[Phase <strong>{0}</strong> Increase Set Point]]></entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.eventType.DECREASE_SETPOINT"><![CDATA[Phase <strong>{0}</strong> Decrease Set Point]]></entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.eventType.INTEGRITY_SCAN">Integrity Scan</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.eventType.ENABLE_REMOTE_CONTROL"><![CDATA[<strong>Enable</strong> Remote Control]]></entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.eventType.DISABLE_REMOTE_CONTROL"><![CDATA[<strong>Disable</strong> Remote Control]]></entry>
     
 </properties>

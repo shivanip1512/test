@@ -1,46 +1,66 @@
 package com.cannontech.capcontrol.dao.impl;
 
-import java.util.Collections;
+import java.sql.SQLException;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.joda.time.Instant;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.deviceDataMonitor.dao.impl.DeviceDataMonitorDaoImpl;
 import com.cannontech.capcontrol.dao.RegulatorEventsDao;
 import com.cannontech.capcontrol.model.RegulatorEvent;
 import com.cannontech.capcontrol.model.RegulatorEvent.EventType;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.model.Phase;
-import com.google.common.collect.ImmutableList;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 
 public class RegulatorEventsDaoImpl implements RegulatorEventsDao {
 
+    private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorDaoImpl.class);
+
+    private static final YukonRowMapper<RegulatorEvent> rowMapper = new YukonRowMapper<RegulatorEvent>() {
+
+        @Override
+        public RegulatorEvent mapRow(YukonResultSet rs) throws SQLException {
+
+            int regulatorId = rs.getInt("RegulatorId");
+            Instant timestamp = rs.getInstant("TimeStamp");
+            EventType type = rs.getEnum("EventType", EventType.class);
+
+            Phase phase;
+            try {
+                phase = rs.getEnum("Phase", Phase.class);
+            } catch (IllegalArgumentException e) {
+                log.warn("Illegal Phase in the RegulatorEvents Table. Using Phase ALL");
+                phase = Phase.ALL;
+            }
+            if (phase == null) phase = Phase.ALL;
+
+            String userName = rs.getString("UserName");
+
+            return RegulatorEvent.of(regulatorId, timestamp, type, phase, userName);
+        }
+    };
+
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+
     @Override
     public List<RegulatorEvent> getForIdSinceTimestamp(int regulatorId, Instant start) {
-        //TODO JOE Actually get this from the DB
 
-        double chance_to_get_events = 0.99;
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT RegulatorId, Timestamp, EventType, Phase, UserName");
+        sql.append("FROM RegulatorEvents");
+        sql.append("WHERE RegulatorId").eq(regulatorId);
+        sql.append("AND TimeStamp").gte(start);
+        sql.append("ORDER BY TimeStamp DESC");
 
-        if (start.equals(new Instant(0))) {
-            return ImmutableList.of(
-                RegulatorEvent.of(regulatorId, Instant.now(), randomEnum(EventType.class), randomEnum(Phase.class), "cap control"),
-                RegulatorEvent.of(regulatorId, Instant.now(), randomEnum(EventType.class), randomEnum(Phase.class), "cap control")
-            );
-        }
+        List<RegulatorEvent> events = yukonJdbcTemplate.query(sql, rowMapper);
 
-        if (Math.random() < chance_to_get_events) {
-            return ImmutableList.of(
-                RegulatorEvent.of(regulatorId, start, randomEnum(EventType.class), randomEnum(Phase.class), "cap control")
-            );
-        } else {
-            return Collections.emptyList();
-        }
-
-    }
-
-    private static <T extends Enum<T>> T randomEnum(Class<T> clazz) {
-        T[] values = clazz.getEnumConstants();
-
-        int index = (int) ((Math.random() * Integer.MAX_VALUE) % values.length);
-        return values[index];
+        return events;
     }
 
 }

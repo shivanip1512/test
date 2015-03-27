@@ -9,7 +9,11 @@ public class RegulatorEvent {
     public static enum EventType {
         TAP_UP,
         TAP_DOWN,
-        SCAN,
+        INCREASE_SETPOINT,
+        DECREASE_SETPOINT,
+        INTEGRITY_SCAN,
+        ENABLE_REMOTE_CONTROL,
+        DISABLE_REMOTE_CONTROL,
         ;
     }
 

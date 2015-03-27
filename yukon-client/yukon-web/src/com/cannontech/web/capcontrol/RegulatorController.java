@@ -55,11 +55,22 @@ import com.google.common.collect.Lists;
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class RegulatorController {
 
-    private static final Map<RegulatorEvent.EventType, String> classNameForEventType = ImmutableMap.of(
-        EventType.TAP_UP, "icon-bullet-go-up",
-        EventType.TAP_DOWN, "icon-bullet-go-down",
-        EventType.SCAN, "icon-transmit-blue"
-    );
+    private static final Map<RegulatorEvent.EventType, String> classNameForEventType;
+
+    static {
+        ImmutableMap.Builder<EventType, String> builder = ImmutableMap.builder();
+
+        builder.put(EventType.TAP_UP, "icon-bullet-go-up");
+        builder.put(EventType.TAP_DOWN, "icon-bullet-go-down");
+        builder.put(EventType.INCREASE_SETPOINT, "icon-bullet-go-up");
+        builder.put(EventType.DECREASE_SETPOINT, "icon-bullet-go-down");
+        builder.put(EventType.INTEGRITY_SCAN, "icon-transmit-blue");
+        builder.put(EventType.ENABLE_REMOTE_CONTROL, "icon-accept");
+        builder.put(EventType.DISABLE_REMOTE_CONTROL, "icon-cancel");
+
+        classNameForEventType = builder.build();
+
+    }
 
     private static final String eventTypeBaseKey = "yukon.web.modules.capcontrol.ivvc.eventType";
 
@@ -210,6 +221,10 @@ public class RegulatorController {
 
         List<RegulatorEvent> events = eventsDao.getForIdSinceTimestamp(id, new Instant(lastUpdate));
 
+        if (events.size() > 20) {
+            events = events.subList(0, 20);
+        }
+
         List<Map<String, String>> eventsJson = Lists.transform(events, new Function<RegulatorEvent, Map<String, String>>() {
 
             @Override
@@ -227,18 +242,8 @@ public class RegulatorController {
 
                 String key = eventTypeBaseKey + "." + event.getType().name();
 
-                String message = null;
-
-                switch (event.getType()) {
-                case SCAN:
-                    message = accessor.getMessage(eventTypeBaseKey + ".SCAN", event.getPhase());
-                    break;
-                case TAP_DOWN:
-                case TAP_UP:
-                    String phaseString = accessor.getMessage(event.getPhase());
-                    message = accessor.getMessage(key, phaseString);
-                    break;
-                }
+                String phaseString = accessor.getMessage(event.getPhase());
+                String message = accessor.getMessage(key, phaseString);
 
                 eventJson.put("message", message);
 
