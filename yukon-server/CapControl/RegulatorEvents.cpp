@@ -42,13 +42,13 @@ std::string desolveEventType( const RegulatorEvent::EventTypes event )
     return "UNINITIALIZED";
 }
 
-boost::optional<char> desolveEventPhase( const Phase phase )
+boost::optional<std::string> desolveEventPhase( const Phase phase )
 {
-    static const std::map<Phase, char> phaseDesolver
+    static const std::map<Phase, std::string> phaseDesolver
     {
-        { Phase_A, 'A' },
-        { Phase_B, 'B' },
-        { Phase_C, 'C' }
+        { Phase_A, "A" },
+        { Phase_B, "B" },
+        { Phase_C, "C" }
     };
 
     return mapFind( phaseDesolver, phase );
@@ -98,7 +98,7 @@ bool WriteEntryToDB( const long ID, const RegulatorEvent & event )
         columnNames.push_back( "TapPosition" );
     }
 
-    boost::optional<char> phaseEntry = desolveEventPhase( event.phase );
+    boost::optional<std::string> phaseEntry = desolveEventPhase( event.phase );
 
     if ( phaseEntry )
     {
@@ -171,7 +171,8 @@ RegulatorEvent RegulatorEvent::makeControlEvent( const EventTypes           even
                                                  const long                 regulatorID,
                                                  const Phase                phase,
                                                  boost::optional<double>  & setPoint,
-                                                 boost::optional<long>    & tapPosition )
+                                                 boost::optional<long>    & tapPosition,
+                                                 const std::string        & user )
 {
     RegulatorEvent  e;
 
@@ -180,32 +181,37 @@ RegulatorEvent RegulatorEvent::makeControlEvent( const EventTypes           even
     e.phase         = phase;
     e.setPointValue = setPoint;
     e.tapPosition   = tapPosition;
+    e.userName      = user;
 
     return e;
 }
 
-RegulatorEvent RegulatorEvent::makeScanEvent( const EventTypes  event,
-                                              const long        regulatorID,
-                                              const Phase       phase )
+RegulatorEvent RegulatorEvent::makeScanEvent( const EventTypes    event,
+                                              const long          regulatorID,
+                                              const Phase         phase,
+                                              const std::string & user )
 {
     RegulatorEvent  e;
 
     e.eventType     = event;
     e.regulatorID   = regulatorID;
     e.phase         = phase;
+    e.userName      = user;
 
     return e;
 }
 
-RegulatorEvent RegulatorEvent::makeRemoteControlEvent( const EventTypes  event,
-                                                       const long        regulatorID,
-                                                       const Phase       phase )
+RegulatorEvent RegulatorEvent::makeRemoteControlEvent( const EventTypes    event,
+                                                       const long          regulatorID,
+                                                       const Phase         phase,
+                                                       const std::string & user )
 {
     RegulatorEvent  e;
 
     e.eventType     = event;
     e.regulatorID   = regulatorID;
     e.phase         = phase;
+    e.userName      = user;
 
     return e;
 }

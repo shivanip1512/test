@@ -128,7 +128,7 @@ class CtiCCCommandExecutor : public CtiCCExecutor
         void enableTimeControl (long bankId, std::vector<CtiSignalMsg*>& signals, Cti::CapControl::EventLogEntries &events, std::vector<CtiRequestMsg*>& requests);
         void disableTimeControl(long bankId, std::vector<CtiSignalMsg*>& signals, Cti::CapControl::EventLogEntries &events, std::vector<CtiRequestMsg*>& requests);
 
-        void sendVoltageRegulatorCommands(const long command);
+        void sendVoltageRegulatorCommands(const long command, const std::string & user);
 
     private:
         //Helper Functions

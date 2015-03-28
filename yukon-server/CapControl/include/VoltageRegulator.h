@@ -136,6 +136,9 @@ public:
 
     double getVoltage();
 
+    boost::optional<long> getTapPosition();
+
+
     long getKeepAliveConfig();
     long getKeepAliveTimer();
 
@@ -189,6 +192,19 @@ inline VoltageRegulator* new_clone(VoltageRegulator const& other)
 {
   return other.replicate();
 }
+
+
+// free functions to inject the user name into the event log.
+// call using these instead of directly calling execute..()
+
+void issueIntegrityScanCommand( VoltageRegulator & regulator, const std::string & user );
+
+void issueEnableRemoteControlCommand( VoltageRegulator & regulator, const std::string & user );
+void issueDisableRemoteControlCommand( VoltageRegulator & regulator, const std::string & user );
+
+void issueTapUpCommand( VoltageRegulator & regulator, const std::string & user );
+void issueTapDownCommand( VoltageRegulator & regulator, const std::string & user );
+
 
 }
 }

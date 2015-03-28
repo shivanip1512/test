@@ -170,9 +170,7 @@ void CtiCCCommandExecutor::execute()
     case CapControlCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_DISABLE:
     case CapControlCommand::VOLTAGE_REGULATOR_TAP_POSITION_RAISE:
     case CapControlCommand::VOLTAGE_REGULATOR_TAP_POSITION_LOWER:
-    case CapControlCommand::VOLTAGE_REGULATOR_KEEP_ALIVE_ENABLE:
-    case CapControlCommand::VOLTAGE_REGULATOR_KEEP_ALIVE_DISABLE:
-        sendVoltageRegulatorCommands( _command->getCommandId() );
+        sendVoltageRegulatorCommands( _command->getCommandId(), _command->getUser() );
         break;
 
     case CapControlCommand::CHANGE_OPERATIONALSTATE:
@@ -6032,7 +6030,7 @@ void CtiCCShutdownExecutor::execute()
     }
 }
 
-void CtiCCCommandExecutor::sendVoltageRegulatorCommands( const long command )
+void CtiCCCommandExecutor::sendVoltageRegulatorCommands( const long command, const std::string & user )
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
@@ -6049,47 +6047,31 @@ void CtiCCCommandExecutor::sendVoltageRegulatorCommands( const long command )
             case CapControlCommand::VOLTAGE_REGULATOR_INTEGRITY_SCAN:
             {
                 commandName += "Integrity Scan";
-                regulator->executeIntegrityScan();
-                Cti::CapControl::enqueueRegulatorEvent(
-                    Cti::CapControl::RegulatorEvent::makeScanEvent( Cti::CapControl::RegulatorEvent::IntegrityScan,
-                                                                    regulator->getPaoId(),
-                                                                    regulator->getPhase() ) );
+                Cti::CapControl::issueIntegrityScanCommand( *regulator, user );
                 break;
             }
             case CapControlCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_ENABLE:
             {
                 commandName += "Remote Control Enable";
-                regulator->executeEnableRemoteControl();
+                Cti::CapControl::issueEnableRemoteControlCommand( *regulator, user );
                 break;
             }
             case CapControlCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_DISABLE:
             {
                 commandName += "Remote Control Disable";
-                regulator->executeDisableRemoteControl();
+                Cti::CapControl::issueDisableRemoteControlCommand( *regulator, user );
                 break;
             }
             case CapControlCommand::VOLTAGE_REGULATOR_TAP_POSITION_RAISE:
             {
                 commandName += "Raise Tap Position";
-                regulator->executeTapUpOperation();
+                Cti::CapControl::issueTapUpCommand( *regulator, user );
                 break;
             }
             case CapControlCommand::VOLTAGE_REGULATOR_TAP_POSITION_LOWER:
             {
                 commandName += "Lower Tap Position";
-                regulator->executeTapDownOperation();
-                break;
-            }
-            case CapControlCommand::VOLTAGE_REGULATOR_KEEP_ALIVE_ENABLE:
-            {
-                commandName += "Enable Keep Alive";
-                regulator->executeEnableKeepAlive();
-                break;
-            }
-            case CapControlCommand::VOLTAGE_REGULATOR_KEEP_ALIVE_DISABLE:
-            {
-                commandName += "Disable Keep Alive";
-                regulator->executeDisableKeepAlive();
+                Cti::CapControl::issueTapDownCommand( *regulator, user );
                 break;
             }
             default:

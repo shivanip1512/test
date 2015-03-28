@@ -27,16 +27,19 @@ struct RegulatorEvent
                                             const long                 regulatorID, 
                                             const Phase                phase,       
                                             boost::optional<double>  & setPoint,    
-                                            boost::optional<long>    & tapPosition );
+                                            boost::optional<long>    & tapPosition,
+                                            const std::string        & user );
 
-    static RegulatorEvent makeScanEvent( const EventTypes  event,
-                                         const long        regulatorID,
-                                         const Phase       phase );
+    static RegulatorEvent makeScanEvent( const EventTypes    event,
+                                         const long          regulatorID,
+                                         const Phase         phase,
+                                         const std::string & user );
 
 
-    static RegulatorEvent makeRemoteControlEvent( const EventTypes  event,
-                                                  const long        regulatorID,
-                                                  const Phase       phase );
+    static RegulatorEvent makeRemoteControlEvent( const EventTypes    event,
+                                                  const long          regulatorID,
+                                                  const Phase         phase,
+                                                  const std::string & user );
 
     long                    regulatorID;
     EventTypes              eventType;

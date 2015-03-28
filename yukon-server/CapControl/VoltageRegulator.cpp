@@ -541,6 +541,17 @@ catch ( UninitializedPointValue & )
 }
 
 
+boost::optional<long> VoltageRegulator::getTapPosition()
+try
+{
+    return _controlPolicy->getTapPosition();
+}
+catch ( UninitializedPointValue & )
+{
+    return boost::none;
+}
+
+
 void VoltageRegulator::canExecuteVoltageRequest( const double changeAmount ) //const
 try
 {
@@ -582,13 +593,13 @@ double VoltageRegulator::adjustVoltage( const double changeAmount )
     {
         if ( changeAmount > 0.0 )
         {
-            executeTapUpOperation();
+            issueTapUpCommand( *this, "cap control" );
 
             return voltageChangePerTap;
         }
         else
         {
-            executeTapDownOperation();
+            issueTapDownCommand( *this, "cap control" );
 
             return -voltageChangePerTap;
         }
@@ -700,11 +711,11 @@ void VoltageRegulator::submitControlCommands( Policy::Action                  & 
 
     CtiCapController::getInstance()->sendMessageToDispatch( signal.release() );
 
-    boost::optional<double> newSetPoint;
-
     if ( eventType == RegulatorEvent::IncreaseSetPoint ||
          eventType == RegulatorEvent::DecreaseSetPoint )
     {
+        boost::optional<double> newSetPoint;
+
         try
         {
             newSetPoint = _controlPolicy->getSetPointValue() + changeAmount;
@@ -713,22 +724,39 @@ void VoltageRegulator::submitControlCommands( Policy::Action                  & 
         {
             // nothing...  inserts a null
         }
-    }
 
-    boost::optional<long> tapPosition;
-
-    try
-    {
-        tapPosition = _controlPolicy->getTapPosition();
+        enqueueRegulatorEvent( RegulatorEvent::makeControlEvent( eventType, getPaoId(), _phase, newSetPoint, getTapPosition(), "cap control" ) );
     }
-    catch ( UninitializedPointValue & )
-    {
-        // nothing...  inserts a null
-    }
-
-    enqueueRegulatorEvent( RegulatorEvent::makeControlEvent( eventType, getPaoId(), _phase, newSetPoint, tapPosition ) );
 
     CtiCapController::getInstance()->manualCapBankControl( request.release() );
+}
+
+
+void issueTapUpCommand( VoltageRegulator & regulator, const std::string & user )
+{
+    regulator.executeTapUpOperation();
+
+    enqueueRegulatorEvent(
+        RegulatorEvent::makeControlEvent( RegulatorEvent::TapUp,
+                                          regulator.getPaoId(),
+                                          regulator.getPhase(),
+                                          boost::optional<double>(),
+                                          regulator.getTapPosition(),
+                                          user ) );
+}
+
+
+void issueTapDownCommand( VoltageRegulator & regulator, const std::string & user )
+{
+    regulator.executeTapDownOperation();
+
+    enqueueRegulatorEvent(
+        RegulatorEvent::makeControlEvent( RegulatorEvent::TapDown,
+                                          regulator.getPaoId(),
+                                          regulator.getPhase(),
+                                          boost::optional<double>(),
+                                          regulator.getTapPosition(),
+                                          user ) );
 }
 
 
@@ -763,6 +791,21 @@ catch ( FailedAttributeLookup & missingAttribute )
                                  missingAttribute.attribute(),
                                  getPaoType(),
                                  isTimeForMissingAttributeComplain()  );
+}
+
+
+void issueIntegrityScanCommand( VoltageRegulator & regulator, const std::string & user )
+{
+    regulator.executeIntegrityScan();
+
+    if ( user != "cap control" )    // only log user issued commands
+    {
+        enqueueRegulatorEvent(
+            RegulatorEvent::makeScanEvent( RegulatorEvent::IntegrityScan,
+                                           regulator.getPaoId(),
+                                           regulator.getPhase(),
+                                           user ) );
+    }
 }
 
 
@@ -815,7 +858,7 @@ void VoltageRegulator::executeDisableRemoteControl()
 
 void VoltageRegulator::submitRemoteControlCommands( Policy::Action                    & action,
                                                     const std::string                 & description,
-                                                    const RegulatorEvent::EventTypes    eventType )
+                                                    const RegulatorEvent::EventTypes    eventType ) //<-
 {
     auto & signal = action.first;
 
@@ -824,7 +867,31 @@ void VoltageRegulator::submitRemoteControlCommands( Policy::Action              
 
     CtiCapController::getInstance()->sendMessageToDispatch( signal.release() );
 
-    enqueueRegulatorEvent( RegulatorEvent::makeRemoteControlEvent( eventType, getPaoId(), _phase ) );
+//    enqueueRegulatorEvent( RegulatorEvent::makeRemoteControlEvent( eventType, getPaoId(), _phase ) );
+}
+
+
+void issueEnableRemoteControlCommand( VoltageRegulator & regulator, const std::string & user )
+{
+    regulator.executeEnableRemoteControl();
+
+    enqueueRegulatorEvent(
+        RegulatorEvent::makeRemoteControlEvent( RegulatorEvent::EnableRemoteControl,
+                                                regulator.getPaoId(),
+                                                regulator.getPhase(),
+                                                user ) );
+}
+
+
+void issueDisableRemoteControlCommand( VoltageRegulator & regulator, const std::string & user )
+{
+    regulator.executeDisableRemoteControl();
+
+    enqueueRegulatorEvent(
+        RegulatorEvent::makeRemoteControlEvent( RegulatorEvent::DisableRemoteControl,
+                                                regulator.getPaoId(),
+                                                regulator.getPhase(),
+                                                user ) );
 }
 
 

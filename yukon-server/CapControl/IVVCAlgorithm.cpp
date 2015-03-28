@@ -850,7 +850,7 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
 
                 if ( sendScan )
                 {
-                    regulator->executeIntegrityScan();
+                    issueIntegrityScanCommand( *regulator, "cap control" );
                 }
             }
             catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
@@ -2396,7 +2396,7 @@ void IVVCAlgorithm::sendDisableRemoteControl( CtiCCSubstationBusPtr subbus )
 
                 if ( regulator->getOperatingMode() == VoltageRegulator::RemoteMode )
                 {
-                    regulator->executeDisableRemoteControl();
+                    issueDisableRemoteControlCommand( *regulator, "cap control" );
                 }
             }
             catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
