@@ -53,7 +53,7 @@ public class AssetReportServiceImpl implements AssetReportService {
                 sql.append("ca.AccountNumber,");
                 sql.append("ypo.PAOName, ypo.Type, ypo.PAObjectId,");
                 if (starsMetering) {
-                    sql.append("mhb.MeterNumber, mhb.MeterTypeId");
+                    sql.append("mhb.MeterNumber, mhb.MeterTypeId,");
                 } else {
                     sql.append("dmg.MeterNumber,");
                 }
