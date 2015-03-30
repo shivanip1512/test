@@ -42,7 +42,7 @@ yukon.assets.report = (function () {
             
             if (_initialized) return;
             
-            _count = parseInt($('#device-report-collection .js-count').text(), 10);
+            _count = +$('#device-report-collection .js-count').text();
             
             if (_count > _threshold) {
                 /** Show loading glass when user clicks any of the paging controls. */

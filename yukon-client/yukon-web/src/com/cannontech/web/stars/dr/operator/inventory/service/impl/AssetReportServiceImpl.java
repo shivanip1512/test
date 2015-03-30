@@ -9,20 +9,13 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.inventory.InventoryIdentifierMapper;
-import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.stars.core.dao.ECMappingDao;
-import com.cannontech.stars.core.dao.EnergyCompanyDao;
-import com.cannontech.stars.database.cache.StarsDatabaseCache;
-import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
-import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.MeteringType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
@@ -33,16 +26,9 @@ public class AssetReportServiceImpl implements AssetReportService {
     
     private static final EnergyCompanySettingType meteringType = EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION;
     
-    @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private EnergyCompanySettingDao ecSettingsDao;
-    @Autowired private ECMappingDao ecMappingDao;
-    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private InventoryIdentifierMapper identifierMapper;
-    @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private SelectionListService selectionListService;
-    @Autowired private StarsDatabaseCache starsDbCache;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-    @Autowired private YukonListDao listDao;
     
     private ChunkingSqlTemplate chunkyTemplate;
     

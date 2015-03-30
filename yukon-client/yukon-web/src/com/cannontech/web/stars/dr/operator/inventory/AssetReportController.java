@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.HardwareType;
-import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.inventory.YukonInventory;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -33,7 +33,6 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.stars.dr.operator.inventory.service.AssetReportService;
 import com.cannontech.web.util.WebFileUtils;
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -47,6 +46,14 @@ public class AssetReportController {
     @Autowired private DateFormattingService dateFormatting;
     
     private static final EnergyCompanySettingType meteringSetting = EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION;
+    private static final String[] header = new String[] {
+        "SERIAL_NUMBER",
+        "METER_NUMBER",
+        "TYPE",
+        "NAME",
+        "LABEL",
+        "ACCOUNT_NUMBER"
+    };
     
     @RequestMapping("/operator/inventory/report")
     public String report(ModelMap model, InventoryCollection collection) {
@@ -85,15 +92,6 @@ public class AssetReportController {
         
         List<AssetReportDevice> devices = getDevices(collection, ecId);
         
-        String[] header = new String[6];
-        
-        header[0] = "SERIAL_NUMBER";
-        header[1] = "METER_NUMBER";
-        header[2] = "TYPE";
-        header[3] = "NAME";
-        header[4] = "LABEL";
-        header[5] = "ACCOUNT_NUMBER";
-        
         List<String[]> data = new ArrayList<>();
         for(AssetReportDevice device: devices) {
             
@@ -123,12 +121,7 @@ public class AssetReportController {
     
     private List<AssetReportDevice> getDevices(InventoryCollection collection, int ecId) {
         
-        List<Integer> ids = Lists.transform(collection.getList(), new Function<InventoryIdentifier, Integer>() {
-            @Override
-            public Integer apply(InventoryIdentifier input) {
-                return input.getInventoryId();
-            }
-        });
+        List<Integer> ids = Lists.transform(collection.getList(), YukonInventory.TO_INVENTORY_ID);
         
         return assetReportService.getAssetReportDevices(ecId, ids);
     }

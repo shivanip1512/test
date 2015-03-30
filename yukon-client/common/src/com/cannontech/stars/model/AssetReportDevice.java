@@ -34,6 +34,7 @@ public class AssetReportDevice implements YukonInventory {
         this.paoIdentifier = paoIdentifier;
     }
     
+    /** Device id will be zero if this is NOT a 'YukonPAOjbect'. */
     public int getDeviceId() {
         return deviceId;
     }
@@ -42,6 +43,7 @@ public class AssetReportDevice implements YukonInventory {
         this.deviceId = deviceId;
     }
     
+    /** Name will be null if this is NOT a 'YukonPAOjbect'. */
     public String getName() {
         return name;
     }
@@ -50,6 +52,7 @@ public class AssetReportDevice implements YukonInventory {
         this.name = name;
     }
     
+    /** Meter number will be null if this is NOT a meter. */
     public String getMeterNumber() {
         return meterNumber;
     }
@@ -58,6 +61,7 @@ public class AssetReportDevice implements YukonInventory {
         this.meterNumber = meterNumber;
     }
     
+    /** Serial number will be null if this is a meter. */
     public String getSerialNumber() {
         return serialNumber;
     }
