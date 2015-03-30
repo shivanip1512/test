@@ -108,7 +108,7 @@ public class LmReportedDataBackingService extends UpdateBackingServiceBase<LmRep
             int substation = address.getSubstation();
             if (substation == -1) {
                 MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
-                value = accessor.getMessage("yukon.web.modules.operator.hardwareConfig.notReadable"); 
+                value = accessor.getMessage("yukon.dr.config.notReadable"); 
             } else {
                 value =  Integer.toString(substation);
             }
