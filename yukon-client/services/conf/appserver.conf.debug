@@ -45,7 +45,7 @@ wrapper.console.format=PM
 wrapper.console.loglevel=INFO
 
 # Log file to use for wrapper output logging.
-wrapper.logfile=..\\Log\\appserver.debug.log
+wrapper.logfile=../Log/appserver.debug.log
 
 # Format of output for the log file.  (See docs for formats)
 wrapper.logfile.format=PTM
