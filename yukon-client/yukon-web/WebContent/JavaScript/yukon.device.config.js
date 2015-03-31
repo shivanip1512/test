@@ -10,339 +10,340 @@ yukon.deviceConfig = (function () {
     'use strict';
 
     /** Show and hide the div that have add button */
-    var _determineDisplayItemAddButtonVisibility = function () {
-        var totalElems = $('[data-display-item]'),
-            visibleElems = totalElems.filter(":visible");
+    var
+    _actionOnFormWith = function (selctor, action) {
 
-        if (visibleElems.length < totalElems.length) {
-            $('.js-show-next').show();
-        } else {
-            $('.js-show-next').hide();
-        }
+        var forms = $('form').filter(function (idx, form) {
+            return $(form).find(selctor).length;
+        });
+
+        forms.each(function (idx, form) {
+            action($(form));
+        });
     },
 
-        /**
-         * Filter and shows the midnight entries.
-         * @param {Object} num - number.
-         */
-        _showSandwichedMidnightEntries = function (num) {
-            var scheduleVisibles = $("td").filter(function () {
-                return this.id.match('^schedule' + num + '_time\\d+$') && $(this.parentElement).is(':visible');
+    /** Hides entries after the last non-disabled entry */
+    _setupDisplayItems = function  () {
+
+        _actionOnFormWith('.js-display-item', function (form) {
+
+            var displayItems = form.find('.js-display-item');
+
+            var lastShownIdx = 0;
+
+            displayItems.each(function (idx, displayItem) {
+                var value = $(displayItem).find(':input').val();
+                if (value !== 'SLOT_DISABLED' && value !== '0' ) {
+                    lastShownIdx = idx;
+                }
             });
-            scheduleVisibles.last().closest('tr').prevAll().show();
-        },
 
-        /** Shows the entries that are before slot disabled entries */
-        _showSandwichedSlotDisabledEntries = function () {
-            var visibleElems = $('[data-display-item]').filter(":visible");
-            visibleElems.last().closest('div').prevAll().show();
-        },
+            $(displayItems.slice(lastShownIdx + 1)).hide();
 
-        /** Hides the entries having slot disabled */
-        _hideSlotDisabledEntries = function () {
-            var displayItems = $('[data-display-item]'),
-                filter = function () {
-                    return $(this).find(':input').val() !== '0';
-                },
-                filteredItems = displayItems.filter(filter);
 
-            if (filteredItems.length > 0) {
-                //edit
-                $(displayItems.splice(filteredItems.last().index() + 1)).hide();
+            if (displayItems.length < lastShownIdx + 1) {
+                form.find('.js-show-next').show();
             } else {
-                //create
-                $(displayItems.splice(1)).hide();
+                form.find('.js-show-next').hide();
             }
-        },
 
-        /**
-         * Determines the visibility of the schedule (Add Rate) button
-         * @param {Object} num - number.
-         */
-        _determineScheduleAddButtonVisibility = function (num) {
-            var allSchedules = $("tr").filter(function () {
-                    return $(this).data('scheduleName') === 'schedule' + num;
-                }),
-                visableSchedules = allSchedules.filter(':visible'),
-                btn;
+        });
+    },
 
-            if (visableSchedules.length < allSchedules.length) {
-                btn = $('.js-add-schedule').filter(function (idx, elem) {
-                    return $(elem).is('[data-schedule="' + num + '"]');
+    /**
+     * Filter and shows the midnight entries.
+     * @param {Object} num - number.
+     */
+    _showSandwichedMidnightEntries = function () {
+
+        _actionOnFormWith('.js-rate-schedule .js-rate-schedule-entry', function (form) {
+
+            form.find('.js-rate-schedule').each(function (idx, table) {
+
+                var entries = $(table).find('.js-rate-schedule-entry');
+
+                var lastVisibleIdx = 0;
+
+                entries.each(function (idx, entry) {
+                    if ($(entry).is(':visible')) { lastVisibleIdx = idx; }
                 });
+
+                $(entries.slice(0, lastVisibleIdx + 1)).show();
+            });
+
+        });
+    },
+
+    /**
+     * Determines the visibility of the schedule (Add Rate) button
+     * @param {Object} num - number.
+     */
+    _determineScheduleAddButtonVisibility = function (form) {
+
+        $('.js-rate-schedule').each(function (idx, table) {
+
+            table = $(table);
+
+            var scheduleName = table.data('scheduleName');
+
+            var entries = table.find('.js-rate-schedule-entry');
+            var visibleEntries = entries.filter(':visible');
+
+            var btn = form.find('.js-add-schedule').filter(function (idx, elem) {
+                return $(elem).is('[data-schedule-name="' + scheduleName + '"]');
+            });
+
+            if (visibleEntries.length < entries.length) {
+                visibleEntries.last().find('.js-add-button-column').append(btn);
                 btn.show();
-
-                visableSchedules.last().find(':last').append(btn);
-
             } else {
-                $('.js-add-schedule').filter(function (idx, elem) {
-                    return $(elem).is('[data-schedule="' + num + '"]');
-                }).hide();
+                btn.hide();
             }
-        },
+        });
+    },
 
-        /**
-         * Show/hide the div having the add button and set the visibility of
-         * schedule button.
-         */
-        _handleVisibleElemsAndButtons = function () {
-            var totalElems = $('[data-display-item]'),
-                hiddenElems = totalElems.filter(":hidden"),
-                i;
+    /** Shows the schedule (Add Rate) button */
+    _registerScheduleButtons = function () {
 
-            if (hiddenElems.length <= totalElems.length) {
-                $('.js-show-next').show();
-            } else {
-                $('.js-show-next').hide();
-            }
+        $(".js-add-schedule").off('click.add-schedule').on('click.add-schedule', function () {
 
-            for (i = 1; i <= 4; i += 1) {
-                _determineScheduleAddButtonVisibility(i);
-                _showSandwichedMidnightEntries(i);
-            }
-        },
+            var button = $(this);
+            var form = button.closest('form');
+            var scheduleName = button.data('scheduleName');
 
-        /** Shows the schedule (Add Rate) button */
-        _registerScheduleButtons = function () {
-            $(".js-add-schedule").click(function () {
-                var button = $(this),
-                    num = button.data('schedule'),
-                    hiddenElems = $("tr").filter(function () {
-                        return $(this).data('scheduleName') === "schedule" + num && !$(this).is(':visible');
-                    });
-
-                hiddenElems.first().show();
-                _determineScheduleAddButtonVisibility(num);
+            var table = form.find('.js-rate-schedule').filter(function (idx, elem) {
+                return $(elem).is('[data-schedule-name="' + scheduleName + '"]');
             });
-        },
 
-        _hidingMap = [
-            {
-                keyHolder: 'disconnectMode',
-                valueHideMap : [
-                    {
-                        value : 'ON_DEMAND',
-                        hide : ['disconnectDemandInterval', 'disconnectDemandThreshold', 'disconnectLoadLimitConnectDelay', 'maxDisconnects', 'disconnectMinutes', 'connectMinutes'],
-                        show : ['reconnectParam']
-                    },
-                    {
-                        value : 'DEMAND_THRESHOLD',
-                        hide : ['disconnectMinutes', 'connectMinutes'],
-                        show : ['reconnectParam', 'disconnectDemandInterval', 'disconnectDemandThreshold', 'disconnectLoadLimitConnectDelay', 'maxDisconnects']
-                    },
-                    {
-                        value : 'CYCLING',
-                        hide : ['reconnectParam', 'disconnectDemandInterval', 'disconnectDemandThreshold', 'disconnectLoadLimitConnectDelay', 'maxDisconnects'],
-                        show : ['disconnectMinutes', 'connectMinutes']
-                    }
-                ]
-            }
-        ],
+            table.find('.js-rate-schedule-entry').filter(':hidden:first').show();
 
-        /**
-         * Hide/show elements in map.
-         * @param {Object} hidingMapEntry - Map entry.
-         * @param {Object} timeout - timeout for slideup() and slidedown().
-         */
-        _hideShowElement = function (hidingMapEntry, timeout) {
-            var value = $('[data-field="' + hidingMapEntry.keyHolder + '"]').find(':input').val(),
-                currentEntry,
-                ii,
-                jj,
-                elem;
+            _determineScheduleAddButtonVisibility(form);
+        });
+    },
 
-            if (typeof timeout !== 'number') {
-                timeout = 0;
-            }
+    _hidingMap = [
+        {
+            keyHolder: 'disconnectMode',
+            valueHideMap : [
+                {
+                    value : 'ON_DEMAND',
+                    hide : ['disconnectDemandInterval', 'disconnectDemandThreshold', 'disconnectLoadLimitConnectDelay', 'maxDisconnects', 'disconnectMinutes', 'connectMinutes'],
+                    show : ['reconnectParam']
+                },
+                {
+                    value : 'DEMAND_THRESHOLD',
+                    hide : ['disconnectMinutes', 'connectMinutes'],
+                    show : ['reconnectParam', 'disconnectDemandInterval', 'disconnectDemandThreshold', 'disconnectLoadLimitConnectDelay', 'maxDisconnects']
+                },
+                {
+                    value : 'CYCLING',
+                    hide : ['reconnectParam', 'disconnectDemandInterval', 'disconnectDemandThreshold', 'disconnectLoadLimitConnectDelay', 'maxDisconnects'],
+                    show : ['disconnectMinutes', 'connectMinutes']
+                }
+            ]
+        }
+    ],
 
-            for (ii = 0; ii < hidingMapEntry.valueHideMap.length; ii += 1) {
-                currentEntry = hidingMapEntry.valueHideMap[ii];
+    /**
+     * Hide/show elements in map.
+     * @param {Object} hidingMapEntry - Map entry.
+     * @param {Object} timeout - timeout for slideup() and slidedown().
+     */
+    _hideShowElement = function (hidingMapEntry, timeout) {
+
+        if (typeof timeout !== 'number') {
+            timeout = 0;
+        }
+
+        _actionOnFormWith('[data-field="' + hidingMapEntry.keyHolder +'"]', function (form) {
+
+            var value = form.find('[data-field="' + hidingMapEntry.keyHolder + '"]').find(':input').val();
+
+            hidingMapEntry.valueHideMap.forEach(function (currentEntry) {
                 if (value === currentEntry.value) {
-                    for (jj = 0; jj < currentEntry.hide.length; jj += 1) {
-                        elem = currentEntry.hide[jj];
-                        $('[data-field="' + elem + '"]').slideUp(timeout);
-                    }
-                    for (jj = 0; jj < currentEntry.show.length; jj += 1) {
-                        elem = currentEntry.show[jj];
-                        $('[data-field="' + elem + '"]').slideDown(timeout);
-                    }
+                    currentEntry.hide.forEach(function (fieldName) {
+                        form.find('[data-field="' + fieldName + '"]').slideUp(timeout);
+                    });
+                    currentEntry.show.forEach(function (fieldName) {
+                        form.find('[data-field="' + fieldName + '"]').slideDown(timeout);
+                    });
                 }
-            }
-        },
-
-        /** Hide elements in map */
-        _hideThingsInMap = function () {
-            var currentEntry,
-                ii,
-                input;
-
-            for (ii = 0; ii < _hidingMap.length; ii += 1) {
-                currentEntry = _hidingMap[ii];
-                input = $('[data-field="' + currentEntry.keyHolder + '"]').find(':input');
-                _hideShowElement(currentEntry, 0);
-
-                $(document).on('change', input, function () {
-                    _hideShowElement(currentEntry, 200);
-                });
-            }
-        },
-
-        _initFields = function () {
-
-            yukon.ui.initChosen();
-
-            _handleVisibleElemsAndButtons();
-            _hideSlotDisabledEntries();
-            _showSandwichedSlotDisabledEntries();
-            _registerScheduleButtons();
-            _determineDisplayItemAddButtonVisibility();
-            _hideThingsInMap();
-        },
-
-        /**
-         * Open category popup page when create/edit category button is clicked from
-         * configuration page.
-         * @param {Object} btn - Reference of button clicked.
-         * @param {Object} url - url of page to open.
-         */
-        _openCategoryPopup = function (btn, url) {
-            $('#category-popup').load(url, function () {
-                var title = $('#popup-title').val(),
-                    buttons = yukon.ui.buttons({ okText: yg.text.save, event: 'yukon.deviceConfigs.category.save' });
-
-                $('#category-popup').dialog({ width: 900, height: 600, title: title, buttons: buttons });
-                _initFields();
-                yukon.ui.unbusy(btn);
             });
-        },
 
-        /**
-         * Show pipes for the device type associated with the input
-         * @param {jQuery} elem - Element with data "deviceType" on it.
-         */
-        _setPipeVisibilityForType = function (elem) {
+        });
 
-            var deviceType = $(elem).data('deviceType');
+    },
 
-            $('.pipe').invisible();
-            $('.pipe[data-device-type-' + deviceType + ']').visible();
-        },
+    /** Hide elements in map */
+    _hideThingsInMap = function () {
+
+        _hidingMap.forEach(function (currentEntry) {
+
+            var input = $('[data-field="' + currentEntry.keyHolder + '"]').find(':input');
+            _hideShowElement(currentEntry, 0);
+
+            $(document).on('change', input, _hideShowElement.bind(null, currentEntry, 200));
+        });
+    },
+
+    _initFields = function () {
+
+        yukon.ui.initChosen();
+
+        _setupDisplayItems();
+        _showSandwichedMidnightEntries();
+        _registerScheduleButtons();
+        _hideThingsInMap();
+    },
+
+    /**
+     * Open category popup page when create/edit category button is clicked from
+     * configuration page.
+     * @param {Object} btn - Reference of button clicked.
+     * @param {Object} url - url of page to open.
+     */
+    _openCategoryPopup = function (btn, url) {
+        $('#category-popup').load(url, function () {
+            var title = $('#popup-title').val(),
+                buttons = yukon.ui.buttons({ okText: yg.text.save, event: 'yukon.deviceConfigs.category.save' });
+
+            $('#category-popup').dialog({ width: 900, height: 600, title: title, buttons: buttons });
+            _initFields();
+            yukon.ui.unbusy(btn);
+        });
+    },
+
+    /**
+     * Show pipes for the device type associated with the input
+     * @param {jQuery} elem - Element with data "deviceType" on it.
+     */
+    _setPipeVisibilityForType = function (elem) {
+
+        var deviceType = $(elem).data('deviceType');
+
+        $('.pipe').invisible();
+        $('.pipe[data-device-type-' + deviceType + ']').visible();
+    },
 
 
-        mod = {
+    mod = {
 
-            /** Initialize the module. Depends on DOM elements so call after page load. */
-            init : function () {
+        /** Initialize the module. Depends on DOM elements so call after page load. */
+        init : function () {
 
-                var typesLink = $('[data-show-device-types]');
+            var typesLink = $('[data-show-device-types]');
 
-                if (typesLink.data('showDeviceTypes') === true) {
-                    typesLink.trigger('click');
-                }
+            if (typesLink.data('showDeviceTypes') === true) {
+                typesLink.trigger('click');
+            }
 
-                /** Edit button clicked for category, show category edit popup. */
-                $('.js-edit-category').click(function (ev) {
+            /** Edit button clicked for category, show category edit popup. */
+            $('.js-edit-category').click(function (ev) {
 
-                    var btn = $(this),
-                        categoryId = $('#categoryId_' + btn.data('categoryType')).val(),
-                        configId = btn.data('configId'),
-                        url = yukon.url('/deviceConfiguration/category/editInPlace?categoryId='
-                            + categoryId + '&configId=' + configId);
+                var btn = $(this),
+                    categoryId = $('#categoryId_' + btn.data('categoryType')).val(),
+                    configId = btn.data('configId'),
+                    url = yukon.url('/deviceConfiguration/category/editInPlace?categoryId='
+                        + categoryId + '&configId=' + configId);
 
-                    _openCategoryPopup(btn, url);
+                _openCategoryPopup(btn, url);
+            });
+
+            /** Save button click on cateogry edit or create popup. Post form and handle results */
+            $('#category-popup').on('yukon.deviceConfigs.category.save', function (ev) {
+                $('#category-form').ajaxSubmit({
+                    type: 'post',
+                    success: function (data, status, xhr, $form) {
+
+                        $('#category-popup').dialog('close');
+                        window.location.reload();
+                        // TODO add message
+
+                    },
+                    error: function (xhr, status, error, $form) {
+                        $('#category-popup').html(xhr.responseText);
+                        _initFields();
+                    }
                 });
+            });
 
-                /** Save button click on cateogry edit or create popup. Post form and handle results */
-                $('#category-popup').on('yukon.deviceConfigs.category.save', function (ev) {
-                    $('#category-form').ajaxSubmit({
-                        type: 'post',
-                        success: function (data, status, xhr, $form) {
+            /** Create button clicked for category, show category create popup. */
+            $(".js-create-category").click(function (ev) {
+                var btn = $(this),
+                    type = btn.data('categoryType'),
+                    configId = btn.data('configId'),
+                    url = yukon.url('/deviceConfiguration/category/createInPlace?categoryType='
+                        + type + '&configId=' + configId);
 
-                            $('#category-popup').dialog('close');
-                            window.location.reload();
-                            // TODO add message
+                _openCategoryPopup(btn, url);
+            });
 
-                        },
-                        error: function (xhr, status, error, $form) {
-                            $('#category-popup').html(xhr.responseText);
-                            _initFields();
+            $(document).on('change', 'input[data-channel-read]', function () {
+                var buttons = $('.button-group [data-value]'),
+                    inputs = $('.button-group input[data-channel-read]'),
+                    intervals = buttons.filter(function () {return $(this).data('value') === 'INTERVAL'; }),
+                    midnights = buttons.filter(function () {return $(this).data('value') === 'MIDNIGHT'; }),
+                    numIntervals = inputs.filter(function () {return $(this).val() === 'INTERVAL'; }).length,
+                    numMidnights = inputs.filter(function () {return $(this).val() === 'MIDNIGHT'; }).length;
+
+                if (numIntervals >= 15) {
+                    intervals.not('.on').prop('disabled', true);
+                    $('.js-reporting').show();
+                } else {
+                    intervals.not('.on').prop('disabled', false);
+                }
+                if (numIntervals + numMidnights >= 80) {
+                    intervals.add(midnights).each(function () {
+                        if ($(this).siblings('input[data-channel-read]').val() === 'DISABLED') {
+                            $(this).prop('disabled', true);
                         }
                     });
-                });
+                    $('.js-midnight').show();
+                } else {
+                    midnights.not('.on').prop('disabled', false);
+                }
+            });
 
-                /** Create button clicked for category, show category create popup. */
-                $(".js-create-category").click(function (ev) {
-                    var btn = $(this),
-                        type = btn.data('categoryType'),
-                        configId = btn.data('configId'),
-                        url = yukon.url('/deviceConfiguration/category/createInPlace?categoryType='
-                            + type + '&configId=' + configId);
+            _initFields();
 
-                    _openCategoryPopup(btn, url);
-                });
-
-                $(document).on('change', 'input[data-channel-read]', function () {
-                    var buttons = $('.button-group [data-value]'),
-                        inputs = $('.button-group input[data-channel-read]'),
-                        intervals = buttons.filter(function () {return $(this).data('value') === 'INTERVAL'; }),
-                        midnights = buttons.filter(function () {return $(this).data('value') === 'MIDNIGHT'; }),
-                        numIntervals = inputs.filter(function () {return $(this).val() === 'INTERVAL'; }).length,
-                        numMidnights = inputs.filter(function () {return $(this).val() === 'MIDNIGHT'; }).length;
-
-                    if (numIntervals >= 15) {
-                        intervals.not('.on').prop('disabled', true);
-                        $('.js-reporting').show();
-                    } else {
-                        intervals.not('.on').prop('disabled', false);
-                    }
-                    if (numIntervals + numMidnights >= 80) {
-                        intervals.add(midnights).each(function () {
-                            if ($(this).siblings('input[data-channel-read]').val() === 'DISABLED') {
-                                $(this).prop('disabled', true);
-                            }
-                        });
-                        $('.js-midnight').show();
-                    } else {
-                        midnights.not('.on').prop('disabled', false);
-                    }
-                });
-
+            $(document).on('yukon:device:config:quick-view:loaded', function () {
                 _initFields();
+            });
 
-                // Find the first type and select his categories
-                _setPipeVisibilityForType($(".js-categories").first());
+            // Find the first type and select his categories
+            _setPipeVisibilityForType($(".js-categories").first());
 
-                $(".js-categories").click(function () {
-                    _setPipeVisibilityForType(this);
-                });
+            $(".js-categories").click(function () {
+                _setPipeVisibilityForType(this);
+            });
 
-                // Show the next hidden display item.
-                $(document).on('click', '.js-show-next', function (event) {
+            // Show the next hidden display item.
+            $(document).on('click', '.js-show-next', function (event) {
 
-                    var btn = $(this),
-                        hiddenElems = $('[data-display-item]').filter(":hidden"),
-                        container = btn.closest('.ui-dialog-content');
+                var btn = $(this),
+                    hiddenElems = btn.closest('form').find('.js-display-item').filter(":hidden"),
+                    container = btn.closest('.ui-dialog-content');
 
-                    if (!container.length) { container = $('html'); }
+                if (!container.length) { container = $('html'); }
 
-                    hiddenElems.first().slideDown(200);
-                    container.scrollTo(btn, 100);
+                hiddenElems.first().slideDown(200);
+                container.scrollTo(btn, 100);
 
-                    if (hiddenElems.length > 1) {
-                        $('.js-show-next').show();
-                    } else {
-                        $('.js-show-next').hide();
-                    }
-                });
+                if (hiddenElems.length > 1) {
+                    $('.js-show-next').show();
+                } else {
+                    $('.js-show-next').hide();
+                }
+            });
 
-            },
+        },
 
-            changeOut : function (type) {
-                var form = $('#categoryChange_' + type);
-                form.submit();
-                return true;
-            }
-        };
+        changeOut : function (type) {
+            var form = $('#categoryChange_' + type);
+            form.submit();
+            return true;
+        }
+    };
 
     return mod;
 }());

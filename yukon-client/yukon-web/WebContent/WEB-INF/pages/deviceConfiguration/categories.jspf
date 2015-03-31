@@ -4,7 +4,12 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths=",yukon.web.modules.tools.configs.category">
-    <div class="clearfix">
+
+    <style>
+        .category-fields-title {padding-left: 5px;}
+        .category-fields-content {padding-left: 20px;}
+    </style>
+
         <c:set var="catType" value="${category.categoryDisplay.categoryType}"/>
         <c:set var="selection" value="${configCategories.categorySelections[(loopStatus.index)]}"/>
     
@@ -111,11 +116,27 @@
                                         icon="icon-pencil" 
                                         title="${editBtnTitle}"/>
                                 </c:if>
+                                <%-- TODO JOE Do this padding right --%>
+                                <div class="category-fields-title">
+                                    <div class="fl revealer"
+                                        data-show-hide=".category-fields-content[data-category-id='${category.categoryId}']">
+
+                                        <i:inline key=".categoryFields.title"/>
+                                    </div>
+                                </div>
                             </div>
                         </cti:displayForPageEditModes>
                     </form>
                 </cti:checkRolesAndProperties>
+
+                <cti:url var="quickView" value="/deviceConfiguration/category/quick-view">
+                    <cti:param name="categoryId" value="${category.categoryId}" />
+                    <cti:param name="configId" value="${deviceConfig.configId}" />
+                </cti:url>
+
+                <div class="dn category-fields-content" data-category-id="${category.categoryId}"
+                    data-url="${quickView}" data-event="yukon:device:config:quick-view:loaded"></div>
+
             </cti:displayForPageEditModes>
         </div>
-    </div>
 </cti:msgScope>

@@ -43,7 +43,9 @@
                 </tags:sectionContainer2>
             </div>
             <div class="column two nogutter">
-                <%@ include file="category.jspf" %>
+                <tags:sectionContainer2 nameKey="categoryFields">
+                    <%@ include file="category.jspf" %>
+                </tags:sectionContainer2>
             </div>
         </div>
         

@@ -13,6 +13,15 @@
 
     <tags:setFormEditMode mode="${mode}"/>
     
+    <cti:displayForPageEditModes modes="VIEW,EDIT">
+        <table class="stacked-md">
+            <tr>
+                <td><span class="label label-warning"><i:inline key="yukon.common.warning"/></span></td>
+                <td><i:inline key=".changeWarning"/><i:inline key=".unassignWarning"/></td>
+            </tr>
+        </table>
+    </cti:displayForPageEditModes>
+
     <form:form commandName="deviceConfig" action="save">
         <cti:csrfToken/>
         <form:hidden path="configId"/>
@@ -66,15 +75,6 @@
     </form:form>
     
     <cti:displayForPageEditModes modes="VIEW,EDIT">
-        <tags:sectionContainer2 nameKey="warning">
-            <div class="stacked">
-            <span class="warning">
-                <i:inline key="yukon.common.warning"/>
-            </span>
-            <i:inline key=".changeWarning"/>
-        </div>
-            <div><i:inline key=".unassignWarning"/></div>
-        </tags:sectionContainer2>
 
         <div class="column-6-18">
             <!-- CATEGORIES -->

@@ -10,23 +10,21 @@
 
 <tags:setFormEditMode mode="${mode}"/>
 
-<tags:sectionContainer2 nameKey="categoryFields">
-
     <cti:includeScript link="/JavaScript/yukon.device.config.js"/>
     <c:set var="categoryEditBean" value="${categoryEditBean}" scope="request"/>
     <c:set var="categoryTemplate" value="${categoryTemplate}" scope="request"/>
     <c:forEach var="field" items="${categoryTemplate.fields}" >
         <c:set var="field" value="${field}" scope="request"/>
+
         <c:set var="classes" value=""/>
 
-        <c:set var="displayItem" value="" />
         <c:if test="${fn:startsWith(field.fieldName, 'displayItem') }">
-            <c:set var="displayItem" value="data-display-item" />
+            <c:set var="classes" value="js-display-item" />
         </c:if>
 
-        <div class="setting clearfix column-6-18 ${classes}" data-field="${field.fieldName}" ${displayItem}>
+        <div class="setting clearfix column-6-18 ${classes}" data-field="${field.fieldName}">
             <div class="column one form-control">${field.displayName}</div>
-            <div class="column two nogutter">
+            <div class="column two form-control nogutter">
                 <tags:simpleInputType input="${field.inputType}" path="categoryInputs[${field.fieldName}]"/>
                 <spring:bind path="categoryInputs[${field.fieldName}]">
                     <c:if test="${status.error}">
@@ -46,14 +44,5 @@
                 <cti:button nameKey="addDisplayItem" classes="js-show-next" icon="icon-add" title="${addTitle}"/>
             </div>
         </c:if>
-        <c:if test="${isTouCategory}">
-            <c:forEach begin="1" end="4" var="status">
-                <cti:msg2 var="title" key=".addScheduleItem" argument="${status}"/>
-                <div class="action-area">
-                    <cti:button nameKey="addSchedule" classes="js-add-schedule" icon="icon-add" data-schedule="${status}" title="${title}"/>
-                </div>
-            </c:forEach>
-        </c:if>
     </cti:displayForPageEditModes>
-</tags:sectionContainer2>
 </cti:msgScope>

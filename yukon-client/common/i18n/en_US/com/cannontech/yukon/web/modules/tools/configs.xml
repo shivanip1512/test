@@ -532,7 +532,7 @@
     <entry key="yukon.web.modules.tools.configs.category.EDIT.contextualPageName">Edit</entry>
     <entry key="yukon.web.modules.tools.configs.category.CREATE.pageName">Create Category</entry>
     <entry key="yukon.web.modules.tools.configs.category.CREATE.contextualPageName">Create</entry>
-    <entry key="yukon.web.modules.tools.configs.category.categoryFields.title">Category Fields</entry>
+    <entry key="yukon.web.modules.tools.configs.category.categoryFields.title">Fields</entry>
     <entry key="yukon.web.modules.tools.configs.category.addDisplayItem">Add another display item to the list</entry>
     <entry key="yukon.web.modules.tools.configs.category.addDisplayItem.label">Add Item</entry>
     <entry key="yukon.web.modules.tools.configs.category.addScheduleItem">Add another rate change to Schedule {0}.</entry>

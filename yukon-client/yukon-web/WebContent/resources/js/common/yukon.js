@@ -627,14 +627,31 @@ yukon.ui = (function () {
                 var target = $(trigger.data('showHide'));
                 if (target.is('[data-url]')) {
                     if (target.is(':visible')) {
-                        target.toggle();
+
+                        target.slideUp(150);
+
+                        if (trigger.is('.revealer')) {
+                            trigger.toggleClass('revealer-expanded');
+                        }
                     } else {
                         target.load(target.data('url'), function () {
-                            target.toggle();
+                            target.slideDown(150);
+                            if (target.is('[data-event]')) {
+                                target.trigger(target.data('event'));
+                            }
+                            if (trigger.is('.revealer')) {
+                                trigger.toggleClass('revealer-expanded');
+                            }
                         });
                     }
                 } else {
-                    target.toggle();
+                    target.slideDown(150);
+                    if (target.is('[data-event]')) {
+                        target.trigger(target.data('event'));
+                    }
+                    if (trigger.is('.revealer')) {
+                        trigger.toggleClass('revealer-expanded');
+                    }
                 }
             });
             

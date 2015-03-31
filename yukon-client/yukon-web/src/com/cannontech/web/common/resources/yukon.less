@@ -703,7 +703,7 @@ ul.disc li {list-style-type: disc; margin-left: 25px;}
 a.pipe-selector {color: @font-color;}
 a.pipe-selector:not(.selected):hover {color: @primary-color;}
 a.pipe-selector.selected {color: @font-color; cursor: default;}
-.pipe-selector .pipe + * {margin-left: 5px;}
+.pipe-selector .pipe ~ * {margin-left: 5px;}
 
 /* COLOR CODING */
 .red, 
@@ -1006,12 +1006,20 @@ hr.dashed,
 }
 
 .revealer {
-    background: url('../Icons/icon_blockcollapsed.png') no-repeat scroll 3px 3px #FFFFFF;
     cursor: pointer;
-    padding-left: 14px; 
+    padding-left: 14px;
+    background-image: url(http://usplyw8rsdxy1.eaton.ad.etn.com:8080/yukon/WebConfig/yukon/Icons/icon_blockcollapsed.png);
+    background-position-x: 3px;
+    background-position-y: 50%;
+    background-repeat-x: no-repeat;
+    background-repeat-y: no-repeat;
+    background-attachment: scroll;
+    background-color: transparent;
 }
+
 .revealer.revealer-expanded {
-    background: transparent url('../Icons/icon_blockexpanded.png') no-repeat scroll 0 7px; 
+    background-image: url(http://usplyw8rsdxy1.eaton.ad.etn.com:8080/yukon/WebConfig/yukon/Icons/icon_blockexpanded.png);
+    background-position-x: 0;
 }
 
 /* YUKON PICKER */

@@ -6,6 +6,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+<cti:msgScope paths="modules.tools.configs, modules.tools.configs.category">
 <input id="popup-title" type="hidden" value="${popupTitle}"/>
 
 <cti:url var="saveInPlaceUrl" value="/deviceConfiguration/category/saveInPlace"/>
@@ -15,14 +16,14 @@
     <form:hidden path="categoryId"/>
     <input type="hidden" name="configId" value="${configId}"/>
     
-    <cti:msgScope paths="modules.tools.configs, modules.tools.configs.category">
         <cti:flashScopeMessages/>
-        <div class="stacked">
-            <span class="warning">
-                <i:inline key="yukon.common.warning"/>
-            </span>
-            <i:inline key=".category.changeWarning"/>
-        </div>
+
+        <table class="stacked-md">
+            <tr>
+                <td><span class="label label-warning"><i:inline key="yukon.common.warning"/></span></td>
+                <td><i:inline key=".category.changeWarning"/></td>
+            </tr>
+        </table>
 
         <tags:nameValueContainer2 tableClass="stacked">
             
@@ -40,7 +41,8 @@
             
         </tags:nameValueContainer2>
         
-    </cti:msgScope>
-    
-    <%@ include file="category.jspf" %>
+    <tags:sectionContainer2 nameKey="categoryFields">
+        <%@ include file="category.jspf" %>
+    </tags:sectionContainer2>
 </form:form>
+</cti:msgScope>

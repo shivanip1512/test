@@ -136,6 +136,16 @@ public class DeviceConfigurationCategoryController {
         return categoryPopup(categoryEditBean, model, configId, userContext);
     }
 
+    @RequestMapping("quick-view")
+    public String quickView(ModelMap model, int categoryId, int configId, YukonUserContext userContext) {
+
+        DeviceConfigCategory category = deviceConfigDao.getDeviceConfigCategory(categoryId);
+        CategoryEditBean categoryEditBean = createCategoryEditBean(category, configId, userContext);
+
+        categoryPopup(categoryEditBean, model, configId, userContext);
+        return "category.quick.view.jsp";
+    }
+
     @RequestMapping("edit")
     @CheckRoleProperty(YukonRoleProperty.ADMIN_EDIT_CONFIG)
     public String edit(ModelMap model, int categoryId, YukonUserContext userCOntext) {
@@ -467,11 +477,6 @@ public class DeviceConfigurationCategoryController {
 
         model.addAttribute("isDisplayItemsCategory", isDisplayItemsCategory);
 
-        boolean isTouCategory = 
-                templateCategoryType.equals(CategoryType.MCT_440_TOU.value()) || 
-                templateCategoryType.equals(CategoryType.TOU.value());
-
-        model.addAttribute("isTouCategory", isTouCategory);
         model.addAttribute("mode", mode);
         model.addAttribute("editingRoleProperty", YukonRoleProperty.ADMIN_EDIT_CONFIG);
     }

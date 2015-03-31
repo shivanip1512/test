@@ -7,21 +7,22 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<table>
+<table class="js-rate-schedule" data-schedule-name="${field.fieldName}">
+
     <c:forEach var="rate" items="${field.inputTypes}" varStatus="loopStatus">
         <c:set var="rowClass" value=""/>
         <c:set var="isMidnight" value="${loopStatus.index == 0}"/>
 
         <%-- Hide TOU entries whose values are midnight (but whose times are not!) --%>
         <c:if test="${categoryEditBean.isScheduleRateHidden(field.fieldName, rate.field) && !isMidnight}">
-            <c:set var="rowClass" value="class='dn'"/>
+            <c:set var="rowClass" value="dn"/>
         </c:if>
 
-        <tr ${rowClass} data-schedule-name="${field.fieldName}">
+        <tr class="${rowClass} js-rate-schedule-entry">
             <td>
                 <i:inline key=".${categoryTemplate.categoryType}.${rate.field}"/>
             </td>
-            <td id="${field.fieldName}_${rate.field}" data-field-name="${field.fieldName}" data-rate="${rate.field}">
+            <td>
                 <c:choose>
                     <c:when test="${!isMidnight}">
                         <cti:displayForPageEditModes modes="VIEW">
@@ -59,9 +60,14 @@
                     <tags:simpleInputType input="${rate.rateType}" path="scheduleInputs[${field.fieldName}].rateInputs[${rate.field}].rate"/>
                 </cti:displayForPageEditModes>
             </td>
-            <td>
+            <td class="js-add-button-column">
                 <%-- This td intentionally left blank to store the Add Rate button in! --%>
             </td>
         </tr>
     </c:forEach>
 </table>
+<cti:displayForPageEditModes modes="EDIT,CREATE">
+    <cti:button nameKey="addSchedule" classes="dn js-add-schedule" icon="icon-add" data-schedule-name="${field.fieldName}"/>
+</cti:displayForPageEditModes>
+
+
