@@ -2086,7 +2086,8 @@ void PilServer::periodicActionThread()
 
             for each ( CtiDeviceSPtr device in rdsDevices )
             {
-                if ( device->timeToPerformPeriodicAction( CtiTime::now() ) )
+                if( ! device->isInhibited() &&
+                    device->timeToPerformPeriodicAction( CtiTime::now() ) )
                 {
                     putQueue( new CtiRequestMsg( device->getID(), "putvalue application-id") );
                 }
@@ -2107,7 +2108,8 @@ void PilServer::periodicActionThread()
 
             for each( CtiDeviceSPtr device in rfDaDevices )
             {
-                if( ! device->hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RF_DA_DnpSlaveAddress) )
+                if( ! device->isInhibited() &&
+                    ! device->hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RF_DA_DnpSlaveAddress) )
                 {
                     putQueue( new CtiRequestMsg( device->getID(), "getconfig dnp address") );
                 }
