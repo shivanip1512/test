@@ -538,9 +538,16 @@ void ActiveMQConnectionManager::registerHandler(const ActiveMQ::Queues::InboundQ
 
 void ActiveMQConnectionManager::addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, SerializedMessageCallback callback)
 {
-    CtiLockGuard<CtiCriticalSection> lock(_newCallbackMux);
+    {
+        CtiLockGuard<CtiCriticalSection> lock(_newCallbackMux);
 
-    _newCallbacks.insert(std::make_pair(&queue, callback));
+        _newCallbacks.insert(std::make_pair(&queue, callback));
+    }
+
+    if( ! isRunning() )
+    {
+        start();
+    }
 }
 
 
