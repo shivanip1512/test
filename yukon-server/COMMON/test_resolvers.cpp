@@ -306,6 +306,29 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     BOOST_CHECK_EQUAL(resolveDeviceType("transdata mark-v"),    TYPE_TDMARKV);
     BOOST_CHECK_EQUAL(resolveDeviceType("vectron"),             TYPE_VECTRON);
 }
+        
+BOOST_AUTO_TEST_CASE(test_isKnownUnsupportedDevice)
+{
+    BOOST_CHECK_EQUAL(isKnownUnsupportedDevice("digi gateway"),  true);
+    BOOST_CHECK_EQUAL(isKnownUnsupportedDevice("rf gateway"),  true);
+    BOOST_CHECK_EQUAL(isKnownUnsupportedDevice("rf gateway 2"),  true);
+    BOOST_CHECK_EQUAL(isKnownUnsupportedDevice("zigbee endpoint"),  true);
+    BOOST_CHECK_EQUAL(isKnownUnsupportedDevice("rfn-440-2131td"),  true);
+    BOOST_CHECK_EQUAL(isKnownUnsupportedDevice("rfn-440-2132td"),  true);
+    BOOST_CHECK_EQUAL(isKnownUnsupportedDevice("rfn-440-2133td"),  true);
+    BOOST_CHECK_EQUAL(isKnownUnsupportedDevice("rfw-meter"),  true);
+    BOOST_CHECK_EQUAL(isKnownUnsupportedDevice("lcr-6200 rfn"),  true);
+    BOOST_CHECK_EQUAL(isKnownUnsupportedDevice("lcr-6600 rfn"),  true);
+    BOOST_CHECK_EQUAL(isKnownUnsupportedDevice("weather location"),  true);
+    BOOST_CHECK_EQUAL(isKnownUnsupportedDevice("ecobee3"),  true);
+    BOOST_CHECK_EQUAL(isKnownUnsupportedDevice("ecobee smart"),  true);
+    BOOST_CHECK_EQUAL(isKnownUnsupportedDevice("ecobee smart si"),  true);
+    BOOST_CHECK_EQUAL(isKnownUnsupportedDevice("ltc"),  true);
+    BOOST_CHECK_EQUAL(isKnownUnsupportedDevice("go_regulator"),  true);
+    BOOST_CHECK_EQUAL(isKnownUnsupportedDevice("po_regulator"),  true);
+    // Make sure it doesn't always return true
+    BOOST_CHECK_EQUAL(isKnownUnsupportedDevice("alpha power plus"),  false);
+}
 
 BOOST_AUTO_TEST_CASE(test_resolvePointArchiveType)
 {
