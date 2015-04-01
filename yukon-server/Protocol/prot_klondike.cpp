@@ -4,6 +4,7 @@
 #include "logger.h"
 #include "utility.h"
 #include "prot_klondike.h"
+#include "dllbase.h"  //  for isDebugLudicrous
 
 #include "std_helper.h"
 
