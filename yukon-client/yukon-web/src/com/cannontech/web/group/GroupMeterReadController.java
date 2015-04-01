@@ -40,7 +40,7 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.ResolvableTemplate;
-import com.cannontech.common.util.ResultResultExpiredException;
+import com.cannontech.common.util.ResultExpiredException;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
@@ -275,7 +275,7 @@ public class GroupMeterReadController {
 
 		// friendly exception
 		if (result == null) {
-			throw new ResultResultExpiredException("Group Meter Result No Longer Exists");
+			throw new ResultExpiredException("Group Meter Result No Longer Exists");
 		}
 		
 		GroupMeterReadResultWrapper resultWrapper = new GroupMeterReadResultWrapper(result);

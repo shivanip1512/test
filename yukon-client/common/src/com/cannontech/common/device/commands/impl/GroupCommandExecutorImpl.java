@@ -26,7 +26,7 @@ import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
-import com.cannontech.common.util.ResultResultExpiredException;
+import com.cannontech.common.util.ResultExpiredException;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -129,7 +129,7 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
     }
 
     @Override
-    public long cancelExecution(String resultId, LiteYukonUser user) throws ResultResultExpiredException {
+    public long cancelExecution(String resultId, LiteYukonUser user) throws ResultExpiredException {
 
         GroupCommandResult result = getResult(resultId);
         long commandsCanceled = commandRequestExecutor.cancelExecution(result.getCallback(), user, true);
@@ -180,13 +180,13 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
     }
 
     @Override
-    public GroupCommandResult getResult(String id) throws ResultResultExpiredException {
+    public GroupCommandResult getResult(String id) throws ResultExpiredException {
 
         GroupCommandResult result = resultsCache.getResult(id);
 
         // friendly exception
         if (result == null) {
-            throw new ResultResultExpiredException("Group Command Result No Longer Exists");
+            throw new ResultExpiredException("Group Command Result No Longer Exists");
         }
 
         return result;

@@ -257,5 +257,8 @@ public interface PointDao {
 
     /** Retrieves all {@link LitePointLimit}s from the database. */
     List<LitePointLimit> getAllPointLimits();
+    
+    /** Retrieves all points with the specified name. */
+    List<LitePoint> findAllPointsWithName(String pointName);
 
 }

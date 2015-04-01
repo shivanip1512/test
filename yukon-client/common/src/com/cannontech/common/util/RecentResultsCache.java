@@ -34,7 +34,7 @@ public class RecentResultsCache<T extends Completable> {
     };
     
     // GET RESULT
-    synchronized public T getResult(String id) throws ResultResultExpiredException {
+    synchronized public T getResult(String id) throws ResultExpiredException {
         
         T result = null;
         
@@ -50,7 +50,7 @@ public class RecentResultsCache<T extends Completable> {
         // maybe null is a valid result object, only throw error
         // if this key was indeed removed at some point
         if (result == null && expiredKeys.contains(id)) {
-            throw new ResultResultExpiredException(id);
+            throw new ResultExpiredException(id);
         }
         
         return result;
@@ -64,6 +64,14 @@ public class RecentResultsCache<T extends Completable> {
     synchronized public List<T> getPending() {
         processLists();
         return returnSafeList(pending);
+    }
+    
+    synchronized public List<T> getAll() {
+        List<T> safePendingList = getPending();
+        List<T> safeCompletedList = getCompleted();
+        List<T> allList = new ArrayList<>(safePendingList);
+        allList.addAll(safeCompletedList);
+        return allList;
     }
     
     synchronized public List<String> getCompletedKeys() {

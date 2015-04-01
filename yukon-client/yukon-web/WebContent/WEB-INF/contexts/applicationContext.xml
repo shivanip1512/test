@@ -1345,8 +1345,8 @@
                     <property name="friendlyExceptionPropertyKey" value="TemporaryDeviceGroupNotFoundException"/>
                 </bean>
                 <bean class="com.cannontech.common.util.KnownExceptionType">
-                    <property name="exceptionClass" value="com.cannontech.common.util.ResultResultExpiredException"/>
-                    <property name="friendlyExceptionPropertyKey" value="ResultResultExpiredException"/>
+                    <property name="exceptionClass" value="com.cannontech.common.util.ResultExpiredException"/>
+                    <property name="friendlyExceptionPropertyKey" value="ResultExpiredException"/>
                 </bean>
                 <bean class="com.cannontech.common.util.KnownExceptionType">
                     <property name="exceptionClass" value="com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException"/>

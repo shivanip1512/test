@@ -1,8 +1,5 @@
 package com.cannontech.capcontrol;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.FilterType;
@@ -95,13 +92,5 @@ public enum RegulatorPointMapping implements DisplayableEnum {
             }
         }
         throw new IllegalArgumentException("Invalid regulator point mapping string.");
-    }
-    
-    public static List<String> getMappingStrings() {
-        List<String> mappingStrings = new ArrayList<>();
-        for (RegulatorPointMapping mapping : values()) {
-            mappingStrings.add(mapping.mappingString);
-        }
-        return mappingStrings;
     }
 }

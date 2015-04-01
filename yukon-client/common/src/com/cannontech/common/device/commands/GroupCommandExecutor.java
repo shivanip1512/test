@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.util.ResultResultExpiredException;
+import com.cannontech.common.util.ResultExpiredException;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -37,7 +37,7 @@ public interface GroupCommandExecutor {
     public List<GroupCommandResult> getPending();
     public List<GroupCommandResult> getPendingByType(DeviceRequestType type);
 
-    public GroupCommandResult getResult(String id) throws ResultResultExpiredException;
+    public GroupCommandResult getResult(String id) throws ResultExpiredException;
 
-    public long cancelExecution(String resultId, LiteYukonUser user) throws ResultResultExpiredException;
+    public long cancelExecution(String resultId, LiteYukonUser user) throws ResultExpiredException;
 }

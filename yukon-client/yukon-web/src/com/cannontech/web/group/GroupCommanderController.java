@@ -49,7 +49,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
-import com.cannontech.common.util.ResultResultExpiredException;
+import com.cannontech.common.util.ResultExpiredException;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.CommandDao;
@@ -319,7 +319,7 @@ public class GroupCommanderController {
     };
     
     @RequestMapping("resultDetail")
-    public void resultDetail(String resultKey, ModelMap map) throws ResultResultExpiredException {
+    public void resultDetail(String resultKey, ModelMap map) throws ResultExpiredException {
         
         GroupCommandResult result = groupCommandExecutor.getResult(resultKey);
         map.addAttribute("result", result);

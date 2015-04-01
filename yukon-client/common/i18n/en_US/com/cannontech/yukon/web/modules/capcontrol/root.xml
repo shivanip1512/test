@@ -629,7 +629,19 @@
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.KEEP_ALIVE_TIMER">Keep Alive Timer</entry>
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.FORWARD_SET_POINT">Set Point</entry>
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.FORWARD_BANDWIDTH">Set Point Bandwidth</entry>
-
+    
+    <!-- RegulatorMappingResultType enum -->
+    <entry key="yukon.web.modules.capcontrol.regulatorMappingResultType.SUCCESSFUL">Successful</entry>
+    <entry key="yukon.web.modules.capcontrol.regulatorMappingResultType.PARTIALLY_SUCCESSFUL">Partially Successful</entry>
+    <entry key="yukon.web.modules.capcontrol.regulatorMappingResultType.FAILED">Failed</entry>
+    <entry key="yukon.web.modules.capcontrol.regulatorMappingResultType.INCOMPLETE">Incomplete</entry>
+    
+    <!-- RegulatorMappingPointResult enum -->
+    <entry key="yukon.web.modules.capcontrol.regulatorMappingPointResult.NO_POINTS_FOUND">No Points Found</entry>
+    <entry key="yukon.web.modules.capcontrol.regulatorMappingPointResult.MULTIPLE_POINTS_FOUND">Multiple Points Found</entry>
+    <entry key="yukon.web.modules.capcontrol.regulatorMappingPointResult.SUCCESS_WITH_OVERWRITE">Success With Overwrite</entry>
+    <entry key="yukon.web.modules.capcontrol.regulatorMappingPointResult.SUCCESS">Success</entry>
+    
     <entry key="yukon.web.modules.capcontrol.regulator.pageName">Regulators</entry>
     <entry key="yukon.web.modules.capcontrol.regulator.VIEW.pageTitle">Regulator: {0}</entry>
     <entry key="yukon.web.modules.capcontrol.regulator.VIEW.pageHeading">{0}</entry>

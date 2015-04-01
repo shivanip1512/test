@@ -233,4 +233,9 @@ public class MockPointDao implements PointDao {
     public List<LitePointLimit> getAllPointLimits() {
         return null;
     }
+
+    @Override
+    public List<LitePoint> findAllPointsWithName(String pointName) {
+        return null;
+    }
 }

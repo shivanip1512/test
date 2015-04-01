@@ -107,7 +107,16 @@ public class PointDaoImpl implements PointDao {
             return null;
         }
     }
-
+    
+    @Override
+    public List<LitePoint> findAllPointsWithName(String pointName) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(LITE_POINT_ROW_MAPPER.getBaseQuery());
+        sql.append("WHERE UPPER(PointName)").eq(pointName.toUpperCase());
+        
+        return jdbcTemplate.query(sql, LITE_POINT_ROW_MAPPER);
+    }
+    
     @Override
     public LitePoint getLitePoint(int pointId) {
         try {
