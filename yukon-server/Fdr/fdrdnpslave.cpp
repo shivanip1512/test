@@ -294,12 +294,16 @@ int DnpSlave::processDataLinkConfirmationRequest(ServerConnection& connection)
 {
     auto buf = _dnpSlave.createDatalinkConfirmation();
 
+    char *bufForConnection = new char[buf.size()];
+
+    std::copy(buf.begin(), buf.end(), bufForConnection);
+
     if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
     {
         CTILOG_DEBUG(dout, logNow() <<" sending DNP data link acknowledgement message." << buf);
     }
 
-    connection.queueMessage(reinterpret_cast<char *>(buf.data()), buf.size(), MAXPRIORITY - 1);
+    connection.queueMessage(bufForConnection, buf.size(), MAXPRIORITY - 1);
 
     return 0;
 }
@@ -308,12 +312,16 @@ int DnpSlave::processDataLinkReset(ServerConnection& connection)
 {
     auto buf = _dnpSlave.createDatalinkAck();
 
+    char *bufForConnection = new char[buf.size()];
+
+    std::copy(buf.begin(), buf.end(), bufForConnection);
+
     if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
     {
         CTILOG_DEBUG(dout, logNow() <<" sending DNP ack message." << buf);
     }
 
-    connection.queueMessage(reinterpret_cast<char *>(buf.data()), buf.size(), MAXPRIORITY - 1);
+    connection.queueMessage(bufForConnection, buf.size(), MAXPRIORITY - 1);
 
 
     return 0;

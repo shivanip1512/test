@@ -36,6 +36,8 @@ struct Test_ServerConnection : Cti::Fdr::ServerConnection
 
         messages.emplace_back(unsigned_buf, unsigned_buf + len);
 
+        delete [] buf;
+
         return true;
     }
 
