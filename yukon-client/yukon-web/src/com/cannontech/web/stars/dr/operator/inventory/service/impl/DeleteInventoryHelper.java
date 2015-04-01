@@ -1,13 +1,16 @@
 package com.cannontech.web.stars.dr.operator.inventory.service.impl;
 
+import org.springframework.context.MessageSourceResolvable;
+
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.stars.dr.operator.inventory.service.CollectionBasedInventoryTask;
+import com.cannontech.web.stars.dr.operator.inventory.model.CollectionBasedInventoryTask;
 import com.cannontech.web.stars.dr.operator.inventory.service.InventoryActionsHelper;
 
 public class DeleteInventoryHelper extends InventoryActionsHelper {
-
+    
     public class DeleteInventoryTask extends CollectionBasedInventoryTask {
         
         public DeleteInventoryTask(InventoryCollection collection, YukonUserContext context) {
@@ -34,6 +37,11 @@ public class DeleteInventoryHelper extends InventoryActionsHelper {
                 }
             };
         }
+        
+        @Override
+        public MessageSourceResolvable getMessage() {
+            return new YukonMessageSourceResolvable(key + "deleteInventory.label");
+        }
     }
-
+    
 }

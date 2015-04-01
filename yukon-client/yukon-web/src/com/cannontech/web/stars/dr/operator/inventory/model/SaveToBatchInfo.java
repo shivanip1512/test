@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.operator.inventory;
+package com.cannontech.web.stars.dr.operator.inventory.model;
 
 public class SaveToBatchInfo {
     private int routeId;

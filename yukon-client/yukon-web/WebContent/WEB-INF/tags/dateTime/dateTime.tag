@@ -14,7 +14,8 @@
 <%@ attribute name="value" type="java.lang.Object" description="Default: null. Sets the initial value of the input." %>
 <%@ attribute name="disabled" type="java.lang.Boolean" description="Default: false. Determines if the input is disabled." %>
 
-<%@ attribute name="cssClass" description="CSS class names applied to the outer container of the picker component." %>
+<%@ attribute name="wrapperClass" description="CSS class names applied to the outer container of the picker component." %>
+<%@ attribute name="cssClass" description="CSS class names applied to the text input" %>
 <%@ attribute name="cssDialogClass" description="CSS class names applied to the popup container." %>
 <%@ attribute name="cssErrorClass" description="CSS class names applied to the error element. 
                                                 Note: error element defaults to span." %>
@@ -37,6 +38,7 @@
     </c:if>
 </c:if>
 
+<cti:default var="wrapperClass" value=""/>
 <c:set var="dateTimeValue" value=""/>
 <c:set var="timeZoneShort" value=""/>
 <c:set var="timeZoneFull" value=""/>
@@ -77,7 +79,7 @@
             <cti:displayForPageEditModes modes="VIEW">${status.value}</cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <c:if test="${status.error}"><c:set var="cssClass" value="${cssClass} error"/></c:if>
-                <span class="datetimeEntry_wrap">
+                <span class="datetimeEntry_wrap ${wrapperClass}">
                     <form:input id="${id}" 
                         path="${path}" 
                         value="${dateTimeValue}"
@@ -107,7 +109,7 @@
                 ${dateTimeValue}
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT,CREATE">
-                <span class="datetimeEntry_wrap">
+                <span class="datetimeEntry_wrap ${wrapperClass}">
                     <input id="${id}" 
                         <c:if test="${!empty pageScope.name}">name="${pageScope.name}"</c:if>
                         value="${dateTimeValue}"

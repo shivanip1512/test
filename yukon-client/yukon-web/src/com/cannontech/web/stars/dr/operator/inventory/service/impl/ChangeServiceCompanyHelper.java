@@ -2,17 +2,21 @@ package com.cannontech.web.stars.dr.operator.inventory.service.impl;
 
 import javax.servlet.http.HttpSession;
 
+import org.springframework.context.MessageSourceResolvable;
+
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.stars.dr.operator.inventory.service.CollectionBasedInventoryTask;
+import com.cannontech.web.stars.dr.operator.inventory.model.CollectionBasedInventoryTask;
 import com.cannontech.web.stars.dr.operator.inventory.service.InventoryActionsHelper;
 
 public class ChangeServiceCompanyHelper extends InventoryActionsHelper {
-
+    
     public class ChangeServiceCompanyTask extends CollectionBasedInventoryTask {
+        
         private int serviceCompanyId;
         private HttpSession session;
         
@@ -58,6 +62,11 @@ public class ChangeServiceCompanyHelper extends InventoryActionsHelper {
                 }
             };
         }
+        
+        @Override
+        public MessageSourceResolvable getMessage() {
+            return new YukonMessageSourceResolvable(key + "changeServiceCompany.label");
+        }
     }
-
+    
 }

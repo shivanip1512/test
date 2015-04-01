@@ -1,17 +1,18 @@
 package com.cannontech.web.updater.config;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.stars.dr.operator.inventory.service.AbstractInventoryTask;
+import com.cannontech.web.stars.dr.operator.inventory.model.AbstractInventoryTask;
 import com.cannontech.web.stars.dr.operator.inventory.service.impl.NewLmConfigHelper.NewLmConfigTask;
 import com.cannontech.web.updater.UpdateBackingService;
 
 public class NewConfigBackingService implements UpdateBackingService {
     
-    private RecentResultsCache<AbstractInventoryTask> resultsCache;
+    @Autowired @Qualifier("inventoryTasks") private RecentResultsCache<AbstractInventoryTask> resultsCache;
     
     private enum DataType {
         ITEMS_PROCESSED,
@@ -75,11 +76,6 @@ public class NewConfigBackingService implements UpdateBackingService {
     @Override
     public boolean isValueAvailableImmediately(String fullIdentifier, long afterDate, YukonUserContext userContext) {
         return true;
-    }
-    
-    @Required
-    public void setResultsCache(RecentResultsCache<AbstractInventoryTask> resultsCache) {
-        this.resultsCache = resultsCache;
     }
     
 }

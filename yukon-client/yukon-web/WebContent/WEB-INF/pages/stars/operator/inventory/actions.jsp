@@ -21,8 +21,8 @@
                 <cti:checkRolesAndProperties value="DEVICE_RECONFIG">
                     <tr>
                         <td>
-                            <cti:url value="inventoryConfiguration" var="url">
-                                <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
+                            <cti:url var="url" value="inventoryConfiguration">
+                                <c:forEach var="parm" items="${inventoryCollection.collectionParameters}">
                                     <cti:param name="${parm.key}" value="${parm.value}"/>
                                 </c:forEach>
                             </cti:url>
@@ -35,7 +35,7 @@
                 <tr>
                     <td>
                         <cti:url value="changeType/view" var="url">
-                            <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
+                            <c:forEach var="parm" items="${inventoryCollection.collectionParameters}">
                                 <cti:param name="${parm.key}" value="${parm.value}"/>
                             </c:forEach>
                         </cti:url>
@@ -46,8 +46,8 @@
                 
                 <tr>
                     <td>
-                        <cti:url value="changeServiceCompany/view" var="url">
-                            <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
+                        <cti:url var="url" value="changeServiceCompany/setup">
+                            <c:forEach var="parm" items="${inventoryCollection.collectionParameters}">
                                 <cti:param name="${parm.key}" value="${parm.value}"/>
                             </c:forEach>
                         </cti:url>
@@ -58,8 +58,8 @@
                 
                 <tr>
                     <td>
-                        <cti:url value="controlAudit/view" var="url">
-                            <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
+                        <cti:url var="url" value="controlAudit/view">
+                            <c:forEach var="parm" items="${inventoryCollection.collectionParameters}">
                                 <cti:param name="${parm.key}" value="${parm.value}"/>
                             </c:forEach>
                         </cti:url>
@@ -76,8 +76,8 @@
             
                 <tr>
                     <td>
-                         <cti:url value="deleteInventory/view" var="url">
-                            <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
+                         <cti:url var="url" value="deleteInventory/setup">
+                            <c:forEach var="parm" items="${inventoryCollection.collectionParameters}">
                                 <cti:param name="${parm.key}" value="${parm.value}"/>
                             </c:forEach>
                         </cti:url>
@@ -88,8 +88,8 @@
                 
                 <tr>
                     <td>
-                        <cti:url value="changeStatus/view" var="url">
-                            <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
+                        <cti:url var="url" value="changeStatus/setup">
+                            <c:forEach var="parm" items="${inventoryCollection.collectionParameters}">
                                 <cti:param name="${parm.key}" value="${parm.value}"/>
                             </c:forEach>
                         </cti:url>
@@ -100,8 +100,8 @@
                 
                 <tr>
                     <td>
-                        <cti:url value="changeWarehouse/view" var="url">
-                            <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
+                        <cti:url var="url" value="changeWarehouse/setup">
+                            <c:forEach var="parm" items="${inventoryCollection.collectionParameters}">
                                 <cti:param name="${parm.key}" value="${parm.value}"/>
                             </c:forEach>
                         </cti:url>
@@ -113,8 +113,8 @@
                 <c:if test="${showSaveToFile}">
                     <tr>
                         <td>
-                            <cti:url value="saveToBatch/setup" var="url">
-                                <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
+                            <cti:url var="url" value="saveToBatch/setup">
+                                <c:forEach var="parm" items="${inventoryCollection.collectionParameters}">
                                     <cti:param name="${parm.key}" value="${parm.value}"/>
                                 </c:forEach>
                             </cti:url>
@@ -127,7 +127,7 @@
                 <tr>
                     <td>
                         <cti:url value="report" var="url">
-                            <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
+                            <c:forEach var="parm" items="${inventoryCollection.collectionParameters}">
                                 <cti:param name="${parm.key}" value="${parm.value}"/>
                             </c:forEach>
                         </cti:url>

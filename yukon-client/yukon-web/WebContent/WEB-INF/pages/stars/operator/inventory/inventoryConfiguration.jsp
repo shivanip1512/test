@@ -29,7 +29,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <cti:url var="url" value="resendConfig/view">
+                        <cti:url var="url" value="resendConfig/setup">
                             <c:forEach var="entry" items="${inventoryCollection.collectionParameters}">
                                 <cti:param name="${entry.key}" value="${entry.value}"/>
                             </c:forEach>

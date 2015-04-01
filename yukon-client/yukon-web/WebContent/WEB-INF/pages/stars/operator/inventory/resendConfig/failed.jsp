@@ -19,7 +19,7 @@
                         <cti:param name="inventoryId" value="${failure.identifier.inventoryId}"/>
                     </cti:url>
                     <tr>
-                        <td><a href="${url}">${failure.lmHardware}</a></td>
+                        <td class="wsnw"><a href="${url}">${failure.lmHardware}</a></td>
                         <td><i:inline key="${failure.reason}"/></td>
                     </tr>
                 </c:forEach>

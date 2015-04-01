@@ -19,9 +19,11 @@ public class ProgressUpdaterHandler implements DeviceReconfigUpdaterHandler {
         DecimalFormat format = new DecimalFormat("##0.#%");
             
         InventoryConfigTask inventoryConfigTask = inventoryConfigTaskDao.getById(taskId);
-        int itemsProcessed = inventoryConfigTask.getNumberOfItemsProcessed();
         
-        double percentComplete = ( (double)itemsProcessed / (double) inventoryConfigTask.getNumberOfItems());
+        int itemsProcessed = inventoryConfigTask.getNumberOfItemsProcessed();
+        double percentComplete = ((double)itemsProcessed / (double) inventoryConfigTask.getNumberOfItems());
+        
+        if (percentComplete == 1.0) return "";
         
         return format.format(percentComplete);
     }

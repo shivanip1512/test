@@ -1503,9 +1503,7 @@
 
     <bean id="deviceReconfigMonitorBackingService" class="com.cannontech.web.updater.deviceReconfig.DeviceReconfigMonitorBackingService"/>
 
-    <bean id="newConfigBackingService" class="com.cannontech.web.updater.config.NewConfigBackingService">
-        <property name="resultsCache" ref="inventoryTaskResultsCache"/>
-    </bean>
+    <bean id="newConfigBackingService" class="com.cannontech.web.updater.config.NewConfigBackingService"/>
 
     <bean class="com.cannontech.web.updater.deviceReconfig.handler.FailedCountUpdaterHandler"/>
     <bean class="com.cannontech.web.updater.deviceReconfig.handler.ItemsProcessedUpdaterHandler"/>
@@ -1576,38 +1574,21 @@
     <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.RfHardwareReadNowStrategy"/>
     <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.ZigBeeHardwareReadNowStrategy"/>
 
-    <bean id="inventoryTaskResultsCache" class="com.cannontech.common.util.RecentResultsCache"/>
-    <bean id="inventoryTaskBackingService" class="com.cannontech.web.updater.dr.InventoryTaskBackingService">
-        <property name="resultsCache" ref="inventoryTaskResultsCache"/>
+    <bean class="com.cannontech.common.util.RecentResultsCache">
+        <qualifier value="inventoryTasks"/>
     </bean>
-    <bean id="changeWarehouseHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeWarehouseHelper">
-        <property name="resultsCache" ref="inventoryTaskResultsCache"/>
-    </bean>
-    <bean id="changeServiceCompanyHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeServiceCompanyHelper">
-        <property name="resultsCache" ref="inventoryTaskResultsCache"/>
-    </bean>
-    <bean id="changeDeviceStatusHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeDeviceStatusHelper">
-        <property name="resultsCache" ref="inventoryTaskResultsCache"/>
-    </bean>
-    <bean id="changeTypeHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeTypeHelper">
-        <property name="resultsCache" ref="inventoryTaskResultsCache"/>
-    </bean>
-    <bean id="deleteInventoryHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.DeleteInventoryHelper">
-        <property name="resultsCache" ref="inventoryTaskResultsCache"/>
-    </bean>
-    <bean id="addByRangeHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.AddByRangeHelper">
-        <property name="resultsCache" ref="inventoryTaskResultsCache"/>
-    </bean>
-    <bean id="saveToBatchHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.SaveToBatchHelper">
-        <property name="resultsCache" ref="inventoryTaskResultsCache"/>
-    </bean>
-    <bean id="resendLmConfigHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.ResendLmConfigHelper">
-        <property name="resultsCache" ref="inventoryTaskResultsCache"/>
-    </bean>
-    <bean id="newLmConfigHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.NewLmConfigHelper">
-        <property name="resultsCache" ref="inventoryTaskResultsCache"/>
-    </bean>
-
+    
+    <bean id="inventoryTaskBackingService" class="com.cannontech.web.updater.dr.InventoryTaskBackingService"/>
+    <bean class="com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeWarehouseHelper"/>
+    <bean class="com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeServiceCompanyHelper"/>
+    <bean class="com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeDeviceStatusHelper"/>
+    <bean class="com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeTypeHelper"/>
+    <bean class="com.cannontech.web.stars.dr.operator.inventory.service.impl.DeleteInventoryHelper"/>
+    <bean class="com.cannontech.web.stars.dr.operator.inventory.service.impl.AddByRangeHelper"/>
+    <bean class="com.cannontech.web.stars.dr.operator.inventory.service.impl.SaveToBatchHelper"/>
+    <bean class="com.cannontech.web.stars.dr.operator.inventory.service.impl.ResendLmConfigHelper"/>
+    <bean class="com.cannontech.web.stars.dr.operator.inventory.service.impl.NewLmConfigHelper"/>
+    
     <bean class="com.cannontech.web.stars.dr.consumer.OptOutControllerHelper"/>
 
     <bean id="warehouseService" class="com.cannontech.web.admin.energyCompany.warehouse.service.impl.WarehouseServiceImpl"/>

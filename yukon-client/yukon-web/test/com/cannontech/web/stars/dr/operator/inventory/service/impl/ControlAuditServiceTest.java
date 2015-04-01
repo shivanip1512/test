@@ -14,7 +14,6 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -36,6 +35,7 @@ import com.cannontech.common.bulk.collection.inventory.ListBasedInventoryCollect
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.inventory.YukonInventory;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -59,7 +59,6 @@ import com.cannontech.web.stars.dr.operator.inventory.model.AuditSettings;
 import com.cannontech.web.stars.dr.operator.inventory.model.ControlAuditResult;
 import com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCollectionProducer;
 import com.cannontech.web.stars.dr.operator.inventory.service.ControlAuditService;
-import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
@@ -185,7 +184,7 @@ public class ControlAuditServiceTest {
                 return new ArrayList<>(allPaos.values());
             }
         }).anyTimes();
-
+        
         rphDao = createNiceMock(RawPointHistoryDao.class);
         rphDao.getAttributeData(anyObject(Iterable.class), anyObject(Attribute.class), anyBoolean(), anyObject(Range.class), anyObject(Order.class),
             anyObject(Set.class));
@@ -193,7 +192,7 @@ public class ControlAuditServiceTest {
             @Override
             public ListMultimap<PaoIdentifier, PointValueQualityHolder> answer() throws Throwable {
                 List<YukonPao> paos = (List<YukonPao>) getCurrentArguments()[0];
-
+                
                 ListMultimap<PaoIdentifier, PointValueQualityHolder> result = ArrayListMultimap.create();
                 for (YukonPao pao : paos) {
                     if (controlledPaos.containsValue(pao.getPaoIdentifier())) {
@@ -206,7 +205,7 @@ public class ControlAuditServiceTest {
                 return result;
             }
         }).anyTimes();
-
+        
         resolver = createNiceMock(YukonUserContextMessageSourceResolver.class);
         resolver.getMessageSourceAccessor(anyObject(YukonUserContext.class));
         expectLastCall().andAnswer(new IAnswer<MessageSourceAccessor>() {
@@ -220,7 +219,7 @@ public class ControlAuditServiceTest {
                 };
             }
         }).anyTimes();
-
+        
         memoryCollectionProducer = createNiceMock(MemoryCollectionProducer.class);
         memoryCollectionProducer.createCollection(anyObject(Iterator.class), anyObject(String.class));
         expectLastCall().andAnswer(new IAnswer<InventoryCollection>() {
@@ -231,7 +230,7 @@ public class ControlAuditServiceTest {
                 return inventoryCollection;
             }
         }).anyTimes();
-
+        
         paoDefinitionDao = createNiceMock(PaoDefinitionDao.class);
         paoDefinitionDao.getPaoAttributeAttrDefinitionMap();
         expectLastCall().andAnswer(new IAnswer<Map<PaoType, Map<Attribute, AttributeDefinition>>>() {
@@ -358,12 +357,8 @@ public class ControlAuditServiceTest {
     }
 
     private InventoryCollection getInventoryCollection(final List<InventoryIdentifier> inventory) {
-        final List<Integer> idList = Lists.transform(inventory, new Function<InventoryIdentifier, Integer>() {
-            @Override
-            public Integer apply(InventoryIdentifier input) {
-                return input.getInventoryId();
-            }
-        });
+        
+        final List<Integer> idList = Lists.transform(inventory, YukonInventory.TO_INVENTORY_ID);
         InventoryCollection collection = new ListBasedInventoryCollection() {
             @Override
             public Map<String, String> getCollectionParameters() {

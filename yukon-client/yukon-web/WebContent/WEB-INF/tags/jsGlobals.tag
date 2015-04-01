@@ -21,15 +21,16 @@ var yg = {
     text: {
         cancel: '<cti:msg2 key="yukon.web.components.button.cancel.label"/>',
         close: '<cti:msg2 key="yukon.web.components.button.close.label"/>',
+        confirm: '<cti:msg2 key="yukon.web.defaults.confirm"/>',
+        complete: '<cti:msg2 key="yukon.common.complete"/>',
         'delete': '<cti:msg2 key="yukon.web.components.button.delete.label"/>',
         edit: '<cti:msg2 key="yukon.web.components.button.edit.label"/>',
+        filter: '<cti:msg2 key="yukon.web.components.button.filter.label"/>',
+        no: '<cti:msg2 key="yukon.web.defaults.no"/>',
         ok: '<cti:msg2 key="yukon.web.components.button.ok.label"/>',
         save: '<cti:msg2 key="yukon.web.components.button.save.label"/>',
         view: '<cti:msg2 key="yukon.web.components.button.view.label"/>',
-        filter: '<cti:msg2 key="yukon.web.components.button.filter.label"/>',
-        yes: '<cti:msg2 key="yukon.web.defaults.yes"/>',
-        no: '<cti:msg2 key="yukon.web.defaults.no"/>',
-        confirm: '<cti:msg2 key="yukon.web.defaults.confirm"/>'
+        yes: '<cti:msg2 key="yukon.web.defaults.yes"/>'
     },
     dev_mode: '<cti:getBooleanConfigParam param="DEVELOPMENT_MODE"/>' === 'true',
     

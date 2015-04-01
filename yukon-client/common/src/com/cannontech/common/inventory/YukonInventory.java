@@ -4,7 +4,7 @@ import com.cannontech.stars.model.LiteLmHardware;
 import com.google.common.base.Function;
 
 public interface YukonInventory {
-
+    
     Function<LiteLmHardware, YukonInventory> TO_INVENTORY = new Function<LiteLmHardware, YukonInventory>() {
         @Override
         public YukonInventory apply(LiteLmHardware input) {
@@ -17,7 +17,7 @@ public interface YukonInventory {
             return input.getInventoryIdentifier().getInventoryId();
         }
     };
-
+    
     InventoryIdentifier getInventoryIdentifier();
-
+    
 }

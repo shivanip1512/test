@@ -2,10 +2,9 @@ package com.cannontech.web.stars.dr.operator.inventory;
 
 import java.util.List;
 
-import javax.annotation.Resource;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -41,8 +40,8 @@ import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.stars.dr.operator.inventory.model.AbstractInventoryTask;
 import com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCollectionProducer;
-import com.cannontech.web.stars.dr.operator.inventory.service.AbstractInventoryTask;
 import com.cannontech.web.stars.dr.operator.inventory.service.impl.AddByRangeHelper;
 import com.cannontech.web.stars.dr.operator.inventory.service.impl.AddByRangeHelper.AddByRangeTask;
 import com.google.common.collect.Lists;
@@ -51,25 +50,27 @@ import com.google.common.collect.Lists;
 @CheckRole(YukonRole.INVENTORY)
 @RequestMapping("/operator/inventory/abr/*")
 public class AddHardwareByRangeController {
+    
     @Autowired private AddByRangeHelper addByRangeHelper;
     @Autowired private DefaultRouteService defaultRouteService;
     @Autowired private EnergyCompanyDao ecDao;
-    @Autowired private InventoryDao InventoryDao;
-    @Autowired private MemoryCollectionProducer memoryCollectionProducer;
+    @Autowired private InventoryDao inventoryDao;
+    @Autowired private MemoryCollectionProducer collectionProducer;
     @Autowired private PaoDao paoDao;
     @Autowired private ServiceCompanyDao serviceCompanyDao;
-    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private StarsDatabaseCache starsDbCache;
     @Autowired private YukonListDao listDao;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-
-    private RecentResultsCache<AbstractInventoryTask> resultsCache;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired @Qualifier("inventoryTasks") private RecentResultsCache<AbstractInventoryTask> resultsCache;
+    
     private AbrValidator validator = new AbrValidator();
     
     private class AbrValidator extends SimpleValidator<AddByRange> {
+        
         public AbrValidator() {
             super(AddByRange.class);
         }
-
+        
         @Override
         public void doValidation(AddByRange abr, Errors errors) {
             YukonListEntry entry = listDao.getYukonListEntry(abr.getHardwareTypeId());
@@ -102,9 +103,10 @@ public class AddHardwareByRangeController {
             }
         }
     }
-
+    
     @RequestMapping("view")
     public String view(ModelMap model, YukonUserContext userContext, int hardwareTypeId, String taskId) {
+        
         YukonListEntry entry = listDao.getYukonListEntry(hardwareTypeId); 
         
         if (taskId != null) {
@@ -128,32 +130,33 @@ public class AddHardwareByRangeController {
     
     private void setupModel(ModelMap model, AddByRange abr, YukonUserContext userContext,
             YukonListEntry hardwareTypeEntry) {
-        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
         
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        EnergyCompany ec = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
+        
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         
         String defaultRoute;
         try {
-            int defaultRouteId = defaultRouteService.getDefaultRouteId(energyCompany);
+            int defaultRouteId = defaultRouteService.getDefaultRouteId(ec);
             defaultRoute = paoDao.getYukonPAOName(defaultRouteId);
             defaultRoute = accessor.getMessage("yukon.common.route.default") + defaultRoute;
         } catch(NotFoundException e) {
             defaultRoute = accessor.getMessage("yukon.common.route.default.none");
         }
         
-        HardwareType hardwareType = InventoryDao.getHardwareTypeById(abr.getHardwareTypeId());
+        HardwareType hardwareType = inventoryDao.getHardwareTypeById(abr.getHardwareTypeId());
         HardwareClass hardwareClass = hardwareType.getHardwareClass();
         
-        List<LiteYukonPAObject> routes = ecDao.getAllRoutes(energyCompany);
+        List<LiteYukonPAObject> routes = ecDao.getAllRoutes(ec);
         
         boolean showVoltage = !hardwareType.isZigbee() && !hardwareClass.isGateway() && !hardwareClass.isThermostat();
         model.addAttribute("showVoltage", showVoltage);
         
-        List<Integer> energyCompanyIds = Lists.transform(energyCompany.getAncestors(true), EnergyCompanyDao.TO_ID_FUNCTION);
+        List<Integer> energyCompanyIds = Lists.transform(ec.getAncestors(true), EnergyCompanyDao.TO_ID_FUNCTION);
         
         model.addAttribute("hardwareTypeId", hardwareTypeEntry.getEntryID());
         model.addAttribute("type", hardwareTypeEntry.getEntryText());
-        model.addAttribute("ecId", energyCompany.getId());
+        model.addAttribute("ecId", ec.getId());
         model.addAttribute("serviceCompanies", serviceCompanyDao.getAllServiceCompanies(energyCompanyIds));
         model.addAttribute("defaultRoute", defaultRoute);
         model.addAttribute("routes", routes);
@@ -162,15 +165,16 @@ public class AddHardwareByRangeController {
     
     @RequestMapping(value="do", params="start")
     public String startTask(ModelMap model, YukonUserContext userContext, @ModelAttribute("abr") AddByRange abr,
-            BindingResult bindingResult, FlashScope flashScope) {
-        validator.validate(abr, bindingResult);
+            BindingResult result, FlashScope flash) {
+        
+        validator.validate(abr, result);
         YukonListEntry typeEntry = listDao.getYukonListEntry(abr.getHardwareTypeId());
         HardwareType type = HardwareType.valueOf(typeEntry.getYukonDefID());
-        if (bindingResult.hasErrors()) {
+        if (result.hasErrors()) {
             // Add errors to flash scope
             model.addAttribute("mode", PageEditMode.CREATE);
-            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
-            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
+            flash.setMessage(messages, FlashScopeMessageType.ERROR);
             setupModel(model, abr, userContext, typeEntry);
             return "operator/inventory/abr/setup.jsp";
         }
@@ -186,37 +190,39 @@ public class AddHardwareByRangeController {
     }
     
     @RequestMapping(value="do", params="cancel")
-    public String cancel(FlashScope flashScope, String taskId) {
+    public String cancel(FlashScope flash, String taskId) {
+        
         if (StringUtils.isNotBlank(taskId)) {
             AbstractInventoryTask task = resultsCache.getResult(taskId);
             task.cancel();
             int processed = task.getCompletedItems(); 
-            flashScope.setWarning(new YukonMessageSourceResolvable("yukon.web.modules.operator.abr.canceled", processed));
+            flash.setWarning(new YukonMessageSourceResolvable("yukon.web.modules.operator.abr.canceled", processed));
         }
+        
         return "redirect:../home";
     }
 
     @RequestMapping("newOperation")
     public String newOperation(ModelMap model, String taskId, YukonUserContext userContext) {
+        
         AddByRangeTask task = (AddByRangeTask) resultsCache.getResult(taskId);
-        String description = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(
+        String description = messageResolver.getMessageSourceAccessor(userContext).getMessage(
             "yukon.web.modules.operator.abr.successCollectionDescription");
         InventoryCollection temporaryCollection =
-                memoryCollectionProducer.createCollection(task.getSuccessful().iterator(), description);
+                collectionProducer.createCollection(task.getSuccessful().iterator(), description);
         model.addAttribute("inventoryCollection", temporaryCollection);
         model.addAllAttributes(temporaryCollection.getCollectionParameters());
+        
         return "redirect:../inventoryActions";
     }
     
     @RequestMapping("viewFailed")
     public String viewFailed(ModelMap model, String taskId) {
+        
         AddByRangeTask task = (AddByRangeTask) resultsCache.getResult(taskId);
         model.addAttribute("failed", task.getFailed());
+        
         return "operator/inventory/abr/failed.jsp";
     }
     
-    @Resource(name="inventoryTaskResultsCache")
-    public void setResultsCache(RecentResultsCache<AbstractInventoryTask> resultsCache) {
-        this.resultsCache = resultsCache;
-    }
 }

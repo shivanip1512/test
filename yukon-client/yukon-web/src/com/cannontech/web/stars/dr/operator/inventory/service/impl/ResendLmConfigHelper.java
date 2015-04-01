@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
@@ -23,11 +24,11 @@ import com.cannontech.stars.dr.hardware.service.LmHardwareCommandService;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.operator.inventory.model.AssetActionFailure;
-import com.cannontech.web.stars.dr.operator.inventory.service.CollectionBasedInventoryTask;
+import com.cannontech.web.stars.dr.operator.inventory.model.CollectionBasedInventoryTask;
 import com.cannontech.web.stars.dr.operator.inventory.service.InventoryActionsHelper;
 
 public class ResendLmConfigHelper extends InventoryActionsHelper {
-
+    
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private LmHardwareCommandService commandService;
@@ -141,6 +142,10 @@ public class ResendLmConfigHelper extends InventoryActionsHelper {
             };
         }
         
+        @Override
+        public MessageSourceResolvable getMessage() {
+            return new YukonMessageSourceResolvable("yukon.web.modules.operator.inventory.config.tasks.current.send");
+        }
     }
 
 }

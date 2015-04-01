@@ -13,24 +13,22 @@
 
 <cti:standardPage module="operator" page="controlAudit">
 
-<div class="column-12-12">
+<div class="stacked-md">
+    <tags:selectedInventory inventoryCollection="${inventoryCollection}"/>
+</div>
+
+<div class="column-12-12 clearfix">
     <div class="column one">
-        <tags:sectionContainer2 nameKey="settings">
-            <tags:selectedInventory inventoryCollection="${inventoryCollection}" id="inventoryCollection"/>
-            <form:form commandName="settings" action="runAudit">
-                <cti:csrfToken/>
-                <cti:inventoryCollection inventoryCollection="${settings.collection}"/>
-                <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey="yukon.common.from">
-                        <dt:dateTime path="from" value="${settings.from}"/>
-                    </tags:nameValue2>
-                    <tags:nameValue2 nameKey="yukon.common.To">
-                        <dt:dateTime path="to" value="${settings.to}"/>
-                    </tags:nameValue2>
-                </tags:nameValueContainer2>
-                <div class="page-action-area"><cti:button type="submit" nameKey="runAudit" classes="primary action" busy="true"/></div>
-            </form:form>
-        </tags:sectionContainer2>
+        <form:form commandName="settings" action="start">
+            <cti:csrfToken/>
+            <cti:inventoryCollection inventoryCollection="${settings.collection}"/>
+            <dt:dateTime path="from" value="${settings.from}" wrapperClass="fn M0"/>
+            <span class="form-control vat"><i:inline key="yukon.common.to"/></span>
+            <dt:dateTime path="to" value="${settings.to}" wrapperClass="fn"/>
+            <div class="page-action-area">
+                <cti:button type="submit" nameKey="runAudit" classes="primary action" busy="true"/>
+            </div>
+        </form:form>
     </div>
     <div class="column two nogutter">
         <c:if test="${not empty auditId}">

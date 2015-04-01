@@ -3,34 +3,35 @@ package com.cannontech.web.stars.dr.operator.inventory.service.impl;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.SwitchCommandQueue;
-import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.stars.dr.operator.inventory.SaveToBatchInfo;
-import com.cannontech.web.stars.dr.operator.inventory.service.CollectionBasedInventoryTask;
+import com.cannontech.web.stars.dr.operator.inventory.model.CollectionBasedInventoryTask;
+import com.cannontech.web.stars.dr.operator.inventory.model.SaveToBatchInfo;
 import com.cannontech.web.stars.dr.operator.inventory.service.InventoryActionsHelper;
 import com.google.common.collect.Lists;
 
 public class SaveToBatchHelper extends InventoryActionsHelper {
+    
     @Autowired protected CustomerAccountDao customerAccountDao;
+    
     public class SaveToBatchTask extends CollectionBasedInventoryTask {
-
+        
         Map<Integer,Integer> inventoryIdsToAccountIds;
-        private YukonUserContext userContext;
-        private YukonEnergyCompany energyCompany;
+        private int ecId;
         private SaveToBatchInfo saveToBatchInfo;
         
-        public SaveToBatchTask(YukonUserContext userContext, YukonEnergyCompany energyCompany,
-                InventoryCollection inventoryCollection, Map<Integer,Integer> inventoryIdsToAccountIds,
+        public SaveToBatchTask(int ecId, InventoryCollection collection, Map<Integer, Integer> inventoryIdsToAccountIds,
                 SaveToBatchInfo saveToBatchInfo) {
-            this.collection = inventoryCollection;
-            this.userContext = userContext;
-            this.energyCompany = energyCompany;
+            
+            this.collection = collection;
+            this.ecId = ecId;
             this.inventoryIdsToAccountIds = inventoryIdsToAccountIds;
             this.saveToBatchInfo = saveToBatchInfo;
         }
@@ -71,7 +72,8 @@ public class SaveToBatchHelper extends InventoryActionsHelper {
                         }
                     } //if saveToBatchInfo.getUseRoutes() equals "current" do nothing.
                     
-                    if (saveToBatchInfo.getUseGroups().equals("new")) {
+                    String useGroups = saveToBatchInfo.getUseGroups();
+                    if (StringUtils.isNotBlank(useGroups) && useGroups.equals("new")) {
                         int groupId = saveToBatchInfo.getGroupId();
                         if (groupId > 0) {
                             if (options == null){
@@ -91,8 +93,9 @@ public class SaveToBatchHelper extends InventoryActionsHelper {
                     Map<Integer,Integer> inventoryIdsToAccountIds = customerAccountDao.getAccountIdsByInventoryIds(inventoryIds);
                     // Add inventory to the SwitchCommandQueue
                     for (InventoryIdentifier invId : hwsToConfig) {
+                        
                         SwitchCommandQueue.SwitchCommand cmd = new SwitchCommandQueue.SwitchCommand();
-                        cmd.setEnergyCompanyID(energyCompany.getEnergyCompanyId());
+                        cmd.setEnergyCompanyID(ecId);
                         cmd.setAccountID(inventoryIdsToAccountIds.get(invId.getInventoryId()));
                         cmd.setInventoryID(invId.getInventoryId());
                         cmd.setCommandType(SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE);
@@ -106,6 +109,11 @@ public class SaveToBatchHelper extends InventoryActionsHelper {
                     commandQueue.addCommand(null, true);
                 }
             };
+        }
+        
+        @Override
+        public MessageSourceResolvable getMessage() {
+            return new YukonMessageSourceResolvable("yukon.web.modules.operator.inventory.config.tasks.current.schedule");
         }
     }
 }

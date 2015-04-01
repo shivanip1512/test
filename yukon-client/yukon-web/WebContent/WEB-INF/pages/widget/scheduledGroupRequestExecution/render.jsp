@@ -60,7 +60,7 @@
                                         totalCountKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobId}/LAST_REQUEST_COUNT_FOR_JOB"
                                         countKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobId}/LAST_SUCCESS_RESULTS_COUNT_FOR_JOB"
                                         failureCountKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobId}/LAST_FAILURE_RESULTS_COUNT_FOR_JOB"
-                                        containerClasses="scheduled-request" 
+                                        containerClasses="progress-short" 
                                         hideCount="true" 
                                         hidePercent="true"/>
                                     <cti:button id="cancel-job-btn-${jobId}" nameKey="cancel" data-job-id="${jobId}" 

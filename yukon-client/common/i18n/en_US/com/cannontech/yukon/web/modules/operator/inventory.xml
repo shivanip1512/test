@@ -20,9 +20,12 @@
     <entry key="yukon.web.modules.operator.inventory.home.links.title">Links</entry>
     <entry key="yukon.web.modules.operator.inventory.home.addHardware.label">Create Device</entry>
     <entry key="yukon.web.modules.operator.inventory.home.addHardwareByRange.label">Create Devices by Range</entry>
+    <entry key="yukon.web.modules.operator.inventory.home.addByRange">Add by Range</entry>
     <entry key="yukon.web.modules.operator.inventory.home.addMeter.label">Add Existing Meter</entry>
     <entry key="yukon.web.modules.operator.inventory.home.zbProblemDevices">ZigBee Problem Devices</entry>
     <entry key="yukon.web.modules.operator.inventory.home.inventorySearch.title">Asset Search</entry>
+    <entry key="yukon.web.modules.operator.inventory.home.actions.recent">Recent</entry>
+    <entry key="yukon.web.modules.operator.inventory.home.actions.none">No recent actions</entry>
     
     <!-- Common Inventory Words -->
     <entry key="yukon.web.modules.operator.newOperation">New Action</entry>
@@ -197,6 +200,9 @@
     <entry key="yukon.web.modules.operator.inventory.config.sendConfig.description">Send current configuration immediately.</entry>
     <entry key="yukon.web.modules.operator.inventory.config.newConfig.label">Send New Config</entry>
     <entry key="yukon.web.modules.operator.inventory.config.newConfig.description">Choose new configuration settings and send to all devices.</entry>
+    <entry key="yukon.web.modules.operator.inventory.config.tasks.current.send">Send Current Config</entry>
+    <entry key="yukon.web.modules.operator.inventory.config.tasks.current.schedule">Schedule Current Config</entry>
+    <entry key="yukon.web.modules.operator.inventory.config.tasks.new.send">Send New Config</entry>
     
     <!-- /inventory/resendConfig.jsp -->
     <entry key="yukon.web.modules.operator.inventory.config.send.pageName">Resend Configuration</entry>

@@ -4,11 +4,10 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.annotation.Resource;
-
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
@@ -35,13 +34,14 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 
 public class DisconnectRfnServiceImpl implements DisconnectRfnService {
-
+    
     @Autowired private RfnMeterDisconnectService rfnMeterDisconnectService;
     @Autowired private MeterDao meterDao;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
-    private Executor executor;
+    @Autowired @Qualifier("longRunning") private Executor executor;
+    
     private final Logger log = YukonLogManager.getLogger(DisconnectRfnServiceImpl.class);
     
     @Override
@@ -195,8 +195,4 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
         }
     }
    
-    @Resource(name="longRunningExecutor")
-    public void setExecutor(Executor executor) {
-        this.executor = executor;
-    }
 }

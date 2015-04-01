@@ -14,7 +14,7 @@ public class FilterModelValidator extends SimpleValidator<FilterModel> {
     public FilterModelValidator() {
         super(FilterModel.class);
     }
-
+    
     @Override
     protected void doValidation(FilterModel target, Errors errors) {
         List<RuleModel> filterRules = target.getFilterRules();
@@ -50,10 +50,13 @@ public class FilterModelValidator extends SimpleValidator<FilterModel> {
                     }
                     break;
                     
+                default:
+                    break;
                     
             }
             errors.popNestedPath();
-
+            
         }
     }
+    
 }

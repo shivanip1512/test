@@ -1,15 +1,17 @@
 package com.cannontech.web.updater.dr;
 
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.stars.dr.operator.inventory.service.AbstractInventoryTask;
+import com.cannontech.web.stars.dr.operator.inventory.model.AbstractInventoryTask;
 import com.cannontech.web.updater.RecentResultUpdateBackingService;
 
 public class InventoryTaskBackingService extends RecentResultUpdateBackingService {
     
-    private RecentResultsCache<AbstractInventoryTask> resultsCache;
+    @Autowired @Qualifier("inventoryTasks") private RecentResultsCache<AbstractInventoryTask> resultsCache;
+    
     private enum DataType {
         NEW_OPERATION_FOR_SUCCESS,
         NEW_OPERATION_FOR_FAILED,
@@ -28,6 +30,7 @@ public class InventoryTaskBackingService extends RecentResultUpdateBackingServic
     
     @Override
     public Object getResultValue(String resultId, String resultTypeStr) {
+        
         AbstractInventoryTask result = resultsCache.getResult(resultId);
         if (result == null) {
             return "";
@@ -51,11 +54,6 @@ public class InventoryTaskBackingService extends RecentResultUpdateBackingServic
         } else {
             return result.isComplete();
         }
-    }
-    
-    @Required
-    public void setResultsCache(RecentResultsCache<AbstractInventoryTask> resultsCache) {
-        this.resultsCache = resultsCache;
     }
     
 }

@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
@@ -36,7 +37,7 @@ import com.cannontech.stars.xml.serialize.StarsLMConfiguration;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.operator.inventory.configuration.model.NewConfigSettings;
 import com.cannontech.web.stars.dr.operator.inventory.model.AssetActionFailure;
-import com.cannontech.web.stars.dr.operator.inventory.service.CollectionBasedInventoryTask;
+import com.cannontech.web.stars.dr.operator.inventory.model.CollectionBasedInventoryTask;
 import com.cannontech.web.stars.dr.operator.inventory.service.InventoryActionsHelper;
 
 public class NewLmConfigHelper extends InventoryActionsHelper {
@@ -160,6 +161,11 @@ public class NewLmConfigHelper extends InventoryActionsHelper {
                     if (settings.isBatch()) SwitchCommandQueue.getInstance().addCommand( null, true );
                 }
             };
+        }
+        
+        @Override
+        public MessageSourceResolvable getMessage() {
+            return new YukonMessageSourceResolvable("yukon.web.modules.operator.inventory.config.tasks.new.send");
         }
         
     }

@@ -1,10 +1,13 @@
 package com.cannontech.web.stars.dr.operator.inventory;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +19,7 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.SerialNumberValidation;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -35,6 +39,7 @@ import com.cannontech.web.common.collection.CollectionCreationException;
 import com.cannontech.web.common.collection.InventoryCollectionFactoryImpl;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.stars.dr.operator.inventory.model.AbstractInventoryTask;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 
@@ -50,6 +55,7 @@ public class AssetDashboardController {
     @Autowired private SelectionListService listService;
     @Autowired private InventoryCollectionFactoryImpl collectionFactory;
     @Autowired private EnergyCompanyDao ecDao;
+    @Autowired @Qualifier("inventoryTasks") private RecentResultsCache<AbstractInventoryTask> taskCache;
     
     private static final String key = "yukon.web.modules.operator.inventory.home.";
     
@@ -153,6 +159,11 @@ public class AssetDashboardController {
                 }
             });
             model.addAttribute("addHardwareByRangeTypes", addHardwareByRangeTypes.iterator());
+            
+            // All recent inventory tasks
+            List<AbstractInventoryTask> tasks = new ArrayList<>(taskCache.getTasks().values());
+            Collections.sort(tasks);
+            model.addAttribute("tasks", tasks);
         }
     }
     

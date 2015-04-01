@@ -15,13 +15,13 @@ import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.concurrent.Executor;
 
-import javax.annotation.Resource;
 import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
@@ -81,8 +81,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class AccountImportService {
-    private static final Logger log = YukonLogManager.getLogger(AccountImportService.class);
-
+    
     @Autowired private AccountEventLogService accountLog;
     @Autowired private AccountService accountService;
     @Autowired private ContactDao contactDao;
@@ -103,9 +102,10 @@ public class AccountImportService {
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private YukonListDao yukonListDao;
     @Autowired private EnergyCompanyDao energycompanyDao;
+    @Autowired @Qualifier("longRunning") private Executor executor;
     
+    private static final Logger log = YukonLogManager.getLogger(AccountImportService.class);
     private PrintWriter importLog;
-    private Executor executor;
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     
     public void startAccountImport(final AccountImportResult result, final YukonUserContext context) {
@@ -1405,7 +1405,7 @@ public class AccountImportService {
        }
        
     }
-
+    
     private void sendImportLog(File importLog, String email, YukonEnergyCompany energyCompany) throws Exception {
         
         String body = "The log file containing information of the import process is attached." + LINE_SEPARATOR + LINE_SEPARATOR;
@@ -1419,11 +1419,6 @@ public class AccountImportService {
         EmailFileDataSource dataSource = new EmailFileDataSource(importLog);
         message.addAttachment(dataSource);
         emailService.sendMessage(message);
-    }
-
-    @Resource(name="longRunningExecutor")
-    public void setExecutor(Executor executor) {
-        this.executor = executor;
     }
     
 }

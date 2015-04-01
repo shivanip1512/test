@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -20,6 +20,7 @@ import org.springframework.validation.MessageCodesResolver;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -67,8 +68,8 @@ import com.cannontech.web.stars.dr.operator.hardware.validator.ColdLoadPickupVal
 import com.cannontech.web.stars.dr.operator.hardware.validator.TamperDetectValidator;
 import com.cannontech.web.stars.dr.operator.inventory.configuration.model.Group;
 import com.cannontech.web.stars.dr.operator.inventory.configuration.model.NewConfigSettings;
+import com.cannontech.web.stars.dr.operator.inventory.model.AbstractInventoryTask;
 import com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCollectionProducer;
-import com.cannontech.web.stars.dr.operator.inventory.service.AbstractInventoryTask;
 import com.cannontech.web.stars.dr.operator.inventory.service.impl.NewLmConfigHelper;
 import com.cannontech.web.stars.dr.operator.inventory.service.impl.NewLmConfigHelper.NewLmConfigTask;
 import com.cannontech.web.util.SpringWebUtil;
@@ -90,11 +91,11 @@ public class NewConfigController {
     @Autowired private StaticLoadGroupMappingDao staticLoadGroupMappingDao;
     @Autowired private LoadGroupDao loadGroupDao;
     @Autowired private StarsDatabaseCache cache;
+    @Autowired @Qualifier("inventoryTasks") private RecentResultsCache<AbstractInventoryTask> resultsCache;
     
     private final ColdLoadPickupValidator coldLoadPickupValidator = new ColdLoadPickupValidator();
     private final TamperDetectValidator tamperDetectValidator = new TamperDetectValidator();
     
-    private RecentResultsCache<AbstractInventoryTask> resultsCache;
     private final static String key = "yukon.web.modules.operator.inventory.config.new.";
     private Set<HardwareConfigType> routableConfigs = ImmutableSet.of(
             HardwareConfigType.EXPRESSCOM,
@@ -160,17 +161,15 @@ public class NewConfigController {
         model.addAttribute("taskId", taskId);
         collectionFactory.addCollectionToModelMap(req, model);
         
-        return "redirect:status";
+        return "redirect:" + taskId + "/status";
     }
     
-    @RequestMapping("/operator/inventory/actions/config/status")
-    public String view(HttpServletRequest request, ModelMap model, String taskId, LiteYukonUser user) 
-    throws ServletRequestBindingException {
-        
-        collectionFactory.addCollectionToModelMap(request, model);
+    @RequestMapping("/operator/inventory/actions/config/{taskId}/status")
+    public String view(ModelMap model, @PathVariable String taskId) {
         
         NewLmConfigTask task = (NewLmConfigTask) resultsCache.getResult(taskId);
         model.addAttribute("task", task);
+        model.addAttribute("inventoryCollection", task.getCollection());
         
         return "operator/inventory/config/new.status.jsp";
     }
@@ -298,11 +297,6 @@ public class NewConfigController {
             MessageCodesResolver resolver = new YukonMessageCodeResolver(key);
             binder.setMessageCodesResolver(resolver);
         }
-    }
-    
-    @Resource(name="inventoryTaskResultsCache")
-    public void setResultsCache(RecentResultsCache<AbstractInventoryTask> resultsCache) {
-        this.resultsCache = resultsCache;
     }
     
 }

@@ -7,7 +7,7 @@
 
 <cti:includeScript link="/JavaScript/yukon.assets.config.js"/>
     
-<div class="stacked-md"><tags:selectedInventory inventoryCollection="${inventoryCollection}" id="inventoryCollection"/></div>
+<div class="stacked-md"><tags:selectedInventory inventoryCollection="${inventoryCollection}"/></div>
 <div class="stacked-md">
     <span class="label label-info"><i:inline key="yukon.common.note"/></span>&nbsp;
     <i:inline key=".note"/>
@@ -55,16 +55,16 @@
                 <tr>
                     <td class="name"><i:inline key=".successful"/>:</td>
                     <td class="value">
-                        <cti:url var="newOperationSuccess" value="newOperation">
-                            <cti:param name="taskId" value="${task.taskId}"/>
-                            <cti:param name="type" value="SUCCESS"/>
-                        </cti:url>
                         <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/SUCCESS_COUNT" 
                             styleClass="success fwb"/>
                     </td>
                     <td class="value">
                         <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_SUCCESS">
-                            <a href="${newOperationSuccess}"><i:inline key=".newOperation"/></a>
+                            <cti:url var="url" value="/stars/operator/inventory/resendConfig/newOperation">
+                                <cti:param name="taskId" value="${task.taskId}"/>
+                                <cti:param name="type" value="SUCCESS"/>
+                            </cti:url>
+                            <a href="${url}"><i:inline key=".newOperation"/></a>
                         </cti:classUpdater>
                     </td>
                 </tr>
@@ -74,16 +74,16 @@
                 <tr>
                     <td class="name"><i:inline key=".unsupported"/>:</td>
                     <td class="value">
-                        <cti:url var="newOperationUnsupported" value="newOperation">
-                            <cti:param name="taskId" value="${task.taskId}"/>
-                            <cti:param name="type" value="UNSUPPORTED"/>
-                        </cti:url>
                         <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/UNSUPPORTED_COUNT" 
                             styleClass="warning fwb"/>
                     </td>
                     <td class="value">
                         <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_UNSUPPORTED">
-                            <a href="${newOperationUnsupported}"><i:inline key=".newOperation"/></a>
+                            <cti:url var="url" value="/stars/operator/inventory/resendConfig/newOperation">
+                                <cti:param name="taskId" value="${task.taskId}"/>
+                                <cti:param name="type" value="UNSUPPORTED"/>
+                            </cti:url>
+                            <a href="${url}"><i:inline key=".newOperation"/></a>
                         </cti:classUpdater>
                     </td>
                 </tr>
@@ -93,17 +93,17 @@
                 <tr>
                     <td class="name"><i:inline key=".failed"/>:</td>
                     <td class="value">
-                        <cti:url var="newOperationFailed" value="newOperation">
-                            <cti:param name="taskId" value="${task.taskId}"/>
-                            <cti:param name="type" value="FAILED"/>
-                        </cti:url>
                         <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/FAILED_COUNT" 
                             styleClass="error fwb fl"/>
                     </td>
                     <td class="value">
                         <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_FAILED">
                             <ul class="list-piped di">
-                                <li><a href="${newOperationFailed}"><i:inline key=".newOperation"/></a></li>
+                                <cti:url var="url" value="/stars/operator/inventory/resendConfig/newOperation">
+                                    <cti:param name="taskId" value="${task.taskId}"/>
+                                    <cti:param name="type" value="FAILED"/>
+                                </cti:url>
+                                <li><a href="${url}"><i:inline key=".newOperation"/></a></li>
                                 <li><a href="javascript:void(0);" class="js-failed-items stacked"
                                         data-task-id="${task.taskId}"><i:inline key=".viewFailureReasons"/></a>
                                 </li>

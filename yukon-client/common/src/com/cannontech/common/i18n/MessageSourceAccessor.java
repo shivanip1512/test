@@ -69,7 +69,7 @@ public class MessageSourceAccessor {
     protected Locale getDefaultLocale() {
         return (this.defaultLocale != null ? this.defaultLocale : LocaleContextHolder.getLocale());
     }
-
+    
     /**
      * Retrieve the message for the given code and the default Locale.
      * @param code code of the message
@@ -79,7 +79,7 @@ public class MessageSourceAccessor {
     public String getMessage(String code) throws NoSuchMessageException {
         return this.messageSource.getMessage(code, null, getDefaultLocale());
     }
-
+    
     /**
      * Retrieve the message for the given code and the default Locale.
      * @param code code of the message
@@ -90,14 +90,21 @@ public class MessageSourceAccessor {
     public String getMessage(String code, Object... args) throws NoSuchMessageException {
         return this.messageSource.getMessage(code, args, getDefaultLocale());
     }
-
+    
+    /**
+     * @see MessageSourceAccessor.getMessage(MessageSourceResolvable resolvable, Locale locale)
+     */
+    public String getMessage(Displayable displayable) throws NoSuchMessageException {
+        return this.messageSource.getMessage(displayable.getMessage(), getDefaultLocale());
+    }
+    
     /**
      * @see MessageSourceAccessor.getMessage(String code, Object... args)
      */
     public String getMessage(DisplayableEnum displayableEnum, Object... args) throws NoSuchMessageException {
         return this.messageSource.getMessage(displayableEnum.getFormatKey(), args, getDefaultLocale());
     }
-
+    
     /**
      * @see MessageSourceAccessor.getMessage(String code, Object... args)
      * Retains original lists order.
@@ -109,7 +116,7 @@ public class MessageSourceAccessor {
         }
         return messages;
     }
-
+    
     /**
      * Retrieve the message for the given code and the default Locale.
      * @param code code of the message
@@ -119,7 +126,7 @@ public class MessageSourceAccessor {
     public String getMessageWithDefault(String code, String defaultMessage) throws NoSuchMessageException {
         return this.messageSource.getMessage(code, null, defaultMessage, getDefaultLocale());
     }
-
+    
     /**
      * Retrieve the message for the given code and the default Locale.
      * @param code code of the message
@@ -130,7 +137,7 @@ public class MessageSourceAccessor {
     public String getMessageWithDefault(String code, String defaultMessage, Object... args) throws NoSuchMessageException {
         return this.messageSource.getMessage(code, args, defaultMessage, getDefaultLocale());
     }
-
+    
     /**
      * Retrieve the given MessageSourceResolvable (e.g. an ObjectError instance)
      * in the default Locale.

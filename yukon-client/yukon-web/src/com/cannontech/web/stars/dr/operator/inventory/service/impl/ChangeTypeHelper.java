@@ -2,20 +2,24 @@ package com.cannontech.web.stars.dr.operator.inventory.service.impl;
 
 import java.util.Set;
 
+import org.springframework.context.MessageSourceResolvable;
+
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.service.NotSupportedException;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.stars.dr.operator.inventory.service.CollectionBasedInventoryTask;
+import com.cannontech.web.stars.dr.operator.inventory.model.CollectionBasedInventoryTask;
 import com.cannontech.web.stars.dr.operator.inventory.service.InventoryActionsHelper;
 import com.google.common.collect.Sets;
 
 public class ChangeTypeHelper extends InventoryActionsHelper {
-
+    
     public class ChangeTypeTask extends CollectionBasedInventoryTask {
+        
         private Set<InventoryIdentifier> unsupported = Sets.newHashSet();
         private Set<InventoryIdentifier> successful = Sets.newHashSet();
         private Set<InventoryIdentifier> failed = Sets.newHashSet();
@@ -31,11 +35,11 @@ public class ChangeTypeHelper extends InventoryActionsHelper {
         public YukonListEntry getTypeEntry() {
             return typeEntry;
         }
-
+        
         public void setTypeEntry(YukonListEntry typeEntry) {
             this.typeEntry = typeEntry;
         }
-
+        
         public Set<InventoryIdentifier> getSuccessful() {
             return successful;
         }
@@ -73,6 +77,11 @@ public class ChangeTypeHelper extends InventoryActionsHelper {
                 }
             };
         }
+        
+        @Override
+        public MessageSourceResolvable getMessage() {
+            return new YukonMessageSourceResolvable(key + "changeType.label");
+        }
     }
-
+    
 }

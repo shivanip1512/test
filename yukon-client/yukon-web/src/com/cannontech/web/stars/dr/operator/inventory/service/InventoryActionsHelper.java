@@ -2,21 +2,21 @@ package com.cannontech.web.stars.dr.operator.inventory.service;
 
 import java.util.concurrent.Executor;
 
-import javax.annotation.Resource;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.stars.dr.hardware.service.HardwareService;
+import com.cannontech.web.stars.dr.operator.inventory.model.AbstractInventoryTask;
 
 public class InventoryActionsHelper {
-
-    private RecentResultsCache<AbstractInventoryTask> resultsCache;
-    protected HardwareService hardwareService;
-    protected Executor executor;
+    
+    @Autowired @Qualifier("inventoryTasks") protected RecentResultsCache<AbstractInventoryTask> resultsCache;
+    @Autowired @Qualifier("longRunning") protected Executor executor;
+    @Autowired protected HardwareService hardwareService;
+    
     protected static final Logger log = YukonLogManager.getLogger(InventoryActionsHelper.class);
     
     /**
@@ -26,25 +26,12 @@ public class InventoryActionsHelper {
      * @return taskId
      */
     public <T extends AbstractInventoryTask> String startTask(T task) {
+        
         executor.execute(task.getProcessor());
         String taskId = resultsCache.addResult(task);
         task.setTaskId(taskId);
+        
         return taskId;
-    }
-    
-    @Resource(name="longRunningExecutor")
-    public void setExecutor(Executor executor) {
-        this.executor = executor;
-    }
-    
-    @Required
-    public void setResultsCache(RecentResultsCache<AbstractInventoryTask> resultsCache) {
-        this.resultsCache = resultsCache;
-    }
-    
-    @Autowired
-    public void setHardwareService(HardwareService hardwareService) {
-        this.hardwareService = hardwareService;
     }
     
 }

@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.operator.inventory.service;
+package com.cannontech.web.stars.dr.operator.inventory.model;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 

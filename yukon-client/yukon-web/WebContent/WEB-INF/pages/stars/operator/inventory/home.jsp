@@ -1,28 +1,17 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="inventory.home">
+<cti:includeScript link="/JavaScript/yukon.assets.dashboard.js"/>
 
 <cti:checkEnergyCompanyOperator showError="true" >
 
 <cti:url var="action" value="/stars/operator/inventory/setupFilterRules"/>
-
-<script type="text/javascript">
-function submitSelectionForm(items) {
-    $('#selectByInventoryPickerForm').submit();
-    return true;
-}
-
-function addMeter() {
-    $('#addMeterForm').submit();
-    return true;
-}
-
-</script>
 
 <!-- Popup for menus -->
 <div id="menuPopup" class="dn menuPopup"></div>
@@ -63,10 +52,10 @@ function addMeter() {
             </select>
         </form>
     </div>
-
+    
     <c:if test="${showAddMeter}">
         <div class="stacked clearfix">
-            <form action="addMeter/view" id="addMeterForm">
+            <form action="addMeter/view" id="add-meter-form">
                 <tags:pickerDialog id="addMeterPicker"
                                    type="drUntrackedMctPicker"
                                    nameKey="addMeter"
@@ -75,7 +64,7 @@ function addMeter() {
                                    allowEmptySelection="false"
                                    multiSelectMode="false"
                                    immediateSelectMode="true"
-                                   endAction="addMeter"/>
+                                   endAction="yukon.assets.dashboard.addMeter"/>
             </form>
         </div>
     </c:if>
@@ -92,7 +81,7 @@ function addMeter() {
                         <tr>
                             <td>
                                 <cti:url value="/stars/operator/inventory/inventoryActions" var="inventoryPickerUrl"/>
-                                <form id="selectByInventoryPickerForm" action="${inventoryPickerUrl}" method="post">
+                                <form id="select-individually-form" action="${inventoryPickerUrl}" method="post">
                                     <cti:csrfToken/>
                                     <input type="hidden" name="collectionType" value="idList"/>
                                     <input type="hidden" name="idList.ids" id="inventoryIds"/>
@@ -101,9 +90,9 @@ function addMeter() {
                                                        id="inventoryPicker" 
                                                        multiSelectMode="true" 
                                                        destinationFieldId="inventoryIds" 
-                                                       endAction="submitSelectionForm" 
-                                                       nameKey="selectInventoryButton"
-                                                       ><i:inline key=".selectInventoryButton.label"/></tags:pickerDialog>
+                                                       endAction="yukon.assets.dashboard.selectIndividually" 
+                                                       nameKey="selectInventoryButton">
+                                                       <i:inline key=".selectInventoryButton.label"/></tags:pickerDialog>
                                 </form>
                             </td>
                             <td><i:inline key=".selectInventoryDescription"/></td>
@@ -141,6 +130,65 @@ function addMeter() {
                             <td><i:inline key=".selectFileDescription"/></td>
                         </tr>
                     </table>
+                        <c:set var="clazz" value="${fn:length(tasks) == 0 ? 'dn' : ''}"/>
+                        <div class="js-recent-actions ${clazz}">
+                            <h4><i:inline key=".actions.recent"/></h4>
+                            <hr class="dashed">
+                            <div class="scroll-sm">
+                            
+                                <table class="full-width striped js-recent-actions">
+                                    <thead></thead>
+                                    <tfoot>
+                                        <%-- Template Row --%>
+                                        <tr class="js-recent-action-template dn" data-task="">
+                                            <td><a href=""></a></td>
+                                            <td></td>
+                                            <td class="wsnw">
+                                                <span class="js-complete success dn">
+                                                    <i:inline key="yukon.common.complete"/>
+                                                </span>
+                                                <div class="js-progress-bar progress-bar-container progress-short dn">
+                                                    <div class="progress">
+                                                        <div class="progress-bar progress-bar-success"></div>
+                                                    </div>
+                                                </div>
+                                                <span class="js-progress-text percent-value dn"></span>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody>
+                                        <c:forEach var="task" items="${tasks}">
+                                            <tr data-task="${task.taskId}">
+                                                <td>
+                                                    <cti:url var="url" value="/stars/operator/inventory/action/${task.taskId}"/>
+                                                    <a href="${url}">
+                                                        <cti:formatDate value="${task.startedAt}" type="DATEHM"/>
+                                                    </a>
+                                                </td>
+                                                <td><i:inline key="${task}"/></td>
+                                                <td class="wsnw">
+                                                    <c:set var="clazz" value="${!task.complete ? 'dn' : ''}"/>
+                                                    <span class="js-complete success ${clazz}">
+                                                        <i:inline key="yukon.common.complete"/>
+                                                    </span>
+                                                    <c:set var="clazz" value="${task.complete ? 'dn' : ''}"/>
+                                                    <div class="js-progress-bar progress-bar-container progress-short ${clazz}">
+                                                        <div class="progress">
+                                                            <div class="progress-bar progress-bar-success"
+                                                            style="width: ${task.completedItems / task.totalItems * 100}%"></div>
+                                                        </div>
+                                                    </div>
+                                                    <span class="js-progress-text percent-value ${clazz}">
+                                                        <fmt:formatNumber type="PERCENT" maxFractionDigits="2" 
+                                                            value="${task.completedItems / task.totalItems}"/>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                 </tags:sectionContainer2> 
             </cti:checkRolesAndProperties>
             

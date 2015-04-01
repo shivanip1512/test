@@ -69,7 +69,7 @@ public class ControlAuditController {
     private RecentResultsCache<ControlAuditResult> resultsCache;
     private static final String BASE_ERROR_KEY = "yukon.web.error";
     
-    private Validator auditInputValidator = new SimpleValidator<AuditSettings>(AuditSettings.class) {
+    private Validator validator = new SimpleValidator<AuditSettings>(AuditSettings.class) {
         @Override
         public void doValidation(AuditSettings auditSettings, Errors errors) {
             Instant now = new Instant();
@@ -119,8 +119,8 @@ public class ControlAuditController {
         return "operator/inventory/controlAudit/view.jsp";
     }
     
-    @RequestMapping("runAudit")
-    public String runAudit(@ModelAttribute("settings") AuditSettings settings, BindingResult result,
+    @RequestMapping("start")
+    public String start(@ModelAttribute("settings") AuditSettings settings, BindingResult result,
                            HttpServletRequest req,
                            YukonUserContext userContext, 
                            ModelMap model, 
@@ -128,16 +128,17 @@ public class ControlAuditController {
         
         /** gets the collection and also puts it in the model map, which we need if we fail */
         InventoryCollection collection = inventoryCollectionFactory.addCollectionToModelMap(req, model);
-
+        
         /* TODO create custom binder for this stuff */
         settings.setCollection(collection);
         settings.setContext(userContext);
         
-        auditInputValidator.validate(settings, result);
+        validator.validate(settings, result);
         
         if (result.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
             flash.setMessage(messages, FlashScopeMessageType.ERROR);
+            
             return "operator/inventory/controlAudit/view.jsp";
         }
         
@@ -209,14 +210,17 @@ public class ControlAuditController {
             code = "yukon.web.modules.operator.controlAudit.controlledCollectionDescription";
             inventory = result.getControlled().iterator();
             break;
+            
         case UNCONTROLLED:
             code = "yukon.web.modules.operator.controlAudit.uncontrolledCollectionDescription";
             inventory = result.getUncontrolled().iterator();
             break;
+            
         case UNKNOWN:
             code = "yukon.web.modules.operator.controlAudit.unknownCollectionDescription";
             inventory = result.getUnknown().iterator();
             break;
+            
         case UNSUPPORTED:
             code = "yukon.web.modules.operator.controlAudit.unsupportedCollectionDescription";
             inventory = result.getUnsupported().iterator();
@@ -227,7 +231,8 @@ public class ControlAuditController {
         InventoryCollection temporaryCollection = memoryCollectionProducer.createCollection(inventory, description);
         model.addAttribute("inventoryCollection", temporaryCollection);
         model.addAllAttributes(temporaryCollection.getCollectionParameters());
-        return "redirect:../inventoryActions";
+        
+        return "redirect:/stars/operator/inventory/inventoryActions";
     }
     
     @Resource(name="controlAuditResultsCache")

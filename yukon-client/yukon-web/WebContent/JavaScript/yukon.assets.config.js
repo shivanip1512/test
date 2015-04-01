@@ -22,7 +22,7 @@ yukon.assets.config = (function () {
             
             $(document).on('click', '.js-failed-items', function(ev) {
                 $.ajax({
-                    url: 'view-failed',
+                    url: yukon.url('/stars/operator/inventory/resendConfig/view-failed'),
                     data: { 'taskId': $(this).data('taskId') }
                 }).done(function (data, textStatus, jqXHR) {
                     $('#failed-container').html(data).show();

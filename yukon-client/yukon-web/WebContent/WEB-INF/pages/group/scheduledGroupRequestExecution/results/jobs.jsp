@@ -150,7 +150,7 @@
                                         <tags:updateableProgressBar totalCountKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobId}/LAST_REQUEST_COUNT_FOR_JOB"
                                             countKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobId}/LAST_SUCCESS_RESULTS_COUNT_FOR_JOB"
                                             failureCountKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobId}/LAST_FAILURE_RESULTS_COUNT_FOR_JOB"
-                                            containerClasses="scheduled-request" hideCount="true" hidePercent="true"/>
+                                            containerClasses="progress-short" hideCount="true" hidePercent="true"/>
                                         <cti:button id="cancel-job-btn-${jobId}" nameKey="cancel" data-job-id="${jobId}" 
                                             classes="js-cancel-job fn M0" renderMode="image" arguments="${jobWrapper.name}" 
                                             icon="icon-cross" data-ok-event="yukon.job.cancel"/>

@@ -3,6 +3,8 @@ package com.cannontech.web.stars.dr.operator.inventory.service.impl;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.context.MessageSourceResolvable;
+
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -11,7 +13,7 @@ import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlready
 import com.cannontech.stars.dr.hardware.model.AddByRange;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.stars.dr.operator.inventory.service.AbstractInventoryTask;
+import com.cannontech.web.stars.dr.operator.inventory.model.AbstractInventoryTask;
 import com.cannontech.web.stars.dr.operator.inventory.service.InventoryActionsHelper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -19,6 +21,7 @@ import com.google.common.collect.Sets;
 public class AddByRangeHelper extends InventoryActionsHelper {
 
     public class AddByRangeTask extends AbstractInventoryTask {
+        
         private AddByRange abr;
         private Set<InventoryIdentifier> successful = Sets.newHashSet();
         private List<AddByRangeFailure> failed = Lists.newArrayList();
@@ -88,6 +91,7 @@ public class AddByRangeHelper extends InventoryActionsHelper {
         }
         
         private void fail(String key, long sn, Exception e) {
+            
             YukonMessageSourceResolvable failure = new YukonMessageSourceResolvable(key, sn, e); 
             AddByRangeFailure abrf = new AddByRangeFailure(sn, failure);
             failed.add(abrf);
@@ -98,6 +102,7 @@ public class AddByRangeHelper extends InventoryActionsHelper {
          * Class for viewing the failure reasons 
          */
         public class AddByRangeFailure {
+            
             private long serialNumber;
             private YukonMessageSourceResolvable failureReason;
             public AddByRangeFailure(long serialNumber, YukonMessageSourceResolvable failureReason) {
@@ -116,6 +121,11 @@ public class AddByRangeHelper extends InventoryActionsHelper {
             public void setFailureReason(YukonMessageSourceResolvable failureReason) {
                 this.failureReason = failureReason;
             }
+        }
+        
+        @Override
+        public MessageSourceResolvable getMessage() {
+            return new YukonMessageSourceResolvable("yukon.web.modules.operator.inventory.home.addByRange");
         }
     }
 

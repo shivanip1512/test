@@ -75,11 +75,11 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.model.InventorySearch;
 import com.cannontech.stars.model.LiteLmHardware;
 import com.cannontech.stars.service.DefaultRouteService;
-import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -633,10 +633,11 @@ public class InventoryDaoImpl implements InventoryDao {
     }
     
     @Override
-    public List<DisplayableLmHardware> getDisplayableLMHardware(List<? extends YukonInventory> yukonInventory) {
+    public List<DisplayableLmHardware> getDisplayableLMHardware(List<? extends YukonInventory> inventory) {
         
         DisplayableLmHardwareRowMapper mapper = new DisplayableLmHardwareRowMapper();
-        Iterable<Integer> inventoryIds = InventoryUtils.convertYukonInventoryToIds(yukonInventory);
+        
+        Iterable<Integer> inventoryIds = Iterables.transform(inventory, YukonInventory.TO_INVENTORY_ID);
         
         SqlStatementBuilder sql = new SqlStatementBuilder(mapper.getBaseQuery().getSql());
         sql.append("WHERE lmhw.inventoryId").in(inventoryIds);
