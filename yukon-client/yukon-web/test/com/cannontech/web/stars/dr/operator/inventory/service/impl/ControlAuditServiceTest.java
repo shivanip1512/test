@@ -72,7 +72,7 @@ public class ControlAuditServiceTest {
     private PaoDao paoDao;
     private RawPointHistoryDao rphDao;
     private YukonUserContextMessageSourceResolver resolver;
-    private MemoryCollectionProducer memoryCollectionProducer;
+    private MemoryCollectionProducer collectionProducer;
     private PaoDefinitionDao paoDefinitionDao;
 
     // Doesn't really matter what these are as long as they are different
@@ -220,8 +220,8 @@ public class ControlAuditServiceTest {
             }
         }).anyTimes();
         
-        memoryCollectionProducer = createNiceMock(MemoryCollectionProducer.class);
-        memoryCollectionProducer.createCollection(anyObject(Iterator.class), anyObject(String.class));
+        collectionProducer = createNiceMock(MemoryCollectionProducer.class);
+        collectionProducer.createCollection(anyObject(Iterator.class), anyObject(String.class));
         expectLastCall().andAnswer(new IAnswer<InventoryCollection>() {
             @Override
             public InventoryCollection answer() throws Throwable {
@@ -253,10 +253,10 @@ public class ControlAuditServiceTest {
         ReflectionTestUtils.setField(service, "paoDao", paoDao);
         ReflectionTestUtils.setField(service, "rphDao", rphDao);
         ReflectionTestUtils.setField(service, "resolver", resolver);
-        ReflectionTestUtils.setField(service, "memoryCollectionProducer", memoryCollectionProducer);
+        ReflectionTestUtils.setField(service, "collectionProducer", collectionProducer);
         ReflectionTestUtils.setField(service, "paoDefinitionDao", paoDefinitionDao);
 
-        replay(inventoryDao, paoDao, rphDao, memoryCollectionProducer, resolver, paoDefinitionDao);
+        replay(inventoryDao, paoDao, rphDao, collectionProducer, resolver, paoDefinitionDao);
     }
 
     @Test
