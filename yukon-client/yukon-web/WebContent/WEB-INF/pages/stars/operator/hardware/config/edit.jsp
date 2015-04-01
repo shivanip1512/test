@@ -160,7 +160,8 @@ updateSub = function (data) {
     
     <div class="page-action-area stacked-md">
         <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-            <c:if test="${fn:length(enrollments) > 0}">
+         <c:choose>
+            <c:when test="${fn:length(enrollments) > 0}">
                 <c:if test="${configurable}">
                     <cti:msg2 key=".config.description" var="configTitle"/>
                     <cti:button type="submit" nameKey="config" onclick="$('#actionInput').val('config');" title="${configTitle}" classes="action primary"/>
@@ -169,7 +170,14 @@ updateSub = function (data) {
                 </c:if>
                 <cti:msg2 key=".saveConfigOnly.description" var="saveConfigOnlyTitle"/>
                 <cti:button type="submit" nameKey="saveConfigOnly" onclick="$('#actionInput').val('saveConfigOnly');" title="${saveConfigOnlyTitle}"/>
-            </c:if>
+            </c:when>
+            <c:otherwise>
+                <cti:checkEnergyCompanySetting value="TRACK_HARDWARE_ADDRESSING" energyCompanyId="${energyCompanyId}">
+                    <cti:msg2 key=".saveConfigOnly.description" var="saveConfigOnlyTitle"/>
+                    <cti:button type="submit" nameKey="saveConfigOnly" onclick="$('#actionInput').val('saveConfigOnly');" title="${saveConfigOnlyTitle}"/>
+                </cti:checkEnergyCompanySetting>
+            </c:otherwise>
+         </c:choose>
         </cti:checkRolesAndProperties>
         <cti:url var="cancelUrl" value="/stars/operator/hardware/list">
             <cti:param name="accountId" value="${accountId}"/>
