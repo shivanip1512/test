@@ -132,6 +132,8 @@ private:
         boost::optional<SerializedMessageCallback> callback;
 
         virtual cms::Message *extractMessage(cms::Session &session) const = 0;
+
+        virtual ~Envelope() {};
     };
 
     typedef boost::ptr_deque<Envelope> EnvelopeQueue;
