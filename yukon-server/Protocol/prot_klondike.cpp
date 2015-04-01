@@ -863,7 +863,7 @@ void KlondikeProtocol::processResponse(const byte_buffer_t &inbound)
             }
             else if( response_command == CommandCode_ACK_NoData )
             {
-                CTILOG_INFO(dout, "CommandCode_WaitingQueueWrite : CommandCode_ACK_NoData");
+                CTILOG_WARN(dout, "CommandCode_WaitingQueueWrite : CommandCode_ACK_NoData");
             }
             else if( response_command == CommandCode_ACK_Data )
             {
@@ -971,6 +971,7 @@ void KlondikeProtocol::processResponse(const byte_buffer_t &inbound)
                         queue_response_t q(inbound_itr,
                                            inbound_end);
 
+                        if( isDebugLudicrous() )
                         {
                             Cti::StreamBuffer outLog;
 
@@ -989,7 +990,7 @@ void KlondikeProtocol::processResponse(const byte_buffer_t &inbound)
 
                             outLog <<")";
 
-                            CTILOG_INFO(dout, outLog);
+                            CTILOG_DEBUG(dout, outLog);
                         }
 
                         remote_work_t::iterator remote_itr = _remote_requests.find(q.sequence);
