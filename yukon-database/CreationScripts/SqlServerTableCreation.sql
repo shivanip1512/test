@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/26/2015 10:40:00 AM                        */
+/* Created on:     4/2/2015 4:20:45 PM                          */
 /*==============================================================*/
 
 
@@ -2916,6 +2916,7 @@ go
 
 INSERT INTO DeviceConfigCategory VALUES (0, 'dnp', 'Default DNP Category', null);
 INSERT INTO DeviceConfigCategory VALUES (1, 'regulatorCategory', 'Default Regulator Category', null);
+INSERT INTO DeviceConfigCategory VALUES (2, 'heartbeat', 'Default Regulator Heartbeat Category', null);
 
 alter table DeviceConfigCategory
    add constraint AK_DeviceConfigCategory_Name unique (Name)
@@ -2941,9 +2942,10 @@ INSERT INTO DeviceConfigCategoryItem VALUES (4, 0, 'enableUnsolicitedMessagesCla
 INSERT INTO DeviceConfigCategoryItem VALUES (5, 0, 'enableUnsolicitedMessagesClass2', 'true');
 INSERT INTO DeviceConfigCategoryItem VALUES (6, 0, 'enableUnsolicitedMessagesClass3', 'true');
 INSERT INTO DeviceConfigCategoryItem VALUES (7, 1, 'voltageChangePerTap', '0.75');
-INSERT INTO DeviceConfigCategoryItem VALUES (8, 1, 'heartbeatPeriod', '0');
-INSERT INTO DeviceConfigCategoryItem VALUES (9, 1, 'heartbeatValue', '0');
-INSERT INTO DeviceConfigCategoryItem VALUES (10, 1, 'voltageControlMode', 'DIRECT_TAP');
+INSERT INTO DeviceConfigCategoryItem VALUES (8, 1, 'voltageControlMode', 'DIRECT_TAP');
+INSERT INTO DeviceConfigCategoryItem VALUES (9, 2, 'heartbeatPeriod', '0');
+INSERT INTO DeviceConfigCategoryItem VALUES (10, 2, 'heartbeatValue', '0');
+INSERT INTO DeviceConfigCategoryItem VALUES (11, 2, 'heartbeatMode', 'NONE');
 
 alter table DeviceConfigCategoryItem
    add constraint AK_DevConCatItem_CatIdItemName unique (DeviceConfigCategoryId, ItemName)
@@ -2961,6 +2963,7 @@ go
 
 INSERT INTO DeviceConfigCategoryMap VALUES(-1, 0);
 INSERT INTO DeviceConfigCategoryMap VALUES(-2, 1);
+INSERT INTO DeviceConfigCategoryMap VALUES(-2, 2);
 
 /*==============================================================*/
 /* Table: DeviceConfigDeviceTypes                               */
