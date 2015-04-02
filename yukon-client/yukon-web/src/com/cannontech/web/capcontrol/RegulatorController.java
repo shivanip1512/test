@@ -66,7 +66,7 @@ public class RegulatorController {
         builder.put(EventType.DECREASE_SETPOINT, "icon-bullet-go-down");
         builder.put(EventType.INTEGRITY_SCAN, "icon-transmit-blue");
         builder.put(EventType.ENABLE_REMOTE_CONTROL, "icon-accept");
-        builder.put(EventType.DISABLE_REMOTE_CONTROL, "icon-cancel");
+        builder.put(EventType.DISABLE_REMOTE_CONTROL, "icon-delete");
 
         classNameForEventType = builder.build();
 
