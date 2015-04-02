@@ -327,7 +327,7 @@ BOOST_AUTO_TEST_CASE(test_isKnownUnsupportedDevice)
     BOOST_CHECK(isKnownUnsupportedDevice("go_regulator"));
     BOOST_CHECK(isKnownUnsupportedDevice("po_regulator"));
     // Make sure it doesn't always return true
-    BOOST_CHECK(!isKnownUnsupportedDevice("alpha power plus"));
+    BOOST_CHECK( ! isKnownUnsupportedDevice("alpha power plus"));
 }
 
 BOOST_AUTO_TEST_CASE(test_resolvePointArchiveType)
