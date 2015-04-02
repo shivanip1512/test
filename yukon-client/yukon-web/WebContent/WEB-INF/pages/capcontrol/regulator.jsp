@@ -23,7 +23,7 @@
         <div class="column-12-12 clearfix stacked-md ">
             <div class="column one">
                 <tags:sectionContainer2 nameKey="info">
-                    <tags:nameValueContainer2 tableClass="natural-width">
+                    <tags:nameValueContainer2 tableClass="natural-width with-form-controls">
 
                         <tags:nameValue2 nameKey=".name">
                             <tags:input path="name"/>
@@ -45,6 +45,11 @@
 
                         <tags:selectNameValue nameKey=".config" items="${availableConfigs}" path="configId" itemValue="configurationId" />
 
+                        <tags:nameValue2 nameKey="yukon.common.status">
+                            <tags:switchButton path="disabled" inverse="true"
+                                offClasses="M0" onNameKey=".enabled" offNameKey=".disabled"/>
+                        </tags:nameValue2>
+
                         <cti:displayForPageEditModes modes="VIEW,EDIT">
 
                             <tags:nameValue2 nameKey=".zone">
@@ -59,10 +64,6 @@
                                 </c:if>
                             </tags:nameValue2>
                         </cti:displayForPageEditModes>
-
-                        <tags:nameValue2 nameKey="yukon.common.status">
-                            <tags:switchButton path="disabled" inverse="true" onNameKey=".enabled" offNameKey=".disabled"/>
-                        </tags:nameValue2>
 
                     </tags:nameValueContainer2>
                 </tags:sectionContainer2>
