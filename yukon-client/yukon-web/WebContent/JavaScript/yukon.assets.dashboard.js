@@ -24,8 +24,8 @@ yukon.assets.dashboard = (function () {
             
             var i, action, row, percent;
             
-            for (i = 0; i < actions.length; i++) {
-                action = actions[i];
+            actions.forEach(function (action) {
+                
                 row = $(table.find('[data-task="' + action.id + '"]')[0]);
                 percent = yukon.percent(action.completed, action.total, 2); 
                 
@@ -35,10 +35,10 @@ yukon.assets.dashboard = (function () {
                     .attr('data-task', action.id).data('task', action.id)
                     .prependTo(table.find('tbody'));
                     
-                    row.find('td:first-child a').attr('href', yukon.url('/stars/operator/inventory/action/' + action.id))
+                    row.find('.js-action-start a').attr('href', yukon.url('/stars/operator/inventory/action/' + action.id))
                     .text(action.text.startedAt);
                     
-                    row.find('td:nth-child(2)').text(action.text.type);
+                    row.find('.js-action-type').text(action.text.type);
                     row.show();
                 }
                 
@@ -47,7 +47,7 @@ yukon.assets.dashboard = (function () {
                 .find('.progress-bar').css({ width: percent });
                 row.find('.js-progress-text').toggleClass('dn', action.complete)
                 .text(percent);
-            }
+            });
             
         }).always(function () {
             setTimeout(_updateRecentActions, 4000);

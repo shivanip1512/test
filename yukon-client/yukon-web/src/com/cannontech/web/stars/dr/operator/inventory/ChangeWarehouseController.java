@@ -69,7 +69,7 @@ public class ChangeWarehouseController {
     }
     
     @RequestMapping(value="do", params="start")
-    public String changeType(HttpServletRequest req, YukonUserContext userContext, ModelMap model, int warehouseId) {
+    public String changeType(HttpServletRequest req, YukonUserContext userContext, int warehouseId) {
         
         InventoryCollection collection = collectionFactory.createCollection(req);
         ChangeWarehouseTask task = helper.new ChangeWarehouseTask(collection, userContext, warehouseId);

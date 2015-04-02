@@ -52,7 +52,7 @@ public class ChangeServiceCompanyController {
     }
     
     @RequestMapping("{taskId}/status")
-    public String view(HttpServletRequest req, ModelMap model, @PathVariable String taskId, LiteYukonUser user) {
+    public String view(ModelMap model, @PathVariable String taskId, LiteYukonUser user) {
         
         EnergyCompany ec = ecDao.getEnergyCompanyByOperator(user);
         LiteStarsEnergyCompany lec = starsDbCache.getEnergyCompany(ec);

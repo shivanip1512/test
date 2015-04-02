@@ -114,13 +114,12 @@ public abstract class AbstractInventoryTask implements Completable, Cancelable, 
         this.completedItems++;
     }
     
+    /** Most recent first comparison */
     @Override
     public int compareTo(AbstractInventoryTask o) {
         long s1 = getStartedAt();
         long s2 = o.getStartedAt();
         
-        if (s1 == s2) return 0;
-        else if (s1 > s2) return -1;
-        else return 1;
+        return -Long.compare(s1, s2);
     }
 }

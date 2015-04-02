@@ -65,8 +65,7 @@ public class SaveToBatchController {
     }
     
     @RequestMapping("{taskId}/status")
-    public String status(HttpServletRequest req, ModelMap model, @PathVariable String taskId,
-            YukonUserContext userContext) {
+    public String status(ModelMap model, @PathVariable String taskId, YukonUserContext userContext) {
         
         EnergyCompany ec = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);

@@ -141,15 +141,15 @@
                                     <tfoot>
                                         <%-- Template Row --%>
                                         <tr class="js-recent-action-template dn" data-task="">
-                                            <td><a href=""></a></td>
-                                            <td></td>
+                                            <td class="js-action-start"><a href=""></a></td>
+                                            <td class="js-action-type"></td>
                                             <td class="wsnw">
                                                 <span class="js-complete success dn">
                                                     <i:inline key="yukon.common.complete"/>
                                                 </span>
                                                 <div class="js-progress-bar progress-bar-container progress-sm dn">
                                                     <div class="progress">
-                                                        <div class="progress-bar progress-bar-success"></div>
+                                                        <div class="progress-bar progress-bar-info progress-bar-striped active"></div>
                                                     </div>
                                                 </div>
                                                 <span class="js-progress-text percent-value dn"></span>
@@ -159,13 +159,13 @@
                                     <tbody>
                                         <c:forEach var="task" items="${tasks}">
                                             <tr data-task="${task.taskId}">
-                                                <td>
+                                                <td class="js-action-start">
                                                     <cti:url var="url" value="/stars/operator/inventory/action/${task.taskId}"/>
                                                     <a href="${url}">
                                                         <cti:formatDate value="${task.startedAt}" type="DATEHM"/>
                                                     </a>
                                                 </td>
-                                                <td><i:inline key="${task}"/></td>
+                                                <td class="js-action-type"><i:inline key="${task}"/></td>
                                                 <td class="wsnw">
                                                     <c:set var="clazz" value="${!task.complete ? 'dn' : ''}"/>
                                                     <span class="js-complete success ${clazz}">
@@ -174,7 +174,7 @@
                                                     <c:set var="clazz" value="${task.complete ? 'dn' : ''}"/>
                                                     <div class="js-progress-bar progress-bar-container progress-sm ${clazz}">
                                                         <div class="progress">
-                                                            <div class="progress-bar progress-bar-success"
+                                                            <div class="progress-bar progress-bar-info progress-bar-striped active"
                                                             style="width: ${task.completedItems / task.totalItems * 100}%"></div>
                                                         </div>
                                                     </div>
