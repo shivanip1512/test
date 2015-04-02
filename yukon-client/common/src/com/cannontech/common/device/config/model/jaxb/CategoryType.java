@@ -41,6 +41,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="rfnOvUv"/>
  *     &lt;enumeration value="rfnTempAlarm"/>
  *     &lt;enumeration value="regulatorCategory"/>
+ *     &lt;enumeration value="heartbeat"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -103,7 +104,9 @@ public enum CategoryType {
     @XmlEnumValue("rfnTempAlarm")
     RFN_TEMP_ALARM("rfnTempAlarm"),
     @XmlEnumValue("regulatorCategory")
-    REGULATOR_CATEGORY("regulatorCategory");
+    REGULATOR_CATEGORY("regulatorCategory"),
+    @XmlEnumValue("heartbeat")
+    HEARTBEAT("heartbeat");
     private final String value;
 
     CategoryType(String v) {

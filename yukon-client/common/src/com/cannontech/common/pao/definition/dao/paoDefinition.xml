@@ -371,6 +371,7 @@
     <pao id="REGULATOR_CONFIGURATION" abstract="true">
         <configuration>
             <category type="regulatorCategory" />
+            <category type="heartbeat" />
         </configuration>
     </pao>
 

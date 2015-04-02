@@ -141,6 +141,26 @@ yukon.deviceConfig = (function () {
                     show : ['disconnectMinutes', 'connectMinutes']
                 }
             ]
+        },
+        {
+            keyHolder: 'heartbeatMode',
+            valueHideMap : [
+                {
+                    value : 'NONE',
+                    hide : ['heartbeatPeriod', 'heartbeatValue'],
+                    show : []
+                },
+                {
+                    value : 'INCREMENT',
+                    hide : ['heartbeatValue'],
+                    show : ['heartbeatPeriod']
+                },
+                {
+                    value : 'COUNTDOWN',
+                    hide : [],
+                    show : ['heartbeatValue', 'heartbeatPeriod']
+                },
+            ]
         }
     ],
 
