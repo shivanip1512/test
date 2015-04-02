@@ -20,6 +20,6 @@ public class TransmitterTreeModel extends AbstractDeviceTreeModel {
 
     @Override
     public boolean isDeviceValid(PaoCategory paoCategory, PaoClass paoClass, PaoType paoType) {
-        return paoType.isTransmitter();
+        return (paoType.isTransmitter() && paoType != PaoType.DIGIGATEWAY);
     }
 }
