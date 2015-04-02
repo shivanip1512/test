@@ -32,7 +32,7 @@
         <tbody>
             <c:forEach items="${reportedConfig.relaysSorted}" var="expressComRelay">
             <tr>
-                <td>${expressComRelay.relayNumber}</td>
+                <td>${expressComRelay.relayNumber+1}</td>
                 <td>
                     <cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" 
                         identifier="${deviceId}/RELAY_PROGRAM/${expressComRelay.relayNumber}"/>
