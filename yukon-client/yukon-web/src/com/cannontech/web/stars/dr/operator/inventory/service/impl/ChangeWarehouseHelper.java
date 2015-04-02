@@ -15,7 +15,20 @@ import com.cannontech.web.stars.dr.operator.inventory.service.InventoryActionsHe
 
 public class ChangeWarehouseHelper extends InventoryActionsHelper {
     
-    public class ChangeWarehouseTask extends CollectionBasedInventoryTask {
+    /**
+     * Starts an inventory task and returns the task's 
+     * recent result cache identifier.
+     */
+    public String startTask(ChangeWarehouseTask task) {
+        
+        executor.execute(task);
+        String taskId = resultsCache.addResult(task);
+        task.setTaskId(taskId);
+        
+        return taskId;
+    }
+    
+    public class ChangeWarehouseTask extends CollectionBasedInventoryTask implements Runnable {
         
         private int warehouseId;
         private HttpSession session;
@@ -42,25 +55,21 @@ public class ChangeWarehouseHelper extends InventoryActionsHelper {
             this.warehouseId = serviceCompanyId;
         }
         
-        public Runnable getProcessor() {
-            return new Runnable() {
-                @Override
-                public void run() {
-                    for (InventoryIdentifier inv : collection.getList()) {
-                        if (canceled) break;
-                        try {
-                            hardwareService.changeWarehouse(userContext, inv, warehouseId);
-                            successCount++;
-                        } catch (ObjectInOtherEnergyCompanyException|StarsDeviceSerialNumberAlreadyExistsException e) {
-                            /* Inventory was probably in a member energy comany */
-                            log.error("Unable to change warehouse: " + inv, e);
-                            failedCount++;
-                        } finally {
-                            completedItems ++;
-                        }
-                    }
+        @Override
+        public void run() {
+            for (InventoryIdentifier inv : collection.getList()) {
+                if (canceled) break;
+                try {
+                    hardwareService.changeWarehouse(userContext, inv, warehouseId);
+                    successCount++;
+                } catch (ObjectInOtherEnergyCompanyException|StarsDeviceSerialNumberAlreadyExistsException e) {
+                    /* Inventory was probably in a member energy comany */
+                    log.error("Unable to change warehouse: " + inv, e);
+                    failedCount++;
+                } finally {
+                    completedItems ++;
                 }
-            };
+            }
         }
         
         @Override

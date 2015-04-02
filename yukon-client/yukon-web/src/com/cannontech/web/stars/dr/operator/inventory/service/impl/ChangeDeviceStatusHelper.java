@@ -16,7 +16,20 @@ import com.cannontech.web.util.SessionUtil;
 
 public class ChangeDeviceStatusHelper extends InventoryActionsHelper {
     
-    public class ChangeDeviceStatusTask extends CollectionBasedInventoryTask {
+    /**
+     * Starts an inventory task and returns the task's 
+     * recent result cache identifier.
+     */
+    public String startTask(ChangeDeviceStatusTask task) {
+        
+        executor.execute(task);
+        String taskId = resultsCache.addResult(task);
+        task.setTaskId(taskId);
+        
+        return taskId;
+    }
+    
+    public class ChangeDeviceStatusTask extends CollectionBasedInventoryTask implements Runnable {
         
         private int statusEntryId;
         private HttpSession session;
@@ -46,26 +59,21 @@ public class ChangeDeviceStatusHelper extends InventoryActionsHelper {
         }
         
         @Override
-        public Runnable getProcessor() {
-            return new Runnable() {
-                @Override
-                public void run() {
-                    for (InventoryIdentifier inv : collection.getList()) {
-                        if (canceled) break;
-                        try {
-                            int userId = SessionUtil.getParentLoginUserId(session, userContext.getYukonUser().getUserID());
-                            hardwareService.changeDeviceStatus(userContext, inv, statusEntryId, userId);
-                            successCount++;
-                        } catch (ObjectInOtherEnergyCompanyException|StarsDeviceSerialNumberAlreadyExistsException e) {
-                            /* Inventory was probably in a member energy comany */
-                            log.error("Unable to change device status: " + inv, e);
-                            failedCount++;
-                        } finally {
-                            completedItems ++;
-                        }
-                    }
+        public void run() {
+            for (InventoryIdentifier inv : collection.getList()) {
+                if (canceled) break;
+                try {
+                    int userId = SessionUtil.getParentLoginUserId(session, userContext.getYukonUser().getUserID());
+                    hardwareService.changeDeviceStatus(userContext, inv, statusEntryId, userId);
+                    successCount++;
+                } catch (ObjectInOtherEnergyCompanyException|StarsDeviceSerialNumberAlreadyExistsException e) {
+                    /* Inventory was probably in a member energy comany */
+                    log.error("Unable to change device status: " + inv, e);
+                    failedCount++;
+                } finally {
+                    completedItems ++;
                 }
-            };
+            }
         }
         
         @Override

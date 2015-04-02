@@ -19,8 +19,21 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class AddByRangeHelper extends InventoryActionsHelper {
-
-    public class AddByRangeTask extends AbstractInventoryTask {
+    
+    /**
+     * Starts an inventory task and returns the task's 
+     * recent result cache identifier.
+     */
+    public String startTask(AddByRangeTask task) {
+        
+        executor.execute(task);
+        String taskId = resultsCache.addResult(task);
+        task.setTaskId(taskId);
+        
+        return taskId;
+    }
+    
+    public class AddByRangeTask extends AbstractInventoryTask implements Runnable {
         
         private AddByRange abr;
         private Set<InventoryIdentifier> successful = Sets.newHashSet();
@@ -63,31 +76,27 @@ public class AddByRangeHelper extends InventoryActionsHelper {
             return end - start + 1;
         }
         
-        public Runnable getProcessor() {
-            return new Runnable() {
-                @Override
-                public void run() {
-                    for (long sn = start; sn <= end; sn++) {
-                        if (canceled) break;
-                        try {
-                            InventoryIdentifier identifier = hardwareService.createForAddByRangeTask(abr, sn, 
-                                    userContext.getYukonUser());
-                            successful.add(identifier);
-                            successCount++;
-                        } catch (ObjectInOtherEnergyCompanyException e) {
-                            fail("yukon.web.modules.operator.abr.error.snUnavailable", sn, e);
-                        } catch (StarsDeviceSerialNumberAlreadyExistsException e) {
-                            fail("yukon.web.modules.operator.abr.error.snUnavailable", sn, e);
-                        } catch (Lcr3102YukonDeviceCreationException e) {
-                            fail("yukon.web.modules.operator.abr.error.paoNameUnavailable.lcr3102", sn, e);
-                        } catch (Exception e) {
-                            fail("yukon.web.modules.operator.abr.error.unknown", sn, e);
-                        } finally {
-                            completedItems ++;
-                        }
-                    }
+        @Override
+        public void run() {
+            for (long sn = start; sn <= end; sn++) {
+                if (canceled) break;
+                try {
+                    InventoryIdentifier identifier = hardwareService.createForAddByRangeTask(abr, sn, 
+                            userContext.getYukonUser());
+                    successful.add(identifier);
+                    successCount++;
+                } catch (ObjectInOtherEnergyCompanyException e) {
+                    fail("yukon.web.modules.operator.abr.error.snUnavailable", sn, e);
+                } catch (StarsDeviceSerialNumberAlreadyExistsException e) {
+                    fail("yukon.web.modules.operator.abr.error.snUnavailable", sn, e);
+                } catch (Lcr3102YukonDeviceCreationException e) {
+                    fail("yukon.web.modules.operator.abr.error.paoNameUnavailable.lcr3102", sn, e);
+                } catch (Exception e) {
+                    fail("yukon.web.modules.operator.abr.error.unknown", sn, e);
+                } finally {
+                    completedItems ++;
                 }
-            };
+            }
         }
         
         private void fail(String key, long sn, Exception e) {

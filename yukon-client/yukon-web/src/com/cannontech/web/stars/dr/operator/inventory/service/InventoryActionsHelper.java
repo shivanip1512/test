@@ -19,19 +19,4 @@ public class InventoryActionsHelper {
     
     protected static final Logger log = YukonLogManager.getLogger(InventoryActionsHelper.class);
     
-    /**
-     * Starts an inventory task and returns the task's 
-     * recent result cache identifier.
-     * @param collection
-     * @return taskId
-     */
-    public <T extends AbstractInventoryTask> String startTask(T task) {
-        
-        executor.execute(task.getProcessor());
-        String taskId = resultsCache.addResult(task);
-        task.setTaskId(taskId);
-        
-        return taskId;
-    }
-    
 }

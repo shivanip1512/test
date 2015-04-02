@@ -35,7 +35,20 @@ public class ResendLmConfigHelper extends InventoryActionsHelper {
     @Autowired private InventoryConfigEventLogService eventLog;
     @Autowired private EnergyCompanySettingDao ecSettingDao;
     
-    public class ResendLmConfigTask extends CollectionBasedInventoryTask {
+    /**
+     * Starts an inventory task and returns the task's 
+     * recent result cache identifier.
+     */
+    public String startTask(ResendLmConfigTask task) {
+        
+        executor.execute(task);
+        String taskId = resultsCache.addResult(task);
+        task.setTaskId(taskId);
+        
+        return taskId;
+    }
+    
+    public class ResendLmConfigTask extends CollectionBasedInventoryTask implements Runnable {
         
         private static final String failureKey = "yukon.web.modules.operator.inventory.config.send.failureMessage";
         
@@ -69,77 +82,72 @@ public class ResendLmConfigHelper extends InventoryActionsHelper {
         }
         
         @Override
-        public Runnable getProcessor() {
-            return new Runnable() {
-                @Override
-                public void run() {
-                    for (InventoryIdentifier identifier : collection.getList()) {
-                        
-                        if (canceled) break;
-                        
-                        int inventoryId = identifier.getInventoryId();
-                        LiteLmHardwareBase lmhb = null;
-                        
-                        try {
-                            lmhb = inventoryBaseDao.getHardwareByInventoryId(inventoryId);
-                        } catch (NotFoundException e) {
-                            // handled below
-                        }
-                        
-                        LiteYukonUser user = userContext.getYukonUser();
-                        
-                        if (lmhb != null && identifier.getHardwareType().isConfigurable()) {
-                            
-                            String sn = lmhb.getManufacturerSerialNumber();
-                            
-                            try {
-                                
-                                LmHardwareCommand command = new LmHardwareCommand();
-                                command.setDevice(lmhb);
-                                command.setType(LmHardwareCommandType.CONFIG);
-                                command.setUser(user);
-                                command.getParams().put(LmHardwareCommandParam.BULK, true);
-                                
-                                if (forceInService) {
-                                    command.getParams().put(LmHardwareCommandParam.FORCE_IN_SERVICE, true);
-                                }
-                                
-                                commandService.sendConfigCommand(command);
-                                
-                                successful.add(identifier);
-                                successCount++;
-                                
-                                eventLog.itemConfigSucceeded(user, sn);
-                            
-                            } catch (CommandCompletionException e) {
-                                
-                                failed.add(identifier);
-                                failedCount++;
-                                
-                                DisplayableLmHardware lmHardware = inventoryDao.getDisplayableLMHardware(inventoryId);
-                                YukonMessageSourceResolvable reason = 
-                                        new YukonMessageSourceResolvable(failureKey, e.getMessage());
-                                AssetActionFailure failure = new AssetActionFailure(identifier, lmHardware, reason);
-                                failures.add(failure);
-                                
-                                eventLog.itemConfigFailed(user, sn, e.getMessage());
-                                
-                            } finally {
-                                completedItems++;
-                            }
-                            
-                        } else {
-                            
-                            unsupported.add(identifier);
-                            unsupportedCount++;
-                            completedItems++;
-                            
-                            String sn = lmhb != null ? lmhb.getManufacturerSerialNumber() : "";
-                            eventLog.itemConfigUnsupported(user, sn);
-                        }
-                    }
+        public void run() {
+            for (InventoryIdentifier identifier : collection.getList()) {
+                
+                if (canceled) break;
+                
+                int inventoryId = identifier.getInventoryId();
+                LiteLmHardwareBase lmhb = null;
+                
+                try {
+                    lmhb = inventoryBaseDao.getHardwareByInventoryId(inventoryId);
+                } catch (NotFoundException e) {
+                    // handled below
                 }
-            };
+                
+                LiteYukonUser user = userContext.getYukonUser();
+                
+                if (lmhb != null && identifier.getHardwareType().isConfigurable()) {
+                    
+                    String sn = lmhb.getManufacturerSerialNumber();
+                    
+                    try {
+                        
+                        LmHardwareCommand command = new LmHardwareCommand();
+                        command.setDevice(lmhb);
+                        command.setType(LmHardwareCommandType.CONFIG);
+                        command.setUser(user);
+                        command.getParams().put(LmHardwareCommandParam.BULK, true);
+                        
+                        if (forceInService) {
+                            command.getParams().put(LmHardwareCommandParam.FORCE_IN_SERVICE, true);
+                        }
+                        
+                        commandService.sendConfigCommand(command);
+                        
+                        successful.add(identifier);
+                        successCount++;
+                        
+                        eventLog.itemConfigSucceeded(user, sn);
+                    
+                    } catch (CommandCompletionException e) {
+                        
+                        failed.add(identifier);
+                        failedCount++;
+                        
+                        DisplayableLmHardware lmHardware = inventoryDao.getDisplayableLMHardware(inventoryId);
+                        YukonMessageSourceResolvable reason = 
+                                new YukonMessageSourceResolvable(failureKey, e.getMessage());
+                        AssetActionFailure failure = new AssetActionFailure(identifier, lmHardware, reason);
+                        failures.add(failure);
+                        
+                        eventLog.itemConfigFailed(user, sn, e.getMessage());
+                        
+                    } finally {
+                        completedItems++;
+                    }
+                    
+                } else {
+                    
+                    unsupported.add(identifier);
+                    unsupportedCount++;
+                    completedItems++;
+                    
+                    String sn = lmhb != null ? lmhb.getManufacturerSerialNumber() : "";
+                    eventLog.itemConfigUnsupported(user, sn);
+                }
+            }
         }
         
         @Override

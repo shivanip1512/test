@@ -289,7 +289,7 @@
     <entry key="yukon.web.modules.operator.inventory.actions.controlAuditDescription">Run a control audit report for two-way devices.</entry>
     <entry key="yukon.web.modules.operator.inventory.actions.report.label">Device Report</entry>
     <entry key="yukon.web.modules.operator.inventory.actions.report.description">View a report of device details.</entry>
-
+    
     <!-- /inventory/inventoryOperations/saveBatchFile.jsp -->
     <entry key="yukon.web.modules.operator.saveToFile.pageName">Save To File</entry>
     <entry key="yukon.web.modules.operator.saveToFile.title">File Settings</entry>

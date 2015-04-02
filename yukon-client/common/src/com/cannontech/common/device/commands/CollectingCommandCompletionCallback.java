@@ -7,12 +7,12 @@ import java.util.Set;
 
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
-import com.cannontech.common.util.CancelStatus;
+import com.cannontech.common.util.Cancelable;
 import com.cannontech.common.util.Completable;
 import com.cannontech.core.dynamic.PointValueHolder;
 
 public class CollectingCommandCompletionCallback implements
-        CommandCompletionCallback<Object>, CommandResultHolder, Completable, CancelStatus {
+        CommandCompletionCallback<Object>, CommandResultHolder, Completable, Cancelable {
     
 	private CommandRequestExecutionIdentifier commandRequestExecutionIdentifier = null;
     private final Set<SpecificDeviceErrorDescription> errors = new HashSet<>();

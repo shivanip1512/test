@@ -18,7 +18,20 @@ import com.google.common.collect.Sets;
 
 public class ChangeTypeHelper extends InventoryActionsHelper {
     
-    public class ChangeTypeTask extends CollectionBasedInventoryTask {
+    /**
+     * Starts an inventory task and returns the task's 
+     * recent result cache identifier.
+     */
+    public String startTask(ChangeTypeTask task) {
+        
+        executor.execute(task);
+        String taskId = resultsCache.addResult(task);
+        task.setTaskId(taskId);
+        
+        return taskId;
+    }
+    
+    public class ChangeTypeTask extends CollectionBasedInventoryTask implements Runnable {
         
         private Set<InventoryIdentifier> unsupported = Sets.newHashSet();
         private Set<InventoryIdentifier> successful = Sets.newHashSet();
@@ -52,30 +65,26 @@ public class ChangeTypeHelper extends InventoryActionsHelper {
             return unsupported;
         }
         
-        public Runnable getProcessor() {
-            return new Runnable() {
-                @Override
-                public void run() {
-                    for (InventoryIdentifier inv : collection.getList()) {
-                        if (canceled) break;
-                        try {
-                            hardwareService.changeType(userContext, inv, typeEntry);
-                            successful.add(inv);
-                            successCount++;
-                        } catch (NotSupportedException nse) {
-                            /* Original hardware type does not support the 'change type' action */
-                            unsupported.add(inv);
-                            unsupportedCount++;
-                        } catch (ObjectInOtherEnergyCompanyException|StarsDeviceSerialNumberAlreadyExistsException e) {
-                            /* Inventory was probably in a member energy comany */
-                            failed.add(inv);
-                            failedCount++;
-                        } finally {
-                            completedItems ++;
-                        }
-                    }
+        @Override
+        public void run() {
+            for (InventoryIdentifier inv : collection.getList()) {
+                if (canceled) break;
+                try {
+                    hardwareService.changeType(userContext, inv, typeEntry);
+                    successful.add(inv);
+                    successCount++;
+                } catch (NotSupportedException nse) {
+                    /* Original hardware type does not support the 'change type' action */
+                    unsupported.add(inv);
+                    unsupportedCount++;
+                } catch (ObjectInOtherEnergyCompanyException|StarsDeviceSerialNumberAlreadyExistsException e) {
+                    /* Inventory was probably in a member energy comany */
+                    failed.add(inv);
+                    failedCount++;
+                } finally {
+                    completedItems ++;
                 }
-            };
+            }
         }
         
         @Override

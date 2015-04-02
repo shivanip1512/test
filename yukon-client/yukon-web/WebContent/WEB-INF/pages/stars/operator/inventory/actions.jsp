@@ -5,7 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="inventory.actions">
-    
+
 <div class="stacked-md"><tags:selectedInventory inventoryCollection="${inventoryCollection}"/></div>
 <div class="stacked-md">
     <span class="label label-info"><i:inline key="yukon.common.note"/></span>&nbsp;
@@ -58,7 +58,7 @@
                 
                 <tr>
                     <td>
-                        <cti:url var="url" value="controlAudit/view">
+                        <cti:url var="url" value="controlAudit/setup">
                             <c:forEach var="parm" items="${inventoryCollection.collectionParameters}">
                                 <cti:param name="${parm.key}" value="${parm.value}"/>
                             </c:forEach>

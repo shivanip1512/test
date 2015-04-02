@@ -9,14 +9,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.util.CancelStatus;
+import com.cannontech.common.util.Cancelable;
 import com.cannontech.common.util.Completable;
 import com.cannontech.common.util.ExceptionStatus;
 import com.cannontech.common.util.MapList;
 import com.cannontech.core.dynamic.PointValueHolder;
 
 public class GroupCommandCompletionCallback implements
-        CommandCompletionCallback<CommandRequestDevice>, Completable, CancelStatus, ExceptionStatus, MultipleDeviceResultHolder {
+        CommandCompletionCallback<CommandRequestDevice>, Completable, Cancelable, ExceptionStatus, MultipleDeviceResultHolder {
     
     private final Map<SimpleDevice,SpecificDeviceErrorDescription> errors = new ConcurrentHashMap<SimpleDevice, SpecificDeviceErrorDescription>(100, .75f, 1);
     private final Map<SimpleDevice,String> resultStrings = new ConcurrentHashMap<SimpleDevice, String>(100, .75f, 1);

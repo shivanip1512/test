@@ -11,31 +11,40 @@ import com.cannontech.web.stars.dr.operator.inventory.service.InventoryActionsHe
 
 public class DeleteInventoryHelper extends InventoryActionsHelper {
     
-    public class DeleteInventoryTask extends CollectionBasedInventoryTask {
+    /**
+     * Starts an inventory task and returns the task's 
+     * recent result cache identifier.
+     */
+    public String startTask(DeleteInventoryTask task) {
+        
+        executor.execute(task);
+        String taskId = resultsCache.addResult(task);
+        task.setTaskId(taskId);
+        
+        return taskId;
+    }
+    
+    public class DeleteInventoryTask extends CollectionBasedInventoryTask implements Runnable {
         
         public DeleteInventoryTask(InventoryCollection collection, YukonUserContext context) {
             this.collection = collection;
             this.userContext = context;
         }
         
-        public Runnable getProcessor() {
-            return new Runnable() {
-                @Override
-                public void run() {
-                    for (InventoryIdentifier inv : collection.getList()) {
-                        if (canceled) break;
-                        try {
-                            hardwareService.deleteHardware(userContext.getYukonUser(), true, inv.getInventoryId());
-                            successCount++;
-                        } catch (Exception e) {
-                            log.error("Unable to delete inventory: " + inv, e);
-                            failedCount++;
-                        } finally {
-                            completedItems ++;
-                        }
-                    }
+        @Override
+        public void run() {
+            for (InventoryIdentifier inv : collection.getList()) {
+                if (canceled) break;
+                try {
+                    hardwareService.deleteHardware(userContext.getYukonUser(), true, inv.getInventoryId());
+                    successCount++;
+                } catch (Exception e) {
+                    log.error("Unable to delete inventory: " + inv, e);
+                    failedCount++;
+                } finally {
+                    completedItems ++;
                 }
-            };
+            }
         }
         
         @Override

@@ -88,6 +88,7 @@
 <entry key="yukon.common.file3">File 3</entry>
 <entry key="yukon.common.file4">File 4</entry>
 <entry key="yukon.common.filter">Filter</entry>
+<entry key="yukon.common.finished">Finished</entry>
 <entry key="yukon.common.float.hundred_millionths">{0,number,#,##0.00000000}</entry>
 <entry key="yukon.common.float.hundred_thousandths">{0,number,#,##0.00000}</entry>
 <entry key="yukon.common.float.hundredths">{0,number,#,##0.00}</entry>
@@ -133,6 +134,7 @@
 <entry key="yukon.common.prefixedByteValue.pebi">{0,number,#,##0.0} PB</entry>
 <entry key="yukon.common.prefixedByteValue.tebi">{0,number,#,##0.0} TB</entry>
 <entry key="yukon.common.preview">Preview</entry>
+<entry key="yukon.common.progress">Progress</entry>
 <entry key="yukon.common.quality">Quality</entry>
 <entry key="yukon.common.range">Range</entry>
 <entry key="yukon.common.requestFailed">Request Failed</entry>

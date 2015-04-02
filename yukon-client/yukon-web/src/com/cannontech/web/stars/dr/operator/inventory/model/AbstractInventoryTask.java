@@ -3,11 +3,11 @@ package com.cannontech.web.stars.dr.operator.inventory.model;
 import org.joda.time.Instant;
 
 import com.cannontech.common.i18n.Displayable;
-import com.cannontech.common.util.CancelStatus;
+import com.cannontech.common.util.Cancelable;
 import com.cannontech.common.util.Completable;
 import com.cannontech.user.YukonUserContext;
 
-public abstract class AbstractInventoryTask implements Completable, CancelStatus, Displayable, Comparable<AbstractInventoryTask> {
+public abstract class AbstractInventoryTask implements Completable, Cancelable, Displayable, Comparable<AbstractInventoryTask> {
     
     protected String taskId;
     protected long startedAt;
@@ -51,25 +51,6 @@ public abstract class AbstractInventoryTask implements Completable, CancelStatus
         return getTotalItems() == completedItems;
     }
     
-    @Override
-    public boolean isCanceled() {
-        return canceled;
-    }
-    
-    /**
-     * Sets the canceled flag on the task so that the processor will know
-     * to stop working on this task, returns true if the task was canceled
-     * before the task was complete.
-     * @return Returns true when cancel was effective (task was not already complete)
-     */
-    public boolean cancel() {
-        canceled = true;
-        return !isComplete();
-    }
-    
-    /** Return the runnable that will perform this task. */
-    public abstract Runnable getProcessor();
-    
     public int getSuccessCount() {
         return successCount;
     }
@@ -92,6 +73,45 @@ public abstract class AbstractInventoryTask implements Completable, CancelStatus
     
     public void setUnsupportedCount(int unsupportedCount) {
         this.unsupportedCount = unsupportedCount;
+    }
+    
+    public YukonUserContext getUserContext() {
+        return userContext;
+    }
+    
+    public void setUserContext(YukonUserContext userContext) {
+        this.userContext = userContext;
+    }
+    
+    @Override
+    public boolean isCanceled() {
+        return canceled;
+    }
+    
+    /**
+     * Sets the canceled flag on the task so that the processor will know
+     * to stop working on this task, returns true if the task was canceled
+     * before the task was complete.
+     * @return Returns true when cancel was effective (task was not already complete)
+     */
+    public boolean cancel() {
+        canceled = true;
+        return !isComplete();
+    }
+    
+    public void addSuccess() {
+        this.successCount++;
+        this.completedItems++;
+    }
+    
+    public void addFailed() {
+        this.failedCount++;
+        this.completedItems++;
+    }
+    
+    public void addUnsupported() {
+        this.unsupportedCount++;
+        this.completedItems++;
     }
     
     @Override

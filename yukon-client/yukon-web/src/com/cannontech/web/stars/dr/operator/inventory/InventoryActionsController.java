@@ -37,6 +37,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.collection.InventoryCollectionFactoryImpl;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.stars.dr.operator.inventory.model.AbstractInventoryTask;
+import com.cannontech.web.stars.dr.operator.inventory.model.ControlAuditTask;
 import com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCollectionProducer;
 import com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeDeviceStatusHelper.ChangeDeviceStatusTask;
 import com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeServiceCompanyHelper.ChangeServiceCompanyTask;
@@ -85,8 +86,9 @@ public class InventoryActionsController {
             return "redirect:/stars/operator/inventory/changeWarehouse/" + id + "/status";
         } else if (task instanceof SaveToBatchTask) {
             return "redirect:/stars/operator/inventory/saveToBatch/" + id + "/status";
+        } else if (task instanceof ControlAuditTask) {
+            return "redirect:/stars/operator/inventory/controlAudit/" + id + "/status";
         }
-        // TODO Control audits
         
         resp.setStatus(HttpStatus.NOT_FOUND.value());
         return null;

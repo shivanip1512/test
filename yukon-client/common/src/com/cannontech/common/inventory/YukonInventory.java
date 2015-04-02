@@ -11,6 +11,12 @@ public interface YukonInventory {
             return input.getIdentifier();
         }
     };
+    Function<YukonInventory, InventoryIdentifier> TO_IDENTIFIER = new Function<YukonInventory, InventoryIdentifier>() {
+        @Override
+        public InventoryIdentifier apply(YukonInventory input) {
+            return input.getInventoryIdentifier();
+        }
+    };
     Function<YukonInventory, Integer> TO_INVENTORY_ID = new Function<YukonInventory, Integer>() {
         @Override
         public Integer apply(YukonInventory input) {

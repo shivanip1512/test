@@ -1613,7 +1613,6 @@
         <jms:listener destination="yukon.notif.obj.dr.rfn.LmAddressNotification" ref="lmReportedDataBackingService" method="handleAddress"/>
     </jms:listener-container>
 
-    <bean id="controlAuditResultsCache" class="com.cannontech.common.util.RecentResultsCache"/>
     <bean class="com.cannontech.web.stars.dr.operator.inventory.service.impl.ControlAuditServiceImpl"/>
     
     <bean class="com.cannontech.web.stars.dr.operator.inventory.service.impl.AssetReportServiceImpl"/>

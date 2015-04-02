@@ -15,7 +15,20 @@ import com.cannontech.web.stars.dr.operator.inventory.service.InventoryActionsHe
 
 public class ChangeServiceCompanyHelper extends InventoryActionsHelper {
     
-    public class ChangeServiceCompanyTask extends CollectionBasedInventoryTask {
+    /**
+     * Starts an inventory task and returns the task's 
+     * recent result cache identifier.
+     */
+    public String startTask(ChangeServiceCompanyTask task) {
+        
+        executor.execute(task);
+        String taskId = resultsCache.addResult(task);
+        task.setTaskId(taskId);
+        
+        return taskId;
+    }
+    
+    public class ChangeServiceCompanyTask extends CollectionBasedInventoryTask implements Runnable {
         
         private int serviceCompanyId;
         private HttpSession session;
@@ -42,25 +55,21 @@ public class ChangeServiceCompanyHelper extends InventoryActionsHelper {
             this.serviceCompanyId = serviceCompanyId;
         }
         
-        public Runnable getProcessor() {
-            return new Runnable() {
-                @Override
-                public void run() {
-                    for (InventoryIdentifier inv : collection.getList()) {
-                        if (canceled) break;
-                        try {
-                            hardwareService.changeServiceCompany(userContext, inv, serviceCompanyId);
-                            successCount++;
-                        } catch (ObjectInOtherEnergyCompanyException|StarsDeviceSerialNumberAlreadyExistsException e) {
-                            /* Inventory was probably in a member energy comany */
-                            log.error("Unable to change service company: " + inv, e);
-                            failedCount++;
-                        } finally {
-                            completedItems ++;
-                        }
-                    }
+        @Override
+        public void run() {
+            for (InventoryIdentifier inv : collection.getList()) {
+                if (canceled) break;
+                try {
+                    hardwareService.changeServiceCompany(userContext, inv, serviceCompanyId);
+                    successCount++;
+                } catch (ObjectInOtherEnergyCompanyException|StarsDeviceSerialNumberAlreadyExistsException e) {
+                    /* Inventory was probably in a member energy comany */
+                    log.error("Unable to change service company: " + inv, e);
+                    failedCount++;
+                } finally {
+                    completedItems ++;
                 }
-            };
+            }
         }
         
         @Override

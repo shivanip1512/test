@@ -11,7 +11,7 @@ import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.util.CancelStatus;
+import com.cannontech.common.util.Cancelable;
 import com.cannontech.common.util.Completable;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ArrayListMultimap;
@@ -29,7 +29,7 @@ import com.google.common.collect.Multimap;
  * 
  * Detailed results can be retrieved via the <code>getResults</code> and <code>getResultsByType</code> methods.
  */
-public class RegulatorMappingTask implements Completable, CancelStatus {
+public class RegulatorMappingTask implements Completable, Cancelable {
     
     private static final Logger log = YukonLogManager.getLogger(RegulatorMappingTask.class);
     

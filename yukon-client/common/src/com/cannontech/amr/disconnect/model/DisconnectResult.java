@@ -13,11 +13,11 @@ import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.util.CancelStatus;
+import com.cannontech.common.util.Cancelable;
 import com.cannontech.common.util.Completable;
 import com.cannontech.common.util.ExceptionStatus;
 
-public class DisconnectResult implements Completable, ExceptionStatus, CancelStatus {
+public class DisconnectResult implements Completable, ExceptionStatus, Cancelable {
     
     private DisconnectCommand command;
     private boolean complete;

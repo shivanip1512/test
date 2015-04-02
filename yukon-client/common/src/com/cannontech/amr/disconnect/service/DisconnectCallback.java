@@ -6,10 +6,10 @@ import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.util.CancelStatus;
+import com.cannontech.common.util.Cancelable;
 import com.cannontech.common.util.Completable;
 
-public interface DisconnectCallback extends Completable, CancelStatus{
+public interface DisconnectCallback extends Completable, Cancelable{
     
     /**
      * This method should be called when it is known that the device is connected.

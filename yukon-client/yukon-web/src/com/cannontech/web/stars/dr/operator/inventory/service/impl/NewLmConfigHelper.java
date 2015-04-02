@@ -49,7 +49,20 @@ public class NewLmConfigHelper extends InventoryActionsHelper {
     @Autowired private StarsDatabaseCache cache;
     @Autowired private EnergyCompanySettingDao ecSettingDao;
     
-    public class NewLmConfigTask extends CollectionBasedInventoryTask {
+    /**
+     * Starts an inventory task and returns the task's 
+     * recent result cache identifier.
+     */
+    public String startTask(NewLmConfigTask task) {
+        
+        executor.execute(task);
+        String taskId = resultsCache.addResult(task);
+        task.setTaskId(taskId);
+        
+        return taskId;
+    }
+    
+    public class NewLmConfigTask extends CollectionBasedInventoryTask implements Runnable {
         
         private static final String failureKey = "yukon.web.modules.operator.inventory.config.send.failureMessage";
         
@@ -83,84 +96,78 @@ public class NewLmConfigHelper extends InventoryActionsHelper {
         }
         
         @Override
-        public Runnable getProcessor() {
+        public void run() {
             
-            return new Runnable() {
-                @Override
-                public void run() {
+            for (InventoryIdentifier identifier : collection.getList()) {
+                
+                if (canceled) break;
+                
+                int inventoryId = identifier.getInventoryId();
+                LiteLmHardwareBase lmhb = null;
+                
+                try {
+                    lmhb = inventoryBaseDao.getHardwareByInventoryId(inventoryId);
+                } catch (NotFoundException e) {
+                 // handled below, put in unsupported (might have been deleted?).
+                }
+                
+                LiteYukonUser user = userContext.getYukonUser();
+                
+                HardwareType hardwareType = identifier.getHardwareType();
+                HardwareConfigType configType = hardwareType.getHardwareConfigType();
+                
+                if (lmhb != null 
+                        && hardwareType.isConfigurable() 
+                        && configType == settings.getConfig().getType()) {
                     
-                    for (InventoryIdentifier identifier : collection.getList()) {
+                    String sn = lmhb.getManufacturerSerialNumber();
+                    
+                    try {
                         
-                        if (canceled) break;
-                        
-                        int inventoryId = identifier.getInventoryId();
-                        LiteLmHardwareBase lmhb = null;
-                        
-                        try {
-                            lmhb = inventoryBaseDao.getHardwareByInventoryId(inventoryId);
-                        } catch (NotFoundException e) {
-                         // handled below, put in unsupported (might have been deleted?).
-                        }
-                        
-                        LiteYukonUser user = userContext.getYukonUser();
-                        
-                        HardwareType hardwareType = identifier.getHardwareType();
-                        HardwareConfigType configType = hardwareType.getHardwareConfigType();
-                        
-                        if (lmhb != null 
-                                && hardwareType.isConfigurable() 
-                                && configType == settings.getConfig().getType()) {
-                            
-                            String sn = lmhb.getManufacturerSerialNumber();
-                            
-                            try {
-                                
-                                if (settings.isBatch()) {
-                                    batch(settings, lmhb);
-                                } else {
-                                    send(settings, lmhb, user);
-                                    if (lmhb.getAccountID() > 0) {
-                                        updateAccount(lmhb);
-                                    }
-                                }
-                                
-                                successful.add(identifier);
-                                successCount++;
-                                
-                                eventLog.itemConfigSucceeded(user, sn);
-                                
-                            } catch (CommandCompletionException e) {
-                                
-                                failed.add(identifier);
-                                failedCount++;
-                                
-                                DisplayableLmHardware lmHardware = inventoryDao.getDisplayableLMHardware(inventoryId);
-                                YukonMessageSourceResolvable reason = 
-                                        new YukonMessageSourceResolvable(failureKey, e.getMessage());
-                                AssetActionFailure failure = new AssetActionFailure(identifier, lmHardware, reason);
-                                failures.add(failure);
-                                
-                                eventLog.itemConfigFailed(user, sn, e.getMessage());
-                                
-                            } finally {
-                                completedItems++;
-                            }
-                            
+                        if (settings.isBatch()) {
+                            batch(settings, lmhb);
                         } else {
-                            
-                            unsupported.add(identifier);
-                            unsupportedCount++;
-                            completedItems++;
-                            
-                            String sn = lmhb != null ? lmhb.getManufacturerSerialNumber() : "";
-                            eventLog.itemConfigUnsupported(user, sn);
+                            send(settings, lmhb, user);
+                            if (lmhb.getAccountID() > 0) {
+                                updateAccount(lmhb);
+                            }
                         }
+                        
+                        successful.add(identifier);
+                        successCount++;
+                        
+                        eventLog.itemConfigSucceeded(user, sn);
+                        
+                    } catch (CommandCompletionException e) {
+                        
+                        failed.add(identifier);
+                        failedCount++;
+                        
+                        DisplayableLmHardware lmHardware = inventoryDao.getDisplayableLMHardware(inventoryId);
+                        YukonMessageSourceResolvable reason = 
+                                new YukonMessageSourceResolvable(failureKey, e.getMessage());
+                        AssetActionFailure failure = new AssetActionFailure(identifier, lmHardware, reason);
+                        failures.add(failure);
+                        
+                        eventLog.itemConfigFailed(user, sn, e.getMessage());
+                        
+                    } finally {
+                        completedItems++;
                     }
                     
-                    // If batching, write the file to disk now that we are all done.
-                    if (settings.isBatch()) SwitchCommandQueue.getInstance().addCommand( null, true );
+                } else {
+                    
+                    unsupported.add(identifier);
+                    unsupportedCount++;
+                    completedItems++;
+                    
+                    String sn = lmhb != null ? lmhb.getManufacturerSerialNumber() : "";
+                    eventLog.itemConfigUnsupported(user, sn);
                 }
-            };
+            }
+            
+            // If batching, write the file to disk now that we are all done.
+            if (settings.isBatch()) SwitchCommandQueue.getInstance().addCommand( null, true );
         }
         
         @Override

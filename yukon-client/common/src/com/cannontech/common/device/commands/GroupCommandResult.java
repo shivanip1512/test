@@ -1,8 +1,8 @@
 package com.cannontech.common.device.commands;
 
-import com.cannontech.common.util.CancelStatus;
+import com.cannontech.common.util.Cancelable;
 
-public class GroupCommandResult extends GroupActionResult implements CancelStatus {
+public class GroupCommandResult extends GroupActionResult implements Cancelable {
     private String command;
     private boolean handleUnsupported = false;
 

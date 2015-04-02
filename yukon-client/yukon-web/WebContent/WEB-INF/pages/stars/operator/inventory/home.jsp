@@ -136,7 +136,7 @@
                             <hr class="dashed">
                             <div class="scroll-sm">
                             
-                                <table class="full-width striped js-recent-actions">
+                                <table class="compact-results-table js-recent-actions">
                                     <thead></thead>
                                     <tfoot>
                                         <%-- Template Row --%>
@@ -147,7 +147,7 @@
                                                 <span class="js-complete success dn">
                                                     <i:inline key="yukon.common.complete"/>
                                                 </span>
-                                                <div class="js-progress-bar progress-bar-container progress-short dn">
+                                                <div class="js-progress-bar progress-bar-container progress-sm dn">
                                                     <div class="progress">
                                                         <div class="progress-bar progress-bar-success"></div>
                                                     </div>
@@ -172,7 +172,7 @@
                                                         <i:inline key="yukon.common.complete"/>
                                                     </span>
                                                     <c:set var="clazz" value="${task.complete ? 'dn' : ''}"/>
-                                                    <div class="js-progress-bar progress-bar-container progress-short ${clazz}">
+                                                    <div class="js-progress-bar progress-bar-container progress-sm ${clazz}">
                                                         <div class="progress">
                                                             <div class="progress-bar progress-bar-success"
                                                             style="width: ${task.completedItems / task.totalItems * 100}%"></div>

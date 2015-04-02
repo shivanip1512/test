@@ -18,6 +18,7 @@ import org.apache.commons.lang3.Validate;
 import com.google.common.base.Function;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class RecentResultsCache<T extends Completable> {
@@ -64,6 +65,18 @@ public class RecentResultsCache<T extends Completable> {
     synchronized public List<T> getPending() {
         processLists();
         return returnSafeList(pending);
+    }
+    
+    synchronized public <E extends T> List<E> getAll(Class<E> clazz) {
+        
+        List<T> safePendingList = getPending();
+        List<T> safeCompletedList = getCompleted();
+        List<T> allList = new ArrayList<>(safePendingList);
+        allList.addAll(safeCompletedList);
+        
+        List<E> filtered = Lists.newArrayList(Iterables.filter(allList, clazz));
+        
+        return filtered;
     }
     
     synchronized public List<T> getAll() {
