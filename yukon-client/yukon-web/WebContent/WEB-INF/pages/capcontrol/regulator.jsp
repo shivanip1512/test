@@ -23,7 +23,11 @@
         <div class="column-12-12 clearfix stacked-md ">
             <div class="column one">
                 <tags:sectionContainer2 nameKey="info">
-                    <tags:nameValueContainer2 tableClass="natural-width with-form-controls">
+                    <c:set var="classes" value="" />
+                    <cti:displayForPageEditModes modes="EDIT,CREATE">
+                        <c:set var="classes" value="with-form-controls" />
+                    </cti:displayForPageEditModes>
+                    <tags:nameValueContainer2 tableClass="natural-width ${classes}">
 
                         <tags:nameValue2 nameKey=".name">
                             <tags:input path="name"/>
