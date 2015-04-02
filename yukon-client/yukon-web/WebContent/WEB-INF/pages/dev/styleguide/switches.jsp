@@ -152,10 +152,10 @@
     <div class="column one"><h4 class="subtle">Example:</h4></div>
     <div class="column two nogutter">
         <tags:switchButton name="foo"/>
-        <tags:switchButton name="foo" offNameKey="no" onNameKey="yes"/>
+        <tags:switchButton name="foo" offNameKey="defaults.no" onNameKey="defaults.yes"/>
         <tags:switchButton name="foo" checked="true"/>
         <tags:switchButton name="foo" checked="true" disabled="true"/>
-        <tags:switchButton name="foo" checked="true" offNameKey="disable" onNameKey="enable" inverse="true"/>
+        <tags:switchButton name="foo" checked="true" offNameKey=".disable.label" onNameKey=".enable.label" inverse="true"/>
     </div>
 </div>
 <h4 class="subtle">Code:</h4>
