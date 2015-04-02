@@ -233,7 +233,7 @@ public class ControlAuditController {
     }
     
     @RequestMapping("{taskId}/details")
-    public String chart(ModelMap model, @PathVariable String taskId) {
+    public String details(ModelMap model, @PathVariable String taskId) {
         
         ControlAuditTask audit = (ControlAuditTask) resultsCache.getResult(taskId);
         model.addAttribute("audit", audit);
@@ -243,7 +243,7 @@ public class ControlAuditController {
     }
     
     @RequestMapping("{taskId}/update")
-    public @ResponseBody Map<String, Object> chart(@PathVariable String taskId, YukonUserContext userContext) {
+    public @ResponseBody Map<String, Object> update(@PathVariable String taskId, YukonUserContext userContext) {
         
         Map<String, Object> status = new HashMap<>();
         
