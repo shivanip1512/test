@@ -2591,7 +2591,7 @@ BOOL CtiLMProgramDirect::maintainProgramControl(LONG currentPriority, vector<Cti
             CTILOG_DEBUG(dout, "LM Program: " << getPAOName() << " is no longer in a valid control window, stopping program control");
         }
         setChangeReason("Control Window Stop");
-        if( stopProgramControl(multiPilMsg, multiDispatchMsg, multiNotifMsg, currentTime) != FALSE )
+        if( stopProgramControl(multiPilMsg, multiDispatchMsg, multiNotifMsg, currentTime) )
         {
             // Let the world know we just auto stopped?
             scheduleStopNotification(CtiTime());
@@ -4423,7 +4423,7 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                         {
                             CTILOG_INFO(dout, *violations);
                         }
-                        return false;
+                        returnBool = FALSE; // At least one group did not restore, but others still could!
                     }
                     else
                     {

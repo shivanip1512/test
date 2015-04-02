@@ -1826,14 +1826,12 @@ BOOL CtiLMControlArea::stopProgramsBelowThreshold(CtiTime currentTime, CtiMultiM
                 }
 
                 lm_program_direct->setChangeReason("Threshold Stop");
-                if( !(lm_program_direct->stopProgramControl(multiPilMsg, multiDispatchMsg, multiNotifMsg, currentTime) == FALSE) )
-                {
-                    stopped_program = true;
-                }
-                else
+                if( lm_program_direct->stopProgramControl(multiPilMsg, multiDispatchMsg, multiNotifMsg, currentTime) )
                 {
                     // Let the world know we just auto stopped?
                     lm_program_direct->scheduleStopNotification(CtiTime());
+
+                    stopped_program = true;
                 }
             }
         }
