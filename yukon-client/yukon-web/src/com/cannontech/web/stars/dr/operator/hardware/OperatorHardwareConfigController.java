@@ -166,6 +166,7 @@ public class OperatorHardwareConfigController {
             }
         }
         
+        model.addAttribute("showSaveOnly", trackHardwareAddressing);
         model.addAttribute("configuration", configuration);
         model.addAttribute("inventoryId", inventoryId);
         return prepareForEdit(true, model, configuration, null, userContext, accountInfo);

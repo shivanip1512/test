@@ -160,24 +160,24 @@ updateSub = function (data) {
     
     <div class="page-action-area stacked-md">
         <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-         <c:choose>
-            <c:when test="${fn:length(enrollments) > 0}">
-                <c:if test="${configurable}">
-                    <cti:msg2 key=".config.description" var="configTitle"/>
-                    <cti:button type="submit" nameKey="config" onclick="$('#actionInput').val('config');" title="${configTitle}" classes="action primary"/>
-                    <cti:msg2 key=".saveToBatch.description" var="saveToBatchTitle"/>
-                    <cti:button type="submit" nameKey="saveToBatch" onclick="$('#actionInput').val('saveToBatch');" title="${saveToBatchTitle}"/>
-                </c:if>
-                <cti:msg2 key=".saveConfigOnly.description" var="saveConfigOnlyTitle"/>
-                <cti:button type="submit" nameKey="saveConfigOnly" onclick="$('#actionInput').val('saveConfigOnly');" title="${saveConfigOnlyTitle}"/>
-            </c:when>
-            <c:otherwise>
-                <cti:checkEnergyCompanySetting value="TRACK_HARDWARE_ADDRESSING" energyCompanyId="${energyCompanyId}">
+            <c:choose>
+                <c:when test="${fn:length(enrollments) > 0}">
+                    <c:if test="${configurable}">
+                        <cti:msg2 key=".config.description" var="configTitle"/>
+                        <cti:button type="submit" nameKey="config" onclick="$('#actionInput').val('config');" title="${configTitle}" classes="action primary"/>
+                        <cti:msg2 key=".saveToBatch.description" var="saveToBatchTitle"/>
+                        <cti:button type="submit" nameKey="saveToBatch" onclick="$('#actionInput').val('saveToBatch');" title="${saveToBatchTitle}"/>
+                    </c:if>
                     <cti:msg2 key=".saveConfigOnly.description" var="saveConfigOnlyTitle"/>
                     <cti:button type="submit" nameKey="saveConfigOnly" onclick="$('#actionInput').val('saveConfigOnly');" title="${saveConfigOnlyTitle}"/>
-                </cti:checkEnergyCompanySetting>
-            </c:otherwise>
-         </c:choose>
+                </c:when>
+                <c:otherwise>
+                    <c:if test="${showSaveOnly}">
+                        <cti:msg2 key=".saveConfigOnly.description" var="saveConfigOnlyTitle"/>
+                        <cti:button type="submit" nameKey="saveConfigOnly" onclick="$('#actionInput').val('saveConfigOnly');" title="${saveConfigOnlyTitle}"/>
+                    </c:if>
+                </c:otherwise>
+            </c:choose>
         </cti:checkRolesAndProperties>
         <cti:url var="cancelUrl" value="/stars/operator/hardware/list">
             <cti:param name="accountId" value="${accountId}"/>
