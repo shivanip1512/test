@@ -26,4 +26,11 @@ public final class DeviceConfigCategoryItem {
     public String getValue() {
         return value;
     }
+
+    @Override
+    public String toString() {
+        return String.format("DeviceConfigCategoryItem [categoryId=%s, fieldName=%s, value=%s]", categoryId, fieldName,
+            value);
+    }
+
 }

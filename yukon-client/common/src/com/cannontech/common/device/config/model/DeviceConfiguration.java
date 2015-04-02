@@ -43,4 +43,11 @@ public final class DeviceConfiguration extends LightDeviceConfiguration {
         
         return null;
     }
+
+    @Override
+    public String toString() {
+        return String.format("DeviceConfiguration [categories=%s, supportedDeviceTypes=%s]", categories,
+            supportedDeviceTypes);
+    }
+
 }

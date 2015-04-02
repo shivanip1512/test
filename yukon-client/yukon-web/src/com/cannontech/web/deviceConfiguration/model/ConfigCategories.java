@@ -107,6 +107,14 @@ public class ConfigCategories {
         public int hashCode() {
             return Objects.hashCode(categoryDisplay, categoryName, categoryId, description, otherCategoriesExist);
         }
+
+        @Override
+        public String toString() {
+            return String.format(
+                "CategorySelection [categoryDisplay=%s, categoryName=%s, categoryId=%s, description=%s, otherCategoriesExist=%s]",
+                categoryDisplay, categoryName, categoryId, description, otherCategoriesExist);
+        }
+
     }
     
     public List<CategorySelection> getCategorySelections() {

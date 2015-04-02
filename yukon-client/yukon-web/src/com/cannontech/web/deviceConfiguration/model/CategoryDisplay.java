@@ -48,4 +48,10 @@ public class CategoryDisplay {
     public int hashCode() {
         return Objects.hashCode(categoryType, existingCategories);
     }
+
+    @Override
+    public String toString() {
+        return String.format("CategoryDisplay [categoryType=%s, existingCategories=%s]", categoryType, existingCategories);
+    }
+
 }

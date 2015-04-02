@@ -43,4 +43,12 @@ public final class DeviceConfigCategory {
     public List<DeviceConfigCategoryItem> getDeviceConfigurationItems() {
         return deviceConfigurationItems;
     }
+
+    @Override
+    public String toString() {
+        return String.format(
+            "DeviceConfigCategory [categoryId=%s, categoryType=%s, categoryName=%s, description=%s, deviceConfigurationItems=%s]",
+            categoryId, categoryType, categoryName, description, deviceConfigurationItems);
+    }
+
 }

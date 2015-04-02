@@ -28,4 +28,10 @@ public class DeviceConfig {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public String toString() {
+        return String.format("DeviceConfig [configId=%s, configName=%s, description=%s]", configId, configName, description);
+    }
+
 }

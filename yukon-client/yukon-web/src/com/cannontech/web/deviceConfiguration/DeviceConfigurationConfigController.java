@@ -395,8 +395,8 @@ public class DeviceConfigurationConfigController {
         return allTypes;
     }
     
-    private DeviceConfig setupConfigBackingBean(int configId,
-                                                                  DeviceConfiguration deviceConfiguration) {
+    private DeviceConfig setupConfigBackingBean(int configId, DeviceConfiguration deviceConfiguration) {
+
         DeviceConfig deviceConfig = new DeviceConfig();
         deviceConfig.setConfigId(configId);
         deviceConfig.setConfigName(deviceConfiguration.getName());
