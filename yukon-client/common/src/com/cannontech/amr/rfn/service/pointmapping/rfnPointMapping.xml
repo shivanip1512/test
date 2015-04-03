@@ -1895,14 +1895,14 @@
         <paoType value="RFN420FRX"/>
         <paoType value="RFN420FRD"/>
 
-        <point name="Min Volts">
+        <point name="Daily Min Volts">
             <uom>V</uom>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Min</modifier>
             </modifiers>
         </point>
-        <point name="Max Volts">
+        <point name="Daily Max Volts">
             <uom>V</uom>
             <parseSiPrefix/>
             <modifiers match="equal">
