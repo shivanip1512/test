@@ -100,11 +100,9 @@ public class ODServiceEndpoint {
     PingURLResponse pingUrl() throws MultispeakWebServiceException {
         PingURLResponse response = objectFactory.createPingURLResponse();
         
-        ErrorObject errorObject = od_server.pingURL();
+        od_server.pingURL();
         
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        List<ErrorObject> errorObjList = arrayOfErrorObject.getErrorObject();
-        errorObjList.add(errorObject);
         response.setPingURLResult(arrayOfErrorObject);
         return response;
     }

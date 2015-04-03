@@ -98,10 +98,9 @@ public class CDServiceEndpoint {
     PingURLResponse pingUrl() throws MultispeakWebServiceException {
         PingURLResponse response = objectFactory.createPingURLResponse();
 
-        ErrorObject errorObject = cd_server.pingURL();
+        cd_server.pingURL();
 
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().add(errorObject);
         response.setPingURLResult(arrayOfErrorObject);
         return response;
     }

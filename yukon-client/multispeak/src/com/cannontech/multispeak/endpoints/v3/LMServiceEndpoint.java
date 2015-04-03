@@ -1,6 +1,5 @@
 package com.cannontech.multispeak.endpoints.v3;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +11,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.cannontech.msp.beans.v3.ArrayOfCustomer;
 import com.cannontech.msp.beans.v3.ArrayOfDomainMember;
+import com.cannontech.msp.beans.v3.ArrayOfErrorObject;
 import com.cannontech.msp.beans.v3.ArrayOfLMDeviceExchange;
 import com.cannontech.msp.beans.v3.ArrayOfLoadManagementDevice;
 import com.cannontech.msp.beans.v3.ArrayOfSubstationLoadControlStatus;
@@ -120,7 +120,9 @@ public class LMServiceEndpoint {
     public @ResponsePayload
     PingURLResponse pingURL() throws MultispeakWebServiceException {
         PingURLResponse response = objectFactory.createPingURLResponse();
-        response.setPingURLResult(multispeakFuncs.toArrayOfErrorObject(Collections.singletonList(lm_Server.pingURL())));
+        lm_Server.pingURL();
+        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        response.setPingURLResult(arrayOfErrorObject);
         return response;
     }
 

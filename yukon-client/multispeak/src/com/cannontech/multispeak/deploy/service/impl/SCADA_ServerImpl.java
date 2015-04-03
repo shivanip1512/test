@@ -55,9 +55,8 @@ public class SCADA_ServerImpl implements SCADA_Server {
     }
 
     @Override
-    public ErrorObject pingURL() throws MultispeakWebServiceException {
+    public void pingURL() throws MultispeakWebServiceException {
         init();
-        return new ErrorObject();
     }
 
     @Override

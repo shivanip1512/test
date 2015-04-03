@@ -25,7 +25,7 @@ public interface OD_Server {
      * as necessary to communicate application status.
      * @throws MultispeakWebServiceException 
      */
-    public ErrorObject pingURL() throws MultispeakWebServiceException;
+    public void pingURL() throws MultispeakWebServiceException;
 
     /**
      * Requester requests list of methods supported by OD.

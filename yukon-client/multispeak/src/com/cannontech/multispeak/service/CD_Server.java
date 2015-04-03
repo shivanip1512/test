@@ -23,7 +23,7 @@ public interface CD_Server {
      * 
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject pingURL() throws MultispeakWebServiceException;
+    public void pingURL() throws MultispeakWebServiceException;
 
     /**
      * Requester requests list of methods supported by CD.

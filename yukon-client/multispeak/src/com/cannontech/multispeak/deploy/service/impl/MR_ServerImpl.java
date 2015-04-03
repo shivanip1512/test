@@ -136,9 +136,8 @@ public class MR_ServerImpl implements MR_Server{
     }
 
     @Override
-    public ErrorObject pingURL() throws MultispeakWebServiceException {
+    public void pingURL() throws MultispeakWebServiceException {
         init();
-        return new ErrorObject();
     }
     
     @Override

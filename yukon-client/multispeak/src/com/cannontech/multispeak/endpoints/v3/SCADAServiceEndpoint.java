@@ -128,10 +128,9 @@ public class SCADAServiceEndpoint {
     PingURLResponse pingURL() throws MultispeakWebServiceException {
         PingURLResponse response = objectFactory.createPingURLResponse();
 
-        ErrorObject errorObject = scada_Server.pingURL();
+        scada_Server.pingURL();
         
         ArrayOfErrorObject arrOfErrorObj = objectFactory.createArrayOfErrorObject();
-        arrOfErrorObj.getErrorObject().add(errorObject);
         response.setPingURLResult(arrOfErrorObj);
         return response;
     }

@@ -25,7 +25,7 @@ public interface SCADA_Server {
      * @return
      * @throws MultispeakWebServiceException
      */
-    public ErrorObject pingURL() throws MultispeakWebServiceException;
+    public void pingURL() throws MultispeakWebServiceException;
 
     /**
      * get Methods

@@ -34,10 +34,9 @@ public class MRServiceEndPoint {
     PingURLResponse pingURL() throws MultispeakWebServiceException {
         PingURLResponse response = objectFactory.createPingURLResponse();
 
-        ErrorObject errorObject = mr_server.pingURL();
+       mr_server.pingURL();
         
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().add(errorObject);
         response.setPingURLResult(arrayOfErrorObject);
         return response;
     }

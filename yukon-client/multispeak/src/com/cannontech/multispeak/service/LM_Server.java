@@ -26,7 +26,7 @@ public interface LM_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public ErrorObject pingURL() throws MultispeakWebServiceException;
+    public void pingURL() throws MultispeakWebServiceException;
 
     /**
      * get Methods.
