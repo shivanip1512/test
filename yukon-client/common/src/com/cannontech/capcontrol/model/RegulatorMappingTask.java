@@ -13,6 +13,7 @@ import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.Cancelable;
 import com.cannontech.common.util.Completable;
+import com.cannontech.common.util.Failable;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -29,7 +30,7 @@ import com.google.common.collect.Multimap;
  * 
  * Detailed results can be retrieved via the <code>getResults</code> and <code>getResultsByType</code> methods.
  */
-public class RegulatorMappingTask implements Completable, Cancelable {
+public class RegulatorMappingTask implements Cancelable, Comparable<RegulatorMappingTask>, Completable, Failable {
     
     private static final Logger log = YukonLogManager.getLogger(RegulatorMappingTask.class);
     
@@ -44,9 +45,8 @@ public class RegulatorMappingTask implements Completable, Cancelable {
     private int partialSuccessCount;
     private int failedCount;
     private int completedCount;
-    private boolean isErrorOccurred = false;
     private Throwable error;
-    private boolean isCanceled = false;
+    private boolean canceled = false;
     
     public RegulatorMappingTask(DeviceCollection regulators, YukonUserContext userContext) {
         this.regulators = regulators;
@@ -141,6 +141,8 @@ public class RegulatorMappingTask implements Completable, Cancelable {
     
     /**
      * Marks a regulator as having all point mapping attempts completed.
+     * The device is not added to the completed count or the success/partial success/failed counts until this method
+     * is called.
      */
     public void deviceComplete(YukonPao regulator) {
         
@@ -171,18 +173,20 @@ public class RegulatorMappingTask implements Completable, Cancelable {
         return completedCount == regulators.getDeviceCount();
     }
     
+    @Override
     public void errorOccurred(Throwable throwable) {
         error = throwable;
-        isErrorOccurred = true;
     }
     
     /**
      * Returns true if an error occurred during processing.
      */
+    @Override
     public boolean isErrorOccurred() {
-        return isErrorOccurred;
+        return error != null;
     }
     
+    @Override
     public Throwable getError() {
         return error;
     }
@@ -194,7 +198,7 @@ public class RegulatorMappingTask implements Completable, Cancelable {
      */
     public boolean cancel() {
         log.debug("Task canceled.");
-        isCanceled = true;
+        canceled = true;
         return !isComplete();
     }
     
@@ -203,6 +207,11 @@ public class RegulatorMappingTask implements Completable, Cancelable {
      */
     @Override
     public boolean isCanceled() {
-        return isCanceled;
+        return canceled;
+    }
+
+    @Override
+    public int compareTo(RegulatorMappingTask other) {
+        return start.compareTo(other.start);
     }
 }

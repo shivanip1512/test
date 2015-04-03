@@ -3,7 +3,6 @@ package com.cannontech.capcontrol.service.impl;
 import static com.cannontech.capcontrol.model.RegulatorPointMappingResult.*;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -33,13 +32,6 @@ public class VoltageRegulatorMappingServiceImpl implements VoltageRegulatorMappi
     
     private static final Logger log = YukonLogManager.getLogger(VoltageRegulatorMappingServiceImpl.class);
     private static final String mappingDelimiter = "-";
-    
-    private static final Comparator<RegulatorMappingTask> taskComparator = new Comparator<RegulatorMappingTask>() {
-        @Override
-        public int compare(RegulatorMappingTask task1, RegulatorMappingTask task2) {
-            return task1.getStart().compareTo(task2.getStart());
-        }
-    };
     
     @Autowired @Qualifier("regulatorMapping") private RecentResultsCache<RegulatorMappingTask> resultsCache;
     @Autowired @Qualifier("longRunning") private Executor executor;
@@ -73,7 +65,7 @@ public class VoltageRegulatorMappingServiceImpl implements VoltageRegulatorMappi
     @Override
     public List<RegulatorMappingTask> getAllTasks() {
         List<RegulatorMappingTask> allTasks = resultsCache.getAll();
-        Collections.sort(allTasks, taskComparator);
+        Collections.sort(allTasks);
         return allTasks;
     }
     

@@ -21,7 +21,7 @@ public class RegulatorMappingResult implements Completable {
     private final Map<RegulatorPointMapping, RegulatorPointMappingResult> pointResultMap = new HashMap<>();
     private boolean hasSuccessfulPointResults = false;
     private boolean hasFailedPointResults = false;
-    private boolean isComplete = false;
+    private boolean complete = false;
     
     public RegulatorMappingResult(YukonPao regulator) {
         this.regulator = regulator;
@@ -51,7 +51,7 @@ public class RegulatorMappingResult implements Completable {
      * Get the overall result for the device.
      */
     public RegulatorMappingResultType getType() {
-        if (!isComplete) {
+        if (!complete) {
             return RegulatorMappingResultType.INCOMPLETE;
         } else if (hasSuccessfulPointResults && !hasFailedPointResults) {
             return RegulatorMappingResultType.SUCCESSFUL;
@@ -67,7 +67,7 @@ public class RegulatorMappingResult implements Completable {
     }
     
     public void complete() {
-        isComplete = true;
+        complete = true;
     }
     
     /**
@@ -75,7 +75,7 @@ public class RegulatorMappingResult implements Completable {
      */
     @Override
     public boolean isComplete() {
-        return isComplete;
+        return complete;
     }
     
 }

@@ -68,6 +68,7 @@ public class ControlAuditTask extends CollectionBasedInventoryTask implements Fa
         this.unsupported = unsupported;
     }
     
+    @Override
     public Throwable getError() {
         return error;
     }
@@ -99,7 +100,11 @@ public class ControlAuditTask extends CollectionBasedInventoryTask implements Fa
     
     @Override
     public void errorOccurred(Throwable t) {
-        this.error = t;
+        error = t;
     }
     
+    @Override
+    public boolean isErrorOccurred() {
+        return error != null;
+    }
 }
