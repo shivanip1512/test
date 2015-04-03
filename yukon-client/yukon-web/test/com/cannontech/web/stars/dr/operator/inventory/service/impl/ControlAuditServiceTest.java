@@ -1,12 +1,6 @@
 package com.cannontech.web.stars.dr.operator.inventory.service.impl;
 
-import static org.easymock.EasyMock.anyBoolean;
-import static org.easymock.EasyMock.anyInt;
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.createNiceMock;
-import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.EasyMock.getCurrentArguments;
-import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.*;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -22,14 +16,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executor;
 
+import org.easymock.EasyMock;
 import org.easymock.IAnswer;
+import org.joda.time.Instant;
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.util.Assert;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.bulk.collection.inventory.InventoryCollectionType;
@@ -45,6 +40,7 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.PaoDao;
@@ -62,17 +58,16 @@ import com.cannontech.web.stars.dr.operator.inventory.model.AuditRow;
 import com.cannontech.web.stars.dr.operator.inventory.model.AuditSettings;
 import com.cannontech.web.stars.dr.operator.inventory.model.ControlAuditTask;
 import com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCollectionProducer;
-import com.cannontech.web.stars.dr.operator.inventory.service.ControlAuditService;
+import com.cannontech.web.stars.dr.operator.inventory.service.impl.ControlAuditServiceImpl.ControlAuditProcessor;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-@Ignore
 public class ControlAuditServiceTest {
 
-    private ControlAuditService service;
+    private ControlAuditServiceImpl service;
     private InventoryDao inventoryDao;
     private PaoDao paoDao;
     private RawPointHistoryDao rphDao;
@@ -94,6 +89,7 @@ public class ControlAuditServiceTest {
     private Map<Integer, PaoIdentifier> unknownPaos = new HashMap<>();
     private Map<Integer, PaoIdentifier> unsupportedPaos = new HashMap<>();
     private Map<Integer, PaoIdentifier> allPaos = new HashMap<>();
+    
     {
         attributeSupport.put(supportsZero, new HashSet<BuiltInAttribute>());
         attributeSupport.put(supportsOne, Sets.newHashSet(BuiltInAttribute.RELAY_1_SHED_TIME_DATA_LOG));
@@ -102,6 +98,8 @@ public class ControlAuditServiceTest {
         attributeSupport.put(supportsAll, Sets.newHashSet(BuiltInAttribute.RELAY_1_SHED_TIME_DATA_LOG,
             BuiltInAttribute.RELAY_2_SHED_TIME_DATA_LOG, BuiltInAttribute.RELAY_3_SHED_TIME_DATA_LOG));
 
+        //create 15 paos in controlled, uncontrolled, unknown
+        //create 5 in unsupported
         int id = 1;
         for (int i = 0; i < 5; i++) {
             controlledPaos.put(id, new PaoIdentifier(id++, supportsOne));
@@ -142,7 +140,7 @@ public class ControlAuditServiceTest {
                 return hardware;
             }
         }).anyTimes();
-        inventoryDao.getDeviceIds(anyObject(Iterable.class));
+        inventoryDao.getDeviceIds(EasyMock.<Iterable<Integer>> anyObject());
         expectLastCall().andAnswer(new IAnswer<Map<Integer, Integer>>() {
             @Override
             public Map<Integer, Integer> answer() throws Throwable {
@@ -153,7 +151,7 @@ public class ControlAuditServiceTest {
                 return deviceIds;
             }
         }).anyTimes();
-        inventoryDao.getLiteLmHardwareByPaos(anyObject(List.class));
+        inventoryDao.getLiteLmHardwareByPaos(EasyMock.<List<? extends YukonPao>> anyObject());
         expectLastCall().andAnswer(new IAnswer<List<LiteLmHardware> >() {
             @Override
             public List<LiteLmHardware> answer() throws Throwable {
@@ -184,7 +182,7 @@ public class ControlAuditServiceTest {
                 return pao;
             }
         }).anyTimes();
-        paoDao.getPaoIdentifiersForPaoIds(anyObject(Iterable.class));
+        paoDao.getPaoIdentifiersForPaoIds(EasyMock.<Iterable<Integer>> anyObject());
         expectLastCall().andAnswer(new IAnswer<List<PaoIdentifier>>() {
             @Override
             public List<PaoIdentifier> answer() throws Throwable {
@@ -193,8 +191,12 @@ public class ControlAuditServiceTest {
         }).anyTimes();
         
         rphDao = createNiceMock(RawPointHistoryDao.class);
-        rphDao.getAttributeData(anyObject(Iterable.class), anyObject(Attribute.class), anyBoolean(), anyObject(Range.class), anyObject(Order.class),
-            anyObject(Set.class));
+        rphDao.getAttributeData(EasyMock.<Iterable<? extends YukonPao>>anyObject(), 
+                                anyObject(Attribute.class), 
+                                anyBoolean(), 
+                                EasyMock.<Range<Instant>> anyObject(), 
+                                anyObject(Order.class),
+                                EasyMock.<Set<PointQuality>> anyObject());
         expectLastCall().andAnswer(new IAnswer<ListMultimap<PaoIdentifier, PointValueQualityHolder>>() {
             @Override
             public ListMultimap<PaoIdentifier, PointValueQualityHolder> answer() throws Throwable {
@@ -228,7 +230,8 @@ public class ControlAuditServiceTest {
         }).anyTimes();
         
         collectionProducer = createNiceMock(MemoryCollectionProducer.class);
-        collectionProducer.createCollection(anyObject(Iterator.class), anyObject(String.class));
+        collectionProducer.createCollection(EasyMock.<Iterator<InventoryIdentifier>> anyObject(), 
+                                            anyObject(String.class));
         expectLastCall().andAnswer(new IAnswer<InventoryCollection>() {
             @Override
             public InventoryCollection answer() throws Throwable {
@@ -256,14 +259,7 @@ public class ControlAuditServiceTest {
             }
         }).anyTimes();
         
-        resultsCache = createNiceMock(RecentResultsCache.class);
-        resultsCache.addResult(anyObject(AbstractInventoryTask.class));
-        expectLastCall().andAnswer(new IAnswer<String>() {
-            @Override
-            public String answer() throws Throwable {
-                return "TASK";
-            }
-        }).anyTimes();
+        resultsCache = new RecentResultsCache<AbstractInventoryTask>();
         
         executor = createNiceMock(Executor.class);
         executor.execute(anyObject(Runnable.class));
@@ -275,8 +271,10 @@ public class ControlAuditServiceTest {
         ReflectionTestUtils.setField(service, "resolver", resolver);
         ReflectionTestUtils.setField(service, "collectionProducer", collectionProducer);
         ReflectionTestUtils.setField(service, "paoDefinitionDao", paoDefinitionDao);
-
-        replay(inventoryDao, paoDao, rphDao, collectionProducer, resolver, paoDefinitionDao);
+        ReflectionTestUtils.setField(service, "resultsCache", resultsCache);
+        ReflectionTestUtils.setField(service, "executor", executor);
+        
+        replay(inventoryDao, paoDao, rphDao, collectionProducer, resolver, paoDefinitionDao, executor);
     }
 
     @Test
@@ -286,73 +284,101 @@ public class ControlAuditServiceTest {
         InventoryCollection collection = getStartingCollection();
         String taskId = service.start(settings, collection, YukonUserContext.system);
         ControlAuditTask runAudit = (ControlAuditTask) resultsCache.getResult(taskId);
-        runAudit.setTaskId(taskId);
+        
+        //Because the executor is a mock, the task is set up, but never run.
+        //Run it "manually"
+        ControlAuditProcessor processor = service.new ControlAuditProcessor(runAudit);
+        processor.run();
         
         assertPropertiesNotNull(runAudit);
         
         for (AuditRow row : runAudit.getControlled()) {
             int deviceId = row.getHardware().getDeviceId();
 
-            Assert.isTrue(controlledPaos.containsKey(deviceId), "Report did not contain device " + deviceId
-                + " in controlled rows. Was expecting it to be controlled.");
-            Assert.isTrue(!uncontrolledPaos.containsKey(deviceId), "Report contained device " + deviceId
-                + " in uncontrolled rows. Was expecting it to be controlled.");
-            Assert.isTrue(!unknownPaos.containsKey(deviceId), "Report contained device " + deviceId
-                + " in unknown rows. Was expecting it to be controlled.");
-            Assert.isTrue(!unsupportedPaos.containsKey(deviceId), "Report contained device " + deviceId
-                + " in unsupported rows. Was expecting it to be controlled.");
+            Assert.assertTrue("Report did not contain device " + deviceId
+                              + " in controlled rows. Was expecting it to be controlled.",
+                              controlledPaos.containsKey(deviceId));
+            Assert.assertFalse("Report contained device " + deviceId
+                               + " in uncontrolled rows. Was expecting it to be controlled.",
+                               uncontrolledPaos.containsKey(deviceId));
+            Assert.assertFalse("Report contained device " + deviceId
+                               + " in unknown rows. Was expecting it to be controlled.",
+                               unknownPaos.containsKey(deviceId));
+            Assert.assertFalse("Report contained device " + deviceId
+                               + " in unsupported rows. Was expecting it to be controlled.",
+                               unsupportedPaos.containsKey(deviceId));
         }
 
         for (AuditRow row : runAudit.getUncontrolled()) {
             int deviceId = row.getHardware().getDeviceId();
 
-            Assert.isTrue(!controlledPaos.containsKey(deviceId), "Report contained device " + deviceId
-                + " in controlled rows. Was expecting it to be uncontrolled.");
-            Assert.isTrue(uncontrolledPaos.containsKey(deviceId), "Report did not contain device " + deviceId
-                + " in uncontrolled rows. Was expecting it to be uncontrolled.");
-            Assert.isTrue(!unknownPaos.containsKey(deviceId), "Report contained device " + deviceId
-                + " in unknown rows. Was expecting it to be uncontrolled.");
-            Assert.isTrue(!unsupportedPaos.containsKey(deviceId), "Report contained device " + deviceId
-                + " in unsupported rows. Was expecting it to be uncontrolled.");
+            Assert.assertFalse("Report contained device " + deviceId
+                               + " in controlled rows. Was expecting it to be uncontrolled.",
+                               controlledPaos.containsKey(deviceId));
+            Assert.assertTrue("Report did not contain device " + deviceId
+                              + " in uncontrolled rows. Was expecting it to be uncontrolled.",
+                              uncontrolledPaos.containsKey(deviceId));
+            Assert.assertFalse("Report contained device " + deviceId
+                               + " in unknown rows. Was expecting it to be uncontrolled.",
+                               unknownPaos.containsKey(deviceId));
+            Assert.assertFalse("Report contained device " + deviceId
+                               + " in unsupported rows. Was expecting it to be uncontrolled.",
+                               unsupportedPaos.containsKey(deviceId));
         }
 
         for (AuditRow row : runAudit.getUnknown()) {
             int deviceId = row.getHardware().getDeviceId();
 
-            Assert.isTrue(!controlledPaos.containsKey(deviceId), "Report contained device " + deviceId
-                + " in controlled rows. Was expecting it to be unknown.");
-            Assert.isTrue(!uncontrolledPaos.containsKey(deviceId), "Report contained device " + deviceId
-                + " in uncontrolled rows. Was expecting it to be unknown.");
-            Assert.isTrue(unknownPaos.containsKey(deviceId), "Report did not contain device " + deviceId
-                + " in unknown rows. Was expecting it to be unknown.");
-            Assert.isTrue(!unsupportedPaos.containsKey(deviceId), "Report contained device " + deviceId
-                + " in unsupported rows. Was expecting it to be unknown.");
+            Assert.assertFalse("Report contained device " + deviceId
+                               + " in controlled rows. Was expecting it to be unknown.",
+                               controlledPaos.containsKey(deviceId));
+            Assert.assertFalse("Report contained device " + deviceId
+                               + " in uncontrolled rows. Was expecting it to be unknown.",
+                               uncontrolledPaos.containsKey(deviceId));
+            Assert.assertTrue("Report did not contain device " + deviceId
+                              + " in unknown rows. Was expecting it to be unknown.",
+                              unknownPaos.containsKey(deviceId));
+            Assert.assertFalse("Report contained device " + deviceId
+                               + " in unsupported rows. Was expecting it to be unknown.",
+                               unsupportedPaos.containsKey(deviceId));
         }
 
         for (AuditRow row : runAudit.getUnsupported()) {
             int deviceId = row.getHardware().getDeviceId();
 
-            Assert.isTrue(!controlledPaos.containsKey(deviceId), "Report contained device " + deviceId
-                + " in controlled rows. Was expecting it to be unsupported.");
-            Assert.isTrue(!uncontrolledPaos.containsKey(deviceId), "Report contained device " + deviceId
-                + " in uncontrolled rows. Was expecting it to be unsupported.");
-            Assert.isTrue(!unknownPaos.containsKey(deviceId), "Report contained device " + deviceId
-                + " in unknown rows. Was expecting it to be unsupported.");
-            Assert.isTrue(unsupportedPaos.containsKey(deviceId), "Report did not contain device " + deviceId
-                + " in unsupported rows. Was expecting it to be unsupported.");
+            Assert.assertFalse("Report contained device " + deviceId
+                              + " in controlled rows. Was expecting it to be unsupported.",
+                              controlledPaos.containsKey(deviceId));
+            Assert.assertFalse("Report contained device " + deviceId
+                              + " in uncontrolled rows. Was expecting it to be unsupported.",
+                              uncontrolledPaos.containsKey(deviceId));
+            Assert.assertFalse("Report contained device " + deviceId
+                               + " in unknown rows. Was expecting it to be unsupported.",
+                               unknownPaos.containsKey(deviceId));
+            Assert.assertTrue("Report did not contain device " + deviceId 
+                              + " in unsupported rows. Was expecting it to be unsupported.", 
+                              unsupportedPaos.containsKey(deviceId));
         }
 
-        Assert.isTrue(runAudit.getControlled().size() == controlledPaos.size());
-        Assert.isTrue(runAudit.getControlledPaged().getHitCount() == controlledPaos.size());
+        Assert.assertEquals("Incorrect number of controlled paos.", 
+                            controlledPaos.size(), runAudit.getControlled().size());
+        Assert.assertEquals("Incorrect number of controlled paos in hit count.", 
+                            controlledPaos.size(), runAudit.getControlledPaged().getHitCount());
 
-        Assert.isTrue(runAudit.getUncontrolled().size() == uncontrolledPaos.size());
-        Assert.isTrue(runAudit.getUncontrolledPaged().getHitCount() == uncontrolledPaos.size());
+        Assert.assertEquals("Incorrect number of uncontrolled paos.", 
+                            uncontrolledPaos.size(), runAudit.getUncontrolled().size());
+        Assert.assertEquals("Incorrect number of uncontrolled paos in hit count.", 
+                            uncontrolledPaos.size(), runAudit.getUncontrolledPaged().getHitCount());
 
-        Assert.isTrue(runAudit.getUnknown().size() == unknownPaos.size());
-        Assert.isTrue(runAudit.getUnknownPaged().getHitCount() == unknownPaos.size());
+        Assert.assertEquals("Incorrect number of unknown paos.", 
+                            unknownPaos.size(), runAudit.getUnknown().size());
+        Assert.assertEquals("Incorrect number of unknown paos in hit count.", 
+                            unknownPaos.size(), runAudit.getUnknownPaged().getHitCount());
 
-        Assert.isTrue(runAudit.getUnsupported().size() == unsupportedPaos.size());
-        Assert.isTrue(runAudit.getUnsupportedPaged().getHitCount() == unsupportedPaos.size());
+        Assert.assertEquals("Incorrect number of unsupported paos.", 
+                            unsupportedPaos.size(), runAudit.getUnsupported().size());
+        Assert.assertEquals("Incorrect number of unsupported paos in hit count.", 
+                            unsupportedPaos.size(), runAudit.getUnsupportedPaged().getHitCount());
     }
 
     private List<PointValueQualityHolder> getData(double value, int number) {
@@ -414,7 +440,7 @@ public class ControlAuditServiceTest {
      * Asserts object is not null and all getter methods return non-null objects.
      */
     private static void assertPropertiesNotNull(Object object) {
-        Assert.notNull(object, "Object itself is null.");
+        Assert.assertNotNull("Object itself is null.", object);
 
         BeanInfo beanInfo;
         try {
@@ -423,8 +449,13 @@ public class ControlAuditServiceTest {
             for (PropertyDescriptor property : beanInfo.getPropertyDescriptors()) {
                 Method readMethod = property.getReadMethod();
                 if (readMethod != null) {
-                    Assert.notNull(readMethod.invoke(object),
-                        "Method " + clazz.getSimpleName() + "." + readMethod.getName() + "() returned null.");
+                    //OK if the getError method returns null
+                    if (readMethod.getName().equals("getError")) {
+                        continue;
+                    }
+                    
+                    Assert.assertNotNull("Method " + clazz.getSimpleName() + "." + readMethod.getName() + "() returned null.",
+                                         readMethod.invoke(object));
                 }
             }
         } catch (ReflectiveOperationException | IntrospectionException e) {
