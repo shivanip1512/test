@@ -67,24 +67,16 @@ public class RecentResultsCache<T extends Completable> {
         return returnSafeList(pending);
     }
     
-    synchronized public <E extends T> List<E> getAll(Class<E> clazz) {
-        
-        List<T> safePendingList = getPending();
-        List<T> safeCompletedList = getCompleted();
-        List<T> allList = new ArrayList<>(safePendingList);
-        allList.addAll(safeCompletedList);
-        
-        List<E> filtered = Lists.newArrayList(Iterables.filter(allList, clazz));
-        
-        return filtered;
-    }
-    
     synchronized public List<T> getAll() {
         List<T> safePendingList = getPending();
         List<T> safeCompletedList = getCompleted();
         List<T> allList = new ArrayList<>(safePendingList);
         allList.addAll(safeCompletedList);
         return allList;
+    }
+    
+    synchronized public <E extends T> List<E> getAll(Class<E> clazz) {
+        return Lists.newArrayList(Iterables.filter(getAll(), clazz));
     }
     
     synchronized public List<String> getCompletedKeys() {
