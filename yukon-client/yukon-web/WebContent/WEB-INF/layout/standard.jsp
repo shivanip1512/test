@@ -65,22 +65,25 @@
         
         <div class="yukon-page">
             <header class="yukon-header">
-                <div class="outer">
-                    <div class="inner">
+                <div class="toolbar-outer">
+                    <div class="toolbar-inner">
                         <div class="toolbar">
                             <form accept-charset="ISO-8859-1" enctype="application/x-www-form-urlencoded" method="get"
                                 action="<cti:url value="/search"/>" class="yukon-search-form">
                                 <input type="text" placeholder="<cti:msg2 key='yukon.common.search.placeholder'/>"
                                     role="search" name="q" class="search-field">
                             </form>
-                            <cti:button data-alert-sound="${alertSounds}"
-                                data-alert-flash="${alertFlash}" classes="yukon-alert-button action dn" label="0"/>
+                            <cti:button data-alert-sound="${alertSounds}" data-alert-flash="${alertFlash}"
+                                data-popup="#yukon_alert_popup" data-popup-toggle=""
+                                classes="yukon-alert-button action dn" label="0"/>
                             <cm:dropdown triggerClasses="b-user-menu fl" icon="icon-user"
                                 label="${fn:escapeXml(displayName)}" type="button">
                                 <cti:checkRolesAndProperties value="ADMIN_SUPER_USER">
                                     <cti:url value="/adminSetup/user/view?userId=${sessionScope.YUKON_USER.userID}"
                                         var="userEditUrl"/>
-                                    <cm:dropdownOption icon="icon-user-edit" href="${userEditUrl}">User Editor</cm:dropdownOption>
+                                    <cm:dropdownOption icon="icon-user-edit" href="${userEditUrl}">
+                                        <cti:msg2 key="yukon.common.user.editor"/>
+                                    </cm:dropdownOption>
                                 </cti:checkRolesAndProperties>
                                 <cti:url value="/user/profile" var="userProfileUrl"/>
                                 <cm:dropdownOption icon="icon-user" href="${userProfileUrl}">
@@ -94,11 +97,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="nav">
-                    <div class="nav-outer">
+                <div class="nav-outer">
+                    <div class="nav-inner">
                         <nav role="navigation">
-                            <ul>
-                                <li class="logo"><a href="${homeUrl}"></a></li>
+                            <ul class="menus">
+                                <li class="menu logo"><a class="menu-title" href="${homeUrl}"></a></li>
                                 <cti:outputContent writable="${menuRenderer}"/>
                             </ul>
                         </nav>
@@ -166,19 +169,15 @@
                 </div>
                 
                 <cti:msg2 key="yukon.web.alerts.heading" var="alertTitle"/>
-                <tags:simplePopup title="${alertTitle}" id="yukon_alert_popup">
-                    <div id="alert_body" class="scroll-lg"></div>
-                    <div class="action-area">
-                        <cti:msg2 key="yukon.web.alerts.clearall" var="clearAllLabel"/>
-                        <cti:button classes="js-clear-all-yukon-alerts" label="${clearAllLabel}" icon="icon-tick"/>
-                    </div>
-                </tags:simplePopup>
-                <tags:updatedWarning />
-                <tags:dataUpdateEnabler />
+                <cti:url var="url" value="/common/alert/view"/>
+                <div id="yukon_alert_popup" data-url="${url}"
+                    data-title="${alertTitle}" data-height="400" data-width="600"></div>
+                <tags:updatedWarning/>
+                <tags:dataUpdateEnabler/>
                 <cti:dataUpdaterCallback function="yukon.alerts.countUpdated" initialize="true" count="ALERT/COUNT"
                     lastId="ALERT/LASTID"/>
                 
-                <tags:analyticsTrackPage />
+                <tags:analyticsTrackPage/>
                 <%-- <tags:feedback/> TODO: uncomment when ready for feedback --%>
             </section>
             

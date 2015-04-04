@@ -125,7 +125,7 @@ var yukon = (function () {
             subType.prototype = prototype;
         },
         
-        /** Handle app name prepending here */
+        /** Build application url, applying any application context needed. */
         url : function (url) {
             if (url.startsWith('/')) {
                 return yg.app_context_path + url;
@@ -134,7 +134,11 @@ var yukon = (function () {
             }
         },
         
-        /** JavaScript side of JsonTag.java */
+        /** 
+         * Parse the inner text contents of 'selector' as JSON.
+         * Used in conjunction with JsonTag.java 
+         * @param {string} selector - The css selector to the element parse text contents of.
+         */
         fromJson : function (selector) {
             return JSON.parse($(selector).text());
         },
@@ -477,6 +481,13 @@ yukon.ui = (function () {
         },
         
         autowire: function () {
+            
+            /** Follow clicks on top level nav menus when not using a touch screen. */
+            $(document).on('click', '[data-url]', function (ev) {
+                if (!Modernizr.touch) {
+                    window.location.href = $(this).data('url');
+                }
+            });
             
             mod.initChosen();
             

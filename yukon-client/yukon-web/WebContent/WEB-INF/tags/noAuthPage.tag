@@ -54,14 +54,14 @@
 <body>
   <div class="yukon-page">
     <header class="yukon-header">
-      <div class="outer" role="banner">
-        <div class="inner"></div>
+      <div class="toolbar-outer">
+        <div class="toolbar-inner"></div>
       </div>
-      <div class="nav">
-        <div class="nav-outer">
+      <div class="nav-outer">
+        <div class="nav-inner">
           <nav role="navigation">
-            <ul>
-              <li class="logo" style="background: transparent;"><a href="#"></a></li>
+            <ul class="menus">
+              <li class="menu logo" style="background: transparent;"><a href="#"></a></li>
             </ul>
           </nav>
         </div>

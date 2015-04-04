@@ -12,10 +12,10 @@
             <tr data-alert-id="${alert.id}">
                 <cti:msg2 key="${alert.type}" var="iconTitle"/>
                 <td><cti:icon icon="${alert.icon}" title="${iconTitle}" classes="push-down-4"/></td>
-                <td class="full-width"><cti:formatTemplate message="${alert.message}" /></td>
                 <td class="wsnw">
                     <cti:formatDate type="BOTH" value="${alert.date}"/>
                 </td>
+                <td class="full-width"><cti:formatTemplate message="${alert.message}" /></td>
                 <td>
                     <cti:msg2 key=".clear.tooltip" var="tt"/>
                     <cti:button classes="js-clear-yukon-alert M0" renderMode="buttonImage" icon="icon-tick" title="${tt}"/>
@@ -24,5 +24,9 @@
         </c:forEach>
       </tbody>
     </table>
+</div>
+<div class="action-area">
+    <cti:msg2 key="yukon.web.alerts.clearall" var="clearAllLabel"/>
+    <cti:button classes="js-clear-all-yukon-alerts" label="${clearAllLabel}" icon="icon-tick"/>
 </div>
 </cti:msgScope>

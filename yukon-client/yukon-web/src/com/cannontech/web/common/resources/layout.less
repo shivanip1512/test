@@ -3,6 +3,7 @@
     
     TABLE OF CONTENTS:
     VARIABLES
+    MIXINS
     BASE
     HEADER
     CONTENT
@@ -37,6 +38,15 @@
 @footer-logo-url: '../layout/powered_by_yukon.png';
 @footer-logo-white-url: '../layout/powered_by_yukon_white.png';
 
+/* MIXINS */
+
+// Constrict to a fixed width
+.page-fixed-width() {
+    margin: 0 auto;
+    overflow: visible;
+    width: @page-width;
+}
+
 /* BASE */
 * {
     -webkit-box-sizing: border-box;
@@ -65,189 +75,157 @@ html {
 .yukon-page { min-width: @page-width; }
 
 /* HEADER */
-.yukon-header {
+.yukon-header .toolbar-outer { height: 44px; }
+
+.yukon-header .toolbar-inner { .page-fixed-width; }
+.yukon-header .nav-inner { .page-fixed-width; }
+
+.yukon-header .toolbar {
+    float: right;
+    margin-top: 8px;
+}
+.yukon-header .toolbar .button:hover { box-shadow: none !important; }
+.yukon-header .b-user-menu > .button { margin-right: 0; }
+.yukon-header .yukon-search-form {
+    float: left;
+    margin-right: 6px;
+}
+.yukon-header .search-field { min-width: 240px; }
+.yukon-header .yukon-alert-button { padding: 4px 10px; }
+.yukon-header .yukon-alert-button .b-label {
+    font-size: 14px;
+    padding: 0 !important;
+}
+
+.yukon-header .nav-outer {
+    background-color: @nav-background;
+    border-bottom: 1px solid @nav-border;
+    box-shadow: 0 -5px 5px @nav-shadow;
+    height: 72px;
+}
+
+.yukon-header .bars { background-color: @content-background; }
+.yukon-header .bc-bar { padding-bottom: 0; }
+.yukon-header .page-title-bar { padding-bottom: 10px; }
+.yukon-header .bc-bar,
+.yukon-header .page-title-bar {
+    .page-fixed-width;
+    background-color: @content-background;
+    font-size: .9em;
+    line-height: 26px;
+}
+
+.yukon-header .page-heading,
+.yukon-header .page-actions { display: inline-block; }
+.yukon-header .page-heading { float: left; }
+.yukon-header .page-actions { float: right; }
+.yukon-header .page-actions .button { margin-right: 0; }
+
+.yukon-header a {
+    cursor: pointer;
+    &:hover { text-decoration: none; }
+}
+
+.yukon-header .menus,
+.yukon-header .menu-options {
+    margin: 0;
+    padding: 0;
+    z-index: 400;
+}
+
+.yukon-header .menu,
+.yukon-header .menu-title { background: url(../layout/sprite_nav.png) right 0 no-repeat; }
+
+.yukon-header .menu,
+.yukon-header .menu-option { list-style: none; }
+
+.yukon-header .menu {
+    background-position: 0 0;
+    float: left;
+    margin: 0 -7px 0 0;
+    padding: 0 0 0 1px;
+    position: relative;
+    z-index: 2;
+}
+// Show dropdown menus when hovered, focused
+.yukon-header .menu.dropdown:hover,
+.yukon-header .menu.dropdown:focus {
+    background-position: 0 -100px;
+    z-index: 205;
+}
+.yukon-header .menu.dropdown:hover .menu-options ,
+.yukon-header .menu.dropdown:focus .menu-options {
+    display: block;
+    left: 3px;
+}
+.yukon-header .menu.dropdown:hover .menu-title,
+.yukon-header .menu.dropdown:focus .menu-title {
+    background-position: right -100px;
+    margin-left: 3px;
+    padding-left: 17px;
+    z-index: 205;
+}
+
+.yukon-header .menu-title {
+    background-position: right 0;
+    color: @primary-color;
+    display: block;
+    font-size: 1.077em;
+    font-weight: bold;
+    line-height: 72px;
+    padding: 0 44px 0 20px;
+    text-shadow: 0 1px 1px white;
+}
+
+.yukon-header .menu-options {
+    background: white;
+    border: 1px solid #d6d6d6;
+    border-radius: 0 5px 5px 5px;
+    box-shadow: 0 1px 2px #ccc;
+    display: none;
+    left: -9999px;
+    margin-top: -17px;
+    min-width: 100%;
+    padding: 5px 0;
+    position: absolute;
+    top: 66px;
+    white-space: nowrap;
+    z-index: -1;
+}
+
+.yukon-header .menu-option {
+    background: 0;
+    float: none;
+    font-weight: normal;
+    line-height: 28px;
+    margin: 0;
+    padding: 0;
+    position: relative;
     
-    .outer {
-        height: 44px;
-        
-        .inner {
-            margin:0 auto;
-            overflow: visible;
-            width: @page-width;
-            
-            .toolbar {
-                float: right;
-                margin-top: 8px;
-                
-                .b-user-menu > .button { margin-right: 0; }
-                .button:hover { box-shadow: none !important; }
-                .yukon-search-form {
-                    float: left;
-                    margin-right:6px;
-                    
-                    .search-field { min-width:240px }
-                }
-                
-                .yukon-alert-button {
-                    padding: 4px 10px;
-                    
-                    .b-label {
-                        font-size:14px;
-                        padding: 0 !important;
-                    }
-                }
-            }
-        }
+    &:first-child { padding-top: 10px; }
+}
+.yukon-header .menu-option.common-section { border-top: 1px solid #ddd; }
+
+.yukon-header .menu-option-link {
+    background: 0;
+    color: @font-color;
+    display: block;
+    font-size: 1em;
+    padding-left: 17px;
+    padding-right: 17px;
+    &:hover {
+        background: @nav-background;
+        color: @primary-color;
     }
-    
-    .nav {
-        background-color: @nav-background;
-        border-bottom: 1px solid @nav-border;
-        box-shadow: 0 -5px 5px @nav-shadow;
-        color: @font-color;
-        height: 72px;
-        font-weight: bold;
-        
-        .nav-outer {
-            overflow: visible;
-            margin:0 auto;
-            width: @page-width;
-        }
-        
-        ul {
-            margin:0;
-            padding:0;
-            z-index: 400;
-            
-            li, li.dropdown a, li.dropdown span {
-                background: url(../layout/sprite_nav.png) right 0 no-repeat;
-            }
-            
-            li {
-                background-position: 0 0;
-                float: left;
-                list-style: none;
-                margin: 0 -7px 0 0;
-                padding: 0 0 0 1px;
-                position: relative;
-                z-index: 2;
-                
-                a {
-                    text-decoration: none;
-                }
-            }
-            
-            li.dropdown {
-                
-                &:hover, &:focus {
-                    background-position: 0 -100px;
-                    z-index: 205;
-                    
-                    ul {
-                        display: block;
-                        left: 3px;
-                        
-                        li a {
-                            color: @font-color;
-                            line-height: 28px;
-                            margin-left: 0;
-                        }
-                    }
-                    
-                    a, span {
-                        background-position: right -100px;
-                        margin-left: 3px;
-                        padding-left: 17px;
-                        z-index: 205;
-                    }
-                }
-                
-                a, span {
-                    display: block;
-                    padding: 0 44px 0 20px;
-                    background-position: right 0;
-                    color: @primary-color;
-                    line-height: 72px;
-                    text-shadow: 0 1px 1px white;
-                    font-size: 1.077em;
-                }
-                
-                ul {
-                    background: white;
-                    border: 1px solid #d6d6d6;
-                    border-radius: 0 5px 5px 5px;
-                    box-shadow: 0 1px 2px #ccc;
-                    display: none;
-                    left: -9999px;
-                    margin-top: -17px;
-                    min-width: 100%;
-                    padding: 5px 0;
-                    position: absolute;
-                    top: 66px;
-                    white-space: nowrap;
-                    z-index: -1;
-                    
-                    li {
-                        background: 0;
-                        float: none;
-                        font-weight: normal;
-                        line-height: 28px;
-                        margin: 0;
-                        padding: 0;
-                        position: relative;
-                        
-                        &.first { padding-top:10px; }
-                        &.common-section { border-top: 1px solid #ddd; }
-                        
-                        a {
-                            background: 0;
-                            display: block;
-                            font-size: 1em;
-                            padding-left: 17px;
-                            &:hover {
-                                color: @primary-color;
-                                background: @nav-background;
-                            }
-                        }
-                    }
-                }
-            }
-            
-            .logo, .logo:hover { background: none; }
-            .logo a {
-                display: inline-block;
-                min-height: 68px;
-                background: url(@logo-url) @logo-left @logo-top no-repeat;
-                width: @logo-width;
-            }
-        }
-    }
-    
-    .bars {
-        background-color: @content-background;
-        
-        .bc-bar { padding-bottom: 0; }
-        .page-title-bar { padding-bottom: 10px; }
-        .bc-bar, .page-title-bar {
-            background-color: @content-background;
-            font-size: .9em;
-            line-height: 26px;
-            margin: 0 auto;
-            width: @page-width;
-        }
-        .page-title-bar .page-heading {
-            display: inline-block;
-            float: left;
-        }
-        .page-title-bar .page-actions {
-            display: inline-block;
-            float: right;
-        }
-        .page-title-bar .page-actions {
-            .button { margin-right: 0; }
-            .b-page-actions { margin-left: 15px; }
-        }
-    }
+}
+
+.yukon-header .logo,
+.yukon-header .logo:hover { background: none; }
+.yukon-header .logo a {
+    display: inline-block;
+    min-height: 68px;
+    background: url(@logo-url) @logo-left @logo-top no-repeat;
+    width: @logo-width;
 }
 
 /* CONTENT */
@@ -261,9 +239,8 @@ html {
     outline: 0;
     padding: 0;
     width: 100%;
-    
-    .main-container { padding-bottom: 10px; }
 }
+.yukon-content .main-container { padding-bottom: 10px; }
 
 /* FOOTER */ 
 .yukon-footer {

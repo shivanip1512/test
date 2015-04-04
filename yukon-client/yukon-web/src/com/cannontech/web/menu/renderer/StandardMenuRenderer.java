@@ -36,7 +36,8 @@ import com.google.common.collect.Iterables;
 
 /**
  * This class consumes the menu_config.xml file and will write out menus in the form:
- * {@code 
+ * <p><pre>
+ * {@code
  * <li class="dropdown">
  *     <a href="/some/url/">Some Menu</a>
  *     <ul>
@@ -46,8 +47,8 @@ import com.google.common.collect.Iterables;
  *         <li class="common-section"><a href="/some/url/">Option 4</a></li>
  *         <li class="last"><a href="/some/url/">Option 5</a></li>
  *      </ul>
- * </li>
- * }
+ * </li>}
+ * </pre></p>
  * 
  * This class uses the JDOM library to parse the menu_config.xml file 
  * and JSoup to generate the corresponding html.  Some class names clash
@@ -63,7 +64,7 @@ public class StandardMenuRenderer {
     @Autowired private ConfigurationSource configurationSource;
 
     private Resource menuConfigFile;
-    private final static String messagBase = "yukon.web.menu.";
+    private final static String key = "yukon.web.menu.";
     private final static Namespace NS = Namespace.getNamespace("http://yukon.cannontech.com/menus");
     
     public StandardMenuRenderer(Resource menuConfigFile) {
@@ -109,9 +110,13 @@ public class StandardMenuRenderer {
         
         Iterator<Element> iter = options.iterator();
         while(iter.hasNext()) {
+            
             Element option = iter.next();
             if (checkPermissions(option, user)) {
+                
                 org.jsoup.nodes.Element optionLi = new org.jsoup.nodes.Element(Tag.valueOf("li"), "");
+                optionLi.addClass("menu-option");
+                
                 if (firstOption) {
                     optionLi.addClass("first");
                     firstOption = false;
@@ -126,11 +131,12 @@ public class StandardMenuRenderer {
                 String link = buildUrl(req, option.getChild("link", NS).getText());
                 String text = null;
                 try {
-                    text = accessor.getMessage(messagBase + menu.getAttributeValue("name") + "." + option.getAttributeValue("name"));
+                    text = accessor.getMessage(key + menu.getAttributeValue("name") 
+                            + "." + option.getAttributeValue("name"));
                 } catch (NoSuchMessageException e) {
-                    text = accessor.getMessage(messagBase + option.getAttributeValue("name"));
+                    text = accessor.getMessage(key + option.getAttributeValue("name"));
                 }
-                optionLi.append("<a href=\"" + link + "\">" + text + "</a>");
+                optionLi.append("<a class=\"menu-option-link\" href=\"" + link + "\">" + text + "</a>");
                 
                 menuOptions.add(optionLi);
             }
@@ -138,19 +144,21 @@ public class StandardMenuRenderer {
         
         if (!menuOptions.isEmpty()) {
             org.jsoup.nodes.Element menuLi = new org.jsoup.nodes.Element(Tag.valueOf("li"), "");
-            menuLi.addClass("dropdown");
+            menuLi.addClass("menu dropdown");
             
-            String text = accessor.getMessage(messagBase + menu.getAttributeValue("name"));
+            String text = accessor.getMessage(key + menu.getAttributeValue("name"));
             
             Element link = menu.getChild("link", NS);
             if (link != null) {
                 String href = buildUrl(req, link.getText());
-                menuLi.append("<a href=\"" + href + "\">" + text + "</a>");
+                // Don't use 'href' so we can disable the linking for touch screens.
+                menuLi.append("<a class=\"menu-title\" data-url=\"" + href + "\">" + text + "</a>");
             } else {
-                menuLi.append("<span>" + text + "</span>");
+                menuLi.append("<a class=\"menu-title\">" + text + "</a>");
             }
             
             org.jsoup.nodes.Element menuUl = new org.jsoup.nodes.Element(Tag.valueOf("ul"), "");
+            menuUl.addClass("menu-options");
             
             for (org.jsoup.nodes.Element menuOption : menuOptions) {
                 menuUl.appendChild(menuOption);
