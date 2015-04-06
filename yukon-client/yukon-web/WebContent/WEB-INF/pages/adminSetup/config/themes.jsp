@@ -144,10 +144,12 @@
                                         <div class="column one">
                                             <c:set var="prop" value="${mappedPropertiesHelper.map['PRIMARY_COLOR']}"/>
                                             <div><span class="name"><i:inline key=".primary"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                            <form:errors path="${prop.path}" cssClass="error" element="div"/>
                                         </div>
                                         <div class="column two nogutter">
                                             <c:set var="prop" value="${mappedPropertiesHelper.map['VISITED_COLOR']}"/>
                                             <div><span class="name"><i:inline key=".visited"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                            <form:errors path="${prop.path}" cssClass="error" element="div"/>
                                         </div>
                                     </div>
                                 </div>
@@ -162,14 +164,17 @@
                                         <div class="column one">
                                             <c:set var="prop" value="${mappedPropertiesHelper.map['BUTTON_COLOR']}"/>
                                             <div><span class="name"><i:inline key=".color"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                            <form:errors path="${prop.path}" cssClass="error" element="div"/>
                                         </div>
                                         <div class="column two">
                                             <c:set var="prop" value="${mappedPropertiesHelper.map['BUTTON_COLOR_BORDER']}"/>
                                             <div><span class="name"><i:inline key=".border"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                            <form:errors path="${prop.path}" cssClass="error" element="div"/>
                                         </div>
                                         <div class="column three nogutter">
                                             <c:set var="prop" value="${mappedPropertiesHelper.map['BUTTON_COLOR_HOVER']}"/>
                                             <div><span class="name"><i:inline key=".hover"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                            <form:errors path="${prop.path}" cssClass="error" element="div"/>
                                         </div>
                                     </div>
                                 </div>
@@ -184,14 +189,17 @@
                                         <div class="column one">
                                             <c:set var="prop" value="${mappedPropertiesHelper.map['PAGE_BACKGROUND']}"/>
                                             <div><span class="name"><i:inline key=".color"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                            <form:errors path="${prop.path}" cssClass="error" element="div"/>
                                         </div>
                                         <div class="column two">
                                             <c:set var="prop" value="${mappedPropertiesHelper.map['PAGE_BACKGROUND_SHADOW']}"/>
                                             <div><span class="name"><i:inline key=".shadow"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                            <form:errors path="${prop.path}" cssClass="error" element="div"/>
                                         </div>
                                         <div class="column three nogutter">
                                             <c:set var="prop" value="${mappedPropertiesHelper.map['PAGE_BACKGROUND_FONT_COLOR']}"/>
                                             <div><span class="name"><i:inline key=".fontColor"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                            <form:errors path="${prop.path}" cssClass="error" element="div"/>
                                         </div>
                                     </div>
                                 </div>
@@ -220,16 +228,19 @@
                                                 <div class="column one">
                                                     <c:set var="prop" value="${mappedPropertiesHelper.map['LOGIN_FONT_COLOR']}"/>
                                                     <div><span class="name"><i:inline key=".fontColor"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                                    <form:errors path="${prop.path}" cssClass="error" element="div"/>
                                                 </div>
                                                 <div class="column two nogutter">
                                                     <c:set var="prop" value="${mappedPropertiesHelper.map['LOGIN_FONT_SHADOW']}"/>
                                                     <div><span class="name"><i:inline key=".fontShadow"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                                    <form:errors path="${prop.path}" cssClass="error" element="div"/>
                                                 </div>
                                             </div>
                                             <div class="column-24 clearfix">
                                                 <div class="column one nogutter">
                                                     <c:set var="prop" value="${mappedPropertiesHelper.map['LOGIN_TAGLINE_MARGIN']}"/>
                                                     <div><span class="name"><i:inline key=".taglineMargin"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                                    <form:errors path="${prop.path}" cssClass="error" element="div"/>
                                                 </div>
                                             </div>
                                         </div>
@@ -256,10 +267,13 @@
                                         <div class="column two nogutter">
                                             <c:set var="prop" value="${mappedPropertiesHelper.map['LOGO_WIDTH']}"/>
                                             <div class="stacked"><span class="name"><i:inline key=".width"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                            <form:errors path="${prop.path}" cssClass="error" element="div"/>
                                             <c:set var="prop" value="${mappedPropertiesHelper.map['LOGO_LEFT']}"/>
                                             <div class="stacked"><span class="name"><i:inline key=".offsetX"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                            <form:errors path="${prop.path}" cssClass="error" element="div"/>
                                             <c:set var="prop" value="${mappedPropertiesHelper.map['LOGO_TOP']}"/>
                                             <div><span class="name"><i:inline key=".offsetY"/></span>&nbsp;<tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
+                                            <form:errors path="${prop.path}" cssClass="error" element="div"/>
                                         </div>
                                     </div>
                                 </div>

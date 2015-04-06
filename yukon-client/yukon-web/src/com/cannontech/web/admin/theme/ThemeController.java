@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +40,8 @@ import com.cannontech.web.admin.theme.model.Theme;
 import com.cannontech.web.admin.theme.model.ThemePropertyType;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.resources.ThemeableResourceCache;
+import com.cannontech.web.input.type.ColorType;
+import com.cannontech.web.input.type.PixelType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.support.MappedPropertiesHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -61,6 +65,26 @@ public class ThemeController {
                 YukonValidationUtils.checkExceedsMaxLength(errors, "name", target.getName(), 255);
             } else {
                 YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "yukon.web.error.required");
+            }
+
+            // Validate Theme properties
+            Map<ThemePropertyType, Object> themeproperties = target.getProperties();
+            Iterator<Entry<ThemePropertyType, Object>> it = themeproperties.entrySet().iterator();
+            while (it.hasNext()) {
+                Entry<ThemePropertyType, Object> pair = it.next();
+                if (pair.getKey().getInputType() instanceof ColorType) {
+                    String colorCode = (String) pair.getValue();
+                    if (!colorCode.matches("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})|^rgba\\((\\d+),(\\d+),(\\d+)(,\\d+\\.\\d+)*\\)$")) {
+                        YukonValidationUtils.rejectValues(errors, "yukon.web.error.themes.isNotValidColor",
+                            "properties[" + pair.getKey().name() + "]");
+                    }
+                } else if (pair.getKey().getInputType() instanceof PixelType) {
+                    try {
+                        Integer.parseInt((String) pair.getValue());
+                    } catch (NumberFormatException nfe) {
+                        errors.rejectValue("properties[" + pair.getKey().name() + "]", "yukon.web.error.notValidNumber");
+                    }
+                }
             }
         }
     };
