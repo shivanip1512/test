@@ -31,7 +31,7 @@ import com.google.common.collect.Iterables;
 public class VoltageRegulatorMappingServiceImpl implements VoltageRegulatorMappingService {
     
     private static final Logger log = YukonLogManager.getLogger(VoltageRegulatorMappingServiceImpl.class);
-    private static final String mappingDelimiter = "-";
+    private static final String delimiter = "-";
     
     @Autowired @Qualifier("regulatorMapping") private RecentResultsCache<RegulatorMappingTask> resultsCache;
     @Autowired @Qualifier("longRunning") private Executor executor;
@@ -41,7 +41,7 @@ public class VoltageRegulatorMappingServiceImpl implements VoltageRegulatorMappi
     @Autowired private CcMonitorBankListDao ccMonitorBankListDao;
     
     @Override
-    public String initiateTask(DeviceCollection regulators, YukonUserContext userContext) {
+    public String start(DeviceCollection regulators, YukonUserContext userContext) {
         
         log.info(userContext.getYukonUser() + " initiated a regulator point mapping task for " 
                  + regulators.getDeviceCount() + " devices.");
@@ -64,8 +64,10 @@ public class VoltageRegulatorMappingServiceImpl implements VoltageRegulatorMappi
     
     @Override
     public List<RegulatorMappingTask> getAllTasks() {
+        
         List<RegulatorMappingTask> allTasks = resultsCache.getAll();
         Collections.sort(allTasks);
+        
         return allTasks;
     }
     
@@ -74,6 +76,7 @@ public class VoltageRegulatorMappingServiceImpl implements VoltageRegulatorMappi
      * The results of this work are stored in the task object.
      */
     final class RegulatorMappingProcessor implements Runnable {
+        
         private final RegulatorMappingTask task;
         
         public RegulatorMappingProcessor(RegulatorMappingTask task) {
@@ -82,10 +85,11 @@ public class VoltageRegulatorMappingServiceImpl implements VoltageRegulatorMappi
         
         @Override
         public void run() {
+            
             try {
                 for (SimpleDevice regulator : task.getRegulators()) {
                     
-                    //check to see if the task was cancelled
+                    // Check to see if the task was cancelled
                     if (task.isCanceled()) {
                         break;
                     }
@@ -99,16 +103,16 @@ public class VoltageRegulatorMappingServiceImpl implements VoltageRegulatorMappi
                         
                         log.trace("Regulator point mapping task working on mapping " + mapping);
                         
-                        //Build the expected point name for the mapping. E.g. "RegulatorName-PointMappingName"
+                        // Build the expected point name for the mapping. E.g. "RegulatorName-PointMappingName"
                         LiteYukonPAObject regulatorPao = serverDatabaseCache.getAllPaosMap().get(regulator.getDeviceId());
                         String regulatorName = regulatorPao.getPaoName();
-                        String mappedPointName = regulatorName + mappingDelimiter + mapping.getMappingString();
+                        String mappedPointName = regulatorName + delimiter + mapping.getMappingString();
                         log.trace("Searching for point name: " + mappedPointName);
                         
-                        //Load point with matching name
+                        // Load point with matching name
                         List<LitePoint> allPointsWithMappedName = pointDao.findAllPointsWithName(mappedPointName);
                         
-                        //If there's no matching point or multiples, bail out and skip to the next mapping.
+                        // If there's no matching point or multiples, bail out and skip to the next mapping.
                         if (allPointsWithMappedName.size() > 1) {
                             log.trace("Multiple candidate points found. Skipping this point mapping.");
                             task.addResult(regulator, mapping, MULTIPLE_POINTS_FOUND);
@@ -121,7 +125,7 @@ public class VoltageRegulatorMappingServiceImpl implements VoltageRegulatorMappi
                         
                         LitePoint pointForMapping = Iterables.getOnlyElement(allPointsWithMappedName);
                         
-                        //Don't bother doing the new mapping if the old mapping is the exact same point
+                        // Don't bother doing the new mapping if the old mapping is the exact same point
                         if (previousMappings.get(mapping) != null
                                 && previousMappings.get(mapping) == pointForMapping.getPointID()) {
                             
@@ -129,14 +133,14 @@ public class VoltageRegulatorMappingServiceImpl implements VoltageRegulatorMappi
                             continue;
                         }
                         
-                        //Assign the point to the regulator
+                        // Assign the point to the regulator
                         extraPaoPointAssignmentDao.addAssignment(regulatorPao, pointForMapping.getPointID(), mapping, true);
                         if (mapping == RegulatorPointMapping.VOLTAGE_Y) {
                             ccMonitorBankListDao.deleteNonMatchingRegulatorPoint(regulator.getDeviceId(), pointForMapping.getPointID());
                             ccMonitorBankListDao.addRegulatorPoint(regulator.getDeviceId());
                         }
                         
-                        //Save a successful result
+                        // Save a successful result
                         if (previousMappings.containsKey(mapping)) {
                             log.trace("Successfully assigned point. Previous mapping was overwritten.");
                             task.addResult(regulator, mapping, SUCCESS_WITH_OVERWRITE);

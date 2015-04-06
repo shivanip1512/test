@@ -131,7 +131,7 @@ public class VoltageRegulatorMappingServiceImplTest {
         ReflectionTestUtils.setField(service, "resultsCache", mockCache);
         
         //Method call
-        service.initiateTask(regulators, YukonUserContext.system);
+        service.start(regulators, YukonUserContext.system);
     }
     
     @Test
@@ -152,8 +152,8 @@ public class VoltageRegulatorMappingServiceImplTest {
         ReflectionTestUtils.setField(service, "resultsCache", cache);
         
         //Initiate two tasks
-        String taskId1 = service.initiateTask(regulators, YukonUserContext.system);
-        String taskId2 = service.initiateTask(regulators2, YukonUserContext.system);
+        String taskId1 = service.start(regulators, YukonUserContext.system);
+        String taskId2 = service.start(regulators2, YukonUserContext.system);
         
         //Get all tasks. Should be ordered by their start time
         List<RegulatorMappingTask> allTasks = service.getAllTasks();

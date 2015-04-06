@@ -54,27 +54,8 @@ import com.google.common.collect.Lists;
 @Controller
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class RegulatorController {
-
-    private static final Map<RegulatorEvent.EventType, String> classNameForEventType;
-
-    static {
-        ImmutableMap.Builder<EventType, String> builder = ImmutableMap.builder();
-
-        builder.put(EventType.TAP_UP, "icon-bullet-go-up");
-        builder.put(EventType.TAP_DOWN, "icon-bullet-go-down");
-        builder.put(EventType.INCREASE_SETPOINT, "icon-bullet-go-up");
-        builder.put(EventType.DECREASE_SETPOINT, "icon-bullet-go-down");
-        builder.put(EventType.INTEGRITY_SCAN, "icon-transmit-blue");
-        builder.put(EventType.ENABLE_REMOTE_CONTROL, "icon-accept");
-        builder.put(EventType.DISABLE_REMOTE_CONTROL, "icon-delete");
-
-        classNameForEventType = builder.build();
-
-    }
-
-    private static final String eventTypeBaseKey = "yukon.web.modules.capcontrol.ivvc.eventType";
-
-    @Autowired private DateFormattingService dateFormattingService;
+    
+    @Autowired private DateFormattingService dateFormatting;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private RegulatorValidator regulatorValidator;
@@ -82,38 +63,56 @@ public class RegulatorController {
     @Autowired private VoltageRegulatorService regulatorService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private ZoneDao zoneDao;
-
-    @RequestMapping(value="{id}", method=RequestMethod.GET)
-    public String view(ModelMap model, @PathVariable int id, YukonUserContext context) {
-
-        Regulator regulator = regulatorService.getRegulatorById(id);
-
-        model.addAttribute("mode",  PageEditMode.VIEW);
-        return setUpModelMap(model, regulator, context);
+    
+    private static final Map<RegulatorEvent.EventType, String> classNameForEventType;
+    
+    static {
+        ImmutableMap.Builder<EventType, String> builder = ImmutableMap.builder();
+        
+        builder.put(EventType.TAP_UP, "icon-bullet-go-up");
+        builder.put(EventType.TAP_DOWN, "icon-bullet-go-down");
+        builder.put(EventType.INCREASE_SETPOINT, "icon-bullet-go-up");
+        builder.put(EventType.DECREASE_SETPOINT, "icon-bullet-go-down");
+        builder.put(EventType.INTEGRITY_SCAN, "icon-transmit-blue");
+        builder.put(EventType.ENABLE_REMOTE_CONTROL, "icon-accept");
+        builder.put(EventType.DISABLE_REMOTE_CONTROL, "icon-delete");
+        
+        classNameForEventType = builder.build();
+        
     }
-
-    private String setUpModelMap(ModelMap model, Regulator regulator, YukonUserContext context) {
-
+    
+    private static final String eventTypeBaseKey = "yukon.web.modules.capcontrol.ivvc.eventType";
+    
+    @RequestMapping(value="{id}", method=RequestMethod.GET)
+    public String view(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
+        
+        Regulator regulator = regulatorService.getRegulatorById(id);
+        model.addAttribute("mode",  PageEditMode.VIEW);
+        
+        return setUpModel(model, regulator, userContext);
+    }
+    
+    private String setUpModel(ModelMap model, Regulator regulator, YukonUserContext userContext) {
+        
         Object modelReg = model.get("regulator");
         if (modelReg instanceof Regulator) {
             regulator = (Regulator) modelReg;
         }
-
+        
         Map<RegulatorPointMapping, Integer> sortedMappings =
-                regulatorService.sortMappingsAllKeys(regulator.getMappings(), context);
-
+                regulatorService.sortMappingsAllKeys(regulator.getMappings(), userContext);
+        
         regulator.setMappings(sortedMappings);
         model.addAttribute("regulator", regulator);
         
-
         model.addAttribute("regulatorTypes", PaoType.getRegulatorTypes());
-
+        
         Set<LightDeviceConfiguration> availableConfigs = new HashSet<>();
         for (PaoType type : PaoType.getRegulatorTypes()) {
             availableConfigs.addAll(deviceConfigurationDao.getAllConfigurationsByType(type));
         }
         model.addAttribute("availableConfigs", availableConfigs);
-
+        
         if (regulator.getId() != null) {
             try {
                 Zone zone = zoneDao.getZoneByRegulatorId(regulator.getId());
@@ -122,80 +121,80 @@ public class RegulatorController {
                 //The regulator is an orphan, so there is no zone to put in the model.
             }
         }
-
+        
         model.addAttribute("paoTypeMap", RegulatorPointMapping.getMappingsByPaoType());
-
+        
         return "regulator.jsp";
     }
-
+    
     @RequestMapping(value="{id}/edit", method = RequestMethod.GET)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
-    public String edit(ModelMap model, @PathVariable int id, YukonUserContext context) {
-
+    public String edit(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
+        
         Regulator regulator = regulatorService.getRegulatorById(id);
-
         model.addAttribute("mode",  PageEditMode.EDIT);
-        return setUpModelMap(model, regulator, context);
+        
+        return setUpModel(model, regulator, userContext);
     }
-
+    
     @RequestMapping("create")
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
-    public String create(ModelMap model, YukonUserContext context) {
-
+    public String create(ModelMap model, YukonUserContext userContext) {
+        
         Regulator regulator = new Regulator();
-
         model.addAttribute("mode",  PageEditMode.CREATE);
-        return setUpModelMap(model, regulator, context);
+        
+        return setUpModel(model, regulator, userContext);
     }
-
+    
     @RequestMapping(value={""}, method=RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String save(
             @ModelAttribute("regulator") Regulator regulator,
-            BindingResult bindingResult,
+            BindingResult result,
             RedirectAttributes redirectAttributes) {
-
-        regulatorValidator.validate(regulator, bindingResult);
-
-        if (bindingResult.hasErrors()) {
-            return bindAndForward(regulator, bindingResult, redirectAttributes);
+        
+        regulatorValidator.validate(regulator, result);
+        
+        if (result.hasErrors()) {
+            return bindAndForward(regulator, result, redirectAttributes);
         }
-
+        
         int id;
         try {
             id = regulatorService.save(regulator);
         } catch (InvalidDeviceTypeException e) {
             //Something happened to make the config invalid since validation.
-            bindingResult.rejectValue("configId", "yukon.web.modules.capcontrol.regulator.error.invalidConfig");
-
-            return bindAndForward(regulator, bindingResult, redirectAttributes);
+            result.rejectValue("configId", "yukon.web.modules.capcontrol.regulator.error.invalidConfig");
+            
+            return bindAndForward(regulator, result, redirectAttributes);
         }
-
+        
         return "redirect:regulators/" + id;
     }
-
-    private String bindAndForward(Regulator regulator, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
-
-        redirectAttributes.addFlashAttribute("regulator", regulator);
-        redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.regulator", bindingResult);
-
+    
+    private String bindAndForward(Regulator regulator, BindingResult result, RedirectAttributes attrs) {
+        
+        attrs.addFlashAttribute("regulator", regulator);
+        attrs.addFlashAttribute("org.springframework.validation.BindingResult.regulator", result);
+        
         if (regulator.getId() == null) {
             return "redirect:regulators/create";
         }
-
+        
         return "redirect:regulators/" + regulator.getId() + "/edit";
     }
-
+    
     @RequestMapping(value="{id}", method = RequestMethod.DELETE)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String delete(HttpServletResponse response, @PathVariable int id) {
-
+        
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(id);
         if (pao == null) {
             response.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         }
-
+        
         try {
             zoneDao.getZoneByRegulatorId(id);
             response.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -203,56 +202,58 @@ public class RegulatorController {
         } catch (OrphanedRegulatorException e) {
           //The regulator is an orphan, which is what we need when deleting
         }
-
+        
         regulatorService.delete(id);
-
+        
         return "redirect:/capcontrol/tier/areas";
     }
-
+    
     @RequestMapping(value="{id}/events")
-    public @ResponseBody Map<String,Object> getEvents(@PathVariable int id, @RequestParam(defaultValue="0") long lastUpdate, YukonUserContext userContext) {
-
-        Map<String,Object> response = new HashMap<>();
-
+    public @ResponseBody Map<String,Object> getEvents(@PathVariable int id, 
+            @RequestParam(defaultValue="0") long lastUpdate, YukonUserContext userContext) {
+        
+        Map<String,Object> resp = new HashMap<>();
+        
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-
+        
         Instant start = Instant.now();
-        response.put("timestamp", start.getMillis());
-
+        resp.put("timestamp", start.getMillis());
+        
         List<RegulatorEvent> events = eventsDao.getForIdSinceTimestamp(id, new Instant(lastUpdate));
-
+        
         if (events.size() > 20) {
             events = events.subList(0, 20);
         }
-
-        List<Map<String, String>> eventsJson = Lists.transform(events, new Function<RegulatorEvent, Map<String, String>>() {
-
+        
+        List<Map<String, String>> eventsJson = 
+                Lists.transform(events, new Function<RegulatorEvent, Map<String, String>>() {
+            
             @Override
             public Map<String, String> apply(RegulatorEvent event) {
-
+                
                 ImmutableMap.Builder<String, String> eventJson = new ImmutableMap.Builder<>();
-
-                String formattedTime = dateFormattingService.format(event.getTimestamp(), DateFormatEnum.BOTH, userContext);
+                
+                String formattedTime = dateFormatting.format(event.getTimestamp(), DateFormatEnum.BOTH, userContext);
                 eventJson.put("timestamp", formattedTime);
-
+                
                 String iconClass = classNameForEventType.get(event.getType());
                 eventJson.put("icon", iconClass);
-
+                
                 eventJson.put("user", event.getUserName());
-
+                
                 String key = eventTypeBaseKey + "." + event.getType().name();
-
+                
                 String phaseString = accessor.getMessage(event.getPhase());
                 String message = accessor.getMessage(key, phaseString);
-
+                
                 eventJson.put("message", message);
-
+                
                 return eventJson.build();
             }
         });
-        response.put("events", eventsJson);
-
-        return response;
+        resp.put("events", eventsJson);
+        
+        return resp;
     }
-
+    
 }

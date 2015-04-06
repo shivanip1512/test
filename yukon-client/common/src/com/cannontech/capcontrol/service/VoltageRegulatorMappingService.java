@@ -17,7 +17,7 @@ public interface VoltageRegulatorMappingService {
      * Creates a new task to add point mappings for the specified regulators, and returns the taskId.
      * @return the ID of the newly created task
      */
-    public String initiateTask(DeviceCollection regulators, YukonUserContext userContext);
+    public String start(DeviceCollection regulators, YukonUserContext userContext);
     
     /**
      * Retrieves a regulator point mapping task by its ID.
