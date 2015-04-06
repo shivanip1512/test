@@ -19,11 +19,11 @@ struct KeepAlivePolicy : Policy
 
     virtual Actions StopKeepAlive() = 0;
 
-    virtual Action EnableRemoteControl( const long keepAliveValue ) = 0;
+    virtual Actions EnableRemoteControl( const long keepAliveValue ) = 0;
 
-    virtual Action DisableRemoteControl() = 0;
+    virtual Actions DisableRemoteControl() = 0;
 
-    OperatingMode   getOperatingMode();
+    OperatingMode getOperatingMode();
 
 protected:
 

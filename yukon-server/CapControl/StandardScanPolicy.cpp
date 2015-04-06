@@ -8,7 +8,11 @@ namespace CapControl    {
 
 StandardScanPolicy::StandardScanPolicy()
 {
-    _supportedAttributes = AttributeList
+}
+
+Policy::AttributeList StandardScanPolicy::getSupportedAttributes()
+{
+    return
     {
         PointAttribute::VoltageX,
         PointAttribute::VoltageY

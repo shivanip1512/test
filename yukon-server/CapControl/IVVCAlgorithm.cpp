@@ -489,7 +489,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                         0,
                         1,
                         "IVVC Comms Restored",
-                        "cap control") );
+                        Cti::CapControl::SystemUser ) );
 
                 break;
             }
@@ -850,7 +850,7 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
 
                 if ( sendScan )
                 {
-                    issueIntegrityScanCommand( *regulator, "cap control" );
+                    regulator->executeIntegrityScan( Cti::CapControl::SystemUser );
                 }
             }
             catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
@@ -1109,7 +1109,7 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
                     VoltageRegulatorManager::SharedPtr regulator =
                             store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
 
-                    if ( regulator->executePeriodicKeepAlive() )
+                    if ( regulator->executePeriodicKeepAlive( Cti::CapControl::SystemUser ) )
                     {
                         if( _CC_DEBUG & CC_DEBUG_IVVC )
                         {
@@ -1148,7 +1148,7 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
                     VoltageRegulatorManager::SharedPtr regulator =
                             store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
 
-                    if ( regulator->executePeriodicKeepAlive() )
+                    if ( regulator->executePeriodicKeepAlive( Cti::CapControl::SystemUser ) )
                     {
                         if( _CC_DEBUG & CC_DEBUG_IVVC )
                         {
@@ -1187,7 +1187,7 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
                     VoltageRegulatorManager::SharedPtr regulator =
                             store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
 
-                    if ( regulator->executePeriodicKeepAlive() )
+                    if ( regulator->executePeriodicKeepAlive( Cti::CapControl::SystemUser ) )
                     {
                         if( _CC_DEBUG & CC_DEBUG_IVVC )
                         {
@@ -2396,7 +2396,7 @@ void IVVCAlgorithm::sendDisableRemoteControl( CtiCCSubstationBusPtr subbus )
 
                 if ( regulator->getOperatingMode() == VoltageRegulator::RemoteMode )
                 {
-                    issueDisableRemoteControlCommand( *regulator, "cap control" );
+                    regulator->executeDisableRemoteControl( Cti::CapControl::SystemUser );
                 }
             }
             catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
@@ -2448,7 +2448,7 @@ void IVVCAlgorithm::handleCommsLost(IVVCStatePtr state, CtiCCSubstationBusPtr su
                 0,
                 0,
                 "IVVC Comms Lost",
-                "cap control") );
+                Cti::CapControl::SystemUser) );
 
         PointValueMap rejectedPoints = state->getGroupRequest()->getRejectedPointValues();
         std::set<long> missingIds = state->getGroupRequest()->getMissingPoints();
@@ -2476,7 +2476,7 @@ void IVVCAlgorithm::handleCommsLost(IVVCStatePtr state, CtiCCSubstationBusPtr su
                     0,
                     pv.second.value,
                     eventText.str(),
-                    "cap control") );
+                    Cti::CapControl::SystemUser) );
 
             // remove the rejected point Ids the set of missingIds to reduce log entries.
             missingIds.erase( pv.first );
@@ -2497,7 +2497,7 @@ void IVVCAlgorithm::handleCommsLost(IVVCStatePtr state, CtiCCSubstationBusPtr su
                     0,
                     0,
                     "IVVC Missing Point Response",
-                    "cap control") );
+                    Cti::CapControl::SystemUser) );
         }
 
         DispatchConnectionPtr dispatchConnection = CtiCapController::getInstance()->getDispatchConnection();

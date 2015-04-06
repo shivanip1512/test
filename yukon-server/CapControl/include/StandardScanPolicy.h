@@ -11,6 +11,8 @@ namespace CapControl    {
 struct StandardScanPolicy : ScanPolicy
 {
     StandardScanPolicy();
+
+    AttributeList getSupportedAttributes() override;
 };
 
 }

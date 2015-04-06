@@ -11,6 +11,8 @@ struct StandardControlPolicy : ControlPolicy
 {
     StandardControlPolicy();
 
+    virtual AttributeList getSupportedAttributes() override;
+
     Action TapUp() override;
     Action TapDown() override;
 

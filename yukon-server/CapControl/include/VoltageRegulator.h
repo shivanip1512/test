@@ -75,8 +75,6 @@ public:
     VoltageRegulator(Cti::RowReader & rdr);
     VoltageRegulator(const VoltageRegulator & toCopy);
 
-//    VoltageRegulator &operator=(const VoltageRegulator & rhs);
-
     void handlePointData(CtiPointDataMsg * message);
 
     IDSet getRegistrationPoints();
@@ -95,25 +93,24 @@ public:
 
     void updateFlags(const unsigned tapDelay);
 
-//    virtual VoltageRegulator * replicate() const = 0;
     VoltageRegulator * replicate() const
     {
         return new VoltageRegulator( *this );
     }
 
-    void executeTapUpOperation();
-    void executeTapDownOperation();
-    void executeAdjustSetPointOperation( const double changeAmount );
+    void executeTapUpOperation( const std::string & user );
+    void executeTapDownOperation( const std::string & user );
+    void executeAdjustSetPointOperation( const double changeAmount, const std::string & user );
 
-    void executeIntegrityScan();
+    void executeIntegrityScan( const std::string & user );
 
-    void executeEnableRemoteControl();
-    void executeDisableRemoteControl();
+    void executeEnableRemoteControl( const std::string & user );
+    void executeDisableRemoteControl( const std::string & user );
 
-    long executeEnableKeepAlive();
-    void executeDisableKeepAlive();
+    long executeEnableKeepAlive( const std::string & user );
+    void executeDisableKeepAlive( const std::string & user );
 
-    bool executePeriodicKeepAlive();
+    bool executePeriodicKeepAlive( const std::string & user );
 
     void        setPhase( const Phase phase );
     Phase       getPhase() const;
@@ -122,7 +119,6 @@ public:
     double getVoltageChangePerTap() const;
     double requestVoltageChange( const double changeAmount,
                                  const bool isEmergency = false );
-
     void canExecuteVoltageRequest( const double changeAmount );
 
     double adjustVoltage( const double changeAmount );
@@ -133,11 +129,9 @@ public:
     ControlMode getControlMode() const;
     std::string getHeartbeatMode() const;
 
-
     double getVoltage();
 
     boost::optional<long> getTapPosition();
-
 
     long getKeepAliveConfig();
     long getKeepAliveTimer();
@@ -178,11 +172,12 @@ protected:
                                 const ControlOperation              operation,
                                 const std::string                 & opDescription,
                                 const RegulatorEvent::EventTypes    eventType,
-                                const double                        changeAmount );
+                                const double                        changeAmount,
+                                const std::string                 & user );
 
-    void submitRemoteControlCommands( Policy::Action                  & action,
-                                      const std::string               & description,
-                                      const RegulatorEvent::EventTypes  eventType );
+    void submitRemoteControlCommands( Policy::Actions                 & actions,
+                                      const RegulatorEvent::EventTypes  eventType,
+                                      const std::string               & user  );
 
     long submitKeepAliveCommands( Policy::Actions & actions);
 };
@@ -192,18 +187,6 @@ inline VoltageRegulator* new_clone(VoltageRegulator const& other)
 {
   return other.replicate();
 }
-
-
-// free functions to inject the user name into the event log.
-// call using these instead of directly calling execute..()
-
-void issueIntegrityScanCommand( VoltageRegulator & regulator, const std::string & user );
-
-void issueEnableRemoteControlCommand( VoltageRegulator & regulator, const std::string & user );
-void issueDisableRemoteControlCommand( VoltageRegulator & regulator, const std::string & user );
-
-void issueTapUpCommand( VoltageRegulator & regulator, const std::string & user );
-void issueTapDownCommand( VoltageRegulator & regulator, const std::string & user );
 
 
 }

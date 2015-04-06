@@ -7,9 +7,9 @@
 namespace Cti           {
 namespace CapControl    {
 
-struct IncrementingKeepAlivePolicy : KeepAlivePolicy
+struct NoKeepAlivePolicy : KeepAlivePolicy
 {
-    IncrementingKeepAlivePolicy();
+    NoKeepAlivePolicy();
 
     virtual AttributeList getSupportedAttributes() override;
 
@@ -20,12 +20,6 @@ struct IncrementingKeepAlivePolicy : KeepAlivePolicy
     Actions EnableRemoteControl( const long keepAliveValue ) override;
     
     Actions DisableRemoteControl() override;
-
-protected:
-
-    long readKeepAliveValue();
-    long getNextKeepAliveValue();
-    bool needsAutoBlockEnable();
 };
 
 }

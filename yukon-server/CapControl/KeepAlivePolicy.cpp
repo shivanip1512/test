@@ -26,7 +26,7 @@ Policy::Action KeepAlivePolicy::WriteKeepAliveValue( const long keepAliveValue )
 
     return
     {
-        makeSignalTemplate( point.getPointOffset(), 0 ),
+        makeSignalTemplate( point.getPointOffset(), 0, "Keep Alive" ),
         makeRequestTemplate( point.getPaoId(),
                              "putvalue analog " + std::to_string( pointOffset ) + " " + std::to_string( keepAliveValue ) )
     };
@@ -34,3 +34,4 @@ Policy::Action KeepAlivePolicy::WriteKeepAliveValue( const long keepAliveValue )
 
 }
 }
+

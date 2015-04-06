@@ -8,7 +8,11 @@ namespace CapControl    {
 
 LoadOnlyScanPolicy::LoadOnlyScanPolicy()
 {
-    _supportedAttributes = AttributeList
+}
+
+Policy::AttributeList LoadOnlyScanPolicy::getSupportedAttributes()
+{
+    return
     {
         PointAttribute::VoltageY
     };

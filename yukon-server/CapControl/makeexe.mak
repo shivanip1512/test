@@ -129,6 +129,7 @@ ExecutorFactory.obj \
 Policy.obj \
 StandardControlPolicy.obj \
 KeepAlivePolicy.obj \
+NoKeepAlivePolicy.obj \
 CountdownKeepAlivePolicy.obj \
 IncrementingKeepAlivePolicy.obj \
 ScanPolicy.obj \

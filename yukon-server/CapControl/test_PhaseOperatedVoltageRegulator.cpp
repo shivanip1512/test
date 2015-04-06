@@ -191,7 +191,7 @@ BOOST_AUTO_TEST_SUITE( test_PhaseOperatedVoltageRegulator )
 
 BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_IntegrityScan_Fail, phase_operated_voltage_regulator_fixture_direct_tap)
 {
-    BOOST_CHECK_THROW( issueIntegrityScanCommand( *regulator, "cap control" ), MissingPointAttribute );
+    BOOST_CHECK_THROW( regulator->executeIntegrityScan( "cap control" ), MissingPointAttribute );
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
     BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
@@ -210,7 +210,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_IntegrityScan_Success
 {
     regulator->loadAttributes( &attributes );
 
-    BOOST_CHECK_NO_THROW( issueIntegrityScanCommand( *regulator, "cap control" ) );
+    BOOST_CHECK_NO_THROW( regulator->executeIntegrityScan( "cap control" ) );
 
 
     BOOST_REQUIRE_EQUAL( 2, capController.signalMessages.size() );
@@ -397,7 +397,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapDown_Success, phas
 
 BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAlive_Fail, phase_operated_voltage_regulator_fixture_direct_tap)
 {
-    BOOST_CHECK_THROW( regulator->executeEnableKeepAlive(), MissingPointAttribute );
+    BOOST_CHECK_THROW( regulator->executeEnableKeepAlive( "cap control" ), MissingPointAttribute );
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
     BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
@@ -431,7 +431,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromRe
     regulator->handlePointData( &keepAlive );
 
 
-    BOOST_CHECK_NO_THROW( regulator->executeEnableKeepAlive() );
+    BOOST_CHECK_NO_THROW( regulator->executeEnableKeepAlive( "cap control" ) );
 
 
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
@@ -486,7 +486,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromRe
     regulator->handlePointData( &keepAlive );
 
 
-    BOOST_CHECK_NO_THROW( regulator->executeEnableKeepAlive() );
+    BOOST_CHECK_NO_THROW( regulator->executeEnableKeepAlive( "cap control" ) );
 
 
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
@@ -544,7 +544,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
 
     // Call: #1
 
-    BOOST_CHECK_NO_THROW( regulator->executeEnableKeepAlive() );
+    BOOST_CHECK_NO_THROW( regulator->executeEnableKeepAlive( "cap control" ) );
 
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 
@@ -575,7 +575,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
 
     // Call: #2
 
-    BOOST_CHECK_NO_THROW( regulator->executeEnableKeepAlive() );
+    BOOST_CHECK_NO_THROW( regulator->executeEnableKeepAlive( "cap control" ) );
 
     BOOST_REQUIRE_EQUAL( 2, capController.signalMessages.size() );
 
@@ -613,7 +613,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
 
     // Call: #3
 
-    BOOST_CHECK_NO_THROW( regulator->executeEnableKeepAlive() );
+    BOOST_CHECK_NO_THROW( regulator->executeEnableKeepAlive( "cap control" ) );
 
     BOOST_REQUIRE_EQUAL( 4, capController.signalMessages.size() );
 
@@ -685,7 +685,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
 
     // Call: #1
 
-    BOOST_CHECK_NO_THROW( regulator->executeEnableKeepAlive() );
+    BOOST_CHECK_NO_THROW( regulator->executeEnableKeepAlive( "cap control" ) );
 
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 
@@ -716,7 +716,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
 
     // Call: #2
 
-    BOOST_CHECK_NO_THROW( regulator->executeEnableKeepAlive() );
+    BOOST_CHECK_NO_THROW( regulator->executeEnableKeepAlive( "cap control" ) );
 
     BOOST_REQUIRE_EQUAL( 2, capController.signalMessages.size() );
 
@@ -754,7 +754,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
 
     // Call: #3
 
-    BOOST_CHECK_NO_THROW( regulator->executeEnableKeepAlive() );
+    BOOST_CHECK_NO_THROW( regulator->executeEnableKeepAlive( "cap control" ) );
 
     BOOST_REQUIRE_EQUAL( 4, capController.signalMessages.size() );
 
@@ -806,7 +806,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
 
 BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableKeepAlive_Fail, phase_operated_voltage_regulator_fixture_direct_tap)
 {
-    BOOST_CHECK_THROW( regulator->executeDisableKeepAlive(), MissingPointAttribute );
+    BOOST_CHECK_THROW( regulator->executeDisableKeepAlive( "cap control" ), MissingPointAttribute );
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
     BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
@@ -825,7 +825,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableKeepAlive_Succ
 {
     regulator->loadAttributes( &attributes );
 
-    BOOST_CHECK_NO_THROW( regulator->executeDisableKeepAlive() );
+    BOOST_CHECK_NO_THROW( regulator->executeDisableKeepAlive( "cap control" ) );
 
 
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
@@ -863,7 +863,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableKeepAlive_Succ
 
 BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableRemoteControl_Fail, phase_operated_voltage_regulator_fixture_direct_tap)
 {
-    BOOST_CHECK_THROW( issueEnableRemoteControlCommand( *regulator, "unit test" ), MissingPointAttribute );
+    BOOST_CHECK_THROW( regulator->executeEnableRemoteControl( "unit test" ), MissingPointAttribute );
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
     BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
@@ -897,7 +897,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableRemoteControlFr
     regulator->handlePointData( &keepAlive );
 
 
-    BOOST_CHECK_NO_THROW( issueEnableRemoteControlCommand( *regulator, "unit test" ) );
+    BOOST_CHECK_NO_THROW( regulator->executeEnableRemoteControl( "unit test" ) );
 
 
     BOOST_REQUIRE_EQUAL( 2, capController.signalMessages.size() );
@@ -970,7 +970,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableRemoteControlFr
     regulator->handlePointData( &keepAlive );
 
 
-    BOOST_CHECK_NO_THROW( issueEnableRemoteControlCommand( *regulator, "cap control" ) );
+    BOOST_CHECK_NO_THROW( regulator->executeEnableRemoteControl( "cap control" ) );
 
 /*
  *  This guys functionality is changed.... - only generates the first 'activate' message now
@@ -1067,7 +1067,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableRemoteControlFr
 
 BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableRemoteControl_Fail, phase_operated_voltage_regulator_fixture_direct_tap)
 {
-    BOOST_CHECK_THROW( issueDisableRemoteControlCommand( *regulator, "unit test" ), MissingPointAttribute );
+    BOOST_CHECK_THROW( regulator->executeDisableRemoteControl( "unit test" ), MissingPointAttribute );
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
     BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
@@ -1086,7 +1086,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableRemoteControl_
 {
     regulator->loadAttributes( &attributes );
 
-    BOOST_CHECK_NO_THROW( issueDisableRemoteControlCommand( *regulator, "unit test" ) );
+    BOOST_CHECK_NO_THROW( regulator->executeDisableRemoteControl( "unit test" ) );
 
 
     BOOST_REQUIRE_EQUAL( 2, capController.signalMessages.size() );

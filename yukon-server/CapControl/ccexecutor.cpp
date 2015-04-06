@@ -13,12 +13,9 @@
 #include "utility.h"
 #include "ccutil.h"
 #include "ExecutorFactory.h"
-
 #include "MsgChangeOpState.h"
 #include "ExecChangeOpState.h"
-
 #include "MsgCapControlServerResponse.h"
-#include "RegulatorEvents.h"
 
 using Cti::CapControl::VoltageRegulatorManager;
 using Cti::CapControl::createPorterRequestMsg;
@@ -6047,31 +6044,31 @@ void CtiCCCommandExecutor::sendVoltageRegulatorCommands( const long command, con
             case CapControlCommand::VOLTAGE_REGULATOR_INTEGRITY_SCAN:
             {
                 commandName += "Integrity Scan";
-                Cti::CapControl::issueIntegrityScanCommand( *regulator, user );
+                regulator->executeIntegrityScan( user );
                 break;
             }
             case CapControlCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_ENABLE:
             {
                 commandName += "Remote Control Enable";
-                Cti::CapControl::issueEnableRemoteControlCommand( *regulator, user );
+                regulator->executeEnableRemoteControl( user );
                 break;
             }
             case CapControlCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_DISABLE:
             {
                 commandName += "Remote Control Disable";
-                Cti::CapControl::issueDisableRemoteControlCommand( *regulator, user );
+                regulator->executeDisableRemoteControl( user );
                 break;
             }
             case CapControlCommand::VOLTAGE_REGULATOR_TAP_POSITION_RAISE:
             {
                 commandName += "Raise Tap Position";
-                Cti::CapControl::issueTapUpCommand( *regulator, user );
+                regulator->executeTapUpOperation( user );
                 break;
             }
             case CapControlCommand::VOLTAGE_REGULATOR_TAP_POSITION_LOWER:
             {
                 commandName += "Lower Tap Position";
-                Cti::CapControl::issueTapDownCommand( *regulator, user );
+                regulator->executeTapDownOperation( user );
                 break;
             }
             default:

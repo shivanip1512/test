@@ -11,6 +11,8 @@ namespace CapControl    {
 struct LoadOnlyScanPolicy : ScanPolicy
 {
     LoadOnlyScanPolicy();
+
+    AttributeList getSupportedAttributes() override;
 };
 
 }

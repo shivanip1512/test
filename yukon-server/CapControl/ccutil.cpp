@@ -257,6 +257,7 @@ double calculatePowerFactor( const double kvar, const double kwatt )
     return pf;
 }
 
+const std::string SystemUser = "cap control";
 
 }
 }

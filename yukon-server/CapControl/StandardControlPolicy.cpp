@@ -8,7 +8,11 @@ namespace CapControl    {
 
 StandardControlPolicy::StandardControlPolicy()
 {
-    _supportedAttributes = AttributeList
+}
+
+Policy::AttributeList StandardControlPolicy::getSupportedAttributes()
+{
+    return
     {
         PointAttribute::TapDown,
         PointAttribute::TapUp,
@@ -20,12 +24,14 @@ StandardControlPolicy::StandardControlPolicy()
 
 Policy::Action StandardControlPolicy::TapUp()
 {
-    return makeStandardDigitalControl( getPointByAttribute( PointAttribute::TapUp ) );
+    return makeStandardDigitalControl( getPointByAttribute( PointAttribute::TapUp ),
+                                       "Raise Tap Position" );
 }
 
 Policy::Action StandardControlPolicy::TapDown()
 {
-    return makeStandardDigitalControl( getPointByAttribute( PointAttribute::TapDown ) );
+    return makeStandardDigitalControl( getPointByAttribute( PointAttribute::TapDown ),
+                                       "Lower Tap Position" );
 }
 
 Policy::Action StandardControlPolicy::AdjustSetPoint( const double changeAmount )
@@ -38,9 +44,11 @@ Policy::Action StandardControlPolicy::AdjustSetPoint( const double changeAmount 
 
     const double newSetPoint = getSetPointValue() + changeAmount;
 
+    const std::string description = changeAmount > 0 ? "Raise Set Point" : "Lower Set Point";
+
     return 
     {
-        makeSignalTemplate( point.getPointId(), 0 ),
+        makeSignalTemplate( point.getPointId(), 0, description ),
         makeRequestTemplate( point.getPaoId(),
                              "putvalue analog " + std::to_string( pointOffset ) + " " + std::to_string( newSetPoint ) )
     };

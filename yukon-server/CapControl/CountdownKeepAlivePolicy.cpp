@@ -8,7 +8,11 @@ namespace CapControl    {
 
 CountdownKeepAlivePolicy::CountdownKeepAlivePolicy()
 {
-    _supportedAttributes = AttributeList
+}
+
+Policy::AttributeList CountdownKeepAlivePolicy::getSupportedAttributes()
+{
+    return
     {
         PointAttribute::AutoRemoteControl,
         PointAttribute::KeepAlive
@@ -33,26 +37,28 @@ Policy::Actions CountdownKeepAlivePolicy::StopKeepAlive()
     return actions;
 }
 
-Policy::Action CountdownKeepAlivePolicy::EnableRemoteControl( const long keepAliveValue )
+Policy::Actions CountdownKeepAlivePolicy::EnableRemoteControl( const long keepAliveValue )
 {
+    Actions    actions;
+
     LitePoint point = getPointByAttribute( PointAttribute::KeepAlive );
 
-    return 
-    {
-        makeSignalTemplate( point.getPointId(), keepAliveValue ),
-        nullptr
-    };
+    actions.emplace_back( makeSignalTemplate( point.getPointId(), keepAliveValue, "Enable Remote Control" ),
+                          nullptr );
+
+    return actions;
 }
 
-Policy::Action CountdownKeepAlivePolicy::DisableRemoteControl()
+Policy::Actions CountdownKeepAlivePolicy::DisableRemoteControl()
 {
+    Actions    actions;
+
     LitePoint point = getPointByAttribute( PointAttribute::KeepAlive );
 
-    return 
-    {
-        makeSignalTemplate( point.getPointId(), 0 ),
-        nullptr
-    };
+    actions.emplace_back( makeSignalTemplate( point.getPointId(), 0, "Disable Remote Control" ),
+                          nullptr );
+
+    return actions;
 }
 
 }

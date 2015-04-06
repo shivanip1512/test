@@ -9,6 +9,10 @@ namespace CapControl    {
 struct ScanPolicy : Policy
 {
     virtual Actions IntegrityScan();
+
+protected:
+
+    Action makeIntegrityScanCommand( const PointAttribute & attribute );
 };
 
 }

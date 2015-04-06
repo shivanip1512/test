@@ -11,12 +11,14 @@
 #include "config_data_regulator.h"
 
 #include "StandardControlPolicy.h"
+#include "NoKeepAlivePolicy.h"
 #include "CountdownKeepAlivePolicy.h"
 #include "IncrementingKeepAlivePolicy.h"
 #include "LoadOnlyScanPolicy.h"
 #include "StandardScanPolicy.h"
 
 #include "RegulatorEvents.h"
+#include "std_helper.h"
 
 using namespace boost::posix_time;
 using namespace Cti::Messaging::CapControl;
@@ -41,6 +43,44 @@ Config::DeviceConfigSPtr    getDeviceConfig( const CapControlPao * regulator )
     }
 
     return deviceConfig;
+}
+
+std::unique_ptr<KeepAlivePolicy> resolveKeepAlivePolicy( const std::string & policyType )
+{
+    static const std::map< std::string,
+                           std::function< std::unique_ptr<KeepAlivePolicy>() > > Lookup
+    {
+        { "NONE",      std::make_unique<NoKeepAlivePolicy> },
+        { "INCREMENT", std::make_unique<IncrementingKeepAlivePolicy> },
+        { "COUNTDOWN", std::make_unique<CountdownKeepAlivePolicy> }
+    };
+
+    if ( auto & result = mapFind( Lookup, policyType ) )
+    {
+        return (*result)();
+    }
+
+    return std::make_unique<NoKeepAlivePolicy>();
+}
+
+
+std::unique_ptr<ScanPolicy> resolveScanPolicy( const std::string & paoType )
+{
+
+    static const std::map< std::string,
+                           std::function< std::unique_ptr<ScanPolicy>() > > Lookup
+    {
+        { VoltageRegulator::LoadTapChanger,                std::make_unique<LoadOnlyScanPolicy> },
+        { VoltageRegulator::GangOperatedVoltageRegulator,  std::make_unique<StandardScanPolicy> },
+        { VoltageRegulator::PhaseOperatedVoltageRegulator, std::make_unique<StandardScanPolicy> }
+    };
+
+    if ( auto & result = mapFind( Lookup, paoType ) )
+    {
+        return (*result)();
+    }
+
+    return std::make_unique<LoadOnlyScanPolicy>();
 }
 
 }
@@ -104,48 +144,10 @@ VoltageRegulator::VoltageRegulator(const VoltageRegulator & toCopy)
     _lastCommandedOperatingMode(toCopy._lastCommandedOperatingMode),
     _recentTapOperation(toCopy._recentTapOperation),
     _keepAlivePeriod( toCopy._keepAlivePeriod ),
-    _keepAliveValue( toCopy._keepAliveValue )//,
-///    _phase(Phase_Unknown),
-///    _updated(true),
-///    _lastControlOperation(VoltageRegulator::None),
-///    _lastMissingAttributeComplainTime(CtiTime(neg_infin)),
-///    _nextKeepAliveSendTime(CtiTime(neg_infin)),
-///    _lastOperatingMode(UnknownMode),
-///    _lastCommandedOperatingMode(UnknownMode),
-///    _recentTapOperation(false),
-///    _keepAlivePeriod( 0 ),
-///    _keepAliveValue( 0 )//,
-//    _controlPolicy( std::make_unique<StandardControlPolicy>() )
+    _keepAliveValue( toCopy._keepAliveValue )
 {
-//    operator=(toCopy);
+    // empty...
 }
-
-
-//VoltageRegulator & VoltageRegulator::operator=(const VoltageRegulator & rhs)
-//{
-//    if ( this != &rhs )
-//    {
-////        CapControlPao::operator=(rhs);
-//
-//        _phase = rhs._phase;
-//
-//        _updated    = rhs._updated;
-//      //  _mode       = rhs._mode;
-//
-//        _lastControlOperation       = rhs._lastControlOperation;
-//        _lastControlOperationTime   = rhs._lastControlOperationTime;
-//
-//        _lastMissingAttributeComplainTime = rhs._lastMissingAttributeComplainTime;
-//
-//        _nextKeepAliveSendTime  = rhs._nextKeepAliveSendTime;
-//
-//        _lastOperatingMode  = rhs._lastOperatingMode;
-//        _lastCommandedOperatingMode = rhs._lastCommandedOperatingMode;
-//        _recentTapOperation = rhs._recentTapOperation;
-//    }
-//
-//    return *this;
-//}
 
 
 void VoltageRegulator::handlePointData(CtiPointDataMsg * message)
@@ -247,21 +249,8 @@ void VoltageRegulator::loadAttributes( AttributeService * service )
     _keepAlivePeriod = getKeepAliveTimer();
     _keepAliveValue  = getKeepAliveConfig();
 
-    std::string currentHeartbeatMode = getHeartbeatMode();
-
-    if ( currentHeartbeatMode == "INCREMENT" )
-    {
-        _keepAlivePolicy = std::make_unique<IncrementingKeepAlivePolicy>();
-    }
-    else if ( currentHeartbeatMode == "NONE" )
-    {
-        _keepAlivePeriod = 0;
-    }
-
-    if ( getPaoType() != VoltageRegulator::LoadTapChanger )
-    {
-        _scanPolicy = std::make_unique<StandardScanPolicy>();
-    }
+    _keepAlivePolicy = resolveKeepAlivePolicy( getHeartbeatMode() );
+    _scanPolicy = resolveScanPolicy( getPaoType() );
 
     _controlPolicy->loadAttributes( *service, getPaoId() );
     _keepAlivePolicy->loadAttributes( *service, getPaoId() );
@@ -593,20 +582,20 @@ double VoltageRegulator::adjustVoltage( const double changeAmount )
     {
         if ( changeAmount > 0.0 )
         {
-            issueTapUpCommand( *this, "cap control" );
+            executeTapUpOperation( SystemUser );
 
             return voltageChangePerTap;
         }
         else
         {
-            issueTapDownCommand( *this, "cap control" );
+            executeTapDownOperation( SystemUser );
 
             return -voltageChangePerTap;
         }
     }
     else    // Set Point
     {
-        executeAdjustSetPointOperation( changeAmount );
+        executeAdjustSetPointOperation( changeAmount, SystemUser );
     }
 
     return changeAmount;
@@ -616,14 +605,15 @@ double VoltageRegulator::adjustVoltage( const double changeAmount )
 //////////////  Control Policy Commands 
 
 
-void VoltageRegulator::executeTapUpOperation()
+void VoltageRegulator::executeTapUpOperation( const std::string & user )
 try
 {
     submitControlCommands( _controlPolicy->TapUp(),
                            RaiseTap,
                            "Raise Tap Position",
                            RegulatorEvent::TapUp,
-                           getVoltageChangePerTap() );
+                           getVoltageChangePerTap(),
+                           user );
 
     sendCapControlOperationMessage(
         CapControlOperationMessage::createRaiseTapMessage( getPaoId(), CtiTime() ) );
@@ -633,18 +623,19 @@ catch ( FailedAttributeLookup & missingAttribute )
     throw MissingPointAttribute( getPaoId(),
                                  missingAttribute.attribute(),
                                  getPaoType(),
-                                 isTimeForMissingAttributeComplain()  );
+                                 isTimeForMissingAttributeComplain() );
 }
 
 
-void VoltageRegulator::executeTapDownOperation()
+void VoltageRegulator::executeTapDownOperation( const std::string & user )
 try
 {
     submitControlCommands( _controlPolicy->TapDown(),
                            LowerTap,
                            "Lower Tap Position",
                            RegulatorEvent::TapDown,
-                           -getVoltageChangePerTap() );
+                           -getVoltageChangePerTap(),
+                           user );
 
     sendCapControlOperationMessage(
         CapControlOperationMessage::createLowerTapMessage( getPaoId(), CtiTime() ) );
@@ -654,11 +645,11 @@ catch ( FailedAttributeLookup & missingAttribute )
     throw MissingPointAttribute( getPaoId(),
                                  missingAttribute.attribute(),
                                  getPaoType(),
-                                 isTimeForMissingAttributeComplain()  );
+                                 isTimeForMissingAttributeComplain() );
 }
 
 
-void VoltageRegulator::executeAdjustSetPointOperation( const double changeAmount )
+void VoltageRegulator::executeAdjustSetPointOperation( const double changeAmount, const std::string & user )
 try
 {
     if ( changeAmount > 0.0 ) 
@@ -667,7 +658,8 @@ try
                                RaiseSetPoint,
                                "Raise Set Point",
                                RegulatorEvent::IncreaseSetPoint,
-                               changeAmount );
+                               changeAmount,
+                               user );
     }
     else
     {
@@ -675,7 +667,8 @@ try
                                LowerSetPoint,
                                "Lower Set Point",
                                RegulatorEvent::DecreaseSetPoint,
-                               changeAmount );
+                               changeAmount,
+                               user );
     }
 }
 catch ( FailedAttributeLookup & missingAttribute )
@@ -697,24 +690,24 @@ void VoltageRegulator::submitControlCommands( Policy::Action                  & 
                                               const ControlOperation            operation,
                                               const std::string               & opDescription,
                                               const RegulatorEvent::EventTypes  eventType,
-                                              const double                      changeAmount )
+                                              const double                      changeAmount,
+                                              const std::string               & user )
 {
     auto & signal  = action.first;
     auto & request = action.second;
 
     notifyControlOperation( operation );
 
-    std::string fullDescription = opDescription + getPhaseString();
-
-    signal->setText( fullDescription );
+    signal->setText( signal->getText() + getPhaseString() );
     signal->setAdditionalInfo( "Voltage Regulator Name: " + getPaoName() );
 
     CtiCapController::getInstance()->sendMessageToDispatch( signal.release() );
 
+    boost::optional<double> newSetPoint;
+
     if ( eventType == RegulatorEvent::IncreaseSetPoint ||
          eventType == RegulatorEvent::DecreaseSetPoint )
     {
-        boost::optional<double> newSetPoint;
 
         try
         {
@@ -724,46 +717,23 @@ void VoltageRegulator::submitControlCommands( Policy::Action                  & 
         {
             // nothing...  inserts a null
         }
-
-        enqueueRegulatorEvent( RegulatorEvent::makeControlEvent( eventType, getPaoId(), _phase, newSetPoint, getTapPosition(), "cap control" ) );
     }
 
+    enqueueRegulatorEvent( RegulatorEvent::makeControlEvent( eventType,
+                                                             getPaoId(),
+                                                             _phase,
+                                                             newSetPoint,
+                                                             getTapPosition(),
+                                                             user ) );
+
     CtiCapController::getInstance()->manualCapBankControl( request.release() );
-}
-
-
-void issueTapUpCommand( VoltageRegulator & regulator, const std::string & user )
-{
-    regulator.executeTapUpOperation();
-
-    enqueueRegulatorEvent(
-        RegulatorEvent::makeControlEvent( RegulatorEvent::TapUp,
-                                          regulator.getPaoId(),
-                                          regulator.getPhase(),
-                                          boost::optional<double>(),
-                                          regulator.getTapPosition(),
-                                          user ) );
-}
-
-
-void issueTapDownCommand( VoltageRegulator & regulator, const std::string & user )
-{
-    regulator.executeTapDownOperation();
-
-    enqueueRegulatorEvent(
-        RegulatorEvent::makeControlEvent( RegulatorEvent::TapDown,
-                                          regulator.getPaoId(),
-                                          regulator.getPhase(),
-                                          boost::optional<double>(),
-                                          regulator.getTapPosition(),
-                                          user ) );
 }
 
 
 //////////////  Scan Policy Commands 
 
 
-void VoltageRegulator::executeIntegrityScan()
+void VoltageRegulator::executeIntegrityScan( const std::string & user )
 try
 {
     for ( auto & action : _scanPolicy->IntegrityScan() )
@@ -771,7 +741,6 @@ try
         auto & signal  = action.first;
         auto & request = action.second;
 
-        signal->setText( "Integrity Scan" );
         signal->setAdditionalInfo( "Voltage Regulator Name: " + getPaoName() );
 
         CtiCapController::getInstance()->sendMessageToDispatch( signal.release() );
@@ -783,6 +752,15 @@ try
         sendCapControlOperationMessage( 
             Messaging::CapControl::CapControlOperationMessage::createScanDeviceMessage(
                 pointPaoID, CtiTime() ) );
+
+        if ( user != SystemUser )    // only log user issued commands
+        {
+            enqueueRegulatorEvent(
+                RegulatorEvent::makeScanEvent( RegulatorEvent::IntegrityScan,
+                                               getPaoId(),
+                                               _phase,
+                                               user ) );
+        }
     }
 }
 catch ( FailedAttributeLookup & missingAttribute )
@@ -794,31 +772,16 @@ catch ( FailedAttributeLookup & missingAttribute )
 }
 
 
-void issueIntegrityScanCommand( VoltageRegulator & regulator, const std::string & user )
-{
-    regulator.executeIntegrityScan();
-
-    if ( user != "cap control" )    // only log user issued commands
-    {
-        enqueueRegulatorEvent(
-            RegulatorEvent::makeScanEvent( RegulatorEvent::IntegrityScan,
-                                           regulator.getPaoId(),
-                                           regulator.getPhase(),
-                                           user ) );
-    }
-}
-
-
 //////////////  KeepAlive Policy Commands 
 
 
-void VoltageRegulator::executeEnableRemoteControl()
+void VoltageRegulator::executeEnableRemoteControl( const std::string & user )
 {
     try
     {
         submitRemoteControlCommands( _keepAlivePolicy->EnableRemoteControl( _keepAliveValue ),
-                                     "Enable Remote Control",
-                                     RegulatorEvent::EnableRemoteControl );
+                                     RegulatorEvent::EnableRemoteControl,
+                                     user );
 
         _lastCommandedOperatingMode = RemoteMode;
     }
@@ -830,17 +793,17 @@ void VoltageRegulator::executeEnableRemoteControl()
                                      isTimeForMissingAttributeComplain()  );
     }
 
-    executeEnableKeepAlive();
+    executeEnableKeepAlive( user );
 }
 
 
-void VoltageRegulator::executeDisableRemoteControl()
+void VoltageRegulator::executeDisableRemoteControl( const std::string & user )
 {
     try
     {
         submitRemoteControlCommands( _keepAlivePolicy->DisableRemoteControl(),
-                                     "Disable Remote Control",
-                                     RegulatorEvent::DisableRemoteControl );
+                                     RegulatorEvent::DisableRemoteControl,
+                                     user );
 
         _lastCommandedOperatingMode = LocalMode;
     }
@@ -852,50 +815,32 @@ void VoltageRegulator::executeDisableRemoteControl()
                                      isTimeForMissingAttributeComplain()  );
     }
 
-    executeDisableKeepAlive();
+    executeDisableKeepAlive( user );
 }
 
 
-void VoltageRegulator::submitRemoteControlCommands( Policy::Action                    & action,
-                                                    const std::string                 & description,
-                                                    const RegulatorEvent::EventTypes    eventType ) //<-
+void VoltageRegulator::submitRemoteControlCommands( Policy::Actions                   & actions,
+                                                    const RegulatorEvent::EventTypes    eventType,
+                                                    const std::string                 & user )
 {
-    auto & signal = action.first;
+    for ( auto & action : actions )
+    {
 
-    signal->setText( description );
-    signal->setAdditionalInfo( "Voltage Regulator Name: " + getPaoName() );
+        auto & signal = action.first;
 
-    CtiCapController::getInstance()->sendMessageToDispatch( signal.release() );
+        signal->setAdditionalInfo( "Voltage Regulator Name: " + getPaoName() );
 
-//    enqueueRegulatorEvent( RegulatorEvent::makeRemoteControlEvent( eventType, getPaoId(), _phase ) );
+        CtiCapController::getInstance()->sendMessageToDispatch( signal.release() );
+
+        enqueueRegulatorEvent( RegulatorEvent::makeRemoteControlEvent( eventType,
+                                                                       getPaoId(),
+                                                                       _phase,
+                                                                       user ) );
+    }
 }
 
 
-void issueEnableRemoteControlCommand( VoltageRegulator & regulator, const std::string & user )
-{
-    regulator.executeEnableRemoteControl();
-
-    enqueueRegulatorEvent(
-        RegulatorEvent::makeRemoteControlEvent( RegulatorEvent::EnableRemoteControl,
-                                                regulator.getPaoId(),
-                                                regulator.getPhase(),
-                                                user ) );
-}
-
-
-void issueDisableRemoteControlCommand( VoltageRegulator & regulator, const std::string & user )
-{
-    regulator.executeDisableRemoteControl();
-
-    enqueueRegulatorEvent(
-        RegulatorEvent::makeRemoteControlEvent( RegulatorEvent::DisableRemoteControl,
-                                                regulator.getPaoId(),
-                                                regulator.getPhase(),
-                                                user ) );
-}
-
-
-long VoltageRegulator::executeEnableKeepAlive()
+long VoltageRegulator::executeEnableKeepAlive( const std::string & user )
 try
 {
     return submitKeepAliveCommands( _keepAlivePolicy->SendKeepAlive( _keepAliveValue ) );
@@ -909,7 +854,7 @@ catch ( FailedAttributeLookup & missingAttribute )
 }
 
 
-void VoltageRegulator::executeDisableKeepAlive()
+void VoltageRegulator::executeDisableKeepAlive( const std::string & user )
 try
 {
     submitKeepAliveCommands( _keepAlivePolicy->StopKeepAlive() );
@@ -925,24 +870,15 @@ catch ( FailedAttributeLookup & missingAttribute )
 
 long VoltageRegulator::submitKeepAliveCommands( Policy::Actions & actions )
 {
-    auto & signal  = actions[0].first;
-    auto & request = actions[0].second;
+    long delay = 0;
 
-    const long delay = signal->getPointValue();
-
-    signal->setText( "Keep Alive" );
-    signal->setAdditionalInfo( "Voltage Regulator Name: " + getPaoName() );
-
-    CtiCapController::getInstance()->sendMessageToDispatch( signal.release() );
-
-    CtiCapController::getInstance()->manualCapBankControl( request.release() );
-
-    if ( actions.size() > 1 )
+    for ( auto & action : actions )
     {
-        auto & signal  = actions[1].first;
-        auto & request = actions[1].second;
+        auto & signal  = action.first;
+        auto & request = action.second;
 
-        signal->setText( "Auto Block Enable" );
+        delay = std::max( delay, static_cast<long>( signal->getPointValue() ) );     // gross - smuggle the message delay out in the point value
+
         signal->setAdditionalInfo( "Voltage Regulator Name: " + getPaoName() );
 
         CtiCapController::getInstance()->sendMessageToDispatch( signal.release() );
@@ -954,11 +890,11 @@ long VoltageRegulator::submitKeepAliveCommands( Policy::Actions & actions )
 }
 
 
-bool VoltageRegulator::executePeriodicKeepAlive()
+bool VoltageRegulator::executePeriodicKeepAlive( const std::string & user )
 {
     if ( _keepAlivePeriod && ( CtiTime::now() >= _nextKeepAliveSendTime ) )
     {
-        const long delay = executeEnableKeepAlive();
+        const long delay = executeEnableKeepAlive( user );
 
         _nextKeepAliveSendTime += ( delay ) ? delay : _keepAlivePeriod;
 

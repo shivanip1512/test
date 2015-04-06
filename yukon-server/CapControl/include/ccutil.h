@@ -135,6 +135,6 @@ void static sendCapControlOperationMessage( Cti::Messaging::CapControl::CapContr
 
 double calculatePowerFactor( const double kvar, const double kwatt );
 
-
+extern const std::string SystemUser;
 
 }}

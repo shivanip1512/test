@@ -3,6 +3,8 @@
 #include "Policy.h"
 #include "std_helper.h"
 #include "msg_pdata.h"
+#include "ccutil.h"
+
 
 extern unsigned long _MSG_PRIORITY;
 
@@ -12,7 +14,7 @@ namespace CapControl    {
 
 void Policy::loadAttributes( AttributeService & service, const long paoID )
 {
-    for ( const auto & attribute : _supportedAttributes )
+    for ( const auto & attribute : getSupportedAttributes() )
     {
         LitePoint point = service.getPointByPaoAndAttribute( paoID, attribute );
 
@@ -61,15 +63,15 @@ Policy::IDSet Policy::getRegistrationPointIDs() const
     return _pointIDs;
 }
 
-std::unique_ptr<CtiSignalMsg> Policy::makeSignalTemplate( const long ID, const long pointValue )
+std::unique_ptr<CtiSignalMsg> Policy::makeSignalTemplate( const long ID, const long pointValue, const std::string & description )
 {
     auto signal = std::make_unique<CtiSignalMsg>( ID,
                                                   0,
-                                                  "",
+                                                  description,
                                                   "",
                                                   CapControlLogType,
                                                   SignalEvent,
-                                                  "cap control" );
+                                                  SystemUser );
 
     signal->setPointValue( pointValue );
 
@@ -86,11 +88,11 @@ std::unique_ptr<CtiRequestMsg> Policy::makeRequestTemplate( const long ID, const
     return request;
 }
 
-Policy::Action Policy::makeStandardDigitalControl( const LitePoint & point )
+Policy::Action Policy::makeStandardDigitalControl( const LitePoint & point, const std::string & description )
 {
     return 
     {
-        makeSignalTemplate( point.getPointId(), 0 ),
+        makeSignalTemplate( point.getPointId(), 0, description ),
         makeRequestTemplate( point.getPaoId(),
                              point.getStateOneControl() + " select pointid " + std::to_string( point.getPointId() ) )
     };

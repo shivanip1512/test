@@ -11,13 +11,15 @@ struct CountdownKeepAlivePolicy : KeepAlivePolicy
 {
     CountdownKeepAlivePolicy();
 
+    virtual AttributeList getSupportedAttributes() override;
+
     Actions SendKeepAlive( const long keepAliveValue ) override;
 
     Actions StopKeepAlive() override;
 
-    Action EnableRemoteControl( const long keepAliveValue ) override;
+    Actions EnableRemoteControl( const long keepAliveValue ) override;
 
-    Action DisableRemoteControl() override;
+    Actions DisableRemoteControl() override;
 };
 
 }
