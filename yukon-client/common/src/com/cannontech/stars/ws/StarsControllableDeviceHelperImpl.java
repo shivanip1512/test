@@ -21,6 +21,7 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.roleproperties.SerialNumberValidation;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -44,6 +45,8 @@ import com.cannontech.stars.dr.hardware.exception.StarsDeviceNotFoundOnAccountEx
 import com.cannontech.stars.dr.hardware.exception.StarsInvalidDeviceTypeException;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.dr.util.YukonListEntryHelper;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.StarsClientRequestException;
@@ -65,6 +68,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private SelectionListService selectionListService;
     @Autowired private EcobeeBuilder ecobeeBuilder;
+    @Autowired private EnergyCompanySettingDao ecSettingDao;
 
     private String getAccountNumber(LmDeviceDto dto) {
         String acctNum = dto.getAccountNumber();
@@ -74,11 +78,40 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         return acctNum;
     }
 
-    private String getSerialNumber(LmDeviceDto dto) {
+    private String getSerialNumber(LmDeviceDto dto, YukonEnergyCompany yec) {
         String serialNum = dto.getSerialNumber();
         if (StringUtils.isBlank(serialNum)) {
             throw new StarsInvalidArgumentException("Serial Number is required");
-        } 
+        }
+        LiteStarsEnergyCompany lsec = starsCache.getEnergyCompany(yec);
+        YukonListEntry deviceType = getDeviceType(dto, lsec);
+        SerialNumberValidation serialNumberValidation = ecSettingDao.getEnum(EnergyCompanySettingType.SERIAL_NUMBER_VALIDATION,
+                                                                             SerialNumberValidation.class,
+                                                                             lsec.getEnergyCompanyId());
+        /* Check if the current energy company setting is numeric) */
+        if (serialNumberValidation == SerialNumberValidation.NUMERIC) {
+            /* Check if the serial number entered is numeric) */
+            if (!StringUtils.isNumeric(serialNum)) {
+                throw new StarsInvalidArgumentException("Serial Number must be Numeric");
+                /* Check if the current energy company setting is alphanumeric */
+            }
+        } else if (serialNumberValidation == SerialNumberValidation.ALPHANUMERIC)
+        /*
+         * Check if the current energy company setting for Serial Number is Alphanumeric
+         */
+        {
+            if (!StringUtils.isAlphanumeric(serialNum)) {
+                throw new StarsInvalidArgumentException("Serial Number must be Alphanumeric");
+            }
+        }
+        /*
+         * Implementing serial Number Validation based on the type of protocol supported by device
+         */
+        HardwareType hardwareType = HardwareType.valueOf(deviceType.getYukonDefID());
+        if (!hardwareType.getHardwareConfigType().isSerialNumberValid(serialNum)) {
+            throw new StarsInvalidArgumentException("Serial Number is not valid");
+        }
+
         return serialNum;
     }
 
@@ -143,7 +176,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         LiteInventoryBase  liteInv = getInventoryOnAccount(dto, lsec);
         // Inventory already exists on the account
         if (liteInv != null) {
-            throw new StarsDeviceAlreadyExistsException(getAccountNumber(dto), getSerialNumber(dto), yec.getName());
+            throw new StarsDeviceAlreadyExistsException(getAccountNumber(dto), getSerialNumber(dto, yec), yec.getName());
         }
                 
         // add device to account
@@ -179,7 +212,8 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
             
             boolean lmHardware = type.isLmHardware();
             if (lmHardware) {
-                LiteLmHardwareBase lmhw = starsSearchDao.searchLmHardwareBySerialNumber(getSerialNumber(dto), lsec);
+                LiteLmHardwareBase lmhw =
+                    starsSearchDao.searchLmHardwareBySerialNumber(getSerialNumber(dto, lsec), lsec);
                 lib = lmhw;
             }
         } catch (ObjectInOtherEnergyCompanyException e) {
@@ -204,7 +238,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
             LiteLmHardwareBase lmhw = new LiteLmHardwareBase();
             lmhw.setCategoryID(selectionListService.getListEntry(lsec, type.getInventoryCategory().getDefinitionId()).getEntryID());
             lmhw.setLmHardwareTypeID(deviceType.getEntryID());
-            lmhw.setManufacturerSerialNumber(getSerialNumber(dto));
+            lmhw.setManufacturerSerialNumber(getSerialNumber(dto, lsec));
             lmhw.setInstallDate(new Date().getTime());
             // force not null
             lmhw.setAlternateTrackingNumber("");
@@ -228,7 +262,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         if (lib != null) {
             // Inventory associated to an account, error out
             if (lib.getAccountID() > 0) {
-                throw new StarsDeviceAlreadyAssignedException(getAccountNumber(dto), getSerialNumber(dto), lsec.getName());
+                throw new StarsDeviceAlreadyAssignedException(getAccountNumber(dto), getSerialNumber(dto, lsec), lsec.getName());
             }
             // existing inventory, reset some fields
             // currentStateId should be retained
@@ -376,7 +410,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         liteInv = getInventoryOnAccount(dto, lsec);
         // Error, if Inventory not found on the account
         if (liteInv == null) {
-            throw new StarsDeviceNotFoundOnAccountException(getAccountNumber(dto), getSerialNumber(dto), lsec.getName());
+            throw new StarsDeviceNotFoundOnAccountException(getAccountNumber(dto), getSerialNumber(dto, lsec), lsec.getName());
         }
 
         // Remove date defaults to current date, if not specified

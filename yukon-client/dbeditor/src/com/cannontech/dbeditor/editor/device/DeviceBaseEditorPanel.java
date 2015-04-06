@@ -50,6 +50,7 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SwingUtil;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoPropertyDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -2235,6 +2236,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             String serialNumber = getSerialNumberTextField().getText();
             String manufacturer = getManufacturerTextField().getText();
             String model = getModelTextField().getText();
+            PaoType paoType = deviceBase.getPaoType();
 
             /*
              * Valid:
@@ -2249,7 +2251,13 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 setErrorString("Serial Number, Manufacturer, and Model fields must all be empty or all be filled in.");
                 return false;
             }
-
+            /*Check if the device is of RFN type*/
+            else if (paoType.isRfn()) {
+                if (!(YukonValidationUtils.isSerialNumberValid(serialNumber)) || (serialNumber.length() >= 30)) {
+                    setErrorString("Device serial number must be numeric or serial number length must be less than 30.");
+                    return false;
+                }
+            }
             /* Check for duplicates */
             RfnDeviceDao rfnDeviceDao = YukonSpringHook.getBean("rfnDeviceDao", RfnDeviceDao.class);
             try {
@@ -2954,4 +2962,6 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
         }
         return jPanelMCTSettings;
     }
+
+    
 }

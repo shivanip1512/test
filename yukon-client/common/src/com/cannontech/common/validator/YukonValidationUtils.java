@@ -31,6 +31,15 @@ public class YukonValidationUtils extends ValidationUtils {
         }
         return input.matches(BASIC_URL_PATH_REGEX);
     }
+    
+    public static boolean isSerialNumberValid(String serialNumber) {
+        try {
+            Integer.parseInt(serialNumber);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
 
     public static boolean checkExceedsMaxLength(Errors errors, String field, String fieldValue, int max) {
         if (fieldValue != null && fieldValue.length() > max) {

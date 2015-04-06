@@ -21,6 +21,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
@@ -80,6 +81,9 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         
         int templateDeviceId = templateDevice.getPAObjectID();
         PaoType paoType = templateDevice.getPaoType();
+        if ((!YukonValidationUtils.isSerialNumberValid(serialNumber)) || (serialNumber.length() >= 30)) {
+            throw new DeviceCreationException("Device serial number must be numeric or serial number length must be less than 30");
+        }
         PaoIdentifier templateIdentifier = new PaoIdentifier(templateDeviceId, paoType);
         
         if (templateDevice.getPaoType().getPaoClass() != PaoClass.RFMESH) {
@@ -147,6 +151,10 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         
         if (StringUtils.isBlank(name) || !(PaoUtils.isValidPaoName(name))) {
             throw new DeviceCreationException("Device name cannot be blank or include any of the following characters: / \\ ,\" ' |");
+        }
+        
+        if ((!YukonValidationUtils.isSerialNumberValid(serialNumber)) || (serialNumber.length() >= 30)) {
+            throw new DeviceCreationException("Device serial number must be numeric or serial number length must be less than 30");
         }
         
         newDevice.setPAOName(name);
