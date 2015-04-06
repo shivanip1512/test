@@ -66,23 +66,20 @@ public class ThemeController {
             } else {
                 YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "yukon.web.error.required");
             }
-
             // Validate Theme properties
-            Map<ThemePropertyType, Object> themeproperties = target.getProperties();
-            Iterator<Entry<ThemePropertyType, Object>> it = themeproperties.entrySet().iterator();
-            while (it.hasNext()) {
-                Entry<ThemePropertyType, Object> pair = it.next();
-                if (pair.getKey().getInputType() instanceof ColorType) {
-                    String colorCode = (String) pair.getValue();
+            for (ThemePropertyType themePropertyType : target.getProperties().keySet()) {
+                if (themePropertyType.getInputType() instanceof ColorType) {
+                    String colorCode = (String) target.getProperties().get(themePropertyType);
                     if (!colorCode.matches("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})|^rgba\\((\\d+),(\\d+),(\\d+)(,\\d+\\.\\d+)*\\)$")) {
                         YukonValidationUtils.rejectValues(errors, "yukon.web.error.themes.isNotValidColor",
-                            "properties[" + pair.getKey().name() + "]");
+                            "properties[" + themePropertyType.name() + "]");
                     }
-                } else if (pair.getKey().getInputType() instanceof PixelType) {
+                } else if (themePropertyType.getInputType() instanceof PixelType) {
                     try {
-                        Integer.parseInt((String) pair.getValue());
+                        String pixelValue = (String) target.getProperties().get(themePropertyType);
+                        Integer.parseInt(pixelValue);
                     } catch (NumberFormatException nfe) {
-                        errors.rejectValue("properties[" + pair.getKey().name() + "]", "yukon.web.error.notValidNumber");
+                        errors.rejectValue("properties[" + themePropertyType.name() + "]", "yukon.web.error.notValidNumber");
                     }
                 }
             }
