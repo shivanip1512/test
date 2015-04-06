@@ -483,8 +483,8 @@ yukon.ui = (function () {
         autowire: function () {
             
             /** Follow clicks on top level nav menus when not using a touch screen. */
-            $(document).on('click', '[data-url]', function (ev) {
-                if (!Modernizr.touch) {
+            $(document).on('click', '.yukon-header .menu-title', function (ev) {
+                if ($(this).is('[data-url]') && !Modernizr.touch) {
                     window.location.href = $(this).data('url');
                 }
             });

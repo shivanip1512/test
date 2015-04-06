@@ -11,12 +11,34 @@
 </c:if>
 <script type="text/javascript">
 var yg = {
-        
+    
+    app_context_path: '${appContextPath}',
+    
+    dev_mode: '<cti:getBooleanConfigParam param="DEVELOPMENT_MODE"/>' === 'true',
+    
+    events: {
+        animationend: 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',
+        pagingend: 'yukon:paging:end'
+    },
+    
+    highcharts_options: {
+        global: {
+            useUTC: false,
+            timezoneOffset : new Date().getTimezoneOffset()
+        }
+    },
+    
+    keys: { up: 38, down: 40, left: 37, right: 39, enter: 13, escape: 27 },
+    
     phone: {
         formats: <cti:msg2 key="yukon.common.phoneNumberFormatting.formats"/>
     },
     
-    app_context_path: '${appContextPath}',
+    // Common selectors in all of Yukon.
+    selectors: {
+        // Any of the paging controls (previous, next, page counts)
+        paging : '.paging-area .previous-page .button, .paging-area .next-page .button, .paging-area .page-size a'
+    },
     
     text: {
         cancel: '<cti:msg2 key="yukon.web.components.button.cancel.label"/>',
@@ -33,26 +55,11 @@ var yg = {
         view: '<cti:msg2 key="yukon.web.components.button.view.label"/>',
         yes: '<cti:msg2 key="yukon.web.defaults.yes"/>'
     },
-    dev_mode: '<cti:getBooleanConfigParam param="DEVELOPMENT_MODE"/>' === 'true',
     
-    highcharts_options: {
-        global: {
-            useUTC: false,
-            timezoneOffset : new Date().getTimezoneOffset()
-        }
-    },
+    // Role properties
+    rp: {
+        updater_delay: +'<cti:getProperty property="DATA_UPDATER_DELAY_MS"/>'
+    }
     
-    events: {
-        animationend: 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',
-        pagingend: 'yukon:paging:end'
-    },
-    
-    // Common selectors in all of Yukon.
-    selectors: {
-        // Any of the paging controls (previous, next, page counts)
-        paging : '.paging-area .previous-page .button, .paging-area .next-page .button, .paging-area .page-size a'
-    },
-    
-    keys: { up: 38, down: 40, left: 37, right: 39, enter: 13, escape: 27 }
 };
 </script>

@@ -54,7 +54,7 @@ yukon.assets.controlAudit = (function () {
             },
             series: [{
                 type: 'pie',
-                data: status.data
+                data: data
             }]
         });
         
@@ -86,13 +86,12 @@ yukon.assets.controlAudit = (function () {
             
             if (chart.is('.js-initialize')) {
                 _buildChart(chart, status.data);
-                _updateChart(chart, status.data);
             } else {
                 _updateChart(chart, status.data);
             }
             
             if (!status.complete) {
-                setTimeout(_update, 2000);
+                setTimeout(_update, yg.rp.updater_delay);
             } else {
                 progress.hide();
                 progressText.addClass('success').text(yg.text.finished);
