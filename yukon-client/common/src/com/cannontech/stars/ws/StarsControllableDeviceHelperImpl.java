@@ -90,22 +90,20 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
                                                                              lsec.getEnergyCompanyId());
         /* Check if the current energy company setting is numeric) */
         if (serialNumberValidation == SerialNumberValidation.NUMERIC) {
-            /* Check if the serial number entered is numeric) */
+            /* Check if the serial number entered is numeric */
             if (!StringUtils.isNumeric(serialNum)) {
                 throw new StarsInvalidArgumentException("Serial Number must be Numeric");
                 /* Check if the current energy company setting is alphanumeric */
             }
-        } else if (serialNumberValidation == SerialNumberValidation.ALPHANUMERIC)
-        /*
-         * Check if the current energy company setting for Serial Number is Alphanumeric
-         */
-        {
+        } else if (serialNumberValidation == SerialNumberValidation.ALPHANUMERIC) {
+            /* Check if the serial number entered is alphanumeric */
             if (!StringUtils.isAlphanumeric(serialNum)) {
                 throw new StarsInvalidArgumentException("Serial Number must be Alphanumeric");
             }
         }
         /*
-         * Implementing serial Number Validation based on the type of protocol supported by device
+         * Implementing serial Number Validation based on the type of protocol
+         * supported by device
          */
         HardwareType hardwareType = HardwareType.valueOf(deviceType.getYukonDefID());
         if (!hardwareType.getHardwareConfigType().isSerialNumberValid(serialNum)) {

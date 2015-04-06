@@ -32,6 +32,9 @@ public class YukonValidationUtils extends ValidationUtils {
         return input.matches(BASIC_URL_PATH_REGEX);
     }
     
+    /**
+     * Check to ensure that the serial Number is a valid numeric value
+     */
     public static boolean isSerialNumberValid(String serialNumber) {
         try {
             Integer.parseInt(serialNumber);
