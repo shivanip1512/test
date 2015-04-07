@@ -6,7 +6,7 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
-<cti:includeScript link="${jqueryPath}" force="true"/>
+<cti:includeScript link="JQUERY" force="true"/>
 <cti:url var="url" value="/stars/hardware/deviceactivation" />
 
         <title>Device Activation Confirmation</title>

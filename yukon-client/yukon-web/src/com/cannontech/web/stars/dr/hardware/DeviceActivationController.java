@@ -3,6 +3,7 @@ package com.cannontech.web.stars.dr.hardware;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -25,7 +26,6 @@ import com.cannontech.stars.dr.hardware.service.DeviceActivationService;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.JsLibrary;
 
 public class DeviceActivationController extends MultiActionController {
     private DeviceActivationService deviceActivationService;
@@ -35,16 +35,14 @@ public class DeviceActivationController extends MultiActionController {
     private AddressDao addressDao;
     private CustomerDao customerDao;
     private AccountSiteDao accountSiteDao;
-    private String jqueryPath = JsLibrary.JQUERY.getPath();
 
-    public ModelAndView view(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ModelAndView view(HttpServletRequest request, HttpServletResponse response) {
         final ModelAndView mav = new ModelAndView();
-        mav.addObject("jqueryPath", jqueryPath);
         mav.setViewName("hardware/deviceactivation/Activation.jsp");
         return mav;
     }
     
-    public ModelAndView confirmation(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ModelAndView confirmation(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException  {
     	final LiteYukonUser user = ServletUtil.getYukonUser(request);
         final String accountNumber = ServletRequestUtils.getRequiredStringParameter(request, "accountnumber");
         final String serialNumber = ServletRequestUtils.getRequiredStringParameter(request, "serialnumber");
@@ -111,7 +109,6 @@ public class DeviceActivationController extends MultiActionController {
     private ModelAndView createStatusView(final String message) {
         final ModelAndView mav = new ModelAndView();
         mav.addObject("message", message);
-        mav.addObject("jqueryPath", jqueryPath);
         mav.setViewName("hardware/deviceactivation/Status.jsp");
         return mav;
     }

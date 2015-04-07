@@ -14,12 +14,7 @@
 <%@ attribute name="maxHeight" type="java.lang.Integer" description="The max-height in pixels for the internal tree div. Example: maxHeight='300'. Defaults is 500." %>
 <%@ attribute name="dataJson" description="A dictionary starting with attributes of the root node." %>
 
-<cti:checkRolesAndProperties value="DEVELOPMENT_MODE">
-    <cti:includeScript link="JQUERY_TREE"/>
-</cti:checkRolesAndProperties>
-<cti:checkRolesAndProperties value="!DEVELOPMENT_MODE">
-    <cti:includeScript link="JQUERY_TREE_MIN"/>
-</cti:checkRolesAndProperties>
+<cti:includeScript link="JQUERY_TREE"/>
 <cti:includeScript link="JQUERY_TREE_HELPERS"/>
 
 <cti:includeCss link="/resources/js/lib/dynatree/skin/ui.dynatree.css"/>

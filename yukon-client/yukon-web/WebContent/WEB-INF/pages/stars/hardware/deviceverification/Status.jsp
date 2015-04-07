@@ -5,7 +5,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <cti:url var="url" value="/stars/hardware/deviceverification" />
 
-<cti:includeScript link="${jqueryPath}" force="true"/>
+<cti:includeScript link="JQUERY" force="true"/>
 
 <script language="JavaScript">
 

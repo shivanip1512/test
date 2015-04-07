@@ -7,7 +7,7 @@
 <cti:url var="activationUrl"
     value="/stars/hardware/deviceactivation" />
 
-<cti:includeScript link="${jqueryPath}" force="true"/>
+<cti:includeScript link="JQUERY" force="true"/>
 <script langauge="JavaScript" type="text/javascript">
     $(function () {
         $("#serialnumberinput").focus();

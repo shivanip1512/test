@@ -6,13 +6,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
-import javax.servlet.jsp.tagext.SimpleTagSupport;
 
+import org.springframework.beans.factory.annotation.Autowire;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.web.JsLibrary;
 
+@Configurable(value = "includeScriptTagPrototype", autowire = Autowire.BY_NAME)
+public class IncludeScriptTag extends YukonTagSupport {
 
-public class IncludeScriptTag extends SimpleTagSupport {
-    
+    @Autowired private ConfigurationSource configurationSource;
+
     private String link;
     private boolean force = false; // force a <script> tag to be written to the output
 
@@ -41,8 +48,11 @@ public class IncludeScriptTag extends SimpleTagSupport {
     }
     
     private String resolveLink() {
+
+        boolean devMode = configurationSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE);
+
         try {
-            return JsLibrary.valueOf(link).getPath();
+            return JsLibrary.valueOf(link).getPath(devMode);
         } catch (IllegalArgumentException e) {
             return link;
         }

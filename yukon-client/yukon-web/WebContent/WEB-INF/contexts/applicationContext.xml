@@ -1263,6 +1263,8 @@
         <property name="durationFormattingService" ref="durationFormattingService"/>
     </bean>
 
+    <bean id="includeScriptTagPrototype" class="com.cannontech.web.taglib.IncludeScriptTag" />
+
     <bean id="formatNotificationTagPrototype" class="com.cannontech.web.taglib.FormatNotificationTag"/>
 
     <bean id="formatMillisTagPrototype" class="com.cannontech.web.taglib.FormatMillisTag">

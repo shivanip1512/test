@@ -55,12 +55,8 @@
 
 <cti:includeCss link="/resources/js/lib/dynatree/skin/ui.dynatree.css"/>
 <cti:includeCss link="/resources/js/lib/dynatree/skin/device.group.css"/>
-<cti:checkRolesAndProperties value="DEVELOPMENT_MODE">
-    <cti:includeScript link="JQUERY_TREE"/>
-</cti:checkRolesAndProperties>
-<cti:checkRolesAndProperties value="!DEVELOPMENT_MODE">
-    <cti:includeScript link="JQUERY_TREE_MIN"/>
-</cti:checkRolesAndProperties>
+
+<cti:includeScript link="JQUERY_TREE"/>
 <cti:includeScript link="JQUERY_TREE_HELPERS"/>
 <cti:includeScript link="JQUERY_FILE_UPLOAD"/>
 <!--[if lte IE 8]><cti:includeScript link="JQUERY_IFRAME_TRANSPORT" /><![endif]-->

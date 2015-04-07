@@ -86,37 +86,37 @@ public class LayoutController {
         /** JS ORDER MATTERS! **/
         Builder<String> b = ImmutableList.builder();
         
-        b.add(JsLibrary.DEBUGGER.getPath());
-        b.add(JsLibrary.MODERNIZR.getPath());
-        b.add(JsLibrary.JS_TIMEZONE_DETECT.getPath());
-        b.add(JsLibrary.MOMENT.getPath());
-        b.add(JsLibrary.MOMENT_TZ.getPath());
+        b.add(JsLibrary.DEBUGGER.getPath(dev));
+        b.add(JsLibrary.MODERNIZR.getPath(dev));
+        b.add(JsLibrary.JS_TIMEZONE_DETECT.getPath(dev));
+        b.add(JsLibrary.MOMENT.getPath(dev));
+        b.add(JsLibrary.MOMENT_TZ.getPath(dev));
         
-        b.add(dev ? JsLibrary.JQUERY.getPath() : JsLibrary.JQUERY_MIN.getPath());
-        b.add(dev ? JsLibrary.JQUERY_UI.getPath() : JsLibrary.JQUERY_UI_MIN.getPath());
-        b.add(JsLibrary.JQUERY_CHECK_ALL.getPath());
-        b.add(JsLibrary.JQUERY_FORM.getPath());
-        b.add(JsLibrary.JQUERY_PLACEHOLDER.getPath());
-        b.add(JsLibrary.JQUERY_TIPSY.getPath());
-        b.add(JsLibrary.JQUERY_SPECTRUM.getPath());
-        b.add(JsLibrary.JQUERY_CHOSEN.getPath());
-        b.add(JsLibrary.JQUERY_HIDDEN_DIMENSIONS.getPath());
-        b.add(JsLibrary.JQUERY_SCROLLTO.getPath());
-        b.add(JsLibrary.JQUERY_COOKIE.getPath());
+        b.add(JsLibrary.JQUERY.getPath(dev) );
+        b.add(JsLibrary.JQUERY_UI.getPath(dev));
+        b.add(JsLibrary.JQUERY_CHECK_ALL.getPath(dev));
+        b.add(JsLibrary.JQUERY_FORM.getPath(dev));
+        b.add(JsLibrary.JQUERY_PLACEHOLDER.getPath(dev));
+        b.add(JsLibrary.JQUERY_TIPSY.getPath(dev));
+        b.add(JsLibrary.JQUERY_SPECTRUM.getPath(dev));
+        b.add(JsLibrary.JQUERY_CHOSEN.getPath(dev));
+        b.add(JsLibrary.JQUERY_HIDDEN_DIMENSIONS.getPath(dev));
+        b.add(JsLibrary.JQUERY_SCROLLTO.getPath(dev));
+        b.add(JsLibrary.JQUERY_COOKIE.getPath(dev));
         
         // Add Yukon common libraries
-        b.add(JsLibrary.YUKON.getPath());
-        b.add(JsLibrary.YUKON_COOKIE.getPath());
-        b.add(JsLibrary.YUKON_ALERTS.getPath());
-        b.add(JsLibrary.YUKON_CONFIRM.getPath());
-        b.add(JsLibrary.YUKON_UI_UTIL.getPath());
-        b.add(JsLibrary.YUKON_UPDATER.getPath());
-        b.add(JsLibrary.YUKON_DROPDOWN.getPath());
-        b.add(JsLibrary.YUKON_ANALYTICS.getPath());
-        b.add(JsLibrary.YUKON_FAVORITES.getPath());
-        b.add(JsLibrary.YUKON_SIMPLE_POPUPS.getPath());
-        b.add(JsLibrary.YUKON_PICKER.getPath());
-        b.add(JsLibrary.YUKON_DEVICE_GROUP_PICKER.getPath());
+        b.add(JsLibrary.YUKON.getPath(dev));
+        b.add(JsLibrary.YUKON_COOKIE.getPath(dev));
+        b.add(JsLibrary.YUKON_ALERTS.getPath(dev));
+        b.add(JsLibrary.YUKON_CONFIRM.getPath(dev));
+        b.add(JsLibrary.YUKON_UI_UTIL.getPath(dev));
+        b.add(JsLibrary.YUKON_UPDATER.getPath(dev));
+        b.add(JsLibrary.YUKON_DROPDOWN.getPath(dev));
+        b.add(JsLibrary.YUKON_ANALYTICS.getPath(dev));
+        b.add(JsLibrary.YUKON_FAVORITES.getPath(dev));
+        b.add(JsLibrary.YUKON_SIMPLE_POPUPS.getPath(dev));
+        b.add(JsLibrary.YUKON_PICKER.getPath(dev));
+        b.add(JsLibrary.YUKON_DEVICE_GROUP_PICKER.getPath(dev));
         layoutScriptFiles = b.build();
         
         /** CSS ORDER MATTERS! **/
