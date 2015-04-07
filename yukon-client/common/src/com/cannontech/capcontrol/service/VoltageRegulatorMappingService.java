@@ -1,9 +1,12 @@
 package com.cannontech.capcontrol.service;
 
+import java.util.Collection;
 import java.util.List;
 
+import com.cannontech.capcontrol.model.Regulator;
+import com.cannontech.capcontrol.model.RegulatorMappingResult;
 import com.cannontech.capcontrol.model.RegulatorMappingTask;
-import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.user.YukonUserContext;
 
 /**
@@ -17,7 +20,7 @@ public interface VoltageRegulatorMappingService {
      * Creates a new task to add point mappings for the specified regulators, and returns the taskId.
      * @return the ID of the newly created task
      */
-    public String start(DeviceCollection regulators, YukonUserContext userContext);
+    public String start(Collection<YukonPao> regulators, YukonUserContext userContext);
     
     /**
      * Retrieves a regulator point mapping task by its ID.
@@ -29,5 +32,8 @@ public interface VoltageRegulatorMappingService {
      * expire, so this is not necessarily a complete list of all tasks ever initiated.)
      */
     public List<RegulatorMappingTask> getAllTasks();
+    
+    /** Perform a regulator point mapping for a single device */
+    public RegulatorMappingResult start(Regulator regulator);
     
 }

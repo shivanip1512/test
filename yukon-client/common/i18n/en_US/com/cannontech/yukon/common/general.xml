@@ -42,6 +42,7 @@
 <entry key="yukon.common.clientApplicationRememberMe.NONE">None</entry>
 <entry key="yukon.common.clientApplicationRememberMe.USERNAME">Username (recommended)</entry>
 <entry key="yukon.common.clientApplicationRememberMe.USERNAME_AND_PASSWORD">Username and Password (less secure)</entry>
+<entry key="yukon.common.close">Close</entry>
 <entry key="yukon.common.collapseAll">Collapse All</entry>
 <entry key="yukon.common.comma">,</entry>
 <entry key="yukon.common.complete">Complete</entry>
@@ -72,6 +73,7 @@
 <entry key="yukon.common.distance.KILOMETERS">km</entry>
 <entry key="yukon.common.distance.MILES">mi.</entry>
 <entry key="yukon.common.distance.NAUTICAL_MILES">n.m.</entry>
+<entry key="yukon.common.edit">Edit</entry>
 <entry key="yukon.common.email">Email</entry>
 <entry key="yukon.common.email.address">Email Address</entry>
 <entry key="yukon.common.email.send">Send Email</entry>
@@ -105,9 +107,10 @@
 <entry key="yukon.common.invalidCron">Invalid Cron Expression</entry>
 <entry key="yukon.common.ipaddress">IP Address</entry>
 <entry key="yukon.common.left">Left</entry>
-<entry key="yukon.common.loading">Loading…</entry>
+<entry key="yukon.common.loading">Loading...</entry>
 <entry key="yukon.common.loginStatus.DISABLED">Disabled</entry>
 <entry key="yukon.common.loginStatus.ENABLED">Enabled</entry>
+<entry key="yukon.common.map">Map</entry>
 <entry key="yukon.common.name">Name</entry>
 <entry key="yukon.common.networkManager">Network Manager</entry>
 <entry key="yukon.common.none">None</entry>
@@ -138,6 +141,7 @@
 <entry key="yukon.common.quality">Quality</entry>
 <entry key="yukon.common.range">Range</entry>
 <entry key="yukon.common.requestFailed">Request Failed</entry>
+<entry key="yukon.common.result">Result</entry>
 <entry key="yukon.common.right">Right</entry>
 <entry key="yukon.common.route">Route</entry>
 <entry key="yukon.common.route.default">Default - {0}</entry>
@@ -154,6 +158,7 @@
 <entry key="yukon.common.selectGroups.title">Select Device Group(s)</entry>
 <entry key="yukon.common.serialNumber">Serial Number</entry>
 <entry key="yukon.common.status">Status</entry>
+<entry key="yukon.common.start">Start</entry>
 <entry key="yukon.common.successful">Successful</entry>
 <entry key="yukon.common.thermostat.mode.AUTO">Auto</entry>
 <entry key="yukon.common.thermostat.mode.COOL">Cool</entry>

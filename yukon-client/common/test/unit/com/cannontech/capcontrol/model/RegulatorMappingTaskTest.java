@@ -1,20 +1,17 @@
 package com.cannontech.capcontrol.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.joda.time.Instant;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.capcontrol.RegulatorPointMapping;
-import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
-import com.cannontech.common.bulk.collection.device.model.DeviceCollectionType;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.Range;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Multimap;
@@ -26,7 +23,7 @@ public class RegulatorMappingTaskTest {
     
     @Test
     public void test_startTime() {
-        DeviceCollection mockRegulators = getMockDeviceCollection();
+        List<YukonPao> mockRegulators = getMockDeviceCollection();
         Instant before = Instant.now();
         RegulatorMappingTask task = new RegulatorMappingTask(mockRegulators, YukonUserContext.system);
         Instant after = Instant.now();
@@ -39,7 +36,7 @@ public class RegulatorMappingTaskTest {
     
     @Test
     public void test_regulatorMappingTask() {
-        DeviceCollection mockRegulators = getMockDeviceCollection();
+        List<YukonPao> mockRegulators = getMockDeviceCollection();
         RegulatorMappingTask task = new RegulatorMappingTask(mockRegulators, YukonUserContext.system);
         
         task.addResult(successRegulator, RegulatorPointMapping.AUTO_BLOCK_ENABLE, RegulatorPointMappingResult.SUCCESS);
@@ -85,7 +82,7 @@ public class RegulatorMappingTaskTest {
     
     @Test
     public void test_cancel() {
-        DeviceCollection mockRegulators = getMockDeviceCollection();
+        List<YukonPao> mockRegulators = getMockDeviceCollection();
         RegulatorMappingTask task = new RegulatorMappingTask(mockRegulators, YukonUserContext.system);
         
         task.addResult(successRegulator, RegulatorPointMapping.AUTO_BLOCK_ENABLE, RegulatorPointMappingResult.SUCCESS);
@@ -99,7 +96,7 @@ public class RegulatorMappingTaskTest {
     
     @Test
     public void test_error() {
-        DeviceCollection mockRegulators = getMockDeviceCollection();
+        List<YukonPao> mockRegulators = getMockDeviceCollection();
         RegulatorMappingTask task = new RegulatorMappingTask(mockRegulators, YukonUserContext.system);
         
         task.addResult(successRegulator, RegulatorPointMapping.AUTO_BLOCK_ENABLE, RegulatorPointMappingResult.SUCCESS);
@@ -113,22 +110,12 @@ public class RegulatorMappingTaskTest {
         Assert.assertSame("Thrown exception does not match exception from task.", e, task.getError());
     }
     
-    private DeviceCollection getMockDeviceCollection() {
-        DeviceCollection regulators = new DeviceCollection() {
-            
-            @Override
-            public int getDeviceCount() {
-                return 3;
-            }
-            
-            //UNIMPLEMENTED
-            @Override public List<SimpleDevice> getDeviceList() {return null;}
-            @Override public Iterator<SimpleDevice> iterator() {return null;}
-            @Override public List<SimpleDevice> getDevices(int start, int size) {return null;}
-            @Override public Map<String, String> getCollectionParameters() {return null;}
-            @Override public MessageSourceResolvable getDescription() {return null;}
-            @Override public DeviceCollectionType getCollectionType() {return null;}
-        };
+    private List<YukonPao> getMockDeviceCollection() {
+        
+        List<YukonPao> regulators = new ArrayList<>();
+        regulators.add(new SimpleDevice(1, PaoType.PHASE_OPERATED));
+        regulators.add(new SimpleDevice(2, PaoType.PHASE_OPERATED));
+        regulators.add(new SimpleDevice(3, PaoType.PHASE_OPERATED));
         
         return regulators;
     }

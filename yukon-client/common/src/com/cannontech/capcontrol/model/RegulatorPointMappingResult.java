@@ -8,6 +8,7 @@ import com.cannontech.common.i18n.DisplayableEnum;
  * successfully and replaced a previously existing mapping.
  */
 public enum RegulatorPointMappingResult implements DisplayableEnum {
+    
     NO_POINTS_FOUND,
     MULTIPLE_POINTS_FOUND,
     SUCCESS_WITH_OVERWRITE,
@@ -20,4 +21,9 @@ public enum RegulatorPointMappingResult implements DisplayableEnum {
     public String getFormatKey() {
         return formatKey + name();
     }
+    
+    public boolean isSuccess() {
+        return this == SUCCESS || this == SUCCESS_WITH_OVERWRITE;
+    }
+    
 }

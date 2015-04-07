@@ -445,6 +445,109 @@ yukon.ui = (function () {
             return buttons;
         },
         
+        /** 
+         * Show a popup. Popup style/behavior should be stored in data attributes described below.
+         * 
+         * @param {sting|object} popup - DOM Object, jQuery DOM object, or css selector string of the popup
+         *                               element, usually a div, to use as a popup.
+         * @param {string} [url] - If provided, the popup element will be loaded with the response from an
+         *                         ajax request to that url. It will override the [data-url] attribute value 
+         *                         if it exists.
+         *                               
+         * The popup element's attributes are as follows:
+         * 
+         * data-dialog        - If present the popup will have 'ok', 'cancel' buttons. See yukon.ui.buttons
+         *                      function for button behaviors.
+         * data-dialog-tabbed - If present, the title bar will be tabs. Correct JQuery tabs markup is expected.
+         * data-width         - Width of the popup. Default is 'auto'.
+         * data-height        - Height of the popup. Default is 'auto'.
+         * data-title         - The title of the popup.
+         * data-event         - If present and [data-dialog] is present, the value of [data-event] will be the name
+         *                      of the event to fire when clicking the 'ok' button.
+         * data-target        - If present and [data-dialog] is present' the value of [data-target] will be the 
+         *                      target of the event fired when clicking the ok button.
+         * data-url           - If present, the contents of the popup element will be replaced with the 
+         *                      response of an ajax request to the url before the popup is shown.
+         * data-load-event    - If present, this event will be fired right before the popup is shown.
+         *                      If 'data-url' is used, the event will be fired after the dialog is loaded with
+         *                      the response body.
+         * data-popup-toggle  - If present, the trigger element can be clicked to close the popup as well.
+         * data-confirm       - If present, after clicking the 'OK' button, the dialog will ask for confirmation.
+         * data-mode          - If present, sets a page mode for the popup, passed to buttons. 
+         *                      Values: 'CREATE', 'EDIT', 'VIEW'.
+         *
+         * Positioning options: see http://api.jqueryui.com/position/
+         * data-position-my   - 'left|center|right top|center|bottom', Order matters. Default is 'center'
+         * data-position-at   - 'left|center|right top|center|bottom', Order matters. Default is 'center'
+         * data-position-of   - selector|element.  Default is 'window'.
+         */
+        dialog: function (popup, url) {
+            
+            popup = $(popup);
+            
+            var dialog = popup.is('[data-dialog]'),
+                tabbed = popup.is('[data-dialog-tabbed]'),
+                loadEvent = popup.data('loadEvent'),
+                options = {
+                    minWidth: popup.is('[data-min-width]') ? popup.data('minWidth') : '150',
+                    width: popup.is('[data-width]') ? popup.data('width') : 'auto',
+                    height: popup.is('[data-height]') ? popup.data('height') : 'auto',
+                    minHeight: popup.is('[data-min-height]') ? popup.data('minHeight') : '150',
+                    dialogClass: popup.is('[data-class]') ? 'yukon-dialog ' + popup.data('class') : 'yukon-dialog'
+                },
+                buttonOptions = {},
+                positionOptions = {};
+            
+            if (popup.is('[data-title]')) options.title = popup.data('title');
+            if (popup.is('[title]')) options.title = popup.attr('title');
+            
+            if (dialog) {
+                if (popup.is('[data-ok-text]')) buttonOptions.okText = popup.data('okText');
+                if (popup.is('[data-ok-class]')) buttonOptions.okClass = popup.data('okClass');
+                if (popup.is('[data-ok-disabled]')) buttonOptions.okDisabled = true;
+                if (popup.is('[data-cancel-text]')) buttonOptions.cancelText = popup.data('cancelText');
+                if (popup.is('[data-cancel-class]')) buttonOptions.cancelClass = popup.data('cancelClass');
+                if (popup.is('[data-event]')) buttonOptions.event = popup.data('event');
+                if (popup.is('[data-target]')) buttonOptions.target = $(popup.data('target'));
+                if (popup.is('[data-form]')) buttonOptions.form = popup.data('form');
+                if (popup.is('[data-confirm]')) buttonOptions.confirm = true;
+                if (popup.is('[data-mode]')) buttonOptions.mode = popup.data('mode');
+                if (popup.is('[data-delete]')) buttonOptions['delete'] = true;
+                options.buttons = mod.buttons(buttonOptions);
+            }
+            
+            if (popup.is('[data-position-my]')) positionOptions.my = popup.data('positionMy');
+            if (popup.is('[data-position-at]')) positionOptions.at = popup.data('positionAt');
+            if (popup.is('[data-position-of]')) positionOptions.of = popup.data('positionOf');
+            options.position = positionOptions;
+            
+            if (popup.is('[data-url]') || url) {
+                url = url || popup.data('url');
+                popup.load(url, function () {
+                    // if no title provided, try to find one hidden in the popup contents
+                    if (!options.title) {
+                        var title = popup.find('.js-popup-title');
+                        if (title[0]) options.title = title[0].value;
+                    }
+                    if (loadEvent) popup.trigger(loadEvent);
+                    
+                    if (tabbed) {
+                        popup.tabbedDialog(options);
+                    } else {
+                        popup.dialog(options);
+                    }
+                });
+            } else {
+                
+                if (loadEvent) popup.trigger(loadEvent);
+                if (tabbed) {
+                    popup.tabbedDialog(options);
+                } else {
+                    popup.dialog(options);
+                }
+            }
+        },
+        
         /** Initialize any chosen selects on page load. */
         initChosen : function () {
             
@@ -859,108 +962,6 @@ yukon.ui = (function () {
                 var focus = popup.find('.js-focus');
                 if (focus.length) focus.focus();
             });
-        },
-        
-        /** 
-         * Show a popup. Popup style/behavior should be stored in data attributes described below.
-         * 
-         * @param {sting|object} popup - DOM Object, jQuery DOM object, or css selector string of the popup
-         *                               element, usually a div, to use as a popup.
-         * @param {string} [url] - If provided, the popup element will be loaded with the response from an
-         *                         ajax request to that url. It will override the [data-url] attribute value 
-         *                         if it exists.
-         *                               
-         * The popup element's attributes are as follows:
-         * 
-         * data-dialog        - If present the popup will have 'ok', 'cancel' buttons. See yukon.ui.buttons
-         *                      function for button behaviors.
-         * data-dialog-tabbed - If present, the title bar will be tabs. Correct JQuery tabs markup is expected.
-         * data-width         - Width of the popup. Default is 'auto'.
-         * data-height        - Height of the popup. Default is 'auto'.
-         * data-title         - The title of the popup.
-         * data-event         - If present and [data-dialog] is present, the value of [data-event] will be the name
-         *                      of the event to fire when clicking the 'ok' button.
-         * data-target        - If present and [data-dialog] is present' the value of [data-target] will be the 
-         *                      target of the event fired when clicking the ok button.
-         * data-url           - If present, the contents of the popup element will be replaced with the 
-         *                      response of an ajax request to the url before the popup is shown.
-         * data-load-event    - If present, this event will be fired right before the popup is shown.
-         *                      If 'data-url' is used, the event will be fired after the dialog is loaded with
-         *                      the response body.
-         * data-popup-toggle  - If present, the trigger element can be clicked to close the popup as well.
-         * data-confirm       - If present, after clicking the 'OK' button, the dialog will ask for confirmation.
-         * data-mode          - If present, sets a page mode for the popup, passed to buttons. 
-         *                      Values: 'CREATE', 'EDIT', 'VIEW'.
-         *
-         * Positioning options: see http://api.jqueryui.com/position/
-         * data-position-my   - 'left|center|right top|center|bottom', Order matters. Default is 'center'
-         * data-position-at   - 'left|center|right top|center|bottom', Order matters. Default is 'center'
-         * data-position-of   - selector|element.  Default is 'window'.
-         */
-        dialog: function (popup, url) {
-            
-            popup = $(popup);
-            
-            var dialog = popup.is('[data-dialog]'),
-                tabbed = popup.is('[data-dialog-tabbed]'),
-                loadEvent = popup.data('loadEvent'),
-                options = {
-                    minWidth: popup.is('[data-min-width]') ? popup.data('minWidth') : '150',
-                    width: popup.is('[data-width]') ? popup.data('width') : 'auto',
-                    height: popup.is('[data-height]') ? popup.data('height') : 'auto',
-                    minHeight: popup.is('[data-min-height]') ? popup.data('minHeight') : '150',
-                    dialogClass: popup.is('[data-class]') ? 'yukon-dialog ' + popup.data('class') : 'yukon-dialog'
-                },
-                buttonOptions = {},
-                positionOptions = {};
-            
-            if (popup.is('[data-title]')) options.title = popup.data('title');
-            if (popup.is('[title]')) options.title = popup.attr('title');
-            
-            if (dialog) {
-                if (popup.is('[data-ok-text]')) buttonOptions.okText = popup.data('okText');
-                if (popup.is('[data-ok-class]')) buttonOptions.okClass = popup.data('okClass');
-                if (popup.is('[data-ok-disabled]')) buttonOptions.okDisabled = true;
-                if (popup.is('[data-cancel-class]')) buttonOptions.cancelClass = popup.data('cancelClass');
-                if (popup.is('[data-event]')) buttonOptions.event = popup.data('event');
-                if (popup.is('[data-target]')) buttonOptions.target = $(popup.data('target'));
-                if (popup.is('[data-form]')) buttonOptions.form = popup.data('form');
-                if (popup.is('[data-confirm]')) buttonOptions.confirm = true;
-                if (popup.is('[data-mode]')) buttonOptions.mode = popup.data('mode');
-                if (popup.is('[data-delete]')) buttonOptions['delete'] = true;
-                options.buttons = mod.buttons(buttonOptions);
-            }
-            
-            if (popup.is('[data-position-my]')) positionOptions.my = popup.data('positionMy');
-            if (popup.is('[data-position-at]')) positionOptions.at = popup.data('positionAt');
-            if (popup.is('[data-position-of]')) positionOptions.of = popup.data('positionOf');
-            options.position = positionOptions;
-            
-            if (popup.is('[data-url]') || url) {
-                url = url || popup.data('url');
-                popup.load(url, function () {
-                    // if no title provided, try to find one hidden in the popup contents
-                    if (!options.title) {
-                        var title = popup.find('.js-popup-title');
-                        if (title[0]) options.title = title[0].value;
-                    }
-                    if (loadEvent) popup.trigger(loadEvent);
-                    
-                    if (tabbed) {
-                        popup.tabbedDialog(options);
-                    } else {
-                        popup.dialog(options);
-                    }
-                });
-            } else {
-                
-                if (loadEvent) popup.trigger(loadEvent);
-                if (tabbed) {
-                    popup.tabbedDialog(options);
-                } else {
-                    popup.dialog(options);
-                }
-            }
         },
         
         /**
@@ -1394,8 +1395,8 @@ yukon.ui = (function () {
                     container = $(glass).parent();
                 }
                 // resize the glass
-                glass.css('width', container.outerWidth())
-                .css('height', container.outerHeight()).fadeIn(200);
+                glass.css('width', container.width())
+                .css('height', container.height()).fadeIn(200);
             },
             
             resize: function (ev) {

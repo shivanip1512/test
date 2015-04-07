@@ -101,8 +101,9 @@ yukon.tools.map = (function() {
             
             var 
             icon, icons = [],
-            source = _getLayer('icons').getSource(),
-            start = new Date().getTime();
+            source = _getLayer('icons').getSource();
+            
+            debug.time('Loading Icons');
             
             for (var i in fc.features) {
                 icon = _createFeature(fc.features[i], fc.crs.properties.name);
@@ -117,7 +118,7 @@ yukon.tools.map = (function() {
                 _map.getView().setZoom(9);
             }
             $('.js-status-loading').hide();
-            debug.log('loading icons: '+ ((new Date().getTime() - start) * .001) + ' seconds');
+            debug.timeEnd('Loading Icons');
             
             if ($('#map').is('[data-dynamic]')) {
                 _update();

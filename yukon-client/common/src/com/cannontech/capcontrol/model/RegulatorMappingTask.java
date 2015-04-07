@@ -9,7 +9,6 @@ import org.joda.time.Instant;
 
 import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.Cancelable;
 import com.cannontech.common.util.Completable;
@@ -37,7 +36,7 @@ public class RegulatorMappingTask implements Cancelable, Comparable<RegulatorMap
     private String taskId;
     private Instant start;
     private YukonUserContext userContext;
-    private final DeviceCollection regulators;
+    private final Collection<YukonPao> regulators;
     
     private Map<YukonPao, RegulatorMappingResult> results = new HashMap<>();
     private Multimap<RegulatorMappingResultType, RegulatorMappingResult> resultsByType = ArrayListMultimap.create();
@@ -48,7 +47,7 @@ public class RegulatorMappingTask implements Cancelable, Comparable<RegulatorMap
     private Throwable error;
     private boolean canceled = false;
     
-    public RegulatorMappingTask(DeviceCollection regulators, YukonUserContext userContext) {
+    public RegulatorMappingTask(Collection<YukonPao> regulators, YukonUserContext userContext) {
         this.regulators = regulators;
         this.userContext = userContext;
         start = Instant.now();
@@ -79,8 +78,24 @@ public class RegulatorMappingTask implements Cancelable, Comparable<RegulatorMap
     /**
      * Gets the collection of regulator devices that this task will act on.
      */
-    public DeviceCollection getRegulators() {
+    public Collection<YukonPao> getRegulators() {
         return regulators;
+    }
+    
+    /**
+     * Return the result holder of a mapping attempt for a particular regulator and mapping.
+     */
+    public RegulatorMappingResult getResult(YukonPao regulator) {
+        
+        RegulatorMappingResult result = results.get(regulator);
+        
+        if (results == null) {
+            log.debug("Adding new result for " + regulator);
+            result = new RegulatorMappingResult(regulator);
+            results.put(regulator, result);
+        }
+        
+        return result;
     }
     
     /**
@@ -170,7 +185,7 @@ public class RegulatorMappingTask implements Cancelable, Comparable<RegulatorMap
      */
     @Override
     public boolean isComplete() {
-        return completedCount == regulators.getDeviceCount();
+        return completedCount == regulators.size();
     }
     
     @Override

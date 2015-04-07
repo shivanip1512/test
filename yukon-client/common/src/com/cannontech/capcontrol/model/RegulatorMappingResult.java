@@ -17,6 +17,7 @@ import com.cannontech.common.util.Completable;
  * {@link RegulatorPointMappingResult}, which represents the results of each individual mapping on the device.
  */
 public class RegulatorMappingResult implements Completable {
+    
     private final YukonPao regulator;
     private final Map<RegulatorPointMapping, RegulatorPointMappingResult> pointResultMap = new HashMap<>();
     private boolean hasSuccessfulPointResults = false;

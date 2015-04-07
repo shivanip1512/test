@@ -2,7 +2,6 @@ package com.cannontech.capcontrol.service.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -10,15 +9,12 @@ import java.util.concurrent.Executor;
 import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.context.MessageSourceResolvable;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
 import com.cannontech.capcontrol.model.RegulatorMappingTask;
 import com.cannontech.capcontrol.service.VoltageRegulatorMappingService;
-import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
-import com.cannontech.common.bulk.collection.device.model.DeviceCollectionType;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.mock.MockPointDao;
 import com.cannontech.common.pao.PaoCategory;
@@ -34,7 +30,6 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.StubServerDatabaseCache;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 public class VoltageRegulatorMappingServiceImplTest {
@@ -123,7 +118,7 @@ public class VoltageRegulatorMappingServiceImplTest {
         EasyMock.replay(mockCache);
         
         //Create other dependencies
-        DeviceCollection regulators = getMockDeviceCollection();
+        List<YukonPao> regulators = getMockDeviceCollection();
         
         //Create service
         VoltageRegulatorMappingService service = new VoltageRegulatorMappingServiceImpl();
@@ -143,8 +138,8 @@ public class VoltageRegulatorMappingServiceImplTest {
         
         RecentResultsCache<RegulatorMappingTask> cache =  new RecentResultsCache<>();
         
-        DeviceCollection regulators = getMockDeviceCollection();
-        DeviceCollection regulators2 = getMockDeviceCollection();
+        List<YukonPao> regulators = getMockDeviceCollection();
+        List<YukonPao> regulators2 = getMockDeviceCollection();
         
         //Create service
         VoltageRegulatorMappingService service = new VoltageRegulatorMappingServiceImpl();
@@ -191,8 +186,7 @@ public class VoltageRegulatorMappingServiceImplTest {
         RecentResultsCache<RegulatorMappingTask> cache =  new RecentResultsCache<>();
         
         //Create task
-        DeviceCollection regulators = getMockDeviceCollection();
-        RegulatorMappingTask task = new RegulatorMappingTask(regulators, YukonUserContext.system);
+        RegulatorMappingTask task = new RegulatorMappingTask(getMockDeviceCollection(), YukonUserContext.system);
         
         //Create service and inject dependencies
         VoltageRegulatorMappingServiceImpl service = new VoltageRegulatorMappingServiceImpl();
@@ -284,33 +278,13 @@ public class VoltageRegulatorMappingServiceImplTest {
         };
     }
     
-    private DeviceCollection getMockDeviceCollection() {
-        DeviceCollection regulators = new DeviceCollection() {
-            List<SimpleDevice> devices = ImmutableList.of(new SimpleDevice(pao1), 
-                                                          new SimpleDevice(pao2), 
-                                                          new SimpleDevice(pao3));
-            
-            @Override
-            public int getDeviceCount() {
-                return devices.size();
-            }
-            
-            @Override 
-            public List<SimpleDevice> getDeviceList() {
-                return devices;
-            }
-            
-            @Override 
-            public Iterator<SimpleDevice> iterator() {
-                return devices.iterator();
-            }
-            
-            //UNIMPLEMENTED
-            @Override public List<SimpleDevice> getDevices(int start, int size) {return null;}
-            @Override public Map<String, String> getCollectionParameters() {return null;}
-            @Override public MessageSourceResolvable getDescription() {return null;}
-            @Override public DeviceCollectionType getCollectionType() {return null;}
-        };
+    private List<YukonPao> getMockDeviceCollection() {
+        
+        List<YukonPao> regulators = new ArrayList<>();
+        regulators.add(new SimpleDevice(pao1));
+        regulators.add(new SimpleDevice(pao2));
+        regulators.add(new SimpleDevice(pao3));
+        
         return regulators;
     }
 }

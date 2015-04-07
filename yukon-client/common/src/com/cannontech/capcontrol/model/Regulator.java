@@ -6,10 +6,11 @@ import java.util.Map;
 import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.model.CompleteRegulator;
 
-public class Regulator {
-
+public class Regulator implements YukonPao {
+    
     private Integer id;
     private String name;
     private PaoType type;
@@ -81,11 +82,16 @@ public class Regulator {
     public void setMappings(Map<RegulatorPointMapping, Integer> mappings) {
         this.mappings = mappings;
     }
-
+    
+    @Override
+    public PaoIdentifier getPaoIdentifier() {
+        return new PaoIdentifier(id, type);
+    }
+    
     public CompleteRegulator asCompletePao() {
-
+        
         CompleteRegulator complete = new CompleteRegulator();
-
+        
         complete.setDescription(description);
         complete.setDisabled(disabled);
         complete.setKeepAliveConfig(keepAliveConfig);
@@ -96,14 +102,14 @@ public class Regulator {
         complete.setPaoName(name);
         complete.setStatistics("");
         complete.setVoltChangePerTap(voltChangePerTap);
-
+        
         return complete;
     }
-
+    
     public static Regulator fromCompletePao(CompleteRegulator complete) {
-
+        
         Regulator regulator = new Regulator();
-
+        
         regulator.setType(complete.getPaoType());
         regulator.setId(complete.getPaObjectId());
         regulator.setDisabled(complete.isDisabled());
@@ -112,14 +118,15 @@ public class Regulator {
         regulator.setName(complete.getPaoName());
         regulator.setDescription(complete.getDescription());
         regulator.setVoltChangePerTap(complete.getVoltChangePerTap());
-
+        
         return regulator;
     }
-
+    
     @Override
     public String toString() {
         return String.format(
             "Regulator [id=%s, name=%s, type=%s, description=%s, voltChangePerTap=%s, keepAliveConfig=%s, keepAliveTimer=%s, disabled=%s, mappings=%s]",
             id, name, type, description, voltChangePerTap, keepAliveConfig, keepAliveTimer, disabled, mappings);
     }
+    
 }

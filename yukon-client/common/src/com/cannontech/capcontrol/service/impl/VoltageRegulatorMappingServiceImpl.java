@@ -1,7 +1,11 @@
 package com.cannontech.capcontrol.service.impl;
 
-import static com.cannontech.capcontrol.model.RegulatorPointMappingResult.*;
+import static com.cannontech.capcontrol.model.RegulatorPointMappingResult.MULTIPLE_POINTS_FOUND;
+import static com.cannontech.capcontrol.model.RegulatorPointMappingResult.NO_POINTS_FOUND;
+import static com.cannontech.capcontrol.model.RegulatorPointMappingResult.SUCCESS;
+import static com.cannontech.capcontrol.model.RegulatorPointMappingResult.SUCCESS_WITH_OVERWRITE;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -13,11 +17,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
+import com.cannontech.capcontrol.model.Regulator;
+import com.cannontech.capcontrol.model.RegulatorMappingResult;
 import com.cannontech.capcontrol.model.RegulatorMappingTask;
 import com.cannontech.capcontrol.service.VoltageRegulatorMappingService;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
-import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.util.ResultExpiredException;
 import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
@@ -41,10 +47,10 @@ public class VoltageRegulatorMappingServiceImpl implements VoltageRegulatorMappi
     @Autowired private CcMonitorBankListDao ccMonitorBankListDao;
     
     @Override
-    public String start(DeviceCollection regulators, YukonUserContext userContext) {
+    public String start(Collection<YukonPao> regulators, YukonUserContext userContext) {
         
         log.info(userContext.getYukonUser() + " initiated a regulator point mapping task for " 
-                 + regulators.getDeviceCount() + " devices.");
+                 + regulators.size() + " devices.");
         
         RegulatorMappingTask task = new RegulatorMappingTask(regulators, userContext);
         String taskId = resultsCache.addResult(task);
@@ -87,68 +93,15 @@ public class VoltageRegulatorMappingServiceImpl implements VoltageRegulatorMappi
         public void run() {
             
             try {
-                for (SimpleDevice regulator : task.getRegulators()) {
+                for (YukonPao regulator : task.getRegulators()) {
                     
                     // Check to see if the task was cancelled
                     if (task.isCanceled()) {
                         break;
                     }
                     
-                    log.debug("Regulator point mapping task working on device " + regulator);
-                    
-                    Map<RegulatorPointMapping, Integer> previousMappings = 
-                            extraPaoPointAssignmentDao.getAssignments(regulator.getPaoIdentifier());
-                    
-                    for (RegulatorPointMapping mapping : RegulatorPointMapping.values()) {
-                        
-                        log.trace("Regulator point mapping task working on mapping " + mapping);
-                        
-                        // Build the expected point name for the mapping. E.g. "RegulatorName-PointMappingName"
-                        LiteYukonPAObject regulatorPao = serverDatabaseCache.getAllPaosMap().get(regulator.getDeviceId());
-                        String regulatorName = regulatorPao.getPaoName();
-                        String mappedPointName = regulatorName + delimiter + mapping.getMappingString();
-                        log.trace("Searching for point name: " + mappedPointName);
-                        
-                        // Load point with matching name
-                        List<LitePoint> allPointsWithMappedName = pointDao.findAllPointsWithName(mappedPointName);
-                        
-                        // If there's no matching point or multiples, bail out and skip to the next mapping.
-                        if (allPointsWithMappedName.size() > 1) {
-                            log.trace("Multiple candidate points found. Skipping this point mapping.");
-                            task.addResult(regulator, mapping, MULTIPLE_POINTS_FOUND);
-                            continue;
-                        } else if (allPointsWithMappedName.size() == 0) {
-                            log.trace("No candidate points found. Skipping this point mapping.");
-                            task.addResult(regulator, mapping, NO_POINTS_FOUND);
-                            continue;
-                        }
-                        
-                        LitePoint pointForMapping = Iterables.getOnlyElement(allPointsWithMappedName);
-                        
-                        // Don't bother doing the new mapping if the old mapping is the exact same point
-                        if (previousMappings.get(mapping) != null
-                                && previousMappings.get(mapping) == pointForMapping.getPointID()) {
-                            
-                            task.addResult(regulator, mapping, SUCCESS); //TODO: may want a new result type for this case
-                            continue;
-                        }
-                        
-                        // Assign the point to the regulator
-                        extraPaoPointAssignmentDao.addAssignment(regulatorPao, pointForMapping.getPointID(), mapping, true);
-                        if (mapping == RegulatorPointMapping.VOLTAGE_Y) {
-                            ccMonitorBankListDao.deleteNonMatchingRegulatorPoint(regulator.getDeviceId(), pointForMapping.getPointID());
-                            ccMonitorBankListDao.addRegulatorPoint(regulator.getDeviceId());
-                        }
-                        
-                        // Save a successful result
-                        if (previousMappings.containsKey(mapping)) {
-                            log.trace("Successfully assigned point. Previous mapping was overwritten.");
-                            task.addResult(regulator, mapping, SUCCESS_WITH_OVERWRITE);
-                        } else {
-                            log.trace("Successfully assigned point.");
-                            task.addResult(regulator, mapping, SUCCESS);
-                        }
-                    }
+                    RegulatorMappingResult result = task.getResult(regulator);
+                    map(result);
                     
                     task.deviceComplete(regulator);
                 }
@@ -158,5 +111,81 @@ public class VoltageRegulatorMappingServiceImpl implements VoltageRegulatorMappi
                 log.error("An unexpected error occurred.", e);
             }
         }
+    }
+    
+    @Override
+    public RegulatorMappingResult start(Regulator regulator) {
+        
+        RegulatorMappingResult result = new RegulatorMappingResult(regulator);
+        map(result);
+        
+        return result;
+    }
+    
+    /**
+     * Perform point mapping for all attributes on the device and store the results on 
+     * the provided result object.
+     */
+    private void map(RegulatorMappingResult result) {
+        
+        YukonPao regulator = result.getRegulator();
+        
+        log.debug("Regulator point mapping for device " + regulator);
+        
+        PaoIdentifier id = regulator.getPaoIdentifier();
+        Map<RegulatorPointMapping, Integer> previousMappings = 
+                extraPaoPointAssignmentDao.getAssignments(id);
+        
+        for (RegulatorPointMapping mapping : RegulatorPointMapping.values()) {
+            
+            log.trace("Regulator point mapping task working on mapping " + mapping);
+            
+            // Build the expected point name for the mapping. E.g. "RegulatorName-PointMappingName"
+            LiteYukonPAObject regulatorPao = serverDatabaseCache.getAllPaosMap().get(id.getPaoId());
+            String regulatorName = regulatorPao.getPaoName();
+            String mappedPointName = regulatorName + delimiter + mapping.getMappingString();
+            log.trace("Searching for point name: " + mappedPointName);
+            
+            // Load point with matching name
+            List<LitePoint> allPointsWithMappedName = pointDao.findAllPointsWithName(mappedPointName);
+            
+            // If there's no matching point or multiples, bail out and skip to the next mapping.
+            if (allPointsWithMappedName.size() > 1) {
+                log.trace("Multiple candidate points found. Skipping this point mapping.");
+                result.addPointDetail(mapping, MULTIPLE_POINTS_FOUND);
+                continue;
+            } else if (allPointsWithMappedName.size() == 0) {
+                log.trace("No candidate points found. Skipping this point mapping.");
+                result.addPointDetail(mapping, NO_POINTS_FOUND);
+                continue;
+            }
+            
+            LitePoint pointForMapping = Iterables.getOnlyElement(allPointsWithMappedName);
+            
+            // Don't bother doing the new mapping if the old mapping is the exact same point
+            if (previousMappings.get(mapping) != null
+                    && previousMappings.get(mapping) == pointForMapping.getPointID()) {
+                result.addPointDetail(mapping, SUCCESS);
+                continue;
+            }
+            
+            // Assign the point to the regulator
+            extraPaoPointAssignmentDao.addAssignment(regulatorPao, pointForMapping.getPointID(), mapping, true);
+            if (mapping == RegulatorPointMapping.VOLTAGE_Y) {
+                ccMonitorBankListDao.deleteNonMatchingRegulatorPoint(id.getPaoId(), pointForMapping.getPointID());
+                ccMonitorBankListDao.addRegulatorPoint(id.getPaoId());
+            }
+            
+            // Save a successful result
+            if (previousMappings.containsKey(mapping)) {
+                log.trace("Successfully assigned point. Previous mapping was overwritten.");
+                result.addPointDetail(mapping, SUCCESS_WITH_OVERWRITE);
+            } else {
+                log.trace("Successfully assigned point.");
+                result.addPointDetail(mapping, SUCCESS);
+            }
+        }
+        
+        result.complete();
     }
 }
