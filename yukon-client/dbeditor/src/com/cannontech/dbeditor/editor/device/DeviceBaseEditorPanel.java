@@ -2253,7 +2253,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             }
             /*Check if the device is of RFN type*/
             else if (paoType.isRfn()) {
-                if (!(YukonValidationUtils.isSerialNumberValid(serialNumber)) || (serialNumber.length() >= 30)) {
+                if (!(YukonValidationUtils.isRfnSerialNumberValid(serialNumber)) || (serialNumber.length() >= 30)) {
                     setErrorString("Device serial number must be numeric and serial number length must be less than 30.");
                     return false;
                 }

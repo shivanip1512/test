@@ -78,12 +78,12 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         return acctNum;
     }
 
-    private String getSerialNumber(LmDeviceDto dto, YukonEnergyCompany yec) {
+    private String getSerialNumber(LmDeviceDto dto, LiteStarsEnergyCompany lsec) {
         String serialNum = dto.getSerialNumber();
         if (StringUtils.isBlank(serialNum)) {
             throw new StarsInvalidArgumentException("Serial Number is required");
         }
-        LiteStarsEnergyCompany lsec = starsCache.getEnergyCompany(yec);
+       
         YukonListEntry deviceType = getDeviceType(dto, lsec);
         SerialNumberValidation serialNumberValidation = ecSettingDao.getEnum(EnergyCompanySettingType.SERIAL_NUMBER_VALIDATION,
                                                                              SerialNumberValidation.class,
@@ -175,7 +175,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         LiteInventoryBase  liteInv = getInventoryOnAccount(dto, lsec);
         // Inventory already exists on the account
         if (liteInv != null) {
-            throw new StarsDeviceAlreadyExistsException(getAccountNumber(dto), getSerialNumber(dto, yec), yec.getName());
+            throw new StarsDeviceAlreadyExistsException(getAccountNumber(dto), getSerialNumber(dto, lsec), yec.getName());
         }
                 
         // add device to account

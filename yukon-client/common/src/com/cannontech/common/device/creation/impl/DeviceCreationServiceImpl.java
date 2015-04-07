@@ -81,7 +81,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         
         int templateDeviceId = templateDevice.getPAObjectID();
         PaoType paoType = templateDevice.getPaoType();
-        if ((!YukonValidationUtils.isSerialNumberValid(serialNumber)) || (serialNumber.length() >= 30)) {
+        if ((!YukonValidationUtils.isRfnSerialNumberValid(serialNumber)) || (serialNumber.length() >= 30)) {
             throw new DeviceCreationException("Device serial number must be numeric and serial number length must be less than 30");
         }
         PaoIdentifier templateIdentifier = new PaoIdentifier(templateDeviceId, paoType);
@@ -153,7 +153,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             throw new DeviceCreationException("Device name cannot be blank or include any of the following characters: / \\ ,\" ' |");
         }
         
-        if ((!YukonValidationUtils.isSerialNumberValid(serialNumber)) || (serialNumber.length() >= 30)) {
+        if ((!YukonValidationUtils.isRfnSerialNumberValid(serialNumber)) || (serialNumber.length() >= 30)) {
             throw new DeviceCreationException("Device serial number must be numeric and serial number length must be less than 30");
         }
         

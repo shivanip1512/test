@@ -33,9 +33,9 @@ public class YukonValidationUtils extends ValidationUtils {
     }
     
     /**
-     * Check to ensure that the serial Number is a valid numeric value
+     * Check to ensure that the serial Number of an RFN device is a valid numeric value
      */
-    public static boolean isSerialNumberValid(String serialNumber) {
+    public static boolean isRfnSerialNumberValid(String serialNumber) {
         try {
             Integer.parseInt(serialNumber);
             return true;
