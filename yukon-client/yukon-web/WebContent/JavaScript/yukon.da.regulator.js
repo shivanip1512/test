@@ -73,7 +73,6 @@ yukon.da.regulator = (function () {
             setTimeout(_updateRecentEvents, 4000);
 
         });
-
     };
 
     var mod = {
@@ -89,58 +88,6 @@ yukon.da.regulator = (function () {
 
                 $(document).on('yukon:da:regulator:delete', function () {
                     $('#delete-regulator').submit();
-                });
-
-                $.ajax(yukon.url('/capcontrol/regulators/' + $('#regulator-id').val() + '/all-events'))
-                .done(function (data) {
-
-                    var begin = data.begin.millis;
-                    var end = data.end.millis;
-
-                    var container = $('#regulator-timeline-container');
-
-                    data.tickMarks.forEach(function (tick) {
-                        var timestamp = tick.millis;
-                        var percent = yukon.percent(timestamp - begin, end - begin, 4);
-                        var tick = $('<span>')
-                        .addClass('tick-mark')
-                        .css({left: percent});
-
-                        container.append(tick);
-                    });
-
-                    Object.keys(data.events2).forEach(function (timestamp) {
-
-                        var events = data.events2[timestamp];
-
-                        var eventList = $('<ul>');
-
-                        events.forEach(function (event) {
-                            var eventItem = $('<li>').html(event.text.timestamp + ': ' + event.text.message);
-                            eventList.append(eventItem);
-                        });
-
-                        var percent = yukon.percent(timestamp - begin, end - begin, 4);
-                        var span = $('<span>')
-                        .addClass('event')
-                        .css({'left': percent });
-
-                        span.append('<i class="M0 icon icon-bullet-go-up"/>');
-                        
-                        container.append(span);
-
-                        span.tipsy({
-                            html: true,
-                            // some tooltips actually are around 175 px in height
-                            gravity: $.fn.tipsy.autoBounds(175, 'nw'),
-                            opacity: 1.0,
-                            title: function () {
-                                return eventList.html();
-                            },
-                            delayIn: 150,
-                            fade: true
-                        });
-                    });
                 });
 
                 _updateRecentEvents();
