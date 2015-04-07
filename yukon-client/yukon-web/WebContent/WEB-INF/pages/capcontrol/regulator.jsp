@@ -89,6 +89,51 @@
                         </table>
                     </div>
                 </tags:sectionContainer2>
+                <tags:sectionContainer title="Timeline">
+                    <style>
+                        #regulator-timeline-container {
+                            height: 16px;
+                            width: 100%;
+                            position: relative;
+                        }
+                        #regulator-timeline {
+                            height: 1px;
+                            background-color: black;
+                            position: absolute;
+                            width: 100%;
+                            top: 8px;
+                        }
+                        .tick-mark {
+                            background-color: black;
+                            height: 9px;
+                            width: 1px;
+                            top: 5px;
+                            position: absolute;
+                        }
+                        .event {
+                            height: 16px;
+                            width: 16px;
+                            background-color: blue;
+                            position: absolute;
+                            border-radius: 8px;
+                        }
+                        #event-1 {
+                            left: calc(100% - 8px);
+                            background-color: yellow;
+                            border: 1px solid blue;
+                        }
+                        #event-2 {
+                            left: calc(0% - 8px);
+                            border: 1px solid blue;
+                            background-color: yellow;
+                        }
+                    </style>
+                    <div id="regulator-timeline-container">
+                        <span id="regulator-timeline" class="fl"></span>
+                        <span id="event-1" class="event"></span>
+                        <span id="event-2" class="event"></span>
+                    </div>
+                </tags:sectionContainer>
             </cti:displayForPageEditModes>
         </div>
         <table class="dn">

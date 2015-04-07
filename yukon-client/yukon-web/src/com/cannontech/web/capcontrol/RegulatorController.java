@@ -1,5 +1,6 @@
 package com.cannontech.web.capcontrol;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -8,6 +9,8 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeFieldType;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -48,7 +51,9 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 
 @RequestMapping("regulators")
 @Controller
@@ -254,6 +259,83 @@ public class RegulatorController {
         resp.put("events", eventsJson);
         
         return resp;
+    }
+
+    @RequestMapping(value="{id}/all-events")
+    public @ResponseBody Map<String,Object> getAllEvents(@PathVariable int id, YukonUserContext userContext) {
+
+        Map<String,Object> response = new HashMap<>();
+
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+
+        Instant start = Instant.now();
+        response.put("timestamp", start.getMillis());
+
+        List<RegulatorEvent> events = eventsDao.getForIdSinceTimestamp(id, new Instant(0));
+
+        List<RegulatorEvent> timelineEvents = new ArrayList<>();
+
+        DateTime endTimeLine = DateTime.now(userContext.getJodaTimeZone()).plusDays(1).withTimeAtStartOfDay();
+
+        DateTime beginTimeLine = endTimeLine.minusDays(1).withTimeAtStartOfDay();
+
+        response.put("begin", beginTimeLine);
+        response.put("end", endTimeLine);
+
+        DateTime tickMark = beginTimeLine;
+
+        List<DateTime> tickMarks = new ArrayList<>();
+        while (tickMark.isBefore(endTimeLine)) {
+            tickMarks.add(tickMark);
+            tickMark = tickMark.plusHours(4);
+        }
+
+        response.put("tickMarks", tickMarks);
+
+
+        for (RegulatorEvent event : events) {
+            if (event.getTimestamp().isAfter(beginTimeLine)) {
+                timelineEvents.add(event);
+            }
+        }
+
+        Multimap<Long, Map<String, Object>> eventsByTime = LinkedListMultimap.create();
+
+        for (RegulatorEvent event : Lists.reverse(events)) {
+            if (event.getTimestamp().isAfter(beginTimeLine)) {
+                ImmutableMap.Builder<String, Object> eventJson = new ImmutableMap.Builder<>();
+
+                Instant timestamp = event.getTimestamp();
+
+
+                eventJson.put("timestamp", event.getTimestamp());
+
+                String iconClass = classNameForEventType.get(event.getType());
+                eventJson.put("icon", iconClass);
+
+                String key = eventTypeBaseKey + "." + event.getType().name();
+
+                Map<String,String> text = new HashMap<>();
+
+                String formattedTime = dateFormatting.format(event.getTimestamp(), DateFormatEnum.BOTH, userContext);
+                text.put("timestamp", formattedTime);
+
+                String phaseString = accessor.getMessage(event.getPhase());
+                String message = accessor.getMessage(key, phaseString);
+                text.put("message", message);
+
+                eventJson.put("text", text);
+
+                DateTime startOfHour = timestamp.toDateTime(userContext.getJodaTimeZone())
+                        .withTime(timestamp.get(DateTimeFieldType.hourOfDay()), 0, 0, 0);
+
+                eventsByTime.put(startOfHour.getMillis(), eventJson.build());
+
+            }
+        }
+        response.put("events2", eventsByTime.asMap());
+
+        return response;
     }
     
 }
