@@ -91,7 +91,7 @@
                                 extraArgs="${catType}"
                                 />
                         </c:if>
-                            
+                        
                         <cti:msg2 var="i18nCatType" key=".${catType}.title"/>
                         <cti:msg2 var="createBtnTitle" key=".createCategory" argument="${i18nCatType}"/>
                         <cti:button nameKey="create" 
@@ -110,15 +110,16 @@
                                 busy="true" 
                                 icon="icon-pencil" 
                                 title="${editBtnTitle}"/>
-                        </c:if>
-                        <%-- TODO JOE Do this padding right --%>
-                        <div class="category-fields-title">
-                            <div class="fl revealer"
-                                data-show-hide=".category-fields-content[data-category-id='${category.categoryId}']">
-
-                                <i:inline key=".categoryFields.title"/>
+                            
+                            <div class="category-fields-title">
+                                <div class="fl revealer"
+                                    data-show-hide=".category-fields-content[data-category-id='${category.categoryId}']">
+                                    
+                                    <i:inline key=".categoryFields.title"/>
+                                </div>
                             </div>
-                        </div>
+                        </c:if>
+                        
                     </div>
                 </cti:displayForPageEditModes>
             </form>
