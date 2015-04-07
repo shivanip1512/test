@@ -23,6 +23,7 @@
 	<bean class="com.cannontech.capcontrol.dao.impl.CapControlImporterFileDaoImpl"/>
     <bean id="regulatorImportService" class="com.cannontech.capcontrol.creation.service.impl.RegulatorImportServiceImpl"/>
 	<bean id="regulatorPointMappingImportService" class="com.cannontech.capcontrol.creation.service.impl.RegulatorPointMappingImportServiceImpl"/>
+	<bean class="com.cannontech.capcontrol.export.RegulatorPointMappingExportServiceImpl"/>
     <bean id="regulatorImportHelper" class="com.cannontech.capcontrol.creation.service.impl.RegulatorImportHelper"/>
     
     <bean id="zoneDao" class="com.cannontech.capcontrol.dao.impl.ZoneDaoImpl"/>
