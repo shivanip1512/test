@@ -78,16 +78,16 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         return acctNum;
     }
 
-    private String getSerialNumber(LmDeviceDto dto, LiteStarsEnergyCompany lsec) {
+    private String getSerialNumber(LmDeviceDto dto, YukonEnergyCompany yec) {
         String serialNum = dto.getSerialNumber();
         if (StringUtils.isBlank(serialNum)) {
             throw new StarsInvalidArgumentException("Serial Number is required");
         }
        
-        YukonListEntry deviceType = getDeviceType(dto, lsec);
+        YukonListEntry deviceType = getDeviceType(dto, yec);
         SerialNumberValidation serialNumberValidation = ecSettingDao.getEnum(EnergyCompanySettingType.SERIAL_NUMBER_VALIDATION,
                                                                              SerialNumberValidation.class,
-                                                                             lsec.getEnergyCompanyId());
+                                                                             yec.getEnergyCompanyId());
         /* Check if the current energy company setting is numeric) */
         if (serialNumberValidation == SerialNumberValidation.NUMERIC) {
             /* Check if the serial number entered is numeric */
@@ -141,17 +141,17 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
      * @return deviceTypeId - yukonListEntry id value.
      * @throws StarsInvalidDeviceTypeException if yukonListEntry is not found for deviceInfo.deviceType 
      */
-    private YukonListEntry getDeviceType(LmDeviceDto dto, LiteStarsEnergyCompany lsec) {
+    private YukonListEntry getDeviceType(LmDeviceDto dto, YukonEnergyCompany yec) {
     	String deviceType = getDeviceTypeString(dto);
     	try {
     		YukonListEntry entry = YukonListEntryHelper.getEntryForEntryText(deviceType, 
     				YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, 
-    				lsec);
+    				yec);
     		
     		return entry;
     		
     	} catch (NotFoundException e) {
-            throw new StarsInvalidDeviceTypeException(deviceType, lsec.getName());
+            throw new StarsInvalidDeviceTypeException(deviceType, yec.getName());
         }
     }
 
