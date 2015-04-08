@@ -53,12 +53,10 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.capcontrol.validators.RegulatorValidator;
-import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
@@ -69,7 +67,6 @@ import com.google.common.collect.Lists;
 @Controller
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class RegulatorController {
-    private final Logger log = YukonLogManager.getLogger(RegulatorController.class);
     
     @Autowired private DateFormattingService dateFormatting;
     @Autowired private DeviceConfigurationDao deviceConfigDao;
@@ -82,6 +79,7 @@ public class RegulatorController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private ZoneDao zoneDao;
     
+    private final Logger log = YukonLogManager.getLogger(RegulatorController.class);
     private static final Map<RegulatorEvent.EventType, String> classNameForEventType;
     
     static {
@@ -314,13 +312,14 @@ public class RegulatorController {
         return resp;
     }
     
-    @RequestMapping(value="{id}/export", method = RequestMethod.GET)
-    public void export(HttpServletResponse resp, ModelMap model, FlashScope flash, @PathVariable int id, YukonUserContext userContext) {
-        String partialFilename = "regulatorExport";
+    @RequestMapping(value="{id}/build-mapping-file", method = RequestMethod.GET)
+    public void export(HttpServletResponse resp, @PathVariable int id) {
+        
+        String prefix = "RegulatorAttributeMapping";
+        LiteYukonPAObject regulator = dbCache.getAllPaosMap().get(id);
         
         try {
-            File csvFile = exportService.generateCsv(partialFilename, Collections.singletonList(id));
-            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.regulator.export.success", csvFile.getName()));
+            File csvFile = exportService.generateCsv(prefix, Collections.singletonList(id));
             
             //Set response properties for CSV file
             resp.setContentType("text/csv");
@@ -329,9 +328,11 @@ public class RegulatorController {
             
             FileCopyUtils.copy(new FileInputStream(csvFile), resp.getOutputStream());
         } catch (IOException e) {
-            log.error("Could not generate regulator point mapping export file for regulator with id: " + id, e);
+            log.error("Error creating regulator attribute mapping file for regulator: "
+                    + regulator + " " + regulator.getPaoIdentifier(), e);
         }
         
         return; 
     }
+    
 }

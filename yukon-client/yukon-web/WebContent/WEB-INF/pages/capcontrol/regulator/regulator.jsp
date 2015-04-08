@@ -54,7 +54,9 @@
 <div id="page-actions" class="dn">
     <cm:dropdownOption icon="icon-pencil" key="yukon.common.edit" href="${editUrl}"/>
     <li class="divider"></li>
-    <cm:dropdownOption data-popup=".js-auto-map-dialog" icon="icon-table-relationship" key=".points.map"/>
+    <cti:url var="url" value="/capcontrol/regulators/${regulator.id}/build-mapping-file"/>
+    <cm:dropdownOption href="${url}" icon="icon-page-white-excel" key=".attribute.map.file"/>
+    <cm:dropdownOption data-popup=".js-auto-map-dialog" icon="icon-table-relationship" key=".attribute.map"/>
 </div>
 </cti:displayForPageEditModes>
 
