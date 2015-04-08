@@ -251,7 +251,7 @@
     <input type="hidden" name="_method" value="delete">
 </form>
 
-<cti:includeScript link="OPEN_LAYERS_MIN"/>
+<cti:includeScript link="OPEN_LAYERS"/>
 <cti:includeCss link="/resources/js/lib/open-layers/ol.css"/>
 <cti:includeScript link="/JavaScript/yukon.assets.gateway.shared.js"/>
 <cti:includeScript link="/JavaScript/yukon.assets.gateway.details.js"/>

@@ -59,8 +59,7 @@ public enum JsLibrary {
     HIGH_STOCK_NO_DATA("/resources/js/lib/highstock/modules/no-data-to-display.js",
                        "/resources/js/lib/highstock/modules/no-data-to-display.src.js"),
     
-    OPEN_LAYERS("/resources/js/lib/open-layers/ol.js",
-                "/resources/js/lib/open-layers/ol-debug.js"),
+    OPEN_LAYERS("/resources/js/lib/open-layers/ol.js"),
     
     YUKON("/resources/js/common/yukon.js"),
     YUKON_ANALYTICS("/resources/js/common/yukon.analytics.js"),

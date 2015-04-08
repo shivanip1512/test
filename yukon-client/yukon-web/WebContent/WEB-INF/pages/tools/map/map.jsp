@@ -168,7 +168,7 @@
     </cti:url>
     <input id="state-group-base-url" type="hidden" value="${fn:escapeXml(stateGroupBaseUrl)}">
 
-    <cti:includeScript link="OPEN_LAYERS_MIN"/>
+    <cti:includeScript link="OPEN_LAYERS"/>
     <cti:includeCss link="/resources/js/lib/open-layers/ol.css"/>
     <cti:includeScript link="/JavaScript/yukon.tools.map.js"/>
 
