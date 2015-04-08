@@ -19,7 +19,8 @@ public enum JsLibrary {
                            "/resources/js/lib/datetimeentry/jquery.datetimeentry.js"), // http://keith-wood.name/datetimeEntry.html
     JQUERY_FILE_UPLOAD("/resources/js/lib/fileupload/jquery.fileupload.js"), // https://github.com/blueimp/jQuery-File-Upload/tree/master/js
     JQUERY_FORM("/resources/js/lib/form/jquery.form.js"), // https://github.com/malsup/form/
-    JQUERY_GRID("/resources/js/lib/jqgrid/js/jquery.jqGrid.min.js", "/resources/js/lib/jqgrid/js/jquery.jqGrid.src.js"), // http://www.trirand.com/jqgridwiki/doku.php?id=wiki:jqgriddocs
+    JQUERY_GRID("/resources/js/lib/jqgrid/js/jquery.jqGrid.min.js",
+                "/resources/js/lib/jqgrid/js/jquery.jqGrid.src.js"), // http://www.trirand.com/jqgridwiki/doku.php?id=wiki:jqgriddocs
     JQUERY_GRID_HELPER("/resources/js/lib/jqgrid/jqGridHelper.js"), //in-house
     JQUERY_IFRAME_TRANSPORT("/resources/js/lib/fileupload/jquery.iframe-transport.js"), // https://github.com/blueimp/jQuery-File-Upload/tree/master/js
     JQUERY_MOUSEWHEEL("/resources/js/lib/mousewheel/jquery.mousewheel.min.js",
@@ -32,7 +33,8 @@ public enum JsLibrary {
     JQUERY_TREE("/resources/js/lib/dynatree/jquery.dynatree.min.js",
                 "/resources/js/lib/dynatree/jquery.dynatree.js"), // http://wwwendt.de/tech/dynatree/doc/dynatree-doc.html
     JQUERY_TREE_HELPERS("/resources/js/tags/yukon.dynatree.js"), //in-house
-    JQUERY_CHOSEN("/resources/js/lib/chosen/chosen.jquery.min.js"), // https://github.com/harvesthq/chosen/releases
+    JQUERY_CHOSEN("/resources/js/lib/chosen/chosen.jquery.min.js",
+                  "/resources/js/lib/chosen/chosen.jquery.src.js"), // https://github.com/harvesthq/chosen/releases
     JQUERY_HIDDEN_DIMENSIONS("/resources/js/lib/hidden-dimensions/hidden-dimensions.js"), // https://github.com/brianfreud/greasemonkey-batchCAA/tree/master/jQuery.getHiddenDimensions
     
     JQUERY_UI("/resources/js/lib/jquery-ui/jquery-ui.min.js",
