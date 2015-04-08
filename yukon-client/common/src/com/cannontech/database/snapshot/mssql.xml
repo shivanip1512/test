@@ -25229,6 +25229,15 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_RegulatorEvents_Device</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>RegulatorId</i__columnName>
+            <i__foreignColumnName>DEVICEID</i__foreignColumnName>
+            <i__foreignTableName>DEVICE</i__foreignTableName>
+            <i__updateRule>0</i__updateRule>
+            <i__deleteRule>1</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>FK_ArchDataAnalSlotVal_Device</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>DeviceId</i__columnName>
@@ -27350,15 +27359,6 @@
         </columnList>
         <i__primaryKeys/>
         <i__foreignKeys>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_RegulatorEvents_Regulator</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>RegulatorId</i__columnName>
-            <i__foreignColumnName>RegulatorId</i__foreignColumnName>
-            <i__foreignTableName>Regulator</i__foreignTableName>
-            <i__updateRule>0</i__updateRule>
-            <i__deleteRule>1</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>FK_ZoneReg_Reg</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
