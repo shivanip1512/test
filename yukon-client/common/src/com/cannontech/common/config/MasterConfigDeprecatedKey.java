@@ -24,6 +24,7 @@ public enum MasterConfigDeprecatedKey {
     PIL_PORT,
     SCANNER_QUEUE, // see yuk-8552
     SCANNER_QUEUE_SCANS, // see yuk-8552
+    YUKON_SMTP_SERVER, // used when dispatch sent notifications and it no longer does
 
     /* The following YUKON_DNP_* keys were intended to be deprecated but have been commented out of this enum.
      * This was done to prevent the 5.5.2 update script from throwing an exception when

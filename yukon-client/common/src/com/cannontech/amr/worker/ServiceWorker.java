@@ -1,5 +1,6 @@
 package com.cannontech.amr.worker;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -145,6 +146,7 @@ public abstract class ServiceWorker<T extends ServiceWorkerQueueObject> {
         @Override
         public void run() {
             while (true) {
+                boolean requeue = false;
                 try {
                     T message = inQueue.take();
                     
@@ -158,6 +160,15 @@ public abstract class ServiceWorker<T extends ServiceWorkerQueueObject> {
                         int currentWorkerIndex = getCurrentWorkerIndex();
                         isWorkerInterrupted.put(currentWorkerIndex, false);
                         log.debug("caught interrupted exception on worker queue " + currentWorkerIndex + " for obj " + message.getId());
+                    } catch (Exception e) {
+                        if (getRecoverableExceptions().contains(e.getClass())) {
+                            int currentWorkerIndex = getCurrentWorkerIndex();
+                            isWorkerInterrupted.put(currentWorkerIndex, false);
+                            log.warn("Recoverable exception caught. Worker queue " + currentWorkerIndex + " for obj " + message.getId() + ". Message will be put back on queue.", e);
+                            requeue = true;
+                        } else {
+                            throw e;
+                        }
                     }
                     
                     // work for this object is now completed
@@ -168,6 +179,10 @@ public abstract class ServiceWorker<T extends ServiceWorkerQueueObject> {
                     
                     updateWorkerQueueSizeMap(this);
                     LogHelper.debug(log, "done working on obj with id %s. Queue size is %s", message.getId(), workerQueueSize.get(getCurrentWorkerIndex()));
+
+                    if (requeue) {
+                        queue(message);
+                    }
                 } catch (InterruptedException e) {
                     log.warn("received shutdown signal, queue size: " + inQueue.size());
                     break;
@@ -216,6 +231,12 @@ public abstract class ServiceWorker<T extends ServiceWorkerQueueObject> {
             throw new InterruptedException();
         }
     }
+
+    /**
+     * A collection of exceptions that can be caught such that the service worker thread
+     *  will cleanup the current worker and then (re) queue the message.
+     */
+    protected abstract Collection<Class<? extends Exception>> getRecoverableExceptions();
 
     /**
      * Returns the worker that is "most available" (worker with the lowest queue size)

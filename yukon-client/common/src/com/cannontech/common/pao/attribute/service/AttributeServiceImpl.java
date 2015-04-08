@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -43,6 +44,7 @@ import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.common.pao.service.PointCreationService;
 import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -75,6 +77,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.Ordering;
+import com.google.common.collect.SetMultimap;
 
 public class AttributeServiceImpl implements AttributeService {
     private static final Logger log = YukonLogManager.getLogger(AttributeServiceImpl.class);
@@ -528,50 +531,40 @@ public class AttributeServiceImpl implements AttributeService {
         SqlFragmentSource groupSqlWhereClause =
             deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "YPO.paObjectId");
 
+        // create map of unique pointIdentifier to set of paoTypes; creates the smallest set of OR clauses for filtering
+        SetMultimap<PointIdentifier, PaoType> pointIdToPaoTypes = HashMultimap.create();
+        for (PaoType paoType : actualPaoTypes) {
+            for (Attribute attr : attributes) {
+                AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(paoType, attr);
+                PointIdentifier ptId = attributeDefinition.getPointTemplate().getPointIdentifier();
+                pointIdToPaoTypes.put(ptId, paoType);
+            }
+        }
+
         // get the state group ID's
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT P.stategroupid AS stategroupid");
         sql.append("FROM Point P");
         sql.append("JOIN YukonPAObject YPO on P.PAObjectID = YPO.PAObjectID");
 
-        // Find the point per pao type/attribute combination
-        sql.append("and (");
-        boolean addOr = false;
-        for (PaoType paoType : actualPaoTypes) {
-            if (!addOr) {
-                addOr = true;
-            } else {
-                sql.append(" OR ");
-            }
-            sql.append("((");
+        // add the monitored group filter
+        sql.append("WHERE").appendFragment(groupSqlWhereClause);
 
-            int countAttributes = 0;
-            for (Attribute attr : attributes) {
-                final PaoTypePointIdentifier ptId = this.getPaoTypePointIdentifierForAttribute(paoType, attr);
-
-                if (countAttributes > 0) {
-                    sql.append(" OR ");
-                }
-                if (attributes.size() > 1) {
-                    sql.append("(");
-                }
-                sql.append("P.POINTOFFSET").eq_k(ptId.getPointIdentifier().getOffset());
-                sql.append("and P.POINTTYPE").eq_k(ptId.getPointIdentifier().getPointType());
-                if (attributes.size() > 1) {
-                    sql.append(")");
-                }
-            }
-
-            // Filter all devices of a particular type from a particular group.
-            sql.append(") and YPO.PAObjectID in (");
-            sql.append("SELECT YPO.paobjectid");
-            sql.append("FROM Device D");
-            sql.append("JOIN YukonPaObject YPO ON (D.deviceid = YPO.paobjectid)");
-            sql.append("WHERE YPO.type").eq(paoType);
-            sql.append("AND").appendFragment(groupSqlWhereClause);
-            sql.append("))");
+        // add unique pointIdentifier to paoTypes        
+        SqlFragmentCollection orCollection = SqlFragmentCollection.newOrCollection();
+        for (Entry<PointIdentifier, Collection<PaoType>> entry : pointIdToPaoTypes.asMap().entrySet()) {
+            SqlStatementBuilder clause = new SqlStatementBuilder();
+            clause.append("(");
+            clause.append("P.POINTOFFSET").eq_k(entry.getKey().getOffset());
+            clause.append("AND P.POINTTYPE").eq_k(entry.getKey().getPointType());
+            clause.append("AND YPO.type").in(entry.getValue());
+            clause.append(")");
+            orCollection.add(clause);
         }
-        sql.append(")");
+        
+        if (!orCollection.isEmpty()) {
+            sql.append("AND").appendFragment(orCollection);
+        }
 
         LiteStateGroup[] allStateGroups = stateDao.getAllStateGroups();
         final Map<Integer, LiteStateGroup> stateGroupsById =

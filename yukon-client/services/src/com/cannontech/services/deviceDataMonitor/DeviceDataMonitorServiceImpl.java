@@ -1,5 +1,6 @@
 package com.cannontech.services.deviceDataMonitor;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -22,6 +23,7 @@ import com.cannontech.amr.worker.ServiceWorker;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigIntegerKeysEnum;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -45,14 +47,17 @@ import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.conns.ConnPool;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -73,11 +78,8 @@ public class DeviceDataMonitorServiceImpl extends ServiceWorker<DeviceDataMonito
     @Autowired private DynamicDataSource dynamicDataSource;
     @Autowired private PointDao pointDao;
 
-    private com.cannontech.message.dispatch.DispatchClientConnection dispatchConnection;
+    private DispatchClientConnection dispatchConnection;
     private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorServiceImpl.class);
-    
-    private static final String WORKER_COUNT_CONFIG = "DEVICE_DATA_MONITOR_WORKER_COUNT";
-    private static final String QUEUE_SIZE_CONFIG = "DEVICE_DATA_MONITOR_QUEUE_SIZE";
 
     @PostConstruct
     public void init() {
@@ -103,12 +105,12 @@ public class DeviceDataMonitorServiceImpl extends ServiceWorker<DeviceDataMonito
 
     @Override
     protected int getWorkerCount() {
-        return configurationSource.getInteger(WORKER_COUNT_CONFIG, 3);
+        return configurationSource.getInteger(MasterConfigIntegerKeysEnum.DEVICE_DATA_MONITOR_WORKER_COUNT, 3);
     }
 
     @Override
     protected int getQueueSize() {
-        return configurationSource.getInteger(QUEUE_SIZE_CONFIG, 10);
+        return configurationSource.getInteger(MasterConfigIntegerKeysEnum.DEVICE_DATA_MONITOR_QUEUE_SIZE, 10);
     }
 
     @Override
@@ -262,6 +264,15 @@ public class DeviceDataMonitorServiceImpl extends ServiceWorker<DeviceDataMonito
         return isWorkingOnObject(monitorId);
     }
 
+    @Override
+    protected Collection<Class<? extends Exception>> getRecoverableExceptions() {
+        /**
+         * DynamicDataAccessException is thrown when dispatch is "online" however it is not able to respond to the request for
+         *  pointData within the allotted timeout period (30s). Thrown from getPaosWithCurrentPointValuesMatchingAProcessor
+         */
+        return ImmutableList.of(DynamicDataAccessException.class);
+    }
+
     /**
      * **Conditionally** find paos in "violation" (having current point values that match a DeviceDataMonitorProcessor),
      * then add them to the violations device group. The "violation calculation" is conditional on several factors:
@@ -346,9 +357,9 @@ public class DeviceDataMonitorServiceImpl extends ServiceWorker<DeviceDataMonito
         return paosInViolation;
     }
 
-    /* 
+    /** 
      * Look's at each point's current value and see if it matches any of our processors
-     * If we find a match then add that device to our paosInViolation set (which we then return) 
+     * If we find a match then add that device to our paosInViolation set (which we then return)
     */
     private Set<PaoIdentifier> getPaosWithCurrentPointValuesMatchingAProcessor(DeviceDataMonitor monitor,
                                                                                Map<LitePoint, PaoPointIdentifier> litePointsToPaoPointIdentifiers)
