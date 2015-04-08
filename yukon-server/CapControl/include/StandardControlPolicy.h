@@ -9,8 +9,6 @@ namespace CapControl    {
 
 struct StandardControlPolicy : ControlPolicy
 {
-    StandardControlPolicy();
-
     virtual AttributeList getSupportedAttributes() override;
 
     Action TapUp() override;

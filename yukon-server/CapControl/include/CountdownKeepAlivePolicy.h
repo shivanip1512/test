@@ -9,8 +9,6 @@ namespace CapControl    {
 
 struct CountdownKeepAlivePolicy : KeepAlivePolicy
 {
-    CountdownKeepAlivePolicy();
-
     virtual AttributeList getSupportedAttributes() override;
 
     Actions SendKeepAlive( const long keepAliveValue ) override;

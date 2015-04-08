@@ -6,6 +6,10 @@
 namespace Cti           {
 namespace CapControl    {
 
+const std::string KeepAlivePolicy::KeepAliveText            = "Keep Alive";
+const std::string KeepAlivePolicy::EnableRemoteControlText  = "Enable Remote Control";
+const std::string KeepAlivePolicy::DisableRemoteControlText = "Disable Remote Control";
+
 KeepAlivePolicy::OperatingMode KeepAlivePolicy::getOperatingMode()
 {
     double value = getValueByAttribute( PointAttribute::AutoRemoteControl );
@@ -26,9 +30,8 @@ Policy::Action KeepAlivePolicy::WriteKeepAliveValue( const long keepAliveValue )
 
     return
     {
-        makeSignalTemplate( point.getPointOffset(), 0, "Keep Alive" ),
-        makeRequestTemplate( point.getPaoId(),
-                             "putvalue analog " + std::to_string( pointOffset ) + " " + std::to_string( keepAliveValue ) )
+        makeSignalTemplate( point.getPointOffset(), 0, KeepAliveText ),
+        makeRequestTemplate( point.getPaoId(), putvalueAnalogCommand( pointOffset, keepAliveValue ) )
     };
 }
 

@@ -8,10 +8,6 @@ extern unsigned long _IVVC_REGULATOR_AUTO_MODE_MSG_DELAY;
 namespace Cti           {
 namespace CapControl    {
 
-IncrementingKeepAlivePolicy::IncrementingKeepAlivePolicy()
-{
-}
-
 Policy::AttributeList IncrementingKeepAlivePolicy::getSupportedAttributes()
 {
     return
@@ -58,7 +54,7 @@ Policy::Actions IncrementingKeepAlivePolicy::StopKeepAlive()
     Actions actions;
 
     actions.emplace_back( makeStandardDigitalControl( getPointByAttribute( PointAttribute::Terminate ),
-                                                      "Keep Alive" ) );
+                                                      KeepAliveText ) );
 
     return actions;
 }
@@ -69,7 +65,7 @@ Policy::Actions IncrementingKeepAlivePolicy::EnableRemoteControl( const long kee
 
     LitePoint point = getPointByAttribute( PointAttribute::KeepAlive );
 
-    actions.emplace_back( makeSignalTemplate( point.getPointId(), readKeepAliveValue(), "Enable Remote Control" ),
+    actions.emplace_back( makeSignalTemplate( point.getPointId(), readKeepAliveValue(), EnableRemoteControlText ),
                           nullptr );
 
     return actions;
@@ -81,7 +77,7 @@ Policy::Actions IncrementingKeepAlivePolicy::DisableRemoteControl()
 
     LitePoint point = getPointByAttribute( PointAttribute::KeepAlive );
 
-    actions.emplace_back( makeSignalTemplate( point.getPointId(), 0, "Disable Remote Control" ),
+    actions.emplace_back( makeSignalTemplate( point.getPointId(), 0, DisableRemoteControlText ),
                           nullptr );
 
     return actions;

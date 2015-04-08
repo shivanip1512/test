@@ -28,6 +28,10 @@ struct KeepAlivePolicy : Policy
 protected:
 
     Action WriteKeepAliveValue( const long keepAliveValue );
+
+    static const std::string KeepAliveText;
+    static const std::string EnableRemoteControlText;
+    static const std::string DisableRemoteControlText;
 };
 
 }

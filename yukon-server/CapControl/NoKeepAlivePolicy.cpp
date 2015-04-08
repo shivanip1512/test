@@ -6,10 +6,6 @@
 namespace Cti           {
 namespace CapControl    {
 
-NoKeepAlivePolicy::NoKeepAlivePolicy()
-{
-}
-
 Policy::AttributeList NoKeepAlivePolicy::getSupportedAttributes()
 {
     return

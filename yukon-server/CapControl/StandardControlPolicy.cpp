@@ -6,10 +6,6 @@
 namespace Cti           {
 namespace CapControl    {
 
-StandardControlPolicy::StandardControlPolicy()
-{
-}
-
 Policy::AttributeList StandardControlPolicy::getSupportedAttributes()
 {
     return
@@ -49,8 +45,7 @@ Policy::Action StandardControlPolicy::AdjustSetPoint( const double changeAmount 
     return 
     {
         makeSignalTemplate( point.getPointId(), 0, description ),
-        makeRequestTemplate( point.getPaoId(),
-                             "putvalue analog " + std::to_string( pointOffset ) + " " + std::to_string( newSetPoint ) )
+        makeRequestTemplate( point.getPaoId(), putvalueAnalogCommand( pointOffset, newSetPoint ) )
     };
 }
 

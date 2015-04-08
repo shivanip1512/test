@@ -63,7 +63,6 @@ std::unique_ptr<KeepAlivePolicy> resolveKeepAlivePolicy( const std::string & pol
     return std::make_unique<NoKeepAlivePolicy>();
 }
 
-
 std::unique_ptr<ScanPolicy> resolveScanPolicy( const std::string & paoType )
 {
 
@@ -870,7 +869,7 @@ catch ( FailedAttributeLookup & missingAttribute )
 
 long VoltageRegulator::submitKeepAliveCommands( Policy::Actions & actions )
 {
-    long delay = 0;
+    long delay = -1;
 
     for ( auto & action : actions )
     {
@@ -896,9 +895,16 @@ bool VoltageRegulator::executePeriodicKeepAlive( const std::string & user )
     {
         const long delay = executeEnableKeepAlive( user );
 
-        _nextKeepAliveSendTime += ( delay ) ? delay : _keepAlivePeriod;
+        if ( delay >= 0 )
+        {
+            _nextKeepAliveSendTime = CtiTime::now() + ( ( delay ) ? delay : _keepAlivePeriod );
 
-        return true;
+            return true;
+        }
+        else
+        {
+            _keepAlivePeriod = 0;
+        }
     }
 
     return false;

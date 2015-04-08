@@ -6,10 +6,6 @@
 namespace Cti           {
 namespace CapControl    {
 
-CountdownKeepAlivePolicy::CountdownKeepAlivePolicy()
-{
-}
-
 Policy::AttributeList CountdownKeepAlivePolicy::getSupportedAttributes()
 {
     return
@@ -43,7 +39,7 @@ Policy::Actions CountdownKeepAlivePolicy::EnableRemoteControl( const long keepAl
 
     LitePoint point = getPointByAttribute( PointAttribute::KeepAlive );
 
-    actions.emplace_back( makeSignalTemplate( point.getPointId(), keepAliveValue, "Enable Remote Control" ),
+    actions.emplace_back( makeSignalTemplate( point.getPointId(), keepAliveValue, EnableRemoteControlText ),
                           nullptr );
 
     return actions;
@@ -55,7 +51,7 @@ Policy::Actions CountdownKeepAlivePolicy::DisableRemoteControl()
 
     LitePoint point = getPointByAttribute( PointAttribute::KeepAlive );
 
-    actions.emplace_back( makeSignalTemplate( point.getPointId(), 0, "Disable Remote Control" ),
+    actions.emplace_back( makeSignalTemplate( point.getPointId(), 0, DisableRemoteControlText ),
                           nullptr );
 
     return actions;

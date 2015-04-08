@@ -9,8 +9,6 @@ namespace CapControl    {
 
 struct IncrementingKeepAlivePolicy : KeepAlivePolicy
 {
-    IncrementingKeepAlivePolicy();
-
     virtual AttributeList getSupportedAttributes() override;
 
     Actions SendKeepAlive( const long keepAliveValue ) override;

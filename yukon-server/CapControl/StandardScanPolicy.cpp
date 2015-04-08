@@ -6,10 +6,6 @@
 namespace Cti           {
 namespace CapControl    {
 
-StandardScanPolicy::StandardScanPolicy()
-{
-}
-
 Policy::AttributeList StandardScanPolicy::getSupportedAttributes()
 {
     return
