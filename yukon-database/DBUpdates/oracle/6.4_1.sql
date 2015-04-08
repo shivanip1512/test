@@ -138,6 +138,87 @@ WHERE DeviceConfigCategoryId NOT IN (SELECT DeviceConfigCategoryId FROM DeviceCo
     OR Name LIKE 'Generated Regulator Config Category%'); 
 /* End YUK-14170 */
 
+/* Start YUK-13939 */
+/* Alter Table structure to add new columns */
+ALTER TABLE RPHTag 
+ADD (
+    PeakUp NUMBER(1,0),
+    PeakDown NUMBER(1,0),
+    UnreasonableUp NUMBER(1,0),
+    UnreasonableDown NUMBER(1,0),
+    ChangeOut NUMBER(1,0),
+    Accepted NUMBER(1,0));
+
+/* Initialize new column values to zero */
+UPDATE RPHTag SET PeakUp = 0, PeakDown = 0, UnreasonableUp = 0, UnreasonableDown = 0, ChangeOut = 0, Accepted = 0;
+
+/* Update new columns using TagName column */
+UPDATE RPHTag SET ChangeOut = 1
+WHERE ChangeId IN (SELECT ChangeId FROM RPHTag WHERE TagName = 'UDC');
+
+UPDATE RPHTag SET PeakUp = 1 
+WHERE ChangeId IN  (SELECT ChangeId FROM RPHTag WHERE TagName = 'PU');
+
+UPDATE RPHTag SET PeakDown = 1 
+WHERE ChangeId IN  (SELECT ChangeId FROM RPHTag WHERE TagName = 'PD');
+
+UPDATE RPHTag SET UnreasonableUp = 1
+WHERE ChangeId IN  (SELECT ChangeId FROM RPHTag WHERE TagName = 'UU');
+
+UPDATE RPHTag SET UnreasonableDown = 1 
+WHERE ChangeId IN  (SELECT ChangeId FROM RPHTag WHERE TagName = 'UD');
+
+UPDATE RPHTag SET Accepted = 1
+WHERE ChangeId IN  (SELECT ChangeId FROM RPHTag WHERE TagName = 'OK');
+
+/* Alter table to drop existing primary key constraint */
+ALTER TABLE RPHTag
+    DROP CONSTRAINT PK_RPHTag;
+
+/* Delete duplicate rows */
+ALTER TABLE RPHTag
+    ADD UniqueId NUMBER;
+
+UPDATE RPHTag R1
+SET UniqueId = (
+    SELECT RNum FROM (
+        SELECT ChangeId, TagName, ROW_NUMBER() OVER (ORDER BY ChangeId) RNum
+        FROM RPHTag) R2
+    WHERE R1.ChangeId = R2.ChangeId
+      AND R1.TagName = R2.TagName);
+
+DELETE FROM RPHTag
+WHERE UniqueId IN (
+    SELECT UniqueId FROM (
+        SELECT UniqueId, ROW_NUMBER() OVER (PARTITION BY ChangeId ORDER BY ChangeId) DuplicateRecCount
+        FROM RPHTag)
+    WHERE DuplicateRecCount > 1);
+
+ALTER TABLE RPHTag
+    DROP COLUMN UniqueId;
+
+/* Alter table to make ChangeId as Primary Key */
+ALTER TABLE RPHTag
+    ADD CONSTRAINT PK_RPHTag PRIMARY KEY (ChangeId);
+
+/* Alter table to drop the TagName column */
+ALTER TABLE RPHTag
+    DROP COLUMN TagName;
+
+ALTER TABLE RPHTag
+    MODIFY PeakUp NOT NULL;
+ALTER TABLE RPHTag
+    MODIFY PeakDown NOT NULL;
+ALTER TABLE RPHTag
+    MODIFY UnreasonableUp NOT NULL;
+ALTER TABLE RPHTag
+    MODIFY UnreasonableDown NOT NULL;
+ALTER TABLE RPHTag
+    MODIFY ChangeOut NOT NULL;
+ALTER TABLE RPHTag
+    MODIFY Accepted NOT NULL;
+/* End YUK-13939 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

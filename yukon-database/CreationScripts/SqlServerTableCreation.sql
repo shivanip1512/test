@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/2/2015 4:20:45 PM                          */
+/* Created on:     4/6/2015 1:18:06 PM                          */
 /*==============================================================*/
 
 
@@ -7755,8 +7755,13 @@ go
 /*==============================================================*/
 create table RPHTag (
    ChangeId             numeric              not null,
-   TagName              varchar(150)         not null,
-   constraint PK_RPHTag primary key (ChangeId, TagName)
+   PeakUp               bit                  not null,
+   PeakDown             bit                  not null,
+   UnreasonableUp       bit                  not null,
+   UnreasonableDown     bit                  not null,
+   ChangeOut            bit                  not null,
+   Accepted             bit                  not null,
+   constraint PK_RPHTag primary key (ChangeId)
 )
 go
 

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/2/2015 5:19:53 PM                          */
+/* Created on:     4/6/2015 1:17:20 PM                          */
 /*==============================================================*/
 
 
@@ -7295,8 +7295,13 @@ create index Indx_RwPtHisTstPtId on RAWPOINTHISTORY (
 /*==============================================================*/
 create table RPHTag  (
    ChangeId             NUMBER                          not null,
-   TagName              VARCHAR2(150)                   not null,
-   constraint PK_RPHTag primary key (ChangeId, TagName)
+   PeakUp               NUMBER(1,0)                     not null,
+   PeakDown             NUMBER(1,0)                     not null,
+   UnreasonableUp       NUMBER(1,0)                     not null,
+   UnreasonableDown     NUMBER(1,0)                     not null,
+   ChangeOut            NUMBER(1,0)                     not null,
+   Accepted             NUMBER(1,0)                     not null,
+   constraint PK_RPHTag primary key (ChangeId)
 );
 
 /*==============================================================*/

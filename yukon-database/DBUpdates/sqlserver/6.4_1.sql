@@ -141,6 +141,72 @@ WHERE DeviceConfigCategoryId NOT IN (SELECT DeviceConfigCategoryId FROM DeviceCo
     OR Name LIKE 'Generated Regulator Config Category%');  
 /* End YUK-14170 */
 
+/* Start YUK-13939 */
+/* Alter Table structure to add new columns */
+ALTER TABLE RPHTag
+    ADD 
+    PeakUp BIT,
+    PeakDown BIT,
+    UnreasonableUp BIT,
+    UnreasonableDown BIT,
+    ChangeOut BIT,
+    Accepted BIT;
+GO
+
+/* Initialize new column values to zero */
+UPDATE RPHTag SET PeakUp = 0, PeakDown = 0, UnreasonableUp = 0, UnreasonableDown = 0, ChangeOut = 0, Accepted = 0;
+
+/* Update new columns using TagName column */
+UPDATE RPHTag SET ChangeOut = 1
+WHERE ChangeId IN (SELECT ChangeId FROM RPHTag WHERE TagName = 'UDC');
+
+UPDATE RPHTag SET PeakUp = 1 
+WHERE ChangeId IN  (SELECT ChangeId FROM RPHTag WHERE TagName = 'PU');
+
+UPDATE RPHTag SET PeakDown = 1 
+WHERE ChangeId IN  (SELECT ChangeId FROM RPHTag WHERE TagName = 'PD');
+
+UPDATE RPHTag SET UnreasonableUp = 1
+WHERE ChangeId IN  (SELECT ChangeId FROM RPHTag WHERE TagName = 'UU');
+
+UPDATE RPHTag SET UnreasonableDown = 1 
+WHERE ChangeId IN  (SELECT ChangeId FROM RPHTag WHERE TagName = 'UD');
+
+UPDATE RPHTag SET Accepted = 1
+WHERE ChangeId IN  (SELECT ChangeId FROM RPHTag WHERE TagName = 'OK');
+
+/* Alter table to drop existing primary key constraint */
+ALTER TABLE RPHTag
+    DROP CONSTRAINT PK_RPHTag;
+
+/* Delete duplicate rows */
+WITH TempEmp (ChangeId, DuplicateRecCount) AS (
+    SELECT ChangeId, ROW_NUMBER() OVER (PARTITION by ChangeId ORDER BY ChangeId) AS DuplicateRecCount
+    FROM RPHTag)
+DELETE FROM TempEmp WHERE DuplicateRecCount > 1;
+
+/* Alter table to make ChangeId as Primary Key */
+ALTER TABLE RPHTag
+    ADD CONSTRAINT PK_RPHTag PRIMARY KEY (ChangeId);
+
+/* Alter table to drop the TagName column */
+ALTER TABLE RPHTag
+    DROP COLUMN TagName;
+
+ALTER TABLE RPHTag
+    ALTER COLUMN PeakUp BIT NOT NULL;
+ALTER TABLE RPHTag
+    ALTER COLUMN PeakDown BIT NOT NULL;
+ALTER TABLE RPHTag
+    ALTER COLUMN UnreasonableUp BIT NOT NULL;
+ALTER TABLE RPHTag
+    ALTER COLUMN UnreasonableDown BIT NOT NULL;
+ALTER TABLE RPHTag
+    ALTER COLUMN ChangeOut BIT NOT NULL;
+ALTER TABLE RPHTag
+    ALTER COLUMN Accepted BIT NOT NULL;
+/* End YUK-13939 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
