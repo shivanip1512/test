@@ -24,9 +24,9 @@ CREATE TABLE RegulatorEvents  (
 );
 
 ALTER TABLE RegulatorEvents
-   ADD CONSTRAINT FK_RegulatorEvents_Regulator FOREIGN KEY (RegulatorId)
-      REFERENCES Regulator (RegulatorId)
-      ON DELETE CASCADE;
+   ADD CONSTRAINT FK_RegulatorEvents_Device FOREIGN KEY (RegulatorId)
+      REFERENCES Device (DeviceId)
+         ON DELETE CASCADE;
 /* End YUK-14167 */
 
 /* Start YUK-14170 */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/6/2015 1:18:06 PM                          */
+/* Created on:     4/8/2015 4:40:09 PM                          */
 /*==============================================================*/
 
 
@@ -13354,8 +13354,8 @@ alter table Regulator
 go
 
 alter table RegulatorEvents
-   add constraint FK_RegulatorEvents_Regulator foreign key (RegulatorId)
-      references Regulator (RegulatorId)
+   add constraint FK_RegulatorEvents_Device foreign key (RegulatorId)
+      references DEVICE (DEVICEID)
          on delete cascade
 go
 
