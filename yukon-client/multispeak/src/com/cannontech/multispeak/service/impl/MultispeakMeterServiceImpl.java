@@ -468,7 +468,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             List<YukonMeter> meters = meterNumberToMeterMap.get(meterNumber);    // this will most likely be size 1
             for (YukonMeter meter : meters) {
                 if (meter == null) {
-                    multispeakEventLogService.meterNotFound(meterNumber, "initiateOutageDetectionEventRequest", mspVendor.toString());
+                    multispeakEventLogService.meterNotFound(meterNumber, "initiateOutageDetectionEventRequest", mspVendor.getCompanyName());
                     ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "ODEvent", mspVendor.getCompanyName());
                     errorObjects.add(err);
                     continue;
@@ -1070,7 +1070,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                                                          "initiateConnectDisconnect", mspVendor.getCompanyName());
                 }
             } catch (NotFoundException e) {
-                multispeakEventLogService.meterNotFound(meterNumber, "initiateConnectDisconnect", mspVendor.toString());
+                multispeakEventLogService.meterNotFound(meterNumber, "initiateConnectDisconnect", mspVendor.getCompanyName());
                 ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "CDEvent", mspVendor.getCompanyName());
                 errorObjects.add(err);
                 log.error(e);
@@ -2226,7 +2226,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 YukonMeter meter = meterDao.getForMeterNumber(meterNumber);
                 addToGroup(meter, systemGroup, mspMethod, mspVendor);
             } catch (NotFoundException e) {
-                multispeakEventLogService.meterNotFound(meterNumber, mspMethod, mspVendor.toString());
+                multispeakEventLogService.meterNotFound(meterNumber, mspMethod, mspVendor.getCompanyName());
                 ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber,
                                                                       "MeterNumber",
                                                                       "Meter",
@@ -2252,7 +2252,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 YukonMeter meter = meterDao.getForMeterNumber(meterNumber);
                 removeFromGroup(meter, systemGroup, mspMethod, mspVendor);
             } catch (NotFoundException e) {
-                multispeakEventLogService.meterNotFound(meterNumber, mspMethod, mspVendor.toString());
+                multispeakEventLogService.meterNotFound(meterNumber, mspMethod, mspVendor.getCompanyName());
                 ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber,
                                                                       "MeterNumber",
                                                                       "Meter",
