@@ -9,7 +9,10 @@ yukon.namespace('yukon.da.regulator');
 
 yukon.da.regulator = (function () {
     
-    _templates = {
+    /** @type {number} - The regulator id. */
+    var _id = null;
+    
+    var _templates = {
         successful: '<span class="label label-success">' + yg.text.successful + '</span>',
         failed: '<span class="label label-danger">' + yg.text.failed + '</span>'
     };
@@ -29,7 +32,7 @@ yukon.da.regulator = (function () {
         mappings.forEach(function (mapping, idx) {
             table.find('[data-mapping="' + mapping + '"]').show().find('input').prop('disabled', false);
         });
-    },
+    };
     
     /**
      * @type {Object.<string, string>}
@@ -40,12 +43,12 @@ yukon.da.regulator = (function () {
      *    PAO_TYPE_2: ['Attr2', 'Attr3']
      *  }
      */
-    _paoTypeToAttributes = {},
+    var _paoTypeToAttributes = {};
     
-    _updateRecentEvents = function () {
+    var _updateRecentEvents = function () {
         
         $.ajax({
-            url: yukon.url('/capcontrol/regulators/' + $('#regulator-id').val() + '/events'),
+            url: yukon.url('/capcontrol/regulators/' + _id + '/events'),
             data: { 'lastUpdate': $('#regulator-events-last-update').val() }
         }).done(function (data) {
             
@@ -84,6 +87,8 @@ yukon.da.regulator = (function () {
         
         init : function () {
             
+            _id = $('#regulator-id').val();
+            
             _paoTypeToAttributes = yukon.fromJson('#pao-type-map');
             _showHideMappings();
             
@@ -103,7 +108,7 @@ yukon.da.regulator = (function () {
                 yukon.ui.elementGlass.show('.js-auto-map-dialog');
                 dialog.parent().find('.ui-dialog-buttonpane').find('.ui-button').prop('disabled', true);
                  
-                $.ajax(yukon.url('/capcontrol/regulators/' + $('#regulator-id').val()) + '/automap')
+                $.ajax(yukon.url('/capcontrol/regulators/' + _id + '/automap'))
                 .done(function (result) {
                     
                     debug.debug('Mapping Result', result);
@@ -113,28 +118,32 @@ yukon.da.regulator = (function () {
                     
                     var tbody = $('.js-auto-map-dialog .js-mappings');
                     var status = result.status.type;
-                    var success = result.status.type == 'SUCCESSFUL';
+                    var success = status === 'SUCCESSFUL' || status === 'PARTIALLY_SUCCESSFUL';
                     
                     $('.js-result-header').show();
                     $('.js-automap-results').show()
                     .find('.js-automap-result').text(result.status.text)
+                    .toggleClass('label-info', status === 'INCOMPLETE')
                     .toggleClass('label-danger', status === 'FAILED' )
                     .toggleClass('label-warning', status === 'PARTIALLY_SUCCESSFUL')
-                    .toggleClass('label-info', status === 'INCOMPLETE')
-                    .toggleClass('label-success', success);
+                    .toggleClass('label-success', status === 'SUCCESSFUL');
                     
                     result.mappings.forEach(function (mapping) {
                         var td = tbody.find('[data-mapping="' + mapping.type + '"] .js-result');
                         if (mapping.success) {
                             td.html(_templates.successful);
                         } else {
-                            td.html(_templates.failed).append(' - ' + mapping.text);
+                            td.html(_templates.failed).append($('<span>').text(' - ' + mapping.text));
                         }
                     });
                     
                     if (success) {
-                        
+                        $.ajax(yukon.url('/capcontrol/regulators/' + _id + '/mapping-table'))
+                        .done(function (table) {
+                            $('.js-mappings-container').html(table);
+                        });
                     }
+                    
                 });
             });
             

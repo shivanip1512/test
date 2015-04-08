@@ -110,6 +110,19 @@ public class RegulatorController {
         return setUpModel(model, regulator, userContext);
     }
     
+    @RequestMapping(value="{id}/mapping-table", method=RequestMethod.GET)
+    public String mappingTable(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
+        
+        Regulator regulator = regulatorService.getRegulatorById(id);
+        Map<RegulatorPointMapping, Integer> sortedMappings =
+                regulatorService.sortMappingsAllKeys(regulator.getMappings(), userContext);
+        regulator.setMappings(sortedMappings);
+        model.addAttribute("regulator",  regulator);
+        model.addAttribute("mode",  PageEditMode.VIEW);
+        
+        return "regulator/mapping-table.jsp";
+    }
+    
     private String setUpModel(ModelMap model, Regulator regulator, YukonUserContext userContext) {
         
         Object modelReg = model.get("regulator");
@@ -142,7 +155,7 @@ public class RegulatorController {
         
         model.addAttribute("paoTypeMap", RegulatorPointMapping.getMappingsByPaoType());
         
-        return "regulator.jsp";
+        return "regulator/regulator.jsp";
     }
     
     @RequestMapping(value="{id}/edit", method = RequestMethod.GET)
@@ -300,7 +313,7 @@ public class RegulatorController {
         
         return resp;
     }
-
+    
     @RequestMapping(value="{id}/export", method = RequestMethod.GET)
     public void export(HttpServletResponse resp, ModelMap model, FlashScope flash, @PathVariable int id, YukonUserContext userContext) {
         String partialFilename = "regulatorExport";
