@@ -1,5 +1,5 @@
 /**
- * Singleton that manages alerts button and popup
+ * Module that manages system wide alerts on every page.
  * 
  * @module yukon.alerts
  * @requires JQUERY
@@ -19,22 +19,16 @@ yukon.alerts = (function () {
     /** @type {number} - count of the alerts. */
     _oldCount = 0,
     
-    _alert_button = '.yukon-alert-button',
-    
-    _clear_button = '.js-clear-all-yukon-alerts',
-    
-    /** @type {string} - URL to view all the alerts. */
-    _viewAlertUrl = yukon.url('/common/alert/view'),
-    
     /** @type {string} - URL to clear all the alerts. */
     _clearAlertUrl = yukon.url('/common/alert/clear'),
     
-    /** Updates the alert count and animates the alert button accordingly.
-    *   @param {number} count - alert count.
-    */
+    /** 
+     * Updates the alert count and animates the alert button accordingly.
+     * @param {number} count - alert count.
+     */
     _updateCount = function (count) {
         
-        var button = $(_alert_button);
+        var button = $('.yukon-alert-button');
         
         button.children('.b-label').html(count);
         if (count > 0) {
@@ -63,7 +57,6 @@ yukon.alerts = (function () {
         $('#yukon_alert_popup').dialog('close');
         $('#alert_body').empty();
     },
-    mod = {};
     
     mod = {
         
@@ -71,7 +64,8 @@ yukon.alerts = (function () {
             
             if (_initialized) return;
             
-            $(_clear_button).on('click', function () { mod.clearAlert(); });
+            $(document).on('click', '.js-clear-all-yukon-alerts', function (ev) { mod.clearAlert(); });
+            
             $(document).on('click', '.js-clear-yukon-alert', function (ev) {
                 var alertId = $(this).closest('tr').data('alertId');
                 mod.clearAlert(alertId); 
@@ -95,6 +89,7 @@ yukon.alerts = (function () {
          * @param {string} alertId- The id associated with the alert. 
          */
         clearAlert : function (alertId) {
+            
             var alertIds = [],
                 remainingAlerts;
             
@@ -123,4 +118,4 @@ yukon.alerts = (function () {
     return mod;
 }());
 
-$(function () {yukon.alerts.init();});
+$(function () { yukon.alerts.init(); });
