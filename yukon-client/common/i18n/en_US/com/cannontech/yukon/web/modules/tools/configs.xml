@@ -463,9 +463,9 @@
     <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.ovuvEnabled">OV/UV Enabled</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.ovuvEnabled.description">When true, OV/UV alarming is enabled for the RFN device. Else, the OV/UV alarming is disabled.</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.ovThreshold">Over Voltage Threshold</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.ovThreshold.description">Voltages higher than this threshold will trigger an over voltage alarm. Values will be normalized to a 240-volt or 480-volt range automatically by the device if necessary.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.ovThreshold.description">Voltages higher than this threshold will trigger an over voltage alarm. Values will be normalized to a 240-volt or 480-volt range automatically by the device if necessary. OV threshold shall be greater than UV threshold.</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.uvThreshold">Under Voltage Threshold</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.uvThreshold.description">Voltages lower than this threshold will trigger an under voltage alarm. Values will be normalized to a 240-volt or 480-volt range automatically by the device if necessary.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.uvThreshold.description">Voltages lower than this threshold will trigger an under voltage alarm. Values will be normalized to a 240-volt or 480-volt range automatically by the device if necessary. UV threshold shall be less than OV threshold.</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.alarmReportingInterval">Alarm Reporting Interval</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.alarmReportingInterval.description">The interval at which the RFN device reports new alarms (in minutes).</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.alarmRepeatInterval">Alarm Repeat Interval</entry>
