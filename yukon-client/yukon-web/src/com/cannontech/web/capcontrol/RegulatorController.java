@@ -311,15 +311,15 @@ public class RegulatorController {
         
         return resp;
     }
-    
+
     @RequestMapping(value="{id}/build-mapping-file", method = RequestMethod.GET)
-    public void export(HttpServletResponse resp, @PathVariable int id) {
+    public void export(HttpServletResponse resp, @PathVariable int id, YukonUserContext userContext) {
         
         String prefix = "RegulatorAttributeMapping";
         LiteYukonPAObject regulator = dbCache.getAllPaosMap().get(id);
         
         try {
-            File csvFile = exportService.generateCsv(prefix, Collections.singletonList(id));
+            File csvFile = exportService.generateCsv(prefix, Collections.singletonList(id), userContext);
             
             //Set response properties for CSV file
             resp.setContentType("text/csv");
