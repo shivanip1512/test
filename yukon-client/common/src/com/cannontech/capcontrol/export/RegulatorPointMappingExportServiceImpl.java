@@ -4,56 +4,60 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.joda.time.Instant;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.capcontrol.RegulatorPointMapping;
-import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.google.common.collect.ImmutableSet;
+import com.cannontech.user.YukonUserContext;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class RegulatorPointMappingExportServiceImpl implements RegulatorPointMappingExportService {
 
-    @Autowired PaoDao paoDao;
+    @Autowired private IDatabaseCache dbCache;
+    @Autowired private DateFormattingService dateFormattingService;
     
     private final static char separator = '-';
     private final static String extension = ".csv";
     
     @Override
-    public File generateCsv(String filename, List<Integer> regulatorIds) throws IOException {
-        
-        DateTimeFormatter fmt = DateTimeFormat.forPattern("_yyyyMMdd_HHmmss");
-        String completeFilename = filename + fmt.print(new Instant()) + extension;
+    public File generateCsv(String filename, List<Integer> regulatorIds, YukonUserContext userContext) throws IOException {
 
-        File csvFile = new File(completeFilename);
-        FileOutputStream out = new FileOutputStream(csvFile);
-        OutputStreamWriter writer = new OutputStreamWriter(out);
+        String timestamp = dateFormattingService.format(new Instant(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        String completeFilename = filename + '_' + timestamp + extension;
+
+        Map<Integer, LiteYukonPAObject> allPaos = dbCache.getAllPaosMap();
+        List<LiteYukonPAObject> regulators = new ArrayList<>();
+        for (Integer id : regulatorIds) {
+            LiteYukonPAObject pao = allPaos.get(id);
+            if (pao.getPaoType().isRegulator()) {
+                regulators.add(pao);
+            }
+        }
         
-        Map<PaoIdentifier, LiteYukonPAObject> regulators = paoDao.getLiteYukonPaosById(paoDao.getPaoIdentifiersForPaoIds(regulatorIds));
-        for (PaoIdentifier regulatorIdentifier : regulators.keySet()) {
-            LiteYukonPAObject regulator = regulators.get(regulatorIdentifier);
-            if (regulator.getPaoType().isRegulator()) {
-                String regulatorName = regulator.getPaoName();
+        File csvFile = new File(completeFilename);
+        try (FileOutputStream out = new FileOutputStream(csvFile);
+                OutputStreamWriter writer = new OutputStreamWriter(out);) {
+            
+            for (LiteYukonPAObject regulator : regulators) {
+                String regulatorName = StringEscapeUtils.escapeCsv(regulator.getPaoName());
                 
-                ImmutableSet<RegulatorPointMapping> pointMappingsForPaoType = 
+                Set<RegulatorPointMapping> pointMappingsForPaoType = 
                         RegulatorPointMapping.getPointMappingsForPaoType(regulator.getPaoType());
-                
-                // Filter the list?
-                // Sort the list?
                 
                 for (RegulatorPointMapping pointMapping : pointMappingsForPaoType) {
                     writer.write(regulatorName + separator + pointMapping.getMappingString() + '\n');
                 }
             }
         }
-        writer.close();
-        out.close();
         
         return csvFile;
     }
