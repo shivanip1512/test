@@ -13,7 +13,15 @@
 <%@ attribute name="destinationFieldName"  description="Name of field to place selected items on picker close." %>
 <%@ attribute name="multiSelectMode" type="java.lang.Boolean" description="If 'true', this picker allows selection of multiple items." %>
 <%@ attribute name="immediateSelectMode" type="java.lang.Boolean" description="If 'true' this picker will select and close when an item is clicked." %>
-<%@ attribute name="endAction" description="Javascript function called when picker ok button press or when item is clicked if 'immediateSelectMode' is 'true'." %>
+
+<%@ attribute name="endAction" 
+    description="Javascript function called when picker ok button press or when item is clicked if 
+                 'immediateSelectMode' is 'true'." %>
+<%@ attribute name="endEvent" 
+    description="The name of an event to fire when item selection is finalized either immediately when using 
+                 'immediateSelectMode' or when the 'ok' button is clicked. The event will also have the array 
+                 of selected items and the javascript picker object itself passed with." %>
+                 
 <%@ attribute name="cancelAction" description="Javascript function called when picker cancel button press." %>
 <%@ attribute name="memoryGroup" description="Adds the picker to the memory group - picker will open up with previous search text populated as long as no page refresh between." %>
 <%@ attribute name="linkType" description="Type of link to create which can be 'normal' (the default--a plain anchor tag link), 'button', 'selection' or 'none'." %>
@@ -33,83 +41,17 @@
 <%@ attribute name="viewOnlyMode" type="java.lang.Boolean" description="Causes picker component to display the value but not be clickable.  Only usable with when linkType is 'selection'." %>
 <%@ attribute name="buttonRenderMode" description="Passes the render mode to the cti:button tag.  Only usable 'linkType' is 'button'.  See cti:button 'renderMode' attribute." %>
 
-<c:set var="containerArg" value="null"/>
-<c:if test="${!empty  pageScope.container}">
-    <c:set var="containerArg" value="$('#${pageScope.container}')"/>
-</c:if>
-
+<cti:default var="linkType" value="normal"/>
 <cti:msg2 var="okText" key="yukon.common.okButton"/>
 <cti:msg2 var="cancelText" key="yukon.common.cancel"/>
 <cti:msg2 var="noneSelectedText" key="yukon.web.components.button.selectionPicker.label"/>
 
-<cti:pickerProperties var="idFieldName" property="ID_FIELD_NAME" type="${type}"/>
-<cti:pickerProperties var="outputColumns" property="OUTPUT_COLUMNS" type="${type}"/>
-
-<script type="text/javascript">
-    // Only create picker if not already created.  This tag gets called more than
-    // once if it's used inside a widget and the widget is updated.  Since the user
-    // isn't navigating off the page, we want to keep the same picker.
-
-    // jQuery dialogs get moved to the end of the body. When pickers are ajaxed
-    // in and replaced, the dialogs might still be left over. Here we will remove any
-    // still hanging around.
-
-    $(document.getElementById('${id}')).remove();
-    try {
-        try {
-            ${id} = new Picker('${okText}', '${cancelText}', '${noneSelectedText}', '${type}', '${pageScope.destinationFieldName}', '${id}', '${pageScope.extraDestinationFields}', ${containerArg});
-            ${id}.idFieldName = '${idFieldName}';
-            ${id}.outputColumns = ${outputColumns};
-        } catch(pickerException) {
-            debug.log('pickerDialog.tag: new Picker failed: ' + pickerException);
-        }
-        
-        <c:if test="${pageScope.multiSelectMode}">
-            ${id}.multiSelectMode = true;
-        </c:if>
-        <c:if test="${pageScope.immediateSelectMode}">
-            ${id}.immediateSelectMode = true;
-        </c:if>
-        <c:if test="${!empty pageScope.endAction}">
-            ${id}.endAction = ${pageScope.endAction};
-        </c:if>
-        <c:if test="${!empty pageScope.cancelAction}">
-            ${id}.cancelAction = ${pageScope.cancelAction};
-        </c:if>
-        <c:if test="${!empty pageScope.destinationFieldId}">
-            ${id}.destinationFieldId = '${pageScope.destinationFieldId}';
-        </c:if>
-        <c:if test="${!empty pageScope.memoryGroup}">
-            ${id}.memoryGroup = '${pageScope.memoryGroup}';
-        </c:if>
-        <c:if test="${!empty pageScope.extraArgs}">
-            ${id}.extraArgs = '<spring:escapeBody javaScriptEscape="true">${pageScope.extraArgs}</spring:escapeBody>';
-        </c:if>
-        <c:if test="${!empty pageScope.selectionProperty && pageScope.linkType == 'selection'}">
-            ${id}.selectionProperty = '${pageScope.selectionProperty}';
-        </c:if>
-        <c:if test="${!empty pageScope.allowEmptySelection}">
-            ${id}.allowEmptySelection = ${pageScope.allowEmptySelection};
-        </c:if>
-        <c:if test="${pageScope.linkType == 'selection'}">
-            ${id}.selectedAndMsg = '<cti:msg2 javaScriptEscape="true" key="yukon.web.picker.selectedAnd"/>';
-            ${id}.selectedMoreMsg = '<cti:msg2 javaScriptEscape="true" key="yukon.web.picker.selectedMore"/>';
-        </c:if>
-        <c:if test="${pageScope.useInitialIdsIfEmpty}">
-            ${id}.useInitialIdsIfEmpty = true;
-        </c:if>
-    } catch (pickerEx) {
-            debug.log("Could not create Picker: " + pickerEx);
-    }
-
-</script>
-
-<c:if test="${pageScope.linkType != 'selection' && !empty pageScope.selectionProperty}">
+<c:if test="${linkType != 'selection' && !empty pageScope.selectionProperty}">
     <span class="error">The "selectionProperty" attribute is
         only valid when using "selection" linkType on tags:pickerDialog.</span>
 </c:if>
 
-<c:if test="${pageScope.linkType == 'selection'}">
+<c:if test="${linkType == 'selection'}">
     <cti:msgScope paths="components.picker">
         <cti:msg2 var="selectedItemsDialogTitleMsg" key=".selectedItemsDialogTitle"/>
     </cti:msgScope>
@@ -119,14 +61,20 @@
 </c:if>
 
 <span id="picker-${id}-input-area">
-<c:if test="${!empty pageScope.initialIds}">
-    <c:forEach var="initialId" items="${initialIds}">
+    <div class="dn js-picker-output-columns"><cti:pickerProperties property="OUTPUT_COLUMNS" type="${type}"/></div>
+    <div class="dn js-picker-id-field-name"><cti:pickerProperties property="ID_FIELD_NAME" type="${type}"/></div>
+    <div class="dn js-picker-container">${pageScope.container}</div>
+    <div class="dn js-picker-end-event">${pageScope.endEvent}</div>
+    <div class="dn js-picker-exclude-ids"
+    ><c:if test="${not empty pageScope.excludeIds}">${cti:jsonString(excludeIds)}</c:if></div>
+    <c:if test="${!empty pageScope.initialIds}">
+        <c:forEach var="initialId" items="${initialIds}">
+            <input type="hidden" name="${destinationFieldName}" value="${initialId}">
+        </c:forEach>
+    </c:if>
+    <c:if test="${!empty pageScope.initialId}">
         <input type="hidden" name="${destinationFieldName}" value="${initialId}">
-    </c:forEach>
-</c:if>
-<c:if test="${!empty pageScope.initialId}">
-    <input type="hidden" name="${destinationFieldName}" value="${initialId}">
-</c:if>
+    </c:if>
 </span>
 
 <c:if test="${pageScope.viewOnlyMode}">
@@ -135,10 +83,10 @@
 </c:if>
 <c:if test="${!pageScope.viewOnlyMode}">
     <c:set var="viewMode" value="false"/>
-    <c:if test="${pageScope.linkType != 'none'}">
+    <c:if test="${linkType != 'none'}">
         <span <c:if test="${not empty pageScope.styleClass}">class="${pageScope.styleClass}"</c:if>>
             <c:choose>
-                <c:when test="${pageScope.linkType == 'button'}">
+                <c:when test="${linkType == 'button'}">
                     <c:set var="renderMode" value="button"/>
                     <c:if test="${not empty pageScope.buttonRenderMode}">
                         <c:set var="renderMode" value="${pageScope.buttonRenderMode}"/>
@@ -150,7 +98,7 @@
                                 classes="${pageScope.buttonStyleClass}" 
                                 icon="${pageScope.icon}"/>
                 </c:when>
-                <c:when test="${pageScope.linkType == 'selection'}">
+                <c:when test="${linkType == 'selection'}">
                     <c:if test="${empty pageScope.selectionProperty}">
                         <span class="error">The "selectionProperty" attribute is
                             required when using "selection" linkType on tags:pickerDialog.</span>
@@ -185,16 +133,94 @@
 </c:if>
 
 <script type="text/javascript">
-try {
-    $(function () {
-        ${id}.init.bind(${id}, ${viewMode})();
-    });
-} catch (callAfterLoadex) {
-    debug.log('exception for picker: ' + "${id}" + ': ' + callAfterLoadex);
-    alert("pickerDialog.tag: yukon.picker.init exception: " + callAfterLoadex);
-}
-
-if (${!empty excludeIds}) {
-    ${id}.excludeIds = ${cti:jsonString(excludeIds)};
-}
+(function () {
+    
+    // Only create picker if not already created.  This tag gets called more than
+    // once if it's used inside a widget and the widget is updated.  Since the user
+    // isn't navigating off the page, we want to keep the same picker.
+    
+    // Jquery dialogs get moved to the end of the body. When pickers are ajaxed
+    // in and replaced, the dialogs might still be left over. Here we will remove any
+    // still hanging around.
+    $(document.getElementById('${id}')).remove();
+    
+    var picker;
+    var data = $('#picker-${id}-input-area');
+    var columns = JSON.parse(data.find('.js-picker-output-columns').text());
+    var field = data.find('.js-picker-id-field-name').text().trim();
+    var container = data.find('.js-picker-container').text().trim();
+    if (container === '') {
+        container = null;
+    } else {
+        container = '#' + container;
+    }
+    var excluedIds = data.find('.js-picker-exclude-ids').text().trim();
+    var endEvent = data.find('.js-picker-end-event').text().trim();
+    
+    try {
+        try {
+            picker = new Picker('${okText}', '${cancelText}', '${noneSelectedText}', '${type}', 
+                    '${pageScope.destinationFieldName}', '${id}', 
+                    '${pageScope.extraDestinationFields}', container);
+            picker.idFieldName = field;
+            picker.outputColumns = columns;
+            picker.endEvent = endEvent;
+            
+            window['${id}'] = picker;
+            if (!yukon.pickers) yukon.pickers = {};
+            yukon.pickers['${id}'] = picker;
+            
+        } catch (pickerException) {
+            debug.log('pickerDialog.tag: new Picker failed: ' + pickerException);
+        }
+        
+        if ('${pageScope.multiSelectMode}' === 'true') {
+            picker.multiSelectMode = true;
+        }
+        if ('${pageScope.immediateSelectMode}' === 'true') {
+            picker.immediateSelectMode = true;
+        }
+        if ('${pageScope.endAction}' !== '') {
+            picker.endAction = '${pageScope.endAction}';
+        }
+        if ('${pageScope.cancelAction}' !== '') {
+            picker.cancelAction = '${pageScope.cancelAction}';
+        }
+        if ('${pageScope.destinationFieldId}' !== '') {
+            picker.destinationFieldId = '${destinationFieldId}';
+        }
+        if ('${pageScope.memoryGroup}' !== '') {
+            picker.memoryGroup = '${memoryGroup}';
+        }
+        if ('${pageScope.extraArgs}' !== '') {
+            picker.extraArgs = '<spring:escapeBody javaScriptEscape="true">${extraArgs}</spring:escapeBody>';
+        }
+        if ('${pageScope.selectionProperty}' !== '' && '${pageScope.linkType}' === 'selection') {
+            picker.selectionProperty = '${selectionProperty}';
+        }
+        picker.allowEmptySelection = '${pageScope.allowEmptySelection}' === 'true';
+        picker.useInitialIdsIfEmpty = '${pageScope.useInitialIdsIfEmpty}' === 'true';
+        if ('${linkType}' === 'selection') {
+            picker.selectedAndMsg = '<cti:msg2 javaScriptEscape="true" key="yukon.web.picker.selectedAnd"/>';
+            picker.selectedMoreMsg = '<cti:msg2 javaScriptEscape="true" key="yukon.web.picker.selectedMore"/>';
+        }
+        
+    } catch (pickerEx) {
+        debug.log('Could not create Picker: ' + pickerEx);
+    }
+    
+    try {
+        $(function () {
+            // Initialize this picker on document ready.
+            picker.init.bind(picker, '${viewMode}' === 'true')();
+        });
+    } catch (callAfterLoadex) {
+        debug.log('exception for picker: ' + '${id}' + ': ' + callAfterLoadex);
+        alert("pickerDialog.tag: yukon.picker.init exception: " + callAfterLoadex);
+    }
+    
+    if (excluedIds !== '') {
+        picker.excludeIds = JSON.parse(excluedIds);
+    }
+})();
 </script>

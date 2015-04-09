@@ -458,8 +458,13 @@ yukon.protoPicker = function (okText,
                 extraDestElem.innerHTML = value;
             }
         }
-        if (this.endAction && !isInitial) {
-            this.endAction(this.selectedItems, this);
+        if (!isInitial) {
+            if (this.endAction) {
+                window[this.endAction](this.selectedItems, this);
+            }
+            if (this.endEvent) {
+                $(document).trigger(this.endEvent, [this.selectedItems, this]);
+            }
         }
         return true;
     },
@@ -921,6 +926,7 @@ yukon.protoPicker = function (okText,
     yukon.protoPicker.prototype.multiSelectMode = true;
     yukon.protoPicker.prototype.immediateSelectMode = true;
     yukon.protoPicker.prototype.endAction = null;
+    yukon.protoPicker.prototype.endEvent = null;
     yukon.protoPicker.prototype.cancelAction = null;
     yukon.protoPicker.prototype.destinationFieldId = null;
     yukon.protoPicker.prototype.memoryGroup = false;
@@ -957,7 +963,12 @@ yukon.protoPicker = function (okText,
  * @constructor
  * @name Picker 
  */
-function Picker (okText, cancelText, noneSelectedText, pickerType, destinationFieldName, pickerId, extraDestinationFields, container) {
+function Picker(okText, cancelText, noneSelectedText, pickerType, destinationFieldName, pickerId, extraDestinationFields, 
+        container) {
+    
+    // JQuery wrap the container, it should be a string (css selector) or null at this point.
+    if (container) container = $(container);
+    
     yukon.protoPicker.call(this, okText, cancelText, noneSelectedText, pickerType, destinationFieldName, pickerId, extraDestinationFields, container);
 };
 

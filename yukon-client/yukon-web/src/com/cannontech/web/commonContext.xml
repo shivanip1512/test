@@ -132,11 +132,12 @@
             <bean class="com.cannontech.web.search.lucene.criteria.StatusPointCriteria"/>
         </property>
     </bean> 
-
+    
     <bean name="availableCapBankPicker" class="com.cannontech.web.picker.AvailableCapBankPicker"/>
     <bean name="availableVoltageRegulatorGangPicker" class="com.cannontech.web.picker.AvailableVoltageRegulatorGangPicker"/>
     <bean name="availableVoltageRegulatorPhasePicker" class="com.cannontech.web.picker.AvailableVoltageRegulatorPhasePicker"/>
-
+    <bean name="regulatorPicker" class="com.cannontech.web.picker.RegulatorPicker"/>
+    
     <bean name="userPicker" class="com.cannontech.web.picker.UserPicker">
         <property name="searcher" ref="userSearcherLucene"/>
     </bean>

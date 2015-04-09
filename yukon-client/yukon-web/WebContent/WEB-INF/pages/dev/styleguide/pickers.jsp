@@ -98,10 +98,19 @@ or in a popup.
     Javascript function called when item selection is finalized either immediately when using 
     <span class="label label-attr">immediateSelectMode</span> or when the <span class="label label-attr">ok</span> 
     button is clicked. The function will be passed two arguments, the array of selected items as the first
-    argument and the javascript picker object itself as the second. 
+    argument and the javascript picker object itself as the second. <span class="label label-warning">Warning</span>
+    The end action function must exist before the picker is created.  
+    Consider using <span class="label label-attr">endEvent</span> instead.
+    </tags:nameValue>
+    <tags:nameValue name="endEvent">
+    The name of an event to fire when item selection is finalized either immediately when using 
+    <span class="label label-attr">immediateSelectMode</span> or when the <span class="label label-attr">ok</span> 
+    button is clicked. The event will also have the array of selected items and the javascript picker object itself 
+    passed with.
     </tags:nameValue>
     <tags:nameValue name="cancelAction">
     Javascript function called when the <span class="label label-attr">cancel</span> button is clicked.
+    <span class="label label-warning">Warning</span> The cancel action function must exist before the picker is created.
     </tags:nameValue>
     <tags:nameValue name="memoryGroup">
     A string used to name the search text used by a picker.  When used, pickers will open up with previous search text 
