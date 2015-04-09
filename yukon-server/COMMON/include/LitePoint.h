@@ -12,7 +12,8 @@ public:
     LitePoint( const int Id, const CtiPointType_t Type, const std::string & Name,
                const int PaoId, const int Offset,
                const std::string & stateZeroControl,
-               const std::string & stateOneControl );
+               const std::string & stateOneControl,
+               const double Multiplier );
 
     void setPointId(int pointId);
     int getPointId() const;
@@ -38,6 +39,9 @@ public:
     void setStateOneControl(const std::string & stateOneControl);
     std::string getStateOneControl() const;
 
+    void setMultiplier(const double multiplier);
+    double getMultiplier() const;
+
 private:
 
     int _pointId;
@@ -49,4 +53,6 @@ private:
 
     std::string _stateZeroControl;
     std::string _stateOneControl;
+
+    double _multiplier;
 };

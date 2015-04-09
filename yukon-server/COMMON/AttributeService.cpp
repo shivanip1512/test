@@ -63,19 +63,41 @@ std::vector<LitePoint> AttributeService::getLitePointsById(const std::vector<int
     std::vector<LitePoint> points;
 
     std::string sql =
-        "SELECT"
-            " P.PointId, P.PointType, P.PointName, P.PAOBjectId, P.PointOffset,"
-            " PSC.StateZeroControl, PSC.StateOneControl,"
-            " PC.ControlOffset"
-        " FROM"
-            " Point P"
-            " LEFT OUTER JOIN POINTSTATUSCONTROL PSC ON P.PointId = PSC.PointId"
-            " LEFT OUTER JOIN POINTCONTROL PC ON P.PointId = PC.PointId"
-        " WHERE P.PointId IN (";
+        "SELECT "
+            "P.PointId, "
+            "P.PointType, "
+            "P.PointName, "
+            "P.PAOBjectId, "
+            "P.PointOffset, "
+            "PSC.StateZeroControl, "
+            "PSC.StateOneControl, "
+            "PC.ControlOffset, "
+        	"X.MULTIPLIER "
+        "FROM "
+            "Point P "
+            "LEFT OUTER JOIN POINTSTATUSCONTROL PSC ON P.PointId = PSC.PointId "
+            "LEFT OUTER JOIN POINTCONTROL PC ON P.PointId = PC.PointId "
+        	"LEFT OUTER JOIN ("
+        		"SELECT "
+        			"PACC.POINTID, "
+                    "PACC.MULTIPLIER "
+        		"FROM "
+        			"POINTACCUMULATOR PACC "
+        			"JOIN POINT P ON PACC.POINTID = P.POINTID "
+        		"UNION "
+        		"SELECT "
+        			"PA.POINTID, "
+                    "PA.MULTIPLIER "
+        		"FROM "
+        			"POINTANALOG PA "
+        			"JOIN POINT P ON PA.POINTID = P.POINTID"
+        		") X ON X.POINTID = P.POINTID "
+        "WHERE "
+        	"P.POINTID IN (";
 
-    for each(int pointId in pointIds)
+    for ( const int pointId : pointIds )
     {
-        sql += CtiNumStr(pointId);
+        sql += std::to_string( pointId );
         sql += ",";
     }
 
@@ -91,6 +113,7 @@ std::vector<LitePoint> AttributeService::getLitePointsById(const std::vector<int
             LitePoint point;
             int tempInt;
             string tempStr;
+            double  multiplier;
 
             rdr["PointId"] >> tempInt;
             point.setPointId(tempInt);
@@ -123,6 +146,12 @@ std::vector<LitePoint> AttributeService::getLitePointsById(const std::vector<int
             {
                 rdr["ControlOffset"] >> tempInt;
                 point.setControlOffset(tempInt);
+            }
+
+            if ( ! rdr["MULTIPLIER"].isNull() )
+            {
+                rdr["MULTIPLIER"] >> multiplier;
+                point.setMultiplier(multiplier);
             }
 
             points.push_back(point);

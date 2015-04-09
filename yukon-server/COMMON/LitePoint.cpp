@@ -7,7 +7,8 @@ LitePoint::LitePoint() :
     _pointType(InvalidPointType),
     _paoId(0),
     _pointOffset(0),
-    _controlOffset(0)
+    _controlOffset(0),
+    _multiplier(0)
 {
 
 }
@@ -15,7 +16,8 @@ LitePoint::LitePoint() :
 LitePoint::LitePoint( const int Id, const CtiPointType_t Type, const std::string & Name,
                       const int PaoId, const int Offset,
                       const std::string & stateZeroControl,
-                      const std::string & stateOneControl )
+                      const std::string & stateOneControl,
+                      const double Multiplier )
     : _pointId(Id),
     _pointType(Type),
     _pointName(Name),
@@ -23,7 +25,8 @@ LitePoint::LitePoint( const int Id, const CtiPointType_t Type, const std::string
     _pointOffset(Offset),
     _controlOffset(0),
     _stateZeroControl(stateZeroControl),
-    _stateOneControl(stateOneControl)
+    _stateOneControl(stateOneControl),
+    _multiplier(Multiplier)
 {
 
 }
@@ -106,5 +109,15 @@ void LitePoint::setStateOneControl(const std::string & stateOneControl)
 std::string LitePoint::getStateOneControl() const
 {
     return _stateOneControl;
+}
+
+void LitePoint::setMultiplier(const double multiplier)
+{
+    _multiplier = multiplier;
+}
+
+double LitePoint::getMultiplier() const
+{
+    return _multiplier;
 }
 

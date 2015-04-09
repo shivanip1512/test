@@ -60,31 +60,31 @@ private:
         AttributeStore  store;
 
         store.insert( std::make_pair( std::make_pair( 25, PointAttribute::TapUp ),
-                                      LitePoint(242, StatusPointType, "Tap Up", 0, 100, "", "" ) ) );
+                                      LitePoint(242, StatusPointType, "Tap Up", 0, 100, "", "", 1.0 ) ) );
 
         store.insert( std::make_pair( std::make_pair( 25, PointAttribute::TapDown ),
-                                      LitePoint(342, StatusPointType, "Tap Down", 0, 101, "", "" ) ) );
+                                      LitePoint(342, StatusPointType, "Tap Down", 0, 101, "", "", 1.0 ) ) );
 
         store.insert( std::make_pair( std::make_pair( 25, PointAttribute::VoltageY ),
-                                      LitePoint(442, AnalogPointType, "Voltage", 0, 102, "", "" ) ) );
+                                      LitePoint(442, AnalogPointType, "Voltage", 0, 102, "", "", 1.0 ) ) );
 
         store.insert( std::make_pair( std::make_pair( 25, PointAttribute::AutoRemoteControl ),
-                                      LitePoint(542, StatusPointType, "Auto Remote", 0, 103, "", "" ) ) );
+                                      LitePoint(542, StatusPointType, "Auto Remote", 0, 103, "", "", 1.0 ) ) );
 
         store.insert( std::make_pair( std::make_pair( 25, PointAttribute::TapPosition ),
-                                      LitePoint(642, AnalogPointType, "Tap Position", 0, 104, "", "" ) ) );
+                                      LitePoint(642, AnalogPointType, "Tap Position", 0, 104, "", "", 1.0 ) ) );
 
         store.insert( std::make_pair( std::make_pair( 30, PointAttribute::TapUp ),
-                                      LitePoint(245, StatusPointType, "Tap Up", 0, 100, "", "" ) ) );
+                                      LitePoint(245, StatusPointType, "Tap Up", 0, 100, "", "", 1.0 ) ) );
 
         store.insert( std::make_pair( std::make_pair( 30, PointAttribute::TapDown ),
-                                      LitePoint(345, StatusPointType, "Tap Down", 0, 101, "", "" ) ) );
+                                      LitePoint(345, StatusPointType, "Tap Down", 0, 101, "", "", 1.0 ) ) );
 
         store.insert( std::make_pair( std::make_pair( 30, PointAttribute::VoltageY ),
-                                      LitePoint(445, AnalogPointType, "Voltage", 0, 102, "", "" ) ) );
+                                      LitePoint(445, AnalogPointType, "Voltage", 0, 102, "", "", 1.0 ) ) );
 
         store.insert( std::make_pair( std::make_pair( 30, PointAttribute::AutoRemoteControl ),
-                                      LitePoint(545, StatusPointType, "Auto Remote", 0, 103, "", "" ) ) );
+                                      LitePoint(545, StatusPointType, "Auto Remote", 0, 103, "", "", 1.0 ) ) );
 
         return store;
     }

@@ -75,27 +75,27 @@ struct phase_operated_voltage_regulator_fixture_core
             _attr = decltype( _attr )
             {
                 { PointAttribute::VoltageXAttribute,
-                    { 2202,  AnalogPointType, "VoltageX", 1000, 1, "", "" } },
+                    { 2202,  AnalogPointType, "VoltageX", 1000, 1, "", "", 1.0 } },
                 { PointAttribute::VoltageYAttribute,
-                    { 2203,  AnalogPointType, "VoltageY", 1001, 2, "", "" } },
+                    { 2203,  AnalogPointType, "VoltageY", 1001, 2, "", "", 1.0 } },
                 { PointAttribute::TapUpAttribute,
-                    { 3100,  StatusPointType, "TapUp", 1003, 4, "", "control close" } },
+                    { 3100,  StatusPointType, "TapUp", 1003, 4, "", "control close", 1.0 } },
                 { PointAttribute::TapDownAttribute,
-                    { 3101,  StatusPointType, "TapDown", 1004, 5, "", "control close" } },
+                    { 3101,  StatusPointType, "TapDown", 1004, 5, "", "control close", 1.0 } },
                 { PointAttribute::KeepAliveAttribute,
-                    { 4200,  AnalogPointType, "KeepAlive", 1007, 10001, "", "" } },
+                    { 4200,  AnalogPointType, "KeepAlive", 1007, 10001, "", "", 1.0 } },
                 { PointAttribute::AutoRemoteControlAttribute,
-                    { 5600,  StatusPointType, "AutoRemoteControl", 1009, 6, "", "" } },
+                    { 5600,  StatusPointType, "AutoRemoteControl", 1009, 6, "", "", 1.0 } },
                 { PointAttribute::TapPositionAttribute,
-                    { 3500,  AnalogPointType, "TapPosition", 1013, 3, "", "" } },
+                    { 3500,  AnalogPointType, "TapPosition", 1013, 3, "", "", 1.0 } },
                 { PointAttribute::TerminateAttribute,
-                    { 7500,  StatusPointType, "Terminate", 1022, 9, "", "control close" } },
+                    { 7500,  StatusPointType, "Terminate", 1022, 9, "", "control close", 1.0 } },
                 { PointAttribute::AutoBlockEnableAttribute,
-                    { 8100,  StatusPointType, "AutoBlock", 1026, 12, "", "control close" } },
+                    { 8100,  StatusPointType, "AutoBlock", 1026, 12, "", "control close", 1.0 } },
                 { PointAttribute::ForwardSetPointAttribute,
-                    { 7000,  AnalogPointType, "SetPoint", 1020, 10007, "", "" } },
+                    { 7000,  AnalogPointType, "SetPoint", 1020, 10007, "", "", 0.1 } },
                 { PointAttribute::ForwardBandwidthAttribute,
-                    { 7100,  AnalogPointType, "Bandwidth", 1021, 8, "", "" } }
+                    { 7100,  AnalogPointType, "Bandwidth", 1021, 8, "", "", 1.0 } }
             };
         }
     }
@@ -1276,7 +1276,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_RaiseSetPoint_Success
     BOOST_REQUIRE( requestMsg );
 
     BOOST_CHECK_EQUAL( 1020, requestMsg->DeviceId() );  // PaoID of the 'SetPoint' LitePoint
-    BOOST_CHECK_EQUAL( "putvalue analog 7 120.750000",
+    BOOST_CHECK_EQUAL( "putvalue analog 7 1208",
                        requestMsg->CommandString() );   // Offset of the 'SetPoint' LitePoint and the new value
 
     // Validate generated RegulatorEvent messages
@@ -1352,7 +1352,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_LowerSetPoint_Success
     BOOST_REQUIRE( requestMsg );
 
     BOOST_CHECK_EQUAL( 1020, requestMsg->DeviceId() );  // PaoID of the 'SetPoint' LitePoint
-    BOOST_CHECK_EQUAL( "putvalue analog 7 119.250000",
+    BOOST_CHECK_EQUAL( "putvalue analog 7 1193",
                        requestMsg->CommandString() );   // Offset of the 'SetPoint' LitePoint and the new value
 
 

@@ -38,14 +38,27 @@ Policy::Action StandardControlPolicy::AdjustSetPoint( const double changeAmount 
                                 ? point.getControlOffset()
                                 : point.getPointOffset() % 10000;
 
+    const std::string description = changeAmount > 0 ? "Raise Set Point" : "Lower Set Point";
+
     const double newSetPoint = getSetPointValue() + changeAmount;
 
-    const std::string description = changeAmount > 0 ? "Raise Set Point" : "Lower Set Point";
+    std::string commandString;
+
+    if ( point.getMultiplier() == 1.0 )
+    {
+        commandString = putvalueAnalogCommand( pointOffset, newSetPoint );
+    }
+    else
+    {
+        const long adjustedSetPoint = std::lround( newSetPoint / point.getMultiplier() );
+
+        commandString = putvalueAnalogCommand( pointOffset, adjustedSetPoint );
+    }
 
     return 
     {
         makeSignalTemplate( point.getPointId(), 0, description ),
-        makeRequestTemplate( point.getPaoId(), putvalueAnalogCommand( pointOffset, newSetPoint ) )
+        makeRequestTemplate( point.getPaoId(), commandString )
     };
 }
 
