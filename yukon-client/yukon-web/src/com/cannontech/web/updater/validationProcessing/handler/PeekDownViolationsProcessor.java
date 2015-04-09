@@ -17,14 +17,14 @@ public class PeekDownViolationsProcessor implements ValidationProcessingUpdaterH
     public String handle(int validationMonitorId, YukonUserContext userContext) {
         String countStr = "(0)";
         Map<RphTag, Integer> tagCounts = rphTagUiDao.getAllValidationTagCounts();
-        if (tagCounts.get(RphTag.PD) != null) {
-            countStr = tagCounts.get(RphTag.PD).toString();
+        if (tagCounts.get(RphTag.PEAKDOWN) != null) {
+            countStr = tagCounts.get(RphTag.PEAKDOWN).toString();
         }
         return countStr;
     }
 
     @Override
     public ValidationMonitorUpdaterTypeEnum getUpdaterType() {
-        return ValidationMonitorUpdaterTypeEnum.PD_VIOLATIONS;
+        return ValidationMonitorUpdaterTypeEnum.PEAKDOWN_VIOLATIONS;
     }
 }

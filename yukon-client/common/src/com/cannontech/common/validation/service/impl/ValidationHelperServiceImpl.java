@@ -96,7 +96,7 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
         // because the RawPointHistory table and the Point table can become unattached,
         // we must be careful that this changeId is for a point/pao that still exists
         
-        rphTagDao.insertTag(changeId, RphTag.OK);
+        rphTagDao.acceptChangeId(changeId);
         
     	PointValueQualityHolder pointValueQualityHolder;
         try {

@@ -1,14 +1,16 @@
 package com.cannontech.common.validation.model;
 
 import java.util.Date;
+import java.util.Set;
 
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.google.common.collect.Sets;
 
 public class ReviewPoint implements PointValueHolder {
 
 	private long changeId;
-	private RphTag rphTag;
+	private Set<RphTag> rphTag;
 	private DisplayablePao displayablePao;
 	private PointValueHolder pointValue;
 	
@@ -18,12 +20,25 @@ public class ReviewPoint implements PointValueHolder {
 	public void setChangeId(long changeId) {
 		this.changeId = changeId;
 	}
-	public RphTag getRphTag() {
-		return rphTag;
-	}
-	public void setRphTag(RphTag rphTag) {
-		this.rphTag = rphTag;
-	}
+
+    public Set<RphTag> getRphTag() {
+        if (this.rphTag == null) {
+            this.rphTag = Sets.newHashSet();
+        }
+        return rphTag;
+    }
+
+    public void addRphTag(RphTag rphTag) {
+        if (this.rphTag == null) {
+            this.rphTag = Sets.newHashSet();
+        }
+        this.rphTag.add(rphTag);
+    }
+    
+    public void setRphTag(Set<RphTag> rphTag) {
+        this.rphTag = rphTag;
+    }
+
 	public DisplayablePao getDisplayablePao() {
 		return displayablePao;
 	}

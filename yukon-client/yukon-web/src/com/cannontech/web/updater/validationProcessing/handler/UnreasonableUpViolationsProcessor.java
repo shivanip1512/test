@@ -17,14 +17,14 @@ public class UnreasonableUpViolationsProcessor implements ValidationProcessingUp
     public String handle(int validationMonitorId, YukonUserContext userContext) {
         String countStr = "(0)";
         Map<RphTag, Integer> tagCounts = rphTagUiDao.getAllValidationTagCounts();
-        if (tagCounts.get(RphTag.UU) != null) {
-            countStr = tagCounts.get(RphTag.UU).toString();
+        if (tagCounts.get(RphTag.UNREASONABLEUP) != null) {
+            countStr = tagCounts.get(RphTag.UNREASONABLEUP).toString();
         }
         return countStr;
     }
 
     @Override
     public ValidationMonitorUpdaterTypeEnum getUpdaterType() {
-        return ValidationMonitorUpdaterTypeEnum.UU_VIOLATIONS;
+        return ValidationMonitorUpdaterTypeEnum.UNREASONABLEUP_VIOLATIONS;
     }
 }

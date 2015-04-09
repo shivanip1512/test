@@ -240,7 +240,7 @@ public class RawPointHistoryValidationServiceTest {
         Multimap<RawPointHistoryWrapper, RphTag> tags = ArrayListMultimap.create();
         AnalysisResult analysisResult = RawPointHistoryValidationService.analyzeThreeHistoryRows(workUnit, validationMonitor, values, tags);
         
-        Assert.assertEquals(ImmutableListMultimap.of(reading2, RphTag.PU), tags);
+        Assert.assertEquals(ImmutableListMultimap.of(reading2, RphTag.PEAKUP), tags);
         Assert.assertEquals(true, analysisResult.peakInTheMiddle);
         Assert.assertEquals(false, analysisResult.considerReRead);
     }
@@ -258,7 +258,7 @@ public class RawPointHistoryValidationServiceTest {
         Multimap<RawPointHistoryWrapper, RphTag> tags = ArrayListMultimap.create();
         AnalysisResult analysisResult = RawPointHistoryValidationService.analyzeThreeHistoryRows(workUnit, validationMonitor, values, tags);
         
-        Assert.assertEquals(ImmutableListMultimap.of(reading2, RphTag.PD), tags);
+        Assert.assertEquals(ImmutableListMultimap.of(reading2, RphTag.PEAKDOWN), tags);
         Assert.assertEquals(true, analysisResult.peakInTheMiddle);
         Assert.assertEquals(false, analysisResult.considerReRead);
     }
@@ -276,7 +276,7 @@ public class RawPointHistoryValidationServiceTest {
         Multimap<RawPointHistoryWrapper, RphTag> tags = ArrayListMultimap.create();
         AnalysisResult analysisResult = RawPointHistoryValidationService.analyzeThreeHistoryRows(workUnit, validationMonitor, values, tags);
         
-        Assert.assertEquals(ImmutableListMultimap.of(reading3, RphTag.UU), tags);
+        Assert.assertEquals(ImmutableListMultimap.of(reading3, RphTag.UNREASONABLEUP), tags);
         Assert.assertEquals(false, analysisResult.peakInTheMiddle);
         Assert.assertEquals(true, analysisResult.considerReRead);
     }
@@ -294,7 +294,7 @@ public class RawPointHistoryValidationServiceTest {
         Multimap<RawPointHistoryWrapper, RphTag> tags = ArrayListMultimap.create();
         AnalysisResult analysisResult = RawPointHistoryValidationService.analyzeThreeHistoryRows(workUnit, validationMonitor, values, tags);
         
-        Assert.assertEquals(ImmutableListMultimap.of(reading3, RphTag.UD), tags);
+        Assert.assertEquals(ImmutableListMultimap.of(reading3, RphTag.UNREASONABLEDOWN), tags);
         Assert.assertEquals(false, analysisResult.peakInTheMiddle);
         Assert.assertEquals(true, analysisResult.considerReRead);
     }
@@ -312,7 +312,7 @@ public class RawPointHistoryValidationServiceTest {
         Multimap<RawPointHistoryWrapper, RphTag> tags = ArrayListMultimap.create();
         AnalysisResult analysisResult = RawPointHistoryValidationService.analyzeThreeHistoryRows(workUnit, validationMonitor, values, tags);
         
-        Assert.assertEquals(ImmutableListMultimap.of(reading3, RphTag.UDC), tags);
+        Assert.assertEquals(ImmutableListMultimap.of(reading3, RphTag.CHANGEOUT), tags);
         Assert.assertEquals(false, analysisResult.peakInTheMiddle);
         Assert.assertEquals(false, analysisResult.considerReRead);
     }
@@ -330,7 +330,7 @@ public class RawPointHistoryValidationServiceTest {
         Multimap<RawPointHistoryWrapper, RphTag> tags = ArrayListMultimap.create();
         AnalysisResult analysisResult = RawPointHistoryValidationService.analyzeThreeHistoryRows(workUnit, validationMonitor, values, tags);
         
-        Assert.assertEquals(ImmutableListMultimap.of(reading3, RphTag.UD), tags); // UD, but no PU!
+        Assert.assertEquals(ImmutableListMultimap.of(reading3, RphTag.UNREASONABLEDOWN), tags); // UnreasonableDown, but no PeakUp!
         Assert.assertEquals(false, analysisResult.peakInTheMiddle);
         Assert.assertEquals(true, analysisResult.considerReRead);
     }

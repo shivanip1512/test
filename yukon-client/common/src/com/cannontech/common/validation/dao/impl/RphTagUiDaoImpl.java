@@ -37,28 +37,28 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
     public SearchResults<ReviewPoint> getReviewPoints(PagingParameters pagingParameters, List<RphTag> tags) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT * FROM (");
-        sql.append("SELECT rt.TagName, rph.*, ypo.PaobjectId, ypo.PaoName, ypo.Type, p.PointType,");
-        sql.append("ROW_NUMBER() OVER (ORDER BY ypo.PAObjectID, rph.ChangeId, rph.TimeStamp, rt.TagName) AS rn");
+        sql.append("SELECT rt.PeakUp, rt.PeakDown, rt.UnreasonableUp, rt.UnreasonableDown, rt.ChangeOut,");
+        sql.append("rph.*, ypo.PaobjectId, ypo.PaoName, ypo.Type, p.PointType,");
+        sql.append("ROW_NUMBER() OVER (ORDER BY ypo.PAObjectID, rph.ChangeId, rph.TimeStamp, rt.PeakUp, rt.PeakDown, rt.UnreasonableUp, rt.UnreasonableDown, rt.ChangeOut) AS rn");
         sql.append("FROM RphTag rt");
-        sql.append(    "JOIN RawPointHistory rph ON (rph.ChangeId = rt.ChangeId)");
-        sql.append(    "JOIN Point p ON (rph.PointId = p.PointId)");
-        sql.append(    "JOIN YukonPaobject ypo ON (p.PaobjectID = ypo.PaobjectId)");
+        sql.append("JOIN RawPointHistory rph ON (rph.ChangeId = rt.ChangeId)");
+        sql.append("JOIN Point p ON (rph.PointId = p.PointId)");
+        sql.append("JOIN YukonPaobject ypo ON (p.PaobjectID = ypo.PaobjectId)");
+        sql.append("WHERE rt.Accepted").eq_k(0);
+        sql.append("AND (");
 
-        //The following four lines are here because the tables are not sane.
-        //When a point is accepted another row is added to RphTag with a changeId of 'OK'. 
-        //This means the same changeId has 'OK' and some other value that is not 'OK'.
-        //This SQL removes any Ids that have any rows with OK attached to them.
-        sql.append("AND rt.ChangeId NOT IN (");
-        sql.append("    SELECT rt2.ChangeId FROM RphTag rt2 ");
-        sql.append("    WHERE rt2.TagName ").eq_k(RphTag.OK);
+        int size = tags.size();
+        for (RphTag rphTag : tags) {
+            // this assumes that RphTag enums match the column names, otherwise suggest adding columnname field to enum
+            sql.append(rphTag).eq_k(1);
+            if (--size != 0) {
+                sql.append(  "OR");
+            }
+        }
         sql.append(")");
-        
-        sql.append("WHERE rt.TagName").neq_k(RphTag.OK);
-        sql.append(    "AND rt.TagName").in_k(tags);
-
         sql.append(") results");
-        sql.append("WHERE rn BETWEEN " + pagingParameters.getOneBasedStartIndex() + " AND " + 
-                pagingParameters.getOneBasedEndIndex());
+        sql.append("WHERE rn BETWEEN " + pagingParameters.getOneBasedStartIndex() + " AND "
+            + pagingParameters.getOneBasedEndIndex());
 
         // get
         ReviewPointRowMapper rowMapper = new ReviewPointRowMapper();
@@ -75,13 +75,15 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
             }
         }
 
-        SearchResults<ReviewPoint> results = SearchResults.pageBasedForSublist(reviewPoints, 
-                pagingParameters.getPage(), pagingParameters.getItemsPerPage(), reviewPoints.size());
+        SearchResults<ReviewPoint> results =
+            SearchResults.pageBasedForSublist(reviewPoints, pagingParameters.getPage(),
+                pagingParameters.getItemsPerPage(), reviewPoints.size());
         return results;
     }
 
     private final static class ReviewPointRowMapper implements YukonRowMapper<ReviewPoint> {
-        // The displayablePao property does not get set on ReviewPoint.  Keep a map of PaoIdentifier by changeId
+        // The displayablePao property does not get set on ReviewPoint. Keep a map of PaoIdentifier by
+        // changeId
         // we can call paoLoadingService later to get displayablePaos.
         Multimap<YukonPao, ReviewPoint> reviewPointsByPao = ArrayListMultimap.create();
 
@@ -92,7 +94,12 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
             ReviewPoint reviewPoint = new ReviewPoint();
             long changeId = rs.getLong("ChangeId");
             reviewPoint.setChangeId(changeId);
-            reviewPoint.setRphTag(rs.getEnum("TagName", RphTag.class));
+            
+            if (rs.getBoolean("PeakUp")) reviewPoint.addRphTag(RphTag.PEAKUP);
+            if (rs.getBoolean("PeakDown")) reviewPoint.addRphTag(RphTag.PEAKDOWN);
+            if (rs.getBoolean("UnreasonableUp")) reviewPoint.addRphTag(RphTag.UNREASONABLEUP);
+            if (rs.getBoolean("UnreasonableDown")) reviewPoint.addRphTag(RphTag.UNREASONABLEDOWN);
+            if (rs.getBoolean("ChangeOut")) reviewPoint.addRphTag(RphTag.CHANGEOUT);
 
             PointValueBuilder builder = PointValueBuilder.create();
             builder.withResultSet(rs);
@@ -109,61 +116,66 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
     @Override
     public Map<RphTag, Integer> getAllValidationTagCounts() {
         final Map<RphTag, Integer> countMap = Maps.newHashMapWithExpectedSize(RphTag.getAllValidation().size());
-        
-        //the countmap is initially initialized to zero such that
-        //even if the database does have count for some attributes for example 'UDC'
-        //it doesn't return a null value for the count 
-        for(RphTag rphtag:RphTag.getAllValidation()){
-            countMap.put(rphtag,0);
-        }
-        
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT rt.Tagname, COUNT(*) as counter");
-            sql.append("FROM RphTag rt");
-            sql.append("Where rt.ChangeId NOT IN (");
-            sql.append("	SELECT rt3.ChangeId");
-            sql.append("	FROM RphTag rt3");
-            sql.append("	WHERE rt3.TagName").eq_k(RphTag.OK);
-            sql.append(")");
-            sql.append("group by TagName");
-            
-            yukonJdbcTemplate.query(sql,new YukonRowCallbackHandler(){
-                @Override
-                public void processRow(YukonResultSet rs) throws SQLException {
-                 
-                    countMap.put(rs.getEnum("Tagname", RphTag.class), rs.getInt("counter"));
-                    
-                }
-            });
-            
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        // This assumes the aliased names equal the RphTag enums
+        sql.append("SELECT"); 
+        sql.append("SUM (CASE WHEN PeakUp = 1 THEN 1 ELSE 0 END) AS PeakUp,"); 
+        sql.append("SUM (CASE WHEN PeakDown = 1 THEN 1 ELSE 0 END) AS PeakDown,"); 
+        sql.append("SUM (CASE WHEN UnreasonableUp = 1 THEN 1 ELSE 0 END) AS UnreasonableUp,"); 
+        sql.append("SUM (CASE WHEN UnreasonableDown = 1 THEN 1 ELSE 0 END) AS UnreasonableDown,"); 
+        sql.append("SUM (CASE WHEN ChangeOut = 1 THEN 1 ELSE 0 END) AS ChangeOut");
+        sql.append("FROM RphTag");
+        sql.append("WHERE Accepted").eq_k(0);
+
+        yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                countMap.put(RphTag.PEAKUP, rs.getInt("PeakUp"));
+                countMap.put(RphTag.PEAKDOWN, rs.getInt("PeakDown"));
+                countMap.put(RphTag.UNREASONABLEUP, rs.getInt("UnreasonableUp"));
+                countMap.put(RphTag.UNREASONABLEDOWN, rs.getInt("UnreasonableDown"));
+                countMap.put(RphTag.CHANGEOUT, rs.getInt("ChangeOut"));
+            }
+        });
+
         return countMap;
     }
-    
+
     @Override
     public int getTotalValidationTagCounts() {
+
+        //Either of these solutions would work
+        /*int totalCount = 0;
+        Set<Map.Entry<RphTag, Integer>> allValidationsPerTag = getAllValidationTagCounts().entrySet();
+        for (Map.Entry<RphTag, Integer> entry : allValidationsPerTag) {
+            totalCount += entry.getValue();
+        }*/
+        // OR
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT COUNT(*)");
-        sql.append("FROM RphTag rt");
-        sql.append("WHERE rt.TagName").neq_k(RphTag.OK);
-        sql.append("AND rt.ChangeId NOT IN (");
-        sql.append("    SELECT rt3.ChangeId");
-        sql.append("    FROM RphTag rt3");
-        sql.append("    WHERE rt3.TagName").eq_k(RphTag.OK);
-        sql.append(")");
-        int c = yukonJdbcTemplate.queryForInt(sql);
-        
-        return c;
+        sql.append("SELECT"); 
+        sql.append("SUM (CASE WHEN PeakUp = 1 THEN 1 ELSE 0 END) +"); 
+        sql.append("SUM (CASE WHEN PeakDown = 1 THEN 1 ELSE 0 END)  +"); 
+        sql.append("SUM (CASE WHEN UnreasonableUp = 1 THEN 1 ELSE 0 END)  +"); 
+        sql.append("SUM (CASE WHEN UnreasonableDown = 1 THEN 1 ELSE 0 END)  +"); 
+        sql.append("SUM (CASE WHEN ChangeOut = 1 THEN 1 ELSE 0 END)");
+        sql.append("FROM RphTag");
+        sql.append("WHERE Accepted").eq_k(0);
+
+        return yukonJdbcTemplate.queryForInt(sql);
     }
 
     @Override
     public List<Long> findMatchingChangeIds(Set<RphTag> set) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select ChangeId");
-        sql.append("from RphTag rt");
-        sql.append("where rt.TagName ").in(set);
-        sql.append("group by ChangeId");
-        sql.append("having count(*) = 1");
+        sql.append("SELECT ChangeId");
+        sql.append("FROM RphTag rt");
+        sql.append("WHERE PeakUp").eq_k(set.contains(RphTag.PEAKUP) ? 1 : 0);
+        sql.append("AND PeakDown").eq_k(set.contains(RphTag.PEAKDOWN) ? 1 : 0);
+        sql.append("AND UnreasonableUp").eq_k(set.contains(RphTag.UNREASONABLEUP) ? 1 : 0);
+        sql.append("AND UnreasonableDown").eq_k(set.contains(RphTag.UNREASONABLEDOWN) ? 1 : 0);
+        sql.append("AND ChangeOut").eq_k(set.contains(RphTag.CHANGEOUT) ? 1 : 0);
 
         List<Long> result = yukonJdbcTemplate.query(sql, RowMapper.LONG);
         return result;

@@ -29,10 +29,9 @@
                             <c:set var="changeId" value="${p.reviewPoint.changeId}"/>
                             <tr>
                                 <td>
-                                    <c:forEach var="otherTag" items="${p.otherTags}">
-                                        <cti:icon icon="${otherTag.iconClass}" classes="fn"/>
+                                    <c:forEach var="rphTag" items="${p.reviewPoint.rphTag}">
+                                        <cti:icon icon="${rphTag.iconClass}" classes="fn"/>
                                     </c:forEach> 
-                                    <cti:icon icon="${p.reviewPoint.rphTag.iconClass}" classes="fn"/>
                                 </td>
                                 <td>
                                     <cti:paoDetailUrl yukonPao="${p.reviewPoint.displayablePao}">

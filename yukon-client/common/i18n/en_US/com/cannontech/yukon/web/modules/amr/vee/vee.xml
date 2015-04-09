@@ -5,11 +5,11 @@
 	<!--RphTag -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
-	<entry key="yukon.web.modules.common.vee.rphTag.PU">Peak Up</entry>
-    <entry key="yukon.web.modules.common.vee.rphTag.PD">Peak Down</entry>
-    <entry key="yukon.web.modules.common.vee.rphTag.UU">Unreasonable Up</entry>
-    <entry key="yukon.web.modules.common.vee.rphTag.UD">Unreasonable Down</entry>
-    <entry key="yukon.web.modules.common.vee.rphTag.UDC">Changeout</entry>
+	<entry key="yukon.web.modules.common.vee.rphTag.PEAKUP">Peak Up</entry>
+    <entry key="yukon.web.modules.common.vee.rphTag.PEAKDOWN">Peak Down</entry>
+    <entry key="yukon.web.modules.common.vee.rphTag.UNREASONABLEUP">Unreasonable Up</entry>
+    <entry key="yukon.web.modules.common.vee.rphTag.UNREASONABLEDOWN">Unreasonable Down</entry>
+    <entry key="yukon.web.modules.common.vee.rphTag.CHANGEOUT">Changeout</entry>
     
 	<!-- VeeReviewController review.jsp -->
     <!-- ================================================================================================================================================= -->

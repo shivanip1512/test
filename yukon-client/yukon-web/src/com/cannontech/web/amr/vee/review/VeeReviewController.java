@@ -27,11 +27,9 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.google.common.base.Function;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Ordering;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.VALIDATION_ENGINE)
@@ -47,13 +45,6 @@ public class VeeReviewController {
         ACCEPT;
     }
     
-    private static Ordering<ReviewPoint> reviewPointingOrdering = Ordering.natural().onResultOf(new Function<ReviewPoint, Comparable<RphTag>>() {
-        @Override
-        public Comparable<RphTag> apply(ReviewPoint reviewPoint) {
-            return reviewPoint.getRphTag();
-        }
-    });
-    
     private void setUpModel(HttpServletRequest request, ModelMap model, PagingParameters pagingParameters) {
         
         List<RphTag> selectedTags = getSelectedTags(request);
@@ -66,49 +57,12 @@ public class VeeReviewController {
             rpsByName.put(rp.getDisplayablePao().getName(), rp);
         }
         
-        // narrow - group by changeId
-        // loop over rpsByName by key to keep order intact
-        ListMultimap<Long, ReviewPoint> commonChangeIdReviewPoints = LinkedListMultimap.create();
-        for (String nameKey : rpsByName.keySet()) {
-            List<ReviewPoint> rpsForName = rpsByName.get(nameKey);
-            for (ReviewPoint rp : rpsForName) {
-                commonChangeIdReviewPoints.put(rp.getChangeId(), rp);
-            }
-        }
-        
-        // narrow - if changeId has multiple review points only keep the one with highest display precedence
-        // add keepers until the next distinct device and count >= PAGE_COUNT
-        int lastPaoId = 0;
-        List<ReviewPoint> keepReviewPoints = new ArrayList<ReviewPoint>();
-        for (long changeId : commonChangeIdReviewPoints.keySet()) {
-            
-            List<ReviewPoint> rpList = commonChangeIdReviewPoints.get(changeId);
-            ReviewPoint keeper = reviewPointingOrdering.min(rpList);
-            
-            int keeperPaoId = keeper.getDisplayablePao().getPaoIdentifier().getPaoId();
-            if (lastPaoId > 0 && keeperPaoId != lastPaoId && keepReviewPoints.size() >= 
-                    pagingParameters.getItemsPerPage()) {
-                break;
-            }
-            
-            keepReviewPoints.add(keeper);
-            lastPaoId = keeperPaoId;
-        }
-        
         // make extended
         List<ExtendedReviewPoint> extendedReviewPoints = new ArrayList<ExtendedReviewPoint>();
-        for (ReviewPoint rp : keepReviewPoints) {
-            
-            List<RphTag> otherTags = Lists.newArrayList();
-            List<ReviewPoint> rpsWithCommonChangeId = commonChangeIdReviewPoints.get(rp.getChangeId());
-            for (ReviewPoint rpCommon : rpsWithCommonChangeId) {
-                if (!rpCommon.equals(rp)) {
-                    otherTags.add(rpCommon.getRphTag());
-                }
-            }
+        for (ReviewPoint rp : rpsByName.values()) {
             
             AdjacentPointValues adjacentPointValues = rawPointHistoryDao.getAdjacentPointValues(rp.getPointValue());
-            ExtendedReviewPoint extRp = new ExtendedReviewPoint(rp, adjacentPointValues.getPreceding(), adjacentPointValues.getSucceeding(), otherTags);
+            ExtendedReviewPoint extRp = new ExtendedReviewPoint(rp, adjacentPointValues.getPreceding(), adjacentPointValues.getSucceeding());
             extendedReviewPoints.add(extRp);
         }
         
@@ -252,13 +206,15 @@ public class VeeReviewController {
         private final ReviewPoint reviewPoint;
         private final PointValueHolder prevPointValue;
         private final PointValueHolder nextPointValue;
-        private final List<RphTag> otherTags;
+//        private final List<RphTag> otherTags;
         
-        public ExtendedReviewPoint(ReviewPoint reviewPoint, PointValueHolder prevPointValue, PointValueHolder nextPointValue, List<RphTag> otherTags) {
+        public ExtendedReviewPoint(ReviewPoint reviewPoint, PointValueHolder prevPointValue, PointValueHolder nextPointValue
+                //, List<RphTag> otherTags
+                ) {
             this.reviewPoint = reviewPoint;
             this.prevPointValue = prevPointValue;
             this.nextPointValue = nextPointValue;
-            this.otherTags = otherTags;
+//            this.otherTags = otherTags;
         }
         
         public ReviewPoint getReviewPoint() {
@@ -270,9 +226,9 @@ public class VeeReviewController {
         public PointValueHolder getNextPointValue() {
             return nextPointValue;
         }
-        public List<RphTag> getOtherTags() {
-            return otherTags;
-        }
+//        public List<RphTag> getOtherTags() {
+//            return otherTags;
+//        }
     }
     
 }

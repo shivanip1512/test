@@ -11,12 +11,33 @@ import com.google.common.collect.ImmutableSet;
 
 public enum RphTag implements DisplayableEnum, LogoableEnum {
     // leave these in an order that makes sense for "display precedence" purposes. i.e PU > UU, PD > UD > UDC
-    PU("icon-arrow-up-red"),
-    PD("icon-arrow-down-red"), 
-    UU("icon-trend-up"), 
-    UD("icon-trend-down"), 
-    UDC("icon-arrow-swap"),
-    OK("");
+    PEAKUP("icon-arrow-up-red"),
+    PEAKDOWN("icon-arrow-down-red"),
+    UNREASONABLEUP("icon-trend-up"),
+    UNREASONABLEDOWN("icon-trend-down"),
+    CHANGEOUT("icon-arrow-swap"),
+    ACCEPTED("");
+    private static final ImmutableSet<RphTag> peakTags = ImmutableSet.of(PEAKUP, PEAKDOWN);
+    private static final ImmutableSet<RphTag> unreasonableTags = ImmutableSet.of(UNREASONABLEUP, UNREASONABLEDOWN,
+        CHANGEOUT);
+    private static final ImmutableSet<RphTag> validationTags = ImmutableSet.of(PEAKUP, PEAKDOWN, UNREASONABLEUP,
+        UNREASONABLEDOWN, CHANGEOUT);
+
+    public boolean isPeak() {
+        return peakTags.contains(this);
+    }
+
+    public boolean isUnreasonable() {
+        return unreasonableTags.contains(this);
+    }
+
+    public static Set<RphTag> getAllUnreasonable() {
+        return unreasonableTags;
+    }
+
+    public static Set<RphTag> getAllValidation() {
+        return validationTags;
+    }
 
     private final String iconClass;
 
@@ -24,29 +45,16 @@ public enum RphTag implements DisplayableEnum, LogoableEnum {
         this.iconClass = iconClass;
     }
 
-    public boolean isPeak() {
-        return name().startsWith("P"); // good enough for now
-    }
-    public boolean isUnreasonable() {
-        return name().startsWith("U"); // good enough for now
-    }
-    public static Set<RphTag> getAllUnreasonable() {
-        return ImmutableSet.of(UU, UD, UDC); // good enough for now
-    }
-    public static Set<RphTag> getAllValidation() {
-        return ImmutableSet.of(PU, PD, UU, UD, UDC); // good enough for now
-    }
-    
     @Override
     public String getFormatKey() {
-    	return "yukon.web.modules.common.vee.rphTag." + this.name();
+        return "yukon.web.modules.common.vee.rphTag." + this.name();
     }
-    
+
     @Override
     public String getLogoKey() {
-    	return getFormatKey() + ".img";
+        return getFormatKey() + ".img";
     }
-    
+
     public String getIconClass() {
         return iconClass;
     }

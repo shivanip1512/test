@@ -375,9 +375,9 @@ public class RawPointHistoryValidationService {
     }
 
     private void writeOutRphTags(Multimap<RawPointHistoryWrapper, RphTag> tags) {
-        Collection<Entry<RawPointHistoryWrapper, RphTag>> entries = tags.entries();
-        for (Entry<RawPointHistoryWrapper, RphTag> entry : entries) {
-            rphTagDao.insertTag(entry.getKey().changeId, entry.getValue());
+        for (RawPointHistoryWrapper key : tags.keySet()) {
+            Collection<RphTag> keyTags = tags.get(key);
+            rphTagDao.insertTag(key.changeId, keyTags);
         }
     }
 
@@ -429,14 +429,14 @@ public class RawPointHistoryValidationService {
 
             // look for Peak Up
             if (jumpUp && fall && increasing && peakIsGreatEnough) {
-                tags.put(values.get(1), RphTag.PU);
+                tags.put(values.get(1), RphTag.PEAKUP);
                 peakInTheMiddle = true;
                 LogHelper.debug(log, "PU (%.1f) detected for %s: %s", height, workUnit.paoPointIdentifier, values);
             }
 
             // look for Peak Down
             if (jumpDown && increasing & peakIsGreatEnough) {
-                tags.put(values.get(1), RphTag.PD);
+                tags.put(values.get(1), RphTag.PEAKDOWN);
                 peakInTheMiddle = true;
                 LogHelper.debug(log, "PD (%.1f) detected for %s: %s", height, workUnit.paoPointIdentifier, values);
             }
@@ -455,7 +455,7 @@ public class RawPointHistoryValidationService {
             RawPointHistoryWrapper currentValue = values.get(0);
             double avgKwhPerDay = calculateLowerAvgKwhPerDay(previousValue, currentValue, validationMonitor.getKwhSlopeError());
             if (avgKwhPerDay > validationMonitor.getReasonableMaxKwhPerDay()) {
-                tags.put(values.get(0), RphTag.UU);
+                tags.put(values.get(0), RphTag.UNREASONABLEUP);
 
                 // Check if re read should be performed. The goal here is to get
                 // an extra reading so that we can detect a possible peak. But,
@@ -479,13 +479,13 @@ public class RawPointHistoryValidationService {
 
             // look for Unreasonable Down
             if (currentValue.getValue() < previousValue.getValue() - validationMonitor.getKwhReadingError()) {
-                RphTag resultTag = RphTag.UD;
+                RphTag resultTag = RphTag.UNREASONABLEDOWN;
                 considerReRead = true;
 
                 // look for Unreasonable Down from Changeout
                 double avgKwhPerDayFromZero = calculateLowerAvgKwhPerDayFromZero(previousValue, currentValue);
                 if (avgKwhPerDayFromZero <= validationMonitor.getReasonableMaxKwhPerDay()) {
-                    resultTag = RphTag.UDC;
+                    resultTag = RphTag.CHANGEOUT;
                     considerReRead = false;
                 }
 
