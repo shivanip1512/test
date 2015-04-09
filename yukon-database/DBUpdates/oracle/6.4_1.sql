@@ -176,26 +176,14 @@ ALTER TABLE RPHTag
     DROP CONSTRAINT PK_RPHTag;
 
 /* Delete duplicate rows */
-ALTER TABLE RPHTag
-    ADD UniqueId NUMBER;
-
-UPDATE RPHTag R1
-SET UniqueId = (
-    SELECT RNum FROM (
-        SELECT ChangeId, TagName, ROW_NUMBER() OVER (ORDER BY ChangeId) RNum
-        FROM RPHTag) R2
-    WHERE R1.ChangeId = R2.ChangeId
-      AND R1.TagName = R2.TagName);
-
-DELETE FROM RPHTag
-WHERE UniqueId IN (
-    SELECT UniqueId FROM (
-        SELECT UniqueId, ROW_NUMBER() OVER (PARTITION BY ChangeId ORDER BY ChangeId) DuplicateRecCount
-        FROM RPHTag)
-    WHERE DuplicateRecCount > 1);
-
-ALTER TABLE RPHTag
-    DROP COLUMN UniqueId;
+DELETE FROM RPHTag WHERE ROWID in (
+    SELECT rid FROM (
+        SELECT ROWID rid,
+            ROW_NUMBER() OVER(PARTITION BY ChangeId ORDER BY ChangeId) rn
+        FROM RPHTag
+    )
+    WHERE rn > 1
+);
 
 /* Alter table to make ChangeId as Primary Key */
 ALTER TABLE RPHTag
