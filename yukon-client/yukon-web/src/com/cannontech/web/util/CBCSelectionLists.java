@@ -49,13 +49,12 @@ public class CBCSelectionLists {
     public static final int CapControlChildList = 8;
     public static final int CapBankSetup = 9;
     public static final int CapBankControllerSetup = 10;
-    public static final int CapBankControllerSchedule = 11;
-    public static final int DualBus = 12;
-    public static final int CapBankAdvanced = 13;
-    public static final int CapBankAdditionalInfo = 14;
-    public static final int AreaSubs = 15;
-    public static final int SpecialAreaSubs = 16;
-    public static final int CapControlStrategyEditor = 17;
+    public static final int DualBus = 11;
+    public static final int CapBankAdvanced = 12;
+    public static final int CapBankAdditionalInfo = 13;
+    public static final int AreaSubs = 14;
+    public static final int SpecialAreaSubs = 15;
+    public static final int CapControlStrategyEditor = 16;
     
     /* MyFaces 1.10 does not seem to show the correct time with h:outPutText, */
 	/* so we only show date for now within our pages */
