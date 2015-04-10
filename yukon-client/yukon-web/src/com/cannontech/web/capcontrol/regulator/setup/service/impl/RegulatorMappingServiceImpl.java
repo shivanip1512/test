@@ -225,6 +225,7 @@ public class RegulatorMappingServiceImpl implements RegulatorMappingService {
             RegulatorPointMappingResult mappingResult = result.getPointMappingResults().get(mapping);
             mappings.add(ImmutableMap.of(
                     "type", mapping, 
+                    "name", accessor.getMessage(mapping), 
                     "success", mappingResult.isSuccess(),
                     "text", accessor.getMessage(mappingResult)));
         }

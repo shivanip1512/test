@@ -80,12 +80,16 @@ yukon.da.regulatorSetup = (function () {
         .toggleClass('label-success', status === 'SUCCESSFUL');
         
         result.mappings.forEach(function (mapping) {
-            var td = tbody.find('[data-mapping="' + mapping.type + '"] .js-result');
+            
+            var row = tbody.find('[data-mapping="' + mapping.type + '"]');
+            var pointTd = row.find('td:nth-child(2)');
+            var resultTd = row.find('.js-result');
             if (mapping.success) {
-                td.html(_templates.successful);
+                resultTd.html(_templates.successful);
             } else {
-                td.html(_templates.failed).append($('<span>').text(' - ' + mapping.text));
+                resultTd.html(_templates.failed).append($('<span>').text(' - ' + mapping.text));
             }
+            pointTd.text(result.regulatorName + '-' + mapping.name);
         });
         
         if (!result.complete) {

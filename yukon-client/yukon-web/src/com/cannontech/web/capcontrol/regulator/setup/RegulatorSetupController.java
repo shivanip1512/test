@@ -136,6 +136,7 @@ public class RegulatorSetupController {
         RegulatorMappingResult result = task.getResult(pao);
         Map<String, Object> data = mappingService.buildJsonResult(result, userContext);
         data.put("taskId", taskId);
+        data.put("regulatorName", pao.getPaoName());
         
         return data;
     }
