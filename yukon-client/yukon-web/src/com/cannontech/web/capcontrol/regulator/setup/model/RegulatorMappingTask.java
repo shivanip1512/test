@@ -1,4 +1,4 @@
-package com.cannontech.capcontrol.model;
+package com.cannontech.web.capcontrol.regulator.setup.model;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -8,11 +8,13 @@ import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 
 import com.cannontech.capcontrol.RegulatorPointMapping;
+import com.cannontech.capcontrol.model.RegulatorPointMappingResult;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.Cancelable;
 import com.cannontech.common.util.Completable;
 import com.cannontech.common.util.Failable;
+import com.cannontech.common.util.StringUtils;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -89,7 +91,7 @@ public class RegulatorMappingTask implements Cancelable, Comparable<RegulatorMap
         
         RegulatorMappingResult result = results.get(regulator);
         
-        if (results == null) {
+        if (result == null) {
             log.debug("Adding new result for " + regulator);
             result = new RegulatorMappingResult(regulator);
             results.put(regulator, result);
@@ -224,9 +226,21 @@ public class RegulatorMappingTask implements Cancelable, Comparable<RegulatorMap
     public boolean isCanceled() {
         return canceled;
     }
-
+    
     @Override
     public int compareTo(RegulatorMappingTask other) {
-        return start.compareTo(other.start);
+        return start.isAfter(other.start) ? -1 : 1;
+    }
+    
+    public String getProgress() {
+        
+        String progress = "0%";
+        double completed = completedCount;
+        
+        if (regulators != null && completed > 0) {
+            progress = StringUtils.percent(regulators.size(), completedCount, 3);
+        }
+        
+        return progress;
     }
 }

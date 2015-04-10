@@ -109,6 +109,9 @@
       <option name="orphans">
         <link>/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubstations__</link>
       </option>
+      <option name="regulatorSetup">
+        <link>/capcontrol/regulator-setup</link>
+      </option>
       <option name="import" section="true">
         <permissions>
           <roleProperty name="CAP_CONTROL_IMPORTER" />

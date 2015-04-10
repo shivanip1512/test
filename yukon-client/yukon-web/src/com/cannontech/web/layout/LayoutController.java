@@ -134,7 +134,7 @@ public class LayoutController {
         b.add(CssLibrary.CHOSEN.getPath());
         standardCssFiles = b.build();
     }
-
+    
     /** StandardPageTag forwards to here! */
     @RequestMapping("/")
     public String display(final HttpServletRequest request, HttpServletResponse response, 

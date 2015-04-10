@@ -57,6 +57,7 @@
     <entry key="yukon.web.modules.capcontrol.attributes.controlMode">Local/Remote Mode</entry>
     
     <entry key="yukon.web.modules.capcontrol.regulator">Regulator</entry>
+    <entry key="yukon.web.modules.capcontrol.regulators">Regulators</entry>
     <entry key="yukon.web.modules.capcontrol.area">Area</entry>
     <entry key="yukon.web.modules.capcontrol.specialArea">Special Area</entry>
     <entry key="yukon.web.modules.capcontrol.substations">Substations</entry>
@@ -684,5 +685,12 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.eventType.INTEGRITY_SCAN">Integrity Scan</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.eventType.ENABLE_REMOTE_CONTROL"><![CDATA[<strong>Enable</strong> Remote Control]]></entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.eventType.DISABLE_REMOTE_CONTROL"><![CDATA[<strong>Disable</strong> Remote Control]]></entry>
+    
+    <entry key="yukon.web.modules.capcontrol.regulator.setup.pageTitle">Regulator Setup</entry>
+    <entry key="yukon.web.modules.capcontrol.regulator.setup.pageHeading">Regulator Setup</entry>
+    <entry key="yukon.web.modules.capcontrol.regulator.setup.crumbTitle">Regulator Setup</entry>
+    <entry key="yukon.web.modules.capcontrol.regulator.setup.recentTasks.title">Recent Attribute Mapping Tasks</entry>
+    <entry key="yukon.web.modules.capcontrol.regulator.setup.recentTasks.none">No attribute mapping tasks have been started.</entry>
+    <entry key="yukon.web.modules.capcontrol.regulator.setup.mapping.result.title">Attribute Mapping Results ({0})</entry>
     
 </properties>

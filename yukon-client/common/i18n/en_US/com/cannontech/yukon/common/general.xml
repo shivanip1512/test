@@ -160,6 +160,7 @@
 <entry key="yukon.common.status">Status</entry>
 <entry key="yukon.common.start">Start</entry>
 <entry key="yukon.common.successful">Successful</entry>
+<entry key="yukon.common.successful.partial">Partially Successful</entry>
 <entry key="yukon.common.thermostat.mode.AUTO">Auto</entry>
 <entry key="yukon.common.thermostat.mode.COOL">Cool</entry>
 <entry key="yukon.common.thermostat.mode.DEFAULT">Default</entry>
@@ -174,6 +175,7 @@
 <entry key="yukon.common.undo">Undo</entry>
 <entry key="yukon.common.units">Units</entry>
 <entry key="yukon.common.unsupported">Unsupported</entry>
+<entry key="yukon.common.user">User</entry>
 <entry key="yukon.common.user.editor">User Editor</entry>
 <entry key="yukon.common.value">State/Value</entry>
 <entry key="yukon.common.view">view</entry>

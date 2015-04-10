@@ -97,9 +97,11 @@
     <div class="column two nogutter">
         <span class="badge">default</span>
         <span class="badge badge-error">error</span>
+        <span class="badge badge-warning">warning</span>
         <span class="badge badge-success">success</span>
         <p><a href="#">Alerts <span class="badge">42</span></a></p>
         <p>Failed <span class="badge badge-error">42</span></p>
+        <p>Partially Successful <span class="badge badge-warning">42</span></p>
         <p>Successful <span class="badge badge-success">42</span></p>
         <p><span class="badge">2342352</span> Unread Emails</p>
     </div>
@@ -108,9 +110,11 @@
 <pre class="code prettyprint">
 &lt;span class=&quot;badge&quot;&gt;default&lt;/span&gt;
 &lt;span class=&quot;badge badge-error&quot;&gt;error&lt;/span&gt;
+&lt;span class=&quot;badge badge-warning&quot;&gt;warning&lt;/span&gt;
 &lt;span class=&quot;badge badge-success&quot;&gt;success&lt;/span&gt;
 &lt;p&gt;&lt;a href=&quot;#&quot;&gt;Alerts &lt;span class=&quot;badge&quot;&gt;42&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;Failed &lt;span class=&quot;badge badge-error&quot;&gt;42&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Partially Successful &lt;span class=&quot;badge badge-warning&quot;&gt;42&lt;/span&gt;&lt;/p&gt;
 &lt;p&gt;Successful &lt;span class=&quot;badge badge-success&quot;&gt;42&lt;/span&gt;&lt;/p&gt;
 &lt;p&gt;&lt;span class=&quot;badge&quot;&gt;2342352&lt;/span&gt; Unread Emails&lt;/p&gt;
 </pre>

@@ -539,6 +539,9 @@ table.nowrap td {
 .sortable.desc .icon,
 .sortable:hover:not(.asc) .icon { background-position: -176px -48px; }
 
+.selectable tbody tr td:first-child { padding: 0; width: 3px; }
+.selectable tbody tr.selected td:first-child { background-color: @primary-color; }
+
 /* PROGRESS BARS */
 .progress-bar-container {
     display: inline-block;
@@ -645,6 +648,21 @@ ul.disc li {
 }
 .editable-list li .remove-item { visibility: hidden; }
 .editable-list li:hover .remove-item { visibility: visible; }
+
+ul.selectable li {
+    border-left: 3px solid transparent;
+}
+ul.selectable li.selected {
+    border-left: 3px solid @primary-color;
+}
+.nav-list li {
+    padding: 4px 0 4px 4px;
+}
+.nav-list li:hover {
+    cursor: pointer;
+    color: @primary-color;
+    background-color: whitesmoke;
+}
 
 /* CONTAINERS */
 .toggle-title {

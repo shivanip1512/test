@@ -39,6 +39,7 @@
 <entry key="yukon.web.menu.vv.strategies">Strategies</entry>
 <entry key="yukon.web.menu.vv.movedBanks">Recent Temp Moves</entry>
 <entry key="yukon.web.menu.vv.orphans">Orphans</entry>
+<entry key="yukon.web.menu.vv.regulatorSetup">Regulator Setup</entry>
 
 <!-- Admin -->
 <entry key="yukon.web.menu.admin">Admin</entry>

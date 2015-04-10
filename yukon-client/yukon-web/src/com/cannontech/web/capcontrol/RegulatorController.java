@@ -3,7 +3,6 @@ package com.cannontech.web.capcontrol;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,11 +36,7 @@ import com.cannontech.capcontrol.export.RegulatorPointMappingExportService;
 import com.cannontech.capcontrol.model.Regulator;
 import com.cannontech.capcontrol.model.RegulatorEvent;
 import com.cannontech.capcontrol.model.RegulatorEvent.EventType;
-import com.cannontech.capcontrol.model.RegulatorMappingResult;
-import com.cannontech.capcontrol.model.RegulatorMappingResultType;
-import com.cannontech.capcontrol.model.RegulatorPointMappingResult;
 import com.cannontech.capcontrol.model.Zone;
-import com.cannontech.capcontrol.service.VoltageRegulatorMappingService;
 import com.cannontech.capcontrol.service.VoltageRegulatorService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
@@ -56,6 +51,8 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
+import com.cannontech.web.capcontrol.regulator.setup.model.RegulatorMappingResult;
+import com.cannontech.web.capcontrol.regulator.setup.service.RegulatorMappingService;
 import com.cannontech.web.capcontrol.validators.RegulatorValidator;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.yukon.IDatabaseCache;
@@ -75,7 +72,7 @@ public class RegulatorController {
     @Autowired private RegulatorValidator validator;
     @Autowired private RegulatorEventsDao eventsDao;
     @Autowired private VoltageRegulatorService regulatorService;
-    @Autowired private VoltageRegulatorMappingService mappingService;
+    @Autowired private RegulatorMappingService mappingService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private ZoneDao zoneDao;
     
@@ -170,25 +167,9 @@ public class RegulatorController {
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public @ResponseBody Map<String, Object> automap(@PathVariable int id, YukonUserContext userContext) {
         
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        
         Regulator regulator = regulatorService.getRegulatorById(id);
         RegulatorMappingResult result = mappingService.start(regulator);
-        
-        Map<String, Object> json = new HashMap<>();
-        List<Map<String, Object>> mappings = new ArrayList<>();
-        
-        RegulatorMappingResultType status = result.getType();
-        json.put("status", ImmutableMap.of("type", status, "text", accessor.getMessage(status)));
-        
-        for (RegulatorPointMapping mapping : result.getPointMappingResults().keySet()) {
-            RegulatorPointMappingResult mappingResult = result.getPointMappingResults().get(mapping);
-            mappings.add(ImmutableMap.of(
-                    "type", mapping, 
-                    "success", mappingResult.isSuccess(),
-                    "text", accessor.getMessage(mappingResult)));
-        }
-        json.put("mappings", mappings);
+        Map<String, Object> json = mappingService.buildJsonResult(result, userContext);
         
         return json;
     }
@@ -311,7 +292,7 @@ public class RegulatorController {
         
         return resp;
     }
-
+    
     @RequestMapping(value="{id}/build-mapping-file", method = RequestMethod.GET)
     public void export(HttpServletResponse resp, @PathVariable int id, YukonUserContext userContext) {
         

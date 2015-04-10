@@ -8,7 +8,7 @@ package com.cannontech.web;
 public enum CssLibrary {
     
     ANIMATE("/resources/css/lib/animate.css"), // http://daneden.github.io/animate.css/
-    BOOTSTRAP("/resources/css/lib/bootstrap.css"), // built subset from www.getbootstrap.com
+    BOOTSTRAP("/resources/css/lib/bootstrap/bootstrap.css"), // built subset from www.getbootstrap.com
     NORMALIZE("/resources/css/lib/normalize.css"), // http://necolas.github.io/normalize.css/
     
     OVERRIDES("/WebConfig/yukon/styles/overrides.css"), // compiled internally

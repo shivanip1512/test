@@ -7,29 +7,25 @@
     <bean id="voltageRegulatorService" class="com.cannontech.capcontrol.service.VoltageRegulatorService"/>
     <bean id="voltageRegulatorDao" class="com.cannontech.capcontrol.dao.impl.VoltageRegulatorDaoImpl"/>
     
-    <bean class="com.cannontech.capcontrol.service.impl.VoltageRegulatorMappingServiceImpl"/>
-    <bean class="com.cannontech.common.util.RecentResultsCache">
-        <qualifier value="regulatorMapping"/>
-    </bean>
+    <bean id="substationBusDao" class="com.cannontech.capcontrol.dao.impl.SubstationBusDaoImpl"/>
+    <bean id="ccSubstationDao" class="com.cannontech.capcontrol.dao.impl.SubstationDaoImpl"/>
+    <bean id="feederDao" class="com.cannontech.capcontrol.dao.impl.FeederDaoImpl"/> 
+    <bean id="capbankDao" class="com.cannontech.capcontrol.dao.impl.CapbankDaoImpl"/>
+    <bean id="capbankControllerDao" class="com.cannontech.capcontrol.dao.impl.CapbankControllerDaoImpl"/>
     
-	<bean id="substationBusDao" class="com.cannontech.capcontrol.dao.impl.SubstationBusDaoImpl"/>
-	<bean id="ccSubstationDao" class="com.cannontech.capcontrol.dao.impl.SubstationDaoImpl"/>
-	<bean id="feederDao" class="com.cannontech.capcontrol.dao.impl.FeederDaoImpl"/> 
-	<bean id="capbankDao" class="com.cannontech.capcontrol.dao.impl.CapbankDaoImpl"/>
-	<bean id="capbankControllerDao" class="com.cannontech.capcontrol.dao.impl.CapbankControllerDaoImpl"/>
-	
-	<bean class="com.cannontech.capcontrol.creation.service.impl.CapControlImportServiceImpl"/>
+    <bean class="com.cannontech.capcontrol.creation.service.impl.CapControlImportServiceImpl"/>
     <bean id="capControlCreationService" class="com.cannontech.capcontrol.creation.service.impl.CapControlCreationServiceImpl"/>
-	<bean class="com.cannontech.capcontrol.dao.impl.CapControlImporterFileDaoImpl"/>
+    <bean class="com.cannontech.capcontrol.dao.impl.CapControlImporterFileDaoImpl"/>
     <bean id="regulatorImportService" class="com.cannontech.capcontrol.creation.service.impl.RegulatorImportServiceImpl"/>
-	<bean id="regulatorPointMappingImportService" class="com.cannontech.capcontrol.creation.service.impl.RegulatorPointMappingImportServiceImpl"/>
-	<bean class="com.cannontech.capcontrol.export.RegulatorPointMappingExportServiceImpl"/>
+    <bean id="regulatorPointMappingImportService" class="com.cannontech.capcontrol.creation.service.impl.RegulatorPointMappingImportServiceImpl"/>
+    <bean class="com.cannontech.capcontrol.export.RegulatorPointMappingExportServiceImpl"/>
     <bean id="regulatorImportHelper" class="com.cannontech.capcontrol.creation.service.impl.RegulatorImportHelper"/>
     
     <bean id="zoneDao" class="com.cannontech.capcontrol.dao.impl.ZoneDaoImpl"/>
     <bean id="ccMonitorBankListDao" class="com.cannontech.capcontrol.dao.impl.CcMonitorBankListDaoImpl"/>
-
+    
     <bean id="ivvcAnalysisMessageListener" class="com.cannontech.capcontrol.service.impl.IvvcAnalysisMessageListener"/>
     <bean id="ivvcAnalysisScenarioProcessor" class="com.cannontech.capcontrol.service.impl.IvvcAnalysisScenarioProcessor"/>
     <bean id="ivvcAnalysisMessageService" class="com.cannontech.capcontrol.service.IvvcAnalysisMessageService"/>
+    
 </beans>

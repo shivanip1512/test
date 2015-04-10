@@ -1,4 +1,4 @@
-package com.cannontech.capcontrol.model;
+package com.cannontech.web.capcontrol.regulator.setup.model;
 
 import static com.cannontech.capcontrol.model.RegulatorPointMappingResult.*;
 
@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.cannontech.capcontrol.RegulatorPointMapping;
+import com.cannontech.capcontrol.model.RegulatorPointMappingResult;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.Completable;
 

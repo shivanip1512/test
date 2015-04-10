@@ -881,7 +881,12 @@
     <bean id="backgroundProcessBackingService" class="com.cannontech.web.updater.bulk.BackgroundProcessBackingService">
         <property name="recentResultsCache" ref="recentResultsCache"/>
     </bean>
-
+    
+    <bean class="com.cannontech.web.capcontrol.regulator.setup.service.impl.RegulatorMappingServiceImpl"/>
+    <bean class="com.cannontech.common.util.RecentResultsCache">
+        <qualifier value="regulatorMapping"/>
+    </bean>
+    
     <bean id="groupMeterReadUpdateBackingService" class="com.cannontech.web.updater.groupMeterRead.GroupMeterReadUpdateBackingService"/>
 
     <bean id="adaProfileReadBackingService" class="com.cannontech.web.updater.archiveDataAnalysis.AdaProfileReadBackingService"/>

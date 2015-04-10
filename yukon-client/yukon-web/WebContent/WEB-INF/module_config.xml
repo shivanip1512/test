@@ -658,6 +658,7 @@
           <page name="recentEvents" type="DETAIL_CHILD"/>
         </pages>
       </page>
+      <page name="regulator.setup" type="BASIC"/>
       <page name="import" type="BASIC"/>
     </pages>
   </module>

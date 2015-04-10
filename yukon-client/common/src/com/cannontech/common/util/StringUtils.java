@@ -11,17 +11,22 @@ import com.google.common.collect.Lists;
 
 public final class StringUtils {
     
-    private StringUtils() {}
-    
-    public static String percent(int total, int count, int maxFractionDigits) {
+    /** Returns the percentage formatted to the pattern provided or ###.##% if pattern is null. */
+    public static String percent(int total, int count, int maxFractionDigits, String pattern) {
         
+        pattern = pattern == null ? "###.##%" : pattern;
         double percent = count / (double)total;
         
-        DecimalFormat decimalFormat = new DecimalFormat("###.##%");
+        DecimalFormat decimalFormat = new DecimalFormat(pattern);
         decimalFormat.setMaximumFractionDigits(maxFractionDigits);
         decimalFormat.setMinimumFractionDigits(0);
         
         return decimalFormat.format(percent);
+    }
+    
+    /** Returns the percentage formatted as ###.##% */
+    public static String percent(int total, int count, int maxFractionDigits) {
+        return percent(total, count, maxFractionDigits, "###.##%");
     }
     
     public static String addCharBetweenWords(char addedChar, String str) {

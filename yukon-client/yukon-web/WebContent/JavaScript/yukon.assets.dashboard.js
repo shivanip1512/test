@@ -22,7 +22,7 @@ yukon.assets.dashboard = (function () {
             contentType: 'application/json'
         }).done(function (actions, status, xhr) {
             
-            var i, action, row, percent;
+            var row, percent;
             
             actions.forEach(function (action) {
                 
@@ -50,7 +50,7 @@ yukon.assets.dashboard = (function () {
             });
             
         }).always(function () {
-            setTimeout(_updateRecentActions, 4000);
+            setTimeout(_updateRecentActions, yg.rp.updater_delay);
         });
     },
     

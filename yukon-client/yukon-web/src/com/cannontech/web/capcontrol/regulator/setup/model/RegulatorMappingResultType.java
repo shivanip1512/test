@@ -1,4 +1,4 @@
-package com.cannontech.capcontrol.model;
+package com.cannontech.web.capcontrol.regulator.setup.model;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 

@@ -66,7 +66,7 @@ public class InventoryActionsController {
     private static final String idListKey = "yukon.common.device.bulk.bulkAction.collection.idList";
     private static final String view = "operator/inventory/";
     
-    /* Inventory Action Status Redirect */
+    /** Inventory Action Status Redirect */
     @RequestMapping("action/{id}")
     public String action(HttpServletResponse resp, @PathVariable String id) {
         
@@ -94,7 +94,7 @@ public class InventoryActionsController {
         return null;
     }
     
-    /* Inventory Action Status Redirect */
+    /** Recent inventory actions. */
     @RequestMapping("actions/recent")
     public @ResponseBody List<Map<String, Object>> recent(YukonUserContext userContext) {
         
@@ -127,7 +127,7 @@ public class InventoryActionsController {
         return tasks;
     }
     
-    /* Inventory Actions */
+    /** Inventory Actions */
     @RequestMapping("inventoryActions")
     public String inventoryActions(HttpServletRequest req, ModelMap model, YukonUserContext userContext) {
         
@@ -150,7 +150,7 @@ public class InventoryActionsController {
         return view + "actions.jsp";
     }
     
-    /* Inventory Configuration */
+    /** Inventory Configuration */
     @RequestMapping("inventoryConfiguration")
     public String inventoryConfiguration(HttpServletRequest req, ModelMap model, YukonUserContext userContext) {
         
@@ -173,7 +173,7 @@ public class InventoryActionsController {
         return view + "inventoryConfiguration.jsp";
     }
     
-    /* Inventory Collection Popup Table */
+    /** Inventory Collection Popup Table */
     @RequestMapping("selectedInventoryTable")
     public String selectedInventoryTable(HttpServletRequest req, ModelMap model) {
         

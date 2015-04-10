@@ -406,4 +406,5 @@
     <bean id="proxyAwareSimpleClientHttpRequestFactory" class="com.cannontech.common.util.ProxyAwareSimpleClientHttpRequestFactory"/>
     
     <bean id="jacksonHttpMessageConverter" class="com.cannontech.spring.JacksonHttpMessageConverter"/>
+    
 </beans>

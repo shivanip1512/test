@@ -657,6 +657,11 @@ yukon.ui = (function () {
                 nameInput.text(value);
             });
             
+            /** Toggle selection (pipe) on rows of selectable tables. */
+            $(document).on('click', 'table.selectable tbody tr, ul.selectable li', function (ev) {
+                $(this).addClass('selected').siblings().removeClass('selected');
+            });
+            
             /** Sorting Handler: Sort a table by column. */
             $(document).on('click', '.sortable', function (ev) {
                 
@@ -1627,42 +1632,44 @@ yukon.ui = (function () {
         
         return this.each(function () {
             
-            var list, alertbox, messages = [], type = typeof (args.message),
+            var i, list, alertbox, messages, type = typeof (args.message),
                 create = !$(this).children('.user-message').length;
+            
+            messages = [];
             
             if (create) {
                 $(this).prepend('<div class="user-message">');
             }
-            alertBox = $(this).children('.user-message');
+            alertbox = $(this).children('.user-message');
             
             if (type === 'string') {
                 messages.push(args.message);
             } else if (type === 'object') {
                 //array
                 if (typeof (args.message.length) != 'undefined') {
-                    for (var i = 0; i < args.message.length; i++) {
+                    for (i = 0; i < args.message.length; i++) {
                         messages.push(args.message[i]);
                     }
                 } else {
                     for (var key in args.message) {
-                        if (typeof (args.message[key]) === 'number' 
-                            || typeof (args.message[key]) === 'string') {
+                        if (typeof (args.message[key]) === 'number' ||
+                            typeof (args.message[key]) === 'string') {
                             messages.push(args.message[key]);
                         }
                     }
                 }
             }
             
-            alertBox.empty().removeClass('error success info warning pending').addClass(args.messageClass);
+            alertbox.empty().removeClass('error success info warning pending').addClass(args.messageClass);
             
             if (messages.length > 1) {
                 list = $('<ul class="simple-list">');
-                for (var i = 0; i < messages.length; i++) {
+                for (i = 0; i < messages.length; i++) {
                     list.append('<li>' + messages[i] + '</li>');
                 }
-                alertBox.prepend(list);
+                alertbox.prepend(list);
             } else {
-                alertBox.html(messages[0]);
+                alertbox.html(messages[0]);
             }
         });
     };

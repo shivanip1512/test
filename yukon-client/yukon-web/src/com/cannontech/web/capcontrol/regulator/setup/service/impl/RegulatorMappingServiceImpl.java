@@ -1,12 +1,14 @@
-package com.cannontech.capcontrol.service.impl;
+package com.cannontech.web.capcontrol.regulator.setup.service.impl;
 
 import static com.cannontech.capcontrol.model.RegulatorPointMappingResult.MULTIPLE_POINTS_FOUND;
 import static com.cannontech.capcontrol.model.RegulatorPointMappingResult.NO_POINTS_FOUND;
 import static com.cannontech.capcontrol.model.RegulatorPointMappingResult.SUCCESS;
 import static com.cannontech.capcontrol.model.RegulatorPointMappingResult.SUCCESS_WITH_OVERWRITE;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -18,10 +20,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
 import com.cannontech.capcontrol.model.Regulator;
-import com.cannontech.capcontrol.model.RegulatorMappingResult;
-import com.cannontech.capcontrol.model.RegulatorMappingTask;
-import com.cannontech.capcontrol.service.VoltageRegulatorMappingService;
+import com.cannontech.capcontrol.model.RegulatorPointMappingResult;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.RecentResultsCache;
@@ -30,13 +31,19 @@ import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.capcontrol.regulator.setup.model.RegulatorMappingResult;
+import com.cannontech.web.capcontrol.regulator.setup.model.RegulatorMappingResultType;
+import com.cannontech.web.capcontrol.regulator.setup.model.RegulatorMappingTask;
+import com.cannontech.web.capcontrol.regulator.setup.service.RegulatorMappingService;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 
-public class VoltageRegulatorMappingServiceImpl implements VoltageRegulatorMappingService {
+public class RegulatorMappingServiceImpl implements RegulatorMappingService {
     
-    private static final Logger log = YukonLogManager.getLogger(VoltageRegulatorMappingServiceImpl.class);
+    private static final Logger log = YukonLogManager.getLogger(RegulatorMappingServiceImpl.class);
     private static final String delimiter = "-";
     
     @Autowired @Qualifier("regulatorMapping") private RecentResultsCache<RegulatorMappingTask> resultsCache;
@@ -45,6 +52,7 @@ public class VoltageRegulatorMappingServiceImpl implements VoltageRegulatorMappi
     @Autowired private PointDao pointDao;
     @Autowired private ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao;
     @Autowired private CcMonitorBankListDao ccMonitorBankListDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
     @Override
     public String start(Collection<YukonPao> regulators, YukonUserContext userContext) {
@@ -81,7 +89,7 @@ public class VoltageRegulatorMappingServiceImpl implements VoltageRegulatorMappi
      * This processor handles the work of finding appropriately named points and performing the regulator point mapping.
      * The results of this work are stored in the task object.
      */
-    final class RegulatorMappingProcessor implements Runnable {
+    public final class RegulatorMappingProcessor implements Runnable {
         
         private final RegulatorMappingTask task;
         
@@ -187,5 +195,41 @@ public class VoltageRegulatorMappingServiceImpl implements VoltageRegulatorMappi
         }
         
         result.complete();
+    }
+    
+    @Override
+    public void delete(String taskId) {
+        
+        RegulatorMappingTask result = resultsCache.getResult(taskId);
+        result.cancel();
+        
+        resultsCache.remove(taskId);
+        
+    }
+    
+    @Override
+    public Map<String, Object> buildJsonResult(RegulatorMappingResult result, 
+            YukonUserContext userContext) {
+        
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        
+        Map<String, Object> json = new HashMap<>();
+        List<Map<String, Object>> mappings = new ArrayList<>();
+        
+        RegulatorMappingResultType status = result.getType();
+        json.put("status", ImmutableMap.of("type", status, "text", accessor.getMessage(status)));
+        json.put("complete", result.isComplete());
+        json.put("regulatorId", result.getRegulator().getPaoIdentifier().getPaoId());
+        
+        for (RegulatorPointMapping mapping : result.getPointMappingResults().keySet()) {
+            RegulatorPointMappingResult mappingResult = result.getPointMappingResults().get(mapping);
+            mappings.add(ImmutableMap.of(
+                    "type", mapping, 
+                    "success", mappingResult.isSuccess(),
+                    "text", accessor.getMessage(mappingResult)));
+        }
+        json.put("mappings", mappings);
+        
+        return json;
     }
 }

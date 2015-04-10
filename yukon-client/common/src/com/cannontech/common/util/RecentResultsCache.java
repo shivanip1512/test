@@ -131,6 +131,13 @@ public class RecentResultsCache<T extends Completable> {
         return key;
     }
     
+    /** Remove a result by key */
+    synchronized public void remove(String key) {
+        pending.remove(key);
+        completed.remove(key);
+        expiredKeys.add(key);
+    }
+    
     // HELPERS
     synchronized private void processLists() {
         
