@@ -1350,6 +1350,8 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             serialNumberTextField.setFont(new Font("sansserif", 0, 14));
             serialNumberTextField.setMinimumSize(new Dimension(200, 23));
             serialNumberTextField.setVisible(false);
+            
+            serialNumberTextField.setDocument(new TextFieldDocument(TextFieldDocument.STRING_LENGTH_30));
         }
         return serialNumberTextField;
     }
@@ -2253,7 +2255,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             }
             /*Check if the device is of RFN type*/
             else if (paoType.isRfn()) {
-                if (!(YukonValidationUtils.isRfnSerialNumberValid(serialNumber)) || (serialNumber.length() >= 30)) {
+                if (!(YukonValidationUtils.isRfnSerialNumberValid(serialNumber))) {
                     setErrorString("Device serial number must be numeric and serial number length must be less than 30.");
                     return false;
                 }

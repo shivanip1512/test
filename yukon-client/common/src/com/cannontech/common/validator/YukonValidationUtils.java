@@ -36,12 +36,10 @@ public class YukonValidationUtils extends ValidationUtils {
      * Check to ensure that the serial Number of an RFN device is a valid numeric value
      */
     public static boolean isRfnSerialNumberValid(String serialNumber) {
-        try {
-            Integer.parseInt(serialNumber);
-            return true;
-        } catch (NumberFormatException e) {
+        if ((!StringUtils.isEmpty(serialNumber)) && (serialNumber.length() >= 30 || !StringUtils.isNumeric(serialNumber))) {
             return false;
         }
+        return true;
     }
 
     public static boolean checkExceedsMaxLength(Errors errors, String field, String fieldValue, int max) {
