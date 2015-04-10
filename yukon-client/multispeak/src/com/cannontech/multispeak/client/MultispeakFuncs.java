@@ -1,13 +1,11 @@
 package com.cannontech.multispeak.client;
 
-import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -17,7 +15,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.WebServiceMessage;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.soap.AbstractSoapMessage;
@@ -55,7 +52,6 @@ import com.cannontech.msp.beans.v3.ArrayOfString;
 import com.cannontech.msp.beans.v3.Customer;
 import com.cannontech.msp.beans.v3.ErrorObject;
 import com.cannontech.msp.beans.v3.LoadActionCode;
-import com.cannontech.msp.beans.v3.MultiSpeakMsgHeader;
 import com.cannontech.msp.beans.v3.ObjectFactory;
 import com.cannontech.msp.beans.v3.ServiceLocation;
 import com.cannontech.multispeak.dao.MultispeakDao;
@@ -77,7 +73,6 @@ public class MultispeakFuncs {
     @Autowired public PaoDefinitionDao paoDefinitionDao;
     @Autowired public PointFormattingService pointFormattingService;
     @Autowired public RolePropertyDao rolePropertyDao;
-    @Autowired public Jaxb2Marshaller unmarshaller;
     @Autowired private ObjectFactory objectFactory;
 
     public void logStrings(String intfaceName, String methodName, List<String> strings) {
@@ -110,14 +105,12 @@ public class MultispeakFuncs {
         }
     }
 
-  
-    public MultiSpeakMsgHeader getResponseHeader() {
+    public SoapHeaderElement getResponseHeaderElement() {
         SoapEnvelope env = getResponseMessageSOAPEnvelope();
         SoapHeader header = env.getHeader();
         Iterator<SoapHeaderElement> it = header.examineHeaderElements(new QName("http://www.multispeak.org/Version_3.0",
                                                                                 "MultiSpeakMsgHeader"));
-        JAXBElement<?> poElement = (JAXBElement<?>) unmarshaller.unmarshal(it.next().getSource());
-        return  (MultiSpeakMsgHeader)poElement.getValue();
+        return it.next();
     }
 
     private SoapEnvelope getResponseMessageSOAPEnvelope() {
@@ -459,10 +452,10 @@ public class MultispeakFuncs {
      * @return
      */
     public void updateResponseHeader(MspReturnList returnList) {
-        getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(returnList.getObjectsRemaining())));
+        getResponseHeaderElement().addAttribute(new QName("ObjectsRemaining"), String.valueOf(returnList.getObjectsRemaining()));
         log.debug("Updated MspMessageHeader.ObjectsRemaining " + returnList.getObjectsRemaining());
 
-        getResponseHeader().setLastSent(returnList.getLastSent());
+        getResponseHeaderElement().addAttribute(new QName("LastSent"), returnList.getLastSent());
         log.debug("Updated MspMessageHeader.LastSent " + returnList.getLastSent());
     }
 
