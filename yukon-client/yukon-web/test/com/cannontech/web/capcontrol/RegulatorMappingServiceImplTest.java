@@ -14,7 +14,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.mock.MockPointDao;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -29,8 +28,9 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.regulator.setup.model.RegulatorMappingTask;
 import com.cannontech.web.capcontrol.regulator.setup.service.RegulatorMappingService;
 import com.cannontech.web.capcontrol.regulator.setup.service.impl.RegulatorMappingServiceImpl;
+import com.cannontech.web.mock.MockPointDao;
+import com.cannontech.web.mock.StubServerDatabaseCache;
 import com.cannontech.yukon.IDatabaseCache;
-import com.cannontech.yukon.StubServerDatabaseCache;
 import com.google.common.collect.ImmutableMap;
 
 public class RegulatorMappingServiceImplTest {
