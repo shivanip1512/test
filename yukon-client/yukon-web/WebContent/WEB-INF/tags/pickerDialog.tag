@@ -132,6 +132,8 @@
     </c:if>
 </c:if>
 
+<c:set var="hasEndAction" value="${not empty endAction}"/>
+
 <script type="text/javascript">
 (function () {
     
@@ -180,8 +182,8 @@
         if ('${pageScope.immediateSelectMode}' === 'true') {
             picker.immediateSelectMode = true;
         }
-        if ('${pageScope.endAction}' !== '') {
-            picker.endAction = '${pageScope.endAction}';
+        if ('${hasEndAction}' === 'true') {
+            picker.endAction = ${pageScope.endAction};
         }
         if ('${pageScope.cancelAction}' !== '') {
             picker.cancelAction = '${pageScope.cancelAction}';

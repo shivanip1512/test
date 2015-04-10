@@ -460,7 +460,7 @@ yukon.protoPicker = function (okText,
         }
         if (!isInitial) {
             if (this.endAction) {
-                window[this.endAction](this.selectedItems, this);
+                this.endAction(this.selectedItems, this);
             }
             if (this.endEvent) {
                 $(document).trigger(this.endEvent, [this.selectedItems, this]);

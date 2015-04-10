@@ -622,6 +622,7 @@
               </page>
             </pages>
           </page>
+          <page name="regulator.setup" type="BASIC"/>
           <page name="scheduleAssignments" type="BASIC">
             <link>/capcontrol/schedules/assignments</link>
           </page>
@@ -658,7 +659,6 @@
           <page name="recentEvents" type="DETAIL_CHILD"/>
         </pages>
       </page>
-      <page name="regulator.setup" type="BASIC"/>
       <page name="import" type="BASIC"/>
     </pages>
   </module>
