@@ -182,9 +182,9 @@
         if ('${pageScope.immediateSelectMode}' === 'true') {
             picker.immediateSelectMode = true;
         }
-        if ('${hasEndAction}' === 'true') {
+        <c:if test="${hasEndAction}">
             picker.endAction = ${pageScope.endAction};
-        }
+        </c:if>
         if ('${pageScope.cancelAction}' !== '') {
             picker.cancelAction = '${pageScope.cancelAction}';
         }
