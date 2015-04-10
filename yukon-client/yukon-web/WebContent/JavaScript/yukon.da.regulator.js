@@ -8,6 +8,8 @@ yukon.namespace('yukon.da.regulator');
  */
 
 yukon.da.regulator = (function () {
+
+    'use strict';
     
     /** @type {number} - The regulator id. */
     var _id = null;
@@ -16,6 +18,17 @@ yukon.da.regulator = (function () {
         successful: '<span class="label label-success">' + yg.text.successful + '</span>',
         failed: '<span class="label label-danger">' + yg.text.failed + '</span>'
     };
+    
+    /**
+     * @type {Object.<string, string>}
+     *
+     * Object mapping PaoTypes to supported attributes. ex:
+     * 
+     *  { PAO_TYPE_1: ['Attr1', 'Attr2'],
+     *    PAO_TYPE_2: ['Attr2', 'Attr3']
+     *  }
+     */
+    var _paoTypeToAttributes = {};
     
     /**
      * Different regulator types (LTC, CL7) have different attributes.
@@ -29,21 +42,10 @@ yukon.da.regulator = (function () {
             table = $(document).find('.js-mappings-table');
         table.find('[data-mapping]').hide().find('input').prop('disabled', true);
         
-        mappings.forEach(function (mapping, idx) {
+        mappings.forEach(function (mapping) {
             table.find('[data-mapping="' + mapping + '"]').show().find('input').prop('disabled', false);
         });
     };
-    
-    /**
-     * @type {Object.<string, string>}
-     *
-     * Object mapping PaoTypes to supported attributes. ex:
-     * 
-     *  { PAO_TYPE_1: ['Attr1', 'Attr2'],
-     *    PAO_TYPE_2: ['Attr2', 'Attr3']
-     *  }
-     */
-    var _paoTypeToAttributes = {};
     
     var _updateRecentEvents = function () {
         
@@ -63,7 +65,7 @@ yukon.da.regulator = (function () {
                 $('.js-ivvc-events-holder').show();
             }
             
-            events.reverse().forEach(function (event, idx) {
+            events.reverse().forEach(function (event) {
                 
                 var row = $(templateRow.clone()).removeAttr('id');
                 
