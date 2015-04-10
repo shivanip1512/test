@@ -86,7 +86,7 @@
 %>
 
 <cti:standardPage module="reporting" title="Reports">
-
+<% final ReportGroup reportGroup = REPORT_BEAN.getReportGroup(); %>
 <c:set var="reportGroup" value="<%= reportGroup %>" />
 <cti:linkTabbedContainer mode="section">
     <cti:checkRolesAndProperties value="AMR_REPORTS_GROUP">
