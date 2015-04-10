@@ -155,10 +155,10 @@ public class RegulatorMappingServiceImplTest {
         List<RegulatorMappingTask> allTasks = service.getAllTasks();
         Assert.assertEquals("Cache should return 2 tasks in getAllTasks() call.", 2, allTasks.size());
         
-        RegulatorMappingTask task1 = allTasks.get(0);
-        RegulatorMappingTask task2 = allTasks.get(1);
-        Assert.assertEquals("Tasks should be ordered by start time.", task1.getTaskId(), taskId1);
+        RegulatorMappingTask task2 = allTasks.get(0);
+        RegulatorMappingTask task1 = allTasks.get(1);
         Assert.assertEquals("Tasks should be ordered by start time.", task2.getTaskId(), taskId2);
+        Assert.assertEquals("Tasks should be ordered by start time.", task1.getTaskId(), taskId1);
     }
     
     @Test
