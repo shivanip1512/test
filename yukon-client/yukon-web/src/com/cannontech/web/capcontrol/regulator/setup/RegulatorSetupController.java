@@ -100,7 +100,7 @@ public class RegulatorSetupController {
         return data;
     }
     
-    /** Retrieve the list of requests asked for. */
+    /** Start a mapping task. */
     @RequestMapping(value="regulator-setup/map-attributes", method=RequestMethod.POST, produces=json, consumes=json)
     public @ResponseBody RegulatorMappingTask map(YukonUserContext userContext, @RequestBody List<Integer> ids) {
         

@@ -214,7 +214,7 @@ yukon.da.regulatorSetup = (function () {
             _updateRecent();
             
             _initialized = true;
-        },
+        }
         
     };
     
