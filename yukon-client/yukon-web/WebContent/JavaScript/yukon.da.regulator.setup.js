@@ -112,6 +112,11 @@ yukon.da.regulatorSetup = (function () {
             /** Retrieve a task result. */
             $(document).on('click', '.js-task-table tbody tr', function (ev) {
                 
+                if ($(ev.target).closest('.js-delete').length) {
+                    // Don't load results if we are deleting, just propagate event up.
+                    return true;
+                }
+                
                 var taskId = $(this).data('task');
                 // Get the task devices and the results table for the first device
                 $.ajax(yukon.url('/capcontrol/regulator-setup/map-attributes/' + taskId + '/results'))

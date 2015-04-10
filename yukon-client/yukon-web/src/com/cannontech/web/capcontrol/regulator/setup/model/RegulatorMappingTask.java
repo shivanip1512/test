@@ -104,14 +104,8 @@ public class RegulatorMappingTask implements Cancelable, Comparable<RegulatorMap
      * Adds the result of a mapping attempt for a particular regulator and mapping.
      */
     public void addResult(YukonPao regulator, RegulatorPointMapping mapping, RegulatorPointMappingResult type) {
-        if (!results.containsKey(regulator)) {
-            log.debug("Adding new result for " + regulator);
-            RegulatorMappingResult result = new RegulatorMappingResult(regulator);
-            results.put(regulator, result);
-        }
-        
         log.debug("Adding new mapping result for " + regulator + ", mapping: " + mapping + ", result: " + type);
-        results.get(regulator).addPointDetail(mapping, type);
+        getResult(regulator).addPointDetail(mapping, type);
     }
     
     /**
