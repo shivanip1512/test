@@ -74,8 +74,9 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
     public MeterReadUpdater buildMeterReadUpdater(BuiltInAttribute attribute,
                                            final PointValueHolder pointValueHolder) {
         final ReadingProcessor processor = attributesToLoad.get(attribute);
-        if (processor == null)
+        if (processor == null) {
             throw new IllegalArgumentException("Attribute " + attribute + " is not supported");
+        }
         return new MeterReadUpdater() {
             @Override
             public void update(MeterRead reading) {
@@ -87,8 +88,9 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
     @Override
     public void updateMeterRead(MeterRead reading, BuiltInAttribute attribute, PointValueHolder pointValueHolder) {
         final ReadingProcessor processor = attributesToLoad.get(attribute);
-        if (processor == null)
+        if (processor == null) {
             throw new IllegalArgumentException("Attribute " + attribute + " is not supported");
+        }
         processor.apply(pointValueHolder, reading);
 
     }
