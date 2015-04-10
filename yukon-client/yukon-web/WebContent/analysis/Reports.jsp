@@ -1,32 +1,30 @@
-<%@page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
+<%@ page import="com.cannontech.core.roleproperties.YukonRoleProperty" %>
 <%@ page import="com.cannontech.amr.deviceread.model.DeviceReadJobLog" %>
 <%@ page import="java.util.Vector" %>
 <%@ page import="com.cannontech.analysis.tablemodel.ReportModelBase" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="com.cannontech.analysis.*" %>
-<%@ page import="com.cannontech.database.db.device.DeviceMeterGroup"%>
-<%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject"%>
-<%@ page import="com.cannontech.database.data.lite.LiteDeviceMeterNumber"%>
+<%@ page import="com.cannontech.database.db.device.DeviceMeterGroup" %>
+<%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
+<%@ page import="com.cannontech.database.data.lite.LiteDeviceMeterNumber" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.database.db.capcontrol.LiteCapControlStrategy" %>
 <%@ page import="com.cannontech.spring.YukonSpringHook" %>
-<%@ page import="com.cannontech.analysis.ReportFilter"%>
+<%@ page import="com.cannontech.analysis.ReportFilter" %>
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
 <%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
 <%@ page import="com.cannontech.stars.core.dao.EnergyCompanyDao" %>
 <%@ page import= "java.util.List" %>
 <%@ page import= "java.util.ArrayList" %>
+<%@ page import="com.cannontech.message.capcontrol.streamable.StreamableCapObject" %>
+<%@ page import="com.cannontech.analysis.controller.ReportController" %>
 
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-
-<%@page import="com.cannontech.analysis.controller.ReportController"%>
 <cti:verifyRolesAndProperties value="REPORTING"/>
-
-<%@page import="com.cannontech.message.capcontrol.streamable.StreamableCapObject"%><cti:verifyRolesAndProperties value="REPORTING"/>
 
 <%
     LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
@@ -45,71 +43,50 @@
 
 <% 
     REPORT_BEAN.setUserID(lYukonUser.getUserID());
-    String menuSelection = null;
-	String groupName=null;
+    String groupName=null;
     Object groupType = request.getParameter("groupType");
     if (groupType == null) {
-    	%>
-    		<cti:checkRolesAndProperties value="STATISTICAL_REPORTS_GROUP">
-   				<% groupName =  ReportGroup.STATISTICAL.name(); %>
-       		</cti:checkRolesAndProperties>
-       		<cti:checkRolesAndProperties value="ADMIN_REPORTS_GROUP">
-       			<cti:checkRolesAndProperties value="ENABLE_SETTLEMENTS">
-       				<% groupName = ReportGroup.SETTLEMENT.name(); %>
-       			</cti:checkRolesAndProperties>
-       		</cti:checkRolesAndProperties>
-       		<cti:checkRolesAndProperties value="DATABASE_REPORTS_GROUP">
-   				<% groupName = ReportGroup.DATABASE.name();%>
-       		</cti:checkRolesAndProperties>
-       		<cti:checkRolesAndProperties value="CI_CURTAILMENT_REPORTS_GROUP">
-   				<% groupName = ReportGroup.CCURT.name();%>
-       		</cti:checkRolesAndProperties>
-       		<cti:checkRolesAndProperties value="ADMIN_REPORTS_GROUP">
-   				<% groupName = ReportGroup.ADMINISTRATIVE.name();%>
-       		</cti:checkRolesAndProperties>
-       		<cti:checkRolesAndProperties value="STARS_REPORTS_GROUP">
-   				<% groupName = ReportGroup.STARS.name(); %>
-       		</cti:checkRolesAndProperties>
-       		<cti:checkRolesAndProperties value="CAP_CONTROL_REPORTS_GROUP"> 
-       			<% groupName = ReportGroup.CAP_CONTROL.name(); %>
-       		</cti:checkRolesAndProperties>
-	       	<cti:checkRolesAndProperties value="LOAD_MANAGEMENT_REPORTS_GROUP">  
-    	   		<% groupName = ReportGroup.LOAD_MANAGEMENT.name(); %>
-			</cti:checkRolesAndProperties>
-			<cti:checkRolesAndProperties value="AMR_REPORTS_GROUP"> 
-       			<% groupName = ReportGroup.METERING.name(); %>
-			</cti:checkRolesAndProperties>	
-			
-			
-	<% REPORT_BEAN.setGroupType(groupName);	}
+        %>
+            <cti:checkRolesAndProperties value="STATISTICAL_REPORTS_GROUP">
+                <% groupName =  ReportGroup.STATISTICAL.name(); %>
+            </cti:checkRolesAndProperties>
+            <cti:checkRolesAndProperties value="ADMIN_REPORTS_GROUP">
+                <cti:checkRolesAndProperties value="ENABLE_SETTLEMENTS">
+                    <% groupName = ReportGroup.SETTLEMENT.name(); %>
+                </cti:checkRolesAndProperties>
+            </cti:checkRolesAndProperties>
+            <cti:checkRolesAndProperties value="DATABASE_REPORTS_GROUP">
+                <% groupName = ReportGroup.DATABASE.name();%>
+            </cti:checkRolesAndProperties>
+            <cti:checkRolesAndProperties value="CI_CURTAILMENT_REPORTS_GROUP">
+                <% groupName = ReportGroup.CCURT.name();%>
+            </cti:checkRolesAndProperties>
+            <cti:checkRolesAndProperties value="ADMIN_REPORTS_GROUP">
+                <% groupName = ReportGroup.ADMINISTRATIVE.name();%>
+            </cti:checkRolesAndProperties>
+            <cti:checkRolesAndProperties value="STARS_REPORTS_GROUP">
+                <% groupName = ReportGroup.STARS.name(); %>
+            </cti:checkRolesAndProperties>
+            <cti:checkRolesAndProperties value="CAP_CONTROL_REPORTS_GROUP"> 
+                <% groupName = ReportGroup.CAP_CONTROL.name(); %>
+            </cti:checkRolesAndProperties>
+            <cti:checkRolesAndProperties value="LOAD_MANAGEMENT_REPORTS_GROUP">  
+                <% groupName = ReportGroup.LOAD_MANAGEMENT.name(); %>
+            </cti:checkRolesAndProperties>
+            <cti:checkRolesAndProperties value="AMR_REPORTS_GROUP"> 
+                <% groupName = ReportGroup.METERING.name(); %>
+            </cti:checkRolesAndProperties>    
+            
+            
+       <% REPORT_BEAN.setGroupType(groupName);
     
-   	final ReportGroup reportGroup = REPORT_BEAN.getReportGroup();
+    }
     
-    if( reportGroup == ReportGroup.ADMINISTRATIVE)
-        menuSelection = "reports|administrator";
-    else if (reportGroup == ReportGroup.METERING)
-        menuSelection = "reports|metering";
-    else if ( reportGroup == ReportGroup.STATISTICAL)
-        menuSelection = "reports|statistical";
-    else if (reportGroup == ReportGroup.LOAD_MANAGEMENT)
-        menuSelection = "reports|management";
-    else if (reportGroup == ReportGroup.CAP_CONTROL)
-        menuSelection = "reports|capcontrol";
-    else if (reportGroup == ReportGroup.DATABASE)
-        menuSelection = "reports|database";
-    else if (reportGroup == ReportGroup.STARS)
-        menuSelection = "reports|stars";
-    else if (reportGroup == ReportGroup.CCURT)
-        menuSelection = "reports|cni";
-    else if (reportGroup == ReportGroup.SETTLEMENT)
-        menuSelection = "reports|settlement";
-    else
-        menuSelection = "reports";
-        
+    
 %>
 
 <cti:standardPage module="reporting" title="Reports">
-<cti:standardMenu menuSelection="<%= menuSelection %>"/>
+
 <c:set var="reportGroup" value="<%= reportGroup %>" />
 <cti:linkTabbedContainer mode="section">
     <cti:checkRolesAndProperties value="AMR_REPORTS_GROUP">
