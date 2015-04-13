@@ -138,7 +138,7 @@ WHERE DeviceConfigCategoryId NOT IN (SELECT DeviceConfigCategoryId FROM DeviceCo
     OR Name LIKE 'Generated Regulator Config Category%'); 
 /* End YUK-14170 */
 
-/* Start YUK-13939 */
+/* Start YUK-14191 */
 /* Alter Table structure to add new columns */
 ALTER TABLE RPHTag 
 ADD (
@@ -175,6 +175,8 @@ WHERE ChangeId IN  (SELECT ChangeId FROM RPHTag WHERE TagName = 'OK');
 ALTER TABLE RPHTag
     DROP CONSTRAINT PK_RPHTag;
 
+DROP INDEX PK_RPHTag;
+
 /* Delete duplicate rows */
 DELETE FROM RPHTag WHERE ROWID in (
     SELECT rid FROM (
@@ -205,7 +207,7 @@ ALTER TABLE RPHTag
     MODIFY ChangeOut NOT NULL;
 ALTER TABLE RPHTag
     MODIFY Accepted NOT NULL;
-/* End YUK-13939 */
+/* End YUK-14191 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

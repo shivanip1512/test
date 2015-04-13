@@ -141,7 +141,7 @@ WHERE DeviceConfigCategoryId NOT IN (SELECT DeviceConfigCategoryId FROM DeviceCo
     OR Name LIKE 'Generated Regulator Config Category%');  
 /* End YUK-14170 */
 
-/* Start YUK-13939 */
+/* Start YUK-14191 */
 /* Alter Table structure to add new columns */
 ALTER TABLE RPHTag
     ADD 
@@ -205,7 +205,7 @@ ALTER TABLE RPHTag
     ALTER COLUMN ChangeOut BIT NOT NULL;
 ALTER TABLE RPHTag
     ALTER COLUMN Accepted BIT NOT NULL;
-/* End YUK-13939 */
+/* End YUK-14191 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
