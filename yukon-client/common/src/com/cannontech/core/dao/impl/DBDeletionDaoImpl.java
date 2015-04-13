@@ -9,6 +9,7 @@ import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DBDeletionDao;
 import com.cannontech.core.dao.MACScheduleDao;
 import com.cannontech.database.data.config.ConfigTwoWay;
+import com.cannontech.database.data.device.Rfn1200;
 import com.cannontech.database.data.device.lm.LMProgramDirectBase;
 import com.cannontech.database.data.holiday.HolidaySchedule;
 import com.cannontech.database.data.route.RouteBase;
@@ -450,6 +451,13 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 			delRes.setItemID( ((com.cannontech.database.data.port.DirectPort) toDelete).getCommPort().getPortID().intValue() );
 			delRes.setDelType( DBDeletionDaoImpl.PORT_TYPE );
 		}
+        else if (toDelete instanceof Rfn1200) { // special comm port
+            delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + ((Rfn1200) toDelete).getPAOName() + "?");
+            delRes.getUnableDelMsg().append("You cannot delete the comm port '" + ((Rfn1200) toDelete).getPAOName() + "'");
+            delRes.setItemID(((Rfn1200) toDelete).getCommPort().getPortID().intValue());
+            // Normally this would be a DEVICE_TYPE however RFN1200 are special types of ports technically
+            delRes.setDelType(DBDeletionDaoImpl.PORT_TYPE);
+        }
 		else if (toDelete instanceof com.cannontech.database.data.device.DeviceBase)
 		{
 			delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + "'?");
