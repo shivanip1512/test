@@ -74,7 +74,7 @@ public interface ArchiveDataAnalysisDao {
     public void updateStatus(int analysisId, AdaStatus status, String statusId);
     
     /**
-     * Retrieves the count of archive data analysis.
+     * Retrieves the total count of non deleted archive data analysis.
      */
-    public int getTotalAdaCount();
+    public int getTotalNonDeletedAdaCount();
 }

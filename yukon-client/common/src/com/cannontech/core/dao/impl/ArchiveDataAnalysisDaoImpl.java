@@ -392,10 +392,10 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     }
 
     @Override
-    public int getTotalAdaCount() {
+    public int getTotalNonDeletedAdaCount() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT COUNT(*) FROM ");
-        sql.append("ArchiveDataAnalysis");
+        sql.append("SELECT COUNT(*)");
+        sql.append("FROM ArchiveDataAnalysis");
         sql.append("WHERE AnalysisStatus").neq_k(AdaStatus.DELETED);
         return jdbcTemplate.queryForInt(sql);
     }
