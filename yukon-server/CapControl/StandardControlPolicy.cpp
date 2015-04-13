@@ -1,6 +1,7 @@
 #include "precompiled.h"
 
 #include "StandardControlPolicy.h"
+#include "logger.h"
 
 
 namespace Cti           {
@@ -44,13 +45,20 @@ Policy::Action StandardControlPolicy::AdjustSetPoint( const double changeAmount 
 
     std::string commandString;
 
-    if ( point.getMultiplier() == 1.0 )
+    const double pointMultiplier = point.getMultiplier();
+
+    if ( pointMultiplier == 0.0 || pointMultiplier == 1.0 )
     {
+        if ( pointMultiplier == 0.0 )
+        {
+            CTILOG_ERROR( dout, "Forward SetPoint Multiplier is 0.0, treating as 1.0" );
+        }
+
         commandString = putvalueAnalogCommand( pointOffset, newSetPoint );
     }
     else
     {
-        const long adjustedSetPoint = std::lround( newSetPoint / point.getMultiplier() );
+        const long adjustedSetPoint = std::lround( newSetPoint / pointMultiplier );
 
         commandString = putvalueAnalogCommand( pointOffset, adjustedSetPoint );
     }
