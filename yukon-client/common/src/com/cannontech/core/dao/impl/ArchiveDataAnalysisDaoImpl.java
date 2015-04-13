@@ -390,4 +390,13 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
             jdbcTemplate.update(sql);
         }
     }
+
+    @Override
+    public int getTotalAdaCount() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*) FROM ");
+        sql.append("ArchiveDataAnalysis");
+        sql.append("WHERE AnalysisStatus").neq_k(AdaStatus.DELETED);
+        return jdbcTemplate.queryForInt(sql);
+    }
 }

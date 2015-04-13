@@ -84,8 +84,9 @@ public class AdaListController {
             analysisSublist.add(new AnalysisWithDeviceCount(analysis, numberOfDevices));
         }
         
-        SearchResults<AnalysisWithDeviceCount> result = SearchResults.pageBasedForSublist(analysisSublist, page, 
-                                                                                          itemsPerPage, analyses.size());
+        int totalAdaCount = archiveDataAnalysisDao.getTotalAdaCount();
+        SearchResults<AnalysisWithDeviceCount> result =
+            SearchResults.pageBasedForSublist(analysisSublist, page, itemsPerPage, totalAdaCount);
         model.addAttribute("result", result);
     }
 }
