@@ -1,62 +1,59 @@
 package com.cannontech.yukon.server.cache;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Date;
 import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlUtils;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteSeasonSchedule;
+import com.cannontech.spring.YukonSpringHook;
 
 public class SeasonScheduleLoader implements Runnable {
-    private String databaseAlias = null;
     private List<LiteSeasonSchedule> allSeasons = null;
 
-    public SeasonScheduleLoader(List<LiteSeasonSchedule> allSeasons, String databaseAlias) {
+    private static final YukonRowMapper<LiteSeasonSchedule> liteSeasonScheduleRowMapper = new YukonRowMapper<LiteSeasonSchedule>() {
+        @Override
+        public LiteSeasonSchedule mapRow(YukonResultSet rs) throws SQLException {
+            int scheduleId = rs.getInt("ScheduleId");
+            String scheduleName = rs.getString("ScheduleName").trim();
+            LiteSeasonSchedule liteSeasonSchedule = new LiteSeasonSchedule(scheduleId, scheduleName);
+            return liteSeasonSchedule;
+        };
+    };
+    
+    public SeasonScheduleLoader(List<LiteSeasonSchedule> allSeasons) {
         this.allSeasons = allSeasons;
-        this.databaseAlias = databaseAlias;
     }
 
     @Override
     public void run() {
-        // temp code
         Date timerStart = new Date();
-        Date timerStop = null;
-        // temp code
-        String sqlString = "SELECT SCHEDULEID,SCHEDULENAME FROM SEASONSCHEDULE WHERE SCHEDULEID >= 0";
+        
+        YukonJdbcTemplate jdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
 
-        Connection conn = null;
-        Statement stmt = null;
-        ResultSet rset = null;
-        try {
-            conn = PoolManager.getInstance().getConnection(this.databaseAlias);
-            stmt = conn.createStatement();
-            rset = stmt.executeQuery(sqlString);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ScheduleId, ScheduleName");
+        sql.append("FROM SeasonSchedule");
+        sql.append("WHERE ScheduleId").gt(0);
 
-            while (rset.next()) {
-                int seasonID = rset.getInt(1);
-                String seasonName = rset.getString(2).trim();
+        allSeasons.addAll(jdbcTemplate.query(sql, liteSeasonScheduleRowMapper));
 
-                LiteSeasonSchedule ss = new LiteSeasonSchedule(seasonID);
+        CTILogger.info((new Date().getTime() - timerStart.getTime()) * .001
+                       + " Secs for SeasonScheduleLoader (" + allSeasons.size() + " loaded)");
+    }
 
-                ss.setScheduleName(seasonName);
-                if (seasonID != 0) {
-                    allSeasons.add(ss);
-                }
-            }
-        } catch (SQLException e) {
-            CTILogger.error(e.getMessage(), e);
-        } finally {
-            SqlUtils.close(rset, stmt, conn);
-            // temp code
-            timerStop = new Date();
-            CTILogger.info((timerStop.getTime() - timerStart.getTime()) * .001
-                + " Secs for SeasonScheduleLoader (" + allSeasons.size() + " loaded)");
-            // temp code
-        }
+    public static LiteSeasonSchedule getForId(int scheduleId) {
+        YukonJdbcTemplate jdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ScheduleId, ScheduleName");
+        sql.append("FROM SeasonSchedule");
+        sql.append("WHERE ScheduleId").eq(scheduleId);
+
+        return jdbcTemplate.queryForObject(sql, liteSeasonScheduleRowMapper);
     }
 }

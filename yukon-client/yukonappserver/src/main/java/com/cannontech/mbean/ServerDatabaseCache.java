@@ -23,7 +23,6 @@ import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.GraphDao;
-import com.cannontech.core.dao.NotificationGroupDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
@@ -96,7 +95,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Autowired private CustomerDao customerDao;
     @Autowired private GraphDao graphDao;
     @Autowired private MeterDao meterDao;
-    @Autowired private NotificationGroupDao notificationGroupDao;
     @Autowired private PaoDao paoDao;
     @Autowired private PointDao pointDao;
     @Autowired private StateGroupDao stateGroupDao;
@@ -105,7 +103,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Autowired private YukonImageDao imageDao;
     @Autowired private YukonUserDao yukonUserDao;
     
-    private String databaseAlias = CtiUtilities.getDatabaseAlias();
+    private final String databaseAlias = CtiUtilities.getDatabaseAlias();
     
     private Map<Integer, LiteYukonPAObject> allLitePaos;
     private Map<Integer, SimpleMeter> allMeters;
@@ -330,7 +328,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         }
         
         allHolidaySchedules = new ArrayList<>();
-        HolidayScheduleLoader holidayScheduleLoader = new HolidayScheduleLoader(allHolidaySchedules, databaseAlias);
+        HolidayScheduleLoader holidayScheduleLoader = new HolidayScheduleLoader(allHolidaySchedules);
         holidayScheduleLoader.run();
         
         return allHolidaySchedules;
@@ -344,7 +342,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         }
         
         allBaselines = new ArrayList<>();
-        BaselineLoader baselineLoader = new BaselineLoader(allBaselines, databaseAlias);
+        BaselineLoader baselineLoader = new BaselineLoader(allBaselines);
         baselineLoader.run();
         
         return allBaselines;
@@ -358,7 +356,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         }
         
         allSeasonSchedules = new ArrayList<>();
-        SeasonScheduleLoader seasonLoader = new SeasonScheduleLoader(allSeasonSchedules, databaseAlias);
+        SeasonScheduleLoader seasonLoader = new SeasonScheduleLoader(allSeasonSchedules);
         seasonLoader.run();
         
         return allSeasonSchedules;
@@ -372,7 +370,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         }
         
         allTouSchedules = new ArrayList<>();
-        TOUScheduleLoader touLoader = new TOUScheduleLoader(allTouSchedules, databaseAlias);
+        TOUScheduleLoader touLoader = new TOUScheduleLoader(allTouSchedules);
         touLoader.run();
         
         return allTouSchedules;
@@ -398,7 +396,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         }
 
         allConfigs = new ArrayList<>();
-        ConfigLoader configLoader = new ConfigLoader(allConfigs, databaseAlias);
+        ConfigLoader configLoader = new ConfigLoader(allConfigs);
         configLoader.run();
         return allConfigs;
     }
@@ -411,7 +409,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         }
 
         allLMProgramConstraints = new ArrayList<>();
-        LMConstraintLoader lmConstraintsLoader = new LMConstraintLoader(allLMProgramConstraints, databaseAlias);
+        LMConstraintLoader lmConstraintsLoader = new LMConstraintLoader(allLMProgramConstraints);
         lmConstraintsLoader.run();
         return allLMProgramConstraints;
     }
@@ -1069,17 +1067,16 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
                 }
             }
             if (!alreadyAdded) {
-                LiteHolidaySchedule lh = new LiteHolidaySchedule(id);
-                lh.retrieve(databaseAlias);
+                LiteHolidaySchedule lh = HolidayScheduleLoader.getForId(id);
                 allHolidaySchedules.add(lh);
                 lBase = lh;
             }
             break;
         case UPDATE:
-            for (int i = 0; i < allHolidaySchedules.size(); i++) {
-                if (allHolidaySchedules.get(i).getHolidayScheduleID() == id) {
-                    allHolidaySchedules.get(i).retrieve(databaseAlias);
-                    lBase = allHolidaySchedules.get(i);
+            for (LiteHolidaySchedule liteHolidaySchedule : allHolidaySchedules) {
+                if (liteHolidaySchedule.getHolidayScheduleID() == id) {
+                    liteHolidaySchedule = HolidayScheduleLoader.getForId(id);
+                    lBase = liteHolidaySchedule;
                     break;
                 }
             }
@@ -1149,17 +1146,16 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
                 }
             }
             if (!alreadyAdded) {
-                LiteBaseline lh = new LiteBaseline(id);
-                lh.retrieve(databaseAlias);
+                LiteBaseline lh = BaselineLoader.getForId(id);
                 allBaselines.add(lh);
                 lBase = lh;
             }
             break;
         case UPDATE:
-            for (int i = 0; i < allBaselines.size(); i++) {
-                if (allBaselines.get(i).getBaselineID() == id) {
-                    allBaselines.get(i).retrieve(databaseAlias);
-                    lBase = allBaselines.get(i);
+            for (LiteBaseline liteBaseline : allBaselines) {
+                if (liteBaseline.getBaselineID() == id) {
+                    liteBaseline = BaselineLoader.getForId(id);
+                    lBase = liteBaseline;
                     break;
                 }
             }
@@ -1199,17 +1195,16 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
                 }
             }
             if (!alreadyAdded) {
-                LiteSeasonSchedule lh = new LiteSeasonSchedule(id);
-                lh.retrieve(databaseAlias);
+                LiteSeasonSchedule lh = SeasonScheduleLoader.getForId(id);
                 allSeasonSchedules.add(lh);
                 lBase = lh;
             }
             break;
         case UPDATE:
-            for (int i = 0; i < allSeasonSchedules.size(); i++) {
-                if (allSeasonSchedules.get(i).getScheduleID() == id) {
-                    allSeasonSchedules.get(i).retrieve(databaseAlias);
-                    lBase = allSeasonSchedules.get(i);
+            for (LiteSeasonSchedule liteSeasonSchedule : allSeasonSchedules) {
+                if (liteSeasonSchedule.getScheduleID() == id) {
+                    liteSeasonSchedule = SeasonScheduleLoader.getForId(id);
+                    lBase = liteSeasonSchedule;
                     break;
                 }
             }
@@ -1249,17 +1244,16 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
                 }
             }
             if (!alreadyAdded) {
-                LiteTOUSchedule lh = new LiteTOUSchedule(id);
-                lh.retrieve(databaseAlias);
+                LiteTOUSchedule lh = TOUScheduleLoader.getForId(id);
                 allTouSchedules.add(lh);
                 lBase = lh;
             }
             break;
         case UPDATE:
-            for (int i = 0; i < allTouSchedules.size(); i++) {
-                if (allTouSchedules.get(i).getScheduleID() == id) {
-                    allTouSchedules.get(i).retrieve(databaseAlias);
-                    lBase = allTouSchedules.get(i);
+            for (LiteTOUSchedule liteTOUSchedule : allTouSchedules) {
+                if (liteTOUSchedule.getScheduleID() == id) {
+                    liteTOUSchedule = TOUScheduleLoader.getForId(id);
+                    lBase = liteTOUSchedule;
                     break;
                 }
             }
@@ -1316,17 +1310,16 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
                 }
             }
             if (!alreadyAdded) {
-                LiteConfig lh = new LiteConfig(id);
-                lh.retrieve(databaseAlias);
+                LiteConfig lh = ConfigLoader.getForId(id);
                 allConfigs.add(lh);
                 lBase = lh;
             }
             break;
         case UPDATE:
-            for (int i = 0; i < allConfigs.size(); i++) {
-                if (allConfigs.get(i).getConfigID() == id) {
-                    allConfigs.get(i).retrieve(databaseAlias);
-                    lBase = allConfigs.get(i);
+            for (LiteConfig liteConfig : allConfigs) {
+                if (liteConfig.getConfigID() == id) {
+                    liteConfig = ConfigLoader.getForId(id);
+                    lBase = liteConfig;
                     break;
                 }
             }
@@ -1366,17 +1359,16 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
                 }
             }
             if (!alreadyAdded) {
-                LiteLMConstraint lh = new LiteLMConstraint(id);
-                lh.retrieve(databaseAlias);
+                LiteLMConstraint lh = LMConstraintLoader.getForId(id);
                 allLMProgramConstraints.add(lh);
                 lBase = lh;
             }
             break;
         case UPDATE:
-            for (int i = 0; i < allLMProgramConstraints.size(); i++) {
-                if (allLMProgramConstraints.get(i).getConstraintID() == id) {
-                    allLMProgramConstraints.get(i).retrieve(databaseAlias);
-                    lBase = allLMProgramConstraints.get(i);
+            for (LiteLMConstraint liteLMConstraint : allLMProgramConstraints) {
+                if (liteLMConstraint.getConstraintID() == id) {
+                    liteLMConstraint = LMConstraintLoader.getForId(id);
+                    lBase = liteLMConstraint;
                     break;
                 }
             }
@@ -1416,7 +1408,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
                 }
             }
             if (!alreadyAdded) {
-                LiteNotificationGroup lg = notificationGroupDao.getLiteNotificationGroup(id);
+                LiteNotificationGroup lg = ContactNotificationGroupLoader.getForId(id);
                 allNotificationGroups.add(lg);
                 lBase = lg;
             }
@@ -1424,7 +1416,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         case UPDATE:
             for (LiteNotificationGroup lg : allNotificationGroups) {
                 if (lg.getNotificationGroupID() == id) {
-                    lg = notificationGroupDao.getLiteNotificationGroup(id);
+                    lg = ContactNotificationGroupLoader.getForId(id);
                     lBase = lg;
                     break;
                 }

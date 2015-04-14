@@ -1,62 +1,56 @@
 package com.cannontech.yukon.server.cache;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Date;
 import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlUtils;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteBaseline;
+import com.cannontech.spring.YukonSpringHook;
 
 public class BaselineLoader implements Runnable {
-    private String databaseAlias = null;
     private List<LiteBaseline> allBaselines = null;
+    
+    private static final YukonRowMapper<LiteBaseline> baselineRowMapper = new YukonRowMapper<LiteBaseline>() {
+        @Override
+        public LiteBaseline mapRow(YukonResultSet rs) throws SQLException {
+            int baselineId = rs.getInt("BaselineId");
+            String baselineName = rs.getString("BaselineName").trim();
+            LiteBaseline liteBaseline = new LiteBaseline(baselineId, baselineName);
+            return liteBaseline;
+        }
+    };
 
-    public BaselineLoader(List<LiteBaseline> allBaselines, String databaseAlias) {
+    public BaselineLoader(List<LiteBaseline> allBaselines) {
         this.allBaselines = allBaselines;
-        this.databaseAlias = databaseAlias;
     }
 
     @Override
     public void run() {
-        // temp code
         Date timerStart = new Date();
-        Date timerStop = null;
-        // temp code
-        String sqlString = "SELECT BASELINEID, BASELINENAME FROM BASELINE WHERE BASELINEID >= 0";
+        
+        YukonJdbcTemplate jdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT BaselineId, BaselineName FROM Baseline");
+        sql.append("WHERE BaseLineId").gte(0);
 
-        Connection conn = null;
-        Statement stmt = null;
-        ResultSet rset = null;
-        try {
-            conn = PoolManager.getInstance().getConnection(databaseAlias);
-            stmt = conn.createStatement();
-            rset = stmt.executeQuery(sqlString);
+        allBaselines.addAll(jdbcTemplate.query(sql, baselineRowMapper));
+        CTILogger.info((new Date().getTime() - timerStart.getTime()) * .001
+            + " Secs for BaselineLoader (" + allBaselines.size() + " loaded)");
+    }
+    
+    public static LiteBaseline getForId(int baselineId) {
+        YukonJdbcTemplate jdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT BaselineId, BaselineName FROM Baseline");
+        sql.append("WHERE BaselineId").eq(baselineId);
 
-            while (rset.next()) {
-                int baselineID = rset.getInt(1);
-                String baselineName = rset.getString(2).trim();
-
-                LiteBaseline basil = new LiteBaseline(baselineID);
-
-                basil.setBaselineName(baselineName);
-
-                allBaselines.add(basil);
-            }
-
-        } catch (SQLException e) {
-            CTILogger.error(e.getMessage(), e);
-        } finally {
-            SqlUtils.close(rset, stmt, conn);
-            // temp code
-            timerStop = new Date();
-            CTILogger.info((timerStop.getTime() - timerStart.getTime()) * .001
-                + " Secs for BaselineLoader (" + allBaselines.size() + " loaded)");
-            // temp code
-        }
+        return jdbcTemplate.queryForObject(sql, baselineRowMapper);
     }
 }

@@ -67,7 +67,7 @@ public class PointCalcComponentEditorPanel extends DataInputPanel implements Act
     // private java.util.List points = null;
     private javax.swing.JCheckBox ivjUsePointCheckBox = null;
     private javax.swing.JPanel ivjJPanelOperations = null;
-    private java.util.Vector<LiteBaseline> basilHolder = null;
+    private List<LiteBaseline> basilHolder = null;
     private Integer currentlyMappedBaselineID = null;
 
     public PointCalcComponentEditorPanel() {
@@ -236,8 +236,8 @@ public class PointCalcComponentEditorPanel extends DataInputPanel implements Act
             if (((String) getOperationFunctionComboBox().getSelectedItem()).equalsIgnoreCase(CalcComponentTypes.BASELINE_FUNCTION)) {
                 getSelectBaselineComboBox().removeAllItems();
 
-                for (int i = 0; i < getBasilHolder().size(); i++) {
-                    getSelectBaselineComboBox().addItem(getBasilHolder().elementAt(i));
+                for (LiteBaseline liteBaseline : getBasilHolder()) {
+                    getSelectBaselineComboBox().addItem(liteBaseline);
                 }
                 getSelectBaselineComboBox().setVisible(true);
 
@@ -623,9 +623,9 @@ public class PointCalcComponentEditorPanel extends DataInputPanel implements Act
         return selectBaselineComboBox;
     }
 
-    private java.util.Vector<LiteBaseline> getBasilHolder() {
+    private List<LiteBaseline> getBasilHolder() {
         if (basilHolder == null)
-            basilHolder = new java.util.Vector<LiteBaseline>();
+            basilHolder = Lists.newArrayList();
         return basilHolder;
     }
 
@@ -911,7 +911,7 @@ public class PointCalcComponentEditorPanel extends DataInputPanel implements Act
             else
                 calcComponents = ((CalculatedPoint) calcPoint).getCalcComponents();
             LiteBaseline temp = new LiteBaseline();
-            basilHolder = temp.getAllBaselines();
+            basilHolder = cache.getAllBaselines();
 
             String type = null;
             Object operand = null;
