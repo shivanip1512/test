@@ -183,4 +183,19 @@ public class CommandServiceImpl implements CommandService {
     public void setDispatchConnection(DispatchClientConnection dispatchConnection) {
         this.dispatchConnection = dispatchConnection;
     }
+    
+    @Override
+    public void resetSeasonControlHrs() {
+        
+        List<Integer> data = new ArrayList<Integer>(1);
+        data.add(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN);
+        
+        Command command = new Command();
+        command.setOperation(Command.RESET_CNTRL_HOURS);
+        command.setOpArgList(data);
+        command.setTimeStamp(new Date());
+        
+        dispatchConnection.queue(command);
+    }
+    
 }

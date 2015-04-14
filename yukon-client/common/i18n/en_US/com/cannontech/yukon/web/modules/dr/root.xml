@@ -45,4 +45,7 @@
     <entry key="yukon.web.modules.dr.cc.groupDetail.crumbTitle">Commercial Curtailment Group Detail</entry>
     <entry key="yukon.web.modules.dr.cc.groupDetail.pageHeading">Commercial Curtailment Group Detail</entry>
     
+    <entry key="yukon.web.modules.dr.seasonCntlHrs.reset">Reset Season Control Hours</entry>
+    <entry key="yukon.web.modules.dr.seasonCntlHrs.reset.success">Season control hours reset successfully.</entry>
+    
 </properties>

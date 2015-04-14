@@ -10,7 +10,7 @@ yukon.dr.dashboard = (function() {
     
     var timeFormatter = yukon.timeFormatter,
         mod;
-
+    
     mod = {
             
         init: function() {
@@ -28,56 +28,59 @@ yukon.dr.dashboard = (function() {
              *               step {number} - The amount between valid values.
              */
             var _sliderInit = function (opts) {
-                    var slideOrChange = function (event, ui) {
-                        var curTime = timeFormatter.formatTime(ui.value, 0);
-                        $(opts.htmlSelector).html(curTime);
-                        $(opts.timeSelector).val(ui.value);
-                    };
-                    $(opts.sliderSelector).slider({
-                        max: opts.max,
-                        min: opts.min,
-                        value: opts.value,
-                        step: opts.step,
-                        slide: function (event, ui) {
-                            slideOrChange(event, ui);
-                        },
-                        change: function (event, ui) {
-                            slideOrChange(event, ui);
-                        }
-                    });
-                },
-                sliderInitOptions = [
-                    // max, min, value, step, htmlSelector, timeSelector
-                    /** Setup the command time slider */
-                    ['#broadcast-config .js-time-slider', 24 * 60 - 15, 0, $('#rf-performance-command-time').val(), 15, '#broadcast-config .js-time-label', '#rf-performance-command-time'],
-                    /** Setup the email time slider */
-                    ['#broadcast-config .js-email-time-slider', 24 * 60 - 15, 0, $('#rf-performance-email-time').val(), 15, '#broadcast-config .js-email-time-label', '#rf-performance-email-time']
-                ],
-                _io,
-                _initOpt,
-                _initSliders = function () {
-                    for (_io = 0; _io < sliderInitOptions.length; _io += 1) {
-                        _initOpt = sliderInitOptions[_io];
-                        _sliderInit({
-                            sliderSelector: _initOpt[0],
-                            max: _initOpt[1],
-                            min: _initOpt[2],
-                            value: _initOpt[3],
-                            step: _initOpt[4],
-                            htmlSelector: _initOpt[5],
-                            timeSelector: _initOpt[6]
-                        });
+                
+                var slideOrChange = function (event, ui) {
+                    var curTime = timeFormatter.formatTime(ui.value, 0);
+                    $(opts.htmlSelector).html(curTime);
+                    $(opts.timeSelector).val(ui.value);
+                };
+                
+                $(opts.sliderSelector).slider({
+                    max: opts.max,
+                    min: opts.min,
+                    value: opts.value,
+                    step: opts.step,
+                    slide: function (event, ui) {
+                        slideOrChange(event, ui);
+                    },
+                    change: function (event, ui) {
+                        slideOrChange(event, ui);
                     }
-                },
-                _originalRfCommandTime = $('#rf-performance-command-time').val(),
-                _originalRfEmailTime = $('#rf-performance-email-time').val();
-
+                });
+            },
+            
+            sliderInitOptions = [
+                // max, min, value, step, htmlSelector, timeSelector
+                /** Setup the command time slider */
+                ['#broadcast-config .js-time-slider', 24 * 60 - 15, 0, $('#rf-performance-command-time').val(), 15, '#broadcast-config .js-time-label', '#rf-performance-command-time'],
+                /** Setup the email time slider */
+                ['#broadcast-config .js-email-time-slider', 24 * 60 - 15, 0, $('#rf-performance-email-time').val(), 15, '#broadcast-config .js-email-time-label', '#rf-performance-email-time']
+            ],
+            _io,
+            _initOpt,
+            _initSliders = function () {
+                for (_io = 0; _io < sliderInitOptions.length; _io += 1) {
+                    _initOpt = sliderInitOptions[_io];
+                    _sliderInit({
+                        sliderSelector: _initOpt[0],
+                        max: _initOpt[1],
+                        min: _initOpt[2],
+                        value: _initOpt[3],
+                        step: _initOpt[4],
+                        htmlSelector: _initOpt[5],
+                        timeSelector: _initOpt[6]
+                    });
+                }
+            },
+            _originalRfCommandTime = $('#rf-performance-command-time').val(),
+            _originalRfEmailTime = $('#rf-performance-email-time').val();
+                
             _initSliders();
-
+            
             /** Setup the time label */
             $('#broadcast-config .js-time-label').html(timeFormatter.formatTime($('#rf-performance-command-time').val(), 0));
             $('#broadcast-config .js-email-time-label').html(timeFormatter.formatTime($('#rf-performance-email-time').val(), 0));
-
+            
             $(document).on('click', '#broadcast-config .button-group-toggle .button', function() {
                 
                 if ($('#broadcast-config .button-group-toggle .yes').hasClass('on')) {
@@ -91,7 +94,7 @@ yukon.dr.dashboard = (function() {
                 }
                 
             });
-
+            
             if ($('#rf-performance-email').val() === 'true') {
                 $('#broadcast-config .button-group-toggle .yes').addClass('on');
                 $('#broadcast-config .button-group-toggle .no').removeClass('on');
@@ -103,13 +106,29 @@ yukon.dr.dashboard = (function() {
                 $('.js-notif-group').hide();
                 $('.js-email-schedule').hide();
             }
-
+            
             $(document).on('yukon.dr.rf.config.load', function (ev) {
                 // each time the configure button popup is loaded, reset the field values of the times
                 // and reinit the sliders so they accurately reflect the current settings in the database
                 $('#rf-performance-command-time').val(_originalRfCommandTime);
                 $('#rf-performance-email-time').val(_originalRfEmailTime);
                 _initSliders();
+            });
+            
+            $(document).on('click', '.js-reset-season-hrs', function (ev) {
+                
+                $.ajax(yukon.url('/dr/season-control-hours/reset'))
+                .done(function(status) {
+                    if (status.success) {
+                        yukon.ui.alertSuccess(status.message);
+                    } else {
+                        yukon.ui.alertError(status.message);
+                    }
+                    setTimeout(function() {
+                        $('.user-message.success').fadeOut(200, function() { $(this).remove(); });
+                    }, 5000);
+                });
+                
             });
         }
     };

@@ -378,7 +378,10 @@
     <entry key="yukon.common.events.dr.inventoryConfig.itemConfigSucceeded">Config command sent to serial number {2} by {1}.</entry>
     <entry key="yukon.common.events.dr.inventoryConfig.itemConfigFailed">Config command failed to serial number {2} by {1}. Error received was {3}.</entry>
     <entry key="yukon.common.events.dr.inventoryConfig.itemConfigUnsupported">Config command is not supported by serial number {2} by {1}.</entry>
-
+    
+    <!-- Season Control History -->
+    <entry key="yukon.common.events.dr.seasonalControlHistoryReset">Seasonal control history hours reset to 0 by {1}.</entry>
+    
     <!-- Command Request Executor -->
     <entry key="yukon.common.events.porterRequests.commandFailedToTransmit">Command failed to transmit: command={2} type={1} error={3} user={4} id={7} contextId={8}.</entry>
     <entry key="yukon.common.events.porterRequests.commandFailedToTransmit.2">Command</entry>

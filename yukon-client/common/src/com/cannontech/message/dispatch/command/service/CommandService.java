@@ -43,4 +43,9 @@ public interface CommandService {
      * command will be send otherwise disable command will be send
      */
     public void toggleControlEnablement(int deviceId, boolean disable, LiteYukonUser user);
+    
+    /**
+     * Sends reset season control hrs command
+     */
+    public void resetSeasonControlHrs();
 }
