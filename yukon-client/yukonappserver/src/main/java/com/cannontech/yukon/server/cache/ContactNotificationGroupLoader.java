@@ -1,99 +1,104 @@
 package com.cannontech.yukon.server.cache;
 
+import java.sql.SQLException;
 import java.util.List;
 
-import com.cannontech.database.SqlUtils;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
-import com.cannontech.database.db.notification.NotificationGroup;
+import com.cannontech.database.data.notification.ContactNotifGroupMap;
+import com.cannontech.database.data.notification.CustomerNotifGroupMap;
+import com.cannontech.database.data.notification.NotifDestinationMap;
 import com.cannontech.database.db.point.PointAlarming;
+import com.cannontech.spring.YukonSpringHook;
 
-/**
- * Insert the type's description here.
- * Creation date: (3/15/00 3:57:58 PM)
- * @author: 
- */
-public class ContactNotificationGroupLoader implements Runnable 
-{
-	private List<LiteNotificationGroup> allContactNotificationGroups = null;
-	//private java.util.ArrayList allUsedContactNotifications = new java.util.ArrayList();
-	
-	private String databaseAlias = null;
+public class ContactNotificationGroupLoader implements Runnable {
+    private List<LiteNotificationGroup> allContactNotificationGroups = null;
 
-	/**
-	 * ContactNotificationLoader constructor comment.
-	 */
-	public ContactNotificationGroupLoader(List<LiteNotificationGroup> contactGroupArray_, String alias) {
-		super();
-		this.allContactNotificationGroups = contactGroupArray_;
-		this.databaseAlias = alias;
-	}
+    /**
+     * ContactNotificationLoader constructor comment.
+     */
+    public ContactNotificationGroupLoader(List<LiteNotificationGroup> contactGroupArray) {
+        super();
+        this.allContactNotificationGroups = contactGroupArray;
+    }
 
+    @Override
+    public void run() {
 
-	/**
-	 * run method comment.
-	 */
-	public void run() {
-	//temp code
-	java.util.Date timerStart = null;
-	java.util.Date timerStop = null;
-	//temp code
-	
-	//temp code
-	timerStart = new java.util.Date();
-	//temp code
-		String sqlString = 
-				"SELECT NotificationGroupID, GroupName, DisableFlag " +
-				"FROM " + NotificationGroup.TABLE_NAME + " " + 
-				"WHERE NotificationGroupID > " + PointAlarming.NONE_NOTIFICATIONID + 
-				"ORDER BY GroupName";
-	
-		java.sql.Connection conn = null;
-		java.sql.Statement stmt = null;
-		java.sql.ResultSet rset = null;
-		try
-		{
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection( this.databaseAlias );
-			stmt = conn.createStatement();
-			rset = stmt.executeQuery(sqlString);
-	
-			while (rset.next())
-			{
-				LiteNotificationGroup lGrp =
-						new LiteNotificationGroup( rset.getInt(1), rset.getString(2).trim() );
+        YukonJdbcTemplate jdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
 
-				lGrp.setDisabled( rset.getString(3).trim().equalsIgnoreCase("Y") );
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT NotificationGroupId, GroupName, DisableFlag");
+        sql.append("FROM NotificationGroup");
+        sql.append("WHERE NotificationGroupId").gt(PointAlarming.NONE_NOTIFICATIONID);
+        sql.append("ORDER BY GroupName");
 
+        List<LiteNotificationGroup> liteNotificationGroups = jdbcTemplate.query(sql, new YukonRowMapper<LiteNotificationGroup>() {
 
-				lGrp.setNotifDestinationMap(
-					com.cannontech.database.data.notification.NotificationGroup.getAllNotifGroupDestinations(
-						new Integer(lGrp.getNotificationGroupID()), conn) );
+            @Override
+            public LiteNotificationGroup mapRow(YukonResultSet rs) throws SQLException {
+                int groupId = rs.getInt("NotificationGroupId");
+                String name = rs.getString("GroupName");
+                LiteNotificationGroup notificationGroup = new LiteNotificationGroup(groupId, name);
+                notificationGroup.setDisabled(rs.getBoolean("DisableFlag"));
+                return notificationGroup;
+            }
+        });
 
-				lGrp.setContactMap(
-					com.cannontech.database.data.notification.NotificationGroup.getAllNotifGroupContacts(
-						new Integer(lGrp.getNotificationGroupID()), conn) );
+        for (LiteNotificationGroup liteNotificationGroup : liteNotificationGroups) {
+            int groupId = liteNotificationGroup.getNotificationGroupID();
 
-				lGrp.setCustomerMap(
-					com.cannontech.database.data.notification.NotificationGroup.getAllNotifGroupCustomers(
-						new Integer(lGrp.getNotificationGroupID()), conn) );
+            // Load up NotifDestinationMap
+            sql = new SqlStatementBuilder();
+            sql.append("SELECT RecipientId, Attribs");
+            sql.append("FROM NotificationDestination");
+            sql.append("WHERE NotificationGroupId").eq(groupId);
 
-				allContactNotificationGroups.add( lGrp );
-			}
+            List<NotifDestinationMap> notifDestinationMaps = jdbcTemplate.query(sql, new YukonRowMapper<NotifDestinationMap>() {
+                @Override
+                public NotifDestinationMap mapRow(YukonResultSet rs) throws SQLException {
+                    int recipientId = rs.getInt("RecipientId");
+                    String attribs = rs.getString("Attribs");
+                    return new NotifDestinationMap(recipientId, attribs);
+                }
+            });
+            liteNotificationGroup.setNotifDestinationMap(notifDestinationMaps);
 
-			
-		}
-		catch( java.sql.SQLException e )
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-		finally
-		{
-			SqlUtils.close(rset, stmt, conn );
-	//temp code
-	timerStop = new java.util.Date();
-	com.cannontech.clientutils.CTILogger.info( 
-	    (timerStop.getTime() - timerStart.getTime())*.001 + 
-	      " Secs for ContactNotificationGroupLoader (" + allContactNotificationGroups.size() + " loaded)" );
-	//temp code
-		}
-	}
+            // Load up ContactNotifGroupMap
+            sql = new SqlStatementBuilder();
+            sql.append("SELECT ContactId, Attribs");
+            sql.append("FROM ContactNotifGroupMap");
+            sql.append("WHERE NotificationGroupId").eq(groupId);
+
+            List<ContactNotifGroupMap> contactNotifGroupMaps = jdbcTemplate.query(sql, new YukonRowMapper<ContactNotifGroupMap>() {
+                @Override
+                public ContactNotifGroupMap mapRow(YukonResultSet rs) throws SQLException {
+                    int contactId = rs.getInt("ContactId");
+                    String attribs = rs.getString("Attribs");
+                    return new ContactNotifGroupMap(contactId, attribs);
+                }
+            });
+            liteNotificationGroup.setContactMap(contactNotifGroupMaps);
+
+            // Load up CustomerNotifGroupMap
+            sql = new SqlStatementBuilder();
+            sql.append("SELECT CustomerId, Attribs");
+            sql.append("FROM CustomerNotifGroupMap");
+            sql.append("WHERE NotificationGroupId").eq(groupId);
+
+            List<CustomerNotifGroupMap> customerNotifGroupMaps = jdbcTemplate.query(sql, new YukonRowMapper<CustomerNotifGroupMap>() {
+                @Override
+                public CustomerNotifGroupMap mapRow(YukonResultSet rs) throws SQLException {
+                    int customerId = rs.getInt("CustomerId");
+                    String attribs = rs.getString("Attribs");
+                    return new CustomerNotifGroupMap(customerId, attribs);
+                }
+            });
+            liteNotificationGroup.setCustomerMap(customerNotifGroupMaps);
+            allContactNotificationGroups.add(liteNotificationGroup);
+        }
+    }
 }

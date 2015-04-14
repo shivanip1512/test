@@ -46,6 +46,7 @@ public class NotifMapContactable extends Contactable {
      * @param notificationMethod
      * @return
      */
+    @Override
     public boolean supportsNotificationMethod(NotifType notificationMethod) {
         return _notifMap.supportsMethod(notificationMethod);
     }
@@ -62,22 +63,16 @@ public class NotifMapContactable extends Contactable {
      */
     public static List<Contactable> getContactablesForGroup(LiteNotificationGroup lng) {
         LinkedList<Contactable> resultList = new LinkedList<Contactable>();
-        CustomerNotifGroupMap[] customerMap = lng.getCustomerMap();
-        for (int i = 0; i < customerMap.length; i++) {
-            CustomerNotifGroupMap notifGroupMap = customerMap[i];
+        
+        for (CustomerNotifGroupMap notifGroupMap : lng.getCustomerMap()) {
             resultList.add(new NotifMapContactable(notifGroupMap));
         }
     
-        ContactNotifGroupMap[] contactMap = lng.getContactMap();
-        for (int i = 0; i < contactMap.length; i++) {
-            ContactNotifGroupMap notifGroupMap = contactMap[i];
+        for (ContactNotifGroupMap notifGroupMap : lng.getContactMap()) {
             resultList.add(new NotifMapContactable(notifGroupMap));
         }
     
-        NotifDestinationMap[] notifDestinationMap = lng
-                .getNotifDestinationMap();
-        for (int i = 0; i < notifDestinationMap.length; i++) {
-            NotifDestinationMap destinationMap = notifDestinationMap[i];
+        for (NotifDestinationMap destinationMap : lng.getNotifDestinationMap()) {
             resultList.add(new NotifMapContactable(destinationMap));
         }
     

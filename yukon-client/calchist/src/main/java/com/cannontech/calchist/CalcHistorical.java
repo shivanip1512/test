@@ -23,6 +23,7 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LogWriter;
 import com.cannontech.common.version.VersionTools;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
@@ -96,6 +97,8 @@ public final class CalcHistorical {
         double returnValue = 0;
         PF powerFactor = null;
 
+        PointDao pointDao = YukonSpringHook.getBean(PointDao.class);
+        
         for (int i = 0; i < calcComponentVector.size(); i++) {
             CalcComponent calcComponent = calcComponentVector.get(i);
             if (calcComponent.getComponentType().equalsIgnoreCase(CalcComponentTypes.OPERATION_COMP_TYPE)) {
@@ -164,8 +167,7 @@ public final class CalcHistorical {
                     powerFactor.pfType = KW_KVAR_PFTYPE;
 
                     // Original way of processing Power Fail. It is done using push in calc-logic.
-                    LitePointUnit ltPU = new LitePointUnit(calcComponent.getComponentPointID().intValue());
-                    ltPU.retrieve(CtiUtilities.getDatabaseAlias());
+                    LitePointUnit ltPU = pointDao.getPointUnit(calcComponent.getComponentPointID());
 
                     for (int j = 0; j < currentRawPointHistoryVector.size(); j++) {
                         if (calcComponent.getComponentPointID().intValue() == ((LiteRawPointHistory) currentRawPointHistoryVector.get(j)).getPointID()) {
@@ -187,8 +189,7 @@ public final class CalcHistorical {
                     }
                     powerFactor.pfType = KW_KQ_PFTYPE;
 
-                    LitePointUnit ltPU = new LitePointUnit(calcComponent.getPointID().intValue());
-                    ltPU.retrieve(CtiUtilities.getDatabaseAlias());
+                    LitePointUnit ltPU = pointDao.getPointUnit(calcComponent.getPointID());
 
                     for (int j = 0; j < currentRawPointHistoryVector.size(); j++) {
                         CTILogger.info(" Current RawPointHistoryVector.size() = " + currentRawPointHistoryVector.size());
@@ -206,8 +207,7 @@ public final class CalcHistorical {
                     }
                     powerFactor.pfType = KW_KVA_PFTYPE;
 
-                    LitePointUnit ltPU = new LitePointUnit(calcComponent.getPointID().intValue());
-                    ltPU.retrieve(CtiUtilities.getDatabaseAlias());
+                    LitePointUnit ltPU = pointDao.getPointUnit(calcComponent.getPointID());
 
                     for (int j = 0; j < currentRawPointHistoryVector.size(); j++) {
                         CTILogger.info(" Current RawPointHistoryVector.size() = " + currentRawPointHistoryVector.size());

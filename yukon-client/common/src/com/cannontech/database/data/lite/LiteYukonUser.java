@@ -1,17 +1,8 @@
 package com.cannontech.database.data.lite;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.ResultSetExtractor;
-
 import com.cannontech.common.user.UserAuthenticationInfo;
-import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
-import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.spring.YukonSpringHook;
 import com.google.common.base.Function;
 
 /**
@@ -57,27 +48,6 @@ public class LiteYukonUser extends LiteBase {
         this.loginStatus = loginStatus;
         this.forceReset = forceReset;
         this.userGroupId = userGroupId;
-    }
-
-    public void retrieve() {
-        YukonJdbcTemplate jdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
-
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT Username, Status, ForceReset, UserGroupId");
-        sql.append("FROM YukonUser");
-        sql.append("WHERE UserId").eq(getUserID());
-
-        jdbcTemplate.query(sql, new ResultSetExtractor<LiteYukonUser>() {
-            @Override
-            public LiteYukonUser extractData(ResultSet rs) throws SQLException, DataAccessException {
-                rs.next();
-                username = rs.getString("Username").trim();
-                loginStatus = LoginStatusEnum.retrieveLoginStatus(rs.getString("Status"));
-                forceReset = "Y".equals(rs.getString("ForceReset"));
-                userGroupId = rs.getInt("UserGroupId");
-                return null;
-            }
-        });
     }
 
     @Override

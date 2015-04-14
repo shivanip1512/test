@@ -6,9 +6,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.GraphDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -55,6 +57,18 @@ public final class GraphDaoImpl implements GraphDao {
         return null;
     }
 
+    @Override
+    public LiteGraphDefinition retrieveLiteGraphDefinition(int graphDefinitionId) throws NotFoundException{
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT GraphDefinitionId, Name");
+            sql.append("FROM GraphDefinition WHERE GraphDefinitionId").eq(graphDefinitionId);
+            return jdbcTemplate.queryForObject(sql, liteGraphMapper);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException("A GraphDefinition with id " + graphDefinitionId + " cannot be found.");
+        }
+    }
+    
     @Override
     public List<LiteYukonPAObject> getLiteYukonPaobjects(int graphDefinitionId) {
 

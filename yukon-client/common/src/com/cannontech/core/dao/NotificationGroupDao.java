@@ -17,6 +17,15 @@ public interface NotificationGroupDao {
     @Deprecated
     List<String> getContactNoficationEmails(LiteNotificationGroup notificationGroup);
 
+    /**
+     * Returns object loaded from database.
+     * Use {@link #getLiteNotificationGroup(id)} unless necessary to load from database.
+     */
+    LiteNotificationGroup retrieveLiteNotificationGroup(int groupId) throws NotFoundException;
+
+    /**
+     * Returns serverDatabaseCache object
+     */
     LiteNotificationGroup getLiteNotificationGroup(int groupId);
 
     Set<LiteNotificationGroup> getAllNotificationGroups();

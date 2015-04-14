@@ -12,6 +12,15 @@ public interface GraphDao {
 
     List<GraphDataSeries> getAllGraphDataSeriesByType(int type);
 
+    /**
+     * Returns object loaded from database.
+     * Use {@link #getLiteGraphDefinition(id)} unless necessary to load from database.
+     */
+    LiteGraphDefinition retrieveLiteGraphDefinition(int graphDefinitionId) throws NotFoundException;;
+    
+    /**
+     * Returns serverDatabaseCache object
+     */
     LiteGraphDefinition getLiteGraphDefinition(int graphDefinitionId);
 
     List<LiteGraphDefinition> getGraphDefinitions();

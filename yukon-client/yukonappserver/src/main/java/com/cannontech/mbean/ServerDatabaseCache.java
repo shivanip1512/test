@@ -22,9 +22,13 @@ import com.cannontech.core.dao.CommandDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.CustomerDao;
+import com.cannontech.core.dao.GraphDao;
+import com.cannontech.core.dao.NotificationGroupDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
+import com.cannontech.core.dao.YukonGroupDao;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.image.dao.YukonImageDao;
 import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
@@ -86,16 +90,20 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     private static ServerDatabaseCache cache;
     
     @Autowired private AlarmCatDao alarmCatDao;
-    @Autowired private PointDao pointDao;
-    @Autowired private PaoDao paoDao;
-    @Autowired private MeterDao meterDao;
-    @Autowired private StateGroupDao stateGroupDao;
-    @Autowired private YukonImageDao imageDao;
-    @Autowired private UserGroupDao userGroupDao;
-    @Autowired private ContactNotificationDao contactNotificationDao;
-    @Autowired private ContactDao contactDao;
-    @Autowired private CustomerDao customerDao;
     @Autowired private CommandDao commandDao;
+    @Autowired private ContactDao contactDao;
+    @Autowired private ContactNotificationDao contactNotificationDao;
+    @Autowired private CustomerDao customerDao;
+    @Autowired private GraphDao graphDao;
+    @Autowired private MeterDao meterDao;
+    @Autowired private NotificationGroupDao notificationGroupDao;
+    @Autowired private PaoDao paoDao;
+    @Autowired private PointDao pointDao;
+    @Autowired private StateGroupDao stateGroupDao;
+    @Autowired private UserGroupDao userGroupDao;
+    @Autowired private YukonGroupDao yukonGroupDao;
+    @Autowired private YukonImageDao imageDao;
+    @Autowired private YukonUserDao yukonUserDao;
     
     private String databaseAlias = CtiUtilities.getDatabaseAlias();
     
@@ -522,7 +530,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
 
         allNotificationGroups = new ArrayList<>();
         ContactNotificationGroupLoader notifLoader =
-            new ContactNotificationGroupLoader(allNotificationGroups, databaseAlias);
+            new ContactNotificationGroupLoader(allNotificationGroups);
         notifLoader.run();
 
         return allNotificationGroups;
@@ -1012,17 +1020,16 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
                 }
             }
             if (!alreadyAdded) {
-                LiteGraphDefinition lsg = new LiteGraphDefinition(id);
-                lsg.retrieve(databaseAlias);
+                LiteGraphDefinition lsg = graphDao.retrieveLiteGraphDefinition(id);
                 allGraphDefinitions.add(lsg);
                 lBase = lsg;
             }
             break;
         case UPDATE:
-            for (int i = 0; i < allGraphDefinitions.size(); i++) {
-                if (allGraphDefinitions.get(i).getGraphDefinitionID() == id) {
-                    allGraphDefinitions.get(i).retrieve(databaseAlias);
-                    lBase = allGraphDefinitions.get(i);
+            for (LiteGraphDefinition liteGraphDefinition : allGraphDefinitions) {
+                if (liteGraphDefinition.getGraphDefinitionID() == id) {
+                    liteGraphDefinition = graphDao.retrieveLiteGraphDefinition(id);
+                    lBase = liteGraphDefinition;
                     break;
                 }
             }
@@ -1409,17 +1416,16 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
                 }
             }
             if (!alreadyAdded) {
-                LiteNotificationGroup lg = new LiteNotificationGroup(id);
-                lg.retrieve(databaseAlias);
+                LiteNotificationGroup lg = notificationGroupDao.getLiteNotificationGroup(id);
                 allNotificationGroups.add(lg);
                 lBase = lg;
             }
             break;
         case UPDATE:
-            for (int i = 0; i < allNotificationGroups.size(); i++) {
-                if (allNotificationGroups.get(i).getNotificationGroupID() == id) {
-                    allNotificationGroups.get(i).retrieve(databaseAlias);
-                    lBase = allNotificationGroups.get(i);
+            for (LiteNotificationGroup lg : allNotificationGroups) {
+                if (lg.getNotificationGroupID() == id) {
+                    lg = notificationGroupDao.getLiteNotificationGroup(id);
+                    lBase = lg;
                     break;
                 }
             }
@@ -1533,18 +1539,17 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
                     }
                 }
                 if (!alreadyAdded) {
-                    LiteYukonGroup lcst = new LiteYukonGroup(id);
-                    lcst.retrieve(databaseAlias);
-                    allYukonGroups.add(lcst);
-                    lBase = lcst;
+                    LiteYukonGroup liteYukonGroup = yukonGroupDao.getLiteYukonGroup(id);
+                    allYukonGroups.add(liteYukonGroup);
+                    lBase = liteYukonGroup;
                 }
                 break;
 
             case UPDATE:
-                for (int i = 0; i < allYukonGroups.size(); i++) {
-                    if (allYukonGroups.get(i).getGroupID() == id) {
-                        allYukonGroups.get(i).retrieve(databaseAlias);
-                        lBase = allYukonGroups.get(i);
+                for (LiteYukonGroup liteYukonGroup : allYukonGroups) {
+                    if (liteYukonGroup.getGroupID() == id) {
+                        liteYukonGroup = yukonGroupDao.getLiteYukonGroup(id);
+                        lBase = liteYukonGroup;
                         break;
                     }
                 }
@@ -1586,16 +1591,14 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         switch (dbChangeType) {
         case ADD:
             if (!noObjectNeeded) {
-                lu = new LiteYukonUser(id);
-                lu.retrieve();
+                lu = yukonUserDao.getLiteYukonUser(id);
                 lBase = lu;
             }
             break;
 
         case UPDATE:
             if (!noObjectNeeded) {
-                lu = new LiteYukonUser(id);
-                lu.retrieve();
+                lu = yukonUserDao.getLiteYukonUser(id);
                 lBase = lu;
             }
             adjustUserMappings(id);

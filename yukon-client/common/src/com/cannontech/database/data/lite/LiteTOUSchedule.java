@@ -1,132 +1,81 @@
-/*
- * Created on Sep 22, 2004
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 package com.cannontech.database.data.lite;
 
-/**
- * @author jdayton
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
-public class LiteTOUSchedule extends LiteBase
-{
-	private String scheduleName;
-	private String defaultRate; 
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlStatement;
+import com.cannontech.database.db.tou.TOUSchedule;
 
-/**
- * LiteHolidaySchedule constructor comment.
- */
-public LiteTOUSchedule()
-{
-	super();
+public class LiteTOUSchedule extends LiteBase {
+    private String scheduleName;
+    private String defaultRate;
 
-	setLiteType(LiteTypes.TOU_SCHEDULE);
-}
-/**
- * LiteHolidaySchedule constructor comment.
- */
-public LiteTOUSchedule(int schedID)
-{
-	super();
+    public LiteTOUSchedule() {
+        super();
+        setLiteType(LiteTypes.TOU_SCHEDULE);
+    }
 
-	setLiteID( schedID );
-	setLiteType(LiteTypes.TOU_SCHEDULE);
-}
+    public LiteTOUSchedule(int schedID) {
+        super();
+        setLiteID(schedID);
+        setLiteType(LiteTypes.TOU_SCHEDULE);
+    }
 
-/**
- * LiteHolidaySchedule constructor comment.
- */
-public LiteTOUSchedule(int schedID, String schedName_, String defaultRate_ )
-{
-	this( schedID );
-	setScheduleName( schedName_ );
-	setDefaultRate(defaultRate_);
-}
+    public LiteTOUSchedule(int schedID, String schedName_, String defaultRate_) {
+        this(schedID);
+        setScheduleName(schedName_);
+        setDefaultRate(defaultRate_);
+    }
 
-public int getScheduleID() 
-{
-	return getLiteID();
-}
-/**
- * Insert the method's description here.
- * Creation date: (9/24/2004 11:14:47 AM)
- * @return java.lang.String
- */
-public String getScheduleName() {
-	return scheduleName;
-}
+    public int getScheduleID() {
+        return getLiteID();
+    }
 
-/**
- * retrieve method comment.
- */
-public void retrieve(String databaseAlias) 
-{
- 
-   com.cannontech.database.SqlStatement s = 
-	  new com.cannontech.database.SqlStatement(
-		 "SELECT TOUScheduleID, TOUScheduleName, TOUDefaultRate "  + 
-			"FROM " + com.cannontech.database.db.tou.TOUSchedule.TABLE_NAME +
-			" where TOUScheduleID = " + getScheduleID(),
-		 com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+    public String getScheduleName() {
+        return scheduleName;
+    }
 
-   try 
-   {
-	  s.execute();
+    /**
+     * retrieve method comment.
+     */
+    public void retrieve(String databaseAlias) {
 
-	  if( s.getRowCount() <= 0 )
-		 throw new IllegalStateException("Unable to find TOU schedule with ID = " + getLiteID() );
+        SqlStatement s = new SqlStatement("SELECT TOUScheduleID, TOUScheduleName, TOUDefaultRate " + 
+                                          "FROM " + TOUSchedule.TABLE_NAME +
+                                          " where TOUScheduleID = " + getScheduleID(), 
+                                          CtiUtilities.getDatabaseAlias());
 
+        try {
+            s.execute();
 
-	  setScheduleID( new Integer(s.getRow(0)[0].toString()).intValue() );
-	  setScheduleName( s.getRow(0)[1].toString() );
-	  setDefaultRate( s.getRow(0)[2].toString() );
-   }
-   catch( Exception e )
-   {
-	  com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-   }
-      
-}
-/**
- * Insert the method's description here.
- * Creation date:(9/24/2004 11:13:50 AM)
- * @return void
- */
-public void setScheduleID( int schedID )
-{
-	setLiteID( schedID );
-}
-/**
- * Insert the method's description here.
- * Creation date: (9/24/2004 11:13:50 AM)
- * @return void
- */
-public void setScheduleName( String name )
-{
-	scheduleName = name;
-}
+            if (s.getRowCount() <= 0)
+                throw new IllegalStateException("Unable to find TOU schedule with ID = " + getLiteID());
 
-/**
- * Insert the method's description here.
- * Creation date: (9/24/2004 11:15:17 AM)
- * @return java.lang.String
- */
-public String toString() 
-{
-	return getScheduleName();
-}
+            setScheduleID(new Integer(s.getRow(0)[0].toString()).intValue());
+            setScheduleName(s.getRow(0)[1].toString());
+            setDefaultRate(s.getRow(0)[2].toString());
+        } catch (Exception e) {
+            com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
+        }
 
+    }
 
-    public String getDefaultRate()
-    {
+    public void setScheduleID(int schedID) {
+        setLiteID(schedID);
+    }
+
+    public void setScheduleName(String name) {
+        scheduleName = name;
+    }
+
+    @Override
+    public String toString() {
+        return getScheduleName();
+    }
+
+    public String getDefaultRate() {
         return defaultRate;
     }
-    public void setDefaultRate(String defaultRate)
-    {
+
+    public void setDefaultRate(String defaultRate) {
         this.defaultRate = defaultRate;
     }
 }

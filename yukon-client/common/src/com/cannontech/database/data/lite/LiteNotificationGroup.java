@@ -1,21 +1,19 @@
 package com.cannontech.database.data.lite;
 
-import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlUtils;
+import java.util.List;
+
 import com.cannontech.database.data.notification.ContactNotifGroupMap;
 import com.cannontech.database.data.notification.CustomerNotifGroupMap;
 import com.cannontech.database.data.notification.NotifDestinationMap;
-import com.cannontech.database.db.notification.NotificationGroup;
+import com.google.common.collect.Lists;
 
 public class LiteNotificationGroup extends LiteBase {
     private String notificationGroupName = null;
     private boolean disabled = false;
 
-    private NotifDestinationMap[] notifDestinationMap = new NotifDestinationMap[0];
-    private ContactNotifGroupMap[] contactMap = new ContactNotifGroupMap[0];
-    private CustomerNotifGroupMap[] customerMap = new CustomerNotifGroupMap[0];
+    private List<NotifDestinationMap> notifDestinationMap = Lists.newArrayList();
+    private List<ContactNotifGroupMap> contactMap = Lists.newArrayList();
+    private List<CustomerNotifGroupMap> customerMap = Lists.newArrayList();
 
     /**
      * LiteNotificationGroup
@@ -42,46 +40,6 @@ public class LiteNotificationGroup extends LiteBase {
         return notificationGroupName;
     }
 
-    public void retrieve(String databaseAlias) {
-        String notifSQL = 
-                "SELECT GroupName, DisableFlag " +
-                "FROM " + NotificationGroup.TABLE_NAME + " " + 
-                "WHERE NotificationGroupID = " + 
-                Integer.toString(getNotificationGroupID());
-
-        java.sql.Connection conn = null;
-        java.sql.Statement stmt = null;
-        java.sql.ResultSet rset = null;
-    
-        try {
-            conn = PoolManager.getInstance().getConnection( databaseAlias );
-            stmt = conn.createStatement();
-            rset = stmt.executeQuery(notifSQL);
-
-            while (rset.next()) {
-                setNotificationGroupName(rset.getString(1).trim());
-                setDisabled(rset.getString(2).trim().charAt(0) == CtiUtilities.trueChar.charValue());
-            }
-
-            setNotifDestinationMap(
-                com.cannontech.database.data.notification.NotificationGroup.getAllNotifGroupDestinations(
-                    new Integer(getNotificationGroupID()), conn));
-
-            setContactMap(
-                com.cannontech.database.data.notification.NotificationGroup.getAllNotifGroupContacts(
-                    new Integer(getNotificationGroupID()), conn));
-
-            setCustomerMap(
-                com.cannontech.database.data.notification.NotificationGroup.getAllNotifGroupCustomers(
-                    new Integer(getNotificationGroupID()), conn));
-                
-        } catch (java.sql.SQLException e) {
-            CTILogger.error(e.getMessage(), e);
-        } finally {
-            SqlUtils.close(rset, stmt, conn);
-        }
-    }
-
     public void setNotificationGroupID(int newValue) {
         setLiteID(newValue);
     }
@@ -103,28 +61,27 @@ public class LiteNotificationGroup extends LiteBase {
         disabled = b;
     }
 
-    public ContactNotifGroupMap[] getContactMap() {
+    public List<ContactNotifGroupMap> getContactMap() {
         return contactMap;
     }
 
-    public CustomerNotifGroupMap[] getCustomerMap() {
+    public List<CustomerNotifGroupMap> getCustomerMap() {
         return customerMap;
     }
 
-    public void setContactMap(ContactNotifGroupMap[] maps) {
+    public void setContactMap(List<ContactNotifGroupMap> maps) {
         contactMap = maps;
     }
 
-    public void setCustomerMap(CustomerNotifGroupMap[] maps) {
+    public void setCustomerMap(List<CustomerNotifGroupMap> maps) {
         customerMap = maps;
     }
 
-    public NotifDestinationMap[] getNotifDestinationMap() {
+    public List<NotifDestinationMap> getNotifDestinationMap() {
         return notifDestinationMap;
     }
 
-    public void setNotifDestinationMap(NotifDestinationMap[] maps) {
+    public void setNotifDestinationMap(List<NotifDestinationMap> maps) {
         notifDestinationMap = maps;
     }
-
 }
