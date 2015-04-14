@@ -34,7 +34,7 @@ public class MRServiceEndPoint {
     PingURLResponse pingURL() throws MultispeakWebServiceException {
         PingURLResponse response = objectFactory.createPingURLResponse();
 
-       mr_server.pingURL();
+        mr_server.pingURL();
         
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
         response.setPingURLResult(arrayOfErrorObject);
@@ -99,8 +99,9 @@ public class MRServiceEndPoint {
         String meterNo = getLatestReadingByMeterNoAndType.getMeterNo();
         String readingType = getLatestReadingByMeterNoAndType.getReadingType();
         String formattedBlockTemplateName = getLatestReadingByMeterNoAndType.getFormattedBlockTemplateName();
-        List<String> fieldNames = getLatestReadingByMeterNoAndType.getFieldName().getString();
-
+        List<String> fieldNames =
+            (null != getLatestReadingByMeterNoAndType.getFieldName())
+                ? getLatestReadingByMeterNoAndType.getFieldName().getString() : null;
         FormattedBlock formattedBlock =
             mr_server.getLatestReadingByMeterNoAndType(meterNo, readingType, formattedBlockTemplateName, fieldNames);
         response.setGetLatestReadingByMeterNoAndTypeResult(formattedBlock);
@@ -118,7 +119,9 @@ public class MRServiceEndPoint {
         String formattedBlockTemplateName = getReadingsByDateAndType.getFormattedBlockTemplateName();
         XMLGregorianCalendar startDate = getReadingsByDateAndType.getStartDate();
         XMLGregorianCalendar endDate = getReadingsByDateAndType.getEndDate();
-        List<String> fieldNames = getReadingsByDateAndType.getFieldName().getString();
+        List<String> fieldNames =
+            (null != getReadingsByDateAndType.getFieldName()) ? getReadingsByDateAndType.getFieldName().getString()
+                : null;
         List<FormattedBlock> formattedBlocks =
             mr_server.getReadingsByDateAndType((startDate != null) ? startDate.toGregorianCalendar() : null,
                 (endDate != null) ? endDate.toGregorianCalendar() : null, readingType, lastReceived,
@@ -454,7 +457,8 @@ public class MRServiceEndPoint {
         GetLatestReadingByTypeResponse getLatestReadingByTypeResponse =
             objectFactory.createGetLatestReadingByTypeResponse();
 
-        List<String> fieldNames = getLatestReadingByType.getFieldName().getString();
+        List<String> fieldNames =
+            (null != getLatestReadingByType.getFieldName()) ? getLatestReadingByType.getFieldName().getString() : null;
         String lastReceived = getLatestReadingByType.getLastReceived();
         String readingType = getLatestReadingByType.getReadingType();
         String formattedBlockTemplateName = getLatestReadingByType.getFormattedBlockTemplateName();
@@ -480,12 +484,14 @@ public class MRServiceEndPoint {
         String formattedBlockTemplateName = getReadingByMeterNoAndType.getFormattedBlockTemplateName();
         String readingType = getReadingByMeterNoAndType.getReadingType();
         String lastReceived = getReadingByMeterNoAndType.getLastReceived();
-        List<String> fieldName = getReadingByMeterNoAndType.getFieldName().getString();
+        List<String> fieldNames =
+            (null != getReadingByMeterNoAndType.getFieldName()) ? getReadingByMeterNoAndType.getFieldName().getString()
+                : null;
         List<FormattedBlock> formattedBlocks =
             mr_server.getReadingsByMeterNoAndType(meterNo,
                 (startDate != null) ? startDate.toGregorianCalendar() : null,
                 (endDate != null) ? endDate.toGregorianCalendar() : null, readingType, lastReceived,
-                formattedBlockTemplateName, fieldName);
+                formattedBlockTemplateName, fieldNames);
         
         ArrayOfFormattedBlock arrayOfFormattedBlock = objectFactory.createArrayOfFormattedBlock();
         arrayOfFormattedBlock.getFormattedBlock().addAll(formattedBlocks);
@@ -831,7 +837,9 @@ public class MRServiceEndPoint {
 
         String formattedBlockTemplateName = getLatestMeterReadingsByMeterGroup.getFormattedBlockTemplateName();
         String meterGroupID = getLatestMeterReadingsByMeterGroup.getMeterGroupID();
-        List<String> fieldNames = getLatestMeterReadingsByMeterGroup.getFieldName().getString();
+        List<String> fieldNames =
+            (null != getLatestMeterReadingsByMeterGroup.getFieldName())
+                ? getLatestMeterReadingsByMeterGroup.getFieldName().getString() : null;
         FormattedBlock formattedBlock =
             mr_server.getLatestMeterReadingsByMeterGroup(meterGroupID, formattedBlockTemplateName, fieldNames);
         getLatestMeterReadingsByMeterGroupResponse.setGetLatestMeterReadingsByMeterGroupResult(formattedBlock);
@@ -852,13 +860,15 @@ public class MRServiceEndPoint {
         MRArrayOfString2 meterNumbers = getLatestReadingsByMeterNoList.getMeterNo();
         ServiceType serviceType = getLatestReadingsByMeterNoList.getServiceType();
         XMLGregorianCalendar endDate = getLatestReadingsByMeterNoList.getEndDate();
-        MRArrayOfString2 fieldNames = getLatestReadingsByMeterNoList.getFieldName();
+        List<String> fieldNames =
+            (null != getLatestReadingsByMeterNoList.getFieldName())
+                ? getLatestReadingsByMeterNoList.getFieldName().getString() : null;
         String readingType = getLatestReadingsByMeterNoList.getReadingType();
 
         List<FormattedBlock> formattedBlocks =
             mr_server.getLatestReadingsByMeterNoList(meterNumbers.getString(), (startDate != null) ? startDate.toGregorianCalendar()
                 : null, (endDate != null) ? endDate.toGregorianCalendar() : null, readingType, lastReceived,
-                serviceType, formattedBlockTemplateName, fieldNames.getString());
+                serviceType, formattedBlockTemplateName, fieldNames);
         
         ArrayOfFormattedBlock arrayOfFormattedBlock = objectFactory.createArrayOfFormattedBlock();
         arrayOfFormattedBlock.getFormattedBlock().addAll(formattedBlocks);
@@ -874,7 +884,9 @@ public class MRServiceEndPoint {
         GetLatestReadingsByMeterNoListFormattedBlockResponse getLatestReadingsByMeterNoListFormattedBlockResponse =
             objectFactory.createGetLatestReadingsByMeterNoListFormattedBlockResponse();
 
-        List<String> fieldNames = getLatestReadingsByMeterNoListFormattedBlock.getFieldName().getString();
+        List<String> fieldNames =
+                (null != getLatestReadingsByMeterNoListFormattedBlock.getFieldName())
+                    ? getLatestReadingsByMeterNoListFormattedBlock.getFieldName().getString() : null;
         String lastReceived = getLatestReadingsByMeterNoListFormattedBlock.getLastReceived();
         List<String> meterNumbers = getLatestReadingsByMeterNoListFormattedBlock.getMeterNo().getString();
         String formattedBlockTemplateName = getLatestReadingsByMeterNoListFormattedBlock.getFormattedBlockTemplateName();
@@ -934,8 +946,11 @@ public class MRServiceEndPoint {
 
         int kWLookForward = getReadingByMeterNumberFormattedBlock.getKWLookForward();
         String meterNumber = getReadingByMeterNumberFormattedBlock.getMeterNumber();
-        List<String> fieldNames = getReadingByMeterNumberFormattedBlock.getFieldName().getString();
 
+        List<String> fieldNames =
+            (null != getReadingByMeterNumberFormattedBlock.getFieldName())
+                ? getReadingByMeterNumberFormattedBlock.getFieldName().getString() : null;
+        
         String formattedBlockTemplateName = getReadingByMeterNumberFormattedBlock.getFormattedBlockTemplateName();
         int kWLookBack = getReadingByMeterNumberFormattedBlock.getKWhLookBack();
         XMLGregorianCalendar billingDate = getReadingByMeterNumberFormattedBlock.getBillingDate();
@@ -963,7 +978,9 @@ public class MRServiceEndPoint {
         int kWLookForward = getReadingsByDateFormattedBlock.getKWLookForward();
         XMLGregorianCalendar billingDate = getReadingsByDateFormattedBlock.getBillingDate();
         int kWLookBack = getReadingsByDateFormattedBlock.getKWLookBack();
-        List<String> fieldNames = getReadingsByDateFormattedBlock.getFieldName().getString();
+        List<String> fieldNames =
+            (null != getReadingsByDateFormattedBlock.getFieldName())
+                ? getReadingsByDateFormattedBlock.getFieldName().getString() : null;
         String formattedBlockTemplateName = getReadingsByDateFormattedBlock.getFormattedBlockTemplateName();
         String lastReceived = getReadingsByDateFormattedBlock.getLastReceived();
         int kWhLookBack = getReadingsByDateFormattedBlock.getKWhLookBack();
@@ -1198,7 +1215,10 @@ public class MRServiceEndPoint {
         InitiateMeterReadsByFieldNameResponse initiateMeterReadsByFieldNameResponse =
             objectFactory.createInitiateMeterReadsByFieldNameResponse();
         String transactionID = initiateMeterReadsByFieldName.getTransactionID();
-        List<String> fieldNames = initiateMeterReadsByFieldName.getFieldNames().getString();
+        
+        List<String> fieldNames =
+            (null != initiateMeterReadsByFieldName.getFieldNames())
+                ? initiateMeterReadsByFieldName.getFieldNames().getString() : null;
         String responseURL = initiateMeterReadsByFieldName.getResponseURL();
         List<String> meterNumbers = initiateMeterReadsByFieldName.getMeterNumbers().getString();
         String formattedBlockTemplateName = initiateMeterReadsByFieldName.getFormattedBlockTemplateName();
@@ -1490,7 +1510,9 @@ public class MRServiceEndPoint {
             objectFactory.createGetReadingsByBillingCycleResponse();
         
         XMLGregorianCalendar billingDate = getReadingsByBillingCycle.getBillingDate();
-        List<String> fieldNames = getReadingsByBillingCycle.getFieldName().getString();
+        List<String> fieldNames =
+                (null != getReadingsByBillingCycle.getFieldName())
+                    ? getReadingsByBillingCycle.getFieldName().getString() : null;
         int kWLookBack = getReadingsByBillingCycle.getKWLookBack();
         String lastReceived = getReadingsByBillingCycle.getLastReceived();
         int kWhLookBack = getReadingsByBillingCycle.getKWhLookBack();
