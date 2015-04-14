@@ -22,7 +22,6 @@ import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.util.Pair;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.EnergyCompanyNameUnavailableException;
 import com.cannontech.core.dao.EnergyCompanyNotFoundException;
@@ -50,6 +49,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.login.LoginService;
 import com.cannontech.web.navigation.CtiNavObject;
+import com.cannontech.web.util.SavedSession;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -73,11 +73,11 @@ public class EnergyCompanyController {
     public String home(HttpServletRequest request, YukonUserContext userContext, ModelMap modelMap) {
         
         HttpSession session = request.getSession(false);
-        Pair p = (Pair)session.getAttribute(LoginController.SAVED_YUKON_USERS);
+        SavedSession p = (SavedSession)session.getAttribute(LoginController.SAVED_YUKON_USERS);
         
         // p != null indicates there is a saved user.
         if (p != null) {
-            Properties oldContext = (Properties) p.getFirst();
+            Properties oldContext = (Properties) p.getProperties();
             LiteYukonUser previousUser = (LiteYukonUser) oldContext.get(LoginController.YUKON_USER);
             int previousUserId = previousUser.getUserID();
             modelMap.addAttribute("previousUserId", previousUserId);

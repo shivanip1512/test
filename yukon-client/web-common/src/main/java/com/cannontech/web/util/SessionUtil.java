@@ -6,7 +6,6 @@ import java.util.Properties;
 import javax.servlet.http.HttpSession;
 
 import com.cannontech.common.constants.LoginController;
-import com.cannontech.common.util.Pair;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 
@@ -26,9 +25,9 @@ public class SessionUtil {
     public static int getParentLoginUserId(HttpSession session, int defaultUserId) {
         int userId = defaultUserId;
         if (session != null) {
-            Pair<?,?> p = (Pair<?,?>) session.getAttribute(LoginController.SAVED_YUKON_USERS);
+            SavedSession p = (SavedSession) session.getAttribute(LoginController.SAVED_YUKON_USERS);
             if (p != null) {
-                Properties oldContext = (Properties) p.getFirst();
+                Properties oldContext = p.getProperties();
                 Enumeration<?> attNames = oldContext.propertyNames();
                 while (attNames.hasMoreElements()) {
                     String attName = (String) attNames.nextElement();
