@@ -517,7 +517,7 @@
             <cti:classUpdater type="VALIDATION_PROCESSING" identifier="SHOW_VIOLATIONS">
                 <cti:url var="reviewUrl" value="/amr/veeReview/home"/>
                 <a href="${reviewUrl}"><i:inline key="yukon.web.widgets.validationMonitorsWidget.review"/></a>
-                <cti:dataUpdaterValue type="VALIDATION_PROCESSING" identifier="TOTAL_VIOLATIONS" styleClass="label label-danger"/>
+                <cti:dataUpdaterValue type="VALIDATION_PROCESSING" identifier="TOTAL_VIOLATIONS" styleClass="badge badge-error"/>
             </cti:classUpdater>
         </c:if>
     </cti:checkRolesAndProperties>
