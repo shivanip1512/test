@@ -2,6 +2,9 @@ package com.cannontech.database.data.point;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.model.CalcPointComponent;
 import com.cannontech.common.pao.definition.model.CalcPointInfo;
@@ -28,6 +31,8 @@ import com.google.common.collect.Lists;
 
 public class PointUtil {
 
+    private final static Logger log = YukonLogManager.getLogger(PointUtil.class);
+    
     private static DBPersistentDao dbPersistentDao = YukonSpringHook.getBean(DBPersistentDao.class);
     private static PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
     private static PointDao pointDao = YukonSpringHook.getBean(PointDao.class);
@@ -133,40 +138,71 @@ public class PointUtil {
      */
     public static PointBase changePointType(PointBase pointBase, PointTemplate newPointTemplate) throws PersistenceException {
 
+        PointTemplate existingPointTemplate = createPointTemplate(pointBase);
         int oldType = PointTypes.getType(pointBase.getPoint().getPointType());
 
-        // actual changing of point type, delete the old point and re-add it with new type
         if (oldType != newPointTemplate.getPointType().getPointTypeId()) {
-
-            pointBase.getPoint().setPointType(PointTypes.getType(newPointTemplate.getPointType().getPointTypeId()));
+            
             PointAlarming savePointAlarming = pointBase.getPointAlarming();
             Point savePoint = pointBase.getPoint();
 
             // Delete partial point data so type can be changed.
-            dbPersistentDao.performDBChangeWithNoMsg(pointBase, TransactionType.DELETE_PARTIAL);
+            deletePartialPointData(pointBase, newPointTemplate);
 
             // Create a new point for new point type
             pointBase = PointFactory.createPoint(newPointTemplate.getPointType().getPointTypeId());
-
+            String newPointType = pointBase.getPoint().getPointType();
+     
             // Set old point data that can transfer over to new point
             pointBase.setPoint(savePoint);
             pointBase.setPointAlarming(savePointAlarming);
             pointBase.setPointID(savePoint.getPointID());
-
-            // Set new point defaults from template
-            pointBase.getPoint().setPointType(PointTypes.getType(newPointTemplate.getPointType().getPointTypeId()));
+            pointBase.getPoint().setPointType(newPointType);
 
             // Add the updated (partial) point information.
             dbPersistentDao.performDBChangeWithNoMsg(pointBase, TransactionType.ADD_PARTIAL);
         }
 
-        PointTemplate existingPointTemplate = createPointTemplate(pointBase);
         if (!existingPointTemplate.equals(newPointTemplate)) {
             applyPointTemplate(pointBase, newPointTemplate);
             dbPersistentDao.performDBChange(pointBase, TransactionType.UPDATE);
         }
 
         return pointBase;
+    }
+    
+    private static void deletePartialPointData(PointBase pointBase, PointTemplate newPointTemplate) {
+        PointType newPointType = newPointTemplate.getPointType();
+        boolean partialDelete = false;
+        // example: MCT410IL->Delivered kWh is PulseAccumulator, RFN420CD ->Delivered kWh is Analog
+        if (pointBase instanceof AnalogPoint && newPointType != PointType.Analog) {
+            partialDelete = true;
+            AnalogPoint point = (AnalogPoint) pointBase;
+            dbPersistentDao.performDBChangeWithNoMsg(point, TransactionType.DELETE_PARTIAL);
+        } else if (pointBase instanceof StatusPoint && newPointType != PointType.Status) {
+            partialDelete = true;
+            StatusPoint point = (StatusPoint) pointBase;
+            dbPersistentDao.performDBChangeWithNoMsg(point, TransactionType.DELETE_PARTIAL);
+        } else if (pointBase instanceof AccumulatorPoint && newPointType != PointType.DemandAccumulator
+            && newPointType != PointType.PulseAccumulator) {
+            partialDelete = true;
+            AccumulatorPoint point = (AccumulatorPoint) pointBase;
+            dbPersistentDao.performDBChangeWithNoMsg(point, TransactionType.DELETE_PARTIAL);
+        } else if (pointBase instanceof CalculatedPoint && newPointType != PointType.CalcAnalog
+            && newPointType != PointType.CalcStatus) {
+            partialDelete = true;
+            CalculatedPoint point = (CalculatedPoint) pointBase;
+            dbPersistentDao.performDBChangeWithNoMsg(point, TransactionType.DELETE_PARTIAL);
+        } else {
+            dbPersistentDao.performDBChangeWithNoMsg(pointBase, TransactionType.DELETE_PARTIAL);
+        }
+
+        if (partialDelete && log.isDebugEnabled()) {
+            Point point = pointBase.getPoint();
+            log.debug("Partialy deleting point information due to a point type change:  point: id="
+                + point.getPointID() + " name=" + point.getPointName() + " type=" + point.getPointType() + " offset="
+                + point.getPointOffset() + "--Change to=" + newPointTemplate);
+        }
     }
 
     private static PointTemplate createPointTemplate(PointBase pointBase) throws IllegalArgumentException {

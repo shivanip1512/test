@@ -1,10 +1,15 @@
 package com.cannontech.common.device.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
@@ -12,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.bulk.processor.ProcessingException;
+import com.cannontech.common.bulk.service.ChangeDeviceTypeService.ChangeDeviceTypeInfo;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
@@ -21,22 +28,29 @@ import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
-import com.cannontech.common.pao.definition.service.PaoDefinitionService.PointTemplateTransferPair;
 import com.cannontech.common.pao.service.PointCreationService;
 import com.cannontech.common.pao.service.PointService;
+import com.cannontech.common.pao.service.impl.PaoCreationHelper;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
+import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
@@ -53,18 +67,23 @@ import com.cannontech.database.data.device.RemoteBase;
 import com.cannontech.database.data.device.RfnBase;
 import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.device.lm.IGroupRoute;
-import com.cannontech.database.data.lite.LiteFactory;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOFactory;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.device.RfnAddress;
+import com.cannontech.database.db.point.Point;
 import com.cannontech.device.range.DlcAddressRangeService;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class DeviceUpdateServiceImpl implements DeviceUpdateService {
@@ -82,6 +101,9 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     @Autowired private PointCreationService pointCreationService;
     @Autowired private PointService pointService;
     @Autowired private RouteDiscoveryService routeDiscoveryService;
+    @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
+    @Autowired private PointDao pointDao;
+    @Autowired private PaoCreationHelper paoCreationHelper;
 
     private final Logger log = YukonLogManager.getLogger(DeviceUpdateServiceImpl.class);
 
@@ -157,7 +179,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
 
     @Override
     @Transactional
-    public SimpleDevice changeDeviceType(YukonDevice currentDevice, PaoDefinition newDefinition) {
+    public SimpleDevice changeDeviceType(YukonDevice currentDevice, PaoDefinition newDefinition, ChangeDeviceTypeInfo info) {
 
         DeviceBase yukonPAObject = (DeviceBase) PAOFactory.createPAObject(currentDevice.getPaoIdentifier().getPaoId());
 
@@ -169,7 +191,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         }
 
         // Change the device's type
-        DeviceBase changedDevice = this.changeDeviceType(yukonPAObject, newDefinition);
+        DeviceBase changedDevice = this.changeDeviceType(yukonPAObject, newDefinition, info);
 
         // Save the changes
         try {
@@ -204,8 +226,11 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
 
     @Override
     @Transactional
-    public DeviceBase changeDeviceType(DeviceBase currentDevice, PaoDefinition newDefinition) {
-
+    public DeviceBase changeDeviceType(DeviceBase currentDevice, PaoDefinition newDefinition, ChangeDeviceTypeInfo info) {
+        
+        log.debug("Changing device type from " + currentDevice.getPaoType() + " to " + newDefinition.getType());
+        log.debug("Device id=" + currentDevice.getDevice().getDeviceID());
+        
         DeviceBase oldDevice = null;
 
         // get a deep copy of the current device
@@ -310,12 +335,42 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
             }
         }
 
+        if (newDevice instanceof MCTBase && oldDevice instanceof RfnBase) {
+            
+            if (info == null || info.getRouteId() == 0){
+                throw new ProcessingException("Address and route id are required");
+            }
+            if (!dlcAddressRangeService.isValidEnforcedAddress(newDefinition.getType(), info.getAddress())) {
+                throw new ProcessingException("Invalid address: " + info.getAddress() + ".");
+            }
+            ((MCTBase) newDevice).setAddress(info.getAddress());
+            ((MCTBase) newDevice).getDeviceRoutes().setRouteID(info.getRouteId());
+        }
+
+        if (newDevice instanceof RfnBase && oldDevice instanceof MCTBase) {
+            
+            if (info == null || StringUtils.isEmpty(info.getSerialNumber())
+                || StringUtils.isEmpty(info.getManufacturer()) || StringUtils.isEmpty(info.getModel())) {
+                throw new ProcessingException("Serial Number, Manufacturer and Model are required");
+            }
+            
+            RfnIdentifier rfnIdentifier =
+                new RfnIdentifier(info.getSerialNumber(), info.getManufacturer(), info.getModel());
+            try {
+                rfnDeviceLookupService.getDevice(rfnIdentifier);
+                // device found, unable to change device type
+                throw new ProcessingException("Device: " + rfnIdentifier + " already exists.");
+            } catch (NotFoundException e) {
+                // ignore
+            }
+            ((RfnBase) newDevice).getRfnAddress().setManufacturer(rfnIdentifier.getSensorManufacturer());
+            ((RfnBase) newDevice).getRfnAddress().setModel(rfnIdentifier.getSensorModel());
+            ((RfnBase) newDevice).getRfnAddress().setSerialNumber(rfnIdentifier.getSensorSerialNumber());
+        }
+
         try {
             dbPersistentDao.performDBChangeWithNoMsg(newDevice, TransactionType.ADD_PARTIAL);
-
-            this.removePoints(oldDevice, newDefinition);
-            this.addPoints(oldDevice, newDefinition);
-            this.transferPoints(oldDevice, newDefinition);
+            updatePoints(oldDevice, newDefinition.getType());
 
         } catch (PersistenceException e) {
             CTILogger.error(e.getMessage(), e);
@@ -324,80 +379,316 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         return newDevice;
     }
 
+    @Override
+    public PointsToProcess getPointsToProccess(DeviceBase oldDevice, PaoType newType) {
+
+        Map<PaoType, Map<Attribute, AttributeDefinition>> definitionMap =
+            paoDefinitionDao.getPaoAttributeAttrDefinitionMap();
+        Map<Attribute, AttributeDefinition> oldDeviceAttributeMap = definitionMap.get(oldDevice.getPaoType());
+        Map<Attribute, AttributeDefinition> newDeviceAttributeMap = definitionMap.get(newType);
+
+        List<PointBase> existingPoints = pointDao.getPointsForPao(oldDevice.getPAObjectID());
+        Set<PointTemplate> initPointTemplates = paoDefinitionDao.getInitPointTemplates(newType);
+     
+        Set<PointBase> pointsToDelete = new HashSet<>();
+        Set<PointTemplate> pointsToAdd = new HashSet<>(initPointTemplates);
+        Map<Integer, PointToTemplate> pointsToTransfer = new HashMap<>();
+
+        ListMultimap<PointIdentifier, PointBase> identifierToPoint = ArrayListMultimap.create();
+        for (PointBase point : existingPoints) {
+            PointIdentifier pointIdentifier =
+                new PointIdentifier(PointType.getForString(point.getPoint().getPointType()),
+                    point.getPoint().getPointOffset());
+            identifierToPoint.put(pointIdentifier, point);
+
+            if (log.isDebugEnabled()) {
+                log.debug("Existing point: id=" + point.getPoint().getPointID() + " name="
+                    + point.getPoint().getPointName() + " type=" + point.getPoint().getPointType() + " offset="
+                    + point.getPoint().getPointOffset());
+            }
+        }
+
+        // match by attribute
+        for (Attribute attribute : oldDeviceAttributeMap.keySet()) {
+            AttributeDefinition oldDefinition = oldDeviceAttributeMap.get(attribute);
+            AttributeDefinition newDefinition = newDeviceAttributeMap.get(attribute);
+            List<PointBase> points = identifierToPoint.get(oldDefinition.getPointTemplate().getPointIdentifier());
+
+            if (log.isDebugEnabled()) {
+                log.debug("Attribute=" + attribute + "------------------------");
+                log.debug("old definition=" + oldDefinition.getPointTemplate());
+                if (newDefinition != null) {
+                    log.debug("new definition=" + newDefinition.getPointTemplate());
+                }
+                for(PointBase point: points){
+                    log.debug("Existing point: id=" + point.getPoint().getPointID() + " name="
+                        + point.getPoint().getPointName() + " type=" + point.getPoint().getPointType() + " offset="
+                        + point.getPoint().getPointOffset());
+                }
+            }
+
+            /**
+             * RF Meters calculated points are created with the same point type and offset so it is possible
+             * to get more then one point with the same point identifier. Attempt to match by point name if
+             * points.size() > 1.
+             */
+            if (points.size() == 1) {
+                if (newDefinition != null
+                    && isTransferable(newDefinition.getPointTemplate().getName(), pointsToTransfer)) {
+                    PointBase point = points.get(0);
+                    PointToTemplate pointToTemplate = new PointToTemplate(point, newDefinition.getPointTemplate());
+                    pointsToTransfer.put(point.getPoint().getPointID(), pointToTemplate);
+                    identifierToPoint.removeAll(oldDefinition.getPointTemplate().getPointIdentifier());
+                    // removing the point from the list of points to be added
+                    pointsToAdd.remove(pointToTemplate.getTemplate());
+
+                    log.debug("Transfering point.");
+                } else {
+                    pointsToDelete.addAll(points);
+                    log.debug("Deleting point.");
+                }
+            }
+        }
+
+        Set<PointTemplate> supportedTemplates = paoDefinitionDao.getAllPointTemplates(newType);
+        
+        // match "leftover" points by name, since some points don't have attributes
+        // Example : Changing device type from MCT410CL to MCT410IL, point: Peak kW (Channel 2)
+
+        // identifierToPoint contains only unmatched points
+        for (PointIdentifier identifier : identifierToPoint.keySet()) {
+            List<PointBase> points = identifierToPoint.get(identifier);
+
+            for (PointBase point : points) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Unmatched point by attribute : id=" + point.getPoint().getPointID() + " name="
+                        + point.getPoint().getPointName() + " type=" + point.getPoint().getPointType() + " offset="
+                        + point.getPoint().getPointOffset());
+                }
+                PointTemplate oldTemplate = null;
+                try {
+                    boolean transfer = false;
+                    oldTemplate = paoDefinitionDao.getPointTemplateByTypeAndOffset(oldDevice.getPaoType(), identifier);
+                    for (PointTemplate newTemplate : supportedTemplates) {
+                        if (oldTemplate.getName().equals(newTemplate.getName())
+                            && isTransferable(newTemplate.getName(), pointsToTransfer)) {
+                            PointToTemplate pointToTemplate = new PointToTemplate(point, newTemplate);
+                            pointsToTransfer.put(point.getPoint().getPointID(), pointToTemplate);
+                            // removing the point from the list of points to be added
+                            pointsToAdd.remove(pointToTemplate.getTemplate());
+                            transfer = true;
+                            log.debug("Matched by name - transfering point");
+                        }
+                    }
+                    if (!transfer) {
+                        pointsToDelete.add(point);
+                        log.debug("Match by name failed - deleting point");
+                    }
+                } catch (NotFoundException e) {
+                    // this point must be a user created point since the template is not found, do nothing
+                    log.debug("User created point - ignoring");
+                }
+            }
+        }
+
+        removeTransferablePointsFromDeletedList(pointsToDelete, pointsToTransfer);
+        return new PointsToProcess(pointsToDelete, pointsToAdd, pointsToTransfer);
+    }
+
+    private void updatePoints(DeviceBase oldDevice, PaoType newType) throws PersistenceException {
+
+        log.debug("Updating points");
+        PointsToProcess pointsToProcess = getPointsToProccess(oldDevice, newType);
+        deletePoints(pointsToProcess.getPointsToDelete());
+        updatePointName(pointsToProcess.getPointsToTransfer());
+        addPoints(pointsToProcess.getPointsToAdd(), oldDevice);
+        changePointType(pointsToProcess.getPointsToTransfer());
+    }
+
     /**
-     * Helper method to remove unsupported points from a device that is being
-     * changed into another device type
-     * Sends DBChangeMsg for each deleted point.
-     * @param device - Device to change type
-     * @param newDefinition - Definition of new device type
-     * @throws PersistenceException 
+     * One point can be mapped to 2 different attributes
+     * Example: Changing device type from MCT410IL to MCT370
+     * 
+     * same point deleted:
+     * Attribute=DELIVERED_KWH
+     * old definition: type = PulseAccumulator, offset = 1, name = 'kWh'
+     * new definition: none
+     * 
+     * same point transfered:
+     * Attribute=USAGE
+     * old definition: type = PulseAccumulator, offset = 1, name = 'kWh
+     * new definition: Analog, offset = 1, name = 'Total kWh'
+     * 
+     * Removes transferable points from deleted list
      */
-    private void removePoints(DeviceBase device, PaoDefinition newDefinition) throws PersistenceException {
 
-        SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
-        Set<PointIdentifier> removeTemplates = paoDefinitionService.getPointTemplatesToRemove(yukonDevice, newDefinition);
+    private void removeTransferablePointsFromDeletedList(Set<PointBase> pointsToDelete, Map<Integer, PointToTemplate> pointsToTransfer) {
 
-        for (PointIdentifier identifier : removeTemplates) {
-            LitePoint litePoint = pointService.getPointForPao(yukonDevice, identifier);
+        Iterator<PointBase> it = pointsToDelete.iterator();
+        while (it.hasNext()) {
+            PointToTemplate pointToTemplate = pointsToTransfer.get(it.next().getPoint().getPointID());
+            if (pointToTemplate != null) {
+                it.remove();
+            }
+        }
+    }
+    
+    /**
+     * MCT430A3 to MCT410IL
+     * 
+     * Existing point: id=2745513 name=IED Blink Count type=Analog offset=40
+     * Existing point: id=2745510 name=Blink Count type=PulseAccumulator offset=20
+     * 
+     * Attribute=BLINK_COUNT
+     * MCT430A3 -> type = Analog, offset = 40, name = 'IED Blink Count'
+     * MCT410IL -> type = PulseAccumulator, offset = 20, name = 'Blink Count'
+     * 
+     * Transfering 'IED Blink Count' to 'Blink Count'
+     * 
+     * Blink Count is unmatched by attribute. Matching "Blink Count" by name:
+     * Blink Count found : id=2745510 name=Blink Count type=PulseAccumulator offset=20
+     * 
+     * Transfering 'Blink Count' to 'Blink Count'
+     * 
+     * Problem: can't create 2 "Blink Count"s
+     * 
+     * Returns true is point is transferable.
+     * If false is returned the the point should be deleted.
+     */
 
-            log.debug("Remove point: deviceId=" + device.getPAObjectID() + litePoint.getPointName() + " type="
-                + litePoint.getPointType() + " offset=" + litePoint.getPointOffset());
+    private boolean isTransferable(String templateName, Map<Integer, PointToTemplate> pointsToTransfer) {
 
-            PointBase point = (PointBase) LiteFactory.convertLiteToDBPers(litePoint);
-            dbPersistentDao.performDBChange(point, TransactionType.DELETE);
+        for (PointToTemplate pointToTemplate : pointsToTransfer.values()) {
+            if (pointToTemplate.getTemplate().getName().equals(templateName)) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Point is already transfered " + pointToTemplate.getTemplate());
+                }
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Deletes points
+     * 
+     * @throws PersistenceException
+     */
+    private void deletePoints(Set<PointBase> pointsToDelete) throws PersistenceException {
+
+        if (!pointsToDelete.isEmpty()) {
+            log.debug("Points to delete-----------------------");
+            for (PointBase point : pointsToDelete) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Deleting point: id=" + point.getPoint().getPointID() + " name="
+                        + point.getPoint().getPointName() + " type=" + point.getPoint().getPointType() + " offset="
+                        + point.getPoint().getPointOffset());
+                }
+                dbPersistentDao.performDBChange(point, TransactionType.DELETE);
+            }
+            log.debug("Points deleted-----------------------");
         }
     }
 
     /**
-     * Helper method to add supported points to a device that is being changed
-     * into another device type
-     * Sends DBChangeMsg for each added point.
-     * @param device - Device to change type
-     * @param newDefinition - Definition of new device type
+     * Creates points base on list of points provided that exist on a template device.
+     * 
      * @throws PersistenceException
      */
-    private void addPoints(DeviceBase device, PaoDefinition newDefinition) throws PersistenceException {
+    private void addPoints(Set<PointTemplate> pointsToAdd, DeviceBase oldDevice) throws PersistenceException {
 
-        SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
-        Set<PointTemplate> addTemplates = paoDefinitionService.getPointTemplatesToAdd(yukonDevice, newDefinition);
-        for (PointTemplate template : addTemplates) {
+        if (!pointsToAdd.isEmpty()) {
+            List<PointTemplate> calcPoints =
+                Lists.newArrayList(Iterables.filter(pointsToAdd, new Predicate<PointTemplate>() {
+                    @Override
+                    public boolean apply(PointTemplate t) {
+                        return t.getPointType() == PointType.CalcAnalog || t.getPointType() == PointType.CalcStatus;
+                    }
+                }));
+            pointsToAdd.removeAll(calcPoints);
+            ArrayList<PointTemplate> sortedTemplates = new ArrayList<PointTemplate>();
+            sortedTemplates.addAll(pointsToAdd);
+            sortedTemplates.addAll(calcPoints);
 
-            log.debug("Add point: deviceId=" + device.getPAObjectID() + " point name=" + template.getName() + " type="
-                + template.getPointType().getPointTypeId() + " offset=" + template.getOffset());
+            log.debug("Points to add-----------------------");
+            SimpleDevice device = deviceDao.getYukonDeviceForDevice(oldDevice);
+            for (PointTemplate template : sortedTemplates) {
 
-            PointBase point = pointCreationService.createPoint(yukonDevice.getPaoIdentifier(), template);
-            dbPersistentDao.performDBChange(point, TransactionType.INSERT);
+                PointBase point = pointCreationService.createPoint(device.getPaoIdentifier(), template);
+                if (log.isDebugEnabled()) {
+                    log.debug("Adding point: id=" + point.getPoint().getPointID() + " name="
+                        + point.getPoint().getPointName() + " type=" + point.getPoint().getPointType() + " offset="
+                        + point.getPoint().getPointOffset());
+                }
+                dbPersistentDao.performDBChange(point, TransactionType.INSERT);
+            }
+            log.debug("Points added--------------------------");
         }
     }
 
     /**
-     * Helper method to transfer supported points from a device that is being
-     * changed into another device type
-     * Sends DBChangeMsg for each transfered (aka changed) point. (ala call to changePointType) 
-     * @param device - Device to change type
-     * @param newDefinition - Definition of new device type
+     * Changes pointBase to the newPointTemplate type.
+     * Sends DBChangeMsg for each point that actually has 'changes'.
+     * 
      * @throws PersistenceException
      */
-    private void transferPoints(DeviceBase device, PaoDefinition newDefinition) throws PersistenceException {
+    private void changePointType(Map<Integer, PointToTemplate> pointsToUpdate) throws PersistenceException {
 
-        SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
-        Iterable<PointTemplateTransferPair> transferTemplates =
-            paoDefinitionService.getPointTemplatesToTransfer(yukonDevice, newDefinition);
+        if (!pointsToUpdate.isEmpty()) {
+            log.debug("Points to update-----------------------");
+            // Change point type
+            for (PointToTemplate pointToTemplate : pointsToUpdate.values()) {
+                if (log.isDebugEnabled()) {
+                    PointBase point = pointToTemplate.getPoint();
+                    log.debug("Updating point: id=" + point.getPoint().getPointID() + " name="
+                        + point.getPoint().getPointName() + " type=" + point.getPoint().getPointType() + " offset="
+                        + point.getPoint().getPointOffset() + "--Change to=" + pointToTemplate.getTemplate());
+                }
+                PointUtil.changePointType(pointToTemplate.getPoint(), pointToTemplate.getTemplate());
+            }
+            log.debug("Points updated---------------------");
+        }
+    }
 
-        for (PointTemplateTransferPair pair : transferTemplates) {
-
-            log.debug("Transfer point: deviceId=" + device.getPAObjectID() + " oldType="
-                + pair.oldDefinitionTemplate.getPointType().getPointTypeId() + " old offset="
-                + pair.oldDefinitionTemplate.getOffset() + " new type="
-                + pair.newDefinitionTemplate.getPointType().getPointTypeId() + " new offset="
-                + pair.newDefinitionTemplate.getOffset());
-
-            LitePoint litePoint = pointService.getPointForPao(yukonDevice, pair.oldDefinitionTemplate);
-            PointBase point = (PointBase) LiteFactory.convertLiteToDBPers(litePoint);
-
-            dbPersistentDao.retrieveDBPersistent(point);
-            point = PointUtil.changePointType(point, pair.newDefinitionTemplate);
-            // changePointType(...) - Handles sending of DBChangeMsg for each transferred (aka changed) point. 
+    /**
+     * Updates point names
+     * Example: MCT410IL -> RFN420CD
+     * MCT410IL -> type = PulseAccumulator, offset = 20, name = 'Blink Count'
+     * RFN420CD -> type = CalcAnalog, offset = 0, name = 'Total Outage Count'
+     * 1. rename point Blink Count to Total Outage Count and update the offset, now the new Blink count can
+     * be added.
+     * 2. add new point type = Analog, offset = 20, name = 'Blink Count'
+     * 3. update point type last since new 'Blink Count' is used for calculation
+     * 
+     * Example: MCT410IL -> MCT430S4
+     * ATTRIBUTE:BLINK_COUNT
+     * MCT410IL-> type = PulseAccumulator, offset = 20, name = 'Blink Count'
+     * MCT430S4-> type = Analog, offset = 40, name = 'IED Blink Count'
+     * 
+     * add
+     * MCT430S4-> type = PulseAccumulator, offset = 20, name = 'Blink Count'
+     * 
+     * Updates point name
+     * @throws PersistenceException
+     */
+    private void updatePointName(Map<Integer, PointToTemplate> pointsToUpdate) throws PersistenceException {
+        if (!pointsToUpdate.isEmpty()) {
+            for (PointToTemplate pointToTemplate : pointsToUpdate.values()) {
+                Point point = pointToTemplate.getPoint().getPoint();
+                String newPointName = pointToTemplate.getTemplate().getName();
+                if (!point.getPointName().equals(newPointName)) {
+                    log.debug("Updating point name: id=" + point.getPointID() + " name="
+                        + point.getPointName() + " type=" + point.getPointType() + " offset=" + point.getPointOffset()
+                        + "--Change to=" + pointToTemplate.getTemplate());
+                    point.setPointName(newPointName);
+                    try {
+                        dbPersistentDao.performDBChangeWithNoMsg(point, TransactionType.UPDATE);
+                    } catch (PersistenceException e) {
+                        log.warn("Failed to update the point name", e);
+                        // ignore
+                    }
+                }
+            }
         }
     }
 }

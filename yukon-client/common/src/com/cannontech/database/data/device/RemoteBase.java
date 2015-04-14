@@ -42,6 +42,17 @@ public abstract class RemoteBase extends TwoWayDevice {
         getDeviceDirectCommSettings().add();
         addTcpProperties();
     }
+    
+    @Override
+    public void deletePartial() throws java.sql.SQLException {
+        int deviceId = getPAObjectID();
+        PaoPropertyDao propertyDao = YukonSpringHook.getBean("paoPropertyDao", PaoPropertyDao.class);
+        propertyDao.removeAll(deviceId);
+
+        getDeviceDialupSettings().delete();
+        getDeviceDirectCommSettings().delete();
+        super.deletePartial();
+    }
 
     @Override
     public void delete() throws java.sql.SQLException {

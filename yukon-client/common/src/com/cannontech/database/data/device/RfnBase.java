@@ -49,6 +49,12 @@ public abstract class RfnBase extends DeviceBase {
     }
     
     @Override
+    public void deletePartial() throws SQLException {
+        getRfnAddress().delete();
+        super.deletePartial();
+    }
+    
+    @Override
     public void delete() throws SQLException {
         getRfnAddress().delete();
         

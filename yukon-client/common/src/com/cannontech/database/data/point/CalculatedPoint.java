@@ -68,6 +68,11 @@ public class CalculatedPoint extends ScalarPoint {
 
     @Override
     public void deletePartial() throws java.sql.SQLException {
+        CalcComponent.deleteCalcComponents(getPoint().getPointID(), getDbConnection());
+        if (!baselineAssigned) {
+            CalcPointBaseline.deleteCalcBaselinePoint(getPoint().getPointID(), getDbConnection());
+        }
+        getCalcBase().delete();
         super.deletePartial();
     }
 

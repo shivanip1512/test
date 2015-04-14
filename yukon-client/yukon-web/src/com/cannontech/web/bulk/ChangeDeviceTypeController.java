@@ -74,7 +74,17 @@ public class ChangeDeviceTypeController {
         for (PaoType paoType : paoTypes) {
             Set<PaoDefinition> changeablePaos = paoDefinitionService.getChangeablePaos(paoType);
             for (PaoDefinition paoDefinition : changeablePaos) {
-                deviceTypes.put(paoDefinition.getDisplayName(), paoDefinition.getType());
+                if (paoType.isMct()) {
+                    if (paoDefinition.getType().isMct()) {
+                        deviceTypes.put(paoDefinition.getDisplayName(), paoDefinition.getType());
+                    }
+                } else if (paoType.isRfMeter()) {
+                    if (paoDefinition.getType().isRfMeter()) {
+                        deviceTypes.put(paoDefinition.getDisplayName(), paoDefinition.getType());
+                    }
+                } else {
+                    deviceTypes.put(paoDefinition.getDisplayName(), paoDefinition.getType());
+                }
             }
         }
         model.addAttribute("deviceTypes", deviceTypes);
@@ -110,7 +120,7 @@ public class ChangeDeviceTypeController {
         SingleProcessor<SimpleDevice> bulkUpdater = new SingleProcessor<SimpleDevice>() {
             @Override
             public void process(SimpleDevice device) throws ProcessingException {
-                changeDeviceTypeService.changeDeviceType(device, selectedDeviceType);
+                changeDeviceTypeService.changeDeviceType(device, selectedDeviceType, null);
             }
         };
         

@@ -134,40 +134,6 @@ public interface PaoDefinitionService {
     public Set<PaoDefinition> getChangeablePaos(PaoType paoType);
     
     /**
-     * Method to get a set of point templates that will be added to the given
-     * pao if its type is changed to the given pao definition
-     * @param pao - Pao to change type
-     * @param paoDefinition - Definition of type to change to
-     * @return Set of points that will be added to the pao (returns a new
-     *         copy each time the method is called)
-     */
-    public Set<PointTemplate> getPointTemplatesToAdd(YukonPao pao,
-            PaoDefinition paoDefinition);
-
-    /**
-     * Method to get a set of points that will be removed from the given pao
-     * if its type is changed to the given pao definition
-     * @param pao - Pao to change type
-     * @param paoDefinition - Definition of type to change to
-     * @return Set of points that will be removed from the pao (returns a new
-     *         copy each time the method is called)
-     */
-    public Set<PointIdentifier> getPointTemplatesToRemove(YukonPao pao,
-            PaoDefinition paoDefinition);
-    
-    /**
-     * Method to get a set of points that will be transfered from the given
-     * pao type to the new pao type if its type is changed to the given
-     * pao definition
-     * @param pao - Pao to change type
-     * @param paoDefinition - Definition of type to change to
-     * @return Set of point templates that will be transfered from the pao
-     *         (returns a new copy each time the method is called)
-     */
-    public Set<PointTemplateTransferPair> getPointTemplatesToTransfer(YukonPao pao,
-            PaoDefinition paoDefinition);
-
-    /**
      * This method returns list of all PAO types in the group
      */
     public List<PaoType> findListOfPaoTypesInGroup(DeviceGroup group, Collection<PaoType> possiblePaoTypes);

@@ -1565,7 +1565,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             // PROBLEM, types do not match!
             // Attempt to change type
             try {
-                changeDeviceTypeService.changeDeviceType(new SimpleDevice(existingMeter), templateMeter.getPaoType());
+                changeDeviceTypeService.changeDeviceType(new SimpleDevice(existingMeter), templateMeter.getPaoType(), null);
                 existingMeter.setPaoIdentifier(new PaoIdentifier(existingMeter.getDeviceId(), templateMeter.getPaoType())); // update local object with new type
                 
                 // Extra logging to SystemLog, can be removed with completion of MultiSpeak EventLogs

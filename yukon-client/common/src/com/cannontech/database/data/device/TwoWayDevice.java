@@ -41,6 +41,13 @@ public abstract class TwoWayDevice extends DeviceBase {
         super.delete();
     }
 
+    @Override
+    public void deletePartial() throws java.sql.SQLException {
+       DeviceScanRate.deleteDeviceScanRates(getDevice().getDeviceID(), getDbConnection());
+       getDeviceWindow().delete();
+       super.deletePartial();
+    }
+    
     public HashMap<String, DeviceScanRate> getDeviceScanRateMap() {
         if (deviceScanRateMap == null) {
             deviceScanRateMap = new HashMap<String, DeviceScanRate>();

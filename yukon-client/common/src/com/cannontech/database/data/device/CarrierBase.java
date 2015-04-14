@@ -40,6 +40,13 @@ public abstract class CarrierBase extends TwoWayDevice implements DBCopiable {
         getDeviceCarrierSettings().add();
         getDeviceRoutes().add();
     }
+    
+    @Override
+    public void deletePartial() throws java.sql.SQLException {
+        getDeviceCarrierSettings().delete();
+        getDeviceRoutes().delete();
+        super.deletePartial();
+    }
 
     @Override
     public void delete() throws java.sql.SQLException {

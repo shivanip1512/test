@@ -19,16 +19,16 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 public class ChangeDeviceTypeServiceImpl implements ChangeDeviceTypeService {
 
-    private PaoDefinitionDao paoDefinitionDao;
-    private PaoDao paoDao;
-    private PaoDefinitionService paoDefinitionService;
-    private DeviceUpdateService deviceUpdateService;
-    
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private PaoDao paoDao;
+    @Autowired private PaoDefinitionService paoDefinitionService;
+    @Autowired private DeviceUpdateService deviceUpdateService;
+      
     @Override
-    public SimpleDevice changeDeviceType(SimpleDevice device, PaoType newDeviceType ) {
+    public SimpleDevice changeDeviceType(SimpleDevice device, PaoType newDeviceType, ChangeDeviceTypeInfo info) {
 
         try {
-
+                        
             // get the definition for the type selected
             if (newDeviceType == device.getDeviceType()) {
                 return device;
@@ -47,7 +47,7 @@ public class ChangeDeviceTypeServiceImpl implements ChangeDeviceTypeService {
                 throw new ProcessingException(errorMsg);
             }
             else {
-                return deviceUpdateService.changeDeviceType(device, selectedPaoDefinition);
+                return deviceUpdateService.changeDeviceType(device, selectedPaoDefinition, info);
             }
 
         }
@@ -60,25 +60,4 @@ public class ChangeDeviceTypeServiceImpl implements ChangeDeviceTypeService {
             throw new ProcessingException("Could not change device type for device with id: " + device.getDeviceId(), e);
         }
     }
-    
-    @Autowired
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-        this.paoDefinitionDao = paoDefinitionDao;
-    }
-    
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-    
-    @Autowired
-    public void setPaoDefinitionService(PaoDefinitionService paoDefinitionService) {
-        this.paoDefinitionService = paoDefinitionService;
-    }
-    
-    @Autowired
-    public void setDeviceUpdateService(DeviceUpdateService deviceUpdateService) {
-		this.deviceUpdateService = deviceUpdateService;
-	}
-
 }

@@ -43,6 +43,17 @@ public abstract class MCTBase extends CarrierBase implements IDeviceMeterGroup {
         }
 
     }
+    
+    @Override
+    public void deletePartial() throws java.sql.SQLException {
+        getDeviceMeterGroup().delete();
+        getDeviceLoadProfile().delete();
+        if (hasConfig) {
+            getConfigMapping().delete();
+        }
+
+        super.deletePartial();
+    }
 
     @Override
     public void delete() throws java.sql.SQLException {

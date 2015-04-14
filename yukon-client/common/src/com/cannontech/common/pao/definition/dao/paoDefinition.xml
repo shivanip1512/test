@@ -379,7 +379,7 @@
     <pao id="MCT_BASE" abstract="true"
         inherits="OUTAGE_STATUS_BASE, SUPPORTS_COMMANDER_REQUESTS_TAG">
         <displayGroup>MCT</displayGroup>
-        <changeGroup>mct</changeGroup>
+        <changeGroup>meter</changeGroup>
         <tags>
             <tag name="DLC_ADDRESS_RANGE_ENFORCE">
                 <value>0-4194303</value>    <!-- max 22bit (positive values only) -->
@@ -6196,7 +6196,7 @@
         inherits="OUTAGE_STATUS_BASE, RFN_EVENTS, SUPPORTS_OUTAGE_TAG, RFN_PTCALC__ALL, SUPPORTS_COMMANDER_REQUESTS_TAG,
         SUPPORTS_DEVICE_CONFIGURATION, RFN_CHANNEL_CONFIGURATION, RFN_TEMPERATURE_ALARM_CONFIGURATION">
         <displayGroup>RFMESH</displayGroup>
-        <changeGroup>rfn</changeGroup>
+        <changeGroup>meter</changeGroup>
         <points>
             <point type="Analog" offset="1">
                 <init>true</init>

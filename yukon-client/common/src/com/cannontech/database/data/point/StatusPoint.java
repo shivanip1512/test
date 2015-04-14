@@ -37,6 +37,8 @@ public class StatusPoint extends PointBase {
 
     @Override
     public void deletePartial() throws java.sql.SQLException {
+        getPointStatusControl().delete();
+        getPointStatus().delete();
         super.deletePartial();
     }
 

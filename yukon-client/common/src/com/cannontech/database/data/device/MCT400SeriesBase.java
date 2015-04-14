@@ -38,6 +38,13 @@ public abstract class MCT400SeriesBase extends MCTBase {
         getDeviceMCT400Series().delete();
         super.delete();
     }
+    
+    @Override
+    public void deletePartial() throws java.sql.SQLException {
+        getDeviceMCT400Series().delete();
+        super.deletePartial();
+    }
+
 
     public DeviceMCT400Series getDeviceMCT400Series() {
         if (deviceMCT400Series == null) {

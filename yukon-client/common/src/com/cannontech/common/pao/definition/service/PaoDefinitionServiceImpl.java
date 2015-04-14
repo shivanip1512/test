@@ -3,7 +3,6 @@ package com.cannontech.common.pao.definition.service;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,13 +26,11 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 public class PaoDefinitionServiceImpl implements PaoDefinitionService {
     
@@ -59,6 +56,7 @@ public class PaoDefinitionServiceImpl implements PaoDefinitionService {
         this.pointDao = pointDao;
     }
     
+    @Override
     public List<PointBase> createDefaultPointsForPao(YukonPao pao) {
         
         Set<PointTemplate> initPointTemplates = paoDefinitionDao.getInitPointTemplates(pao.getPaoIdentifier().getPaoType());
@@ -66,6 +64,7 @@ public class PaoDefinitionServiceImpl implements PaoDefinitionService {
         return pointList;
     }
     
+    @Override
     public List<PointBase> createAllPointsForPao(YukonPao pao) {
         
         Set<PointTemplate> allPointTemplates = paoDefinitionDao.getAllPointTemplates(pao.getPaoIdentifier().getPaoType());
@@ -110,6 +109,7 @@ public class PaoDefinitionServiceImpl implements PaoDefinitionService {
         return pointList;
     }
     
+    @Override
     public ListMultimap<String, PaoDefinition> getPaoDisplayGroupMap() {
         return paoDefinitionDao.getPaoDisplayGroupMap();
     }
@@ -122,25 +122,30 @@ public class PaoDefinitionServiceImpl implements PaoDefinitionService {
     @Override
     public ListMultimap<String, PaoDefinition> getCreatablePaoDisplayGroupMap() {
         return getPaoDisplayGroupMap(new Predicate<PaoDefinition>() {
+            @Override
             public boolean apply(PaoDefinition input) {
                 return input.isCreatable();
             }
         });
     }
     
+    @Override
     public boolean isPaoTypeChangeable(YukonPao pao) {
         return isPaoTypeChangeable(pao.getPaoIdentifier().getPaoType());
     }
     
+    @Override
     public boolean isPaoTypeChangeable(PaoType paoType) {
         PaoDefinition paoDefinition = paoDefinitionDao.getPaoDefinition(paoType);
         return paoDefinition.isChangeable();
     }
     
+    @Override
     public Set<PaoDefinition> getChangeablePaos(YukonPao pao) {
         return getChangeablePaos(pao.getPaoIdentifier().getPaoType());
     }
     
+    @Override
     public Set<PaoDefinition> getChangeablePaos(PaoType paoType) {
         
         // Make sure this paoType can be changed
@@ -154,125 +159,8 @@ public class PaoDefinitionServiceImpl implements PaoDefinitionService {
         Set<PaoDefinition> paos = paoDefinitionDao.getPaosThatPaoCanChangeTo(paoDefinition);
         return paos;
     }
-    
-    /**
-     * Points to add are points that are defined for newDefinition minus points being
-     * transfered (i.e. minus new points from getPointTemplatesForTransfer).
-     * 
-     * For this method, templates are being compared on the new definition and therefore
-     * should be compared by the identifier (although including name won't hurt, because
-     * everything is from the same definition).
-     */
-    public Set<PointTemplate> getPointTemplatesToAdd(YukonPao pao, PaoDefinition newDefinition) {
-        
-        this.validateChange(pao, newDefinition);
-        
-        Set<PointTemplate> existingTemplates = paoDefinitionDao.getInitPointTemplates(newDefinition);
-        HashSet<PointTemplate> result = new HashSet<PointTemplate>(existingTemplates);
-        
-        Iterable<PointTemplateTransferPair> pointTemplatesToTransfer = getPointTemplatesToTransfer(pao, newDefinition);
-        for (PointTemplateTransferPair pointTemplateTransferPair : pointTemplatesToTransfer) {
-            result.remove(pointTemplateTransferPair.newDefinitionTemplate);
-        }
-        
-        return result;
-    }
-    
-    /**
-     * Points to remove are points that exist on pao (AND are defined) minus points being
-     * transfered (i.e. minus old points from getPointTemplatesForTransfer).
-     *
-     * For this method, templates are being compared on the new definition and therefore
-     * should be compared by the identifier (although including name won't hurt, because
-     * everything is from the same definition).
-     */
-    public Set<PointIdentifier> getPointTemplatesToRemove(YukonPao pao, PaoDefinition newDefinition) {
-        
-        this.validateChange(pao, newDefinition);
-       
-        HashSet<PointIdentifier> result = new HashSet<PointIdentifier>();
-        Set<PointTemplate> existingPointTemplates = getExistingPointTemplates(pao);
-        for (PointTemplate pointTemplate : existingPointTemplates) {
-            result.add(pointTemplate.getPointIdentifier());
-        }
-        
-        Iterable<PointTemplateTransferPair> pointTemplatesToTransfer = getPointTemplatesToTransfer(pao, newDefinition);
-        for (PointTemplateTransferPair pointTemplateTransferPair : pointTemplatesToTransfer) {
-            result.remove(pointTemplateTransferPair.oldDefinitionTemplate);
-        }
-        
-        return result;
-    }
-    
-    public Set<PointTemplateTransferPair> getPointTemplatesToTransfer(YukonPao pao, PaoDefinition newDefinition) {
-        
-        this.validateChange(pao, newDefinition);
-        
-        Set<PointTemplate> existingTemplates = this.getExistingPointTemplates(pao);
-        Set<PointTemplate> supportedTemplates = paoDefinitionDao.getAllPointTemplates(newDefinition);
-        
-        // Form pairs of points by comparing names
-        Set<PointTemplateTransferPair> result = Sets.newHashSet();
-        for (PointTemplate oldTemplate : existingTemplates) {
-            for (PointTemplate newTemplate : supportedTemplates) {
-                // here's the big check that determines what points are the same
-                // note we're comparing the names of the names of the templates
-                // so that any changes to the point's name in the DB are ignored
-                if (oldTemplate.getName().equals(newTemplate.getName())) {
-                    PointTemplateTransferPair pair = new PointTemplateTransferPair();
-                    pair.oldDefinitionTemplate = oldTemplate.getPointIdentifier();
-                    pair.newDefinitionTemplate = newTemplate;
-                    result.add(pair);
-                }
-            }
-        }
-        
-        return result;
-    }
-    
-    /**
-     * Helper method to determine if the pao can be changed into the new
-     * definition type
-     * @param pao - Pao to change
-     * @param newDefinition - Definition of type to change to
-     * @return True if the pao can be changed into the given definition type
-     */
-    private void validateChange(YukonPao pao, PaoDefinition newDefinition) {
-        
-        PaoDefinition paoDefinition = paoDefinitionDao.getPaoDefinition(pao.getPaoIdentifier().getPaoType());
-        
-        if (paoDefinition.getChangeGroup() == null
-                || !paoDefinition.getChangeGroup().equals(newDefinition.getChangeGroup())) {
-            
-            throw new IllegalArgumentException(pao + " cannot be changed into a " + newDefinition.getDisplayName());
-        }
-        
-    }
-    
-    /**
-     * Helper method to get the list of point templates that correspond to
-     * litePoints that exist for the given pao
-     * @param pao - Pao to get pointTemplates for
-     * @return A set of existing point templates (returns a new copy each time the method is called)
-     */
-    private Set<PointTemplate> getExistingPointTemplates(YukonPao pao) {
-        
-        Set<PointTemplate> templates = new HashSet<PointTemplate>();
-        List<LitePoint> existingPoints = pointDao.getLitePointsByPaObjectId(pao.getPaoIdentifier().getPaoId());
-        Set<PointTemplate> existingTemplates = paoDefinitionDao.getAllPointTemplates(pao.getPaoIdentifier().getPaoType());
-        
-        for (LitePoint litePoint : existingPoints) {
-            PointIdentifier pointIdentifier = PointIdentifier.createPointIdentifier(litePoint);
-            for (PointTemplate template : existingTemplates) {
-                if (pointIdentifier.equals(template.getPointIdentifier())) {
-                    templates.add(template);
-                }
-            }
-        }
-        
-        return templates;
-    }
-    
+
+    @Override
     public List<PaoType> findListOfPaoTypesInGroup(DeviceGroup group, Collection<PaoType> possiblePaoTypes) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();

@@ -24,23 +24,21 @@ import javax.swing.event.ListSelectionListener;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.DeviceUpdateService;
+import com.cannontech.common.device.service.DeviceUpdateService.PointToTemplate;
+import com.cannontech.common.device.service.DeviceUpdateService.PointsToProcess;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TitleBorder;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
-import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
-import com.cannontech.common.pao.definition.service.PaoDefinitionService.PointTemplateTransferPair;
-import com.cannontech.common.pao.service.PointService;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
-import com.cannontech.database.data.lite.LiteFactory;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.db.point.Point;
 import com.cannontech.spring.YukonSpringHook;
 
 public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectionListener {
@@ -49,7 +47,6 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
 
     private PaoDefinitionService paoDefinitionService = YukonSpringHook.getBean(PaoDefinitionService.class);
     private DeviceUpdateService deviceUpdateService = YukonSpringHook.getBean(DeviceUpdateService.class);
-    private PointService pointService = (PointService) YukonSpringHook.getBean("devicePointService");
 
     private JList deviceJList = null;
     private JPanel ivjJPanelNotes = null;
@@ -100,9 +97,9 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
             return newDefinition.getType();
         }
 
-        return deviceUpdateService.changeDeviceType(currentDevice, newDefinition);
+        return deviceUpdateService.changeDeviceType(currentDevice, newDefinition, null);
     }
-
+    
     @Override
     public void setValue(Object val) {
     }
@@ -220,7 +217,23 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
         List<PaoDefinition> deviceList = new ArrayList<PaoDefinition>();
         DeviceDao deviceDao = YukonSpringHook.getBean(DeviceDao.class);
         SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
-        deviceList.addAll(paoDefinitionService.getChangeablePaos(yukonDevice));
+       
+        Set<PaoDefinition> changeablePaos = paoDefinitionService.getChangeablePaos(yukonDevice);
+        for (PaoDefinition paoDefinition : changeablePaos) {
+            PaoType paoType = yukonDevice.getPaoIdentifier().getPaoType();
+            if (paoType.isMct()) {
+                if (paoDefinition.getType().isMct()) {
+                    deviceList.add(paoDefinition);
+                }
+            } else if (paoType.isRfMeter()) {
+                if (paoDefinition.getType().isRfMeter()) {
+                    deviceList.add(paoDefinition);
+                }
+            } else {
+                deviceList.add(paoDefinition);
+            }
+        }
+
         Collections.sort(deviceList);
 
         // Set the JList data
@@ -239,10 +252,10 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
     private String generateDeviceChangeText(PaoDefinition paoDefinition) {
 
         StringBuffer buffer = new StringBuffer();
-
-        DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean("deviceDao");
+        
         DeviceBase device = getCurrentDevice();
-        SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
+        
+        PointsToProcess pointsToProcess = deviceUpdateService.getPointsToProccess(device, paoDefinition.getType());
 
         // Add text to explain what type the current device is and what it is
         // changing to
@@ -250,8 +263,8 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
                 + paoDefinition.getDisplayName() + "\n\n");
 
         // Add text for point additions
-        Set<PointTemplate> addTemplates = paoDefinitionService.getPointTemplatesToAdd(yukonDevice,
-                                                                                         paoDefinition);
+        Set<PointTemplate> addTemplates = pointsToProcess.getPointsToAdd();
+        
         buffer.append("Points to add:\n");
         if (addTemplates.size() == 0) {
             buffer.append("--none\n");
@@ -263,14 +276,12 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
         buffer.append("\n");
 
         // Add text for point deletions
-        Set<PointIdentifier> removeTemplates = paoDefinitionService.getPointTemplatesToRemove(yukonDevice,
-                                                                                               paoDefinition);
+        Set<PointBase> removeTemplates = pointsToProcess.getPointsToDelete();
         buffer.append("Points to remove:\n");
         buffer.append(this.generateRemoveChangeText(paoDefinition, removeTemplates));
 
         // Add text for point transfers
-        Collection<PointTemplateTransferPair> transferTemplates = paoDefinitionService.getPointTemplatesToTransfer(yukonDevice,
-                                                                                                       paoDefinition);
+        Collection<PointToTemplate> transferTemplates = pointsToProcess.getPointsToTransfer().values();
         buffer.append("Points to transfer:\n");
         if (transferTemplates.size() == 0) {
             buffer.append("--none\n");
@@ -286,23 +297,18 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
      * the device type is changed
      * @param paoDefinition - Selected definition to change the current
      *            device to
-     * @param removeTemplates - Templates of points to remove
+     * @param points - Templates of points to remove
      * @return A String with remove information
      */
-    private String generateRemoveChangeText(PaoDefinition paoDefinition,
-            Set<PointIdentifier> removeTemplates) {
+    private String generateRemoveChangeText(PaoDefinition paoDefinition, Set<PointBase> points) {
 
         StringBuffer buffer = new StringBuffer();
 
-        if (removeTemplates.size() == 0) {
+        if (points.size() == 0) {
             buffer.append("--none\n");
         } else {
-            LitePoint point = null;
-            for (PointIdentifier template : removeTemplates) {
-                DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean("deviceDao");
-                SimpleDevice device = deviceDao.getYukonDeviceForDevice(getCurrentDevice());
-                point = pointService.getPointForPao(device, template);
-                buffer.append("-- #" + point.getPointOffset() + " " + point.getPointName() + "\n");
+            for (PointBase point : points) {
+                buffer.append("-- #" + point.getPoint().getPointOffset() + " " + point.getPoint().getPointName() + "\n");
             }
         }
         buffer.append("\n");
@@ -320,35 +326,37 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
      * @return A String with change information
      */
     private String generatePointTransferChangeText(PaoDefinition paoDefinition,
-            Iterable<PointTemplateTransferPair> transferTemplates) {
+            Collection<PointToTemplate> transferTemplates) {
 
         StringBuffer buffer = new StringBuffer();
 
-        DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean("deviceDao");
-        SimpleDevice device = deviceDao.getYukonDeviceForDevice(getCurrentDevice());
         
-        for (PointTemplateTransferPair pair : transferTemplates) {
-        	LitePoint litePoint = pointService.getPointForPao(device, pair.oldDefinitionTemplate);
-            PointBase point = (PointBase) LiteFactory.createDBPersistent(litePoint);
+        for (PointToTemplate pointToTemplate : transferTemplates) {
+    
+            Point point = pointToTemplate.getPoint().getPoint();
+            buffer.append("-- #" + point.getPointOffset() + " " + point.getPointName()+ "\n");
 
-            buffer.append("-- #" + litePoint.getPointOffset() + " " + litePoint.getPointName()
-                    + "\n");
-
-            if (pair.newDefinitionTemplate.getOffset() != litePoint.getPointOffset()) {
-                buffer.append("    offset will be updated to: " + pair.newDefinitionTemplate.getOffset() + "\n");
+            if (!pointToTemplate.getTemplate().getName().equals(point.getPointName())) {
+                buffer.append("    point name will be updated to: " + pointToTemplate.getTemplate().getName()
+                        + "\n");
+            }
+            
+            if (pointToTemplate.getTemplate().getOffset() != point.getPointOffset()) {
+                buffer.append("    offset will be updated to: " + pointToTemplate.getTemplate().getOffset() + "\n");
             }
 
+            PointBase pointBase = pointToTemplate.getPoint();
             Double currentMultiplier = 1.0;
-            if (point instanceof AccumulatorPoint) {
-                AccumulatorPoint accPoint = (AccumulatorPoint) point;
+            if (pointBase instanceof AccumulatorPoint) {
+                AccumulatorPoint accPoint = (AccumulatorPoint) pointBase;
                 currentMultiplier = accPoint.getPointAccumulator().getMultiplier();
-            } else if (point instanceof AnalogPoint) {
-                AnalogPoint analogPoint = (AnalogPoint) point;
+            } else if (pointBase instanceof AnalogPoint) {
+                AnalogPoint analogPoint = (AnalogPoint) pointBase;
                 currentMultiplier = analogPoint.getPointAnalog().getMultiplier();
             }
-
-            if (pair.newDefinitionTemplate.getMultiplier() != currentMultiplier) {
-                buffer.append("    multiplier will be updated to: " + pair.newDefinitionTemplate.getMultiplier()
+        
+            if (pointToTemplate.getTemplate().getMultiplier() != currentMultiplier) {
+                buffer.append("    multiplier will be updated to: " + pointToTemplate.getTemplate().getMultiplier()
                         + "\n");
             }
         }
