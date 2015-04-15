@@ -6,7 +6,10 @@
   
   <menu name="ami">
     <permissions>
-      <role name="METERING" />
+      <or>
+        <role name="METERING" />
+        <role name="APPLICATION_BILLING" />
+      </or>
     </permissions>
     <link>/meter/start</link>
     <options>

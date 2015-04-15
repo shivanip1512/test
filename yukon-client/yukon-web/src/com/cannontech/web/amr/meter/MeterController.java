@@ -89,6 +89,7 @@ public class MeterController {
         return "start.jsp";
     }
     
+    @CheckRole({ YukonRole.METERING })
     @RequestMapping("search")
     public String search(HttpServletRequest request, ModelMap model, YukonUserContext userContext,
             SortingParameters sorting, PagingParameters paging) {
@@ -169,6 +170,7 @@ public class MeterController {
         return "meters.jsp";
     }
     
+    @CheckRole({ YukonRole.METERING })
     @RequestMapping("home")
     public String home(HttpServletRequest request, ModelMap model, LiteYukonUser user, int deviceId) {
         
@@ -259,6 +261,7 @@ public class MeterController {
         return "meterHome.jsp";
     }
     
+    @CheckRole({ YukonRole.METERING })
     @RequestMapping("touPreviousReadings")
     public String touPreviousReadings(ModelMap model, int deviceId) {
         
