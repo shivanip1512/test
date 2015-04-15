@@ -2,7 +2,7 @@ package com.cannontech.capcontrol.export;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 
 import com.cannontech.user.YukonUserContext;
 
@@ -19,6 +19,6 @@ public interface RegulatorPointMappingExportService {
      * @throws IOException thrown if there is a problem creating the File. 
      * stored 
      */
-    File generateCsv(String filename, List<Integer> regulatorIds, YukonUserContext userContext) throws IOException;
+    File generateCsv(String filename, Collection<Integer> regulatorIds, YukonUserContext userContext) throws IOException;
 
 }

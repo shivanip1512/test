@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,7 +30,7 @@ public class RegulatorPointMappingExportServiceImpl implements RegulatorPointMap
     private final static String extension = ".csv";
     
     @Override
-    public File generateCsv(String filename, List<Integer> regulatorIds, YukonUserContext userContext) throws IOException {
+    public File generateCsv(String filename, Collection<Integer> regulatorIds, YukonUserContext userContext) throws IOException {
 
         String timestamp = dateFormattingService.format(new Instant(), DateFormatEnum.FILE_TIMESTAMP, userContext);
         String completeFilename = filename + '_' + timestamp + extension;

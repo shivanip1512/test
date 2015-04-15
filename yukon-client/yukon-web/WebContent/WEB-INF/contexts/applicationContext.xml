@@ -883,6 +883,7 @@
     </bean>
     
     <bean class="com.cannontech.web.capcontrol.regulator.setup.service.impl.RegulatorMappingServiceImpl"/>
+    <bean class="com.cannontech.web.capcontrol.regulator.setup.FileExporter"/>
     <bean class="com.cannontech.common.util.RecentResultsCache">
         <qualifier value="regulatorMapping"/>
     </bean>

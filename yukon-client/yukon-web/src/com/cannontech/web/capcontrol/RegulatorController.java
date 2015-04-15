@@ -1,7 +1,5 @@
 package com.cannontech.web.capcontrol;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,13 +10,11 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,7 +34,6 @@ import com.cannontech.capcontrol.model.RegulatorEvent;
 import com.cannontech.capcontrol.model.RegulatorEvent.EventType;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.service.VoltageRegulatorService;
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
@@ -51,6 +46,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
+import com.cannontech.web.capcontrol.regulator.setup.FileExporter;
 import com.cannontech.web.capcontrol.regulator.setup.model.RegulatorMappingResult;
 import com.cannontech.web.capcontrol.regulator.setup.service.RegulatorMappingService;
 import com.cannontech.web.capcontrol.validators.RegulatorValidator;
@@ -75,8 +71,8 @@ public class RegulatorController {
     @Autowired private RegulatorMappingService mappingService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private ZoneDao zoneDao;
+    @Autowired private FileExporter fileExporter;
     
-    private final Logger log = YukonLogManager.getLogger(RegulatorController.class);
     private static final Map<RegulatorEvent.EventType, String> classNameForEventType;
     
     static {
@@ -294,26 +290,9 @@ public class RegulatorController {
     }
     
     @RequestMapping(value="{id}/build-mapping-file", method = RequestMethod.GET)
-    public void export(HttpServletResponse resp, @PathVariable int id, YukonUserContext userContext) {
-        
-        String prefix = "RegulatorAttributeMapping";
-        LiteYukonPAObject regulator = dbCache.getAllPaosMap().get(id);
-        
-        try {
-            File csvFile = exportService.generateCsv(prefix, Collections.singletonList(id), userContext);
-            
-            //Set response properties for CSV file
-            resp.setContentType("text/csv");
-            resp.setHeader("Content-Disposition", "attachment; filename=" + csvFile.getName());
-            resp.setHeader("Content-Length", Long.toString(csvFile.length()));
-            
-            FileCopyUtils.copy(new FileInputStream(csvFile), resp.getOutputStream());
-        } catch (IOException e) {
-            log.error("Error creating regulator attribute mapping file for regulator: "
-                    + regulator + " " + regulator.getPaoIdentifier(), e);
-        }
-        
-        return; 
+    public void export(HttpServletResponse resp, @PathVariable int id, YukonUserContext userContext) throws IOException {
+        String key = fileExporter.build(resp, Collections.singleton(id), userContext);
+        fileExporter.export(key, resp);
     }
     
 }

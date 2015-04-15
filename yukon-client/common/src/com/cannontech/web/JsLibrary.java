@@ -62,6 +62,7 @@ public enum JsLibrary {
     OPEN_LAYERS("/resources/js/lib/open-layers/ol.js"),
     
     YUKON("/resources/js/common/yukon.js"),
+    YUKON_HUB("/resources/js/common/yukon.hub.js"),
     YUKON_ANALYTICS("/resources/js/common/yukon.analytics.js"),
     YUKON_ALERTS("/resources/js/common/yukon.alerts.js"),
     YUKON_CONFIRM("/resources/js/common/yukon.dialog.confirm.js"),

@@ -7,6 +7,14 @@
 <cti:standardPage module="capcontrol" page="regulator.setup">
 <cti:includeScript link="/JavaScript/yukon.da.regulator.setup.js"/>
 
+<tags:pickerDialog type="regulatorPicker" id="mappingPicker" linkType="none"
+            endEvent="yukon:da:regulator:mapping:build"
+            multiSelectMode="true"/>
+
+<div id="page-buttons">
+    <cti:button nameKey="mapping.new" classes="js-new-mappings" icon="icon-page-white-excel"/>
+</div>
+
 <tags:sectionContainer2 nameKey="recentTasks" styleClass="stacked">
     <c:set var="clazz" value="${not empty tasks ? 'dn' : ''}"/>
     <div class="empty-list ${clazz}"><i:inline key=".recentTasks.none"/></div>

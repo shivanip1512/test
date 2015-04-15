@@ -1,5 +1,6 @@
 package com.cannontech.web.capcontrol.regulator.setup;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,6 +38,7 @@ import com.cannontech.web.capcontrol.regulator.setup.service.RegulatorMappingSer
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -45,6 +47,7 @@ public class RegulatorSetupController {
     
     @Autowired private IDatabaseCache dbCache;
     @Autowired private VoltageRegulatorService regulatorService;
+    @Autowired private FileExporter fileExporter;
     @Autowired private RegulatorMappingService mappingService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private DateFormattingService dateFormatting;
@@ -98,6 +101,22 @@ public class RegulatorSetupController {
         data.put("total", task.getRegulators().size());
         
         return data;
+    }
+    
+    /** Build a mapping import file. */
+    @RequestMapping(value="regulator-setup/map-attributes/build", method=RequestMethod.POST, consumes=json, produces=json)
+    public @ResponseBody Map<String, String> build(HttpServletResponse resp, YukonUserContext userContext, 
+            @RequestBody List<Integer> ids)
+    throws IOException{
+        
+        String key = fileExporter.build(resp, ids, userContext);
+        return ImmutableMap.of("key", key);
+    }
+    
+    /** Build a mapping import file. */
+    @RequestMapping("regulator-setup/map-attributes/export/{key}")
+    public void export(HttpServletResponse resp, YukonUserContext userContext, @PathVariable String key) {
+        fileExporter.export(key, resp);
     }
     
     /** Start a mapping task. */

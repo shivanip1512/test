@@ -692,5 +692,6 @@
     <entry key="yukon.web.modules.capcontrol.regulator.setup.recentTasks.title">Recent Attribute Mapping Tasks</entry>
     <entry key="yukon.web.modules.capcontrol.regulator.setup.recentTasks.none">No attribute mapping tasks have been started.</entry>
     <entry key="yukon.web.modules.capcontrol.regulator.setup.mapping.result.title">Attribute Mapping Results ({0})</entry>
+    <entry key="yukon.web.modules.capcontrol.regulator.setup.mapping.new.label">Build Attribute Mappings</entry>
     
 </properties>

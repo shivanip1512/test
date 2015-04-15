@@ -113,6 +113,9 @@ yukon.da.regulatorSetup = (function () {
             /** Show picker when start button clicked. */
             $('.js-new-task').click(function (ev) { yukon.pickers['regulatorPicker'].show(); });
             
+            /** Show picker when build attribute mappings button clicked. */
+            $('.js-new-mappings').click(function (ev) { yukon.pickers['mappingPicker'].show(); });
+            
             /** Retrieve a task result. */
             $(document).on('click', '.js-task-table tbody tr', function (ev) {
                 
@@ -208,6 +211,22 @@ yukon.da.regulatorSetup = (function () {
                 })
                 .done(function (task) {
                     debug.debug('New Task: ', task);
+                });
+            });
+            
+            /** Build a attribute to point mapping file after regulators were picked. */
+            $(document).on('yukon:da:regulator:mapping:build', function (ev, items, picker) {
+                
+                debug.debug('Regulators chosen for mapping file:', items);
+                var ids = items.map(function (item) { return item.paoId; });
+                
+                $.ajax({
+                    url: yukon.url('/capcontrol/regulator-setup/map-attributes/build'),
+                    type: 'post',
+                    contentType: 'application/json',
+                    data: JSON.stringify(ids)
+                }).done(function (data) {
+                    window.location.href = yukon.url('/capcontrol/regulator-setup/map-attributes/export/' + data.key);
                 });
             });
             
