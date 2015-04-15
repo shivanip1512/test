@@ -38,7 +38,7 @@
 
 
 <div>
-<h:commandButton action="#{sProgramDetail.saveNew}" value="Create"/>
+<h:commandButton action="#{sProgramDetail.saveNew}" value="Create" disabled="#{empty sProgramDetail.availableTypes}"/>
 <h:commandButton action="#{sProgramDetail.cancel}" value="Cancel"/>
 </div>
 
