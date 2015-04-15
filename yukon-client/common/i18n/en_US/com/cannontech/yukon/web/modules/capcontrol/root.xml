@@ -555,6 +555,7 @@
     <entry key="yukon.web.modules.capcontrol.import.cbcImportFailure">{0} - Import failed for CBC named "{1}"</entry>
     <entry key="yukon.web.modules.capcontrol.import.cbcImportSuccess">{0} - Import succeeded for CBC named "{1}"</entry>
     <entry key="yukon.web.modules.capcontrol.import.regulatorMappingBadPointType">Invalid Value - {0} failed. Point type "{1}" is invalid for mapping "{2}"</entry>
+    <entry key="yukon.web.modules.capcontrol.import.file.format">{0} File Format</entry>
 
     <entry key="yukon.web.modules.capcontrol.import.sampleFile">Sample File</entry>
     <entry key="yukon.web.modules.capcontrol.import.header.required">Required Columns</entry>

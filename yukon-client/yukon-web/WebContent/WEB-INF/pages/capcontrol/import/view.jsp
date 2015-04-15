@@ -46,9 +46,7 @@
 <c:forEach var="importType" items="${importTypes}">
     <div data-type="${importType}" class="dn">
         <cti:msg2 var="displayImportType" key="${importType}"/>
-        <h2 class="dib">${displayImportType} File Format
-            
-        </h2>
+        <h2 class="dib"><i:inline key=".file.format" arguments="${displayImportType}"/></h2>
         <cti:url var="url" value="/WebConfig/custom/sample_capcontrol_files/Sample ${displayImportType} Import.csv"/>
         <a href="${url}" class="fr">
             <cti:icon icon="icon-page-white-excel"/>
