@@ -141,7 +141,9 @@ public class PointCalcBaseSettingsPanel extends DataInputPanel implements Action
             point.getCalcBase().setUpdateType((String) getUpdateTypeComboBox().getSelectedItem());
             point.getCalcBase().setPeriodicRate(SwingUtil.getIntervalComboBoxSecondsValue(getPeriodicRateComboBox()));
             point.getPoint().setPointOffset(0);
-            point.getPoint().setStateGroupID(StateGroupUtils.STATEGROUP_TWO_STATE_STATUS);
+            if (point.getPoint().getStateGroupID() == null) {
+                point.getPoint().setStateGroupID(StateGroupUtils.STATEGROUP_TWO_STATE_STATUS);
+            }
         } else {
            CalculatedPoint point = (CalculatedPoint) val;
 
