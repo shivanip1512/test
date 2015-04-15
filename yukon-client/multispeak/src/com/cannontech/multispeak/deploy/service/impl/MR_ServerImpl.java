@@ -284,7 +284,7 @@ public class MR_ServerImpl implements MR_Server{
     public List<FormattedBlock> getReadingsByBillingCycle(String billingCycle,
             Calendar billingDate, int kWhLookBack, int kWLookBack,
             int kWLookForward, String lastReceived,
-            String formattedBlockTemplateName, List<String> fieldName)
+            String formattedBlockTemplateName)
             throws MultispeakWebServiceException {
         /* TODO
         init();
@@ -465,8 +465,7 @@ public class MR_ServerImpl implements MR_Server{
     
     @Override
     public FormattedBlock getLatestReadingByMeterNoAndType(String meterNo,
-            String readingType, String formattedBlockTemplateName,
-            List<String> fieldName) throws MultispeakWebServiceException {
+            String readingType, String formattedBlockTemplateName) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("getLatestReadingByMeterNoAndType", vendor.getCompanyName());
@@ -506,8 +505,7 @@ public class MR_ServerImpl implements MR_Server{
     
     @Override
     public List<FormattedBlock> getLatestReadingByType(String readingType,
-            String lastReceived, String formattedBlockTemplateName,
-            List<String> fieldName) throws MultispeakWebServiceException {
+            String lastReceived, String formattedBlockTemplateName) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("getLatestReadingByType", vendor.getCompanyName());
@@ -530,7 +528,7 @@ public class MR_ServerImpl implements MR_Server{
     @Override
     public List<FormattedBlock> getReadingsByDateAndType(Calendar startDate,
             Calendar endDate, String readingType, String lastReceived,
-            String formattedBlockTemplateName, List<String> fieldName)
+            String formattedBlockTemplateName)
             throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
@@ -558,8 +556,7 @@ public class MR_ServerImpl implements MR_Server{
     @Override
     public List<FormattedBlock> getReadingsByMeterNoAndType(String meterNo,
             Calendar startDate, Calendar endDate, String readingType,
-            String lastReceived, String formattedBlockTemplateName,
-            List<String> fieldName) throws MultispeakWebServiceException {
+            String lastReceived, String formattedBlockTemplateName) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("getReadingsByMeterNoAndType", vendor.getCompanyName());
