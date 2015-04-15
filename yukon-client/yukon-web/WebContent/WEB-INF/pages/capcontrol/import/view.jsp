@@ -31,7 +31,7 @@
 <c:if test="${not empty results}">
     <tags:sectionContainer2 nameKey="resultContainer">
         <div class="scroll-md">
-            <ol style="list-style-type:decimal; padding-left: 35px">
+            <ol class="numbered-list">
                 <c:forEach var="result" items="${results}">
                     <c:set var="clazz" value="${result.success ? 'success' : 'error'}"/>
                     <li>
