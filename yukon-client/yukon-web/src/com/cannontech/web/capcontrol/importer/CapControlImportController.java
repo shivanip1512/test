@@ -84,18 +84,18 @@ public class CapControlImportController {
     };
     
     @RequestMapping("view")
-    public String view(String key, ModelMap model) {
+    public String view(String cacheKey, ModelMap model) {
         
         List<ImportResult> results = Lists.newArrayList();
         
-        if (key != null) {
-            results = resultsLookup.getIfPresent(key);
+        if (cacheKey != null) {
+            results = resultsLookup.getIfPresent(cacheKey);
         }
         
         model.addAttribute("results", results);
         model.addAttribute("importTypes", ImportType.values());
         
-        return "import/capcontrolImport.jsp";
+        return "import/view.jsp";
     }
     
     @RequestMapping(value="cbcFile", method=RequestMethod.POST)

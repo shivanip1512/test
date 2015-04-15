@@ -522,7 +522,6 @@
     <entry key="yukon.web.modules.capcontrol.import.pageName">Capacitor Control Import</entry>
     <entry key="yukon.web.modules.capcontrol.import.importContainer.title">File Upload</entry>
     <entry key="yukon.web.modules.capcontrol.import.resultContainer.title">Import Results</entry>
-    <entry key="yukon.web.modules.capcontrol.import.importSubmitButton.label">Import</entry>
     <entry key="yukon.web.modules.capcontrol.import.importTypeSelect">Import type</entry>
     <entry key="yukon.web.modules.capcontrol.import.importTypes.CBC">CBC</entry>
     <entry key="yukon.web.modules.capcontrol.import.importTypes.HIERARCHY">Hierarchy</entry>
