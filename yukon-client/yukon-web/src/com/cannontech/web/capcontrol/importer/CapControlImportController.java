@@ -46,7 +46,6 @@ import com.cannontech.common.exception.InvalidColumnNameException;
 import com.cannontech.common.exception.RequiredColumnMissingException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.web.common.flashScope.FlashScope;
