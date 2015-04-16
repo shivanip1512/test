@@ -94,20 +94,15 @@ RowWriter &DatabaseWriter::operator<<(const INT operand)
     return *this;
 }
 
-/* SQLAPI++ email response to explain the casts in the following two functions:
- * I suspect it's not the problem of the &operator << (unsigned long) but the SQLNCI wrapper bug. 
- * Sinse 4.0.3 we use ODBC API by default for SQL Server. So inside SQLNCLI/ODBC wrapper we use                                                   .
- * SQL_INTEGER type for SQL_C_ULONG program variables.
- */
 RowWriter &DatabaseWriter::operator<<(const UINT operand)
 {
-    _command << static_cast<sa_uint64_t>(operand);
+    _command << (unsigned long)operand;
     return *this;
 }
 
 RowWriter &DatabaseWriter::operator<<(const unsigned long operand)
 {
-    _command << static_cast<sa_uint64_t>(operand);
+    _command << operand;
     return *this;
 }
 

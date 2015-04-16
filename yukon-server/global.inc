@@ -81,7 +81,7 @@ $(BOOST)\lib\boost_system-$(BOOST_VERSION).lib
 BOOST_TEST_LIBS = \
 $(BOOST)\lib\boost_unit_test_framework-$(BOOST_VERSION).lib
 
-SQLAPI          = $(CPP_LIBRARIES)\sqlapi\4.1.4
+SQLAPI          = $(CPP_LIBRARIES)\sqlapi\4.1.4-patched
 SQLAPI_LIB      = $(SQLAPI)\lib\sqlapi.lib
 SQLAPI_DLL      = sqlapi.dll
 
