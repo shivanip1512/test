@@ -183,7 +183,7 @@ var yukon = (function () {
                 if (lat > 90 || lat < -90) {
                     return false;
                 }
-                var validator = /^-?([0-8]?[0-9]|90).[0-9]{1,6}$/;
+                var validator = /^-?([0-8]?[0-9]|90)\.[0-9]{1,6}$/;
                 return validator.test(lat);
             },
             
@@ -244,7 +244,7 @@ yukon.namespace = function (ns) {
 yukon.namespace('yukon.ui');
 yukon.ui = (function () {
     
-    var initialized = false, mod = {};
+    var initialized = false,
     
     /** Initialize the site wide search autocomplete. */
     _initSearch = function () {
@@ -313,12 +313,12 @@ yukon.ui = (function () {
                 btn.prepend('<i class="icon busy"></i>');
                 spinner = btn.children('.icon.busy');
             }
-            spinner.show(); 
+            spinner.show();
             
             label = btn.children('.b-label');
             busyText = btn.attr('data-busy');
             if (busyText && label.length > 0) {
-                originalText = label.html(); 
+                originalText = label.html();
                 label.html(busyText);
                 btn.data('originalText', originalText);
             }
@@ -400,31 +400,31 @@ yukon.ui = (function () {
             
             // Cancel Button
             buttons.push({
-                text : options.cancelText, 
-                click : function (ev) { $(this).dialog('close'); }, 
+                text : options.cancelText,
+                click : function (ev) { $(this).dialog('close'); },
                 'class': 'js-secondary-action ' + (options.cancelClass || '')
             });
             
             if (options['delete'] && options.mode !== 'CREATE') {
                 // Delete Button
                 buttons.push({
-                    text : yg.text['delete'], 
+                    text : yg.text['delete'],
                     click: function (ev) {
                         
                         var dialog = $(this).closest('.ui-dialog-content'),
-                            target = options.target ? options.target : dialog;
+                            target = options.target || dialog;
                         mod.confirm({ dialog : dialog });
                         dialog.off('yukon:ui:dialog:confirm').on('yukon:ui:dialog:confirm', function (ev) {
                             $(target).trigger('yukon:ui:dialog:delete');
                         });
-                    }, 
+                    },
                     'class' : 'delete'
                 });
             }
             
             // OK Button
             buttons.push({
-                text : options.okText, 
+                text : options.okText,
                 click : function (ev) {
                     
                     var dialog = $(this).closest('.ui-dialog-content'),
@@ -437,7 +437,7 @@ yukon.ui = (function () {
                     } else {
                         okClicked(dialog, target);
                     }
-                }, 
+                },
                 'class' : 'primary action js-primary-action ' + options.okClass,
                 disabled : options.okDisabled
             });
@@ -670,7 +670,7 @@ yukon.ui = (function () {
                     sort = anchor.data('sort'),
                     container = anchor.closest('[data-url]'),
                     url = container.data('url'),
-                    pagingArea = container.find('.paging-area'), 
+                    pagingArea = container.find('.paging-area'),
                     params = {sort: sort, dir: dir};
                 
                 // Add page size if paging is available
@@ -691,7 +691,7 @@ yukon.ui = (function () {
             /** Paging Handler: Get the next or previous page, or change page size. */
             $(document).on('click', yg.selectors.paging, function (ev) {
                 
-                var 
+                var
                 target = $(this),
                 container = target.closest('[data-url]'),
                 sortables = container.find('.sortable'),
@@ -787,7 +787,7 @@ yukon.ui = (function () {
             });
             
             /** Toggle buttons in a button group */
-            $(document).on('click', '.button-group-toggle .button', function (ev) { 
+            $(document).on('click', '.button-group-toggle .button', function (ev) {
                 
                 var btn = $(this), input, value;
                 
@@ -825,7 +825,7 @@ yukon.ui = (function () {
                 if (button.is(':input')) {
                     this.disabled = true;
                     group = button.attr('data-disable-group');
-                    if (group != '') {
+                    if (group !== '') {
                         $("[data-disable-group='" + group + "']").each(function (idx) {
                             this.disabled = true;
                         });
@@ -841,9 +841,9 @@ yukon.ui = (function () {
                         form = $(this.form);
                         
                         // insert the name and or value of the button into the form action
-                        if (typeof button.attr('name') != 'undefined' && button.attr('name').length != 0) {
-                            form.prepend('<input name="'+ button.attr('name') + '" value="' + button.attr('value') 
-                                    + '" type="hidden"/>');
+                        if (typeof button.attr('name') != 'undefined' && button.attr('name').length !== 0) {
+                            form.prepend('<input name="'+ button.attr('name') +
+                                '" value="' + button.attr('value') + '" type="hidden"/>');
                         }
                         form.trigger('submit');
                     }
@@ -950,7 +950,7 @@ yukon.ui = (function () {
                     if (trigger.is('[data-popup-toggle]') && popup.dialog('isOpen')) {
                         popup.dialog('close');
                         // Return so we don't re-open it, return true to propigate event incase others are listening.
-                        return true; 
+                        return true;
                     }
                 } catch (error) {/* Ignore error, occurs when dialog not initialized yet. */ }
                 
@@ -1174,7 +1174,7 @@ yukon.ui = (function () {
                 // fix up the move up/down buttons if there are any
                 if (row.has('.js-up, .js-down').length) {
                     if (rows.length === 1) { // only one row
-                        row.find('.js-up, .js-down').prop('disabled', true); 
+                        row.find('.js-up, .js-down').prop('disabled', true);
                     } else if (idx === 0) { // first row
                         row.find('.js-up').prop('disabled', true);
                         row.find('.js-down').prop('disabled', false);
@@ -1211,7 +1211,7 @@ yukon.ui = (function () {
                 // fix up the move up/down buttons
                 if (row.has('.js-up, .js-down').length) {
                     if (rows.length === 1) { // only one row
-                        row.find('.js-up, .js-down').prop('disabled', true); 
+                        row.find('.js-up, .js-down').prop('disabled', true);
                     } else if (idx === 0) { // first row
                         row.find('.js-up').prop('disabled', true);
                         row.find('.js-down').prop('disabled', false);
@@ -1242,7 +1242,7 @@ yukon.ui = (function () {
         /** Format time, (do we still need yukon.format.time.js?) */
         formatTime : function (time, opts) {
             
-            var timeStr = ''; 
+            var timeStr = '';
             if (!opts) {
                 opts = {};
             }
@@ -1254,7 +1254,7 @@ yukon.ui = (function () {
                     timeStr = time.getHours() + ':' + mod.pad(time.getMinutes(), 2);
                 }
             } else {
-                var hours = time.getHours() % 12 == 0 ? 12 : time.getHours() % 12,
+                var hours = time.getHours() % 12 === 0 ? 12 : time.getHours() % 12,
                     meridian = '';
                 if (opts.meridian) {
                     meridian = time.getHours() >= 11 ? 'pm' : 'am';
@@ -1494,7 +1494,7 @@ yukon.ui = (function () {
         if (!dialogOptions.dialogClass) {
             dialogOptions.dialogClass = 'ui-dialog-tabbed';
         } else {
-            dialogOptions.dialogClass = dialogOptions.dialogClass + ' ui-dialog-tabbed'; 
+            dialogOptions.dialogClass = dialogOptions.dialogClass + ' ui-dialog-tabbed';
         }
         
         if (initialized && dynamic) {
@@ -1527,7 +1527,7 @@ yukon.ui = (function () {
         
         // Add a title if needed
         var title = this.dialog('option', 'title');
-        if (title != null && title) {
+        if (title) {
             tabul.prepend($('<li>').addClass('ui-dialog-tabbed-title').text(title));
         }
         
@@ -1538,8 +1538,8 @@ yukon.ui = (function () {
                 return;
             }
             
-            var tabbables = $(':tabbable', this).add('ul.ui-tabs-nav.ui-dialog-titlebar-tabbed > li > a'), 
-                first = tabbables.filter(':first'), 
+            var tabbables = $(':tabbable', this).add('ul.ui-tabs-nav.ui-dialog-titlebar-tabbed > li > a'),
+                first = tabbables.filter(':first'),
                 last = tabbables.filter(':last');
             
             if (ev.target === last[0] && !ev.shiftKey) {
