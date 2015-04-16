@@ -13,6 +13,7 @@ import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
@@ -138,7 +139,14 @@ public class PointUtil {
      */
     public static PointBase changePointType(PointBase pointBase, PointTemplate newPointTemplate) throws PersistenceException {
 
-        PointTemplate existingPointTemplate = createPointTemplate(pointBase);
+        PointTemplate existingPointTemplate = null;
+        try {
+            existingPointTemplate = createPointTemplate(pointBase);
+        } catch (NotFoundException e) {
+            // ignore
+            // example: original device has a point that is already deleted, this point is part of the calculation for
+            // second point, it will not be possible to create a template for the second point without the first point.
+        }
         int oldType = PointTypes.getType(pointBase.getPoint().getPointType());
 
         if (oldType != newPointTemplate.getPointType().getPointTypeId()) {
@@ -163,7 +171,7 @@ public class PointUtil {
             dbPersistentDao.performDBChangeWithNoMsg(pointBase, TransactionType.ADD_PARTIAL);
         }
 
-        if (!existingPointTemplate.equals(newPointTemplate)) {
+        if (existingPointTemplate == null || !existingPointTemplate.equals(newPointTemplate)) {
             applyPointTemplate(pointBase, newPointTemplate);
             dbPersistentDao.performDBChange(pointBase, TransactionType.UPDATE);
         }

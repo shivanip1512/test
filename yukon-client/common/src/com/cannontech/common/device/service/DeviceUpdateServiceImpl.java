@@ -441,10 +441,11 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
                     identifierToPoint.removeAll(oldDefinition.getPointTemplate().getPointIdentifier());
                     // removing the point from the list of points to be added
                     pointsToAdd.remove(pointToTemplate.getTemplate());
-
+                    
                     log.debug("Transfering point.");
                 } else {
                     pointsToDelete.addAll(points);
+                    identifierToPoint.removeAll(oldDefinition.getPointTemplate().getPointIdentifier());
                     log.debug("Deleting point.");
                 }
             }

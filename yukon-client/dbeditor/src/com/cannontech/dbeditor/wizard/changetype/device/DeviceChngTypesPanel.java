@@ -22,6 +22,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.bulk.service.ChangeDeviceTypeService.ChangeDeviceTypeInfo;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.device.service.DeviceUpdateService.PointToTemplate;
@@ -34,7 +35,6 @@ import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.device.DeviceBase;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.PointBase;
@@ -54,8 +54,8 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
     private JScrollPane ivjJScrollPaneNotes = null;
     private JTextPane ivjJTextPaneNotes = null;
 
-    // Hack for 310ID to 410 change
-    public boolean isDisconnect = false;
+    public boolean displayMctOptions = false;
+    public boolean displayRfnOptions = false;
 
     /**
      * Constructor
@@ -90,14 +90,17 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
      */
     @Override
     public Object getValue(Object val) {
-
         PaoDefinition newDefinition = (PaoDefinition) getJListDevices().getSelectedValue();
 
         if (val == null) {
             return newDefinition.getType();
         }
 
-        return deviceUpdateService.changeDeviceType(currentDevice, newDefinition, null);
+        if (val instanceof ChangeDeviceTypeInfo) {
+            return deviceUpdateService.changeDeviceType(currentDevice, newDefinition, (ChangeDeviceTypeInfo) val);
+        } else {
+            return deviceUpdateService.changeDeviceType(currentDevice, newDefinition, null);
+        }
     }
     
     @Override
@@ -107,28 +110,42 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
     @Override
     public void valueChanged(ListSelectionEvent ev) {
         // make sure we have the last event in a sequence of events.
-        if (!ev.getValueIsAdjusting()) {
+        if (!ev.getValueIsAdjusting()) {            
             if (ev.getSource() == getJListDevices()) {
                 getJTextPaneNotes().setText("generating type differences...");
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         PaoDefinition paoDefinition = (PaoDefinition) getJListDevices().getSelectedValue();
-                        String text = generateDeviceChangeText(paoDefinition);
+                        
                         if (((PaoDefinition) getJListDevices().getSelectedValue()).equals(paoDefinition)) {
 
+                            displayMctOptions = false;
+                            displayRfnOptions = false;
                             PaoType currentDeviceType = currentDevice.getPaoType();
                             PaoType newType = paoDefinition.getType();
+                            StringBuilder requiredText = new  StringBuilder();
                             
-                            if (DeviceTypesFuncs.isDisconnectMCT(currentDeviceType) && (DeviceTypesFuncs.isMCT410(newType)) ) {
-                                isDisconnect = true;
-                                text = "--When changed to a 410, this device will REQUIRE a disconnect address.\n"
-                                        + text;
-                            } else {
-                                isDisconnect = false;
+                            if (currentDeviceType.isMct() && newType.isRfMeter()) {
+                                displayRfnOptions = true;
+                                requiredText.append("\n-- serial number\n");
+                                requiredText.append("-- model\n");
+                                requiredText.append("-- manufacturer");
                             }
-
-                            getJTextPaneNotes().setText(text);
+                            if (currentDeviceType.isRfMeter() && newType.isMct()) {
+                                displayMctOptions = true;
+                                requiredText.append("\n-- physical address\n");
+                                requiredText.append("-- route");
+                            }
+                            
+                            StringBuilder text = new StringBuilder();
+                            text.append("Change from " + currentDeviceType + " to " + paoDefinition.getDisplayName());
+                            if(requiredText.length() > 0){
+                                text.append("\n\nRequired:");
+                                text.append(requiredText);
+                            }
+                            text.append(generatePointChangeText(paoDefinition));
+                            getJTextPaneNotes().setText(text.toString());
 
                             fireInputUpdate();
 
@@ -217,23 +234,7 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
         List<PaoDefinition> deviceList = new ArrayList<PaoDefinition>();
         DeviceDao deviceDao = YukonSpringHook.getBean(DeviceDao.class);
         SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
-       
-        Set<PaoDefinition> changeablePaos = paoDefinitionService.getChangeablePaos(yukonDevice);
-        for (PaoDefinition paoDefinition : changeablePaos) {
-            PaoType paoType = yukonDevice.getPaoIdentifier().getPaoType();
-            if (paoType.isMct()) {
-                if (paoDefinition.getType().isMct()) {
-                    deviceList.add(paoDefinition);
-                }
-            } else if (paoType.isRfMeter()) {
-                if (paoDefinition.getType().isRfMeter()) {
-                    deviceList.add(paoDefinition);
-                }
-            } else {
-                deviceList.add(paoDefinition);
-            }
-        }
-
+        deviceList.addAll(paoDefinitionService.getChangeablePaos(yukonDevice));
         Collections.sort(deviceList);
 
         // Set the JList data
@@ -249,7 +250,7 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
      *            device to
      * @return A string explaining change details
      */
-    private String generateDeviceChangeText(PaoDefinition paoDefinition) {
+    private String generatePointChangeText(PaoDefinition paoDefinition) {
 
         StringBuffer buffer = new StringBuffer();
         
@@ -257,15 +258,10 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
         
         PointsToProcess pointsToProcess = deviceUpdateService.getPointsToProccess(device, paoDefinition.getType());
 
-        // Add text to explain what type the current device is and what it is
-        // changing to
-        buffer.append("Change from " + device.getPaoType() + " to "
-                + paoDefinition.getDisplayName() + "\n\n");
-
         // Add text for point additions
         Set<PointTemplate> addTemplates = pointsToProcess.getPointsToAdd();
         
-        buffer.append("Points to add:\n");
+        buffer.append("\n\nPoints to add:\n");
         if (addTemplates.size() == 0) {
             buffer.append("--none\n");
         } else {
