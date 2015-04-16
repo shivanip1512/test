@@ -118,7 +118,7 @@ var yukon = (function () {
     
     var mod = {
         
-        /** support for inheritance: inherit superType's prototype */
+        /** Support for inheritance: inherit superType's prototype. */
         inheritPrototype : function (subType, superType) {
             var prototype = Object.create(superType.prototype);
             prototype.constructor = subType;
@@ -199,6 +199,21 @@ var yukon = (function () {
                 return validator.test(long);
             }
             
+        },
+        
+        /**
+         * Returns a random number between min (inclusive) and max (exclusive)
+         */
+        random: function (min, max) {
+            return Math.random() * (max - min) + min;
+        },
+        
+        /**
+         * Returns a random integer between min (inclusive) and max (inclusive)
+         * Using Math.round() will give you a non-uniform distribution!
+         */
+        randomInt: function (min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
         }
         
     };
@@ -1700,8 +1715,9 @@ yukon.ui = (function () {
         
         _create: function () {
             this.element.addClass('timeline-container');
+            this.draw();
         },
-
+        
         /** 
          * Add an event to the timeline
          * @param {string} event.id - Unique identifier key. Will override any existing event with that id.
@@ -1711,6 +1727,7 @@ yukon.ui = (function () {
          */
         addEvent: function (event) {
             this.options.events[event.id] = event;
+            this.draw();
         },
         /** 
          * Add evenst to the timeline
@@ -1720,34 +1737,38 @@ yukon.ui = (function () {
          * @param {string} [events[].message] - html to display in the tooltip.
          */
         addEvents: function (events) {
-            events.forEach(this.addEvent.bind(this));
+            events.forEach(function (event) {
+                this.options.events[event.id] = event;
+            });
+            this.draw();
         },
         
         clear: function () {
             this.options.events = {};
+            this.draw();
         },
-
+        
         _drawTicks: function () {
-
+            
             var container = this.element;
             
             var begin = this.options.begin;
             var end = this.options.end;
             var interval = this.options.tickInterval * 1000;
-
+            
             var time = begin + interval;
             var percent;
             var tick;
-
+            
             while (time < end) {
-
+                
                 percent = yukon.percent(time - begin, end - begin, 5);
                 
                 tick = $('<span class="timeline-tick">')
                 .css({'left': percent });
                 
                 container.append(tick);
-
+                
                 time += interval;
             }
             
@@ -1763,15 +1784,15 @@ yukon.ui = (function () {
             container.append(endSpan);
             
         },
-
+        
         _drawEvents: function () {
-
+            
             var container = this.element;
-
+            
             var begin = this.options.begin;
             var end = this.options.end;
             var events = this.options.events;
-
+            
             //eventIds will only include elements between the bounds, and be sorted by time
             var eventIds = Object.keys(events).filter(function (id) {
                 return begin < events[id].timestamp && events[id].timestamp < end;
@@ -1779,47 +1800,48 @@ yukon.ui = (function () {
             .sort(function (lhs, rhs) {
                 return events[lhs].timestamp - events[rhs].timestamp;
             });
-
+            
             eventIds.forEach(function (id) {
-
+                
                 var event = events[id];
-
+                
                 var percent = yukon.percent(event.timestamp - begin, end - begin, 5);
-
+                
                 var span = $('<span class="timeline-event">')
+                .toggleClass('timeline-icon', event.icon !== undefined)
                 .css({'left': percent })
                 .append('<i class="M0 icon ' + (event.icon || 'icon-blank') + '"/>');
-
+                
                 var prevEvent = container.find('.timeline-event:last');
-
+                
                 container.append(span);
-
+                
                 var tooltipped;
                 var offset = parseFloat(span.css('left')) - parseFloat(prevEvent.css('left'));
-
+                
                 //Cluster if closer than 10 px away
                 if (prevEvent.length && offset < 10) {
-
+                    
                     span.remove();
                     prevEvent.addClass('multi')
                     .data('count', prevEvent.data('count') + 1);
                     
                     prevEvent.find('.icon').remove();
-
+                    
                     if (prevEvent.find('.timeline-event-count').length === 0) {
                         prevEvent.append('<span class="timeline-event-count">');
                     }
-
+                    
                     prevEvent.find('.timeline-event-count')
                         .text(prevEvent.data('count'));
-
+                    
                     tooltipped = prevEvent;
-
+                    
                 } else {
-
+                    
                     span.data('count', 1)
                     .data('tooltip', $('<ul class="simple-list">'));
-
+                    
                     span.tipsy({
                         html: true,
                         opacity: 1.0,
@@ -1830,10 +1852,10 @@ yukon.ui = (function () {
                         delayIn: 150,
                         fade: true
                     });
-
+                    
                     tooltipped = span;
                 }
-
+                
                 var tooltip = tooltipped.data('tooltip');
                 
                 var timeText = moment(event.timestamp).tz(timezone).format(yg.formats.date.full);
@@ -1843,18 +1865,18 @@ yukon.ui = (function () {
                 tooltip.append(itemTooltip);
                 tooltipped.data('tooltip', tooltip);
            });
-
+            
         },
-
+        
         draw: function () {
-
+            
             var container = this.element;
-
+            
             $('.tipsy').remove();
             container.empty();
-
+            
             container.append('<span class="timeline-axis">');
-
+            
             this._drawTicks();
             this._drawEvents();
         }

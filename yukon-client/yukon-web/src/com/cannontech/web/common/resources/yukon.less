@@ -1248,13 +1248,13 @@ input.dateTimePicker { width: 150px; }
 }
 .timeline-axis {
     height: 1px;
-    background-color: black;
+    background-color: @font-color;
     width: 100%;
     top: 8px;
 }
 .timeline-axis::before,
 .timeline-axis::after {
-    background-color: black;
+    background-color: @font-color;
     height: 5px;
     width: 5px;
     content: ' ';
@@ -1266,22 +1266,26 @@ input.dateTimePicker { width: 150px; }
     left: 100%;
 }
 .timeline-tick {
-    background-color: black;
+    background-color: @font-color;
     height: 5px;
     width: 1px;
     top: 6px;
 }
 .timeline-event {
+    background-color: @primary-color;
+    border-radius: 100%;
+    border: 2px solid #555;
     height: 16px;
     width: 16px;
-    background-color: blue;
-    border-radius: 100%;
     top: 1px;
+}
+.timeline-event.timeline-icon:not(.multi) {
+    background-color: transparent;
+    border: none;
 }
 .timeline-event.multi {
     height: 19px;
     width: 19px;
-    background-color: @orange;
     border: 1px solid;
     top: 0;
 }

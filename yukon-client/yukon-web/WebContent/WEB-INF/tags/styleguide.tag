@@ -41,6 +41,8 @@
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/dialogs"/>">Dialogs</a></li>
             <c:set var="clazz" value="${page == 'pickers' ? 'selected' : ''}"/>
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/pickers"/>">Pickers</a></li>
+            <c:set var="clazz" value="${page == 'timelines' ? 'selected' : ''}"/>
+            <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/timelines"/>">Time Lines</a></li>
             <c:set var="clazz" value="${page == 'date-pickers' ? 'selected' : ''}"/>
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/date-pickers"/>">Date & Time Pickers</a></li>
             <c:set var="clazz" value="${page == 'group-pickers' ? 'selected' : ''}"/>

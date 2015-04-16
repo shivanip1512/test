@@ -94,7 +94,7 @@ yukon.da.regulator = (function () {
                 body.prepend(row);
                 row.flash();
             });
-
+            
             body.find('tr:gt(20)').remove();
             
             var timelineContainer = $('.timeline-container[data-regulator-id="' + _id + '"]');

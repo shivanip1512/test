@@ -92,6 +92,11 @@ public class StyleGuideController {
         return "styleguide/progressbars.jsp";
     }
     
+    @RequestMapping("/styleguide/timelines")
+    public String timelines() {
+        return "styleguide/timelines.jsp";
+    }
+    
     public class ButtonBean {
         private String phase = "B";
         
