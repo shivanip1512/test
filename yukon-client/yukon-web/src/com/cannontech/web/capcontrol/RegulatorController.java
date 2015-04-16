@@ -40,8 +40,6 @@ import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -61,7 +59,6 @@ import com.google.common.collect.Lists;
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class RegulatorController {
     
-    @Autowired private DateFormattingService dateFormatting;
     @Autowired private DeviceConfigurationDao deviceConfigDao;
     @Autowired private RegulatorPointMappingExportService exportService;
     @Autowired private IDatabaseCache dbCache;
@@ -254,20 +251,16 @@ public class RegulatorController {
         
         List<RegulatorEvent> events = eventsDao.getForIdSinceTimestamp(id, new Instant(lastUpdate));
         
-        if (events.size() > 20) {
-            events = events.subList(0, 20);
-        }
-        
-        List<Map<String, String>> eventsJson = 
-                Lists.transform(events, new Function<RegulatorEvent, Map<String, String>>() {
+        List<Map<String, Object>> eventsJson =
+                Lists.transform(events, new Function<RegulatorEvent, Map<String, Object>>() {
             
             @Override
-            public Map<String, String> apply(RegulatorEvent event) {
+            public Map<String, Object> apply(RegulatorEvent event) {
                 
-                ImmutableMap.Builder<String, String> eventJson = new ImmutableMap.Builder<>();
+                ImmutableMap.Builder<String, Object> eventJson = new ImmutableMap.Builder<>();
                 
-                String formattedTime = dateFormatting.format(event.getTimestamp(), DateFormatEnum.BOTH, userContext);
-                eventJson.put("timestamp", formattedTime);
+                eventJson.put("id", event.getId());
+                eventJson.put("timestamp", event.getTimestamp().getMillis());
                 
                 String iconClass = classNameForEventType.get(event.getType());
                 eventJson.put("icon", iconClass);

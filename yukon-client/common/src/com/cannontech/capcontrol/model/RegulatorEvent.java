@@ -17,13 +17,15 @@ public class RegulatorEvent {
         ;
     }
 
+    private final int id;
     private final int regulatorId;
     private final Instant timestamp;
     private final EventType type;
     private final Phase phase;
     private final String userName;
 
-    protected RegulatorEvent(int regulatorId, Instant timestamp, EventType type, Phase phase, String userName) {
+    protected RegulatorEvent(int id, int regulatorId, Instant timestamp, EventType type, Phase phase, String userName) {
+        this.id = id;
         this.regulatorId = regulatorId;
         this.timestamp = timestamp;
         this.type = type;
@@ -31,10 +33,13 @@ public class RegulatorEvent {
         this.userName = userName;
     }
 
-    public static RegulatorEvent of(int regulatorId, Instant timestamp, EventType type, Phase phase, String userName) {
-        return new RegulatorEvent(regulatorId, timestamp, type, phase, userName);
+    public static RegulatorEvent of(int id, int regulatorId, Instant timestamp, EventType type, Phase phase, String userName) {
+        return new RegulatorEvent(id, regulatorId, timestamp, type, phase, userName);
     }
 
+    public int getId() {
+        return id;
+    }
     public int getRegulatorId() {
         return regulatorId;
     }

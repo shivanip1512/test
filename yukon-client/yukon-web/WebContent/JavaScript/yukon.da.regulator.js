@@ -14,6 +14,9 @@ yukon.da.regulator = (function () {
     /** @type {number} - The regulator id. */
     var _id = null;
     
+    /** {String} - The IANA timezone name. */
+    var _tz = jstz.determine().name();
+    
     var _templates = {
         successful: '<span class="label label-success">' + yg.text.successful + '</span>',
         failed: '<span class="label label-danger">' + yg.text.failed + '</span>'
@@ -72,15 +75,19 @@ yukon.da.regulator = (function () {
                 row.find('.js-event-icon').addClass(event.icon);
                 row.find('.js-message').html(event.message);
                 row.find('.js-user').text(event.user);
-                row.find('.js-timestamp').text(event.timestamp);
+                
+                var timeText = moment(event.timestamp).tz(_tz).format(yg.formats.date.full);
+                row.find('.js-timestamp').text(timeText);
                 
                 body.prepend(row);
                 row.flash();
             });
+
+            body.find('tr:gt(20)').remove();
             
             body.find('tr:gt(20)').remove();
             
-            setTimeout(_updateRecentEvents, 4000);
+            setTimeout(_updateRecentEvents, yg.rp.updater_delay);
             
         });
     };

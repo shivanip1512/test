@@ -27,6 +27,7 @@ public class RegulatorEventsDaoImpl implements RegulatorEventsDao {
         @Override
         public RegulatorEvent mapRow(YukonResultSet rs) throws SQLException {
 
+            int id = rs.getInt("RegulatorEventId");
             int regulatorId = rs.getInt("RegulatorId");
             Instant timestamp = rs.getInstant("TimeStamp");
             EventType type = rs.getEnum("EventType", EventType.class);
@@ -42,7 +43,7 @@ public class RegulatorEventsDaoImpl implements RegulatorEventsDao {
 
             String userName = rs.getString("UserName");
 
-            return RegulatorEvent.of(regulatorId, timestamp, type, phase, userName);
+            return RegulatorEvent.of(id, regulatorId, timestamp, type, phase, userName);
         }
     };
 
@@ -52,7 +53,7 @@ public class RegulatorEventsDaoImpl implements RegulatorEventsDao {
     public List<RegulatorEvent> getForIdSinceTimestamp(int regulatorId, Instant start) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT RegulatorId, Timestamp, EventType, Phase, UserName");
+        sql.append("SELECT RegulatorEventId, RegulatorId, Timestamp, EventType, Phase, UserName");
         sql.append("FROM RegulatorEvents");
         sql.append("WHERE RegulatorId").eq(regulatorId);
         sql.append("AND TimeStamp").gte(start);
