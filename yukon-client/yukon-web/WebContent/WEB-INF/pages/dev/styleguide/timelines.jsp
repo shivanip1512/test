@@ -55,6 +55,36 @@
 </div>
 <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
+&lt;div class=&quot;js-simple-timeline&quot;&gt;&lt;/div&gt;
+&lt;script&gt;
+var now = new Date();
+var twelveHoursAgo = new Date(now.getTime() - (1000 * 60 * 12 * 60));
+var tl = $('.js-simple-timeline');
+var i, timestamp, hours, stuff, event;
+var event_stuff = {
+    0: { message: 'Earthquake!' },
+    1: { message: 'Legos!', icon: 'icon-brick' },
+    2: { message: 'OMG A BOMB!', icon: 'icon-bomb' },
+    3: { message: 'Happy Birthday!', icon: 'icon-cake' }
+};
+
+var events = [];
+for (var i = 0; i &lt; 10; i++) {
+    hours = yukon.random(1, 9);
+    timestamp = new Date(now.getTime() - (1000 * 60 * hours * 60));
+    stuff = event_stuff[yukon.randomInt(0, 3)];
+    event = { id: i, timestamp: timestamp.getTime(), message: stuff.message };
+    if (stuff.icon) event.icon = stuff.icon;
+    events.push(event);
+}
+
+var options = {};
+options.end = now.getTime();
+options.begin = twelveHoursAgo.getTime();
+options.events = events;
+
+tl.timeline(options);
+&lt;/script&gt;
 </pre>
 
 </tags:styleguide>
