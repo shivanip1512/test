@@ -26,7 +26,7 @@ var yg = {
             full: 'MM/DD/YYYY HH:mm:ss zz',
             full_hm: 'MM/DD/YYYY HH:mm zz',
             long_date_time: 'MMM DD hh:mm:ss A',
-            long_date_time_hms: 'MMM DD hh:mm A',
+            long_date_time_hm: 'MMM DD hh:mm A',
         },
         phone: <cti:msg2 key="yukon.common.phoneNumberFormatting.formats"/>
     },
