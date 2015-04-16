@@ -1239,7 +1239,7 @@ input.dateTimePicker { width: 150px; }
 
 /* TIMELINE WIDGET */
 .timeline-container {
-    height: 19px;
+    height: 26px;
     width: 100%;
     position: relative;
 }
@@ -1250,7 +1250,7 @@ input.dateTimePicker { width: 150px; }
     height: 1px;
     background-color: @font-color;
     width: 100%;
-    top: 8px;
+    top: 13px;
 }
 .timeline-axis::before,
 .timeline-axis::after {
@@ -1263,13 +1263,13 @@ input.dateTimePicker { width: 150px; }
     top: -2px;
 }
 .timeline-axis::after {
-    left: 100%;
+    right: 0;
 }
 .timeline-tick {
     background-color: @font-color;
-    height: 5px;
+    height: 8px;
     width: 1px;
-    top: 6px;
+    top: 10px;
 }
 .timeline-event {
     background-color: @primary-color;
@@ -1277,17 +1277,17 @@ input.dateTimePicker { width: 150px; }
     border: 2px solid #555;
     height: 16px;
     width: 16px;
-    top: 1px;
+    top: 4px;
 }
 .timeline-event.timeline-icon:not(.multi) {
     background-color: transparent;
     border: none;
 }
 .timeline-event.multi {
-    height: 19px;
-    width: 19px;
+    height: 20px;
+    width: 20px;
     border: 1px solid;
-    top: 0;
+    top: 3px;
 }
 .timeline-event-count {
     color: white;
@@ -1299,7 +1299,7 @@ input.dateTimePicker { width: 150px; }
 }
 .timeline-label-begin,
 .timeline-label-end {
-    top: 19px;
+    top: 26px;
     height: 1em;
 }
 .timeline-label-end {
