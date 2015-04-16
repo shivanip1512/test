@@ -18,8 +18,6 @@ yukon.assets.gateway.details = (function () {
     /** {String} - The IANA timezone name. */
     _tz = jstz.determine().name(),
     
-    _timeFormat = 'MM/DD/YYYY hh:mm A',
-    
     /** @type {Number} - The gateway pao id. */
     _gateway,
     
@@ -111,7 +109,7 @@ yukon.assets.gateway.details = (function () {
             comm.find('.js-gw-radios').empty();
             radios.forEach(function (item, idx, arr) {
                 var radio = radios[idx],
-                    timestamp = moment(radio.timestamp).tz(_tz).format(_timeFormat),
+                    timestamp = moment(radio.timestamp).tz(_tz).format(yg.formats.date.full_hm),
                     div = $('<div>').addClass('stacked').attr('title', timestamp);
                 div.append('<div>' + radio.type + '</div>');
                 div.append('<div>' + radio.mac + '</div>');
@@ -124,7 +122,7 @@ yukon.assets.gateway.details = (function () {
             .toggleClass('red', data.lastComm == 'FAILED')
             .toggleClass('orange', data.lastComm == 'MISSED')
             .toggleClass('subtle', data.lastComm == 'UNKNOWN');
-            comm.find('.js-gw-last-comm-time').text(moment(data.lastCommTimestamp).tz(_tz).format(_timeFormat));
+            comm.find('.js-gw-last-comm-time').text(moment(data.lastCommTimestamp).tz(_tz).format(yg.formats.date.full_hm));
             collection.find('.js-gw-data-completeness .progress-bar').css({ width: data.collectionPercent + '%' })
             .toggleClass('progress-bar-success', !data.collectionDanger && !data.collectionWarning)
             .toggleClass('progress-bar-warning', data.collectionWarning)

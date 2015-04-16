@@ -21,6 +21,16 @@ var yg = {
         pagingend: 'yukon:paging:end'
     },
     
+    formats: {
+        date: {
+            full: 'MM/DD/YYYY HH:mm:ss zz',
+            full_hm: 'MM/DD/YYYY HH:mm zz',
+            long_date_time: 'MMM DD hh:mm:ss A',
+            long_date_time_hms: 'MMM DD hh:mm A',
+        },
+        phone: <cti:msg2 key="yukon.common.phoneNumberFormatting.formats"/>
+    },
+    
     highcharts_options: {
         global: {
             useUTC: false,
@@ -29,10 +39,6 @@ var yg = {
     },
     
     keys: { up: 38, down: 40, left: 37, right: 39, enter: 13, escape: 27 },
-    
-    phone: {
-        formats: <cti:msg2 key="yukon.common.phoneNumberFormatting.formats"/>
-    },
     
     // Common selectors in all of Yukon.
     selectors: {

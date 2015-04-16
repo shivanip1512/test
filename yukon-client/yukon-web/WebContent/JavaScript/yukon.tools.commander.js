@@ -49,8 +49,6 @@ yukon.tools.commander = (function () {
     /** {String} - The IANA timezone name. */
     _tz = jstz.determine().name(),
     
-    _timeFormat = 'MMM DD hh:mm:ss A z',
-    
     /** {object} - Map of requests that are still waiting for responses.
      *             It's a hash of request id to array of already processed response ids. */
     _pending = {},
@@ -160,7 +158,7 @@ yukon.tools.commander = (function () {
      */
     _logRequest = function (req) {
         
-        var timestamp = moment(req.timezone).tz(_tz).format(_timeFormat),
+        var timestamp = moment(req.timestamp).tz(_tz).format(yg.formats.date.long_date_time_hms),
             result = $('<div>'), 
             resultReq = $('<div>'),
             console = $('#commander-results');

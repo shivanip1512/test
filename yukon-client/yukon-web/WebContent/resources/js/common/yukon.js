@@ -1120,9 +1120,9 @@ yukon.ui = (function () {
                 format;
                 
             if (stripped.length > 0) {
-                for (i=0; i<yg.phone.formats.length; i++) {
-                    regex = yg.phone.formats[i].regex;
-                    format = yg.phone.formats[i].format;
+                for (i=0; i<yg.formats.phone.length; i++) {
+                    regex = yg.formats.phone[i].regex;
+                    format = yg.formats.phone[i].format;
                     if (regex.test(stripped)) {
                         input.value = stripped.replace(regex, format);
                         break;
