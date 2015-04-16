@@ -9267,6 +9267,19 @@
                 <decimalplaces value="4" />
             </point>
             
+            <point type="Analog" offset="156">
+                <name>Peak kVAr</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVAr" />
+                <decimalplaces value="4" />
+            </point>
+            <point type="Analog" offset="197">
+                <name>Coincident Cumulative Peak kVAr</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVAr" />
+                <decimalplaces value="3" />
+            </point>
+            
             <point type="Analog" offset="240">
                 <name>kVAh</name>
                 <multiplier value="1.0" />
@@ -9505,6 +9518,9 @@
             </attribute>
             <attribute name="DEMAND_PEAK_KVA_COIN">
                 <basicLookup point="Demand at Peak kVa Coincidental"/>
+            </attribute>
+            <attribute name="PEAK_KVAR">
+                <basicLookup point="Peak kVAr" />
             </attribute>
         </attributes>
     </pao>

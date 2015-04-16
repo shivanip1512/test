@@ -2549,6 +2549,33 @@
                 <modifier>Max</modifier>
             </baseModifiers>
         </point>
+        <point name="Peak kVAr">
+            <uom>Var</uom>
+            <multiplier value=".001" />
+            <parseSiPrefix />
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+            </modifiers>
+        </point>
+        <point name="Coincident Cumulative Peak kVAr">
+            <uom>Var</uom>
+            <multiplier value=".001" />
+            <parseSiPrefix />
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Cumulative</modifier>
+            </modifiers>
+            <baseUom>Var</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+            </baseModifiers>
+        </point>
     </pointGroup>
     
     <!-- ITRON SENTINEL LEVEL 2 & 3 -->
