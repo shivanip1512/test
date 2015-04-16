@@ -28,16 +28,16 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRole;
 
 @Controller
-@CheckRole({YukonRole.METERING,YukonRole.APPLICATION_BILLING,YukonRole.SCHEDULER,YukonRole.DEVICE_ACTIONS})
+@CheckRole({YukonRole.METERING})
 @RequestMapping("/water/*")
 public class WaterMeterController {
 
-    private DeviceDao deviceDao = null;
-    private MultispeakFuncs multispeakFuncs;
-    private PointDao pointDao = null;
-    private PaoLoadingService paoLoadingService = null;
-    private CachingPointFormattingService cachingPointFormattingService = null;
-    private PaoDefinitionDao paoDefinitionDao = null;
+    @Autowired private DeviceDao deviceDao = null;
+    @Autowired private MultispeakFuncs multispeakFuncs;
+    @Autowired private PointDao pointDao = null;
+    @Autowired private PaoLoadingService paoLoadingService = null;
+    @Autowired private CachingPointFormattingService cachingPointFormattingService = null;
+    @Autowired private PaoDefinitionDao paoDefinitionDao = null;
 
     @RequestMapping("home")
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response)
@@ -72,36 +72,4 @@ public class WaterMeterController {
         
         return mav;
     }
-
-    // DI Setters
-    @Autowired
-    public void setDeviceDao(DeviceDao deviceDao) {
-        this.deviceDao = deviceDao;
-    }
-
-    @Autowired
-    public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
-        this.multispeakFuncs = multispeakFuncs;
-    }
-    
-    @Autowired
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
-    }
-    
-    @Autowired
-    public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
-        this.paoLoadingService = paoLoadingService;
-    }
-    
-    @Autowired
-    public void setCachingPointFormattingService(CachingPointFormattingService cachingPointFormattingService) {
-        this.cachingPointFormattingService = cachingPointFormattingService;
-    }
-    
-    @Autowired
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-        this.paoDefinitionDao = paoDefinitionDao;
-    }
-    
 }
