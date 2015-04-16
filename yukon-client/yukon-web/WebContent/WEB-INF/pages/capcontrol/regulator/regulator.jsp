@@ -139,6 +139,8 @@
                         </table>
                     </div>
                 </tags:sectionContainer2>
+               
+                <div class="timeline-container" data-regulator-id="${regulator.id}"></div>
             </cti:displayForPageEditModes>
         </div>
         <table class="dn">

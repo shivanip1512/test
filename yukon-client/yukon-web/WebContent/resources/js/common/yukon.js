@@ -1681,6 +1681,185 @@ yukon.ui = (function () {
         });
     };
     
+    /** {String} - The IANA timezone name. */
+    var timezone = jstz.determine().name();
+
+    /** 
+     * A widget for creating a timeline to view events
+     * @param {number} [begin=Yesterday Midnight] - Endpoint of the timeline, expressed as epoch timestamp.
+     * @param {number} [end=Now] - Endpoint of the timeline, expressed as epoch timestamp.
+     * @param {number} [tickInterval=1hr] - Interval between tickmarks.
+     */
+    $.widget('yukon.timeline', {
+        options: {
+            begin: new Date(new Date().setDate(new Date().getDate() - 1)),
+            end: new Date().getTime(),
+            tickInterval: 60 * 60,
+            events: {}
+        },
+        
+        _create: function () {
+            this.element.addClass('timeline-container');
+        },
+
+        /** 
+         * Add an event to the timeline
+         * @param {string} event.id - Unique identifier key. Will override any existing event with that id.
+         * @param {number} event.timestamp - Time of event. expressed as epoch timestamp.
+         * @param {string} [event.icon=icon-blank] - Icon to show on the timeline.
+         * @param {string} [event.message] - html to display in the tooltip.
+         */
+        addEvent: function (event) {
+            this.options.events[event.id] = event;
+        },
+        /** 
+         * Add evenst to the timeline
+         * @param {string} events[].id - Unique identifier key. Will override any existing event with that id.
+         * @param {number} events[].timestamp - Time of event. expressed as epoch timestamp.
+         * @param {string} [events[].icon=icon-blank] - Icon to show on the timeline.
+         * @param {string} [events[].message] - html to display in the tooltip.
+         */
+        addEvents: function (events) {
+            events.forEach(this.addEvent.bind(this));
+        },
+        
+        clear: function () {
+            this.options.events = {};
+        },
+
+        _drawTicks: function () {
+
+            var container = this.element;
+            
+            var begin = this.options.begin;
+            var end = this.options.end;
+            var interval = this.options.tickInterval * 1000;
+
+            var time = begin + interval;
+            var percent;
+            var tick;
+
+            while (time < end) {
+
+                percent = yukon.percent(time - begin, end - begin, 5);
+                
+                tick = $('<span class="timeline-tick">')
+                .css({'left': percent });
+                
+                container.append(tick);
+
+                time += interval;
+            }
+            
+            var beginText = moment(begin).tz(timezone).format(yg.formats.date.long_date_time_hm);
+            var endText = moment(end).tz(timezone).format(yg.formats.date.long_date_time_hm);
+            
+            var beginSpan = $('<span class="timeline-label-begin">')
+            .text(beginText);
+            container.append(beginSpan);
+            
+            var endSpan = $('<span class="timeline-label-end">')
+            .text(endText);
+            container.append(endSpan);
+            
+        },
+
+        _drawEvents: function () {
+
+            var container = this.element;
+
+            var begin = this.options.begin;
+            var end = this.options.end;
+            var events = this.options.events;
+
+            //eventIds will only include elements between the bounds, and be sorted by time
+            var eventIds = Object.keys(events).filter(function (id) {
+                return begin < events[id].timestamp && events[id].timestamp < end;
+            })
+            .sort(function (lhs, rhs) {
+                return events[lhs].timestamp - events[rhs].timestamp;
+            });
+
+            eventIds.forEach(function (id) {
+
+                var event = events[id];
+
+                var percent = yukon.percent(event.timestamp - begin, end - begin, 5);
+
+                var span = $('<span class="timeline-event">')
+                .css({'left': percent })
+                .append('<i class="M0 icon ' + (event.icon || 'icon-blank') + '"/>');
+
+                var prevEvent = container.find('.timeline-event:last');
+
+                container.append(span);
+
+                var tooltipped;
+                var offset = parseFloat(span.css('left')) - parseFloat(prevEvent.css('left'));
+
+                //Cluster if closer than 10 px away
+                if (prevEvent.length && offset < 10) {
+
+                    span.remove();
+                    prevEvent.addClass('multi')
+                    .data('count', prevEvent.data('count') + 1);
+                    
+                    prevEvent.find('.icon').remove();
+
+                    if (prevEvent.find('.timeline-event-count').length === 0) {
+                        prevEvent.append('<span class="timeline-event-count">');
+                    }
+
+                    prevEvent.find('.timeline-event-count')
+                        .text(prevEvent.data('count'));
+
+                    tooltipped = prevEvent;
+
+                } else {
+
+                    span.data('count', 1)
+                    .data('tooltip', $('<ul class="simple-list">'));
+
+                    span.tipsy({
+                        html: true,
+                        opacity: 1.0,
+                        title: function () {
+                            var tip = $(this).data('tooltip').wrap('<div>').parent();
+                            return tip.html();
+                        },
+                        delayIn: 150,
+                        fade: true
+                    });
+
+                    tooltipped = span;
+                }
+
+                var tooltip = tooltipped.data('tooltip');
+                
+                var timeText = moment(event.timestamp).tz(timezone).format(yg.formats.date.full);
+                
+                var message = event.message ? ' - ' + event.message : '';
+                var itemTooltip = $('<li>').html(timeText + message);
+                tooltip.append(itemTooltip);
+                tooltipped.data('tooltip', tooltip);
+           });
+
+        },
+
+        draw: function () {
+
+            var container = this.element;
+
+            $('.tipsy').remove();
+            container.empty();
+
+            container.append('<span class="timeline-axis">');
+
+            this._drawTicks();
+            this._drawEvents();
+        }
+    });
+    
 })(jQuery);
 
 /** Initialize the lib */

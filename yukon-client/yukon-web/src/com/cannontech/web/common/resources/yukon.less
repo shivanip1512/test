@@ -25,6 +25,7 @@
     COLOR PICKER
     IMAGE PICKER
     DATE/TIME PICKER
+    TIMELINE WIDGET
     DROPDOWN MENUS
     MODAL/BLOCKING GLASS
     CONNECTION WARNING
@@ -1234,6 +1235,71 @@ input.dateTimePicker { width: 150px; }
         right: 0;
         top: 0;
     }
+}
+
+/* TIMELINE WIDGET */
+.timeline-container {
+    height: 19px;
+    width: 100%;
+    position: relative;
+}
+.timeline-container * {
+    position: absolute;
+}
+.timeline-axis {
+    height: 1px;
+    background-color: black;
+    width: 100%;
+    top: 8px;
+}
+.timeline-axis::before,
+.timeline-axis::after {
+    background-color: black;
+    height: 5px;
+    width: 5px;
+    content: ' ';
+    position: absolute;
+    border-radius: 100%;
+    top: -2px;
+}
+.timeline-axis::after {
+    left: 100%;
+}
+.timeline-tick {
+    background-color: black;
+    height: 5px;
+    width: 1px;
+    top: 6px;
+}
+.timeline-event {
+    height: 16px;
+    width: 16px;
+    background-color: blue;
+    border-radius: 100%;
+    top: 1px;
+}
+.timeline-event.multi {
+    height: 19px;
+    width: 19px;
+    background-color: @orange;
+    border: 1px solid;
+    top: 0;
+}
+.timeline-event-count {
+    color: white;
+    text-align: center;
+    font-weight: bold;
+    left: 0;
+    right: 0;
+    top: -1px;
+}
+.timeline-label-begin,
+.timeline-label-end {
+    top: 19px;
+    height: 1em;
+}
+.timeline-label-end {
+    right: 0px;
 }
 
 /* DROPDOWN MENUS */

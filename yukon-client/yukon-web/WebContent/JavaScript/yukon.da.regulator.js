@@ -4,6 +4,8 @@ yukon.namespace('yukon.da.regulator');
  * Module that manages the regulator page in capcontrol
  *
  * @requires JQUERY
+ * @requires MOMENT
+ * @requires MOMENT_TZ
  * @requires yukon
  */
 
@@ -68,6 +70,16 @@ yukon.da.regulator = (function () {
                 $('.js-ivvc-events-holder').show();
             }
             
+            var timelineOpts = {};
+            timelineOpts.end = data.timestamp;
+            
+            //Begin will be midnight yesterday
+            var begin = new Date(0);
+            begin.setUTCMilliseconds(data.timestamp);
+            begin.setDate(begin.getDate() - 1);
+            begin.setHours(0, 0, 0, 0);
+            timelineOpts.begin = begin.getTime();
+            
             events.reverse().forEach(function (event) {
                 
                 var row = $(templateRow.clone()).removeAttr('id');
@@ -85,7 +97,13 @@ yukon.da.regulator = (function () {
 
             body.find('tr:gt(20)').remove();
             
-            body.find('tr:gt(20)').remove();
+            var timelineContainer = $('.timeline-container[data-regulator-id="' + _id + '"]');
+            
+            if (events.length) {
+                timelineContainer.timeline(timelineOpts);
+                timelineContainer.timeline('addEvents', events);
+                timelineContainer.timeline('draw');
+            }
             
             setTimeout(_updateRecentEvents, yg.rp.updater_delay);
             
