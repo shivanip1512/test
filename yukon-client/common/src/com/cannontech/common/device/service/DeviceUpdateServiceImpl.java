@@ -635,9 +635,21 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     private void changePointType(Map<Integer, PointToTemplate> pointsToUpdate) throws PersistenceException {
 
         if (!pointsToUpdate.isEmpty()) {
+            List<PointToTemplate> calcPoints =
+                    Lists.newArrayList(Iterables.filter(pointsToUpdate.values(), new Predicate<PointToTemplate>() {
+                        @Override
+                        public boolean apply(PointToTemplate t) {
+                            return t.getTemplate().getPointType() == PointType.CalcAnalog
+                                    || t.getTemplate().getPointType() == PointType.CalcStatus;
+                        }
+                    }));
+            
+            List<PointToTemplate> points = new ArrayList<PointToTemplate>(pointsToUpdate.values());
+            points.removeAll(calcPoints);
+            points.addAll(calcPoints);
             log.debug("Points to update-----------------------");
             // Change point type
-            for (PointToTemplate pointToTemplate : pointsToUpdate.values()) {
+            for (PointToTemplate pointToTemplate : points) {
                 if (log.isDebugEnabled()) {
                     PointBase point = pointToTemplate.getPoint();
                     log.debug("Updating point: id=" + point.getPoint().getPointID() + " name="
