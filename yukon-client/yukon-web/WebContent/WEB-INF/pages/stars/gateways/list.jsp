@@ -14,9 +14,14 @@
     </div>
     
     <div id="gateway-create-popup" class="dn" 
-        data-title="<cti:msg2 key=".create.title"/>" data-url="gateways/create" 
-        data-width="570" data-min-width="570" data-dialog data-event="yukon:assets:gateway:save" 
-        data-ok-text="<cti:msg2 key="components.button.save.label"/>" data-load-event="yukon:assets:gateway:load"></div>
+        data-dialog 
+        data-title="<cti:msg2 key=".create.title"/>" 
+        data-url="<cti:url value="/stars/gateways/create"/>" 
+        data-width="570" 
+        data-min-width="570" 
+        data-event="yukon:assets:gateway:save" 
+        data-ok-text="<cti:msg2 key="components.button.save.label"/>" 
+        data-load-event="yukon:assets:gateway:load"></div>
 </cti:checkRolesAndProperties>
 
 <cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
@@ -45,6 +50,7 @@
     <tfoot></tfoot>
     <tbody>
         <c:forEach items="${gateways}" var="gateway">
+            <cti:url var="detailUrl" value="/stars/gateways/${gateway.paoIdentifier.paoId}"/>
             <tr data-gateway="${gateway.paoIdentifier.paoId}" data-loaded="${not empty gateway.data}">
                 <c:choose>
                     <c:when test="${not empty gateway.data}">
@@ -54,8 +60,7 @@
                         <td class="state-indicator js-gw-conn-status" title="${title}">
                             <span class="state-box ${clazz}"></span>
                         </td>
-                        <cti:url var="gatewayDetailLink" value="gateways/${gateway.paoIdentifier.paoId}"/>
-                        <td class="js-gw-name"><a href="${gatewayDetailLink}">${fn:escapeXml(gateway.name)}</a></td>
+                        <td class="js-gw-name"><a href="${detailUrl}">${fn:escapeXml(gateway.name)}</a></td>
                         <td class="js-gw-sn">${fn:escapeXml(gateway.rfnIdentifier.sensorSerialNumber)}</td>
                         <td class="js-gw-ip">${fn:escapeXml(gateway.data.ipAddress)}</td>
                         <c:set var="clazz" value="green"/>
@@ -102,9 +107,9 @@
                     </c:when>
                     <c:otherwise>
                         <td><cti:icon icon="icon-loading-bars"/></td>
-                        <td></td>
+                        <td><a href="${detailUrl}">${fn:escapeXml(gateway.name)}</a></td>
                         <td>${fn:escapeXml(gateway.rfnIdentifier.sensorSerialNumber)}</td>
-                        <td colspan="4"><i:inline key=".loadingGatewayData"/></td>
+                        <td colspan="4"><em><i:inline key=".loadingGatewayData"/></em></td>
                     </c:otherwise>
                 </c:choose>
             </tr>
@@ -227,5 +232,5 @@
 
 <cti:includeScript link="/JavaScript/yukon.assets.gateway.list.js"/>
 <cti:includeScript link="/JavaScript/yukon.assets.gateway.shared.js"/>
-    
+
 </cti:standardPage>

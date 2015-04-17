@@ -143,7 +143,7 @@ public class GatewaySettingsController {
         
         try {
             
-            RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(id);
+            RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(id);
             
             GatewaySettings settings = new GatewaySettings();
             settings.setId(id);
@@ -188,7 +188,7 @@ public class GatewaySettingsController {
         
         try {
             
-            RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(id);
+            RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(id);
             
             gateway.setName(settings.getName());
             if (settings.getLatitude() != null) {
@@ -251,7 +251,7 @@ public class GatewaySettingsController {
     public String schedule(ModelMap model, YukonUserContext userContext, @PathVariable int id) 
             throws NmCommunicationException {
         
-        RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(id);
+        RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(id);
         String schedule = gateway.getData().getCollectionSchedule();
         CronExpressionTagState state = cronService.parse(schedule, userContext);
         model.addAttribute("state", state);

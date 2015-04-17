@@ -22,7 +22,6 @@ import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.TimeoutExecutionException;
 import com.cannontech.common.rfn.service.RfnGatewayService;
-import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -31,7 +30,6 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.google.common.collect.Lists;
@@ -110,7 +108,7 @@ public class GatewayDetailController {
     public String sequences(ModelMap model, YukonUserContext userContext, @PathVariable int id) 
             throws NmCommunicationException {
         
-        RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(id);
+        RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(id);
         List<DataSequence> sequences = Lists.newArrayList(gateway.getData().getSequences());
         helper.sortSequences(sequences, userContext);
         model.addAttribute("sequences", sequences);
@@ -122,7 +120,7 @@ public class GatewayDetailController {
     public @ResponseBody Map<String, Object> data(ModelMap model, YukonUserContext userContext, @PathVariable int id) 
             throws NmCommunicationException {
         
-        RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(id);
+        RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(id);
         Map<String, Object> data = helper.buildGatewayModel(gateway, userContext);
         
         return data;

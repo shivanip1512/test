@@ -39,7 +39,7 @@ public final class PaoIdentifier implements YukonPao, Serializable {
     
     @Override
     public String toString() {
-        return paoType + ":" + paoId;
+        return String.format("PaoIdentifier [paoId=%s, paoType=%s]", paoId, paoType);
     }
     
     static {

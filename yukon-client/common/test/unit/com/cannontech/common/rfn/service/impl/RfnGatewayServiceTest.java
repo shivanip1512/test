@@ -197,7 +197,7 @@ public class RfnGatewayServiceTest {
         
         // Do the service call
         service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao, rfnDeviceDao, null, cache);
-        RfnGateway rfnGateway = service.getGatewayByPaoId(gatewayPaoId.getPaoId());
+        RfnGateway rfnGateway = service.getGatewayByPaoIdWithData(gatewayPaoId.getPaoId());
         
         // Test that we got the expected values
         Assert.assertEquals("PaoIdentifier does not match", gatewayPaoId, rfnGateway.getPaoIdentifier());
@@ -235,7 +235,7 @@ public class RfnGatewayServiceTest {
         
         // Do the service call
         service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao, rfnDeviceDao, null, cache);
-        RfnGateway rfnGateway = service.getGatewayByPaoId(gateway2PaoId.getPaoId());
+        RfnGateway rfnGateway = service.getGatewayByPaoIdWithData(gateway2PaoId.getPaoId());
         
         // Test that we got the expected values
         Assert.assertEquals("PaoIdentifier does not match", gateway2PaoId, rfnGateway.getPaoIdentifier());
@@ -255,7 +255,7 @@ public class RfnGatewayServiceTest {
         
         // Do the service call. NotFoundException should be thrown.
         service = new RfnGatewayServiceImpl(null, null, null, null, null, rfnDeviceDao, null, null);
-        service.getGatewayByPaoId(gatewayPaoId.getPaoId());
+        service.getGatewayByPaoIdWithData(gatewayPaoId.getPaoId());
     }
     
     @Test(expected=NmCommunicationException.class)
@@ -282,7 +282,7 @@ public class RfnGatewayServiceTest {
         // Do the service call. NmCommunicationException should be thrown
         PaoLocationDao paoLocationDao = new EmptyPaoLocationDao();
         service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao, rfnDeviceDao, null, cache);
-        service.getGatewayByPaoId(gatewayPaoId.getPaoId());
+        service.getGatewayByPaoIdWithData(gatewayPaoId.getPaoId());
     }
     
     @Test(expected=NmCommunicationException.class)

@@ -37,7 +37,9 @@
             <li class="divider"></li>
         </cti:checkRolesAndProperties>
         <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
-            <cm:dropdownOption icon="icon-pencil" key="components.button.edit.label" data-popup="#gateway-edit-popup"/>
+            <c:set var="clazz" value="${empty data ? 'dn' : ''}"/>
+            <cm:dropdownOption icon="icon-pencil" key="components.button.edit.label" data-popup="#gateway-edit-popup"
+                    classes="js-edit ${clazz}"/>
         </cti:checkRolesAndProperties>
         <cti:checkRolesAndProperties value="INFRASTRUCTURE_DELETE">
             <cm:dropdownOption icon="icon-cross" key="components.button.delete.label" id="gateway-delete"
@@ -103,7 +105,7 @@
                         <c:set var="clazz" value="error"/>
                     </c:if>
                     <span class="${clazz}" valueClass="js-gw-app-mode">
-                        <i:inline key=".appMode.${data.mode}"/>
+                        <c:if test="${not empty data}"><i:inline key=".appMode.${data.mode}"/></c:if>
                     </span>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
@@ -111,7 +113,9 @@
         
         <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
             <div class="buffered clearfix">
-                <cti:button nameKey="edit" icon="icon-pencil" data-popup="#gateway-edit-popup" classes="fr"/>
+                <c:set var="clazz" value="${empty data ? 'dn' : ''}"/>
+                <cti:button nameKey="edit" icon="icon-pencil" data-popup="#gateway-edit-popup" 
+                    classes="fr ${clazz} js-edit"/>
             </div>
         </cti:checkRolesAndProperties>
     </div>
@@ -152,19 +156,25 @@
                         <c:if test="${not empty data.superAdmin}">${fn:escapeXml(data.superAdmin.username)}</c:if>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".connectionType" valueClass="js-gw-conn-type">
-                        <i:inline key=".connectionType.${data.connectionType}"/>
+                        <c:if test="${not empty data}"><i:inline key=".connectionType.${data.connectionType}"/></c:if>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".ipaddress">
                         <span class="js-gw-ip">${fn:escapeXml(data.ipAddress)}</span>&nbsp;
-                        <span class="js-gw-port"><i:inline key=".port" arguments="${data.port}"/></span>
+                        <span class="js-gw-port">
+                            <c:if test="${not empty data}">
+                                <i:inline key=".port" arguments="${data.port}"/>
+                            </c:if>
+                        </span>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".radios" valueClass="js-gw-radios">
-                        <c:forEach var="radio" items="${data.radios}">
-                            <div title="<cti:formatDate type="DATEHM" value="${radio.timestamp}"/>" class="stacked">
-                                <div><i:inline key=".radioType.${radio.type}"/></div>
-                                <div><i:inline key=".macAddress" arguments="${radio.macAddress}"/></div>
-                            </div>
-                        </c:forEach>
+                        <c:if test="${not empty data}">
+                            <c:forEach var="radio" items="${data.radios}">
+                                <div title="<cti:formatDate type="DATEHM" value="${radio.timestamp}"/>" class="stacked">
+                                    <div><i:inline key=".radioType.${radio.type}"/></div>
+                                    <div><i:inline key=".macAddress" arguments="${radio.macAddress}"/></div>
+                                </div>
+                            </c:forEach>
+                        </c:if>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </div>
@@ -174,7 +184,9 @@
                         <c:set var="clazz" value="${data.connectionStatus == 'CONNECTED' ? 'green' : 'red'}"/>
                         <span class="state-box ${clazz} js-gw-conn-state"></span>
                         <span class="js-gw-conn-state-text">
-                            <i:inline key=".connectionStatus.${data.connectionStatus}"/>
+                            <c:if test="${not empty data}">
+                                <i:inline key=".connectionStatus.${data.connectionStatus}"/>
+                            </c:if>
                         </span>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".lastComms">
@@ -189,7 +201,9 @@
                             <c:set var="clazz" value="gray"/>
                         </c:if>
                         <span class="${clazz} js-gw-last-comm">
-                            <i:inline key=".lastCommStatus.${data.lastCommStatus}"/>
+                            <c:if test="${not empty data}">
+                                <i:inline key=".lastCommStatus.${data.lastCommStatus}"/>
+                            </c:if>
                         </span>
                         <cti:formatDate var="lastCommTime" type="DATEHM" value="${data.lastCommStatusTimestamp}"/>
                         <span class="js-gw-last-comm-time subtle">${lastCommTime}</span>
@@ -231,7 +245,9 @@
                     <tags:nameValue2 nameKey=".schedule" valueClass="full-width">
                         <span class="js-gw-schedule"><cti:formatCron value="${data.collectionSchedule}"/></span>
                         <cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
-                            <cti:button nameKey="edit" icon="icon-pencil" classes="fr" data-popup="#gateway-schedule-popup"/>
+                            <c:set var="clazz" value="${empty data ? 'dn' : ''}"/>
+                            <cti:button nameKey="edit" icon="icon-pencil" classes="fr ${clazz} js-edit" 
+                                data-popup="#gateway-schedule-popup"/>
                         </cti:checkRolesAndProperties>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>

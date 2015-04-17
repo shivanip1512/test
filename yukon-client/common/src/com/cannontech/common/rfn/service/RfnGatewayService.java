@@ -39,7 +39,15 @@ public interface RfnGatewayService {
      * @throws NmCommunicationException if there is a communication error between Yukon
      *             and Network Manager.
      */
-    RfnGateway getGatewayByPaoId(int paoId) throws NmCommunicationException;
+    RfnGateway getGatewayByPaoIdWithData(int paoId) throws NmCommunicationException;
+    
+    /**
+     * Retrieves the specified gateway. If the gateway data is not cached, the returned
+     * gateways data field will be null. Use {@link #getGatewayByPaoIdWithData(int)} if you require data.
+     * 
+     * @throws IllegalArgumentException if a gateway with the specified identifier does not exist.
+     */
+    RfnGateway getGatewayByPaoId(int paoId);
     
     /**
      * Gets all RfnGateways with the specified paoids. If any ids are invalid, they will be ignored. If the gateway

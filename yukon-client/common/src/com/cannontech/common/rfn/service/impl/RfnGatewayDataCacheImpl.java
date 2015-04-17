@@ -71,6 +71,7 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
     
     @Override
     public RfnGatewayData getIfPresent(final PaoIdentifier paoIdentifier) {
+        
         RfnGatewayData data = cache.getIfPresent(paoIdentifier);
         
         //spin off new thread to update the cache for this value
@@ -81,7 +82,7 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
                     try {
                         cache.get(paoIdentifier);
                     } catch (Exception e) {
-                        log.error("Asynchronous rfn gateway cache update failed", e);
+                        log.error("Asynchronous rfn gateway cache update failed for: " + paoIdentifier, e);
                     }
                 }
             };
@@ -167,7 +168,7 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
             return cacheMap;
         }
     }
-
+    
     @Override
     public LoadingCache<PaoIdentifier, RfnGatewayData> getCache() {
         return cache;

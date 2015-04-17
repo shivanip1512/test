@@ -123,13 +123,24 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     }
     
     @Override
-    public RfnGateway getGatewayByPaoId(int paoId) throws NmCommunicationException {
+    public RfnGateway getGatewayByPaoIdWithData(int paoId) throws NmCommunicationException {
         
         // Get base RfnDevice
         RfnDevice device = rfnDeviceDao.getDeviceForId(paoId);
         
         // Get RfnGatewayData from cache
         RfnGatewayData data = dataCache.get(device.getPaoIdentifier());
+        
+        return buildRfnGateway(device, device.getName(), data);
+    }
+    
+    @Override
+    public RfnGateway getGatewayByPaoId(int paoId) {
+        
+        // Get base RfnDevice
+        RfnDevice device = rfnDeviceDao.getDeviceForId(paoId);
+        // Get RfnGatewayData from cache
+        RfnGatewayData data = dataCache.getIfPresent(device.getPaoIdentifier());
         
         return buildRfnGateway(device, device.getName(), data);
     }
@@ -257,7 +268,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         
         // Determine if change is local Yukon DB change (i.e. name) or remote Network Manager change.
         PaoIdentifier paoIdentifier = gateway.getPaoIdentifier();
-        RfnGateway existingGateway = getGatewayByPaoId(paoIdentifier.getPaoId());
+        RfnGateway existingGateway = getGatewayByPaoIdWithData(paoIdentifier.getPaoId());
         RfnGatewayData existingGatewayData = existingGateway.getData();
         RfnGatewayData newGatewayData = gateway.getData();
         

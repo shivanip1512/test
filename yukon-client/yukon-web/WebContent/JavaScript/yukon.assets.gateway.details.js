@@ -87,6 +87,8 @@ yukon.assets.gateway.details = (function () {
             url: yukon.url('/stars/gateways/' + _gateway + '/data')
         }).done(function (gw) {
             
+            $('.js-edit').show();
+            
             var info = $('#gw-info'), comm = $('#gw-comm'), collection = $('#gw-data-collection'), 
                 data = gw.data, radios = gw.data.radios, percent = data.collectionPercent.toFixed(2);
             
