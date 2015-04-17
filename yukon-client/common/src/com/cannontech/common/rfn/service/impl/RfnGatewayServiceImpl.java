@@ -21,6 +21,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.gateway.Authentication;
 import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
 import com.cannontech.common.rfn.message.gateway.DataType;
@@ -69,11 +70,11 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     // Autowired in constructor
     private RfnDeviceDao rfnDeviceDao;
     private DeviceDao deviceDao;
-    private IDatabaseCache serverDatabaseCache;
+    private IDatabaseCache dbCache;
     private RfnGatewayDataCache dataCache;
     private ConnectionFactory connectionFactory;
-    private ConfigurationSource configurationSource;
-    private RfnDeviceCreationService rfnDeviceCreationService;
+    private ConfigurationSource configSource;
+    private RfnDeviceCreationService creationService;
     private PaoLocationDao paoLocationDao;
     
     // Created in post-construct
@@ -93,96 +94,103 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         
         this.dataCache = dataCache;
         this.connectionFactory = connectionFactory;
-        this.configurationSource = configurationSource;
-        this.rfnDeviceCreationService = rfnDeviceCreationService;
+        this.configSource = configurationSource;
+        this.creationService = rfnDeviceCreationService;
         this.paoLocationDao = paoLocationDao;
         this.rfnDeviceDao = rfnDeviceDao;
         this.deviceDao = deviceDao;
-        this.serverDatabaseCache = serverDatabaseCache;
+        this.dbCache = serverDatabaseCache;
     }
     
     @PostConstruct
     public void init() {
         updateRequestTemplate = new RequestReplyTemplateImpl<GatewayUpdateResponse>(gatewayUpdateRequestCparm, 
-                configurationSource, connectionFactory, gatewayUpdateRequestQueue, false);
+                configSource, connectionFactory, gatewayUpdateRequestQueue, false);
         actionRequestTemplate = new RequestReplyTemplateImpl<GatewayActionResponse>(gatewayActionRequestCparm,
-                configurationSource, connectionFactory, gatewayActionRequestQueue, false);
+                configSource, connectionFactory, gatewayActionRequestQueue, false);
         connectionTestRequestTemplate = 
                 new RequestReplyTemplateImpl<GatewayConnectionTestResponse>(gatewayActionRequestCparm, 
-                configurationSource, connectionFactory, gatewayActionRequestQueue, false);
+                configSource, connectionFactory, gatewayActionRequestQueue, false);
     }
     
     @Override
     public Set<RfnGateway> getAllGateways() {
         
-        List<RfnDevice> gatewayDevices = rfnDeviceDao.getDevicesByPaoTypes(PaoType.getRfGatewayTypes());
-        Set<RfnGateway> rfnGateways = getGatewaysFromDevices(gatewayDevices);
-        return rfnGateways;
+        List<RfnDevice> devices = rfnDeviceDao.getDevicesByPaoTypes(PaoType.getRfGatewayTypes());
+        Set<RfnGateway> gateways = getGatewaysFromDevices(devices);
+        
+        return gateways;
     }
     
     @Override
     public RfnGateway getGatewayByPaoId(int paoId) throws NmCommunicationException {
         
         // Get base RfnDevice
-        RfnDevice gwDevice = rfnDeviceDao.getDeviceForId(paoId);
+        RfnDevice device = rfnDeviceDao.getDeviceForId(paoId);
         
         // Get RfnGatewayData from cache
-        RfnGatewayData gatewayData = dataCache.get(gwDevice.getPaoIdentifier());
+        RfnGatewayData data = dataCache.get(device.getPaoIdentifier());
         
-        return buildRfnGateway(gwDevice, gwDevice.getName(), gatewayData);
+        return buildRfnGateway(device, device.getName(), data);
     }
     
-    private RfnGateway buildRfnGateway(RfnDevice gwDevice, String name, RfnGatewayData gatewayData) {
-        RfnGateway rfnGateway;
-        if (gwDevice.getPaoIdentifier().getPaoType() == PaoType.RFN_GATEWAY_2) {
-            rfnGateway = new RfnGateway2(name, gwDevice.getPaoIdentifier(),
-                                                   gwDevice.getRfnIdentifier(), gatewayData);
+    private RfnGateway buildRfnGateway(RfnDevice device, String name, RfnGatewayData data) {
+        
+        RfnGateway gateway;
+        RfnIdentifier rfId = device.getRfnIdentifier();
+        PaoIdentifier paoId = device.getPaoIdentifier();
+        
+        if (paoId.getPaoType() == PaoType.RFN_GATEWAY_2) {
+            gateway = new RfnGateway2(name, paoId, rfId, data);
         } else {
-            rfnGateway = new RfnGateway(name, gwDevice.getPaoIdentifier(),
-                                                   gwDevice.getRfnIdentifier(), gatewayData);
+            gateway = new RfnGateway(name, paoId, rfId, data);
         }
         
         // Get PaoLocation from PaoLocationDao
-        PaoLocation gatewayLoc = paoLocationDao.getLocation(gwDevice.getPaoIdentifier().getPaoId());
-        if (gatewayLoc != null) {
-            rfnGateway.setLocation(gatewayLoc);
+        PaoLocation location = paoLocationDao.getLocation(paoId.getPaoId());
+        if (location != null) {
+            gateway.setLocation(location);
         }
         
-        return rfnGateway;
+        return gateway;
     }
     
     @Override
     public Set<RfnGateway> getGatewaysByPaoIds(Iterable<Integer> paoIds) {
         
-        List<RfnDevice> gatewayDevices = rfnDeviceDao.getDevicesByPaoIds(paoIds);
-        Set<RfnGateway> rfnGateways = getGatewaysFromDevices(gatewayDevices);
-        return rfnGateways;
+        List<RfnDevice> devices = rfnDeviceDao.getDevicesByPaoIds(paoIds);
+        Set<RfnGateway> gateways = getGatewaysFromDevices(devices);
+        
+        return gateways;
     }
     
     @Override
     public Map<Integer, RfnGateway> getAllGatewaysByPaoId() {
-        Set<RfnGateway> allGateways = getAllGateways();
         
-        Map<Integer, RfnGateway> map = new HashMap<>();
+        Set<RfnGateway> allGateways = getAllGateways();
+        Map<Integer, RfnGateway> paoIdToGateway = new HashMap<>();
         for(RfnGateway gateway : allGateways) {
-            map.put(gateway.getPaoIdentifier().getPaoId(), gateway);
+            paoIdToGateway.put(gateway.getPaoIdentifier().getPaoId(), gateway);
         }
-        return map;
+        
+        return paoIdToGateway;
     }
     
-    private Set<RfnGateway> getGatewaysFromDevices(Iterable<RfnDevice> gatewayDevices) {
-        Set<RfnGateway> rfnGateways = new HashSet<RfnGateway>();
-        for (RfnDevice gatewayDevice : gatewayDevices) {
+    private Set<RfnGateway> getGatewaysFromDevices(Iterable<RfnDevice> devices) {
+        
+        Set<RfnGateway> gateways = new HashSet<RfnGateway>();
+        for (RfnDevice device : devices) {
             // Get PAO name
-            String name = serverDatabaseCache.getAllPaosMap().get(gatewayDevice.getPaoIdentifier().getPaoId()).getPaoName();
+            PaoIdentifier paoId = device.getPaoIdentifier();
+            String name = dbCache.getAllPaosMap().get(paoId.getPaoId()).getPaoName();
             // Get available RfnGatewayData from cache via non-blocking call. May be null.
-            RfnGatewayData gatewayData = dataCache.getIfPresent(gatewayDevice.getPaoIdentifier());
+            RfnGatewayData data = dataCache.getIfPresent(paoId);
             
             //Create gateway object
-            RfnGateway rfnGateway = buildRfnGateway(gatewayDevice, name, gatewayData);
-            rfnGateways.add(rfnGateway);
+            RfnGateway rfnGateway = buildRfnGateway(device, name, data);
+            gateways.add(rfnGateway);
         }
-        return rfnGateways;
+        return gateways;
     }
     
     @Override
@@ -191,7 +199,8 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         // Send the request
         GatewayCreateRequest request = buildGatewayCreateRequest(settings);
         log.debug("Attempting to create a new gateway: " + request);
-        BlockingJmsReplyHandler<GatewayUpdateResponse> replyHandler = new BlockingJmsReplyHandler<>(GatewayUpdateResponse.class);
+        BlockingJmsReplyHandler<GatewayUpdateResponse> replyHandler = 
+                new BlockingJmsReplyHandler<>(GatewayUpdateResponse.class);
         updateRequestTemplate.send(request, replyHandler);
         
         // Wait for the response
@@ -207,7 +216,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         // Parse the response
         if (response.getResult() == GatewayUpdateResult.SUCCESSFUL) {
             // Create the device in Yukon DB (This also sends a DB Change message)
-            RfnDevice gateway = rfnDeviceCreationService.createGateway(settings.getName(), response.getRfnIdentifier());
+            RfnDevice gateway = creationService.createGateway(settings.getName(), response.getRfnIdentifier());
             PaoIdentifier gatewayIdentifier = gateway.getPaoIdentifier();
             // Force the data cache to update
             dataCache.get(gatewayIdentifier);
@@ -251,8 +260,10 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         RfnGateway existingGateway = getGatewayByPaoId(paoIdentifier.getPaoId());
         RfnGatewayData existingGatewayData = existingGateway.getData();
         RfnGatewayData newGatewayData = gateway.getData();
+        
         GatewaySaveData editData = new GatewaySaveData();
         boolean sendGatewayEditRequest = false;
+        
         if (newGatewayData.getIpAddress() != null 
                 && !newGatewayData.getIpAddress().equals(existingGatewayData.getIpAddress())) {
             editData.setIpAddress(newGatewayData.getIpAddress());
@@ -316,7 +327,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         
         return result;
     }
-
+    
     @Override
     public boolean deleteGateway(PaoIdentifier paoIdentifier) throws NmCommunicationException {
         
@@ -345,7 +356,6 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
                     "Network Manager.", e);
         }
     }
-    
     
     @Override
     public boolean testConnection(int deviceId, String ipAddress, String username, String password) 
@@ -401,7 +411,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     public boolean connectGateway(PaoIdentifier paoIdentifier) throws NmCommunicationException {
         return performGatewayConnectionAction(paoIdentifier, ConnectionStatus.CONNECTED);
     }
-
+    
     @Override
     public boolean disconnectGateway(PaoIdentifier paoIdentifier) throws NmCommunicationException {
         return performGatewayConnectionAction(paoIdentifier, ConnectionStatus.DISCONNECTED);
@@ -431,7 +441,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         
         return sendActionRequest(request, "data collection");
     }
-
+    
     @Override
     public boolean setCollectionSchedule(PaoIdentifier paoIdentifier, String cronExpression)
             throws NmCommunicationException {
@@ -444,7 +454,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         
         return sendActionRequest(request, "collection schedule update");
     }
-
+    
     @Override
     public boolean deleteCollectionSchedule(PaoIdentifier paoIdentifier) throws NmCommunicationException {
         
@@ -473,7 +483,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
                     "communication error with Network Manager.", e);
         }
     }
-
+    
     @Override
     public void clearCache() {
         dataCache.getCache().asMap().clear();
