@@ -572,6 +572,11 @@ public class CBControllerEditor implements ICBControllerModel {
 	            deviceCBC.getPaoType());
 	    
 	    LightDeviceConfiguration configuration = configurationDao.findConfigurationForDevice(new SimpleDevice(identifier));
+
+        if (configuration == null) {
+            configuration = configurationDao.getDefaultDNPConfiguration();
+        }
+        
 	    DNPConfiguration dnpConfig = 
 	        configurationDao.getDnpConfiguration(
 	            configurationDao.getDeviceConfiguration(configuration.getConfigurationId()));

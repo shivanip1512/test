@@ -10,9 +10,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.cannontech.cbc.cache.CapControlCache;
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
@@ -34,6 +36,7 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCFeederBankList;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.database.model.Season;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.message.capcontrol.streamable.PointQualityCheckable;
@@ -41,6 +44,7 @@ import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.CapControlConst;
 
 public final class CapControlUtils {
@@ -49,7 +53,9 @@ public final class CapControlUtils {
     private static final StateDao stateDao = YukonSpringHook.getBean("stateDao", StateDao.class);
     private static final RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
     private static final SeasonScheduleDao seasonScheduleDao = YukonSpringHook.getBean(SeasonScheduleDao.class);
+    private static final YukonUserContextMessageSourceResolver messageResolver = YukonSpringHook.getBean(YukonUserContextMessageSourceResolver.class);
     private static Map<String, List<String>> kvarPropertiesAsLists = new HashMap<>();
+    private final static Logger log = YukonLogManager.getLogger(CapControlUtils.class);
 
     public static final Comparator<SubBus> SUB_DISPLAY_COMPARATOR = new Comparator<SubBus>() {
         @Override
@@ -69,7 +75,7 @@ public final class CapControlUtils {
 
                 return strA.compareToIgnoreCase(strB);
             } catch (Exception e) {
-                CTILogger.error("Something went wrong with sorting, ignoring sorting rules", e);
+                log.error("Something went wrong with sorting, ignoring sorting rules", e);
                 return 0;
             }
 
@@ -558,7 +564,7 @@ public final class CapControlUtils {
             pao.setDbConnection(conn);
             pao.retrieve();
         } catch (SQLException sql) {
-            CTILogger.error("Unable to retrieve DB Object", sql);
+            log.error("Unable to retrieve DB Object", sql);
         } finally {
             pao.setDbConnection(null);
 
@@ -600,7 +606,7 @@ public final class CapControlUtils {
         try {
             fixedText = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.CAP_BANK_FIXED_TEXT, yukonUser);
         } catch(UserNotInRoleException e) {
-            CTILogger.warn("User not in Cap Bank Display role, using default Fixed text.");
+            log.warn("User not in Cap Bank Display role, using default Fixed text.");
         }
 
         if(StringUtils.isBlank(fixedText)) fixedText = "Fixed";
@@ -670,9 +676,16 @@ public final class CapControlUtils {
      * This is used in CapBankDetailsController as a format
      */
     public static String convertControlReason(Double value) {
-        int rawState = value.intValue();
 
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
+        int rawState = value.intValue();
+        
         LiteState state = stateDao.findLiteState(StateGroupUtils.STATEGROUP_LASTCONTROL_STATE, rawState);
+        
+        if (state == null) {
+            log.error("Unrecognized control state" + value);
+            return accessor.getMessage("yukon.web.modules.capcontrol.unknownState", rawState);
+        }
 
         return state.getStateText();
     }
