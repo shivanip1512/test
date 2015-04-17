@@ -13,7 +13,7 @@
     jquery's <a href="https://jqueryui.com/widget/">widget factory</a>.
 </p>
 
-<h2>Simple Timeline with Some Events</h2>
+<h2>Simple Timeline with Some Random Events</h2>
 
 <p class="description">
     Create a timeline component through the jquery timeline function added by the new timeline widget.

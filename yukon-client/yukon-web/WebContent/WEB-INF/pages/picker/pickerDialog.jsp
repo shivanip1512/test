@@ -5,17 +5,16 @@
 
 <cti:msgScope paths="picker">
 <cti:msg var="dialogTitle" key="${title}"/>
-<div title="${dialogTitle}" id="${id}" class="dn js-picker-dialog" role="dialog">
+<div title="${dialogTitle}" id="${id}" data-picker="${id}" class="dn js-picker-dialog" role="dialog">
     <div class="clearfix">
         <div class="fl">
             <div class="stacked">
-                <label class="wsnw">
-                    <i:inline key=".query"/>
-                    <input class="js-picker-search" type="text" id="picker-${id}-ss" name="ss" onkeyup="${id}.doKeyUp.call(${id});false;">
+                <label>
+                    <i:inline key="yukon.common.search"/>
+                    <input type="text" id="picker-${id}-ss" name="ss" class="js-picker-search-field"
+                    ><cti:button renderMode="buttonImage" icon="icon-cross-gray" classes="dn fn vat right M0 js-picker-show-all"
+                            id="picker-${id}-show-all-link"/>
                 </label>
-                <a id="picker-${id}-show-all-link" href="javascript:${id}.showAll.call(${id})" style="margin-left: 3px;">
-                    <i:inline key=".showAll"/>
-                </a>
             </div>
         </div>
         <div class="fr paging-area">
@@ -26,7 +25,9 @@
     <div id="picker-${id}-nothing-selected" style="display:none;" class="error"><i:inline key=".nothingSelected"/></div>
     <div class="js-block-this">
         <div id="picker-${id}-results"></div>
-        <div id="picker-${id}-no-results" style="display: none"><i:inline key=".noResults"/></div>
+        <div id="picker-${id}-no-results" style="display: none" class="buffered empty-list">
+            <i:inline key=".noResults"/>
+        </div>
     </div>
     
     <c:if test="${multiSelectMode}">

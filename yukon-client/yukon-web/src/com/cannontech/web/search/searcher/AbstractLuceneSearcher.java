@@ -27,15 +27,16 @@ import com.cannontech.web.search.lucene.index.IndexManager;
 import com.google.common.collect.Lists;
 
 public abstract class AbstractLuceneSearcher<E> {
+    
     private IndexManager indexManager;
     private final Analyzer analyzer = new YukonObjectSearchAnalyzer();
-
+    
     public abstract E buildResults(Document doc);
-
+    
     public final SearchResults<E> search(String queryString, YukonObjectCriteria criteria) {
         return search(queryString, criteria, 0, -1);
     }
-
+    
     public final SearchResults<E> search(String queryString, YukonObjectCriteria criteria, int start, int count) {
         try {
             Query query = createQuery(queryString, criteria);
@@ -44,7 +45,7 @@ public abstract class AbstractLuceneSearcher<E> {
             throw new RuntimeException(e);
         }
     }
-
+    
     protected final SearchResults<E> doSearch(final Query query, final int start, final int count) throws IOException {
         // We can't use count here because Lucene will just give us the first number of items. Here we are
         // paging the results so we need enough items to populate the current 
@@ -53,31 +54,31 @@ public abstract class AbstractLuceneSearcher<E> {
         final SearchResults<E> result =
             getIndexManager().getSearchTemplate().doCallBackSearch(query,
                 new TopDocsCallbackHandler<SearchResults<E>>() {
-
+                    
                     @Override
                     public SearchResults<E> processHits(TopDocs topDocs, IndexSearcher indexSearcher)
                             throws IOException {
                         final int stop = Math.min(start + count, topDocs.totalHits);
                         final List<E> list = Lists.newArrayListWithCapacity(stop - start);
-
+                        
                         for (int i = start; i < stop; ++i) {
                             int docId = topDocs.scoreDocs[i].doc;
                             Document document = indexSearcher.doc(docId);
                             list.add(buildResults(document));
                         }
-
+                        
                         SearchResults<E> result = new SearchResults<>();
                         result.setBounds(start, count, topDocs.totalHits);
                         result.setResultList(list);
                         return result;
                     }
                 }, maxResults);
-
+        
         return result;
     }
-
+    
     private Query createQuery(final String queryString, final YukonObjectCriteria criteria) throws ParseException {
-
+        
         String[] terms = queryString.split("\\s+");
         List<String> cleanList = new ArrayList<>();
         for (String s : terms) {
@@ -88,7 +89,7 @@ public abstract class AbstractLuceneSearcher<E> {
             }
             cleanList.add(s);
         }
-
+        
         Query query;
         if (cleanList.isEmpty()) {
             query = new MatchAllDocsQuery();
@@ -98,27 +99,28 @@ public abstract class AbstractLuceneSearcher<E> {
             parser.setDefaultOperator(QueryParser.AND_OPERATOR);
             query = parser.parse(newQueryString);
         }
-
+        
         return compileAndCombine(query, criteria);
     }
-
+    
     protected final Query compileAndCombine(Query originalQuery, YukonObjectCriteria criteria) {
         if (criteria == null) {
             return originalQuery;
         }
-
+        
         Query criteriaQuery = criteria.getCriteria();
         BooleanQuery finalQuery = new BooleanQuery(false);
         finalQuery.add(originalQuery, BooleanClause.Occur.MUST);
         finalQuery.add(criteriaQuery, BooleanClause.Occur.MUST);
         return finalQuery;
     }
-
+    
     public final IndexManager getIndexManager() {
         return indexManager;
     }
-
+    
     public final void setIndexManager(IndexManager indexManager) {
         this.indexManager = indexManager;
     }
+    
 }

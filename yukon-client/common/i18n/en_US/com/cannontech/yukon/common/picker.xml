@@ -70,6 +70,7 @@
 
 <!-- User Picker -->
 <entry key="yukon.web.picker.user.name">Username</entry>
+<entry key="yukon.web.picker.user.userGroupName">User Group</entry>
 <entry key="yukon.web.picker.user.userId">User Id</entry>
 <entry key="yukon.web.picker.userPicker.dialogTitle">Select User</entry>
 
@@ -78,12 +79,13 @@
 
 <!-- User Picker -->
 <entry key="yukon.web.picker.userGroup.name">User Group Name</entry>
-<entry key="yukon.web.picker.userGroup.userGroupId">User Group Id</entry>
+<entry key="yukon.web.picker.userGroup.users">Users</entry>
+<entry key="yukon.web.picker.userGroup.description">Description</entry>
 <entry key="yukon.web.picker.userGroupPicker.dialogTitle">Select User Group</entry>
 
 <!-- Role Group Picker -->
 <entry key="yukon.web.picker.loginGroup.groupName">Role Group Name</entry>
-<entry key="yukon.web.picker.loginGroup.groupId">Group Id</entry>
+<entry key="yukon.web.picker.loginGroup.description">Description</entry>
 <entry key="yukon.web.picker.loginGroupPicker.dialogTitle">Select Role Group</entry>
 
 <!-- Assigned Program Picker -->

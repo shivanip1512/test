@@ -130,7 +130,7 @@
                     <div class="empty-list js-ivvc-events-empty">
                         <i:inline key=".emptylist"/>
                     </div>
-                    <div class="scroll-md dn js-ivvc-events-holder" style="border-bottom: 1px solid #ccc">
+                    <div class="scroll-md dn js-ivvc-events-holder">
                         <table id="regulator-events" class="has-alerts full-width dashed">
                             <thead></thead>
                             <tfoot></tfoot>
@@ -138,9 +138,9 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="timeline-container" data-regulator-id="${regulator.id}"></div>
                 </tags:sectionContainer2>
                
-                <div class="timeline-container" data-regulator-id="${regulator.id}"></div>
             </cti:displayForPageEditModes>
         </div>
         <table class="dn">
@@ -148,7 +148,7 @@
                 <td><cti:icon icon="js-event-icon"/></td>
                 <td class="js-message"></td>
                 <td class="js-user"></td>
-                <td class="js-timestamp"></td>
+                <td class="tar js-timestamp"></td>
             </tr>
         </table>
     </div>

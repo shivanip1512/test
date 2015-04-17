@@ -197,6 +197,7 @@ public class UserGroupDaoImpl implements UserGroupDao {
     
     @Override
     public LiteUserGroup getLiteUserGroupByUserId(int userId) {
+        
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("SELECT UG.UserGroupId, UG.Name, UG.Description");
@@ -206,8 +207,9 @@ public class UserGroupDaoImpl implements UserGroupDao {
             LiteUserGroup userGroup = yukonJdbcTemplate.queryForObject(sql, new LiteUserGroupRowMapper());
             
             return userGroup;
-        } catch (EmptyResultDataAccessException e) {}
-        return null;
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
     
     @Override
@@ -222,7 +224,7 @@ public class UserGroupDaoImpl implements UserGroupDao {
         
         return liteUserGroups;
     }
-
+    
     @Override
     public LiteUserGroup getLiteUserGroupByUserGroupName(String userGroupName) {
         
@@ -239,9 +241,9 @@ public class UserGroupDaoImpl implements UserGroupDao {
     public LiteUserGroup findLiteUserGroupByUserGroupName(String userGroupName) {
         try {
             return getLiteUserGroupByUserGroupName(userGroupName);
-        } catch (EmptyResultDataAccessException e) {}
-        
-        return null;
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
     
     @Override
@@ -252,7 +254,8 @@ public class UserGroupDaoImpl implements UserGroupDao {
         sql.append("FROM UserGroup");
         sql.append("WHERE Name").eq(userGroupName);
         
-        com.cannontech.database.db.user.UserGroup userGroup = yukonJdbcTemplate.queryForObject(sql, new DBUserGroupRowMapper());
+        com.cannontech.database.db.user.UserGroup userGroup = 
+                yukonJdbcTemplate.queryForObject(sql, new DBUserGroupRowMapper());
         return userGroup;
     }
     

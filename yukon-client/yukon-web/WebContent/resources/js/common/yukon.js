@@ -1737,13 +1737,10 @@ yukon.ui = (function () {
          * @param {string} [events[].message] - html to display in the tooltip.
          */
         addEvents: function (events) {
-            
-            var widget = this;
-            
+            var _self = this;
             events.forEach(function (event) {
-                widget.options.events[event.id] = event;
+                _self.options.events[event.id] = event;
             });
-
             this.draw();
         },
         
@@ -1756,8 +1753,10 @@ yukon.ui = (function () {
             
             var container = this.element;
             
+            var current;
             var begin = this.options.begin;
             var end = this.options.end;
+            var range = end - begin;
             var interval = this.options.tickInterval * 1000;
             
             var time = begin + interval;
@@ -1766,7 +1765,11 @@ yukon.ui = (function () {
             
             while (time < end) {
                 
-                percent = yukon.percent(time - begin, end - begin, 5);
+                current = time - begin;
+                // Jump when we are on top of the end marker
+                if (current / range > .99) break;
+                
+                percent = yukon.percent(current, range, 5);
                 
                 tick = $('<span class="timeline-tick">')
                 .css({'left': percent });
@@ -1813,7 +1816,7 @@ yukon.ui = (function () {
                 
                 var span = $('<span class="timeline-event">')
                 .toggleClass('timeline-icon', event.icon !== undefined)
-                .css({'left': 'calc(' + percent + ' - 8px)'})
+                .css({'left': 'calc(' + percent + ' - 8px)' })
                 .append('<i class="M0 icon ' + (event.icon || 'icon-blank') + '"/>');
                 
                 var prevEvent = container.find('.timeline-event:last');
@@ -1847,14 +1850,14 @@ yukon.ui = (function () {
                     .data('tooltip', $('<ul class="simple-list">'));
                     
                     span.tipsy({
+                        delayIn: 150,
+                        fade: true,
                         html: true,
                         opacity: 1.0,
                         title: function () {
                             var tip = $(this).data('tooltip').wrap('<div>').parent();
                             return tip.html();
-                        },
-                        delayIn: 150,
-                        fade: true
+                        }
                     });
                     
                     tooltipped = span;

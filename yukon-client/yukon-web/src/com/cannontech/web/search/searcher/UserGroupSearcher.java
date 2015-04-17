@@ -6,5 +6,7 @@ import com.cannontech.web.search.lucene.criteria.YukonObjectCriteria;
 
 
 public interface UserGroupSearcher extends Searcher<UltraLightUserGroup> {
-    public SearchResults<UltraLightUserGroup> search(String queryString, YukonObjectCriteria criteria);
+    
+    SearchResults<UltraLightUserGroup> search(String queryString, YukonObjectCriteria criteria);
+    
 }

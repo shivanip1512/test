@@ -1,9 +1,14 @@
 package com.cannontech.common.search.result;
 
-/*
- * getters should match outputCols in the picker's JavaScript file
- */
+/** Getters should match outputCols in the picker's JavaScript file. */
 public interface UltraLightUserGroup {
-    public String getUserGroupName();
-    public int getUserGroupId();
+    
+    String getUserGroupName();
+    
+    int getUserGroupId();
+    
+    int getUsers();
+    
+    String getDescription();
+    
 }

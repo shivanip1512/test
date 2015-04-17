@@ -362,9 +362,11 @@ yukon.protoPicker = function (okText,
         block.call(this);
         ss = this.ssInput.value;
         if (ss) {
-            $(this.showAllLink).show();
+            $(this.ssInput).addClass('left');
+            $(this.showAllLink).removeClass('dn');
         } else {
-            $(this.showAllLink).hide();
+            $(this.ssInput).removeClass('left');
+            $(this.showAllLink).addClass('dn');
         }
         this.currentSearch = ss;
         if (this.memoryGroup) {
@@ -978,7 +980,9 @@ function Picker(okText, cancelText, noneSelectedText, pickerType, destinationFie
  */
 yukon.inheritPrototype(Picker, yukon.protoPicker);
 
-/** 
+/**
+ * Add general behavior binding for all pickers.
+ * 
  * Add keyboard binding for up, down left right and enter.
  * up - Move focus up.
  * down - Move focus down.
@@ -987,6 +991,18 @@ yukon.inheritPrototype(Picker, yukon.protoPicker);
  * right - Goto to next page.
  */ 
 $(function () {
+    
+    /** Fire the keyup behavior on search field keyup. */
+    $(document).on('keyup', '.js-picker-search-field', function (ev) {
+        var pickerId = $(this).closest('[data-picker]').data('picker');
+        yukon.pickers[pickerId].doKeyUp();
+    });
+    
+    /** Clear the filtering when clear button clicked */
+    $(document).on('click', '.js-picker-show-all', function (ev) {
+        var pickerId = $(this).closest('[data-picker]').data('picker');
+        yukon.pickers[pickerId].showAll();
+    });
     
     $(document).on('keydown', '.js-picker-dialog', function (ev) {
         

@@ -82,7 +82,7 @@ public class ECOperatorCandidatePicker extends DatabasePicker<UltraLightYukonUse
                 }
 
                 @Override
-                public String getGroupName() {
+                public String getUserGroupName() {
                     return "";
                 }
 
