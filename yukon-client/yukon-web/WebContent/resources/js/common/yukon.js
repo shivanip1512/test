@@ -1737,9 +1737,13 @@ yukon.ui = (function () {
          * @param {string} [events[].message] - html to display in the tooltip.
          */
         addEvents: function (events) {
+            
+            var widget = this;
+            
             events.forEach(function (event) {
-                this.options.events[event.id] = event;
+                widget.options.events[event.id] = event;
             });
+
             this.draw();
         },
         
@@ -1809,7 +1813,7 @@ yukon.ui = (function () {
                 
                 var span = $('<span class="timeline-event">')
                 .toggleClass('timeline-icon', event.icon !== undefined)
-                .css({'left': percent })
+                .css({'left': 'calc(' + percent + ' - 8px)'})
                 .append('<i class="M0 icon ' + (event.icon || 'icon-blank') + '"/>');
                 
                 var prevEvent = container.find('.timeline-event:last');
