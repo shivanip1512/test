@@ -22,6 +22,7 @@ import com.cannontech.common.rfn.message.gateway.GatewayDataRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayDataResponse;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGatewayData;
+import com.cannontech.common.rfn.model.TimeoutExecutionException;
 import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
@@ -34,6 +35,7 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
     private static final Logger log = YukonLogManager.getLogger(RfnGatewayDataCacheImpl.class);
     private static final String gatewayDataRequestCparm = "RFN_GATEWAY_DATA_REQUEST";
     private static final String gatewayDataRequestQueue = "yukon.qr.obj.common.rfn.GatewayDataRequest";
+    private static final int maxRetries = 3;
     
     //Autowired in constructor
     private ConnectionFactory connectionFactory;
@@ -138,14 +140,31 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
             request.setRfnIdentifier(rfnIdentifier);
             
             //Send the request and wait for the response
-            BlockingJmsReplyHandler<GatewayDataResponse> replyHandler = new BlockingJmsReplyHandler<>(GatewayDataResponse.class);
-            requestTemplate.send(request, replyHandler);
-            GatewayDataResponse response = replyHandler.waitForCompletion();
+            GatewayDataResponse response = sendRequestWithRetry(request);
             data = new RfnGatewayData(response);
             
             //Update the cache and return the data
             cacheMap.put(key, data);
             return data;
+        }
+        
+        private GatewayDataResponse sendRequestWithRetry(GatewayDataRequest request) throws ExecutionException {
+            int retryCount = 0;
+            GatewayDataResponse response = null;
+            while (response == null) {
+                try {
+                    BlockingJmsReplyHandler<GatewayDataResponse> replyHandler = new BlockingJmsReplyHandler<>(GatewayDataResponse.class);
+                    requestTemplate.send(request, replyHandler);
+                    response = replyHandler.waitForCompletion();
+                } catch (TimeoutExecutionException e) {
+                    if(retryCount < maxRetries) {
+                        log.error("Gateway data request timed out. Retrying.", e);
+                    } else {
+                        throw e;
+                    }
+                }
+            }
+            return response;
         }
         
         @Override
