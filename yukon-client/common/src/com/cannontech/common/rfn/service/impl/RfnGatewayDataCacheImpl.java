@@ -158,6 +158,7 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
                     response = replyHandler.waitForCompletion();
                 } catch (TimeoutExecutionException e) {
                     if(retryCount < maxRetries) {
+                        retryCount++;
                         log.error("Gateway data request timed out. Retrying.", e);
                     } else {
                         throw e;

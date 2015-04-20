@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -87,7 +86,6 @@ public class RfnGatewayDataCacheTest {
         cache.get(paoIdentifier); //NetworkManagerCommunicationException thrown here
     }
     
-    @Ignore
     @Test(expected=NmCommunicationException.class)
     public void test_get_timeoutWithUncachedValue() throws NmCommunicationException {
         //setup
