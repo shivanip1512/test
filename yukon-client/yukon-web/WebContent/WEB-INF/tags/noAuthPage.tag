@@ -32,8 +32,6 @@
 <%-- Include overrides.css last so that, you know, they actually override.  cascade! --%>
 <cti:includeCss link="OVERRIDES" force="true"/>
 
-<tags:jsGlobals/>
-
 <cti:includeScript link="MODERNIZR" force="true"/>
 
 <cti:includeScript link="JQUERY" force="true"/>
@@ -45,6 +43,10 @@
 <cti:includeScript link="JQUERY_CHECK_ALL" force="true"/>
 <cti:includeScript link="JQUERY_FORM" force="true"/>
 <cti:includeScript link="JQUERY_PLACEHOLDER" force="true"/>
+<cti:includeScript link="JS_TIMEZONE_DETECT" force="true"/>
+
+<tags:jsGlobals/>
+
 <cti:includeScript link="YUKON" force="true"/>
 <cti:includeScript link="YUKON_COOKIE" force="true"/>
 <cti:includeScript link="YUKON_UI_UTIL" force="true"/>

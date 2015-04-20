@@ -65,10 +65,13 @@ var yg = {
         yes: '<cti:msg2 key="yukon.web.defaults.yes"/>'
     },
     
+    timezone: jstz.determine().name(),
+    
     // Role properties
     rp: {
         updater_delay: +'<cti:getProperty property="DATA_UPDATER_DELAY_MS"/>'
     }
     
 };
+
 </script>

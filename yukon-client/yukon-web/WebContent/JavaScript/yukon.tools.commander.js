@@ -4,6 +4,8 @@ yukon.namespace('yukon.tools.commander');
  * Module for the commander page (localhost:8080/yukon/tools/commander).
  * @module yukon.tools.commander
  * @requires JQUERY
+ * @requires MOMENT
+ * @requires MOMENT_TZ
  * @requires yukon
  */
 yukon.tools.commander = (function () {
@@ -45,9 +47,6 @@ yukon.tools.commander = (function () {
         'SUCCESS': 'cmd-resp-success', 
         'INHIBITED': 'cmd-resp-warn'
     },
-    
-    /** {String} - The IANA timezone name. */
-    _tz = jstz.determine().name(),
     
     /** {object} - Map of requests that are still waiting for responses.
      *             It's a hash of request id to array of already processed response ids. */
@@ -158,7 +157,7 @@ yukon.tools.commander = (function () {
      */
     _logRequest = function (req) {
         
-        var timestamp = moment(req.timestamp).tz(_tz).format(yg.formats.date.long_date_time_hms),
+        var timestamp = moment(req.timestamp).tz(yg.timezone).format(yg.formats.date.long_date_time_hms),
             result = $('<div>'), 
             resultReq = $('<div>'),
             console = $('#commander-results');

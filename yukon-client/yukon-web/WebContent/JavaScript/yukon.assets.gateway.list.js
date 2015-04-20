@@ -4,6 +4,8 @@ yukon.namespace('yukon.assets.gateway.list');
  * Module that handles the behavior on the gatway list page (localhost:8080/yukon/stars/gateways).
  * @module yukon.assets.gateway.list
  * @requires JQUERY
+ * @requires MOMENT
+ * @requires MOMENT_TZ
  * @requires yukon
  */
 yukon.assets.gateway.list = (function () {
@@ -14,10 +16,7 @@ yukon.assets.gateway.list = (function () {
     _initialized = false,
     
     _text,
-    
-    /** {String} - The IANA timezone name. */
-    _tz = jstz.determine().name(),
-    
+
     _update = function () {
         $.ajax({
             url: yukon.url('/stars/gateways/data'),
@@ -34,7 +33,7 @@ yukon.assets.gateway.list = (function () {
                 
                 if (data != null) {
                     
-                    timestamp = moment(data.lastCommTimestamp).tz(_tz).format(yg.formats.date.full_hm);
+                    timestamp = moment(data.lastCommTimestamp).tz(yg.timezone).format(yg.formats.date.full_hm);
                     percent = data.collectionPercent.toFixed(2);
                     
                     if (!row.data('loaded')) {
@@ -99,7 +98,7 @@ yukon.assets.gateway.list = (function () {
         
         var 
         gwText, 
-        timestamp = moment(update.timestamp.millis).tz(_tz).format(yg.formats.date.full_hm);
+        timestamp = moment(update.timestamp.millis).tz(yg.timezone).format(yg.formats.date.full_hm);
         
         row.find('.js-cert-update-timestamp a').text(timestamp);
         row.find('.js-cert-update-file').text(update.fileName);

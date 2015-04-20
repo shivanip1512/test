@@ -16,9 +16,6 @@ yukon.da.regulator = (function () {
     /** @type {number} - The regulator id. */
     var _id = null;
     
-    /** {String} - The IANA timezone name. */
-    var _tz = jstz.determine().name();
-    
     var _templates = {
         successful: '<span class="label label-success">' + yg.text.successful + '</span>',
         failed: '<span class="label label-danger">' + yg.text.failed + '</span>'
@@ -88,7 +85,7 @@ yukon.da.regulator = (function () {
                 row.find('.js-message').html(event.message);
                 row.find('.js-user').text(event.user);
                 
-                var timeText = moment(event.timestamp).tz(_tz).format(yg.formats.date.full);
+                var timeText = moment(event.timestamp).tz(yg.timezone).format(yg.formats.date.full);
                 row.find('.js-timestamp').text(timeText);
                 
                 body.prepend(row);

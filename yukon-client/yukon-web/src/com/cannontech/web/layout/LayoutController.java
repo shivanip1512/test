@@ -75,7 +75,8 @@ public class LayoutController {
     @Autowired private YukonUserDao userDao;
     @Autowired private WebUtilityService webUtilService;
     
-    private List<String> layoutScriptFiles;
+    private List<String> libraryScriptFiles;
+    private List<String> yukonScriptFiles;
     private List<String> standardCssFiles;
     
     @PostConstruct
@@ -103,7 +104,9 @@ public class LayoutController {
         b.add(JsLibrary.JQUERY_HIDDEN_DIMENSIONS.getPath(dev));
         b.add(JsLibrary.JQUERY_SCROLLTO.getPath(dev));
         b.add(JsLibrary.JQUERY_COOKIE.getPath(dev));
+        libraryScriptFiles = b.build();
         
+        b = ImmutableList.builder();
         // Add Yukon common libraries
         b.add(JsLibrary.YUKON.getPath(dev));
         b.add(JsLibrary.YUKON_HUB.getPath(dev));
@@ -118,7 +121,7 @@ public class LayoutController {
         b.add(JsLibrary.YUKON_SIMPLE_POPUPS.getPath(dev));
         b.add(JsLibrary.YUKON_PICKER.getPath(dev));
         b.add(JsLibrary.YUKON_DEVICE_GROUP_PICKER.getPath(dev));
-        layoutScriptFiles = b.build();
+        yukonScriptFiles = b.build();
         
         /** CSS ORDER MATTERS! **/
         b = ImmutableList.builder();
@@ -218,14 +221,16 @@ public class LayoutController {
         removeDuplicates(loginGroupCssList);
         model.addAttribute("loginGroupCss", loginGroupCssList);
         
+        model.addAttribute("libraryScriptFiles", libraryScriptFiles);
+        
         Set<String> finalScriptList = new LinkedHashSet<String>();
         
-        finalScriptList.addAll(layoutScriptFiles);
+        finalScriptList.addAll(yukonScriptFiles);
         
         // get script files declared in the module
         finalScriptList.addAll(moduleBase.getScriptFiles());
         finalScriptList.addAll(tagInfo.getScriptFiles());
-        model.addAttribute("javaScriptFiles", finalScriptList);
+        model.addAttribute("yukonScriptFiles", finalScriptList);
         
         LayoutSkinEnum skin = moduleBase.getSkin();
         

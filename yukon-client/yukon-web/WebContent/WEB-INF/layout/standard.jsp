@@ -22,17 +22,17 @@
 
 <link rel="shortcut icon" href="<cti:url value="/favicon.ico"/>" type="image/x-icon">
 
-<!-- Standard CSS Files -->
+<%-- Standard CSS Files --%>
 <c:forEach items="${standardCssFiles}" var="file">
     <link rel="stylesheet" href="<cti:url value="${file}"/>">
 </c:forEach>
 
-<!-- Module CSS files from module_config.xml -->
+<%-- Module CSS files from module_config.xml --%>
 <c:forEach items="${moduleConfigCss}" var="file">
     <link rel="stylesheet" href="<cti:url value="${file}"/>">
 </c:forEach>
 
-<!-- Individual files from includeCss tag on the request page -->
+<%-- Individual files from includeCss tag on the request page --%>
 <c:forEach items="${innerContentCss}" var="file">
     <link rel="stylesheet" href="<cti:url value="${file}"/>">
 </c:forEach>
@@ -40,10 +40,15 @@
 <%-- Include overrides.css last so that, you know, they actually override.  cascade! --%>
 <cti:includeCss link="OVERRIDES" force="true"/>
 
+<%-- Library Script Files --%>
+<c:forEach items="${libraryScriptFiles}" var="file">
+    <script src="<cti:url value="${file}"/>"></script>
+</c:forEach>
+
 <tags:jsGlobals/>
 
-<!-- Consolidated Script Files -->
-<c:forEach items="${javaScriptFiles}" var="file">
+<%-- Yukon Script Files --%>
+<c:forEach items="${yukonScriptFiles}" var="file">
     <script src="<cti:url value="${file}"/>"></script>
 </c:forEach>
 

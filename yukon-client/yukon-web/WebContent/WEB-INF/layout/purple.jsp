@@ -10,7 +10,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <title><c:out value="${info.title}" /></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-        <!-- Layout CSS files -->
+        <%-- Layout CSS files  --%>
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/CannonStyle.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/PurpleHeaderBar.css"/>" >
         <cti:includeCss link="YUKON" force="true"/>
@@ -20,22 +20,26 @@
         </cti:url>
         <link rel="stylesheet" type="text/css" href="${webClientRoleStyleSheet}" >
 
-        <!-- Module CSS files from module_config.xml -->
+        <%-- Module CSS files from module_config.xml --%>
         <c:forEach items="${moduleConfigCss}" var="file"><link rel="stylesheet" type="text/css" href="<cti:url value="${file}"/>" >
         </c:forEach>
         
-        <!-- Individual files from includeCss tag on the request page -->
+        <%-- Individual files from includeCss tag on the request page --%>
         <c:forEach items="${innerContentCss}" var="file"><link rel="stylesheet" type="text/css" href="<cti:url value="${file}"/>" >
         </c:forEach>
         
-        <!-- Login Group specific style sheets (YukonRoleProperty.STD_PAGE_STYLE_SHEET)-->
+        <%-- Login Group specific style sheets (YukonRoleProperty.STD_PAGE_STYLE_SHEET) --%>
         <c:forEach items="${loginGroupCss}" var="file"><link rel="stylesheet" type="text/css" href="<cti:url value="${file}"/>" >
+        </c:forEach>
+        
+        <%-- Library Script Files --%>
+        <c:forEach items="${libraryScriptFiles}" var="file"><script type="text/javascript" src="<cti:url value="${file}"/>"></script>
         </c:forEach>
         
         <tags:jsGlobals/>
         
-        <!-- Consolidated Script Files -->
-        <c:forEach items="${javaScriptFiles}" var="file"><script type="text/javascript" src="<cti:url value="${file}"/>"></script>
+        <%-- Yukon Script Files --%>
+        <c:forEach items="${yukonScriptFiles}" var="file"><script type="text/javascript" src="<cti:url value="${file}"/>"></script>
         </c:forEach>
 
 </head>

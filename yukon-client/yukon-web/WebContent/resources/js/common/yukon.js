@@ -1737,9 +1737,6 @@ yukon.ui = (function () {
         });
     };
     
-    /** {String} - The IANA timezone name. */
-    var timezone = jstz.determine().name();
-
     /** 
      * A widget for creating a timeline to view events
      * @param {number} [begin=Yesterday Midnight] - Endpoint of the timeline, expressed as epoch timestamp.
@@ -1820,8 +1817,8 @@ yukon.ui = (function () {
                 time += interval;
             }
             
-            var beginText = moment(begin).tz(timezone).format(yg.formats.date.long_date_time_hm);
-            var endText = moment(end).tz(timezone).format(yg.formats.date.long_date_time_hm);
+            var beginText = moment(begin).tz(yg.timezone).format(yg.formats.date.long_date_time_hm);
+            var endText = moment(end).tz(yg.timezone).format(yg.formats.date.long_date_time_hm);
             
             var beginSpan = $('<span class="timeline-label-begin">')
             .text(beginText);
@@ -1906,7 +1903,7 @@ yukon.ui = (function () {
                 
                 var tooltip = tooltipped.data('tooltip');
                 
-                var timeText = moment(event.timestamp).tz(timezone).format(yg.formats.date.full);
+                var timeText = moment(event.timestamp).tz(yg.timezone).format(yg.formats.date.full);
                 
                 var message = event.message ? ' - ' + event.message : '';
                 var itemTooltip = $('<li>').html(timeText + message);
