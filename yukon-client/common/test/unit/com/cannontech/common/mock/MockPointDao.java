@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.Map;
 
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.common.pao.service.impl.PointCreationServiceImpl;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
@@ -18,10 +20,14 @@ import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
+import com.cannontech.database.data.point.PointArchiveInterval;
+import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.StatusControlType;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.google.common.collect.Multimap;
 
 /**
@@ -29,6 +35,8 @@ import com.google.common.collect.Multimap;
  * static value expected for unit testing
  */
 public class MockPointDao implements PointDao {
+    
+    PointCreationServiceImpl pointCreationService;
 
     /**
      * This method will return a point based on a fake id (ids 1 thru 4 are
@@ -107,8 +115,49 @@ public class MockPointDao implements PointDao {
 
     @Override
     public java.util.List<PointBase> getPointsForPao(int paoId) {
+        if (paoId == 1) {
+            PaoIdentifier pao = new PaoIdentifier(paoId, PaoType.MCT410IL);
+            return getPointsForDevice1(pao);
+        } else if (paoId == 2) {
+            PaoIdentifier pao = new PaoIdentifier(paoId, PaoType.MCT410IL);
+            return getPointsForDevice2(pao);
+        }
         return null;
     };
+    
+    private List<PointBase> getPointsForDevice1(PaoIdentifier pao) {
+        List<PointBase> points = new ArrayList<PointBase>();
+        points.add(getPoint(1, pao, PointType.DemandAccumulator, 100, "User Created"));
+        points.add(getPoint(2, pao, PointType.PulseAccumulator, 20, "Blink Count"));
+        points.add(getPoint(3, pao, PointType.PulseAccumulator, 1, "kWh"));
+        points.add(getPoint(4, pao, PointType.DemandAccumulator, 4, "Voltage"));
+        return points;
+    }
+    
+    private List<PointBase> getPointsForDevice2(PaoIdentifier pao) {
+        List<PointBase> points = new ArrayList<PointBase>();
+        points.add(getPoint(1, pao, PointType.DemandAccumulator, 100, "User Created"));
+        points.add(getPoint(2, pao, PointType.Analog, 1, "Delivered kWh"));
+        points.add(getPoint(3, pao, PointType.Analog, 2, "Received kWh"));
+        points.add(getPoint(4, pao, PointType.Analog, 20, "Blink Count")); 
+        points.add(getPoint(5, pao, PointType.Analog, 22, "Outage Count")); 
+        PointBase calcPoint = getPoint(6, pao, PointType.CalcAnalog, 0, "Total Outage Count");
+        calcPoint.setPointID(6);
+        points.add(calcPoint); 
+        return points;
+    }
+    
+    
+    private PointBase getPoint(int pointId, PaoIdentifier pao, PointType type, int offset, String pointName) {
+        pointCreationService.setNextValueHelper(new NextValueHelper() {
+            @Override
+            public int getNextValue(String tableName) {
+                return pointId;
+            }
+        });
+        return pointCreationService.createPoint(type.getPointTypeId(), pointName, pao, offset, 1.0, 1, 0, 0, 3,
+            StatusControlType.NONE, PointArchiveType.NONE, PointArchiveInterval.ZERO);
+    }
 
     @Override
     public int getNextPointId() {
