@@ -1,7 +1,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="dev" page="progressbars">
+<cti:standardPage module="dev" page="timelines">
 <tags:styleguide page="timelines">
 
 <style>

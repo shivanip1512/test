@@ -302,6 +302,22 @@ input[type=radio] {
     opacity: .5;
 }
 
+/** Styles for a 'stepper' select **/
+.stepper {
+    display: inline-block;
+}
+.stepper button.stepper-prev,
+.stepper select.stepper-select,
+.stepper button.stepper-next {
+    float: none;
+    vertical-align: middle;
+    margin: 0;
+}
+.stepper select.stepper-select {
+    background-image: none;
+    padding-right: 5px;
+}
+
 /* VERTICAL MENUS */
 #LeftColumn .info-fragment, #LeftColumn .bumper {border-right: 1px solid #ccc;}
 #LeftColumn .bumper {min-height: 120px;}

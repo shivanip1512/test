@@ -19,7 +19,7 @@
 <cti:uniqueIdentifier prefix="checkbox-" var="thisId"/>
 <cti:default var="id" value="${thisId}"/>
 
-<label <c:if test="${not empty pageScope.classes}">classes="${classes}"</c:if>>
+<label <c:if test="${not empty pageScope.classes}">class="${classes}"</c:if>>
     <c:if test="${not empty pageScope.key}"><cti:msg2 key="${key}"/></c:if>
     <span class="checkbox">
         <c:choose>

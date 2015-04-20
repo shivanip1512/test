@@ -921,6 +921,47 @@ yukon.ui = (function () {
                 }
             });
             
+            /** STEPPER SELECT BEHAVIOR. */
+            /** Move selection backward when previous button clicked. */
+            $(document).on('click', '.stepper .stepper-prev', function (ev) {
+                
+                var btn = $(this);
+                var wrapper = btn.closest('.stepper');
+                var select = wrapper.find('.stepper-select');
+                var prev = select.find('option:selected').prev('option');
+                
+                if (!prev.length) {
+                    prev = select.find('option:last-child');
+                }
+                prev.prop('selected', true);
+                select.trigger('change');
+                
+                return true;
+            });
+            
+            /** Move selection backward when previous button clicked. */
+            $(document).on('click', '.stepper .stepper-next', function (ev) {
+                
+                var btn = $(this);
+                var wrapper = btn.closest('.stepper');
+                var select = wrapper.find('.stepper-select');
+                var next = select.find('option:selected').next('option');
+                
+                if (!next.length) {
+                    next = select.find('option:first-child');
+                }
+                next.prop('selected', true);
+                select.trigger('change');
+                
+                return true;
+            });
+            
+            /** Prevent select default behavior. */
+            $(document).on('mousedown', '.stepper .stepper-select', function (ev) {
+                ev.preventDefault();
+            });
+            /** END STEPPER SELECT BEHAVIOR. */
+            
             /** Focus the designated input element */
             mod.autofocus();
             

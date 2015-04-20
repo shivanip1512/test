@@ -97,6 +97,11 @@ public class StyleGuideController {
         return "styleguide/timelines.jsp";
     }
     
+    @RequestMapping("/styleguide/steppers")
+    public String steppers() {
+        return "styleguide/steppers.jsp";
+    }
+    
     public class ButtonBean {
         private String phase = "B";
         
