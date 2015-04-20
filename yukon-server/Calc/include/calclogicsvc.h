@@ -7,7 +7,7 @@
 
 #include "thread_monitor.h"
 #include "thread_register_data.h"
-#include "worker_thread.h"
+#include "CalcWorkerThread.h"
 
 #include "msg_dbchg.h"
 #include <queue>
@@ -44,8 +44,8 @@ protected:
 
 private:
 
-    Cti::WorkerThread _inputFunc;
-    Cti::WorkerThread _outputFunc;
+    Cti::CalcLogic::CalcWorkerThread    _inputFunc;
+    Cti::CalcLogic::CalcWorkerThread    _outputFunc;
 
     CtiTime _lastDispatchMessageTime;
     bool _dispatchConnectionBad;

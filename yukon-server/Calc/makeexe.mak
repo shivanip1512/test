@@ -38,7 +38,7 @@ calc_logic.obj \
 pointstore.obj \
 calcthread.obj \
 calclogicsvc.obj \
-
+CalcWorkerThread.obj
 
 
 LURKOBJS= \

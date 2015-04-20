@@ -2,10 +2,9 @@
 
 #include <string>
 
-#include "boost/noncopyable.hpp"
-#include "boost/thread/thread.hpp"
-#include "boost/thread/condition_variable.hpp"
-#include "boost/optional/optional.hpp"
+#include <boost/noncopyable.hpp>
+#include <boost/thread.hpp>
+#include <boost/optional.hpp>
 
 #include "dlldefs.h"
 #include "timing_util.h"
@@ -89,11 +88,6 @@ public:
     bool tryJoinFor( const Timing::Chrono &duration );
     void tryJoinOrTerminateFor( const Timing::Chrono &duration );
 
-    void pause();
-    bool tryForDurationToPause( const Timing::Chrono &duration );
-    void resume();
-    bool waitForResume();
-
     static void interruptionPoint();
     static void sleepFor( const Timing::Chrono &duration );
     
@@ -101,11 +95,6 @@ private:
 
     mutable boost::thread       _thread;
     Function                    _function;
-
-    bool volatile               _pause;
-    boost::mutex                _pauseMutex;
-    boost::condition_variable   _pauseCond;
-    boost::condition_variable   _resumeCond;
 
     void executeWrapper();
 };

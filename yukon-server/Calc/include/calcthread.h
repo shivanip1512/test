@@ -8,7 +8,7 @@
 
 #include "thread_monitor.h"
 #include "thread_register_data.h"
-#include "worker_thread.h"
+#include "CalcWorkerThread.h"
 
 #include <functional>
 
@@ -64,10 +64,10 @@ private:
 
     mutable CtiCriticalSection _mutex;
 
-    Cti::WorkerThread _periodicThreadFunc;
-    Cti::WorkerThread _onUpdateThreadFunc;
-    Cti::WorkerThread _historicalThreadFunc;
-    Cti::WorkerThread _baselineThreadFunc;
+    Cti::CalcLogic::CalcWorkerThread    _periodicThreadFunc;
+    Cti::CalcLogic::CalcWorkerThread    _onUpdateThreadFunc;
+    Cti::CalcLogic::CalcWorkerThread    _historicalThreadFunc;
+    Cti::CalcLogic::CalcWorkerThread    _baselineThreadFunc;
 
     void getCalcHistoricalLastUpdatedTime(PointTimeMap &dbTimeMap);
     void getHistoricalTableData(CtiCalc *calcPoint, CtiTime &lastTime, DynamicTableData &data);

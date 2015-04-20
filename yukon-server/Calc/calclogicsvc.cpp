@@ -584,8 +584,6 @@ void CtiCalcLogicService::_inputThread( void )
             {
                 incomingMsg.reset( dispatchConnection->ReadConnQue( 1000 ));
 
-                _inputFunc.waitForResume();
-
                 if(!_shutdownOnThreadTimeout)
                 {
                     threadStatus.monitorCheck();
@@ -595,6 +593,8 @@ void CtiCalcLogicService::_inputThread( void )
                     threadStatus.monitorCheck(&CtiCalcLogicService::sendUserQuit);
                 }
             }
+
+            _inputFunc.waitForResume();
 
             try
             {

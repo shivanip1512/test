@@ -14,8 +14,7 @@ namespace Cti {
  * @param function thread function to run
  */
 WorkerThread::WorkerThread( const Function &function ) :
-    _function(function),
-    _pause(false)
+    _function(function)
 {
 }
 
@@ -93,9 +92,7 @@ void WorkerThread::join()
  */
 bool WorkerThread::tryJoinFor( const Timing::Chrono &duration )
 {
-    // try_join_for() is available in boost 1.50+
-    // return _thread.try_join_for( boost::chrono::milliseconds( duration.milliseconds() ));
-    return _thread.timed_join( boost::posix_time::milliseconds( duration.milliseconds() ));
+    return _thread.try_join_for( boost::chrono::milliseconds( duration.milliseconds() ));
 }
 
 /**
@@ -113,87 +110,6 @@ void WorkerThread::tryJoinOrTerminateFor( const Timing::Chrono &duration )
         terminate();
     }
 }
-
-/**
- * request the thread to pause
- *
- * @throw  boost::thread_interrupted
- */
-void WorkerThread::pause()
-{
-    boost::unique_lock<boost::mutex> lock( _pauseMutex );
-
-    _pause = true;
-
-    _pauseCond.wait( lock );
-}
-
-/**
- * try to request the thread to pause using a timeout in milliseconds,
- * cancel the pause request and return
- *
- * @param  duration
- * @return true if thread is paused,
- *         false otherwize
- */
-bool WorkerThread::tryForDurationToPause( const Timing::Chrono &duration )
-{
-    boost::unique_lock<boost::mutex> lock( _pauseMutex );
-
-    _pause = true;
-
-    // wait_for() is available in boost 1.50+
-    // if( !_pausedCond.wait_for( lock, boost::chrono::milliseconds( duration.milliseconds() )))
-    if( !_pauseCond.timed_wait( lock, boost::posix_time::milliseconds( duration.milliseconds() )))
-    {
-        _pause = false;
-    }
-
-    return _pause;
-}
-
-/**
- * request the thread to resume execution
- * call only if pause() or if tryForDurationToPause() has succeeded
- */
-void WorkerThread::resume()
-{
-    {
-        boost::unique_lock<boost::mutex> lock( _pauseMutex );
-
-        _pause = false;
-    }
-
-    _resumeCond.notify_one();
-}
-
-/**
- * block if paused and wait for call on resume()
- *
- * @return true if thread was paused and has been resumed,
- *         false otherwise
- * @throw  boost::thread_interrupted
- */
-bool WorkerThread::waitForResume()
-{
-    {
-        boost::unique_lock<boost::mutex> lock( _pauseMutex );
-
-        if( _pause )
-        {
-            _pauseCond.notify_one();
-
-            _resumeCond.wait( lock ); // throws boost::thread_interrupted
-
-            return true;
-        }
-    }
-
-    interruptionPoint(); // throws boost::thread_interrupted
-
-    return false;
-}
-
 /**
  * check if interruption as been requested
  *
@@ -211,9 +127,7 @@ void WorkerThread::interruptionPoint()
  */
 void WorkerThread::sleepFor( const Timing::Chrono &duration )
 {
-    // sleep_for() is available in boost 1.50+
-    //boost::this_thread::sleep_for( boost::chrono::milliseconds( duration.milliseconds() ));
-    boost::this_thread::sleep( boost::posix_time::milliseconds( duration.milliseconds() ));
+    boost::this_thread::sleep_for( boost::chrono::milliseconds( duration.milliseconds() ));
 }
 
 /**

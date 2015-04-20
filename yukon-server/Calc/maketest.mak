@@ -51,6 +51,7 @@ calccomponent.obj \
 pointstore.obj \
 calcthread.obj \
 calclogicsvc.obj \
+CalcWorkerThread.obj
 
 
 CALC_TEST_FULLBUILD = $[Filename,$(OBJ),CalcTestFullBuild,target]

@@ -182,11 +182,11 @@ void CtiCalculateThread::periodicThread( void )
             while( newTime == tempTime )
             {
                 tempTime = CtiTime( );
-                if( ! _periodicThreadFunc.waitForResume() )
-                {
-                    Cti::WorkerThread::sleepFor(Cti::Timing::Chrono::milliseconds(250));
-                }
+
+                Cti::WorkerThread::sleepFor(Cti::Timing::Chrono::milliseconds(250));
             }
+
+            _periodicThreadFunc.waitForResume();
 
             now = clock( );
 
@@ -312,12 +312,11 @@ void CtiCalculateThread::onUpdateThread( void )
                     threadStatus.monitorCheck(&CtiCalculateThread::sendUserQuit);
                 }
 
-                if( ! _onUpdateThreadFunc.waitForResume() )
-                {
-                    Cti::WorkerThread::sleepFor(Cti::Timing::Chrono::milliseconds(250));
-                }
+                Cti::WorkerThread::sleepFor(Cti::Timing::Chrono::milliseconds(250));
+            }
+            while( !_auAffectedPoints.entries( ) );
 
-            } while( !_auAffectedPoints.entries( ) );
+            _onUpdateThreadFunc.waitForResume();
 
             pChg = CTIDBG_new CtiMultiMsg;
             pointsInMulti = FALSE;
@@ -509,13 +508,12 @@ void CtiCalculateThread::historicalThread( void )
                     threadStatus.monitorCheck(&CtiCalculateThread::sendUserQuit);
                 }
 
-                if( ! _historicalThreadFunc.waitForResume() )
-                {
-                    //Historical doesnt do much most of the time, it can sleep for several seconds
-                    Cti::WorkerThread::sleepFor(Cti::Timing::Chrono::seconds(2));
-                }
+                //Historical doesnt do much most of the time, it can sleep for several seconds
+                Cti::WorkerThread::sleepFor(Cti::Timing::Chrono::seconds(2));
+            }
+            while( now < nextCalcTime );
 
-            } while( now < nextCalcTime );
+            _historicalThreadFunc.waitForResume();
 
             CTILOG_INFO(dout, "Historical Calculation beginning.");
 
@@ -541,12 +539,6 @@ void CtiCalculateThread::historicalThread( void )
                 if( calcPoint==NULL || !calcPoint->ready( ) )
                 {
                     continue;  // for
-                }
-
-                if( _historicalThreadFunc.waitForResume() )
-                {
-                    reloaded = true;//We were paused, our historicIter cant be trusted, we need to re-run our loop
-                    continue;//for
                 }
 
                 if( calcPoint->isBaselineCalc() )
@@ -714,13 +706,12 @@ void CtiCalculateThread::baselineThread( void )
                     threadStatus.monitorCheck(&CtiCalculateThread::sendUserQuit);
                 }
 
-                if( ! _baselineThreadFunc.waitForResume() )
-                {
-                    //baseline doesnt do much almost all of the time, it can sleep for as long as we can wait on shutdown
-                    Cti::WorkerThread::sleepFor(Cti::Timing::Chrono::seconds(2));
-                }
+                //baseline doesnt do much almost all of the time, it can sleep for as long as we can wait on shutdown
+                Cti::WorkerThread::sleepFor(Cti::Timing::Chrono::seconds(2));
+            }
+            while( !(now >= nextCalcTime) );
 
-            } while( !(now >= nextCalcTime) );
+            _baselineThreadFunc.waitForResume();
 
             CTILOG_INFO(dout, "Baseline Calculation beginning.");
 
@@ -751,12 +742,6 @@ void CtiCalculateThread::baselineThread( void )
                 if( calcPoint==NULL || !calcPoint->ready( ) )
                 {
                     continue;  // for
-                }
-
-                if( _baselineThreadFunc.waitForResume() )
-                {
-                    reloaded = true;//We were paused, our historicIter cant be trusted, we need to re-run our loop
-                    continue;//for
                 }
 
                 if( !calcPoint->isBaselineCalc() )
@@ -1102,36 +1087,25 @@ void CtiCalculateThread::interruptThreads()
 
 void CtiCalculateThread::pauseThreads()
 {
-    if( ! _periodicThreadFunc.tryForDurationToPause(Cti::Timing::Chrono::seconds(5)) )
+    try
     {
-        CTILOG_ERROR(dout, "Unable to pause the periodicThread. Calc may become unstable!");
-    }
-    if( ! _onUpdateThreadFunc.tryForDurationToPause(Cti::Timing::Chrono::seconds(5)) )
-    {
-        CTILOG_ERROR(dout, "Unable to pause the onUpdateThread. Calc may become unstable!");
-    }
+        _onUpdateThreadFunc.pause();
+        _periodicThreadFunc.pause();
 
-    if( _runCalcHistorical )
-    {
-        if( ! _historicalThreadFunc.tryForDurationToPause(Cti::Timing::Chrono::seconds(5)) )
+        if( _runCalcHistorical )
         {
-            CTILOG_ERROR(dout, "Unable to pause the historicalThread. Calc may become unstable!");
+            _historicalThreadFunc.pause();
+        }
+
+        if( _runCalcBaseline )
+        {
+            _baselineThreadFunc.pause();
         }
     }
-
-    if( _runCalcBaseline )
+    catch(...)
     {
-        if( ! _baselineThreadFunc.tryForDurationToPause(Cti::Timing::Chrono::seconds(5)) )
-        {
-            CTILOG_ERROR(dout, "Unable to pause the baselineThread. Calc may become unstable!");
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
-
-    if( _CALC_DEBUG & CALC_DEBUG_RELOAD )
-    {
-        CTILOG_DEBUG(dout, "CalcThreads interruption attempt completed");
-    }
-
 }
 
 void CtiCalculateThread::resumeThreads(  )
