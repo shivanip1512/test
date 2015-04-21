@@ -117,9 +117,8 @@ public class RfnOptionPanel extends DataInputPanel implements CaretListener {
         String manufacturer = StringUtils.isBlank(getManufacturerTextField().getText()) ? null : getManufacturerTextField().getText();
         String model = StringUtils.isBlank(getModelTextField().getText()) ? null : getModelTextField().getText();
         boolean allFilledIn = StringUtils.isNotBlank(serialNumber) && StringUtils.isNotBlank(manufacturer) && StringUtils.isNotBlank(model);
-        if(!allFilledIn) {
+        if(!allFilledIn)
             throw new EditorInputValidationException("Serial Number, Manufacturer, and Model fields must all be filled in.");
-        }
                 
         /* Check for duplicates */
         try {
@@ -128,9 +127,8 @@ public class RfnOptionPanel extends DataInputPanel implements CaretListener {
         } catch (NotFoundException e) { /* IGNORE */ };
         
         ChangeDeviceTypeInfo info = new ChangeDeviceTypeInfo();
-        info.setManufacturer(manufacturer);
-        info.setModel(model);
-        info.setSerialNumber(serialNumber);
+        RfnIdentifier rfnIdentifier = new RfnIdentifier(serialNumber, manufacturer, model);
+        info.setRfnIdentifier(rfnIdentifier);
         
         return info;
     }

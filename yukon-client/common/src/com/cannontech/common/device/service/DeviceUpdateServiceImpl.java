@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
@@ -337,7 +336,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
 
         if (newDevice instanceof MCTBase && oldDevice instanceof RfnBase) {
             
-            if (info == null || info.getRouteId() == 0){
+            if (info == null || info.getRouteId() < 0) {
                 throw new ProcessingException("Address and route id are required");
             }
             if (!dlcAddressRangeService.isValidEnforcedAddress(newDefinition.getType(), info.getAddress())) {
@@ -349,13 +348,11 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
 
         if (newDevice instanceof RfnBase && oldDevice instanceof MCTBase) {
             
-            if (info == null || StringUtils.isEmpty(info.getSerialNumber())
-                || StringUtils.isEmpty(info.getManufacturer()) || StringUtils.isEmpty(info.getModel())) {
+            if (info == null || !info.getRfnIdentifier().isNotBlank()) {
                 throw new ProcessingException("Serial Number, Manufacturer and Model are required");
             }
             
-            RfnIdentifier rfnIdentifier =
-                new RfnIdentifier(info.getSerialNumber(), info.getManufacturer(), info.getModel());
+            RfnIdentifier rfnIdentifier = info.getRfnIdentifier();
             try {
                 rfnDeviceLookupService.getDevice(rfnIdentifier);
                 // device found, unable to change device type
@@ -387,19 +384,19 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         Map<Attribute, AttributeDefinition> oldDeviceAttributeMap = definitionMap.get(oldDevice.getPaoType());
         Map<Attribute, AttributeDefinition> newDeviceAttributeMap = definitionMap.get(newType);
 
-        List<PointBase> existingPoints = pointDao.getPointsForPao(oldDevice.getDevice().getDeviceID());        
+        List<PointBase> existingPoints = pointDao.getPointsForPao(oldDevice.getDevice().getDeviceID());
         Set<PointTemplate> initPointTemplates = paoDefinitionDao.getInitPointTemplates(newType);
      
         Set<PointBase> pointsToDelete = new HashSet<>();
         Set<PointTemplate> pointsToAdd = new HashSet<>(initPointTemplates);
         Map<Integer, PointToTemplate> pointsToTransfer = new HashMap<>();
 
-        ListMultimap<PointIdentifier, PointBase> identifierToPoint = ArrayListMultimap.create();
+        ListMultimap<PointIdentifier, PointBase> existingPointIdToPoint = ArrayListMultimap.create();
         for (PointBase point : existingPoints) {
             PointIdentifier pointIdentifier =
                 new PointIdentifier(PointType.getForString(point.getPoint().getPointType()),
                     point.getPoint().getPointOffset());
-            identifierToPoint.put(pointIdentifier, point);
+            existingPointIdToPoint.put(pointIdentifier, point);
 
             if (log.isDebugEnabled()) {
                 log.debug("Existing point: id=" + point.getPoint().getPointID() + " name="
@@ -412,7 +409,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         for (Attribute attribute : oldDeviceAttributeMap.keySet()) {
             AttributeDefinition oldDefinition = oldDeviceAttributeMap.get(attribute);
             AttributeDefinition newDefinition = newDeviceAttributeMap.get(attribute);
-            List<PointBase> points = identifierToPoint.get(oldDefinition.getPointTemplate().getPointIdentifier());
+            List<PointBase> points = existingPointIdToPoint.get(oldDefinition.getPointTemplate().getPointIdentifier());
 
             if (log.isDebugEnabled()) {
                 log.debug("Attribute=" + attribute + "------------------------");
@@ -438,14 +435,14 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
                     PointBase point = points.get(0);
                     PointToTemplate pointToTemplate = new PointToTemplate(point, newDefinition.getPointTemplate());
                     pointsToTransfer.put(point.getPoint().getPointID(), pointToTemplate);
-                    identifierToPoint.removeAll(oldDefinition.getPointTemplate().getPointIdentifier());
+                    existingPointIdToPoint.removeAll(oldDefinition.getPointTemplate().getPointIdentifier());
                     // removing the point from the list of points to be added
                     pointsToAdd.remove(pointToTemplate.getTemplate());
                     
                     log.debug("Transfering point.");
                 } else {
                     pointsToDelete.addAll(points);
-                    identifierToPoint.removeAll(oldDefinition.getPointTemplate().getPointIdentifier());
+                    existingPointIdToPoint.removeAll(oldDefinition.getPointTemplate().getPointIdentifier());
                     log.debug("Deleting point.");
                 }
             }
@@ -456,9 +453,9 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         // match "leftover" points by name, since some points don't have attributes
         // Example : Changing device type from MCT410CL to MCT410IL, point: Peak kW (Channel 2)
 
-        // identifierToPoint contains only unmatched points
-        for (PointIdentifier identifier : identifierToPoint.keySet()) {
-            List<PointBase> points = identifierToPoint.get(identifier);
+        // existingPointIdToPoint contains only unmatched points
+        for (PointIdentifier identifier : existingPointIdToPoint.keySet()) {
+            List<PointBase> points = existingPointIdToPoint.get(identifier);
 
             for (PointBase point : points) {
                 if (log.isDebugEnabled()) {

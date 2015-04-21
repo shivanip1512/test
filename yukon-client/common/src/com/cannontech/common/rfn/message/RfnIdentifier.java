@@ -36,7 +36,18 @@ public final class RfnIdentifier implements Serializable {
         return String.format("%s_%s_%s", sensorSerialNumber, sensorManufacturer, sensorModel);
     }
 
-    
+    /**
+     * Returns true if NONE of the fields are blank.
+     */
+    public boolean isNotBlank() {
+        return StringUtils.isNotBlank(sensorManufacturer) 
+            && StringUtils.isNotBlank(sensorModel)
+            && StringUtils.isNotBlank(sensorSerialNumber);
+    }
+
+    /**
+     * Returns true if ALL of the fields are blank.
+     */
     public boolean isBlank() {
         return StringUtils.isBlank(sensorManufacturer) 
             && StringUtils.isBlank(sensorModel)

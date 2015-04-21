@@ -47,6 +47,7 @@ import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.service.ChangeDeviceTypeService;
+import com.cannontech.common.bulk.service.ChangeDeviceTypeService.ChangeDeviceTypeInfo;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.MasterConfigHelper;
@@ -1403,7 +1404,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         multispeakEventLogService.meterCreated(newMeter.getMeterNumber(), newMeter, METER_ADD_STRING, mspVendor.getCompanyName());
 
         // update default values of newMeter
-        updateExistingMeter(mspMeterToAdd, newMeter, templateMeter, METER_ADD_STRING, mspVendor, true);
+        newMeter = updateExistingMeter(mspMeterToAdd, newMeter, templateMeter, METER_ADD_STRING, mspVendor, true);
         return newMeter;
     }
     
@@ -1499,7 +1500,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             templateMeter = meter;
         }
         
-        updateExistingMeter(mspMeter, meter, templateMeter, METER_ADD_STRING, mspVendor, true);
+        meter = updateExistingMeter(mspMeter, meter, templateMeter, METER_ADD_STRING, mspVendor, true);
         return meter;
     }
 
@@ -1517,18 +1518,19 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      *      - Removes from /Meters/Flags/Inventory/
      *  - Enables meter 
      *  - Attempt to update CIS Substation Group and Routing information
+     * @return Returns the updated existingMeter object (in case of major paoType change)
      */
-    private void updateExistingMeter(Meter mspMeter, YukonMeter existingMeter, YukonMeter templateMeter, String mspMethod,
+    private YukonMeter updateExistingMeter(Meter mspMeter, YukonMeter existingMeter, YukonMeter templateMeter, String mspMethod,
             MultispeakVendor mspVendor, boolean enable) throws MspErrorObjectException {
 
         YukonMeter originalCopy = existingMeter;
+        String newSerialOrAddress = mspMeter.getNameplate().getTransponderID().trim(); // this should be the sensorSerialNumber        
         
-        verifyAndUpdateType(templateMeter, existingMeter, mspMethod, mspVendor);
+        existingMeter = verifyAndUpdateType(templateMeter, existingMeter, newSerialOrAddress, mspMethod, mspVendor);
 
         String newMeterNumber = mspMeter.getMeterNo().trim();
         verifyAndUpdateMeterNumber(newMeterNumber, existingMeter, mspMethod, mspVendor);
 
-        String newSerialOrAddress = mspMeter.getNameplate().getTransponderID().trim(); // this should be the sensorSerialNumber
         verifyAndUpdateAddressOrSerial(newSerialOrAddress, templateMeter, existingMeter, mspMethod, mspVendor);
 
         String newPaoName = getPaoNameFromMspMeter(mspMeter, mspVendor);
@@ -1547,6 +1549,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         
         systemLog(mspMethod, "Original:"+ originalCopy.toString() + " New:"+ existingMeter.toString(), mspVendor);
         // TODO Perform DBChange for Pao here instead? Need to make sure the above methods no longer push the db change msg too...
+        return existingMeter;
     }
 
     /**
@@ -1557,28 +1560,38 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      * @param existingMeter - the meter to update
      * @param mspVendor
      * @throws MspErrorObjectException when error changing the type
+     * @return Returns the updated existingMeter object (in case of major paoType change) 
      */
-    private void verifyAndUpdateType(YukonMeter templateMeter, YukonMeter existingMeter, String mspMethod, MultispeakVendor mspVendor)
+    private YukonMeter verifyAndUpdateType(YukonMeter templateMeter, YukonMeter existingMeter, String serialOrAddress, String mspMethod, MultispeakVendor mspVendor)
             throws MspErrorObjectException {
         PaoType originalType = existingMeter.getPaoType();
         if (templateMeter.getPaoType() != originalType) {
             // PROBLEM, types do not match!
             // Attempt to change type
             try {
-                changeDeviceTypeService.changeDeviceType(new SimpleDevice(existingMeter), templateMeter.getPaoType(), null);
-                existingMeter.setPaoIdentifier(new PaoIdentifier(existingMeter.getDeviceId(), templateMeter.getPaoType())); // update local object with new type
+                ChangeDeviceTypeService.ChangeDeviceTypeInfo changeInfo = new ChangeDeviceTypeInfo();
+                changeInfo.setAddress(Integer.parseInt(serialOrAddress));
+                changeInfo.setRouteId(0);   // this will be updated later as part of route locate
+                if (templateMeter.getPaoType().isRfn()) {
+                    RfnIdentifier rfnIdentifier = buildNewMeterRfnIdentifier((RfnMeter)templateMeter, serialOrAddress);
+                    changeInfo.setRfnIdentifier(rfnIdentifier);
+                }
+                
+                changeDeviceTypeService.changeDeviceType(new SimpleDevice(existingMeter), templateMeter.getPaoType(), changeInfo);
+                existingMeter = meterDao.getForId(existingMeter.getDeviceId()); // reload the meter in case we've changed base classes
                 
                 // Extra logging to SystemLog, can be removed with completion of MultiSpeak EventLogs
                 systemLog(mspMethod, "MeterNumber (" + existingMeter.getMeterNumber() + ") - Changed DeviceType from:" + originalType + 
                           " to:" + templateMeter.getPaoIdentifier().getPaoType() + ").", mspVendor);
                 multispeakEventLogService.deviceTypeUpdated(originalType, existingMeter, mspMethod, mspVendor.getCompanyName());
-            } catch (ProcessingException e) {
+            } catch (ProcessingException | NumberFormatException e) {
                 ErrorObject errorObject = mspObjectDao.getErrorObject(existingMeter.getMeterNumber(), "Error: " + e.getMessage(),
                                                                       "Meter", "ChangeDeviceType", mspVendor.getCompanyName());
                 // return errorObject; couldn't save the change type
                 throw new MspErrorObjectException(errorObject);
             }
         }
+        return existingMeter;
     }
 
     /**
@@ -1676,7 +1689,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             boolean addedToGroup = updateSubstationGroup(substationName, meterNumber, meterToUpdate, mspMethod, mspVendor);
 
             if (meterToUpdate.getPaoType().isPlc()) {
-                if (addedToGroup) {
+                if (addedToGroup || ((PlcMeter)meterToUpdate).getRouteId() == 0) {
                     // If the substation changed, we should attempt to update the route info too.
                     // Update route (_after_ meter is enabled).
                     verifyAndUpdateRoute(meterToUpdate, mspVendor, substationName, mspMethod);
@@ -1930,7 +1943,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                                 // If no template found, just use this meter as the template (meaning, same meter, no type changes).
                                 templateMeter = meterToChange;
                             }
-                            updateExistingMeter(mspMeter, meterToChange, templateMeter, METER_CHANGED_STRING, mspVendor, true);
+                            meterToChange = updateExistingMeter(mspMeter, meterToChange, templateMeter, METER_CHANGED_STRING, mspVendor, true);
 
                             // using null for mspServiceLocation. See comments in getSubstationNameFromMspMeter(...)
                             verifyAndUpdateSubstationGroupAndRoute(meterToChange, mspVendor, mspMeter, null, SERV_LOC_CHANGED_STRING);

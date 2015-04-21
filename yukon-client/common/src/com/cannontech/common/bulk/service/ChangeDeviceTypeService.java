@@ -2,15 +2,14 @@ package com.cannontech.common.bulk.service;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 
 public interface ChangeDeviceTypeService {
 
     class ChangeDeviceTypeInfo{
         private int address;
         private int routeId;
-        private String model;
-        private String manufacturer;
-        private String serialNumber;
+        private RfnIdentifier rfnIdentifier;
         
         public int getAddress() {
             return address;
@@ -18,24 +17,15 @@ public interface ChangeDeviceTypeService {
         public void setAddress(int address) {
             this.address = address;
         }
-        public String getModel() {
-            return model;
+        
+        public RfnIdentifier getRfnIdentifier() {
+            return rfnIdentifier;
         }
-        public void setModel(String model) {
-            this.model = model;
+        
+        public void setRfnIdentifier(RfnIdentifier rfnIdentifier) {
+            this.rfnIdentifier = rfnIdentifier;
         }
-        public String getManufacturer() {
-            return manufacturer;
-        }
-        public void setManufacturer(String manufacturer) {
-            this.manufacturer = manufacturer;
-        }
-        public String getSerialNumber() {
-            return serialNumber;
-        }
-        public void setSerialNumber(String serialNumber) {
-            this.serialNumber = serialNumber;
-        }
+        
         public int getRouteId() {
             return routeId;
         }
