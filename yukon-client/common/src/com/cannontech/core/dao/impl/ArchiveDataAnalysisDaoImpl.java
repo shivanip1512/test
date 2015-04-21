@@ -153,7 +153,8 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     }
     
     @Override
-    public List<DeviceArchiveData> getSlotValues(int analysisId, PagingParameters paging, SortingParameters sorting) {
+    public List<DeviceArchiveData> getSlotValues(int analysisId, PagingParameters paging,
+            SortingParameters sorting) {
         /*
          * First DeviceId, paoname, type, MeterNumber and a flag that represents changed is null or
          * not (changeIdNull) is fetch in alias innertable for the passed analysis id.
@@ -205,8 +206,7 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
             sql.append(paging.getOneBasedStartIndex()).append("AND").append(paging.getOneBasedEndIndex());
         }
 
-        final LinkedHashMap<PaoIdentifier, DeviceArchiveData> deviceArchiveData =
-            new LinkedHashMap<PaoIdentifier, DeviceArchiveData>();
+        final LinkedHashMap<PaoIdentifier, DeviceArchiveData> deviceArchiveData = new LinkedHashMap<PaoIdentifier, DeviceArchiveData>();
         final Analysis analysis = getAnalysisById(analysisId);
         List<DeviceArchiveData> arsList = new ArrayList<>();
 
@@ -243,13 +243,15 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
         };
         final ListMultimap<Integer, ArchiveData> archiveDatas = ArrayListMultimap.create();
         ChunkingSqlTemplate chunkingTemplate = new ChunkingSqlTemplate(jdbcTemplate);
-        chunkingTemplate.query(sqlGenerator, Iterables.transform(deviceList, PaoIdentifier.TO_PAO_ID),
-            new YukonRowCallbackHandler() {
-                @Override
-                public void processRow(YukonResultSet rs) throws SQLException {
-                    archiveDatas.put(rs.getInt("DeviceId"), archiveDataRowMapper.mapRow(rs));
-                }
-            });
+        chunkingTemplate.query(sqlGenerator,
+                               Iterables.transform(deviceList, PaoIdentifier.TO_PAO_ID),
+                               new YukonRowCallbackHandler() {
+                                   @Override
+                                   public void processRow(YukonResultSet rs) throws SQLException {
+                                       archiveDatas.put(rs.getInt("DeviceId"),
+                                                        archiveDataRowMapper.mapRow(rs));
+                                   }
+                               });
 
         for (PaoIdentifier deviceId : deviceArchiveData.keySet()) {
             DeviceArchiveData data = deviceArchiveData.get(deviceId);
