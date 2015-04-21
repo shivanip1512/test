@@ -206,15 +206,12 @@ public class VeeReviewController {
         private final ReviewPoint reviewPoint;
         private final PointValueHolder prevPointValue;
         private final PointValueHolder nextPointValue;
-//        private final List<RphTag> otherTags;
         
         public ExtendedReviewPoint(ReviewPoint reviewPoint, PointValueHolder prevPointValue, PointValueHolder nextPointValue
-                //, List<RphTag> otherTags
                 ) {
             this.reviewPoint = reviewPoint;
             this.prevPointValue = prevPointValue;
             this.nextPointValue = nextPointValue;
-//            this.otherTags = otherTags;
         }
         
         public ReviewPoint getReviewPoint() {
@@ -226,9 +223,7 @@ public class VeeReviewController {
         public PointValueHolder getNextPointValue() {
             return nextPointValue;
         }
-//        public List<RphTag> getOtherTags() {
-//            return otherTags;
-//        }
+
     }
     
 }

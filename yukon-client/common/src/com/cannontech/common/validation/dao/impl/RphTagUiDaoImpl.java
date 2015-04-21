@@ -13,6 +13,7 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.validation.dao.RphTagUiDao;
 import com.cannontech.common.validation.model.ReviewPoint;
@@ -45,17 +46,18 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
         sql.append("JOIN Point p ON (rph.PointId = p.PointId)");
         sql.append("JOIN YukonPaobject ypo ON (p.PaobjectID = ypo.PaobjectId)");
         sql.append("WHERE rt.Accepted").eq_k(0);
-        sql.append("AND (");
 
-        int size = tags.size();
+        SqlFragmentCollection orCollection = SqlFragmentCollection.newOrCollection();
         for (RphTag rphTag : tags) {
             // this assumes that RphTag enums match the column names, otherwise suggest adding columnname field to enum
-            sql.append(rphTag).eq_k(1);
-            if (--size != 0) {
-                sql.append(  "OR");
-            }
+            SqlStatementBuilder clause = new SqlStatementBuilder();
+            clause.append(rphTag).eq_k(1);
+            orCollection.add(clause);
         }
-        sql.append(")");
+        if (!orCollection.isEmpty()) {
+            sql.append("AND").appendFragment(orCollection);
+        }
+        
         sql.append(") results");
         sql.append("WHERE rn BETWEEN " + pagingParameters.getOneBasedStartIndex() + " AND "
             + pagingParameters.getOneBasedEndIndex());

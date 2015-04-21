@@ -958,8 +958,8 @@
     <bean class="com.cannontech.web.updater.validationProcessing.handler.TotalViolationsProcessor"/>
     <bean class="com.cannontech.web.updater.validationProcessing.handler.UnreasonableUpViolationsProcessor"/>
     <bean class="com.cannontech.web.updater.validationProcessing.handler.UnreasonableDownViolationsProcessor"/>
-    <bean class="com.cannontech.web.updater.validationProcessing.handler.PeekUpViolationsProcessor"/>
-    <bean class="com.cannontech.web.updater.validationProcessing.handler.PeekDownViolationsProcessor"/>
+    <bean class="com.cannontech.web.updater.validationProcessing.handler.PeakUpViolationsProcessor"/>
+    <bean class="com.cannontech.web.updater.validationProcessing.handler.PeakDownViolationsProcessor"/>
     <bean class="com.cannontech.web.updater.validationProcessing.handler.ChangeOutViolationsProcessor"/>
     <bean class="com.cannontech.web.updater.validationProcessing.handler.ShowViolationsProcessor"/>
 

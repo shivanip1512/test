@@ -9,7 +9,7 @@ import com.cannontech.common.validation.model.RphTag;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.validationProcessing.ValidationMonitorUpdaterTypeEnum;
 
-public class PeekUpViolationsProcessor implements ValidationProcessingUpdaterHandler {
+public class PeakDownViolationsProcessor implements ValidationProcessingUpdaterHandler {
 
     @Autowired private RphTagUiDao rphTagUiDao;
 
@@ -17,14 +17,14 @@ public class PeekUpViolationsProcessor implements ValidationProcessingUpdaterHan
     public String handle(int validationMonitorId, YukonUserContext userContext) {
         String countStr = "(0)";
         Map<RphTag, Integer> tagCounts = rphTagUiDao.getAllValidationTagCounts();
-        if (tagCounts.get(RphTag.PEAKUP) != null) {
-            countStr = tagCounts.get(RphTag.PEAKUP).toString();
+        if (tagCounts.get(RphTag.PEAKDOWN) != null) {
+            countStr = tagCounts.get(RphTag.PEAKDOWN).toString();
         }
         return countStr;
     }
 
     @Override
     public ValidationMonitorUpdaterTypeEnum getUpdaterType() {
-        return ValidationMonitorUpdaterTypeEnum.PEAKUP_VIOLATIONS;
+        return ValidationMonitorUpdaterTypeEnum.PEAKDOWN_VIOLATIONS;
     }
 }

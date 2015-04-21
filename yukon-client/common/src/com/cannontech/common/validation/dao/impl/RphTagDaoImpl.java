@@ -66,14 +66,6 @@ public class RphTagDaoImpl implements RphTagDao {
         return yukonJdbcTemplate.update(deleteSql);
     }
 
-    public int clearNonOkTagsAfter(long lastChangeId) {
-        SqlStatementBuilder deleteSql = new SqlStatementBuilder();
-        deleteSql.append("DELETE from RphTag");
-        deleteSql.append("WHERE ChangeId").gt(lastChangeId);
-        deleteSql.append("AND Accepted").eq(0);
-        return yukonJdbcTemplate.update(deleteSql);
-    }
-    
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
