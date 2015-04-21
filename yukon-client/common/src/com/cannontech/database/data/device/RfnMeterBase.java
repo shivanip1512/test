@@ -27,6 +27,12 @@ public class RfnMeterBase extends RfnBase implements IDeviceMeterGroup {
     }
     
     @Override
+    public void deletePartial() throws SQLException {
+        getDeviceMeterGroup().delete();
+        super.deletePartial();
+    }
+    
+    @Override
     public void addPartial() throws SQLException {
         super.addPartial();
         getDeviceMeterGroup().add();

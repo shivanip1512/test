@@ -78,12 +78,10 @@ import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Ordering;
 
 public class DeviceUpdateServiceImpl implements DeviceUpdateService {
 
@@ -426,8 +424,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
 
             /**
              * RF Meters calculated points are created with the same point type and offset so it is possible
-             * to get more then one point with the same point identifier. Attempt to match by point name if
-             * points.size() > 1.
+             * to get more then one point with the same point identifier.
              */
             if (points.size() == 1) {
                 if (newDefinition != null
@@ -596,21 +593,12 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     private void addPoints(Set<PointTemplate> pointsToAdd, DeviceBase oldDevice) throws PersistenceException {
 
         if (!pointsToAdd.isEmpty()) {
-            List<PointTemplate> calcPoints =
-                Lists.newArrayList(Iterables.filter(pointsToAdd, new Predicate<PointTemplate>() {
-                    @Override
-                    public boolean apply(PointTemplate t) {
-                        return t.getPointType() == PointType.CalcAnalog || t.getPointType() == PointType.CalcStatus;
-                    }
-                }));
-            pointsToAdd.removeAll(calcPoints);
-            ArrayList<PointTemplate> sortedTemplates = new ArrayList<PointTemplate>();
-            sortedTemplates.addAll(pointsToAdd);
-            sortedTemplates.addAll(calcPoints);
+            List<PointTemplate> templates = new ArrayList<PointTemplate>(pointsToAdd);
+            Collections.sort(templates , new OrderCalcLast2());
 
             log.debug("Points to add-----------------------");
             SimpleDevice device = deviceDao.getYukonDeviceForDevice(oldDevice);
-            for (PointTemplate template : sortedTemplates) {
+            for (PointTemplate template : templates) {
 
                 PointBase point = pointCreationService.createPoint(device.getPaoIdentifier(), template);
                 if (log.isDebugEnabled()) {
@@ -625,6 +613,32 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     }
 
     /**
+     * Orders calculated points to be last
+     */
+    private class OrderCalcLast1 extends Ordering<PointToTemplate> {
+        @Override
+        public int compare(PointToTemplate t1, PointToTemplate t2) {
+            if (t2.getTemplate().getPointType().isCalcPoint()) {
+                return -1;
+            }
+            return 0;
+        }
+    }
+    
+    /**
+     * Orders calculated points to be last
+     */
+    private class OrderCalcLast2 extends Ordering<PointTemplate> {
+        @Override
+        public int compare(PointTemplate t1, PointTemplate t2) {
+            if (t2.getPointType().isCalcPoint()) {
+                return -1;
+            }
+            return 0;
+        }
+    }
+    
+    /**
      * Changes pointBase to the newPointTemplate type.
      * Sends DBChangeMsg for each point that actually has 'changes'.
      * 
@@ -633,18 +647,8 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     private void changePointType(Map<Integer, PointToTemplate> pointsToUpdate) throws PersistenceException {
 
         if (!pointsToUpdate.isEmpty()) {
-            List<PointToTemplate> calcPoints =
-                    Lists.newArrayList(Iterables.filter(pointsToUpdate.values(), new Predicate<PointToTemplate>() {
-                        @Override
-                        public boolean apply(PointToTemplate t) {
-                            return t.getTemplate().getPointType() == PointType.CalcAnalog
-                                    || t.getTemplate().getPointType() == PointType.CalcStatus;
-                        }
-                    }));
-            
             List<PointToTemplate> points = new ArrayList<PointToTemplate>(pointsToUpdate.values());
-            points.removeAll(calcPoints);
-            points.addAll(calcPoints);
+            Collections.sort(points , new OrderCalcLast1());
             log.debug("Points to update-----------------------");
             // Change point type
             for (PointToTemplate pointToTemplate : points) {

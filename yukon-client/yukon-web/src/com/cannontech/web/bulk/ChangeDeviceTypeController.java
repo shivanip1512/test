@@ -74,6 +74,11 @@ public class ChangeDeviceTypeController {
         for (PaoType paoType : paoTypes) {
             Set<PaoDefinition> changeablePaos = paoDefinitionService.getChangeablePaos(paoType);
             for (PaoDefinition paoDefinition : changeablePaos) {
+                /*
+                 * To change between MCT < > RFN requires additional data per meter being collected. We are not going to
+                 * support that with the Change Type collection action, therefore, we are explicitly not including the
+                 * opposite types for this feature.
+                 */
                 if (paoType.isMct()) {
                     if (paoDefinition.getType().isMct()) {
                         deviceTypes.put(paoDefinition.getDisplayName(), paoDefinition.getType());

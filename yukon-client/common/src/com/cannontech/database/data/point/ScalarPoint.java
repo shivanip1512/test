@@ -59,7 +59,7 @@ public class ScalarPoint extends PointBase {
     public void deletePartial() throws java.sql.SQLException {
         getPointUnit().delete();
         // delete all the associated PointLimits
-        delete(PointLimit.TABLE_NAME, "POINTID", getPointUnit().getPointID());
+        delete(PointLimit.TABLE_NAME, "POINTID", getPoint().getPointID());
         super.deletePartial();
     }
 

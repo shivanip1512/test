@@ -7,8 +7,8 @@ import org.apache.commons.lang3.Validate;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableMap.Builder;
+import com.google.common.collect.Sets;
 
 public enum PointType implements DisplayableEnum, DatabaseRepresentationSource {
     
@@ -26,6 +26,7 @@ public enum PointType implements DisplayableEnum, DatabaseRepresentationSource {
     private final int pointTypeId;
     private final static ImmutableMap<Integer, PointType> lookupById;
     private final static Set<PointType> statusPoints = Sets.immutableEnumSet(Status, CalcStatus, StatusOutput);
+    private final static Set<PointType> calcPoints = Sets.immutableEnumSet(CalcStatus, CalcAnalog);
     
     static {
         Builder<Integer, PointType> idBuilder = ImmutableMap.builder();
@@ -75,4 +76,7 @@ public enum PointType implements DisplayableEnum, DatabaseRepresentationSource {
         return statusPoints.contains(this);
     }
     
+    public boolean isCalcPoint() {
+        return calcPoints.contains(this);
+    }
 }

@@ -8257,7 +8257,7 @@
     <pao id="RFN440_BASE" abstract="true"
         inherits="OUTAGE_STATUS_BASE, RFN_EVENTS, SUPPORTS_OUTAGE_TAG, SUPPORTS_TOU_TAG">
         <displayGroup>RFMESH</displayGroup>
-        <changeGroup>rfn</changeGroup>
+        <changeGroup>meter</changeGroup>
         <points>
             <point type="Analog" offset="1">
                 <init>true</init>
@@ -8643,7 +8643,7 @@
         inherits="RFN_EVENTS, SUPPORTS_OUTAGE_TAG, OUTAGE_STATUS_BASE, SUPPORTS_DEVICE_CONFIGURATION, 
             SUPPORTS_COMMANDER_REQUESTS_TAG, RFN_CHANNEL_CONFIGURATION, RFN_TEMPERATURE_ALARM_CONFIGURATION">
         <displayGroup>RFMESH</displayGroup>
-        <changeGroup>rfn</changeGroup>
+        <changeGroup>meter</changeGroup>
         <points>
             <point type="Analog" offset="22">
                 <init>true</init>

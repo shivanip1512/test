@@ -179,10 +179,13 @@ public class PointUtil {
         return pointBase;
     }
     
+    /**
+     * Deletes partial point data
+     * example: MCT410IL->Delivered kWh is PulseAccumulator, RFN420CD ->Delivered kWh is Analog
+     */
     private static void deletePartialPointData(PointBase pointBase, PointTemplate newPointTemplate) {
         PointType newPointType = newPointTemplate.getPointType();
         boolean partialDelete = false;
-        // example: MCT410IL->Delivered kWh is PulseAccumulator, RFN420CD ->Delivered kWh is Analog
         if (pointBase instanceof AnalogPoint && newPointType != PointType.Analog) {
             partialDelete = true;
             AnalogPoint point = (AnalogPoint) pointBase;
