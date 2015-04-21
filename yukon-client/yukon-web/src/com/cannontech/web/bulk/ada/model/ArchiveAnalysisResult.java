@@ -2,13 +2,14 @@ package com.cannontech.web.bulk.ada.model;
 
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.model.Analysis;
+import com.cannontech.common.bulk.model.DeviceArchiveData;
 import com.cannontech.common.search.result.SearchResults;
 
 public class ArchiveAnalysisResult {
 
     private DeviceCollection deviceCollection;
     private Analysis analysis;
-    private SearchResults<AdaDevice> searchResult;
+    private SearchResults<DeviceArchiveData> searchResult;
     
     public ArchiveAnalysisResult(Analysis analysis) {
         this.analysis = analysis;
@@ -22,11 +23,11 @@ public class ArchiveAnalysisResult {
         this.deviceCollection = deviceCollection;
     }
 
-    public void setSearchResult(SearchResults<AdaDevice> searchResult) {
+    public void setSearchResult(SearchResults<DeviceArchiveData> searchResult) {
         this.searchResult = searchResult;
     }
 
-    public SearchResults<AdaDevice> getSearchResult() {
+    public SearchResults<DeviceArchiveData> getSearchResult() {
         return searchResult;
     }
 

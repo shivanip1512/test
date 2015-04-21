@@ -16,6 +16,10 @@ public class DeviceArchiveData implements YukonPao {
     private Interval archiveRange;
     private List<ArchiveData> archiveData = Lists.newArrayList();
     private List<ReadSequence> timeline;
+    private String name;
+    private String meterNumber;
+    private int missingIntervals;
+    private String type;
     
     public DeviceArchiveData() {}
     
@@ -99,4 +103,37 @@ public class DeviceArchiveData implements YukonPao {
     public PaoIdentifier getPaoIdentifier() {
         return paoIdentifier;
     }
+    
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getMeterNumber() {
+        return meterNumber;
+    }
+
+    public void setMeterNumber(String meterNumber) {
+        this.meterNumber = meterNumber;
+    }
+    
+    public int getMissingIntervals() {
+        return missingIntervals;
+    }
+    
+    public void setMissingIntervals(int missingIntervals) {
+        this.missingIntervals = missingIntervals;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+    
 }

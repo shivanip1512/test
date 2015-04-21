@@ -3,8 +3,10 @@ package com.cannontech.core.dao.impl;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executor;
 
 import org.apache.log4j.Logger;
@@ -25,6 +27,7 @@ import com.cannontech.common.bulk.model.DevicePointValuesHolder;
 import com.cannontech.common.bulk.model.ReadType;
 import com.cannontech.common.bulk.service.ArchiveDataAnalysisHelper;
 import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -52,7 +55,6 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     private final static Logger log = YukonLogManager.getLogger(ArchiveDataAnalysisDaoImpl.class);
@@ -77,7 +79,7 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
             Long changeId = rs.getNullableLong("changeId");
             
             ReadType readType;
-            if(changeId==null) {
+            if (changeId == null) {
                 readType = ReadType.DATA_MISSING;
             } else {
                 readType = ReadType.DATA_PRESENT;
@@ -151,8 +153,82 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     }
     
     @Override
-    public List<DeviceArchiveData> getSlotValues(int analysisId) {
+    public List<DeviceArchiveData> getSlotValues(int analysisId, PagingParameters paging, SortingParameters sorting) {
+        /*
+         * First DeviceId, paoname, type, MeterNumber and a flag that represents changed is null or
+         * not (changeIdNull) is fetch in alias innertable for the passed analysis id.
+         * The deviceid that needs to fetched are retrieved against analysisid.
+         * Then the data is grouped and count of changeIdNull is fetched in alias groupedtable.
+         * Then Row number is allocated to each row and the rows are selected based on row number.
+         */
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT RowNumber, PaObjectId, Name, Type, Meter_Number, Missing FROM (");
+        sql.append(    "SELECT");
+        
+        if (sorting != null) {
+            sql.append("(ROW_NUMBER() OVER (ORDER BY")
+               .append(sorting.getSort())
+               .append(sorting.getDirection())
+               .append(")) AS RowNumber,");
+        }
+        
+
+        sql.append(    "PaObjectId, Name, Type, Meter_Number,Missing");
+        sql.append(    "FROM (");
+        sql.append(        "SELECT PaObjectId, Name, Type, Meter_Number, SUM(ChangeIdNull) AS Missing");
+        sql.append(        "FROM (");
+        sql.append(            "SELECT SlotValue.DeviceId AS PaObjectId, PaoName as Name, Type, MeterNumber as Meter_Number,");
+        sql.append(            "(CASE WHEN ChangeId IS NULL THEN 1 ELSE 0 END) AS ChangeIdNull");
+        sql.append(            "FROM ArchiveDataAnalysisSlotValue slotValue");
+        sql.append(              "JOIN ArchiveDataAnalysisSlot slot ON slotValue.slotId = slot.slotId");
+        sql.append(              "JOIN YukonPaObject yukonpao ON yukonpao.PAObjectID = slotValue.DeviceId");
+        sql.append(              "JOIN DeviceMeterGroup dmg ON yukonpao.PAObjectID = dmg.DeviceId");
+        sql.append(            "WHERE AnalysisId").eq(analysisId);
+        sql.append(              "AND slotValue.DeviceId IN (");
+        sql.append(                "SELECT DeviceId");
+        sql.append(                "FROM ArchiveDataAnalysisSlotValue");
+        sql.append(                "WHERE SlotId = (");
+        sql.append(                    "SELECT SlotId FROM");
+        sql.append(                        "(SELECT ROW_NUMBER() OVER (ORDER BY SlotId DESC) rowNumber, SlotId");
+        sql.append(                        "FROM ArchiveDataAnalysisSlot");
+        sql.append(                        "WHERE AnalysisId").eq(analysisId);
+        sql.append(                        ") slotTable WHERE rowNumber=1");
+        sql.append(                ")");
+        sql.append(            ")");
+        sql.append(        ") innertable");
+        sql.append(        "GROUP BY PaObjectId, Type, Meter_Number, Name");
+        sql.append(    ") groupedtable");
+        sql.append(") outertable");
+        
+        if (paging != null) {
+            sql.append("WHERE RowNumber BETWEEN");
+            sql.append(paging.getOneBasedStartIndex()).append("AND").append(paging.getOneBasedEndIndex());
+        }
+
+        final LinkedHashMap<PaoIdentifier, DeviceArchiveData> deviceArchiveData =
+            new LinkedHashMap<PaoIdentifier, DeviceArchiveData>();
         final Analysis analysis = getAnalysisById(analysisId);
+        List<DeviceArchiveData> arsList = new ArrayList<>();
+
+        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                DeviceArchiveData data = new DeviceArchiveData();
+                PaoIdentifier pao = rs.getPaoIdentifier("paobjectId", "type");
+
+                data.setAttribute(analysis.getAttribute());
+                data.setArchiveRange(analysis.getDateTimeRange());
+                data.setId(pao);
+                data.setMeterNumber(rs.getString("Meter_Number"));
+                data.setName(rs.getString("Name"));
+                data.setMissingIntervals(rs.getInt("Missing"));
+                deviceArchiveData.put(pao, data);
+            }
+        });
+
+        Set<PaoIdentifier> deviceList = deviceArchiveData.keySet();
+
+        final ArchiveDataRowMapper archiveDataRowMapper = new ArchiveDataRowMapper(analysis.getIntervalPeriod());
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
@@ -165,9 +241,7 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
                 return sql;
             }
         };
-        List<PaoIdentifier> deviceList = getRelevantDeviceIds(analysisId);
         final ListMultimap<Integer, ArchiveData> archiveDatas = ArrayListMultimap.create();
-        final ArchiveDataRowMapper archiveDataRowMapper = new ArchiveDataRowMapper(analysis.getIntervalPeriod());
         ChunkingSqlTemplate chunkingTemplate = new ChunkingSqlTemplate(jdbcTemplate);
         chunkingTemplate.query(sqlGenerator, Iterables.transform(deviceList, PaoIdentifier.TO_PAO_ID),
             new YukonRowCallbackHandler() {
@@ -176,17 +250,12 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
                     archiveDatas.put(rs.getInt("DeviceId"), archiveDataRowMapper.mapRow(rs));
                 }
             });
-        Map<Integer, PaoIdentifier> paoIdentifiers = Maps.uniqueIndex(deviceList, PaoIdentifier.TO_PAO_ID);
-        List<DeviceArchiveData> arsList = new ArrayList<>();
-        for (int deviceId : archiveDatas.keySet()) {
-            DeviceArchiveData data = new DeviceArchiveData();
-            data.setAttribute(analysis.getAttribute());
-            data.setArchiveRange(analysis.getDateTimeRange());
-            data.setArchiveData(archiveDatas.get(deviceId));
-            data.setId(paoIdentifiers.get(deviceId));
+
+        for (PaoIdentifier deviceId : deviceArchiveData.keySet()) {
+            DeviceArchiveData data = deviceArchiveData.get(deviceId);
+            data.setArchiveData(archiveDatas.get(deviceId.getPaoId()));
             arsList.add(data);
         }
-
         return arsList;
     }
 

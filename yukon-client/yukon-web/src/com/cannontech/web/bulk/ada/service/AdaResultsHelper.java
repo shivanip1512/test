@@ -11,28 +11,25 @@ import com.cannontech.common.bulk.model.DeviceArchiveData;
 import com.cannontech.common.bulk.model.PixelData;
 import com.cannontech.common.bulk.model.ReadSequence;
 import com.cannontech.common.bulk.model.ReadType;
-import com.cannontech.web.bulk.ada.model.AdaDevice;
 import com.google.common.collect.Lists;
 
 public class AdaResultsHelper {
 
-    public static void buildBars(Analysis analysis, int barWidth, List<AdaDevice> devices) {
+    public static void buildBars(Analysis analysis, int barWidth, List<DeviceArchiveData> devices) {
         // Build pixel data for the visible devices subset
         long analysisStartLong = analysis.getDateTimeRange().getStartMillis();
         long analysisEndLong = analysis.getDateTimeRange().getEndMillis();
         long analysisLength = analysisEndLong - analysisStartLong;
         long pxRange = analysisLength / barWidth;  // Each pixel represents <pxRange> milliseconds
         
-        for (AdaDevice device : devices) {
-            
-            DeviceArchiveData data = device.getData();
+        for (DeviceArchiveData device : devices) {
             
             List<PixelData> pixels = Lists.newArrayList();
             for (int i = 0; i < barWidth; i++) {
                 PixelData pixel = new PixelData();
                 pixels.add(pixel);
             }
-            List<ArchiveData> intervals = data.getArchiveData();
+            List<ArchiveData> intervals = device.getArchiveData();
             
             boolean done = false;
             int pixelIndex = 0;
@@ -90,7 +87,7 @@ public class AdaResultsHelper {
             }
             
             List<ReadSequence> readData = compressPixelData(pixels);
-            data.setTimeline(readData);
+            device.setTimeline(readData);
         }
         
     }

@@ -125,7 +125,7 @@
             <tbody>
                 <c:forEach items="${result.searchResult.resultList}" var="row">
                     <tr>
-                        <td><cti:deviceName deviceId="${row.paoIdentifier.paoId}"/></td>
+                    	<td>${row.name}</td>
                         <td><i:inline key="${row.paoIdentifier.paoType}"/></td>
                         <td>
                             <c:choose>
@@ -134,7 +134,7 @@
                             </c:choose>
                         </td>
                         <td>${row.missingIntervals}</td>
-                        <td><amr:analysisResult data="${row.data}" width="${barWidth}"/></td>
+                        <td><amr:analysisResult data="${row}" width="${barWidth}"/></td>
                     </tr>
                 </c:forEach>
             </tbody>

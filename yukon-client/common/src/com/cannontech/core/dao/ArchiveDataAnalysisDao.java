@@ -10,6 +10,7 @@ import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.DeviceArchiveData;
 import com.cannontech.common.bulk.model.DevicePointValuesHolder;
 import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 
@@ -30,11 +31,11 @@ public interface ArchiveDataAnalysisDao {
     public void insertSlotValues(PaoIdentifier paoIdentifier, Analysis analysis, int pointId, boolean excludeBadPointQualities);
     
     /**
-     * Retrieves all slot values for all devices in a given analysis. Returned as a list of
-     * DeviceArchiveData, each of which contains all slot values for a single device.
+     * Retrieves all slot values for filtered (based on paging parameters) devices in a given analysis.
+     * Returned as a list of DeviceArchiveData, each of which contains all slot values for a single device.
      * Use to collect results after analysis is complete.
      */
-    public List<DeviceArchiveData> getSlotValues(int analysisId);
+    public List<DeviceArchiveData> getSlotValues(int analysisId, PagingParameters paging, SortingParameters sorting);
     
     /**
      * Retrieves the Analysis object for a given analysisId.

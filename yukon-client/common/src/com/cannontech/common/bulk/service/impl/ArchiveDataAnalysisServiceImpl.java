@@ -141,7 +141,7 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
     @Override
     public String runProfileReads(final int analysisId, LiteYukonUser user) {
         Analysis analysis = archiveDataAnalysisDao.getAnalysisById(analysisId);
-        List<DeviceArchiveData> data = archiveDataAnalysisDao.getSlotValues(analysisId);
+        List<DeviceArchiveData> data = archiveDataAnalysisDao.getSlotValues(analysisId,null,null);
         
         List<CommandRequestDevice> requests = getProfileRequests(analysis, data);
         
