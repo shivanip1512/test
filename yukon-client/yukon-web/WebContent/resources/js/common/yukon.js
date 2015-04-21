@@ -1745,15 +1745,16 @@ yukon.ui = (function () {
      */
     $.widget('yukon.timeline', {
         
+        /** @type {Object} options - Default settings to use. */
         options: {
             begin: new Date(new Date().setDate(new Date().getDate() - 1)),
             end: new Date().getTime(),
-            tickInterval: 60 * 60,
             events: {}
         },
         
         _create: function () {
             this.element.addClass('timeline-container');
+            this.element.data('timelineInitialized', true);
             this.draw();
         },
         
@@ -1802,31 +1803,8 @@ yukon.ui = (function () {
             
             var container = this.element;
             
-            var current;
             var begin = this.options.begin;
             var end = this.options.end;
-            var range = end - begin;
-            var interval = this.options.tickInterval * 1000;
-            
-            var time = begin + interval;
-            var percent;
-            var tick;
-            
-            while (time < end) {
-                
-                current = time - begin;
-                // Jump when we are on top of the end marker
-                if (current / range > .99) break;
-                
-                percent = yukon.percent(current, range, 5);
-                
-                tick = $('<span class="timeline-tick">')
-                .css({'left': percent });
-                
-                container.append(tick);
-                
-                time += interval;
-            }
             
             var beginText = moment(begin).tz(yg.timezone).format(yg.formats.date.long_date_time_hm);
             var endText = moment(end).tz(yg.timezone).format(yg.formats.date.long_date_time_hm);
@@ -1849,7 +1827,7 @@ yukon.ui = (function () {
             var end = this.options.end;
             var events = this.options.events;
             
-            //eventIds will only include elements between the bounds, and be sorted by time
+            // eventIds will only include elements between the bounds, and be sorted by time.
             var eventIds = Object.keys(events).filter(function (id) {
                 return begin < events[id].timestamp && events[id].timestamp < end;
             })
@@ -1875,7 +1853,7 @@ yukon.ui = (function () {
                 var tooltipped;
                 var offset = parseFloat(span.css('left')) - parseFloat(prevEvent.css('left'));
                 
-                //Cluster if closer than 10 px away
+                // Cluster if closer than 10 px away.
                 if (prevEvent.length && offset < 10) {
                     
                     span.remove();

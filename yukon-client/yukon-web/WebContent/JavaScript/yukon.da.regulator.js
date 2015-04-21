@@ -71,11 +71,6 @@ yukon.da.regulator = (function () {
             var timeline = $('.timeline-container[data-regulator-id="' + _id + '"]');
             var toAdd = [], currentIds = [];
             
-            if (events.length) {
-                $('.js-ivvc-events-empty').hide();
-                $('.js-ivvc-events-holder').show();
-            }
-            
             var options = {};
             options.end = new Date().getTime();
             var now = new Date();
@@ -122,6 +117,11 @@ yukon.da.regulator = (function () {
                 timeline.timeline('addEvents', toAdd);
                 timeline.timeline('draw');
             }
+            
+            var hasEvents = body.find('[data-event-id]').length > 0;
+            $('.js-ivvc-events-empty').toggle(!hasEvents);
+            $('.js-ivvc-events-holder').toggle(hasEvents);
+            timeline.toggle(hasEvents);
             
             _events_token = setTimeout(_updateRecentEvents, yg.rp.updater_delay);
             
