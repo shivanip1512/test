@@ -1,6 +1,7 @@
 package com.cannontech.web.capcontrol;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,9 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -39,6 +40,7 @@ import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.TimeRange;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -49,10 +51,10 @@ import com.cannontech.web.capcontrol.regulator.setup.model.RegulatorMappingResul
 import com.cannontech.web.capcontrol.regulator.setup.service.RegulatorMappingService;
 import com.cannontech.web.capcontrol.validators.RegulatorValidator;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.util.WebUtilityService;
 import com.cannontech.yukon.IDatabaseCache;
-import com.google.common.base.Function;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 
 @RequestMapping("regulators")
 @Controller
@@ -69,8 +71,10 @@ public class RegulatorController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private ZoneDao zoneDao;
     @Autowired private FileExporter fileExporter;
+    @Autowired private WebUtilityService webUtil;
     
     private static final Map<RegulatorEvent.EventType, String> classNameForEventType;
+    private static final TypeReference<TimeRange> rangeRef = new TypeReference<TimeRange>() {};
     
     static {
         ImmutableMap.Builder<EventType, String> builder = ImmutableMap.builder();
@@ -90,10 +94,23 @@ public class RegulatorController {
     private static final String eventTypeBaseKey = "yukon.web.modules.capcontrol.ivvc.eventType";
     
     @RequestMapping(value="{id}", method=RequestMethod.GET)
-    public String view(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
+    public String view(HttpServletRequest req, ModelMap model, @PathVariable int id, YukonUserContext userContext) 
+    throws IOException {
         
         Regulator regulator = regulatorService.getRegulatorById(id);
         model.addAttribute("mode",  PageEditMode.VIEW);
+        
+        model.addAttribute("ranges", TimeRange.values());
+        
+        Map<String, Integer> hours = new HashMap<>();
+        for (TimeRange range : TimeRange.values()) {
+            hours.put(range.name(), range.getHours());
+        }
+        model.put("hours", hours);
+        
+        // Check cookie for last event range
+        TimeRange range = webUtil.getYukonCookieValue(req, "ivvc-regualtor", "last-event-range", TimeRange.DAY_1, rangeRef);
+        model.addAttribute("lastRange", range);
         
         return setUpModel(model, regulator, userContext);
     }
@@ -238,48 +255,34 @@ public class RegulatorController {
         return "redirect:/capcontrol/tier/areas";
     }
     
+    /** Returns a list of events sorted by most recent descending as JSON. */
     @RequestMapping(value="{id}/events")
-    public @ResponseBody Map<String,Object> getEvents(@PathVariable int id, 
-            @RequestParam(defaultValue="0") long lastUpdate, YukonUserContext userContext) {
-        
-        Map<String,Object> resp = new HashMap<>();
+    public @ResponseBody List<Map<String, Object>> getEvents(@PathVariable int id, 
+            @RequestParam TimeRange range, YukonUserContext userContext) {
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         
-        Instant start = Instant.now();
-        resp.put("timestamp", start.getMillis());
-        
-        List<RegulatorEvent> events = eventsDao.getForIdSinceTimestamp(id, new Instant(lastUpdate));
-        
-        List<Map<String, Object>> eventsJson =
-                Lists.transform(events, new Function<RegulatorEvent, Map<String, Object>>() {
+        List<Map<String, Object>> events = new ArrayList<>();
+        for (RegulatorEvent re : eventsDao.getForId(id, range)) {
             
-            @Override
-            public Map<String, Object> apply(RegulatorEvent event) {
-                
-                ImmutableMap.Builder<String, Object> eventJson = new ImmutableMap.Builder<>();
-                
-                eventJson.put("id", event.getId());
-                eventJson.put("timestamp", event.getTimestamp().getMillis());
-                
-                String iconClass = classNameForEventType.get(event.getType());
-                eventJson.put("icon", iconClass);
-                
-                eventJson.put("user", event.getUserName());
-                
-                String key = eventTypeBaseKey + "." + event.getType().name();
-                
-                String phaseString = accessor.getMessage(event.getPhase());
-                String message = accessor.getMessage(key, phaseString);
-                
-                eventJson.put("message", message);
-                
-                return eventJson.build();
-            }
-        });
-        resp.put("events", eventsJson);
+            Map<String, Object> event = new HashMap<>();
+            
+            event.put("id", re.getId());
+            event.put("timestamp", re.getTimestamp().getMillis());
+            event.put("user", re.getUserName());
+            
+            String iconClass = classNameForEventType.get(re.getType());
+            event.put("icon", iconClass);
+            
+            String phaseString = accessor.getMessage(re.getPhase());
+            String key = eventTypeBaseKey + "." + re.getType().name();
+            String message = accessor.getMessage(key, phaseString);
+            event.put("message", message);
+            
+            events.add(event);
+        }
         
-        return resp;
+        return events;
     }
     
     @RequestMapping(value="{id}/build-mapping-file", method = RequestMethod.GET)

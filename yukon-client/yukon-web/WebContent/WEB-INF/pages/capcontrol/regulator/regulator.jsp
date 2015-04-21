@@ -11,6 +11,8 @@
 <cti:includeScript link="/JavaScript/yukon.da.regulator.js"/>
 <tags:setFormEditMode mode="${mode}"/>
 
+<cti:toJson object="${hours}" id="range-hours"/>
+
 <cti:displayForPageEditModes modes="VIEW">
 
 <div class="dn js-auto-map-dialog" data-dialog data-width="650"
@@ -126,31 +128,29 @@
             <cti:displayForPageEditModes modes="VIEW">
                 <%--Events Table Here --%>
                 <tags:sectionContainer2 nameKey="events">
+                    <tags:stepper id="ivvc-events-range" key=".events.shown" classes="fr stacked">
+                        <c:forEach var="range" items="${ranges}">
+                            <c:set var="selected" value="${range eq lastRange ? 'selected' : ''}"/>
+                            <option value="${range}" ${selected}><cti:msg2 key="${range}"/></option>
+                        </c:forEach>
+                    </tags:stepper>
                     <input type="hidden" value="0" id="regulator-events-last-update">
                     <div class="empty-list js-ivvc-events-empty">
                         <i:inline key=".emptylist"/>
                     </div>
-                    <div class="scroll-md dn js-ivvc-events-holder">
-                        <table id="regulator-events" class="has-alerts full-width dashed">
+                    <div class="scroll-md dn js-ivvc-events-holder clear">
+                        <table id="regulator-events" class="has-alerts full-width dashed stacked">
                             <thead></thead>
                             <tfoot></tfoot>
                             <tbody>
                             </tbody>
                         </table>
                     </div>
-                    <div class="timeline-container" data-regulator-id="${regulator.id}"></div>
+                    <div class="timeline-container clear" data-regulator-id="${regulator.id}"></div>
                 </tags:sectionContainer2>
                
             </cti:displayForPageEditModes>
         </div>
-        <table class="dn">
-            <tr id="regulator-events-template-row">
-                <td><cti:icon icon="js-event-icon"/></td>
-                <td class="js-message"></td>
-                <td class="js-user"></td>
-                <td class="tar js-timestamp"></td>
-            </tr>
-        </table>
     </div>
     
     <h2><i:inline key=".mappings"/></h2>
@@ -193,5 +193,14 @@
 
 <cti:url var="url" value="/capcontrol/regulators/${regulator.id}"/>
 <form:form id="delete-regulator" method="DELETE" action="${url}"></form:form>
+
+<table class="dn js-templates">
+    <tr data-event-id="?" class="js-event-template">
+        <td><cti:icon icon="js-event-icon"/></td>
+        <td class="js-message"></td>
+        <td class="js-user"></td>
+        <td class="tar js-timestamp"></td>
+    </tr>
+</table>
 
 </cti:standardPage>

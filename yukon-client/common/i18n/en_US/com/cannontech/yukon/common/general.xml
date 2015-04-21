@@ -168,6 +168,12 @@
 <entry key="yukon.common.thermostat.mode.HEAT">Heat</entry>
 <entry key="yukon.common.thermostat.mode.OFF">Off</entry>
 <entry key="yukon.common.thousandSeparator">,</entry>
+<entry key="yukon.common.time.range.HR_1">1 Hour</entry>
+<entry key="yukon.common.time.range.HR_6">6 Hours</entry>
+<entry key="yukon.common.time.range.HR_12">12 Hours</entry>
+<entry key="yukon.common.time.range.DAY_1">24 Hours</entry>
+<entry key="yukon.common.time.range.DAY_2">48 Days</entry>
+<entry key="yukon.common.time.range.WEEK_1">7 Days</entry>
 <entry key="yukon.common.timestamp">Timestamp</entry>
 <entry key="yukon.common.To">To</entry>
 <entry key="yukon.common.to">to</entry>

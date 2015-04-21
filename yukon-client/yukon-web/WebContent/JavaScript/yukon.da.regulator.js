@@ -16,21 +16,28 @@ yukon.da.regulator = (function () {
     /** @type {number} - The regulator id. */
     var _id = null;
     
+    /** @type {string} - Events updater timeout reference. */
+    var _events_token = null;
+    
     var _templates = {
         successful: '<span class="label label-success">' + yg.text.successful + '</span>',
         failed: '<span class="label label-danger">' + yg.text.failed + '</span>'
     };
     
     /**
-     * @type {Object.<string, string>}
-     *
-     * Object mapping PaoTypes to supported attributes. ex:
+     * A mapping of appropriate attributes to show per regulator type.
      * 
-     *  { PAO_TYPE_1: ['Attr1', 'Attr2'],
+     * @type {Object.<string, string>}
+     * Object mapping PaoTypes to supported attributes. ex:
+     *  { 
+     *    PAO_TYPE_1: ['Attr1', 'Attr2'],
      *    PAO_TYPE_2: ['Attr2', 'Attr3']
      *  }
      */
     var _paoTypeToAttributes = {};
+    
+    /** @type {Object} - A hash of TimeRange enum entry to hours it represents. */
+    var _range_hours = {};
     
     /**
      * Different regulator types (LTC, CL7) have different attributes.
@@ -51,58 +58,72 @@ yukon.da.regulator = (function () {
     
     var _updateRecentEvents = function () {
         
+        var range = $('#ivvc-events-range').val();
+        
         $.ajax({
             url: yukon.url('/capcontrol/regulators/' + _id + '/events'),
-            data: { 'lastUpdate': $('#regulator-events-last-update').val() }
-        }).done(function (data) {
+            data: { 'range': range }
+        }).done(function (events) {
             
-            $('#regulator-events-last-update').val(data.timestamp);
-            var templateRow = $('#regulator-events-template-row');
             var body = $('#regulator-events').find('tbody');
-            
-            var events = data.events;
+            var current = body.find('tr[data-event-id]');
+            var eventIds = events.map(function (event) { return event.id; });
+            var timeline = $('.timeline-container[data-regulator-id="' + _id + '"]');
+            var toAdd = [], currentIds = [];
             
             if (events.length) {
                 $('.js-ivvc-events-empty').hide();
                 $('.js-ivvc-events-holder').show();
             }
             
-            var timelineOpts = {};
-            timelineOpts.end = data.timestamp;
+            var options = {};
+            options.end = new Date().getTime();
+            var now = new Date();
+            var hoursAgo = _range_hours[range];
+            var begin = new Date(now.getTime() - (1000 * 60 * 60 * hoursAgo));
+            options.begin = begin.getTime();
             
-            //Begin will be midnight yesterday
-            var begin = new Date(0);
-            begin.setUTCMilliseconds(data.timestamp);
-            begin.setDate(begin.getDate() - 1);
-            begin.setHours(0, 0, 0, 0);
-            timelineOpts.begin = begin.getTime();
-            
-            events.reverse().forEach(function (event) {
-                
-                var row = $(templateRow.clone()).removeAttr('id');
-                
-                row.find('.js-event-icon').addClass(event.icon);
-                row.find('.js-message').html(event.message);
-                row.find('.js-user').text(event.user);
-                
-                var timeText = moment(event.timestamp).tz(yg.timezone).format(yg.formats.date.full);
-                row.find('.js-timestamp').text(timeText);
-                
-                body.prepend(row);
-                row.flash();
+            // Remove any rows in the table and timeline that are not in the retrieved list.
+            current.each(function (idx, row) {
+                row = $(row);
+                var id = row.data('eventId');
+                if (eventIds.indexOf(id) === -1) {
+                    row.remove();
+                    timeline.timeline('removeEvent', id);
+                } else {
+                    currentIds.push(id);
+                }
             });
             
-            body.find('tr:gt(20)').remove();
+            // Add any rows in the retrieved list that are not in the table.
+            // Reverse order to add oldest first.
+            events.reverse().forEach(function (event) {
+                if (currentIds.indexOf(event.id) === -1) {
+                    // New event not in table, add it to table and timeline.
+                    var row = $('.js-event-template').clone().removeClass('js-event-template')
+                    .attr('data-event-id', event.id).data('eventId', event.id);
+                    
+                    row.find('.js-event-icon').addClass(event.icon);
+                    row.find('.js-message').html(event.message);
+                    row.find('.js-user').text(event.user);
+                    
+                var timeText = moment(event.timestamp).tz(yg.timezone).format(yg.formats.date.full);
+                    row.find('.js-timestamp').text(timeText);
+                    
+                    body.prepend(row);
+                    row.flash();
+                    
+                    toAdd.push(event);
+                }
+            });
             
-            var timelineContainer = $('.timeline-container[data-regulator-id="' + _id + '"]');
-            
-            if (events.length) {
-                timelineContainer.timeline(timelineOpts);
-                timelineContainer.timeline('addEvents', events);
-                timelineContainer.timeline('draw');
+            if (toAdd.length) {
+                timeline.timeline(options);
+                timeline.timeline('addEvents', toAdd);
+                timeline.timeline('draw');
             }
             
-            setTimeout(_updateRecentEvents, yg.rp.updater_delay);
+            _events_token = setTimeout(_updateRecentEvents, yg.rp.updater_delay);
             
         });
     };
@@ -111,19 +132,33 @@ yukon.da.regulator = (function () {
         
         init : function () {
             
+            /** The pao id of the regulator when in view/edit mode. */
             _id = $('#regulator-id').val();
             
+            _range_hours = yukon.fromJson('#range-hours');
+            
             _paoTypeToAttributes = yukon.fromJson('#pao-type-map');
+            
             _showHideMappings();
             
+            /** Show the correct attributes in the mapping table when the type of regulator changes. */
             $('#regulator-type').on('change', function () {
                 _showHideMappings();
             });
             
+            /** User confirmed intent to delete regulator. */
             $(document).on('yukon:da:regulator:delete', function () {
                 $('#delete-regulator').submit();
             });
             
+            /** User changed the events time range. Cancel updating timeout and restart. */
+            $('#ivvc-events-range').on('change', function () {
+                yukon.cookie.set('ivvc-regualtor', 'last-event-range', $(this).val());
+                clearTimeout(_events_token);
+                _updateRecentEvents();
+            });
+            
+            /** User clicked the 'map' button on the map attributes popup. Start the task. */
             $(document).on('yukon:da:regulator:automap', function (ev) {
                 
                 var dialog = $(ev.target);
@@ -171,7 +206,7 @@ yukon.da.regulator = (function () {
                 });
             });
             
-            /** Reset the dialog when closed */
+            /** Reset the attribute mapping dialog when closed */
             $(document).on('dialogclose', '.js-auto-map-dialog', function (ev) {
                 
                 var dialog = $(this);

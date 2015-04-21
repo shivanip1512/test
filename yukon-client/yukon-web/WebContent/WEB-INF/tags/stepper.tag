@@ -6,18 +6,20 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <%@ attribute name="name" description="The name of the checkbox input." %>
-<%@ attribute name="path" description="Spring path, used instead of 'name'." %>
+<%@ attribute name="key" description="I18n key used for accessability text." %>
 <%@ attribute name="disabled" type="java.lang.Boolean" description="If 'true' switch will be disabled.  Default: false." %>
 
 <%@ attribute name="classes" description="CSS class names applied to the outer wrapper element." %>
 <%@ attribute name="id" description="The html id attribute of the input." %>
 
+<cti:msgScope paths=",yukon.web.common">
 <cti:default var="classes" value=""/>
 <cti:default var="disabled" value="${false}"/>
 <cti:uniqueIdentifier prefix="stepper-" var="thisId"/>
 <cti:default var="id" value="${thisId}"/>
 
 <label class="stepper ${classes}">
+    <c:if test="${not empty pageScope.key}"><cti:msg2 key="${key}"/></c:if>
     <cti:button classes="stepper-prev left" renderMode="buttonImage" icon="icon-resultset-previous-gray"
             disabled="${disabled}"
     /><select class="stepper-select middle" type="checkbox" name="${name}" 
@@ -25,3 +27,4 @@
     </select><cti:button classes="stepper-next right" renderMode="buttonImage" icon="icon-resultset-next-gray" 
             disabled="${disabled}"/>
 </label>
+</cti:msgScope>

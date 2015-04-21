@@ -1744,6 +1744,7 @@ yukon.ui = (function () {
      * @param {number} [tickInterval=1hr] - Interval between tickmarks.
      */
     $.widget('yukon.timeline', {
+        
         options: {
             begin: new Date(new Date().setDate(new Date().getDate() - 1)),
             end: new Date().getTime(),
@@ -1767,6 +1768,16 @@ yukon.ui = (function () {
             this.options.events[event.id] = event;
             this.draw();
         },
+        
+        /** 
+         * Remove an event from the timeline and redraws the timeline.
+         * @param {string} eventId - Unique identifier of the event to remove.
+         */
+        removeEvent: function (eventId) {
+            delete this.options.events[eventId];
+            this.draw();
+        },
+        
         /** 
          * Add evenst to the timeline
          * @param {string} events[].id - Unique identifier key. Will override any existing event with that id.
