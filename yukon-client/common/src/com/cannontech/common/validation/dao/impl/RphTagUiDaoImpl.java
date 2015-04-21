@@ -147,14 +147,6 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
     @Override
     public int getTotalValidationTagCounts() {
 
-        //Either of these solutions would work
-        /*int totalCount = 0;
-        Set<Map.Entry<RphTag, Integer>> allValidationsPerTag = getAllValidationTagCounts().entrySet();
-        for (Map.Entry<RphTag, Integer> entry : allValidationsPerTag) {
-            totalCount += entry.getValue();
-        }*/
-        // OR
-        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT"); 
         sql.append("SUM (CASE WHEN PeakUp = 1 THEN 1 ELSE 0 END) +"); 
