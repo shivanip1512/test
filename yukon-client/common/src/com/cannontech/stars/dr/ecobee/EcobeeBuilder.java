@@ -50,9 +50,7 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
             ecobeeCommunicationService.moveDeviceToSet(serialNumber, EcobeeCommunicationService.UNENROLLED_SET);
         } catch (Exception e) {
             //Catch any exception here - only ecobee exceptions (most often communications) are expected, but we might
-            //also have authentication exceptions (which cannot be explicitly caught here) or something unexpected. We
-            //need to roll back the transaction if anything goes wrong - lest we end up with inventory and no associated 
-            //pao.
+            //also have authentication exceptions (which cannot be explicitly caught here) or something unexpected.
             log.error("Unable to create device.", e);
             throw new DeviceCreationException(e.getMessage(), e);
         }
