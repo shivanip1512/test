@@ -48,8 +48,8 @@ BOOST_AUTO_TEST_CASE( test_restoreObjectBlocks )
 
             const auto &block = *block_ptr;
 
-            BOOST_CHECK_EQUAL( 0, block.getGroup());
-            BOOST_CHECK_EQUAL( 0, block.getVariation());
+            BOOST_CHECK_EQUAL(60, block.getGroup());
+            BOOST_CHECK_EQUAL( 4, block.getVariation());
             BOOST_CHECK(block.empty());
         }
     }

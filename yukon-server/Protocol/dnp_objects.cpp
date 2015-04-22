@@ -456,162 +456,160 @@ int ObjectBlock::restore( const unsigned char *buf, int len )
 {
     int pos = 0, bitpos = 0, qty = 0;
 
-    if( len > ObjectBlockMinSize )
+    if( len < ObjectBlockMinSize )
     {
-        _group     = buf[pos++];
-        _variation = buf[pos++];
-        _qualifier = buf[pos++];
+        return len;
+    }
+
+    _group     = buf[pos++];
+    _variation = buf[pos++];
+    _qualifier = buf[pos++];
+
+    switch( _qualifier )
+    {
+        case ShortIndex_ShortQty:
+        case ByteIndex_ShortQty:
+        case NoIndex_ShortQty:
+        {
+            qty  = buf[pos++];
+            qty |= buf[pos++] << 8;
+            break;
+        }
+
+        case NoIndex_ByteQty:
+        case ByteIndex_ByteQty:
+        {
+            qty = buf[pos++];
+            break;
+        }
+
+        case NoIndex_ByteStartStop:
+        {
+            _start    = buf[pos++];
+
+            auto stop = buf[pos++];
+
+            qty  = stop - _start;
+            qty += 1;
+
+            break;
+        }
+
+        case NoIndex_ShortStartStop:
+        {
+            _start  = buf[pos++];
+            _start |= buf[pos++] << 8;
+
+            unsigned short stop;
+            stop    = buf[pos++];
+            stop   |= buf[pos++] << 8;
+
+            qty  = stop - _start;
+            qty += 1;
+
+            break;
+        }
+
+        case NoIndex_NoRange:
+        {
+            qty = 0;
+
+            break;
+        }
+
+        default:
+        {
+            CTILOG_ERROR(dout, "Unknown qualifier block type "<< _qualifier);
+
+            pos = len;
+        }
+    }
+
+    for( int qty_restored = 0; pos < len && qty_restored < qty; qty_restored++ )
+    {
+        int idx = 0;
 
         switch( _qualifier )
         {
             case ShortIndex_ShortQty:
-            case ByteIndex_ShortQty:
-            case NoIndex_ShortQty:
             {
-                qty  = buf[pos++];
-                qty |= buf[pos++] << 8;
+                idx  = buf[pos++];
+                idx |= buf[pos++] << 8;
                 break;
             }
 
-            case NoIndex_ByteQty:
             case ByteIndex_ByteQty:
+            case ByteIndex_ShortQty:
             {
-                qty = buf[pos++];
+                idx  = buf[pos++];
                 break;
             }
 
             case NoIndex_ByteStartStop:
-            {
-                _start    = buf[pos++];
-
-                auto stop = buf[pos++];
-
-                qty  = stop - _start;
-                qty += 1;
-
-                break;
-            }
-
             case NoIndex_ShortStartStop:
             {
-                _start  = buf[pos++];
-                _start |= buf[pos++] << 8;
-
-                unsigned short stop;
-                stop    = buf[pos++];
-                stop   |= buf[pos++] << 8;
-
-                qty  = stop - _start;
-                qty += 1;
-
+                idx = _start + qty_restored;
                 break;
             }
 
-            case NoIndex_NoRange:
+            case NoIndex_ByteQty:
+            case NoIndex_ShortQty:
             {
-                qty = 0;
+                if( isDebugLudicrous() )
+                {
+                    CTILOG_DEBUG(dout, "NoIndex_ByteQty or NoIndex_ShortQty");
+                }
+
+                idx = 0 + qty_restored;
 
                 break;
             }
 
             default:
             {
-                CTILOG_ERROR(dout, "Unknown qualifier block type "<< _qualifier);
-
-                pos = len;
+                idx = -1;
             }
         }
 
-        for( int qty_restored = 0; pos < len && qty_restored < qty; qty_restored++ )
+        std::unique_ptr<Object> tmpObject;
+        unsigned objbitlen = 0;
+        unsigned objlen    = 0;
+
+        //  special case for single-bit objects...
+        if( (_group == BinaryInput::Group  && _variation == BinaryInput::BI_SingleBitPacked) ||
+            (_group == BinaryOutput::Group && _variation == BinaryOutput::BO_SingleBit)      ||
+            (_group == BinaryOutputControl::Group && _variation == BinaryOutputControl::BOC_PatternMask) ||
+            (_group == InternalIndications::Group && _variation == InternalIndications::II_InternalIndications) )
         {
-            int idx = 0;
-
-            switch( _qualifier )
-            {
-                case ShortIndex_ShortQty:
-                {
-                    idx  = buf[pos++];
-                    idx |= buf[pos++] << 8;
-                    break;
-                }
-
-                case ByteIndex_ByteQty:
-                case ByteIndex_ShortQty:
-                {
-                    idx  = buf[pos++];
-                    break;
-                }
-
-                case NoIndex_ByteStartStop:
-                case NoIndex_ShortStartStop:
-                {
-                    idx = _start + qty_restored;
-                    break;
-                }
-
-                case NoIndex_ByteQty:
-                case NoIndex_ShortQty:
-                {
-                    if( isDebugLudicrous() )
-                    {
-                        CTILOG_DEBUG(dout, "NoIndex_ByteQty or NoIndex_ShortQty");
-                    }
-
-                    idx = 0 + qty_restored;
-
-                    break;
-                }
-
-                default:
-                {
-                    idx = -1;
-                }
-            }
-
-            std::unique_ptr<Object> tmpObject;
-            unsigned objbitlen = 0;
-            unsigned objlen    = 0;
-
-            //  special case for single-bit objects...
-            if( (_group == BinaryInput::Group  && _variation == BinaryInput::BI_SingleBitPacked) ||
-                (_group == BinaryOutput::Group && _variation == BinaryOutput::BO_SingleBit)      ||
-                (_group == BinaryOutputControl::Group && _variation == BinaryOutputControl::BOC_PatternMask) ||
-                (_group == InternalIndications::Group && _variation == InternalIndications::II_InternalIndications) )
-            {
-                std::tie(tmpObject, objbitlen) = restoreBitObject(buf + pos, len - pos, bitpos);
-            }
-            else
-            {
-                std::tie(tmpObject, objlen)    = restoreObject(buf + pos, len - pos);
-            }
-
-            if( tmpObject )
-            {
-                _objectList.push_back(std::move(tmpObject));
-
-                _objectIndices.push_back(idx);
-
-                bitpos += objbitlen;
-
-                while( bitpos >= 8 )
-                {
-                    bitpos -= 8;
-                    pos++;
-                }
-
-                pos += objlen;
-            }
-            else
-            {
-                CTILOG_ERROR(dout, "error restoring object at pos = "<< pos <<", len = "<< len);
-
-                pos = len;
-            }
+            std::tie(tmpObject, objbitlen) = restoreBitObject(buf + pos, len - pos, bitpos);
         }
-    }
-    else
-    {
-        pos = len;
+        else
+        {
+            std::tie(tmpObject, objlen)    = restoreObject(buf + pos, len - pos);
+        }
+
+        if( tmpObject )
+        {
+            _objectList.push_back(std::move(tmpObject));
+
+            _objectIndices.push_back(idx);
+
+            bitpos += objbitlen;
+
+            while( bitpos >= 8 )
+            {
+                bitpos -= 8;
+                pos++;
+            }
+
+            pos += objlen;
+        }
+        else
+        {
+            CTILOG_ERROR(dout, "error restoring object at pos = "<< pos <<", len = "<< len);
+
+            pos = len;
+        }
     }
 
     if( bitpos > 0 )
