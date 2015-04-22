@@ -116,19 +116,18 @@ public class RfnOptionPanel extends DataInputPanel implements CaretListener {
         String serialNumber = StringUtils.trimToNull(getSerialNumberTextField().getText()); // Don't respect leading or trailing spaces
         String manufacturer = StringUtils.isBlank(getManufacturerTextField().getText()) ? null : getManufacturerTextField().getText();
         String model = StringUtils.isBlank(getModelTextField().getText()) ? null : getModelTextField().getText();
-        boolean allFilledIn = StringUtils.isNotBlank(serialNumber) && StringUtils.isNotBlank(manufacturer) && StringUtils.isNotBlank(model);
-        if(!allFilledIn)
+        
+        RfnIdentifier rfnIdentifier = new RfnIdentifier(serialNumber, manufacturer, model);
+        if(!rfnIdentifier.isNotBlank())
             throw new EditorInputValidationException("Serial Number, Manufacturer, and Model fields must all be filled in.");
                 
         /* Check for duplicates */
         try {
-            rfnDeviceDao.getDeviceForExactIdentifier(new RfnIdentifier(serialNumber, manufacturer, model));
+            rfnDeviceDao.getDeviceForExactIdentifier(rfnIdentifier);
             throw new EditorInputValidationException("Serial Number, Manufacturer, and Model fields must be unique among RFN devices.");
         } catch (NotFoundException e) { /* IGNORE */ };
         
-        RfnIdentifier rfnIdentifier = new RfnIdentifier(serialNumber, manufacturer, model);
         ChangeDeviceTypeInfo info = new ChangeDeviceTypeInfo(rfnIdentifier);
-        
         return info;
     }
 

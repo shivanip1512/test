@@ -346,7 +346,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
 
         if (newDevice instanceof RfnBase && oldDevice instanceof MCTBase) {
             
-            if (info == null || !info.getRfnIdentifier().isNotBlank()) {
+            if (info == null || info.getRfnIdentifier() == null || !info.getRfnIdentifier().isNotBlank()) {
                 throw new ProcessingException("Serial Number, Manufacturer and Model are required");
             }
             
