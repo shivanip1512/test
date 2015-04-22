@@ -14,6 +14,7 @@ public enum CommandCategory {
     MCT_BASE("All MCTs"),
     IED_BASE("All IED Meters"),
     LP_BASE("All LP Meters"),
+    RFN_BASE("All RFNs"),
     RTU_BASE("All RTUs"),
     REPEATER_BASE("All Repeaters"),
     TCU_BASE("All TCUs"),

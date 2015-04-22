@@ -24,6 +24,7 @@ public class CommandCategoryUtil {
         CommandCategory.LOAD_GROUP_BASE,
         CommandCategory.LP_BASE,
         CommandCategory.MCT_BASE,
+        CommandCategory.RFN_BASE,
         CommandCategory.RTU_BASE,
         CommandCategory.REPEATER_BASE,
         CommandCategory.TCU_BASE,
@@ -50,6 +51,7 @@ public class CommandCategoryUtil {
     private static List<PaoType> CAT_PING_BASE_DEVTYPES;
     private static List<PaoType> CAT_MCT_4XX_SERIES_DEVTYPES;
     private static List<PaoType> CAT_TWO_WAY_LCR_DEVTYPES;
+    private static List<PaoType> CAT_RFN_BASE_DEVTYPES;
     
     public final static Set<CommandCategory> getAllCategories() {
         return ALL_CATEGORIES;
@@ -108,6 +110,8 @@ public class CommandCategoryUtil {
             return getAllMCT4XXSeriesDevTypes();
         } else if (category == CommandCategory.TWO_WAY_LCR_BASE) {
             return getAllTwoWayLCRDevTypes();
+        } else if (category == CommandCategory.RFN_BASE) {
+            return getALLRFNDevTypes();
         }
         return null;
     }
@@ -197,7 +201,16 @@ public class CommandCategoryUtil {
         
         return CAT_MCT_BASE_DEVTYPES;
     }
-    
+
+    private static List<PaoType> getALLRFNDevTypes() {
+        
+        if (CAT_RFN_BASE_DEVTYPES == null) {
+            CAT_RFN_BASE_DEVTYPES = Lists.newArrayList(PaoType.getRfMeterTypes());
+        }
+        
+        return CAT_RFN_BASE_DEVTYPES;
+    }
+
     private static List<PaoType> getAllLPDevTypes() {
         
         if (CAT_LP_BASE_DEVTYPES == null) {
