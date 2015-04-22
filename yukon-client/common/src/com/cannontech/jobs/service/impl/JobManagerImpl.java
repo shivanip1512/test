@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -66,6 +67,7 @@ public class JobManagerImpl implements JobManager {
     // JobId -> ScheduledJobInfoImpl
     private ConcurrentMap<Integer, ScheduledInfo> scheduledJobs = new ConcurrentHashMap<Integer, ScheduledInfo>();
 
+    private static final CopyOnWriteArraySet <JobException> jobExceptions = new CopyOnWriteArraySet<JobException>();
     private AtomicInteger startOffsetMs = new AtomicInteger(5000);
     private int startOffsetIncrement = 1000;
 
@@ -88,7 +90,9 @@ public class JobManagerImpl implements JobManager {
                 final RunnableRetryJob runnable = new RunnableRetryJob(status) {
                     @Override
                     protected void afterRun() {
-                        doScheduleScheduledJob(status.getJob(), null);
+                        if (stopRescheduledForJob(status.getJob().getId())) {
+                            doScheduleScheduledJob(status.getJob(), null);
+                        }
                     }
                 };
                 Date nextStartupTime = getNextStartupTime();
@@ -278,7 +282,9 @@ public class JobManagerImpl implements JobManager {
             Runnable runnable = new BaseRunnableJob(job) {
                 @Override
                 protected void afterRun() {
-                    doScheduleScheduledJob(job, nextRuntime);
+                    if (stopRescheduledForJob(job.getId())) {
+                        doScheduleScheduledJob(job, nextRuntime);
+                    }
                 }
             };
 
@@ -292,6 +298,16 @@ public class JobManagerImpl implements JobManager {
         } catch (Exception e) {
             log.error("unable to schedule job " + job, e);
         }
+    }
+
+    private boolean stopRescheduledForJob(Integer jobId) {
+        boolean isToBeStopped = true;
+        for (JobException it : jobExceptions) {
+            if (it.jobId == jobId) {
+                isToBeStopped = it.isExeptionRecieved();
+            }
+        }
+        return isToBeStopped;
     }
 
     private void doScheduleOneTimeJob(final ScheduledOneTimeJob job) {
@@ -319,7 +335,7 @@ public class JobManagerImpl implements JobManager {
                         runnable.run();
                     } else {
                         log.info("time came to run schedule and it wasn't in scheduledJobs, must have been removed: " +
-                        		"jobId=" + jobId);
+                                "jobId=" + jobId);
                     }
                 }
             };
@@ -397,8 +413,8 @@ public class JobManagerImpl implements JobManager {
             //and so on, until we catch back up to the present.
             Date nextValidTimeAfter = cronExpression.getNextValidTimeAfter(from);
             while(nextValidTimeAfter != null && nextValidTimeAfter.before(new Date())) {
-            	from = nextValidTimeAfter;
-            	nextValidTimeAfter = cronExpression.getNextValidTimeAfter(from);
+                from = nextValidTimeAfter;
+                nextValidTimeAfter = cronExpression.getNextValidTimeAfter(from);
             }
             
             return nextValidTimeAfter;
@@ -414,6 +430,7 @@ public class JobManagerImpl implements JobManager {
 
     private void executeJob(final JobStatus<?> status) throws TransactionException {
         // assume the best
+        JobException jobException;
         status.setJobState(JobState.COMPLETED);
         try {
             YukonTask task = instantiateTask(status.getJob());
@@ -426,10 +443,15 @@ public class JobManagerImpl implements JobManager {
                     + existingTask);
             }
             task.start(); // this should block until task is complete
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("YukonTask failed", e);
             status.setJobState(JobState.FAILED);
             status.setMessage(e.toString());
+            jobException = new JobException(status.getJob().getId(), e.getClass().getName(), true);
+            boolean isJobException = jobExceptions.add(jobException);
+            if (!isJobException) {
+                updateExceptionForJobReschedule(status.getJob().getId());
+            }
         } finally {
             currentlyRunning.remove(status.getJob());
         }
@@ -437,6 +459,14 @@ public class JobManagerImpl implements JobManager {
         // record status in database
         status.setStopTime(timeSource.getCurrentTime());
         jobStatusDao.saveOrUpdate(status);
+    }
+
+    private void updateExceptionForJobReschedule(Integer jobId) {
+        for (JobException it : jobExceptions) {
+            if (it.jobId == jobId) {
+                it.isExeptionRecieved = false;
+            }
+        }
     }
 
     @Override
@@ -589,6 +619,50 @@ public class JobManagerImpl implements JobManager {
             } else if (!time.equals(other.time))
                 return false;
             return true;
+        }
+    }
+
+    private class JobException {
+        int jobId;
+        String exception;
+        private boolean isExeptionRecieved;
+
+        public JobException(int jobId, String exception,boolean isExeptionRecieved) {
+            this.jobId = jobId;
+            this.exception = exception;
+            this.isExeptionRecieved=isExeptionRecieved;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + jobId;
+            result = prime * result + ((exception == null) ? 0 : exception.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            final JobException other = (JobException) obj;
+            if (jobId != other.jobId)
+                return false;
+            if (exception == null) {
+                if (other.exception != null)
+                    return false;
+            } else if (!exception.equals(other.exception))
+                return false;
+            return true;
+        }
+
+        public boolean isExeptionRecieved() {
+            return isExeptionRecieved;
         }
     }
 
