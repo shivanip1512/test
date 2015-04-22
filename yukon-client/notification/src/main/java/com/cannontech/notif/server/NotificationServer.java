@@ -34,7 +34,7 @@ public class NotificationServer {
 
     public static void main(String[] argsv) {
         try {
-            System.setProperty("cti.app.name", "Notification-Server");
+            System.setProperty("cti.app.name", "NotificationServer");
             log.info("Starting notification server from main method");
             YukonSpringHook.setDefaultContext(YukonSpringHook.NOTIFICATION_BEAN_FACTORY_KEY);
 
