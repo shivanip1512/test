@@ -13,9 +13,6 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.model.CompleteDevice;
 import com.cannontech.common.pao.service.PaoPersistenceService;
-import com.cannontech.dr.ecobee.EcobeeCommunicationException;
-import com.cannontech.dr.ecobee.EcobeeDeviceDoesNotExistException;
-import com.cannontech.dr.ecobee.EcobeeSetDoesNotExistException;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvider;
@@ -51,7 +48,11 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
             // Update the Stars table with the device id
             inventoryBaseDao.updateInventoryBaseDeviceId(inventoryId, ecobeePao.getPaObjectId());
             ecobeeCommunicationService.moveDeviceToSet(serialNumber, EcobeeCommunicationService.UNENROLLED_SET);
-        } catch (EcobeeCommunicationException | EcobeeDeviceDoesNotExistException | EcobeeSetDoesNotExistException e) {
+        } catch (Exception e) {
+            //Catch any exception here - only ecobee exceptions (most often communications) are expected, but we might
+            //also have authentication exceptions (which cannot be explicitly caught here) or something unexpected. We
+            //need to roll back the transaction if anything goes wrong - lest we end up with inventory and no associated 
+            //pao.
             log.error("Unable to create device.", e);
             throw new DeviceCreationException(e.getMessage(), e);
         }
