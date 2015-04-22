@@ -1569,12 +1569,12 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             // PROBLEM, types do not match!
             // Attempt to change type
             try {
-                ChangeDeviceTypeService.ChangeDeviceTypeInfo changeInfo = new ChangeDeviceTypeInfo();
-                changeInfo.setAddress(Integer.parseInt(serialOrAddress));
-                changeInfo.setRouteId(0);   // this will be updated later as part of route locate
+                ChangeDeviceTypeService.ChangeDeviceTypeInfo changeInfo;
                 if (templateMeter.getPaoType().isRfn()) {
                     RfnIdentifier rfnIdentifier = buildNewMeterRfnIdentifier((RfnMeter)templateMeter, serialOrAddress);
-                    changeInfo.setRfnIdentifier(rfnIdentifier);
+                    changeInfo = new ChangeDeviceTypeInfo(rfnIdentifier);
+                } else {
+                    changeInfo = new ChangeDeviceTypeInfo(Integer.parseInt(serialOrAddress), 0); // route will be updated later as part of route locate
                 }
                 
                 changeDeviceTypeService.changeDeviceType(new SimpleDevice(existingMeter), templateMeter.getPaoType(), changeInfo);

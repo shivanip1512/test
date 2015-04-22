@@ -160,11 +160,9 @@ public class MctOptionPanel extends DataInputPanel implements CaretListener {
         } catch (NumberFormatException e) {
             throw new EditorInputValidationException("Physical address must be an integer.");
         }
-        ChangeDeviceTypeInfo info = new ChangeDeviceTypeInfo();
         int routeId = ((LiteYukonPAObject) getRouteComboBox().getSelectedItem()).getYukonID();
         Integer address = new Integer(getAddressTextField().getText());
-        info.setRouteId(routeId);
-        info.setAddress(address);
+        ChangeDeviceTypeInfo info = new ChangeDeviceTypeInfo(address, routeId);
         return info;
     }
 

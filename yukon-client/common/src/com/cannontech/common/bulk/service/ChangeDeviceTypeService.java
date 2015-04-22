@@ -11,26 +11,29 @@ public interface ChangeDeviceTypeService {
         private int routeId;
         private RfnIdentifier rfnIdentifier;
         
+        /** Use for CarrierBase types */
+        public ChangeDeviceTypeInfo(int address, int routeId) {
+            super();
+            this.address = address;
+            this.routeId = routeId;
+        }
+
+        /** Use for RfnBase types */
+        public ChangeDeviceTypeInfo(RfnIdentifier rfnIdentifier) {
+            super();
+            this.rfnIdentifier = rfnIdentifier;
+        }
+        
         public int getAddress() {
             return address;
-        }
-        public void setAddress(int address) {
-            this.address = address;
         }
         
         public RfnIdentifier getRfnIdentifier() {
             return rfnIdentifier;
         }
         
-        public void setRfnIdentifier(RfnIdentifier rfnIdentifier) {
-            this.rfnIdentifier = rfnIdentifier;
-        }
-        
         public int getRouteId() {
             return routeId;
-        }
-        public void setRouteId(int routeId) {
-            this.routeId = routeId;
         }
     }
     

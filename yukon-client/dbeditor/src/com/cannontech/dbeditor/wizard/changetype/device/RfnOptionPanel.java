@@ -126,9 +126,8 @@ public class RfnOptionPanel extends DataInputPanel implements CaretListener {
             throw new EditorInputValidationException("Serial Number, Manufacturer, and Model fields must be unique among RFN devices.");
         } catch (NotFoundException e) { /* IGNORE */ };
         
-        ChangeDeviceTypeInfo info = new ChangeDeviceTypeInfo();
         RfnIdentifier rfnIdentifier = new RfnIdentifier(serialNumber, manufacturer, model);
-        info.setRfnIdentifier(rfnIdentifier);
+        ChangeDeviceTypeInfo info = new ChangeDeviceTypeInfo(rfnIdentifier);
         
         return info;
     }

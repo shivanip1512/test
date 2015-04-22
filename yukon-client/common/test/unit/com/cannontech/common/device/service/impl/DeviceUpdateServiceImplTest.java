@@ -45,7 +45,7 @@ public class DeviceUpdateServiceImplTest extends TestCase {
     public void testPointTransferMCTtoMCT() {
         
         MCT410IL mct410IL = new MCT410IL();
-        mct410IL.getDevice().setDeviceID(1);
+        mct410IL.setDeviceID(1); 
 
         PointsToProcess mctToMct = service.getPointsToProccess(mct410IL, PaoType.MCT430S4);
 

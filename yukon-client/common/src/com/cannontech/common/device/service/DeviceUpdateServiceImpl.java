@@ -382,7 +382,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         Map<Attribute, AttributeDefinition> oldDeviceAttributeMap = definitionMap.get(oldDevice.getPaoType());
         Map<Attribute, AttributeDefinition> newDeviceAttributeMap = definitionMap.get(newType);
 
-        List<PointBase> existingPoints = pointDao.getPointsForPao(oldDevice.getDevice().getDeviceID());
+        List<PointBase> existingPoints = pointDao.getPointsForPao(oldDevice.getPAObjectID());
         Set<PointTemplate> initPointTemplates = paoDefinitionDao.getInitPointTemplates(newType);
      
         Set<PointBase> pointsToDelete = new HashSet<>();
