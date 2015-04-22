@@ -1852,6 +1852,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 RemoteBase remoteBase = (RemoteBase) val;
                 remoteBase.setPort(portNum);
                 remoteBase.setIpAddress(ipAddress);
+                remoteBase.addTcpProperties(); // commit these to the database, since they have already been removed above. Necessary if no changes to object are made in DBeditor (in which no "update" db is called)
             } else {
                 // The DBPersistent doesn't track this info, write to PaoProperty for it.
                 PaoIdentifier identifier = new PaoIdentifier(deviceBase.getPAObjectID(), deviceType);
