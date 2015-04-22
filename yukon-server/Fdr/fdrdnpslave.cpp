@@ -380,7 +380,7 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection)
         }
     }
 
-    _dnpSlave.setCommand(DnpSlaveProtocol::Commands::Class1230Read, std::move(inputPoints));
+    _dnpSlave.setScanCommand(std::move(inputPoints));
 
     CtiXfer xfer;
 
@@ -434,23 +434,11 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
         return -1;
     }
 
-    DnpSlaveProtocol::input_point iPoint;
-
-    //  create the point so we can echo it back in the DNP response
-    iPoint.type = DnpSlaveProtocol::DigitalInput;
-    iPoint.offset         = ob.index;
-    iPoint.din.control    = boc->getControlCode();
-    iPoint.din.queue      = boc->getQueue();
-    iPoint.din.clear      = boc->getClear();
-    iPoint.din.trip_close = boc->getTripClose();
-    iPoint.din.count      = boc->getCount();
-    iPoint.din.on_time    = boc->getOnTime();
-    iPoint.din.off_time   = boc->getOffTime();
-    iPoint.din.status     = BinaryOutputControl::Status_NotSupported;
+    auto status = BinaryOutputControl::Status_NotSupported;
 
     boost::optional<unsigned> controlState;
 
-    switch( iPoint.din.trip_close )
+    switch( boc->getTripClose() )
     {
         case BinaryOutputControl::Trip:
         {
@@ -466,7 +454,7 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
 
         case BinaryOutputControl::NUL:
         {
-            switch( iPoint.din.control )
+            switch( boc->getControlCode() )
             {
                 case BinaryOutputControl::PulseOn:
                 case BinaryOutputControl::LatchOn:
@@ -486,7 +474,7 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
 
     if ( ! controlState)
     {
-        iPoint.din.status = BinaryOutputControl::Status_FormatError;
+        status = BinaryOutputControl::Status_FormatError;
     }
     else
     {
@@ -526,16 +514,16 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
 
                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                     {
-                        CTILOG_DEBUG(dout, logNow() << " Control " << (iPoint.din.trip_close == BinaryOutputControl::Close ? "close" : "open") << " sent to pointid " << fdrPoint->getPointID());
+                        CTILOG_DEBUG(dout, logNow() << " Control " << (*controlState ? "close" : "open") << " sent to pointid " << fdrPoint->getPointID());
                     }
 
-                    iPoint.din.status = BinaryOutputControl::Status_Success;
+                    status = BinaryOutputControl::Status_Success;
                 }
             }
         }
     }
 
-    _dnpSlave.setCommand(DnpSlaveProtocol::Commands::SetDigitalOut_Direct, { iPoint });
+    _dnpSlave.setControlCommand(control, status);
 
     CtiXfer xfer;
 

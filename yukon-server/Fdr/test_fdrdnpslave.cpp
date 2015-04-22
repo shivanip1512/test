@@ -889,9 +889,9 @@ BOOST_AUTO_TEST_CASE( test_control_request_shortIndexShortQuantity )
     dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
 
     const byte_str expected(
-            "05 64 1a 44 e8 03 f6 01 20 bb "
-            "c0 c1 81 00 00 0c 01 17 01 00 41 01 00 00 00 00 a7 b3 "
-            "00 00 00 00 00 ff ff");
+            "05 64 1c 44 e8 03 f6 01 f9 d0 "
+            "c0 c1 81 00 00 0c 01 28 01 00 00 00 41 01 00 00 85 b9 "
+            "00 00 00 00 00 00 00 ff ff");
 
     BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
     BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
@@ -947,9 +947,9 @@ BOOST_AUTO_TEST_CASE( test_control_request_visualTD_MCT )
     dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
 
     const byte_str expected(
-            "05 64 1a 44 e8 03 0b 00 6b e2 "
-            "c0 c2 81 00 00 0c 01 17 01 01 41 01 00 00 00 00 ed 5e "
-            "00 00 00 00 00 ff ff");
+            "05 64 1c 44 e8 03 0b 00 b2 89 "
+            "c0 c2 81 00 00 0c 01 28 01 00 01 00 41 01 00 00 4a be "
+            "00 00 00 00 00 00 00 ff ff");
 
     BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
     BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
@@ -1005,9 +1005,9 @@ BOOST_AUTO_TEST_CASE( test_control_request_visualTD_CBC )
     dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
 
     const byte_str expected(
-            "05 64 1a 44 e8 03 0b 00 6b e2 "
-            "c0 c3 81 00 00 0c 01 17 01 00 41 01 00 00 00 00 97 6f "
-            "00 00 00 00 00 ff ff");
+            "05 64 1c 44 e8 03 0b 00 b2 89 "
+            "c0 c3 81 00 00 0c 01 28 01 00 00 00 41 01 00 00 b5 65 "
+            "00 00 00 00 00 00 00 ff ff");
 
     BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
     BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());

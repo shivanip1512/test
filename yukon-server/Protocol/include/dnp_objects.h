@@ -139,6 +139,10 @@ public:
     int getGroup( void )     const;
     int getVariation( void ) const;
 
+    size_t getIndexLength() const;
+    size_t getQuantityLength() const;
+    size_t getStartStopLength() const;
+
     void setUnsolicited();
 
     unsigned size( void )  const;

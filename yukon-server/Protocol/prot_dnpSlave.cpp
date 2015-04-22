@@ -41,7 +41,7 @@ YukonError_t DnpSlaveProtocol::decode( CtiXfer &xfer )
 
 auto DnpSlaveProtocol::identifyRequest( const char* data, unsigned int size ) -> std::pair<Commands, ObjectBlockPtr>
 {
-    std::pair<Commands, DNP::ObjectBlockPtr> Invalid = { Commands::Invalid, nullptr };
+    auto Invalid = std::make_pair(Commands::Invalid, nullptr);
 
     if( ! data )
     {
@@ -197,107 +197,112 @@ std::vector<unsigned char> DnpSlaveProtocol::createDatalinkAck()
     return std::vector<unsigned char> { buf, buf + DatalinkPacket::calcPacketLength(packet.header.fmt.len) };
 }
 
-void DnpSlaveProtocol::setCommand( Commands command, std::vector<input_point> inputPoints )
+void DnpSlaveProtocol::setScanCommand( std::vector<input_point> inputPoints )
 {
-    _command = command;
+    _command = Commands::Class1230Read;
 
-    switch( _command )
+    std::map<unsigned, std::unique_ptr<const AnalogInput>> analogs;
+    std::map<unsigned, std::unique_ptr<const BinaryInput>> digitals;
+    std::map<unsigned, std::unique_ptr<const Counter>>     counters;
+
+    for( const auto &ip : inputPoints )
     {
-        case Commands::Class1230Read:
+        switch( ip.type )
         {
-            std::map<unsigned, std::unique_ptr<const AnalogInput>> analogs;
-            std::map<unsigned, std::unique_ptr<const BinaryInput>> digitals;
-            std::map<unsigned, std::unique_ptr<const Counter>>     counters;
-
-            for( const auto &ip : inputPoints )
+            case AnalogInputType:
             {
-                switch( ip.type )
-                {
-                    case AnalogInputType:
-                    {
-                        auto ain = std::make_unique<AnalogInput>(AnalogInput::AI_32Bit);
-                        ain->setValue(ip.ain.value);
-                        ain->setOnlineFlag(ip.online);
+                auto ain = std::make_unique<AnalogInput>(AnalogInput::AI_32Bit);
+                ain->setValue(ip.ain.value);
+                ain->setOnlineFlag(ip.online);
 
-                        analogs.emplace(ip.offset, std::move(ain));
+                analogs.emplace(ip.offset, std::move(ain));
 
-                        break;
-                    }
-                    case DigitalInput:
-                    {
-                        auto bin = std::make_unique<BinaryInput>(BinaryInput::BI_WithStatus);
-                        bin->setStateValue(ip.din.trip_close);
-                        bin->setOnlineFlag(ip.online);
-
-                        digitals.emplace(ip.offset, std::move(bin));
-
-                        break;
-                    }
-                    case Counters:
-                    {
-                        auto counterin = std::make_unique<Counter>(Counter::C_Binary32Bit);
-                        counterin->setValue(ip.counterin.value);
-                        counterin->setOnlineFlag(ip.online);
-
-                        counters.emplace(ip.offset, std::move(counterin));
-
-                        break;
-                    }
-                }
+                break;
             }
-
-            std::vector<ObjectBlockPtr> dobs;
-
-            if( ! analogs.empty() )     dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(analogs)));
-            if( ! digitals.empty() )    dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(digitals)));
-            if( ! counters.empty() )    dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(counters)));
-
-            _application.setCommand(
-                    ApplicationLayer::ResponseResponse,
-                    std::move(dobs));
-
-            break;
-        }
-        case Commands::SetDigitalOut_Direct:
-        {
-            if( ! inputPoints.empty()
-                && inputPoints[0].type == DigitalInput )
+            case DigitalInput:
             {
-                const input_point &p = inputPoints[0];
+                auto bin = std::make_unique<BinaryInput>(BinaryInput::BI_WithStatus);
+                bin->setStateValue(ip.din.trip_close);
+                bin->setOnlineFlag(ip.online);
 
-                auto boc = std::make_unique<BinaryOutputControl>(BinaryOutputControl::BOC_ControlRelayOutputBlock);
+                digitals.emplace(ip.offset, std::move(bin));
 
-                boc->setControlBlock(
-                        p.din.on_time,
-                        p.din.off_time,
-                        p.din.count,
-                        p.din.control,
-                        p.din.queue,
-                        p.din.clear,
-                        p.din.trip_close);
-                boc->setStatus(
-                        p.din.status);
+                break;
+            }
+            case Counters:
+            {
+                auto counterin = std::make_unique<Counter>(Counter::C_Binary32Bit);
+                counterin->setValue(ip.counterin.value);
+                counterin->setOnlineFlag(ip.online);
 
+                counters.emplace(ip.offset, std::move(counterin));
+
+                break;
+            }
+        }
+    }
+
+    std::vector<ObjectBlockPtr> dobs;
+
+    if( ! analogs.empty() )     dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(analogs)));
+    if( ! digitals.empty() )    dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(digitals)));
+    if( ! counters.empty() )    dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(counters)));
+
+    _application.setCommand(
+            ApplicationLayer::ResponseResponse,
+            std::move(dobs));
+
+    _application.initForSlaveOutput();
+}
+
+
+void DnpSlaveProtocol::setControlCommand( const DNP::ObjectBlock &ob, const DNP::BinaryOutputControl::Status status )
+{
+    if( ob.getGroup()     == BinaryOutputControl::Group &&
+        ob.getVariation() == BinaryOutputControl::BOC_ControlRelayOutputBlock &&
+        ! ob.empty() )
+    {
+        auto &od = ob[0];
+
+        if( const auto request = dynamic_cast<const BinaryOutputControl *>(od.object) )
+        {
+            _command = Commands::SetDigitalOut_Direct;
+
+            auto boc = std::make_unique<BinaryOutputControl>(BinaryOutputControl::BOC_ControlRelayOutputBlock);
+
+            boc->setControlBlock(
+                    request->getOnTime(),
+                    request->getOffTime(),
+                    request->getCount(),
+                    request->getControlCode(),
+                    request->getQueue(),
+                    request->getClear(),
+                    request->getTripClose());
+            boc->setStatus(
+                    status);
+
+            if( ob.getQuantityLength() == 2 && ob.getIndexLength() == 2 )
+            {
+                _application.setCommand(
+                        ApplicationLayer::ResponseResponse,
+                        ObjectBlock::makeLongIndexedBlock(
+                                std::move(boc),
+                                od.index));
+            }
+            else
+            {
                 _application.setCommand(
                         ApplicationLayer::ResponseResponse,
                         ObjectBlock::makeIndexedBlock(
                                 std::move(boc),
-                                p.offset));
-
-                break;
-            }
-            else
-            {
-                CTILOG_ERROR(dout, "Input point invalid for control");
-                _command = Commands::Invalid;
+                                od.index));
             }
         }
-        default:
-        {
-            CTILOG_ERROR(dout, "invalid command "<< static_cast<int>(_command));
-
-            _command = Commands::Invalid;
-        }
+    }
+    else
+    {
+        CTILOG_ERROR(dout, "Input point invalid for control");
+        _command = Commands::Invalid;
     }
 
     //  finalize the request

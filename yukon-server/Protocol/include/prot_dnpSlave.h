@@ -63,7 +63,8 @@ public:
     std::vector<unsigned char> createDatalinkAck();
 
     std::pair<Commands, DNP::ObjectBlockPtr> identifyRequest(const char* data, unsigned int size);
-    void setCommand( Commands command, std::vector<input_point> inputPoints );
+    void setScanCommand( std::vector<input_point> inputPoints );
+    void setControlCommand( const DNP::ObjectBlock &ob, const DNP::BinaryOutputControl::Status status );
 
     YukonError_t decode( CtiXfer &xfer );
     YukonError_t generate( CtiXfer &xfer );

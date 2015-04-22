@@ -138,6 +138,50 @@ int ObjectBlock::getVariation(void) const
 }
 
 
+size_t ObjectBlock::getIndexLength() const
+{
+    switch( _qualifier )
+    {
+        case ByteIndex_ByteQty:
+        case ByteIndex_ShortQty:
+            return 1;
+        case ShortIndex_ShortQty:
+            return 2;
+        default:
+            return 0;
+    }
+}
+
+size_t ObjectBlock::getQuantityLength() const
+{
+    switch( _qualifier )
+    {
+        case NoIndex_ByteQty:
+        case ByteIndex_ByteQty:
+            return 1;
+        case NoIndex_ShortQty:
+        case ByteIndex_ShortQty:
+        case ShortIndex_ShortQty:
+            return 2;
+        default:
+            return 0;
+    }
+}
+
+size_t ObjectBlock::getStartStopLength() const
+{
+    switch( _qualifier )
+    {
+        case NoIndex_ByteStartStop:
+            return 1;
+        case NoIndex_ShortStartStop:
+            return 2;
+        default:
+            return 0;
+    }
+}
+
+
 void ObjectBlock::setUnsolicited()
 {
     _unsolicited = true;
