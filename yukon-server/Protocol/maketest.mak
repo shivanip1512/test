@@ -40,6 +40,7 @@ test_prot_dnp.obj \
 test_dnp_transport.obj \
 test_dnp_objects.obj \
 test_dnp_datalink.obj \
+test_dnp_application.obj \
 test_prot_sa305.obj
 
 PROTLIBS=\

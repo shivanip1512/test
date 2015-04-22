@@ -159,7 +159,7 @@ public:
     bool hasDeviceRestarted() const;
     bool needsTime() const;
 
-    static std::vector<std::unique_ptr<ObjectBlock>> restoreObjectBlocks(const unsigned char *buf, const unsigned len);
+    IM_EX_PROT static std::vector<std::unique_ptr<ObjectBlock>> restoreObjectBlocks(const unsigned char *buf, const unsigned len);
 
     enum
     {
