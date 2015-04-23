@@ -7,8 +7,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.naming.ConfigurationException;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.Duration;
@@ -19,12 +17,13 @@ import com.google.common.collect.Sets;
 import com.google.common.primitives.Ints;
 
 public class PasswordPolicy {
+    
     // Lockouts/Expirations
     private Duration lockoutDuration;
     private int lockoutThreshold;
     private Duration maxPasswordAge;
     private Duration minPasswordAge;
- 
+    
     // Password Strength
     private int passwordHistory;
     private int minPasswordLength;
@@ -96,7 +95,7 @@ public class PasswordPolicy {
         for (PolicyRule policyRule :  this.policyRules) {
             Pattern policyRolePattern = policyRule.getRegexPattern();
             Matcher matcher = policyRolePattern.matcher(password);
-
+            
             if (matcher.find()) {
                 numberOfRulesMeet++;
             }
@@ -109,8 +108,8 @@ public class PasswordPolicy {
      * This method returns whether or not the supplied password has met enough password policy rules to be accepted.
      */
     public boolean isPasswordQualityCheckMet(String password) {
-        int numberOfRulesMet = numberOfRulesMet(password);
         
+        int numberOfRulesMet = numberOfRulesMet(password);
         if (numberOfRulesMet >= this.passwordQualityCheck) {
             return true;
         }
@@ -122,38 +121,36 @@ public class PasswordPolicy {
      * Return a list of the PolicyRules met
      */
     public Set<PolicyRule> getValidPolicyRules(String password) {
-    	Set<PolicyRule> validRules = Sets.newHashSet();
-    	
-    	for (PolicyRule policyRule :  this.policyRules) {
-    		Pattern policyRolePattern = policyRule.getRegexPattern();
-    		Matcher matcher = policyRolePattern.matcher(password);
-    		if (matcher.find()) {
-    			validRules.add(policyRule);
-    		}
-    	}
-    	
-    	return validRules;
+        
+        Set<PolicyRule> validRules = Sets.newHashSet();
+        for (PolicyRule policyRule :  this.policyRules) {
+            Pattern policyRolePattern = policyRule.getRegexPattern();
+            Matcher matcher = policyRolePattern.matcher(password);
+            if (matcher.find()) {
+                validRules.add(policyRule);
+            }
+        }
+        
+        return validRules;
     }
-
+    
     /**
      * Get the password age.
      */
-    public Duration getPasswordAge(UserAuthenticationInfo userAuthenticationInfo) {
-        Duration passwordAge = new Duration(userAuthenticationInfo.getLastChangedDate(), Instant.now());
-        
-        return passwordAge;
+    public Duration getPasswordAge(UserAuthenticationInfo authInfo) {
+        return new Duration(authInfo.getLastChangedDate(), Instant.now());
     }
-
+    
     /**
      * Checks to see if the password is old enough to be changed.
      */
-    public boolean isPasswordAgeRequirementMet(UserAuthenticationInfo userAuthenticationInfo) {
-        if (userAuthenticationInfo == null) {
+    public boolean isPasswordAgeRequirementMet(UserAuthenticationInfo authInfo) {
+        
+        if (authInfo == null) {
             return true;
         }
-
-        Duration passwordAge = getPasswordAge(userAuthenticationInfo);
-
+        
+        Duration passwordAge = getPasswordAge(authInfo);
         if (passwordAge.isLongerThan(minPasswordAge)) {
             return true;
         }
@@ -171,19 +168,19 @@ public class PasswordPolicy {
      * policies available),a password meeting at least the policy checks will be created.
      */
     public String generatePassword() {
-
+        
         String genPass = PolicyRule.UPPERCASE_CHARACTERS.generateRandomCharacter();
         genPass = genPass.concat(PolicyRule.LOWERCASE_CHARACTERS.generateRandomCharacter());
         genPass = genPass.concat(PolicyRule.BASE_10_DIGITS.generateRandomCharacter());
-
+        
         if (policyRules.contains(PolicyRule.NONALPHANUMERIC_CHARACTERS)) {
             genPass = genPass.concat(PolicyRule.NONALPHANUMERIC_CHARACTERS.generateRandomCharacter());
         }
-
+        
         // Fill in the remaining needed characters.  If its less than 0 use 0.
         int numberOfNeededCharacters = Ints.max(passwordQualityCheck - genPass.length(), minPasswordLength - genPass.length(), 0) ;
         genPass = genPass.concat(RandomStringUtils.randomAlphanumeric(numberOfNeededCharacters));
-
+        
         // Shuffle the characters around to make the password more random.
         List<Character> passwordCharacters = Arrays.asList(ArrayUtils.toObject(genPass.toCharArray()));
         Collections.shuffle(passwordCharacters);
@@ -192,4 +189,5 @@ public class PasswordPolicy {
         
         return finalGeneratedPassword;
     }
+    
 }
