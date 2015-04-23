@@ -10539,13 +10539,6 @@
                 <stategroup value="TwoStateStatus" />
             </point>
         </points>
-        <commands>
-            <command id="INTEGRITY_SCAN">
-                <name>Integrity Scan</name>
-                <cmd text="scan integrity"/>
-                <pointRef name="Capacitor Bank State"/>
-            </command>
-        </commands>
         <attributes>
             <attribute name="CONTROL_POINT">
                 <basicLookup point="Capacitor Bank State" />
@@ -10584,6 +10577,13 @@
                 <stategroup value="TrueFalse" />
             </point>
         </points>
+        <commands>
+            <command id="INTEGRITY_SCAN">
+                <name>Integrity Scan</name>
+                <cmd text="scan integrity"/>
+                <pointRef name="Capacitor Bank State"/>
+            </command>
+        </commands>
         <attributes>
             <attribute name="VOLTAGE">
                 <basicLookup point="Average Line Voltage" />
