@@ -37,6 +37,7 @@
 <entry key="yukon.common.authType.NONE">No Login</entry>
 <entry key="yukon.common.authType.PLAIN">PLAIN</entry>
 <entry key="yukon.common.authType.RADIUS">Radius</entry>
+<entry key="yukon.common.available">Available</entry>
 <entry key="yukon.common.cancel">Cancel</entry>
 <entry key="yukon.common.choose">Choose</entry>
 <entry key="yukon.common.clientApplicationRememberMe.NONE">None</entry>
@@ -49,6 +50,7 @@
 <entry key="yukon.common.completed">Completed</entry>
 <entry key="yukon.common.console">Console</entry>
 <entry key="yukon.common.copyof">Copy of {0}</entry>
+<entry key="yukon.common.create">Create</entry>
 <entry key="yukon.common.csv">CSV</entry>
 <entry key="yukon.common.decimalSeparator">.</entry>
 <entry key="yukon.common.device">Device</entry>
@@ -79,6 +81,7 @@
 <entry key="yukon.common.email.send">Send Email</entry>
 <entry key="yukon.common.enable">Enable</entry>
 <entry key="yukon.common.enabled">Enabled</entry>
+<entry key="yukon.common.energyCompany">Energy Company</entry>
 <entry key="yukon.common.error">Error</entry>
 <entry key="yukon.common.expandAll">Expand All</entry>
 <entry key="yukon.common.failed">Failed</entry>
@@ -114,10 +117,13 @@
 <entry key="yukon.common.name">Name</entry>
 <entry key="yukon.common.networkManager">Network Manager</entry>
 <entry key="yukon.common.none">None</entry>
+<entry key="yukon.common.none.choice">(none)</entry>
 <entry key="yukon.common.note">Note</entry>
 <entry key="yukon.common.noPhase">No Phase</entry>
 <entry key="yukon.common.okButton">OK</entry>
 <entry key="yukon.common.operationSuccess">Operation Successful</entry>
+<entry key="yukon.common.password.confirm.placeholder">confirm</entry>
+<entry key="yukon.common.password.placeholder">password</entry>
 <entry key="yukon.common.pdf">PDF</entry>
 <entry key="yukon.common.pending">Pending</entry>
 <entry key="yukon.common.phase">Phase</entry>
@@ -143,6 +149,7 @@
 <entry key="yukon.common.requestFailed">Request Failed</entry>
 <entry key="yukon.common.result">Result</entry>
 <entry key="yukon.common.right">Right</entry>
+<entry key="yukon.common.role.group">Role Group</entry>
 <entry key="yukon.common.route">Route</entry>
 <entry key="yukon.common.route.default">Default - {0}</entry>
 <entry key="yukon.common.route.default.none">Default - (none)</entry>
@@ -183,6 +190,9 @@
 <entry key="yukon.common.unsupported">Unsupported</entry>
 <entry key="yukon.common.user">User</entry>
 <entry key="yukon.common.user.editor">User Editor</entry>
+<entry key="yukon.common.user.group">User Group</entry>
+<entry key="yukon.common.username">Username</entry>
+<entry key="yukon.common.unavailable">Unavailable</entry>
 <entry key="yukon.common.value">State/Value</entry>
 <entry key="yukon.common.view">view</entry>
 <entry key="yukon.common.warning">Warning</entry>

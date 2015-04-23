@@ -237,4 +237,6 @@
     <entry key="yukon.web.modules.adminSetup.jobsscheduler.all.column.scheduledStart">Scheduled Start</entry>
     <entry key="yukon.web.modules.adminSetup.jobsscheduler.all.column.enabled">Enable/Disable</entry>
     
+    <entry key="yukon.web.modules.adminSetup.userEditor.user.new">New User</entry>
+    
 </properties>

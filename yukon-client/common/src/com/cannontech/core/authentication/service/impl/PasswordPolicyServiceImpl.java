@@ -75,7 +75,9 @@ public class PasswordPolicyServiceImpl implements PasswordPolicyService {
         }
         
         // There is not a password policy for this user the default password policy will be returned.
-        if (user == null || !rolePropertyDao.checkRole(YukonRole.PASSWORD_POLICY, user)) {
+        if (user == null 
+                || !rolePropertyDao.checkRole(YukonRole.PASSWORD_POLICY, user)
+                || (user == null && group == null)) {
             return getDefaultPasswordPolicy();
         }
         

@@ -655,7 +655,7 @@ yukon.ui = (function () {
                     $(this).find('[data-row-tooltip]').tipsy('hide');
                 });
             }
-            
+                
             /**
              * Tooltips
              * 
@@ -1870,7 +1870,7 @@ yukon.ui = (function () {
         },
         
         /** 
-         * Add evenst to the timeline
+         * Add events to the timeline
          * @param {string} events[].id - Unique identifier key. Will override any existing event with that id.
          * @param {number} events[].timestamp - Time of event. expressed as epoch timestamp.
          * @param {string} [events[].icon=icon-blank] - Icon to show on the timeline.

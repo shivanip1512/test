@@ -4,9 +4,10 @@ import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 
 public enum LoginStatusEnum implements DatabaseRepresentationSource, DisplayableEnum {
+    
     ENABLED("Enabled"),
     DISABLED("Disabled");
-
+    
     private String sqlValue;
     
     LoginStatusEnum(String sqlValue){
@@ -17,7 +18,7 @@ public enum LoginStatusEnum implements DatabaseRepresentationSource, Displayable
     public Object getDatabaseRepresentation() {
         return sqlValue;
     }
-
+    
     public static LoginStatusEnum retrieveLoginStatus(String dbValue) {
         LoginStatusEnum[] values = values();
         for (LoginStatusEnum loginStatusEnum : values) {
@@ -25,10 +26,10 @@ public enum LoginStatusEnum implements DatabaseRepresentationSource, Displayable
                 return loginStatusEnum;
             }
         }
-
+        
         return null;
     }
-
+    
     public boolean isEnabled() {
         return this == ENABLED;
     }
@@ -36,7 +37,7 @@ public enum LoginStatusEnum implements DatabaseRepresentationSource, Displayable
     public boolean isDisabled() {
         return this == DISABLED;
     }
-
+    
     @Override
     public String getFormatKey() {
         return "yukon.common.loginStatus." + name();

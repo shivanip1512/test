@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.naming.ConfigurationException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -24,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.user.Password;
+import com.cannontech.common.user.User;
 import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
@@ -49,9 +50,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
-import com.cannontech.web.admin.userGroupEditor.model.Password;
 import com.cannontech.web.admin.userGroupEditor.model.RoleAndGroup;
-import com.cannontech.web.admin.userGroupEditor.model.User;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -66,24 +65,18 @@ import com.google.common.collect.Multimap;
 @CheckRoleProperty(YukonRoleProperty.ADMIN_SUPER_USER)
 public class UserEditorController {
     
-    private UserValidator userValidator = new UserValidator();
-    private final static String baseKey = "yukon.web.modules.adminSetup.userEditor.";
-    
     @Autowired private AuthenticationService authService;
     @Autowired private RoleDao roleDao;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private UserGroupDao userGroupDao;
+    @Autowired private UserValidator userValidator;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private PasswordPolicyService passwordPolicyService;
     @Autowired private PasswordResetService passwordResetService;
     @Autowired private CsrfTokenService csrfTokenService;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     
-    /* Group Editor View Page */
-    @RequestMapping("home")
-    public String home(YukonUserContext userContext, ModelMap modelMap) {
-        return "userGroupEditor/userHome.jsp";
-    }
+    private final static String key = "yukon.web.modules.adminSetup.userEditor.";
     
     @RequestMapping("view")
     public String view(YukonUserContext userContext, ModelMap model, int userId) {
@@ -139,12 +132,12 @@ public class UserEditorController {
         
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
         authService.removeAuthenticationThrottle(user.getUsername());
-        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "userUnlocked"));
+        flash.setConfirm(new YukonMessageSourceResolvable(key + "userUnlocked"));
         
         return redirectToView(model, userId);
     }
     
-    /* Update Group */
+    /* Update User */
     @RequestMapping(value="edit", method=RequestMethod.POST, params="update")
     public String update(HttpServletRequest request, YukonUserContext userContext, 
             @ModelAttribute User user, BindingResult result, ModelMap model, FlashScope flash) {
@@ -182,9 +175,24 @@ public class UserEditorController {
             authService.setAuthenticationCategory(yukonUser, user.getAuthCategory());
         }
         
-        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "updateSuccessful"));
+        flash.setConfirm(new YukonMessageSourceResolvable(key + "updateSuccessful"));
         
         return redirectToView(model, user.getUserId());
+    }
+    
+    /* Delete User */
+    @RequestMapping(value="edit", method=RequestMethod.POST, params="delete")
+    public String delete(ModelMap model, @ModelAttribute User user, FlashScope flash, YukonUserContext userContext) {
+        
+        if (userContext.getYukonUser().getUserID() == user.getUserId()) {
+            flash.setError(new YukonMessageSourceResolvable(key + "delete.failed.self"));
+            return redirectToView(model, user.getUserId());
+        }
+        
+        yukonUserDao.deleteUser(user.getUserId());
+        flash.setConfirm(new YukonMessageSourceResolvable(key + "delete.success", user.getUsername()));
+        
+        return "redirect:/adminSetup/userEditor/home";
     }
     
     @RequestMapping(value="change-password", method=RequestMethod.POST)
@@ -209,7 +217,7 @@ public class UserEditorController {
         }
         
         authService.setPassword(yukonUser, password.getPassword());
-        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "passwordUpdateSuccessful"));
+        flash.setConfirm(new YukonMessageSourceResolvable(key + "passwordUpdateSuccessful"));
         
         resp.setStatus(HttpStatus.NO_CONTENT.value());
         return null;
@@ -224,7 +232,7 @@ public class UserEditorController {
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
         if (binder.getTarget() != null) {
-            MessageCodesResolver msgCodesResolver = new YukonMessageCodeResolver(baseKey + "");
+            MessageCodesResolver msgCodesResolver = new YukonMessageCodeResolver(key + "");
             binder.setMessageCodesResolver(msgCodesResolver);
         }
     }
@@ -238,7 +246,7 @@ public class UserEditorController {
         model.addAttribute("password", new Password());
         model.addAttribute("mode", mode);
         
-        model.addAttribute("currentUserId",userContext.getYukonUser().getLiteID());
+        model.addAttribute("currentUserId", userContext.getYukonUser().getLiteID());
         model.addAttribute("userId", user.getUserId());
         model.addAttribute("editNameAndStatus", user.getUserId() > -1);
         
@@ -265,23 +273,6 @@ public class UserEditorController {
         model.addAttribute("roles", sortedRoles.asMap());
     }
     
-    private class UserValidator extends SimpleValidator<User> {
-        
-        public UserValidator() {
-            super(User.class);
-        }
-        
-        @Override
-        public void doValidation(User user, Errors errors) {
-            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "username", "required.username");
-            YukonValidationUtils.checkExceedsMaxLength(errors, "username", user.getUsername(), 64);
-            LiteYukonUser possibleDuplicate = yukonUserDao.findUserByUsername(user.getUsername());
-            if (possibleDuplicate != null && user.getUserId() != possibleDuplicate.getUserID()) {
-                errors.rejectValue("username", "unavailable.username");
-            }
-        }
-    }
-    
     private class PasswordValidator extends SimpleValidator<Password> {
         
         private List<MessageSourceResolvable> messages = Lists.newArrayList();
@@ -304,7 +295,7 @@ public class UserEditorController {
             
             if (!target.getPassword().equals(target.getConfirmPassword())) {
                 YukonValidationUtils.rejectValues(errors, "password.mismatch", passwordKey, confirmPasswordKey);
-                messages.add(new YukonMessageSourceResolvable(baseKey + "password.mismatch"));
+                messages.add(new YukonMessageSourceResolvable(key + "password.mismatch"));
                 return;
             }
             

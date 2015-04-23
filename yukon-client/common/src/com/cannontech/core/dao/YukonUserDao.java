@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.dao.DataAccessException;
 
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.user.NewUser;
 import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.authentication.service.AuthenticationService;
@@ -18,7 +19,7 @@ import com.cannontech.database.db.user.UserGroup;
 
 public interface YukonUserDao {
 
-    public void changeUsername(LiteYukonUser changingUser, int modifiedUserId, String newUsername);
+    void changeUsername(LiteYukonUser changingUser, int modifiedUserId, String newUsername);
 
     /**
      * Returns a LiteYukonUser by user id or null if none exists.
@@ -26,14 +27,14 @@ public interface YukonUserDao {
      * @param userId
      * @return the LiteYukonUser or null if no user with that id exists
      */
-    public LiteYukonUser getLiteYukonUser(int userId);
+    LiteYukonUser getLiteYukonUser(int userId);
 
     /**
      * Get user authentication information for the given user id. This information is stored in the same
      * database table as the stuff in {@link LiteYukonUser} but needs to be updated via
      * {@link AuthenticationService#setAuthenticationCategory} or {@link AuthenticationService#setPassword}.
      */
-    public UserAuthenticationInfo getUserAuthenticationInfo(int userId);
+    UserAuthenticationInfo getUserAuthenticationInfo(int userId);
 
     /**
      * Get user authentication information for the given user ids. This information is stored in the
@@ -42,7 +43,7 @@ public interface YukonUserDao {
      * 
      * @return a map of userId -> UserAuthenticationInfo
      */
-    public Map<Integer, UserAuthenticationInfo> getUserAuthenticationInfo(Iterable<Integer> userIds);
+    Map<Integer, UserAuthenticationInfo> getUserAuthenticationInfo(Iterable<Integer> userIds);
 
     /**
      * Returns a LiteYukonUser by username or null if none exists.
@@ -50,7 +51,7 @@ public interface YukonUserDao {
      * @param userName
      * @return the LiteYukonUser or null if username doesn't exist
      */
-    public LiteYukonUser findUserByUsername(String userName);
+    LiteYukonUser findUserByUsername(String userName);
 
     /**
      * Gets the cached contact for the given user id.
@@ -58,20 +59,20 @@ public interface YukonUserDao {
      * @param userId
      * @return
      */
-    public LiteContact getLiteContact(int userId);
+    LiteContact getLiteContact(int userId);
 
     /**
      * This method sets all of the EventBase userIds of a given user to the default user. This
      * allows a user to be deleted.
      */
-    public void removeUserFromEventBase(int userId);
+    void removeUserFromEventBase(int userId);
 
     /**
      * Deletes user from YukonUser by user id.
      * 
      * @param userId
      */
-    public void deleteUser(Integer userId);
+    void deleteUser(Integer userId);
 
     /**
      * Updates the YukonUser for a give LiteYukonUser.
@@ -79,7 +80,7 @@ public interface YukonUserDao {
      * @param user
      * @throws DataAccessException
      */
-    public void update(LiteYukonUser user) throws DataAccessException;
+    void update(LiteYukonUser user) throws DataAccessException;
 
     /**
      * Updates the YukonUser's Status('Enabled' or 'Disabled') of a given user
@@ -87,7 +88,7 @@ public interface YukonUserDao {
      * @param user - The user we are updating
      * @param status - This value should be 'Enabled' or 'Disabled'
      */
-    public void setUserStatus(LiteYukonUser user, LoginStatusEnum loginStatusEnum);
+    void setUserStatus(LiteYukonUser user, LoginStatusEnum loginStatusEnum);
 
     /**
      * Generates a unique username based on the given firstName and lastName.
@@ -96,35 +97,35 @@ public interface YukonUserDao {
      * @param lastName
      * @return newUsername
      */
-    public String generateUsername(String firstName, String lastName);
+    String generateUsername(String firstName, String lastName);
 
-    public int getAllYukonUserCount();
+    int getAllYukonUserCount();
 
     /**
      * A Lists of users are given to the callback as all the users in the system are retrieved from the
      * database.
      */
-    public void callbackWithAllYukonUsers(SimpleCallback<LiteYukonUser> callback);
+    void callbackWithAllYukonUsers(SimpleCallback<LiteYukonUser> callback);
 
     /**
      * A Lists of users are given to the callback as they are retrieved in chunks from the role group.
      */
-    public void callbackWithYukonUsersInGroup(LiteYukonGroup liteGroup, SimpleCallback<LiteYukonUser> simpleCallback);
+    void callbackWithYukonUsersInGroup(LiteYukonGroup liteGroup, SimpleCallback<LiteYukonUser> simpleCallback);
 
     /**
      * A Lists of users are given to the callback as they are retrieved in chunks from the user group.
      */
-    public void callbackWithYukonUsersInUserGroup(UserGroup userGroup, SimpleCallback<LiteYukonUser> simpleCallback);
+    void callbackWithYukonUsersInUserGroup(UserGroup userGroup, SimpleCallback<LiteYukonUser> simpleCallback);
 
     /**
      * This method removes the user from their current user group.
      */
-    public void removeUserFromUserGroup(int userId);
+    void removeUserFromUserGroup(int userId);
 
     /**
      * This method removes the users from the user group.
      */
-    public void removeUsersFromUserGroup(int userGroupId);
+    void removeUsersFromUserGroup(int userGroupId);
 
     /**
      * This method adds a user to the supplied groups and sends out the necessary db change messages
@@ -132,7 +133,7 @@ public interface YukonUserDao {
      * @param user
      * @param yukonGroups
      */
-    public void addUserToGroup(int userId, Integer... groupIds);
+    void addUserToGroup(int userId, Integer... groupIds);
 
     /**
      * Creates a login for an additional contact on a stars account. This login will user the first and last
@@ -142,32 +143,36 @@ public interface YukonUserDao {
      * will have no password.
      * 
      */
-    public LiteYukonUser createLoginForAdditionalContact(String firstName, String lastName, LiteUserGroup userGroup);
+    LiteYukonUser createLoginForAdditionalContact(String firstName, String lastName, LiteUserGroup userGroup);
 
     /**
      * Returns a SearchResult<LiteYukonUser> of the users that are members of the group provided
      */
-    public SearchResults<LiteYukonUser> getUsersForUserGroup(int userGroupId, final int start, final int count);
+    SearchResults<LiteYukonUser> getUsersForUserGroup(int userGroupId, final int start, final int count);
 
     /**
      * This method returns all of the operators that are directly associated with the given energy
      * company ids.
      */
-    public List<LiteYukonUser> getOperatorLoginsByEnergyCompanyIds(Iterable<Integer> energyCompanyIds);
+    List<LiteYukonUser> getOperatorLoginsByEnergyCompanyIds(Iterable<Integer> energyCompanyIds);
 
     /**
      * Inserts or updates a lite yukon user.
      * Requires userId = LiteYukonUser.CREATE_NEW_USER_ID for _new_ user to be created. (Not preferred!)
+     * @deprecated Use {@link #create(NewUser, boolean)} instead for user creation.
      */
-    public void save(LiteYukonUser user);
+    void save(LiteYukonUser user);
 
     /**
      * Updates which user group a user is apart of
      */
-    public void updateUserGroupId(int userId, Integer userGroupId);
+    void updateUserGroupId(int userId, Integer userGroupId);
 
     /**
      * Changes all the forceReset values for a given role group (aka YukonGroup).
      */
-    public void updateForceResetByRoleGroupId(int roleGroupId, boolean forceReset);
+    void updateForceResetByRoleGroupId(int roleGroupId, boolean forceReset);
+
+    /** Create a new user */
+    LiteYukonUser create(NewUser user, boolean forceReset);
 }

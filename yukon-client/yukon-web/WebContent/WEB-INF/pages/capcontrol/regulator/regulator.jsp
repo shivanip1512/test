@@ -139,7 +139,7 @@
                         <i:inline key=".emptylist"/>
                     </div>
                     <div class="scroll-md dn js-ivvc-events-holder clear">
-                        <table id="regulator-events" class="has-alerts full-width dashed stacked">
+                        <table id="regulator-events" class="has-alerts full-width dashed stacked striped">
                             <thead></thead>
                             <tfoot></tfoot>
                             <tbody>

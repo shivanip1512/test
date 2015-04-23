@@ -111,9 +111,14 @@
     <entry key="yukon.web.modules.adminSetup.userEditor.required.username">Username is required</entry>
     <entry key="yukon.web.modules.adminSetup.userEditor.unavailable.username">Username is unavailable</entry>
     <entry key="yukon.web.modules.adminSetup.userEditor.password.mismatch">Password fields do not match</entry>
+    <entry key="yukon.web.modules.adminSetup.userEditor.password.required">Password is required</entry>
     <entry key="yukon.web.modules.adminSetup.userEditor.updateSuccessful">User Updated Successfully</entry>
     <entry key="yukon.web.modules.adminSetup.userEditor.passwordUpdateSuccessful">Password Updated Successfully</entry>
     <entry key="yukon.web.modules.adminSetup.userEditor.groupConflict">Could not add user to group(s). The groups this user is already a member of and the new group(s) {0} have conflicting roles.</entry>
+    <entry key="yukon.web.modules.adminSetup.userEditor.delete.confirm.title">Delete User</entry>
+    <entry key="yukon.web.modules.adminSetup.userEditor.delete.confirm.message">Are you sure you want to delete this user?</entry>
+    <entry key="yukon.web.modules.adminSetup.userEditor.delete.success">User {0} delete successfully.</entry>
+    <entry key="yukon.web.modules.adminSetup.userEditor.delete.failed.self">You cannot delete your own user.</entry>
     
     <!-- Groups Editor groups.jsp -->
     <entry key="yukon.web.modules.adminSetup.roleGroups.pageName">Role Groups</entry>

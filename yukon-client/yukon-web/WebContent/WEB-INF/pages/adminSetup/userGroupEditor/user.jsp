@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
@@ -46,7 +47,7 @@
     </div>
     
     <tags:setFormEditMode mode="${mode}"/>
-    <cti:msg2 var="none" key="yukon.web.defaults.none"/>
+    <cti:msg2 var="none" key="yukon.common.none.choice"/>
     
     <div class="column-12-12">
     
@@ -86,7 +87,7 @@
                     </c:choose>
                     
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
-                            <cti:msg2 var="none" key="defaults.none"/>
+                            <cti:msg2 var="none" key="yukon.common.none.choice"/>
                             <tags:selectNameValue nameKey=".userGroup" items="${userGroups}" itemValue="userGroupId" 
                                 itemLabel="userGroupName" path="userGroupId" 
                                 defaultItemLabel="${none}" defaultItemValue=""/>
@@ -104,19 +105,30 @@
                 
                 <div class="page-action-area">
                     <cti:displayForPageEditModes modes="EDIT,CREATE">
+                        
                         <cti:button nameKey="save" name="update" type="submit" classes="primary action"/>
-                        <%-- TODO implement this later <cti:button nameKey="delete" name="delete" type="submit"/> --%>
+                        
+                        <c:set var="disabled" value="${currentUserId == userId}"/>
+                        <cti:button nameKey="delete" name="delete" type="submit" classes="delete js-delete-user"
+                            disabled="${disabled}"/>
+                        <d:confirm on=".js-delete-user" nameKey="delete.confirm"/>
+                        
                         <cti:url var="cancelUrl" value="view">
                             <cti:param name="userId" value="${user.userId}"/>
                         </cti:url>
                         <cti:button nameKey="cancel" href="${cancelUrl}"/>
+                        
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">
+                        
                         <cti:button nameKey="edit" icon="icon-pencil" name="edit" type="submit"/>
+                        
                         <c:if test="${supportsPasswordSet[user.authCategory]}">
                             <cti:button nameKey="changePassword" data-popup="#change-password-popup" icon="icon-key"/>
                         </c:if>
+                        
                         <cti:button nameKey="unlockUser" name="unlockUser" id="unlockUser"  type="submit"/>
+                        
                     </cti:displayForPageEditModes>
                 </div>
             </form:form>

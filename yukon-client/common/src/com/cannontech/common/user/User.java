@@ -1,15 +1,14 @@
-package com.cannontech.web.admin.userGroupEditor.model;
+package com.cannontech.common.user;
 
 import org.apache.commons.lang3.Validate;
 
-import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class User {
     
-    private int userId;
+    private Integer userId;
     private String username;
     private Password password = new Password();
     private AuthenticationCategory authCategory;
@@ -45,11 +44,11 @@ public class User {
         yukonUser.setUserGroupId(userGroupId);
     }
     
-    public int getUserId() {
+    public Integer getUserId() {
         return userId;
     }
     
-    public void setUserId(int userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
     
