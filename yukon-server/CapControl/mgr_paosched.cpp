@@ -96,7 +96,7 @@ void CtiPAOScheduleManager::stop()
         _scheduleThr.interrupt();
         _resetThr.interrupt();
 
-        if ( ! _scheduleThr.timed_join( boost::posix_time::milliseconds( 250 ) ) )
+        if ( ! _scheduleThr.timed_join( boost::posix_time::seconds( 30 ) ) )
         {
             CTILOG_WARN( dout, "Schedule Manager main thread did not shutdown gracefully. "
                                "Attempting a forced shutdown" );
@@ -104,7 +104,7 @@ void CtiPAOScheduleManager::stop()
             TerminateThread( _scheduleThr.native_handle(), EXIT_SUCCESS );
         }
 
-        if ( ! _resetThr.timed_join( boost::posix_time::milliseconds( 250 ) ) )
+        if ( ! _resetThr.timed_join( boost::posix_time::seconds( 30 ) ) )
         {
             CTILOG_WARN( dout, "Schedule Manager reset thread did not shutdown gracefully. "
                                "Attempting a forced shutdown" );

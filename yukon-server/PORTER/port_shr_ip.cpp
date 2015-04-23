@@ -365,6 +365,11 @@ void CtiPortShareIP::inThread()
                 }
             }
         }
+        catch (boost::thread_interrupted) 
+        {
+            CTILOG_DEBUG(dout, thread_name + " thread Interrupted, exiting");
+            break;
+        }
         catch( const StreamConnectionException &ex )
         {
             CTILOG_EXCEPTION_ERROR(dout, ex, getIDString());
@@ -553,6 +558,11 @@ void CtiPortShareIP::outThread()
                 sleep(1000);
             }
         }
+        catch (boost::thread_interrupted) 
+        {
+            CTILOG_DEBUG(dout, thread_name + " thread Interrupted, exiting");
+            break;
+        }
         catch( const StreamConnectionException &ex )
         {
             CTILOG_EXCEPTION_ERROR(dout, ex, getIDString());
@@ -613,22 +623,18 @@ void CtiPortShareIP::shutDown()
 {
     try
     {
+        _outThread.interrupt();
+        _inThread.interrupt();
 
-        if( ! _outThread.timed_join(boost::posix_time::milliseconds(250)) )
+        if( ! _outThread.timed_join(boost::posix_time::seconds(30)) )
         {
-            if( getDebugLevel(DEBUG_THREAD) )
-            {
-                CTILOG_WARN(dout, getIDString() <<" - Port Share OutThread did not shutdown gracefully. Will attempt a forceful shutdown.");
-            }
+            CTILOG_WARN(dout, getIDString() <<" - Port Share OutThread did not shutdown gracefully. Will attempt a forceful shutdown.");
             TerminateThread(_outThread.native_handle(), EXIT_SUCCESS);
         }
 
-        if( ! _inThread.timed_join(boost::posix_time::milliseconds(250)) )
+        if( ! _inThread.timed_join(boost::posix_time::seconds(30)) )
         {
-            if( getDebugLevel(DEBUG_THREAD) )
-            {
-                CTILOG_WARN(dout, getIDString() <<" - Port Share InThread did not shutdown gracefully. Will attempt a forceful shutdown.");
-            }
+            CTILOG_WARN(dout, getIDString() <<" - Port Share InThread did not shutdown gracefully. Will attempt a forceful shutdown.");
             TerminateThread(_inThread.native_handle(), EXIT_SUCCESS);
         }
     }

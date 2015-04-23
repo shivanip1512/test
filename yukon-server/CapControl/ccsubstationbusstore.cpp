@@ -130,7 +130,7 @@ void CtiCCSubstationBusStore::stopThreads()
         _amfmThr.interrupt();
         _opStatThr.interrupt();
 
-        if ( ! _resetThr.timed_join( boost::posix_time::milliseconds( 250 ) ) )
+        if ( ! _resetThr.timed_join( boost::posix_time::seconds( 30 ) ) )
         {
             CTILOG_WARN( dout, "SubstationBusStore reset thread did not shutdown gracefully. "
                                "Attempting a forced shutdown" );
@@ -138,7 +138,7 @@ void CtiCCSubstationBusStore::stopThreads()
             TerminateThread( _resetThr.native_handle(), EXIT_SUCCESS );
         }
 
-        if ( ! _amfmThr.timed_join( boost::posix_time::milliseconds( 250 ) ) )
+        if ( ! _amfmThr.timed_join( boost::posix_time::seconds( 30 ) ) )
         {
             CTILOG_WARN( dout, "SubstationBusStore AMFM thread did not shutdown gracefully. "
                                "Attempting a forced shutdown" );
@@ -146,7 +146,7 @@ void CtiCCSubstationBusStore::stopThreads()
             TerminateThread( _amfmThr.native_handle(), EXIT_SUCCESS );
         }
 
-        if ( ! _opStatThr.timed_join( boost::posix_time::milliseconds( 250 ) ) )
+        if ( ! _opStatThr.timed_join( boost::posix_time::seconds( 30 ) ) )
         {
             CTILOG_WARN( dout, "SubstationBusStore OpStats thread did not shutdown gracefully. "
                                "Attempting a forced shutdown" );

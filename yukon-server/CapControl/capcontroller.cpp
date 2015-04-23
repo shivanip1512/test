@@ -169,7 +169,7 @@ void CtiCapController::stop()
         _messageSenderThread.interrupt();
         _incomingMessageProcessorThread.interrupt();
 
-        if ( ! _substationBusThread.timed_join( boost::posix_time::milliseconds( 250 ) ) )
+        if ( ! _substationBusThread.timed_join( boost::posix_time::seconds( 30 ) ) )
         {
             CTILOG_WARN( dout, "CtiCapController substation bus thread did not shutdown gracefully. "
                                "Attempting a forced shutdown" );
@@ -177,7 +177,7 @@ void CtiCapController::stop()
             TerminateThread( _substationBusThread.native_handle(), EXIT_SUCCESS );
         }
 
-        if ( ! _outClientMsgThread.timed_join( boost::posix_time::milliseconds( 250 ) ) )
+        if ( ! _outClientMsgThread.timed_join( boost::posix_time::seconds( 30 ) ) )
         {
             CTILOG_WARN( dout, "CtiCapController OutClientMsg thread did not shutdown gracefully. "
                                "Attempting a forced shutdown" );
@@ -185,7 +185,7 @@ void CtiCapController::stop()
             TerminateThread( _outClientMsgThread.native_handle(), EXIT_SUCCESS );
         }
 
-        if ( ! _messageSenderThread.timed_join( boost::posix_time::milliseconds( 250 ) ) )
+        if ( ! _messageSenderThread.timed_join( boost::posix_time::seconds( 30 ) ) )
         {
             CTILOG_WARN( dout, "CtiCapController message sender thread did not shutdown gracefully. "
                                "Attempting a forced shutdown" );
@@ -193,7 +193,7 @@ void CtiCapController::stop()
             TerminateThread( _messageSenderThread.native_handle(), EXIT_SUCCESS );
         }
 
-        if ( ! _incomingMessageProcessorThread.timed_join( boost::posix_time::milliseconds( 250 ) ) )
+        if ( ! _incomingMessageProcessorThread.timed_join( boost::posix_time::seconds( 30 ) ) )
         {
             CTILOG_WARN( dout, "CtiCapController incoming message thread did not shutdown gracefully. "
                                "Attempting a forced shutdown" );

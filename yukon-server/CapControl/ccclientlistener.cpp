@@ -79,6 +79,9 @@ void CtiCCClientListener::stop()
 
     _doquit = true;
 
+    _listenerThr.interrupt();
+    _checkThr.interrupt();
+
     CTILOG_INFO(dout, "Closing all client connections.");
 
     // wait for the threads to stop
@@ -237,6 +240,10 @@ void CtiCCClientListener::_listen()
             threadStatus.monitorCheck();
         }
     }
+    catch (boost::thread_interrupted) 
+    {
+        CTILOG_DEBUG(dout, "Client Listener listen thread Interrupted, exiting");
+    }
     catch(...)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
@@ -279,6 +286,11 @@ void CtiCCClientListener::_check()
                 }
             }
         }
+        catch (boost::thread_interrupted) 
+        {
+            CTILOG_DEBUG(dout, "Client Listener check thread Interrupted, exiting");
+            break;
+        } 
         catch(...)
         {
             CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);

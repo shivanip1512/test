@@ -82,6 +82,9 @@ void CtiLMClientListener::stop()
 
     CTILOG_INFO(dout, "Closing all client connections.");
 
+    _listenerthr.interrupt();
+    _checkthr.interrupt();
+
     if ( ! _listenerthr.timed_join( boost::posix_time::seconds( 60 ) ) )
     {
         CTILOG_WARN( dout, "Client Listener listen thread did not shutdown gracefully. "
@@ -220,7 +223,11 @@ void CtiLMClientListener::_listen()
             }
         }
     }
-    catch(...)
+    catch (boost::thread_interrupted) 
+    {
+        CTILOG_DEBUG(dout, "LM Client Listener listen thread Interrupted, exiting");
+    } 
+    catch (...) 
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
@@ -265,6 +272,11 @@ void CtiLMClientListener::_check()
                 }
             }
         }
+        catch (boost::thread_interrupted) 
+        {
+            CTILOG_DEBUG(dout, "LM Client Listener check thread Interrupted, exiting");
+            break;
+        } 
         catch(...)
         {
             CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
