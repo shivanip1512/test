@@ -1,7 +1,9 @@
 package com.cannontech.dr.rfn.message.unicast;
 
 import java.io.Serializable;
-import java.util.Arrays;
+import java.nio.charset.StandardCharsets;
+
+import org.apache.commons.codec.binary.Hex;
 
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
@@ -99,15 +101,15 @@ public class RfnExpressComUnicastRequest implements RfnIdentifyingMessage, Seria
     @Override
     public String toString() {
         return String
-            .format("RfnExpressComUnicastRequest [messageId=%s, groupId=%s, rfnIdentifier=%s, messagePriority=%s, rfnMessageClass=%s, expirationDuration=%s, payload=%s, responseExpected=%s]",
+            .format("RfnExpressComUnicastRequest [messageId=%s, groupId=%s, rfnIdentifier=%s, messagePriority=%s, rfnMessageClass=%s, expirationDuration=%s, payload=[0x%s <%s>], responseExpected=%s]",
                     messageId,
                     groupId,
                     rfnIdentifier,
                     messagePriority,
                     rfnMessageClass,
                     expirationDuration,
-                    Arrays.toString(payload),
+                    Hex.encodeHexString(payload),
+                    new String(payload, StandardCharsets.US_ASCII),
                     responseExpected);
     }
-    
 }

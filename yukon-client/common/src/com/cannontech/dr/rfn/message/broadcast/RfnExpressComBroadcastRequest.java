@@ -1,10 +1,12 @@
 package com.cannontech.dr.rfn.message.broadcast;
 
 import java.io.Serializable;
-import java.util.Arrays;
+import java.nio.charset.StandardCharsets;
 
 import javax.jms.JMSException;
 import javax.jms.StreamMessage;
+
+import org.apache.commons.codec.binary.Hex;
 
 import com.cannontech.common.rfn.message.RfnMessageClass;
 
@@ -90,13 +92,12 @@ public class RfnExpressComBroadcastRequest implements Serializable {
     @Override
     public String toString() {
         return String
-            .format("RfnExpressComBroadcastRequest [messageId=%s, messagePriority=%s, rfnMessageClass=%s, expirationDuration=%s, payload=%s]",
+            .format("RfnExpressComBroadcastRequest [messageId=%s, messagePriority=%s, rfnMessageClass=%s, expirationDuration=%s, payload=[0x%s <%s>]]",
                     messageId,
                     messagePriority,
                     rfnMessageClass,
                     expirationDuration,
-                    Arrays.toString(payload));
+                    Hex.encodeHexString(payload),
+                    new String(payload, StandardCharsets.US_ASCII));
     }
-
-    
 }
