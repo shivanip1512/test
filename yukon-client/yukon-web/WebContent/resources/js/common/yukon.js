@@ -655,7 +655,97 @@ yukon.ui = (function () {
                     $(this).find('[data-row-tooltip]').tipsy('hide');
                 });
             }
+            
+            /**
+             * Tooltips
+             * 
+             * Elements with attribute [data-yukon-tooltip] will have html tooltips.
+             * The value of the attribute [data-yukon-tooltip] is a selector for the
+             * element to serve as the tooltip body.
+             * If the tooltip has class js-sticky-tooltip, clicking the item
+             * will cause the tooltip to stay visible until the next click.
+             * 
+             */
+            
+            /** 
+             * Move the tooltip to the body of the page, then position it below the 
+             *  @param {Object} tooltip - tooltip item to be positioned.
+             *  @param {Object} trigger - element containing the dropdown menu
+             */
+            var _positionTooltip = function (tooltip, trigger) {
                 
+                var windowLeft = $(window).scrollLeft();
+                var windowWidth = $(window).width();
+                var offset = trigger.offset();
+                
+                tooltip.appendTo('body');
+                
+                tooltip.removeAttr('style')
+                .addClass('yukon-tooltip');
+                
+                var width = tooltip.outerWidth();
+                
+                tooltip.css({
+                    top: offset.top + trigger.height() + 3,
+                    left: offset.left
+                });
+
+                tooltip.show();
+
+                if (offset.left + width > windowLeft + windowWidth ) {
+                    // The tooltip is overflowing off the right edge of the screen.
+                    // Make its right edge touch the edge of the screen.
+                    tooltip.css({
+                        left: (windowLeft + windowWidth) - width
+                    });
+                }
+            };
+            
+            /** Handle clicks on menu triggers */
+            $(document).on('mouseover', '[data-yukon-tooltip]', function(ev) {
+                
+                var trigger = $(this);
+                var tooltip = $(trigger.data('yukonTooltip'));
+                
+                _positionTooltip(tooltip, trigger);
+                
+                trigger.off('mouseout.yukon.tooltip remove.yukon.tooltip')
+                .on('mouseout.yukon.tooltip remove.yukon.tooltip', function () {
+                    
+                    $('.yukon-tooltip:not(.yukon-tooltip-open)').hide();
+                });
+            });
+            
+            /** Handle clicks on sticky tooltips */
+            $(document).on('click', '[data-yukon-tooltip]', function(ev) {
+                
+                var trigger = $(this);
+                var tooltip = $(trigger.data('yukonTooltip'));
+                
+                if (!tooltip.is('.js-sticky-tooltip')) return;
+                
+                $('.yukon-tooltip').hide();
+                
+                tooltip.addClass('yukon-tooltip-open');
+                
+                _positionTooltip(tooltip, trigger);
+            });
+
+            /** Close all tooltips on click except when clicking a tooltip */
+            $(document).click(function (ev) {
+                if ($(ev.target).closest('.yukon-tooltip, [data-yukon-tooltip]').length === 0) {
+                    /* Click was not inside a tooltip or trigger. Hide all tooltips. */
+                    $('.yukon-tooltip').removeClass('yukon-tooltip-open').hide();
+                }
+            });
+            
+            /** Close all tooltips when esc key is hit */
+            $(document).keyup(function (ev) {
+                if (ev.which == yg.keys.escape) {
+                    $('.yukon-tooltip').removeClass('yukon-tooltip-open').hide();
+                }
+            });
+            
             /** Add placeholder functionality if needed. */
             if (!Modernizr.input.placeholder) $('input, textarea').placeholder();
             
@@ -1841,10 +1931,12 @@ yukon.ui = (function () {
                 
                 var percent = yukon.percent(event.timestamp - begin, end - begin, 5);
                 
+                var icon = $('<i class="M0 icon ' + (event.icon || 'icon-blank') + '"/>');
+                
                 var span = $('<span class="timeline-event">')
                 .toggleClass('timeline-icon', event.icon !== undefined)
                 .css({'left': 'calc(' + percent + ' - 8px)' })
-                .append('<i class="M0 icon ' + (event.icon || 'icon-blank') + '"/>');
+                .append(icon);
                 
                 var prevEvent = container.find('.timeline-event:last');
                 
@@ -1860,7 +1952,7 @@ yukon.ui = (function () {
                     prevEvent.addClass('multi')
                     .data('count', prevEvent.data('count') + 1);
                     
-                    prevEvent.find('.icon').remove();
+                    prevEvent.find('> .icon').remove();
                     
                     if (prevEvent.find('.timeline-event-count').length === 0) {
                         prevEvent.append('<span class="timeline-event-count">');
@@ -1873,31 +1965,37 @@ yukon.ui = (function () {
                     
                 } else {
                     
-                    span.data('count', 1)
-                    .data('tooltip', $('<ul class="simple-list">'));
+                    var tooltipTemplate = $('<ul class="dn simple-list">')
+                    .addClass('js-event-tooltip js-sticky-tooltip')
+                    .attr('data-event-id', id);
                     
-                    span.tipsy({
-                        delayIn: 150,
-                        fade: true,
-                        html: true,
-                        opacity: 1.0,
-                        title: function () {
-                            var tip = $(this).data('tooltip').wrap('<div>').parent();
-                            return tip.html();
-                        }
-                    });
+                    span.data('count', 1)
+                    .append(tooltipTemplate)
+                    .attr('data-yukon-tooltip', '.js-event-tooltip[data-event-id="' + id + '"]');
                     
                     tooltipped = span;
                 }
                 
-                var tooltip = tooltipped.data('tooltip');
+                var tooltip = tooltipped.find('.js-event-tooltip');
                 
                 var timeText = moment(event.timestamp).tz(yg.timezone).format(yg.formats.date.full);
                 
                 var message = event.message ? ' - ' + event.message : '';
                 var itemTooltip = $('<li>').html(timeText + message);
+                itemTooltip.prepend(icon.clone());
                 tooltip.append(itemTooltip);
-                tooltipped.data('tooltip', tooltip);
+                
+                var tooltipIcons = tooltip.find('.icon');
+                
+                /* 
+                 * If there is at least 1 'real' icon, show them with a margin.
+                 * If all icons are icon-blank, hide them
+                 */
+                if (tooltipIcons.is(':not(.icon-blank)')) {
+                    tooltipIcons.removeClass('dn M0');
+                } else {
+                    tooltipIcons.addClass('dn M0');
+                }
            });
             
         },
@@ -1906,7 +2004,6 @@ yukon.ui = (function () {
             
             var container = this.element;
             
-            $('.tipsy').remove();
             container.empty();
             
             container.append('<span class="timeline-axis">');
