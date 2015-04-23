@@ -32,6 +32,8 @@ public interface ArchiveDataAnalysisDao {
     
     /**
      * Retrieves all slot values for filtered (based on paging parameters) devices in a given analysis.
+     * When all the devices have to be fetched for an analysis id then paging and sorting
+     * should be passed as null
      * Returned as a list of DeviceArchiveData, each of which contains all slot values for a single device.
      * Use to collect results after analysis is complete.
      */
