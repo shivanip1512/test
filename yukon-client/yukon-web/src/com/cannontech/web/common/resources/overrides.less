@@ -14,6 +14,7 @@
 @primary-button-color-border: #666;
 @primary-button-color-hover: #888;
 
+@border-radius: 2px;
 @form-control-height: 26px;
 
 
@@ -136,7 +137,7 @@ ul.dynatree-container {
     border: none;
     
     .dynatree-title { 
-        border-radius: 2px;
+        border-radius: @border-radius;
         border: 1px solid white;
     }
 }
@@ -226,7 +227,7 @@ span.dynatree-folder a {
 .ui-widget {
     
     border: 1px solid #ccc;
-    border-radius: 2px;
+    border-radius: @border-radius;
     padding: 0;
     font: inherit;
     
@@ -248,7 +249,7 @@ span.dynatree-folder a {
     .ui-widget-header {
         padding: 10px;
         border: none;
-        border-radius: 2px 2px 0 0;
+        border-radius: @border-radius @border-radius 0 0;
         text-shadow: 1px 1px 0 white;
         background: whitesmoke;
         color: @font-color;
@@ -322,7 +323,7 @@ span.dynatree-folder a {
             button {
                 background: #F3F3F3;
                 border: solid 1px #bbb;
-                border-radius: 2px;
+                border-radius: @border-radius;
                 color: #444;
                 display: inline-block;
                 float: left;
@@ -372,7 +373,7 @@ span.dynatree-folder a {
             background: whitesmoke; 
             border: 1px solid #ccc;
             border-bottom-width: 0;
-            border-radius: 2px 2px 0 0;
+            border-radius: @border-radius @border-radius 0 0;
             margin: 0 -1px 0 0;
             
             &.ui-tabs-active { background: #fff; }
@@ -447,7 +448,7 @@ span.dynatree-folder a {
     }
 }
 
-.ui-tooltip { border-radius: 2px; }
+.ui-tooltip { border-radius: @border-radius; }
 .ui-menu .ui-menu-item a.ui-state-focus,
 .ui-menu .ui-menu-item a.ui-state-active { background-color: #eee; }
 .ui-progressbar {
@@ -515,7 +516,7 @@ span.dynatree-folder a {
     background: #fff;
     border: 1px solid #d9d9d9;
     border-top: 1px solid #c0c0c0;
-    border-radius: 2px;
+    border-radius: @border-radius;
     transition: border 0.1s ease-in-out, background-color 0.1s ease-in-out;
     background-image: url('../Icons/bullet_arrow_down.png');
     background-position: right;
@@ -549,7 +550,7 @@ span.dynatree-folder a {
     background: #fff;
     border: 1px solid #d9d9d9;
     border-top: 1px solid #c0c0c0;
-    border-radius: 2px;
+    border-radius: @border-radius;
     margin: 0;
     transition: border .1s ease-in-out,background-color .1s ease-in-out;
 }
@@ -584,7 +585,7 @@ span.dynatree-folder a {
     .ui-datepicker-buttonpane button {
         background: #F3F3F3;
         border: solid 1px #bbb;
-        border-radius: 2px;
+        border-radius: @border-radius;
         box-shadow: inset 0px 0px 0px #fff,0 1px 0 rgba(0,0,0,0.07);
         color: #444;
         font: bold 12px Helvetica, Arial, sans-serif;
@@ -665,7 +666,7 @@ span.dynatree-folder a {
         
         /* days */
         .ui-state-default {
-            border-radius: 2px;
+            border-radius: @border-radius;
             border: 1px solid rgba(0,0,0,0);
             color: @font-color;
             background: white;
