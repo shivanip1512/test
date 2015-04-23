@@ -29,7 +29,7 @@
                             <c:set var="changeId" value="${p.reviewPoint.changeId}"/>
                             <tr>
                                 <td>
-                                    <c:forEach var="rphTag" items="${p.reviewPoint.rphTag}">
+                                    <c:forEach var="rphTag" items="${p.reviewPoint.rphTags}">
                                         <cti:icon icon="${rphTag.iconClass}" classes="fn"/>
                                     </c:forEach> 
                                 </td>

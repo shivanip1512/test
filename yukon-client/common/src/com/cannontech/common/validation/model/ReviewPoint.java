@@ -10,7 +10,7 @@ import com.google.common.collect.Sets;
 public class ReviewPoint implements PointValueHolder {
 
 	private long changeId;
-	private Set<RphTag> rphTag;
+	private Set<RphTag> rphTags;
 	private DisplayablePao displayablePao;
 	private PointValueHolder pointValue;
 	
@@ -21,22 +21,22 @@ public class ReviewPoint implements PointValueHolder {
 		this.changeId = changeId;
 	}
 
-    public Set<RphTag> getRphTag() {
-        if (this.rphTag == null) {
-            this.rphTag = Sets.newHashSet();
+    public Set<RphTag> getRphTags() {
+        if (this.rphTags == null) {
+            this.rphTags = Sets.newHashSet();
         }
-        return rphTag;
+        return rphTags;
     }
 
     public void addRphTag(RphTag rphTag) {
-        if (this.rphTag == null) {
-            this.rphTag = Sets.newHashSet();
+        if (this.rphTags == null) {
+            this.rphTags = Sets.newHashSet();
         }
-        this.rphTag.add(rphTag);
+        this.rphTags.add(rphTag);
     }
     
-    public void setRphTag(Set<RphTag> rphTag) {
-        this.rphTag = rphTag;
+    public void setRphTags(Set<RphTag> rphTag) {
+        this.rphTags = rphTag;
     }
 
 	public DisplayablePao getDisplayablePao() {
