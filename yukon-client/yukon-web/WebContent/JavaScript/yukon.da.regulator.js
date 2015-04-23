@@ -115,7 +115,6 @@ yukon.da.regulator = (function () {
             if (toAdd.length) {
                 timeline.timeline(options);
                 timeline.timeline('addEvents', toAdd);
-                timeline.timeline('draw');
             }
             
             var hasEvents = body.find('[data-event-id]').length > 0;
