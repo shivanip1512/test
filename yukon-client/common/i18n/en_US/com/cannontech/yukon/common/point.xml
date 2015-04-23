@@ -41,7 +41,6 @@
           Therefore, changing these values will break those references. -->
     <entry key="yukon.common.attribute.builtInAttribute.BLINK_COUNT">Blink Count</entry>
     <entry key="yukon.common.attribute.builtInAttribute.COMM_STATUS">Communication Status</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.CONNECTION_STATUS">Connection Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CONTROL_POINT">Control Point</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NEUTRAL_CURRENT">Current (Neutral)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CURRENT">Current</entry>

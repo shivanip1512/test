@@ -157,7 +157,6 @@ bool Attribute::operator<( const Attribute & rhs ) const
 const Attribute Attribute::Unknown                                          = Attribute( "UNKNOWN" );
 const Attribute Attribute::BlinkCount                                       = Attribute( "BLINK_COUNT" );
 const Attribute Attribute::CommunicationStatus                              = Attribute( "COMM_STATUS" );
-const Attribute Attribute::ConnectionStatus                                 = Attribute( "CONNECTION_STATUS" );
 const Attribute Attribute::ControlPoint                                     = Attribute( "CONTROL_POINT" );
 const Attribute Attribute::ControlStatus                                    = Attribute( "CONTROL_STATUS" );
 const Attribute Attribute::CurrentNeutral                                   = Attribute( "NEUTRAL_CURRENT" );

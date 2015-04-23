@@ -2775,6 +2775,11 @@
                 <pointRef name="Zero Usage (24 Hours)" />
                 <pointRef name="Reverse Power" />
             </command>
+            <command id="READ_PHASE_DETECT">
+                <name>Detect Phase</name>
+                <cmd text="getconfig phasedetect read"/>
+                <pointRef name="Phase"/>
+            </command>
         </commands>
 
         <attributes>
@@ -10534,6 +10539,13 @@
                 <stategroup value="TwoStateStatus" />
             </point>
         </points>
+        <commands>
+            <command id="INTEGRITY_SCAN">
+                <name>Integrity Scan</name>
+                <cmd text="scan integrity"/>
+                <pointRef name="Capacitor Bank State"/>
+            </command>
+        </commands>
         <attributes>
             <attribute name="CONTROL_POINT">
                 <basicLookup point="Capacitor Bank State" />
@@ -11066,6 +11078,17 @@
                 <stategroup value="TrueFalse" />
             </point>
         </points>
+        <commands>
+            <command id="INTEGRITY_SCAN">
+                <name>Integrity Scan</name>
+                <cmd text="scan integrity"/>
+                <pointRef name="Capacitor Bank State"/>
+                <pointRef name="Firmware Version"/>
+                <pointRef name="IP Address"/>
+                <pointRef name="Neutral Current Sensor"/>
+                <pointRef name="UDP Port"/>
+            </command>
+        </commands>
         <attributes>
             <attribute name="FIRMWARE_VERSION">
                 <basicLookup point="Firmware Version" />
@@ -11437,6 +11460,19 @@
                 <decimalplaces value="0" />
             </point>
         </points>
+        <commands>
+            <command id="INTEGRITY_SCAN">
+                <name>Integrity Scan</name>
+                <cmd text="scan integrity"/>
+                <pointRef name="Capacitor Bank State"/>
+                <pointRef name="Firmware Version"/>
+                <pointRef name="Serial Number"/>
+                <pointRef name="Last Control Reason"/>
+                <pointRef name="Ignored Control Reason"/>
+                <pointRef name="IP Address"/>
+                <pointRef name="UDP Port"/>
+            </command>
+        </commands>
         <attributes>
             <attribute name="FIRMWARE_VERSION">
                 <basicLookup point="Firmware Version" />

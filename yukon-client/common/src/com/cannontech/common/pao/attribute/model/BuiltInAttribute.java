@@ -26,24 +26,23 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     // Any changes/additions here need to be reflected there as well.
     
     BLINK_COUNT("Blink Count", AttributeGroup.BLINK_AND_OUTAGE),
-    COMM_STATUS("Communication Status", AttributeGroup.STATUS),
-    CONNECTION_STATUS("Connection Status", AttributeGroup.STATUS),
+    COMM_STATUS("Communication Status", AttributeGroup.STATUS, false),   // updated directly by port activity only
     CONTROL_POINT("Control Point", AttributeGroup.STATUS),
     CONTROL_STATUS("Control Status", AttributeGroup.STATUS),
     NEUTRAL_CURRENT("Current (Neutral)", AttributeGroup.CURRENT),
-    CURRENT("Current", AttributeGroup.CURRENT),
+    CURRENT("Current", AttributeGroup.CURRENT, false),   //440 types only
     CURRENT_PHASE_A("Current (Phase A)", AttributeGroup.CURRENT),
     CURRENT_PHASE_B("Current (Phase B)", AttributeGroup.CURRENT),
     CURRENT_PHASE_C("Current (Phase C)", AttributeGroup.CURRENT),
-    CURRENT_ANGLE_PHASE_A("Current Angle (Phase A)", AttributeGroup.CURRENT),
-    CURRENT_ANGLE_PHASE_B("Current Angle (Phase B)", AttributeGroup.CURRENT),
-    CURRENT_ANGLE_PHASE_C("Current Angle (Phase C)", AttributeGroup.CURRENT),
-    CURRENT_WITHOUT_VOLTAGE_FLAG("Current Without Voltage", AttributeGroup.STATUS),
+    CURRENT_ANGLE_PHASE_A("Current Angle (Phase A)", AttributeGroup.CURRENT, false),   //440 types only
+    CURRENT_ANGLE_PHASE_B("Current Angle (Phase B)", AttributeGroup.CURRENT, false),   //440 types only
+    CURRENT_ANGLE_PHASE_C("Current Angle (Phase C)", AttributeGroup.CURRENT, false),   //440 types only
+    CURRENT_WITHOUT_VOLTAGE_FLAG("Current Without Voltage", AttributeGroup.STATUS, false),   //440 types only
     DEMAND("Demand", AttributeGroup.DEMAND),
     DEMAND_PEAK_KVA_COIN("Demand at Peak kVa Coincidental", AttributeGroup.DEMAND),
     DISCONNECT_STATUS("Disconnect Status", AttributeGroup.STATUS),
-    FAULT_STATUS("Fault Status", AttributeGroup.STATUS),
-    FORWARD_INDUCTIVE_KVARH("Forward Inductive kVArh", AttributeGroup.REACTIVE),
+    FAULT_STATUS("Fault Status", AttributeGroup.STATUS, false),
+    FORWARD_INDUCTIVE_KVARH("Forward Inductive kVArh", AttributeGroup.REACTIVE, false),   //440 types only
     GENERAL_ALARM_FLAG("General Alarm Flag", AttributeGroup.STATUS),
     IED_DEMAND_RESET_COUNT("IED Demand Reset Count", AttributeGroup.DEMAND),
     // Treating "kVAh" as "Delivered kVAh". May need to created separate attributes in the future.
@@ -59,21 +58,21 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     KVARH_RATE_B("kVArh Rate B", AttributeGroup.REACTIVE),
     KVARH_RATE_C("kVArh Rate C", AttributeGroup.REACTIVE),
     KVARH_RATE_D("kVArh Rate D", AttributeGroup.REACTIVE),
-    LM_GROUP_STATUS("LM Group Status", AttributeGroup.STATUS),
-    LOAD_PROFILE("Load Profile", AttributeGroup.PROFILE),
-    LOAD_SIDE_VOLTAGE_DETECTED_FLAG("Load Side Voltage Detected", AttributeGroup.STATUS),
-    METER_BOX_COVER_REMOVAL_FLAG("Meter Box Cover Removal", AttributeGroup.STATUS),
+    LM_GROUP_STATUS("LM Group Status", AttributeGroup.STATUS, false),
+    LOAD_PROFILE("Load Profile", AttributeGroup.PROFILE, false),    //require extra input, not "attribute" based readable
+    LOAD_SIDE_VOLTAGE_DETECTED_FLAG("Load Side Voltage Detected", AttributeGroup.STATUS, false),   //440 types only
+    METER_BOX_COVER_REMOVAL_FLAG("Meter Box Cover Removal", AttributeGroup.STATUS, false),   //440 types only
     MAXIMUM_VOLTAGE("Maximum Voltage", AttributeGroup.VOLTAGE),
     MAXIMUM_VOLTAGE_FROZEN("Maximum Voltage Frozen", AttributeGroup.VOLTAGE),
     MINIMUM_VOLTAGE("Minimum Voltage", AttributeGroup.VOLTAGE),
     MINIMUM_VOLTAGE_FROZEN("Minimum Voltage Frozen", AttributeGroup.VOLTAGE),
     OUTAGE_LOG("Outage Log", AttributeGroup.BLINK_AND_OUTAGE),
     OUTAGE_STATUS("Outage Status", AttributeGroup.STATUS),
-    OUT_OF_VOLTAGE_FLAG("Out of Voltage", AttributeGroup.STATUS),
-    VOLTAGE_OUT_OF_LIMITS_FLAG("Voltage Out of Limits", AttributeGroup.STATUS),
-    OVER_VOLTAGE("Over Voltage", AttributeGroup.RFN_HARDWARE_EVENT),
-    OVER_VOLTAGE_MEASURED("Over Voltage Measured", AttributeGroup.RFN_HARDWARE_EVENT),
-    OVER_VOLTAGE_THRESHOLD("Over Voltage Threshold", AttributeGroup.RFN_HARDWARE_EVENT),
+    OUT_OF_VOLTAGE_FLAG("Out of Voltage", AttributeGroup.STATUS, false),   //440 types only
+    VOLTAGE_OUT_OF_LIMITS_FLAG("Voltage Out of Limits", AttributeGroup.STATUS, false),   //440 types only
+    OVER_VOLTAGE("Over Voltage", AttributeGroup.RFN_HARDWARE_EVENT, false),
+    OVER_VOLTAGE_MEASURED("Over Voltage Measured", AttributeGroup.RFN_HARDWARE_EVENT, false),
+    OVER_VOLTAGE_THRESHOLD("Over Voltage Threshold", AttributeGroup.RFN_HARDWARE_EVENT, false),
     PEAK_DEMAND("Peak Demand", AttributeGroup.DEMAND),
     PEAK_DEMAND_FROZEN("Peak Demand Frozen", AttributeGroup.DEMAND),
     PEAK_DEMAND_RATE_A("Peak Demand Rate A", AttributeGroup.DEMAND),
@@ -106,10 +105,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     POWER_FACTOR_PHASE_B("Power Factor (Phase B)", AttributeGroup.REACTIVE),
     POWER_FACTOR_PHASE_C("Power Factor (Phase C)", AttributeGroup.REACTIVE),
     POWER_FAIL_FLAG("Power Fail Flag", AttributeGroup.STATUS),
-    PROFILE_CHANNEL_2("Profile Channel 2", AttributeGroup.PROFILE),
-    PROFILE_CHANNEL_3("Profile Channel 3", AttributeGroup.PROFILE),
+    PROFILE_CHANNEL_2("Profile Channel 2", AttributeGroup.PROFILE, false),    //require extra input, not "attribute" based readable
+    PROFILE_CHANNEL_3("Profile Channel 3", AttributeGroup.PROFILE, false),    //require extra input, not "attribute" based readable
     RECORDING_INTERVAL("Recording Interval", AttributeGroup.OTHER),
-    HUMIDITY("Relative Humidity", AttributeGroup.OTHER),
+    HUMIDITY("Relative Humidity", AttributeGroup.OTHER, false),  //timer pulled data
     RELAY_1_LOAD_SIZE("Relay 1 kW Load Size", AttributeGroup.RELAY),
     RELAY_1_REMAINING_CONTROL("Relay 1 Remaining Control Time", AttributeGroup.RELAY),
     RELAY_1_RUN_TIME_DATA_LOG("Relay 1 Run Time", AttributeGroup.RELAY),
@@ -126,18 +125,18 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     RELAY_4_RUN_TIME_DATA_LOG("Relay 4 Run Time", AttributeGroup.RELAY),
     RELAY_4_SHED_TIME_DATA_LOG("Relay 4 Shed Time", AttributeGroup.RELAY),
     REPORTING_INTERVAL("Reporting Interval", AttributeGroup.OTHER),
-    REVERSE_INDUCTIVE_KVARH("Reverse Inductive kVArh", AttributeGroup.REACTIVE),
+    REVERSE_INDUCTIVE_KVARH("Reverse Inductive kVArh", AttributeGroup.REACTIVE, false),   //440 types only
     REVERSE_POWER_FLAG("Reverse Power Flag", AttributeGroup.STATUS),
-    RF_DEMAND_RESET_STATUS("RF Demand Reset Status", AttributeGroup.STATUS),
+    RF_DEMAND_RESET_STATUS("RF Demand Reset Status", AttributeGroup.STATUS, false),
     SERVICE_STATUS("Service Status", AttributeGroup.STATUS),
     TAMPER_FLAG("Tamper Flag", AttributeGroup.STATUS),
-    TEMPERATURE("Temperature", AttributeGroup.OTHER),
-    TEMPERATURE_DEVICE("Temperature of Device", AttributeGroup.RFN_HARDWARE_EVENT),
+    TEMPERATURE("Temperature", AttributeGroup.OTHER, false), //timer pulled data
+    TEMPERATURE_DEVICE("Temperature of Device", AttributeGroup.RFN_HARDWARE_EVENT, false),
     TOTAL_LUF_COUNT("Total LUF Event Count", AttributeGroup.OTHER),
     TOTAL_LUV_COUNT("Total LUV Event Count", AttributeGroup.OTHER),
-    UNDER_VOLTAGE("Under Voltage", AttributeGroup.RFN_HARDWARE_EVENT),
-    UNDER_VOLTAGE_MEASURED("Under Voltage Measured", AttributeGroup.RFN_HARDWARE_EVENT),
-    UNDER_VOLTAGE_THRESHOLD("Under Voltage Threshold", AttributeGroup.RFN_HARDWARE_EVENT),
+    UNDER_VOLTAGE("Under Voltage", AttributeGroup.RFN_HARDWARE_EVENT, false),
+    UNDER_VOLTAGE_MEASURED("Under Voltage Measured", AttributeGroup.RFN_HARDWARE_EVENT, false),
+    UNDER_VOLTAGE_THRESHOLD("Under Voltage Threshold", AttributeGroup.RFN_HARDWARE_EVENT, false),
     USAGE("Usage Reading", AttributeGroup.USAGE),
     USAGE_FROZEN("Usage Frozen", AttributeGroup.USAGE),
     USAGE_RATE_A("Usage Rate A", AttributeGroup.USAGE),
@@ -145,16 +144,16 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     USAGE_RATE_C("Usage Rate C", AttributeGroup.USAGE),
     USAGE_RATE_D("Usage Rate D", AttributeGroup.USAGE),
     USAGE_RATE_E("Usage Rate E", AttributeGroup.USAGE),
-    USAGE_WATER("Water Usage Reading", AttributeGroup.USAGE),
+    USAGE_WATER("Water Usage Reading", AttributeGroup.USAGE, false),    //water not readable
     VOLTAGE("Voltage", AttributeGroup.VOLTAGE),
     VOLTAGE_PHASE_A("Voltage (Phase A)", AttributeGroup.VOLTAGE),
     VOLTAGE_PHASE_B("Voltage (Phase B)", AttributeGroup.VOLTAGE),
     VOLTAGE_PHASE_C("Voltage (Phase C)", AttributeGroup.VOLTAGE),
-    VOLTAGE_PROFILE("Voltage Profile", AttributeGroup.PROFILE),
-    WATT_HOUR_PULSE_FAILURE("Watt-Hour Pulse Failure", AttributeGroup.RFN_HARDWARE_EVENT),
+    VOLTAGE_PROFILE("Voltage Profile", AttributeGroup.PROFILE, false),    //require extra input, not "attribute" based readable
+    WATT_HOUR_PULSE_FAILURE("Watt-Hour Pulse Failure", AttributeGroup.RFN_HARDWARE_EVENT, false),
     ZERO_USAGE_FLAG("Zero Usage Flag", AttributeGroup.STATUS),
-    ZIGBEE_LINK_STATUS("ZigBee Link Status", AttributeGroup.STATUS),
-    TERMINAL_BLOCK_COVER_REMOVAL_FLAG("Terminal Block Cover Removal", AttributeGroup.STATUS),
+    ZIGBEE_LINK_STATUS("ZigBee Link Status", AttributeGroup.STATUS, false),
+    TERMINAL_BLOCK_COVER_REMOVAL_FLAG("Terminal Block Cover Removal", AttributeGroup.STATUS, false),   //440 types only
     INDOOR_TEMPERATURE("Indoor Temperature", AttributeGroup.OTHER),
     OUTDOOR_TEMPERATURE("Outdoor Temperature", AttributeGroup.OTHER),
     COOL_SET_TEMPERATURE("Cool Set Temperature", AttributeGroup.OTHER),
@@ -163,7 +162,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     DELIVERED_KWH("Delivered kWh", AttributeGroup.USAGE),
     // Delivered Rate x kWh is currently using USAGE_RATE_X attributes
     RECEIVED_KWH("Received kWh", AttributeGroup.USAGE),
-    RECEIVED_KWH_FROZEN("Received kWh Frozen", AttributeGroup.USAGE),
+    RECEIVED_KWH_FROZEN("Received kWh Frozen", AttributeGroup.USAGE, false),   //440 types only
     RECEIVED_KWH_RATE_A("Received kWh Rate A", AttributeGroup.USAGE),
     RECEIVED_KWH_RATE_B("Received kWh Rate B", AttributeGroup.USAGE),
     RECEIVED_KWH_RATE_C("Received kWh Rate C", AttributeGroup.USAGE),
@@ -186,25 +185,25 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     SUM_KVAH("Sum kVAh", AttributeGroup.USAGE),
     SUM_KVARH("Sum kVArh", AttributeGroup.USAGE),
 
-    USAGE_PER_INTERVAL("Usage per Interval", AttributeGroup.USAGE),
-    DELIVERED_KWH_PER_INTERVAL("Delivered kWh per Interval", AttributeGroup.USAGE),
-    RECEIVED_KWH_PER_INTERVAL("Received kWh per Interval", AttributeGroup.USAGE),
-    SUM_KWH_PER_INTERVAL("Sum kWh per Interval", AttributeGroup.USAGE),
-    NET_KWH_PER_INTERVAL("Net kWh per Interval", AttributeGroup.USAGE),
-    SUM_KVAH_PER_INTERVAL("Sum kVAh per Interval", AttributeGroup.USAGE),
-    SUM_KVARH_PER_INTERVAL("Sum kVArh per Interval", AttributeGroup.REACTIVE),
-    WATER_USAGE_PER_INTERVAL("Water Usage per Interval", AttributeGroup.USAGE),
-    FORWARD_INDUCTIVE_KVARH_PER_INTERVAL("Forward Inductive kVArh per Interval", AttributeGroup.REACTIVE),
-    FORWARD_CAPACITIVE_KVARH_PER_INTERVAL("Forward Capacitive kVArh per Interval", AttributeGroup.REACTIVE),
-    REVERSE_INDUCTIVE_KVARH_PER_INTERVAL("Reverse Inductive kVArh per Interval", AttributeGroup.REACTIVE),
-    REVERSE_CAPACITIVE_KVARH_PER_INTERVAL("Reverse Capacitive kVArh per Interval", AttributeGroup.REACTIVE),
+    USAGE_PER_INTERVAL("Usage per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    DELIVERED_KWH_PER_INTERVAL("Delivered kWh per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    RECEIVED_KWH_PER_INTERVAL("Received kWh per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    SUM_KWH_PER_INTERVAL("Sum kWh per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    NET_KWH_PER_INTERVAL("Net kWh per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    SUM_KVAH_PER_INTERVAL("Sum kVAh per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    SUM_KVARH_PER_INTERVAL("Sum kVArh per Interval", AttributeGroup.REACTIVE, false),   //calculated, not readable
+    WATER_USAGE_PER_INTERVAL("Water Usage per Interval", AttributeGroup.USAGE, false),   //calculated, water not readable
+    FORWARD_INDUCTIVE_KVARH_PER_INTERVAL("Forward Inductive kVArh per Interval", AttributeGroup.REACTIVE, false),   //440 types only
+    FORWARD_CAPACITIVE_KVARH_PER_INTERVAL("Forward Capacitive kVArh per Interval", AttributeGroup.REACTIVE, false),   //440 types only
+    REVERSE_INDUCTIVE_KVARH_PER_INTERVAL("Reverse Inductive kVArh per Interval", AttributeGroup.REACTIVE, false),   //440 types only
+    REVERSE_CAPACITIVE_KVARH_PER_INTERVAL("Reverse Capacitive kVArh per Interval", AttributeGroup.REACTIVE, false),   //440 types only
 
-    DELIVERED_KW_LOAD_PROFILE("Delivered kW Load Profile", AttributeGroup.PROFILE),
-    RECEIVED_KW_LOAD_PROFILE("Received kW Load Profile", AttributeGroup.PROFILE),
-    SUM_KW_LOAD_PROFILE("Sum kW Load Profile", AttributeGroup.PROFILE),
-    NET_KW_LOAD_PROFILE("Net kW Load Profile", AttributeGroup.PROFILE),
-    SUM_KVA_LOAD_PROFILE("Sum kVA Load Profile", AttributeGroup.PROFILE),
-    SUM_KVAR_LOAD_PROFILE("Sum kVAr Load Profile", AttributeGroup.PROFILE),
+    DELIVERED_KW_LOAD_PROFILE("Delivered kW Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    RECEIVED_KW_LOAD_PROFILE("Received kW Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    SUM_KW_LOAD_PROFILE("Sum kW Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    NET_KW_LOAD_PROFILE("Net kW Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    SUM_KVA_LOAD_PROFILE("Sum kVA Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    SUM_KVAR_LOAD_PROFILE("Sum kVAr Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
 
     NET_DELIVERED_KVARH("Net Delivered kVArh", AttributeGroup.REACTIVE),
     NET_DELIVERED_KVARH_RATE_A("Net Delivered kVArh Rate A", AttributeGroup.REACTIVE),
@@ -226,83 +225,83 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     // RFN Events that map to Event Status points (this list must be kept in sync with both
     // our RFN set below AND its version in RfnConditionType.java. Outages and restores are
     // the only exception to this rule (as in the names don't exactly match))
-    ALTERNATE_MODE_ENTRY("Alternate Mode Entry", AttributeGroup.RFN_SOFTWARE_EVENT),
-    ANSI_SECURITY_FAILED("ANSI Security Failed", AttributeGroup.RFN_SOFTWARE_EVENT),
-    BAD_UPGRADE_SECURITY_PARAM("Bad Upgrade Security Parameter", AttributeGroup.RFN_SOFTWARE_EVENT),
-    CONFIGURATION_ERROR("Configuration Error", AttributeGroup.RFN_SOFTWARE_EVENT),
-    CLOCK_ERROR("Clock Error", AttributeGroup.RFN_OTHER_EVENT),
-    CRYSTAL_OSCILLATOR_ERROR("Crystal Oscillator Error", AttributeGroup.RFN_HARDWARE_EVENT),
-    CURRENT_LOSS("Current Loss", AttributeGroup.RFN_CURRENT_EVENT),
-    CURRENT_WAVEFORM_DISTORTION("Current Waveform Distortion", AttributeGroup.RFN_OTHER_EVENT),
-    DEMAND_OVERLOAD("Demand Overload", AttributeGroup.RFN_DEMAND_EVENT),
-    DEMAND_READS_AND_RESET("Demand Reads And Reset", AttributeGroup.RFN_DEMAND_EVENT),
-    DEMAND_THRESHOLD_EXCEEDED_WARNING("Demand Threshold Exceeded Warning", AttributeGroup.RFN_DEMAND_EVENT),
-    DNP3_ADDRESS_CHANGED("DNP3 Address Changed", AttributeGroup.RFN_OTHER_EVENT),
-    DISPLAY_LOCKED_BY_WARNING("Display Locked By Warning", AttributeGroup.RFN_OTHER_EVENT),
-    EEPROM_ACCESS_ERROR("Eeprom Access Error", AttributeGroup.RFN_HARDWARE_EVENT),
-    ENCRYPTION_KEY_TABLE_CRC_ERROR("Encryption Key Table Crc Error", AttributeGroup.RFN_SOFTWARE_EVENT),
-    END_OF_CALENDAR_WARNING("End Of Calendar Warning", AttributeGroup.RFN_SOFTWARE_EVENT),
-    ENERGY_ACCUMULATED_WHILE_IN_STANDBY_MODE("Energy Accumulated While In Standby Mode", AttributeGroup.RFN_METERING_EVENT),
-    FAILED_UPGRADE_SIGNATURE_VERIF("Failed Upgrade Signature Verification", AttributeGroup.RFN_SOFTWARE_EVENT),
-    IMPROPER_METER_ENGINE_OPERATION_WARNING("Improper Meter Engine Operation Warning", AttributeGroup.RFN_HARDWARE_EVENT),
-    INACTIVE_PHASE_CURRENT_DIAGNOSTIC_ERROR("Inactive Phase Current Diagnostic Error", AttributeGroup.RFN_OTHER_EVENT),
-    INTERNAL_COMMUNICATION_ERROR("Internal Communication Error", AttributeGroup.RFN_HARDWARE_EVENT),
-    INTERNAL_ERROR_FLAG("Internal Error Flag", AttributeGroup.RFN_HARDWARE_EVENT),
-    INVALID_SERVICE("Invalid Service", AttributeGroup.RFN_SOFTWARE_EVENT),
-    LINE_FREQUENCY_WARNING("Line Frequency Warning", AttributeGroup.RFN_METERING_EVENT),
-    LOAD_SIDE_VOLTAGE_IS_MISSING("Load Side Voltage Is Missing", AttributeGroup.RFN_METERING_EVENT),
-    LOSS_OF_ALL_CURRENT("Loss Of All Current", AttributeGroup.RFN_CURRENT_EVENT),
-    LOSS_OF_PHASE_A_CURRENT("Loss Of Phase A Current", AttributeGroup.RFN_CURRENT_EVENT),
-    LOSS_OF_PHASE_C_CURRENT("Loss Of Phase C Current", AttributeGroup.RFN_CURRENT_EVENT),
-    LOW_BATTERY_WARNING("Low Battery Warning", AttributeGroup.RFN_HARDWARE_EVENT),
-    LOW_LOSS_POTENTIAL("Low Loss Potential", AttributeGroup.RFN_METERING_EVENT),
-    MASS_MEMORY_ERROR("Mass Memory Error", AttributeGroup.RFN_SOFTWARE_EVENT),
-    MEASUREMENT_ERROR("Measurement Error", AttributeGroup.RFN_METERING_EVENT),
-    METER_RECONFIGURE("Meter Reconfigure", AttributeGroup.RFN_HARDWARE_EVENT),
-    METROLOGY_COMM_FAILURE("Metrology Communication Failure", AttributeGroup.RFN_OTHER_EVENT),
-    NON_VOLATILE_MEM_FAILURE("Non Volatile Mem Failure", AttributeGroup.RFN_HARDWARE_EVENT),
-    OUTSTATION_DNP3_SERCOMM_LOCKED("Outstation DNP3 SerComm Locked", AttributeGroup.RFN_OTHER_EVENT),
-    PASSWORD_TABLE_CRC_ERROR("Password Table Crc Error", AttributeGroup.RFN_SOFTWARE_EVENT),
-    PHASE_ANGLE_DISPLACEMENT("Phase Angle Displacement", AttributeGroup.RFN_OTHER_EVENT),
-    PHASE_LOSS("Phase Loss", AttributeGroup.RFN_OTHER_EVENT),
-    POLARITY_CROSS_PHASE_ENERGY_FLOW_DIAGNOSTIC("Polarity, Cross-phase and Energy Flow Diagnostic", AttributeGroup.RFN_OTHER_EVENT),
-    POTENTIAL_INDICATOR_WARNING("Potential Indicator Warning", AttributeGroup.RFN_METERING_EVENT),
-    POWER_FAIL_DATA_SAVE_ERROR("Power Fail Data Save Error", AttributeGroup.RFN_HARDWARE_EVENT),
-    PQM_TEST_FAILURE_WARNING("Pqm Test Failure Warning", AttributeGroup.RFN_METERING_EVENT),
-    RAM_ERROR("Ram Error", AttributeGroup.RFN_HARDWARE_EVENT),
-    REGISTER_FULL_SCALE_EXCEEDED("Register Full-scale Exceeded", AttributeGroup.RFN_OTHER_EVENT),
-    REVERSED_AGGREGATE("Reversed Aggregate", AttributeGroup.RFN_METERING_EVENT),
-    REVERSED_PHASE_A("Reversed Phase A", AttributeGroup.RFN_METERING_EVENT),
-    REVERSED_PHASE_C("Reversed Phase C", AttributeGroup.RFN_METERING_EVENT),
-    RFN_BLINK_COUNT("Rfn Blink Count", AttributeGroup.BLINK_AND_OUTAGE),
-    RFN_BLINK_RESTORE_COUNT("Rfn Blink Restore Count", AttributeGroup.BLINK_AND_OUTAGE),
-    RFN_TEMPERATURE_ALARM("RFN High Temperature Alarm", AttributeGroup.RFN_HARDWARE_EVENT),
-    RFN_OUTAGE_COUNT("Rfn Outage Count", AttributeGroup.BLINK_AND_OUTAGE),
-    RFN_OUTAGE_RESTORE_COUNT("Rfn Outage Restore Count", AttributeGroup.BLINK_AND_OUTAGE),
-    ROM_ERROR("Rom Error", AttributeGroup.RFN_HARDWARE_EVENT),
-    SEASON_CHANGE("Season Change", AttributeGroup.RFN_OTHER_EVENT),
-    SECURITY_CONFIGURATION_ERROR("Security Configuration Error", AttributeGroup.RFN_SOFTWARE_EVENT),
-    SELF_CHECK_ERROR("Self Check Error", AttributeGroup.RFN_SOFTWARE_EVENT),
-    SERVICE_CURRENT_TEST_FAILURE_WARNING("Service Current Test Failure Warning", AttributeGroup.RFN_METERING_EVENT),
-    SERVICE_DISCONNECT_SWITCH_ERROR("Service Disconnect Switch Error", AttributeGroup.RFN_HARDWARE_EVENT),
-    SERVICE_DISCONNECT_SWITCH_OPEN("Service Disconnect Switch Open", AttributeGroup.RFN_HARDWARE_EVENT),
-    SERVICE_DISCONNECT_SWITCH_SENSOR_ERROR("Service Disconnect Switch Sensor Error", AttributeGroup.RFN_HARDWARE_EVENT),
-    SITESCAN_ERROR("SiteScan Error", AttributeGroup.RFN_OTHER_EVENT),
-    STUCK_SWITCH("Stuck Switch", AttributeGroup.RFN_HARDWARE_EVENT),
-    TABLE_CRC_ERROR("Table Crc Error", AttributeGroup.RFN_SOFTWARE_EVENT),
-    THD_V_OR_TDD_I_ERROR("THD V or TDD I Error", AttributeGroup.RFN_OTHER_EVENT),
-    TIME_ADJUSTMENT("Time Adjustment", AttributeGroup.RFN_OTHER_EVENT),
-    TIME_SYNC_FAILED("Time Sync Failed", AttributeGroup.RFN_OTHER_EVENT),
-    TOU_SCHEDULE_ERROR("TOU Schedule Error", AttributeGroup.RFN_SOFTWARE_EVENT),
-    UNCONFIGURED("Unconfigured", AttributeGroup.RFN_SOFTWARE_EVENT),
-    UNPROGRAMMED("Unprogrammed", AttributeGroup.RFN_SOFTWARE_EVENT),
-    USER_PROGRAMMABLE_TEMPERATURE_THRESHOLD_EXCEEDED("User Programmable Temperature Threshold Exceeded", AttributeGroup.RFN_METERING_EVENT),
-    VOLTAGE_ALERTS("Voltage Alerts", AttributeGroup.RFN_METERING_EVENT),
-    VOLTAGE_LOSS("Voltage Loss", AttributeGroup.RFN_VOLTAGE_EVENT),
-    VOLTAGE_PHASE_A_OUT("Voltage Phase A Out", AttributeGroup.RFN_VOLTAGE_EVENT),
-    VOLTAGE_PHASE_B_OUT("Voltage Phase B Out", AttributeGroup.RFN_VOLTAGE_EVENT),
-    VOLTAGE_PHASE_C_OUT("Voltage Phase C Out", AttributeGroup.RFN_VOLTAGE_EVENT),
-    VOLTAGE_PHASE_ERROR("Voltage Phase Error", AttributeGroup.RFN_METERING_EVENT),
+    ALTERNATE_MODE_ENTRY("Alternate Mode Entry", AttributeGroup.RFN_SOFTWARE_EVENT, false),
+    ANSI_SECURITY_FAILED("ANSI Security Failed", AttributeGroup.RFN_SOFTWARE_EVENT, false),
+    BAD_UPGRADE_SECURITY_PARAM("Bad Upgrade Security Parameter", AttributeGroup.RFN_SOFTWARE_EVENT, false),
+    CONFIGURATION_ERROR("Configuration Error", AttributeGroup.RFN_SOFTWARE_EVENT, false),
+    CLOCK_ERROR("Clock Error", AttributeGroup.RFN_OTHER_EVENT, false),
+    CRYSTAL_OSCILLATOR_ERROR("Crystal Oscillator Error", AttributeGroup.RFN_HARDWARE_EVENT, false),
+    CURRENT_LOSS("Current Loss", AttributeGroup.RFN_CURRENT_EVENT, false),
+    CURRENT_WAVEFORM_DISTORTION("Current Waveform Distortion", AttributeGroup.RFN_OTHER_EVENT, false),
+    DEMAND_OVERLOAD("Demand Overload", AttributeGroup.RFN_DEMAND_EVENT, false),
+    DEMAND_READS_AND_RESET("Demand Reads And Reset", AttributeGroup.RFN_DEMAND_EVENT, false),
+    DEMAND_THRESHOLD_EXCEEDED_WARNING("Demand Threshold Exceeded Warning", AttributeGroup.RFN_DEMAND_EVENT, false),
+    DNP3_ADDRESS_CHANGED("DNP3 Address Changed", AttributeGroup.RFN_OTHER_EVENT, false),
+    DISPLAY_LOCKED_BY_WARNING("Display Locked By Warning", AttributeGroup.RFN_OTHER_EVENT, false),
+    EEPROM_ACCESS_ERROR("Eeprom Access Error", AttributeGroup.RFN_HARDWARE_EVENT, false),
+    ENCRYPTION_KEY_TABLE_CRC_ERROR("Encryption Key Table Crc Error", AttributeGroup.RFN_SOFTWARE_EVENT, false),
+    END_OF_CALENDAR_WARNING("End Of Calendar Warning", AttributeGroup.RFN_SOFTWARE_EVENT, false),
+    ENERGY_ACCUMULATED_WHILE_IN_STANDBY_MODE("Energy Accumulated While In Standby Mode", AttributeGroup.RFN_METERING_EVENT, false),
+    FAILED_UPGRADE_SIGNATURE_VERIF("Failed Upgrade Signature Verification", AttributeGroup.RFN_SOFTWARE_EVENT, false),
+    IMPROPER_METER_ENGINE_OPERATION_WARNING("Improper Meter Engine Operation Warning", AttributeGroup.RFN_HARDWARE_EVENT, false),
+    INACTIVE_PHASE_CURRENT_DIAGNOSTIC_ERROR("Inactive Phase Current Diagnostic Error", AttributeGroup.RFN_OTHER_EVENT, false),
+    INTERNAL_COMMUNICATION_ERROR("Internal Communication Error", AttributeGroup.RFN_HARDWARE_EVENT, false),
+    INTERNAL_ERROR_FLAG("Internal Error Flag", AttributeGroup.RFN_HARDWARE_EVENT, false),   //440 types only
+    INVALID_SERVICE("Invalid Service", AttributeGroup.RFN_SOFTWARE_EVENT, false),
+    LINE_FREQUENCY_WARNING("Line Frequency Warning", AttributeGroup.RFN_METERING_EVENT, false),
+    LOAD_SIDE_VOLTAGE_IS_MISSING("Load Side Voltage Is Missing", AttributeGroup.RFN_METERING_EVENT, false),
+    LOSS_OF_ALL_CURRENT("Loss Of All Current", AttributeGroup.RFN_CURRENT_EVENT, false),
+    LOSS_OF_PHASE_A_CURRENT("Loss Of Phase A Current", AttributeGroup.RFN_CURRENT_EVENT, false),
+    LOSS_OF_PHASE_C_CURRENT("Loss Of Phase C Current", AttributeGroup.RFN_CURRENT_EVENT, false),
+    LOW_BATTERY_WARNING("Low Battery Warning", AttributeGroup.RFN_HARDWARE_EVENT, false),
+    LOW_LOSS_POTENTIAL("Low Loss Potential", AttributeGroup.RFN_METERING_EVENT, false),
+    MASS_MEMORY_ERROR("Mass Memory Error", AttributeGroup.RFN_SOFTWARE_EVENT, false),
+    MEASUREMENT_ERROR("Measurement Error", AttributeGroup.RFN_METERING_EVENT, false),
+    METER_RECONFIGURE("Meter Reconfigure", AttributeGroup.RFN_HARDWARE_EVENT, false),
+    METROLOGY_COMM_FAILURE("Metrology Communication Failure", AttributeGroup.RFN_OTHER_EVENT, false),
+    NON_VOLATILE_MEM_FAILURE("Non Volatile Mem Failure", AttributeGroup.RFN_HARDWARE_EVENT, false),
+    OUTSTATION_DNP3_SERCOMM_LOCKED("Outstation DNP3 SerComm Locked", AttributeGroup.RFN_OTHER_EVENT, false),
+    PASSWORD_TABLE_CRC_ERROR("Password Table Crc Error", AttributeGroup.RFN_SOFTWARE_EVENT, false),
+    PHASE_ANGLE_DISPLACEMENT("Phase Angle Displacement", AttributeGroup.RFN_OTHER_EVENT, false),
+    PHASE_LOSS("Phase Loss", AttributeGroup.RFN_OTHER_EVENT, false),
+    POLARITY_CROSS_PHASE_ENERGY_FLOW_DIAGNOSTIC("Polarity, Cross-phase and Energy Flow Diagnostic", AttributeGroup.RFN_OTHER_EVENT, false),
+    POTENTIAL_INDICATOR_WARNING("Potential Indicator Warning", AttributeGroup.RFN_METERING_EVENT, false),
+    POWER_FAIL_DATA_SAVE_ERROR("Power Fail Data Save Error", AttributeGroup.RFN_HARDWARE_EVENT, false),
+    PQM_TEST_FAILURE_WARNING("Pqm Test Failure Warning", AttributeGroup.RFN_METERING_EVENT, false),
+    RAM_ERROR("Ram Error", AttributeGroup.RFN_HARDWARE_EVENT, false),
+    REGISTER_FULL_SCALE_EXCEEDED("Register Full-scale Exceeded", AttributeGroup.RFN_OTHER_EVENT, false),
+    REVERSED_AGGREGATE("Reversed Aggregate", AttributeGroup.RFN_METERING_EVENT, false),
+    REVERSED_PHASE_A("Reversed Phase A", AttributeGroup.RFN_METERING_EVENT, false),
+    REVERSED_PHASE_C("Reversed Phase C", AttributeGroup.RFN_METERING_EVENT, false),
+    RFN_BLINK_COUNT("Rfn Blink Count", AttributeGroup.BLINK_AND_OUTAGE, false),
+    RFN_BLINK_RESTORE_COUNT("Rfn Blink Restore Count", AttributeGroup.BLINK_AND_OUTAGE, false),
+    RFN_TEMPERATURE_ALARM("RFN High Temperature Alarm", AttributeGroup.RFN_HARDWARE_EVENT, false),
+    RFN_OUTAGE_COUNT("Rfn Outage Count", AttributeGroup.BLINK_AND_OUTAGE, false),
+    RFN_OUTAGE_RESTORE_COUNT("Rfn Outage Restore Count", AttributeGroup.BLINK_AND_OUTAGE, false),
+    ROM_ERROR("Rom Error", AttributeGroup.RFN_HARDWARE_EVENT, false),
+    SEASON_CHANGE("Season Change", AttributeGroup.RFN_OTHER_EVENT, false),
+    SECURITY_CONFIGURATION_ERROR("Security Configuration Error", AttributeGroup.RFN_SOFTWARE_EVENT, false),
+    SELF_CHECK_ERROR("Self Check Error", AttributeGroup.RFN_SOFTWARE_EVENT, false),
+    SERVICE_CURRENT_TEST_FAILURE_WARNING("Service Current Test Failure Warning", AttributeGroup.RFN_METERING_EVENT, false),
+    SERVICE_DISCONNECT_SWITCH_ERROR("Service Disconnect Switch Error", AttributeGroup.RFN_HARDWARE_EVENT, false),
+    SERVICE_DISCONNECT_SWITCH_OPEN("Service Disconnect Switch Open", AttributeGroup.RFN_HARDWARE_EVENT, false),
+    SERVICE_DISCONNECT_SWITCH_SENSOR_ERROR("Service Disconnect Switch Sensor Error", AttributeGroup.RFN_HARDWARE_EVENT, false),
+    SITESCAN_ERROR("SiteScan Error", AttributeGroup.RFN_OTHER_EVENT, false),
+    STUCK_SWITCH("Stuck Switch", AttributeGroup.RFN_HARDWARE_EVENT, false),
+    TABLE_CRC_ERROR("Table Crc Error", AttributeGroup.RFN_SOFTWARE_EVENT, false),
+    THD_V_OR_TDD_I_ERROR("THD V or TDD I Error", AttributeGroup.RFN_OTHER_EVENT, false),
+    TIME_ADJUSTMENT("Time Adjustment", AttributeGroup.RFN_OTHER_EVENT, false),
+    TIME_SYNC_FAILED("Time Sync Failed", AttributeGroup.RFN_OTHER_EVENT, false),
+    TOU_SCHEDULE_ERROR("TOU Schedule Error", AttributeGroup.RFN_SOFTWARE_EVENT, false),
+    UNCONFIGURED("Unconfigured", AttributeGroup.RFN_SOFTWARE_EVENT, false),
+    UNPROGRAMMED("Unprogrammed", AttributeGroup.RFN_SOFTWARE_EVENT, false),
+    USER_PROGRAMMABLE_TEMPERATURE_THRESHOLD_EXCEEDED("User Programmable Temperature Threshold Exceeded", AttributeGroup.RFN_METERING_EVENT, false),
+    VOLTAGE_ALERTS("Voltage Alerts", AttributeGroup.RFN_METERING_EVENT, false),
+    VOLTAGE_LOSS("Voltage Loss", AttributeGroup.RFN_VOLTAGE_EVENT, false),
+    VOLTAGE_PHASE_A_OUT("Voltage Phase A Out", AttributeGroup.RFN_VOLTAGE_EVENT, false),
+    VOLTAGE_PHASE_B_OUT("Voltage Phase B Out", AttributeGroup.RFN_VOLTAGE_EVENT, false),
+    VOLTAGE_PHASE_C_OUT("Voltage Phase C Out", AttributeGroup.RFN_VOLTAGE_EVENT, false),
+    VOLTAGE_PHASE_ERROR("Voltage Phase Error", AttributeGroup.RFN_METERING_EVENT, false),
 
     FIRMWARE_VERSION("Firmware Version", AttributeGroup.OTHER),
     IGNORED_CONTROL_REASON("Ignored Control Reason", AttributeGroup.OTHER),
@@ -313,10 +312,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     UDP_PORT("UDP Port", AttributeGroup.OTHER),
     
     // Estimated load
-    CONNECTED_LOAD("Connected Load", AttributeGroup.ESTIMATED_LOAD),
-    DIVERSIFIED_LOAD("Diversified Load", AttributeGroup.ESTIMATED_LOAD),
-    MAX_LOAD_REDUCTION("Max Load Reduction", AttributeGroup.ESTIMATED_LOAD),
-    AVAILABLE_LOAD_REDUCTION("Available Load Reduction", AttributeGroup.ESTIMATED_LOAD),
+    CONNECTED_LOAD("Connected Load", AttributeGroup.ESTIMATED_LOAD, false), //calculated dr
+    DIVERSIFIED_LOAD("Diversified Load", AttributeGroup.ESTIMATED_LOAD, false), //calculated dr
+    MAX_LOAD_REDUCTION("Max Load Reduction", AttributeGroup.ESTIMATED_LOAD, false), //calculated dr
+    AVAILABLE_LOAD_REDUCTION("Available Load Reduction", AttributeGroup.ESTIMATED_LOAD, false), //calculated dr
     ;
 
     private final String keyPrefix = "yukon.common.attribute.builtInAttribute.";
@@ -329,6 +328,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     // These are both informational and used for display group purposes.
     private static Set<BuiltInAttribute> readableProfileAttributes;
 
+    private static Set<BuiltInAttribute> readableAttributes;
+    
     // The following maps and sets are used for displaying grouped attribute lists.
     private static Map<AttributeGroup, Set<BuiltInAttribute>> groupedDataAttributes;
 
@@ -339,12 +340,19 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
     private final static ImmutableSetMultimap<AttributeGroup, BuiltInAttribute> lookupByGroup;
     static {
-        
+
         ImmutableSetMultimap.Builder<AttributeGroup, BuiltInAttribute> builder = ImmutableSetMultimap.builder();
+        ImmutableSet.Builder<BuiltInAttribute> readableBuilder = ImmutableSet.builder();
+        
         for (BuiltInAttribute attribute : values()) {
             builder.put(attribute.getAttributeGroup(), attribute);
+            
+            if (attribute.isOnDemandReadable) {
+                readableBuilder.add(attribute);
+            }
         }
         lookupByGroup = builder.build();
+        readableAttributes = readableBuilder.build();
         
         buildDataAttributeSets();
         buildRfnEventAttributeSets();
@@ -559,22 +567,23 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
     private String defaultDescription;
     private AttributeGroup attributeGroup;
+    private boolean isOnDemandReadable;
 
+    /**
+     * Defaults isOnDemandReadable to true
+     */
     private BuiltInAttribute(String defaultDescription, AttributeGroup attributeGroup) {
-        this.defaultDescription = defaultDescription;
-        this.attributeGroup = attributeGroup;
+        this(defaultDescription, attributeGroup, true);
     }
 
-    public boolean isProfile() {
-        return lookupByGroup.get(AttributeGroup.PROFILE).contains(this);
+    private BuiltInAttribute(String defaultDescription, AttributeGroup attributeGroup, boolean isOnDemandReadable) {
+        this.defaultDescription = defaultDescription;
+        this.attributeGroup = attributeGroup;
+        this.isOnDemandReadable = isOnDemandReadable;
     }
 
     public boolean isReadableProfile() {
         return readableProfileAttributes.contains(this);
-    }
-
-    public boolean isAccumulator() {
-        return lookupByGroup.get(AttributeGroup.USAGE).contains(this);
     }
 
     public static Map<AttributeGroup, Set<BuiltInAttribute>> getStandardGroupedAttributes() {
@@ -605,16 +614,18 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         return rfnEventTypes;
     }
 
-    public static Set<BuiltInAttribute> getProfileAttributes() {
-        return lookupByGroup.get(AttributeGroup.PROFILE);
-    }
-
     public static Set<BuiltInAttribute> getAttributesForGroup(AttributeGroup attributeGroup) {
         return lookupByGroup.get(attributeGroup);
     }
-    
-    public static Set<BuiltInAttribute> getReadableProfileAttributes() {
-        return readableProfileAttributes;
+
+    /** Readable attributes (excludes profile attributes)*/
+    public static Set<BuiltInAttribute> getReadableAttributes() {
+        return readableAttributes;
+    }
+
+    /** Readable attributes + readable profile attributes */
+    public static Set<BuiltInAttribute> getAdvancedReadableAttributes() {
+        return Sets.union(readableAttributes, readableProfileAttributes);
     }
 
     public boolean isRfnEventType() {

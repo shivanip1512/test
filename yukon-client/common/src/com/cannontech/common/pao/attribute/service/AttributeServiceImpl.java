@@ -65,13 +65,11 @@ import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -93,36 +91,6 @@ public class AttributeServiceImpl implements AttributeService {
     @Autowired private StateDao stateDao;
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-
-    private Set<Attribute> readableAttributes;
-    {
-        Iterable<BuiltInAttribute> readableAttributes =
-            Iterables.filter(Arrays.asList(BuiltInAttribute.values()), new Predicate<BuiltInAttribute>() {
-                @Override
-                public boolean apply(BuiltInAttribute attribute) {
-                    // Exclude profile attributes and event attributes that are not readable
-                    return !attribute.isProfile() && !attribute.isRfnNonReadableEvent();
-                }
-            });
-
-        // could consider other factors and handle user defined attributes in the future
-        this.readableAttributes = ImmutableSet.<Attribute> copyOf(readableAttributes);
-    }
-
-    private Set<Attribute> advancedReadableAttributes;
-    {
-        Iterable<BuiltInAttribute> advancedReadableAttributes =
-            Iterables.filter(Arrays.asList(BuiltInAttribute.values()), new Predicate<BuiltInAttribute>() {
-                @Override
-                public boolean apply(BuiltInAttribute attribute) {
-                    // Exclude event attributes that are not readable
-                    return !attribute.isRfnNonReadableEvent();
-                }
-            });
-
-        // could consider other factors and handle user defined attributes in the future
-        this.advancedReadableAttributes = ImmutableSet.<Attribute> copyOf(advancedReadableAttributes);
-    }
 
     @Override
     public LitePoint getPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
@@ -318,12 +286,12 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     public Set<Attribute> getReadableAttributes() {
-        return readableAttributes;
+        return ImmutableSet.<Attribute> copyOf(BuiltInAttribute.getReadableAttributes());
     }
 
     @Override
     public Set<Attribute> getAdvancedReadableAttributes() {
-        return advancedReadableAttributes;
+        return ImmutableSet.<Attribute> copyOf(BuiltInAttribute.getAdvancedReadableAttributes());
     }
 
     @Override
