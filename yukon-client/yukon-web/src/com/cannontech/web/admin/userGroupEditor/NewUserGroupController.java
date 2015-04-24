@@ -37,12 +37,19 @@ public class NewUserGroupController {
     private final Validator validator = new SimpleValidator<UserGroup>(UserGroup.class) {
         @Override
         public void doValidation(UserGroup userGroup, Errors errors) {
-            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "userGroupName", key + "name.required");
-            YukonValidationUtils.checkExceedsMaxLength(errors, "userGroupName", userGroup.getUserGroupName(), 1000);
             
-            LiteUserGroup possibleDuplicate = userGroupDao.findLiteUserGroupByUserGroupName(userGroup.getUserGroupName());
-            if (possibleDuplicate != null && userGroup.getUserGroupId() != possibleDuplicate.getUserGroupId()) {
-                errors.rejectValue("userGroupName", key + "name.unavailable");
+            String name = userGroup.getUserGroupName();
+            Integer groupId = userGroup.getUserGroupId();
+            
+            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "userGroupName", key + "name.required");
+            YukonValidationUtils.checkExceedsMaxLength(errors, "userGroupName", name, 1000);
+            
+            LiteUserGroup possibleDuplicate = userGroupDao.findLiteUserGroupByUserGroupName(name);
+            if (possibleDuplicate != null) {
+                if (groupId == null // Creating new group. 
+                        || groupId != possibleDuplicate.getUserGroupId()) { // This group is not me.
+                    errors.rejectValue("userGroupName", key + "name.unavailable");
+                }
             }
         }
     };
