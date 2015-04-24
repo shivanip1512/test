@@ -1,10 +1,10 @@
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="adminSetup" page="userGroupEditor.${mode}">
 
@@ -14,8 +14,8 @@
         <div class="column one">
             <form:form commandName="userGroup" action="edit" method="post">
                 <cti:csrfToken/>
-	            <form:hidden path="userGroupId"/>
-
+                <form:hidden path="userGroupId"/>
+                
                 <tags:nameValueContainer2>
                     <tags:inputNameValue nameKey=".userGroupName" path="userGroupName"/>
                     <tags:inputNameValue nameKey=".userGroupDescription" path="userGroupDescription"/>
@@ -25,10 +25,9 @@
                     <cti:displayForPageEditModes modes="EDIT,CREATE">
                         <cti:button nameKey="save" name="update" type="submit" classes="primary action"/>
                         <c:if test="${isUserGroupDeletable}">
-                             <%-- TODO Uncomment this when we implement the role group and user delete functionality.
-                             <cti:button nameKey="delete" id="deleteButton" name="delete" name="delete" type="submit"/>
+                             <cti:button nameKey="delete" id="deleteButton" name="delete" type="submit"
+                                 classes="delete"/>
                              <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${userGroupName}"/>
-                            --%>
                         </c:if>
                         <cti:url var="cancelUrl" value="view">
                             <cti:param name="userGroupId" value="${userGroupId}"/>

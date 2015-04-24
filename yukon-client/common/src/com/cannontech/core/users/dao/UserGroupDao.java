@@ -10,10 +10,15 @@ import com.cannontech.database.data.user.UserGroup;
 
 public interface UserGroupDao {
     
-    public void create(com.cannontech.database.db.user.UserGroup userGroup);
+    /**
+     * Creates the group and returns the group id.
+     */
+    public int create(com.cannontech.database.db.user.UserGroup userGroup);
+    
     public void update(com.cannontech.database.db.user.UserGroup userGroup);
+    
     public void delete(int userGroupId);
-
+    
     /**
      * This method returns the lite user group associated with the supplied user group id.
      */

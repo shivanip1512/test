@@ -104,6 +104,26 @@ yukon.admin.users.home = (function () {
                 });
             });
             
+            /** 
+             * OK button on the new user group popup clicked.
+             * Submits form via ajax and shows validated form if validation failed
+             * or closes popup and go to user page if validation succeded. 
+             */
+            $('.js-new-user-group-dialog').on('yukon:admin:user:group:create', function (ev) {
+                
+                $('#new-user-group-form').ajaxSubmit({
+                    url: yukon.url('/adminSetup/user-group'), 
+                    type: 'post',
+                    success: function (result, status, xhr, $form) {
+                        $('.js-new-user-group-dialog').dialog('close');
+                        window.location.href = yukon.url('/adminSetup/userGroup/view?userGroupId=' + result.userGroupId);
+                    },
+                    error: function (xhr, status, error, $form) {
+                        $('#new-user-group-form').html(xhr.responseText);
+                    }
+                });
+            });
+            
             _initialized = true;
         }
         

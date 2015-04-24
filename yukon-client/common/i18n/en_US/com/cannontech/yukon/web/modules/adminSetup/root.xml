@@ -238,5 +238,6 @@
     <entry key="yukon.web.modules.adminSetup.jobsscheduler.all.column.enabled">Enable/Disable</entry>
     
     <entry key="yukon.web.modules.adminSetup.userEditor.user.new">New User</entry>
+    <entry key="yukon.web.modules.adminSetup.userEditor.user.group.new">New User Group</entry>
     
 </properties>

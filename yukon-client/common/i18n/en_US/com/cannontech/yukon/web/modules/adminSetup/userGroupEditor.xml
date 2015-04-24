@@ -36,6 +36,10 @@
     <entry key="yukon.web.modules.adminSetup.roleGroupEditor.expiredAllPasswords">All the passwords for the role group have been expired.</entry>
 
     <!-- Group Editor group.jsp-->
+    <entry key="yukon.web.modules.adminSetup.userGroupEditor.VIEW.pageName">User Group Info</entry>
+    <entry key="yukon.web.modules.adminSetup.userGroupEditor.VIEW.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.userGroupEditor.EDIT.pageName">Edit</entry>
+    <entry key="yukon.web.modules.adminSetup.userGroupEditor.EDIT.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.adminSetup.userGroupEditor.rolesContainer.title">Roles Derived From Role Groups</entry>
     <entry key="yukon.web.modules.adminSetup.userGroupEditor.userGroupName">User Group Name</entry>
     <entry key="yukon.web.modules.adminSetup.userGroupEditor.userGroupDescription">User Group Description</entry>
@@ -45,10 +49,8 @@
     <entry key="yukon.web.modules.adminSetup.userGroupEditor.confirmDelete.message">Are you sure you want to delete the user group {0}?</entry>
     <entry key="yukon.web.modules.adminSetup.userGroupEditor.noRoles">No role groups are attached to this user group.</entry>
     <entry key="yukon.web.modules.adminSetup.userGroupEditor.usersCurrentlyAttached">User groups cannot be deleted with users attached.  Please remove the users from this user group and try again.</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroupEditor.VIEW.pageName">User Group Info</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroupEditor.VIEW.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroupEditor.EDIT.pageName">Edit</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroupEditor.EDIT.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.userGroupEditor.name.required">Group name is required.</entry>
+    <entry key="yukon.web.modules.adminSetup.userGroupEditor.name.unavailable">Group name is already used.</entry>
     
     <!-- Role Editor roles.jsp -->
     <entry key="yukon.web.modules.adminSetup.roles.pageName">Role Editor</entry>

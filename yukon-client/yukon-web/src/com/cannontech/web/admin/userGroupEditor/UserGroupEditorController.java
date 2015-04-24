@@ -70,6 +70,10 @@ public class UserGroupEditorController {
     @Autowired private UserGroupValidator userGroupValidator;
     @Autowired private CsrfTokenService csrfTokenService;
     
+    private static final String groupKey = "yukon.web.modules.adminSetup.userGroupEditor.";
+    private static final String userKey = "yukon.web.modules.adminSetup.userEditor.";
+    private static final String roleKey = "yukon.web.modules.adminSetup.roleGroupEditor.";
+    
     /* User Editor View Page */
     @RequestMapping("home")
     public String home(YukonUserContext userContext, ModelMap modelMap) {
@@ -129,31 +133,27 @@ public class UserGroupEditorController {
         
         userGroupDao.update(userGroup);
         
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.userGroupEditor.updateSuccessful"));
+        flash.setConfirm(new YukonMessageSourceResolvable(groupKey + "updateSuccessful"));
         model.addAttribute("userGroupId", userGroup.getLiteUserGroup().getUserGroupId());
         
         return "redirect:view";
     }
     
-    /**
-     * TODO Uncomment this when we implement the role group and user delete functionality.
-     * 
-    
     @RequestMapping(value="edit", method=RequestMethod.POST, params="delete")
-     */
     public String delete(ModelMap model, FlashScope flash, int userGroupId) {
+        
+        LiteUserGroup userGroup = userGroupDao.getLiteUserGroup(userGroupId);
         
         int numberOfUsers = userGroupDao.getNumberOfUsers(userGroupId);
         if (numberOfUsers > 0) {
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.userGroupEditor.usersCurrentlyAttached"));
+            flash.setError(new YukonMessageSourceResolvable(groupKey + "usersCurrentlyAttached"));
             model.addAttribute("userGroupId", userGroupId);
             return "redirect:view";
         }
         
         userGroupDao.delete(userGroupId);
         
-        LiteUserGroup userGroup = userGroupDao.getLiteUserGroup(userGroupId);
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.userGroupEditor.deletedSuccessful", userGroup.getUserGroupName()));
+        flash.setConfirm(new YukonMessageSourceResolvable(groupKey + "deletedSuccessful", userGroup.getUserGroupName()));
         return "userGroupEditor/home.jsp";
     }
     
@@ -211,9 +211,9 @@ public class UserGroupEditorController {
             
             // Display the response message.
             if (!conflictingRoleGroupNames.isEmpty()) {
-                flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.userEditor.groupConflict", conflictingRoleGroupNames));
+                flash.setError(new YukonMessageSourceResolvable(userKey + "groupConflict", conflictingRoleGroupNames));
             } else {
-                flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.userEditor.updateSuccessful"));
+                flash.setConfirm(new YukonMessageSourceResolvable(userKey + "updateSuccessful"));
             }
         }
         
@@ -224,7 +224,7 @@ public class UserGroupEditorController {
     @RequestMapping(value="removeRoleGroup", method=RequestMethod.POST)
     public String removeRoleGroup(HttpServletRequest request, ModelMap model, FlashScope flash, int userGroupId, int remove) {
         userGroupDao.deleteUserGroupToYukonGroupMappng(userGroupId, remove);
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.userEditor.updateSuccessful"));
+        flash.setConfirm(new YukonMessageSourceResolvable(userKey + "updateSuccessful"));
         model.addAttribute("userGroupId", userGroupId);
         return "redirect:roleGroups";
     }
@@ -253,7 +253,7 @@ public class UserGroupEditorController {
     public String removeUser(HttpServletRequest request, ModelMap model, FlashScope flash, int userGroupId, int remove) {
         yukonUserDao.removeUserFromUserGroup(remove);
         
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.roleGroupEditor.updateSuccessful"));
+        flash.setConfirm(new YukonMessageSourceResolvable(roleKey + "updateSuccessful"));
         model.addAttribute("userGroupId", userGroupId);
         return "redirect:users";
     }
@@ -266,7 +266,7 @@ public class UserGroupEditorController {
             yukonUserDao.updateUserGroupId(userId, userGroupId);
         }
         
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.roleGroupEditor.updateSuccessful"));
+        flash.setConfirm(new YukonMessageSourceResolvable(roleKey + "updateSuccessful"));
         model.addAttribute("userGroupId", userGroupId);
         return "redirect:users";
     }
@@ -274,7 +274,7 @@ public class UserGroupEditorController {
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
         if (binder.getTarget() != null) {
-            MessageCodesResolver msgCodesResolver = new YukonMessageCodeResolver("yukon.web.modules.adminSetup.userEditor.");
+            MessageCodesResolver msgCodesResolver = new YukonMessageCodeResolver(userKey);
             binder.setMessageCodesResolver(msgCodesResolver);
         }
     }
@@ -288,4 +288,5 @@ public class UserGroupEditorController {
         Multimap<YukonRoleCategory, RoleAndGroup> sortedRoles = RoleListHelper.sortRolesByCategory(rolesAndGroups);
         model.addAttribute("roles", sortedRoles.asMap());
     }
+    
 }
