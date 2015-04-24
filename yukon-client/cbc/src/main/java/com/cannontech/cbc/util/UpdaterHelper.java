@@ -473,7 +473,7 @@ public class UpdaterHelper {
             if (substation.getSpecialAreaEnabled()) {
                 return "error";
             } else {
-                return "normalText";
+                return "";
             }
         }
         

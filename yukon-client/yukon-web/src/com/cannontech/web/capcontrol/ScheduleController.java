@@ -254,7 +254,7 @@ public class ScheduleController {
 
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     @RequestMapping(value="{id}/delete")
-    public String delete(HttpServletResponse response, ModelMap model, @PathVariable int id) {
+    public String delete(@PathVariable int id) {
         paoScheduleDao.delete(id);
         return null;
     }
@@ -368,8 +368,7 @@ public class ScheduleController {
      * Any other schedule assignment commands that match the filter criteria will be ignored. 
      */
     @RequestMapping("stop-multiple")
-    public  @ResponseBody Map<String, Object> stopMultiple(HttpServletRequest request, YukonUserContext context, 
-            ModelMap map) {
+    public  @ResponseBody Map<String, Object> stopMultiple(HttpServletRequest request, YukonUserContext context) {
         String filterByCommand = ServletRequestUtils.getStringParameter(request, "stopCommand", "");
         String filterBySchedule = ServletRequestUtils.getStringParameter(request, "stopSchedule", "");
         
@@ -473,7 +472,7 @@ public class ScheduleController {
     }
     
     @RequestMapping(value="remove-assignment", method=RequestMethod.POST)
-    public String removePao(Integer eventId, Integer paoId, ModelMap map, FlashScope flash) {
+    public String removePao(Integer eventId, Integer paoId, FlashScope flash) {
         boolean success = paoScheduleDao.unassignCommandByEventId(eventId);
         
         if (success) {
@@ -494,8 +493,7 @@ public class ScheduleController {
     }
 
     @RequestMapping("set-ovuv")
-    public @ResponseBody Map<String, Object> setOvUv(Integer eventId, Integer ovuv, ModelMap map, 
-            YukonUserContext context) {
+    public @ResponseBody Map<String, Object> setOvUv(Integer eventId, Integer ovuv, YukonUserContext context) {
         boolean success = false;
         Map<String, Object> json = new HashMap<>();
         try {
@@ -513,8 +511,7 @@ public class ScheduleController {
     }
 
     @RequestMapping(value="addPao")
-    public String addPao(String addSchedule, String addCommand, String filterCommand, String filterSchedule, 
-            String paoIdList, ModelMap map, FlashScope flash) {
+    public String addPao(String addSchedule, String addCommand, String paoIdList, FlashScope flash) {
         ScheduleCommand cmd = ScheduleCommand.valueOf(addCommand);
         boolean success = true;
         YukonMessageSourceResolvable message;
