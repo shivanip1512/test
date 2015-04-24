@@ -160,10 +160,11 @@ public final class SimpleTableAccessTemplate<T> {
     }
     
     private final int insert(T object, Number parentKeyFieldId) {
+        
         HolderOfParameters holder = getHolderOfParameters(object, parentKeyFieldId);
         final MapSqlParameterSource parameterSource = holder.parameterSource;
         final SqlParameterChildHelper helper = holder.helper;
-
+        
         // validation to warn if the primary key field has been passed in as a normal field in the fieldmapper.  
         if(parameterSource.getValues().keySet().contains(this.primaryKeyField)) {
             throw new IllegalArgumentException("Primary key field \"" + this.primaryKeyField + "\" should not be included in the FieldMapper.");

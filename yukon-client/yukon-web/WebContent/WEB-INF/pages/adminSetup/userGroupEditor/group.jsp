@@ -1,11 +1,10 @@
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="adminSetup" page="roleGroupEditor.${mode}">
     
@@ -14,56 +13,54 @@
     <div class="column-14-10">
 
         <div class="column one">
-            <cti:url var="groupUrl" value="/adminSetup/roleGroup/edit"/>
-            <form:form commandName="group" action="${groupUrl}" method="post">
-                <cti:csrfToken/>
-                <form:hidden path="groupID"/>
-                <input type="hidden" value="${group.groupID}" name="roleGroupId">
-                
-                <tags:nameValueContainer2>
+            <tags:sectionContainer2 nameKey="infoContainer">
+                <cti:url var="groupUrl" value="/adminSetup/roleGroup/edit"/>
+                <form:form commandName="group" action="${groupUrl}" method="post">
+                    <cti:csrfToken/>
+                    <form:hidden path="groupID"/>
+                    <input type="hidden" value="${group.groupID}" name="roleGroupId">
                     
-                    <c:choose>
-                        <c:when test="${editName}">
-                            <tags:inputNameValue nameKey=".name" path="groupName" size="40"/>
-                        </c:when>
-                        <c:otherwise>
-                            <tags:hidden path="groupName"/>
-                            <tags:nameValue2 nameKey=".name">
-                                <spring:escapeBody htmlEscape="true">${group.groupName}</spring:escapeBody>
-                            </tags:nameValue2>
-                        </c:otherwise>
-                    </c:choose>
-                    <tags:textareaNameValue nameKey=".description" rows="3" cols="35" path="groupDescription"/>
-                
-                </tags:nameValueContainer2>
-                
-                <div class="page-action-area">
-                    <cti:displayForPageEditModes modes="EDIT">
-                        <cti:button nameKey="save" name="update" type="submit" classes="primary action"/>
-                        <%-- TODO implement this later 
-                        <cti:button nameKey="delete" id="deleteButton" name="delete" type="submit"/>
-                        <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${groupName}"/>
-                        --%>
-                        <cti:button nameKey="cancel" name="cancel" type="submit"/>
-                    </cti:displayForPageEditModes>
-                    <cti:displayForPageEditModes modes="VIEW">
-                        <cti:button nameKey="edit" icon="icon-pencil" name="edit" type="submit"/>
-                    </cti:displayForPageEditModes>
-                    <cti:button nameKey="expireAllPasswords" id="expireAllPasswordsButton" name="expireAllPasswords" type="submit"/>
-                    <d:confirm on="#expireAllPasswordsButton" nameKey="confirmExpireAllPasswords" argument="${group.groupName}"/>
+                    <tags:nameValueContainer2>
+                        
+                        <c:choose>
+                            <c:when test="${editName}">
+                                <tags:inputNameValue nameKey=".name" path="groupName" size="40"/>
+                            </c:when>
+                            <c:otherwise>
+                                <tags:hidden path="groupName"/>
+                                <tags:nameValue2 nameKey=".name">${fn:escapeXml(group.groupName)}</tags:nameValue2>
+                            </c:otherwise>
+                        </c:choose>
+                        <tags:textareaNameValue nameKey=".description" rows="3" cols="35" path="groupDescription"/>
                     
-                </div>
-            </form:form>
-                
+                    </tags:nameValueContainer2>
+                    
+                    <div class="page-action-area">
+                        <cti:displayForPageEditModes modes="EDIT">
+                            <cti:button nameKey="save" name="update" type="submit" classes="primary action"/>
+                            <cti:button nameKey="delete" id="delete-btn" name="delete" type="submit" classes="delete"/>
+                            <d:confirm on="#delete-btn" nameKey="confirmDelete" argument="${group.groupName}"/>
+                            <cti:button nameKey="cancel" name="cancel" type="submit"/>
+                        </cti:displayForPageEditModes>
+                        <cti:displayForPageEditModes modes="VIEW">
+                            <cti:button nameKey="edit" icon="icon-pencil" name="edit" type="submit"/>
+                            <cti:button nameKey="expireAllPasswords" id="expire-passwords-btn" 
+                                    name="expireAllPasswords" type="submit"/>
+                            <d:confirm on="#expire-passwords-btn" nameKey="confirmExpireAllPasswords" 
+                                    argument="${group.groupName}"/>
+                        </cti:displayForPageEditModes>
+                    </div>
+                </form:form>
+            </tags:sectionContainer2>
         </div>
             
         <div class="column two nogutter">
             <cti:displayForPageEditModes modes="VIEW">
                 
-                <tags:boxContainer2 nameKey="rolesContainer">
+                <tags:sectionContainer2 nameKey="rolesContainer">
                     <c:choose>
                         <c:when test="${empty categoryRoleMap}">
-                            <i:inline key=".noRoles"/>
+                            <div class="empty-list"><i:inline key=".noRoles"/></div>
                         </c:when>
                         <c:otherwise>
                             <div class="wsnw">
@@ -103,7 +100,7 @@
                             </select>
                         </form>
                     </div>
-                </tags:boxContainer2>
+                </tags:sectionContainer2>
                 
             </cti:displayForPageEditModes>
         </div>

@@ -25,9 +25,9 @@
                     <cti:displayForPageEditModes modes="EDIT,CREATE">
                         <cti:button nameKey="save" name="update" type="submit" classes="primary action"/>
                         <c:if test="${isUserGroupDeletable}">
-                             <cti:button nameKey="delete" id="deleteButton" name="delete" type="submit"
+                             <cti:button nameKey="delete" id="delete-btn" name="delete" type="submit"
                                  classes="delete"/>
-                             <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${userGroupName}"/>
+                             <d:confirm on="#delete-btn" nameKey="confirmDelete" argument="${userGroupName}"/>
                         </c:if>
                         <cti:url var="cancelUrl" value="view">
                             <cti:param name="userGroupId" value="${userGroupId}"/>

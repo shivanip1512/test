@@ -198,7 +198,7 @@ public class RoleDaoImpl implements RoleDao {
             public void processRow(YukonResultSet rs) throws SQLException {
 
                 YukonRole yukonRole = rs.getEnum("RoleId", YukonRole.class);
-                LiteYukonGroup liteYukonGroup = YukonGroupDaoImpl.liteYukonGroupRowMapper.mapRow(rs);
+                LiteYukonGroup liteYukonGroup = YukonGroupDaoImpl.mapper.mapRow(rs);
 
                 results.put(yukonRole, liteYukonGroup);
                 
@@ -224,7 +224,7 @@ public class RoleDaoImpl implements RoleDao {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
                 YukonRole yukonRole = rs.getEnum("RoleId", YukonRole.class);
-                LiteYukonGroup liteYukonGroup = YukonGroupDaoImpl.liteYukonGroupRowMapper.mapRow(rs);
+                LiteYukonGroup liteYukonGroup = YukonGroupDaoImpl.mapper.mapRow(rs);
 
                 results.put(yukonRole, liteYukonGroup);
             }

@@ -124,6 +124,26 @@ yukon.admin.users.home = (function () {
                 });
             });
             
+            /** 
+             * OK button on the new role group popup clicked.
+             * Submits form via ajax and shows validated form if validation failed
+             * or closes popup and go to user page if validation succeded. 
+             */
+            $('.js-new-role-group-dialog').on('yukon:admin:role:group:create', function (ev) {
+                
+                $('#new-role-group-form').ajaxSubmit({
+                    url: yukon.url('/adminSetup/role-group'), 
+                    type: 'post',
+                    success: function (result, status, xhr, $form) {
+                        $('.js-new-role-group-dialog').dialog('close');
+                        window.location.href = yukon.url('/adminSetup/roleGroup/view?roleGroupId=' + result.groupId);
+                    },
+                    error: function (xhr, status, error, $form) {
+                        $('#new-role-group-form').html(xhr.responseText);
+                    }
+                });
+            });
+            
             _initialized = true;
         }
         

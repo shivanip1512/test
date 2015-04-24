@@ -8,7 +8,7 @@
 
 <cti:msgScope paths="modules.adminSetup.userEditor,yukon.common">
 
-<form:form id="new-user-form" commandName="user" action="edit" method="post">
+<form:form id="new-user-form" commandName="user" method="post">
     <cti:csrfToken/>
     
     <tags:nameValueContainer2 tableClass="with-form-controls">

@@ -49,7 +49,7 @@
                 </form>
             </c:when>
             <c:otherwise>
-                <i:inline key=".noGroups"/>
+                <div class="empty-list"><i:inline key=".noGroups"/></div>
             </c:otherwise>
         </c:choose>
         <div class="action-area">
