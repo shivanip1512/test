@@ -24,7 +24,7 @@
                 </th>
                 <th class="wsnw">
                     <i:inline key=".state"/>
-                    <div id="bank-state-info" class="dn"><cti:msg2 key=".stateInfoToolTip"/></div>
+                    <div id="bank-state-info" class="dn js-sticky-tooltip"><cti:msg2 key=".stateInfoToolTip"/></div>
                     <cti:icon nameKey="stateInfo" icon="icon-information" classes="M0 vatt fn" data-tooltip="#bank-state-info"/>
                 </th>
                 <th><i:inline key=".timestamp"/></th>

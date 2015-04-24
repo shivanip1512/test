@@ -36,12 +36,12 @@
                 <cti:url var="substationUrl" value="/capcontrol/tier/substations">
                     <cti:param name="bc_areaId" value="${areaId}"/>
                 </cti:url>
-                <tr data-has-row-tooltip>
+                <tr data-tooltip="#station-count-${areaId}">
                     <td>
                         <capTags:warningImg paoId="${areaId}" type="${areaType.updaterType}"/>
-                        <span id="station-count-${areaId}" class="dn"><i:inline key=".stationCount" arguments="${viewableArea.stationCount}"/></span>
+                        <div id="station-count-${areaId}" class="dn"><i:inline key=".stationCount" arguments="${viewableArea.stationCount}"/></div>
                     </td>
-                    <td data-tooltip="#station-count-${areaId}" data-row-tooltip>
+                    <td>
                         <a href="${substationUrl}">${fn:escapeXml(viewableArea.ccName)}</a>
                     </td>
                     <td class="state-indicator">

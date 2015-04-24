@@ -615,137 +615,6 @@ yukon.ui = (function () {
                 elem.tabs({'active': elem.data('selectedTab')}).show().removeClass('js-init-tabs');
             });
                 
-            /** Add fancy tooltip support (tipsy)
-             *  To give an item a custom tooltip, give it an attribute 'data-tooltip'
-             *  with a value that is a selector for an element that has the content in HTML.
-             */
-            // some pages do not include the tipsy libary
-            if ('undefined' !== typeof $.fn.tipsy) {
-                // use browser-native tooltips for all but the fancy HTML ones
-                $('[data-tooltip]').each(function (index, element) {
-                    $(element).tipsy({
-                        html: true,
-                        // some tooltips actually are around 175 px in height
-                        gravity: $.fn.tipsy.autoBounds(175, 'nw'),
-                        opacity: 1.0,
-                        title: function () {
-                            var elem = $(this),
-                            toolTipped = elem.closest('[data-tooltip]'),
-                            tip = $(toolTipped.data('tooltip'));
-                            if (toolTipped.length && tip.length) {
-                                // voodoo so inner div has full height of its container
-                                setTimeout(function () { $('.tipsy-inner').addClass('clearfix'); }, 100);
-                                return tip.html();
-                            }
-                            return '';
-                        },
-                        delayIn: 150,
-                        fade: true
-                    });
-                });
-                
-                /**
-                 * To have an element's tooltip display when the row is hovered, the row must have 
-                 * the [data-has-row-tooltip] attribute and the element that would normally have 
-                 * the tooltip must have the [data-row-tooltip] attribute.
-                 */
-                $('[data-has-row-tooltip]').hover( function () {
-                    $(this).find('[data-row-tooltip]').tipsy('show');
-                }, function () {
-                    $(this).find('[data-row-tooltip]').tipsy('hide');
-                });
-            }
-                
-            /**
-             * Tooltips
-             * 
-             * Elements with attribute [data-yukon-tooltip] will have html tooltips.
-             * The value of the attribute [data-yukon-tooltip] is a selector for the
-             * element to serve as the tooltip body.
-             * If the tooltip has class js-sticky-tooltip, clicking the item
-             * will cause the tooltip to stay visible until the next click.
-             * 
-             */
-            
-            /** 
-             * Move the tooltip to the body of the page, then position it below the 
-             *  @param {Object} tooltip - tooltip item to be positioned.
-             *  @param {Object} trigger - element containing the dropdown menu
-             */
-            var _positionTooltip = function (tooltip, trigger) {
-                
-                var windowLeft = $(window).scrollLeft();
-                var windowWidth = $(window).width();
-                var offset = trigger.offset();
-                
-                tooltip.appendTo('body');
-                
-                tooltip.removeAttr('style')
-                .addClass('yukon-tooltip');
-                
-                var width = tooltip.outerWidth();
-                
-                tooltip.css({
-                    top: offset.top + trigger.height() + 3,
-                    left: offset.left
-                });
-
-                tooltip.show();
-
-                if (offset.left + width > windowLeft + windowWidth ) {
-                    // The tooltip is overflowing off the right edge of the screen.
-                    // Make its right edge touch the edge of the screen.
-                    tooltip.css({
-                        left: (windowLeft + windowWidth) - width
-                    });
-                }
-            };
-            
-            /** Handle clicks on menu triggers */
-            $(document).on('mouseover', '[data-yukon-tooltip]', function(ev) {
-                
-                var trigger = $(this);
-                var tooltip = $(trigger.data('yukonTooltip'));
-                
-                _positionTooltip(tooltip, trigger);
-                
-                trigger.off('mouseout.yukon.tooltip remove.yukon.tooltip')
-                .on('mouseout.yukon.tooltip remove.yukon.tooltip', function () {
-                    
-                    $('.yukon-tooltip:not(.yukon-tooltip-open)').hide();
-                });
-            });
-            
-            /** Handle clicks on sticky tooltips */
-            $(document).on('click', '[data-yukon-tooltip]', function(ev) {
-                
-                var trigger = $(this);
-                var tooltip = $(trigger.data('yukonTooltip'));
-                
-                if (!tooltip.is('.js-sticky-tooltip')) return;
-                
-                $('.yukon-tooltip').hide();
-                
-                tooltip.addClass('yukon-tooltip-open');
-                
-                _positionTooltip(tooltip, trigger);
-            });
-
-            /** Close all tooltips on click except when clicking a tooltip */
-            $(document).click(function (ev) {
-                if ($(ev.target).closest('.yukon-tooltip, [data-yukon-tooltip]').length === 0) {
-                    /* Click was not inside a tooltip or trigger. Hide all tooltips. */
-                    $('.yukon-tooltip').removeClass('yukon-tooltip-open').hide();
-                }
-            });
-            
-            /** Close all tooltips when esc key is hit */
-            $(document).keyup(function (ev) {
-                if (ev.which == yg.keys.escape) {
-                    $('.yukon-tooltip').removeClass('yukon-tooltip-open').hide();
-                }
-            });
-            
             /** Add placeholder functionality if needed. */
             if (!Modernizr.input.placeholder) $('input, textarea').placeholder();
             
@@ -1971,7 +1840,7 @@ yukon.ui = (function () {
                     
                     span.data('count', 1)
                     .append(tooltipTemplate)
-                    .attr('data-yukon-tooltip', '.js-event-tooltip[data-event-id="' + id + '"]');
+                    .attr('data-tooltip', '.js-event-tooltip[data-event-id="' + id + '"]');
                     
                     tooltipped = span;
                 }
