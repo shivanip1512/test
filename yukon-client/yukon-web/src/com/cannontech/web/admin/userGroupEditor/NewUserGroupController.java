@@ -48,7 +48,7 @@ public class NewUserGroupController {
     };
     
     @RequestMapping("new-user-group-dialog")
-    public String newUser(ModelMap model) {
+    public String newGroup(ModelMap model) {
         
         UserGroup group = new UserGroup();
         model.addAttribute("group", group);
