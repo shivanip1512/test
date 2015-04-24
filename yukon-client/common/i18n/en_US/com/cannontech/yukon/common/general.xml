@@ -179,7 +179,7 @@
 <entry key="yukon.common.time.range.HR_6">6 Hours</entry>
 <entry key="yukon.common.time.range.HR_12">12 Hours</entry>
 <entry key="yukon.common.time.range.DAY_1">24 Hours</entry>
-<entry key="yukon.common.time.range.DAY_2">48 Days</entry>
+<entry key="yukon.common.time.range.DAY_2">48 Hours</entry>
 <entry key="yukon.common.time.range.WEEK_1">7 Days</entry>
 <entry key="yukon.common.timestamp">Timestamp</entry>
 <entry key="yukon.common.To">To</entry>

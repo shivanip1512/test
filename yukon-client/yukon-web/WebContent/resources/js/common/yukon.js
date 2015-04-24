@@ -1740,6 +1740,18 @@ yukon.ui = (function () {
         },
         
         /** 
+         * Remove an event from the timeline and redraws the timeline.
+         * @param {string[]} eventId - Unique identifiers of the events to remove.
+         */
+        removeEvents: function (eventIds) {
+            var _self = this;
+            eventIds.forEach(function (eventId) {
+                delete _self.options.events[eventId];
+            });
+            this.draw();
+        },
+        
+        /** 
          * Add events to the timeline
          * @param {string} events[].id - Unique identifier key. Will override any existing event with that id.
          * @param {number} events[].timestamp - Time of event. expressed as epoch timestamp.

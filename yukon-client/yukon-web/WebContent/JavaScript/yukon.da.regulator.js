@@ -78,17 +78,21 @@ yukon.da.regulator = (function () {
             var begin = new Date(now.getTime() - (1000 * 60 * 60 * hoursAgo));
             options.begin = begin.getTime();
             
+            var eventsToRemove = [];
             // Remove any rows in the table and timeline that are not in the retrieved list.
             current.each(function (idx, row) {
                 row = $(row);
                 var id = row.data('eventId');
                 if (eventIds.indexOf(id) === -1) {
                     row.remove();
-                    timeline.timeline('removeEvent', id);
+                    eventsToRemove.push(id)
                 } else {
                     currentIds.push(id);
                 }
             });
+            if (eventsToRemove.length) {
+                timeline.timeline('removeEvents', eventsToRemove);
+            }
             
             // Add any rows in the retrieved list that are not in the table.
             // Reverse order to add oldest first.
