@@ -685,13 +685,6 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         // Add paoDefinition to type map
         paoTypeMap.put(paoType, paoDefinition);
         
-        // Add paoDefinition to change group map
-        if (pao.getChangeGroup() != null) {
-            String changeGroup = pao.getChangeGroup();
-            
-            changeGroupPaosMap.put(changeGroup, paoDefinition);
-        }
-        
         // Add paoDefinition to group map
         if (group != null) {
             paoDisplayGroupMap.put(group, paoDefinition);
@@ -754,6 +747,13 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         // Add pao to creatable list
         if (paoDefinition.isCreatable()) {
             creatablePaoDefinitions.add(paoDefinition);
+            // Add paoDefinition to change group map
+            // change group map should contain only creatable devices
+            if (pao.getChangeGroup() != null) {
+                String changeGroup = pao.getChangeGroup();
+                
+                changeGroupPaosMap.put(changeGroup, paoDefinition);
+            }
         }
     }
     
