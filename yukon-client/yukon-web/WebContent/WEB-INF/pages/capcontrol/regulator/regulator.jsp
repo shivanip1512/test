@@ -146,7 +146,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="timeline-container clear" data-regulator-id="${regulator.id}"></div>
+                    <div class="js-events-timeline clear" data-regulator-id="${regulator.id}"></div>
                 </tags:sectionContainer2>
                
             </cti:displayForPageEditModes>

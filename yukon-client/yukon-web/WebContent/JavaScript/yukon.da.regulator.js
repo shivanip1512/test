@@ -68,7 +68,7 @@ yukon.da.regulator = (function () {
             var body = $('#regulator-events').find('tbody');
             var current = body.find('tr[data-event-id]');
             var eventIds = events.map(function (event) { return event.id; });
-            var timeline = $('.timeline-container[data-regulator-id="' + _id + '"]');
+            var timeline = $('.js-events-timeline[data-regulator-id="' + _id + '"]');
             var toAdd = [], currentIds = [];
             
             var options = {};

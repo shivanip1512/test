@@ -1711,6 +1711,7 @@ yukon.ui = (function () {
             events: {}
         },
         
+        /** Constructor */
         _create: function () {
             this.element.addClass('timeline-container');
             this.element.data('timelineInitialized', true);
@@ -1753,11 +1754,17 @@ yukon.ui = (function () {
             this.draw();
         },
         
+        /** 
+         * Removes all events from the timeline.
+         */
         clear: function () {
             this.options.events = {};
             this.draw();
         },
         
+        /** 
+         * Adds text timestamps to the endpoints.
+         */
         _drawTicks: function () {
             
             var container = this.element;
@@ -1768,16 +1775,19 @@ yukon.ui = (function () {
             var beginText = moment(begin).tz(yg.timezone).format(yg.formats.date.long_date_time_hm);
             var endText = moment(end).tz(yg.timezone).format(yg.formats.date.long_date_time_hm);
             
-            var beginSpan = $('<span class="timeline-label-begin">')
-            .text(beginText);
-            container.append(beginSpan);
+            $('<span class="timeline-label-begin">')
+            .text(beginText)
+            .appendTo(container);
             
-            var endSpan = $('<span class="timeline-label-end">')
-            .text(endText);
-            container.append(endSpan);
+           $('<span class="timeline-label-end">')
+            .text(endText)
+            .appendTo(container);
             
         },
         
+        /** 
+         * Put all events on the timeline and cluster nearby events.
+         */
         _drawEvents: function () {
             
             var container = this.element;
@@ -1869,6 +1879,9 @@ yukon.ui = (function () {
             
         },
         
+        /** 
+         * Manually trigger a redraw of all events.
+         */
         draw: function () {
             
             var container = this.element;
