@@ -108,7 +108,7 @@ yukon.dialogConfirm = (function () {
                     $(element.attr("data-form"))[0].submit();
                 };
             }
-
+            
             // Inject the message into the dialog
             $("#yukon_dialog_confirm .confirm-message").html(args.strings.message);
             // Show the dialog

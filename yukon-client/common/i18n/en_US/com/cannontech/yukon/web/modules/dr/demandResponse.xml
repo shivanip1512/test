@@ -463,6 +463,10 @@
 <entry key="yukon.web.modules.dr.home.name">Name</entry>
 <entry key="yukon.web.modules.dr.home.type">Type</entry>
 <entry key="yukon.web.modules.dr.home.state">State</entry>
+<entry key="yukon.web.modules.dr.home.season.reset.confirm.title">Reset Season Control Hours</entry>
+<entry key="yukon.web.modules.dr.home.season.reset.confirm.message">
+    Are you sure you want to reset all the seasonal control hours in the system?
+</entry>
 
 <!-- Ecobees -->
 <entry key="yukon.web.modules.dr.home.ecobee.title">ecobee Statistics</entry>

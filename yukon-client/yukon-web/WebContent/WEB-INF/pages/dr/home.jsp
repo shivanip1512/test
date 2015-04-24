@@ -18,8 +18,10 @@
 <tags:simpleDialog id="drDialog"/>
 <c:if test="${showSeasonReset}">
     <div id="page-actions">
-        <cm:dropdownOption key=".seasonCntlHrs.reset" icon="icon-arrow-swap" classes="js-reset-season-hrs"/>
+        <cm:dropdownOption key=".seasonCntlHrs.reset" icon="icon-arrow-swap" 
+            classes="js-reset-season-hrs" data-ok-event="yukon:dr:season-cntl-hrs-reset"/>
     </div>
+    <d:confirm on=".js-reset-season-hrs" nameKey="season.reset.confirm"/>
 </c:if>
 
 <div class="column-12-12">

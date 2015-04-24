@@ -8,10 +8,12 @@ yukon.namespace('yukon.dr.dashboard');
  */
 yukon.dr.dashboard = (function() {
     
-    var timeFormatter = yukon.timeFormatter,
-        mod;
+    var _tf = yukon.timeFormatter;
     
-    mod = {
+    var command_time = '#rf-performance-command-time';
+    var email_time = '#rf-performance-email-time';
+    
+    var mod = {
             
         init: function() {
             
@@ -30,7 +32,7 @@ yukon.dr.dashboard = (function() {
             var _sliderInit = function (opts) {
                 
                 var slideOrChange = function (event, ui) {
-                    var curTime = timeFormatter.formatTime(ui.value, 0);
+                    var curTime = _tf.formatTime(ui.value, 0);
                     $(opts.htmlSelector).html(curTime);
                     $(opts.timeSelector).val(ui.value);
                 };
@@ -52,9 +54,13 @@ yukon.dr.dashboard = (function() {
             sliderInitOptions = [
                 // max, min, value, step, htmlSelector, timeSelector
                 /** Setup the command time slider */
-                ['#broadcast-config .js-time-slider', 24 * 60 - 15, 0, $('#rf-performance-command-time').val(), 15, '#broadcast-config .js-time-label', '#rf-performance-command-time'],
+                ['#broadcast-config .js-time-slider', 24 * 60 - 15, 0, 
+                     $(command_time).val(), 15, '#broadcast-config .js-time-label', 
+                     command_time],
                 /** Setup the email time slider */
-                ['#broadcast-config .js-email-time-slider', 24 * 60 - 15, 0, $('#rf-performance-email-time').val(), 15, '#broadcast-config .js-email-time-label', '#rf-performance-email-time']
+                ['#broadcast-config .js-email-time-slider', 24 * 60 - 15, 0, 
+                     $(email_time).val(), 15, '#broadcast-config .js-email-time-label', 
+                     email_time]
             ],
             _io,
             _initOpt,
@@ -72,14 +78,14 @@ yukon.dr.dashboard = (function() {
                     });
                 }
             },
-            _originalRfCommandTime = $('#rf-performance-command-time').val(),
-            _originalRfEmailTime = $('#rf-performance-email-time').val();
+            _originalRfCommandTime = $(command_time).val(),
+            _originalRfEmailTime = $(email_time).val();
                 
             _initSliders();
             
             /** Setup the time label */
-            $('#broadcast-config .js-time-label').html(timeFormatter.formatTime($('#rf-performance-command-time').val(), 0));
-            $('#broadcast-config .js-email-time-label').html(timeFormatter.formatTime($('#rf-performance-email-time').val(), 0));
+            $('#broadcast-config .js-time-label').html(_tf.formatTime($(command_time).val(), 0));
+            $('#broadcast-config .js-email-time-label').html(_tf.formatTime($(email_time).val(), 0));
             
             $(document).on('click', '#broadcast-config .button-group-toggle .button', function() {
                 
@@ -110,12 +116,13 @@ yukon.dr.dashboard = (function() {
             $(document).on('yukon.dr.rf.config.load', function (ev) {
                 // each time the configure button popup is loaded, reset the field values of the times
                 // and reinit the sliders so they accurately reflect the current settings in the database
-                $('#rf-performance-command-time').val(_originalRfCommandTime);
-                $('#rf-performance-email-time').val(_originalRfEmailTime);
+                $(command_time).val(_originalRfCommandTime);
+                $(email_time).val(_originalRfEmailTime);
                 _initSliders();
             });
             
-            $(document).on('click', '.js-reset-season-hrs', function (ev) {
+            /** Reset the season control hours. */
+            $(document).on('yukon:dr:season-cntl-hrs-reset', function (ev) {
                 
                 $.ajax(yukon.url('/dr/season-control-hours/reset'))
                 .done(function(status) {
