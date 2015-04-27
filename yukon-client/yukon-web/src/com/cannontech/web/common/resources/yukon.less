@@ -1091,8 +1091,6 @@ hr.dashed,
     cursor: text;
 }
 
-.front { z-index: 9999; }
-
 .button-group-toggle .button:focus { outline: none; }
 .button-group-toggle .yes.on .b-label, 
 .button-group-toggle .yes.on:hover .b-label { 
@@ -1353,6 +1351,7 @@ input.dateTimePicker { width: 150px; }
     border-radius: @border-radius;
     padding: 1px 4px;
     position: absolute;
+    z-index: 9999;
 }
 
 /* DROPDOWN MENUS */

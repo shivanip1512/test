@@ -85,12 +85,13 @@ yukon.da.regulator = (function () {
                 var id = row.data('eventId');
                 if (eventIds.indexOf(id) === -1) {
                     row.remove();
-                    eventsToRemove.push(id)
+                    eventsToRemove.push(id);
                 } else {
                     currentIds.push(id);
                 }
             });
             if (eventsToRemove.length) {
+                timeline.timeline(options);
                 timeline.timeline('removeEvents', eventsToRemove);
             }
             
@@ -100,16 +101,32 @@ yukon.da.regulator = (function () {
                 if (currentIds.indexOf(event.id) === -1) {
                     // New event not in table, add it to table and timeline.
                     var row = $('.js-event-template').clone().removeClass('js-event-template')
-                    .attr('data-event-id', event.id).data('eventId', event.id);
+                    .attr('data-event-id', event.id)
+                    .data('eventId', event.id)
+                    .data('timestamp', event.timestamp);
                     
                     row.find('.js-event-icon').addClass(event.icon);
                     row.find('.js-message').html(event.message);
                     row.find('.js-user').text(event.user);
                     
-                var timeText = moment(event.timestamp).tz(yg.timezone).format(yg.formats.date.full);
+                    var timeText = moment(event.timestamp).tz(yg.timezone).format(yg.formats.date.full);
                     row.find('.js-timestamp').text(timeText);
                     
-                    body.prepend(row);
+                    var attached = false;
+                    
+                    body.find('tr').each(function (idx, tr) {
+                        tr = $(tr);
+                        if (tr.data('timestamp') < event.timestamp) {
+                            row.insertBefore(tr);
+                            attached = true;
+                        } 
+                       
+                    });
+                    
+                    if (!attached) {
+                        body.append(row);
+                    }
+                    
                     row.flash();
                     
                     toAdd.push(event);

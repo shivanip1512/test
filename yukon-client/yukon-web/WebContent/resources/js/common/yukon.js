@@ -1731,6 +1731,21 @@ yukon.ui = (function () {
         },
         
         /** 
+         * Add events to the timeline
+         * @param {string} events[].id - Unique identifier key. Will override any existing event with that id.
+         * @param {number} events[].timestamp - Time of event. expressed as epoch timestamp.
+         * @param {string} [events[].icon=icon-blank] - Icon to show on the timeline.
+         * @param {string} [events[].message] - html to display in the tooltip.
+         */
+        addEvents: function (events) {
+            var _self = this;
+            events.forEach(function (event) {
+                _self.options.events[event.id] = event;
+            });
+            this.draw();
+        },
+        
+        /** 
          * Remove an event from the timeline and redraws the timeline.
          * @param {string} eventId - Unique identifier of the event to remove.
          */
@@ -1747,21 +1762,6 @@ yukon.ui = (function () {
             var _self = this;
             eventIds.forEach(function (eventId) {
                 delete _self.options.events[eventId];
-            });
-            this.draw();
-        },
-        
-        /** 
-         * Add events to the timeline
-         * @param {string} events[].id - Unique identifier key. Will override any existing event with that id.
-         * @param {number} events[].timestamp - Time of event. expressed as epoch timestamp.
-         * @param {string} [events[].icon=icon-blank] - Icon to show on the timeline.
-         * @param {string} [events[].message] - html to display in the tooltip.
-         */
-        addEvents: function (events) {
-            var _self = this;
-            events.forEach(function (event) {
-                _self.options.events[event.id] = event;
             });
             this.draw();
         },
@@ -1898,9 +1898,9 @@ yukon.ui = (function () {
             
             var container = this.element;
             
-            container.empty();
-            
-            container.append('<span class="timeline-axis">');
+            container.empty()            
+            .append('<span class="timeline-axis">')
+            .show();
             
             this._drawTicks();
             this._drawEvents();
