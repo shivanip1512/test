@@ -2347,11 +2347,11 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             if (DatabaseEditorUtil.isTagSupported(mctBase, ImmutableSet.of(PaoTag.DEVICE_CONFIGURATION))) {
                 int id = mctBase.getPAObjectID();
                 PaoType type = mctBase.getPaoType();
-//                SimpleDevice device = new SimpleDevice(id, type);
-//                DeviceConfigurationDao deviceConfigurationDao = YukonSpringHook.getBean(DeviceConfigurationDao.class);
-//                LightDeviceConfiguration config = deviceConfigurationDao.findConfigurationForDevice(device);
-                if (mctBase.getDeviceConfiguration() != null) {
-                    getAssignedMctConfigLabel().setText(mctBase.getDeviceConfiguration().getName());
+                SimpleDevice device = new SimpleDevice(id, type);
+                DeviceConfigurationDao deviceConfigurationDao = YukonSpringHook.getBean(DeviceConfigurationDao.class);
+                LightDeviceConfiguration config = deviceConfigurationDao.findConfigurationForDevice(device);
+                if (config != null) {
+                    getAssignedMctConfigLabel().setText(config.getName());
                 } else {
                     getAssignedMctConfigLabel().setText(CtiUtilities.STRING_NONE);
                 }
