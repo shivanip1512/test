@@ -12,7 +12,9 @@ public class DNPConfiguration extends LightDeviceConfiguration {
     private boolean localTime = false;
     private boolean enableDnpTimesyncs = false;
     private boolean omitTimeRequest = false;
-    private boolean enableUnsolicitedMessages = true;
+    private boolean enableUnsolicitedMessageClass1 = true;
+    private boolean enableUnsolicitedMessageClass2 = true;
+    private boolean enableUnsolicitedMessageClass3 = true;
     
     public DNPConfiguration(Integer configurationId, String name, String description) {
         super(configurationId, name, description);
@@ -50,11 +52,27 @@ public class DNPConfiguration extends LightDeviceConfiguration {
         this.omitTimeRequest = omitTimeRequest;
     }
 
-    public boolean isEnableUnsolicitedMessages() {
-        return enableUnsolicitedMessages;
+    public boolean isEnableUnsolicitedMessageClass1() {
+        return enableUnsolicitedMessageClass1;
     }
-
-    public void setEnableUnsolicitedMessages(boolean enableUnsolicitedMessages) {
-        this.enableUnsolicitedMessages = enableUnsolicitedMessages;
+    
+    public void setEnableUnsolicitedMessageClass1(boolean enableUnsolicitedMessageClass1) {
+        this.enableUnsolicitedMessageClass1 = enableUnsolicitedMessageClass1;
+    }
+    
+    public boolean isEnableUnsolicitedMessageClass2() {
+        return enableUnsolicitedMessageClass2;
+    }
+    
+    public void setEnableUnsolicitedMessageClass2(boolean enableUnsolicitedMessageClass2) {
+        this.enableUnsolicitedMessageClass2 = enableUnsolicitedMessageClass2;
+    }
+    
+    public boolean isEnableUnsolicitedMessageClass3() {
+        return enableUnsolicitedMessageClass3;
+    }
+    
+    public void setEnableUnsolicitedMessageClass3(boolean enableUnsolicitedMessageClass3) {
+        this.enableUnsolicitedMessageClass3 = enableUnsolicitedMessageClass3;
     }
 }

@@ -1009,8 +1009,14 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
             case "enableDnpTimesyncs":
                 dnpConfiguration.setEnableDnpTimesyncs(Boolean.valueOf(item.getValue()));
                 break;
-            case "enableUnsolicitedMessages":
-                dnpConfiguration.setEnableUnsolicitedMessages(Boolean.valueOf(item.getValue()));
+            case "enableUnsolicitedMessagesClass1":
+                dnpConfiguration.setEnableUnsolicitedMessageClass1(Boolean.valueOf(item.getValue()));
+                break;
+            case "enableUnsolicitedMessagesClass2":
+                dnpConfiguration.setEnableUnsolicitedMessageClass2(Boolean.valueOf(item.getValue()));
+                break;
+            case "enableUnsolicitedMessagesClass3":
+                dnpConfiguration.setEnableUnsolicitedMessageClass3(Boolean.valueOf(item.getValue()));
                 break;
             case "localTime":
                 dnpConfiguration.setLocalTime(Boolean.valueOf(item.getValue()));

@@ -90,6 +90,7 @@ import com.cannontech.dbeditor.DatabaseEditorUtil;
 import com.cannontech.device.range.DlcAddressRangeService;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableSet;
 import com.klg.jclass.field.DataProperties;
 import com.klg.jclass.field.JCInvalidInfo;
@@ -583,6 +584,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             unsolicitedLabelConstraints.insets = new Insets(3, 3, 3, 3);
             unsolicitedLabelConstraints.gridy = 5;
             unsolicitedLabelConstraints.gridx = 0;
+            unsolicitedLabelConstraints.weightx = 1.0;
             unsolicitedLabelConstraints.anchor = GridBagConstraints.NORTHWEST;
 
             unsolicitedValueLabelConstraints.insets = new Insets(3, 3, 3, 3);
@@ -801,11 +803,11 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             unsolicitedLabel = new JLabel();
             unsolicitedLabel.setName("UnsolicitedLabel");
             unsolicitedLabel.setFont(new Font("dialog", 0, 14));
-            unsolicitedLabel.setText("Unsolicited Enabled: ");
+            unsolicitedLabel.setText("Unsolicited Enabled Class(1,2,3):");
             unsolicitedLabel.setVisible(true);
-            unsolicitedLabel.setPreferredSize(new Dimension(172, 19));
-            unsolicitedLabel.setMaximumSize(new Dimension(172, 19));
-            unsolicitedLabel.setMinimumSize(new Dimension(172, 19));
+            unsolicitedLabel.setPreferredSize(new Dimension(210, 19));
+            unsolicitedLabel.setMaximumSize(new Dimension(210, 19));
+            unsolicitedLabel.setMinimumSize(new Dimension(210, 19));
             unsolicitedLabel.setFont(new Font("Arial", 0, 14));
         }
 
@@ -2345,11 +2347,11 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             if (DatabaseEditorUtil.isTagSupported(mctBase, ImmutableSet.of(PaoTag.DEVICE_CONFIGURATION))) {
                 int id = mctBase.getPAObjectID();
                 PaoType type = mctBase.getPaoType();
-                SimpleDevice device = new SimpleDevice(id, type);
-                DeviceConfigurationDao deviceConfigurationDao = YukonSpringHook.getBean(DeviceConfigurationDao.class);
-                LightDeviceConfiguration config = deviceConfigurationDao.findConfigurationForDevice(device);
-                if (config != null) {
-                    getAssignedMctConfigLabel().setText(config.getName());
+//                SimpleDevice device = new SimpleDevice(id, type);
+//                DeviceConfigurationDao deviceConfigurationDao = YukonSpringHook.getBean(DeviceConfigurationDao.class);
+//                LightDeviceConfiguration config = deviceConfigurationDao.findConfigurationForDevice(device);
+                if (mctBase.getDeviceConfiguration() != null) {
+                    getAssignedMctConfigLabel().setText(mctBase.getDeviceConfiguration().getName());
                 } else {
                     getAssignedMctConfigLabel().setText(CtiUtilities.STRING_NONE);
                 }
@@ -2775,13 +2777,16 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 boolean localTime = dnpConfig.isLocalTime();
                 boolean enableTimesyncs = dnpConfig.isEnableDnpTimesyncs();
                 boolean omitTimeRequest = dnpConfig.isOmitTimeRequest();
-                boolean unsolicitedEnabled = dnpConfig.isEnableUnsolicitedMessages();
-
+                boolean unsolicitedEnabled1 = dnpConfig.isEnableUnsolicitedMessageClass1();
+                boolean unsolicitedEnabled2 = dnpConfig.isEnableUnsolicitedMessageClass2();
+                boolean unsolicitedEnabled3 = dnpConfig.isEnableUnsolicitedMessageClass3();
+                String unsolicitedEnabled = Joiner.on(", ").join(unsolicitedEnabled1, unsolicitedEnabled2, unsolicitedEnabled3);
+                
                 getInternalRetriesValueLabel().setText(Integer.toString(internalRetries));
                 getLocaltimeValueLabel().setText(Boolean.toString(localTime));
                 getTimesyncValueLabel().setText(Boolean.toString(enableTimesyncs));
                 getOmitTimeRequestValueLabel().setText(Boolean.toString(omitTimeRequest));
-                getUnsolicitedValueLabel().setText(Boolean.toString(unsolicitedEnabled));
+                getUnsolicitedValueLabel().setText(unsolicitedEnabled);
             } else {
                 getAssignedDnpConfigLabel().setText(CtiUtilities.STRING_NONE);
                 getAssignedDnpConfigLabel().setForeground(Color.RED);
