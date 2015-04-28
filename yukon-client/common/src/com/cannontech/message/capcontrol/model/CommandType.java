@@ -119,6 +119,12 @@ public enum CommandType implements DisplayableEnum {
         builder.add(CommandType.DISABLE_CAPBANK);
         builder.add(CommandType.SEND_ENABLE_OVUV);
         builder.add(CommandType.SEND_DISABLE_OVUV);
+        builder.add(CommandType.SEND_ENABLE_TEMPCONTROL);
+        builder.add(CommandType.SEND_DISABLE_TEMPCONTROL);
+        builder.add(CommandType.SEND_ENABLE_VARCONTROL);
+        builder.add(CommandType.SEND_DISABLE_VARCONTROL);
+        builder.add(CommandType.SEND_ENABLE_TIMECONTROL);
+        builder.add(CommandType.SEND_DISABLE_TIMECONTROL);
         requiresComment = builder.build();
     }
     
