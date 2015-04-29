@@ -43,15 +43,19 @@
             <props>
                 <prop key="/visualDisplays/loadManagement/*">visualDisplaysLoadManagementController</prop>
                 <prop key="/visualDisplays/probabilityForPeak/*">visualDisplaysProbabilityForPeakLoadController</prop>
-                <prop key="/CB_Server.wsdl">cb_server</prop>
-                <prop key="/CD_Server.wsdl">cd_server</prop>
-                <prop key="/EA_Server.wsdl">ea_server</prop>
-                <prop key="/LM_Server.wsdl">lm_server</prop>
-                <prop key="/MR_Server.wsdl">mr_server</prop>
-                <prop key="/OA_Server.wsdl">oa_server</prop>
-                <prop key="/OD_Server.wsdl">od_server</prop>
-                <prop key="/MDM_Server.wsdl">mdm_server</prop>
-                <prop key="/SCADA_Server.wsdl">scada_server</prop>
+                <prop key="/CB_ServerSoap.wsdl">cb_server</prop>
+                <prop key="/CD_ServerSoap.wsdl">cd_server</prop>
+                <prop key="/EA_ServerSoap.wsdl">ea_server</prop>
+                <prop key="/LM_ServerSoap.wsdl">lm_server</prop>
+                <prop key="/MR_ServerSoap.wsdl">mr_server</prop>
+                <prop key="/OA_ServerSoap.wsdl">oa_server</prop>
+                <prop key="/OD_ServerSoap.wsdl">od_server</prop>
+                <prop key="/MDM_ServerSaop.wsdl">mdm_server</prop>
+                <prop key="/SCADA_ServerSoap.wsdl">scada_server</prop>
+                <prop key="/CD_CBSoap.wsdl">cd_cbsoap</prop>
+                <prop key="/OD_OASoap.wsdl">od_oasoap</prop>
+                <prop key="/MR_CBSoap.wsdl">mr_cbsoap</prop>
+                <prop key="/MR_EASoap.wsdl">mr_easoap</prop>
             </props>
         </property>
         <property name="defaultHandler" ref="messageDispatcher"/>
@@ -106,7 +110,28 @@
      <bean id="scada_server"
         class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
         <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/SCADA_Server.wsdl" />
+    </bean>
+    
+    <bean id="cd_cbsoap"
+        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
+        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/2B_CD_CB.wsdl" />
     </bean> 
+    
+    <bean id="od_oasoap"
+        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
+        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/5_OD_OA.wsdl" />
+    </bean> 
+    
+    <bean id="mr_cbsoap"
+        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
+        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/2A_MR_CB.wsdl" />
+    </bean>
+    
+    <bean id="mr_easoap"
+        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
+        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/4_MR_EA.wsdl" />
+    </bean>
+    
     <!-- Exception Handling -->
     <bean id="exceptionResolver" class="org.springframework.ws.soap.server.endpoint.SoapFaultAnnotationExceptionResolver"/>
     <bean
