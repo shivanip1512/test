@@ -57,6 +57,7 @@ var yg = {
         filter: '<cti:msg2 key="yukon.web.components.button.filter.label"/>',
         finished: '<cti:msg2 key="yukon.common.finished"/>',
         map: '<cti:msg2 key="yukon.common.map"/>',
+        more: '<cti:msg2 key="yukon.common.selectGroup.more"/>',
         no: '<cti:msg2 key="yukon.web.defaults.no"/>',
         ok: '<cti:msg2 key="yukon.web.components.button.ok.label"/>',
         save: '<cti:msg2 key="yukon.web.components.button.save.label"/>',

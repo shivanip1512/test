@@ -117,11 +117,11 @@
                                         classes="js-command-button" data-command-id="${scanCommandHolder.commandId}"/>
                                 </li>
                                 <li>
-                                    <cti:button renderMode="labeledImage" nameKey="up" icon="icon-bullet-go-up"
+                                    <cti:button renderMode="labeledImage" nameKey="up" icon="icon-arrow-up-green"
                                         classes="js-command-button" data-command-id="${tapUpCommandHolder.commandId}"/>
                                 </li>
                                 <li>
-                                    <cti:button renderMode="labeledImage" nameKey="down" icon="icon-bullet-go-down"
+                                    <cti:button renderMode="labeledImage" nameKey="down" icon="icon-arrow-down-orange"
                                         classes="js-command-button" data-command-id="${tapDownCommandHolder.commandId}"/>
                                 </li>
                                 <li>

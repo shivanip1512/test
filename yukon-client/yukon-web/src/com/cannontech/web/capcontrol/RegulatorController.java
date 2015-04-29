@@ -79,10 +79,10 @@ public class RegulatorController {
     static {
         ImmutableMap.Builder<EventType, String> builder = ImmutableMap.builder();
         
-        builder.put(EventType.TAP_UP, "icon-bullet-go-up");
-        builder.put(EventType.TAP_DOWN, "icon-bullet-go-down");
-        builder.put(EventType.INCREASE_SETPOINT, "icon-bullet-go-up");
-        builder.put(EventType.DECREASE_SETPOINT, "icon-bullet-go-down");
+        builder.put(EventType.TAP_UP, "icon-arrow-up-green");
+        builder.put(EventType.TAP_DOWN, "icon-arrow-down-orange");
+        builder.put(EventType.INCREASE_SETPOINT, "icon-arrow-up-green");
+        builder.put(EventType.DECREASE_SETPOINT, "icon-arrow-down-orange");
         builder.put(EventType.INTEGRITY_SCAN, "icon-transmit-blue");
         builder.put(EventType.ENABLE_REMOTE_CONTROL, "icon-accept");
         builder.put(EventType.DISABLE_REMOTE_CONTROL, "icon-delete");

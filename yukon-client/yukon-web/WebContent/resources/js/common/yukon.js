@@ -1868,13 +1868,26 @@ yukon.ui = (function () {
                 }
                 
                 var tooltip = tooltipped.find('.js-event-tooltip');
+
+                if (tooltip.find('li').length > 10) {
+                    
+                    tooltip.find('li:gt(10)').remove();
+                    
+                    var moreCount = tooltipped.data('count') - 10;
+                    var moreText = yg.text.more.replace(/\{0\}/g, '<strong>' + moreCount + '</strong>');
+                    
+                    $('<li class="tac">')
+                    .html(moreText)
+                    .appendTo(tooltip);
+                    return;
+                }
                 
                 var timeText = moment(event.timestamp).tz(yg.timezone).format(yg.formats.date.full);
-                
                 var message = event.message ? ' - ' + event.message : '';
-                var itemTooltip = $('<li>').html(timeText + message);
-                itemTooltip.prepend(icon.clone());
-                tooltip.append(itemTooltip);
+                
+                $('<li>').html(timeText + message)
+                .prepend(icon.clone())
+                .appendTo(tooltip);
                 
                 var tooltipIcons = tooltip.find('.icon');
                 
@@ -1887,6 +1900,7 @@ yukon.ui = (function () {
                 } else {
                     tooltipIcons.addClass('dn M0');
                 }
+                
            });
             
         },
