@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.amr.device.StrategyType;
-import com.cannontech.amr.deviceread.service.RetryParameters;
 import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
@@ -26,17 +25,14 @@ import com.cannontech.amr.rfn.service.RfnMeterReadService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDevice;
-import com.cannontech.common.device.commands.CommandRequestExecutionObjects;
 import com.cannontech.common.device.commands.GroupCommandCompletionCallback;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -60,7 +56,7 @@ import com.google.common.collect.Sets;
 
 public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrategy {
     
-    private final static Logger log = YukonLogManager.getLogger(DeviceAttributeReadPlcStrategy.class);
+    private final static Logger log = YukonLogManager.getLogger(DeviceAttributeReadRfnStrategy.class);
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private RfnMeterReadService rfnMeterReadService;
@@ -398,15 +394,6 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
         sendDeviceRequests(rfnDevices, devicePointIds, strategyCallback);
     }
             
-    @Override
-    public CommandRequestExecutionObjects<CommandRequestDevice> initiateRead(Set<SimpleDevice> devices,
-            Set<? extends Attribute> attributes, String command, DeviceRequestType type, LiteYukonUser user,
-            RetryParameters retryParameters, CommandCompletionCallbackAdapter<CommandRequestDevice> callback) {
-        
-        throw new UnsupportedOperationException(getType() + " Strategy does not support read with retries");
-        
-    }
-
     private <T> SpecificDeviceErrorDescription getError(DeviceError error, T replyType, String msgCode) {
         DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(error);
         MessageSourceResolvable detail = YukonMessageSourceResolvable.createSingleCodeWithArguments(msgCode, replyType);

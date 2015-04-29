@@ -5,13 +5,8 @@ import java.util.Set;
 
 import com.cannontech.amr.deviceread.service.DeviceReadResult;
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
-import com.cannontech.amr.deviceread.service.RetryParameters;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.device.commands.CommandRequestDevice;
-import com.cannontech.common.device.commands.CommandRequestExecutionObjects;
-import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -48,15 +43,6 @@ public interface DeviceAttributeReadService {
                                DeviceRequestType type,
                                final SimpleCallback<GroupMeterReadResult> callback,
                                LiteYukonUser user);
-
-    /**
-     * This method will attempt to read device collection and retry if needed. This method supports
-     * PLC devices only, all other devices will be marked as unsupported.
-     */
-    
-    CommandRequestExecutionObjects<CommandRequestDevice> initiateRead(Set<SimpleDevice> devices,
-            Set<? extends Attribute> attributes, String command, DeviceRequestType type, LiteYukonUser user,
-            RetryParameters retryParameters, CommandCompletionCallbackAdapter<CommandRequestDevice> callback);
     
     /**
      * This method will attempt to read device and wait for the result

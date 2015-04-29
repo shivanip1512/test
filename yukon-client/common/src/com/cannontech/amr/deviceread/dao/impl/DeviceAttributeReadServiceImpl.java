@@ -18,7 +18,6 @@ import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.amr.deviceread.dao.WaitableDeviceAttributeReadCallback;
 import com.cannontech.amr.deviceread.service.DeviceReadResult;
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
-import com.cannontech.amr.deviceread.service.RetryParameters;
 import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
@@ -27,8 +26,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.device.commands.CommandRequestDevice;
-import com.cannontech.common.device.commands.CommandRequestExecutionObjects;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
@@ -41,7 +38,6 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
@@ -254,16 +250,6 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
 				CommandRequestUnsupportedType.UNSUPPORTED);
 		return key;
 	}
-
-    @Override
-    public CommandRequestExecutionObjects<CommandRequestDevice> initiateRead(Set<SimpleDevice> devices,
-            Set<? extends Attribute> attributes, String command, DeviceRequestType type, LiteYukonUser user,
-            RetryParameters retryParameters, CommandCompletionCallbackAdapter<CommandRequestDevice> callback) {
-        if (log.isDebugEnabled()) {
-            log.debug("initiateRead (PLC with retries)");
-        }
-        return plcStrategy.initiateRead(devices, attributes, command, type, user, retryParameters, callback);
-    }
 
 	@Override
 	public DeviceReadResult initiateReadAndWait(YukonDevice device, Set<? extends Attribute> toRead,

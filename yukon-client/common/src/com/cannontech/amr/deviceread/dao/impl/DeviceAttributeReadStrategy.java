@@ -1,20 +1,13 @@
 package com.cannontech.amr.deviceread.dao.impl;
 
 import java.util.Collection;
-import java.util.Set;
 
 import com.cannontech.amr.device.StrategyType;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
-import com.cannontech.amr.deviceread.service.RetryParameters;
 import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.device.commands.CommandRequestDevice;
-import com.cannontech.common.device.commands.CommandRequestExecutionObjects;
 import com.cannontech.common.device.commands.GroupCommandCompletionCallback;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
-import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -68,13 +61,6 @@ public interface DeviceAttributeReadStrategy {
                              GroupCommandCompletionCallback groupCallback, DeviceRequestType type,
                              LiteYukonUser user);
     
-    /**
-     * This method works only on PLC devices and supports retries.
-     */
-    CommandRequestExecutionObjects<CommandRequestDevice> initiateRead(Set<SimpleDevice> devices,
-            Set<? extends Attribute> attributes, String command, DeviceRequestType type, LiteYukonUser user,
-            RetryParameters retryParameters, CommandCompletionCallbackAdapter<CommandRequestDevice> callback);
-
     public int getRequestCount(Collection<PaoMultiPointIdentifier> devicesForThisStrategy);
 
 

@@ -9,7 +9,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
+import com.cannontech.amr.deviceread.dao.DeviceCommandService;
 import com.cannontech.amr.deviceread.service.RetryParameters;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.model.ScheduledGroupRequestExecutionPair;
@@ -50,7 +50,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionResultsDao;
-    @Autowired private DeviceAttributeReadService deviceAttributeReadService;
+    @Autowired private DeviceCommandService devicePorterCommandService;
 
     @Override
     public void start() {
@@ -70,7 +70,6 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
     	LiteYukonUser user = getUserContext().getYukonUser();
     	
     	log.info("Starting scheduled group command execution. user = " + user.getUsername() + ".");
-        
         try {
         	DeviceGroup taskDeviceGroup = getDeviceGroup();
             if (taskDeviceGroup == null) {
@@ -87,8 +86,8 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
                 };
             Set<SimpleDevice> devices = deviceGroupService.getDevices(Collections.singletonList(getDeviceGroup()));
             CommandRequestExecutionObjects<CommandRequestDevice> executionObjects =
-                deviceAttributeReadService.initiateRead(devices, attributes, command, commandRequestExecutionType,
-                    user, getRetryParameters(), callback);
+                devicePorterCommandService.execute(devices, attributes, command, commandRequestExecutionType, user,
+                    getRetryParameters(), callback);
             currentExecutor = executionObjects.getCommandRequestExecutor();
             currentCallback = executionObjects.getCallback();
 
