@@ -75,27 +75,27 @@ struct phase_operated_voltage_regulator_fixture_core
             _attr = decltype( _attr )
             {
                 { PointAttribute::VoltageXAttribute,
-                    { 2202,  AnalogPointType, "VoltageX", 1000, 1, "", "", 1.0 } },
+                    { 2202,  AnalogPointType, "VoltageX", 1000, 1, "", "", 1.0, 0 } },
                 { PointAttribute::VoltageYAttribute,
-                    { 2203,  AnalogPointType, "VoltageY", 1001, 2, "", "", 1.0 } },
+                    { 2203,  AnalogPointType, "VoltageY", 1001, 2, "", "", 1.0, 0 } },
                 { PointAttribute::TapUpAttribute,
-                    { 3100,  StatusPointType, "TapUp", 1003, 4, "", "control close", 1.0 } },
+                    { 3100,  StatusPointType, "TapUp", 1003, 4, "", "control close", 1.0, 0 } },
                 { PointAttribute::TapDownAttribute,
-                    { 3101,  StatusPointType, "TapDown", 1004, 5, "", "control close", 1.0 } },
+                    { 3101,  StatusPointType, "TapDown", 1004, 5, "", "control close", 1.0, 0 } },
                 { PointAttribute::KeepAliveAttribute,
-                    { 4200,  AnalogPointType, "KeepAlive", 1007, 10001, "", "", 1.0 } },
+                    { 4200,  AnalogPointType, "KeepAlive", 1007, 10001, "", "", 1.0, 0 } },
                 { PointAttribute::AutoRemoteControlAttribute,
-                    { 5600,  StatusPointType, "AutoRemoteControl", 1009, 6, "", "", 1.0 } },
+                    { 5600,  StatusPointType, "AutoRemoteControl", 1009, 6, "", "", 1.0, 0 } },
                 { PointAttribute::TapPositionAttribute,
-                    { 3500,  AnalogPointType, "TapPosition", 1013, 3, "", "", 1.0 } },
+                    { 3500,  AnalogPointType, "TapPosition", 1013, 3, "", "", 1.0, 0 } },
                 { PointAttribute::TerminateAttribute,
-                    { 7500,  StatusPointType, "Terminate", 1022, 9, "", "control close", 1.0 } },
+                    { 7500,  StatusPointType, "Terminate", 1022, 9, "", "control close", 1.0, 0 } },
                 { PointAttribute::AutoBlockEnableAttribute,
-                    { 8100,  StatusPointType, "AutoBlock", 1026, 12, "", "control close", 1.0 } },
+                    { 8100,  StatusPointType, "AutoBlock", 1026, 12, "", "control close", 1.0, 0 } },
                 { PointAttribute::ForwardSetPointAttribute,
-                    { 7000,  AnalogPointType, "SetPoint", 1020, 10007, "", "", 0.1 } },
+                    { 7000,  AnalogPointType, "SetPoint", 1020, 10007, "", "", 0.1, 0 } },
                 { PointAttribute::ForwardBandwidthAttribute,
-                    { 7100,  AnalogPointType, "Bandwidth", 1021, 8, "", "", 1.0 } }
+                    { 7100,  AnalogPointType, "Bandwidth", 1021, 8, "", "", 1.0, 0 } }
             };
         }
     }

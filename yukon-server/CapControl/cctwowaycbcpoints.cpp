@@ -297,7 +297,7 @@ PointAttribute CtiCCTwoWayPoints::getAttribute(int pointtype, int offset)
     return PointAttribute::Unknown;
 }
 
-bool CtiCCTwoWayPoints::setTwoWayPointId(CtiPointType_t pointtype, int offset, long pointId)
+bool CtiCCTwoWayPoints::setTwoWayPointId(CtiPointType_t pointtype, int offset, long pointId, int stateGroupId)
 {
     PointAttribute pa = getAttribute(pointtype, offset);
     if (pa == PointAttribute::Unknown)
@@ -310,6 +310,7 @@ bool CtiCCTwoWayPoints::setTwoWayPointId(CtiPointType_t pointtype, int offset, l
         p.setPointId(pointId);
         p.setPointOffset(offset);
         p.setPointType(pointtype);
+        p.setStateGroupId(stateGroupId);
         _attributes[pa] = p;
         _pointidPointtypeMap.insert(std::make_pair(pointId, pointtype));
     }
@@ -368,6 +369,16 @@ void CtiCCTwoWayPoints::addAllCBCPointsToRegMsg(std::set<long>& pointList)
                     | boost::adaptors::transformed( std::mem_fun_ref( &LitePoint::getPointId ) )
                     | boost::adaptors::filtered( std::bind2nd( std::greater<long>(), 0 ) ),
                  std::inserter( pointList, pointList.begin() ) );
+}
+
+std::string CtiCCTwoWayPoints::getLastControlText()
+{
+    return _lastControlReason->getText( encodeLastControlReasonForDB(), getLastControlReasonStateGroupID() );
+}
+
+void CtiCCTwoWayPoints::setLastControlReasonDecoder( std::unique_ptr<LastControlReason> && reason )
+{
+    _lastControlReason = std::move( reason );
 }
 
 struct ColumnMapping
@@ -467,14 +478,11 @@ void CtiCCTwoWayPoints::setDynamicData(Cti::RowReader& rdr, LONG cbcState, CtiTi
 CtiCCTwoWayPointsCbcDnp::CtiCCTwoWayPointsCbcDnp( long paoid, std::string paotype  )
     :   CtiCCTwoWayPoints(paoid, paotype)
 {
-        _statusOffsetAttribute =
+    setLastControlReasonDecoder( std::make_unique<LastControlReasonCbcDnp>() );
+
+    _statusOffsetAttribute =
                 OffsetAttributeMappings{
                         { 1, PointAttribute::CapacitorBankState }};
-}
-
-std::string CtiCCTwoWayPointsCbcDnp::getLastControlText()
-{
-    return "Uninitialized";
 }
 
 int CtiCCTwoWayPointsCbcDnp::encodeLastControlReasonForDB()
@@ -487,6 +495,11 @@ void CtiCCTwoWayPointsCbcDnp::decodeLastControlReasonFromDB( const int lastContr
     // empty
 }
 
+long CtiCCTwoWayPointsCbcDnp::getLastControlReasonStateGroupID() const
+{
+    return 0;
+}
+
 
 // ------------------------------
 
@@ -494,6 +507,8 @@ void CtiCCTwoWayPointsCbcDnp::decodeLastControlReasonFromDB( const int lastContr
 CtiCCTwoWayPointsCbc702x::CtiCCTwoWayPointsCbc702x( long paoid, std::string paotype  )
     :   CtiCCTwoWayPoints(paoid, paotype)
 {
+    setLastControlReasonDecoder( std::make_unique<LastControlReasonCbc702x>() );
+
     _analogOffsetAttribute =
             OffsetAttributeMappings {
                     {     5, PointAttribute::CbcVoltage                     },
@@ -549,28 +564,6 @@ CtiCCTwoWayPointsCbc702x::CtiCCTwoWayPointsCbc702x( long paoid, std::string paot
                     {     3, PointAttribute::OvCount                        }};
 }
 
-std::string CtiCCTwoWayPointsCbc702x::getLastControlText()
-{
-    string retVal = "Uninitialized";
-    if ((LONG) getPointValueByAttribute(PointAttribute::LastControlRemote) > 0 )
-        retVal = "Remote";
-    else if (getPointValueByAttribute(PointAttribute::LastControlLocal) > 0 )
-        retVal = "Local";
-    else if (getPointValueByAttribute(PointAttribute::LastControlOvUv) > 0 )
-        retVal = "OvUv";
-    else if (getPointValueByAttribute(PointAttribute::LastControlNeutralFault) > 0 )
-        retVal = "NeutralFault";
-    else if (getPointValueByAttribute(PointAttribute::LastControlScheduled) > 0 )
-        retVal = "Schedule";
-    else if (getPointValueByAttribute(PointAttribute::LastControlDigital) > 0 )
-        retVal = "Digital";
-    else if (getPointValueByAttribute(PointAttribute::LastControlAnalog) > 0 )
-        retVal = "Analog";
-    else if (getPointValueByAttribute(PointAttribute::LastControlTemperature) > 0 )
-        retVal = "Temp";
-    return retVal;
-}
-
 int CtiCCTwoWayPointsCbc702x::encodeLastControlReasonForDB()
 {
     int lastControlReason = 0;
@@ -599,34 +592,20 @@ void CtiCCTwoWayPointsCbc702x::decodeLastControlReasonFromDB( const int lastCont
     setTwoWayStatusPointValue(getPointIdByAttribute(PointAttribute::LastControlTemperature),  !!(lastControlReason & 0x80), timestamp);
 }
 
+long CtiCCTwoWayPointsCbc702x::getLastControlReasonStateGroupID() const
+{
+    return 0;
+}
+
 
 // ------------------------------
 
 
-const std::vector<std::string>   CtiCCTwoWayPointsCbc802x::lastControlDecoder
-    = boost::assign::list_of
-        ( "Manual" )
-        ( "SCADA Override" )
-        ( "Fault Current" )
-        ( "Emergency Voltage" )
-        ( "Time ONOFF" )
-        ( "OVUV Control" )
-        ( "VAR" )
-        ( "Va" )
-        ( "Vb" )
-        ( "Vc" )
-        ( "Ia" )
-        ( "Ib" )
-        ( "Ic" )
-        ( "Temp" )
-        ( "Remote" )
-        ( "Time" )
-        ( "Reclose Block" )
-            ;
-
 CtiCCTwoWayPointsCbc802x::CtiCCTwoWayPointsCbc802x( long paoid, std::string paotype  )
     :   CtiCCTwoWayPoints(paoid, paotype)
 {
+    setLastControlReasonDecoder( std::make_unique<LastControlReasonCbc802x>() );
+
     _analogOffsetAttribute =
             OffsetAttributeMappings {
                     {     2, PointAttribute::LastControlReason      },
@@ -653,34 +632,14 @@ CtiCCTwoWayPointsCbc802x::CtiCCTwoWayPointsCbc802x( long paoid, std::string paot
                     {     5, PointAttribute::OpenOpCount            }};
 }
 
-std::string CtiCCTwoWayPointsCbc802x::getLastControlText()
-{
-    std::string retVal = "Uninitialized";
-
-    if ( getPointIdByAttribute( PointAttribute::LastControlReason ) > 0 )
-    {
-        const int value = getPointValueByAttribute( PointAttribute::LastControlReason,
-                                                    lastControlDecoder.size() );
-
-        if ( 0 <= value && value < lastControlDecoder.size() )
-        {
-            retVal = lastControlDecoder[ value ];
-        }
-    }
-
-    return retVal;
-}
-
 int CtiCCTwoWayPointsCbc802x::encodeLastControlReasonForDB()
 {
-    int lastControlReason = -1;
-
     if ( getPointIdByAttribute( PointAttribute::LastControlReason ) > 0 )
     {
-        lastControlReason = getPointValueByAttribute( PointAttribute::LastControlReason, lastControlReason );
+        return getPointValueByAttribute( PointAttribute::LastControlReason, -1 );
     }
 
-    return lastControlReason;
+    return -1;
 }
 
 void CtiCCTwoWayPointsCbc802x::decodeLastControlReasonFromDB( const int lastControlReason, const CtiTime & timestamp )
@@ -691,6 +650,18 @@ void CtiCCTwoWayPointsCbc802x::decodeLastControlReasonFromDB( const int lastCont
     {
         setTwoWayAnalogPointValue( pointID, lastControlReason, timestamp );
     }
+}
+
+long CtiCCTwoWayPointsCbc802x::getLastControlReasonStateGroupID() const
+{
+    LitePoint point = getPointByAttribute( PointAttribute::LastControlReason );
+
+    if ( point.getPointId() > 0 )
+    {
+        return point.getStateGroupId();
+    }
+
+    return 0;
 }
 
 

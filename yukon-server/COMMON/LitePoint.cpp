@@ -8,7 +8,8 @@ LitePoint::LitePoint() :
     _paoId(0),
     _pointOffset(0),
     _controlOffset(0),
-    _multiplier(0)
+    _multiplier(0),
+    _stateGroupId(0)
 {
 
 }
@@ -17,7 +18,8 @@ LitePoint::LitePoint( const int Id, const CtiPointType_t Type, const std::string
                       const int PaoId, const int Offset,
                       const std::string & stateZeroControl,
                       const std::string & stateOneControl,
-                      const double Multiplier )
+                      const double Multiplier,
+                      const int stateGroupId )
     : _pointId(Id),
     _pointType(Type),
     _pointName(Name),
@@ -26,7 +28,8 @@ LitePoint::LitePoint( const int Id, const CtiPointType_t Type, const std::string
     _controlOffset(0),
     _stateZeroControl(stateZeroControl),
     _stateOneControl(stateOneControl),
-    _multiplier(Multiplier)
+    _multiplier(Multiplier),
+    _stateGroupId(stateGroupId)
 {
 
 }
@@ -119,5 +122,15 @@ void LitePoint::setMultiplier(const double multiplier)
 double LitePoint::getMultiplier() const
 {
     return _multiplier;
+}
+
+void LitePoint::setStateGroupId(const int stateGroupId)
+{
+    _stateGroupId = stateGroupId;
+}
+
+int LitePoint::getStateGroupId() const
+{
+    return _stateGroupId;
 }
 

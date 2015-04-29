@@ -39,6 +39,7 @@ $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\ctiholidaydb.lib \
 $(COMPILEBASE)\lib\ctidevdb.lib \
 $(COMPILEBASE)\lib\cticonfig.lib \
+$(COMPILEBASE)\lib\ctidbsrc.lib \
 $(COMPILEBASE)\lib\ctithriftmsg.lib \
 $(THRIFT_LIB)
 
@@ -153,7 +154,8 @@ IncrementingKeepAlivePolicy.obj \
 ScanPolicy.obj \
 LoadOnlyScanPolicy.obj \
 StandardScanPolicy.obj \
-RegulatorEvents.obj
+RegulatorEvents.obj \
+LastControlReason.obj
 
 
 

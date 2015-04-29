@@ -13,7 +13,8 @@ public:
                const int PaoId, const int Offset,
                const std::string & stateZeroControl,
                const std::string & stateOneControl,
-               const double Multiplier );
+               const double Multiplier,
+               const int stateGroupId );
 
     void setPointId(int pointId);
     int getPointId() const;
@@ -42,6 +43,9 @@ public:
     void setMultiplier(const double multiplier);
     double getMultiplier() const;
 
+    void setStateGroupId(const int stateGroupId);
+    int getStateGroupId() const;
+
 private:
 
     int _pointId;
@@ -55,4 +59,6 @@ private:
     std::string _stateOneControl;
 
     double _multiplier;
+
+    int _stateGroupId;
 };

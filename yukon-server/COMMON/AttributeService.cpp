@@ -69,6 +69,7 @@ std::vector<LitePoint> AttributeService::getLitePointsById(const std::vector<int
             "P.PointName, "
             "P.PAOBjectId, "
             "P.PointOffset, "
+            "P.StateGroupId, "
             "PSC.StateZeroControl, "
             "PSC.StateOneControl, "
             "PC.ControlOffset, "
@@ -129,6 +130,9 @@ std::vector<LitePoint> AttributeService::getLitePointsById(const std::vector<int
 
             rdr["PointOffset"] >> tempInt;
             point.setPointOffset(tempInt);
+
+            rdr["StateGroupId"] >> tempInt;
+            point.setStateGroupId(tempInt);
 
             if ( ! rdr["StateZeroControl"].isNull() )
             {

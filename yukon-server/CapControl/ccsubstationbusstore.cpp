@@ -6461,7 +6461,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
         }
         //load points off of cbc 70xx devices (two way device points)
         {
-            static const string sql = "SELECT PT.paobjectid, PT.pointid, PT.pointoffset, PT.pointtype "
+            static const string sql = "SELECT PT.paobjectid, PT.pointid, PT.pointoffset, PT.pointtype, PT.stategroupid "
                                       "FROM point PT, capbank CB "
                                       "WHERE CB.controldeviceid = PT.paobjectid";
 
@@ -6505,16 +6505,19 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                             long tempPointId = -1000;
                             long tempPointOffset = -1000;
                             string tempPointType = "(none)";
+                            int tempStateGroupID = 0;
+
                             rdr["pointid"] >> tempPointId;
                             rdr["pointoffset"] >> tempPointOffset;
                             rdr["pointtype"] >> tempPointType;
+                            rdr["stategroupid"] >> tempStateGroupID;
 
                             CtiPointType_t pointType = resolvePointType(tempPointType);
                             if (pointType == StatusPointType ||
                                 pointType == AnalogPointType ||
                                 pointType == PulseAccumulatorPointType)
                             {
-                                if (currentCCCapBank->getTwoWayPoints().setTwoWayPointId(pointType, tempPointOffset, tempPointId) )
+                                if (currentCCCapBank->getTwoWayPoints().setTwoWayPointId(pointType, tempPointOffset, tempPointId, tempStateGroupID) )
                                 {
                                     currentCCCapBank->addPointId(tempPointId);
                                     pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));

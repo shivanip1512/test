@@ -1,10 +1,10 @@
 #include <boost/test/unit_test.hpp>
 
-#include <boost/scoped_ptr.hpp>
-#include <boost/assign/list_of.hpp>
+#include "boost_test_helpers.h"
 
 #include "cctwowaycbcpoints.h"
 #include "ctidate.h"
+#include "std_helper.h"
 
 
 struct PointInitializer
@@ -15,40 +15,84 @@ struct PointInitializer
 };
 
 
+class test_LastControlReasonCbc802x : public LastControlReason
+{
+public:
+
+    std::string getText( const long reason, const long stateGroup ) override
+    {
+        // state of the world as of 2015.04.29...
+
+        static const std::map<long, std::string>    _lookup 
+        {
+            {  0, "Manual"                  },
+            {  1, "SCADA Override"          },
+            {  2, "Fault Current"           },
+            {  3, "Emergency Voltage"       },
+            {  4, "Time ONOFF"              },
+            {  5, "OVUV Control"            },
+            {  6, "VAR"                     },
+            {  7, "Va"                      },
+            {  8, "Vb"                      },
+            {  9, "Vc"                      },
+            { 10, "Ia"                      },
+            { 11, "Ib"                      },
+            { 12, "Ic"                      },
+            { 13, "Temp"                    },
+            { 14, "N/A"                     },
+            { 15, "Time"                    },
+            { 16, "N/A"                     },
+            { 17, "Bad Active Relay"        },
+            { 18, "NC Lockout"              },
+            { 19, "Control Accepted"        },
+            { 20, "Auto Mode"               },
+            { 21, "Reclose Block"           }
+        };
+
+        if ( auto result = Cti::mapFind( _lookup, reason ) )
+        {
+            return *result;
+        }
+
+        return "Uninitialized";
+    }
+};
+
+
+
 BOOST_AUTO_TEST_SUITE( test_TwoWayCBCPoints )
 
 BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_DNP )
 {
-    boost::scoped_ptr<CtiCCTwoWayPoints>     points( CtiCCTwoWayPointsFactory::Create( 575, "CBC DNP" ) );
+    std::unique_ptr<CtiCCTwoWayPoints>     points( CtiCCTwoWayPointsFactory::Create( 575, "CBC DNP" ) );
 
     PointInitializer    databaseInput[] =
     {
         { StatusPointType,                  1,      761 }
     };
 
-    for each ( const PointInitializer & item in databaseInput )
+    for ( const PointInitializer & item : databaseInput )
     {
-        points->setTwoWayPointId( item.type, item.offset, item.pointID );
+        points->setTwoWayPointId( item.type, item.offset, item.pointID, 0 );
     }
 
     std::set<long>
         registrationPoints,
         expected
-            = boost::assign::list_of
-                ( 761 )
-                    ;
+        {
+            761
+        };
 
     points->addAllCBCPointsToRegMsg( registrationPoints );
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(  registrationPoints.begin(), registrationPoints.end(),
-                                    expected.begin(),           expected.end()  );
+    BOOST_CHECK_EQUAL_RANGES( registrationPoints, expected );
 
     BOOST_CHECK_EQUAL( "Uninitialized", points->getLastControlText() );
 }
 
 BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 {
-    boost::scoped_ptr<CtiCCTwoWayPoints>     points( CtiCCTwoWayPointsFactory::Create( 545, "CBC 7022" ) );
+    std::unique_ptr<CtiCCTwoWayPoints>     points( CtiCCTwoWayPointsFactory::Create( 545, "CBC 7022" ) );
 
     PointInitializer    databaseInput[] =
     {
@@ -126,26 +170,25 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
         { StatusPointType,               2001,      740 }
     };
 
-    for each ( const PointInitializer & item in databaseInput )
+    for ( const PointInitializer & item : databaseInput )
     {
-        points->setTwoWayPointId( item.type, item.offset, item.pointID );
+        points->setTwoWayPointId( item.type, item.offset, item.pointID, 0 );
     }
 
     std::set<long>
         registrationPoints,
         expected
-            = boost::assign::list_of
-                ( 739 )( 691 )( 732 )( 706 )( 712 )( 723 )( 671 )( 698 )( 708 )
-                ( 733 )( 720 )( 721 )( 697 )( 729 )( 684 )( 672 )( 722 )( 719 )
-                ( 688 )( 711 )( 727 )( 687 )( 675 )( 682 )( 694 )( 707 )( 679 )
-                ( 700 )( 690 )( 693 )( 676 )( 734 )( 674 )( 701 )( 702 )( 714 )
-                ( 716 )( 704 )( 695 )( 689 )( 705 )( 731 )( 683 )( 717 )( 726 )
-                    ;
+        {
+            739, 691, 732, 706, 712, 723, 671, 698, 708,
+            733, 720, 721, 697, 729, 684, 672, 722, 719,
+            688, 711, 727, 687, 675, 682, 694, 707, 679,
+            700, 690, 693, 676, 734, 674, 701, 702, 714,
+            716, 704, 695, 689, 705, 731, 683, 717, 726
+        };
 
     points->addAllCBCPointsToRegMsg( registrationPoints );
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(  registrationPoints.begin(), registrationPoints.end(),
-                                    expected.begin(),           expected.end()  );
+    BOOST_CHECK_EQUAL_RANGES( registrationPoints, expected );
 
 /// -----------
 
@@ -267,7 +310,9 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
 BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 {
-    boost::scoped_ptr<CtiCCTwoWayPoints>     points( CtiCCTwoWayPointsFactory::Create( 545, "CBC 8020" ) );
+    std::unique_ptr<CtiCCTwoWayPoints>     points( CtiCCTwoWayPointsFactory::Create( 545, "CBC 8020" ) );
+
+    points->setLastControlReasonDecoder( std::make_unique<test_LastControlReasonCbc802x>() );
 
     PointInitializer    databaseInput[] =
     {
@@ -328,23 +373,22 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
         { StatusPointType,               2001,      346 }
     };
 
-    for each ( const PointInitializer & item in databaseInput )
+    for ( const PointInitializer & item : databaseInput )
     {
-        points->setTwoWayPointId( item.type, item.offset, item.pointID );
+        points->setTwoWayPointId( item.type, item.offset, item.pointID, -17 );
     }
 
     std::set<long>
         registrationPoints,
         expected
-            = boost::assign::list_of
-                ( 340 )( 331 )( 359 )( 313 )( 323 )( 338 )( 362 )( 330 )( 350 )
-                ( 318 )( 334 )( 311 )( 354 )( 321 )( 336 )( 335 )
-                    ;
+        {
+            340, 331, 359, 313, 323, 338, 362, 330, 350,
+            318, 334, 311, 354, 321, 336, 335
+        };
 
     points->addAllCBCPointsToRegMsg( registrationPoints );
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(  registrationPoints.begin(), registrationPoints.end(),
-                                    expected.begin(),           expected.end()  );
+    BOOST_CHECK_EQUAL_RANGES( registrationPoints, expected );
 
 /// -----------
 
@@ -441,7 +485,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
                     points->getPointIdByAttribute( PointAttribute::LastControlReason ),    14, now ) );
 
-    BOOST_CHECK_EQUAL( "Remote", points->getLastControlText() );
+    BOOST_CHECK_EQUAL( "N/A", points->getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
@@ -453,11 +497,41 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
                     points->getPointIdByAttribute( PointAttribute::LastControlReason ),    16, now ) );
 
-    BOOST_CHECK_EQUAL( "Reclose Block", points->getLastControlText() );
+    BOOST_CHECK_EQUAL( "N/A", points->getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
                     points->getPointIdByAttribute( PointAttribute::LastControlReason ),    17, now ) );
+
+    BOOST_CHECK_EQUAL( "Bad Active Relay", points->getLastControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::LastControlReason ),    18, now ) );
+
+    BOOST_CHECK_EQUAL( "NC Lockout", points->getLastControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::LastControlReason ),    19, now ) );
+
+    BOOST_CHECK_EQUAL( "Control Accepted", points->getLastControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::LastControlReason ),    20, now ) );
+
+    BOOST_CHECK_EQUAL( "Auto Mode", points->getLastControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::LastControlReason ),    21, now ) );
+
+    BOOST_CHECK_EQUAL( "Reclose Block", points->getLastControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::LastControlReason ),    22, now ) );
 
     BOOST_CHECK_EQUAL( "Uninitialized", points->getLastControlText() );
 }

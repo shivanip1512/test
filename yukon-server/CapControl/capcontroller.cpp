@@ -33,12 +33,11 @@
 #include "ControlStrategy.h"
 #include "ThreadStatusKeeper.h"
 #include "ExecutorFactory.h"
-
+#include "dllyukon.h"
 #include "ccclientconn.h"
 #include "ccclientlistener.h"
 #include "millisecond_timer.h"
 #include "module_util.h"
-
 #include "mgr_config.h"
 
 extern void refreshGlobalCParms();
@@ -1904,7 +1903,6 @@ void CtiCapController::parseMessage(CtiMessage *message)
                         ( (dbChange->getDatabase() == ChangePAODb && resolvePAOCategory(dbChange->getCategory()) == PAO_CATEGORY_CAP_CONTROL) ||
                           (dbChange->getDatabase() == ChangePAODb && resolvePAOCategory(dbChange->getCategory()) == PAO_CATEGORY_DEVICE) ||
                           dbChange->getDatabase() == ChangePointDb ||
-                          (dbChange->getDatabase() == ChangeStateGroupDb && dbChange->getId() == 3) ||
                           dbChange->getDatabase() == ChangeCBCStrategyDb ||
                           dbChange->getDatabase() == ChangePAOScheduleDB ))
                     {
@@ -1966,6 +1964,12 @@ void CtiCapController::parseMessage(CtiMessage *message)
                         CcDbReloadInfo reloadInfo( -1, ChangeTypeUpdate, Cti::CapControl::VoltageRegulatorType );
                         CtiCCSubstationBusStore::getInstance()->insertDBReloadList( reloadInfo );
 
+                    }
+                    else if ( dbChange && dbChange->getDatabase() == ChangeStateGroupDb )
+                    {
+                        CTILOG_DEBUG(dout, "State Group database change received, reloading state groups.");
+
+                        ReloadStateNames();
                     }
                 }
                 break;

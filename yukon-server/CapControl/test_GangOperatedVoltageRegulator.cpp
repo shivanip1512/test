@@ -75,21 +75,21 @@ struct gang_operated_voltage_regulator_fixture_core
             _attr = decltype( _attr )
             {
                 { PointAttribute::VoltageYAttribute,
-                    { 2203,  AnalogPointType, "VoltageY", 1001, 2, "", "", 1.0 } },
+                    { 2203,  AnalogPointType, "VoltageY", 1001, 2, "", "", 1.0, 0 } },
                 { PointAttribute::TapUpAttribute,
-                    { 3100,  StatusPointType, "TapUp", 1003, 4, "", "control close", 1.0 } },
+                    { 3100,  StatusPointType, "TapUp", 1003, 4, "", "control close", 1.0, 0 } },
                 { PointAttribute::TapDownAttribute,
-                    { 3101,  StatusPointType, "TapDown", 1004, 5, "", "control close", 1.0 } },
+                    { 3101,  StatusPointType, "TapDown", 1004, 5, "", "control close", 1.0, 0 } },
                 { PointAttribute::KeepAliveAttribute,
-                    { 4200,  AnalogPointType, "KeepAlive", 1007, 1, "", "", 1.0 } },
+                    { 4200,  AnalogPointType, "KeepAlive", 1007, 1, "", "", 1.0, 0 } },
                 { PointAttribute::AutoRemoteControlAttribute,
-                    { 5600,  StatusPointType, "AutoRemoteControl", 1009, 6, "", "", 1.0 } },
+                    { 5600,  StatusPointType, "AutoRemoteControl", 1009, 6, "", "", 1.0, 0 } },
                 { PointAttribute::TapPositionAttribute,
-                    { 3500,  AnalogPointType, "TapPosition", 1013, 3, "", "", 1.0 } },
+                    { 3500,  AnalogPointType, "TapPosition", 1013, 3, "", "", 1.0, 0 } },
                 { PointAttribute::ForwardSetPointAttribute,
-                    { 7000,  AnalogPointType, "SetPoint", 1020, 10007, "", "", 1.0 } },
+                    { 7000,  AnalogPointType, "SetPoint", 1020, 10007, "", "", 1.0, 0 } },
                 { PointAttribute::ForwardBandwidthAttribute,
-                    { 7100,  AnalogPointType, "Bandwidth", 1021, 8, "", "", 1.0 } }
+                    { 7100,  AnalogPointType, "Bandwidth", 1021, 8, "", "", 1.0, 0 } }
             };
         }
     }

@@ -4,6 +4,7 @@
 #include "PointAttribute.h"
 #include "PointValueHolder.h"
 #include "LitePoint.h"
+#include "LastControlReason.h"
 
 namespace Cti {
     class RowReader;
@@ -20,7 +21,7 @@ public:
 
     long getPAOId() const;
 
-    virtual std::string getLastControlText() = 0;
+    std::string getLastControlText();
 
     void setPAOId(long paoId);
 
@@ -29,7 +30,7 @@ public:
     double getPointValueByAttribute(PointAttribute pointAttribute, const double sentinel = 0);
 
 
-    bool setTwoWayPointId(CtiPointType_t pointtype, int offset, long pointId);
+    bool setTwoWayPointId(CtiPointType_t pointtype, int offset, long pointId, int stateGroupId);
     bool setTwoWayStatusPointValue(long pointID, long value, CtiTime timestamp);
     bool setTwoWayAnalogPointValue(long pointID, double value, CtiTime timestamp);
     bool setTwoWayPulseAccumulatorPointValue(long pointID, double value, CtiTime timestamp);
@@ -39,6 +40,8 @@ public:
 
     void restore(Cti::RowReader& rdr);
     void setDynamicData(Cti::RowReader& rdr, LONG cbcState, const CtiTime timestamp);
+
+    void setLastControlReasonDecoder( std::unique_ptr<LastControlReason> && reason );
 
 protected:
 
@@ -63,6 +66,9 @@ private:
 
     virtual int encodeLastControlReasonForDB() = 0;
     virtual void decodeLastControlReasonFromDB( const int lastControlReason, const CtiTime & timestamp ) = 0;
+    virtual long getLastControlReasonStateGroupID() const = 0;
+
+    std::unique_ptr<LastControlReason>  _lastControlReason;
 
     long _paoid;
     std::string _paotype;
@@ -95,12 +101,11 @@ public:
 
     CtiCCTwoWayPointsCbcDnp(long paoid, std::string paotype);
 
-    virtual std::string getLastControlText();
-
 private:
 
-    virtual int encodeLastControlReasonForDB();
-    virtual void decodeLastControlReasonFromDB( const int lastControlReason, const CtiTime & timestamp );
+    int encodeLastControlReasonForDB() override;
+    void decodeLastControlReasonFromDB( const int lastControlReason, const CtiTime & timestamp ) override;
+    long getLastControlReasonStateGroupID() const override;
 };
 
 
@@ -113,12 +118,11 @@ public:
 
     CtiCCTwoWayPointsCbc702x(long paoid, std::string paotype);
 
-    virtual std::string getLastControlText();
-
 private:
 
-    virtual int encodeLastControlReasonForDB();
-    virtual void decodeLastControlReasonFromDB( const int lastControlReason, const CtiTime & timestamp );
+    int encodeLastControlReasonForDB() override;
+    void decodeLastControlReasonFromDB( const int lastControlReason, const CtiTime & timestamp ) override;
+    long getLastControlReasonStateGroupID() const override;
 };
 
 
@@ -131,14 +135,11 @@ public:
 
     CtiCCTwoWayPointsCbc802x(long paoid, std::string paotype);
 
-    virtual std::string getLastControlText();
-
 private:
 
-    virtual int encodeLastControlReasonForDB();
-    virtual void decodeLastControlReasonFromDB( const int lastControlReason, const CtiTime & timestamp );
-
-    static const std::vector<std::string>   lastControlDecoder;
+    int encodeLastControlReasonForDB() override;
+    void decodeLastControlReasonFromDB( const int lastControlReason, const CtiTime & timestamp ) override;
+    long getLastControlReasonStateGroupID() const override;
 };
 
 
