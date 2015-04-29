@@ -223,7 +223,8 @@ package.access=sun.,\
                com.sun.scenario.,\
                com.sun.t2k.,\
                com.sun.pisces.,\
-               com.sun.webkit.
+               com.sun.webkit.,\
+               jdk.management.resource.internal.
 
 #
 # List of comma-separated packages that start with or equal this string
@@ -281,7 +282,8 @@ package.definition=sun.,\
                    com.sun.scenario.,\
                    com.sun.t2k.,\
                    com.sun.pisces.,\
-                   com.sun.webkit.
+                   com.sun.webkit.,\
+                   jdk.management.resource.internal.
 
 #
 # Determines whether this properties file can be appended to
