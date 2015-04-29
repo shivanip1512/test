@@ -21,8 +21,7 @@ import com.cannontech.core.authorization.support.AllowDeny;
 import com.cannontech.core.authorization.support.AuthorizationResponse;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.users.model.LiteUserGroup;
-import com.cannontech.database.IntegerRowMapper;
-import com.cannontech.database.StringRowMapper;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.google.common.base.Function;
@@ -112,7 +111,7 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
         sql.append("WHERE UserGroupId").in(userGroupIds);
         sql.append("  AND Permission").eq(permission);
 
-        List<Integer> paoIdList = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+        List<Integer> paoIdList = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
         return paoIdList;
     }
 
@@ -127,30 +126,18 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
         List<PaoPermission> result = Lists.newArrayList(gppList);
         return result;
     }
-
-    private List<PaoPermission> getPermissionsForPao(int userGroupId, int paoId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT GroupPaoPermissionId, UserGroupId, PaoId, Permission, Allow");
-        sql.append("FROM GroupPaoPermission");
-        sql.append("WHERE UserGroupId").eq(userGroupId);
-        sql.append("  AND PaoId").eq(paoId);
-
-        List<? extends PaoPermission> gppList = yukonJdbcTemplate.query(sql, new GroupPaoPermissionMapper());
-        List<PaoPermission> result = Lists.newArrayList(gppList);
-        return result;
-    }
-
+    
     private AuthorizationResponse isHasPermissionForPao(List<Integer> userGroupIds, int paoId, Permission permission) {
-
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT Allow");
         sql.append("FROM GroupPaoPermission");
         sql.append("WHERE UserGroupId").in(userGroupIds);
         sql.append("  AND PaoId").eq(paoId);
         sql.append("  AND Permission").eq(permission);
-
-        List<String> allowList = yukonJdbcTemplate.query(sql, new StringRowMapper());
-
+        
+        List<String> allowList = yukonJdbcTemplate.query(sql, RowMapper.STRING);
+        
         if (allowList.size() == 0) {
             return AuthorizationResponse.UNKNOWN;
         } else {
@@ -171,7 +158,7 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
             }
         }
     }
-
+    
     @Override
     public Multimap<AuthorizationResponse, PaoIdentifier> getPaoAuthorizations(Collection<PaoIdentifier> paos,
             LiteUserGroup lightUserGroup, Permission permission) {

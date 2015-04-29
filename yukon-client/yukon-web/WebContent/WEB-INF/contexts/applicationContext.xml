@@ -109,18 +109,6 @@
         <property name="required" value="true"/>
     </bean>
 
-    <bean id="widgetInput.permission" class="com.cannontech.web.widget.support.SimpleWidgetInput">
-        <property name="name" value="permission"/>
-        <property name="description" value="the name of one of the Permission enums"/>
-        <property name="required" value="true"/>
-    </bean>
-
-    <bean id="widgetInput.permissionAllow" class="com.cannontech.web.widget.support.SimpleWidgetInput">
-        <property name="name" value="allow"/>
-        <property name="description" value="whether this permission is being allowed or denied"/>
-        <property name="required" value="true"/>
-    </bean>
-
     <bean id="widgetInput.groupId" class="com.cannontech.web.widget.support.SimpleWidgetInput">
         <property name="name" value="groupId"/>
         <property name="description" value="the id of ta Yukon user group"/>
@@ -447,48 +435,7 @@
         <property name="paoDao" ref="paoDao"/>
 
     </bean>
-
-    <bean id="userPermissionEditorWidget"
-        class="com.cannontech.web.widget.UserPermissionEditorWidget">
-        <property name="identityPath" value="common/userPermissionIdentity.jsp"/>
-        <property name="inputs">
-           <set>
-              <ref local="widgetInput.constraint"/>
-              <ref local="widgetInput.permission"/>
-              <ref local="widgetInput.permissionAllow"/>
-              <ref local="widgetInput.userId"/>
-           </set>
-        </property>
-        <property name="roleAndPropertiesChecker">
-               <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
-                <constructor-arg value="ADMIN_LM_USER_ASSIGN"/>
-            </bean>
-           </property>
-        <property name="yukonUserDao" ref="yukonUserDao"/>
-        <property name="paoDao" ref="paoDao"/>
-        <property name="editorService" ref="userEditorService"/>
-    </bean>
-
-    <bean id="groupPermissionEditorWidget" class="com.cannontech.web.widget.GroupPermissionEditorWidget">
-        <property name="identityPath" value="common/groupPermissionIdentity.jsp"/>
-        <property name="inputs">
-           <set>
-              <ref local="widgetInput.constraint"/>
-              <ref local="widgetInput.permission"/>
-              <ref local="widgetInput.permissionAllow"/>
-              <ref local="widgetInput.groupId"/>
-           </set>
-        </property>
-        <property name="roleAndPropertiesChecker">
-               <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
-                <constructor-arg value="ADMIN_LM_USER_ASSIGN"/>
-            </bean>
-           </property>
-        <property name="userGroupDao" ref="userGroupDao"/>
-        <property name="paoDao" ref="paoDao"/>
-        <property name="editorService" ref="userGroupEditorService"/>
-    </bean>
-
+    
     <bean id="peakReportWidget"
         class="com.cannontech.web.widget.PeakReportWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp"/>

@@ -11,17 +11,17 @@
     <bean id="roleAndPropertyDescriptionService" class="com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService"/> 
 
     <!-- Authorization Services -->
-    <!-- Pao command authorization service - authorizes commands on paos -->	
-	<bean id="paoCommandAuthorizationService" class="com.cannontech.core.authorization.service.impl.PaoCommandAuthorizationServiceImpl">
-		<property name="authorizationService" ref="paoAuthorizationService" />
-		<property name="converter" ref="permissionConverter" />
-	</bean>
+    <!-- Pao command authorization service - authorizes commands on paos -->    
+    <bean id="paoCommandAuthorizationService" class="com.cannontech.core.authorization.service.impl.PaoCommandAuthorizationServiceImpl">
+        <property name="authorizationService" ref="paoAuthorizationService" />
+        <property name="converter" ref="permissionConverter" />
+    </bean>
 
-    <!-- LM command authorization service - authorizes commands on Load Management objects -->	
-	<bean id="lmCommandAuthorizationService" class="com.cannontech.core.authorization.service.impl.LMCommandAuthorizationServiceImpl">
-		<property name="authorizationService" ref="lmAuthorizationService" />
-		<property name="converter" ref="permissionConverter" />
-	</bean>
+    <!-- LM command authorization service - authorizes commands on Load Management objects -->    
+    <bean id="lmCommandAuthorizationService" class="com.cannontech.core.authorization.service.impl.LMCommandAuthorizationServiceImpl">
+        <property name="authorizationService" ref="lmAuthorizationService" />
+        <property name="converter" ref="permissionConverter" />
+    </bean>
 
 
     
@@ -32,186 +32,188 @@
     <bean id="userPaoPermissionDao" class="com.cannontech.core.authorization.dao.UserPaoPermissionDaoImpl">
         <qualifier value="user"/>
     </bean>
-	
+    
     <bean id="userGroupPaoPermissionDao" class="com.cannontech.core.authorization.dao.UserGroupPaoPermissionDaoImpl">
         <qualifier value="userGroup"/>
     </bean>
     
-  	<bean id="userEditorService" class="com.cannontech.core.authorization.service.impl.PaoPermissionEditorServiceImpl">
-		<property name="paoDao" ref="paoDao" />
-		<property name="permissionDao" ref="userPaoPermissionDao" />
-	</bean>
+    <bean id="userEditorService" class="com.cannontech.core.authorization.service.impl.PaoPermissionEditorServiceImpl">
+        <qualifier value="user"/>
+        <property name="paoDao" ref="paoDao" />
+        <property name="permissionDao" ref="userPaoPermissionDao" />
+    </bean>
     
-	<bean id="userGroupEditorService" class="com.cannontech.core.authorization.service.impl.PaoPermissionEditorServiceImpl">
-		<property name="paoDao" ref="paoDao" />
-		<property name="permissionDao" ref="userGroupPaoPermissionDao" />
-	</bean>
- 
-	
-	<!-- Pao checkers -->
+    <bean id="userGroupEditorService" class="com.cannontech.core.authorization.service.impl.PaoPermissionEditorServiceImpl">
+        <qualifier value="userGroup"/>
+        <property name="paoDao" ref="paoDao" />
+        <property name="permissionDao" ref="userGroupPaoPermissionDao" />
+    </bean>
+    
+    
+    <!-- Pao checkers -->
     <!-- Pao checker which matches LM paos -->
-	<bean id="loadManagementPaoCheck" class="com.cannontech.core.authorization.support.pao.PaoCheckCategoryClass">
-		<property name="paoCategoryClassList">
-			<list>
-				<!-- LM Pao -->
-				<bean class="com.cannontech.core.authorization.support.pao.PaoCheckCategoryClass$PaoCategoryClass">
-					<property name="category" value="LOADMANAGEMENT"/>
-					<property name="paoClass" value="LOADMANAGEMENT"/>
-				</bean>
-				<!-- LM Group -->
-				<bean class="com.cannontech.core.authorization.support.pao.PaoCheckCategoryClass$PaoCategoryClass">
-					<property name="category" value="DEVICE"/>
-					<property name="paoClass" value="GROUP"/>
-				</bean>
+    <bean id="loadManagementPaoCheck" class="com.cannontech.core.authorization.support.pao.PaoCheckCategoryClass">
+        <property name="paoCategoryClassList">
+            <list>
+                <!-- LM Pao -->
+                <bean class="com.cannontech.core.authorization.support.pao.PaoCheckCategoryClass$PaoCategoryClass">
+                    <property name="category" value="LOADMANAGEMENT"/>
+                    <property name="paoClass" value="LOADMANAGEMENT"/>
+                </bean>
+                <!-- LM Group -->
+                <bean class="com.cannontech.core.authorization.support.pao.PaoCheckCategoryClass$PaoCategoryClass">
+                    <property name="category" value="DEVICE"/>
+                    <property name="paoClass" value="GROUP"/>
+                </bean>
                 <bean class="com.cannontech.core.authorization.support.pao.PaoCheckCategoryClass$PaoCategoryClass">
                     <property name="category" value="SCHEDULE"/>
                     <property name="paoClass" value="SCHEDULE"/>
                 </bean>
-			</list>
-		</property>
-	</bean>
-	
+            </list>
+        </property>
+    </bean>
+    
     <!-- Pao checker which matches cap control paos -->
-	<bean id="capControlPaoCheck" class="com.cannontech.core.authorization.support.pao.PaoCheckCategoryClass">
-		<property name="paoCategoryClassList">
-			<list>
-				<!-- Cap Control device -->
-				<bean class="com.cannontech.core.authorization.support.pao.PaoCheckCategoryClass$PaoCategoryClass">
-					<property name="category" value="DEVICE"/>
-					<property name="paoClass" value="CAPCONTROL"/>
-				</bean>
-			</list>
-		</property>
-	</bean>
-	
+    <bean id="capControlPaoCheck" class="com.cannontech.core.authorization.support.pao.PaoCheckCategoryClass">
+        <property name="paoCategoryClassList">
+            <list>
+                <!-- Cap Control device -->
+                <bean class="com.cannontech.core.authorization.support.pao.PaoCheckCategoryClass$PaoCategoryClass">
+                    <property name="category" value="DEVICE"/>
+                    <property name="paoClass" value="CAPCONTROL"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
+    
     <!-- Pao checker which matches all paos except cap control and lm paos -->
-	<bean id="otherPaoCheck" class="com.cannontech.core.authorization.support.pao.PaoCheckDefault">
-		<property name="excludeList">
-			<list>
-				<ref bean="capControlPaoCheck"/>
-				<ref bean="loadManagementPaoCheck"/>
-			</list>
-		</property>
-	</bean>
-	
+    <bean id="otherPaoCheck" class="com.cannontech.core.authorization.support.pao.PaoCheckDefault">
+        <property name="excludeList">
+            <list>
+                <ref bean="capControlPaoCheck"/>
+                <ref bean="loadManagementPaoCheck"/>
+            </list>
+        </property>
+    </bean>
+    
     <!-- String checker which matches LM strings -->
-	<bean id="lmStringChecker" class="com.cannontech.core.authorization.support.string.StringChecker">
-		<property name="checkStringList">
-			<list>
-				<value>lmdevice</value>
-				<value>sa305</value>
-				<value>sa205</value>
-				<value>xcom</value>
-				<value>vcom</value>
-			</list>
-		</property>
-	</bean>
-
-	<!-- Converter which converts command strings into permissions -->
-	<bean id="permissionConverter" class="com.cannontech.core.authorization.support.CommandPermissionConverter">
-		<property name="commandPermissionList">
-			<list>
-				<!-- Command string to permission mappings  -->
-				<bean class="com.cannontech.core.authorization.support.CommandPermissionConverter$CommandPermissionMapping">
-					<property name="commandString" value="get" />
-					<property name="permission" value="READ_COMMAND" />
-				</bean>
-				<bean class="com.cannontech.core.authorization.support.CommandPermissionConverter$CommandPermissionMapping">
-					<property name="commandString" value="put" />
-					<property name="permission" value="WRITE_COMMAND" />
-				</bean>
-				<bean class="com.cannontech.core.authorization.support.CommandPermissionConverter$CommandPermissionMapping">
-					<property name="commandString" value="control" />
-					<property name="permission" value="CONTROL_COMMAND" />
-				</bean>
-				
-				<!-- These commands are always allowed regardless of other role property settings -->
-				<bean class="com.cannontech.core.authorization.support.CommandPermissionConverter$CommandPermissionMapping">
-					<property name="commandString" value="ping" />
-					<property name="permission" value="ALLOWED_COMMAND" />
-				</bean>
-				<bean class="com.cannontech.core.authorization.support.CommandPermissionConverter$CommandPermissionMapping">
-					<property name="commandString" value="loop*" />
-					<property name="permission" value="ALLOWED_COMMAND" />
-				</bean>
-			</list>
-		</property>
-	</bean>
-
-	<!-- 
-		Service which authorizes permissions for LM objects based on a role property.  This service is
-		necessary because some LM objects are not paos.  Contains a list of authorizations which map an 
-		LM object permission with a role property.
-	 -->
-    <bean id="lmAuthorizationService" class="com.cannontech.core.authorization.service.impl.LMSerialTypeAuthorizationServiceImpl" >
-        <property name="authorizationList">
-        	<list>
-        	
-        		<!-- Config to check if a user has permission for a READ_COMMAND on a LM object based on 
-        			their READ_LM_DEVICE role property -->
-        		<bean class="com.cannontech.core.authorization.support.string.StringPermissionRoleAuthorization">
-			    	<property name="objectChecker" ref="lmStringChecker" />
-			    	<property name="roleChecker">
-			    		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
-                            <constructor-arg value="READ_LM_DEVICE"/>
-                        </bean>
-			    	</property>
-			    	<property name="permission" value="READ_COMMAND"/>
-			    </bean>
-			    <!-- Config to check if a user has permission for a WRITE_COMMAND on a LM object based on 
-			    	their WRITE_TO_LM_DEVICE role property -->
-        		<bean class="com.cannontech.core.authorization.support.string.StringPermissionRoleAuthorization">
-			    	<property name="objectChecker" ref="lmStringChecker" />
-			    	<property name="roleChecker">
-			    		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
-                            <constructor-arg value="WRITE_TO_LM_DEVICE"/>
-                        </bean>
-			    	</property>
-			    	<property name="permission" value="WRITE_COMMAND"/>
-			    </bean>
-			    <!-- Config to check if a user has permission for a CONTROL_COMMAND on a LM object based on 
-			    	their CONTROL_LM_DEVICE role property -->
-        		<bean class="com.cannontech.core.authorization.support.string.StringPermissionRoleAuthorization">
-			    	<property name="objectChecker" ref="lmStringChecker" />
-			    	<property name="roleChecker">
-			    		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
-                            <constructor-arg value="CONTROL_LM_DEVICE"/>
-                        </bean>
-			    	</property>
-			    	<property name="permission" value="CONTROL_COMMAND"/>
-			    </bean>
-			    
-			    
-			    <!-- Catch all for unknown commands.  If a command is not known, the EXECUTE_UNKOWN_COMMAND
-			         role property will be checked to determine command authorization  -->
-			    <bean class="com.cannontech.core.authorization.support.string.StringPermissionRoleAuthorization">
-			    	<property name="objectChecker" ref="lmStringChecker" />
-			    	<property name="roleChecker">
-			    		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
-                            <constructor-arg value="EXECUTE_UNKNOWN_COMMAND"/>
-                        </bean>
-			    	</property>
-			    	<property name="permission" value="OTHER_COMMAND"/>
-			    </bean>
-			    
-			    
-			    <!-- Catch all - checks permissions default value -->			    
-			    <bean class="com.cannontech.core.authorization.support.DefaultAuthorization" />
-			    
-        	</list>
+    <bean id="lmStringChecker" class="com.cannontech.core.authorization.support.string.StringChecker">
+        <property name="checkStringList">
+            <list>
+                <value>lmdevice</value>
+                <value>sa305</value>
+                <value>sa205</value>
+                <value>xcom</value>
+                <value>vcom</value>
+            </list>
         </property>
     </bean>
 
-	<!-- 
-		Service which authorizes permissions for paos.  This service iterates through the 
-		list of authorizations. If one of the authorizations returns authorized, the service
-		returns authorized. If none of the authorizations returns authorized, the service
-		returns unauthorized.
-	 -->
+    <!-- Converter which converts command strings into permissions -->
+    <bean id="permissionConverter" class="com.cannontech.core.authorization.support.CommandPermissionConverter">
+        <property name="commandPermissionList">
+            <list>
+                <!-- Command string to permission mappings  -->
+                <bean class="com.cannontech.core.authorization.support.CommandPermissionConverter$CommandPermissionMapping">
+                    <property name="commandString" value="get" />
+                    <property name="permission" value="READ_COMMAND" />
+                </bean>
+                <bean class="com.cannontech.core.authorization.support.CommandPermissionConverter$CommandPermissionMapping">
+                    <property name="commandString" value="put" />
+                    <property name="permission" value="WRITE_COMMAND" />
+                </bean>
+                <bean class="com.cannontech.core.authorization.support.CommandPermissionConverter$CommandPermissionMapping">
+                    <property name="commandString" value="control" />
+                    <property name="permission" value="CONTROL_COMMAND" />
+                </bean>
+                
+                <!-- These commands are always allowed regardless of other role property settings -->
+                <bean class="com.cannontech.core.authorization.support.CommandPermissionConverter$CommandPermissionMapping">
+                    <property name="commandString" value="ping" />
+                    <property name="permission" value="ALLOWED_COMMAND" />
+                </bean>
+                <bean class="com.cannontech.core.authorization.support.CommandPermissionConverter$CommandPermissionMapping">
+                    <property name="commandString" value="loop*" />
+                    <property name="permission" value="ALLOWED_COMMAND" />
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 
+        Service which authorizes permissions for LM objects based on a role property.  This service is
+        necessary because some LM objects are not paos.  Contains a list of authorizations which map an 
+        LM object permission with a role property.
+     -->
+    <bean id="lmAuthorizationService" class="com.cannontech.core.authorization.service.impl.LMSerialTypeAuthorizationServiceImpl" >
+        <property name="authorizationList">
+            <list>
+            
+                <!-- Config to check if a user has permission for a READ_COMMAND on a LM object based on 
+                    their READ_LM_DEVICE role property -->
+                <bean class="com.cannontech.core.authorization.support.string.StringPermissionRoleAuthorization">
+                    <property name="objectChecker" ref="lmStringChecker" />
+                    <property name="roleChecker">
+                        <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                            <constructor-arg value="READ_LM_DEVICE"/>
+                        </bean>
+                    </property>
+                    <property name="permission" value="READ_COMMAND"/>
+                </bean>
+                <!-- Config to check if a user has permission for a WRITE_COMMAND on a LM object based on 
+                    their WRITE_TO_LM_DEVICE role property -->
+                <bean class="com.cannontech.core.authorization.support.string.StringPermissionRoleAuthorization">
+                    <property name="objectChecker" ref="lmStringChecker" />
+                    <property name="roleChecker">
+                        <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                            <constructor-arg value="WRITE_TO_LM_DEVICE"/>
+                        </bean>
+                    </property>
+                    <property name="permission" value="WRITE_COMMAND"/>
+                </bean>
+                <!-- Config to check if a user has permission for a CONTROL_COMMAND on a LM object based on 
+                    their CONTROL_LM_DEVICE role property -->
+                <bean class="com.cannontech.core.authorization.support.string.StringPermissionRoleAuthorization">
+                    <property name="objectChecker" ref="lmStringChecker" />
+                    <property name="roleChecker">
+                        <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                            <constructor-arg value="CONTROL_LM_DEVICE"/>
+                        </bean>
+                    </property>
+                    <property name="permission" value="CONTROL_COMMAND"/>
+                </bean>
+                
+                
+                <!-- Catch all for unknown commands.  If a command is not known, the EXECUTE_UNKOWN_COMMAND
+                     role property will be checked to determine command authorization  -->
+                <bean class="com.cannontech.core.authorization.support.string.StringPermissionRoleAuthorization">
+                    <property name="objectChecker" ref="lmStringChecker" />
+                    <property name="roleChecker">
+                        <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                            <constructor-arg value="EXECUTE_UNKNOWN_COMMAND"/>
+                        </bean>
+                    </property>
+                    <property name="permission" value="OTHER_COMMAND"/>
+                </bean>
+                
+                
+                <!-- Catch all - checks permissions default value -->                
+                <bean class="com.cannontech.core.authorization.support.DefaultAuthorization" />
+                
+            </list>
+        </property>
+    </bean>
+
+    <!-- 
+        Service which authorizes permissions for paos.  This service iterates through the 
+        list of authorizations. If one of the authorizations returns authorized, the service
+        returns authorized. If none of the authorizations returns authorized, the service
+        returns unauthorized.
+     -->
     <bean id="paoAuthorizationService" class="com.cannontech.core.authorization.service.impl.PaoAuthorizationServiceImpl" >
         <property name="authorizationList">
-        	<list>
-        	
+            <list>
+            
                 <!-- ALLOWED_COMMAND is always allowed -->
                 <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionRoleAuthorization">
                     <property name="permission" value="ALLOWED_COMMAND"/>
@@ -278,146 +280,146 @@
                     <property name="permission" value="LM_VISIBLE"/>
                 </bean>
 
-        		<!-- Permissions from the UserPaoPermission and GroupPaoPermission db tables -->
-				<bean class="com.cannontech.core.authorization.support.pao.PaoPermissionAuthorization"/>
+                <!-- Permissions from the UserPaoPermission and GroupPaoPermission db tables -->
+                <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionAuthorization"/>
 
-        		<!-- Group parent permissions from the UserPaoPermission and GroupPaoPermission db tables -->
-				<bean class="com.cannontech.core.authorization.support.pao.LMGroupParentAuthorization">
+                <!-- Group parent permissions from the UserPaoPermission and GroupPaoPermission db tables -->
+                <bean class="com.cannontech.core.authorization.support.pao.LMGroupParentAuthorization">
                     <property name="permission" value="LM_VISIBLE"/>
-				</bean>
+                </bean>
 
-        		<!-- Program parent permissions from the UserPaoPermission and GroupPaoPermission db tables -->
-				<bean class="com.cannontech.core.authorization.support.pao.LMProgramParentAuthorization">
+                <!-- Program parent permissions from the UserPaoPermission and GroupPaoPermission db tables -->
+                <bean class="com.cannontech.core.authorization.support.pao.LMProgramParentAuthorization">
                     <property name="permission" value="LM_VISIBLE"/>
-				</bean>
+                </bean>
 
-        		<!-- Load Management pao permissions -->
-        		
-			    <!-- Config to check if a user has permission for a READ_COMMAND on a load management pao
-			    	 based on their READ_LM_DEVICE role property -->
-			    <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionRoleAuthorization">
-			    	<property name="objectChecker" ref="loadManagementPaoCheck" />
-			    	<property name="roleChecker">
-			    		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <!-- Load Management pao permissions -->
+                
+                <!-- Config to check if a user has permission for a READ_COMMAND on a load management pao
+                     based on their READ_LM_DEVICE role property -->
+                <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionRoleAuthorization">
+                    <property name="objectChecker" ref="loadManagementPaoCheck" />
+                    <property name="roleChecker">
+                        <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                             <constructor-arg value="READ_LM_DEVICE"/>
                         </bean>
-			    	</property>
-			    	<property name="permission" value="READ_COMMAND"/>
-			    </bean>
-			    <!-- Config to check if a user has permission for a WRITE_COMMAND on a load management pao
-			    	 based on their WRITE_TO_LM_DEVICE role property -->
-			    <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionRoleAuthorization">
-			    	<property name="objectChecker" ref="loadManagementPaoCheck" />
-			    	<property name="roleChecker">
-			    		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                    </property>
+                    <property name="permission" value="READ_COMMAND"/>
+                </bean>
+                <!-- Config to check if a user has permission for a WRITE_COMMAND on a load management pao
+                     based on their WRITE_TO_LM_DEVICE role property -->
+                <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionRoleAuthorization">
+                    <property name="objectChecker" ref="loadManagementPaoCheck" />
+                    <property name="roleChecker">
+                        <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                             <constructor-arg value="WRITE_TO_LM_DEVICE"/>
                         </bean>
-			    	</property>
-			    	<property name="permission" value="WRITE_COMMAND"/>
-			    </bean>
-			    <!-- Config to check if a user has permission for a CONTROL_COMMAND on a load management pao
-			    	 based on their CONTROL_LM_DEVICE role property -->
-			    <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionRoleAuthorization">
-			    	<property name="objectChecker" ref="loadManagementPaoCheck" />
-			    	<property name="roleChecker">
-			    		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                    </property>
+                    <property name="permission" value="WRITE_COMMAND"/>
+                </bean>
+                <!-- Config to check if a user has permission for a CONTROL_COMMAND on a load management pao
+                     based on their CONTROL_LM_DEVICE role property -->
+                <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionRoleAuthorization">
+                    <property name="objectChecker" ref="loadManagementPaoCheck" />
+                    <property name="roleChecker">
+                        <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                             <constructor-arg value="ALLOW_DR_CONTROL"/>
                         </bean>
-			    	</property>
-			    	<property name="permission" value="CONTROL_COMMAND"/>
-			    </bean>
+                    </property>
+                    <property name="permission" value="CONTROL_COMMAND"/>
+                </bean>
 
-        		<!-- Cap Control pao permissions -->
-        		
-			    <!-- Config to check if a user has permission for a READ_COMMAND on a cap control pao
-			    	 based on their READ_CAP_CONTROL_DEVICE role property -->
-			    <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionRoleAuthorization">
-			    	<property name="objectChecker" ref="capControlPaoCheck" />
-			    	<property name="roleChecker">
-			    		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <!-- Cap Control pao permissions -->
+                
+                <!-- Config to check if a user has permission for a READ_COMMAND on a cap control pao
+                     based on their READ_CAP_CONTROL_DEVICE role property -->
+                <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionRoleAuthorization">
+                    <property name="objectChecker" ref="capControlPaoCheck" />
+                    <property name="roleChecker">
+                        <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                             <constructor-arg value="READ_CAP_CONTROL_DEVICE"/>
                         </bean>
-			    	</property>
-			    	<property name="permission" value="READ_COMMAND"/>
-			    </bean>
-			    <!-- Config to check if a user has permission for a WRITE_COMMAND on a cap control pao
-			    	 based on their WRITE_TO_CAP_CONTROL_DEVICE role property -->
-			    <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionRoleAuthorization">
-			    	<property name="objectChecker" ref="capControlPaoCheck" />
-			    	<property name="roleChecker">
-			    		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                    </property>
+                    <property name="permission" value="READ_COMMAND"/>
+                </bean>
+                <!-- Config to check if a user has permission for a WRITE_COMMAND on a cap control pao
+                     based on their WRITE_TO_CAP_CONTROL_DEVICE role property -->
+                <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionRoleAuthorization">
+                    <property name="objectChecker" ref="capControlPaoCheck" />
+                    <property name="roleChecker">
+                        <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                             <constructor-arg value="WRITE_TO_CAP_CONTROL_DEVICE"/>
                         </bean>
-			    	</property>
-			    	<property name="permission" value="WRITE_COMMAND"/>
-			    </bean>
-			    <!-- Config to check if a user has permission for a CONTROL_COMMAND on a cap control pao
-			    	 based on their CONTROL_CAP_CONTROL_DEVICE role property -->
-			    <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionRoleAuthorization">
-			    	<property name="objectChecker" ref="capControlPaoCheck" />
-			    	<property name="roleChecker">
-			    		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                    </property>
+                    <property name="permission" value="WRITE_COMMAND"/>
+                </bean>
+                <!-- Config to check if a user has permission for a CONTROL_COMMAND on a cap control pao
+                     based on their CONTROL_CAP_CONTROL_DEVICE role property -->
+                <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionRoleAuthorization">
+                    <property name="objectChecker" ref="capControlPaoCheck" />
+                    <property name="roleChecker">
+                        <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                             <constructor-arg value="CONTROL_CAP_CONTROL_DEVICE"/>
                         </bean>
-			    	</property>
-			    	<property name="permission" value="CONTROL_COMMAND"/>
-			    </bean>
-			    
-			    <!-- Other pao permissions -->
+                    </property>
+                    <property name="permission" value="CONTROL_COMMAND"/>
+                </bean>
+                
+                <!-- Other pao permissions -->
 
-			    <!-- Config to check if a user has permission for a READ_COMMAND on any pao
-					 (not LM or cap control) based on their READ_DEVICE role property -->
-			    <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionRoleAuthorization">
-			    	<property name="objectChecker" ref="otherPaoCheck" />
-			    	<property name="roleChecker">
-			    		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <!-- Config to check if a user has permission for a READ_COMMAND on any pao
+                     (not LM or cap control) based on their READ_DEVICE role property -->
+                <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionRoleAuthorization">
+                    <property name="objectChecker" ref="otherPaoCheck" />
+                    <property name="roleChecker">
+                        <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                             <constructor-arg value="READ_DEVICE"/>
                         </bean>
-			    	</property>
-			    	<property name="permission" value="READ_COMMAND"/>
-			    </bean>
-			    <!-- Config to check if a user has permission for a WRITE_COMMAND on any pao
-			    	 (not LM or cap control) based on their WRITE_TO_DEVICE role property -->
-			    <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionRoleAuthorization">
-			    	<property name="objectChecker" ref="otherPaoCheck" />
-			    	<property name="roleChecker">
-			    		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                    </property>
+                    <property name="permission" value="READ_COMMAND"/>
+                </bean>
+                <!-- Config to check if a user has permission for a WRITE_COMMAND on any pao
+                     (not LM or cap control) based on their WRITE_TO_DEVICE role property -->
+                <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionRoleAuthorization">
+                    <property name="objectChecker" ref="otherPaoCheck" />
+                    <property name="roleChecker">
+                        <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                             <constructor-arg value="WRITE_TO_DEVICE"/>
                         </bean>
-			    	</property>
-			    	<property name="permission" value="WRITE_COMMAND"/>
-			    </bean>
-			    <!-- Config to check if a user has permission for a CONTROL_COMMAND on any pao
-			    	 (not LM or cap control) based on their CONTROL_DEVICE role property -->
-			    <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionRoleAuthorization">
-			    	<property name="objectChecker" ref="otherPaoCheck" />
-			    	<property name="roleChecker">
-			    		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                    </property>
+                    <property name="permission" value="WRITE_COMMAND"/>
+                </bean>
+                <!-- Config to check if a user has permission for a CONTROL_COMMAND on any pao
+                     (not LM or cap control) based on their CONTROL_DEVICE role property -->
+                <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionRoleAuthorization">
+                    <property name="objectChecker" ref="otherPaoCheck" />
+                    <property name="roleChecker">
+                        <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                             <constructor-arg value="CONTROL_DEVICE"/>
                         </bean>
-			    	</property>
-			    	<property name="permission" value="CONTROL_COMMAND"/>
-			    </bean>
+                    </property>
+                    <property name="permission" value="CONTROL_COMMAND"/>
+                </bean>
 
-			    <!-- Catch all for unknown commands.  If a command is not known, the EXECUTE_UNKNOWN_COMMAND
-			         role property will be checked to determine command authorization  -->
-			    <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionRoleAuthorization">
-			    	<property name="objectChecker">
-			    		<bean class="com.cannontech.core.authorization.support.pao.PaoCheckDefault" />
-			    	</property>
-			    	<property name="roleChecker">
+                <!-- Catch all for unknown commands.  If a command is not known, the EXECUTE_UNKNOWN_COMMAND
+                     role property will be checked to determine command authorization  -->
+                <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionRoleAuthorization">
+                    <property name="objectChecker">
+                        <bean class="com.cannontech.core.authorization.support.pao.PaoCheckDefault" />
+                    </property>
+                    <property name="roleChecker">
                         <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                             <constructor-arg value="EXECUTE_UNKNOWN_COMMAND"/>
                         </bean>
-			    	</property>
-			    	<property name="permission" value="OTHER_COMMAND"/>
-			    </bean>
-			    
-			    <!-- Catch all - checks permissions default value -->	
-			    <bean class="com.cannontech.core.authorization.support.DefaultAuthorization" />
-			    			    
-		    </list>
-	    </property>
-	</bean>
+                    </property>
+                    <property name="permission" value="OTHER_COMMAND"/>
+                </bean>
+                
+                <!-- Catch all - checks permissions default value -->    
+                <bean class="com.cannontech.core.authorization.support.DefaultAuthorization" />
+                                
+            </list>
+        </property>
+    </bean>
     
 </beans>

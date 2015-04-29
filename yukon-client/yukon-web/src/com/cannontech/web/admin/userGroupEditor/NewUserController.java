@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
@@ -50,7 +49,7 @@ public class NewUserController {
     @Autowired private UserLuceneSearcher userLuceneSearcher;
     @Autowired private PasswordPolicyService passwordService;
     
-    private final static String key = "yukon.web.modules.adminSetup.userEditor.";
+    private final static String key = "yukon.web.modules.adminSetup.auth.user.";
     
     @RequestMapping("new-user-dialog")
     public String newUser(ModelMap model, YukonUserContext userContext) {
@@ -74,7 +73,7 @@ public class NewUserController {
     }
     
     @RequestMapping(value="user", method=RequestMethod.POST)
-    public String create(ModelMap model, HttpServletRequest req, HttpServletResponse resp, 
+    public String create(ModelMap model, HttpServletResponse resp, 
             @ModelAttribute("user") NewUser user, BindingResult binding) throws Exception {
         
         userValidator.validate(user, binding);

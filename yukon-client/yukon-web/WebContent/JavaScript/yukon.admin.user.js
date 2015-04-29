@@ -21,6 +21,14 @@ yukon.admin.user = (function () {
             if (_initialized) return;
             
             /** User clicked save button on change password popup, submit request. */
+            $(document).on('click', '.js-remove-login-wait', function (ev) {
+                $.ajax(yukon.url('/adminSetup/user/' + $(this).data('userId') + '/remove-login-wait'))
+                .done(function () {
+                    $('#login-throttle').hide();
+                });
+            });
+            
+            /** User clicked save button on change password popup, submit request. */
             $(document).on('yukon:admin:user:password:save', function (ev) {
                 
                 $('#change-password-form').ajaxSubmit({

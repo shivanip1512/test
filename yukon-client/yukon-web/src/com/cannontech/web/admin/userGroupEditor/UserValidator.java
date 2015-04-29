@@ -15,7 +15,7 @@ public class UserValidator extends SimpleValidator<User> {
     
     @Autowired private YukonUserDao yukonUserDao;
     
-    private final static String key = "yukon.web.modules.adminSetup.userEditor.";
+    private final static String key = "yukon.web.modules.adminSetup.auth.user.";
     
     public UserValidator() {
         super(User.class);

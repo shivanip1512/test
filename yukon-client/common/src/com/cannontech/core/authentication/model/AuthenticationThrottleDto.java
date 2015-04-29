@@ -2,8 +2,6 @@ package com.cannontech.core.authentication.model;
 
 import java.util.Date;
 
-import org.springframework.core.style.ToStringCreator;
-
 public class AuthenticationThrottleDto implements Comparable<AuthenticationThrottleDto> {
 
     private Date lastFailedLoginTime;
@@ -46,15 +44,12 @@ public class AuthenticationThrottleDto implements Comparable<AuthenticationThrot
     public long getActualThrottleDuration() {
         return throttleEndtime.getTime() - lastFailedLoginTime.getTime();
     }
-
+    
+    @Override
     public String toString() {
-        ToStringCreator tsc = new ToStringCreator(this);
-        tsc.append("lastFailedLoginTime", lastFailedLoginTime);
-        tsc.append("retryCount", retryCount);
-        tsc.append("throttleEndtime", throttleEndtime);
-        tsc.append("throttleDurationSeconds", throttleDurationSeconds);
-        
-        return tsc.toString();
+        return String.format("AuthenticationThrottleDto [lastFailedLoginTime=%s, retryCount=%s, throttleEndtime=%s," 
+                + " throttleDurationSeconds=%s]", lastFailedLoginTime, retryCount, throttleEndtime,
+                throttleDurationSeconds);
     }
     
     @Override

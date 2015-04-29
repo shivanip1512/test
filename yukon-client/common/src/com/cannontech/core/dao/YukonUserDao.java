@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.dao.DataAccessException;
 
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.user.NewUser;
 import com.cannontech.common.user.UserAuthenticationInfo;
@@ -148,7 +149,7 @@ public interface YukonUserDao {
     /**
      * Returns a SearchResult<LiteYukonUser> of the users that are members of the group provided
      */
-    SearchResults<LiteYukonUser> getUsersForUserGroup(int userGroupId, final int start, final int count);
+    SearchResults<LiteYukonUser> getUsersForUserGroup(int userGroupId, PagingParameters paging);
 
     /**
      * This method returns all of the operators that are directly associated with the given energy
@@ -175,4 +176,6 @@ public interface YukonUserDao {
 
     /** Create a new user */
     LiteYukonUser create(NewUser user, boolean forceReset);
+    
+    List<Integer> getUserIdsForUserGroup(int userGroupId);
 }

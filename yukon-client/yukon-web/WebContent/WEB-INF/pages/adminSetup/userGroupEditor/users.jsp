@@ -1,89 +1,45 @@
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="adminSetup" page="users">
+<cti:msgScope paths="yukon.common,modules.adminSetup.auth.user.group">
 
-<script type="text/javascript">
-function addUsers() {
-    $('#addUsersForm').submit();
-}
-</script>
-    
-    <cti:msg2 var="usersContainerTitle" key=".usersContainer"/>
-    <tags:sectionContainer title="${usersContainerTitle}">
-        <c:choose>
-            <c:when test="${fn:length(users.resultList) > 0}">
-                <cti:url var="removeUserUrl" value="/adminSetup/userGroup/removeUser"/>
-                <form action="${removeUserUrl}" method="post">
-                    <cti:csrfToken/>
-                    <input type="hidden" name="userGroupId" value="${userGroupId}">
-                    <cti:url var="url" value="/adminSetup/userGroup/users">
-                        <cti:param name="userGroupId" value="${userGroupId}"/>
-                    </cti:url>
-                    <div data-url="${url}" data-static>
-                        <table class="compact-results-table">
-                            <thead>
-                                <tr>
-                                    <th><i:inline key=".username"/></th>
-                                    <th><i:inline key=".authentication"/></th>
-                                    <th><i:inline key=".userStatus"/></th>
-                                    <th class="remove-column"><i:inline key=".remove"/></th>
-                                </tr>
-                            </thead>
-                            <tfoot></tfoot>
-                            <tbody>
-                                <c:forEach items="${users.resultList}" var="user">
-                                    <cti:url value="/adminSetup/user/view" var="editUserUrl">
-                                        <cti:param name="userId" value="${user.userID}"/>
-                                    </cti:url>
-                                    <c:choose>
-                                        <c:when test="${user.loginStatus == 'ENABLED'}">
-                                            <c:set  var="styleClass" value="success"/>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <c:set  var="styleClass" value="error"/>
-                                        </c:otherwise>
-                                    </c:choose>
-                                    <tr>
-                                        <td><a href="${editUserUrl}">${fn:escapeXml(user.username)}</a></td>
-                                        <td><cti:msg2 key="${userAuthenticationInfo[user.userID].authenticationCategory}"/></td>
-                                        <td><span class="${styleClass}"><cti:formatObject value="${user.loginStatus}"/></span></td>
-    
-                                        <d:confirm on="#remove_${user.userID}" nameKey="confirmRemove" argument="${fn:escapeXml(user.username)}" />
-                                        <td class="remove-column">
-                                            <div class="dib">
-                                                <cti:button id="remove_${user.userID}" nameKey="remove" name="remove" value="${user.userID}" type="submit" renderMode="image" icon="icon-cross"/>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </c:forEach>
-                            </tbody>
-                        </table>
-                        <tags:pagingResultsControls result="${users}" adjustPageCount="true" hundreds="true"/>
-                    </div>
-                </form>
-            </c:when>
-            <c:otherwise>
-                <i:inline key=".noUsers"/>
-            </c:otherwise>
-        </c:choose>
-        <div class="action-area">
-            <cti:url var="addUsersFormUrl" value="/adminSetup/userGroup/addUsers"/>
-            <form id="addUsersForm" action="${addUsersFormUrl}" method="post">
-                <cti:csrfToken/>
-                <input type="hidden" name="userIds" id="userIds">
-                <input type="hidden" name="userGroupId" value="${userGroupId}">
-                <tags:pickerDialog type="userPicker" id="userPicker" destinationFieldId="userIds" excludeIds="${alreadyAssignedUserIds}" linkType="button" 
-                        nameKey="addUsers" multiSelectMode="true" endAction="addUsers"/>
+<table class="full-width striped dashed with-form-controls">
+    <thead>
+        <tr>
+            <th><i:inline key=".username"/></th>
+            <th><i:inline key=".authentication"/></th>
+            <th><i:inline key=".userStatus"/></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tfoot></tfoot>
+    <tbody>
+        <c:forEach var="user" items="${users.resultList}">
+            <cti:url var="url" value="/adminSetup/user/${user.userID}/view"/>
+            <tr>
+                <td><a href="${url}">${fn:escapeXml(user.username)}</a></td>
+                <td><cti:msg2 key="${authInfo[user.userID].authenticationCategory}"/></td>
+                <td>
+                    <c:set  var="clazz" value="${user.enabled ? 'success' : 'error'}"/>
+                    <span class="${clazz}"><i:inline key="${user.loginStatus}"/></span>
+                </td>
+                
+                <d:confirm on="#remove_${user.userID}" nameKey="remove.user.confirm" 
+                    argument="${fn:escapeXml(user.username)}" />
+                <td>
+                    <cti:button id="remove_${user.userID}" 
+                        nameKey="remove" name="remove" classes="fr show-on-hover" 
+                        value="${user.userID}" type="submit" 
+                        renderMode="buttonImage" icon="icon-cross"/>
+                </td>
+            </tr>
+        </c:forEach>
+    </tbody>
+</table>
+<tags:pagingResultsControls result="${users}" adjustPageCount="true"/>
 
-            </form>
-        </div>
-    </tags:sectionContainer>
-    
-</cti:standardPage>
+</cti:msgScope>

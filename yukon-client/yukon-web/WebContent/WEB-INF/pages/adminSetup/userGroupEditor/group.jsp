@@ -6,103 +6,149 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="adminSetup" page="roleGroupEditor.${mode}">
-    
-    <tags:setFormEditMode mode="${mode}"/>
+<cti:standardPage module="adminSetup" page="auth.role.group.${mode}">
+<cti:includeScript link="/JavaScript/yukon.admin.role.group.js"/>
 
-    <div class="column-14-10">
+<tags:setFormEditMode mode="${mode}"/>
+<c:set var="groupName" value="${group.groupName}"/>
+<c:set var="groupId" value="${group.groupID}"/>
 
-        <div class="column one">
-            <tags:sectionContainer2 nameKey="infoContainer">
-                <cti:url var="groupUrl" value="/adminSetup/roleGroup/edit"/>
-                <form:form commandName="group" action="${groupUrl}" method="post">
-                    <cti:csrfToken/>
-                    <form:hidden path="groupID"/>
-                    <input type="hidden" value="${group.groupID}" name="roleGroupId">
-                    
-                    <tags:nameValueContainer2>
-                        
-                        <c:choose>
-                            <c:when test="${editName}">
-                                <tags:inputNameValue nameKey=".name" path="groupName" size="40"/>
-                            </c:when>
-                            <c:otherwise>
-                                <tags:hidden path="groupName"/>
-                                <tags:nameValue2 nameKey=".name">${fn:escapeXml(group.groupName)}</tags:nameValue2>
-                            </c:otherwise>
-                        </c:choose>
-                        <tags:textareaNameValue nameKey=".description" rows="3" cols="35" path="groupDescription"/>
-                    
-                    </tags:nameValueContainer2>
-                    
-                    <div class="page-action-area">
-                        <cti:displayForPageEditModes modes="EDIT">
-                            <cti:button nameKey="save" name="update" type="submit" classes="primary action"/>
-                            <cti:button nameKey="delete" id="delete-btn" name="delete" type="submit" classes="delete"/>
-                            <d:confirm on="#delete-btn" nameKey="confirmDelete" argument="${group.groupName}"/>
-                            <cti:button nameKey="cancel" name="cancel" type="submit"/>
-                        </cti:displayForPageEditModes>
-                        <cti:displayForPageEditModes modes="VIEW">
-                            <cti:button nameKey="edit" icon="icon-pencil" name="edit" type="submit"/>
-                            <cti:button nameKey="expireAllPasswords" id="expire-passwords-btn" 
-                                    name="expireAllPasswords" type="submit"/>
-                            <d:confirm on="#expire-passwords-btn" nameKey="confirmExpireAllPasswords" 
-                                    argument="${group.groupName}"/>
-                        </cti:displayForPageEditModes>
-                    </div>
-                </form:form>
-            </tags:sectionContainer2>
-        </div>
-            
-        <div class="column two nogutter">
-            <cti:displayForPageEditModes modes="VIEW">
+<div class="column-14-10 clearfix">
+
+    <div class="column one">
+        <tags:sectionContainer2 nameKey="infoContainer">
+            <cti:url var="url" value="/adminSetup/role-groups/${groupId}"/>
+            <form:form commandName="group" action="${url}" method="post">
+                <cti:csrfToken/>
+                <form:hidden path="groupID"/>
+                <input id="role-group-id" type="hidden" value="${groupId}" name="roleGroupId">
                 
-                <tags:sectionContainer2 nameKey="rolesContainer">
+                <tags:nameValueContainer2>
+                    
                     <c:choose>
-                        <c:when test="${empty categoryRoleMap}">
-                            <div class="empty-list"><i:inline key=".noRoles"/></div>
+                        <c:when test="${editName}">
+                            <tags:inputNameValue nameKey=".name" path="groupName" size="40"/>
                         </c:when>
                         <c:otherwise>
-                            <div class="wsnw">
-                                <c:forEach var="category" items="${categoryRoleMap}">
-                                    <ul class="grouped-list">
-                                        <li><span class="group"><cti:formatObject value="${category.key}"/></span>
-                                            <ul class="groupedItem">
-                                                <c:forEach var="role" items="${category.value}">
-                                                    <li class="detail">
-                                                        <cti:url value="/adminSetup/roleEditor/view" var="roleUrl">
-                                                            <cti:param name="roleId" value="${role.roleId}"/>
-                                                            <cti:param name="roleGroupId" value="${roleGroupId}"/>
-                                                        </cti:url>
-                                                        <a href="${roleUrl}"><cti:formatObject value="${role}"/></a>
-                                                    </li>
-                                                </c:forEach>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                </c:forEach>
-                            </div>
+                            <tags:hidden path="groupName"/>
+                            <tags:nameValue2 nameKey=".name">${fn:escapeXml(groupName)}</tags:nameValue2>
                         </c:otherwise>
                     </c:choose>
-                    <div class="action-area">
-                        <form action="<cti:url value="/adminSetup/roleGroup/addRole"/>" method="post">
-                            <cti:csrfToken/>
-                            <input type="hidden" value="${roleGroupId}" name="roleGroupId">
-                            <cti:button nameKey="add" type="submit" id="addButton" icon="icon-add"/>
-                            <select name="newRoleId">
-                                <c:forEach var="availableCategory" items="${availableRolesMap}">
-                                    <optgroup label="<cti:formatObject value="${availableCategory.key}"/>">
-                                        <c:forEach var="availableRole" items="${availableCategory.value}">
-                                            <option value="${availableRole.roleId}"><cti:formatObject value="${availableRole}"/></option>
-                                        </c:forEach>
-                                    </optgroup>
-                                </c:forEach>
-                            </select>
-                        </form>
-                    </div>
-                </tags:sectionContainer2>
+                    <tags:textareaNameValue nameKey=".description" rows="3" cols="35" path="groupDescription"/>
                 
-            </cti:displayForPageEditModes>
-        </div>
+                </tags:nameValueContainer2>
+                
+                <div class="page-action-area">
+                    <cti:displayForPageEditModes modes="EDIT">
+                        <cti:button nameKey="save" name="update" type="submit" classes="primary action"/>
+                        <cti:button nameKey="delete" id="delete-btn" name="delete" type="submit" classes="delete"/>
+                        <d:confirm on="#delete-btn" nameKey="confirmDelete" argument="${groupName}"/>
+                        <cti:url var="url" value="/adminSetup/role-groups/${groupId}/view"/>
+                        <cti:button nameKey="cancel" href="${url}"/>
+                    </cti:displayForPageEditModes>
+                    <cti:displayForPageEditModes modes="VIEW">
+                        <cti:url var="url" value="/adminSetup/role-groups/${groupId}/edit"/>
+                        <cti:button nameKey="edit" icon="icon-pencil" href="${url}"/>
+                        <cti:url var="url" value="/adminSetup/role-groups/${groupId}/expire-passwords"/>
+                        <cti:button nameKey="expireAllPasswords" id="expire-passwords-btn" href="${url}"/>
+                        <d:confirm on="#expire-passwords-btn" nameKey="confirmExpireAllPasswords" argument="${groupName}"/>
+                    </cti:displayForPageEditModes>
+                </div>
+            </form:form>
+        </tags:sectionContainer2>
     </div>
+        
+    <div class="column two nogutter">
+        <cti:displayForPageEditModes modes="VIEW">
+            
+            <tags:sectionContainer2 nameKey="rolesContainer">
+                <c:choose>
+                    <c:when test="${empty categoryRoleMap}">
+                        <div class="empty-list"><i:inline key=".noRoles"/></div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="wsnw scroll-md">
+                            <c:forEach var="category" items="${categoryRoleMap}">
+                                <ul class="grouped-list">
+                                    <li><span class="group"><cti:formatObject value="${category.key}"/></span>
+                                        <ul class="groupedItem">
+                                            <c:forEach var="role" items="${category.value}">
+                                                <cti:url var="url" value="/adminSetup/role-groups/${roleGroupId}/roles/${role.roleId}"/>
+                                                <li><a href="${url}"><i:inline key="${role}"/></a></li>
+                                            </c:forEach>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </c:forEach>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
+                <div class="action-area">
+                    <form action="<cti:url value="/adminSetup/role-groups/${roleGroupId}/add-role"/>" method="post">
+                        <cti:csrfToken/>
+                        <cti:button nameKey="add" type="submit" icon="icon-add"/>
+                        <select name="newRoleId">
+                            <c:forEach var="availableCategory" items="${availableRolesMap}">
+                                <optgroup label="<cti:msg2 key="${availableCategory.key}"/>">
+                                    <c:forEach var="availableRole" items="${availableCategory.value}">
+                                        <option value="${availableRole.roleId}">
+                                            <i:inline key="${availableRole}"/>
+                                        </option>
+                                    </c:forEach>
+                                </optgroup>
+                            </c:forEach>
+                        </select>
+                    </form>
+                </div>
+            </tags:sectionContainer2>
+            
+        </cti:displayForPageEditModes>
+    </div>
+</div>
+
+<cti:displayForPageEditModes modes="VIEW">
+<tags:sectionContainer2 nameKey="groupsContainer">
+    <c:choose>
+        <c:when test="${!empty userGroups}">
+            <cti:url var="url" value="/adminSetup/role-groups/${roleGroupId}/remove-user-group"/>
+            <form action="${url}" method="post">
+                <cti:csrfToken/>
+                <table class="full-width striped dashed with-form-controls">
+                    <thead>
+                        <tr>
+                            <th><i:inline key=".groupName"/></th>
+                            <th><i:inline key=".description"/></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody>
+                        <c:forEach items="${userGroups}" var="userGroup">
+                            <cti:url var="url" value="/adminSetup/user-groups/${userGroup.userGroupId}/view"/>
+                            <tr>
+                                <td><a href="${url}">${fn:escapeXml(userGroup.userGroupName)}</a></td>
+                                <td>${fn:escapeXml(userGroup.userGroupDescription)}</td>
+                                <td>
+                                    <cti:button nameKey="remove" name="remove" value="${userGroup.userGroupId}" 
+                                        type="submit" classes="fr show-on-hover"
+                                        renderMode="buttonImage" icon="icon-cross"/>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
+            </form>
+        </c:when>
+        <c:otherwise>
+            <div class="empty-list"><i:inline key=".noGroups"/></div>
+        </c:otherwise>
+    </c:choose>
+    <div class="action-area">
+        <tags:pickerDialog type="userGroupPicker" id="userGroupPicker" excludeIds="${alreadyAssignedUserGroupIds}" 
+            linkType="button" nameKey="add" multiSelectMode="true" icon="icon-add"
+            endEvent="yukon:admin:role:group:add:user:groups"/>
+    </div>
+</tags:sectionContainer2>
+</cti:displayForPageEditModes>
+
 </cti:standardPage>

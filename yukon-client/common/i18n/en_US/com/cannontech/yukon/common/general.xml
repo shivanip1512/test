@@ -53,6 +53,7 @@
 <entry key="yukon.common.create">Create</entry>
 <entry key="yukon.common.csv">CSV</entry>
 <entry key="yukon.common.decimalSeparator">.</entry>
+<entry key="yukon.common.description">Description</entry>
 <entry key="yukon.common.device">Device</entry>
 <entry key="yukon.common.device.errorSummary">{0} ({1})</entry>
 <entry key="yukon.common.device.errorDetail">{0}</entry>

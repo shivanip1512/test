@@ -3,7 +3,6 @@ package com.cannontech.web.admin.userGroupEditor;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +37,7 @@ public class NewRoleGroupController {
     }
     
     @RequestMapping(value="role-group", method=RequestMethod.POST)
-    public String create(ModelMap model, HttpServletRequest req, HttpServletResponse resp, 
+    public String create(HttpServletResponse resp, 
             @ModelAttribute("group") LiteYukonGroup group, BindingResult binding) throws Exception {
         
         validator.validate(group, binding);

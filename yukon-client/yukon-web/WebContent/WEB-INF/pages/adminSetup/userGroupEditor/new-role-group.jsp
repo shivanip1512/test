@@ -2,7 +2,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msgScope paths="modules.adminSetup.roleGroupEditor,yukon.common">
+<cti:msgScope paths="modules.adminSetup.auth.role.group,yukon.common">
 
 <form:form id="new-role-group-form" commandName="group" method="post">
     <cti:csrfToken/>

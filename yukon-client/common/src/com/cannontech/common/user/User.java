@@ -96,4 +96,8 @@ public class User {
         return authenticationChanged;
     }
     
+    public boolean isEnabled() {
+        return loginStatus == LoginStatusEnum.ENABLED;
+    }
+    
 }

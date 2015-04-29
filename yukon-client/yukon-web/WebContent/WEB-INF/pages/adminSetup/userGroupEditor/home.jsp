@@ -3,7 +3,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="adminSetup" page="userEditor">
+<cti:standardPage module="adminSetup" page="auth.home">
 <cti:includeScript link="/JavaScript/yukon.admin.users.home.js"/>
 
 <div id="page-buttons">

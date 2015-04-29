@@ -6,7 +6,7 @@
 <%@ taglib prefix="s" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msgScope paths="modules.adminSetup.userEditor,yukon.common">
+<cti:msgScope paths="modules.adminSetup.auth.user,yukon.common">
 
 <form:form id="new-user-form" commandName="user" method="post">
     <cti:csrfToken/>

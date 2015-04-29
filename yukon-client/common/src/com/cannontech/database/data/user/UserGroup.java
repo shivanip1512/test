@@ -150,7 +150,7 @@ public class UserGroup extends DBPersistent implements CTIDbChange, EditorPanel 
     public void update() throws SQLException {
         UserGroupDao userGroupDao = YukonSpringHook.getBean("userGroupDao", UserGroupDao.class);
         userGroup.update();
-
+        
         // Update the connections between the yukon group and the user group
         YukonGroupDao yukonGroupDao = YukonSpringHook.getBean("yukonGroupDao", YukonGroupDao.class);
         List<LiteYukonGroup> existingYukonGroups = yukonGroupDao.getRoleGroupsForUserGroupId(userGroup.getUserGroupId());
@@ -159,7 +159,7 @@ public class UserGroup extends DBPersistent implements CTIDbChange, EditorPanel 
         for (LiteYukonGroup newYukonGroup : yukonGroupsToAdd) {
             userGroupDao.createUserGroupToYukonGroupMappng(userGroup.getUserGroupId(), newYukonGroup.getGroupID());
         }
-
+        
         Set<LiteYukonGroup> yukonGroupsToRemove = Sets.newHashSet(existingYukonGroups);
         yukonGroupsToRemove.removeAll(getRoleGroups());
         for (LiteYukonGroup existingYukonGroup : yukonGroupsToRemove) {

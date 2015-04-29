@@ -14,7 +14,7 @@ public class RoleGroupValidator extends SimpleValidator<LiteYukonGroup> {
     
     @Autowired private YukonGroupDao yukonGroupDao;
     
-    private static final String key = "yukon.web.modules.adminSetup.roleGroupEditor.";
+    private static final String key = "yukon.web.modules.adminSetup.auth.role.group.";
     
     public RoleGroupValidator() {
         super(LiteYukonGroup.class);

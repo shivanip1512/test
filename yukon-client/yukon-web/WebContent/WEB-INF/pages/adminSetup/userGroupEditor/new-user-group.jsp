@@ -2,14 +2,14 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msgScope paths="modules.adminSetup.userGroupEditor,yukon.common">
+<cti:msgScope paths="modules.adminSetup.auth.user.group,yukon.common">
 
 <form:form id="new-user-group-form" commandName="group" method="post">
     <cti:csrfToken/>
     
     <tags:nameValueContainer2 tableClass="with-form-controls">
-        <tags:inputNameValue nameKey=".userGroupName" path="userGroupName"/>
-        <tags:textareaNameValue nameKey=".userGroupDescription" rows="3" cols="35" path="userGroupDescription"/>
+        <tags:inputNameValue nameKey="yukon.common.name" path="userGroupName"/>
+        <tags:textareaNameValue nameKey="yukon.common.description" rows="3" cols="35" path="userGroupDescription"/>
     </tags:nameValueContainer2>
     
 </form:form>

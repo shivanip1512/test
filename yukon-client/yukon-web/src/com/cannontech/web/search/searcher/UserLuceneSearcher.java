@@ -9,6 +9,7 @@ import org.apache.lucene.search.Query;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.search.result.UltraLightYukonUser;
 import com.cannontech.core.users.dao.UserGroupDao;
+import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.search.lucene.criteria.YukonObjectCriteria;
 
@@ -28,7 +29,13 @@ public class UserLuceneSearcher extends AbstractLuceneSearcher<UltraLightYukonUs
             // userGroupName is not currently searchable; it is only for display purposes.
             public String getUserGroupName() {
                 UserGroupDao userGroupDao = YukonSpringHook.getBean(UserGroupDao.class);
-                return userGroupDao.getLiteUserGroupByUserId(userId).getUserGroupName();
+                LiteUserGroup group = userGroupDao.getLiteUserGroupByUserId(userId);
+                String groupName = "";
+                if (group != null) {
+                    groupName = group.getUserGroupName();
+                }
+                
+                return groupName;
             }
             
             public int getUserId() {

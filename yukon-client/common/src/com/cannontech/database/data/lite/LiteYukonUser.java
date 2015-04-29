@@ -96,4 +96,7 @@ public class LiteYukonUser extends LiteBase {
         return getUsername();
     }
     
+    public boolean isEnabled() {
+        return loginStatus == LoginStatusEnum.ENABLED;
+    }
 }

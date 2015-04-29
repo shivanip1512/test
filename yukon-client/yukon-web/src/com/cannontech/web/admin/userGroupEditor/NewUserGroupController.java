@@ -32,7 +32,7 @@ public class NewUserGroupController {
     
     @Autowired private UserGroupDao userGroupDao;
     
-    private static final String key = "yukon.web.modules.adminSetup.userGroupEditor.";
+    private static final String key = "yukon.web.modules.adminSetup.auth.user.group.";
     
     private final Validator validator = new SimpleValidator<UserGroup>(UserGroup.class) {
         @Override

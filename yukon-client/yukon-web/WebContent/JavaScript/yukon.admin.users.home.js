@@ -24,9 +24,9 @@ yukon.admin.users.home = (function () {
      * property for the picker type and the url to navigate to when an item from the picker is chosen.
      */
     _targets = {
-        'userPicker': {id: 'userId', url: '/adminSetup/user/view?userId='},
-        'userGroupPicker': {id: 'userGroupId', url: '/adminSetup/userGroup/view?userGroupId='},
-        'roleGroupPicker': {id: 'groupId', url: '/adminSetup/roleGroup/view?roleGroupId='}
+        'userPicker': {id: 'userId', url: '/adminSetup/user/?/view'},
+        'userGroupPicker': {id: 'userGroupId', url: '/adminSetup/user-groups/?/view'},
+        'roleGroupPicker': {id: 'groupId', url: '/adminSetup/role-groups/?/view'}
     },
     
     mod = {
@@ -50,7 +50,7 @@ yukon.admin.users.home = (function () {
                 var target = _targets[picker.pickerId];
                 var id = items[0][target.id];
                 var url = target.url;
-                window.location.href = yukon.url(url + id);
+                window.location.href = yukon.url(url.replace('?', id));
             });
             
             /** Show/hide password fields when auth category changes. */
@@ -96,7 +96,7 @@ yukon.admin.users.home = (function () {
                     type: 'post',
                     success: function (result, status, xhr, $form) {
                         $('.js-new-user-dialog').dialog('close');
-                        window.location.href = yukon.url('/adminSetup/user/view?userId=' + result.userId);
+                        window.location.href = yukon.url('/adminSetup/user/' + result.userId + '/view');
                     },
                     error: function (xhr, status, error, $form) {
                         $('#new-user-form').html(xhr.responseText);
@@ -112,11 +112,11 @@ yukon.admin.users.home = (function () {
             $('.js-new-user-group-dialog').on('yukon:admin:user:group:create', function (ev) {
                 
                 $('#new-user-group-form').ajaxSubmit({
-                    url: yukon.url('/adminSetup/user-group'), 
+                    url: yukon.url('/adminSetup/user-groups'),
                     type: 'post',
                     success: function (result, status, xhr, $form) {
                         $('.js-new-user-group-dialog').dialog('close');
-                        window.location.href = yukon.url('/adminSetup/userGroup/view?userGroupId=' + result.userGroupId);
+                        window.location.href = yukon.url('/adminSetup/user-groups/' + result.userGroupId + '/view');
                     },
                     error: function (xhr, status, error, $form) {
                         $('#new-user-group-form').html(xhr.responseText);
@@ -132,11 +132,11 @@ yukon.admin.users.home = (function () {
             $('.js-new-role-group-dialog').on('yukon:admin:role:group:create', function (ev) {
                 
                 $('#new-role-group-form').ajaxSubmit({
-                    url: yukon.url('/adminSetup/role-group'), 
+                    url: yukon.url('/adminSetup/role-group'),
                     type: 'post',
                     success: function (result, status, xhr, $form) {
                         $('.js-new-role-group-dialog').dialog('close');
-                        window.location.href = yukon.url('/adminSetup/roleGroup/view?roleGroupId=' + result.groupId);
+                        window.location.href = yukon.url('/adminSetup/role-groups/view?roleGroupId=' + result.groupId);
                     },
                     error: function (xhr, status, error, $form) {
                         $('#new-role-group-form').html(xhr.responseText);

@@ -802,70 +802,57 @@
                     </page>
                 </pages>
             </page>
-            <page name="userEditor" type="BASIC">
-                <requireRoleProperty value="ADMIN_SUPER_USER" />
+            <page name="auth.home" type="BASIC">
+                <requireRoleProperty value="ADMIN_SUPER_USER"/>
                 <link>/adminSetup/userEditor/home</link>
                 <pages>
-                    <page name="roleGroupEditor.VIEW" type="DETAIL" navigationMenuRoot="true" contributeToMenu="true">
-                        <link>/adminSetup/roleGroup/view?roleGroupId=${roleGroupId}</link>
-                        <labelArgument>${roleGroupName}</labelArgument>
-                        <infoInclude>/WEB-INF/pages/adminSetup/userGroupEditor/roleGroupInfoFragment.jsp</infoInclude>
+                    <page name="auth.users" type="BASIC">
                         <pages>
-                            <page name="roleGroupEditor.EDIT" type="DETAIL_CHILD" hideFavorite="true">
-                                <link>/adminSetup/roleGroup/edit?roleGroupId=${roleGroupId}</link>
-                                <labelArgument>${roleGroupName}</labelArgument>
-                            </page>
-                            <page name="userGroups" type="DETAIL_CHILD" contributeToMenu="true">
-                                <link>/adminSetup/roleGroup/userGroups?roleGroupId=${roleGroupId}</link>
-                                <labelArgument>${roleGroupName}</labelArgument>
-                            </page>
-                            <page name="roles" type="DETAIL">
-                                <link>/adminSetup/roleEditor/view?roleGroupId=${roleGroupId}&amp;roleId=${roleId}</link>
-                                <labelArgument>${roleName}</labelArgument>
+                            <page name="auth.user.VIEW" type="DETAIL">
+                                <link>/adminSetup/user/${userId}/view</link>
+                                <labelArgument>${username}</labelArgument>
+                                <pages>
+                                    <page name="auth.user.EDIT" type="DETAIL_CHILD" hideFavorite="true">
+                                        <labelArgument>${username}</labelArgument>
+                                    </page>
+                                    <page name="auth.user.permissions" type="DETAIL_CHILD">
+                                        <requireRoleProperty value="ADMIN_LM_USER_ASSIGN"/>
+                                        <labelArgument>${username}</labelArgument>
+                                    </page>
+                                </pages>
                             </page>
                         </pages>
                     </page>
-                    <page name="userEditor.VIEW" type="DETAIL" navigationMenuRoot="true" contributeToMenu="true">
-                        <link>/adminSetup/user/view?userId=${userId}</link>
-                        <labelArgument>${editingUsername}</labelArgument>
-                        <infoInclude>/WEB-INF/pages/adminSetup/userGroupEditor/userInfoFragment.jsp</infoInclude>
+                    <page name="auth.user.groups" type="BASIC">
                         <pages>
-                            <page name="userEditor.EDIT" type="DETAIL_CHILD" hideFavorite="true">
-                                <link>/adminSetup/user/edit?userId=${userId}</link>
-                                <labelArgument>${editingUsername}</labelArgument>
-                            </page>
-                            <page name="userPermissions" type="DETAIL_CHILD" contributeToMenu="true">
-                                <requireRoleProperty value="ADMIN_LM_USER_ASSIGN"/>
-                                <link>/adminSetup/user/permissions?userId=${userId}</link>
-                                <labelArgument>${editingUsername}</labelArgument>
+                            <page name="auth.user.group.VIEW" type="DETAIL">
+                                <link>/adminSetup/user-groups/${userGroupId}/view</link>
+                                <labelArgument>${userGroupName}</labelArgument>
+                                <pages>
+                                    <page name="auth.user.group.EDIT" type="DETAIL_CHILD" hideFavorite="true">
+                                        <labelArgument>${userGroupName}</labelArgument>
+                                    </page>
+                                    <page name="auth.user.group.permissions" type="DETAIL_CHILD">
+                                        <requireRoleProperty value="ADMIN_LM_USER_ASSIGN"/>
+                                        <labelArgument>${userGroupName}</labelArgument>
+                                    </page>
+                                </pages>
                             </page>
                         </pages>
                     </page>
-                    <page name="userGroupEditor.VIEW" type="DETAIL" navigationMenuRoot="true" contributeToMenu="true">
-                        <link>/adminSetup/userGroup/view?userGroupId=${userGroupId}</link>
-                        <labelArgument>${userGroupName}</labelArgument>
-                        <infoInclude>/WEB-INF/pages/adminSetup/userGroupEditor/userGroupInfoFragment.jsp</infoInclude>
+                    <page name="auth.role.groups" type="BASIC">
                         <pages>
-                            <page name="userGroupEditor.EDIT" type="DETAIL_CHILD" hideFavorite="true">
-                                <link>/adminSetup/userGroup/edit?userId=${userId}</link>
-                                <labelArgument>${userGroupName}</labelArgument>
-                            </page>
-                            <page name="userGroupAssociation" type="DETAIL_CHILD">
-                                <link>/adminSetup/userGroup/association</link>
-                                <labelArgument>${userGroupName}</labelArgument>
-                            </page>
-                            <page name="users" type="DETAIL_CHILD" contributeToMenu="true">
-                                <link>/adminSetup/userGroup/users?userGroupId=${userGroupId}</link>
-                                <labelArgument>${userGroupName}</labelArgument>
-                            </page>
-                            <page name="roleGroups" type="DETAIL_CHILD" contributeToMenu="true">
-                                <link>/adminSetup/userGroup/roleGroups?userGroupId=${userGroupId}</link>
-                                <labelArgument>${userGroupName}</labelArgument>
-                            </page>
-                            <page name="groupPermissions" type="DETAIL_CHILD" contributeToMenu="true">
-                                <requireRoleProperty value="ADMIN_LM_USER_ASSIGN"/>
-                                <link>/adminSetup/userGroup/permissions?userGroupId=${userGroupId}</link>
-                                <labelArgument>${userGroupName}</labelArgument>
+                            <page name="auth.role.group.VIEW" type="DETAIL">
+                                <link>/adminSetup/role-groups/${roleGroupId}/view</link>
+                                <labelArgument>${roleGroupName}</labelArgument>
+                                <pages>
+                                    <page name="auth.role.group.EDIT" type="DETAIL_CHILD" hideFavorite="true">
+                                        <labelArgument>${roleGroupName}</labelArgument>
+                                    </page>
+                                    <page name="auth.role" type="DETAIL_CHILD" hideFavorite="true">
+                                        <labelArgument>${roleName}</labelArgument>
+                                    </page>
+                                </pages>
                             </page>
                         </pages>
                     </page>

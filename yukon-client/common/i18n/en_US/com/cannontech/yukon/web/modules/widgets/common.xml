@@ -30,8 +30,6 @@
 <entry key="yukon.web.widgets.miniTdcWidget">Mini TDC</entry>
 <entry key="yukon.web.widgets.profileWidget">Profile Collection</entry>
 <entry key="yukon.web.widgets.pendingProfilesWidget">Pending Profile Collections</entry>
-<entry key="yukon.web.widgets.userPermissionEditorWidget">User Permission Editor</entry>
-<entry key="yukon.web.widgets.groupPermissionEditorWidget">Group Permission Editor</entry>
 <entry key="yukon.web.widgets.peakReportWidget">Peak Summary Report</entry>
 <entry key="yukon.web.widgets.outageMonitorsWidget">Outage Monitors</entry>
 <entry key="yukon.web.widgets.tamperFlagMonitorsWidget">Tamper Flag Monitors</entry>
@@ -74,8 +72,6 @@
 <entry key="yukon.web.widgets.miniTdcWidget.widgetIdentity">Mini TDC {0}</entry>
 <entry key="yukon.web.widgets.profileWidget.widgetIdentity">Profile Collection {0}</entry>
 <entry key="yukon.web.widgets.pendingProfilesWidget.widgetIdentity">Pending Profile Collections {0}</entry>
-<entry key="yukon.web.widgets.userPermissionEditorWidget.widgetIdentity">User Permission Editor {0}</entry>
-<entry key="yukon.web.widgets.groupPermissionEditorWidget.widgetIdentity">{0}</entry>
 <entry key="yukon.web.widgets.peakReportWidget.widgetIdentity">Peak Summary Report {0}</entry>
 <entry key="yukon.web.widgets.outageMonitorsWidget.widgetIdentity">Outage Monitors {0}</entry>
 <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.widgetIdentity">Tamper Flag Monitors {0}</entry>

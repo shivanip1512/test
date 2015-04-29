@@ -1,8 +1,7 @@
 package com.cannontech.web.admin.userGroupEditor;
 
-import static com.cannontech.common.util.StringUtils.parseIntStringForList;
-
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -14,8 +13,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authentication.service.AuthenticationService;
@@ -38,7 +39,6 @@ import com.cannontech.web.security.csrf.CsrfTokenService;
 import com.google.common.collect.Lists;
 
 @Controller
-@RequestMapping("/roleGroup/*")
 @CheckRoleProperty(YukonRoleProperty.ADMIN_SUPER_USER)
 public class RoleGroupEditorController {
     
@@ -50,11 +50,11 @@ public class RoleGroupEditorController {
     @Autowired private RoleGroupValidator validator;
     @Autowired private CsrfTokenService csrfTokenService;
     
-    private static final String key = "yukon.web.modules.adminSetup.roleGroupEditor.";
-    private static final String userGroupKey = "yukon.web.modules.adminSetup.userGroups.";
+    private static final String key = "yukon.web.modules.adminSetup.auth.role.group.";
     
-    @RequestMapping("view")
-    public String view(ModelMap model, int roleGroupId) {
+    /* VIEW PAGE */
+    @RequestMapping("role-groups/{roleGroupId}/view")
+    public String view(ModelMap model, @PathVariable int roleGroupId) {
         
         model.addAttribute("mode", PageEditMode.VIEW);
         LiteYukonGroup group = roleGroupDao.getLiteYukonGroup(roleGroupId);
@@ -66,16 +66,9 @@ public class RoleGroupEditorController {
         return "userGroupEditor/group.jsp";
     }
     
-    private void setupModelMap(ModelMap model, LiteYukonGroup group) {
-        model.addAttribute("group", group);
-        model.addAttribute("roleGroupId", group.getGroupID());
-        model.addAttribute("roleGroupName", group.getGroupName());
-        model.addAttribute("editName", group.getGroupID() > -1 ? true : false);
-    }
-
-    /* Group Editor Edit Page*/
-    @RequestMapping(value="edit", method=RequestMethod.POST, params="edit")
-    public String edit(ModelMap model, int roleGroupId) {
+    /* EDIT PAGE */
+    @RequestMapping("role-groups/{roleGroupId}/edit")
+    public String edit(ModelMap model, @PathVariable int roleGroupId) {
         
         model.addAttribute("mode", PageEditMode.EDIT);
         LiteYukonGroup group = roleGroupDao.getLiteYukonGroup(roleGroupId);
@@ -84,9 +77,9 @@ public class RoleGroupEditorController {
         return "userGroupEditor/group.jsp";
     }
     
-    /* Expire all users in this group */
-    @RequestMapping(value="edit", method=RequestMethod.POST, params="expireAllPasswords")
-    public String expireAllPasswords(ModelMap model, FlashScope flash, int roleGroupId) {
+    /* EXPIRE PASWORDS */
+    @RequestMapping("role-groups/{roleGroupId}/expire-passwords")
+    public String expireAllPasswords(ModelMap model, FlashScope flash, @PathVariable int roleGroupId) {
         
         model.addAttribute("mode", PageEditMode.EDIT);
         LiteYukonGroup roleGroup = roleGroupDao.getLiteYukonGroup(roleGroupId);
@@ -95,12 +88,12 @@ public class RoleGroupEditorController {
         authService.expireAllPasswords(roleGroup.getGroupID());
         flash.setConfirm(new YukonMessageSourceResolvable(key + "expiredAllPasswords"));
         
-        return "redirect:view";
+        return "redirect:/adminSetup/role-groups/" + roleGroupId + "/view";
     }
     
-    /* Update Group */
-    @RequestMapping(value="edit", method=RequestMethod.POST, params="update")
-    public String update(ModelMap model, FlashScope flash, 
+    /* UPDATE */
+    @RequestMapping(value="role-groups/{roleGroupId}", method=RequestMethod.POST, params="update")
+    public String update(ModelMap model, FlashScope flash, @PathVariable int roleGroupId,
             @ModelAttribute("group") LiteYukonGroup group, BindingResult result) {
         
         validator.validate(group, result);
@@ -118,21 +111,13 @@ public class RoleGroupEditorController {
         roleGroupDao.save(group);
         
         flash.setConfirm(new YukonMessageSourceResolvable(key + "updateSuccessful"));
-        model.addAttribute("roleGroupId", group.getGroupID());
         
-        return "redirect:view";
+        return "redirect:/adminSetup/role-groups/" + roleGroupId + "/view";
     }
     
-    /* Cancel */
-    @RequestMapping(value="edit", method=RequestMethod.POST, params="cancel")
-    public String cancel(int roleGroupId, ModelMap model) {
-        model.addAttribute("roleGroupId", roleGroupId);
-        return "redirect:view";
-    }
-    
-    /* Delete Group */
-    @RequestMapping(value="edit", method=RequestMethod.POST, params="delete")
-    public String delete(int roleGroupId, FlashScope flash) {
+    /* DELETE */
+    @RequestMapping(value="role-groups/{roleGroupId}", method=RequestMethod.POST, params="delete")
+    public String delete(@PathVariable int roleGroupId, FlashScope flash) {
         
         roleGroupDao.delete(roleGroupId);
         flash.setConfirm(new YukonMessageSourceResolvable(key + "deletedSuccessful"));
@@ -140,68 +125,47 @@ public class RoleGroupEditorController {
         return "redirect:/adminSetup/userEditor/home";
     }
     
-    /* User Groups */
-    @RequestMapping("userGroups")
-    public String userGroups(ModelMap model, int roleGroupId) {
-        
-        LiteYukonGroup roleGroup = roleGroupDao.getLiteYukonGroup(roleGroupId);
-        List<LiteUserGroup> userGroups = userGroupDao.getLiteUserGroupsByRoleGroupId(roleGroupId);
-        
-        model.addAttribute("userGroups", userGroups);
-        model.addAttribute("alreadyAssignedUserGroupIds", Lists.transform(userGroups, LiteBase.ID_FUNCTION));
-        setupModelMap(model, roleGroup);
-        
-        return "userGroupEditor/userGroups.jsp";
-    }
-    
-    /* Add User Group */
-    @RequestMapping(value="addUserGroups", method=RequestMethod.POST)
-    public String addUserGroups(ModelMap model, FlashScope flash, int roleGroupId, String userGroupIds) 
+    /* ADD USER GROUPS */
+    @RequestMapping(value="role-groups/{roleGroupId}/add-user-groups", method=RequestMethod.POST)
+    public void addRoleGroups(ModelMap model, FlashScope flash, 
+            @PathVariable int roleGroupId, @RequestParam("groups[]") int[] groups)
     throws SQLException {
         
-        List<Integer> userGroupIdsList = parseIntStringForList(userGroupIds);
-        
         LiteYukonGroup roleGroup = roleGroupDao.getLiteYukonGroup(roleGroupId);
-        List<String> conflictingUserGroupNames = Lists.newArrayList();
-        for (int userGroupId : userGroupIdsList) {
+        List<String> conflicts = new ArrayList<>();
+        for (int userGroupId : groups) {
             
             UserGroup userGroup = userGroupDao.getUserGroup(userGroupId);
             try {
                 userGroup.addRoleGroups(roleGroup);
                 userGroup.update();
             } catch (ConfigurationException e) {
-                conflictingUserGroupNames.add(userGroup.getUserGroup().getUserGroupName());
+                conflicts.add(userGroup.getUserGroup().getUserGroupName());
             }
         }
         
-        // Display the response message.
-        if (!conflictingUserGroupNames.isEmpty()) {
-            flash.setError(new YukonMessageSourceResolvable(userGroupKey + "roleGroupConflict", 
-                    roleGroup.getGroupName(), conflictingUserGroupNames));
+        if (!conflicts.isEmpty()) {
+            flash.setError(new YukonMessageSourceResolvable(key + "roleGroupConflict", 
+                    roleGroup.getGroupName(), conflicts));
         } else {
-            flash.setConfirm(new YukonMessageSourceResolvable(userGroupKey + "addedSuccessful"));
+            flash.setConfirm(new YukonMessageSourceResolvable(key + "addedSuccessful"));
         }
-        model.addAttribute("roleGroupId", roleGroupId);
-        
-        return "redirect:userGroups";
-    }
-
-    /* Remove User Group */
-    @RequestMapping(value="removeUserGroups", method=RequestMethod.POST)
-    public String removeUserGroups(ModelMap model, FlashScope flash, int roleGroupId, int remove) {
-        
-        LiteUserGroup userGroup = userGroupDao.getLiteUserGroup(remove);
-        
-        userGroupDao.deleteUserGroupToYukonGroupMappng(remove, roleGroupId);
-        flash.setConfirm(new YukonMessageSourceResolvable(userGroupKey + "removedSuccessful", userGroup.getUserGroupName()));
-        model.addAttribute("roleGroupId", roleGroupId);
-        
-        return "redirect:userGroups";
     }
     
-    /* Add Role */
-    @RequestMapping(value="addRole", method=RequestMethod.POST)
-    public String addRole(ModelMap model, FlashScope flash, int newRoleId, int roleGroupId) {
+    /* REMOVE USER GROUP */
+    @RequestMapping(value="role-groups/{roleGroupId}/remove-user-group", method=RequestMethod.POST)
+    public String removeUserGroups(ModelMap model, FlashScope flash, @PathVariable int roleGroupId, int remove) {
+        
+        LiteUserGroup userGroup = userGroupDao.getLiteUserGroup(remove);
+        userGroupDao.deleteUserGroupToYukonGroupMappng(remove, roleGroupId);
+        flash.setConfirm(new YukonMessageSourceResolvable(key + "removedSuccessful", userGroup.getUserGroupName()));
+        
+        return "redirect:/adminSetup/role-groups/" + roleGroupId + "/view";
+    }
+    
+    /* ADD ROLE */
+    @RequestMapping(value="role-groups/{roleGroupId}/add-role", method=RequestMethod.POST)
+    public String addRole(ModelMap model, FlashScope flash, int newRoleId, @PathVariable int roleGroupId) {
         
         LiteYukonGroup group = roleGroupDao.getLiteYukonGroup(roleGroupId);
         YukonRole role = YukonRole.getForId(newRoleId);
@@ -211,15 +175,29 @@ public class RoleGroupEditorController {
             rolePropertyEditorDao.addRoleToGroup(group, role);
         } catch (ConfigurationException e) {
             model.addAttribute("roleGroupId", roleGroupId);
-            flash.setError(new YukonMessageSourceResolvable(key + "roleConflictingWithUserGroup", role.name(), group.getGroupName()));
-            return "redirect:view";
+            flash.setError(new YukonMessageSourceResolvable(key + "roleConflictingWithUserGroup", 
+                    role.name(), group.getGroupName()));
+            return "redirect:/adminSetup/role-groups/" + roleGroupId + "/view";
         }
         
         model.addAttribute("roleGroupId", roleGroupId);
         model.addAttribute("roleId", newRoleId);
         flash.setConfirm(new YukonMessageSourceResolvable(key + "updateSuccessful"));
         
-        return "redirect:/adminSetup/roleEditor/view";
+        return "redirect:/adminSetup/role-groups/" + roleGroupId + "/roles/" + newRoleId;
+    }
+    
+    private void setupModelMap(ModelMap model, LiteYukonGroup group) {
+        
+        int roleGroupId = group.getGroupID();
+        model.addAttribute("group", group);
+        model.addAttribute("roleGroupId", group.getGroupID());
+        model.addAttribute("roleGroupName", group.getGroupName());
+        model.addAttribute("editName", group.getGroupID() > -1 ? true : false);
+        
+        List<LiteUserGroup> userGroups = userGroupDao.getLiteUserGroupsByRoleGroupId(roleGroupId);
+        model.addAttribute("userGroups", userGroups);
+        model.addAttribute("alreadyAssignedUserGroupIds", Lists.transform(userGroups, LiteBase.ID_FUNCTION));
     }
     
 }

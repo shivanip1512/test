@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.user.NewUser;
 import com.cannontech.common.user.UserAuthenticationInfo;
@@ -28,6 +29,7 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.PagingResultSetExtractor;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YNBoolean;
@@ -381,7 +383,10 @@ public class YukonUserDaoImpl implements YukonUserDao {
     }
     
     @Override
-    public SearchResults<LiteYukonUser> getUsersForUserGroup(int userGroupId, final int start, final int count) {
+    public SearchResults<LiteYukonUser> getUsersForUserGroup(int userGroupId, PagingParameters paging) {
+        
+        int start = paging.getStartIndex();
+        int count = paging.getItemsPerPage();
         
         /* Get Total Count */
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -407,6 +412,19 @@ public class YukonUserDaoImpl implements YukonUserDao {
         searchResult.setBounds(start, count, totalCount);
         
         return searchResult;
+    }
+    
+    @Override
+    public List<Integer> getUserIdsForUserGroup(int userGroupId) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT UserId");
+        sql.append("FROM YukonUser");
+        sql.append("WHERE UserGroupid").eq(userGroupId);
+        
+        List<Integer> userIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
+        
+        return userIds;
     }
     
     @Override

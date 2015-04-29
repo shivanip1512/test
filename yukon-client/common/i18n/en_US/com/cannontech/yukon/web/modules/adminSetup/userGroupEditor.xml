@@ -2,154 +2,148 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
-    <!-- home.jsp -->
-    <entry key="yukon.web.modules.adminSetup.userEditor.pageName">User Editor</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.pageDescription">User Editor</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.roleGroups">Role Groups</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.roleGroupPicker.title">Select A Role Group To Edit</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.users">Users</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.userPicker.title">Select A User To Edit</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.userGroups">User Groups</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.userGroupPicker.title">Select A User Group To Edit</entry>
+    <!-- Home -->
+    <entry key="yukon.web.modules.adminSetup.auth.home.pageName">User and Groups</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.home.pageDescription">User and Groups</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.home.user.new">New User</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.home.user.group.new">New User Group</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.home.role.group.new">New Role Group</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.home.roleGroups">Role Groups</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.home.roleGroupPicker.title">Select A Role Group To Edit</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.home.users">Users</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.home.userPicker.title">Select A User To Edit</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.home.userGroups">User Groups</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.home.userGroupPicker.title">Select A User Group To Edit</entry>
     
-    <!-- Group Editor group.jsp-->
-    <entry key="yukon.web.modules.adminSetup.roleGroupEditor.VIEW.pageName">Group Info</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroupEditor.VIEW.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroupEditor.EDIT.pageName">Edit</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroupEditor.EDIT.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroupEditor.infoContainer.title">Group Info</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroupEditor.rolesContainer.title">Roles</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroupEditor.otherActions.title">Other Actions</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroupEditor.name">Name</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroupEditor.description">Description</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroupEditor.roleConflictingWithUserGroup">The role {0} cannot be added due to a conflict with one of the user groups currently attached to this role group {1}.</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroupEditor.updateSuccessful">Group Updated Successfully</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroupEditor.deletedSuccessful">Group Deleted Successfully</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroupEditor.confirmDelete.title">Delete Group {0}</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroupEditor.confirmDelete.message">Are you sure you want to delete group {0}?</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroupEditor.groupNameRequired">Name is required.</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroupEditor.groupNameUnavailable">Name is already in use by another group.</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroupEditor.noRoles">No roles assigned for this group.</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroupEditor.expireAllPasswords.label">Expire All Passwords</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroupEditor.confirmExpireAllPasswords.title">Expire All Passwords {0}</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroupEditor.confirmExpireAllPasswords.message">Are you sure you want to expire all passwords for the group {0}?</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroupEditor.expiredAllPasswords">All the passwords for the role group have been expired.</entry>
-
-    <!-- Group Editor group.jsp-->
-    <entry key="yukon.web.modules.adminSetup.userGroupEditor.VIEW.pageName">User Group Info</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroupEditor.VIEW.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroupEditor.EDIT.pageName">Edit</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroupEditor.EDIT.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroupEditor.rolesContainer.title">Roles Derived From Role Groups</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroupEditor.userGroupName">User Group Name</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroupEditor.userGroupDescription">User Group Description</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroupEditor.updateSuccessful">User Group Updated Successfully</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroupEditor.deletedSuccessful">User Group {0} Deleted Successfully</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroupEditor.confirmDelete.title">Delete User Group {0}</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroupEditor.confirmDelete.message">Are you sure you want to delete the user group {0}?</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroupEditor.noRoles">No role groups are attached to this user group.</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroupEditor.usersCurrentlyAttached">User groups cannot be deleted with users attached.  Please remove the users from this user group and try again.</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroupEditor.name.required">Group name is required.</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroupEditor.name.unavailable">Group name is already used.</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.users.crumbTitle">Users</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.groups.crumbTitle">User Groups</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.groups.crumbTitle">Role Groups</entry>
     
-    <!-- Role Editor roles.jsp -->
-    <entry key="yukon.web.modules.adminSetup.roles.pageName">Role Editor</entry>
-    <entry key="yukon.web.modules.adminSetup.roles.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.adminSetup.roles.loginGroupRoleUpdated">Role Group Role Updated Successfully</entry>
-    <entry key="yukon.web.modules.adminSetup.roles.confirmDelete.title">Remove Role From {0}</entry>
-    <entry key="yukon.web.modules.adminSetup.roles.confirmDelete.message">Are you sure you want to remove this role from {0}?</entry>
-    <entry key="yukon.web.modules.adminSetup.roles.default">Default</entry>
-    <entry key="yukon.web.modules.adminSetup.roles.legend">- non default value</entry>
+    <!-- User -->
+    <entry key="yukon.web.modules.adminSetup.auth.user.VIEW.pageTitle">User ({0})</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.VIEW.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.VIEW.pageHeading">User ({0})</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.EDIT.pageTitle">Edit User ({0})</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.EDIT.crumbTitle">Edit</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.EDIT.pageHeading">Edit User ({0})</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.authentication">Authentication</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.infoContainer.title">User Info</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.userStatus">Status</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.userGroup">User Group</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.energyCompany">Link to Energy Company</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.password">Password</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.password.mismatch">Password fields do not match</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.password.required">Password is required</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.passwordUpdateSuccessful">Password Updated Successfully</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.confirmPassword">Confirm Password</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.changePasswordPopup">Change Password for User: {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.changePassword.label">Change Password</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.unlockUser.label">Unlock User</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.userUnlocked">The user is unlocked</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.rolesContainer.title">Roles Derived From User Group</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.noRoles">No roles assigned for this user.</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.required.username">Username is required</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.unavailable.username">Username is unavailable</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.updateSuccessful">User Updated Successfully</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.groupConflict">Could not add user to group(s). The groups this user is already a member of and the new group(s) {0} have conflicting roles.</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.delete.confirm.title">Delete User</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.delete.confirm.message">Are you sure you want to delete this user?</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.delete.success">User {0} delete successfully.</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.delete.failed.self">You cannot delete your own user.</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.permissions.view">View Object Permissions</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.login.throttle.title">Failed Login Attempts</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.lastFailed">Last Attempt</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.numFailed">Number of Attempts</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.retryEndTime">Throttle Expires</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.waitDuration">Throttle Duration</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.remove.login.wait.label">Remove Throttle</entry>
     
-    <!-- Group Permission Editor -->
-    <entry key="yukon.web.modules.adminSetup.groupPermissions.pageName">Permissions</entry>
-    <entry key="yukon.web.modules.adminSetup.groupPermissions.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.adminSetup.groupPermissions.instructions">Instructions: </entry>
-    <entry key="yukon.web.modules.adminSetup.groupPermissions.lm.notes">Use this permission for Load Management. Select items to ALLOW group access.</entry>
-    <entry key="yukon.web.modules.adminSetup.groupPermissions.cc.notes">Use this permission for Cap Control. Select items to DENY group access.</entry>
-    <entry key="yukon.web.modules.adminSetup.groupPermissions.failedLogin.title">Failed Login Information for: {0}</entry>
-    <entry key="yukon.web.modules.adminSetup.groupPermissions.lastFailed">Last failed login time:</entry>
-    <entry key="yukon.web.modules.adminSetup.groupPermissions.numFailed">Number of failed login attempts:</entry>
-    <entry key="yukon.web.modules.adminSetup.groupPermissions.retryEndTime">Retry Wait End time:</entry>
-    <entry key="yukon.web.modules.adminSetup.groupPermissions.waitDuration">Wait duration before next Login retry:</entry>
+    <!-- User Permissions  -->
+    <entry key="yukon.web.modules.adminSetup.auth.user.permissions.pageName">Permissions</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.permissions.pageDescription">{0}</entry>
     
-    <!-- User Permission Editor -->
-    <entry key="yukon.web.modules.adminSetup.userPermissions.pageName">Permissions</entry>
-    <entry key="yukon.web.modules.adminSetup.userPermissions.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.adminSetup.userPermissions.instructions">Instructions: </entry>
-    <entry key="yukon.web.modules.adminSetup.userPermissions.lm.notes">Use this permission for Load Management. Select items to ALLOW user access.</entry>
-    <entry key="yukon.web.modules.adminSetup.userPermissions.cc.notes">Use this permission for Cap Control. Select items to DENY user access.</entry>
+    <!-- User Group Permissions  -->
+    <entry key="yukon.web.modules.adminSetup.auth.user.group.permissions.pageName">Permissions</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.group.permissions.pageDescription">{0}</entry>
     
-    <!-- Users Editor users.jsp -->
-    <entry key="yukon.web.modules.adminSetup.users.pageName">Users</entry>
-    <entry key="yukon.web.modules.adminSetup.users.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.adminSetup.users.usersUpdated">Role Group Users Updated Successfully</entry>
-    <entry key="yukon.web.modules.adminSetup.users.usersContainer">Users of this Group</entry>
-    <entry key="yukon.web.modules.adminSetup.users.authentication">Authentication</entry>
-    <entry key="yukon.web.modules.adminSetup.users.userStatus">User Status</entry>
-    <entry key="yukon.web.modules.adminSetup.users.remove">Remove</entry>
-    <entry key="yukon.web.modules.adminSetup.users.noUsers">No Users In This Group</entry>
-    <entry key="yukon.web.modules.adminSetup.users.addUsers.label">Add</entry>
-    <entry key="yukon.web.modules.adminSetup.users.confirmRemove.title">Confirm Remove</entry>
-    <entry key="yukon.web.modules.adminSetup.users.confirmRemove.message">Are you sure you want to remove the user {0} from this user group?</entry>
-
-    <!-- User Editor user.jsp-->
-    <entry key="yukon.web.modules.adminSetup.userEditor.VIEW.pageName">User Info</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.VIEW.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.EDIT.pageName">Edit</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.EDIT.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.authentication">Authentication</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.userStatus">User Status</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.userGroup">User Group</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.energyCompany">Link to Energy Company</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.password">Password</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.confirmPassword">Confirm Password</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.changePasswordPopup">Change Password for User: {0}</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.changePassword.label">Change Password</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.unlockUser.label">Unlock User</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.userUnlocked">The user is unlocked</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.rolesContainer.title">Roles Derived From User Group</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.noRoles">No roles assigned for this user.</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.required.username">Username is required</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.unavailable.username">Username is unavailable</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.password.mismatch">Password fields do not match</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.password.required">Password is required</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.updateSuccessful">User Updated Successfully</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.passwordUpdateSuccessful">Password Updated Successfully</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.groupConflict">Could not add user to group(s). The groups this user is already a member of and the new group(s) {0} have conflicting roles.</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.delete.confirm.title">Delete User</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.delete.confirm.message">Are you sure you want to delete this user?</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.delete.success">User {0} delete successfully.</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.delete.failed.self">You cannot delete your own user.</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.permissions.lm.title">Load Management</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.permissions.lm.note">
+    <![CDATA[Select items to <strong class="success">ALLOW</strong> access.]]>
+    </entry>
+    <entry key="yukon.web.modules.adminSetup.auth.permissions.vv.title">Volt/Var</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.permissions.vv.note">
+    <![CDATA[Select items to <strong class="error">DENY</strong> access.]]>
+    </entry>
     
-    <!-- Groups Editor groups.jsp -->
-    <entry key="yukon.web.modules.adminSetup.roleGroups.pageName">Role Groups</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroups.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroups.userUpdated">User Updated Successfully</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroups.groupsContainer.title">Role Groups</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroups.groupName">Group Name</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroups.description">Description</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroups.remove">Remove</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroups.addGroups.label">Add</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroups.noGroups">This user group does not have any role groups associated with it.</entry>
-
-    <!-- User Groups Editor groups.jsp -->
-    <entry key="yukon.web.modules.adminSetup.userGroups.pageName">User Groups</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroups.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroups.groupsContainer.title">User Groups</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroups.groupName">User Group Name</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroups.description">Description</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroups.remove">Remove</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroups.addUserGroups.label">Add</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroups.noGroups">This role group is not a member of any user groups.</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroups.roleGroupConflict">The role group {0} cannot be added to the user groups {1}.</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroups.addedSuccessful">User Groups Added Successfully</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroups.removedSuccessful">{0} Removed Successfully</entry>
+    <!-- User Group userGroup.jsp-->
+    <entry key="yukon.web.modules.adminSetup.auth.user.group.VIEW.pageTitle">User Group ({0})</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.group.VIEW.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.group.VIEW.pageHeading">User Group ({0})</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.group.EDIT.pageName">Edit</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.group.EDIT.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.group.authentication">Authentication</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.group.confirmDelete.message">Are you sure you want to delete the user group {0}?</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.group.confirmDelete.title">Delete User Group {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.group.remove.user.confirm.message">Are you sure you want to remove the user {0} from this user group?</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.group.remove.user.confirm.title">Confirm Remove</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.group.deletedSuccessful">User Group {0} Deleted Successfully</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.group.description">Description</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.group.groupName">Group Name</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.group.infoContainer.title">Group Info</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.group.name.required">Group name is required.</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.group.name.unavailable">Group name is already used.</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.group.noGroups">This user group does not have any role groups associated with it.</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.group.noRoles">No role groups are attached to this user group.</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.group.noUsers">No Users In This Group</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.group.role.groups.title">Role Groups</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.group.rolesContainer.title">Roles Derived From Role Groups</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.group.updateSuccessful">User Group Updated Successfully</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.group.userGroupDescription">User Group Description</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.group.userGroupName">User Group Name</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.group.users.title">Users</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.group.usersCurrentlyAttached">User groups cannot be deleted with users attached.  Please remove the users from this user group and try again.</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.group.userStatus">Status</entry>
     
-    <entry key="yukon.web.widgetClasses.GroupPermissionEditorWidget.save.labelBusy">Saving</entry>
+    <!-- Role Group group.jsp-->
+    <entry key="yukon.web.modules.adminSetup.auth.role.group.VIEW.pageTitle">Role Group ({0})</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.group.VIEW.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.group.VIEW.pageHeading">Role Group ({0})</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.group.EDIT.pageName">Edit</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.group.EDIT.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.group.addedSuccessful">User Groups Added Successfully</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.group.confirmDelete.message">Are you sure you want to delete group {0}?</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.group.confirmDelete.title">Delete Group {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.group.confirmExpireAllPasswords.message">Are you sure you want to expire all passwords for the group {0}?</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.group.confirmExpireAllPasswords.title">Expire All Passwords {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.group.deletedSuccessful">Group Deleted Successfully</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.group.description">Description</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.group.description">Description</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.group.expireAllPasswords.label">Expire All Passwords</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.group.expiredAllPasswords">All the passwords for the role group have been expired.</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.group.groupName">User Group Name</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.group.groupNameRequired">Name is required.</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.group.groupNameUnavailable">Name is already in use by another group.</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.group.groupsContainer.title">User Groups</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.group.infoContainer.title">Group Info</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.group.name">Name</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.group.noGroups">This role group is not a member of any user groups.</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.group.noRoles">No roles assigned for this group.</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.group.otherActions.title">Other Actions</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.group.removedSuccessful">{0} Removed Successfully</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.group.roleConflictingWithUserGroup">The role {0} cannot be added due to a conflict with one of the user groups currently attached to this role group {1}.</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.group.roleGroupConflict">The role group {0} cannot be added to the user groups {1}.</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.group.rolesContainer.title">Roles</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.group.updateSuccessful">Group Updated Successfully</entry>
     
-    <!--  userGroupPermissionEditor render.jsp -->
-    <entry key="yukon.web.widgets.userPermissionEditorWidget.save.label">Save</entry>
-    <entry key="yukon.web.widgets.userPermissionEditorWidget.save.labelBusy">Saving</entry>
-    <entry key="yukon.web.widgets.userPermissionEditorWidget.remove.hoverText">Remove this PAO</entry>
+    <!-- Role Properties roles.jsp -->
+    <entry key="yukon.web.modules.adminSetup.auth.role.pageTitle">Role ({0})</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.pageHeading">Role ({0})</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.properties.title">Role Properties</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.update.success">{0} Role Updated Successfully</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.confirmDelete.title">Remove Role From {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.confirmDelete.message">Are you sure you want to remove this role from {0}?</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.default">Default</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.role.legend">- non default value</entry>
+    
 </properties>

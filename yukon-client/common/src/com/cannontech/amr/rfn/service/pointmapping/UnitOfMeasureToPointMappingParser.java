@@ -20,7 +20,6 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.amr.rfn.message.read.ChannelData;
 import com.cannontech.amr.rfn.message.read.DatedChannelData;
-import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.dao.RfnPointMappingDao;
 import com.cannontech.common.pao.PaoType;
@@ -203,9 +202,10 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
             pointMapperMap = parse(xmlFile);
         }
 
-        computingCache = CacheBuilder.newBuilder().concurrencyLevel(6).expireAfterWrite(5, TimeUnit.MINUTES).build(new CacheLoader<CachedPointKey, CachedPointValue>() {
+        computingCache = CacheBuilder.newBuilder().concurrencyLevel(6).expireAfterWrite(5, TimeUnit.MINUTES)
+        .build(new CacheLoader<CachedPointKey, CachedPointValue>() {
                 @Override
-                public CachedPointValue load(CachedPointKey key) throws Exception {
+                public CachedPointValue load(CachedPointKey key) {
                     return locatePointValueHandler(key);
                 }
         });
@@ -333,7 +333,7 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
 
         }
         
-        LogHelper.debug(log, "unable to find match on %s for %s %s", paoType, unitOfMeasure, unitOfMeasureModifiers);
+        log.debug(String.format("unable to find match on %s for %s %s", paoType, unitOfMeasure, unitOfMeasureModifiers));
         return nullCachedPointValue;
     }
     

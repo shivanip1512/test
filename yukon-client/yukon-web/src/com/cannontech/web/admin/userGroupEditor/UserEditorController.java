@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,7 @@ import org.springframework.validation.MessageCodesResolver;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -61,7 +61,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 @Controller
-@RequestMapping("/user/*")
 @CheckRoleProperty(YukonRoleProperty.ADMIN_SUPER_USER)
 public class UserEditorController {
     
@@ -76,22 +75,29 @@ public class UserEditorController {
     @Autowired private CsrfTokenService csrfTokenService;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     
-    private final static String key = "yukon.web.modules.adminSetup.userEditor.";
+    private final static String key = "yukon.web.modules.adminSetup.auth.user.";
     
-    @RequestMapping("view")
-    public String view(YukonUserContext userContext, ModelMap model, int userId) {
+    /* VIEW PAGE */
+    @RequestMapping("user/{userId}/view")
+    public String view(YukonUserContext userContext, ModelMap model, @PathVariable int userId) {
         
-        LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(userId);
+        LiteYukonUser lyu = yukonUserDao.getLiteYukonUser(userId);
         UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(userId);
-        User user = new User(yukonUser, userAuthenticationInfo);
+        User user = new User(lyu, userAuthenticationInfo);
         setupModelMap(model, user, PageEditMode.VIEW, userContext);
+        
+        LiteYukonUser me = userContext.getYukonUser();
+        boolean showPermissions = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_LM_USER_ASSIGN, me);
+        model.addAttribute("showPermissions", showPermissions);
+        AuthenticationThrottleDto throttling = authService.getAuthenticationThrottleData(user.getUsername());
+        model.addAttribute("throttling", throttling);
         
         return "userGroupEditor/user.jsp";
     }
     
-    /* User Editor Edit Page */
-    @RequestMapping(value="edit", method=RequestMethod.POST, params="edit")
-    public String edit(HttpServletRequest request, YukonUserContext userContext, ModelMap model, int userId) {
+    /* EDIT PAGE */
+    @RequestMapping("user/{userId}/edit")
+    public String edit(YukonUserContext userContext, ModelMap model, @PathVariable int userId) {
         
         UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(userId);
         User user = new User(yukonUserDao.getLiteYukonUser(userId), userAuthenticationInfo);
@@ -100,35 +106,18 @@ public class UserEditorController {
         return "userGroupEditor/user.jsp";
     }
     
-    @RequestMapping("permissions")
-    public String permissions(ModelMap model, int userId, YukonUserContext userContext) {
+    @RequestMapping("user/{userId}/remove-login-wait")
+    public void reset(HttpServletResponse resp, @PathVariable int userId, YukonUserContext userContext) {
         
-        rolePropertyDao.verifyProperty(YukonRoleProperty.ADMIN_LM_USER_ASSIGN, userContext.getYukonUser());
-        LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
-        
-        AuthenticationThrottleDto authThrottleDto = authService.getAuthenticationThrottleData(user.getUsername());
-        
-        model.addAttribute("user", user);
-        model.addAttribute("userId", user.getUserID());
-        model.addAttribute("editingUsername", user.getUsername()); // Used by layout controller.
-        model.addAttribute("authThrottleDto", authThrottleDto);
-        return "userGroupEditor/editUser.jsp";
-    }
-
-    @RequestMapping(value="removeLoginWait", method = RequestMethod.POST)
-    public String removeLoginWait(ModelMap model, int userId, YukonUserContext userContext) {
-        
-        rolePropertyDao.verifyProperty(YukonRoleProperty.ADMIN_LM_USER_ASSIGN, userContext.getYukonUser());
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
         authService.removeAuthenticationThrottle(user.getUsername());
-        model.addAttribute("userId", userId);
+        resp.setStatus(HttpStatus.NO_CONTENT.value());
         
-        return "redirect:permissions";
     }
     
     /* Unlock User */
-    @RequestMapping(value="edit", method=RequestMethod.POST, params="unlockUser")
-    public String unlock(ModelMap model, FlashScope flash, int userId) {
+    @RequestMapping("user/{userId}/unlock")
+    public String unlock(ModelMap model, FlashScope flash, @PathVariable int userId) {
         
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
         authService.removeAuthenticationThrottle(user.getUsername());
@@ -138,8 +127,8 @@ public class UserEditorController {
     }
     
     /* Update User */
-    @RequestMapping(value="edit", method=RequestMethod.POST, params="update")
-    public String update(HttpServletRequest request, YukonUserContext userContext, 
+    @RequestMapping(value="user/{userId}", method=RequestMethod.POST, params="update")
+    public String update(YukonUserContext userContext, 
             @ModelAttribute User user, BindingResult result, ModelMap model, FlashScope flash) {
         
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(user.getUserId());
@@ -181,7 +170,7 @@ public class UserEditorController {
     }
     
     /* Delete User */
-    @RequestMapping(value="edit", method=RequestMethod.POST, params="delete")
+    @RequestMapping(value="user/{userId}", method=RequestMethod.POST, params="delete")
     public String delete(ModelMap model, @ModelAttribute User user, FlashScope flash, YukonUserContext userContext) {
         
         if (userContext.getYukonUser().getUserID() == user.getUserId()) {
@@ -195,9 +184,9 @@ public class UserEditorController {
         return "redirect:/adminSetup/userEditor/home";
     }
     
-    @RequestMapping(value="change-password", method=RequestMethod.POST)
+    @RequestMapping(value="user/{userId}/change-password", method=RequestMethod.POST)
     public @ResponseBody List<String> changePassword(HttpServletResponse resp, YukonUserContext userContext, 
-            FlashScope flash, int userId, @ModelAttribute Password password, BindingResult result) {
+            FlashScope flash, @PathVariable int userId, @ModelAttribute Password password, BindingResult result) {
         
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(userId);
         PasswordValidator validator = new PasswordValidator(yukonUser,  "password", "confirmPassword");
@@ -225,12 +214,11 @@ public class UserEditorController {
     
     private String redirectToView(ModelMap model, int userId) {
         model.clear();
-        model.addAttribute("userId", userId);
-        return "redirect:view";
+        return "redirect:/adminSetup/user/" + userId + "/view";
     }
     
     @InitBinder
-    public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
+    public void initBinder(WebDataBinder binder) {
         if (binder.getTarget() != null) {
             MessageCodesResolver msgCodesResolver = new YukonMessageCodeResolver(key + "");
             binder.setMessageCodesResolver(msgCodesResolver);
@@ -250,7 +238,7 @@ public class UserEditorController {
         model.addAttribute("userId", user.getUserId());
         model.addAttribute("editNameAndStatus", user.getUserId() > -1);
         
-        model.addAttribute("editingUsername", yukonUserDao.getLiteYukonUser(user.getUserId()).getUsername());
+        model.addAttribute("username", yukonUserDao.getLiteYukonUser(user.getUserId()).getUsername());
         AuthenticationCategory[] categories = AuthenticationCategory.values();
         model.addAttribute("authenticationCategories", categories);
         Map<AuthenticationCategory, Boolean> passwordSettable = Maps.newHashMap();
@@ -276,7 +264,7 @@ public class UserEditorController {
     private class PasswordValidator extends SimpleValidator<Password> {
         
         private List<MessageSourceResolvable> messages = Lists.newArrayList();
-        LiteYukonUser yukonUser;
+        private LiteYukonUser yukonUser;
         private String passwordKey;
         private String confirmPasswordKey;
         
