@@ -14,6 +14,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.cannontech.msp.beans.v3.*;
 import com.cannontech.multispeak.client.MultispeakDefines;
+import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.multispeak.service.MR_Server;
 
@@ -28,6 +29,7 @@ public class MRServiceEndPoint {
 
     @Autowired private MR_Server mr_server;
     @Autowired private ObjectFactory objectFactory;
+    @Autowired private MultispeakFuncs multispeakFuncs;
 
     @PayloadRoot(localPart = "PingURL", namespace = MultispeakDefines.NAMESPACE_v3)
     public @ResponsePayload
@@ -63,8 +65,8 @@ public class MRServiceEndPoint {
         Float expirationTime = initiateDemandReset.getExpirationTime();
         String responseURL = initiateDemandReset.getResponseURL();
         String transactionId = initiateDemandReset.getTransactionID();
-        ArrayOfMeterIdentifier arrayOfMeterIdentifier = initiateDemandReset.getMeterIDs();
-        List<MeterIdentifier> meterIdentifiers = arrayOfMeterIdentifier.getMeterIdentifier();
+        List<MeterIdentifier> meterIdentifiers =
+                (null != initiateDemandReset.getMeterIDs()) ? initiateDemandReset.getMeterIDs().getMeterIdentifier() : null;
         List<ErrorObject> errorObjects = mr_server.initiateDemandReset(meterIdentifiers, responseURL, transactionId, expirationTime);
         
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
@@ -116,10 +118,14 @@ public class MRServiceEndPoint {
         String formattedBlockTemplateName = getReadingsByDateAndType.getFormattedBlockTemplateName();
         XMLGregorianCalendar startDate = getReadingsByDateAndType.getStartDate();
         XMLGregorianCalendar endDate = getReadingsByDateAndType.getEndDate();
-        List<FormattedBlock> formattedBlocks =
-            mr_server.getReadingsByDateAndType((startDate != null) ? startDate.toGregorianCalendar() : null,
-                (endDate != null) ? endDate.toGregorianCalendar() : null, readingType, lastReceived,
-                formattedBlockTemplateName);
+
+        if (startDate == null || endDate == null) {
+            throw new MultispeakWebServiceException("Invalid date/time.");
+        }
+        List<FormattedBlock> formattedBlocks = mr_server.getReadingsByDateAndType(startDate.toGregorianCalendar(),
+                                                                                  endDate.toGregorianCalendar(),
+                                                                                  readingType,
+                                                                                  lastReceived, formattedBlockTemplateName);
         
         ArrayOfFormattedBlock arrayOfFormattedBlock = objectFactory.createArrayOfFormattedBlock();
         arrayOfFormattedBlock.getFormattedBlock().addAll(formattedBlocks);
@@ -133,8 +139,9 @@ public class MRServiceEndPoint {
             throws MultispeakWebServiceException {
         MeterAddNotificationResponse response = objectFactory.createMeterAddNotificationResponse();
 
-        List<Meter> meters = meterAddNotification.getAddedMeters().getMeter();
-        List<ErrorObject> errorObjects = mr_server.meterAddNotification(meters);
+        List<Meter> meters =
+            (null != meterAddNotification.getAddedMeters()) ? meterAddNotification.getAddedMeters().getMeter() : null;
+         List<ErrorObject> errorObjects = mr_server.meterAddNotification(meters);
         
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
         arrayOfErrorObject.getErrorObject().addAll(errorObjects);
@@ -148,7 +155,8 @@ public class MRServiceEndPoint {
             @RequestPayload InitiateUsageMonitoring initiateUsageMonitoring) throws MultispeakWebServiceException {
         InitiateUsageMonitoringResponse response = objectFactory.createInitiateUsageMonitoringResponse();
 
-        List<String> meterNumbers = initiateUsageMonitoring.getMeterNos().getString();
+        List<String> meterNumbers =
+            (null != initiateUsageMonitoring.getMeterNos()) ? initiateUsageMonitoring.getMeterNos().getString() : null;
         List<ErrorObject> errorObjects = mr_server.initiateUsageMonitoring(meterNumbers);
 
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
@@ -163,7 +171,8 @@ public class MRServiceEndPoint {
             @RequestPayload CancelDisconnectedStatus cancelDisconnectedStatus) throws MultispeakWebServiceException {
         CancelDisconnectedStatusResponse response = objectFactory.createCancelDisconnectedStatusResponse();
 
-        List<String> meterNumbers = cancelDisconnectedStatus.getMeterNos().getString();
+        List<String> meterNumbers =
+                (null != cancelDisconnectedStatus.getMeterNos()) ? cancelDisconnectedStatus.getMeterNos().getString() : null;
         List<ErrorObject> errorObjects = mr_server.cancelDisconnectedStatus(meterNumbers);
         
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
@@ -201,8 +210,7 @@ public class MRServiceEndPoint {
         String meterNo = initiateMeterReadByMeterNoAndType.getMeterNo();
         String readingType = initiateMeterReadByMeterNoAndType.getReadingType();
         List<ErrorObject> errorObjects =
-            mr_server.initiateMeterReadByMeterNoAndType(meterNo, responseURL, readingType, transactionId,
-                expirationTime);
+            mr_server.initiateMeterReadByMeterNoAndType(meterNo, responseURL, readingType, transactionId, expirationTime);
         
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
         arrayOfErrorObject.getErrorObject().addAll(errorObjects);
@@ -219,9 +227,13 @@ public class MRServiceEndPoint {
         XMLGregorianCalendar startDate = getReadingsByDate.getStartDate();
         XMLGregorianCalendar endDate = getReadingsByDate.getEndDate();
         String lastReceived = getReadingsByDate.getLastReceived();
-        List<MeterRead> meterReads =
-            mr_server.getReadingsByDate((startDate != null) ? startDate.toGregorianCalendar() : null, (endDate != null)
-                ? endDate.toGregorianCalendar() : null, lastReceived);
+        if (startDate == null || endDate == null) {
+            throw new MultispeakWebServiceException("Invalid date/time.");
+        }
+
+        List<MeterRead> meterReads = mr_server.getReadingsByDate(startDate.toGregorianCalendar(),
+                                                                 endDate.toGregorianCalendar(),
+                                                                 lastReceived);
 
         ArrayOfMeterRead arrayOfMeterRead = objectFactory.createArrayOfMeterRead();
         arrayOfMeterRead.getMeterRead().addAll(meterReads);
@@ -253,9 +265,13 @@ public class MRServiceEndPoint {
         XMLGregorianCalendar startDate = getReadingsByMeterNo.getStartDate();
         XMLGregorianCalendar endDate = getReadingsByMeterNo.getEndDate();
         String meterNo = getReadingsByMeterNo.getMeterNo();
-        List<MeterRead> meterReads =
-            mr_server.getReadingsByMeterNo(meterNo, (startDate != null) ? startDate.toGregorianCalendar() : null,
-                (endDate != null) ? endDate.toGregorianCalendar() : null);
+        
+        if (startDate == null || endDate == null) {
+            throw new MultispeakWebServiceException("Invalid date/time.");
+        }
+        List<MeterRead> meterReads = mr_server.getReadingsByMeterNo(meterNo,
+                                                                    startDate.toGregorianCalendar(),
+                                                                    endDate.toGregorianCalendar());
         
         ArrayOfMeterRead arrayOfMeterRead = objectFactory.createArrayOfMeterRead();
         arrayOfMeterRead.getMeterRead().addAll(meterReads);
@@ -265,8 +281,7 @@ public class MRServiceEndPoint {
 
     @PayloadRoot(localPart = "GetSupportedReadingTypes", namespace = MultispeakDefines.NAMESPACE_v3)
     public @ResponsePayload
-    GetSupportedReadingTypesResponse getSupportedReadingTypes(
-            @RequestPayload GetSupportedReadingTypes getSupportedReadingTypes) throws MultispeakWebServiceException {
+    GetSupportedReadingTypesResponse getSupportedReadingTypes() throws MultispeakWebServiceException {
         GetSupportedReadingTypesResponse response = objectFactory.createGetSupportedReadingTypesResponse();
 
         Set<String> readingTypes = mr_server.getSupportedReadingTypes();
@@ -282,7 +297,10 @@ public class MRServiceEndPoint {
     MeterChangedNotificationResponse meterChangedNotification(
             @RequestPayload MeterChangedNotification meterChangedNotification) throws MultispeakWebServiceException {
         MeterChangedNotificationResponse response = objectFactory.createMeterChangedNotificationResponse();
-        List<Meter> meters = meterChangedNotification.getChangedMeters().getMeter();
+        List<Meter> meters =
+            (null != meterChangedNotification.getChangedMeters())
+                ? meterChangedNotification.getChangedMeters().getMeter() : null;
+
         List<ErrorObject> errorObjects = mr_server.meterChangedNotification(meters);
         
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
@@ -297,7 +315,10 @@ public class MRServiceEndPoint {
             @RequestPayload InitiateDisconnectedStatus initiateDisconnectedStatus) throws MultispeakWebServiceException {
         InitiateDisconnectedStatusResponse response = objectFactory.createInitiateDisconnectedStatusResponse();
 
-        List<String> meterNumbers = initiateDisconnectedStatus.getMeterNos().getString();
+        List<String> meterNumbers =
+            (null != initiateDisconnectedStatus.getMeterNos()) ? initiateDisconnectedStatus.getMeterNos().getString()
+                : null;
+
         List<ErrorObject> errorObjects = mr_server.initiateDisconnectedStatus(meterNumbers);
 
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
@@ -325,7 +346,9 @@ public class MRServiceEndPoint {
         RemoveMetersFromMeterGroupResponse response = objectFactory.createRemoveMetersFromMeterGroupResponse();
 
         String meterGroupIds = removeMetersFromMeterGroup.getMeterGroupID();
-        List<String> meterNumbers = removeMetersFromMeterGroup.getMeterNumbers().getString();
+        List<String> meterNumbers =
+            (null != removeMetersFromMeterGroup.getMeterNumbers())
+                ? removeMetersFromMeterGroup.getMeterNumbers().getString() : null;
         List<ErrorObject> errorObjects = mr_server.removeMetersFromMeterGroup(meterNumbers, meterGroupIds);
         
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
@@ -352,7 +375,8 @@ public class MRServiceEndPoint {
         CancelUsageMonitoringResponse cancelUsageMonitoringResponse =
             objectFactory.createCancelUsageMonitoringResponse();
 
-        List<String> meterNumbers = cancelUsageMonitoring.getMeterNos().getString();
+        List<String> meterNumbers =
+            (null != cancelUsageMonitoring.getMeterNos()) ? cancelUsageMonitoring.getMeterNos().getString() : null;
         List<ErrorObject> errorObjects = mr_server.cancelUsageMonitoring(meterNumbers);
         
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
@@ -368,7 +392,9 @@ public class MRServiceEndPoint {
         MeterRemoveNotificationResponse meterRemoveNotificationResponse =
             objectFactory.createMeterRemoveNotificationResponse();
 
-        List<Meter> meters = meterRemoveNotification.getRemovedMeters().getMeter();
+        List<Meter> meters =
+            (null != meterRemoveNotification.getRemovedMeters())
+                ? meterRemoveNotification.getRemovedMeters().getMeter() : null;
         List<ErrorObject> errorObjects = mr_server.meterRemoveNotification(meters);
         
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
@@ -385,7 +411,9 @@ public class MRServiceEndPoint {
         ServiceLocationChangedNotificationResponse serviceLocationChangedNotificationResponse =
             objectFactory.createServiceLocationChangedNotificationResponse();
 
-        List<ServiceLocation> serviceLocation = serviceLocationChangedNotification.getChangedServiceLocations().getServiceLocation();
+        List<ServiceLocation> serviceLocation =
+            (null != serviceLocationChangedNotification.getChangedServiceLocations())
+                ? serviceLocationChangedNotification.getChangedServiceLocations().getServiceLocation() : null;
         List<ErrorObject> errorObjects = mr_server.serviceLocationChangedNotification(serviceLocation);
         
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
@@ -401,7 +429,9 @@ public class MRServiceEndPoint {
         InsertMeterInMeterGroupResponse insertMeterInMeterGroupResponse =
             objectFactory.createInsertMeterInMeterGroupResponse();
 
-        List<String> meterNumbers = insertMeterInMeterGroup.getMeterNumbers().getString();
+        List<String> meterNumbers =
+            (null != insertMeterInMeterGroup.getMeterNumbers()) ? insertMeterInMeterGroup.getMeterNumbers().getString()
+                : null;
         String meterGroupID = insertMeterInMeterGroup.getMeterGroupID();
         List<ErrorObject> errorObjects = mr_server.insertMeterInMeterGroup(meterNumbers, meterGroupID);
         
@@ -418,11 +448,13 @@ public class MRServiceEndPoint {
             throws MultispeakWebServiceException {
         InitiateMeterReadByMeterNumberResponse initiateMeterReadByMeterNumberResponse =
             objectFactory.createInitiateMeterReadByMeterNumberResponse();
-
+       
         Float expirationTime = initiateMeterReadByMeterNumber.getExpirationTime();
         String responseURL = initiateMeterReadByMeterNumber.getResponseURL();
         String transactionID = initiateMeterReadByMeterNumber.getTransactionID();
-        List<String> meterNumbers = initiateMeterReadByMeterNumber.getMeterNos().getString();
+        List<String> meterNumbers =
+            (null != initiateMeterReadByMeterNumber.getMeterNos())
+                ? initiateMeterReadByMeterNumber.getMeterNos().getString() : null;
         List<ErrorObject> errorObjects = mr_server.initiateMeterReadByMeterNumber(meterNumbers, responseURL, transactionID, expirationTime);
         
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
@@ -476,11 +508,16 @@ public class MRServiceEndPoint {
         String formattedBlockTemplateName = getReadingByMeterNoAndType.getFormattedBlockTemplateName();
         String readingType = getReadingByMeterNoAndType.getReadingType();
         String lastReceived = getReadingByMeterNoAndType.getLastReceived();
-        List<FormattedBlock> formattedBlocks =
-            mr_server.getReadingsByMeterNoAndType(meterNo,
-                (startDate != null) ? startDate.toGregorianCalendar() : null,
-                (endDate != null) ? endDate.toGregorianCalendar() : null, readingType, lastReceived,
-                formattedBlockTemplateName);
+        
+        if (startDate == null || endDate == null) {
+            throw new MultispeakWebServiceException("Invalid date/time.");
+        }
+
+        List<FormattedBlock> formattedBlocks = mr_server.getReadingsByMeterNoAndType(meterNo,
+                                                                                     startDate.toGregorianCalendar(),
+                                                                                     endDate.toGregorianCalendar(),
+                                                                                     readingType,
+                                                                                     lastReceived, formattedBlockTemplateName);
         
         ArrayOfFormattedBlock arrayOfFormattedBlock = objectFactory.createArrayOfFormattedBlock();
         arrayOfFormattedBlock.getFormattedBlock().addAll(formattedBlocks);
@@ -489,1015 +526,355 @@ public class MRServiceEndPoint {
     }
 
     @PayloadRoot(localPart = "CancelPlannedOutage", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    CancelPlannedOutageResponse cancelPlannedOutage(@RequestPayload CancelPlannedOutage cancelPlannedOutage)
-            throws MultispeakWebServiceException {
-        CancelPlannedOutageResponse cancelPlannedOutageResponse = objectFactory.createCancelPlannedOutageResponse();
-
-        List<String> meterNumbers = cancelPlannedOutage.getMeterNos().getString();
-        List<ErrorObject> errorObjects = mr_server.cancelPlannedOutage(meterNumbers);
-        
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        cancelPlannedOutageResponse.setCancelPlannedOutageResult(arrayOfErrorObject);
-        return cancelPlannedOutageResponse;
+    public void cancelPlannedOutage() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "CustomerChangedNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    CustomerChangedNotificationResponse customerChangedNotification(
-            @RequestPayload CustomerChangedNotification customerChangedNotification)
-            throws MultispeakWebServiceException {
-        CustomerChangedNotificationResponse customerChangedNotificationResponse =
-            objectFactory.createCustomerChangedNotificationResponse();
-
-        List<Customer> customers = customerChangedNotification.getChangedCustomers().getCustomer();
-        List<ErrorObject> errorObjects = mr_server.customerChangedNotification(customers);
-
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        customerChangedNotificationResponse.setCustomerChangedNotificationResult(arrayOfErrorObject);
-        return customerChangedNotificationResponse;
+    public void customerChangedNotification() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
 
     }
 
     @PayloadRoot(localPart = "CustomersAffectedByOutageNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    CustomersAffectedByOutageNotificationResponse customersAffectedByOutageNotification(
-            @RequestPayload CustomersAffectedByOutageNotification customersAffectedByOutageNotification)
-            throws MultispeakWebServiceException {
-        CustomersAffectedByOutageNotificationResponse customersAffectedByOutageNotificationResponse =
-            objectFactory.createCustomersAffectedByOutageNotificationResponse();
-
-        List<CustomersAffectedByOutage> customersAffectedByOutages =
-                customersAffectedByOutageNotification.getNewOutages().getCustomersAffectedByOutage();
-
-        List<ErrorObject> errorObjects = mr_server.customersAffectedByOutageNotification(customersAffectedByOutages);
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        customersAffectedByOutageNotificationResponse.setCustomersAffectedByOutageNotificationResult(arrayOfErrorObject);
-        return customersAffectedByOutageNotificationResponse;
+    public void customersAffectedByOutageNotification() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "DeleteReadingSchedule", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    DeleteReadingScheduleResponse deleteReadingSchedule(@RequestPayload DeleteReadingSchedule deleteReadingSchedule)
-            throws MultispeakWebServiceException {
-        DeleteReadingScheduleResponse deleteReadingScheduleResponse =
-            objectFactory.createDeleteReadingScheduleResponse();
-
-        String readingScheduleID = deleteReadingSchedule.getReadingScheduleID();
-        List<ErrorObject> errorObjects = mr_server.deleteReadingSchedule(readingScheduleID);
-
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        deleteReadingScheduleResponse.setDeleteReadingScheduleResult(arrayOfErrorObject);
-        return deleteReadingScheduleResponse;
+    public void deleteReadingSchedule() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "DeleteSchedule", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    DeleteScheduleResponse deleteSchedule(@RequestPayload DeleteSchedule deleteSchedule)
-            throws MultispeakWebServiceException {
-        DeleteScheduleResponse deleteScheduleResponse = objectFactory.createDeleteScheduleResponse();
-
-        String scheduleID = deleteSchedule.getScheduleID();
-        List<ErrorObject> errorObjects = mr_server.deleteSchedule(scheduleID);
-
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        deleteScheduleResponse.setDeleteScheduleResult(arrayOfErrorObject);
-        return deleteScheduleResponse;
+    public void deleteSchedule() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "DisableReadingSchedule", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    DisableReadingScheduleResponse disableReadingSchedule(@RequestPayload DisableReadingSchedule disableReadingSchedule)
-            throws MultispeakWebServiceException {
-        DisableReadingScheduleResponse disableReadingScheduleResponse =
-            objectFactory.createDisableReadingScheduleResponse();
-
-        String readingScheduleID = disableReadingSchedule.getReadingScheduleID();
-        List<ErrorObject> errorObjects = mr_server.disableReadingSchedule(readingScheduleID);
-
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        disableReadingScheduleResponse.setDisableReadingScheduleResult(arrayOfErrorObject);
-        return disableReadingScheduleResponse;
+    public void disableReadingSchedule() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "DomainMembersChangedNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    DomainMembersChangedNotificationResponse domainMembersChangedNotification(
-            @RequestPayload DomainMembersChangedNotification domainMembersChangedNotification)
-            throws MultispeakWebServiceException {
-        DomainMembersChangedNotificationResponse domainMembersChangedNotificationResponse =
-            objectFactory.createDomainMembersChangedNotificationResponse();
-
-        List<DomainMember> domainMembers = domainMembersChangedNotification.getChangedDomainMembers().getDomainMember();
-
-        List<ErrorObject> errorObjects = mr_server.domainMembersChangedNotification(domainMembers);
-
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        domainMembersChangedNotificationResponse.setDomainMembersChangedNotificationResult(arrayOfErrorObject);
-        return domainMembersChangedNotificationResponse;
+    public void domainMembersChangedNotification() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "DomainNamesChangedNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    DomainNamesChangedNotificationResponse domainNamesChangedNotification(
-            @RequestPayload DomainNamesChangedNotification domainNamesChangedNotification)
-            throws MultispeakWebServiceException {
-        DomainNamesChangedNotificationResponse domainNamesChangedNotificationResponse =
-            objectFactory.createDomainNamesChangedNotificationResponse();
-
-        List<DomainNameChange> domainNameChanges = domainNamesChangedNotification.getChangedDomainNames().getDomainNameChange();
-        List<ErrorObject> errorObjects = mr_server.domainNamesChangedNotification(domainNameChanges);
-
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        domainNamesChangedNotificationResponse.setDomainNamesChangedNotificationResult(arrayOfErrorObject);
-        return domainNamesChangedNotificationResponse;
+    public void domainNamesChangedNotification() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "EnableReadingSchedule", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    EnableReadingScheduleResponse enableReadingSchedule(@RequestPayload EnableReadingSchedule enableReadingSchedule)
-            throws MultispeakWebServiceException {
-        EnableReadingScheduleResponse enableReadingScheduleResponse =
-            objectFactory.createEnableReadingScheduleResponse();
-
-        String readingScheduleID = enableReadingSchedule.getReadingScheduleID();
-        List<ErrorObject> errorObjects = mr_server.enableReadingSchedule(readingScheduleID);
-
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        enableReadingScheduleResponse.setEnableReadingScheduleResult(arrayOfErrorObject);
-        return enableReadingScheduleResponse;
+    public void enableReadingSchedule() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "EndDeviceShipmentNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    EndDeviceShipmentNotificationResponse endDeviceShipmentNotification(
-            @RequestPayload EndDeviceShipmentNotification endDeviceShipmentNotification)
-            throws MultispeakWebServiceException {
-        EndDeviceShipmentNotificationResponse endDeviceShipmentNotificationResponse =
-            objectFactory.createEndDeviceShipmentNotificationResponse();
-
-        EndDeviceShipment shipment = endDeviceShipmentNotification.getShipment();
-        List<ErrorObject> errorObjects = mr_server.endDeviceShipmentNotification(shipment);
-
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        endDeviceShipmentNotificationResponse.setEndDeviceShipmentNotificationResult(arrayOfErrorObject);
-        return endDeviceShipmentNotificationResponse;
+    public void endDeviceShipmentNotification() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "EstablishReadingSchedules", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    EstablishReadingSchedulesResponse establishReadingSchedules(
-            @RequestPayload EstablishReadingSchedules establishReadingSchedules) throws MultispeakWebServiceException {
-        EstablishReadingSchedulesResponse establishReadingSchedulesResponse =
-            objectFactory.createEstablishReadingSchedulesResponse();
-
-        List<ReadingSchedule> readingSchedules = establishReadingSchedules.getReadingSchedules().getReadingSchedule();
-        List<ErrorObject> errorObjects = mr_server.establishReadingSchedules(readingSchedules);
-
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        establishReadingSchedulesResponse.setEstablishReadingSchedulesResult(arrayOfErrorObject);
-        return establishReadingSchedulesResponse;
+    public void establishReadingSchedules() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "EstablishSchedules", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    EstablishSchedulesResponse establishSchedules(@RequestPayload EstablishSchedules establishSchedules)
-            throws MultispeakWebServiceException {
-        EstablishSchedulesResponse establishSchedulesResponse = objectFactory.createEstablishSchedulesResponse();
-
-        List<Schedule> schedules = establishSchedules.getSchedules().getSchedule();
-        List<ErrorObject> errorObjects = mr_server.establishSchedules(schedules);
-        
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        establishSchedulesResponse.setEstablishSchedulesResult(arrayOfErrorObject);
-        return establishSchedulesResponse;
+    public void establishSchedules() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetDomainMembers", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    GetDomainMembersResponse getDomainMembers(@RequestPayload GetDomainMembers getDomainMembers)
-            throws MultispeakWebServiceException {
-        GetDomainMembersResponse getDomainMembersResponse = objectFactory.createGetDomainMembersResponse();
-
-        List<DomainMember> domainMembers = mr_server.getDomainMembers(getDomainMembers.getDomainName());
-        
-        ArrayOfDomainMember arrayOfDomainMember = objectFactory.createArrayOfDomainMember();
-        arrayOfDomainMember.getDomainMember().addAll(domainMembers);
-        getDomainMembersResponse.setGetDomainMembersResult(arrayOfDomainMember);
-        return getDomainMembersResponse;
+    public void getDomainMembers() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
 
     }
 
     @PayloadRoot(localPart = "GetDomainNames", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    GetDomainNamesResponse getDomainNames(@RequestPayload GetDomainNames getDomainNames)
-            throws MultispeakWebServiceException {
-        GetDomainNamesResponse getDomainNamesResponse = objectFactory.createGetDomainNamesResponse();
-        List<String> domainNames = mr_server.getDomainNames();
-        
-        ArrayOfString arrayOfString = objectFactory.createArrayOfString();
-        arrayOfString.getString().addAll(domainNames);
-        getDomainNamesResponse.setGetDomainNamesResult(arrayOfString);
-        return getDomainNamesResponse;
+    public void getDomainNames() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
 
     }
 
     @PayloadRoot(localPart = "GetFormattedBlockTemplates", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    GetFormattedBlockTemplatesResponse getFormattedBlockTemplates(
-            @RequestPayload GetFormattedBlockTemplates getFormattedBlockTemplates) throws MultispeakWebServiceException {
-        GetFormattedBlockTemplatesResponse getFormattedBlockTemplatesResponse =
-            objectFactory.createGetFormattedBlockTemplatesResponse();
-        String lastReceived = getFormattedBlockTemplates.getLastReceived();
-        List<FormattedBlockTemplate> formattedBlockTemplates = mr_server.getFormattedBlockTemplates(lastReceived);
-        
-        ArrayOfFormattedBlockTemplate arrayOfFormattedBlockTemplate = objectFactory.createArrayOfFormattedBlockTemplate();
-        arrayOfFormattedBlockTemplate.getFormattedBlockTemplate().addAll(formattedBlockTemplates);
-        getFormattedBlockTemplatesResponse.setGetFormattedBlockTemplatesResult(arrayOfFormattedBlockTemplate);
-        return getFormattedBlockTemplatesResponse;
+    public void getFormattedBlockTemplates() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
 
     }
 
     @PayloadRoot(localPart = "GetHistoryLogByMeterNo", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    GetHistoryLogByMeterNoResponse getHistoryLogByMeterNo(@RequestPayload GetHistoryLogByMeterNo getHistoryLogByMeterNo)
-            throws MultispeakWebServiceException {
-        GetHistoryLogByMeterNoResponse getHistoryLogByMeterNoResponse =
-            objectFactory.createGetHistoryLogByMeterNoResponse();
-        XMLGregorianCalendar endDate = getHistoryLogByMeterNo.getEndDate();
-        String meterNo = getHistoryLogByMeterNo.getMeterNo();
-        XMLGregorianCalendar startDate = getHistoryLogByMeterNo.getStartDate();
-        List<HistoryLog> historyLogs =
-            mr_server.getHistoryLogByMeterNo(meterNo, (startDate != null) ? startDate.toGregorianCalendar() : null,
-                (endDate != null) ? endDate.toGregorianCalendar() : null);
-        
-        ArrayOfHistoryLog arrayOfHistoryLog = objectFactory.createArrayOfHistoryLog();
-        arrayOfHistoryLog.getHistoryLog().addAll(historyLogs);
-        getHistoryLogByMeterNoResponse.setGetHistoryLogByMeterNoResult(arrayOfHistoryLog);
-        return getHistoryLogByMeterNoResponse;
+    public void getHistoryLogByMeterNo() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
 
     }
 
     @PayloadRoot(localPart = "GetHistoryLogsByDate", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    GetHistoryLogsByDateResponse getHistoryLogsByDate(@RequestPayload GetHistoryLogsByDate getHistoryLogsByDate)
-            throws MultispeakWebServiceException {
-        GetHistoryLogsByDateResponse getHistoryLogsByDateResponse = objectFactory.createGetHistoryLogsByDateResponse();
-
-        XMLGregorianCalendar endDate = getHistoryLogsByDate.getEndDate();
-        XMLGregorianCalendar startDate = getHistoryLogsByDate.getStartDate();
-        String lastReceived = getHistoryLogsByDate.getLastReceived();
-        List<HistoryLog> historyLogs =
-            mr_server.getHistoryLogsByDate((startDate != null) ? startDate.toGregorianCalendar() : null,
-                (endDate != null) ? endDate.toGregorianCalendar() : null, lastReceived);
-        
-        ArrayOfHistoryLog arrayOfHistoryLog = objectFactory.createArrayOfHistoryLog();
-        arrayOfHistoryLog.getHistoryLog().addAll(historyLogs);
-        getHistoryLogsByDateResponse.setGetHistoryLogsByDateResult(arrayOfHistoryLog);
-        return getHistoryLogsByDateResponse;
+    public void getHistoryLogsByDate() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
 
     }
 
     @PayloadRoot(localPart = "GetHistoryLogsByDateAndEventCode", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    GetHistoryLogsByDateAndEventCodeResponse getHistoryLogsByDateAndEventCode(
-            @RequestPayload GetHistoryLogsByDateAndEventCode getHistoryLogsByDateAndEventCode)
-            throws MultispeakWebServiceException {
-        GetHistoryLogsByDateAndEventCodeResponse getHistoryLogsByDateAndEventCodeResponse =
-            objectFactory.createGetHistoryLogsByDateAndEventCodeResponse();
-
-        XMLGregorianCalendar endDate = getHistoryLogsByDateAndEventCode.getEndDate();
-        XMLGregorianCalendar startDate = getHistoryLogsByDateAndEventCode.getStartDate();
-        String lastReceived = getHistoryLogsByDateAndEventCode.getLastReceived();
-        EventCode eventCode = getHistoryLogsByDateAndEventCode.getEventCode();
-
-        List<HistoryLog> historyLogs =
-            mr_server.getHistoryLogsByDateAndEventCode(eventCode, (startDate != null) ? startDate.toGregorianCalendar()
-                : null, (endDate != null) ? endDate.toGregorianCalendar() : null, lastReceived);
-        
-        ArrayOfHistoryLog arrayOfHistoryLog = objectFactory.createArrayOfHistoryLog();
-        arrayOfHistoryLog.getHistoryLog().addAll(historyLogs);
-        getHistoryLogsByDateAndEventCodeResponse.setGetHistoryLogsByDateAndEventCodeResult(arrayOfHistoryLog);
-        return getHistoryLogsByDateAndEventCodeResponse;
+    public void getHistoryLogsByDateAndEventCode() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetHistoryLogsByMeterNoAndEventCode", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    GetHistoryLogsByMeterNoAndEventCodeResponse getHistoryLogsByMeterNoAndEventCode(
-            @RequestPayload GetHistoryLogsByMeterNoAndEventCode getHistoryLogsByMeterNoAndEventCode)
-            throws MultispeakWebServiceException {
-        GetHistoryLogsByMeterNoAndEventCodeResponse getHistoryLogsByMeterNoAndEventCodeResponse =
-            objectFactory.createGetHistoryLogsByMeterNoAndEventCodeResponse();
-
-        XMLGregorianCalendar endDate = getHistoryLogsByMeterNoAndEventCode.getEndDate();
-        String meterNo = getHistoryLogsByMeterNoAndEventCode.getMeterNo();
-        EventCode eventCode = getHistoryLogsByMeterNoAndEventCode.getEventCode();
-        XMLGregorianCalendar startDate = getHistoryLogsByMeterNoAndEventCode.getStartDate();
-        List<HistoryLog> historyLogs =
-            mr_server.getHistoryLogsByMeterNoAndEventCode(meterNo, eventCode,
-                (startDate != null) ? startDate.toGregorianCalendar() : null,
-                (endDate != null) ? endDate.toGregorianCalendar() : null);
-        
-        ArrayOfHistoryLog arrayOfHistoryLog = objectFactory.createArrayOfHistoryLog();
-        arrayOfHistoryLog.getHistoryLog().addAll(historyLogs);
-        getHistoryLogsByMeterNoAndEventCodeResponse.setGetHistoryLogsByMeterNoAndEventCodeResult(arrayOfHistoryLog);
-        return getHistoryLogsByMeterNoAndEventCodeResponse;
+    public void getHistoryLogsByMeterNoAndEventCode() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetLatestMeterReadingsByMeterGroup", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    GetLatestMeterReadingsByMeterGroupResponse getLatestMeterReadingsByMeterGroup(
-            @RequestPayload GetLatestMeterReadingsByMeterGroup getLatestMeterReadingsByMeterGroup)
-            throws MultispeakWebServiceException {
-        GetLatestMeterReadingsByMeterGroupResponse getLatestMeterReadingsByMeterGroupResponse =
-            objectFactory.createGetLatestMeterReadingsByMeterGroupResponse();
-
-        String formattedBlockTemplateName = getLatestMeterReadingsByMeterGroup.getFormattedBlockTemplateName();
-        String meterGroupID = getLatestMeterReadingsByMeterGroup.getMeterGroupID();
-        List<String> fieldNames =
-            (null != getLatestMeterReadingsByMeterGroup.getFieldName())
-                ? getLatestMeterReadingsByMeterGroup.getFieldName().getString() : null;
-        FormattedBlock formattedBlock =
-            mr_server.getLatestMeterReadingsByMeterGroup(meterGroupID, formattedBlockTemplateName, fieldNames);
-        getLatestMeterReadingsByMeterGroupResponse.setGetLatestMeterReadingsByMeterGroupResult(formattedBlock);
-        return getLatestMeterReadingsByMeterGroupResponse;
+    public void getLatestMeterReadingsByMeterGroup() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetLatestReadingsByMeterNoList", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    GetLatestReadingsByMeterNoListResponse getLatestReadingsByMeterNoList(
-            @RequestPayload GetLatestReadingsByMeterNoList getLatestReadingsByMeterNoList)
-            throws MultispeakWebServiceException {
-        GetLatestReadingsByMeterNoListResponse getLatestMeterReadingsByMeterGroupResponse =
-            objectFactory.createGetLatestReadingsByMeterNoListResponse();
-
-        String formattedBlockTemplateName = getLatestReadingsByMeterNoList.getFormattedBlockTemplateName();
-        XMLGregorianCalendar startDate = getLatestReadingsByMeterNoList.getStartDate();
-        String lastReceived = getLatestReadingsByMeterNoList.getLastReceived();
-        MRArrayOfString2 meterNumbers = getLatestReadingsByMeterNoList.getMeterNo();
-        ServiceType serviceType = getLatestReadingsByMeterNoList.getServiceType();
-        XMLGregorianCalendar endDate = getLatestReadingsByMeterNoList.getEndDate();
-        List<String> fieldNames =
-            (null != getLatestReadingsByMeterNoList.getFieldName())
-                ? getLatestReadingsByMeterNoList.getFieldName().getString() : null;
-        String readingType = getLatestReadingsByMeterNoList.getReadingType();
-
-        List<FormattedBlock> formattedBlocks =
-            mr_server.getLatestReadingsByMeterNoList(meterNumbers.getString(), (startDate != null) ? startDate.toGregorianCalendar()
-                : null, (endDate != null) ? endDate.toGregorianCalendar() : null, readingType, lastReceived,
-                serviceType, formattedBlockTemplateName, fieldNames);
-        
-        ArrayOfFormattedBlock arrayOfFormattedBlock = objectFactory.createArrayOfFormattedBlock();
-        arrayOfFormattedBlock.getFormattedBlock().addAll(formattedBlocks);
-        getLatestMeterReadingsByMeterGroupResponse.setGetLatestReadingsByMeterNoListResult(arrayOfFormattedBlock);
-        return getLatestMeterReadingsByMeterGroupResponse;
+    public void getLatestReadingsByMeterNoList() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetLatestReadingsByMeterNoListFormattedBlock", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    GetLatestReadingsByMeterNoListFormattedBlockResponse getLatestReadingsByMeterNoListFormattedBlock(
-            @RequestPayload GetLatestReadingsByMeterNoListFormattedBlock getLatestReadingsByMeterNoListFormattedBlock)
-            throws MultispeakWebServiceException {
-        GetLatestReadingsByMeterNoListFormattedBlockResponse getLatestReadingsByMeterNoListFormattedBlockResponse =
-            objectFactory.createGetLatestReadingsByMeterNoListFormattedBlockResponse();
-
-        List<String> fieldNames =
-                (null != getLatestReadingsByMeterNoListFormattedBlock.getFieldName())
-                    ? getLatestReadingsByMeterNoListFormattedBlock.getFieldName().getString() : null;
-        String lastReceived = getLatestReadingsByMeterNoListFormattedBlock.getLastReceived();
-        List<String> meterNumbers = getLatestReadingsByMeterNoListFormattedBlock.getMeterNo().getString();
-        String formattedBlockTemplateName = getLatestReadingsByMeterNoListFormattedBlock.getFormattedBlockTemplateName();
-        XMLGregorianCalendar endDate = getLatestReadingsByMeterNoListFormattedBlock.getEndDate();
-        ServiceType serviceType = getLatestReadingsByMeterNoListFormattedBlock.getServiceType();
-        XMLGregorianCalendar startDate = getLatestReadingsByMeterNoListFormattedBlock.getEndDate();
-        List<FormattedBlock> formattedBlocks =
-            mr_server.getLatestReadingsByMeterNoListFormattedBlock(meterNumbers,
-                (startDate != null) ? startDate.toGregorianCalendar() : null,
-                (endDate != null) ? endDate.toGregorianCalendar() : null, formattedBlockTemplateName, fieldNames,
-                lastReceived, serviceType);
-
-        ArrayOfFormattedBlock arrayOfFormattedBlock = objectFactory.createArrayOfFormattedBlock();
-        arrayOfFormattedBlock.getFormattedBlock().addAll(formattedBlocks);
-        getLatestReadingsByMeterNoListFormattedBlockResponse.setGetLatestReadingsByMeterNoListFormattedBlockResult(arrayOfFormattedBlock);
-        return getLatestReadingsByMeterNoListFormattedBlockResponse;
+    public void getLatestReadingsByMeterNoListFormattedBlock() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
 
     }
 
     @PayloadRoot(localPart = "GetModifiedAMRMeters", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    GetModifiedAMRMetersResponse getModifiedAMRMeters(@RequestPayload GetModifiedAMRMeters getModifiedAMRMeters)
-            throws MultispeakWebServiceException {
-        GetModifiedAMRMetersResponse getModifiedAMRMetersResponse = objectFactory.createGetModifiedAMRMetersResponse();
-
-        String lastReceived = getModifiedAMRMeters.getLastReceived();
-        String previousSessionID = getModifiedAMRMeters.getPreviousSessionID();
-        List<Meter> meters = mr_server.getModifiedAMRMeters(previousSessionID, lastReceived);
-
-        ArrayOfMeter arrayOfMeter = objectFactory.createArrayOfMeter();
-        arrayOfMeter.getMeter().addAll(meters);
-        getModifiedAMRMetersResponse.setGetModifiedAMRMetersResult(arrayOfMeter);
-        return getModifiedAMRMetersResponse;
+    public void getModifiedAMRMeters() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetPublishMethods", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    GetPublishMethodsResponse getPublishMethods(@RequestPayload GetPublishMethods getPublishMethods)
-            throws MultispeakWebServiceException {
-        GetPublishMethodsResponse getPublishMethodsResponse = objectFactory.createGetPublishMethodsResponse();
-
-        List<String> publishMethods = mr_server.getPublishMethods();
-        
-        ArrayOfString arrayOfString = objectFactory.createArrayOfString();
-        arrayOfString.getString().addAll(publishMethods);
-        getPublishMethodsResponse.setGetPublishMethodsResult(arrayOfString);
-        return getPublishMethodsResponse;
+    public void getPublishMethods() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetReadingByMeterNumberFormattedBlock", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    GetReadingByMeterNumberFormattedBlockResponse getReadingByMeterNumberFormattedBlock(
-            @RequestPayload GetReadingByMeterNumberFormattedBlock getReadingByMeterNumberFormattedBlock)
-            throws MultispeakWebServiceException {
-        GetReadingByMeterNumberFormattedBlockResponse getReadingByMeterNumberFormattedBlockResponse =
-            objectFactory.createGetReadingByMeterNumberFormattedBlockResponse();
-
-        int kWLookForward = getReadingByMeterNumberFormattedBlock.getKWLookForward();
-        String meterNumber = getReadingByMeterNumberFormattedBlock.getMeterNumber();
-
-        List<String> fieldNames =
-            (null != getReadingByMeterNumberFormattedBlock.getFieldName())
-                ? getReadingByMeterNumberFormattedBlock.getFieldName().getString() : null;
-        
-        String formattedBlockTemplateName = getReadingByMeterNumberFormattedBlock.getFormattedBlockTemplateName();
-        int kWLookBack = getReadingByMeterNumberFormattedBlock.getKWhLookBack();
-        XMLGregorianCalendar billingDate = getReadingByMeterNumberFormattedBlock.getBillingDate();
-        int kWhLookBack = getReadingByMeterNumberFormattedBlock.getKWhLookBack();
-        String lastReceived = getReadingByMeterNumberFormattedBlock.getLastReceived();
-        List<FormattedBlock> formattedBlocks =
-            mr_server.getReadingByMeterNumberFormattedBlock(meterNumber,
-                (billingDate != null) ? billingDate.toGregorianCalendar() : null, kWhLookBack, kWLookBack,
-                kWLookForward, lastReceived, formattedBlockTemplateName, fieldNames);
-
-        ArrayOfFormattedBlock arrayOfFormattedBlock = objectFactory.createArrayOfFormattedBlock();
-        arrayOfFormattedBlock.getFormattedBlock().addAll(formattedBlocks);
-        getReadingByMeterNumberFormattedBlockResponse.setGetReadingByMeterNumberFormattedBlockResult(arrayOfFormattedBlock);
-        return getReadingByMeterNumberFormattedBlockResponse;
+    public void getReadingByMeterNumberFormattedBlock() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetReadingsByDateFormattedBlock", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    GetReadingsByDateFormattedBlockResponse getReadingsByDateFormattedBlock(
-            @RequestPayload GetReadingsByDateFormattedBlock getReadingsByDateFormattedBlock)
-            throws MultispeakWebServiceException {
-        GetReadingsByDateFormattedBlockResponse getReadingsByDateFormattedBlockResponse =
-            objectFactory.createGetReadingsByDateFormattedBlockResponse();
-
-        int kWLookForward = getReadingsByDateFormattedBlock.getKWLookForward();
-        XMLGregorianCalendar billingDate = getReadingsByDateFormattedBlock.getBillingDate();
-        int kWLookBack = getReadingsByDateFormattedBlock.getKWLookBack();
-        List<String> fieldNames =
-            (null != getReadingsByDateFormattedBlock.getFieldName())
-                ? getReadingsByDateFormattedBlock.getFieldName().getString() : null;
-        String formattedBlockTemplateName = getReadingsByDateFormattedBlock.getFormattedBlockTemplateName();
-        String lastReceived = getReadingsByDateFormattedBlock.getLastReceived();
-        int kWhLookBack = getReadingsByDateFormattedBlock.getKWhLookBack();
-        List<FormattedBlock> formattedBlocks =
-            mr_server.getReadingsByDateFormattedBlock((billingDate != null) ? billingDate.toGregorianCalendar() : null,
-                kWhLookBack, kWLookBack, kWLookForward, lastReceived, formattedBlockTemplateName, fieldNames);
-
-        ArrayOfFormattedBlock arrayOfFormattedBlock = objectFactory.createArrayOfFormattedBlock();
-        arrayOfFormattedBlock.getFormattedBlock().addAll(formattedBlocks);
-        getReadingsByDateFormattedBlockResponse.setGetReadingsByDateFormattedBlockResult(arrayOfFormattedBlock);
-        return getReadingsByDateFormattedBlockResponse;
+    public void getReadingsByDateFormattedBlock() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetReadingsByUOMAndDate", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    GetReadingsByUOMAndDateResponse getReadingsByUOMAndDate(
-            @RequestPayload GetReadingsByUOMAndDate getReadingsByUOMAndDate) throws MultispeakWebServiceException {
-        GetReadingsByUOMAndDateResponse getReadingsByUOMAndDateResponse =
-            objectFactory.createGetReadingsByUOMAndDateResponse();
-        XMLGregorianCalendar startDate = getReadingsByUOMAndDate.getStartDate();
-        XMLGregorianCalendar endDate = getReadingsByUOMAndDate.getEndDate();
-        String lastReceived = getReadingsByUOMAndDate.getLastReceived();
-        String uomData = getReadingsByUOMAndDate.getUomData();
-        
-        List<MeterRead> meterReads =
-            mr_server.getReadingsByUOMAndDate(uomData, (startDate != null) ? startDate.toGregorianCalendar() : null,
-                (endDate != null) ? endDate.toGregorianCalendar() : null, lastReceived);
-
-        ArrayOfMeterRead arrayOfMeterRead = objectFactory.createArrayOfMeterRead();
-        arrayOfMeterRead.getMeterRead().addAll(meterReads);
-        getReadingsByUOMAndDateResponse.setGetReadingsByUOMAndDateResult(arrayOfMeterRead);
-        return getReadingsByUOMAndDateResponse;
+    public void getReadingsByUOMAndDate() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetReadingScheduleByID", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    GetReadingScheduleByIDResponse getReadingScheduleByID(@RequestPayload GetReadingScheduleByID getReadingScheduleByID)
-            throws MultispeakWebServiceException {
-        GetReadingScheduleByIDResponse getReadingScheduleByIDResponse =
-            objectFactory.createGetReadingScheduleByIDResponse();
-
-        String readingScheduleID = getReadingScheduleByID.getReadingScheduleID();
-        ReadingSchedule readingSchedule = mr_server.getReadingScheduleByID(readingScheduleID);
-        getReadingScheduleByIDResponse.setGetReadingScheduleByIDResult(readingSchedule);
-        return getReadingScheduleByIDResponse;
+    public void getReadingScheduleByID() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetReadingSchedules", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    GetReadingSchedulesResponse getReadingSchedules(@RequestPayload GetReadingSchedules getReadingSchedules) throws MultispeakWebServiceException {
-        GetReadingSchedulesResponse getReadingSchedulesResponse = objectFactory.createGetReadingSchedulesResponse();
-        
-        String lastReceived = getReadingSchedules.getLastReceived();
-        List<ReadingSchedule> readingSchedules = mr_server.getReadingSchedules(lastReceived);
-
-        ArrayOfReadingSchedule arrayOfReadingSchedule = objectFactory.createArrayOfReadingSchedule();
-        arrayOfReadingSchedule.getReadingSchedule().addAll(readingSchedules);
-        getReadingSchedulesResponse.setGetReadingSchedulesResult(arrayOfReadingSchedule);
-        return getReadingSchedulesResponse;
+    public void getReadingSchedules() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetRegistrationInfoByID", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    GetRegistrationInfoByIDResponse getRegistrationInfoByID(
-            @RequestPayload GetRegistrationInfoByID getRegistrationInfoByID) throws MultispeakWebServiceException {
-        GetRegistrationInfoByIDResponse getRegistrationInfoByIDResponse = objectFactory.createGetRegistrationInfoByIDResponse();
-        
-        String registrationID = getRegistrationInfoByID.getRegistrationID();
-        RegistrationInfo registrationInfo = mr_server.getRegistrationInfoByID(registrationID);
-        getRegistrationInfoByIDResponse.setGetRegistrationInfoByIDResult(registrationInfo);
-        return getRegistrationInfoByIDResponse;
+    public void getRegistrationInfoByID() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetScheduleByID", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    GetScheduleByIDResponse getScheduleByID(@RequestPayload GetScheduleByID getScheduleByID)
-            throws MultispeakWebServiceException {
-        GetScheduleByIDResponse getScheduleByIDResponse = objectFactory.createGetScheduleByIDResponse();
-        
-        String scheduleID = getScheduleByID.getScheduleID();
-        Schedule schedule = mr_server.getScheduleByID(scheduleID);
-        getScheduleByIDResponse.setGetScheduleByIDResult(schedule);
-        return getScheduleByIDResponse;
+    public void getScheduleByID() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
 
     }
 
     @PayloadRoot(localPart = "GetSchedules", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    GetSchedulesResponse getSchedules(@RequestPayload GetSchedules getSchedules) throws MultispeakWebServiceException {
-        GetSchedulesResponse getSchedulesResponse = objectFactory.createGetSchedulesResponse();
-
-        String lastReceived = getSchedules.getLastReceived();
-        List<Schedule> schedules = mr_server.getSchedules(lastReceived);
-
-        ArrayOfSchedule arrayOfSchedule = objectFactory.createArrayOfSchedule();
-        arrayOfSchedule.getSchedule().addAll(schedules);
-        getSchedulesResponse.setGetSchedulesResult(arrayOfSchedule);
-        return getSchedulesResponse;
+    public void getSchedules() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "InHomeDisplayAddNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    InHomeDisplayAddNotificationResponse inHomeDisplayAddNotification(
-            @RequestPayload InHomeDisplayAddNotification inHomeDisplayAddNotification)
-            throws MultispeakWebServiceException {
-        InHomeDisplayAddNotificationResponse inHomeDisplayAddNotificationResponse =
-                objectFactory.createInHomeDisplayAddNotificationResponse();
-        
-        List<InHomeDisplay> inHomeDisplays = inHomeDisplayAddNotification.getAddedIHDs().getInHomeDisplay();
-        List<ErrorObject> errorObjects = mr_server.inHomeDisplayAddNotification(inHomeDisplays);
-        
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        inHomeDisplayAddNotificationResponse.setInHomeDisplayAddNotificationResult(arrayOfErrorObject);
-        return inHomeDisplayAddNotificationResponse;
+    public void inHomeDisplayAddNotification() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "InHomeDisplayChangedNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    InHomeDisplayChangedNotificationResponse inHomeDisplayChangedNotification(
-            @RequestPayload InHomeDisplayChangedNotification inHomeDisplayChangedNotification)
-            throws MultispeakWebServiceException {
-        InHomeDisplayChangedNotificationResponse inHomeDisplayChangedNotificationResponse =
-                objectFactory.createInHomeDisplayChangedNotificationResponse();
-        
-        List<InHomeDisplay> inHomeDisplays = inHomeDisplayChangedNotification.getChangedIHDs().getInHomeDisplay();
-        List<ErrorObject> errorObjects = mr_server.inHomeDisplayChangedNotification(inHomeDisplays);
-
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        inHomeDisplayChangedNotificationResponse.setInHomeDisplayChangedNotificationResult(arrayOfErrorObject);
-        return inHomeDisplayChangedNotificationResponse;
+    public void inHomeDisplayChangedNotification() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "InHomeDisplayExchangeNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    InHomeDisplayExchangeNotificationResponse inHomeDisplayExchangeNotification(
-            @RequestPayload InHomeDisplayExchangeNotification inHomeDisplayExchangeNotification)
-            throws MultispeakWebServiceException {
-        InHomeDisplayExchangeNotificationResponse inHomeDisplayExchangeNotificationResponse =
-                objectFactory.createInHomeDisplayExchangeNotificationResponse();
-        
-        List<InHomeDisplayExchange> inHomeDisplayExchanges = inHomeDisplayExchangeNotification.getIHDChangeout().getInHomeDisplayExchange();
-        List<ErrorObject> errorObjects = mr_server.inHomeDisplayExchangeNotification(inHomeDisplayExchanges);
-
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        inHomeDisplayExchangeNotificationResponse.setInHomeDisplayExchangeNotificationResult(arrayOfErrorObject);
-        return inHomeDisplayExchangeNotificationResponse;
+    public void inHomeDisplayExchangeNotification() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "InHomeDisplayRemoveNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    InHomeDisplayRemoveNotificationResponse inHomeDisplayRemoveNotification(
-            @RequestPayload InHomeDisplayRemoveNotification inHomeDisplayRemoveNotification)
-            throws MultispeakWebServiceException {
-        InHomeDisplayRemoveNotificationResponse inHomeDisplayRemoveNotificationResponse =
-            objectFactory.createInHomeDisplayRemoveNotificationResponse();
-        List<InHomeDisplay> inHomeDisplays = inHomeDisplayRemoveNotification.getRemovedIHDs().getInHomeDisplay();
-        List<ErrorObject> errorObjects = mr_server.inHomeDisplayRemoveNotification(inHomeDisplays);
-
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        inHomeDisplayRemoveNotificationResponse.setInHomeDisplayRemoveNotificationResult(arrayOfErrorObject);
-        return inHomeDisplayRemoveNotificationResponse;
+    public void inHomeDisplayRemoveNotification() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "InHomeDisplayRetireNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    InHomeDisplayRetireNotificationResponse inHomeDisplayRetireNotification(
-            @RequestPayload InHomeDisplayRetireNotification inHomeDisplayRetireNotification)
-            throws MultispeakWebServiceException {
-        InHomeDisplayRetireNotificationResponse inHomeDisplayRetireNotificationResponse =
-            objectFactory.createInHomeDisplayRetireNotificationResponse();
-
-        List<InHomeDisplay> inHomeDisplays = inHomeDisplayRetireNotification.getRetiredIHDs().getInHomeDisplay();
-        List<ErrorObject> errorObjects = mr_server.inHomeDisplayRetireNotification(inHomeDisplays);
-
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        inHomeDisplayRetireNotificationResponse.setInHomeDisplayRetireNotificationResult(arrayOfErrorObject);
-        return inHomeDisplayRetireNotificationResponse;
+    public void inHomeDisplayRetireNotification() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "InitiateGroupMeterRead", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    InitiateGroupMeterReadResponse initiateGroupMeterRead(@RequestPayload InitiateGroupMeterRead initiateGroupMeterRead)
-            throws MultispeakWebServiceException {
-
-        InitiateGroupMeterReadResponse initiateGroupMeterReadResponse =
-            objectFactory.createInitiateGroupMeterReadResponse();
-        String responseURL = initiateGroupMeterRead.getResponseURL();
-        float expirationTime = initiateGroupMeterRead.getExpirationTime();
-        String transactionID = initiateGroupMeterRead.getTransactionID();
-        String meterGroupName = initiateGroupMeterRead.getMeterGroupName();
-        List<ErrorObject> errorObjects =
-            mr_server.initiateGroupMeterRead(meterGroupName, responseURL, transactionID, expirationTime);
-
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        initiateGroupMeterReadResponse.setInitiateGroupMeterReadResult(arrayOfErrorObject);
-        return initiateGroupMeterReadResponse;
+    public void initiateGroupMeterRead() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "InitiateMeterReadByObject", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    InitiateMeterReadByObjectResponse initiateMeterReadByObject(
-            @RequestPayload InitiateMeterReadByObject initiateMeterReadByObject) throws MultispeakWebServiceException {
-        InitiateMeterReadByObjectResponse initiateMeterReadByObjectResponse =
-            objectFactory.createInitiateMeterReadByObjectResponse();
-        PhaseCd phaseCode = initiateMeterReadByObject.getPhaseCode();
-        String transactionID = initiateMeterReadByObject.getTransactionID();
-        String responseURL = initiateMeterReadByObject.getResponseURL();
-        String objectName = initiateMeterReadByObject.getObjectName();
-        float expirationTime = initiateMeterReadByObject.getExpirationTime();
-        String nounType = initiateMeterReadByObject.getNounType();
-        List<ErrorObject> errorObjects =
-            mr_server.initiateMeterReadByObject(objectName, nounType, phaseCode, responseURL, transactionID,
-                expirationTime);
-
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        initiateMeterReadByObjectResponse.setInitiateMeterReadByObjectResult(arrayOfErrorObject);
-        return initiateMeterReadByObjectResponse;
+    public void initiateMeterReadByObject() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "InitiateMeterReadsByFieldName", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    InitiateMeterReadsByFieldNameResponse initiateMeterReadsByFieldName(
-            @RequestPayload InitiateMeterReadsByFieldName initiateMeterReadsByFieldName)
-            throws MultispeakWebServiceException {
-        InitiateMeterReadsByFieldNameResponse initiateMeterReadsByFieldNameResponse =
-            objectFactory.createInitiateMeterReadsByFieldNameResponse();
-        String transactionID = initiateMeterReadsByFieldName.getTransactionID();
-        
-        List<String> fieldNames =
-            (null != initiateMeterReadsByFieldName.getFieldNames())
-                ? initiateMeterReadsByFieldName.getFieldNames().getString() : null;
-        String responseURL = initiateMeterReadsByFieldName.getResponseURL();
-        List<String> meterNumbers = initiateMeterReadsByFieldName.getMeterNumbers().getString();
-        String formattedBlockTemplateName = initiateMeterReadsByFieldName.getFormattedBlockTemplateName();
-        float expirationTime = initiateMeterReadsByFieldName.getExpirationTime();
-        List<ErrorObject> errorObjects =
-            mr_server.initiateMeterReadsByFieldName(meterNumbers, fieldNames, responseURL, transactionID,
-                expirationTime, formattedBlockTemplateName);
-
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        initiateMeterReadsByFieldNameResponse.setInitiateMeterReadsByFieldNameResult(arrayOfErrorObject);
-        return initiateMeterReadsByFieldNameResponse;
+    public void initiateMeterReadsByFieldName() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "InitiatePlannedOutage", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    InitiatePlannedOutageResponse initiatePlannedOutage(@RequestPayload InitiatePlannedOutage initiatePlannedOutage)
-            throws MultispeakWebServiceException {
-
-        InitiatePlannedOutageResponse initiatePlannedOutageResponse =
-            objectFactory.createInitiatePlannedOutageResponse();
-        XMLGregorianCalendar startDate = initiatePlannedOutage.getEndDate();
-        XMLGregorianCalendar endDate = initiatePlannedOutage.getEndDate();
-        List<String> meterNumbers = initiatePlannedOutage.getMeterNos().getString();
-        List<ErrorObject> errorObjects =
-            mr_server.initiatePlannedOutage(meterNumbers, (startDate != null) ? startDate.toGregorianCalendar() : null,
-                (endDate != null) ? endDate.toGregorianCalendar() : null);
-        
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        initiatePlannedOutageResponse.setInitiatePlannedOutageResult(arrayOfErrorObject);
-        return initiatePlannedOutageResponse;
+    public void initiatePlannedOutage() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "InsertMetersInConfigurationGroup", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    InsertMetersInConfigurationGroupResponse insertMetersInConfigurationGroup(
-            @RequestPayload InsertMetersInConfigurationGroup insertMetersInConfigurationGroup)
-            throws MultispeakWebServiceException {
-
-        InsertMetersInConfigurationGroupResponse insertMetersInConfigurationGroupResponse =
-            objectFactory.createInsertMetersInConfigurationGroupResponse();
-        List<String> meterNumbers = insertMetersInConfigurationGroup.getMeterNumbers().getString();
-        ServiceType serviceType = insertMetersInConfigurationGroup.getServiceType();
-        String meterGroupID = insertMetersInConfigurationGroup.getMeterGroupID();
-        List<ErrorObject> errorObjects =
-            mr_server.insertMetersInConfigurationGroup(meterNumbers, meterGroupID, serviceType);
-        
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        insertMetersInConfigurationGroupResponse.setInsertMetersInConfigurationGroupResult(arrayOfErrorObject);
-        return insertMetersInConfigurationGroupResponse;
+    public void insertMetersInConfigurationGroup() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "MeterBaseAddNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    MeterBaseAddNotificationResponse meterBaseAddNotification(
-            @RequestPayload MeterBaseAddNotification meterBaseAddNotification) throws MultispeakWebServiceException {
-        MeterBaseAddNotificationResponse meterBaseAddNotificationResponse =
-            objectFactory.createMeterBaseAddNotificationResponse();
-
-        List<MeterBase> meterBases = meterBaseAddNotification.getAddedMBs().getMeterBase();
-        List<ErrorObject> errorObjects = mr_server.meterBaseAddNotification(meterBases);
-
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        meterBaseAddNotificationResponse.setMeterBaseAddNotificationResult(arrayOfErrorObject);
-        return meterBaseAddNotificationResponse;
+    public void meterBaseAddNotification() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "MeterBaseChangedNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    MeterBaseChangedNotificationResponse meterBaseChangedNotification(
-            @RequestPayload MeterBaseChangedNotification meterBaseChangedNotification)
-            throws MultispeakWebServiceException {
-        MeterBaseChangedNotificationResponse meterBaseChangedNotificationResponse =
-            objectFactory.createMeterBaseChangedNotificationResponse();
-        List<MeterBase> meterBases = meterBaseChangedNotification.getChangedMBs().getMeterBase();
-        List<ErrorObject> errorObjects = mr_server.meterBaseChangedNotification(meterBases);
-
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        meterBaseChangedNotificationResponse.setMeterBaseChangedNotificationResult(arrayOfErrorObject);
-        return meterBaseChangedNotificationResponse;
+    public void meterBaseChangedNotification() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "MeterBaseExchangeNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    MeterBaseExchangeNotificationResponse meterBaseExchangeNotification(
-            @RequestPayload MeterBaseExchangeNotification meterBaseExchangeNotification)
-            throws MultispeakWebServiceException {
-        MeterBaseExchangeNotificationResponse meterBaseExchangeNotificationResponse =
-            objectFactory.createMeterBaseExchangeNotificationResponse();
-
-        List<MeterBaseExchange> meterBaseExchanges = meterBaseExchangeNotification.getMBChangeout().getMeterBaseExchange();
-        List<ErrorObject> errorObjects = mr_server.meterBaseExchangeNotification(meterBaseExchanges);
-
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        meterBaseExchangeNotificationResponse.setMeterBaseExchangeNotificationResult(arrayOfErrorObject);
-        return meterBaseExchangeNotificationResponse;
+    public void meterBaseExchangeNotification() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "MeterBaseRemoveNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    MeterBaseRemoveNotificationResponse meterBaseRemoveNotification(
-            @RequestPayload MeterBaseRemoveNotification meterBaseRemoveNotification)
-            throws MultispeakWebServiceException {
-        MeterBaseRemoveNotificationResponse meterBaseRemoveNotificationResponse =
-            objectFactory.createMeterBaseRemoveNotificationResponse();
-
-        List<MeterBase> meterBases = meterBaseRemoveNotification.getRemovedMBs().getMeterBase();
-        List<ErrorObject> errorObjects = mr_server.meterBaseRemoveNotification(meterBases);
-
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        meterBaseRemoveNotificationResponse.setMeterBaseRemoveNotificationResult(arrayOfErrorObject);
-        return meterBaseRemoveNotificationResponse;
+    public void meterBaseRemoveNotification() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "MeterConnectivityNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    MeterConnectivityNotificationResponse meterConnectivityNotification(
-            @RequestPayload MeterConnectivityNotification meterConnectivityNotification)
-            throws MultispeakWebServiceException {
-        MeterConnectivityNotificationResponse meterConnectivityNotificationResponse =
-            objectFactory.createMeterConnectivityNotificationResponse();
-        List<MeterConnectivity> meterConnectivities = meterConnectivityNotification.getNewConnectivity().getMeterConnectivity();
-        List<ErrorObject> errorObjects = mr_server.meterConnectivityNotification(meterConnectivities);
-        
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        meterConnectivityNotificationResponse.setMeterConnectivityNotificationResult(arrayOfErrorObject);
-        return meterConnectivityNotificationResponse;
+    public void meterConnectivityNotification() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "MeterExchangeNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    MeterExchangeNotificationResponse meterExchangeNotification(
-            @RequestPayload MeterExchangeNotification meterExchangeNotification) throws MultispeakWebServiceException {
-        MeterExchangeNotificationResponse meterExchangeNotificationResponse =
-            objectFactory.createMeterExchangeNotificationResponse();
-
-        List<MeterExchange> meterExchanges = meterExchangeNotification.getMeterChangeout().getMeterExchange();
-        List<ErrorObject> errorObjects = mr_server.meterExchangeNotification(meterExchanges);
-
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        meterExchangeNotificationResponse.setMeterExchangeNotificationResult(arrayOfErrorObject);
-        return meterExchangeNotificationResponse;
+    public void meterExchangeNotification() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "MeterRetireNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    MeterRetireNotificationResponse meterRetireNotification(
-            @RequestPayload MeterRetireNotification meterRetireNotification) throws MultispeakWebServiceException {
-        MeterRetireNotificationResponse meterRetireNotificationResponse =
-            objectFactory.createMeterRetireNotificationResponse();
-
-        List<Meter> meters = meterRetireNotification.getRetiredMeters().getMeter();
-        List<ErrorObject> errorObjects = mr_server.meterRetireNotification(meters);
-
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        meterRetireNotificationResponse.setMeterRetireNotificationResult(arrayOfErrorObject);
-        return meterRetireNotificationResponse;
+    public void meterRetireNotification() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "RegisterForService", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    RegisterForServiceResponse registerForService(@RequestPayload RegisterForService registerForService)
-            throws MultispeakWebServiceException {
-        RegisterForServiceResponse registerForServiceResponse = objectFactory.createRegisterForServiceResponse();
-        RegistrationInfo registrationDetails = registerForService.getRegistrationDetails();
-        List<ErrorObject> errorObjects = mr_server.registerForService(registrationDetails);
-
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        registerForServiceResponse.setRegisterForServiceResult(arrayOfErrorObject);
-        return registerForServiceResponse;
+    public void registerForService() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "RemoveMetersFromConfigurationGroup", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    RemoveMetersFromConfigurationGroupResponse removeMetersFromConfigurationGroup(
-            @RequestPayload RemoveMetersFromConfigurationGroup removeMetersFromConfigurationGroup)
-            throws MultispeakWebServiceException {
-        RemoveMetersFromConfigurationGroupResponse removeMetersFromConfigurationGroupResponse =
-            objectFactory.createRemoveMetersFromConfigurationGroupResponse();
-        ServiceType serviceType = removeMetersFromConfigurationGroup.getServiceType();
-        List<String> meterNumbers  = removeMetersFromConfigurationGroup.getMeterNumbers().getString();
-        String meterGroupID = removeMetersFromConfigurationGroup.getMeterGroupID();
-        List<ErrorObject> errorObjects =
-            mr_server.removeMetersFromConfigurationGroup(meterNumbers, meterGroupID, serviceType);
-
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        removeMetersFromConfigurationGroupResponse.setRemoveMetersFromConfigurationGroupResult(arrayOfErrorObject);
-        return removeMetersFromConfigurationGroupResponse;
+    public void removeMetersFromConfigurationGroup() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "RequestRegistrationID", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    RequestRegistrationIDResponse requestRegistrationID(@RequestPayload RequestRegistrationID requestRegistrationID)
-            throws MultispeakWebServiceException {
-        RequestRegistrationIDResponse requestRegistrationIDIdResponse =
-            objectFactory.createRequestRegistrationIDResponse();
-
-        String registrationID = mr_server.requestRegistrationID();
-        requestRegistrationIDIdResponse.setRequestRegistrationIDResult(registrationID);
-        return requestRegistrationIDIdResponse;
+    public void requestRegistrationID() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "ScheduleGroupMeterRead", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    ScheduleGroupMeterReadResponse ScheduleGroupMeterRead(@RequestPayload ScheduleGroupMeterRead scheduleGroupMeterRead)
-            throws MultispeakWebServiceException {
-        ScheduleGroupMeterReadResponse scheduleGroupMeterReadResponse =
-            objectFactory.createScheduleGroupMeterReadResponse();
-        
-        String transactionID = scheduleGroupMeterRead.getTransactionID();
-        String meterGroupName = scheduleGroupMeterRead.getMeterGroupName();
-        String responseURL = scheduleGroupMeterRead.getResponseURL();
-        XMLGregorianCalendar timeToRead = scheduleGroupMeterRead.getTimeToRead();
-        List<ErrorObject> errorObjects =
-            mr_server.scheduleGroupMeterRead(meterGroupName, (timeToRead != null) ? timeToRead.toGregorianCalendar()
-                : null, responseURL, transactionID);
-
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        scheduleGroupMeterReadResponse.setScheduleGroupMeterReadResult(arrayOfErrorObject);
-        return scheduleGroupMeterReadResponse;
+    public void ScheduleGroupMeterRead() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "UnregisterForService", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    UnregisterForServiceResponse unregisterForService(@RequestPayload UnregisterForService unregisterForService)
-            throws MultispeakWebServiceException {
-        UnregisterForServiceResponse unregisterForServiceResponse = objectFactory.createUnregisterForServiceResponse();
-
-        String registrationID = unregisterForService.getRegistrationID();
-        List<ErrorObject> errorObjects = mr_server.unregisterForService(registrationID);
-        
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        unregisterForServiceResponse.setUnregisterForServiceResult(arrayOfErrorObject);
-        return unregisterForServiceResponse;
+    public void unregisterForService() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "UpdateServiceLocationDisplays", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    UpdateServiceLocationDisplaysResponse updateServiceLocationDisplays(
-            @RequestPayload UpdateServiceLocationDisplays updateServiceLocationDisplays)
-            throws MultispeakWebServiceException {
-        UpdateServiceLocationDisplaysResponse updateServiceLocationDisplaysResponse =
-            objectFactory.createUpdateServiceLocationDisplaysResponse();
-
-        String servLocID = updateServiceLocationDisplays.getServLocID();
-        List<ErrorObject> errorObjects = mr_server.updateServiceLocationDisplays(servLocID);
-
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        updateServiceLocationDisplaysResponse.setUpdateServiceLocationDisplaysResult(arrayOfErrorObject);
-        return updateServiceLocationDisplaysResponse;
+    public void updateServiceLocationDisplays() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "MeterBaseRetireNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    MeterBaseRetireNotificationResponse meterBaseRetireNotification(
-            @RequestPayload MeterBaseRetireNotification meterBaseRetireNotification)
-            throws MultispeakWebServiceException {
-        MeterBaseRetireNotificationResponse meterBaseRetireNotificationResponse =
-            objectFactory.createMeterBaseRetireNotificationResponse();
-
-        List<MeterBase> meterBases = meterBaseRetireNotification.getRetiredMBs().getMeterBase();
-        List<ErrorObject> errorObjects = mr_server.meterBaseRetireNotification(meterBases);
-        
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-        meterBaseRetireNotificationResponse.setMeterBaseRetireNotificationResult(arrayOfErrorObject);
-        return meterBaseRetireNotificationResponse;
+    public void meterBaseRetireNotification() throws MultispeakWebServiceException {
+        multispeakFuncs.init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetReadingsByBillingCycle", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    GetReadingsByBillingCycleResponse getReadingsByBillingCycle(
-            @RequestPayload GetReadingsByBillingCycle getReadingsByBillingCycle) throws MultispeakWebServiceException {
-        GetReadingsByBillingCycleResponse getReadingsByBillingCycleResponse =
-            objectFactory.createGetReadingsByBillingCycleResponse();
-        
+    public @ResponsePayload GetReadingsByBillingCycleResponse getReadingsByBillingCycle(
+            @RequestPayload GetReadingsByBillingCycle getReadingsByBillingCycle)
+            throws MultispeakWebServiceException {
+        GetReadingsByBillingCycleResponse getReadingsByBillingCycleResponse = objectFactory.createGetReadingsByBillingCycleResponse();
+
         XMLGregorianCalendar billingDate = getReadingsByBillingCycle.getBillingDate();
         int kWLookBack = getReadingsByBillingCycle.getKWLookBack();
         String lastReceived = getReadingsByBillingCycle.getLastReceived();
@@ -1505,11 +882,18 @@ public class MRServiceEndPoint {
         String billingCycle = getReadingsByBillingCycle.getBillingCycle();
         String formattedBlockTemplateName = getReadingsByBillingCycle.getFormattedBlockTemplateName();
         int kWLookForward = getReadingsByBillingCycle.getKWLookForward();
-
-        List<FormattedBlock> formattedBlocks =
-            mr_server.getReadingsByBillingCycle(billingCycle, (billingDate != null) ? billingDate.toGregorianCalendar()
-                : null, kWhLookBack, kWLookBack, kWLookForward, lastReceived, formattedBlockTemplateName);
         
+        if (billingDate == null) {
+            throw new MultispeakWebServiceException("Invalid date/time.");
+        }
+
+        List<FormattedBlock> formattedBlocks = mr_server.getReadingsByBillingCycle(billingCycle,
+                                                                                   billingDate.toGregorianCalendar(),
+                                                                                   kWhLookBack,
+                                                                                   kWLookBack,
+                                                                                   kWLookForward,
+                                                                                   lastReceived, formattedBlockTemplateName);
+
         ArrayOfFormattedBlock arrayOfFormattedBlock = objectFactory.createArrayOfFormattedBlock();
         List<FormattedBlock> formattedBlockList = arrayOfFormattedBlock.getFormattedBlock();
         formattedBlockList.addAll(formattedBlocks);

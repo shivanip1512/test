@@ -21,18 +21,10 @@ import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.msp.beans.v3.CDDevice;
-import com.cannontech.msp.beans.v3.CDDeviceExchange;
-import com.cannontech.msp.beans.v3.CDState;
 import com.cannontech.msp.beans.v3.ConnectDisconnectEvent;
-import com.cannontech.msp.beans.v3.Customer;
-import com.cannontech.msp.beans.v3.DomainMember;
-import com.cannontech.msp.beans.v3.DomainNameChange;
 import com.cannontech.msp.beans.v3.ErrorObject;
 import com.cannontech.msp.beans.v3.LoadActionCode;
 import com.cannontech.msp.beans.v3.Meter;
-import com.cannontech.msp.beans.v3.RegistrationInfo;
-import com.cannontech.msp.beans.v3.ServiceLocation;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
@@ -77,18 +69,6 @@ public class CD_ServerImpl implements CD_Server {
     }
 
     @Override
-    public List<String> getDomainNames() throws MultispeakWebServiceException {
-        init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @Override
-    public List<DomainMember> getDomainMembers(String domainName) throws MultispeakWebServiceException {
-        init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @Override
     public List<Meter> getCDSupportedMeters(String lastReceived) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
@@ -106,12 +86,6 @@ public class CD_ServerImpl implements CD_Server {
             meterList.getLastSent(), "getCDSupportedMeters", vendor.getCompanyName());
 
         return meters;
-    }
-
-    @Override
-    public List<Meter> getModifiedCDMeters(String previousSessionID, String lastReceived)
-            throws MultispeakWebServiceException {
-        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @Override
@@ -157,48 +131,6 @@ public class CD_ServerImpl implements CD_Server {
         return errorObjects;
     }
 
-    @Override
-    public List<ErrorObject> serviceLocationChangedNotification(List<ServiceLocation> changedServiceLocations)
-            throws MultispeakWebServiceException {
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @Override
-    public List<ErrorObject> meterChangedNotification(List<Meter> changedMeters) throws MultispeakWebServiceException {
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @Override
-    public List<ErrorObject> customerChangedNotification(List<Customer> changedCustomers) throws MultispeakWebServiceException {
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @Override
-    public List<ErrorObject> CDDeviceAddNotification(List<CDDevice> addedCDDs) throws MultispeakWebServiceException {
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @Override
-    public List<ErrorObject> CDDeviceChangedNotification(List<CDDevice> changedCDDs) throws MultispeakWebServiceException {
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @Override
-    public List<ErrorObject> CDDeviceExchangeNotification(List<CDDeviceExchange> CDDChangeout)
-            throws MultispeakWebServiceException {
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @Override
-    public List<ErrorObject> CDDeviceRemoveNotification(List<CDDevice> removedCDDs) throws MultispeakWebServiceException {
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @Override
-    public List<ErrorObject> CDDeviceRetireNotification(List<CDDevice> retiredCDDs) throws MultispeakWebServiceException {
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
     /**
      * Retrieves DISCONNECT_STATUS attribute's pointData from dispatch.
      * Gets the LoadActionCode based on the type of meter and expected state group for that type.
@@ -232,64 +164,4 @@ public class CD_ServerImpl implements CD_Server {
         }
     }
 
-    @Override
-    public String requestRegistrationID() throws MultispeakWebServiceException {
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @Override
-    public List<ErrorObject> registerForService(RegistrationInfo registrationDetails) throws MultispeakWebServiceException {
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @Override
-    public List<ErrorObject> unregisterForService(String registrationID) throws MultispeakWebServiceException {
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @Override
-    public RegistrationInfo getRegistrationInfoByID(String registrationID) throws MultispeakWebServiceException {
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @Override
-    public List<String> getPublishMethods() throws MultispeakWebServiceException {
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @Override
-    public List<ErrorObject> domainMembersChangedNotification(List<DomainMember> changedDomainMembers)
-            throws MultispeakWebServiceException {
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @Override
-    public List<ErrorObject> domainNamesChangedNotification(List<DomainNameChange> changedDomainNames)
-            throws MultispeakWebServiceException {
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @Override
-    public List<ErrorObject> initiateCDStateRequest(List<CDState> states, String responseURL, String transactionID,
-            float expirationTime) throws MultispeakWebServiceException {
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @Override
-    public List<ErrorObject> initiateArmCDDevice(List<CDState> states, String responseURL, String transactionID,
-            float expirationTime) throws MultispeakWebServiceException {
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @Override
-    public List<ErrorObject> initiateEnableCDDevice(List<CDState> states, String responseURL, String transactionID,
-            float expirationTime) throws MultispeakWebServiceException {
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @Override
-    public List<ErrorObject> initiateDisableCDDevice(List<CDState> states, String responseURL, String transactionID,
-            float expirationTime) throws MultispeakWebServiceException {
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
 }
