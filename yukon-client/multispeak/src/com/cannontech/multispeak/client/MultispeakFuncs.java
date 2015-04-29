@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -545,7 +546,7 @@ public class MultispeakFuncs {
         XMLGregorianCalendar eventTime = null;
 
         try {
-            GregorianCalendar gc = (GregorianCalendar) GregorianCalendar.getInstance();
+            GregorianCalendar gc = (GregorianCalendar) GregorianCalendar.getInstance(TimeZone.getTimeZone("UTC"));
             if (inputDate instanceof Date) {
                 Date date = (Date) inputDate;
                 gc.setTime(date);
