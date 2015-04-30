@@ -50,7 +50,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionResultsDao;
-    @Autowired private DeviceCommandService devicePorterCommandService;
+    @Autowired private DeviceCommandService commandService;
 
     @Override
     public void start() {
@@ -86,7 +86,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
                 };
             Set<SimpleDevice> devices = deviceGroupService.getDevices(Collections.singletonList(getDeviceGroup()));
             CommandRequestExecutionObjects<CommandRequestDevice> executionObjects =
-                devicePorterCommandService.execute(devices, attributes, command, commandRequestExecutionType, user,
+                commandService.execute(devices, attributes, command, commandRequestExecutionType, user,
                     getRetryParameters(), callback);
             currentExecutor = executionObjects.getCommandRequestExecutor();
             currentCallback = executionObjects.getCallback();
