@@ -20,7 +20,7 @@ yukon.admin.user = (function () {
             
             if (_initialized) return;
             
-            /** User clicked save button on change password popup, submit request. */
+            /** User clicked 'remove login wait' button. */
             $(document).on('click', '.js-remove-login-wait', function (ev) {
                 $.ajax(yukon.url('/adminSetup/user/' + $(this).data('userId') + '/remove-login-wait'))
                 .done(function () {

@@ -43,7 +43,7 @@ yukon.admin.permission = (function () {
                 var table = btn.closest('table');
                 var paoId = row.data('id');
                 var permission = table.data('permission');
-                var pickerId = table.is('#lm-table') ? 'lmPicker' : 'vvPicker'; 
+                var pickerId = table.is('#lm-table') ? 'lmPicker' : 'vvPicker';
                 var picker = yukon.pickers[pickerId];
                 
                 yukon.ui.busy(btn);
@@ -88,7 +88,7 @@ yukon.admin.permission = (function () {
                     paos.forEach(function (pao) {
                         
                         var row = $('.js-templates .js-template-row').clone()
-                        .removeAttr('id').data('id', pao.id).attr('id', pao.id)
+                        .removeAttr('id').data('id', pao.id).attr('data-id', pao.id)
                         .appendTo(table);
                         
                         row.find('td:first-child').text(pao.name)

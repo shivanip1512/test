@@ -24,9 +24,9 @@ yukon.admin.users.home = (function () {
      * property for the picker type and the url to navigate to when an item from the picker is chosen.
      */
     _targets = {
-        'userPicker': {id: 'userId', url: '/adminSetup/user/?/view'},
-        'userGroupPicker': {id: 'userGroupId', url: '/adminSetup/user-groups/?/view'},
-        'roleGroupPicker': {id: 'groupId', url: '/adminSetup/role-groups/?/view'}
+        'userPicker': { id: 'userId', url: '/adminSetup/user/{id}/view' },
+        'userGroupPicker': { id: 'userGroupId', url: '/adminSetup/user-groups/{id}/view' },
+        'roleGroupPicker': { id: 'groupId', url: '/adminSetup/role-groups/{id}/view' }
     },
     
     mod = {
@@ -50,7 +50,7 @@ yukon.admin.users.home = (function () {
                 var target = _targets[picker.pickerId];
                 var id = items[0][target.id];
                 var url = target.url;
-                window.location.href = yukon.url(url.replace('?', id));
+                window.location.href = yukon.url(url.replace('{id}', id));
             });
             
             /** Show/hide password fields when auth category changes. */
@@ -136,7 +136,7 @@ yukon.admin.users.home = (function () {
                     type: 'post',
                     success: function (result, status, xhr, $form) {
                         $('.js-new-role-group-dialog').dialog('close');
-                        window.location.href = yukon.url('/adminSetup/role-groups/view?roleGroupId=' + result.groupId);
+                        window.location.href = yukon.url('/adminSetup/role-groups/' + result.groupId + '/view');
                     },
                     error: function (xhr, status, error, $form) {
                         $('#new-role-group-form').html(xhr.responseText);

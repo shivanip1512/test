@@ -64,7 +64,7 @@ public class PermissionController {
     /** USER PERMISSIONS */
     
     @RequestMapping("user/{userId}/permissions")
-    public String user(ModelMap model, @PathVariable int userId, YukonUserContext userContext) {
+    public String user(ModelMap model, @PathVariable int userId) {
         
         LiteYukonUser user = userDao.getLiteYukonUser(userId);
         
@@ -108,9 +108,11 @@ public class PermissionController {
     }
     
     @RequestMapping(value="user/{userId}/permissions/add", method=RequestMethod.POST)
-    public @ResponseBody List<Map<String, Object>> addUserPermission(HttpServletRequest req, @PathVariable int userId, 
+    public @ResponseBody List<Map<String, Object>> addUserPermission(
             YukonUserContext userContext,
-            @RequestParam("paoIds[]") int[] paoIds, Permission permission) {
+            @PathVariable int userId,
+            @RequestParam("paoIds[]") int[] paoIds,
+            Permission permission) {
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         boolean allow = permission == Permission.LM_VISIBLE;
@@ -140,7 +142,7 @@ public class PermissionController {
     /** USER GROUP PERMISSIONS */
     
     @RequestMapping("user-groups/{groupId}/permissions")
-    public String group(ModelMap model, @PathVariable int groupId, YukonUserContext userContext) {
+    public String group(ModelMap model, @PathVariable int groupId) {
         
         LiteUserGroup group = userGroupDao.getLiteUserGroup(groupId);
         
@@ -185,9 +187,11 @@ public class PermissionController {
     }
     
     @RequestMapping(value="user-groups/{groupId}/permissions/add", method=RequestMethod.POST)
-    public @ResponseBody List<Map<String, Object>> addGroupPermission(HttpServletRequest req, @PathVariable int groupId, 
+    public @ResponseBody List<Map<String, Object>> addGroupPermission( 
             YukonUserContext userContext,
-            @RequestParam("paoIds[]") int[] paoIds, Permission permission) {
+            @PathVariable int groupId,
+            @RequestParam("paoIds[]") int[] paoIds,
+            Permission permission) {
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         boolean allow = permission == Permission.LM_VISIBLE;

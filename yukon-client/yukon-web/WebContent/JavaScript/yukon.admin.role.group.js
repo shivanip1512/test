@@ -23,14 +23,14 @@ yukon.admin.role.group = (function () {
             /** New user groups chosen to add to the role group. */
             $(document).on('yukon:admin:role:group:add:user:groups', function (ev, items, picker) {
                 
-                var groups = items.map(function (item) { return item.userGroupId; });
+                var userGroupIds = items.map(function (item) { return item.userGroupId; });
                 var groupId = $('#role-group-id').val();
                 
                 $.ajax({
                     url: yukon.url('/adminSetup/role-groups/' + groupId + '/add-user-groups'),
                     type: 'post',
                     data: {
-                        groups: groups
+                        groups: userGroupIds
                     }
                 }).always(function () {
                     window.location.reload();
