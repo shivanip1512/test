@@ -7,7 +7,6 @@
 #include "std_helper.h"
 #include "row_reader.h"
 
-#include <boost/assign/list_of.hpp>
 #include <boost/range/adaptor/map.hpp>
 #include <boost/range/adaptor/filtered.hpp>
 #include <boost/range/adaptor/transformed.hpp>
@@ -28,56 +27,57 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints(long paoid, string paotype)
         _insertDynamicDataFlag( true ),
         _dirty( true )
 {
-    _attributes =
-            AttributePoint{
-                { PointAttribute::CbcVoltage,                   LitePoint() },
-                { PointAttribute::HighVoltage,                  LitePoint() },
-                { PointAttribute::LowVoltage,                   LitePoint() },
-                { PointAttribute::DeltaVoltage,                 LitePoint() },
-                { PointAttribute::AnalogInput1,                 LitePoint() },
-                { PointAttribute::Temperature,                  LitePoint() },
-                { PointAttribute::RSSI,                         LitePoint() },
-                { PointAttribute::IgnoredReason,                LitePoint() },
-                { PointAttribute::VoltageControl,               LitePoint() },
-                { PointAttribute::UvThreshold,                  LitePoint() },
-                { PointAttribute::OvThreshold,                  LitePoint() },
-                { PointAttribute::OVUVTrackTime,                LitePoint() },
-                { PointAttribute::NeutralCurrentSensor,         LitePoint() },
-                { PointAttribute::NeutralCurrentAlarmThreshold, LitePoint() },
-                { PointAttribute::TimeTempSeasonOne,            LitePoint() },
-                { PointAttribute::TimeTempSeasonTwo,            LitePoint() },
-                { PointAttribute::VarControl,                   LitePoint() },
-                { PointAttribute::UDPIpAddress,                 LitePoint() },
-                { PointAttribute::UDPPortNumber,                LitePoint() },
-                { PointAttribute::CapacitorBankState,           LitePoint() },
-                { PointAttribute::ReCloseBlocked,               LitePoint() },
-                { PointAttribute::ControlMode,                  LitePoint() },
-                { PointAttribute::AutoVoltControl,              LitePoint() },
-                { PointAttribute::LastControlLocal,             LitePoint() },
-                { PointAttribute::LastControlRemote,            LitePoint() },
-                { PointAttribute::LastControlOvUv,              LitePoint() },
-                { PointAttribute::LastControlNeutralFault,      LitePoint() },
-                { PointAttribute::LastControlScheduled,         LitePoint() },
-                { PointAttribute::LastControlDigital,           LitePoint() },
-                { PointAttribute::LastControlAnalog,            LitePoint() },
-                { PointAttribute::LastControlTemperature,       LitePoint() },
-                { PointAttribute::OvCondition,                  LitePoint() },
-                { PointAttribute::UvCondition,                  LitePoint() },
-                { PointAttribute::OpFailedNeutralCurrent,       LitePoint() },
-                { PointAttribute::NeutralCurrentFault,          LitePoint() },
-                { PointAttribute::BadRelay,                     LitePoint() },
-                { PointAttribute::DailyMaxOps,                  LitePoint() },
-                { PointAttribute::VoltageDeltaAbnormal,         LitePoint() },
-                { PointAttribute::TempAlarm,                    LitePoint() },
-                { PointAttribute::DSTActive,                    LitePoint() },
-                { PointAttribute::NeutralLockout,               LitePoint() },
-                { PointAttribute::IgnoredIndicator,             LitePoint() },
-                { PointAttribute::TotalOpCount,                 LitePoint() },
-                { PointAttribute::UvCount,                      LitePoint() },
-                { PointAttribute::OvCount,                      LitePoint() },
-                { PointAttribute::CloseOpCount,                 LitePoint() },
-                { PointAttribute::OpenOpCount,                  LitePoint() },
-                { PointAttribute::LastControlReason,            LitePoint() }};
+    _attributes = AttributePoint
+    {
+        { PointAttribute::CbcVoltage,                   LitePoint() },
+        { PointAttribute::HighVoltage,                  LitePoint() },
+        { PointAttribute::LowVoltage,                   LitePoint() },
+        { PointAttribute::DeltaVoltage,                 LitePoint() },
+        { PointAttribute::AnalogInput1,                 LitePoint() },
+        { PointAttribute::Temperature,                  LitePoint() },
+        { PointAttribute::RSSI,                         LitePoint() },
+        { PointAttribute::IgnoredReason,                LitePoint() },
+        { PointAttribute::VoltageControl,               LitePoint() },
+        { PointAttribute::UvThreshold,                  LitePoint() },
+        { PointAttribute::OvThreshold,                  LitePoint() },
+        { PointAttribute::OVUVTrackTime,                LitePoint() },
+        { PointAttribute::NeutralCurrentSensor,         LitePoint() },
+        { PointAttribute::NeutralCurrentAlarmThreshold, LitePoint() },
+        { PointAttribute::TimeTempSeasonOne,            LitePoint() },
+        { PointAttribute::TimeTempSeasonTwo,            LitePoint() },
+        { PointAttribute::VarControl,                   LitePoint() },
+        { PointAttribute::UDPIpAddress,                 LitePoint() },
+        { PointAttribute::UDPPortNumber,                LitePoint() },
+        { PointAttribute::CapacitorBankState,           LitePoint() },
+        { PointAttribute::ReCloseBlocked,               LitePoint() },
+        { PointAttribute::ControlMode,                  LitePoint() },
+        { PointAttribute::AutoVoltControl,              LitePoint() },
+        { PointAttribute::LastControlLocal,             LitePoint() },
+        { PointAttribute::LastControlRemote,            LitePoint() },
+        { PointAttribute::LastControlOvUv,              LitePoint() },
+        { PointAttribute::LastControlNeutralFault,      LitePoint() },
+        { PointAttribute::LastControlScheduled,         LitePoint() },
+        { PointAttribute::LastControlDigital,           LitePoint() },
+        { PointAttribute::LastControlAnalog,            LitePoint() },
+        { PointAttribute::LastControlTemperature,       LitePoint() },
+        { PointAttribute::OvCondition,                  LitePoint() },
+        { PointAttribute::UvCondition,                  LitePoint() },
+        { PointAttribute::OpFailedNeutralCurrent,       LitePoint() },
+        { PointAttribute::NeutralCurrentFault,          LitePoint() },
+        { PointAttribute::BadRelay,                     LitePoint() },
+        { PointAttribute::DailyMaxOps,                  LitePoint() },
+        { PointAttribute::VoltageDeltaAbnormal,         LitePoint() },
+        { PointAttribute::TempAlarm,                    LitePoint() },
+        { PointAttribute::DSTActive,                    LitePoint() },
+        { PointAttribute::NeutralLockout,               LitePoint() },
+        { PointAttribute::IgnoredIndicator,             LitePoint() },
+        { PointAttribute::TotalOpCount,                 LitePoint() },
+        { PointAttribute::UvCount,                      LitePoint() },
+        { PointAttribute::OvCount,                      LitePoint() },
+        { PointAttribute::CloseOpCount,                 LitePoint() },
+        { PointAttribute::OpenOpCount,                  LitePoint() },
+        { PointAttribute::LastControlReason,            LitePoint() }
+    };
 }
 
 long CtiCCTwoWayPoints::getPAOId() const
@@ -97,7 +97,7 @@ void CtiCCTwoWayPoints::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
         return;
     }
 
-    int lastControlReason = encodeLastControlReasonForDB();
+    int lastControlReason = _lastControlReason->serialize( *this );
 
     int condition = 0;
     condition |= 0x01 * !!getPointValueByAttribute(PointAttribute::UvCondition);
@@ -322,7 +322,7 @@ bool CtiCCTwoWayPoints::setTwoWayPointId(CtiPointType_t pointtype, int offset, l
     return true;
 }
 
-double CtiCCTwoWayPoints::getPointValueByAttribute(PointAttribute attribute, const double sentinel)
+double CtiCCTwoWayPoints::getPointValueByAttribute(PointAttribute attribute, const double sentinel) const
 {
     double value = sentinel;
     _pointValues.getPointValue(getPointIdByAttribute(attribute), value);
@@ -373,7 +373,7 @@ void CtiCCTwoWayPoints::addAllCBCPointsToRegMsg(std::set<long>& pointList)
 
 std::string CtiCCTwoWayPoints::getLastControlText()
 {
-    return _lastControlReason->getText( encodeLastControlReasonForDB(), getLastControlReasonStateGroupID() );
+    return _lastControlReason->getText( *this );
 }
 
 void CtiCCTwoWayPoints::setLastControlReasonDecoder( std::unique_ptr<LastControlReason> && reason )
@@ -460,7 +460,7 @@ void CtiCCTwoWayPoints::setDynamicData(Cti::RowReader& rdr, LONG cbcState, CtiTi
 
     int lastControlReason;
     rdr["lastcontrol"] >> lastControlReason;
-    decodeLastControlReasonFromDB( lastControlReason, timestamp );
+    _lastControlReason->deserialize( *this, lastControlReason, timestamp );
 
     int condition;
     rdr["condition"] >> condition;
@@ -480,24 +480,10 @@ CtiCCTwoWayPointsCbcDnp::CtiCCTwoWayPointsCbcDnp( long paoid, std::string paotyp
 {
     setLastControlReasonDecoder( std::make_unique<LastControlReasonCbcDnp>() );
 
-    _statusOffsetAttribute =
-                OffsetAttributeMappings{
-                        { 1, PointAttribute::CapacitorBankState }};
-}
-
-int CtiCCTwoWayPointsCbcDnp::encodeLastControlReasonForDB()
-{
-    return 0;
-}
-
-void CtiCCTwoWayPointsCbcDnp::decodeLastControlReasonFromDB( const int lastControlReason, const CtiTime & timestamp )
-{
-    // empty
-}
-
-long CtiCCTwoWayPointsCbcDnp::getLastControlReasonStateGroupID() const
-{
-    return 0;
+    _statusOffsetAttribute = OffsetAttributeMappings
+    {
+        {     1, PointAttribute::CapacitorBankState             }
+    };
 }
 
 
@@ -509,92 +495,62 @@ CtiCCTwoWayPointsCbc702x::CtiCCTwoWayPointsCbc702x( long paoid, std::string paot
 {
     setLastControlReasonDecoder( std::make_unique<LastControlReasonCbc702x>() );
 
-    _analogOffsetAttribute =
-            OffsetAttributeMappings {
-                    {     5, PointAttribute::CbcVoltage                     },
-                    {     6, PointAttribute::HighVoltage                    },
-                    {     7, PointAttribute::LowVoltage                     },
-                    {     8, PointAttribute::DeltaVoltage                   },
-                    {     9, PointAttribute::AnalogInput1                   },
-                    {    10, PointAttribute::Temperature                    },
-                    {    13, PointAttribute::RSSI                           },
-                    {    14, PointAttribute::IgnoredReason                  },
-                    { 10001, PointAttribute::VoltageControl                 },
-                    { 10002, PointAttribute::UvThreshold                    },
-                    { 10003, PointAttribute::OvThreshold                    },
-                    { 10004, PointAttribute::OVUVTrackTime                  },
-                    { 10010, PointAttribute::NeutralCurrentSensor           },
-                    { 10011, PointAttribute::NeutralCurrentAlarmThreshold   },
-                    { 10026, PointAttribute::TimeTempSeasonOne              },
-                    { 10042, PointAttribute::TimeTempSeasonTwo              },
-                    { 10068, PointAttribute::VarControl                     },
-                    { 20001, PointAttribute::UDPIpAddress                   },
-                    { 20002, PointAttribute::UDPPortNumber                  }};
+    _analogOffsetAttribute = OffsetAttributeMappings
+    {
+        {     5, PointAttribute::CbcVoltage                     },
+        {     6, PointAttribute::HighVoltage                    },
+        {     7, PointAttribute::LowVoltage                     },
+        {     8, PointAttribute::DeltaVoltage                   },
+        {     9, PointAttribute::AnalogInput1                   },
+        {    10, PointAttribute::Temperature                    },
+        {    13, PointAttribute::RSSI                           },
+        {    14, PointAttribute::IgnoredReason                  },
+        { 10001, PointAttribute::VoltageControl                 },
+        { 10002, PointAttribute::UvThreshold                    },
+        { 10003, PointAttribute::OvThreshold                    },
+        { 10004, PointAttribute::OVUVTrackTime                  },
+        { 10010, PointAttribute::NeutralCurrentSensor           },
+        { 10011, PointAttribute::NeutralCurrentAlarmThreshold   },
+        { 10026, PointAttribute::TimeTempSeasonOne              },
+        { 10042, PointAttribute::TimeTempSeasonTwo              },
+        { 10068, PointAttribute::VarControl                     },
+        { 20001, PointAttribute::UDPIpAddress                   },
+        { 20002, PointAttribute::UDPPortNumber                  }
+    };
 
-    _statusOffsetAttribute =
-            OffsetAttributeMappings {
-                    {     1, PointAttribute::CapacitorBankState             },
-                    {     2, PointAttribute::ReCloseBlocked                 },
-                    {     3, PointAttribute::ControlMode                    },
-                    {     4, PointAttribute::AutoVoltControl                },
-                    {     5, PointAttribute::LastControlLocal               },
-                    {     6, PointAttribute::LastControlRemote              },
-                    {     7, PointAttribute::LastControlOvUv                },
-                    {     8, PointAttribute::LastControlNeutralFault        },
-                    {     9, PointAttribute::LastControlScheduled           },
-                    {    10, PointAttribute::LastControlDigital             },
-                    {    11, PointAttribute::LastControlAnalog              },
-                    {    12, PointAttribute::LastControlTemperature         },
-                    {    13, PointAttribute::OvCondition                    },
-                    {    14, PointAttribute::UvCondition                    },
-                    {    15, PointAttribute::OpFailedNeutralCurrent         },
-                    {    16, PointAttribute::NeutralCurrentFault            },
-                    {    24, PointAttribute::BadRelay                       },
-                    {    25, PointAttribute::DailyMaxOps                    },
-                    {    26, PointAttribute::VoltageDeltaAbnormal           },
-                    {    27, PointAttribute::TempAlarm                      },
-                    {    28, PointAttribute::DSTActive                      },
-                    {    29, PointAttribute::NeutralLockout                 },
-                    {    34, PointAttribute::IgnoredIndicator               }};
+    _statusOffsetAttribute = OffsetAttributeMappings
+    {
+        {     1, PointAttribute::CapacitorBankState             },
+        {     2, PointAttribute::ReCloseBlocked                 },
+        {     3, PointAttribute::ControlMode                    },
+        {     4, PointAttribute::AutoVoltControl                },
+        {     5, PointAttribute::LastControlLocal               },
+        {     6, PointAttribute::LastControlRemote              },
+        {     7, PointAttribute::LastControlOvUv                },
+        {     8, PointAttribute::LastControlNeutralFault        },
+        {     9, PointAttribute::LastControlScheduled           },
+        {    10, PointAttribute::LastControlDigital             },
+        {    11, PointAttribute::LastControlAnalog              },
+        {    12, PointAttribute::LastControlTemperature         },
+        {    13, PointAttribute::OvCondition                    },
+        {    14, PointAttribute::UvCondition                    },
+        {    15, PointAttribute::OpFailedNeutralCurrent         },
+        {    16, PointAttribute::NeutralCurrentFault            },
+        {    24, PointAttribute::BadRelay                       },
+        {    25, PointAttribute::DailyMaxOps                    },
+        {    26, PointAttribute::VoltageDeltaAbnormal           },
+        {    27, PointAttribute::TempAlarm                      },
+        {    28, PointAttribute::DSTActive                      },
+        {    29, PointAttribute::NeutralLockout                 },
+        {    34, PointAttribute::IgnoredIndicator               }
+    };
 
-    _accumulatorOffsetAttribute =
-            OffsetAttributeMappings {
-                    {     1, PointAttribute::TotalOpCount                   },
-                    {     2, PointAttribute::UvCount                        },
-                    {     3, PointAttribute::OvCount                        }};
-}
-
-int CtiCCTwoWayPointsCbc702x::encodeLastControlReasonForDB()
-{
-    int lastControlReason = 0;
-
-    lastControlReason |= 0x01 * !!getPointValueByAttribute(PointAttribute::LastControlLocal);
-    lastControlReason |= 0x02 * !!getPointValueByAttribute(PointAttribute::LastControlRemote);
-    lastControlReason |= 0x04 * !!getPointValueByAttribute(PointAttribute::LastControlOvUv);
-    lastControlReason |= 0x08 * !!getPointValueByAttribute(PointAttribute::LastControlNeutralFault);
-    lastControlReason |= 0x10 * !!getPointValueByAttribute(PointAttribute::LastControlScheduled);
-    lastControlReason |= 0x20 * !!getPointValueByAttribute(PointAttribute::LastControlDigital);
-    lastControlReason |= 0x40 * !!getPointValueByAttribute(PointAttribute::LastControlAnalog);
-    lastControlReason |= 0x80 * !!getPointValueByAttribute(PointAttribute::LastControlTemperature);
-
-    return lastControlReason;
-}
-
-void CtiCCTwoWayPointsCbc702x::decodeLastControlReasonFromDB( const int lastControlReason, const CtiTime & timestamp )
-{
-    setTwoWayStatusPointValue(getPointIdByAttribute(PointAttribute::LastControlLocal),        !!(lastControlReason & 0x01), timestamp);
-    setTwoWayStatusPointValue(getPointIdByAttribute(PointAttribute::LastControlRemote),       !!(lastControlReason & 0x02), timestamp);
-    setTwoWayStatusPointValue(getPointIdByAttribute(PointAttribute::LastControlOvUv),         !!(lastControlReason & 0x04), timestamp);
-    setTwoWayStatusPointValue(getPointIdByAttribute(PointAttribute::LastControlNeutralFault), !!(lastControlReason & 0x08), timestamp);
-    setTwoWayStatusPointValue(getPointIdByAttribute(PointAttribute::LastControlScheduled),    !!(lastControlReason & 0x10), timestamp);
-    setTwoWayStatusPointValue(getPointIdByAttribute(PointAttribute::LastControlDigital),      !!(lastControlReason & 0x20), timestamp);
-    setTwoWayStatusPointValue(getPointIdByAttribute(PointAttribute::LastControlAnalog),       !!(lastControlReason & 0x40), timestamp);
-    setTwoWayStatusPointValue(getPointIdByAttribute(PointAttribute::LastControlTemperature),  !!(lastControlReason & 0x80), timestamp);
-}
-
-long CtiCCTwoWayPointsCbc702x::getLastControlReasonStateGroupID() const
-{
-    return 0;
+    _accumulatorOffsetAttribute = OffsetAttributeMappings
+    {
+        {     1, PointAttribute::TotalOpCount                   },
+        {     2, PointAttribute::UvCount                        },
+        {     3, PointAttribute::OvCount                        }
+    };
 }
 
 
@@ -606,62 +562,33 @@ CtiCCTwoWayPointsCbc802x::CtiCCTwoWayPointsCbc802x( long paoid, std::string paot
 {
     setLastControlReasonDecoder( std::make_unique<LastControlReasonCbc802x>() );
 
-    _analogOffsetAttribute =
-            OffsetAttributeMappings {
-                    {     2, PointAttribute::LastControlReason      },
-                    {    12, PointAttribute::CbcVoltage             },
-                    { 10001, PointAttribute::OvThreshold            },
-                    { 10002, PointAttribute::UvThreshold            },
-                    { 10318, PointAttribute::VoltageControl         }};
-
-    _statusOffsetAttribute =
-            OffsetAttributeMappings {
-                    {     1, PointAttribute::CapacitorBankState     },
-                    {     3, PointAttribute::NeutralLockout         },
-                    {    72, PointAttribute::VoltageDeltaAbnormal   },
-                    {    84, PointAttribute::ReCloseBlocked         },
-                    {    86, PointAttribute::ControlMode            },
-                    {    89, PointAttribute::AutoVoltControl        }};
-
-    _accumulatorOffsetAttribute =
-            OffsetAttributeMappings {
-                    {     1, PointAttribute::TotalOpCount           },
-                    {     2, PointAttribute::OvCount                },
-                    {     3, PointAttribute::UvCount                },
-                    {     4, PointAttribute::CloseOpCount           },
-                    {     5, PointAttribute::OpenOpCount            }};
-}
-
-int CtiCCTwoWayPointsCbc802x::encodeLastControlReasonForDB()
-{
-    if ( getPointIdByAttribute( PointAttribute::LastControlReason ) > 0 )
+    _analogOffsetAttribute = OffsetAttributeMappings
     {
-        return getPointValueByAttribute( PointAttribute::LastControlReason, -1 );
-    }
+        {     2, PointAttribute::LastControlReason              },
+        {    12, PointAttribute::CbcVoltage                     },
+        { 10001, PointAttribute::OvThreshold                    },
+        { 10002, PointAttribute::UvThreshold                    },
+        { 10318, PointAttribute::VoltageControl                 }
+    };
 
-    return -1;
-}
-
-void CtiCCTwoWayPointsCbc802x::decodeLastControlReasonFromDB( const int lastControlReason, const CtiTime & timestamp )
-{
-    const long pointID = getPointIdByAttribute( PointAttribute::LastControlReason );
-
-    if ( pointID > 0 && lastControlReason != -1 )
+    _statusOffsetAttribute = OffsetAttributeMappings
     {
-        setTwoWayAnalogPointValue( pointID, lastControlReason, timestamp );
-    }
-}
+        {     1, PointAttribute::CapacitorBankState             },
+        {     3, PointAttribute::NeutralLockout                 },
+        {    72, PointAttribute::VoltageDeltaAbnormal           },
+        {    84, PointAttribute::ReCloseBlocked                 },
+        {    86, PointAttribute::ControlMode                    },
+        {    89, PointAttribute::AutoVoltControl                }
+    };
 
-long CtiCCTwoWayPointsCbc802x::getLastControlReasonStateGroupID() const
-{
-    LitePoint point = getPointByAttribute( PointAttribute::LastControlReason );
-
-    if ( point.getPointId() > 0 )
+    _accumulatorOffsetAttribute = OffsetAttributeMappings
     {
-        return point.getStateGroupId();
-    }
-
-    return 0;
+        {     1, PointAttribute::TotalOpCount                   },
+        {     2, PointAttribute::OvCount                        },
+        {     3, PointAttribute::UvCount                        },
+        {     4, PointAttribute::CloseOpCount                   },
+        {     5, PointAttribute::OpenOpCount                    }
+    };
 }
 
 

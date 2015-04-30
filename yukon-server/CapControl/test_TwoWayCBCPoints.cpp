@@ -15,11 +15,11 @@ struct PointInitializer
 };
 
 
-class test_LastControlReasonCbc802x : public LastControlReason
+class test_LastControlReasonCbc802x : public LastControlReasonCbc802x
 {
 public:
 
-    std::string getText( const long reason, const long stateGroup ) override
+    std::string lookupStateName( const long reason, const long stateGroup ) const override
     {
         // state of the world as of 2015.04.29...
 
@@ -54,7 +54,7 @@ public:
             return *result;
         }
 
-        return "Uninitialized";
+        return "Unknown State. Value = " + std::to_string( reason );
     }
 };
 
@@ -306,6 +306,13 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
                     points->getPointIdByAttribute( PointAttribute::LastControlTemperature ),    1, now ) );
 
     BOOST_CHECK_EQUAL( "Temp", points->getLastControlText() );
+
+    // LastControl... points are mutually exclusive - set another and validate the error message.
+    now += 1;
+    BOOST_CHECK( points->setTwoWayStatusPointValue(
+                    points->getPointIdByAttribute( PointAttribute::LastControlAnalog ),         1, now ) );
+    BOOST_CHECK_EQUAL( "Unknown State. Value = 192", points->getLastControlText() );
+
 }
 
 BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
@@ -533,7 +540,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
                     points->getPointIdByAttribute( PointAttribute::LastControlReason ),    22, now ) );
 
-    BOOST_CHECK_EQUAL( "Uninitialized", points->getLastControlText() );
+    BOOST_CHECK_EQUAL( "Unknown State. Value = 22", points->getLastControlText() );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

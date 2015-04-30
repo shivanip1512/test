@@ -27,7 +27,7 @@ public:
 
     LitePoint getPointByAttribute(const PointAttribute & attribute) const;
     int getPointIdByAttribute(const PointAttribute & attribute) const;
-    double getPointValueByAttribute(PointAttribute pointAttribute, const double sentinel = 0);
+    double getPointValueByAttribute(PointAttribute pointAttribute, const double sentinel = 0) const;
 
 
     bool setTwoWayPointId(CtiPointType_t pointtype, int offset, long pointId, int stateGroupId);
@@ -51,6 +51,8 @@ protected:
                             _analogOffsetAttribute,
                             _accumulatorOffsetAttribute;
 
+    std::unique_ptr<LastControlReason>  _lastControlReason;
+
 private:
 
     typedef std::map<PointAttribute, LitePoint> AttributePoint;
@@ -63,12 +65,6 @@ private:
 
     bool isTimestampNew(long pointID, CtiTime timestamp);
     bool setTwoWayPointValue(long pointID, long value, CtiPointType_t type, CtiTime timestamp);
-
-    virtual int encodeLastControlReasonForDB() = 0;
-    virtual void decodeLastControlReasonFromDB( const int lastControlReason, const CtiTime & timestamp ) = 0;
-    virtual long getLastControlReasonStateGroupID() const = 0;
-
-    std::unique_ptr<LastControlReason>  _lastControlReason;
 
     long _paoid;
     std::string _paotype;
@@ -100,12 +96,6 @@ class CtiCCTwoWayPointsCbcDnp : public CtiCCTwoWayPoints
 public:
 
     CtiCCTwoWayPointsCbcDnp(long paoid, std::string paotype);
-
-private:
-
-    int encodeLastControlReasonForDB() override;
-    void decodeLastControlReasonFromDB( const int lastControlReason, const CtiTime & timestamp ) override;
-    long getLastControlReasonStateGroupID() const override;
 };
 
 
@@ -117,12 +107,6 @@ class CtiCCTwoWayPointsCbc702x : public CtiCCTwoWayPoints
 public:
 
     CtiCCTwoWayPointsCbc702x(long paoid, std::string paotype);
-
-private:
-
-    int encodeLastControlReasonForDB() override;
-    void decodeLastControlReasonFromDB( const int lastControlReason, const CtiTime & timestamp ) override;
-    long getLastControlReasonStateGroupID() const override;
 };
 
 
@@ -134,12 +118,6 @@ class CtiCCTwoWayPointsCbc802x : public CtiCCTwoWayPoints
 public:
 
     CtiCCTwoWayPointsCbc802x(long paoid, std::string paotype);
-
-private:
-
-    int encodeLastControlReasonForDB() override;
-    void decodeLastControlReasonFromDB( const int lastControlReason, const CtiTime & timestamp ) override;
-    long getLastControlReasonStateGroupID() const override;
 };
 
 
