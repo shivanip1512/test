@@ -53,7 +53,7 @@ public class RoleGroupEditorController {
     private static final String key = "yukon.web.modules.adminSetup.auth.role.group.";
     
     /* VIEW PAGE */
-    @RequestMapping("role-groups/{roleGroupId}/view")
+    @RequestMapping("role-groups/{roleGroupId}")
     public String view(ModelMap model, @PathVariable int roleGroupId) {
         
         model.addAttribute("mode", PageEditMode.VIEW);
@@ -88,7 +88,7 @@ public class RoleGroupEditorController {
         authService.expireAllPasswords(roleGroup.getGroupID());
         flash.setConfirm(new YukonMessageSourceResolvable(key + "expiredAllPasswords"));
         
-        return "redirect:/adminSetup/role-groups/" + roleGroupId + "/view";
+        return "redirect:/adminSetup/role-groups/" + roleGroupId;
     }
     
     /* UPDATE */
@@ -112,7 +112,7 @@ public class RoleGroupEditorController {
         
         flash.setConfirm(new YukonMessageSourceResolvable(key + "updateSuccessful"));
         
-        return "redirect:/adminSetup/role-groups/" + roleGroupId + "/view";
+        return "redirect:/adminSetup/role-groups/" + roleGroupId;
     }
     
     /* DELETE */
@@ -122,7 +122,7 @@ public class RoleGroupEditorController {
         roleGroupDao.delete(roleGroupId);
         flash.setConfirm(new YukonMessageSourceResolvable(key + "deletedSuccessful"));
         
-        return "redirect:/adminSetup/userEditor/home";
+        return "redirect:/adminSetup/users-groups/home";
     }
     
     /* ADD USER GROUPS */
@@ -160,7 +160,7 @@ public class RoleGroupEditorController {
         userGroupDao.deleteUserGroupToYukonGroupMappng(remove, roleGroupId);
         flash.setConfirm(new YukonMessageSourceResolvable(key + "removedSuccessful", userGroup.getUserGroupName()));
         
-        return "redirect:/adminSetup/role-groups/" + roleGroupId + "/view";
+        return "redirect:/adminSetup/role-groups/" + roleGroupId;
     }
     
     /* ADD ROLE */
@@ -177,7 +177,7 @@ public class RoleGroupEditorController {
             model.addAttribute("roleGroupId", roleGroupId);
             flash.setError(new YukonMessageSourceResolvable(key + "roleConflictingWithUserGroup", 
                     role.name(), group.getGroupName()));
-            return "redirect:/adminSetup/role-groups/" + roleGroupId + "/view";
+            return "redirect:/adminSetup/role-groups/" + roleGroupId;
         }
         
         model.addAttribute("roleGroupId", roleGroupId);

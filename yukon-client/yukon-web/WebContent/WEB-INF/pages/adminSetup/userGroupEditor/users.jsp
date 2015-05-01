@@ -19,7 +19,7 @@
     <tfoot></tfoot>
     <tbody>
         <c:forEach var="user" items="${users.resultList}">
-            <cti:url var="url" value="/adminSetup/user/${user.userID}/view"/>
+            <cti:url var="url" value="/adminSetup/users/${user.userID}"/>
             <tr>
                 <td><a href="${url}">${fn:escapeXml(user.username)}</a></td>
                 <td><cti:msg2 key="${authInfo[user.userID].authenticationCategory}"/></td>

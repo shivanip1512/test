@@ -71,7 +71,7 @@ public class UserGroupEditorController {
     private static final String roleKey = "yukon.web.modules.adminSetup.auth.role.group.";
     
     /* VIEW PAGE */
-    @RequestMapping("user-groups/{userGroupId}/view")
+    @RequestMapping("user-groups/{userGroupId}")
     public String view(ModelMap model, @PathVariable int userGroupId, LiteYukonUser user,
             @DefaultItemsPerPage(10) PagingParameters paging) {
         
@@ -119,7 +119,7 @@ public class UserGroupEditorController {
         int userGroupId = userGroup.getLiteUserGroup().getUserGroupId();
         model.addAttribute("userGroupId", userGroupId);
         
-        return "redirect:/adminSetup/user-groups/" + userGroupId + "/view";
+        return "redirect:/adminSetup/user-groups/" + userGroupId;
     }
     
     /* DELETE */
@@ -132,7 +132,7 @@ public class UserGroupEditorController {
         if (numberOfUsers > 0) {
             flash.setError(new YukonMessageSourceResolvable(groupKey + "usersCurrentlyAttached"));
             model.addAttribute("userGroupId", userGroupId);
-            return "redirect:/adminSetup/user-groups/" + userGroupId + "/view";
+            return "redirect:/adminSetup/user-groups/" + userGroupId;
         }
         
         userGroupDao.delete(userGroupId);
@@ -177,7 +177,7 @@ public class UserGroupEditorController {
         yukonUserDao.removeUserFromUserGroup(remove);
         flash.setConfirm(new YukonMessageSourceResolvable(roleKey + "updateSuccessful"));
         
-        return "redirect:/adminSetup/user-groups/" + userGroupId + "/view";
+        return "redirect:/adminSetup/user-groups/" + userGroupId;
     }
     
     /* ADD ROLE GROUPS */
@@ -217,7 +217,7 @@ public class UserGroupEditorController {
         flash.setConfirm(new YukonMessageSourceResolvable(groupKey + "updateSuccessful"));
         model.addAttribute("userGroupId", userGroupId);
         
-        return "redirect:/adminSetup/user-groups/" + userGroupId + "/view";
+        return "redirect:/adminSetup/user-groups/" + userGroupId;
     }
     
     @InitBinder

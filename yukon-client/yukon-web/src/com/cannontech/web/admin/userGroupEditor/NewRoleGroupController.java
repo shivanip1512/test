@@ -36,7 +36,7 @@ public class NewRoleGroupController {
         return "userGroupEditor/new-role-group.jsp";
     }
     
-    @RequestMapping(value="role-group", method=RequestMethod.POST)
+    @RequestMapping(value="role-groups", method=RequestMethod.POST)
     public String create(HttpServletResponse resp, 
             @ModelAttribute("group") LiteYukonGroup group, BindingResult binding) throws Exception {
         

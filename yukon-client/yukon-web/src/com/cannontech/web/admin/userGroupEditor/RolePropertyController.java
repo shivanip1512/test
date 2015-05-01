@@ -156,7 +156,7 @@ public class RolePropertyController {
         String roleName = accessor.getMessage(role);
         flash.setConfirm(new YukonMessageSourceResolvable(key + "update.success", roleName));
         
-        return "redirect:/adminSetup/role-groups/" + roleGroupId + "/view";
+        return "redirect:/adminSetup/role-groups/" + roleGroupId;
     }
     
     /* DELETE */
@@ -167,7 +167,7 @@ public class RolePropertyController {
         rpEditorDao.removeRoleFromGroup(roleGroupId, roleId);
         flash.setConfirm(new YukonMessageSourceResolvable(key + "group.updateSuccessful"));
         
-        return "redirect:/adminSetup/role-groups/" + roleGroupId + "/view";
+        return "redirect:/adminSetup/role-groups/" + roleGroupId;
     }
     
     public static class GroupRolePropertyEditorBean {

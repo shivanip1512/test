@@ -24,7 +24,8 @@
     </c:if>
     <div class="column-12-12">
         <div class="column one">
-            <form:form id="change-password-form" commandName="password" action="change-password" method="post">
+            <cti:url var="url" value="/adminSetup/users/${userId}/change-password"/>
+            <form:form id="change-password-form" commandName="password" action="${url}" method="post">
                 <cti:csrfToken/>
                 <input type="hidden" name="userId" value="${userId}">
                 <tags:nameValueContainer2>
@@ -55,7 +56,7 @@
     <div class="column one">
         
         <tags:sectionContainer2 nameKey="infoContainer" styleClass="stacked-lg">
-            <cti:url var="url" value="/adminSetup/user/${user.userId}"/>
+            <cti:url var="url" value="/adminSetup/users/${user.userId}"/>
             <form:form commandName="user" action="${url}" method="post">
                 <cti:csrfToken/>
                 <form:hidden path="userId"/>
@@ -84,7 +85,7 @@
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">
                         <tags:nameValue2 nameKey=".userGroup">
-                            <cti:url var="url" value="/adminSetup/user-groups/${user.userGroupId}/view"/>
+                            <cti:url var="url" value="/adminSetup/user-groups/${user.userGroupId}"/>
                             <a href="${url}">${fn:escapeXml(userGroupName)}</a>
                         </tags:nameValue2>
                     </cti:displayForPageEditModes>
@@ -117,7 +118,7 @@
                 <cti:displayForPageEditModes modes="VIEW">
                     <c:if test="${showPermissions}">
                         <div class="action-area">
-                            <cti:url var="url" value="/adminSetup/user/${user.userId}/permissions"/>
+                            <cti:url var="url" value="/adminSetup/users/${user.userId}/permissions"/>
                             <a href="${url}"><i:inline key=".permissions.view"/></a>
                         </div>
                     </c:if>
@@ -141,14 +142,14 @@
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">
                         
-                        <cti:url var="url" value="/adminSetup/user/${user.userId}/edit"/>
+                        <cti:url var="url" value="/adminSetup/users/${user.userId}/edit"/>
                         <cti:button nameKey="edit" icon="icon-pencil" href="${url}"/>
                         
                         <c:if test="${supportsPasswordSet[user.authCategory]}">
                             <cti:button nameKey="changePassword" data-popup="#change-password-popup" icon="icon-key"/>
                         </c:if>
                         
-                        <cti:url var="url" value="/adminSetup/user/${user.userId}/unlock"/>
+                        <cti:url var="url" value="/adminSetup/users/${user.userId}/unlock"/>
                         <cti:button href="${url}" nameKey="unlockUser" icon="icon-lock-open"/>
                         
                     </cti:displayForPageEditModes>

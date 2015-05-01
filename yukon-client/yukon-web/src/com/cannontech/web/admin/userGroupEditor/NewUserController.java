@@ -72,7 +72,7 @@ public class NewUserController {
         return "userGroupEditor/new-user.jsp";
     }
     
-    @RequestMapping(value="user", method=RequestMethod.POST)
+    @RequestMapping(value="users", method=RequestMethod.POST)
     public String create(ModelMap model, HttpServletResponse resp, 
             @ModelAttribute("user") NewUser user, BindingResult binding) throws Exception {
         

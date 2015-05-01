@@ -41,7 +41,7 @@
                                  classes="delete"/>
                              <d:confirm on="#delete-btn" nameKey="confirmDelete" argument="${userGroupName}"/>
                         </c:if>
-                        <cti:url var="url" value="/adminSetup/user-groups/${userGroupId}/view"/>
+                        <cti:url var="url" value="/adminSetup/user-groups/${userGroupId}"/>
                         <cti:button nameKey="cancel" href="${url}"/>
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">
@@ -71,7 +71,7 @@
                                             <ul class="groupedItem">
                                                 <c:forEach var="roleGroupPair" items="${category.value}">
                                                     <li>
-                                                        <cti:url var="url" value="/adminSetup/role-groups/${roleGroupPair.group.groupID}/view"/>
+                                                        <cti:url var="url" value="/adminSetup/role-groups/${roleGroupPair.group.groupID}"/>
                                                         <i:inline key="${roleGroupPair.role}"/>
                                                         &nbsp;<a href="${url}" class="detail wsnw">(${fn:escapeXml(roleGroupPair.group)})</a>
                                                     </li>
@@ -136,7 +136,7 @@
                     <tfoot></tfoot>
                     <tbody>
                         <c:forEach var="group" items="${groups}">
-                            <cti:url var="url" value="/adminSetup/role-groups/${group.groupID}/view"/>
+                            <cti:url var="url" value="/adminSetup/role-groups/${group.groupID}"/>
                             <tr>
                                 <td><a href="${url}">${fn:escapeXml(group.groupName)}</a></td>
                                 <td>${fn:escapeXml(group.groupDescription)}</td>

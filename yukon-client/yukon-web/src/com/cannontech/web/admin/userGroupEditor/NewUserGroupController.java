@@ -63,7 +63,7 @@ public class NewUserGroupController {
         return "userGroupEditor/new-user-group.jsp";
     }
     
-    @RequestMapping(value="user-group", method=RequestMethod.POST)
+    @RequestMapping(value="user-groups", method=RequestMethod.POST)
     public String create(ModelMap model, HttpServletRequest req, HttpServletResponse resp, 
             @ModelAttribute("group") UserGroup group, BindingResult binding) throws Exception {
         

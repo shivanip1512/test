@@ -119,7 +119,7 @@ public enum SiteMapPage implements DisplayableEnum {
             MatchStyle.all, YukonRoleProperty.ADMIN_MULTISPEAK_SETUP),
     SUBSTATIONS(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.systemAdministration.substations", "/adminSetup/substations/routeMapping/view",
             MatchStyle.all, YukonRole.OPERATOR_ADMINISTRATOR),
-    USERS_GROUPS(SiteMapCategory.ADMIN, "yukon.web.menu.admin.usersAndGroups", "/adminSetup/userEditor/home",
+    USERS_GROUPS(SiteMapCategory.ADMIN, "yukon.web.menu.admin.usersAndGroups", "/adminSetup/users-groups/home",
             MatchStyle.all, YukonRoleProperty.ADMIN_SUPER_USER),
     ADMIN_REPORTS(SiteMapCategory.ADMIN, "yukon.web.menu.config.reporting.reports.administrator", "/analysis/Reports.jsp?groupType=ADMINISTRATIVE",
             MatchStyle.all, YukonRoleProperty.ADMIN_REPORTS_GROUP),

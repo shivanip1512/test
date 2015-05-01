@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
@@ -63,7 +62,7 @@ public class PermissionController {
     
     /** USER PERMISSIONS */
     
-    @RequestMapping("user/{userId}/permissions")
+    @RequestMapping("users/{userId}/permissions")
     public String user(ModelMap model, @PathVariable int userId) {
         
         LiteYukonUser user = userDao.getLiteYukonUser(userId);
@@ -79,7 +78,7 @@ public class PermissionController {
         model.addAttribute("pao", Permission.PAO_VISIBLE);
         
         Map<String, Object> data = ImmutableMap.of(
-                "type", "user",
+                "type", "users",
                 "id", user.getUserID(),
                 "lm_exclude", Lists.transform(lmVisible, YukonPao.TO_PAO_ID),
                 "vv_exclude", Lists.transform(paoVisible, YukonPao.TO_PAO_ID));
@@ -90,7 +89,7 @@ public class PermissionController {
         return "userGroupEditor/permissions.jsp";
     }
     
-    @RequestMapping("user/{userId}/permissions/remove")
+    @RequestMapping("users/{userId}/permissions/remove")
     public void removeUserPermission(HttpServletResponse resp, @PathVariable int userId, YukonUserContext userContext,
             int paoId, Permission permission) {
         
@@ -107,7 +106,7 @@ public class PermissionController {
         resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
     
-    @RequestMapping(value="user/{userId}/permissions/add", method=RequestMethod.POST)
+    @RequestMapping(value="users/{userId}/permissions/add", method=RequestMethod.POST)
     public @ResponseBody List<Map<String, Object>> addUserPermission(
             YukonUserContext userContext,
             @PathVariable int userId,
@@ -157,7 +156,7 @@ public class PermissionController {
         model.addAttribute("pao", Permission.PAO_VISIBLE);
         
         Map<String, Object> data = ImmutableMap.of(
-                "type", "user-group",
+                "type", "user-groups",
                 "id", group.getUserGroupId(),
                 "lm_exclude", Lists.transform(lmVisible, YukonPao.TO_PAO_ID),
                 "vv_exclude", Lists.transform(paoVisible, YukonPao.TO_PAO_ID));

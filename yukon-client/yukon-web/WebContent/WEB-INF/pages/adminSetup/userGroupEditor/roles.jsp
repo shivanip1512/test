@@ -62,7 +62,7 @@
         <cti:button nameKey="delete" id="deleteButton" name="delete" type="submit" classes="delete"/>
         <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${roleGroupName}"/>
     </c:if>
-    <cti:url var="url" value="/adminSetup/role-groups/${roleGroupId}/view"/>
+    <cti:url var="url" value="/adminSetup/role-groups/${roleGroupId}"/>
     <cti:button nameKey="cancel" href="${url}"/>
 
 </form:form>

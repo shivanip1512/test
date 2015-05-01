@@ -14,7 +14,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller
-@RequestMapping("/userEditor/*")
+@RequestMapping("/users-groups/*")
 @CheckRoleProperty(YukonRoleProperty.ADMIN_SUPER_USER)
 public class UsersAndGroupsHomeController {
     

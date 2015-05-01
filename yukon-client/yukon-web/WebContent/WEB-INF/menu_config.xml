@@ -309,7 +309,7 @@
         <permissions>
           <roleProperty name="ADMIN_SUPER_USER" />
         </permissions>
-        <link>/adminSetup/userEditor/home</link>
+        <link>/adminSetup/users-groups/home</link>
       </option>
       <option name="reports" section="true">
         <permissions>

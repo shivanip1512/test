@@ -43,7 +43,7 @@
                         <cti:button nameKey="save" name="update" type="submit" classes="primary action"/>
                         <cti:button nameKey="delete" id="delete-btn" name="delete" type="submit" classes="delete"/>
                         <d:confirm on="#delete-btn" nameKey="confirmDelete" argument="${groupName}"/>
-                        <cti:url var="url" value="/adminSetup/role-groups/${groupId}/view"/>
+                        <cti:url var="url" value="/adminSetup/role-groups/${groupId}"/>
                         <cti:button nameKey="cancel" href="${url}"/>
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">
@@ -124,7 +124,7 @@
                     <tfoot></tfoot>
                     <tbody>
                         <c:forEach items="${userGroups}" var="userGroup">
-                            <cti:url var="url" value="/adminSetup/user-groups/${userGroup.userGroupId}/view"/>
+                            <cti:url var="url" value="/adminSetup/user-groups/${userGroup.userGroupId}"/>
                             <tr>
                                 <td><a href="${url}">${fn:escapeXml(userGroup.userGroupName)}</a></td>
                                 <td>${fn:escapeXml(userGroup.userGroupDescription)}</td>

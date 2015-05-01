@@ -804,12 +804,12 @@
             </page>
             <page name="auth.home" type="BASIC">
                 <requireRoleProperty value="ADMIN_SUPER_USER"/>
-                <link>/adminSetup/userEditor/home</link>
+                <link>/adminSetup/users-groups/home</link>
                 <pages>
                     <page name="auth.users" type="BASIC">
                         <pages>
                             <page name="auth.user.VIEW" type="DETAIL">
-                                <link>/adminSetup/user/${userId}/view</link>
+                                <link>/adminSetup/users/${userId}</link>
                                 <labelArgument>${username}</labelArgument>
                                 <pages>
                                     <page name="auth.user.EDIT" type="DETAIL_CHILD" hideFavorite="true">
@@ -826,7 +826,7 @@
                     <page name="auth.user.groups" type="BASIC">
                         <pages>
                             <page name="auth.user.group.VIEW" type="DETAIL">
-                                <link>/adminSetup/user-groups/${userGroupId}/view</link>
+                                <link>/adminSetup/user-groups/${userGroupId}</link>
                                 <labelArgument>${userGroupName}</labelArgument>
                                 <pages>
                                     <page name="auth.user.group.EDIT" type="DETAIL_CHILD" hideFavorite="true">
@@ -843,7 +843,7 @@
                     <page name="auth.role.groups" type="BASIC">
                         <pages>
                             <page name="auth.role.group.VIEW" type="DETAIL">
-                                <link>/adminSetup/role-groups/${roleGroupId}/view</link>
+                                <link>/adminSetup/role-groups/${roleGroupId}</link>
                                 <labelArgument>${roleGroupName}</labelArgument>
                                 <pages>
                                     <page name="auth.role.group.EDIT" type="DETAIL_CHILD" hideFavorite="true">

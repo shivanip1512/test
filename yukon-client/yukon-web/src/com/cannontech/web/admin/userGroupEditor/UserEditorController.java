@@ -78,7 +78,7 @@ public class UserEditorController {
     private final static String key = "yukon.web.modules.adminSetup.auth.user.";
     
     /* VIEW PAGE */
-    @RequestMapping("user/{userId}/view")
+    @RequestMapping("users/{userId}")
     public String view(YukonUserContext userContext, ModelMap model, @PathVariable int userId) {
         
         LiteYukonUser lyu = yukonUserDao.getLiteYukonUser(userId);
@@ -96,7 +96,7 @@ public class UserEditorController {
     }
     
     /* EDIT PAGE */
-    @RequestMapping("user/{userId}/edit")
+    @RequestMapping("users/{userId}/edit")
     public String edit(YukonUserContext userContext, ModelMap model, @PathVariable int userId) {
         
         UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(userId);
@@ -106,7 +106,7 @@ public class UserEditorController {
         return "userGroupEditor/user.jsp";
     }
     
-    @RequestMapping("user/{userId}/remove-login-wait")
+    @RequestMapping("users/{userId}/remove-login-wait")
     public void reset(HttpServletResponse resp, @PathVariable int userId, YukonUserContext userContext) {
         
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
@@ -116,7 +116,7 @@ public class UserEditorController {
     }
     
     /* Unlock User */
-    @RequestMapping("user/{userId}/unlock")
+    @RequestMapping("users/{userId}/unlock")
     public String unlock(ModelMap model, FlashScope flash, @PathVariable int userId) {
         
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
@@ -127,7 +127,7 @@ public class UserEditorController {
     }
     
     /* Update User */
-    @RequestMapping(value="user/{userId}", method=RequestMethod.POST, params="update")
+    @RequestMapping(value="users/{userId}", method=RequestMethod.POST, params="update")
     public String update(YukonUserContext userContext, 
             @ModelAttribute User user, BindingResult result, ModelMap model, FlashScope flash) {
         
@@ -170,7 +170,7 @@ public class UserEditorController {
     }
     
     /* Delete User */
-    @RequestMapping(value="user/{userId}", method=RequestMethod.POST, params="delete")
+    @RequestMapping(value="users/{userId}", method=RequestMethod.POST, params="delete")
     public String delete(ModelMap model, @ModelAttribute User user, FlashScope flash, YukonUserContext userContext) {
         
         if (userContext.getYukonUser().getUserID() == user.getUserId()) {
@@ -181,10 +181,10 @@ public class UserEditorController {
         yukonUserDao.deleteUser(user.getUserId());
         flash.setConfirm(new YukonMessageSourceResolvable(key + "delete.success", user.getUsername()));
         
-        return "redirect:/adminSetup/userEditor/home";
+        return "redirect:/adminSetup/users-groups/home";
     }
     
-    @RequestMapping(value="user/{userId}/change-password", method=RequestMethod.POST)
+    @RequestMapping(value="users/{userId}/change-password", method=RequestMethod.POST)
     public @ResponseBody List<String> changePassword(HttpServletResponse resp, YukonUserContext userContext, 
             FlashScope flash, @PathVariable int userId, @ModelAttribute Password password, BindingResult result) {
         
@@ -214,7 +214,7 @@ public class UserEditorController {
     
     private String redirectToView(ModelMap model, int userId) {
         model.clear();
-        return "redirect:/adminSetup/user/" + userId + "/view";
+        return "redirect:/adminSetup/users/" + userId + "";
     }
     
     @InitBinder
