@@ -25,18 +25,22 @@ import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.google.common.collect.Lists;
 
 public class ZoneDtoHelper {
-    private ZoneService zoneService;
-    private PaoDao paoDao;
-    private PointDao pointDao;
-    private FilterCacheFactory filterCacheFactory;
+    
+    @Autowired private ZoneService zoneService;
+    @Autowired private PaoDao paoDao;
+    @Autowired private PointDao pointDao;
+    @Autowired private FilterCacheFactory filterCacheFactory;
     
     public AbstractZone getAbstractZoneFromZoneId(int zoneId, LiteYukonUser user) {
+        
         Zone zone = zoneService.getZoneById(zoneId);
         AbstractZone zoneDto = getAbstractZoneFromZone(zone, user);
+        
         return zoneDto;
     }
     
     public AbstractZone getAbstractZoneFromZone(Zone zone, LiteYukonUser user) {
+        
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
         AbstractZone zoneDto = AbstractZone.create(zone);
         
@@ -56,6 +60,7 @@ public class ZoneDtoHelper {
     }
     
     public List<ZoneType> getAvailableChildZoneTypesFromParentZoneType(ZoneType parentZoneType) {
+        
         List<ZoneType> availableZoneTypes = Lists.newArrayListWithExpectedSize(3);
         if (parentZoneType == ZoneType.GANG_OPERATED) {
             availableZoneTypes =
@@ -66,10 +71,12 @@ public class ZoneDtoHelper {
         } else {
             availableZoneTypes.add(ZoneType.SINGLE_PHASE);
         }
+        
         return availableZoneTypes;
     }
     
     public List<Phase> getAvailableChildPhasesFromParentZone(AbstractZone parentZone) {
+        
         List<Phase> availableZonePhases = Lists.newArrayListWithExpectedSize(3);
         if (parentZone.getZoneType() == ZoneType.SINGLE_PHASE) {
             Phase parentPhase = ((AbstractZoneNotThreePhase)parentZone).getRegulator().getPhase();
@@ -77,10 +84,12 @@ public class ZoneDtoHelper {
         } else {
             availableZonePhases.addAll(Lists.newArrayList(Phase.getRealPhases()));
         }
+        
         return availableZonePhases;
     }
-
+    
     private List<ZoneAssignmentCapBankRow> getBankAssignmentList(int zoneId, CapControlCache cache) {
+        
         List<ZoneAssignmentCapBankRow> rows = Lists.newArrayList();
         List<CapBankToZoneMapping> banksToZone = zoneService.getCapBankToZoneMapping(zoneId);
         
@@ -93,10 +102,11 @@ public class ZoneDtoHelper {
     }
     
     public ZoneAssignmentCapBankRow getBankAssignmentFromMapping(CapBankToZoneMapping bankToZone, CapControlCache cache) {
+        
         int bankId = bankToZone.getDeviceId();
         CapBankDevice bank = cache.getCapBankDevice(bankId);
         LiteYukonPAObject controller = paoDao.getLiteYukonPAO(bank.getControlDeviceID());
-
+        
         ZoneAssignmentCapBankRow row = new ZoneAssignmentCapBankRow();
         row.setId(bankId);        
         row.setName(bank.getCcName());
@@ -106,8 +116,9 @@ public class ZoneDtoHelper {
         
         return row;
     }
-
+    
     private List<ZoneAssignmentPointRow> getPointAssignmentList(int zoneId) {
+        
         List<PointToZoneMapping> pointsToZone = zoneService.getPointToZoneMapping(zoneId);
         
         List<ZoneAssignmentPointRow> rows = Lists.newArrayList();
@@ -120,10 +131,11 @@ public class ZoneDtoHelper {
     }
     
     public ZoneAssignmentPointRow getPointAssignmentFromMapping(PointToZoneMapping pointToZone) {
+        
         int pointId = pointToZone.getPointId();
         LitePoint point = pointDao.getLitePoint(pointId);
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(point.getPaobjectID());
-
+        
         ZoneAssignmentPointRow row = new ZoneAssignmentPointRow();
         row.setId(pointId);        
         row.setName(point.getPointName());
@@ -134,24 +146,5 @@ public class ZoneDtoHelper {
         
         return row;
     }
-
-    @Autowired
-    public void setFilterCacheFactory(FilterCacheFactory filterCacheFactory) {
-        this.filterCacheFactory = filterCacheFactory;
-    }
     
-    @Autowired
-    public void setZoneService(ZoneService zoneService) {
-        this.zoneService = zoneService;
-    }
-    
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-    
-    @Autowired
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
-    }
 }

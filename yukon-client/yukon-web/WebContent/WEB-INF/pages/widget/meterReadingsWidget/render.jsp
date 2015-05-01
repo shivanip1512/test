@@ -110,14 +110,22 @@ function ${widgetParameters.widgetId}_updateDifference() {
 <div id="${widgetParameters.widgetId}_results" class="buffered"></div>
 <cti:url var="meterPointsUrl" value="/common/pao/${device.deviceId}/points"/>
 <div class="action-area">
-    <a href="${meterPointsUrl}" class="fl"><i:inline key="yukon.web.defaults.showAll"/></a>
-    <a href="javascript:void(0);" class="fl" style="margin-left: 10px;" id="readings_quick_view"><i:inline key="yukon.web.defaults.quickView"/></a>
+    <a href="${meterPointsUrl}">
+        <i:inline key="yukon.common.viewAll"/>
+    </a>&nbsp;|&nbsp;
+    <a href="javascript:void(0);" 
+        data-popup=".js-readings-quick-view" data-popup-toggle>
+        <i:inline key="yukon.common.quickView"/>
+    </a>
     <tags:widgetActionUpdate hide="${!readable}" method="read" nameKey="readNow" 
             container="${widgetParameters.widgetId}_results" icon="icon-read" classes="M0"/>
 </div>
 
 <%--TODO make this into a tag --%>
-<i:simplePopup id="poinvalues-quickview" titleKey="components.dialog.devicePoints.title" arguments="${deviceName}" on="#readings_quick_view" options="{'modal' : false, 'width' : 600, 'height' : 500}">
+<cti:msg2 var="title" key="components.dialog.devicePoints.title" arguments="${deviceName}"/>
+<div class="dn js-readings-quick-view" 
+    data-title="${title}"
+    data-width="600" data-height="500">
     <table class="compact-results-table row-highlighting">
         <thead>
             <tr>
@@ -143,4 +151,4 @@ function ${widgetParameters.widgetId}_updateDifference() {
          </c:forEach>
         </tbody>
     </table>
-</i:simplePopup>
+</div>

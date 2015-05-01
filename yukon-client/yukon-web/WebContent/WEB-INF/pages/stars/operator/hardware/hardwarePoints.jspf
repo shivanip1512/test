@@ -62,7 +62,7 @@ $(function() {
             <cti:param name="deviceId" value="${hardware.deviceId}"/>
             <cti:param name="accountId" value="${accountId}"/>
         </cti:url>
-        <a href="${pointsUrl}"><i:inline key="yukon.web.defaults.showAll"/></a>
+        <a href="${pointsUrl}"><i:inline key="yukon.common.showAll"/></a>
         <c:if test="${hardware.hardwareType.rf or hardware.hardwareType.twoWayPlcLcr 
                         or hardware.hardwareType.ecobee}">
             <cti:button id="readNow" nameKey="readNow" busy="true" icon="icon-read"/>

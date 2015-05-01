@@ -146,6 +146,7 @@
 <entry key="yukon.common.preview">Preview</entry>
 <entry key="yukon.common.progress">Progress</entry>
 <entry key="yukon.common.quality">Quality</entry>
+<entry key="yukon.common.quickView">Quick View</entry>
 <entry key="yukon.common.range">Range</entry>
 <entry key="yukon.common.requestFailed">Request Failed</entry>
 <entry key="yukon.common.result">Result</entry>
@@ -165,6 +166,7 @@
 <entry key="yukon.common.selectGroups">select device group(s)...</entry>
 <entry key="yukon.common.selectGroups.title">Select Device Group(s)</entry>
 <entry key="yukon.common.serialNumber">Serial Number</entry>
+<entry key="yukon.common.showAll">Show All</entry>
 <entry key="yukon.common.status">Status</entry>
 <entry key="yukon.common.start">Start</entry>
 <entry key="yukon.common.successful">Successful</entry>
@@ -196,6 +198,7 @@
 <entry key="yukon.common.unavailable">Unavailable</entry>
 <entry key="yukon.common.value">State/Value</entry>
 <entry key="yukon.common.view">view</entry>
+<entry key="yukon.common.viewAll">View All</entry>
 <entry key="yukon.common.warning">Warning</entry>
 <entry key="yukon.common.warningMessage">Warning: {0}</entry>
 <entry key="yukon.web.chooseAccountNumbers">Choose Account Numbers</entry>
@@ -239,10 +242,8 @@
 <entry key="yukon.web.defaults.on">On</entry>
 <entry key="yukon.web.defaults.or">or</entry>
 <entry key="yukon.web.defaults.pageTitle">Energy Services Operations Center</entry>
-<entry key="yukon.web.defaults.quickView">Quick View</entry>
 <entry key="yukon.web.defaults.remove">Remove</entry>
 <entry key="yukon.web.defaults.selector.selectOne">-- Select One --</entry>
-<entry key="yukon.web.defaults.showAll">Show All</entry>
 <entry key="yukon.web.defaults.start">Start</entry>
 <entry key="yukon.web.defaults.stop">Stop</entry>
 <entry key="yukon.web.defaults.upload">Upload</entry>

@@ -10477,8 +10477,13 @@
                 <decimalplaces value="4" />
             </point>
         </points>
+        <attributes>
+            <attribute name="POWER_FACTOR">
+                <basicLookup point="Power Factor"/>
+            </attribute>
+        </attributes>
     </pao>
-
+    
     <pao id="CAP_CONTROL_SPECIAL_AREA">
         <displayName>Special Area</displayName>
         <displayGroup>Volt/Var</displayGroup>

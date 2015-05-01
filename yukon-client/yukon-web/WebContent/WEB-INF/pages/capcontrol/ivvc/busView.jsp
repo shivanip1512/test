@@ -1,33 +1,33 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="capcontrol" page="ivvc.busView">
     
     <cti:includeScript link="/JavaScript/yukon.table.dynamic.js"/>
     
-    <%@include file="/capcontrol/capcontrolHeader.jspf"%>
+    <%@ include file="/capcontrol/capcontrolHeader.jspf" %>
     
     <cti:url var="zoneCreatorUrl" value="/capcontrol/ivvc/wizard/zoneCreationWizard">
         <cti:param name="subBusId" value="${subBusId}"/>
     </cti:url>
-
+    
     <cti:msg2 key="yukon.web.modules.capcontrol.ivvc.zoneWizard.creation.title" var="zoneCreationWizardTitle"/>
     <cti:msg2 key="yukon.web.modules.capcontrol.ivvc.zoneWizard.editor.title" var="zoneEditorWizardTitle"/>
-
+    
     <!-- Zone Wizard Dialog -->
     <tags:simpleDialog id="zoneWizardPopup"/>
-
+    
     <script type="text/javascript">
         function showZoneCreationWizard(url) {
             openSimpleDialog('zoneWizardPopup', url, "${zoneCreationWizardTitle}", null, 'get');
         }
-
+        
         function showZoneEditorWizard(url) {
             openSimpleDialog('zoneWizardPopup', url, "${zoneEditorWizardTitle}", null, 'get');
         }
@@ -53,25 +53,25 @@
                 }
             };
         }
-
+        
         if (${hasSubBusControl}) {
             addCommandMenuBehavior('a[id^="subbusState"]');
         }
-     </script>
-
+    </script>
+    
     <c:set var="dividerAdded" value="false" />
-
+    
     <c:if test="${hasSubBusControl}">
-
+        
         <div class="js-page-additional-actions dn">
             <c:if test="${not dividerAdded}">
                 <li class="divider">
                 <c:set var="dividerAdded" value="true" />
             </c:if>
-            <cm:dropdownOption linkId="subbusState_${subBusId}" key="defaults.actions" icon="icon-cog" href="javascript:void(0);" />
+            <cm:dropdownOption linkId="subbusState_${subBusId}" key="defaults.actions" icon="icon-cog"/>
         </div>
     </c:if>
-
+    
     <c:if test="${hasEditingRole}">
         <div class="js-page-additional-actions dn">
             <cti:url var="editUrl" value="/editor/cbcBase.jsf">
@@ -87,7 +87,7 @@
     </c:if>
     <div class="column-12-12">
         <div class="column one">
-        
+            
             <tags:boxContainer2 nameKey="zoneList" hideEnabled="true" showInitially="true">
                 <table class="zoneListTable compact-results-table">
                     <thead>
@@ -140,39 +140,13 @@
                 </c:if>
                 
             </tags:boxContainer2>
-
-            <tags:boxContainer2 nameKey="busDetail" hideEnabled="true" showInitially="true">
+            
+            <tags:sectionContainer2 nameKey="busDetail">
                     
-                <table class="compact-results-table">
-                    <tr>
-                        <td><i:inline key=".busDetail.table.state"/></td>
-                        <td class="row-icon">
-                            <capTags:warningImg paoId="${subBusId}" type="SUBBUS"/>
-                        </td>
-                        <td class="state-indicator">
-                            <span class="box state-box js-cc-state-updater" data-pao-id="${subBusId}">&nbsp;</span>
-                            <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" value="SUBBUS/${subBusId}/STATE_FLAGS"/>
-                        </td>
-                        <%-- State --%>
-                        <td class="wsnw">
-                           <cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="STATE"/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><i:inline key=".busDetail.table.volts"/></td>
-                        <td></td>
-                        <td></td>
-                        <td>
-                            <cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="VOLTS"/>
-                            <cti:classUpdater type="SUBBUS" identifier="${subBusId}/VOLT_QUALITY">
-                                <cti:icon icon="icon-bullet-red" classes="thin fn M0"/>
-                            </cti:classUpdater>
-                        </td>
-                    </tr>
+                <table class="full-width striped">
+                    <%-- KVAR --%>
                     <tr>
                         <td><i:inline key=".busDetail.table.kvar"/></td>
-                        <td></td>
-                        <td></td>
                         <td>
                             <cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="KVAR_LOAD"/>
                             <cti:classUpdater type="SUBBUS" identifier="${subBusId}/KVAR_LOAD_QUALITY">
@@ -180,10 +154,9 @@
                             </cti:classUpdater>
                         </td>
                     </tr>
+                    <%-- KW --%>
                     <tr>
                         <td><i:inline key=".busDetail.table.kw"/></td>
-                        <td></td>
-                        <td></td>
                         <td>
                             <cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="KW"/>
                             <cti:classUpdater type="SUBBUS" identifier="${subBusId}/WATT_QUALITY">
@@ -191,33 +164,36 @@
                             </cti:classUpdater>
                         </td>
                     </tr>
-                    <c:forEach items="${allSubBusPoints}" var="point">
-                        <tr>
-                            <td>${fn:escapeXml(point.pointName)}</td>
-                            <td></td>
-                            <td class="state-indicator">
-                                <cti:pointStatus pointId="${point.liteID}"/>
-                            </td>
-                            <td>
-                                <cti:pointValue pointId="${point.liteID}" format="VALUE"/>
-                            </td>
-                        </tr>
-                    </c:forEach>
+                    <%-- POWER FACTOR --%>
+                    <tr>
+                        <td>${fn:escapeXml(pfPoint.pointName)}</td>
+                        <td>
+                            <cti:pointValue pointId="${pfPoint.liteID}" format="VALUE"/>
+                        </td>
+                    </tr>
                 </table>
-                    <div class="action-area">
-                    <a href="javascript:void(0);" class="js-show-strategy-details">Strategy Details</a>
+                <div class="action-area">
+                    <a href="javascript:void(0);" data-popup=".js-strategy-details" data-popup-toggle>
+                        <i:inline key=".busDetail.strategy.settings"/>
+                    </a>
                 </div>
-            </tags:boxContainer2>
+            </tags:sectionContainer2>
             
             <cti:msg2 key=".strategyDetails.title" arguments="${strategyName}" var="strategyTitle"/>
-            <tags:simplePopup id="strategyDetails" title="${strategyTitle}" on=".js-show-strategy-details">
-                <table class="compact-results-table" >
+            <div class="dn js-strategy-details" data-title="${strategyTitle}">
+                <c:if test="${hasEditingRole}">
+                    <cti:url var="url" value="/editor/cbcBase.jsf">
+                        <cti:param name="type" value="5"/>
+                        <cti:param name="itemid" value="${strategyId}"/>
+                    </cti:url>
+                    <i:inline key=".strategyDetails.link"/><a href="${url}">${fn:escapeXml(strategyName)}</a>
+                </c:if>
+                <table class="full-width striped" >
                     <thead>
                         <tr>
-                            <th><i:inline key=".strategyDetails.table.setting"/></th>
+                            <th></th>
                             <th><i:inline key=".strategyDetails.table.peak"/></th>
                             <th><i:inline key=".strategyDetails.table.offPeak"/></th>
-                            <th><i:inline key=".strategyDetails.table.units"/></th>
                         </tr>
                     </thead>
                     <tfoot></tfoot>
@@ -225,24 +201,19 @@
                         <c:forEach var="setting" items="${strategySettings}">
                             <tr>
                                 <td>${fn:escapeXml(setting.type.displayName)}</td>
-                                <td>${fn:escapeXml(setting.peakValue)}</td>
-                                <td>${fn:escapeXml(setting.offPeakValue)}</td>
-                                <td>${fn:escapeXml(setting.type.units)}</td>
+                                <td>
+                                    ${fn:escapeXml(setting.peakValue)}&nbsp;
+                                    ${fn:escapeXml(setting.type.units)}
+                                </td>
+                                <td>
+                                    ${fn:escapeXml(setting.offPeakValue)}&nbsp;
+                                    ${fn:escapeXml(setting.type.units)}
+                                </td>
                             </tr>
                         </c:forEach>
                     </tbody>
                 </table>
-                <div class="actionArea">
-                    <cti:button nameKey="close" onclick="$('#strategyDetails').dialog('close');"/>
-                    <c:if test="${hasEditingRole}">
-                        <cti:url var="editorUrl" value="/editor/cbcBase.jsf">
-                            <cti:param name="type" value="5"/>
-                            <cti:param name="itemid" value="${strategyId}"/>
-                        </cti:url>
-                        <cti:button nameKey="edit" icon="icon-pencil" href="${editorUrl}"/>
-                    </c:if>
-                </div>
-            </tags:simplePopup>
+            </div>
         </div>
         
         <div class="column two nogutter">
