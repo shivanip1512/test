@@ -49,7 +49,7 @@
             <cti:csrfToken/>
             <input type="hidden" name="deleteJobId" value="${editJobId}">
         </form>
-                            
+        
         <%-- TABS --%>
         <cti:tabs>
                 

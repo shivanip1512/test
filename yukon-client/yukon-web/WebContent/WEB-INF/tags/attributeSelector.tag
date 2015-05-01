@@ -24,7 +24,9 @@
     <c:if test="${not empty pageScope.multipleSize}">multiple size="${pageScope.multipleSize}"</c:if>
     name="${name}">
     
-    <option value="">${selectOneLabel}</option>
+    <c:if test="${empty pageScope.multipleSize}"><%-- Only use dummy option for single select. --%>
+        <option value="">${selectOneLabel}</option>
+    </c:if>
     
     <c:choose>
         <c:when test="${pageScope.groupItems}">
