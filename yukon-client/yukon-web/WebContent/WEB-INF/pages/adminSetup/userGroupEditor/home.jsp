@@ -20,7 +20,7 @@
     data-title="<cti:msg2 key=".user.new"/>"
     data-event="yukon:admin:user:create"
     data-ok-text="<cti:msg2 key="yukon.common.save"/>"
-    data-url="<cti:url value="/adminSetup/new-user-dialog"/>"></div>
+    data-url="<cti:url value="/admin/new-user-dialog"/>"></div>
 
 <div class="dn js-new-user-group-dialog"
     data-dialog
@@ -28,7 +28,7 @@
     data-title="<cti:msg2 key=".user.group.new"/>"
     data-event="yukon:admin:user:group:create"
     data-ok-text="<cti:msg2 key="yukon.common.save"/>"
-    data-url="<cti:url value="/adminSetup/new-user-group-dialog"/>"></div>
+    data-url="<cti:url value="/admin/new-user-group-dialog"/>"></div>
 
 <div class="dn js-new-role-group-dialog"
     data-dialog
@@ -36,7 +36,7 @@
     data-title="<cti:msg2 key=".role.group.new"/>"
     data-event="yukon:admin:role:group:create"
     data-ok-text="<cti:msg2 key="yukon.common.save"/>"
-    data-url="<cti:url value="/adminSetup/new-role-group-dialog"/>"></div>
+    data-url="<cti:url value="/admin/new-role-group-dialog"/>"></div>
 
 <div id="tabs" class="section">
     <ul>

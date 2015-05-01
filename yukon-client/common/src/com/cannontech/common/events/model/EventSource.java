@@ -11,7 +11,7 @@ public enum EventSource implements Displayable {
     API,                // EIM web-services
     CONSUMER,           // WEB-INF/pages/stars/consumer
     ACCOUNT_IMPORTER,   // account importer
-    OPERATOR,           // WEB-INF/adminSetup/userGroupEditor
+    OPERATOR,           // WEB-INF/admin/userGroupEditor
                         // WEB-INF/pages/stars/operator
     
     

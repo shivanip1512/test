@@ -13,7 +13,7 @@
 
 <c:set var="legend"><cti:icon icon="icon-asterisk-orange"/>&nbsp;<i:inline key=".legend"/></c:set>
 
-<cti:url var="url" value="/adminSetup/role-groups/${roleGroupId}/roles/${roleId}"/>
+<cti:url var="url" value="/admin/role-groups/${roleGroupId}/roles/${roleId}"/>
 <form:form action="${url}" method="post">
     <cti:csrfToken/>
     <input type="hidden" name="roleId" value="${roleId}">
@@ -62,7 +62,7 @@
         <cti:button nameKey="delete" id="deleteButton" name="delete" type="submit" classes="delete"/>
         <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${roleGroupName}"/>
     </c:if>
-    <cti:url var="url" value="/adminSetup/role-groups/${roleGroupId}"/>
+    <cti:url var="url" value="/admin/role-groups/${roleGroupId}"/>
     <cti:button nameKey="cancel" href="${url}"/>
 
 </form:form>

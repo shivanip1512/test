@@ -933,7 +933,7 @@
 
     <servlet-mapping>
         <servlet-name>adminSetup</servlet-name>
-        <url-pattern>/adminSetup/*</url-pattern>
+        <url-pattern>/admin/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

@@ -57,7 +57,7 @@ import com.cannontech.web.stars.dr.operator.validator.LoginValidatorFactory;
 @Controller
 public class OperatorLoginController {
     
-    private final String baseUrl = "/adminSetup/energyCompany/operatorLogin";
+    private final String baseUrl = "/admin/energyCompany/operatorLogin";
     
     @Autowired private AuthenticationService authenticationService;
     @Autowired private ECMappingDao ecMappingDao;

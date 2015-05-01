@@ -8,7 +8,7 @@
 
 <cti:standardPage module="adminSetup" page="createEnergyCompany">
 
-    <cti:url var="createUrl" value="/adminSetup/energyCompany/create"/>
+    <cti:url var="createUrl" value="/admin/energyCompany/create"/>
     <form:form commandName="energyCompanyDto" action="${createUrl}">
         <cti:csrfToken/>
         <form:hidden path="operatorUserGroupIds" id="operatorUserGroupIds"/>

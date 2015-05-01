@@ -10,7 +10,7 @@
 
     <div class="clearfix box">
         <div class="category fl">
-            <cti:url var="viewUrl" value="/adminSetup/config/security/view"/>
+            <cti:url var="viewUrl" value="/admin/config/security/view"/>
             <a href="${viewUrl}" class="icon icon-32 fl icon-32-key"></a>
             <div class="box fl meta">
                 <div><a class="title" href="${viewUrl}"><i:inline key="yukon.common.setting.subcategory.SECURITY"/></a></div>

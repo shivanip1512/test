@@ -27,7 +27,7 @@ yukon.admin.role.group = (function () {
                 var groupId = $('#role-group-id').val();
                 
                 $.ajax({
-                    url: yukon.url('/adminSetup/role-groups/' + groupId + '/add-user-groups'),
+                    url: yukon.url('/admin/role-groups/' + groupId + '/add-user-groups'),
                     type: 'post',
                     data: {
                         groups: userGroupIds

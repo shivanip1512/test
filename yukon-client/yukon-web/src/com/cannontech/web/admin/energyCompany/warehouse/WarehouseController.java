@@ -45,7 +45,7 @@ public class WarehouseController {
     @Autowired private StarsEventLogService starsEventLogService;
     @Autowired private WarehouseService warehouseService;
     
-    private final String baseUrl = "/adminSetup/energyCompany/warehouse";
+    private final String baseUrl = "/admin/energyCompany/warehouse";
     
     /* Main page */
     @RequestMapping("home")

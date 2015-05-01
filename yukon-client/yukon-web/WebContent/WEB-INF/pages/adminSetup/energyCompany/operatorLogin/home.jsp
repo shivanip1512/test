@@ -19,7 +19,7 @@
              var data = {};
              data.userId = userId;
              data.ecId = ecId;
-             $.post(yukon.url('/adminSetup/energyCompany/operatorLogin/remove'), data).done(function(data) {  
+             $.post(yukon.url('/admin/energyCompany/operatorLogin/remove'), data).done(function(data) {  
                  $("#"+userId).hide();
            });
         });

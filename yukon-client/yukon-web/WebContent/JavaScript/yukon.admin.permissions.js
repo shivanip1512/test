@@ -51,7 +51,7 @@ yukon.admin.permission = (function () {
                 debug.log('remove permission on:' + paoId);
                 
                 $.ajax({
-                    url: yukon.url('/adminSetup/' + _data.type + '/' + _data.id + '/permissions/remove'),
+                    url: yukon.url('/admin/' + _data.type + '/' + _data.id + '/permissions/remove'),
                     data: {
                         permission: permission,
                         paoId: paoId
@@ -76,7 +76,7 @@ yukon.admin.permission = (function () {
                 var table = picker.pickerId == 'lmPicker' ? '#lm-table' : '#vv-table';
                 
                 $.ajax({
-                    url: yukon.url('/adminSetup/' + _data.type + '/' + _data.id + '/permissions/add'),
+                    url: yukon.url('/admin/' + _data.type + '/' + _data.id + '/permissions/add'),
                     data: {
                         'paoIds': paoIds,
                         permission: permission

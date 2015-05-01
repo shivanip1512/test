@@ -27,7 +27,7 @@ yukon.admin.user.group = (function () {
                 var groupId = $('#user-group-id').val();
                 
                 $.ajax({
-                    url: yukon.url('/adminSetup/user-groups/' + groupId + '/add-users'),
+                    url: yukon.url('/admin/user-groups/' + groupId + '/add-users'),
                     type: 'post',
                     data: {
                         users: users
@@ -44,7 +44,7 @@ yukon.admin.user.group = (function () {
                 var groupId = $('#user-group-id').val();
                 
                 $.ajax({
-                    url: yukon.url('/adminSetup/user-groups/' + groupId + '/add-role-groups'),
+                    url: yukon.url('/admin/user-groups/' + groupId + '/add-role-groups'),
                     type: 'post',
                     data: {
                         groups: groups

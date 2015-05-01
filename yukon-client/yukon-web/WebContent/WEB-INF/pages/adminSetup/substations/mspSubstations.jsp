@@ -4,7 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths="yukon.web.modules.adminSetup.substationToRouteMapping">
-<cti:url var="submitUrl" value="/adminSetup/substations/routemapping/multispeak/add"/>  
+<cti:url var="submitUrl" value="/admin/substations/routemapping/multispeak/add"/>  
 <form action="${submitUrl}" method="post">
     <cti:csrfToken/>
 

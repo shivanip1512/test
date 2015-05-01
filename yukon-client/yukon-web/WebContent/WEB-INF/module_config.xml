@@ -765,10 +765,10 @@
         <skin name="STANDARD" />
         <pages>
             <page name="config" type="BASIC">
-                <link>/adminSetup/config/view</link>
+                <link>/admin/config/view</link>
                 <pages>
                     <page name="config.category" type="BLANK">
-                        <link>/adminSetup/config/category</link>
+                        <link>/admin/config/category</link>
                         <labelArgument>${categoryName}</labelArgument>
                     </page>
                     <page name="config.themes" type="BLANK"/>
@@ -804,12 +804,12 @@
             </page>
             <page name="auth.home" type="BASIC">
                 <requireRoleProperty value="ADMIN_SUPER_USER"/>
-                <link>/adminSetup/users-groups/home</link>
+                <link>/admin/users-groups/home</link>
                 <pages>
                     <page name="auth.users" type="BASIC">
                         <pages>
                             <page name="auth.user.VIEW" type="DETAIL">
-                                <link>/adminSetup/users/${userId}</link>
+                                <link>/admin/users/${userId}</link>
                                 <labelArgument>${username}</labelArgument>
                                 <pages>
                                     <page name="auth.user.EDIT" type="DETAIL_CHILD" hideFavorite="true">
@@ -826,7 +826,7 @@
                     <page name="auth.user.groups" type="BASIC">
                         <pages>
                             <page name="auth.user.group.VIEW" type="DETAIL">
-                                <link>/adminSetup/user-groups/${userGroupId}</link>
+                                <link>/admin/user-groups/${userGroupId}</link>
                                 <labelArgument>${userGroupName}</labelArgument>
                                 <pages>
                                     <page name="auth.user.group.EDIT" type="DETAIL_CHILD" hideFavorite="true">
@@ -843,7 +843,7 @@
                     <page name="auth.role.groups" type="BASIC">
                         <pages>
                             <page name="auth.role.group.VIEW" type="DETAIL">
-                                <link>/adminSetup/role-groups/${roleGroupId}</link>
+                                <link>/admin/role-groups/${roleGroupId}</link>
                                 <labelArgument>${roleGroupName}</labelArgument>
                                 <pages>
                                     <page name="auth.role.group.EDIT" type="DETAIL_CHILD" hideFavorite="true">
@@ -860,27 +860,27 @@
             </page>
             <page name="maintenance" type="BASIC">
                 <requireRoleProperty value="ADMIN_SUPER_USER" />
-                <link>/adminSetup/maintenance/view</link>
+                <link>/admin/maintenance/view</link>
                 <pages>
                     <page name="maintenance.EDIT" type="DETAIL" hideFavorite="true">
-                        <link>/adminSetup/maintenance/edit</link>
+                        <link>/admin/maintenance/edit</link>
                         <labelArgument>${jobNameMsg}</labelArgument>
                     </page>
                 </pages>
             </page>
             <page name="home" type="BASIC">
-                <link>/adminSetup/energyCompany/home?ecId=${ecId}</link>
+                <link>/admin/energyCompany/home?ecId=${ecId}</link>
                 <pages>
                     <page name="createEnergyCompany" type="BASIC" hideFavorite="true">
-                        <link>/adminSetup/energyCompany/new</link>
+                        <link>/admin/energyCompany/new</link>
                     </page>
                     <page name="generalInfo.VIEW" type="DETAIL" navigationMenuRoot="true" contributeToMenu="true">
-                        <link>/adminSetup/energyCompany/general/view?ecId=${ecId}</link>
+                        <link>/admin/energyCompany/general/view?ecId=${ecId}</link>
                         <labelArgument>${energyCompanyName}</labelArgument>
                         <infoInclude>/WEB-INF/pages/adminSetup/energyCompany/ecInfoFragment.jsp</infoInclude>
                         <pages>
                             <page name="generalInfo.EDIT" type="DETAIL_CHILD" hideFavorite="true">
-                                <link>/adminSetup/energyCompany/generalInfo?ecId=${ecId}</link>
+                                <link>/admin/energyCompany/generalInfo?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
                             </page>
                             <page name="deleteEnergyCompanyConfirm" type="DETAIL_CHILD">
@@ -888,15 +888,15 @@
                             </page>
                             <page name="energyCompanySettings" type="BASIC" contributeToMenu="true">
                                 <requireCanEditEnergyCompany/>
-                                <link>/adminSetup/energyCompany/settings/view?ecId=${ecId}</link>
+                                <link>/admin/energyCompany/settings/view?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
                             </page>
                             <page name="operatorLogin.home" type="DETAIL_CHILD" contributeToMenu="true">
-                                <link>/adminSetup/energyCompany/operatorLogin/home?ecId=${ecId}</link>
+                                <link>/admin/energyCompany/operatorLogin/home?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
                                 <pages>
                                     <page name="operatorLogin.VIEW" type="DETAIL">
-                                        <link>/adminSetup/energyCompany/operatorLogin/view?operatorLoginId=${operatorLogin.userId}&amp;ecId=${ecId}</link>
+                                        <link>/admin/energyCompany/operatorLogin/view?operatorLoginId=${operatorLogin.userId}&amp;ecId=${ecId}</link>
                                         <labelArgument>${operatorLogin.username}</labelArgument>
                                         <pages>
                                             <page name="operatorLogin.EDIT" type="DETAIL_CHILD" hideFavorite="true">
@@ -909,88 +909,88 @@
                                 </pages>
                             </page>
                             <page name="applianceCategory.list" type="DETAIL_CHILD" contributeToMenu="true">
-                                <link>/adminSetup/energyCompany/applianceCategory/list?ecId=${ecId}</link>
+                                <link>/admin/energyCompany/applianceCategory/list?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
                                 <pages>
                                     <page name="applianceCategory.VIEW" type="DETAIL">
-                                        <link>/adminSetup/energyCompany/applianceCategory/view?ecId=${ecId}&amp;applianceCategoryId=${applianceCategory.applianceCategoryId}</link>
+                                        <link>/admin/energyCompany/applianceCategory/view?ecId=${ecId}&amp;applianceCategoryId=${applianceCategory.applianceCategoryId}</link>
                                         <labelArgument>${applianceCategory.categoryLabel}</labelArgument>
                                         <pages>
                                             <page name="applianceCategory.EDIT" type="DETAIL_CHILD" hideFavorite="true">
-                                                <link>/adminSetup/energyCompany/applianceCategory/edit?ecId=${ecId}&amp;applianceCategoryId=${applianceCategory.applianceCategoryId}</link>
+                                                <link>/admin/energyCompany/applianceCategory/edit?ecId=${ecId}&amp;applianceCategoryId=${applianceCategory.applianceCategoryId}</link>
                                                 <labelArgument>${applianceCategory.categoryLabel}</labelArgument>
                                             </page>
                                         </pages>
                                     </page>
                                     <page name="applianceCategory.CREATE" type="BASIC" hideFavorite="true">
-                                        <link>/adminSetup/energyCompany/applianceCategory/create?ecId=${ecId}</link>
+                                        <link>/admin/energyCompany/applianceCategory/create?ecId=${ecId}</link>
                                     </page>
                                 </pages>
                             </page>
                             <page name="applianceCategory.PROGRAMS" type="DETAIL_CHILD" contributeToMenu="true">
-                                <link>/adminSetup/energyCompany/applianceCategory/programs?ecId=${ecId}</link>
+                                <link>/admin/energyCompany/applianceCategory/programs?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
                             </page>
                             <page name="serviceCompany.list" type="DETAIL_CHILD" contributeToMenu="true">
                                 <requireRoleProperty value="OPERATOR_CONSUMER_INFO_HARDWARES, OPERATOR_CONSUMER_INFO_WORK_ORDERS"/>
-                                <link>/adminSetup/energyCompany/serviceCompany/list?ecId=${ecId}</link>
+                                <link>/admin/energyCompany/serviceCompany/list?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
                                 <pages>
                                     <page name="serviceCompany.VIEW" type="DETAIL" contributeToMenu="false">
-                                        <link>/adminSetup/energyCompany/serviceCompany/view?serviceCompanyId=${serviceCompany.companyId}&amp;ecId=${ecId}</link>
+                                        <link>/admin/energyCompany/serviceCompany/view?serviceCompanyId=${serviceCompany.companyId}&amp;ecId=${ecId}</link>
                                         <labelArgument>${serviceCompany.companyName}</labelArgument>
                                         <pages>
                                             <page name="serviceCompany.EDIT" type="DETAIL_CHILD" contributeToMenu="false" hideFavorite="true">
-                                                <link>/adminSetup/energyCompany/serviceCompany/edit?serviceCompany=${serviceCompanyId}</link>
+                                                <link>/admin/energyCompany/serviceCompany/edit?serviceCompany=${serviceCompanyId}</link>
                                                 <labelArgument>${serviceCompany.companyName}</labelArgument>
                                             </page>
                                         </pages>
                                     </page>
                                     <page name="serviceCompany.CREATE" type="DETAIL_CHILD" contributeToMenu="false" hideFavorite="true">
-                                        <link>/adminSetup/energyCompany/serviceCompany/create?ecId=${ecId}</link>
+                                        <link>/admin/energyCompany/serviceCompany/create?ecId=${ecId}</link>
                                     </page>
                                 </pages>
                             </page>
                             <page name="warehouse.home" type="DETAIL_CHILD" contributeToMenu="true">
                                 <requireRoleProperty value="ADMIN_MULTI_WAREHOUSE"/>
-                                <link>/adminSetup/energyCompany/warehouse/home?ecId=${ecId}</link>
+                                <link>/admin/energyCompany/warehouse/home?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
                                 <pages>
                                     <page name="warehouse.VIEW" type="DETAIL">
-                                        <link>/adminSetup/energyCompany/warehouse/view?warehouseId=${warehouseDto.warehouse.warehouseID}&amp;ecId=${ecId}</link>
+                                        <link>/admin/energyCompany/warehouse/view?warehouseId=${warehouseDto.warehouse.warehouseID}&amp;ecId=${ecId}</link>
                                         <labelArgument>${warehouseDto.warehouse.warehouseName}</labelArgument>
                                         <pages>
                                             <page name="warehouse.EDIT" type="DETAIL_CHILD" hideFavorite="true">
-                                                <link>/adminSetup/energyCompany/warehouse/edit?warehouseId=${warehouseId}</link>
+                                                <link>/admin/energyCompany/warehouse/edit?warehouseId=${warehouseId}</link>
                                                 <labelArgument>${warehouseDto.warehouse.warehouseName}</labelArgument>
                                             </page>
                                         </pages>
                                     </page>
                                     <page name="warehouse.CREATE" type="DETAIL" contributeToMenu="false" hideFavorite="true">
-                                        <link>/adminSetup/energyCompany/warehouse/create?id=${id}</link>
+                                        <link>/admin/energyCompany/warehouse/create?id=${id}</link>
                                     </page>
                                 </pages>
                             </page>
                             <page name="routesAndSubstations.VIEW" type="DETAIL_CHILD" contributeToMenu="true">
-                                <link>/adminSetup/energyCompany/routesAndSubstations/view?ecId=${ecId}</link>
+                                <link>/admin/energyCompany/routesAndSubstations/view?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
                                 <pages>
                                     <page name="routesAndSubstations.EDIT" type="DETAIL_CHILD" hideFavorite="true">
-                                        <link>/adminSetup/energyCompany/routesAndSubstations/edit?ecId=${ecId}</link>
+                                        <link>/admin/energyCompany/routesAndSubstations/edit?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                     </page>
                                 </pages>
                             </page>
                             <page name="list.list" type="DETAIL_CHILD" contributeToMenu="true">
-                                <link>/adminSetup/energyCompany/list/list?ecId=${ecId}</link>
+                                <link>/admin/energyCompany/list/list?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
                                 <pages>
                                     <page name="list.VIEW" type="DETAIL">
-                                        <link>/adminSetup/energyCompany/list/view?ecId=${ecId}&amp;listId=${list.listId}</link>
+                                        <link>/admin/energyCompany/list/view?ecId=${ecId}&amp;listId=${list.listId}</link>
                                         <labelArgument>${list.type}</labelArgument>
                                         <pages>
                                             <page name="list.EDIT" type="DETAIL_CHILD" hideFavorite="true">
-                                                <link>/adminSetup/energyCompany/list/edit?ecId=${ecId}&amp;listId=${list.listId}</link>
+                                                <link>/admin/energyCompany/list/edit?ecId=${ecId}&amp;listId=${list.listId}</link>
                                                 <labelArgument>${list.type}</labelArgument>
                                             </page>
                                         </pages>
@@ -999,22 +999,22 @@
                             </page>
                             <page name="schedules.VIEW" type="DETAIL_CHILD" contributeToMenu="true">
                                 <requireRoleProperty value="OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT"/>
-                                <link>/adminSetup/energyCompany/schedules/view?ecId=${ecId}</link>
+                                <link>/admin/energyCompany/schedules/view?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
                                 <pages>
                                     <page name="schedules.EDIT" type="DETAIL_CHILD" hideFavorite="true">
-                                        <link>/adminSetup/energyCompany/schedules/edit?ecId=${ecId}&amp;type=${type}</link>
+                                        <link>/admin/energyCompany/schedules/edit?ecId=${ecId}&amp;type=${type}</link>
                                         <labelArgument>${typeStr}</labelArgument>
                                     </page>
                                 </pages>
                             </page>
                             <page name="settlements.list" type="DETAIL_CHILD" contributeToMenu="true">
                                 <requireRoleProperty value="ENABLE_SETTLEMENTS"/>
-                                <link>/adminSetup/energyCompany/settlement/list?ecId=${ecId}</link>
+                                <link>/admin/energyCompany/settlement/list?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
                                 <pages>
                                     <page name="settlements.EDIT" type="DETAIL">
-                                        <link>/adminSetup/energyCompany/settlement/edit?ecId=${ecId}</link>
+                                        <link>/admin/energyCompany/settlement/edit?ecId=${ecId}</link>
                                         <labelArgument>${settlementName}</labelArgument>
                                     </page>
                                 </pages>

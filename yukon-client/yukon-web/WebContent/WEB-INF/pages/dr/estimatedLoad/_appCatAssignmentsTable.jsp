@@ -29,7 +29,7 @@
                             <c:set var="appCat" value="${appCatAssignment.applianceCategory}"/>
                              <tr>
                                  <td>
-                                    <cti:url var="appCatUrl" value="/adminSetup/energyCompany/applianceCategory/view">
+                                    <cti:url var="appCatUrl" value="/admin/energyCompany/applianceCategory/view">
                                         <cti:param name="applianceCategoryId" value="${appCat.applianceCategoryId}"/>
                                         <cti:param name="ecId" value="${energyCompanyIds[appCat.applianceCategoryId]}"/>
                                     </cti:url>

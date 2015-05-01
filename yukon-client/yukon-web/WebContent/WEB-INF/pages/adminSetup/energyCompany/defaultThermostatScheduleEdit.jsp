@@ -77,7 +77,7 @@
                                 thermostatIds=""
                                 accountId=""
                                 temperatureUnit="${temperatureUnit}"
-                                actionPath="/adminSetup/energyCompany/schedules"
+                                actionPath="/admin/energyCompany/schedules"
                                 thermostatType="${schedule.thermostatType}"
                                 styleClass="vh stacked"
                                 customActions="true"
@@ -118,7 +118,7 @@
                                         thermostatIds="${thermostatIds}"
                                         accountId="${accountId}"
                                         temperatureUnit="${temperatureUnit}"
-                                        actionPath="/adminSetup/energyCompany/schedules/save?ecId=${ecId}"
+                                        actionPath="/admin/energyCompany/schedules/save?ecId=${ecId}"
                                         thermostatType="${thermostatType}"/>
                     </c:forEach>
                 </div>

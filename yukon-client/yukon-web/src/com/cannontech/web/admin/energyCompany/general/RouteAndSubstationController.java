@@ -205,7 +205,7 @@ public class RouteAndSubstationController {
      */
     @RequestMapping("createSubstation")
     public String createSubstation(YukonUserContext userContext, ModelMap modelMap) {
-        return "redirect:/adminSetup/substations/routeMapping/view";
+        return "redirect:/admin/substations/routeMapping/view";
     }
     
     private void setupModelMap(ModelMap modelMap, EnergyCompanyInfoFragment energyCompanyInfoFragment,

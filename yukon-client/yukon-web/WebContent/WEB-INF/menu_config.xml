@@ -276,7 +276,7 @@
         <permissions>
           <roleProperty name="ADMIN_SUPER_USER" />
         </permissions>
-        <link>/adminSetup/config/view</link>
+        <link>/admin/config/view</link>
       </option>
       <option name="energyCompany">
         <permissions>
@@ -285,16 +285,16 @@
             <roleProperty name="ADMIN_SUPER_USER" />
           </or>
         </permissions>
-        <link>/adminSetup/energyCompany/home</link>
+        <link>/admin/energyCompany/home</link>
       </option>
       <!-- <option name="jobs"> enable after these pages don't suck -->
-      <!-- <link>/adminSetup/jobsscheduler/active</link> -->
+      <!-- <link>/admin/jobsscheduler/active</link> -->
       <!-- </option> -->
       <option name="maintenance">
         <permissions>
           <roleProperty name="ADMIN_SUPER_USER" />
         </permissions>
-        <link>/adminSetup/maintenance/view</link>
+        <link>/admin/maintenance/view</link>
       </option>
       <option name="multispeak">
         <permissions>
@@ -303,13 +303,13 @@
         <link>/multispeak/setup/home</link>
       </option>
       <option name="substations">
-        <link>/adminSetup/substations/routeMapping/view</link>
+        <link>/admin/substations/routeMapping/view</link>
       </option>
       <option name="usersAndGroups">
         <permissions>
           <roleProperty name="ADMIN_SUPER_USER" />
         </permissions>
-        <link>/adminSetup/users-groups/home</link>
+        <link>/admin/users-groups/home</link>
       </option>
       <option name="reports" section="true">
         <permissions>

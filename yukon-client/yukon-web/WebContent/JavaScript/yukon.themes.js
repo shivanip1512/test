@@ -151,7 +151,7 @@ yukon.themes = (function () {
                     
                 imgPicker.dialog('close');
                 input.val(selected);
-                link.attr('href', yukon.url('/adminSetup/config/themes/imagePicker?category=logos&selected=' + selected));
+                link.attr('href', yukon.url('/admin/config/themes/imagePicker?category=logos&selected=' + selected));
                 link.find('img').attr('alt', selected).attr('src', yukon.url('/common/images/' + selected + '/thumb'));
             });
 

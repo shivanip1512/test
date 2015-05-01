@@ -10,7 +10,7 @@
             
             <td class="vat">
                 <div id="sub_element">
-                    <jsp:include page="/adminSetup/substations/routeMapping/viewSubstation">
+                    <jsp:include page="/admin/substations/routeMapping/viewSubstation">
                         <jsp:param name="view" value="" />
                     </jsp:include>
                 </div>
@@ -20,7 +20,7 @@
             
             <td class="vat">
                 <div id="route_element">
-                    <jsp:include page="/adminSetup/substations/routeMapping/viewRoute">
+                    <jsp:include page="/admin/substations/routeMapping/viewRoute">
                         <jsp:param name="view" value="" />
                     </jsp:include>
                 </div>

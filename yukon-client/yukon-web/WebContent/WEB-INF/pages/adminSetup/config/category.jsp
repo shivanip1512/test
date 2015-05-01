@@ -10,7 +10,7 @@
 <cti:standardPage module="adminSetup" page="config.category">
 
 <div class="dashboard">
-    <cti:url var="updateUrl" value="/adminSetup/config/update"/>
+    <cti:url var="updateUrl" value="/admin/config/update"/>
     <form:form action="${updateUrl}" id="settingsForm" method="post">
         <cti:csrfToken/>
         <form:hidden path="category"/>

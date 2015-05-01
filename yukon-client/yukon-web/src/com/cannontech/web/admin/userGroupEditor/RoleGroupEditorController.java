@@ -88,7 +88,7 @@ public class RoleGroupEditorController {
         authService.expireAllPasswords(roleGroup.getGroupID());
         flash.setConfirm(new YukonMessageSourceResolvable(key + "expiredAllPasswords"));
         
-        return "redirect:/adminSetup/role-groups/" + roleGroupId;
+        return "redirect:/admin/role-groups/" + roleGroupId;
     }
     
     /* UPDATE */
@@ -112,7 +112,7 @@ public class RoleGroupEditorController {
         
         flash.setConfirm(new YukonMessageSourceResolvable(key + "updateSuccessful"));
         
-        return "redirect:/adminSetup/role-groups/" + roleGroupId;
+        return "redirect:/admin/role-groups/" + roleGroupId;
     }
     
     /* DELETE */
@@ -122,7 +122,7 @@ public class RoleGroupEditorController {
         roleGroupDao.delete(roleGroupId);
         flash.setConfirm(new YukonMessageSourceResolvable(key + "deletedSuccessful"));
         
-        return "redirect:/adminSetup/users-groups/home";
+        return "redirect:/admin/users-groups/home";
     }
     
     /* ADD USER GROUPS */
@@ -160,7 +160,7 @@ public class RoleGroupEditorController {
         userGroupDao.deleteUserGroupToYukonGroupMappng(remove, roleGroupId);
         flash.setConfirm(new YukonMessageSourceResolvable(key + "removedSuccessful", userGroup.getUserGroupName()));
         
-        return "redirect:/adminSetup/role-groups/" + roleGroupId;
+        return "redirect:/admin/role-groups/" + roleGroupId;
     }
     
     /* ADD ROLE */
@@ -177,14 +177,14 @@ public class RoleGroupEditorController {
             model.addAttribute("roleGroupId", roleGroupId);
             flash.setError(new YukonMessageSourceResolvable(key + "roleConflictingWithUserGroup", 
                     role.name(), group.getGroupName()));
-            return "redirect:/adminSetup/role-groups/" + roleGroupId;
+            return "redirect:/admin/role-groups/" + roleGroupId;
         }
         
         model.addAttribute("roleGroupId", roleGroupId);
         model.addAttribute("roleId", newRoleId);
         flash.setConfirm(new YukonMessageSourceResolvable(key + "updateSuccessful"));
         
-        return "redirect:/adminSetup/role-groups/" + roleGroupId + "/roles/" + newRoleId;
+        return "redirect:/admin/role-groups/" + roleGroupId + "/roles/" + newRoleId;
     }
     
     private void setupModelMap(ModelMap model, LiteYukonGroup group) {

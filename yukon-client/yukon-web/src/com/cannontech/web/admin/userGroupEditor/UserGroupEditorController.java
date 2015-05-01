@@ -119,7 +119,7 @@ public class UserGroupEditorController {
         int userGroupId = userGroup.getLiteUserGroup().getUserGroupId();
         model.addAttribute("userGroupId", userGroupId);
         
-        return "redirect:/adminSetup/user-groups/" + userGroupId;
+        return "redirect:/admin/user-groups/" + userGroupId;
     }
     
     /* DELETE */
@@ -132,7 +132,7 @@ public class UserGroupEditorController {
         if (numberOfUsers > 0) {
             flash.setError(new YukonMessageSourceResolvable(groupKey + "usersCurrentlyAttached"));
             model.addAttribute("userGroupId", userGroupId);
-            return "redirect:/adminSetup/user-groups/" + userGroupId;
+            return "redirect:/admin/user-groups/" + userGroupId;
         }
         
         userGroupDao.delete(userGroupId);
@@ -177,7 +177,7 @@ public class UserGroupEditorController {
         yukonUserDao.removeUserFromUserGroup(remove);
         flash.setConfirm(new YukonMessageSourceResolvable(roleKey + "updateSuccessful"));
         
-        return "redirect:/adminSetup/user-groups/" + userGroupId;
+        return "redirect:/admin/user-groups/" + userGroupId;
     }
     
     /* ADD ROLE GROUPS */
@@ -217,7 +217,7 @@ public class UserGroupEditorController {
         flash.setConfirm(new YukonMessageSourceResolvable(groupKey + "updateSuccessful"));
         model.addAttribute("userGroupId", userGroupId);
         
-        return "redirect:/adminSetup/user-groups/" + userGroupId;
+        return "redirect:/admin/user-groups/" + userGroupId;
     }
     
     @InitBinder

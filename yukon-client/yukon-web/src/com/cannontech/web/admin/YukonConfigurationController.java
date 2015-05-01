@@ -161,11 +161,11 @@ public class YukonConfigurationController {
         
         /** Themes and Weather have a special editors */
         if (category == GlobalSettingSubCategory.THEMES) {
-            return "redirect:/adminSetup/config/themes";
+            return "redirect:/admin/config/themes";
         } else if (category == GlobalSettingSubCategory.WEATHER) {
-            return "redirect:/adminSetup/config/weather";
+            return "redirect:/admin/config/weather";
         } else if (category == GlobalSettingSubCategory.SECURITY) {
-            return "redirect:/adminSetup/config/security/view";
+            return "redirect:/admin/config/security/view";
         }
         
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
@@ -243,7 +243,7 @@ public class YukonConfigurationController {
         String categoryName = accessor.getMessage(category);
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.config.updateSuccessful", categoryName));
         setupModelMap(context, map, category);
-        return "redirect:/adminSetup/config/view";
+        return "redirect:/admin/config/view";
     }
     
     private List<GlobalSetting> adjustSettings(final GlobalSettingsEditorBean command ) throws ExecutionException {

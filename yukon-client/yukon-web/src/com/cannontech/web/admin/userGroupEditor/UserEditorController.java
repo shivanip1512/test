@@ -181,7 +181,7 @@ public class UserEditorController {
         yukonUserDao.deleteUser(user.getUserId());
         flash.setConfirm(new YukonMessageSourceResolvable(key + "delete.success", user.getUsername()));
         
-        return "redirect:/adminSetup/users-groups/home";
+        return "redirect:/admin/users-groups/home";
     }
     
     @RequestMapping(value="users/{userId}/change-password", method=RequestMethod.POST)
@@ -214,7 +214,7 @@ public class UserEditorController {
     
     private String redirectToView(ModelMap model, int userId) {
         model.clear();
-        return "redirect:/adminSetup/users/" + userId + "";
+        return "redirect:/admin/users/" + userId + "";
     }
     
     @InitBinder

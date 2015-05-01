@@ -152,7 +152,7 @@ public class ThemeController {
         
         themeDao.saveTheme(theme);
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.config.themes.created", theme.getName()));
-        return "redirect:/adminSetup/config/themes/" + theme.getThemeId();
+        return "redirect:/admin/config/themes/" + theme.getThemeId();
     }
     
     @RequestMapping(value="/config/themes/{id}", method=RequestMethod.PUT)
@@ -172,7 +172,7 @@ public class ThemeController {
             themeableResourceCache.reloadAll();
         }
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.config.themes.updated", theme.getName()));
-        return "redirect:/adminSetup/config/themes/" + theme.getThemeId();
+        return "redirect:/admin/config/themes/" + theme.getThemeId();
     }
     
     @RequestMapping(value="/config/themes/{id}", method=RequestMethod.DELETE)
@@ -180,7 +180,7 @@ public class ThemeController {
         themeDao.deleteTheme(id);
         
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.config.themes.deleted"));
-        return "redirect:/adminSetup/config/themes";
+        return "redirect:/admin/config/themes";
     }
     
     @RequestMapping(value="/config/themes/{id}/use", method=RequestMethod.GET)
@@ -188,7 +188,7 @@ public class ThemeController {
         themeDao.setCurrentTheme(id);
         themeableResourceCache.reloadAll();
         
-        return "redirect:/adminSetup/config/themes/" + id;
+        return "redirect:/admin/config/themes/" + id;
     }
     
     @RequestMapping("/config/themes/imagePicker")

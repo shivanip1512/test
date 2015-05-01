@@ -110,7 +110,7 @@ $(function() {
                                     <tfoot></tfoot>
                                     <tbody>
                                         <c:forEach var="company" items="${members}">
-                                            <cti:url value="/adminSetup/energyCompany/general/view" var="viewEcUrl">
+                                            <cti:url value="/admin/energyCompany/general/view" var="viewEcUrl">
                                                 <cti:param name="ecId" value="${company.energyCompanyId}"/>
                                             </cti:url>
                                             <tr>

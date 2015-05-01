@@ -14,7 +14,7 @@
 <div class="column-12-12 clearfix stacked-lg">
     <div class="column one">
         <tags:sectionContainer2 nameKey="infoContainer">
-            <cti:url var="url" value="/adminSetup/user-groups/${userGroupId}"/>
+            <cti:url var="url" value="/admin/user-groups/${userGroupId}"/>
             <form:form commandName="userGroup" action="${url}" method="post">
                 <cti:csrfToken/>
                 <form:hidden id="user-group-id" path="userGroupId"/>
@@ -27,7 +27,7 @@
                 <cti:displayForPageEditModes modes="VIEW">
                     <c:if test="${showPermissions}">
                         <div class="action-area">
-                            <cti:url var="url" value="/adminSetup/user-groups/${userGroupId}/permissions"/>
+                            <cti:url var="url" value="/admin/user-groups/${userGroupId}/permissions"/>
                             <a href="${url}"><i:inline key=".permissions.view"/></a>
                         </div>
                     </c:if>
@@ -41,11 +41,11 @@
                                  classes="delete"/>
                              <d:confirm on="#delete-btn" nameKey="confirmDelete" argument="${userGroupName}"/>
                         </c:if>
-                        <cti:url var="url" value="/adminSetup/user-groups/${userGroupId}"/>
+                        <cti:url var="url" value="/admin/user-groups/${userGroupId}"/>
                         <cti:button nameKey="cancel" href="${url}"/>
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">
-                        <cti:url var="url" value="/adminSetup/user-groups/${userGroupId}/edit"/>
+                        <cti:url var="url" value="/admin/user-groups/${userGroupId}/edit"/>
                         <cti:button nameKey="edit" icon="icon-pencil" href="${url}"/>
                     </cti:displayForPageEditModes>
                 </div>
@@ -71,7 +71,7 @@
                                             <ul class="groupedItem">
                                                 <c:forEach var="roleGroupPair" items="${category.value}">
                                                     <li>
-                                                        <cti:url var="url" value="/adminSetup/role-groups/${roleGroupPair.group.groupID}"/>
+                                                        <cti:url var="url" value="/admin/role-groups/${roleGroupPair.group.groupID}"/>
                                                         <i:inline key="${roleGroupPair.role}"/>
                                                         &nbsp;<a href="${url}" class="detail wsnw">(${fn:escapeXml(roleGroupPair.group)})</a>
                                                     </li>
@@ -96,11 +96,11 @@
 <tags:sectionContainer2 nameKey="users" styleClass="stacked-lg">
     <c:choose>
         <c:when test="${fn:length(users.resultList) > 0}">
-            <cti:url var="url" value="/adminSetup/user-groups/${userGroupId}/remove-user"/>
+            <cti:url var="url" value="/admin/user-groups/${userGroupId}/remove-user"/>
             <form action="${url}" method="post">
                 <cti:csrfToken/>
                 <input type="hidden" name="userGroupId" value="${userGroupId}">
-                <cti:url var="url" value="/adminSetup/user-groups/${userGroupId}/users"/>
+                <cti:url var="url" value="/admin/user-groups/${userGroupId}/users"/>
                 <div data-url="${url}">
                     <%@ include file="users.jsp" %>
                 </div>
@@ -121,7 +121,7 @@
 <tags:sectionContainer2 nameKey="role.groups" styleClass="stacked">
     <c:choose>
         <c:when test="${!empty groups}">
-            <cti:url var="url" value="/adminSetup/user-groups/${userGroupId}/remove-role-group"/>
+            <cti:url var="url" value="/admin/user-groups/${userGroupId}/remove-role-group"/>
             <form action="${url}" method="post">
                 <cti:csrfToken/>
                 <input type="hidden" name="userGroupId" value="${userGroupId}">
@@ -136,7 +136,7 @@
                     <tfoot></tfoot>
                     <tbody>
                         <c:forEach var="group" items="${groups}">
-                            <cti:url var="url" value="/adminSetup/role-groups/${group.groupID}"/>
+                            <cti:url var="url" value="/admin/role-groups/${group.groupID}"/>
                             <tr>
                                 <td><a href="${url}">${fn:escapeXml(group.groupName)}</a></td>
                                 <td>${fn:escapeXml(group.groupDescription)}</td>

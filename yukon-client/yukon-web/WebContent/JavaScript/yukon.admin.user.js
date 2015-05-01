@@ -22,7 +22,7 @@ yukon.admin.user = (function () {
             
             /** User clicked 'remove login wait' button. */
             $(document).on('click', '.js-remove-login-wait', function (ev) {
-                $.ajax(yukon.url('/adminSetup/users/' + $(this).data('userId') + '/remove-login-wait'))
+                $.ajax(yukon.url('/admin/users/' + $(this).data('userId') + '/remove-login-wait'))
                 .done(function () {
                     $('#login-throttle').hide();
                 });

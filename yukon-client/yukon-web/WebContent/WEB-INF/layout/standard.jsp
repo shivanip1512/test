@@ -84,7 +84,7 @@
                             <cm:dropdown triggerClasses="b-user-menu fl" icon="icon-user"
                                 label="${fn:escapeXml(displayName)}" type="button">
                                 <cti:checkRolesAndProperties value="ADMIN_SUPER_USER">
-                                    <cti:url var="url" value="/adminSetup/users/${sessionScope.YUKON_USER.userID}"/>
+                                    <cti:url var="url" value="/admin/users/${sessionScope.YUKON_USER.userID}"/>
                                     <cm:dropdownOption icon="icon-user-edit" href="${url}">
                                         <cti:msg2 key="yukon.common.user.editor"/>
                                     </cm:dropdownOption>

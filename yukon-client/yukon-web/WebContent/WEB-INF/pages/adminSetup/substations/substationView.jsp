@@ -5,9 +5,9 @@
 
 <cti:msgScope paths="yukon.web.modules.adminSetup.substationToRouteMapping">
 
-<cti:url var="routeUrl" value="/adminSetup/substations/routeMapping/viewRoute" />
-<cti:url var="subUrl" value="/adminSetup/substations/routeMapping/edit" />
-<cti:url var="removeAllUrl" value="/adminSetup/substations/routeMapping/removeAll">
+<cti:url var="routeUrl" value="/admin/substations/routeMapping/viewRoute" />
+<cti:url var="subUrl" value="/admin/substations/routeMapping/edit" />
+<cti:url var="removeAllUrl" value="/admin/substations/routeMapping/removeAll">
     <cti:param name="removeAll" value=""/>
 </cti:url>
 
@@ -56,7 +56,7 @@
             
             <c:if test="${hasVendorId}"> 
                 
-                <cti:url var="mspAddUrl" value="/adminSetup/substations/routemapping/multispeak/choose"/>
+                <cti:url var="mspAddUrl" value="/admin/substations/routemapping/multispeak/choose"/>
                 <cti:button id="mspAddButton" type="button" label="MSP" onclick="SubstationToRouteMappings_disableInputs(true);openSimpleDialog('mspAddDialog', '${mspAddUrl}', 'Choose Substations');"/>
             </c:if>
     

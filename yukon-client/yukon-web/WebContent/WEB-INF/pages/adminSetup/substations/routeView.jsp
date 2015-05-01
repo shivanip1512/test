@@ -4,9 +4,9 @@
 
 <cti:msgScope paths="yukon.web.modules.adminSetup.substationToRouteMapping">
 
-<cti:url var="routeUrl" value="/adminSetup/substations/routeMapping/viewRoute" />
-<cti:url var="deleteUrl" value="/adminSetup/substations/routeMapping/removeRoute" />
-<cti:url var="updateUrl" value="/adminSetup/substations/routeMapping/update" />
+<cti:url var="routeUrl" value="/admin/substations/routeMapping/viewRoute" />
+<cti:url var="deleteUrl" value="/admin/substations/routeMapping/removeRoute" />
+<cti:url var="updateUrl" value="/admin/substations/routeMapping/update" />
 
 <b>Assigned Routes</b>
 <form name="routeform" class="pr" action="${routeUrl}" method="post">

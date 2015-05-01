@@ -6,7 +6,7 @@
 
 <cti:standardPage module="adminSetup" page="maintenance">
 
-<c:url value="/adminSetup/maintenance/toggleJobEnabledAjax" var="toggleJobAjaxUrl"/>
+<c:url value="/admin/maintenance/toggleJobEnabledAjax" var="toggleJobAjaxUrl"/>
 
 <script>
 $(function(){
@@ -43,7 +43,7 @@ $(function(){
 					<c:forEach var="job" items="${jobs}">
 						<cti:msg2 var="jobNameMsg" key=".${job.beanName}.title"/>
 						<tr>
-							<cti:url var="editScheduleDetailsUrl" value="/adminSetup/maintenance/edit" >
+							<cti:url var="editScheduleDetailsUrl" value="/admin/maintenance/edit" >
 								<cti:param name="jobId" value="${job.id}"/>
 							</cti:url>
 							<td>

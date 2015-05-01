@@ -44,9 +44,9 @@
     />
     <div class="clearfix">
         <div class="category fl">
-            <a href="<cti:url value="/adminSetup/config/themes"/>" class="icon icon-32 fl icon-32-brush"></a>
+            <a href="<cti:url value="/admin/config/themes"/>" class="icon icon-32 fl icon-32-brush"></a>
             <div class="fl meta">
-                <div><a class="title" href="<cti:url value="/adminSetup/config/themes"/>"><i:inline key="yukon.common.setting.subcategory.THEMES"/></a></div>
+                <div><a class="title" href="<cti:url value="/admin/config/themes"/>"><i:inline key="yukon.common.setting.subcategory.THEMES"/></a></div>
                 <div class="detail"><i:inline key="yukon.common.setting.subcategory.THEMES.description"/></div>
             </div>
         </div>
@@ -83,7 +83,7 @@
                                 </div>
                                 <div class="dib fl">
                                     <div>
-                                        <a class="dib" href="<cti:url value="/adminSetup/config/themes/${theme.themeId}"/>">${fn:escapeXml(theme.name)}</a>
+                                        <a class="dib" href="<cti:url value="/admin/config/themes/${theme.themeId}"/>">${fn:escapeXml(theme.name)}</a>
                                     </div>
                                     <div>
                                         <c:if test="${theme.currentTheme}">
@@ -96,7 +96,7 @@
                     </c:forEach>
                     <li>
                         <div class="page-action-area">
-                            <cti:url var="createUrl" value="/adminSetup/config/themes/create"/>
+                            <cti:url var="createUrl" value="/admin/config/themes/create"/>
                             <cti:button nameKey="create" icon="icon-plus-green" href="${createUrl}"/>
                         </div>
                     </li>
@@ -108,11 +108,11 @@
             <tags:sectionContainer2 nameKey="settings">
                 
                 <c:if test="${mode == 'EDIT'}">
-                    <cti:url var="action" value="/adminSetup/config/themes/${command.themeId}"/>
+                    <cti:url var="action" value="/admin/config/themes/${command.themeId}"/>
                     <c:set var="method" value="PUT"/>
                 </c:if>
                 <c:if test="${mode == 'CREATE'}">
-                    <cti:url var="action" value="/adminSetup/config/themes/"/>
+                    <cti:url var="action" value="/admin/config/themes/"/>
                     <c:set var="method" value="POST"/>
                 </c:if>
                 
@@ -284,12 +284,12 @@
                     
                     <div class="page-action-area">
                         <c:if test="${mode == 'VIEW' and !command.currentTheme}">
-                            <cti:url value="/adminSetup/config/themes/${command.themeId}/use" var="useUrl"/>
+                            <cti:url value="/admin/config/themes/${command.themeId}/use" var="useUrl"/>
                             <cti:button nameKey="use" icon="icon-tick" href="${useUrl}"/>
                         </c:if>
                         
                         <c:if test="${command.editable and mode == 'VIEW'}">
-                            <cti:url value="/adminSetup/config/themes/${command.themeId}/edit" var="editUrl"/>
+                            <cti:url value="/admin/config/themes/${command.themeId}/edit" var="editUrl"/>
                             <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
                         </c:if>
                         
@@ -300,12 +300,12 @@
                                 <cti:button id="b-delete" nameKey="delete" classes="delete"/>
                             </c:if>
                             
-                            <cti:url value="/adminSetup/config/themes/${cancelId}" var="cancelUrl"/>
+                            <cti:url value="/admin/config/themes/${cancelId}" var="cancelUrl"/>
                             <cti:button nameKey="cancel" href="${cancelUrl}"/>
                         </c:if>
                         
                         <c:if test="${mode == 'VIEW'}">
-                            <cti:url value="/adminSetup/config/themes/${command.themeId}/copy" var="copyUrl"/>
+                            <cti:url value="/admin/config/themes/${command.themeId}/copy" var="copyUrl"/>
                             <cti:button nameKey="copy" icon="icon-page-copy" href="${copyUrl}"/>
                         </c:if>
                     </div>

@@ -32,7 +32,7 @@ $(document).on('click', 'button.loginButton',function() {
                         <c:forEach items="${companies}" var="company" varStatus="status">
                             <tr>
                                 <td>
-                                    <cti:url var="viewUrl" value="/adminSetup/energyCompany/general/view">
+                                    <cti:url var="viewUrl" value="/admin/energyCompany/general/view">
                                         <cti:param name="ecId" value="${company.energyCompanyId}"/>
                                     </cti:url>
                                     <a href="${viewUrl}">
@@ -54,7 +54,7 @@ $(document).on('click', 'button.loginButton',function() {
                 
                 <cti:checkRolesAndProperties value="ADMIN_SUPER_USER">
                     <div class="action-area">
-                        <cti:url var="newUrl" value="/adminSetup/energyCompany/new"/>
+                        <cti:url var="newUrl" value="/admin/energyCompany/new"/>
                         <form action="${newUrl}">
                             <cti:button nameKey="create" icon="icon-plus-green" type="submit" name="create"/>
                         </form>

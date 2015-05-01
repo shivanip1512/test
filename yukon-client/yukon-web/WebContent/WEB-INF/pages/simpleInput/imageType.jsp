@@ -11,7 +11,7 @@
     <c:when test="${empty param.mode or param.mode != 'VIEW'}">
         <input type="hidden" <tags:attributeHelper name="id" value="${param.id}"/> name="${status.expression}" value="${status.value}">
         <div class="edit simple-input-image" <tags:attributeHelper name="id" value="${param.id}"/>>
-            <cti:url var="url" value="/adminSetup/config/themes/imagePicker"><!-- TODO: put this somewhere common -->
+            <cti:url var="url" value="/admin/config/themes/imagePicker"><!-- TODO: put this somewhere common -->
                 <cti:param name="selected" value="${status.value}" />
                 <cti:param name="category" value="${inputType.category}" />
             </cti:url>

@@ -15,7 +15,7 @@
         <div class="category fl">
             <a href="weather" class="icon icon-32 fl icon-32-cloud2"></a>
             <div class="box fl meta">
-                <div><a class="title" href="<cti:url value="/adminSetup/config/weather"/>">
+                <div><a class="title" href="<cti:url value="/admin/config/weather"/>">
                     <i:inline key="yukon.common.setting.subcategory.WEATHER"/>
                 </a></div>
                 <div class="detail"><i:inline key="yukon.common.setting.subcategory.WEATHER.description"/></div>

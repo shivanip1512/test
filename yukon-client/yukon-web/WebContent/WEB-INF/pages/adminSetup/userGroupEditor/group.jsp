@@ -17,7 +17,7 @@
 
     <div class="column one">
         <tags:sectionContainer2 nameKey="infoContainer">
-            <cti:url var="url" value="/adminSetup/role-groups/${groupId}"/>
+            <cti:url var="url" value="/admin/role-groups/${groupId}"/>
             <form:form commandName="group" action="${url}" method="post">
                 <cti:csrfToken/>
                 <form:hidden path="groupID"/>
@@ -43,13 +43,13 @@
                         <cti:button nameKey="save" name="update" type="submit" classes="primary action"/>
                         <cti:button nameKey="delete" id="delete-btn" name="delete" type="submit" classes="delete"/>
                         <d:confirm on="#delete-btn" nameKey="confirmDelete" argument="${groupName}"/>
-                        <cti:url var="url" value="/adminSetup/role-groups/${groupId}"/>
+                        <cti:url var="url" value="/admin/role-groups/${groupId}"/>
                         <cti:button nameKey="cancel" href="${url}"/>
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">
-                        <cti:url var="url" value="/adminSetup/role-groups/${groupId}/edit"/>
+                        <cti:url var="url" value="/admin/role-groups/${groupId}/edit"/>
                         <cti:button nameKey="edit" icon="icon-pencil" href="${url}"/>
-                        <cti:url var="url" value="/adminSetup/role-groups/${groupId}/expire-passwords"/>
+                        <cti:url var="url" value="/admin/role-groups/${groupId}/expire-passwords"/>
                         <cti:button nameKey="expireAllPasswords" id="expire-passwords-btn" href="${url}"/>
                         <d:confirm on="#expire-passwords-btn" nameKey="confirmExpireAllPasswords" argument="${groupName}"/>
                     </cti:displayForPageEditModes>
@@ -73,7 +73,7 @@
                                     <li><span class="group"><cti:formatObject value="${category.key}"/></span>
                                         <ul class="groupedItem">
                                             <c:forEach var="role" items="${category.value}">
-                                                <cti:url var="url" value="/adminSetup/role-groups/${roleGroupId}/roles/${role.roleId}"/>
+                                                <cti:url var="url" value="/admin/role-groups/${roleGroupId}/roles/${role.roleId}"/>
                                                 <li><a href="${url}"><i:inline key="${role}"/></a></li>
                                             </c:forEach>
                                         </ul>
@@ -84,7 +84,7 @@
                     </c:otherwise>
                 </c:choose>
                 <div class="action-area">
-                    <form action="<cti:url value="/adminSetup/role-groups/${roleGroupId}/add-role"/>" method="post">
+                    <form action="<cti:url value="/admin/role-groups/${roleGroupId}/add-role"/>" method="post">
                         <cti:csrfToken/>
                         <cti:button nameKey="add" type="submit" icon="icon-add"/>
                         <select name="newRoleId">
@@ -110,7 +110,7 @@
 <tags:sectionContainer2 nameKey="groupsContainer">
     <c:choose>
         <c:when test="${!empty userGroups}">
-            <cti:url var="url" value="/adminSetup/role-groups/${roleGroupId}/remove-user-group"/>
+            <cti:url var="url" value="/admin/role-groups/${roleGroupId}/remove-user-group"/>
             <form action="${url}" method="post">
                 <cti:csrfToken/>
                 <table class="full-width striped dashed with-form-controls">
@@ -124,7 +124,7 @@
                     <tfoot></tfoot>
                     <tbody>
                         <c:forEach items="${userGroups}" var="userGroup">
-                            <cti:url var="url" value="/adminSetup/user-groups/${userGroup.userGroupId}"/>
+                            <cti:url var="url" value="/admin/user-groups/${userGroup.userGroupId}"/>
                             <tr>
                                 <td><a href="${url}">${fn:escapeXml(userGroup.userGroupName)}</a></td>
                                 <td>${fn:escapeXml(userGroup.userGroupDescription)}</td>

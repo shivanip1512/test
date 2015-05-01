@@ -395,7 +395,7 @@ public class EstimatedLoadController {
                     String appCatName = applianceCategoryDao.getById(appCatId).getDisplayName();
                     
                     String linkText = accessor.getMessage(elKey + "link.applianceCategory", appCatName);
-                    String linkValue = "/adminSetup/energyCompany/applianceCategory/view?";
+                    String linkValue = "/admin/energyCompany/applianceCategory/view?";
                     linkValue += "ecId=" + ecId;
                     linkValue += "&applianceCategoryId=" + appCatId;
                     
