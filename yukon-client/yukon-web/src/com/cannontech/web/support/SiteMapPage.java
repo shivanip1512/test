@@ -191,7 +191,7 @@ public enum SiteMapPage implements DisplayableEnum {
     FILE_EXPORT_HISTORY(SiteMapCategory.SUPPORT, "yukon.web.modules.support.fileExportHistory.pageName","/support/fileExportHistory/list",
             MatchStyle.all),
     THREAD_DUMP(SiteMapCategory.SUPPORT, "yukon.web.modules.support.threadDump.pageName", "/support/threadDump",
-            MatchStyle.all),
+            MatchStyle.all, YukonRole.OPERATOR_ADMINISTRATOR),
     ROUTE_USAGE(SiteMapCategory.SUPPORT, "yukon.web.modules.support.routeUsage.pageName", "/support/routeUsage",
             MatchStyle.all),
     DEVICE_DEFINITIONS(SiteMapCategory.SUPPORT, "yukon.web.menu.config.support.information.deviceDef", "/common/deviceDefinition.xml",
