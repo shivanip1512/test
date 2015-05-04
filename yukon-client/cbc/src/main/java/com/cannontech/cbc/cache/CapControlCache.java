@@ -34,6 +34,8 @@ public interface CapControlCache {
     
     StreamableCapObject getObject(int id);
     
+    List<SubBus> getAllBuses();
+    
     List<SubBus> getSubBusesBySubStation(SubStation substation);
     
     SubStation getSubstation(int substationId);

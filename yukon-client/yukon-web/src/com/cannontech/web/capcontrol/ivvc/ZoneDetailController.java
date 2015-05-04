@@ -1,5 +1,6 @@
 package com.cannontech.web.capcontrol.ivvc;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -48,8 +49,8 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.LazyList;
+import com.cannontech.common.util.TimeRange;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -76,6 +77,9 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.PaoIdentifierPropertyEditor;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.util.WebUtilityService;
+import com.cannontech.yukon.IDatabaseCache;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
@@ -85,21 +89,24 @@ import com.google.common.collect.Ordering;
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class ZoneDetailController {
 
-    @Autowired private FilterCacheFactory filterCacheFactory;
-    @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private ZoneService zoneService;
-    @Autowired private ZoneDtoHelper zoneDtoHelper;
-    @Autowired private VoltageRegulatorService voltageRegulatorService;
-    @Autowired private VoltageFlatnessGraphService voltageFlatnessGraphService;
-    @Autowired private PaoDao paoDao;
-    @Autowired private PointDao pointDao;
     @Autowired private CapControlCommandExecutor executor;
-    @Autowired private CcMonitorBankListDao ccMonitorBankListDao;
-    @Autowired private StrategyDao strategyDao;
-    @Autowired private ZoneDao zoneDao;
-    @Autowired private FlotChartService flotChartService;
     @Autowired private CapControlWebUtilsService capControlWebUtilsService;
+    @Autowired private CcMonitorBankListDao ccMonitorBankListDao;
     @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private FilterCacheFactory filterCacheFactory;
+    @Autowired private FlotChartService flotChartService;
+    @Autowired private IDatabaseCache dbCache;
+    @Autowired private PointDao pointDao;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private StrategyDao strategyDao;
+    @Autowired private VoltageFlatnessGraphService voltageFlatnessGraphService;
+    @Autowired private VoltageRegulatorService voltageRegulatorService;
+    @Autowired private WebUtilityService webUtil;
+    @Autowired private ZoneDao zoneDao;
+    @Autowired private ZoneDtoHelper zoneDtoHelper;
+    @Autowired private ZoneService zoneService;
+    
+    private static final TypeReference<TimeRange> rangeRef = new TypeReference<TimeRange>() {};
 
     public static class ZoneVoltageDeltas {
         private List<CapBankPointDelta> pointDeltas = LazyList
@@ -120,12 +127,23 @@ public class ZoneDetailController {
     }
 
     @RequestMapping("detail")
-    public String detail(ModelMap model, HttpServletRequest request, YukonUserContext userContext, int zoneId) {
-        setupDetails(model, request, userContext, zoneId);
+    public String detail(ModelMap model, HttpServletRequest req, YukonUserContext userContext, int zoneId) throws IOException {
+        setupDetails(model, userContext, zoneId);
 
         List<VoltageLimitedDeviceInfo> infos = ccMonitorBankListDao.getDeviceInfoByZoneId(zoneId);
         ZoneVoltagePointsHolder zoneVoltagePointsHolder = new ZoneVoltagePointsHolder(zoneId, infos);
         model.addAttribute("zoneVoltagePointsHolder", zoneVoltagePointsHolder);
+        
+        Map<String, Integer> hours = new HashMap<>();
+        for (TimeRange range : TimeRange.values()) {
+            hours.put(range.name(), range.getHours());
+        }
+        
+        model.addAttribute("ranges", TimeRange.values());
+        model.put("hours", hours);
+        
+        TimeRange range = webUtil.getYukonCookieValue(req, "ivvc-regualtor", "last-event-range", TimeRange.DAY_1, rangeRef);
+        model.addAttribute("lastRange", range);
 
         return "ivvc/zoneDetail.jsp";
     }
@@ -189,7 +207,7 @@ public class ZoneDetailController {
 
         StrategyLimitsHolder strategyLimitsHolder = strategyDao.getStrategyLimitsHolder(strategyId);
         for (VoltageLimitedDeviceInfo deviceInfo : zoneVoltagePointsHolder.getPoints()) {
-            /* If OverideStrategy is false, then simply assign the stragie's limits to our object.
+            /* If OverideStrategy is false, then simply assign the strategy's limits to our object.
              * This prevents having to write jsp and javascript code checking for this case and handling it
              * special (hence preventing client-side bugs). 
              */
@@ -299,7 +317,7 @@ public class ZoneDetailController {
         return Collections.emptyMap();
     }
     
-    private void setupDetails(ModelMap model, HttpServletRequest request, YukonUserContext userContext, int zoneId) {
+    private void setupDetails(ModelMap model, YukonUserContext userContext, int zoneId) {
         
         LiteYukonUser user = userContext.getYukonUser();
         
@@ -377,7 +395,8 @@ public class ZoneDetailController {
         Map<Phase, RegulatorToZoneMapping> regulators = abstractZone.getRegulators();
         Map<Phase, String> regulatorTypeMap = Maps.newHashMapWithExpectedSize(3);
         for (Entry<Phase, RegulatorToZoneMapping> entry : regulators.entrySet()) {
-            YukonPao regulatorPao = paoDao.getYukonPao(entry.getValue().getRegulatorId());
+            YukonPao regulatorPao = dbCache.getAllPaosMap().get(entry.getValue().getRegulatorId());
+                    
             PaoType regType = regulatorPao.getPaoIdentifier().getPaoType();
             String regTypeString = regType.getDbString();
             regulatorTypeMap.put(entry.getKey(), regTypeString);

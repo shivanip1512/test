@@ -84,4 +84,22 @@ public class RegulatorEventsDaoImpl implements RegulatorEventsDao {
         return events;
     }
     
+    @Override
+    public List<RegulatorEvent> getForIds(Iterable<Integer> regulatorIds, TimeRange range) {
+        
+        Duration hours = Duration.standardHours(range.getHours());
+        Instant since = Instant.now().minus(hours);
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT RegulatorEventId, RegulatorId, Timestamp, EventType, Phase, UserName");
+        sql.append("FROM RegulatorEvents");
+        sql.append("WHERE RegulatorId").in(regulatorIds);
+        sql.append("AND TimeStamp").gte(since);
+        sql.append("ORDER BY TimeStamp DESC");
+        
+        List<RegulatorEvent> events = yukonJdbcTemplate.query(sql, rowMapper);
+        
+        return events;
+    }
+    
 }

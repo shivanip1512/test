@@ -136,9 +136,9 @@
                     </tags:stepper>
                     <input type="hidden" value="0" id="regulator-events-last-update">
                     <div class="empty-list js-ivvc-events-empty">
-                        <i:inline key=".emptylist"/>
+                        <i:inline key=".events.emptylist"/>
                     </div>
-                    <div class="scroll-md dn js-ivvc-events-holder clear">
+                    <div class="scroll-md dn js-ivvc-events-holder stacked-md clear">
                         <table id="regulator-events" class="has-alerts full-width dashed stacked striped">
                             <thead></thead>
                             <tfoot></tfoot>

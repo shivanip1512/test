@@ -18,4 +18,6 @@ public interface RegulatorEventsDao {
      * Returns a list of events for the id that have occurred from time range until now.
      */
     List<RegulatorEvent> getForId(int id, TimeRange range);
+
+    List<RegulatorEvent> getForIds(Iterable<Integer> regulatorIds, TimeRange range);
 }

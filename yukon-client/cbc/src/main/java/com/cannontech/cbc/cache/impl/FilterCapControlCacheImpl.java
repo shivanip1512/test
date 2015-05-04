@@ -232,6 +232,20 @@ public class FilterCapControlCacheImpl implements CapControlCache {
         if (filter.valid(area)) return cache.getSubBus(subID);
         return null;
     }
+    
+    @Override
+    public List<SubBus> getAllBuses() {
+        
+        List<SubBus> result = new ArrayList<>();
+        for (Area area : cache.getAreas()) {
+            if (filter.valid(area)) {
+                result.addAll(cache.getSubBusesByArea(area.getCcId()));
+            }
+            
+        }
+        
+        return result;
+    }
 
     @Override
     public List<SubBus> getSubBusesByArea(int areaId) {

@@ -12,7 +12,7 @@
 <%@include file="/capcontrol/capcontrolHeader.jspf"%>
 
 <cti:includeScript link="/JavaScript/yukon.table.dynamic.js"/>
-<cti:includeScript link="/JavaScript/yukon.da.ivvc.js" />
+<cti:includeScript link="/JavaScript/yukon.da.zone.js" />
 <cti:includeScript link="/JavaScript/yukon.da.command.js" />
 
 <!-- Zone Wizard Dialog -->
@@ -24,38 +24,20 @@
     </cti:url>
 
     <cm:dropdownOption key=".otherActions.voltageDeltas" href="${zoneVoltageDeltasUrl}" icon="icon-control-equalizer" />
+    <cm:dropdownOption key="yukon.common.edit" classes="js-zone-editor" icon="icon-pencil" />
 </div>
 
-<div class="column-12-12">
+<div class="column-10-14">
     <div class="column one">
-        <tags:boxContainer2 nameKey="details" hideEnabled="true" showInitially="true">
-            <table class="compact-results-table has-alerts">
-                <thead>
-                <tr>
-                    <th></th>
-                    <th></th>
-                    <th><i:inline key=".details.table.name"/></th>
-                    <th><i:inline key=".details.table.type"/></th>
-                </tr>
-                </thead>
+        <tags:sectionContainer2 nameKey="details">
+        
+            <table class="compact-results-table has-alerts has-actions">
+                <thead></thead>
                 <tfoot></tfoot>
                 <tbody>
                 <tr>
                     <td><cti:icon icon="icon-blank"/></td>
                     <td><span class="strong-label-small"><i:inline key=".details.table.zone"/></span></td>
-                    <td>
-                        <c:if test="${hasEditingRole}">
-                            <cti:msg2 key="yukon.web.modules.capcontrol.ivvc.zoneWizard.editor.title" var="zoneWizardTitle"/>
-                            <cti:url var="zoneEditorUrl" value="/capcontrol/ivvc/wizard/zoneEditor">
-                                <cti:param name="zoneId" value="${zoneId}"/>
-                            </cti:url>
-                            <a href="javascript:void(0);" class="js-zone-editor" data-editor-url="${zoneEditorUrl}" data-editor-title="${zoneWizardTitle}">
-                        </c:if>
-                            ${fn:escapeXml(zoneName)}
-                        <c:if test="${hasEditingRole}">
-                            </a>
-                        </c:if>
-                    </td>
                     <td>
                             <i:inline key="yukon.web.modules.capcontrol.ivvc.zone.${zoneDto.zoneType}"/>
                     </td>
@@ -69,172 +51,37 @@
                         <td>
                             <span class="strong-label-small">
                                 <i:inline key=".details.table.regulator"/>
-                                <c:if test="${zoneDto.zoneType != gangOperated}"> - 
-                                    <i:inline key="${phaseKey}"/>
+                                <c:if test="${zoneDto.zoneType != gangOperated}"> 
+                                    - <i:inline key="${phaseKey}"/>
                                 </c:if>
                             </span>
                         </td>
                         <td>
-                            <cti:url var="editorUrl" value="/capcontrol/regulators/${regulatorIdMap[phaseKey]}" />
+                            <cti:url var="regulatorUrl" value="/capcontrol/regulators/${regulatorIdMap[phaseKey]}" />
 
-                            <c:if test="${hasEditingRole}">
-                                <a href="${editorUrl}">
-                            </c:if>
-                            ${fn:escapeXml(regulatorNameMap[phaseKey])}
-                            <c:if test="${hasEditingRole}">
-                                </a>
-                            </c:if>
-                        </td>
-                        <td>
-                            <i:inline key="yukon.web.modules.capcontrol.ivvc.regulator.${zoneDto.zoneType}"/>
+                            <a href="${regulatorUrl}">${fn:escapeXml(regulatorNameMap[phaseKey])}</a>
+                            
+                            <cm:dropdown data-pao-id="${regulatorIdMap[phaseKey]}" triggerClasses="fr">
+                                <cm:dropdownOption key=".scan.label" icon="icon-transmit-blue" classes="js-command-button" 
+                                    data-pao-id="${regulatorIdMap[phaseKey]}" data-command-id="${scanCommandHolder.commandId}" />
+                                <cm:dropdownOption key=".up.label" icon="icon-arrow-up-green" classes="js-command-button" 
+                                    data-pao-id="${regulatorIdMap[phaseKey]}" data-command-id="${tapUpCommandHolder.commandId}" />
+                                <cm:dropdownOption key=".down.label" icon="icon-arrow-down-orange" classes="js-command-button" 
+                                    data-pao-id="${regulatorIdMap[phaseKey]}" data-command-id="${tapDownCommandHolder.commandId}" />
+                                <cm:dropdownOption key=".enable.label" icon="icon-accept" classes="js-command-button" 
+                                    data-pao-id="${regulatorIdMap[phaseKey]}" data-command-id="${enableRemoteCommandHolder.commandId}" />
+                                <cm:dropdownOption key=".disable.label" icon="icon-delete" classes="js-command-button" 
+                                    data-pao-id="${regulatorIdMap[phaseKey]}" data-command-id="${disableRemoteCommandHolder.commandId}" />
+                            </cm:dropdown>
                         </td>
                     </tr>
                 </c:forEach>
                 </tbody>
             </table>
-        </tags:boxContainer2>
-        
-        <tags:boxContainer2 nameKey="actions" hideEnabled="true" showInitially="true" styleClass="regulatorActions">
-            <table class="compact-results-table">
-                <thead>
-                <tr>
-                    <c:if test="${zoneDto.zoneType != gangOperated}">
-                        <c:forEach items="${zoneDto.regulators}" var="regulator">
-                            <th><i:inline key=".details.table.phase.${regulator.key}"/></th>
-                        </c:forEach>
-                    </c:if>
-                </tr>
-                </thead>
-                <tfoot></tfoot>
-                <tbody>
-                <tr>
-                    <c:forEach items="${zoneDto.regulators}" var="regulator">
-                        <c:set var="phaseKey" value="${regulator.key}"/>
-                        <td>
-                            <ul class="button-stack" data-pao-id="${regulatorIdMap[phaseKey]}" >
-                                <li>
-                                    <cti:button renderMode="labeledImage" nameKey="scan" icon="icon-transmit-blue"
-                                        classes="js-command-button" data-command-id="${scanCommandHolder.commandId}"/>
-                                </li>
-                                <li>
-                                    <cti:button renderMode="labeledImage" nameKey="up" icon="icon-arrow-up-green"
-                                        classes="js-command-button" data-command-id="${tapUpCommandHolder.commandId}"/>
-                                </li>
-                                <li>
-                                    <cti:button renderMode="labeledImage" nameKey="down" icon="icon-arrow-down-orange"
-                                        classes="js-command-button" data-command-id="${tapDownCommandHolder.commandId}"/>
-                                </li>
-                                <li>
-                                    <cti:button renderMode="labeledImage" nameKey="enable" icon="icon-accept"
-                                        classes="js-command-button" data-command-id="${enableRemoteCommandHolder.commandId}"/>
-                                </li>
-                                <li>
-                                    <cti:button renderMode="labeledImage" nameKey="disable" icon="icon-delete"
-                                        classes="js-command-button" data-command-id="${disableRemoteCommandHolder.commandId}"/>
-                                </li>
-                            </ul>
-                        </td>
-                    </c:forEach>
-                </tr>
-                </tbody>
-            </table>
-        </tags:boxContainer2>
-        <c:choose>
-            <c:when test="${zoneDto.zoneType == threePhase}">
-                <table class="compact-results-table">
-                    <thead>
-                    <tr style="text-align: left;">
-                        <th><i:inline key=".attributes.name"/></th>
-                        <c:forEach items="${zoneDto.regulators}" var="regulator">
-                            <th><i:inline key=".attributes.phaseValue.${regulator.key}"/></th>
-                        </c:forEach>
-                    </tr>
-                    </thead>
-                    <tfoot></tfoot>
-                    <tbody>
-                    <c:set var="points" value="${regulatorPointMappingsMap[phaseA]}" />
-                    <c:if test="${empty points}">
-                        <c:set var="points" value="${regulatorPointMappingsMap[phaseAll]}" />
-                    </c:if>
-                    <c:forEach var="point" items="${points}">
-                        <tr>
-                            <td><i:inline key="${point.key}"/></td>
-                            <c:forEach items="${zoneDto.regulators}" var="regulator">
-                                <td>
-                                    <c:set var="pointId" value="${regulatorPointMappingsMap[regulator.key][point.key]}"/>
-                                    <c:choose>
-                                        <c:when test="${pointId > 0}">
-                                            <span data-tooltip="[data-point-updated='${pointId}']">
-                                                <cti:pointStatus pointId="${pointId}" statusPointOnly="true"/>
-                                                <cti:pointValue pointId="${pointId}" format="VALUE"/>
-                                                <cti:pointValue pointId="${pointId}" format="UNIT" unavailableValue=""/>
-                                                <cti:pointValue pointId="${pointId}" format="SHORT_QUALITY" unavailableValue=""/>
-                                            </span>
-                                            <div class="dn" data-point-updated="${pointId}">
-                                                <cti:pointValue pointId="${pointId}" format="DATE"/>
-                                            </div>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <i:inline key="yukon.web.defaults.dashes"/>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </td>
-                            </c:forEach>
-                        </tr>
-                    </c:forEach>
-                    <tr>
-                        <td><i:inline key=".attributes.voltChangePerTap"/></td>
-                       <c:forEach items="${zoneDto.regulators}" var="regulator">
-                            <c:set var="phaseKey" value="${regulator.key}" />
-                            <td><cti:dataUpdaterValue identifier="${regulatorIdMap[phaseKey]}/VOLT_CHANGE_PER_TAP" type="VOLTAGE_REGULATOR"/></td>
-                       </c:forEach>
-                    </tr>
-                    </tbody>
-                </table>
-            </c:when>
-            <c:otherwise>
-                <tags:boxContainer2 nameKey="attributes" hideEnabled="true" showInitially="true">
-                    <table class="compact-results-table">
-                        <thead></thead>
-                        <tfoot></tfoot>
-                        <tbody>
-                        <c:forEach items="${zoneDto.regulators}" var="regulator">
-                            <c:set var="phaseKey" value="${regulator.key}"/>
-                            <c:forEach var="point" items="${regulatorPointMappingsMap[phaseKey]}">
-                                <c:set var="pointId" value="${point.value}" />
-                                <tr>
-                                    <td><i:inline key="${point.key}"/></td>
-                                    <td>
-                                        <c:choose>
-                                            <c:when test="${point.value > 0}">
-                                                <span data-tooltip="[data-point-updated='${pointId}']">
-                                                    <cti:pointStatus pointId="${pointId}" statusPointOnly="true"/>
-                                                    <cti:pointValue pointId="${pointId}" format="VALUE"/>
-                                                    <cti:pointValue pointId="${pointId}" format="UNIT" unavailableValue=""/>
-                                                    <cti:pointValue pointId="${pointId}" format="SHORT_QUALITY" unavailableValue=""/>
-                                                </span>
-                                                <div class="dn" data-point-updated="${pointId}">
-                                                    <cti:pointValue pointId="${pointId}" format="DATE"/>
-                                                </div>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <i:inline key="yukon.web.defaults.dashes"/>
-                                            </c:otherwise>
-                                        </c:choose>
-                                   </td>
-                               </tr>
-                            </c:forEach>
-                            <tr>
-                                <td><i:inline key=".attributes.voltChangePerTap"/></td>
-                                <td><cti:dataUpdaterValue identifier="${regulatorIdMap[phaseKey]}/VOLT_CHANGE_PER_TAP" type="VOLTAGE_REGULATOR"/></td>
-                            </tr>
-                        </c:forEach>
-                        </tbody>
-                    </table>
-                </tags:boxContainer2>
-            </c:otherwise>
-        </c:choose>
-
+            <div class="action-area">
+                    <cti:button classes="js-zone-editor" nameKey="edit" icon="icon-pencil"/>
+                </div>
+        </tags:sectionContainer2>
     </div>
 
     <div class="column two nogutter">
@@ -262,50 +109,52 @@
                 </div>
             </cti:tab>
         </cti:tabs>
-        <tags:boxContainer2 nameKey="ivvcEvents" hideEnabled="true" showInitially="true">
-            <input id="ivvc-most-recent-update" type="hidden" value="${mostRecentDateTime}">
-            <div class="scroll-lg">
-
-                <c:set var="tableClass" value="" />
-                <c:if test="${empty events}">
-                    <span class="empty-list"> <i:inline key=".ivvcEvents.none"/> </span>
-                    <c:set var="tableClass" value="dn" />
-                </c:if>
-                <div>
-                    <div>
-                        <span class="notes"></span>
-                    </div>
-                </div>
-                <table id="ivvc-recent-events" class="compact-results-table ${tableClass}" data-timeout="${updaterDelay}" data-control-role="${hasControlRole}" data-bus-id="${subBusId}" data-zone-id="${zoneId}" >
-                    <thead>
-                        <tr id="recentEventsHeaderRow">
-                            <th><i:inline key=".ivvcEvents.deviceName"/></th>
-                            <th><i:inline key=".ivvcEvents.description"/></th>
-                            <th><i:inline key=".attributes.timestamp"/></th>
-                        </tr>
-                    </thead>
-                    <tfoot></tfoot>
-                    <tbody>
-                       <c:forEach var="ccEvent" items="${events}">
-                            <tr>
-                                <td class="js-device-name">${fn:escapeXml(ccEvent.deviceName)}</td>
-                                <td class="js-description">${fn:escapeXml(ccEvent.text)}</td>
-                                <td class="js-formatted-time"><cti:formatDate value="${ccEvent.dateTime}" type="BOTH"/></td>
-                            </tr>
-                       </c:forEach>
-                   </tbody>
-                </table>
-            </div>
-        </tags:boxContainer2>
     </div>
 </div>
-<div class="dn">
-    <table>
-    <tr id="ivvc-recent-events-template-row">
-        <td class="js-device-name"></td>
-        <td class="js-description"></td>
-        <td class="js-formatted-time"></td>
-    </tr>
-    </table>
+<div class="clear">
+    <tags:sectionContainer2 nameKey="ivvcEvents">
+        <tags:stepper id="ivvc-events-range" key=".events.shown" classes="fr stacked">
+            <c:forEach var="range" items="${ranges}">
+                <c:set var="selected" value="${range eq lastRange ? 'selected' : ''}"/>
+                <option value="${range}" ${selected}><cti:msg2 key="${range}"/></option>
+            </c:forEach>
+        </tags:stepper>
+        <input type="hidden" value="0" id="ivvc-events-last-update">
+        <div class="empty-list js-ivvc-events-empty">
+            <i:inline key=".events.emptylist"/>
+        </div>
+        <div class="scroll-md dn js-ivvc-events-holder stacked-md clear">
+            <table id="ivvc-events" class="has-alerts full-width dashed stacked striped">
+                <thead></thead>
+                <tfoot></tfoot>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div class="js-events-timeline clear" data-zone-id="${zoneId}"></div>
+    </tags:sectionContainer2>
 </div>
+<table class="dn">
+    <tr data-event-id="?" class="js-event-template">
+        <td><cti:icon icon="js-event-icon"/></td>
+        <td>
+            <div class="js-device-name"></div>
+        </td>
+        <td>
+            <div class="js-message"></div>
+        </td>
+        <td class="js-user"></td>
+        <td class="tar js-timestamp"></td>
+    </tr>
+</table>
+
+<input type="hidden" id="zone-id" value="${zoneId}"/>
+<cti:toJson object="${hours}" id="range-hours"/>
+
+<cti:msg2 var="editorTitle" key="yukon.web.modules.capcontrol.ivvc.zoneWizard.editor.title" />
+<cti:url var="editorUrl" value="/capcontrol/ivvc/wizard/zoneEditor">
+    <cti:param name="zoneId" value="${zoneId}"/>
+</cti:url>
+
+<div id="zone-editor-info" data-editor-url="${editorUrl}" data-editor-title="${editorTitle}"/></div>
 </cti:standardPage>
