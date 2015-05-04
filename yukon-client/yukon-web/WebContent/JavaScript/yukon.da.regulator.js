@@ -127,8 +127,6 @@ yukon.da.regulator = (function () {
                         body.append(row);
                     }
                     
-                    row.flash();
-                    
                     toAdd.push(event);
                 }
             });
