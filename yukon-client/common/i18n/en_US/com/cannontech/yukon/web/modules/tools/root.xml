@@ -206,6 +206,7 @@
     <entry key="yukon.web.modules.search.capcontrol.bank.summary"></entry>
     <entry key="yukon.web.modules.search.capcontrol.cbc.title">CBC: {0}</entry>
     <entry key="yukon.web.modules.search.capcontrol.cbc.summary"></entry>
+    <entry key="yukon.web.modules.search.capcontrol.regulator.VIEW.title">Regulator: {0}</entry>
     
     <entry key="yukon.web.modules.search.capcontrol.edit.CAPBANK.title">Cap Bank Editor: {0}</entry>
     <entry key="yukon.web.modules.search.capcontrol.edit.CAPBANK.summary"></entry>
