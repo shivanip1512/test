@@ -199,7 +199,10 @@ void ActiveMQConnectionManager::registerConsumer(const ActiveMQ::Queues::Inbound
 
     consumer->listener.reset(
             new ActiveMQ::MessageListener(
-                    boost::bind(&ActiveMQConnectionManager::onInboundMessage, this, inboundQueue, _1)));
+                    [=](const cms::Message *msg)
+                    {
+                        onInboundMessage(inboundQueue, msg);
+                    }));
 
     consumer->managedConsumer->setMessageListener(
             consumer->listener.get());
@@ -246,7 +249,7 @@ void ActiveMQConnectionManager::sendOutgoingMessages()
             CTILOG_DEBUG(dout, "Sending outgoing message for queue \"" << e->queue->name << "\" id " << reinterpret_cast<unsigned long>(e->queue));
         }
 
-        if( e->callback )
+        if( e->replyListener )
         {
             std::auto_ptr<TempQueueConsumerWithCallback> tempConsumer(new TempQueueConsumerWithCallback);
 
@@ -256,11 +259,14 @@ void ActiveMQConnectionManager::sendOutgoingMessages()
 
             message->setCMSReplyTo(tempConsumer->managedConsumer->getDestination());
 
-            tempConsumer->callback = *(e->callback);
+            tempConsumer->callback = e->replyListener->callback;
 
             tempConsumer->listener.reset(
                     new ActiveMQ::MessageListener(
-                            boost::bind(&ActiveMQConnectionManager::onTempQueueReply, this, _1)));
+                            [=](const cms::Message *msg)
+                            {
+                                onTempQueueReply(msg);
+                            }));
 
             tempConsumer->managedConsumer->setMessageListener(
                     tempConsumer->listener.get());
@@ -277,6 +283,13 @@ void ActiveMQConnectionManager::sendOutgoingMessages()
             _temporaryConsumers.insert(
                     destinationPhysicalName,
                     tempConsumer);
+
+            _temporaryExpirations.insert(
+                    std::make_pair(
+                            e->replyListener->expiration,
+                            ExpirationHandler{
+                                destinationPhysicalName,
+                                e->replyListener->timedOut }));
         }
 
         ActiveMQ::QueueProducer &queueProducer = getQueueProducer(*_producerSession, e->queue->name);
@@ -300,44 +313,38 @@ void ActiveMQConnectionManager::dispatchIncomingMessages()
         _newIncomingMessages.clear();
     }
 
-    IncomingPerQueue::const_iterator queueMsgs_itr = incomingMessages.begin();
-
-    const ActiveMQ::Queues::InboundQueue *queue = 0;
-    std::pair<CallbacksPerQueue::const_iterator, CallbacksPerQueue::const_iterator> queueCallbacks;
-
-    for( ; queueMsgs_itr != incomingMessages.end(); ++queueMsgs_itr )
+    for( const auto &inbound : incomingMessages )
     {
+        const auto &queue     = inbound.first;
+        const auto &messages  = inbound.second;
+
         if( debugActivityInfo() )
         {
-            CTILOG_DEBUG(dout, "Received incoming message(s) for queue \"" << queueMsgs_itr->first->name << "\" id " << reinterpret_cast<unsigned long>(queueMsgs_itr->first));
+            CTILOG_DEBUG(dout, "Received incoming message(s) for queue \"" << queue->name << "\" id " << reinterpret_cast<unsigned long>(queue));
         }
 
-        //  we should only look up the callbacks once if we receive a bunch of inbound messages for the same queue
-        if( ! queue || queue != queueMsgs_itr->first )
-        {
-            queue = queueMsgs_itr->first;
+        const auto queueCallbacks = _callbacks.equal_range(queue);
 
-            queueCallbacks = _callbacks.equal_range(queue);
-        }
-
-        for each( const SerializedMessage &msg in queueMsgs_itr->second )
+        for( const auto &msg : messages )
         {
             if( debugActivityInfo() )
             {
-                CTILOG_DEBUG(dout, "Dispatching message to callbacks from queue \"" << queueMsgs_itr->first->name << "\" id " << reinterpret_cast<unsigned long>(queueMsgs_itr->first) << std::endl
-                        << reinterpret_cast<unsigned long>(queueMsgs_itr->first) << ": " << msg);
+                CTILOG_DEBUG(dout, "Dispatching message to callbacks from queue \"" << queue->name << "\" id " << reinterpret_cast<unsigned long>(queue) << std::endl
+                        << reinterpret_cast<unsigned long>(queue) << ": " << msg);
             }
 
-            CallbacksPerQueue::const_iterator cb_itr = queueCallbacks.first;
+            auto cb_itr = queueCallbacks.first;
 
             for( ; cb_itr != queueCallbacks.second; ++cb_itr )
             {
+                auto callback = cb_itr->second;
+
                 if( debugActivityInfo() )
                 {
-                    CTILOG_DEBUG(dout, "Calling callback " << reinterpret_cast<unsigned long>(&(cb_itr->second)) << " for queue \"" << queueMsgs_itr->first->name << "\" id " << reinterpret_cast<unsigned long>(queueMsgs_itr->first));
+                    CTILOG_DEBUG(dout, "Calling callback " << reinterpret_cast<unsigned long>(&callback) << " for queue \"" << queue->name << "\" id " << reinterpret_cast<unsigned long>(queue));
                 }
 
-                cb_itr->second(msg);
+                callback(msg);
             }
         }
     }
@@ -377,6 +384,22 @@ void ActiveMQConnectionManager::dispatchTempQueueReplies()
 
         _temporaryConsumers.erase(itr);
     }
+
+    const auto end = _temporaryExpirations.upper_bound(CtiTime::now());
+
+    if( _temporaryExpirations.begin() != end )
+    {
+        for( auto itr = _temporaryExpirations.begin(); itr != end; ++itr )
+        {
+            const auto &expirationHandler = itr->second;
+
+            _temporaryConsumers.erase(expirationHandler.queueName);
+
+            expirationHandler.callback();
+        }
+
+        _temporaryExpirations.erase(_temporaryExpirations.begin(), end);
+    }
 }
 
 
@@ -413,21 +436,34 @@ struct DeserializationHelper
 
 
 template<typename Msg>
-void ActiveMQConnectionManager::enqueueMessageWithCallbackFor(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type message, typename CallbackFor<Msg>::type callback)
+void ActiveMQConnectionManager::enqueueMessageWithCallbackFor(
+        const ActiveMQ::Queues::OutboundQueue &queue,
+        StreamableMessage::auto_type message,
+        typename CallbackFor<Msg>::type callback,
+        CtiTime timeout,
+        TimeoutCallback timedOut)
 {
     SerializedMessageCallback callbackWrapper = DeserializationHelper<Msg>(callback);
 
-    gActiveMQConnection->enqueueOutgoingMessage(queue, message, callbackWrapper);
+    gActiveMQConnection->enqueueOutgoingMessage(queue, message, TemporaryListener{ callbackWrapper, timeout, timedOut });
 }
 
 
-void ActiveMQConnectionManager::enqueueMessageWithCallback(const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message, SerializedMessageCallback callback)
+void ActiveMQConnectionManager::enqueueMessageWithCallback(
+        const ActiveMQ::Queues::OutboundQueue &queue,
+        const SerializedMessage &message,
+        SerializedMessageCallback callback,
+        CtiTime timeout,
+        TimeoutCallback timedOut)
 {
-    gActiveMQConnection->enqueueOutgoingMessage(queue, message, callback);
+    gActiveMQConnection->enqueueOutgoingMessage(queue, message, TemporaryListener{ callback, timeout, timedOut });
 }
 
 
-void ActiveMQConnectionManager::enqueueOutgoingMessage(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type message, boost::optional<SerializedMessageCallback> callback)
+void ActiveMQConnectionManager::enqueueOutgoingMessage(
+        const ActiveMQ::Queues::OutboundQueue &queue,
+        StreamableMessage::auto_type message,
+        boost::optional<TemporaryListener> replyListener)
 {
     //  ensure the message is not null
     if( ! message.get() )
@@ -453,7 +489,7 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(const ActiveMQ::Queues::O
 
     e->queue = &queue;
     e->message.reset(message.release());
-    e->callback = callback;
+    e->replyListener = replyListener;
 
     {
         CtiLockGuard<CtiCriticalSection> lock(_outgoingMessagesMux);
@@ -468,7 +504,10 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(const ActiveMQ::Queues::O
 }
 
 
-void ActiveMQConnectionManager::enqueueOutgoingMessage(const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message, boost::optional<SerializedMessageCallback> callback)
+void ActiveMQConnectionManager::enqueueOutgoingMessage(
+        const ActiveMQ::Queues::OutboundQueue &queue,
+        const SerializedMessage &message,
+        boost::optional<TemporaryListener> replyListener)
 {
     struct BytesEnvelope : Envelope
     {
@@ -488,7 +527,7 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(const ActiveMQ::Queues::O
 
     e->queue    = &queue;
     e->message  = message;
-    e->callback = callback;
+    e->replyListener = replyListener;
 
     if( debugActivityInfo() )
     {
@@ -644,6 +683,9 @@ const IM_EX_MSG OutboundQueue
 
 InboundQueue::InboundQueue(std::string name_) : name(name_) {}
 
+const IM_EX_MSG InboundQueue
+        InboundQueue::NetworkManagerE2eDataConfirm
+                ("com.eaton.eas.yukon.networkmanager.e2e.rfn.E2eDataConfirm");
 const IM_EX_MSG InboundQueue
         InboundQueue::NetworkManagerE2eDataIndication
                 ("com.eaton.eas.yukon.networkmanager.e2e.rfn.E2eDataIndication");

@@ -38,6 +38,7 @@ test_resolvers.obj \
 test_timeperiod.obj \
 test_utility.obj \
 test_words.obj \
+test_std_helper.obj \
 test_string_formatter.obj \
 test_string_util.obj \
 

@@ -12,17 +12,89 @@
 
 #include <boost/assign/list_of.hpp>
 
+#include <random>
+
 namespace Cti {
 namespace Messaging {
 namespace Rfn {
 
+enum
+{
+    E2EDT_NM_TIMEOUT =  5,
+};
+
 extern Serialization::MessageFactory<Rfn::E2eMsg> rfnMessageFactory;
 
-E2eMessenger::E2eMessenger()
+E2eMessenger::E2eMessenger() :
+    _timeoutProcessor([this]{processTimeouts();})
 {
+    _sessionId = _messageId =
+            std::uniform_int_distribution<long long>()(
+                    std::mt19937_64(
+                            std::random_device()()));
+
     ActiveMQConnectionManager::registerHandler(
             ActiveMQ::Queues::InboundQueue::NetworkManagerE2eDataIndication,
-            boost::bind(&E2eMessenger::handleRfnE2eDataIndicationMsg, this, _1));
+            [&](const SerializedMessage &msg)
+            {
+                handleRfnE2eDataIndicationMsg(msg);
+            });
+
+    ActiveMQConnectionManager::registerHandler(
+            ActiveMQ::Queues::InboundQueue::NetworkManagerE2eDataConfirm,
+            [&](const SerializedMessage &msg)
+            {
+                handleRfnE2eDataConfirmMsg(msg);
+            });
+
+    _timeoutProcessor.start();
+}
+
+E2eMessenger::~E2eMessenger()
+{
+    _timeoutProcessor.interrupt();
+    _timeoutProcessor.tryJoinOrTerminateFor(Timing::Chrono::seconds(2));
+}
+
+
+void E2eMessenger::processTimeouts()
+try
+{
+    while( true )
+    {
+        {
+            LockGuard guard(_expirationMux);
+
+            const auto end = _pendingExpirations.upper_bound(CtiTime::now());
+
+            if( _pendingExpirations.begin() != end )
+            {
+                for( auto itr = _pendingExpirations.begin(); itr != end; ++itr )
+                {
+                    const auto messageId = itr->second;
+
+                    auto callbackItr = _pendingCallbacks.find(messageId);
+
+                    if( callbackItr != _pendingCallbacks.end() )
+                    {
+                        auto callbacks = callbackItr->second;
+
+                        callbacks.timeout();
+
+                        _pendingCallbacks.erase(callbackItr);
+                    }
+                }
+
+                _pendingExpirations.erase(_pendingExpirations.begin(), end);
+            }
+        }
+
+        WorkerThread::sleepFor(Timing::Chrono::seconds(1));
+    }
+}
+catch( WorkerThread::Interrupted &ex )
+{
+    //  exit gracefully
 }
 
 
@@ -142,18 +214,21 @@ namespace {
     using RT = E2eDataConfirmMsg::ReplyType;
     using CE = ClientErrors;
 
-    const std::map<RT::type, YukonError_t> ConfirmErrors = {
+    const std::map<RT, YukonError_t> ConfirmErrors = {
         { RT::DESTINATION_DEVICE_ADDRESS_UNKNOWN     , CE::E2eUnknownAddress              },
         { RT::DESTINATION_NETWORK_UNAVAILABLE        , CE::E2eNetworkUnavailable          },
         { RT::PMTU_LENGTH_EXCEEDED                   , CE::E2eRequestPacketTooLarge       },
         { RT::E2E_PROTOCOL_TYPE_NOT_SUPPORTED        , CE::E2eProtocolUnsupported         },
         { RT::NETWORK_SERVER_IDENTIFIER_INVALID      , CE::E2eInvalidNetworkServerId      },
         { RT::APPLICATION_SERVICE_IDENTIFIER_INVALID , CE::E2eInvalidApplicationServiceId },
-        { RT::NETWORK_LOAD_CONTROL                   , CE::E2eNetworkLoadControl          }};
+        { RT::NETWORK_LOAD_CONTROL                   , CE::E2eNetworkLoadControl          },
+        { RT::NETWORK_SERVICE_FAILURE                , CE::E2eNetworkServiceFailure       },
+        { RT::REQUEST_CANCELED                       , CE::RequestCancelled               },
+        { RT::REQUEST_EXPIRED                        , CE::RequestExpired                 }};
 }
 
 
-void E2eMessenger::handleRfnE2eDataConfirmMsg(const SerializedMessage &msg, Confirm::Callback callback)
+void E2eMessenger::handleRfnE2eDataConfirmMsg(const SerializedMessage &msg)
 {
     using Serialization::MessagePtr;
 
@@ -165,52 +240,72 @@ void E2eMessenger::handleRfnE2eDataConfirmMsg(const SerializedMessage &msg, Conf
     {
         CTILOG_INFO(dout, "Got new RfnE2eDataConfirmMsg");
 
-        Confirm c;
+        boost::optional<Confirm::Callback> confirmCallback;
 
-        c.rfnIdentifier = confirmMsg->rfnIdentifier;
-
-        if( confirmMsg->replyType != E2eDataConfirmMsg::ReplyType::OK )
+        if( confirmMsg->header )
         {
-            const boost::optional<YukonError_t> error = mapFind(ConfirmErrors, confirmMsg->replyType);
+            LockGuard guard(_expirationMux);
 
-            c.error = (error ? *error : ClientErrors::Unknown);
+            const auto messageId = confirmMsg->header->messageId;
+
+            if( auto callbacks = mapFind(_pendingCallbacks, messageId) )
+            {
+                confirmCallback = callbacks->confirm;
+
+                _pendingCallbacks.erase(messageId);
+            }
         }
 
-        callback(c);
+        if( confirmCallback )
+        {
+            Confirm c;
+
+            c.rfnIdentifier = confirmMsg->rfnIdentifier;
+
+            if( confirmMsg->replyType != E2eDataConfirmMsg::ReplyType::OK )
+            {
+                const boost::optional<YukonError_t> error = mapFind(ConfirmErrors, confirmMsg->replyType);
+
+                c.error = (error ? *error : ClientErrors::Unknown);
+            }
+
+            (*confirmCallback)(c);
+        }
     }
 }
 
 
-void E2eMessenger::sendE2eDt(const Request &req, const ApplicationServiceIdentifiers asid, Confirm::Callback callback)
+void E2eMessenger::sendE2eDt(const Request &req, const ApplicationServiceIdentifiers asid, Confirm::Callback callback, TimeoutCallback timeout)
 {
+    gE2eMessenger->serializeAndQueue(req, callback, timeout, asid);
+}
+
+
+void E2eMessenger::sendE2eAp_Dnp(const Request &req, Confirm::Callback callback, TimeoutCallback timeout)
+{
+    gE2eMessenger->serializeAndQueue(req, callback, timeout, ApplicationServiceIdentifiers::E2EAP_DNP3);
+}
+
+
+void E2eMessenger::serializeAndQueue(const Request &req, Confirm::Callback callback, TimeoutCallback timeout, const ApplicationServiceIdentifiers asid)
+{
+    static const char *PorterGuid = "134B8C32-4505-B5EC-1371-8CBC643446A0";
+
     E2eDataRequestMsg msg;
 
     msg.applicationServiceId = static_cast<unsigned char>(asid);
-    msg.priority      = req.priority;
+    msg.highPriority  = true;
     msg.rfnIdentifier = req.rfnIdentifier;
     msg.protocol      = E2eMsg::Application;
     msg.payload       = req.payload;
 
-    gE2eMessenger->serializeAndQueue(msg, callback);
-}
+    msg.header.clientGuid = PorterGuid;
+    msg.header.sessionId  = _sessionId;
+    msg.header.messageId  = ++_messageId;
+    msg.header.groupId    = req.groupId;
+    msg.header.priority   = req.priority;
+    msg.header.expiration = req.expiration.seconds() * 1000;
 
-
-void E2eMessenger::sendE2eAp_Dnp(const Request &req, Confirm::Callback callback)
-{
-    E2eDataRequestMsg msg;
-
-    msg.applicationServiceId = static_cast<unsigned char>(ApplicationServiceIdentifiers::E2EAP_DNP3);
-    msg.priority      = req.priority;
-    msg.rfnIdentifier = req.rfnIdentifier;
-    msg.protocol      = E2eMsg::Application;
-    msg.payload       = req.payload;
-
-    gE2eMessenger->serializeAndQueue(msg, callback);
-}
-
-
-void E2eMessenger::serializeAndQueue(const E2eDataRequestMsg &msg, Confirm::Callback callback)
-{
     SerializedMessage serialized;
 
     rfnMessageFactory.serialize(msg, serialized);
@@ -218,7 +313,24 @@ void E2eMessenger::serializeAndQueue(const E2eDataRequestMsg &msg, Confirm::Call
     ActiveMQConnectionManager::enqueueMessageWithCallback(
             ActiveMQ::Queues::OutboundQueue::NetworkManagerE2eDataRequest,
             serialized,
-            boost::bind(&E2eMessenger::handleRfnE2eDataConfirmMsg, this, _1, callback));
+            [=](const SerializedMessage &ack)
+            {
+                //  ignore the ack message itself
+
+                LockGuard guard(_expirationMux);
+
+                _pendingExpirations.insert(
+                        std::make_pair(
+                                req.expiration,
+                                msg.header.messageId));
+
+                _pendingCallbacks[msg.header.messageId] = MessageCallbacks{ callback, timeout };
+            },
+            CtiTime::now() + E2EDT_NM_TIMEOUT,
+            [=]
+            {
+                timeout();
+            });
 }
 
 

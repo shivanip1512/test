@@ -205,12 +205,22 @@ void CtiDeviceGroupRfnExpresscom::sendDRMessage(int priority, int expirationDura
                     expirationDuration,
                     payload));
 
-    ActiveMQConnectionManager::CallbackFor<RfnBroadcastReplyMessage>::type callback =
-            boost::bind(&logResponse, rfnBroadcastMessage->messageId, rfnBroadcastMessage->payload, _1);
+    const auto messageId = rfnBroadcastMessage->messageId;
+
+    auto callback =
+        [=](const Cti::Messaging::Rfn::RfnBroadcastReplyMessage &reply)
+        {
+            logResponse(messageId, payload, reply);
+        };
 
     StreamableMessage::auto_type streamableMessage(rfnBroadcastMessage);
 
-    ActiveMQConnectionManager::enqueueMessageWithCallbackFor<RfnBroadcastReplyMessage>(OutboundQueue::RfnBroadcast, streamableMessage, callback);
+    ActiveMQConnectionManager::enqueueMessageWithCallbackFor<RfnBroadcastReplyMessage>(
+            OutboundQueue::RfnBroadcast,
+            streamableMessage,
+            callback,
+            CtiTime::now() + expirationDuration,
+            []{ /* ignore failures */ });
 }
 
 std::string CtiDeviceGroupRfnExpresscom::getSQLCoreStatement() const

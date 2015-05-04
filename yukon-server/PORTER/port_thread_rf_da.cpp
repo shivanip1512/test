@@ -64,7 +64,12 @@ RfDaPortHandler::RfDaPortHandler( Ports::RfDaPortSPtr &rf_da_port, CtiDeviceMana
     _rf_da_port(rf_da_port)
 {
     Messaging::Rfn::E2eMessenger::registerDnpHandler(
-            boost::bind(&RfDaPortHandler::receiveIndication, this, _1),
+            [&](const Messaging::Rfn::E2eMessenger::Indication &msg)
+            {
+                CtiLockGuard<CtiCriticalSection> lock(_indicationMux);
+
+                _indications.push_back(msg);
+            },
             rf_da_port->getRfnIdentifier());
 }
 
@@ -78,19 +83,6 @@ bool RfDaPortHandler::isPortRateLimited() const
 }
 
 
-void RfDaPortHandler::receiveIndication(Messaging::Rfn::E2eMessenger::Indication msg)
-{
-    CtiLockGuard<CtiCriticalSection> lock(_indicationMux);
-
-    _indications.push_back(msg);
-}
-
-
-void RfDaPortHandler::receiveConfirm(Messaging::Rfn::E2eMessenger::Confirm msg)
-{
-    //  ideally this would report any errors back to the unsolicited handler and update the timeout if the packet was sent successfully
-}
-
 YukonError_t RfDaPortHandler::sendOutbound( device_record &dr )
 {
     if( gConfigParms.isTrue("PORTER_RFDA_DEBUG") )
@@ -102,16 +94,41 @@ YukonError_t RfDaPortHandler::sendOutbound( device_record &dr )
     Messaging::Rfn::E2eMessenger::Request msg;
 
     msg.rfnIdentifier = _rf_da_port->getRfnIdentifier();
-    msg.priority =
-        (dr.outbound.empty() || ! dr.outbound.front())
-            ? MAXPRIORITY
-            : std::max<int>(1, std::min<int>(dr.outbound.front()->Priority, MAXPRIORITY));
+
+    if( dr.outbound.empty() || ! dr.outbound.front() )
+    {
+        msg.priority   = MAXPRIORITY - 1;  //  unsolicited, highest priority response
+        msg.expiration = CtiTime::now() + getDeviceTimeout(dr);
+        msg.groupId    = 0;
+    }
+    else
+    {
+        const CtiOutMessage &om = *dr.outbound.front();
+
+        msg.priority   = clamp<1, MAXPRIORITY>(om.Priority);
+
+        msg.expiration = om.ExpirationTime
+                             ? CtiTime(om.ExpirationTime)
+                             : CtiTime::now() + 900;  //  15 minutes, as per the RF-DA spec
+
+        msg.groupId    = om.Request.GrpMsgID;
+    }
 
     msg.payload.assign(
             dr.xfer.getOutBuffer(),
             dr.xfer.getOutBuffer() + dr.xfer.getOutCount());
 
-    Messaging::Rfn::E2eMessenger::sendE2eAp_Dnp(msg, boost::bind(&RfDaPortHandler::receiveConfirm, this, _1));
+    auto successCallback =
+        [](const Messaging::Rfn::E2eMessenger::Confirm &msg) {
+            //  TODO - report success/error
+        };
+
+    auto failCallback =
+        []{
+            //  TODO - report error
+        };
+
+    Messaging::Rfn::E2eMessenger::sendE2eAp_Dnp(msg, successCallback, failCallback);
 
     dr.last_outbound = CtiTime::now();
 
@@ -188,7 +205,7 @@ bool RfDaPortHandler::collectInbounds( const MillisecondTimer & timer, const uns
     }
 
     //  ignore the timer - this is bound to be quick
-    for each( Messaging::Rfn::E2eMessenger::Indication ind in recentIndications )
+    for( const auto &ind : recentIndications )
     {
         if( gConfigParms.isTrue("PORTER_RFDA_DEBUG") )
         {
@@ -213,7 +230,7 @@ bool RfDaPortHandler::collectInbounds( const MillisecondTimer & timer, const uns
 
 void RfDaPortHandler::loadDeviceProperties(const std::vector<const CtiDeviceSingle *> &devices)
 {
-    for each( const CtiDeviceSingle *dev in devices )
+    for( const auto dev : devices )
     {
         if( dev )
         {

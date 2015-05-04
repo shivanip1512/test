@@ -3,7 +3,10 @@
 #include "utility.h"
 
 #include "boost/optional/optional.hpp"
-#include "boost/range/iterator.hpp"
+#include <boost/range/iterator_range.hpp>
+
+#include <iostream>
+#include <iomanip>
 
 namespace Cti {
 
@@ -90,6 +93,18 @@ template <typename T>
 boost::iterator_range<T*> arrayToRange(T* arr, size_t len)
 {
     return boost::make_iterator_range(arr, arr+len);
+}
+
+template <typename T>
+T clamp(T min, T input, T max)
+{
+    return std::max(min, std::min(max, input));
+}
+
+template <int Min, int Max>
+int clamp(int input)
+{
+    return clamp(Min, input, Max);
 }
 
 namespace Logging {

@@ -37,7 +37,7 @@ namespace Cti {
 namespace Messaging {
 namespace Rfn {
 
-IM_EX_RFN_E2E std::auto_ptr<E2eMessenger> gE2eMessenger(new E2eMessenger);
+IM_EX_RFN_E2E std::unique_ptr<E2eMessenger> gE2eMessenger(new E2eMessenger);
 
 }
 }

@@ -12,6 +12,7 @@
 #include <thrift/protocol/TProtocol.h>
 #include <thrift/transport/TTransport.h>
 
+#include "NetworkManagerMessaging_types.h"
 
 
 namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift {
@@ -26,6 +27,15 @@ struct RfnE2eProtocol {
 
 extern const std::map<int, const char*> _RfnE2eProtocol_VALUES_TO_NAMES;
 
+struct RfnE2eMessagePriority {
+  enum type {
+    APP_LO = 0,
+    APP_HI = 1
+  };
+};
+
+extern const std::map<int, const char*> _RfnE2eMessagePriority_VALUES_TO_NAMES;
+
 struct RfnE2eDataReplyType {
   enum type {
     OK = 0,
@@ -36,7 +46,9 @@ struct RfnE2eDataReplyType {
     NETWORK_SERVER_IDENTIFIER_INVALID = 5,
     APPLICATION_SERVICE_IDENTIFIER_INVALID = 6,
     NETWORK_LOAD_CONTROL = 7,
-    NETWORK_SERVICE_FAILURE = 8
+    NETWORK_SERVICE_FAILURE = 8,
+    REQUEST_CANCELED = 9,
+    REQUEST_EXPIRED = 10
   };
 };
 
@@ -94,17 +106,18 @@ class RfnIdentifier {
 void swap(RfnIdentifier &a, RfnIdentifier &b);
 
 typedef struct _RfnE2eDataRequest__isset {
-  _RfnE2eDataRequest__isset() : security(false) {}
+  _RfnE2eDataRequest__isset() : security(false), header(false) {}
   bool security;
+  bool header;
 } _RfnE2eDataRequest__isset;
 
 class RfnE2eDataRequest {
  public:
 
-  static const char* ascii_fingerprint; // = "559520F3403B1E3381E01E984AB40451";
-  static const uint8_t binary_fingerprint[16]; // = {0x55,0x95,0x20,0xF3,0x40,0x3B,0x1E,0x33,0x81,0xE0,0x1E,0x98,0x4A,0xB4,0x04,0x51};
+  static const char* ascii_fingerprint; // = "89B9149745925B4EF3FE9B42BEA3EEAF";
+  static const uint8_t binary_fingerprint[16]; // = {0x89,0xB9,0x14,0x97,0x45,0x92,0x5B,0x4E,0xF3,0xFE,0x9B,0x42,0xBE,0xA3,0xEE,0xAF};
 
-  RfnE2eDataRequest() : e2eProtocol((RfnE2eProtocol::type)0), applicationServiceId(0), priority(0), security(), payload() {
+  RfnE2eDataRequest() : e2eProtocol((RfnE2eProtocol::type)0), applicationServiceId(0), priority((RfnE2eMessagePriority::type)0), security(), payload() {
   }
 
   virtual ~RfnE2eDataRequest() throw() {}
@@ -112,9 +125,10 @@ class RfnE2eDataRequest {
   RfnE2eProtocol::type e2eProtocol;
   int8_t applicationServiceId;
   RfnIdentifier rfnIdentifier;
-  int8_t priority;
+  RfnE2eMessagePriority::type priority;
   std::string security;
   std::string payload;
+   ::Cti::Messaging::Serialization::Thrift::NetworkManagerRequestHeader header;
 
   _RfnE2eDataRequest__isset __isset;
 
@@ -130,7 +144,7 @@ class RfnE2eDataRequest {
     rfnIdentifier = val;
   }
 
-  void __set_priority(const int8_t val) {
+  void __set_priority(const RfnE2eMessagePriority::type val) {
     priority = val;
   }
 
@@ -141,6 +155,11 @@ class RfnE2eDataRequest {
 
   void __set_payload(const std::string& val) {
     payload = val;
+  }
+
+  void __set_header(const  ::Cti::Messaging::Serialization::Thrift::NetworkManagerRequestHeader& val) {
+    header = val;
+    __isset.header = true;
   }
 
   bool operator == (const RfnE2eDataRequest & rhs) const
@@ -158,6 +177,10 @@ class RfnE2eDataRequest {
     else if (__isset.security && !(security == rhs.security))
       return false;
     if (!(payload == rhs.payload))
+      return false;
+    if (__isset.header != rhs.__isset.header)
+      return false;
+    else if (__isset.header && !(header == rhs.header))
       return false;
     return true;
   }
@@ -182,10 +205,10 @@ typedef struct _RfnE2eDataIndication__isset {
 class RfnE2eDataIndication {
  public:
 
-  static const char* ascii_fingerprint; // = "559520F3403B1E3381E01E984AB40451";
-  static const uint8_t binary_fingerprint[16]; // = {0x55,0x95,0x20,0xF3,0x40,0x3B,0x1E,0x33,0x81,0xE0,0x1E,0x98,0x4A,0xB4,0x04,0x51};
+  static const char* ascii_fingerprint; // = "8566E586DC91E3EDB6D1BCD87B3E26BD";
+  static const uint8_t binary_fingerprint[16]; // = {0x85,0x66,0xE5,0x86,0xDC,0x91,0xE3,0xED,0xB6,0xD1,0xBC,0xD8,0x7B,0x3E,0x26,0xBD};
 
-  RfnE2eDataIndication() : e2eProtocol((RfnE2eProtocol::type)0), applicationServiceId(0), priority(0), security(), payload() {
+  RfnE2eDataIndication() : e2eProtocol((RfnE2eProtocol::type)0), applicationServiceId(0), priority((RfnE2eMessagePriority::type)0), security(), payload() {
   }
 
   virtual ~RfnE2eDataIndication() throw() {}
@@ -193,7 +216,7 @@ class RfnE2eDataIndication {
   RfnE2eProtocol::type e2eProtocol;
   int8_t applicationServiceId;
   RfnIdentifier rfnIdentifier;
-  int8_t priority;
+  RfnE2eMessagePriority::type priority;
   std::string security;
   std::string payload;
 
@@ -211,7 +234,7 @@ class RfnE2eDataIndication {
     rfnIdentifier = val;
   }
 
-  void __set_priority(const int8_t val) {
+  void __set_priority(const RfnE2eMessagePriority::type val) {
     priority = val;
   }
 
@@ -255,12 +278,16 @@ class RfnE2eDataIndication {
 
 void swap(RfnE2eDataIndication &a, RfnE2eDataIndication &b);
 
+typedef struct _RfnE2eDataConfirm__isset {
+  _RfnE2eDataConfirm__isset() : header(false) {}
+  bool header;
+} _RfnE2eDataConfirm__isset;
 
 class RfnE2eDataConfirm {
  public:
 
-  static const char* ascii_fingerprint; // = "F41C7A57730C1F3FDF1957261326625D";
-  static const uint8_t binary_fingerprint[16]; // = {0xF4,0x1C,0x7A,0x57,0x73,0x0C,0x1F,0x3F,0xDF,0x19,0x57,0x26,0x13,0x26,0x62,0x5D};
+  static const char* ascii_fingerprint; // = "61DD36B051F28B11EA460F062E62D05C";
+  static const uint8_t binary_fingerprint[16]; // = {0x61,0xDD,0x36,0xB0,0x51,0xF2,0x8B,0x11,0xEA,0x46,0x0F,0x06,0x2E,0x62,0xD0,0x5C};
 
   RfnE2eDataConfirm() : e2eProtocol((RfnE2eProtocol::type)0), applicationServiceId(0), replyType((RfnE2eDataReplyType::type)0) {
   }
@@ -271,6 +298,9 @@ class RfnE2eDataConfirm {
   int8_t applicationServiceId;
   RfnIdentifier rfnIdentifier;
   RfnE2eDataReplyType::type replyType;
+   ::Cti::Messaging::Serialization::Thrift::NetworkManagerRequestHeader header;
+
+  _RfnE2eDataConfirm__isset __isset;
 
   void __set_e2eProtocol(const RfnE2eProtocol::type val) {
     e2eProtocol = val;
@@ -288,6 +318,11 @@ class RfnE2eDataConfirm {
     replyType = val;
   }
 
+  void __set_header(const  ::Cti::Messaging::Serialization::Thrift::NetworkManagerRequestHeader& val) {
+    header = val;
+    __isset.header = true;
+  }
+
   bool operator == (const RfnE2eDataConfirm & rhs) const
   {
     if (!(e2eProtocol == rhs.e2eProtocol))
@@ -297,6 +332,10 @@ class RfnE2eDataConfirm {
     if (!(rfnIdentifier == rhs.rfnIdentifier))
       return false;
     if (!(replyType == rhs.replyType))
+      return false;
+    if (__isset.header != rhs.__isset.header)
+      return false;
+    else if (__isset.header && !(header == rhs.header))
       return false;
     return true;
   }

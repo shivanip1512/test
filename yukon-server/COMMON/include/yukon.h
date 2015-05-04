@@ -374,6 +374,8 @@ struct ClientErrors
         E2eRequestNotAcceptable,
 
         NoPointsOnDevice,
+
+        E2eNetworkServiceFailure,
     };
 };
 

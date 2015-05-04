@@ -22,6 +22,16 @@ const char* _kRfnE2eProtocolNames[] = {
 };
 const std::map<int, const char*> _RfnE2eProtocol_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(3, _kRfnE2eProtocolValues, _kRfnE2eProtocolNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
+int _kRfnE2eMessagePriorityValues[] = {
+  RfnE2eMessagePriority::APP_LO,
+  RfnE2eMessagePriority::APP_HI
+};
+const char* _kRfnE2eMessagePriorityNames[] = {
+  "APP_LO",
+  "APP_HI"
+};
+const std::map<int, const char*> _RfnE2eMessagePriority_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _kRfnE2eMessagePriorityValues, _kRfnE2eMessagePriorityNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+
 int _kRfnE2eDataReplyTypeValues[] = {
   RfnE2eDataReplyType::OK,
   RfnE2eDataReplyType::DESTINATION_DEVICE_ADDRESS_UNKNOWN,
@@ -31,7 +41,9 @@ int _kRfnE2eDataReplyTypeValues[] = {
   RfnE2eDataReplyType::NETWORK_SERVER_IDENTIFIER_INVALID,
   RfnE2eDataReplyType::APPLICATION_SERVICE_IDENTIFIER_INVALID,
   RfnE2eDataReplyType::NETWORK_LOAD_CONTROL,
-  RfnE2eDataReplyType::NETWORK_SERVICE_FAILURE
+  RfnE2eDataReplyType::NETWORK_SERVICE_FAILURE,
+  RfnE2eDataReplyType::REQUEST_CANCELED,
+  RfnE2eDataReplyType::REQUEST_EXPIRED
 };
 const char* _kRfnE2eDataReplyTypeNames[] = {
   "OK",
@@ -42,9 +54,11 @@ const char* _kRfnE2eDataReplyTypeNames[] = {
   "NETWORK_SERVER_IDENTIFIER_INVALID",
   "APPLICATION_SERVICE_IDENTIFIER_INVALID",
   "NETWORK_LOAD_CONTROL",
-  "NETWORK_SERVICE_FAILURE"
+  "NETWORK_SERVICE_FAILURE",
+  "REQUEST_CANCELED",
+  "REQUEST_EXPIRED"
 };
-const std::map<int, const char*> _RfnE2eDataReplyType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(9, _kRfnE2eDataReplyTypeValues, _kRfnE2eDataReplyTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _RfnE2eDataReplyType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(11, _kRfnE2eDataReplyTypeValues, _kRfnE2eDataReplyTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 const char* RfnIdentifier::ascii_fingerprint = "AB879940BD15B6B25691265F7384B271";
 const uint8_t RfnIdentifier::binary_fingerprint[16] = {0xAB,0x87,0x99,0x40,0xBD,0x15,0xB6,0xB2,0x56,0x91,0x26,0x5F,0x73,0x84,0xB2,0x71};
@@ -142,8 +156,8 @@ void swap(RfnIdentifier &a, RfnIdentifier &b) {
   swap(a.sensorSerialNumber, b.sensorSerialNumber);
 }
 
-const char* RfnE2eDataRequest::ascii_fingerprint = "559520F3403B1E3381E01E984AB40451";
-const uint8_t RfnE2eDataRequest::binary_fingerprint[16] = {0x55,0x95,0x20,0xF3,0x40,0x3B,0x1E,0x33,0x81,0xE0,0x1E,0x98,0x4A,0xB4,0x04,0x51};
+const char* RfnE2eDataRequest::ascii_fingerprint = "89B9149745925B4EF3FE9B42BEA3EEAF";
+const uint8_t RfnE2eDataRequest::binary_fingerprint[16] = {0x89,0xB9,0x14,0x97,0x45,0x92,0x5B,0x4E,0xF3,0xFE,0x9B,0x42,0xBE,0xA3,0xEE,0xAF};
 
 uint32_t RfnE2eDataRequest::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -197,8 +211,10 @@ uint32_t RfnE2eDataRequest::read(::apache::thrift::protocol::TProtocol* iprot) {
         }
         break;
       case 4:
-        if (ftype == ::apache::thrift::protocol::T_BYTE) {
-          xfer += iprot->readByte(this->priority);
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast1;
+          xfer += iprot->readI32(ecast1);
+          this->priority = (RfnE2eMessagePriority::type)ecast1;
           isset_priority = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -216,6 +232,14 @@ uint32_t RfnE2eDataRequest::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readBinary(this->payload);
           isset_payload = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 7:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->header.read(iprot);
+          this->__isset.header = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -258,8 +282,8 @@ uint32_t RfnE2eDataRequest::write(::apache::thrift::protocol::TProtocol* oprot) 
   xfer += this->rfnIdentifier.write(oprot);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("priority", ::apache::thrift::protocol::T_BYTE, 4);
-  xfer += oprot->writeByte(this->priority);
+  xfer += oprot->writeFieldBegin("priority", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeI32((int32_t)this->priority);
   xfer += oprot->writeFieldEnd();
 
   if (this->__isset.security) {
@@ -271,6 +295,11 @@ uint32_t RfnE2eDataRequest::write(::apache::thrift::protocol::TProtocol* oprot) 
   xfer += oprot->writeBinary(this->payload);
   xfer += oprot->writeFieldEnd();
 
+  if (this->__isset.header) {
+    xfer += oprot->writeFieldBegin("header", ::apache::thrift::protocol::T_STRUCT, 7);
+    xfer += this->header.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -284,11 +313,12 @@ void swap(RfnE2eDataRequest &a, RfnE2eDataRequest &b) {
   swap(a.priority, b.priority);
   swap(a.security, b.security);
   swap(a.payload, b.payload);
+  swap(a.header, b.header);
   swap(a.__isset, b.__isset);
 }
 
-const char* RfnE2eDataIndication::ascii_fingerprint = "559520F3403B1E3381E01E984AB40451";
-const uint8_t RfnE2eDataIndication::binary_fingerprint[16] = {0x55,0x95,0x20,0xF3,0x40,0x3B,0x1E,0x33,0x81,0xE0,0x1E,0x98,0x4A,0xB4,0x04,0x51};
+const char* RfnE2eDataIndication::ascii_fingerprint = "8566E586DC91E3EDB6D1BCD87B3E26BD";
+const uint8_t RfnE2eDataIndication::binary_fingerprint[16] = {0x85,0x66,0xE5,0x86,0xDC,0x91,0xE3,0xED,0xB6,0xD1,0xBC,0xD8,0x7B,0x3E,0x26,0xBD};
 
 uint32_t RfnE2eDataIndication::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -317,9 +347,9 @@ uint32_t RfnE2eDataIndication::read(::apache::thrift::protocol::TProtocol* iprot
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast1;
-          xfer += iprot->readI32(ecast1);
-          this->e2eProtocol = (RfnE2eProtocol::type)ecast1;
+          int32_t ecast2;
+          xfer += iprot->readI32(ecast2);
+          this->e2eProtocol = (RfnE2eProtocol::type)ecast2;
           isset_e2eProtocol = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -342,8 +372,10 @@ uint32_t RfnE2eDataIndication::read(::apache::thrift::protocol::TProtocol* iprot
         }
         break;
       case 4:
-        if (ftype == ::apache::thrift::protocol::T_BYTE) {
-          xfer += iprot->readByte(this->priority);
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast3;
+          xfer += iprot->readI32(ecast3);
+          this->priority = (RfnE2eMessagePriority::type)ecast3;
           isset_priority = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -403,8 +435,8 @@ uint32_t RfnE2eDataIndication::write(::apache::thrift::protocol::TProtocol* opro
   xfer += this->rfnIdentifier.write(oprot);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("priority", ::apache::thrift::protocol::T_BYTE, 4);
-  xfer += oprot->writeByte(this->priority);
+  xfer += oprot->writeFieldBegin("priority", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeI32((int32_t)this->priority);
   xfer += oprot->writeFieldEnd();
 
   if (this->__isset.security) {
@@ -432,8 +464,8 @@ void swap(RfnE2eDataIndication &a, RfnE2eDataIndication &b) {
   swap(a.__isset, b.__isset);
 }
 
-const char* RfnE2eDataConfirm::ascii_fingerprint = "F41C7A57730C1F3FDF1957261326625D";
-const uint8_t RfnE2eDataConfirm::binary_fingerprint[16] = {0xF4,0x1C,0x7A,0x57,0x73,0x0C,0x1F,0x3F,0xDF,0x19,0x57,0x26,0x13,0x26,0x62,0x5D};
+const char* RfnE2eDataConfirm::ascii_fingerprint = "61DD36B051F28B11EA460F062E62D05C";
+const uint8_t RfnE2eDataConfirm::binary_fingerprint[16] = {0x61,0xDD,0x36,0xB0,0x51,0xF2,0x8B,0x11,0xEA,0x46,0x0F,0x06,0x2E,0x62,0xD0,0x5C};
 
 uint32_t RfnE2eDataConfirm::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -461,9 +493,9 @@ uint32_t RfnE2eDataConfirm::read(::apache::thrift::protocol::TProtocol* iprot) {
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast2;
-          xfer += iprot->readI32(ecast2);
-          this->e2eProtocol = (RfnE2eProtocol::type)ecast2;
+          int32_t ecast4;
+          xfer += iprot->readI32(ecast4);
+          this->e2eProtocol = (RfnE2eProtocol::type)ecast4;
           isset_e2eProtocol = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -487,10 +519,18 @@ uint32_t RfnE2eDataConfirm::read(::apache::thrift::protocol::TProtocol* iprot) {
         break;
       case 4:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast3;
-          xfer += iprot->readI32(ecast3);
-          this->replyType = (RfnE2eDataReplyType::type)ecast3;
+          int32_t ecast5;
+          xfer += iprot->readI32(ecast5);
+          this->replyType = (RfnE2eDataReplyType::type)ecast5;
           isset_replyType = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 5:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->header.read(iprot);
+          this->__isset.header = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -535,6 +575,11 @@ uint32_t RfnE2eDataConfirm::write(::apache::thrift::protocol::TProtocol* oprot) 
   xfer += oprot->writeI32((int32_t)this->replyType);
   xfer += oprot->writeFieldEnd();
 
+  if (this->__isset.header) {
+    xfer += oprot->writeFieldBegin("header", ::apache::thrift::protocol::T_STRUCT, 5);
+    xfer += this->header.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -546,6 +591,8 @@ void swap(RfnE2eDataConfirm &a, RfnE2eDataConfirm &b) {
   swap(a.applicationServiceId, b.applicationServiceId);
   swap(a.rfnIdentifier, b.rfnIdentifier);
   swap(a.replyType, b.replyType);
+  swap(a.header, b.header);
+  swap(a.__isset, b.__isset);
 }
 
 }}}} // namespace

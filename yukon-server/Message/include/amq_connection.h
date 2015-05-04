@@ -60,6 +60,7 @@ struct IM_EX_MSG InboundQueue
 {
     std::string name;
 
+    static const InboundQueue NetworkManagerE2eDataConfirm;
     static const InboundQueue NetworkManagerE2eDataIndication;
     static const InboundQueue ScannerOutMessages;
     static const InboundQueue ScannerInMessages;
@@ -77,8 +78,9 @@ class IM_EX_MSG ActiveMQConnectionManager :
 {
 public:
 
-    typedef std::vector<unsigned char> SerializedMessage;
-    typedef boost::function<void (const SerializedMessage &)> SerializedMessageCallback;
+    using SerializedMessage = std::vector<unsigned char>;
+    using SerializedMessageCallback = std::function<void (const SerializedMessage &)>;
+    using TimeoutCallback = std::function<void()>;
 
     template<class Msg>
     struct CallbackFor
@@ -93,9 +95,14 @@ public:
 
     static void enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type message);
     static void enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message);
+
     template<class Msg>
-    static void enqueueMessageWithCallbackFor(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type message, typename CallbackFor<Msg>::type callback);
-    static void enqueueMessageWithCallback(const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message, SerializedMessageCallback callback);
+    static void enqueueMessageWithCallbackFor(
+            const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type message,
+            typename CallbackFor<Msg>::type callback, CtiTime timeout, TimeoutCallback timedOut);
+    static void enqueueMessageWithCallback(
+            const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message,
+            SerializedMessageCallback callback, CtiTime timeout, TimeoutCallback timedOut);
 
     static void registerHandler(const ActiveMQ::Queues::InboundQueue &queue, const SerializedMessageCallback callback);
 
@@ -103,8 +110,21 @@ public:
 
 protected:
 
-    virtual void enqueueOutgoingMessage(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type message, boost::optional<SerializedMessageCallback> callback);
-    virtual void enqueueOutgoingMessage(const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message, boost::optional<SerializedMessageCallback> callback);
+    struct TemporaryListener
+    {
+        SerializedMessageCallback callback;
+        CtiTime expiration;
+        TimeoutCallback timedOut;
+    };
+
+    virtual void enqueueOutgoingMessage(
+            const ActiveMQ::Queues::OutboundQueue &queue,
+            StreamableMessage::auto_type message,
+            boost::optional<TemporaryListener> callback);
+    virtual void enqueueOutgoingMessage(
+            const ActiveMQ::Queues::OutboundQueue &queue,
+            const SerializedMessage &message,
+            boost::optional<TemporaryListener> callback);
 
     void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, const SerializedMessageCallback callback);
 
@@ -129,7 +149,7 @@ private:
     {
         const ActiveMQ::Queues::OutboundQueue *queue;
 
-        boost::optional<SerializedMessageCallback> callback;
+        boost::optional<TemporaryListener> replyListener;
 
         virtual cms::Message *extractMessage(cms::Session &session) const = 0;
 
@@ -173,6 +193,14 @@ private:
     typedef boost::ptr_map<std::string, TempQueueConsumerWithCallback> TemporaryConsumersByDestination;
     TemporaryConsumersByDestination _temporaryConsumers;
 
+    struct ExpirationHandler
+    {
+        std::string queueName;
+        TimeoutCallback callback;
+    };
+
+    std::multimap<CtiTime, ExpirationHandler> _temporaryExpirations;
+
     typedef std::map<std::string, SerializedMessage> ReplyPerDestination;
     CtiCriticalSection  _tempQueueRepliesMux;
     ReplyPerDestination _tempQueueReplies;
@@ -197,7 +225,7 @@ private:
     void dispatchTempQueueReplies();
 };
 
-template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnBroadcastReplyMessage>(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type message, CallbackFor<Rfn::RfnBroadcastReplyMessage>::type callback);
+template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnBroadcastReplyMessage>(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type message, CallbackFor<Rfn::RfnBroadcastReplyMessage>::type callback, CtiTime expiration, TimeoutCallback timedOut);
 
 }
 }

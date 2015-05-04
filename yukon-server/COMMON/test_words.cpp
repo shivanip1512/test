@@ -3,6 +3,8 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/assign/list_of.hpp>
 
+#include "boost_test_helpers.h"
+
 namespace std {
 
     ostream &operator<<(ostream &o, unsigned char c)
@@ -35,8 +37,8 @@ BOOST_AUTO_TEST_CASE(test_B_Word)
     BSt.Remote = 0;
 
     {
-        std::vector<unsigned char> expected = boost::assign::list_of
-            (0xa0)(0x00)(0x00)(0x00)(0x00)(0x03)(0x10);
+        const Cti::Test::byte_str expected =
+            "a0 00 00 00 00 03 10";
 
         std::vector<unsigned char> results;
         results.resize(7);
@@ -45,13 +47,11 @@ BOOST_AUTO_TEST_CASE(test_B_Word)
 
         B_Word(&results.front(), tmpBSt, 0);
 
-        BOOST_CHECK_EQUAL_COLLECTIONS(
-            expected.begin(), expected.end(),
-            results.begin(), results.end());
+        BOOST_CHECK_EQUAL_RANGES(expected, results);
     }
     {
-        std::vector<unsigned char> expected = boost::assign::list_of
-            (0xa0)(0x00)(0x00)(0x00)(0x0f)(0xe0)(0x90);
+        const Cti::Test::byte_str expected =
+            "a0 00 00 00 0f e0 90";
 
         std::vector<unsigned char> results;
         results.resize(7);
@@ -62,9 +62,7 @@ BOOST_AUTO_TEST_CASE(test_B_Word)
 
         B_Word(&results.front(), tmpBSt, 0);
 
-        BOOST_CHECK_EQUAL_COLLECTIONS(
-            expected.begin(), expected.end(),
-            results.begin(), results.end());
+        BOOST_CHECK_EQUAL_RANGES(expected, results);
     }
 }
 

@@ -16,11 +16,12 @@ namespace Pil {
 
 enum
 {
-    E2EDT_NM_TIMEOUT           =  5,
     E2EDT_CON_RETX_TIMEOUT     = 60,
     E2EDT_CON_MAX_RETX         =  2,
     E2EDT_CON_RETX_RAND_FACTOR = 10,
     E2EDT_STATS_REPORTING_INTERVAL = 86400,
+    E2EDT_ACK_PRIORITY         = 15,  //  high priority - we want these to get out so the node doesn't retransmit
+    E2EDT_RETRANSMIT_PRIORITY  = 15,  //  If the first one got out, we need the retransmits to get out as well
 };
 
 Rfn::E2eStatistics stats;
@@ -28,28 +29,20 @@ Rfn::E2eStatistics stats;
 RfnRequestManager::RfnRequestManager()
 {
     E2eMessenger::registerE2eDtHandler(
-            boost::bind(&RfnRequestManager::receiveIndication, this, _1));
-}
+            [&](const E2eMessenger::Indication &msg)
+            {
+                LockGuard guard(_indicationMux);
 
-
-void RfnRequestManager::receiveIndication(const E2eMessenger::Indication &msg)
-{
-    CtiLockGuard<CtiCriticalSection> lock(_indicationMux);
-
-    _indications.push_back(msg);
+                _indications.push_back(msg);
+            });
 }
 
 
 void RfnRequestManager::tick()
 {
-    const RfnIdentifierSet rejected =
-            handleConfirms();
-
-    const RfnIdentifierSet completed =
-            handleIndications();
-
-    const RfnIdentifierSet expired =
-            handleTimeouts();
+    const auto rejected  = handleConfirms();
+    const auto completed = handleIndications();
+    const auto expired   = handleTimeouts();
 
     RfnIdentifierSet devicesToInspect;
 
@@ -84,7 +77,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
     IndicationQueue recentIndications;
 
     {
-        CtiLockGuard<CtiCriticalSection> lock(_indicationMux);
+        LockGuard guard(_indicationMux);
 
         std::swap(recentIndications, _indications);
     }
@@ -113,12 +106,10 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
 
             if( ! er.ack.empty() )
             {
-                //  ignore the return, don't set any timeouts - this is fire and forget
-                sendE2eDataRequestPacket(
+                sendE2eDataAck(
                         er.ack,
                         activeRequest.request.command->getApplicationServiceId(),
-                        activeRequest.request.rfnIdentifier,
-                        activeRequest.request.priority);
+                        activeRequest.request.rfnIdentifier);
 
                 stats.incrementAcks(activeRequest.request.deviceId, CtiTime::now());
             }
@@ -128,10 +119,6 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
                 CTILOG_ERROR(dout, "Indication received for inactive request token "<< er.token <<" for device "<< activeRequest.request.rfnIdentifier);
                 continue;
             }
-
-            CTILOG_INFO(dout, "Erasing timeout "<< activeRequest.timeout <<" for device "<< activeRequest.request.rfnIdentifier);
-
-            _upcomingExpirations[activeRequest.timeout].erase(indication.rfnIdentifier);
 
             CTILOG_INFO(dout, "Response received for token "<< er.token <<" for device "<< activeRequest.request.rfnIdentifier <<
                     std::endl <<"rfnId: "<< activeRequest.request.rfnIdentifier << ": " << er.data);
@@ -151,19 +138,15 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
                                 er.blockContinuation,
                                 activeRequest.request.command->getApplicationServiceId(),
                                 activeRequest.request.rfnIdentifier,
-                                activeRequest.request.priority);
+                                activeRequest.request.priority,
+                                activeRequest.timeout);
 
-                activeRequest.timeout = CtiTime::now().seconds() + gConfigParms.getValueAsInt("E2EDT_NM_TIMEOUT", E2EDT_NM_TIMEOUT);
-                activeRequest.status  = ActiveRfnRequest::PendingConfirm;
+                activeRequest.status = ActiveRfnRequest::PendingConfirm;
 
                 stats.incrementBlockContinuation(activeRequest.request.deviceId, previousRetransmitCount, activeRequest.currentPacket.timeSent, previousBlockTimeSent);
 
                 CTILOG_INFO(dout, "Block continuation sent for device "<< activeRequest.request.rfnIdentifier <<
                         std::endl <<"rfnId: "<< activeRequest.request.rfnIdentifier <<": "<< activeRequest.currentPacket.payloadSent);
-
-                CTILOG_INFO(dout, "Setting timeout "<< activeRequest.timeout <<" for device "<< activeRequest.request.rfnIdentifier);
-
-                _upcomingExpirations[activeRequest.timeout].insert(indication.rfnIdentifier);
 
                 continue;
             }
@@ -223,7 +206,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleConfirms()
     ConfirmQueue recentConfirms;
 
     {
-        CtiLockGuard<CtiCriticalSection> lock(_confirmMux);
+        LockGuard guard(_confirmMux);
 
         std::swap(recentConfirms, _confirms);
     }
@@ -242,35 +225,26 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleConfirms()
 
         CTILOG_INFO(dout, "Confirm message received for device "<< activeRequest.request.rfnIdentifier);
 
-        if( ! confirm.error )
+        if( confirm.error )
         {
-            CTILOG_INFO(dout, "Erasing timeout "<< activeRequest.timeout << " for device " << confirm.rfnIdentifier);
-
-            _upcomingExpirations[activeRequest.timeout].erase(confirm.rfnIdentifier);
-
-            activeRequest.timeout = CtiTime::now().seconds() + activeRequest.currentPacket.retransmissionDelay;
-            activeRequest.status = ActiveRfnRequest::PendingReply;
-
-            CTILOG_INFO(dout, "Setting timeout "<< activeRequest.timeout <<" for device "<< confirm.rfnIdentifier);
-
-            _upcomingExpirations[activeRequest.timeout].insert(confirm.rfnIdentifier);
-
-            continue;
-        }
-
-        std::auto_ptr<RfnDeviceResult> result(
+            std::auto_ptr<RfnDeviceResult> result(
                 new RfnDeviceResult(
                         activeRequest.request,
                         activeRequest.request.command->error(CtiTime::now(), *confirm.error),
                         *confirm.error));
 
-        CTILOG_INFO(dout, "Result ["<< result->status <<", "<< result->commandResult.description <<"] for device "<< activeRequest.request.rfnIdentifier);
+            CTILOG_INFO(dout, "Result ["<< result->status <<", "<< result->commandResult.description <<"] for device "<< activeRequest.request.rfnIdentifier);
 
-        _tickResults.push_back(result);
+            _tickResults.push_back(result);
 
-        rejected.insert(confirm.rfnIdentifier);
+            rejected.insert(confirm.rfnIdentifier);
 
-        _activeRequests.erase(confirm.rfnIdentifier);
+            _activeRequests.erase(confirm.rfnIdentifier);
+
+            continue;
+        }
+
+        activeRequest.status = ActiveRfnRequest::PendingReply;
     }
 
     return rejected;
@@ -283,99 +257,84 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleTimeouts()
 
     RfnIdentifierSet expirations;
 
-    ExpirationMap::const_iterator
-            expired_itr = _upcomingExpirations.begin(),
-            expired_end = _upcomingExpirations.upper_bound(Now.seconds());
+    ExpirationQueue recentExpirations;
+
+    {
+        std::lock_guard<std::mutex> guard(_expirationMux);
+
+        std::swap(recentExpirations, _expirations);
+    }
 
     RfnIdentifierSet retransmits;
 
-    for( ; expired_itr != expired_end; ++expired_itr )
-    {
-        for each( const RfnIdentifier &rfnId in expired_itr->second )
-        {
-            RfnIdToActiveRequest::iterator request_itr = _activeRequests.find(rfnId);
-
-            if( request_itr == _activeRequests.end() )
-            {
-                CTILOG_WARN(dout, "Timeout occurred for inactive device " << rfnId);
-                continue;
-            }
-
-            ActiveRfnRequest &activeRequest = request_itr->second;
-
-            CTILOG_INFO(dout, "Timeout "<< expired_itr->first <<" occurred for device "<< activeRequest.request.rfnIdentifier);
-
-            if( activeRequest.status == ActiveRfnRequest::PendingReply )
-            {
-                CTILOG_INFO(dout, "Timeout "<< expired_itr->first <<" reply was pending for device "<< activeRequest.request.rfnIdentifier);
-
-                stats.incrementFailures(activeRequest.request.deviceId);
-
-                if( activeRequest.currentPacket.retransmits < activeRequest.currentPacket.maxRetransmits )
-                {
-                    sendE2eDataRequestPacket(
-                            activeRequest.currentPacket.payloadSent,
-                            activeRequest.request.command->getApplicationServiceId(),
-                            rfnId,
-                            activeRequest.request.priority);
-
-                    activeRequest.currentPacket.retransmits++;
-                    activeRequest.currentPacket.retransmissionDelay *= 2;
-
-                    activeRequest.timeout = CtiTime::now().seconds() + gConfigParms.getValueAsInt("E2EDT_NM_TIMEOUT", E2EDT_NM_TIMEOUT);
-                    activeRequest.status  = ActiveRfnRequest::PendingConfirm;
-
-                    retransmits.insert(rfnId);
-
-                    CTILOG_INFO(dout, "Retransmit sent ("<< (activeRequest.currentPacket.maxRetransmits - activeRequest.currentPacket.retransmits) <<" remaining) for device "<< activeRequest.request.rfnIdentifier);
-
-                    continue;
-                }
-            }
-
-            YukonError_t error = ClientErrors::Unknown;
-
-            switch( activeRequest.status )
-            {
-                default:
-                    CTILOG_WARN(dout, "Timeout occurred for device \""<< activeRequest.request.rfnIdentifier <<"\" deviceid "<< activeRequest.request.deviceId <<" in unknown state "<< activeRequest.status);
-                    break;
-                case ActiveRfnRequest::PendingConfirm:
-                    error = ClientErrors::NetworkManagerTimeout;
-                    break;
-                case ActiveRfnRequest::PendingReply:
-                    error = ClientErrors::E2eRequestTimeout;
-                    break;
-            }
-
-            std::auto_ptr<RfnDeviceResult> result(
-                    new RfnDeviceResult(
-                            activeRequest.request,
-                            activeRequest.request.command->error(CtiTime::now(), error),
-                            error));
-
-            CTILOG_INFO(dout, "Result ["<< result->status <<", "<< result->commandResult.description <<"] for device "<< activeRequest.request.rfnIdentifier);
-
-            _tickResults.push_back(result);
-
-            expirations.insert(rfnId);
-
-            _activeRequests.erase(rfnId);
-        }
-    }
-
-    _upcomingExpirations.erase(_upcomingExpirations.begin(), expired_end);
-
-    for each( const RfnIdentifier &rfnId in retransmits )
+    for( const auto &rfnId : recentExpirations )
     {
         RfnIdToActiveRequest::iterator request_itr = _activeRequests.find(rfnId);
 
-        if( request_itr != _activeRequests.end() )
+        if( request_itr == _activeRequests.end() )
         {
-            ActiveRfnRequest &activeRequest = request_itr->second;
-
-            _upcomingExpirations[activeRequest.timeout].insert(rfnId);
+            CTILOG_WARN(dout, "Timeout occurred for inactive device " << rfnId);
+            continue;
         }
+
+        ActiveRfnRequest &activeRequest = request_itr->second;
+
+        CTILOG_INFO(dout, "Timeout occurred for device "<< activeRequest.request.rfnIdentifier);
+
+        if( activeRequest.status == ActiveRfnRequest::PendingReply )
+        {
+            CTILOG_INFO(dout, "Timeout reply was pending for device "<< activeRequest.request.rfnIdentifier);
+
+            stats.incrementFailures(activeRequest.request.deviceId);
+
+            if( activeRequest.currentPacket.retransmits < activeRequest.currentPacket.maxRetransmits )
+            {
+                sendE2eDataRequestPacket(
+                        activeRequest.currentPacket.payloadSent,
+                        activeRequest.request.command->getApplicationServiceId(),
+                        activeRequest.request.rfnIdentifier,
+                        E2EDT_RETRANSMIT_PRIORITY,
+                        CtiTime::now() + activeRequest.currentPacket.retransmissionDelay);
+                        //  expire the message if it hasn't gone out by the time we will send the next one
+
+                activeRequest.currentPacket.retransmits++;
+                activeRequest.currentPacket.retransmissionDelay *= 2;
+                activeRequest.status  = ActiveRfnRequest::PendingConfirm;
+
+                CTILOG_INFO(dout, "Retransmit sent ("<< (activeRequest.currentPacket.maxRetransmits - activeRequest.currentPacket.retransmits) <<" remaining) for device "<< activeRequest.request.rfnIdentifier);
+
+                continue;
+            }
+        }
+
+        YukonError_t error = ClientErrors::Unknown;
+
+        switch( activeRequest.status )
+        {
+            default:
+                CTILOG_WARN(dout, "Timeout occurred for device \""<< activeRequest.request.rfnIdentifier <<"\" deviceid "<< activeRequest.request.deviceId <<" in unknown state "<< activeRequest.status);
+                break;
+            case ActiveRfnRequest::PendingConfirm:
+                error = ClientErrors::NetworkManagerTimeout;
+                break;
+            case ActiveRfnRequest::PendingReply:
+                error = ClientErrors::E2eRequestTimeout;
+                break;
+        }
+
+        std::auto_ptr<RfnDeviceResult> result(
+                new RfnDeviceResult(
+                        activeRequest.request,
+                        activeRequest.request.command->error(CtiTime::now(), error),
+                        error));
+
+        CTILOG_INFO(dout, "Result ["<< result->status <<", "<< result->commandResult.description <<"] for device "<< activeRequest.request.rfnIdentifier);
+
+        _tickResults.push_back(result);
+
+        expirations.insert(rfnId);
+
+        _activeRequests.erase(rfnId);
     }
 
     return expirations;
@@ -387,7 +346,7 @@ void RfnRequestManager::handleNewRequests(const RfnIdentifierSet &recentCompleti
     RfnIdentifierSet recentlyActive(recentCompletions);
 
     {
-        CtiLockGuard<CtiCriticalSection> lock(_submittedRequestsMux);
+        LockGuard guard(_submittedRequestsMux);
 
         for each( RfnDeviceRequest r in _submittedRequests )
         {
@@ -409,6 +368,12 @@ void RfnRequestManager::handleNewRequests(const RfnIdentifierSet &recentCompleti
 std::vector<unsigned char>  RfnRequestManager::sendE2eDtRequest(const std::vector<unsigned char> &payload, const long endpointId, const unsigned long token)
 {
     return _e2edt.sendRequest(payload, endpointId, token);
+}
+
+
+int calcExpiration(const RfnDeviceRequest &request)
+{
+    return request.priority > 7 ? 3600 : 86400;
 }
 
 void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
@@ -449,16 +414,16 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
             ActiveRfnRequest newRequest;
 
             newRequest.request = request;
+            newRequest.timeout = calcExpiration(request);
             newRequest.currentPacket =
                     sendE2eDataRequestPacket(
                             e2ePacket,
-                            request.command->getApplicationServiceId(),
-                            request.rfnIdentifier,
-                            request.priority);
+                            newRequest.request.command->getApplicationServiceId(),
+                            newRequest.request.rfnIdentifier,
+                            newRequest.request.priority,
+                            newRequest.timeout);
 
             stats.incrementRequests(newRequest.request.deviceId, newRequest.currentPacket.timeSent);
-
-            newRequest.timeout = CtiTime::now().seconds() + gConfigParms.getValueAsInt("E2EDT_NM_TIMEOUT", E2EDT_NM_TIMEOUT);
             newRequest.status  = ActiveRfnRequest::PendingConfirm;
 
             FormattedList logItems;
@@ -479,8 +444,6 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
 
             CTILOG_INFO(dout, "Added request for device "<< rfnIdentifier <<
                     logItems);
-
-            _upcomingExpirations[newRequest.timeout].insert(request.rfnIdentifier);
 
             _activeRequests[request.rfnIdentifier] = newRequest;
 
@@ -504,7 +467,7 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
 
 void RfnRequestManager::postResults()
 {
-    CtiLockGuard<CtiCriticalSection> lock(_resultsMux);
+    LockGuard guard(_resultsMux);
 
     _results.transfer(_results.end(), _tickResults);
 }
@@ -512,7 +475,7 @@ void RfnRequestManager::postResults()
 
 boost::ptr_deque<RfnDeviceResult> RfnRequestManager::getResults(unsigned max)
 {
-    CtiLockGuard<CtiCriticalSection> lock(_resultsMux);
+    LockGuard guard(_resultsMux);
 
     boost::ptr_deque<RfnDeviceResult> tmp;
 
@@ -538,7 +501,7 @@ void RfnRequestManager::cancelByGroupMessageId(long groupMessageId)
 
 unsigned long RfnRequestManager::submitRequests(const std::vector<RfnDeviceRequest> &requests, unsigned long requestId)
 {
-    CtiLockGuard<CtiCriticalSection> lock(_submittedRequestsMux);
+    LockGuard guard(_submittedRequestsMux);
 
     for each(RfnDeviceRequest r in requests)
     {
@@ -553,27 +516,34 @@ unsigned long RfnRequestManager::submitRequests(const std::vector<RfnDeviceReque
 
 boost::random::mt19937 random_source;
 
-void RfnRequestManager::receiveConfirm(const E2eMessenger::Confirm &msg)
-{
-    CtiLockGuard<CtiCriticalSection> lock(_confirmMux);
-
-    _confirms.push_back(msg);
-}
-
 RfnRequestManager::PacketInfo
     RfnRequestManager::sendE2eDataRequestPacket(
         const std::vector<unsigned char> &e2ePacket,
         const ApplicationServiceIdentifiers &asid,
         const RfnIdentifier &rfnIdentifier,
-        const unsigned priority)
+        const unsigned priority,
+        const CtiTime expiration)
 {
     E2eMessenger::Request msg;
 
     msg.rfnIdentifier = rfnIdentifier;
     msg.payload       = e2ePacket;
-    msg.priority      = std::max<char>(1, std::min<unsigned>(priority, MAXPRIORITY));
+    msg.priority      = clamp<1, MAXPRIORITY>(priority);
+    msg.expiration    = expiration;
 
-    E2eMessenger::sendE2eDt(msg, asid, boost::bind(&RfnRequestManager::receiveConfirm, this, _1));
+    E2eMessenger::sendE2eDt(msg, asid,
+            [this](const E2eMessenger::Confirm &msg)
+            {
+                LockGuard guard(_confirmMux);
+
+                _confirms.push_back(msg);
+            },
+            [=]
+            {
+                LockGuard guard(_confirmMux);
+
+                _expirations.push_back(rfnIdentifier);
+            });
 
     PacketInfo transmissionReceipt;
 
@@ -589,6 +559,23 @@ RfnRequestManager::PacketInfo
     transmissionReceipt.retransmits = 0;
 
     return transmissionReceipt;
+}
+
+
+void RfnRequestManager::sendE2eDataAck(
+        const std::vector<unsigned char> &e2eAck,
+        const ApplicationServiceIdentifiers &asid,
+        const RfnIdentifier &rfnIdentifier)
+{
+    E2eMessenger::Request msg;
+
+    msg.rfnIdentifier = rfnIdentifier;
+    msg.payload       = e2eAck;
+    msg.priority      = E2EDT_ACK_PRIORITY;
+    msg.expiration    = E2EDT_CON_RETX_TIMEOUT;
+
+    //  ignore the confirm and timeout callbacks - this is fire and forget, even if we don't hear back from NM
+    E2eMessenger::sendE2eDt(msg, asid, [](const E2eMessenger::Confirm &msg){}, []{});
 }
 
 

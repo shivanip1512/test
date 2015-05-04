@@ -90,29 +90,33 @@ private:
         unsigned maxRetransmits;
     };
 
-    PacketInfo sendE2eDataRequestPacket(const std::vector<unsigned char> &e2ePacket, const ApplicationServiceIdentifiers &asid, const RfnIdentifier &rfnIdentifier, const unsigned priority);
-
-    void receiveConfirm(const E2eMessenger::Confirm &msg);
-    void receiveIndication(const E2eMessenger::Indication &msg);
+    PacketInfo sendE2eDataRequestPacket(const std::vector<unsigned char> &e2ePacket, const ApplicationServiceIdentifiers &asid, const RfnIdentifier &rfnIdentifier, const unsigned priority, const CtiTime timeout);
+    void sendE2eDataAck(const std::vector<unsigned char> &e2eAck, const ApplicationServiceIdentifiers &asid,  const RfnIdentifier &rfnIdentifier);
 
     void checkForNewRequest(const RfnIdentifier &rfnId);
 
-    typedef std::vector<E2eMessenger::Indication> IndicationQueue;
-    typedef std::vector<E2eMessenger::Confirm> ConfirmQueue;
-    typedef std::map<long, unsigned short> DeviceIdToE2eIdMap;
-    typedef std::priority_queue<RfnDeviceRequest> RequestQueue;
-    typedef std::map<RfnIdentifier, RequestQueue> RfnIdToRequestQueue;
+    using IndicationQueue = std::vector<E2eMessenger::Indication>;
+    using ConfirmQueue    = std::vector<E2eMessenger::Confirm>;
+    using ExpirationQueue = std::vector<RfnIdentifier>;
+    using RequestQueue    = std::priority_queue<RfnDeviceRequest>;
+    using RfnIdToRequestQueue = std::map<RfnIdentifier, RequestQueue>;
 
-    CtiCriticalSection   _indicationMux;
+    using Mutex     = std::mutex;
+    using LockGuard = std::lock_guard<std::mutex>;
+
+    Mutex                _indicationMux;
     IndicationQueue      _indications;
 
-    CtiCriticalSection   _confirmMux;
+    Mutex                _confirmMux;
     ConfirmQueue         _confirms;
 
-    CtiCriticalSection   _submittedRequestsMux;
+    Mutex                _expirationMux;
+    ExpirationQueue      _expirations;
+
+    Mutex                _submittedRequestsMux;
     RfnDeviceRequestList _submittedRequests;
 
-    CtiCriticalSection   _resultsMux;
+    Mutex                _resultsMux;
     ResultQueue          _results;
 
     ResultQueue _tickResults;
@@ -124,7 +128,6 @@ private:
         RfnDeviceRequest request;
         Devices::Commands::RfnCommand::RfnResponsePayload response;
         PacketInfo currentPacket;
-        unsigned short e2eId;
         enum
         {
             Submitted,
@@ -138,10 +141,6 @@ private:
     typedef std::map<RfnIdentifier, ActiveRfnRequest> RfnIdToActiveRequest;
 
     RfnIdToActiveRequest _activeRequests;
-
-    typedef std::map<time_t, RfnIdentifierSet> ExpirationMap;
-
-    ExpirationMap _upcomingExpirations;
 };
 
 }

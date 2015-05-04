@@ -11,7 +11,7 @@ using Cti::Messaging::Rfn::E2eDataRequestMsg;
 
 struct test_E2eMessenger : Cti::Messaging::Rfn::E2eMessenger
 {
-    std::vector<E2eDataRequestMsg> messages;
+    std::vector<Request> messages;
 
     Indication::Callback indicationHandler;
 
@@ -20,12 +20,12 @@ struct test_E2eMessenger : Cti::Messaging::Rfn::E2eMessenger
         indicationHandler = callback;
     }
 
-    void serializeAndQueue(const E2eDataRequestMsg &msg, Confirm::Callback callback) override
+    void serializeAndQueue(const Request &req, Confirm::Callback callback, TimeoutCallback timeout, const Cti::Messaging::Rfn::ApplicationServiceIdentifiers asid) override
     {
-        messages.push_back(msg);
+        messages.push_back(req);
 
         Confirm ack;
-        ack.rfnIdentifier = msg.rfnIdentifier;
+        ack.rfnIdentifier = req.rfnIdentifier;
 
         callback(ack);  //  call the confirm callback immediately
     }
@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_successful )
     {
         BOOST_REQUIRE_EQUAL(e2e->messages.size(), 1);
 
-        E2eDataRequestMsg &request = e2e->messages.front();
+        const auto &request = e2e->messages.front();
 
         Cti::Test::byte_str expectedPayload = "42 01 02 73 5a d6 ff 78 02 00";
 
@@ -228,7 +228,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_badRequest )
     {
         BOOST_REQUIRE_EQUAL(e2e->messages.size(), 1);
 
-        E2eDataRequestMsg &request = e2e->messages.front();
+        const auto &request = e2e->messages.front();
 
         Cti::Test::byte_str expectedPayload = "42 01 02 73 5a d6 ff 78 02 00";
 

@@ -39,32 +39,28 @@ public:
 
 protected:
 
-    virtual std::string describePort() const;
+    std::string describePort() const override;
 
-    virtual bool setupPort()         { return true; }  //  nothing to do
-    virtual bool manageConnections() { return false; }  //  nothing to do
+    bool setupPort() override         { return true; }  //  nothing to do
+    bool manageConnections() override { return false; }  //  nothing to do
 
-    void receiveConfirm(Messaging::Rfn::E2eMessenger::Confirm msg);
+    YukonError_t sendOutbound( device_record &dr ) override;
+    unsigned getDeviceTimeout( const device_record &dr ) const override;
+    bool collectInbounds(const Cti::Timing::MillisecondTimer & timer, const unsigned long until) override;
 
-    virtual YukonError_t sendOutbound( device_record &dr );
-    virtual unsigned getDeviceTimeout( const device_record &dr ) const;
-    virtual bool collectInbounds(const Cti::Timing::MillisecondTimer & timer, const unsigned long until);
+    void loadDeviceProperties(const std::vector<const CtiDeviceSingle *> &devices) override;
 
-    virtual void loadDeviceProperties(const std::vector<const CtiDeviceSingle *> &devices);
+    void addDeviceProperties   (const CtiDeviceSingle &device) override;
+    void updateDeviceProperties(const CtiDeviceSingle &device) override {}
+    void deleteDeviceProperties(const CtiDeviceSingle &device) override;
 
-    virtual void addDeviceProperties   (const CtiDeviceSingle &device);
-    virtual void updateDeviceProperties(const CtiDeviceSingle &device) {}
-    virtual void deleteDeviceProperties(const CtiDeviceSingle &device);
+    void updatePortProperties() override {}  //  no properties
 
-    virtual void updatePortProperties() {}  //  no properties
+    bool isDeviceDisconnected( const long device_id ) const override { return false; }
 
-    virtual bool isDeviceDisconnected( const long device_id ) const { return false; }
-
-    virtual std::string describeDeviceAddress( const long device_id ) const;
+    std::string describeDeviceAddress( const long device_id ) const override;
 
     RfnIdentifier getRfnIdentifier() const { return RfnIdentifier(); }
-
-    void receiveIndication(Messaging::Rfn::E2eMessenger::Indication msg);
 };
 
 }

@@ -1,3 +1,5 @@
+include "NetworkManagerMessaging.thrift"
+
 namespace cpp Cti.Messaging.Serialization.Thrift
 namespace java com.cannontech.messaging.serialization.thrift.generated
 
@@ -14,22 +16,29 @@ enum RfnE2eProtocol {
     //...
 }
 
+enum RfnE2eMessagePriority {
+    APP_LO = 0x00,
+    APP_HI = 0x01,
+    //...
+}
+
 struct RfnE2eDataRequest {
-    1: required     RfnE2eProtocol e2eProtocol;
-    2: required     byte           applicationServiceId;
-    3: required     RfnIdentifier  rfnIdentifier;
-    4: required     byte           priority;
-    5: optional     string         security;
-    6: required     binary         payload;
+    1: required     RfnE2eProtocol        e2eProtocol;
+    2: required     byte                  applicationServiceId;
+    3: required     RfnIdentifier         rfnIdentifier;
+    4: required     RfnE2eMessagePriority priority;
+    5: optional     string                security;
+    6: required     binary                payload;
+    7: optional     NetworkManagerMessaging.NetworkManagerRequestHeader header;
 }
 
 struct RfnE2eDataIndication {
-    1: required     RfnE2eProtocol e2eProtocol;
-    2: required     byte           applicationServiceId;
-    3: required     RfnIdentifier  rfnIdentifier;
-    4: required     byte           priority;
-    5: optional     string         security;
-    6: required     binary         payload;
+    1: required     RfnE2eProtocol        e2eProtocol;
+    2: required     byte                  applicationServiceId;
+    3: required     RfnIdentifier         rfnIdentifier;
+    4: required     RfnE2eMessagePriority priority;
+    5: optional     string                security;
+    6: required     binary                payload;
 }
 
 enum RfnE2eDataReplyType {
@@ -42,6 +51,8 @@ enum RfnE2eDataReplyType {
     APPLICATION_SERVICE_IDENTIFIER_INVALID = 0x06,
     NETWORK_LOAD_CONTROL                   = 0x07,
     NETWORK_SERVICE_FAILURE                = 0x08,
+    REQUEST_CANCELED                       = 0x09,
+    REQUEST_EXPIRED                        = 0x0a,
     //...
 }
 
@@ -50,4 +61,5 @@ struct RfnE2eDataConfirm {
     2: required     byte                  applicationServiceId;
     3: required     RfnIdentifier         rfnIdentifier;
     4: required     RfnE2eDataReplyType   replyType;
+    5: optional     NetworkManagerMessaging.NetworkManagerRequestHeader header;
 }

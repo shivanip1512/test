@@ -2,6 +2,7 @@
 
 #include "rfn_identifier.h"
 #include "RfnE2eMsg.h"
+#include "NetworkManagerMessaging.h"
 
 #include <boost/optional.hpp>
 
@@ -16,9 +17,11 @@ struct /*IM_EX_MSG*/ E2eDataRequestMsg : E2eMsg  //  no methods, does not need t
     Protocol protocol;
     unsigned char applicationServiceId;
     RfnIdentifier rfnIdentifier;
-    char priority;
+    bool highPriority;
     boost::optional<std::string> security;
     std::vector<unsigned char> payload;
+
+    NetworkManagerRequestHeader header;
 };
 
 }
