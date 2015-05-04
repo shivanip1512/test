@@ -257,7 +257,7 @@
         <tags:sectionContainer2 nameKey="assignedVoltagePoint" hideEnabled="false">
             <c:set var="addItemParameters" value="{'zoneType': '${zoneDto.zoneType}'}"/>
             <tags:dynamicTable items="${zoneDto.pointAssignments}" nameKey="dynamicTable"
-                id="pointTable" addItemParameters="${addItemParameters}" 
+                id="pointTable" addItemParameters="${addItemParameters}"  addButtonClass="pointAddItem"
                 noBlockOnAdd="true" >
                 <div class="scroll-md">
                     <table class="compact-results-table">
