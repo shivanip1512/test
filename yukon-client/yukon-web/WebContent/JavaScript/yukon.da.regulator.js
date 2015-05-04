@@ -116,7 +116,7 @@ yukon.da.regulator = (function () {
                     
                     body.find('tr').each(function (idx, tr) {
                         tr = $(tr);
-                        if (tr.data('timestamp') < event.timestamp) {
+                        if (!attached && tr.data('timestamp') < event.timestamp) {
                             row.insertBefore(tr);
                             attached = true;
                         } 
