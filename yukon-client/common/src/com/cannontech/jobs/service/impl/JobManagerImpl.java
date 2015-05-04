@@ -90,7 +90,7 @@ public class JobManagerImpl implements JobManager {
                 final RunnableRetryJob runnable = new RunnableRetryJob(status) {
                     @Override
                     protected void afterRun() {
-                        if (stopRescheduledForJob(status.getJob().getId())) {
+                        if (stopRescheduleForJob(status.getJob().getId())) {
                             doScheduleScheduledJob(status.getJob(), null);
                         }
                     }
@@ -282,7 +282,7 @@ public class JobManagerImpl implements JobManager {
             Runnable runnable = new BaseRunnableJob(job) {
                 @Override
                 protected void afterRun() {
-                    if (stopRescheduledForJob(job.getId())) {
+                    if (stopRescheduleForJob(job.getId())) {
                         doScheduleScheduledJob(job, nextRuntime);
                     }
                 }
@@ -300,7 +300,10 @@ public class JobManagerImpl implements JobManager {
         }
     }
 
-    private boolean stopRescheduledForJob(Integer jobId) {
+    /**
+     * This method will decide whether job needs to be rescheduled.
+     */
+    private boolean stopRescheduleForJob(Integer jobId) {
         boolean isToBeStopped = true;
         for (JobException it : jobExceptions) {
             if (it.jobId == jobId) {
@@ -461,6 +464,9 @@ public class JobManagerImpl implements JobManager {
         jobStatusDao.saveOrUpdate(status);
     }
 
+    /**
+     * This method sets isExeptionRecieved to false
+     */
     private void updateExceptionForJobReschedule(Integer jobId) {
         for (JobException it : jobExceptions) {
             if (it.jobId == jobId) {
