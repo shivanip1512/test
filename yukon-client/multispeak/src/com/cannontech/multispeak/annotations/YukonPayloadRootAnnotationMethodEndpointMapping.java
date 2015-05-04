@@ -23,43 +23,40 @@ import com.google.common.collect.ImmutableMap;
  */
 public class YukonPayloadRootAnnotationMethodEndpointMapping extends PayloadRootAnnotationMethodEndpointMapping {
 
-    private enum P2PMapping {
+    /**
+     * The purpose of this enum to support the same endpoint for different url point to point or any other web service url) 
+     * it is also building the map that contains the url and endPointAddress.
+     */
+    private enum EndPointMapping {
+        
         MR_CBSoap("MR_CBSoap", "/soap/MR_ServerSoap"),
-
         OD_OASoap("OD_OASoap", "/soap/OD_ServerSoap"),
-
         CD_CBSoap("CD_CBSoap", "/soap/CD_ServerSoap"),
-
         MR_EASoap("MR_EASoap", "/soap/MR_ServerSoap"),
-
         MR_ServerSoap("MR_ServerSoap", "/soap/MR_ServerSoap"),
-
         CD_ServerSoap("CD_ServerSoap", "/soap/CD_ServerSoap"),
-
         SCADA_ServerSoap("SCADA_ServerSoap", "/soap/SCADA_ServerSoap"),
-
         OD_ServerSoap("OD_ServerSoap", "/soap/OD_ServerSoap"),
-
         LM_ServerSoap("LM_ServerSoap", "/soap/LM_ServerSoap");
-
-        private static final ImmutableMap<String, String> endPointyMapping;
+        
+        private static final ImmutableMap<String, String> endPointMappingMap;
         private final String url;
         private final String endPointAddress;
         static {
             ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
-            for (P2PMapping p2PMapping : values()) {
+            for (EndPointMapping p2PMapping : values()) {
                 builder.put(p2PMapping.url, p2PMapping.endPointAddress);
             }
-            endPointyMapping = builder.build();
+            endPointMappingMap = builder.build();
         }
 
-        private P2PMapping(String url, String endPointAddress) {
+        private EndPointMapping(String url, String endPointAddress) {
             this.url = url;
             this.endPointAddress = endPointAddress;
         }
 
         public static String getLocationForEndPoint(String url) {
-            return endPointyMapping.get(url);
+            return endPointMappingMap.get(url);
         }
 
     }
@@ -76,7 +73,7 @@ public class YukonPayloadRootAnnotationMethodEndpointMapping extends PayloadRoot
                 String requestURI = ((HttpServletConnection) connection).getHttpServletRequest().getRequestURI();
                 String contextPath = ((HttpServletConnection) connection).getHttpServletRequest().getContextPath();
                 String orginalUrlPart = requestURI.substring(contextPath.length());
-                urlPart = P2PMapping.getLocationForEndPoint(orginalUrlPart.substring(orginalUrlPart.lastIndexOf("/")+1));
+                urlPart = EndPointMapping.getLocationForEndPoint(orginalUrlPart.substring(orginalUrlPart.lastIndexOf("/")+1));
             }
         }
 
