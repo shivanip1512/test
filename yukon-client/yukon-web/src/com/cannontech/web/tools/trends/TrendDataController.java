@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.GraphDao;
@@ -21,6 +23,8 @@ import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.service.DurationFormattingService;
+import com.cannontech.core.service.durationFormatter.DurationFormat;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.graph.GraphDataSeries;
@@ -40,6 +44,9 @@ public class TrendDataController {
     @Autowired private GraphDao graphDao;
     @Autowired private RawPointHistoryDao rphDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private DurationFormattingService durationFormatting;
+    
+    private static final Logger log = YukonLogManager.getLogger(TrendDataController.class);
     
     public enum LegacySeriesType {
         
@@ -99,6 +106,8 @@ public class TrendDataController {
         List<GraphDataSeries> series = graphDao.getGraphDataSeries(trend.getGraphDefinitionID());
         List<Map<String, Object>> seriesData = new ArrayList<>();
         
+        Duration dbTime = new Duration(0);
+        
         for (GraphDataSeries serie : series) {
             
             Map<String, Object> valueMap = new HashMap<>();
@@ -108,7 +117,17 @@ public class TrendDataController {
             Instant end = Instant.now();
             Instant start = end.minus(Duration.standardDays(365 * 2));
             Range<Instant> instantRange = new Range<>(start, true, end, true);
+            
+            Instant before = Instant.now();
+            
             List<PointValueHolder> data = rphDao.getPointData(serie.getPointID(), instantRange, Order.FORWARD);
+            
+            Instant after = Instant.now();
+            Duration dbHit = new Duration(before, after);
+            
+            log.debug("RPH retrieval for point: " + serie.getPointID() + " took " + 
+                    durationFormatting.formatDuration(dbHit, DurationFormat.DHMS_SHORT_REDUCED, userContext));
+            dbTime = dbTime.plus(dbHit);
             
             /** If this is a status point we need to turn data grouping off. */
             if (!data.isEmpty()) {
@@ -139,6 +158,9 @@ public class TrendDataController {
             
             seriesData.add(valueMap);
         }
+        
+        log.debug("RPH retrieval for trend: " + trend + " took " + 
+                durationFormatting.formatDuration(dbTime, DurationFormat.DHMS_SHORT_REDUCED, userContext));
         
         Map<String, Object> json = new HashMap<>();
         json.put("name", trend.getName());
