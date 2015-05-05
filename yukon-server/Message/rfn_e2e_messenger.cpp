@@ -33,20 +33,6 @@ E2eMessenger::E2eMessenger() :
                     std::mt19937_64(
                             std::random_device()()));
 
-    ActiveMQConnectionManager::registerHandler(
-            ActiveMQ::Queues::InboundQueue::NetworkManagerE2eDataIndication,
-            [&](const SerializedMessage &msg)
-            {
-                handleRfnE2eDataIndicationMsg(msg);
-            });
-
-    ActiveMQConnectionManager::registerHandler(
-            ActiveMQ::Queues::InboundQueue::NetworkManagerE2eDataConfirm,
-            [&](const SerializedMessage &msg)
-            {
-                handleRfnE2eDataConfirmMsg(msg);
-            });
-
     _timeoutProcessor.start();
 }
 
@@ -98,6 +84,7 @@ catch( WorkerThread::Interrupted &ex )
 }
 
 
+//  This is only called by PilServer on startup via RfnRequestManager::start()
 void E2eMessenger::registerE2eDtHandler(Indication::Callback callback)
 {
     gE2eMessenger->setE2eDtHandler(callback);
@@ -106,9 +93,27 @@ void E2eMessenger::registerE2eDtHandler(Indication::Callback callback)
 
 void E2eMessenger::setE2eDtHandler(Indication::Callback callback)
 {
-    readers_writer_lock_t::writer_lock_guard_t lock(_callbackMux);
+    {
+        readers_writer_lock_t::writer_lock_guard_t lock(_callbackMux);
 
-    _e2edtCallback = callback;
+        _e2edtCallback = callback;
+    }
+
+    ActiveMQConnectionManager::registerHandler(
+            ActiveMQ::Queues::InboundQueue::NetworkManagerE2eDataIndication,
+            [&](const SerializedMessage &msg)
+            {
+                handleRfnE2eDataIndicationMsg(msg);
+            });
+
+    ActiveMQConnectionManager::registerHandler(
+            ActiveMQ::Queues::InboundQueue::NetworkManagerE2eDataConfirm,
+            [&](const SerializedMessage &msg)
+            {
+                handleRfnE2eDataConfirmMsg(msg);
+            });
+
+    ActiveMQConnectionManager::start();
 }
 
 
@@ -122,8 +127,8 @@ void E2eMessenger::registerDnpHandler(Indication::Callback callback, const RfnId
         gE2eMessenger->_dnp3Callbacks[rfnid] = callback;
     }
 
-    //  as soon as we get anyone interested in DNP messages, make sure the AMQ handler is started
-    ActiveMQConnectionManager::start();
+    //  We don't need to start the AMQ connection here, since it
+    //    was already started by PIL's call to registerE2eDtHandler()
 }
 
 

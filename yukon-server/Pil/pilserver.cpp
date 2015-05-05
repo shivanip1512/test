@@ -142,6 +142,7 @@ int PilServer::execute()
         _nexusWriteThread.start();
         _vgConnThread    .start();
         _schedulerThread .start();
+        _rfnManager      .start();
         _periodicActionThread.start();
     }
 

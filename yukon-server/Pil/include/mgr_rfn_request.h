@@ -47,8 +47,6 @@ class IM_EX_CTIPIL RfnRequestManager
 {
 public:
 
-    RfnRequestManager();
-
     typedef boost::ptr_deque<RfnDeviceResult> ResultQueue;
     typedef std::vector<RfnDeviceRequest> RfnDeviceRequestList;
 
@@ -59,6 +57,8 @@ public:
     ResultQueue getResults(unsigned max);
 
     void cancelByGroupMessageId(long groupMessageId);
+
+    void start();
 
 protected:
 
@@ -76,7 +76,6 @@ private:
     void             postResults();
     void             handleStatistics();
 
-    typedef Messaging::Rfn::E2eMessenger E2eMessenger;
     typedef Messaging::Rfn::ApplicationServiceIdentifiers ApplicationServiceIdentifiers;
 
     Protocols::E2eDataTransferProtocol _e2edt;
@@ -95,8 +94,8 @@ private:
 
     void checkForNewRequest(const RfnIdentifier &rfnId);
 
-    using IndicationQueue = std::vector<E2eMessenger::Indication>;
-    using ConfirmQueue    = std::vector<E2eMessenger::Confirm>;
+    using IndicationQueue = std::vector<Messaging::Rfn::E2eMessenger::Indication>;
+    using ConfirmQueue    = std::vector<Messaging::Rfn::E2eMessenger::Confirm>;
     using ExpirationQueue = std::vector<RfnIdentifier>;
     using RequestQueue    = std::priority_queue<RfnDeviceRequest>;
     using RfnIdToRequestQueue = std::map<RfnIdentifier, RequestQueue>;

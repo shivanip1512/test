@@ -10,6 +10,7 @@
 #include <sstream>
 
 using Cti::Logging::Vector::Hex::operator<<;
+using Cti::Messaging::Rfn::E2eMessenger;
 
 namespace Cti {
 namespace Pil {
@@ -26,7 +27,7 @@ enum
 
 Rfn::E2eStatistics stats;
 
-RfnRequestManager::RfnRequestManager()
+void RfnRequestManager::start()
 {
     E2eMessenger::registerE2eDtHandler(
             [&](const E2eMessenger::Indication &msg)

@@ -65,6 +65,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_successful )
 
     mgr.e2e.id = 0x7301;
 
+    mgr.start();
+
     std::vector<Cti::Pil::RfnDeviceRequest> requests;
 
     const Cti::RfnIdentifier rfnId = { "MANUFATURER", "MODEL", "SERIAL" };
@@ -201,6 +203,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_badRequest )
     test_RfnRequestManager mgr;
 
     mgr.e2e.id = 0x7301;
+
+    mgr.start();
 
     std::vector<Cti::Pil::RfnDeviceRequest> requests;
 
