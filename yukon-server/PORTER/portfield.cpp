@@ -2914,7 +2914,7 @@ YukonError_t DoProcessInMessage(YukonError_t CommResult, CtiPortSPtr Port, INMES
                             ESTRUCT ESt;
 
                             /* This is I so decode dword(s) for the result */
-                            CommResult = InMessage.ErrorCode = status = D_Words (InMessage.Buffer.InMessage + 3, (USHORT)((InMessage.InLength - 3) / (DWORDLEN + 1)),  OutMessage->Remote, &DSt, &ESt);
+                            CommResult = InMessage.ErrorCode = status = D_Words (InMessage.Buffer.InMessage + 3, InMessage.InLength - 3,  OutMessage->Remote, &DSt, &ESt);
 
                             if( status == ClientErrors::EWordReceived )
                             {

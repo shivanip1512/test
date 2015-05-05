@@ -135,7 +135,7 @@ YukonError_t D1_Word (const unsigned char *DWord,  /* D word to be decoded */
       /* well if it isnt is it an e word? */
       if((DWord[0] & 0xf0) != 0xe0)
       {
-         return ClientErrors::BadType;
+         return ClientErrors::BadWordType;
       }
       else
       {
@@ -178,7 +178,7 @@ YukonError_t D23_Word(
       /* if it is not a d word is it an e word? */
       if((DWord[0] & 0xf0) != 0xe0)
       {
-         return ClientErrors::BadType;
+         return ClientErrors::BadWordType;
       }
       else
       {
@@ -204,11 +204,13 @@ YukonError_t D23_Word(
 
 YukonError_t D_Words (
         const unsigned char *DWords, /* D words to decode */
-        USHORT Num,         /* DWord count */
+        size_t len,         /* data length */
         USHORT CCU,         /* CCU number */
         DSTRUCT *DSt,       /* D word structure */
         ESTRUCT *ESt)       /* E word structure in case one is found */
 {
+   const size_t Num = len / (DWORDLEN + 1);
+
    YukonError_t Code;
    USHORT Dummy, Nack;
 
@@ -227,7 +229,7 @@ YukonError_t D_Words (
        ((DWords[0] & 0xf0) != 0xe0) &&
        !isNackPadded(DWords, 1, CCU) )
    {
-       return ClientErrors::BadType;
+       return ClientErrors::BadWordType;
    }
 
    /* check for a nacked */
@@ -347,7 +349,7 @@ YukonError_t E_Word (
    /* Check to be sure type is right */
    if((EWord[0] & 0xf0) != 0xe0)
    {
-      return ClientErrors::BadType;
+      return ClientErrors::BadWordType;
    }
 
    /* decode the information and place it in the e word structure */

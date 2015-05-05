@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE(test_ccu721_decode_eword)
         const char *e_word = "\xfe\x00\x00\x20\x00\x02\x60";
         ESTRUCT ESt;
 
-        BOOST_CHECK_EQUAL(ClientErrors::BadType, Test_Ccu721Device::decodeEWord(reinterpret_cast<const unsigned char *>(e_word), 7, &ESt));
+        BOOST_CHECK_EQUAL(ClientErrors::BadWordType, Test_Ccu721Device::decodeEWord(reinterpret_cast<const unsigned char *>(e_word), 7, &ESt));
     }
 
     {

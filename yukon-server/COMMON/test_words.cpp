@@ -66,5 +66,57 @@ BOOST_AUTO_TEST_CASE(test_B_Word)
     }
 }
 
+
+BOOST_AUTO_TEST_CASE(test_D_Words)
+{
+    {
+        const Cti::Test::byte_str inboundBWord =
+                "af f2 6d c5 3c bc 40 41 "
+                "04 8d 0f 43 30 0a b0 39 "
+                "2a 55 64 fb 3f ff f0 39";
+
+        DSTRUCT d;
+        ESTRUCT e;
+
+        BOOST_CHECK_EQUAL(ClientErrors::BadWordType, D_Words(inboundBWord.data(), inboundBWord.size(), 1, &d, &e));
+    }
+
+    {
+        const Cti::Test::byte_str nackPadded =
+                "B1 B1 B1 B1 B1 B1 B1 B1 "
+                "B1 B1 B1 B1 B1 B1 B1 B1 "
+                "B1 B1 B1 B1 B1 B1 B1 B1";
+
+        DSTRUCT d;
+        ESTRUCT e;
+
+        BOOST_CHECK_EQUAL(ClientErrors::Word1NackPadded, D_Words(nackPadded.data(), nackPadded.size(), 1, &d, &e));
+    }
+
+    {
+        const Cti::Test::byte_str dWords =
+                "DF DD 55 D7 FF FF F0 39 "
+                "FE A4 93 60 4C 80 10 39 "
+                "2F 12 86 F0 00 03 00 39";
+
+        DSTRUCT d;
+        ESTRUCT e;
+
+        BOOST_CHECK_EQUAL(ClientErrors::Word1Nack, D_Words(dWords.data(), dWords.size(), 1, &d, &e));
+    }
+
+    {
+        const Cti::Test::byte_str dWords =
+                "DE BD D3 01 20 9D 20 41 "
+                "DB E0 04 83 FF C2 F0 41 "
+                "D3 FF C0 00 00 02 10 41";
+
+        DSTRUCT d;
+        ESTRUCT e;
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, D_Words(dWords.data(), dWords.size(), 1, &d, &e));
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 

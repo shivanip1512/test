@@ -137,7 +137,7 @@ struct ClientErrors
         None = 0,
         Abnormal,
         NoTransmitterForRoute,
-        BadType,
+        BadWordType,
         DLength,
         z_005,  //  all z_ codes are unused and may be repurposed
         z_006,

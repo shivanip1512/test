@@ -17,7 +17,7 @@ static const std::map<YukonError_t, error_info> CtiErrors = {
         { ClientErrors::None,                        ei{ ERRTYPENONE,     "Normal (Success) Return"                     } },
         { ClientErrors::Abnormal,                    ei{ ERRTYPESYSTEM,   "Not Normal (Unsuccessful) Return"            } },
         { ClientErrors::NoTransmitterForRoute,       ei{ ERRTYPESYSTEM,   "Route has no associated transmitter"         } },
-        { ClientErrors::BadType,                     ei{ ERRTYPEPROTOCOL, "Bad Message Type"                            } },
+        { ClientErrors::BadWordType,                 ei{ ERRTYPEPROTOCOL, "Bad Message Type"                            } },
         { ClientErrors::DLength,                     ei{ ERRTYPEPROTOCOL, "D Word Wrong length"                         } },
         { ClientErrors::BadId,                       ei{ ERRTYPESYSTEM,   "Bad ID Specification"                        } },
         { ClientErrors::BadRange,                    ei{ ERRTYPESYSTEM,   "Parameter out of Range"                      } },
