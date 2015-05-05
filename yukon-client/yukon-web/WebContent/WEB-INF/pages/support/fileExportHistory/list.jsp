@@ -11,10 +11,10 @@
     <form action="list" class="clearfix stacked">
         <tags:nameValueContainer2 tableClass="with-form-controls">
 		    <tags:nameValue2 nameKey=".search.name">
-            	<input type="text" name="name" value="${searchName}">
+            	<input type="text" name="name" value="${fn:escapeXml(searchName)}">
             </tags:nameValue2>
 		    <tags:nameValue2 nameKey=".search.jobName">
-            	<input type="text" name="jobName" value="${searchJobName}" size="40">
+            	<input type="text" name="jobName" value="${fn:escapeXml(searchJobName)}" size="40">
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".search.exportType">
             	<select name="exportType">
