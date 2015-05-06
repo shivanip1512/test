@@ -86,7 +86,7 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of<std::string
     ("Unknown Error Code (55)")
     ("Function and/or Type Not Found")
     ("E-Word Received in Returned Message")
-    ("Unknown Error Code (58)")
+    ("B-Word Received in Returned Message")
     ("OS or System Error")
     //  60
     ("Bad Port Specification")
@@ -278,7 +278,7 @@ BOOST_AUTO_TEST_CASE(test_GetErrorType)
         2, 2, 2, _, _, _, _, _, _, _,
         _, 3, 3, 3, 3, _, 3, _, _, _,
         _, _, _, _, _, _, 3, _, _, _,
-        _, _, _, _, _, _, _, 2, _, _,
+        _, _, _, _, _, _, _, 2, 2, _,
         _, _, _, _, _, 3, _, 3, 3, _,
         _, 2, 2, _, 2, 2, _, _, _, _,
         _, _, _, _, _, _, _, 3, 3, 3,

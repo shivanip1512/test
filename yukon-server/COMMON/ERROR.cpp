@@ -48,6 +48,7 @@ static const std::map<YukonError_t, error_info> CtiErrors = {
         { ClientErrors::IdNotFound,                  ei{ ERRTYPESYSTEM,   "ID Not Found"                                } },
         { ClientErrors::TypeNotFound,                ei{ ERRTYPESYSTEM,   "Function and/or Type Not Found"              } },
         { ClientErrors::EWordReceived,               ei{ ERRTYPEPROTOCOL, "E-Word Received in Returned Message"         } },
+        { ClientErrors::BWordReceived,               ei{ ERRTYPEPROTOCOL, "B-Word Received in Returned Message"         } },
         { ClientErrors::SystemRelated,               ei{ ERRTYPESYSTEM,   "OS or System Error"                          } },
         { ClientErrors::BadPort,                     ei{ ERRTYPESYSTEM,   "Bad Port Specification"                      } },
         { ClientErrors::QueueRead,                   ei{ ERRTYPESYSTEM,   "Error Reading Queue"                         } },
