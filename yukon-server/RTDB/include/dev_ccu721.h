@@ -41,7 +41,7 @@ protected:
     static void writeAWord      (byte_buffer_t &buf, const ASTRUCT &ASt);
     static void writeBWord      (byte_buffer_t &buf, const BSTRUCT &BSt);
 
-    YukonError_t decodeDWords(const unsigned char *input, const unsigned input_length, const unsigned Remote, DSTRUCT *DSt, ESTRUCT *ESt) const;
+    YukonError_t decodeDWords(const unsigned char *input, const unsigned input_length, const unsigned Remote, DSTRUCT *DSt, ESTRUCT *ESt, BSTRUCT *BSt) const;
     static YukonError_t decodeEWord(const unsigned char *input, const unsigned input_length, ESTRUCT *ESt);
 
     Protocols::KlondikeProtocol _klondike;

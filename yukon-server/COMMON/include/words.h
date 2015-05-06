@@ -117,11 +117,12 @@ struct ESTRUCT
 
 int          IM_EX_CTIBASE A_Word  (PBYTE, const ASTRUCT &, BOOL Double = FALSE);
 int          IM_EX_CTIBASE B_Word  (PBYTE, const BSTRUCT &, unsigned wordCount, BOOL Double = FALSE);
+YukonError_t IM_EX_CTIBASE decodeBWord(const unsigned char *, BSTRUCT *BSt);
 int          IM_EX_CTIBASE C_Word  (PBYTE, const PBYTE, USHORT);
 int          IM_EX_CTIBASE C_Words (unsigned char *, const unsigned char *, unsigned short, unsigned int *cword_count = 0);
 YukonError_t IM_EX_CTIBASE D1_Word (const unsigned char *, PBYTE, PUSHORT, PULONG, PUSHORT, PUSHORT);
 YukonError_t IM_EX_CTIBASE D23_Word(const unsigned char *, PBYTE, PUSHORT, PUSHORT);
-YukonError_t IM_EX_CTIBASE D_Words (const unsigned char *, size_t, USHORT, DSTRUCT *, ESTRUCT *);
+YukonError_t IM_EX_CTIBASE D_Words (const unsigned char *, size_t, USHORT, DSTRUCT *, ESTRUCT *, BSTRUCT *);
 YukonError_t IM_EX_CTIBASE E_Word  (const unsigned char *, ESTRUCT *);
 bool isBchValid  (const unsigned char *);
 bool isNackPadded(const unsigned char *, USHORT, USHORT);

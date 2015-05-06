@@ -2912,9 +2912,10 @@ YukonError_t DoProcessInMessage(YukonError_t CommResult, CtiPortSPtr Port, INMES
                         {
                             DSTRUCT DSt;
                             ESTRUCT ESt;
+                            BSTRUCT BSt;
 
                             /* This is I so decode dword(s) for the result */
-                            CommResult = InMessage.ErrorCode = status = D_Words (InMessage.Buffer.InMessage + 3, InMessage.InLength - 3,  OutMessage->Remote, &DSt, &ESt);
+                            CommResult = InMessage.ErrorCode = status = D_Words (InMessage.Buffer.InMessage + 3, InMessage.InLength - 3,  OutMessage->Remote, &DSt, &ESt, &BSt);
 
                             if( status == ClientErrors::EWordReceived )
                             {
@@ -2924,6 +2925,24 @@ YukonError_t DoProcessInMessage(YukonError_t CommResult, CtiPortSPtr Port, INMES
                                         OutMessage->Request.RouteID,
                                         OutMessage->Request.RetryMacroOffset,
                                         ESt.echo_address);
+                            }
+                            else if( status == ClientErrors::BWordReceived )
+                            {
+                                Cti::FormattedList bWordDetails;
+
+                                bWordDetails.add("Device name") << Device->getName();
+                                bWordDetails.add("Device ID")   << Device->getID();
+                                bWordDetails.add("Device type") << desolveDeviceType(Device->getType());
+
+                                bWordDetails.add("DLC Address") << BSt.Address;
+                                bWordDetails.add("Repeater fixed bits")    << BSt.DlcRoute.RepFixed;
+                                bWordDetails.add("Repeater variable bits") << BSt.DlcRoute.RepVar;
+                                bWordDetails.add("Function")   << BSt.Function;
+                                bWordDetails.add("IO bits")    << BSt.IO;
+                                bWordDetails.add("Word count") << BSt.Length;
+
+                                CTILOG_WARN(dout, "B word received, possible interference from another transmitter"
+                                                    << bWordDetails);
                             }
                             else
                             {

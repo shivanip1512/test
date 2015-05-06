@@ -6,6 +6,8 @@
 #include "numstr.h"
 #include "porter.h"
 #include "mgr_route.h"
+#include "desolvers.h"
+#include "words.h"
 
 #include <boost/bind.hpp>
 
@@ -786,9 +788,10 @@ YukonError_t Ccu721Device::processInbound(const OUTMESS *om, INMESS &im)
     {
         DSTRUCT tmp_d_struct;
         ESTRUCT tmp_e_struct;
+        BSTRUCT tmp_b_struct;
 
         //  inbound command - decode the D words
-        const YukonError_t dword_status = decodeDWords(im.Buffer.InMessage, im.InLength, om->Remote, &tmp_d_struct, &tmp_e_struct);
+        const YukonError_t dword_status = decodeDWords(im.Buffer.InMessage, im.InLength, om->Remote, &tmp_d_struct, &tmp_e_struct, &tmp_b_struct);
 
         switch( dword_status )
         {
@@ -799,6 +802,28 @@ YukonError_t Ccu721Device::processInbound(const OUTMESS *om, INMESS &im)
                 im.Buffer.DSt.DSTFlag = im.MilliTime & DSTACTIVE;
 
                 im.InLength = im.Buffer.DSt.Length = (im.InLength / DWORDLEN) * 5 - 2;  //  calculate the number of bytes we get back
+
+                break;
+            }
+            case ClientErrors::BWordReceived:
+            {
+                Cti::FormattedList bWordDetails;
+
+                bWordDetails.add("Device name") << getName();
+                bWordDetails.add("Device ID")   << getID();
+                bWordDetails.add("Device type") << desolveDeviceType(getType());
+
+                bWordDetails.add("DLC Address") << tmp_b_struct.Address;
+                bWordDetails.add("Repeater fixed bits")    << tmp_b_struct.DlcRoute.RepFixed;
+                bWordDetails.add("Repeater variable bits") << tmp_b_struct.DlcRoute.RepVar;
+                bWordDetails.add("Function")   << tmp_b_struct.Function;
+                bWordDetails.add("IO bits")    << tmp_b_struct.IO;
+                bWordDetails.add("Word count") << tmp_b_struct.Length;
+
+                CTILOG_WARN(dout, "B word received, possible interference from another transmitter"
+                                    << bWordDetails);
+
+                im.InLength = 0;
 
                 break;
             }
@@ -825,7 +850,7 @@ YukonError_t Ccu721Device::processInbound(const OUTMESS *om, INMESS &im)
 }
 
 
-YukonError_t Ccu721Device::decodeDWords(const unsigned char *input, const unsigned input_length, const unsigned Remote, DSTRUCT *DSt, ESTRUCT *ESt) const
+YukonError_t Ccu721Device::decodeDWords(const unsigned char *input, const unsigned input_length, const unsigned Remote, DSTRUCT *DSt, ESTRUCT *ESt, BSTRUCT *BSt) const
 {
     if( input_length % DWORDLEN )
     {
@@ -853,7 +878,11 @@ YukonError_t Ccu721Device::decodeDWords(const unsigned char *input, const unsign
         {
             return decodeEWord(input_itr, input_end - input_itr, ESt);
         }
-        else if( status )
+        if( status == ClientErrors::BWordReceived )
+        {
+            return decodeBWord(&*input_itr, BSt);
+        }
+        if( status )
         {
             return status;
         }

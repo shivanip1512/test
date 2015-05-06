@@ -77,8 +77,42 @@ BOOST_AUTO_TEST_CASE(test_D_Words)
 
         DSTRUCT d;
         ESTRUCT e;
+        BSTRUCT b;
 
-        BOOST_CHECK_EQUAL(ClientErrors::BadWordType, D_Words(inboundBWord.data(), inboundBWord.size(), 1, &d, &e));
+        BOOST_CHECK_EQUAL(ClientErrors::BWordReceived, D_Words(inboundBWord.data(), inboundBWord.size(), 1, &d, &e, &b));
+
+        BOOST_CHECK_EQUAL(636692, b.Address);
+        BOOST_CHECK_EQUAL(203, b.Function);
+        BOOST_CHECK_EQUAL(  3, b.IO);
+        BOOST_CHECK_EQUAL(  3, b.Length);
+        BOOST_CHECK_EQUAL( 31, b.DlcRoute.RepFixed);
+        BOOST_CHECK_EQUAL(  7, b.DlcRoute.RepVar);
+    }
+
+    {
+        const Cti::Test::byte_str badBchBword =
+                "A0 0F CB 09 5F D5 70 39 "
+                "66 98 3F 9C 0C 83 D0 39 "
+                "AE CF 8F 0E 97 F0 20 39";
+
+        DSTRUCT d;
+        ESTRUCT e;
+        BSTRUCT b;
+
+        BOOST_CHECK_EQUAL(ClientErrors::Word1Nack, D_Words(badBchBword.data(), badBchBword.size(), 1, &d, &e, &b));
+    }
+
+    {
+        const Cti::Test::byte_str lastWordNack =
+                "DE 29 30 0B 6C 5F A0 41 "
+                "D3 19 C0 43 30 03 30 41 "
+                "55 14 02 64 A0 73 30 39";
+
+        DSTRUCT d;
+        ESTRUCT e;
+        BSTRUCT b;
+
+        BOOST_CHECK_EQUAL(ClientErrors::BadBch, D_Words(lastWordNack.data(), lastWordNack.size(), 1, &d, &e, &b));
     }
 
     {
@@ -89,8 +123,9 @@ BOOST_AUTO_TEST_CASE(test_D_Words)
 
         DSTRUCT d;
         ESTRUCT e;
+        BSTRUCT b;
 
-        BOOST_CHECK_EQUAL(ClientErrors::Word1NackPadded, D_Words(nackPadded.data(), nackPadded.size(), 1, &d, &e));
+        BOOST_CHECK_EQUAL(ClientErrors::Word1NackPadded, D_Words(nackPadded.data(), nackPadded.size(), 1, &d, &e, &b));
     }
 
     {
@@ -101,8 +136,9 @@ BOOST_AUTO_TEST_CASE(test_D_Words)
 
         DSTRUCT d;
         ESTRUCT e;
+        BSTRUCT b;
 
-        BOOST_CHECK_EQUAL(ClientErrors::Word1Nack, D_Words(dWords.data(), dWords.size(), 1, &d, &e));
+        BOOST_CHECK_EQUAL(ClientErrors::Word1Nack, D_Words(dWords.data(), dWords.size(), 1, &d, &e, &b));
     }
 
     {
@@ -113,8 +149,33 @@ BOOST_AUTO_TEST_CASE(test_D_Words)
 
         DSTRUCT d;
         ESTRUCT e;
+        BSTRUCT b;
 
-        BOOST_CHECK_EQUAL(ClientErrors::None, D_Words(dWords.data(), dWords.size(), 1, &d, &e));
+        BOOST_CHECK_EQUAL(ClientErrors::None, D_Words(dWords.data(), dWords.size(), 1, &d, &e, &b));
+    }
+
+    {
+         const Cti::Test::byte_str eWords =
+                 "ED 6F E0 20 90 01 F0 41 "
+                 "ED 6F E0 20 90 01 F0 41 "
+                 "ED 6F E0 20 90 01 F0 41";
+
+         DSTRUCT d;
+         ESTRUCT e;
+         BSTRUCT b;
+
+         BOOST_CHECK_EQUAL(ClientErrors::EWordReceived, D_Words(eWords.data(), eWords.size(), 1, &d, &e, &b));
+
+         BOOST_CHECK_EQUAL(e.echo_address, 5886);
+         BOOST_CHECK_EQUAL(e.repeater_variable, 6);
+         BOOST_CHECK( ! e.alarm);
+         BOOST_CHECK( ! e.power_fail);
+         BOOST_CHECK( ! e.diagnostics.incoming_bch_error);
+         BOOST_CHECK(e.diagnostics.incoming_no_response);
+         BOOST_CHECK( ! e.diagnostics.listen_ahead_bch_error);
+         BOOST_CHECK( ! e.diagnostics.listen_ahead_no_response);
+         BOOST_CHECK( ! e.diagnostics.repeater_code_mismatch);
+         BOOST_CHECK( ! e.diagnostics.weak_signal);
     }
 }
 

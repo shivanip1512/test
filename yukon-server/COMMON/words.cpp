@@ -55,6 +55,43 @@ INT IM_EX_CTIBASE B_Word (PBYTE BWord, const BSTRUCT &BSt, unsigned wordCount, B
 }
 
 
+YukonError_t decodeBWord(const unsigned char *BWord, BSTRUCT *BSt)
+{
+   if( ! isBchValid(BWord) )
+   {
+      return ClientErrors::BadBch;
+   }
+
+   if( (BWord[0] & 0xe0) != 0xa0 )  //  allow both 0xA0 and 0xB0
+   {
+      return ClientErrors::BadWordType;
+   }
+
+   BSt->DlcRoute.RepVar   = (BWord[0] >> 1) & 0x07;
+   BSt->DlcRoute.RepFixed = (BWord[0] << 4) & 0x10 |
+                            (BWord[1] >> 4) & 0x0f;
+
+   //  can't be determined from an inbound B word, so set them to FFFF
+   BSt->DlcRoute.Amp = -1;
+   BSt->DlcRoute.Bus = -1;
+   BSt->DlcRoute.Stages = -1;
+
+   BSt->Address  = (BWord[1] << 18) & 0x3c0000 |
+                   (BWord[2] << 10) & 0x03fc00 |
+                   (BWord[3] <<  2) & 0x0003fc |
+                   (BWord[4] >>  6) & 0x000003;
+
+   BSt->Length   = (BWord[4] >> 4) & 0x03;
+
+   BSt->Function = (BWord[4] << 4) & 0xf0 |
+                   (BWord[5] >> 4) & 0x0f;
+
+   BSt->IO       = (BWord[5] >> 2) & 0x03;
+
+   return ClientErrors::BWordReceived;
+}
+
+
 /* Routine to make single "C" word */
 
 INT IM_EX_CTIBASE C_Word (PBYTE CWord,                        /* result */
@@ -115,6 +152,19 @@ INT IM_EX_CTIBASE C_Words (unsigned char * CWords,             /* results */
 }
 
 
+YukonError_t validateDWord(const unsigned char firstByte)
+{
+   switch( firstByte & 0xf0 )
+   {
+      case 0xa0:
+      case 0xb0:  return ClientErrors::BWordReceived;
+      case 0xd0:  return ClientErrors::None;
+      case 0xe0:  return ClientErrors::EWordReceived;
+      default:    return ClientErrors::BadWordType;
+   }
+}
+
+
 /* Routine to decode "D1" type Message */
 
 YukonError_t D1_Word (const unsigned char *DWord,  /* D word to be decoded */
@@ -130,17 +180,9 @@ YukonError_t D1_Word (const unsigned char *DWord,  /* D word to be decoded */
    }
 
    /* check if we actually have a DWord */
-   if((DWord[0] & 0xf0) != 0xd0)
+   if( const auto error = validateDWord(DWord[0]) )
    {
-      /* well if it isnt is it an e word? */
-      if((DWord[0] & 0xf0) != 0xe0)
-      {
-         return ClientErrors::BadWordType;
-      }
-      else
-      {
-         return ClientErrors::EWordReceived;
-      }
+      return error;
    }
 
    /* decode the overhead stuff */
@@ -173,17 +215,9 @@ YukonError_t D23_Word(
    }
 
    /* make sure that we received a d word */
-   if((DWord[0] & 0xf0) != 0xd0)
+   if( const auto error = validateDWord(DWord[0]) )
    {
-      /* if it is not a d word is it an e word? */
-      if((DWord[0] & 0xf0) != 0xe0)
-      {
-         return ClientErrors::BadWordType;
-      }
-      else
-      {
-         return ClientErrors::EWordReceived;
-      }
+      return error;
    }
 
    /* decode the status bits */
@@ -207,7 +241,8 @@ YukonError_t D_Words (
         size_t len,         /* data length */
         USHORT CCU,         /* CCU number */
         DSTRUCT *DSt,       /* D word structure */
-        ESTRUCT *ESt)       /* E word structure in case one is found */
+        ESTRUCT *ESt,       /* E word structure in case one is found */
+        BSTRUCT *BSt )      /* B word structure in case one is found */
 {
    const size_t Num = len / (DWORDLEN + 1);
 
@@ -224,8 +259,10 @@ YukonError_t D_Words (
       return ClientErrors::DLength;
    }
 
-   /* if it's not a D word, and it's not a NACK, we got garbage */
-   if( ((DWords[0] & 0xf0) != 0xd0) &&
+   /* early check to rule out garbage */
+   if( ((DWords[0] & 0xf0) != 0xa0) &&
+       ((DWords[0] & 0xf0) != 0xb0) &&
+       ((DWords[0] & 0xf0) != 0xd0) &&
        ((DWords[0] & 0xf0) != 0xe0) &&
        !isNackPadded(DWords, 1, CCU) )
    {
@@ -260,6 +297,10 @@ YukonError_t D_Words (
          /* try to decode the E word we just found */
          return E_Word(DWords, ESt);
       }
+      if(Code == ClientErrors::BWordReceived)
+      {
+         return decodeBWord(DWords, BSt);
+      }
 
       return(Code);
    }
@@ -292,6 +333,10 @@ YukonError_t D_Words (
             /* try to decode the E word we just found */
             return E_Word(DWords+8, ESt);
          }
+         if(Code == ClientErrors::BWordReceived)
+         {
+            return decodeBWord(DWords+8, BSt);
+         }
 
          return(Code);
       }
@@ -323,6 +368,10 @@ YukonError_t D_Words (
          {
             /* try to decode the E word we just found */
             return E_Word(DWords+16, ESt);
+         }
+         if(Code == ClientErrors::BWordReceived)
+         {
+            return decodeBWord(DWords+16, BSt);
          }
 
          return(Code);
@@ -433,7 +482,7 @@ YukonError_t NackTst (
    /* calculate out the ack character for this CCU and compare */
    if((Reply & 0x7c) == 0x40)
       *NAck = 0;
-   else if((Reply & 0x7c) == 0x30)
+   else if((Reply & 0x7c) == 0x30)  //  not sufficient... ?  Only checking for NAK-S (signal dropout)...  see Emetcon protocol spec 3-3
       *NAck = 1;
 
    if((Reply & 0x03) != (CCU & 0x03))

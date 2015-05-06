@@ -192,7 +192,7 @@ struct ClientErrors
         z_055,
         TypeNotFound,
         EWordReceived,
-        z_058,
+        BWordReceived,
         SystemRelated,
         BadPort,
         QueueRead,
