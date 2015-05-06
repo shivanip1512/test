@@ -3,7 +3,7 @@ package com.cannontech.dr.rfn.message.unicast;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.codec.binary.Hex;
+import javax.xml.bind.DatatypeConverter;
 
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
@@ -108,7 +108,7 @@ public class RfnExpressComUnicastRequest implements RfnIdentifyingMessage, Seria
                     messagePriority,
                     rfnMessageClass,
                     expirationDuration,
-                    Hex.encodeHexString(payload),
+                    DatatypeConverter.printHexBinary(payload),
                     new String(payload, StandardCharsets.US_ASCII),
                     responseExpected);
     }
