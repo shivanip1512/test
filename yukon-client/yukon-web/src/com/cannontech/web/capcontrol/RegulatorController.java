@@ -1,11 +1,9 @@
 package com.cannontech.web.capcontrol;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,7 +19,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -31,19 +28,15 @@ import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.exception.OrphanedRegulatorException;
 import com.cannontech.capcontrol.export.RegulatorPointMappingExportService;
 import com.cannontech.capcontrol.model.Regulator;
-import com.cannontech.capcontrol.model.RegulatorEvent;
-import com.cannontech.capcontrol.model.RegulatorEvent.EventType;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.service.VoltageRegulatorService;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.TimeRange;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.capcontrol.regulator.setup.FileExporter;
@@ -54,7 +47,6 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.WebUtilityService;
 import com.cannontech.yukon.IDatabaseCache;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.common.collect.ImmutableMap;
 
 @RequestMapping("regulators")
 @Controller
@@ -68,30 +60,12 @@ public class RegulatorController {
     @Autowired private RegulatorEventsDao eventsDao;
     @Autowired private VoltageRegulatorService regulatorService;
     @Autowired private RegulatorMappingService mappingService;
-    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private ZoneDao zoneDao;
     @Autowired private FileExporter fileExporter;
     @Autowired private WebUtilityService webUtil;
     
-    private static final Map<RegulatorEvent.EventType, String> classNameForEventType;
     private static final TypeReference<TimeRange> rangeRef = new TypeReference<TimeRange>() {};
     
-    static {
-        ImmutableMap.Builder<EventType, String> builder = ImmutableMap.builder();
-        
-        builder.put(EventType.TAP_UP, "icon-arrow-up-green");
-        builder.put(EventType.TAP_DOWN, "icon-arrow-down-orange");
-        builder.put(EventType.INCREASE_SETPOINT, "icon-arrow-up-green");
-        builder.put(EventType.DECREASE_SETPOINT, "icon-arrow-down-orange");
-        builder.put(EventType.INTEGRITY_SCAN, "icon-transmit-blue");
-        builder.put(EventType.ENABLE_REMOTE_CONTROL, "icon-accept");
-        builder.put(EventType.DISABLE_REMOTE_CONTROL, "icon-delete");
-        
-        classNameForEventType = builder.build();
-        
-    }
-    
-    private static final String eventTypeBaseKey = "yukon.web.modules.capcontrol.ivvc.eventType";
     
     @RequestMapping(value="{id}", method=RequestMethod.GET)
     public String view(HttpServletRequest req, ModelMap model, @PathVariable int id, YukonUserContext userContext) 
@@ -253,36 +227,6 @@ public class RegulatorController {
         regulatorService.delete(id);
         
         return "redirect:/capcontrol/tier/areas";
-    }
-    
-    /** Returns a list of events sorted by most recent descending as JSON. */
-    @RequestMapping(value="{id}/events")
-    public @ResponseBody List<Map<String, Object>> getEvents(@PathVariable int id, 
-            @RequestParam TimeRange range, YukonUserContext userContext) {
-        
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        
-        List<Map<String, Object>> events = new ArrayList<>();
-        for (RegulatorEvent re : eventsDao.getForId(id, range)) {
-            
-            Map<String, Object> event = new HashMap<>();
-            
-            event.put("id", re.getId());
-            event.put("timestamp", re.getTimestamp().getMillis());
-            event.put("user", re.getUserName());
-            
-            String iconClass = classNameForEventType.get(re.getType());
-            event.put("icon", iconClass);
-            
-            String phaseString = accessor.getMessage(re.getPhase());
-            String key = eventTypeBaseKey + "." + re.getType().name();
-            String message = accessor.getMessage(key, phaseString);
-            event.put("message", message);
-            
-            events.add(event);
-        }
-        
-        return events;
     }
     
     @RequestMapping(value="{id}/build-mapping-file", method = RequestMethod.GET)

@@ -29,7 +29,7 @@ yukon.da.zone = (function () {
         var range = $('#ivvc-events-range').val();
         
         $.ajax({
-            url: yukon.url('/capcontrol/ivvc/zones/' + _id + '/events'),
+            url: yukon.url('/capcontrol/zones/' + _id + '/events'),
             data: { 'range': range }
         }).done(function (events) {
             

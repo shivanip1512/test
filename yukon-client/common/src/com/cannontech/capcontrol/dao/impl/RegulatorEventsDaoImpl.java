@@ -1,6 +1,9 @@
 package com.cannontech.capcontrol.dao.impl;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -14,10 +17,14 @@ import com.cannontech.capcontrol.model.RegulatorEvent;
 import com.cannontech.capcontrol.model.RegulatorEvent.EventType;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.model.Phase;
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.TimeRange;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 
 public class RegulatorEventsDaoImpl implements RegulatorEventsDao {
@@ -90,14 +97,35 @@ public class RegulatorEventsDaoImpl implements RegulatorEventsDao {
         Duration hours = Duration.standardHours(range.getHours());
         Instant since = Instant.now().minus(hours);
         
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT RegulatorEventId, RegulatorId, Timestamp, EventType, Phase, UserName");
-        sql.append("FROM RegulatorEvents");
-        sql.append("WHERE RegulatorId").in(regulatorIds);
-        sql.append("AND TimeStamp").gte(since);
-        sql.append("ORDER BY TimeStamp DESC");
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT RegulatorEventId, RegulatorId, Timestamp, EventType, Phase, UserName");
+                sql.append("FROM RegulatorEvents");
+                sql.append("WHERE RegulatorId").in(regulatorIds);
+                sql.append("AND TimeStamp").gte(since);
+                sql.append("ORDER BY TimeStamp DESC");
+                return sql;
+            }
+        };
         
-        List<RegulatorEvent> events = yukonJdbcTemplate.query(sql, rowMapper);
+        List<RegulatorEvent> events = new ArrayList<>();
+        
+        ChunkingSqlTemplate chunkingTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
+        chunkingTemplate.query(sqlGenerator, regulatorIds, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                RegulatorEvent location = rowMapper.mapRow(rs);
+                events.add(location);
+            }
+        });
+        
+        Collections.sort(events, new Comparator<RegulatorEvent>() {
+            @Override
+            public int compare(RegulatorEvent lhs, RegulatorEvent rhs) {
+                return -lhs.getTimestamp().compareTo(rhs.getTimestamp());
+            }});
         
         return events;
     }
