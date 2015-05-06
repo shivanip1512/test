@@ -23,7 +23,7 @@ import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteWorkOrderBase;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
 import com.cannontech.stars.database.db.integration.SAMToCRS_PTJ;
-import com.cannontech.stars.database.db.report.WorkOrderBase;
+import com.cannontech.stars.dr.workOrder.dao.WorkOrderBaseDao;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -57,7 +57,8 @@ public class UpdateServiceRequestAction implements ActionBase {
 	/**
 	 * @see com.cannontech.web.action.ActionBase#build(HttpServletRequest, HttpSession)
 	 */
-	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
+	@Override
+    public SOAPMessage build(HttpServletRequest req, HttpSession session) {
 		try {
 			YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(req);
 			TimeZone tz = yukonUserContext.getTimeZone();
@@ -83,7 +84,8 @@ public class UpdateServiceRequestAction implements ActionBase {
 	/**
 	 * @see com.cannontech.web.action.ActionBase#process(SOAPMessage, HttpSession)
 	 */
-	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
+	@Override
+    public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
         StarsOperation respOper = new StarsOperation();
         
         try {
@@ -110,7 +112,7 @@ public class UpdateServiceRequestAction implements ActionBase {
 
         	if (updateOrder.getOrderNumber() != null &&
         		!updateOrder.getOrderNumber().equals( liteOrder.getOrderNumber() ) &&
-        		WorkOrderBase.orderNumberExists( updateOrder.getOrderNumber(), liteStarsEC.getEnergyCompanyId() ))
+        		YukonSpringHook.getBean(WorkOrderBaseDao.class).orderNumberExists(updateOrder.getOrderNumber(), liteStarsEC.getEnergyCompanyId()))
         	{
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
 						StarsConstants.FAILURE_CODE_INVALID_PRIMARY_FIELD, "Order # already exists, please enter a different one") );
@@ -170,7 +172,8 @@ public class UpdateServiceRequestAction implements ActionBase {
 	/**
 	 * @see com.cannontech.web.action.ActionBase#parse(SOAPMessage, SOAPMessage, HttpSession)
 	 */
-	public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
+	@Override
+    public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
         try {
             StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 

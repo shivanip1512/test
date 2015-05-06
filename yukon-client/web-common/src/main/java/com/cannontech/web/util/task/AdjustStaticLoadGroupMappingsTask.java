@@ -27,7 +27,9 @@ import com.cannontech.stars.database.data.lite.StarsLiteFactory;
 import com.cannontech.stars.database.db.hardware.LMHardwareConfiguration;
 import com.cannontech.stars.database.db.hardware.StaticLoadGroupMapping;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
+import com.cannontech.stars.dr.hardware.dao.StaticLoadGroupMappingDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
+import com.cannontech.stars.dr.hardware.model.StarsStaticLoadGroupMapping;
 import com.cannontech.stars.dr.hardware.service.impl.PorterExpressComCommandBuilder;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.ECUtils;
@@ -141,7 +143,7 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
         }
 
         String options = null;
-
+        StaticLoadGroupMappingDao staticLoadGroupMappingDao = YukonSpringHook.getBean(StaticLoadGroupMappingDao.class);
         for (int i = 0; i < hwsToAdjust.size(); i++) {
             if (isCanceled) {
                 status = STATUS_CANCELED;
@@ -196,7 +198,12 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
 
             //get SwitchTypeID
             Integer devType = liteHw.getLmHardwareTypeID();
-            StaticLoadGroupMapping groupMapping = StaticLoadGroupMapping.getAStaticLoadGroupMapping(applianceCatID, zip, consumptionType, devType);
+            StarsStaticLoadGroupMapping criteria = new StarsStaticLoadGroupMapping();
+            criteria.setApplianceCategoryID(applianceCatID);
+            criteria.setZipCode(zip);
+            criteria.setConsumptionTypeID(consumptionType);
+            criteria.setSwitchTypeID(devType);
+            StarsStaticLoadGroupMapping groupMapping = staticLoadGroupMappingDao.getStaticLoadGroupMapping(criteria);
             if (groupMapping == null) {
                 configurationSet.add(hwsToAdjust.get(i));
                 numFailure++;

@@ -17,7 +17,10 @@ import org.joda.time.ReadableInstant;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlStatement;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.db.pao.LMControlHistory;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
@@ -33,15 +36,6 @@ import com.cannontech.stars.util.task.LMCtrlHistTimerTask;
 import com.cannontech.stars.xml.serialize.ControlHistoryEntry;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
-
-/**
- * <p>Title: </p>
- * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2002</p>
- * <p>Company: </p>
- * @author unascribed
- * @version 1.0
- */
 
 public class LMControlHistoryUtil {
 	
@@ -518,18 +512,13 @@ public class LMControlHistoryUtil {
 					
 					groupIDs.add( new Integer(groupID) );
 				}
-			}
-			else if (liteCfg.getSASimple() != null) {
-				String sql = "SELECT GroupID FROM LMGroupSASimple " +
-					"WHERE OperationalAddress = '" + liteCfg.getSASimple().getOperationalAddress() + "'";
-				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
-				stmt.execute();
-				
-				for (int i = 0; i < stmt.getRowCount(); i++) {
-					int groupID = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
-					groupIDs.add( new Integer(groupID) );
-				}
-			}
+            } else if (liteCfg.getSASimple() != null) {
+                YukonJdbcTemplate jdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT GroupID FROM LMGroupSASimple");
+                sql.append("WHERE OperationalAddress").eq(liteCfg.getSASimple().getOperationalAddress());
+                groupIDs = jdbcTemplate.query(sql, RowMapper.INTEGER);
+            }
 		}
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );

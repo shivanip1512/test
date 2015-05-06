@@ -1,5 +1,8 @@
 package com.cannontech.stars.xml;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.util.CtiUtilities;
@@ -14,6 +17,8 @@ import com.cannontech.stars.database.db.customer.AccountSite;
 import com.cannontech.stars.database.db.customer.CustomerAccount;
 import com.cannontech.stars.database.db.customer.SiteInformation;
 import com.cannontech.stars.database.db.report.CallReportBase;
+import com.cannontech.stars.dr.account.dao.CallReportDao;
+import com.cannontech.stars.dr.account.model.CallReport;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.xml.serialize.BillingAddress;
 import com.cannontech.stars.xml.serialize.CallType;
@@ -182,25 +187,29 @@ public class StarsFactory {
 			callDB.setTakenBy( call.getTakenBy() );
 	}
 
-	public static StarsCallReport[] getStarsCallReports(Integer accountID) {
-		com.cannontech.stars.database.db.report.CallReportBase[] calls =
-				CallReportBase.getAllCallReports( accountID );
+	public static List<StarsCallReport> getStarsCallReports(Integer accountID) {
+	    
+	    CallReportDao callReportDao = YukonSpringHook.getBean(CallReportDao.class);
+	    List<CallReport> calls = callReportDao.getAllCallReportByAccountId(accountID);
+	    
+//		com.cannontech.stars.database.db.report.CallReportBase[] calls =
+//				CallReportBase.getAllCallReports( accountID );
 		if (calls == null) return null;
         
-		StarsCallReport[] callRprts = new StarsCallReport[ calls.length ];
-		for (int i = 0; i < calls.length; i++) {
-			callRprts[i] = new StarsCallReport();
-        	
-			callRprts[i].setCallID( calls[i].getCallID().intValue() );
-			callRprts[i].setCallNumber( StarsUtils.forceNotNull(calls[i].getCallNumber()) );
-			callRprts[i].setCallDate( calls[i].getDateTaken() );
-			callRprts[i].setTakenBy( StarsUtils.forceNotNull(calls[i].getTakenBy()) );
-			callRprts[i].setDescription( StarsUtils.forceNotNull(calls[i].getDescription()) );
-        	
-			CallType callType = new CallType();
-			StarsLiteFactory.setStarsCustListEntry( callType, YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(calls[i].getCallTypeID().intValue()) );
-			callRprts[i].setCallType( callType );
-		}
+		List<StarsCallReport> callRprts = new ArrayList<StarsCallReport>(calls.size());
+//		StarsCallReport[] callRprts = new StarsCallReport[ calls.length ];
+		for (CallReport call : calls) {
+            StarsCallReport starsCallReport = new StarsCallReport();
+            starsCallReport.setCallID(call.getCallId().intValue());
+            starsCallReport.setCallNumber(StarsUtils.forceNotNull(call.getCallNumber()));
+            starsCallReport.setCallDate(call.getDateTaken());
+            starsCallReport.setTakenBy(StarsUtils.forceNotNull(call.getTakenBy()));
+            starsCallReport.setDescription(call.getDescription());
+            CallType callType = new CallType();
+            StarsLiteFactory.setStarsCustListEntry(callType, YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(call.getCallTypeId()));
+            starsCallReport.setCallType(callType);
+            callRprts.add(starsCallReport);
+        }
         
 		return callRprts;
 	}

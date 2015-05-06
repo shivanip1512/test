@@ -1,7 +1,5 @@
 package com.cannontech.stars.database.data.report;
 
-import com.cannontech.database.Transaction;
-import com.cannontech.database.TransactionException;
 import com.cannontech.database.db.DBPersistent;
 
 
@@ -27,11 +25,13 @@ public class CallReportBase extends DBPersistent {
         getCallReportBase().setCallID(newID);
     }
 
+    @Override
     public void setDbConnection(java.sql.Connection conn) {
         super.setDbConnection(conn);
         getCallReportBase().setDbConnection(conn);
     }
 
+    @Override
     public void delete() throws java.sql.SQLException {
         // delete from mapping table
         delete( "ECToCallReportMapping", "CallReportID", getCallReportBase().getCallID() );
@@ -39,6 +39,7 @@ public class CallReportBase extends DBPersistent {
         getCallReportBase().delete();
     }
 
+    @Override
     public void add() throws java.sql.SQLException {
     	if (energyCompanyID == null)
     		throw new java.sql.SQLException("Add: setEnergyCompanyID() must be called before this function");
@@ -53,31 +54,14 @@ public class CallReportBase extends DBPersistent {
         add( "ECToCallReportMapping", addValues );
     }
 
+    @Override
     public void update() throws java.sql.SQLException {
         getCallReportBase().update();
     }
 
+    @Override
     public void retrieve() throws java.sql.SQLException {
         getCallReportBase().retrieve();
-    }
-    
-    public static void deleteAllCallReports(Integer accountID) {
-    	try {
-	    	com.cannontech.stars.database.db.report.CallReportBase[] calls =
-	    			com.cannontech.stars.database.db.report.CallReportBase.getAllCallReports( accountID );
-	    	
-	    	if (calls != null) {
-	    		for (int i = 0; i < calls.length; i++) {
-	    			CallReportBase call = new CallReportBase();
-	    			call.setCallID( calls[i].getCallID() );
-	    			
-	    			Transaction.createTransaction( Transaction.DELETE, call ).execute();
-	    		}
-	    	}
-    	}
-    	catch (TransactionException e) {
-    		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-    	}
     }
     
 	/**

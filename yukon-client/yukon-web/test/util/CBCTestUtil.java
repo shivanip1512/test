@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.JdbcOperations;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.JdbcTemplateHelper;
-import com.cannontech.database.data.capcontrol.CapControlArea;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
 import com.cannontech.spring.YukonSpringHook;
@@ -87,20 +86,5 @@ public class CBCTestUtil {
         stratID.append("CapBank");
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
         return yukonTemplate.queryForInt(stratID.toString());
-    }
-
-    public static Integer getSubIdNotInArea(Integer capControlPAOID) {
-        List<Integer> allAreas = CapControlArea.getAllAreaIDs ();
-        allAreas.remove(capControlPAOID);
-        Integer subID = null;
-        if (allAreas.size() > 0) {
-            Integer areaID = allAreas.get(allAreas.size()-1);
-            List<CCSubAreaAssignment> allAreaSubs = CCSubAreaAssignment.getAllAreaSubStations(areaID);
-            if (allAreaSubs.size() > 0) {
-                subID = (allAreaSubs.get(allAreaSubs.size() - 1)).getSubstationBusID();
-            }
-        }
-        
-        return subID;
     }
 }

@@ -28,9 +28,8 @@ public class ScheduleAssignmentFilter implements UiFilter<PaoScheduleAssignment>
         retVal.add(new SqlFilter(){
             @Override
             public SqlFragmentSource getWhereClauseFragment() {
-                String sql = "s.ScheduleName = '" + schedule + "'";
-                SqlStatementBuilder retVal = new SqlStatementBuilder(sql);
-                
+                SqlStatementBuilder retVal = new SqlStatementBuilder("s.ScheduleName");
+                retVal.eq(schedule);
                 return retVal;
             }
         });

@@ -88,11 +88,11 @@ public class DBFuncs {
 	public static Integer getDeviceIDByAddress(String address) {
 		Integer returnDeviceID = null;
 		
-		String stmt = "SELECT DEVICEID FROM " + DeviceCarrierSettings.TABLE_NAME + " WHERE ADDRESS = '" + address + "'";
+		String stmt = "SELECT DEVICEID FROM " + DeviceCarrierSettings.TABLE_NAME + " WHERE ADDRESS = ?";
 		    
         try {
             JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-            returnDeviceID = jdbcOps.queryForInt(stmt);
+            returnDeviceID = jdbcOps.queryForInt(stmt, address);
         } 
         catch (IncorrectResultSizeDataAccessException e) {
             return null;
@@ -181,12 +181,11 @@ public class DBFuncs {
 	
 	public static List<Integer> getRouteIDsFromSubstationName(String name) {
         String stmt = "SELECT ROUTEID FROM SUBSTATIONTOROUTEMAPPING WHERE SUBSTATIONID IN " +
-                "(SELECT SUBSTATIONID FROM SUBSTATION WHERE SUBSTATIONNAME  = '" 
-            + name + "') ORDER BY ORDERING";
+                "(SELECT SUBSTATIONID FROM SUBSTATION WHERE SUBSTATIONNAME  = ?) ORDER BY ORDERING";
         
         JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
         List<Integer> routeIDs = 
-            jdbcOps.query(stmt, routeIDRowMapper);
+            jdbcOps.query(stmt, routeIDRowMapper, name);
         
         return routeIDs;
     }
@@ -195,12 +194,12 @@ public class DBFuncs {
         String stmt = "SELECT PAONAME " + 
                                 " FROM YUKONPAOBJECT PAO, SUBSTATION SUB, SUBSTATIONTOROUTEMAPPING MAP " + 
                                 " WHERE SUB.SUBSTATIONID = MAP.SUBSTATIONID " + 
-                                " AND SUB.SUBSTATIONNAME = '" + subName + "' " + 
+                                " AND SUB.SUBSTATIONNAME = ?" + 
                                 " AND PAO.PAOBJECTID = MAP.ROUTEID ORDER BY MAP.ORDERING";
         
         JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
         List<String> routeNames = 
-            jdbcOps.query(stmt, routeNameRowMapper);
+            jdbcOps.query(stmt, routeNameRowMapper, subName);
         
         return routeNames;
     }    

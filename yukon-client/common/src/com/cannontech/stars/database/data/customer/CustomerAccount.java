@@ -63,6 +63,7 @@ public class CustomerAccount extends DBPersistent {
     	getAccountSite().setAccountSiteID(accountSiteID);
     }
     
+    @Override
     public void setDbConnection(java.sql.Connection conn) {
         super.setDbConnection(conn);
         getCustomerAccount().setDbConnection(conn);
@@ -71,6 +72,7 @@ public class CustomerAccount extends DBPersistent {
         if (getCustomer() != null) getCustomer().setDbConnection(conn);
     }
 
+    @Override
     @SuppressWarnings("cast")
     public void delete() throws java.sql.SQLException {
 		for (int i = 0; i < getInventoryVector().size(); i++) {
@@ -100,7 +102,7 @@ public class CustomerAccount extends DBPersistent {
 		com.cannontech.stars.database.data.appliance.ApplianceBase app =
     			new com.cannontech.stars.database.data.appliance.ApplianceBase();
         for (int i = 0; i < getApplianceVector().size(); i++) {
-        	Integer appID = (Integer) getApplianceVector().get(i);
+        	Integer appID = getApplianceVector().get(i);
         	app.setApplianceID( appID );
             app.setDbConnection( getDbConnection() );
             app.delete();
@@ -113,8 +115,7 @@ public class CustomerAccount extends DBPersistent {
     			getCustomerAccount().getAccountID().intValue() );
     	
     	// Delete call reports
-    	com.cannontech.stars.database.data.report.CallReportBase.deleteAllCallReports(
-    			getCustomerAccount().getAccountID() );
+    	delete("CallReportBase", "AccountID", getCustomerAccount().getAccountID());
         
         // Delete thermostat schedules
     	AccountThermostatScheduleDao accountThermostatScheduleDao = 
@@ -149,6 +150,7 @@ public class CustomerAccount extends DBPersistent {
         setDbConnection(null);
     }
 
+    @Override
     public void add() throws java.sql.SQLException {
     	if (energyCompanyID == null)
     		throw new java.sql.SQLException( "setEnergyCompanyID() must be called before this function" );
@@ -185,6 +187,7 @@ public class CustomerAccount extends DBPersistent {
         setDbConnection(null);
     }
 
+    @Override
     public void update() throws java.sql.SQLException {
         getCustomerAccount().update();
 
@@ -197,6 +200,7 @@ public class CustomerAccount extends DBPersistent {
         setDbConnection(null);
     }
 
+    @Override
     public void retrieve() throws java.sql.SQLException {
         getCustomerAccount().retrieve();
 

@@ -196,4 +196,16 @@ public class WorkOrderBaseDaoImpl implements WorkOrderBaseDao {
         List<Long> callNumbers = Lists.transform(yukonJdbcTemplate.query(sql, RowMapper.STRING), toLongOrZero);
         return callNumbers.isEmpty() ? 0L : Collections.max(callNumbers);
     }
+
+    @Override
+    public boolean orderNumberExists(String orderNumber, int ecId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*)");
+        sql.append("FROM WorkOrderBase wob, ECToWorkOrderMapping map");
+        sql.append("WHERE map.EnergyCompanyId").eq(ecId);
+        sql.append("AND wob.OrderNumber").eq(orderNumber);
+
+        int existingCount = yukonJdbcTemplate.queryForInt(sql);
+        return (existingCount > 0);
+    }
 }

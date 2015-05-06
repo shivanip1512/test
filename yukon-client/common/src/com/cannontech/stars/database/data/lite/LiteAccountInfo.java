@@ -1,7 +1,6 @@
 package com.cannontech.stars.database.data.lite;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.cannontech.core.dao.CustomerDao;
@@ -10,9 +9,9 @@ import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.db.customer.CICustomerBase;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.LMProgramWebPublishingDao;
 import com.cannontech.stars.core.dao.StarsApplianceDao;
-import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCallReport;
@@ -90,8 +89,8 @@ public class LiteAccountInfo extends LiteBase {
 	    if (callReportHistory == null) {
 	        callReportHistory = new ArrayList<StarsCallReport>();
 	        if (getCustomerAccount() != null) { //Must already have at least the base objects loaded
-	            StarsCallReport[] calls = StarsFactory.getStarsCallReports(getAccountID());
-	            if (calls != null) callReportHistory.addAll(Arrays.asList(calls));  
+	            List<StarsCallReport> calls = StarsFactory.getStarsCallReports(getAccountID());
+	            if (calls != null) callReportHistory.addAll(calls);  
 	        }
 	    }
 		return callReportHistory;

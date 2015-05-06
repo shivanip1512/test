@@ -5,14 +5,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.jdbc.core.JdbcOperations;
-
 import com.cannontech.common.editor.EditorPanel;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
 import com.cannontech.spring.YukonSpringHook;
@@ -131,20 +127,4 @@ public class CapControlArea extends CapControlYukonPAOBase implements EditorPane
         }
         connection.close();
     }
-
-    public static List<Integer> getAllAreaIDs() {
-        SqlStatementBuilder builder = new SqlStatementBuilder();
-        builder.append("select areaid from capcontrolarea");
-        JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-        return yukonTemplate.queryForList(builder.toString(), Integer.class);
-    }
-
-    public static Integer  getAreaIdByName (String name) {
-        SqlStatementBuilder builder = new SqlStatementBuilder();
-        builder.append("select areaid from capcontrolarea, yukonpaobject");
-        builder.append("where areaid = paobjectid and paoname like "  + "'" +name+ "'");
-        JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-        return yukonTemplate.queryForObject(builder.toString(), Integer.class);
-    }
-
 }

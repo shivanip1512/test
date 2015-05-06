@@ -37,4 +37,8 @@ public interface WorkOrderBaseDao {
      */
     long getLargestNumericOrderNumber(int ecId);
 
+    /**
+     * Returns true if order number already exists for ecId.
+     */
+    boolean orderNumberExists(String orderNumber, int ecId);
 }

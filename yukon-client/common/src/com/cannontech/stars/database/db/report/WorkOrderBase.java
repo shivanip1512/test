@@ -389,17 +389,4 @@ public class WorkOrderBase extends DBPersistent {
 	public void setAccountID(Integer accountID) {
 		this.accountID = accountID;
 	}
-	
-	public static boolean orderNumberExists(String orderNo, Integer energyCompanyID)
-			throws com.cannontech.common.util.CommandExecutionException
-	{
-		String sql = "SELECT OrderID FROM WorkOrderBase o, ECToWorkOrderMapping map "
-				   + "WHERE OrderNumber = '" + orderNo + "' AND o.OrderID = map.WorkOrderID AND map.EnergyCompanyID = " + energyCompanyID;
-		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-		
-		stmt.execute();
-		return (stmt.getRowCount() > 0);
-	}
-
 }

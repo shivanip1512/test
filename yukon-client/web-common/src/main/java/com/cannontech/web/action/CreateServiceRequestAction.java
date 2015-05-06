@@ -24,7 +24,6 @@ import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteWorkOrderBase;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
 import com.cannontech.stars.database.db.integration.SAMToCRS_PTJ;
-import com.cannontech.stars.database.db.report.WorkOrderBase;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.dr.workOrder.dao.WorkOrderBaseDao;
 import com.cannontech.stars.util.EventUtils;
@@ -229,7 +228,7 @@ public class CreateServiceRequestAction implements ActionBase {
 				if (orderNo.trim().length() == 0) {
                     throw new WebClientException( "Order # cannot be empty" );
                 }
-				if (WorkOrderBase.orderNumberExists( orderNo, energyCompany.getEnergyCompanyId() )) {
+				if (YukonSpringHook.getBean(WorkOrderBaseDao.class).orderNumberExists(orderNo, energyCompany.getEnergyCompanyId())) {
                     throw new WebClientException( "Order # already exists" );
                 }
 			}
