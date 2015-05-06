@@ -192,12 +192,9 @@ public class StarsFactory {
 	    CallReportDao callReportDao = YukonSpringHook.getBean(CallReportDao.class);
 	    List<CallReport> calls = callReportDao.getAllCallReportByAccountId(accountID);
 	    
-//		com.cannontech.stars.database.db.report.CallReportBase[] calls =
-//				CallReportBase.getAllCallReports( accountID );
 		if (calls == null) return null;
         
 		List<StarsCallReport> callRprts = new ArrayList<StarsCallReport>(calls.size());
-//		StarsCallReport[] callRprts = new StarsCallReport[ calls.length ];
 		for (CallReport call : calls) {
             StarsCallReport starsCallReport = new StarsCallReport();
             starsCallReport.setCallID(call.getCallId().intValue());
