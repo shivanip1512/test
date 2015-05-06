@@ -24,6 +24,7 @@
 #include "fdrsocketlayer.h"
 #include "fdrinet.h"
 #include "socket_helper.h"
+#include "dsm2.h"
 
 // this class header
 #include "fdrrccs.h"

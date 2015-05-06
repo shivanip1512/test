@@ -53,9 +53,4 @@ public:
 
 } // namespace Cti
 
-#include "dsm2.h"
 
-#pragma warning(disable:4661)
-
-template class IM_EX_CTIBASE Cti::StreamLocalConnection<CtiOutMessage, INMESS>;
-template class IM_EX_CTIBASE Cti::StreamLocalConnection<INMESS, CtiOutMessage>;

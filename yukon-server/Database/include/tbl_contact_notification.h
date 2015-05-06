@@ -2,7 +2,7 @@
 
 #include "row_reader.h"
 #include "loggable.h"
-
+#include "mutex.h"
 
 class IM_EX_CTIYUKONDB CtiTableContactNotification : public Cti::Loggable
 {

@@ -4,7 +4,6 @@
 #include "dllbase.h"
 #include "devicetypes.h"
 #include "logger.h"
-#include "master.h"
 #include "msg_pcrequest.h"
 #include "prot_fpcbc.h"
 #include "utility.h"

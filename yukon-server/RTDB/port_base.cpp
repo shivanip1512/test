@@ -209,7 +209,8 @@ INT CtiPort::writeQueueWithPriority(OUTMESS *OutMessage, int priority, HANDLE hQ
     int status = ClientErrors::None;
     ULONG QueEntries;
 
-    if(OutMessage->DeviceID == 0 && OutMessage->TargetID == 0)
+    if(OutMessage &&
+       OutMessage->DeviceID == 0 && OutMessage->TargetID == 0)
     {
         CTILOG_DEBUG(dout, "A thread just dumped an untraceable OUTMESS request into a port queue."<<
                 endl <<"You will undoubtedly have difficulties soon"

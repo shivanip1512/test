@@ -3,7 +3,7 @@
 #include "row_reader.h"
 #include "loggable.h"
 #include "dlldefs.h"
-
+#include "mutex.h"
 
 class IM_EX_CTIYUKONDB CtiTableState : public Cti::Loggable
 {

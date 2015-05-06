@@ -2,6 +2,7 @@
 
 #include "dllbase.h"
 #include "ansi_datalink.h"
+#include "utility.h"
 
 #define MAXRETRIES        5
 #define ANSI_C12_18        0x00

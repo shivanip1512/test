@@ -14,6 +14,7 @@
 
 class INMESS;
 class CtiOutMessage;
+using OUTMESS = CtiOutMessage;
 class CtiMutex;
 enum CtiPointType_t;
 
@@ -49,6 +50,19 @@ IM_EX_CTIBASE BOOL searchFuncForOutMessageUniqueID(void *pId, void* d);
 IM_EX_CTIBASE void applyPortQueueOutMessageReport(void *ptr, void* d);
 
 IM_EX_CTIBASE double limitValue(double input, double min, double max);
+
+
+union BYTEUSHORT
+{
+    UCHAR    ch[2];
+    USHORT   sh;
+};
+
+union BYTEULONG
+{
+    UCHAR    ch[4];
+    ULONG    ul;
+};
 
 
 struct CtiQueueAnalysis_t

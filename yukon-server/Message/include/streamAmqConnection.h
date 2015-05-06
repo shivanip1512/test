@@ -37,9 +37,3 @@ private:
 
 } // namespace Cti
 
-#include "dsm2.h"
-
-#pragma warning(disable:4661)
-
-template class IM_EX_MSG Cti::StreamAmqConnection<CtiOutMessage, INMESS>;
-template class IM_EX_MSG Cti::StreamAmqConnection<INMESS, CtiOutMessage>;

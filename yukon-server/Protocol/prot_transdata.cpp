@@ -3,6 +3,7 @@
 #include "guard.h"
 #include "logger.h"
 #include "prot_transdata.h"
+#include "dsm2.h"
 
 using std::endl;
 using std::vector;

@@ -4,6 +4,7 @@
 #include "yukon.h"
 #include "row_reader.h"
 #include "loggable.h"
+#include "mutex.h"
 
 #include <set>
 

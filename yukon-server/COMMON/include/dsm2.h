@@ -24,19 +24,6 @@ IM_EX_CTIBASE LONG OutMessageCount();
 
 #pragma pack(push, message_packing, 1)
 
-union BYTEUSHORT
-{
-    UCHAR    ch[2];
-    USHORT   sh;
-};
-
-union BYTEULONG
-{
-    UCHAR    ch[4];
-    ULONG    ul;
-};
-
-
 /* Structure defintions */
 enum  CtiSyncType_t
 {

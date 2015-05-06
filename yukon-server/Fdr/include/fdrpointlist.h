@@ -5,6 +5,7 @@
 #include "dlldefs.h"
 #include "queues.h"
 #include "mgr_fdrpoint.h"
+#include "mutex.h"
 
 class IM_EX_FDRBASE CtiFDRPointList
 {

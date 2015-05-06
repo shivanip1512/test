@@ -2,6 +2,7 @@
 #include "pointstore.h"
 
 #include "std_helper.h"
+#include "logger.h"
 
 #include <boost/range/algorithm/transform.hpp>
 #include <boost/smart_ptr/scoped_ptr.hpp>

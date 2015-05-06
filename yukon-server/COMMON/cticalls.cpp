@@ -4,6 +4,7 @@
 #include "dllbase.h"
 #include "logger.h"
 #include "win_helper.h"
+#include "dsm2.h"
 
 #include <string>
 
@@ -304,7 +305,7 @@ YukonError_t CTIOpen (PSZ         pszFileName,
    return ClientErrors::None;    // We have the file handle now!
 }
 
-//TODO: OUMESS and INMESS should inherit Loggable instead - this function can be removed
+//TODO: OUTMESS and INMESS should inherit Loggable instead - then this function can be removed
 IM_EX_CTIBASE std::string outMessageToString(const OUTMESS* Om)
 {
     Cti::FormattedList itemList;

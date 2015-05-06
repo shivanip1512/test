@@ -8,6 +8,7 @@
 #include "database_reader.h"
 #include "database_writer.h"
 #include "database_util.h"
+#include "mutex.h"
 
 #include <iostream>
 #include <sstream>
@@ -588,7 +589,7 @@ bool CtiTableLMControlHistory::Update()
     }
 
     setDirty(false);
-    
+
     return true; // No error occured!
 }
 

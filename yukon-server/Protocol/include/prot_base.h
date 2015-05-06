@@ -8,6 +8,10 @@
 #include "dlldefs.h"
 #include "xfer.h"
 
+class CtiOutMessage;
+using OUTMESS = CtiOutMessage;
+class INMESS;
+
 namespace Cti {
 namespace Protocols {
 

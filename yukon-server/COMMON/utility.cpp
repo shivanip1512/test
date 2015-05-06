@@ -12,6 +12,7 @@
 #include "ctidate.h"
 #include "devicetypes.h"
 #include "desolvers.h"
+#include "dsm2.h"
 
 #include <boost/regex.hpp>
 #include <boost/optional.hpp>

@@ -1,6 +1,7 @@
 #include <boost/test/auto_unit_test.hpp>
 
 #include "prot_dnp.h"
+#include "utility.h"
 
 #include "boost_test_helpers.h"
 

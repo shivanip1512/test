@@ -3,8 +3,7 @@
 #include "dsm2.h"
 #include "rte_xcu.h"
 #include "tbl_rtversacom.h"
-#include "master.h"
-#include "ctibase.h"
+#include "dllbase.h"
 #include "dev_remote.h"
 
 class IM_EX_DEVDB CtiRouteExpresscom : public CtiRouteXCU

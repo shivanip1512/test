@@ -1,22 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   rte_versacom
-*
-* Date:   7/23/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2008/10/28 19:21:43 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
-
-
-#include <iostream>
-#include <iomanip>
-
 
 #include "cmdparse.h"
 #include "dsm2.h"
@@ -25,13 +7,14 @@
 #include "rte_versacom.h"
 #include "prot_versacom.h"
 #include "numstr.h"
+#include "master.h"
+
+#include <iostream>
+#include <iomanip>
 
 using std::string;
 using std::endl;
 using std::list;
-
-CtiRouteVersacom::CtiRouteVersacom()
-{}
 
 std::string CtiRouteVersacom::toString() const
 {
@@ -145,12 +128,6 @@ YukonError_t CtiRouteVersacom::ExecuteRequest(CtiRequestMsg        *pReq,
                         OutMessage->Buffer.VSt.Address           = 0L;
 
                         OutMessage->Buffer.VSt.CommandType       = EXDATA;           // Extended VDATA CONTROL
-    #if 0
-                        if(parse.getFlags() & CMD_FLAG_TESTMODE)
-                        {
-                            OutMessage->Buffer.VSt.CommandType   = VDATA;            // VDATA CONTROL
-                        }
-    #endif
 
                         OutMessage->Buffer.VSt.VData.DataType    = 0;
                         OutMessage->Buffer.VSt.VData.DataLength  = 7;

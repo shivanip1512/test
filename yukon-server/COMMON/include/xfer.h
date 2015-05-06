@@ -1,8 +1,6 @@
 #pragma once
 
-class CtiDeviceBase;
-
-#include "dsm2.h"
+#include "dlldefs.h"
 #include "yukon.h"
 
 class IM_EX_CTIBASE CtiXfer

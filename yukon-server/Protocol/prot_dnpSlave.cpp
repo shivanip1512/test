@@ -8,6 +8,8 @@
 #include "dnp_object_counter.h"
 #include "dnp_object_class.h"
 
+#include "logger.h"
+
 namespace Cti {
 namespace Protocols {
 

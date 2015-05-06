@@ -2,6 +2,7 @@
 
 #include "tbl_paoproperty.h"
 #include "dbaccess.h"
+#include "utility.h"
 
 namespace Cti {
 namespace Database {

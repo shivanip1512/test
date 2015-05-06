@@ -226,3 +226,9 @@ size_t StreamAmqConnection<Outbound, Inbound>::peek(void *buf, int len)
 }
 
 } // namespace Cti
+
+#include "dsm2.h"
+
+template class IM_EX_MSG Cti::StreamAmqConnection<CtiOutMessage, INMESS>;
+template class IM_EX_MSG Cti::StreamAmqConnection<INMESS, CtiOutMessage>;
+

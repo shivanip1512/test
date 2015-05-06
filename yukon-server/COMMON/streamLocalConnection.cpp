@@ -4,6 +4,7 @@
 #include "millisecond_timer.h"
 #include "win_helper.h"
 #include "streamLocalConnection.h"
+#include "dsm2.h"
 
 using std::endl;
 using std::string;
@@ -253,3 +254,7 @@ void StreamLocalConnection<OUTMESS, INMESS>::purgeRequest(int request)
 }
 
 } // namespace Cti
+
+template class IM_EX_CTIBASE Cti::StreamLocalConnection<CtiOutMessage, INMESS>;
+template class IM_EX_CTIBASE Cti::StreamLocalConnection<INMESS, CtiOutMessage>;
+

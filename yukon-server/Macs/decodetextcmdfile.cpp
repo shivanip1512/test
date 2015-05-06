@@ -29,6 +29,7 @@ Function #  Comment in the file, will get moved to the exported file if needed
 #include "dllbase.h"
 
 #include "utility.h"
+#include "logger.h"
 
 #include <vector>
 

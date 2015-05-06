@@ -4,6 +4,7 @@
 #include "dllbase.h"
 #include "ctitime.h"
 #include "logger.h"
+#include "guard.h"
 
 using namespace std;
 

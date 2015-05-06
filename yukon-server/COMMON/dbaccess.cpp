@@ -4,6 +4,7 @@
 #include "dllbase.h"
 #include "logger.h"
 
+#include "guard.h"
 #include "critical_section.h"
 
 #include <boost/algorithm/string/predicate.hpp>

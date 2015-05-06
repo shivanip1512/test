@@ -1,9 +1,9 @@
 #pragma once
 
-#include "dsm2.h"
 #include "os2_2w32.h"
 #include "cticalls.h"
 #include "dlldefs.h"
+#include "critical_section.h"
 
 #include <windows.h>
 #include <lmcons.h>

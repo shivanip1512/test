@@ -23,6 +23,7 @@
 #include "fdrclientconnection.h"
 #include "fdrsocketlayer.h"
 #include "socket_helper.h"
+#include "dsm2.h"
 
 // this class header
 #include "fdrinet.h"
