@@ -415,7 +415,7 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
             ActiveRfnRequest newRequest;
 
             newRequest.request = request;
-            newRequest.timeout = calcExpiration(request);
+            newRequest.timeout = CtiTime::now() + calcExpiration(request);
             newRequest.currentPacket =
                     sendE2eDataRequestPacket(
                             e2ePacket,
@@ -441,7 +441,7 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
             logItems.add("retransmission delay")     << newRequest.currentPacket.retransmissionDelay;
             logItems.add("max retransmits")          << newRequest.currentPacket.maxRetransmits;
             logItems.add("status")                   << newRequest.status;
-            logItems.add("timeout")                  << CtiTime(newRequest.timeout);
+            logItems.add("timeout")                  << newRequest.timeout;
 
             CTILOG_INFO(dout, "Added request for device "<< rfnIdentifier <<
                     logItems);

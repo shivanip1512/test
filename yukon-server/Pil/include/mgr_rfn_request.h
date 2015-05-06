@@ -134,7 +134,7 @@ private:
             PendingReply,
         }
         status;
-        time_t timeout;
+        CtiTime timeout;
     };
 
     typedef std::map<RfnIdentifier, ActiveRfnRequest> RfnIdToActiveRequest;
