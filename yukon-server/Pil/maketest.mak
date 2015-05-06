@@ -95,6 +95,12 @@ deps:
 
 ######################################################################################
 #UPDATE#
+test_main.obj:	amq_connection.h thread.h mutex.h dlldefs.h guard.h \
+		utility.h ctitime.h queues.h cticalls.h yukon.h types.h \
+		ctidbgmem.h os2_2w32.h constants.h numstr.h logger.h \
+		streamBuffer.h loggable.h string_util.h exception_helper.h \
+		boostutil.h critical_section.h StreamableMessage.h \
+		connection_base.h RfnBroadcastReplyMessage.h
 test_mgr_rfn_request.obj:	mgr_rfn_request.h dlldefs.h dev_rfn.h \
 		rfn_identifier.h streamBuffer.h loggable.h cmd_rfn.h \
 		cmd_device.h dev_single.h dsm2.h streamConnection.h yukon.h \
@@ -105,8 +111,7 @@ test_mgr_rfn_request.obj:	mgr_rfn_request.h dlldefs.h dev_rfn.h \
 		dsm2err.h words.h optional.h macro_offset.h dev_base.h \
 		cmdparse.h ctitokenizer.h parsevalue.h dev_exclusion.h \
 		tbl_paoexclusion.h row_reader.h config_device.h dllbase.h \
-		rte_base.h dbmemobject.h ctibase.h streamSocketConnection.h \
-		socket_helper.h win_helper.h message.h collectable.h \
+		rte_base.h dbmemobject.h message.h collectable.h \
 		tbl_pao_lite.h tbl_rtcomm.h dbaccess.h resolvers.h \
 		pointtypes.h db_entry_defines.h msg_signal.h \
 		tbl_static_paoinfo.h encryption.h std_helper.h tbl_base.h \
@@ -117,9 +122,9 @@ test_mgr_rfn_request.obj:	mgr_rfn_request.h dlldefs.h dev_rfn.h \
 		cparms.h configkey.h configval.h readers_writer_lock.h \
 		connection_base.h worker_thread.h xfer.h exceptions.h \
 		rfn_asid.h rfn_e2e_messenger.h RfnE2eDataIndicationMsg.h \
-		RfnE2eMsg.h RfnE2eDataConfirmMsg.h RfnE2eDataRequestMsg.h \
-		cmd_rfn_ChannelConfiguration.h ctidate.h boost_test_helpers.h \
-		millisecond_timer.h
+		RfnE2eMsg.h RfnE2eDataConfirmMsg.h NetworkManagerMessaging.h \
+		RfnE2eDataRequestMsg.h cmd_rfn_ChannelConfiguration.h \
+		ctidate.h boost_test_helpers.h millisecond_timer.h
 test_pilserver.obj:	pilserver.h dsm2.h streamConnection.h yukon.h \
 		types.h ctidbgmem.h dlldefs.h netports.h timing_util.h \
 		immutable.h critical_section.h guard.h utility.h ctitime.h \
@@ -131,10 +136,9 @@ test_pilserver.obj:	pilserver.h dsm2.h streamConnection.h yukon.h \
 		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h configkey.h configval.h readers_writer_lock.h \
 		connection_base.h worker_thread.h connection_listener.h \
-		ctibase.h streamSocketConnection.h socket_helper.h \
-		win_helper.h dllbase.h smartmap.h msg_pcrequest.h \
-		mgr_device.h rtdb.h dev_base.h cmdparse.h ctitokenizer.h \
-		parsevalue.h dev_exclusion.h tbl_paoexclusion.h row_reader.h \
+		dllbase.h smartmap.h msg_pcrequest.h mgr_device.h rtdb.h \
+		dev_base.h cmdparse.h ctitokenizer.h parsevalue.h \
+		dev_exclusion.h tbl_paoexclusion.h row_reader.h \
 		config_device.h rte_base.h dbmemobject.h tbl_pao_lite.h \
 		tbl_rtcomm.h dbaccess.h resolvers.h db_entry_defines.h \
 		msg_signal.h tbl_static_paoinfo.h encryption.h std_helper.h \
@@ -146,6 +150,7 @@ test_pilserver.obj:	pilserver.h dsm2.h streamConnection.h yukon.h \
 		msg_pcreturn.h tbl_dv_scandata.h tbl_dv_wnd.h xfer.h \
 		exceptions.h rfn_asid.h rfn_e2e_messenger.h \
 		RfnE2eDataIndicationMsg.h RfnE2eMsg.h RfnE2eDataConfirmMsg.h \
-		RfnE2eDataRequestMsg.h cmd_rfn_demandFreeze.h
+		NetworkManagerMessaging.h RfnE2eDataRequestMsg.h \
+		cmd_rfn_demandFreeze.h
 #ENDUPDATE#
 
