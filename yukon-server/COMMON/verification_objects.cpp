@@ -1,22 +1,7 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   verification
-*
-* Date:   4/9/2004
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:25:49 $
-*
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "verification_objects.h"
-#include "ctidbgmem.h"
+#include "dsm2.h"
 
 using std::string;
 using std::queue;
@@ -79,7 +64,7 @@ const string &CtiVerificationBase::getCodeStatusName(CodeStatus cs)
 
 CtiVerificationWork::CtiVerificationWork(Protocol p, const CtiOutMessage &om, const string &command, const string &code, ptime::time_duration_type patience = seconds(0)) :
     CtiVerificationBase(Type_Work, p, command, code),
-    _retry_om(om),
+    _retry_om(std::make_unique<CtiOutMessage>(om)),
     _expiration(second_clock::universal_time() + patience),
     _codeDisposition(CodeStatus_Uninitialized)
 {
@@ -94,15 +79,15 @@ CtiVerificationWork::~CtiVerificationWork()
 }
 
 
-CtiOutMessage *CtiVerificationWork::getRetryOM() const
+std::unique_ptr<CtiOutMessage> CtiVerificationWork::getRetryOM() const
 {
-    CtiOutMessage *retval = CTIDBG_new CtiOutMessage(_retry_om);
+    auto retval = std::make_unique<CtiOutMessage>(*_retry_om);
 
     //  only expire this message if the other one had an expiration time set...  this isn't quite foolproof,
     //    since the expiration time might need to be longer than _patience, but it's a good starting place...
     //    maybe we should make it an addtional constructor parameter, or have the constructor-submitted OM
     //    keep a relative value until we resubmit it and make it an absolute time
-    if( _retry_om.ExpirationTime )
+    if( _retry_om->ExpirationTime )
     {
         ptime::time_duration_type expiration = (second_clock::universal_time() - ptime(date(1970, 1, 1))) + _patience;
 

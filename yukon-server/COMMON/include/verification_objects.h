@@ -1,12 +1,13 @@
 #pragma once
 
 #include "dlldefs.h"
-#include "dsm2.h"
 
 #include <string>
 #include <queue>
 
 #include "boost_time.h"
+
+class CtiOutMessage;
 
 //  the verification objects inherit from VerificationBase so that they can both be submitted to the same thread queue
 class IM_EX_CTIBASE CtiVerificationBase
@@ -120,7 +121,7 @@ private:
 
     boost::posix_time::ptime::time_duration_type _patience;
     boost::posix_time::ptime                     _expiration;
-    const CtiOutMessage                          _retry_om;
+    const std::unique_ptr<CtiOutMessage>         _retry_om;
     long                                         _sequence;
 
     CodeStatus _codeDisposition;
@@ -171,7 +172,7 @@ public:
     long  getSequence()                            const   {  return _sequence;        };
     boost::posix_time::ptime getSubmissionTime()   const   {  return _birth;           };
 
-    CtiOutMessage *getRetryOM() const;
+    std::unique_ptr<CtiOutMessage> getRetryOM() const;
     //string         getCommand() const   { return _command; }
 
     void  addExpectation(long receiver_id, bool retransmit);

@@ -310,11 +310,15 @@ void CtiPorterVerification::processWorkQueue(bool purge)
 
             if( status == CtiVerificationBase::CodeStatus_Retry )
             {
-                CtiOutMessage *om = work->getRetryOM();
+                auto om = work->getRetryOM();
 
-                if(PortManager.writeQueue(om))
+                if(PortManager.writeQueue(om.get()))
                 {
                     CTILOG_ERROR(dout, "Could not write to port queue for DeviceID "<< om->DeviceID <<" / Port "<< om->Port);
+                }
+                else
+                {
+                    om.release();
                 }
 
                 //  possible addition to enhance retry logic  ----
@@ -352,7 +356,7 @@ void CtiPorterVerification::processWorkQueue(bool purge)
                     CTILOG_ERROR(dout, "work/expectation mismatch");
                 }
             }
-            
+
             delete work;
         }
     }
