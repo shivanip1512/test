@@ -58,7 +58,6 @@ public class LoginServiceImpl implements LoginService {
     private static final String USERNAME = LoginController.USERNAME;
     private static final String PASSWORD = LoginController.PASSWORD;
     private static final String TOKEN = LoginController.TOKEN;
-    private static final String REDIRECT = LoginController.REDIRECT;
     private static final String YUKON_USER = LoginController.YUKON_USER;
     private static final String SAVED_YUKON_USERS = LoginController.SAVED_YUKON_USERS;
     private static final String LOGIN_CLIENT_ACTIVITY_ACTION = ActivityLogActions.LOGIN_CLIENT_ACTIVITY_ACTION;
@@ -150,8 +149,7 @@ public class LoginServiceImpl implements LoginService {
             SavedSession p = (SavedSession) session.getAttribute(SAVED_YUKON_USERS);
             session.invalidate();
             
-            redirect = request.getContextPath()
-                + rolePropertyDao.getPropertyStringValue(YukonRoleProperty.LOG_IN_URL, user);
+            redirect = "/" + rolePropertyDao.getPropertyStringValue(YukonRoleProperty.LOG_IN_URL, user);
             ActivityLogger.logEvent(user.getUserID(),LOGOUT_ACTIVITY_LOG, "User " + user.getUsername() + " (userid="
                 + user.getUserID() + ") has logged out from " + request.getRemoteAddr());
             
@@ -171,8 +169,10 @@ public class LoginServiceImpl implements LoginService {
                 ServletUtil.deleteAllCookies(request, response);
             }
         } catch (NotLoggedInException | UserNotInRoleException e) {
-            redirect = ServletUtil.createSafeUrl(request, LoginController.LOGIN_URL);
+            redirect = LoginController.LOGIN_URL;
         }
+        
+        redirect = ServletUtil.createSafeRedirectUrl(request, redirect);
         
         response.sendRedirect(redirect);
     }
@@ -222,7 +222,7 @@ public class LoginServiceImpl implements LoginService {
                         redirect += "?" + INVALID_PARAMS;
                     }
                 } else {
-                    redirect = request.getContextPath() + VOICE_ROOT + LoginController.INVALID_URI;
+                    redirect = VOICE_ROOT + LoginController.INVALID_URI;
                 }
             }
             ActivityLogger.logEvent(LOGIN_FAILED_ACTIVITY_LOG, "VOICE Login attempt for contact " + lContact.toString() + " failed from " + request.getRemoteAddr());
@@ -284,7 +284,7 @@ public class LoginServiceImpl implements LoginService {
     }
     
     private String getRedirect(final HttpServletRequest request) {
-        String redirect = request.getParameter(REDIRECT);
+        String redirect = request.getParameter(ServletUtil.ATT_REDIRECT);
         return  redirect;
     }
     

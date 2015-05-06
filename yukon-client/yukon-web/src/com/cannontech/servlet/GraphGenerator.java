@@ -62,7 +62,6 @@ public synchronized void service(HttpServletRequest req, HttpServletResponse res
 			return;
 		}
 		String destURL = req.getParameter( ServletUtil.ATT_REDIRECT );	//successsful action URL
-		String errorURL = req.getParameter( ServletUtil.ATT_REFERRER );	//failed action URL
 
 		com.cannontech.graph.GraphBean localBean = (com.cannontech.graph.GraphBean)session.getAttribute(ServletUtil.ATT_GRAPH_BEAN);
 		if(localBean == null)
@@ -186,7 +185,7 @@ public synchronized void service(HttpServletRequest req, HttpServletResponse res
 					}	
 				}
 				if (destURL == null)
-					destURL = req.getContextPath() + "/user/Metering/user_get_data_now.jsp";				
+					destURL = "/user/Metering/user_get_data_now.jsp";
 			}		
 		}
 		if(destURL != null) {

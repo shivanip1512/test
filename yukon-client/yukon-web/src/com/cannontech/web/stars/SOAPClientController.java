@@ -147,7 +147,7 @@ public class SOAPClientController implements Controller {
                     if (status == 0) {
                         nextURL = destURL;
                     } else if (status == StarsConstants.FAILURE_CODE_SESSION_INVALID) {
-                        nextURL = request.getContextPath() + LOGIN_URL;
+                        nextURL = LOGIN_URL;
                     } else {
                         setErrorMsg( session, status );
                         nextURL = errorURL;
@@ -162,6 +162,8 @@ public class SOAPClientController implements Controller {
                 }
             }
         }
+        
+        nextURL = ServletUtil.createSafeRedirectUrl(request, nextURL);
 
         response.sendRedirect(nextURL);
         return null;

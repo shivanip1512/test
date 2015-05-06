@@ -64,9 +64,7 @@ public class ServletUtil {
     public static final String ATT_YUKON_USER = "YUKON_USER";
 
     public static final String ATT_REDIRECT = "REDIRECT";
-    public static final String ATT_REDIRECT2 = "REDIRECT2";
     public static final String ATT_REFERRER = "REFERRER";
-    public static final String ATT_REFERRER2 = "REFERRER2";
 
     /**
      * if used in session, this attribute should be passed a CtiNavObject
@@ -581,13 +579,20 @@ public class ServletUtil {
      */
     public static String createSafeRedirectUrl(final ServletRequest request, final String url) {
         if (url == null) {
-            return "/";
+            return ServletUtil.createSafeUrl(request, "/");
         }
-
-        Matcher matcher = Pattern.compile("^\\w{3,}://.+?(/.*)$").matcher(url);
+        
+        /*
+         * Browsers are permissive in letting the slash going either way (ex: http:// or http:\\)
+         * Scheme (http, ftp, etc) is a letter, optionally followed by letters, numbers, '+', '-', or '.' per RFC-3986. 
+         * Allowing all character sequences (without a ':') as a scheme here for simplicity.
+         */
+        String colonSlashSlash = ".+?:[/\\\\]{2}";
+        
+        Matcher matcher = Pattern.compile(colonSlashSlash + ".+?([/\\\\].*)$").matcher(url);
         boolean matches = matcher.matches();
 
-        Matcher matcher2 = Pattern.compile("^\\w{3,}://.+$").matcher(url);
+        Matcher matcher2 = Pattern.compile(colonSlashSlash + ".+$").matcher(url);
         boolean matches2 = !matches && matcher2.matches();
 
         String safeUrl;

@@ -13,6 +13,7 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.bean.PurchaseBean;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.action.StarsInventoryActionController;
 import com.cannontech.web.util.task.AddSNRangeTask;
 import com.cannontech.web.util.task.AddShipmentSNRangeTask;
@@ -48,7 +49,7 @@ public class ShipmentSNRangeAddController extends StarsInventoryActionController
             if (task.getStatus() == AddSNRangeTask.STATUS_FINISHED) {
                 session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, task.getProgressMsg());
                 ProgressChecker.removeTask( id );
-                if (redir != null) redirect = redir;
+                if (redir != null) redirect = ServletUtil.createSafeRedirectUrl(request, redir);
                 /**
                  * Need to make sure that the newly created serial range is saved to the shipment
                  */

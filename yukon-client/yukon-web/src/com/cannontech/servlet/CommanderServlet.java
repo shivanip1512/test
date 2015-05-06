@@ -60,7 +60,7 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
             localBean = (YCBean)session.getAttribute(ServletUtil.ATT_YC_BEAN);
         }
 
-        String redirectURL = ServletRequestUtils.getStringParameter(req, "REDIRECT");
+        String redirectURL = ServletRequestUtils.getStringParameter(req, ServletUtil.ATT_REDIRECT);
 
         /**deviceID(opt1) or SerialNumber(opt2) must exist!
          * deviceID/serialNumber command is sent. */
@@ -125,11 +125,8 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
             }
         }
         
-        if( redirectURL != null ) {
-            resp.sendRedirect(redirectURL);
-        }
-        else {
-            resp.sendRedirect(req.getContextPath() + "/dashboard");
-        }
+        redirectURL = ServletUtil.createSafeRedirectUrl(req, redirectURL);
+        
+        resp.sendRedirect(redirectURL);
     }
 }

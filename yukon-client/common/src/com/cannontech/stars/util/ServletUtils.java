@@ -34,9 +34,7 @@ public class ServletUtils {
     public static final String ATT_CONFIRM_MESSAGE = ServletUtil.ATT_CONFIRM_MESSAGE;
     public static final String ATT_PROMPT_MESSAGE = "PROMPT_MESSAGE";
     public static final String ATT_REDIRECT = ServletUtil.ATT_REDIRECT;
-    public static final String ATT_REDIRECT2 = ServletUtil.ATT_REDIRECT2;
     public static final String ATT_REFERRER = ServletUtil.ATT_REFERRER;
-    public static final String ATT_REFERRER2 = ServletUtil.ATT_REFERRER2;
 
     public static final int ACTION_CHANGEDEVICE = 1;
     public static final int ACTION_CHANGESTATE = 2;

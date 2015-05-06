@@ -38,7 +38,6 @@ public interface LoginController {
 	/* Parameter Names */
 	public static final String USERNAME = "USERNAME";
 	public static final String PASSWORD = "PASSWORD";
-	public static final String REDIRECT = ServletUtil.ATT_REDIRECT;
 	public static final String TOKEN = "TOKEN";
 
 	public static final String YUKON_USER = ServletUtil.ATT_YUKON_USER;

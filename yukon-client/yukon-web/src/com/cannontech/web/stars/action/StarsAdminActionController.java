@@ -28,7 +28,7 @@ public abstract class StarsAdminActionController extends AbstractBaseActionContr
                 nav.getPreviousPage() : request.getHeader("referer");
         
         if (referer == null) {
-            referer = request.getContextPath() + AbstractBaseActionController.LOGIN_URL;
+            referer = AbstractBaseActionController.LOGIN_URL;
         }
         referer = ServletUtil.createSafeRedirectUrl(request, referer);
         return referer;

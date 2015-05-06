@@ -41,6 +41,7 @@ public class DisplaySearchServlet extends HttpServlet {
             DisplaySearch ds = new DisplaySearch();
             String displayUrl = ds.findDisplay(key);
             if(displayUrl != null) {
+                displayUrl = ServletUtil.createSafeRedirectUrl(req, displayUrl);
                 resp.sendRedirect(displayUrl);
                 return;
             }

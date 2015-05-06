@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.fileupload.FileItem;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.stars.util.ServletUtils;
@@ -15,7 +16,7 @@ import com.cannontech.web.navigation.CtiNavObject;
 public abstract class StarsImportManagerActionController extends AbstractBaseActionController {
 
 	@Override
-    public String getRedirect(HttpServletRequest request) throws Exception {
+    public String getRedirect(HttpServletRequest request) throws ServletRequestBindingException {
 		String redirect = ServletRequestUtils.getStringParameter(request, ServletUtils.ATT_REDIRECT );
 		
 	    if (redirect == null) {
@@ -26,7 +27,7 @@ public abstract class StarsImportManagerActionController extends AbstractBaseAct
 	}
 	
 	@Override
-    public String getReferer(HttpServletRequest request) throws Exception {
+    public String getReferer(HttpServletRequest request) throws ServletRequestBindingException {
 	    String referer = ServletRequestUtils.getStringParameter(request, ServletUtils.ATT_REFERRER );
 
 		if (referer == null) {

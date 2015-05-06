@@ -3,6 +3,7 @@ package com.cannontech.web.stars.action;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.stars.util.ServletUtils;
@@ -11,7 +12,7 @@ import com.cannontech.web.navigation.CtiNavObject;
 public abstract class StarsWorkorderActionController extends AbstractBaseActionController {
 
     @Override
-    public String getRedirect(HttpServletRequest request) throws Exception {
+    public String getRedirect(HttpServletRequest request) throws ServletRequestBindingException {
         String confirmOnMessage = ServletRequestUtils.getStringParameter(request, ServletUtils.CONFIRM_ON_MESSAGE_PAGE);
         String redirect = buildRedirect(request);
         
@@ -19,14 +20,14 @@ public abstract class StarsWorkorderActionController extends AbstractBaseActionC
             HttpSession session = request.getSession(false);
             session.setAttribute( ServletUtils.ATT_MSG_PAGE_REDIRECT, redirect);
             session.setAttribute( ServletUtils.ATT_MSG_PAGE_REFERRER, buildReferer(request));
-            redirect = "/operator/Admin/Message.jsp";
+            redirect = request.getContextPath() + "/operator/Admin/Message.jsp";
         }
 
         return redirect;
     }
     
     @Override
-    public String getReferer(HttpServletRequest request) throws Exception {
+    public String getReferer(HttpServletRequest request) throws ServletRequestBindingException  {
         String confirmOnMessage = ServletRequestUtils.getStringParameter(request, ServletUtils.CONFIRM_ON_MESSAGE_PAGE);
         String referer = buildReferer(request);
         
@@ -39,7 +40,7 @@ public abstract class StarsWorkorderActionController extends AbstractBaseActionC
         return referer;
     }
     
-    private String buildRedirect(final HttpServletRequest request) throws Exception {
+    private String buildRedirect(final HttpServletRequest request) throws ServletRequestBindingException {
         String redirect = ServletRequestUtils.getStringParameter(request, ServletUtils.ATT_REDIRECT);
         
         if (redirect == null) {
@@ -49,7 +50,7 @@ public abstract class StarsWorkorderActionController extends AbstractBaseActionC
         return redirect;
     }
     
-    private String buildReferer(final HttpServletRequest request) throws Exception {
+    private String buildReferer(final HttpServletRequest request) throws ServletRequestBindingException {
         String referer = ServletRequestUtils.getStringParameter(request, ServletUtils.ATT_REFERRER);
         
         if(referer == null) {
