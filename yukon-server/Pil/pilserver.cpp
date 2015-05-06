@@ -27,7 +27,6 @@
 #include "executor.h"
 #include "dlldefs.h"
 
-#include "ctibase.h"
 #include "dllbase.h"
 #include "logger.h"
 #include "repeaterrole.h"

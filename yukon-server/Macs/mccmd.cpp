@@ -29,7 +29,7 @@
 #include "msg_notif_email.h"
 #include "msg_cmd.h"
 #include "tbl_devicereadrequestlog.h"
-#include "ctibase.h"
+#include "dllbase.h"
 #include "collectable.h"
 #include "pointtypes.h"
 #include "numstr.h"

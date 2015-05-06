@@ -4,7 +4,7 @@
 //  #include "monitor.h"
 #include "CServiceConfig.h"
 #include "rtdb.h"
-#include "ctibase.h"
+#include "dllbase.h"
 #include "cparms.h"
 #include "dbghelp.h"
 #include "calclogicsvc.h"

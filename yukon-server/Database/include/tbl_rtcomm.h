@@ -8,7 +8,6 @@
 #include "logger.h"
 #include "yukon.h"
 #include "dbmemobject.h"
-#include "ctibase.h"
 #include "dlldefs.h"
 
 #include <windows.h>

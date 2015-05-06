@@ -2,7 +2,7 @@
 
 #include "mc_fileint.h"
 #include "mc_msg.h"
-#include "ctibase.h"
+#include "dllbase.h"
 #include "ctidate.h"
 #include "utility.h"
 #include "errno.h"

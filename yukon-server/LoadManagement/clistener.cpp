@@ -3,7 +3,7 @@
 #include "clistener.h"
 #include "lmmessage.h"
 #include "lmcontrolareastore.h"
-#include "ctibase.h"
+#include "dllbase.h"
 #include "executor.h"
 #include "logger.h"
 #include "amq_constants.h"

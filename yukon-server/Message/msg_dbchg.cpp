@@ -3,7 +3,7 @@
 #include "collectable.h"
 #include "msg_dbchg.h"
 #include "dlldefs.h"
-#include "ctibase.h"
+#include "dllbase.h"
 #include "logger.h"
 
 using namespace std;

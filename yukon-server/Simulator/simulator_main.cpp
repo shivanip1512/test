@@ -6,7 +6,7 @@
 
 #include "ccusimsvc.h"
 #include "CServiceConfig.h"
-#include "ctibase.h"
+#include "dllbase.h"
 #include "logManager.h"
 #include "guard.h"
 #include "connection_base.h"

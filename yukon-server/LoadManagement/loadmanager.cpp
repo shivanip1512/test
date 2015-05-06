@@ -18,7 +18,7 @@
 #include "lmcontrolareatrigger.h"
 #include "tbl_lmprogramhistory.h"
 #include "executor.h"
-#include "ctibase.h"
+#include "dllbase.h"
 #include "netports.h"
 #include "pointdefs.h"
 #include "pointtypes.h"

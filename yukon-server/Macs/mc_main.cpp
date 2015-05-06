@@ -5,7 +5,7 @@
 #include "CServiceConfig.h"
 #include "id_macs.h"
 #include "mc_svc.h"
-#include "ctibase.h"
+#include "dllbase.h"
 #include "connection_base.h"
 #include "logManager.h"
 

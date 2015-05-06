@@ -38,7 +38,7 @@
 #include "database_reader.h"
 #include "database_connection.h"
 #include "database_util.h"
-#include "ctibase.h"
+#include "dllbase.h"
 #include "logger.h"
 #include "msg_dbchg.h"
 #include "loadmanager.h"

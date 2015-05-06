@@ -2,7 +2,7 @@
 
 #include "ccclientlistener.h"
 #include "ccmessage.h"
-#include "ctibase.h"
+#include "dllbase.h"
 #include "logger.h"
 #include "utility.h"
 #include "ThreadStatusKeeper.h"

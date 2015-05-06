@@ -9,7 +9,7 @@ using namespace std;
 #include "dllvg.h"
 #include "CServiceConfig.h"
 #include "dllbase.h"
-#include "ctibase.h"
+#include "dllbase.h"
 #include "logManager.h"
 #include "utility.h"
 #include "dbghelp.h"

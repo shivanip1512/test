@@ -4,7 +4,7 @@
 #include "dsm2.h"
 #include "dbmemobject.h"
 #include "cmdparse.h"
-#include "ctibase.h"
+#include "dllbase.h"
 #include "message.h"
 #include "tbl_pao_lite.h"
 #include "tbl_rtcomm.h"

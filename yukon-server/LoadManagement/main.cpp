@@ -9,7 +9,7 @@
 #include "monitor.h"
 #include "CServiceConfig.h"
 #include "rtdb.h"
-#include "ctibase.h"
+#include "dllbase.h"
 #include "module_util.h"
 #include "connection_base.h"
 #include "logManager.h"

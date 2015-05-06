@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ctibase.h"
+#include "dllbase.h"
 #include "dlldefs.h"
 #include "dbmemobject.h"
 #include "pointdefs.h"

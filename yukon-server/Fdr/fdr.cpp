@@ -2,7 +2,7 @@
 
 #include "ctitime.h"
 #include "dlldefs.h"
-#include "ctibase.h"
+#include "dllbase.h"
 #include "logManager.h"
 #include "guard.h"
 #include "cparms.h"

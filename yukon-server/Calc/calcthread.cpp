@@ -5,7 +5,7 @@
 #include <sstream>
 
 #include "dbaccess.h"
-#include "ctibase.h"
+#include "dllbase.h"
 #include "pointtypes.h"
 #include "message.h"
 #include "msg_multi.h"

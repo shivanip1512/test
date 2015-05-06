@@ -10,7 +10,7 @@
 #include "resolvers.h"
 #include "devicetypes.h"
 #include "dbaccess.h"
-#include "ctibase.h"
+#include "dllbase.h"
 #include "logger.h"
 #include "msg_dbchg.h"
 #include "msg_signal.h"

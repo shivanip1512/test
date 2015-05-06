@@ -7,7 +7,7 @@ using namespace std;
 
 #include "dlldefs.h"
 #include "portsvc.h"
-#include "ctibase.h"
+#include "dllbase.h"
 #include "portglob.h"
 #include "utility.h"
 

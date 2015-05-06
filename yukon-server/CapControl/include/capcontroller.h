@@ -15,7 +15,7 @@
 #include "pointtypes.h"
 #include "ccsubstationbusstore.h"
 #include "ccexecutor.h"
-#include "ctibase.h"
+#include "dllbase.h"
 #include "logger.h"
 #include "yukon.h"
 #include "ctdpcptrq.h"

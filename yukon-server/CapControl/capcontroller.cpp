@@ -19,7 +19,7 @@
 #include "capcontroller.h"
 #include "ccsubstationbusstore.h"
 #include "ccexecutor.h"
-#include "ctibase.h"
+#include "dllbase.h"
 #include "netports.h"
 #include "pointdefs.h"
 #include "pointtypes.h"

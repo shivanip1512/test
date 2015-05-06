@@ -3,7 +3,7 @@
 #include "collectable.h"
 #include "msg_multi.h"
 #include "dlldefs.h"
-#include "ctibase.h"
+#include "dllbase.h"
 #include "logger.h"
 #include "utility.h"
 

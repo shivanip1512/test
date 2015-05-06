@@ -7,7 +7,7 @@
 
 #include "portsvc.h"
 #include "CServiceConfig.h"
-#include "ctibase.h"
+#include "dllbase.h"
 #include "portglob.h"
 #include "cparms.h"
 #include "logManager.h"

@@ -3,7 +3,7 @@
 #include <limits.h>
 
 #include "connection_server.h"
-#include "ctibase.h"
+#include "dllbase.h"
 
 class IM_EX_CTISVR CtiConnectionManager : public CtiServerConnection
 {

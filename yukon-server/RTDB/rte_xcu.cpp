@@ -5,7 +5,7 @@
 #include "rte_xcu.h"
 #include "master.h"
 #include "cmdparse.h"
-#include "ctibase.h"
+#include "dllbase.h"
 #include "dev_remote.h"
 #include "dev_tap.h"
 #include "dev_snpp.h"

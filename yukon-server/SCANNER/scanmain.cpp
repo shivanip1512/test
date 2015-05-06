@@ -8,7 +8,7 @@ using namespace std;
 #include "scansvc.h"
 #include "CServiceConfig.h"
 #include "dllbase.h"
-#include "ctibase.h"
+#include "dllbase.h"
 #include "logManager.h"
 #include "thread_monitor.h"
 #include "connection_base.h"

@@ -4,7 +4,7 @@
 
 #include "dlldefs.h"
 #include "ccusimsvc.h"
-#include "ctibase.h"
+#include "dllbase.h"
 #include "utility.h"
 
 #include <boost/thread.hpp>

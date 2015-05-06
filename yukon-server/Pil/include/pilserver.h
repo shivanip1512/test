@@ -8,7 +8,7 @@
 #include "mgr_point.h"
 #include "mgr_route.h"
 #include "mgr_config.h"
-#include "ctibase.h"
+#include "dllbase.h"
 
 #include "connection_listener.h"
 #include "amq_constants.h"

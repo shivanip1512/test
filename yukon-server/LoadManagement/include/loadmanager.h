@@ -12,7 +12,7 @@
 #include "loadmanager.h"
 #include "lmcontrolareastore.h"
 #include "executor.h"
-#include "ctibase.h"
+#include "dllbase.h"
 #include "logger.h"
 #include "yukon.h"
 #include "queue.h"
