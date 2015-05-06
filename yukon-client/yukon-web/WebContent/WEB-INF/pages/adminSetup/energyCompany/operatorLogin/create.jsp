@@ -90,10 +90,10 @@
             <cti:displayForPageEditModes modes="CREATE,EDIT">
                 <c:if test="${supportsPasswordSet}">
                     <tags:nameValue2 nameKey=".password">
-                        <tags:password path="password1" cssClass="js-password-1" autocomplete="false" />
+                        <tags:password path="password1" cssClass="js-password-1" autocomplete="off" />
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".confirmPassword"> 
-                        <tags:password path="password2" cssClass="js-password-2" autocomplete="false" />
+                        <tags:password path="password2" cssClass="js-password-2" autocomplete="off" />
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey="defaults.blank" excludeColon="true">
                         <cti:msg2 key=".generatePassword" var="pwordButton"/>

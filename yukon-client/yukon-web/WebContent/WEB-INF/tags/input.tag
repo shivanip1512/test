@@ -7,7 +7,8 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <%@ attribute name="toggleGroup" description="Used to setup a toggle group driven by a checkbox." %>
-<%@ attribute name="autocomplete" type="java.lang.Boolean"%>
+<%@ attribute name="autocomplete" 
+        description="HTML input autocomplete attribute. Possible values: 'on|off'. Default: 'on'." %>
 <%@ attribute name="disabled" %>
 <%@ attribute name="id" %>
 <%@ attribute name="inputClass" %>
@@ -23,6 +24,7 @@
 <%@ attribute name="password" type="java.lang.Boolean" description="If true, a password field is used. Default: false." %>
 
 <cti:default var="password" value="${false}"/>
+<cti:default var="autocomplete" value="on"/>
 
 <spring:bind path="${path}">
 
@@ -44,7 +46,7 @@
             readonly="${pageScope.readonly}"
             size="${pageScope.size}" 
             maxlength="${pageScope.maxlength}"
-            autocomplete="${pageScope.autocomplete}" 
+            autocomplete="${autocomplete}" 
             cssClass="${pageScope.inputClass}"
             onkeyup="${pageScope.onkeyup}" 
             onchange="${pageScope.onchange}"
@@ -60,7 +62,7 @@
             readonly="${pageScope.readonly}"
             size="${pageScope.size}" 
             maxlength="${pageScope.maxlength}"
-            autocomplete="${pageScope.autocomplete}" 
+            autocomplete="${autocomplete}" 
             cssClass="${pageScope.inputClass}"
             onkeyup="${pageScope.onkeyup}" 
             onchange="${pageScope.onchange}"

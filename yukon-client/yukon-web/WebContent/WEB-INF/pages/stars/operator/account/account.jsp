@@ -207,7 +207,7 @@
                                 <!-- Username Field -->
                                 <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME">
                                     <tags:nameValue2 nameKey=".userName">
-                                        <tags:input path="loginBackingBean.username" autocomplete="false"/>
+                                        <tags:input path="loginBackingBean.username" autocomplete="off"/>
                                     </tags:nameValue2>
                                 </cti:checkRolesAndProperties>
                                 <cti:checkRolesAndProperties value="!OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME">
@@ -243,15 +243,15 @@
                                             <div class="password_editor">
                                             <tags:nameValue2 nameKey=".newPassword">
                                                 <input type="text" class="js-password-editor-field" 
-                                                    autocomplete="false" maxlength="64" style="display:none;">
+                                                    autocomplete="off" maxlength="64" style="display:none;">
                                                 <tags:password path="loginBackingBean.password1" 
-                                                    cssClass="js-password-editor-field" autocomplete="false"/>
+                                                    cssClass="js-password-editor-field" autocomplete="off"/>
                                             </tags:nameValue2>
                                             <tags:nameValue2 nameKey=".confirmPassword">
                                                 <input type="text" class="js-password-editor-field" 
-                                                    autocomplete="false" maxlength="64" style="display:none;">
+                                                    autocomplete="off" maxlength="64" style="display:none;">
                                                 <tags:password path="loginBackingBean.password2" 
-                                                    cssClass="js-password-editor-field" autocomplete="false"/>
+                                                    cssClass="js-password-editor-field" autocomplete="off"/>
                                             </tags:nameValue2>
                                         </c:if>
                                     </cti:checkRolesAndProperties>
@@ -346,15 +346,15 @@
                             <tags:nameValueContainer2 id="passwordFields">
                                 <tags:nameValue2 nameKey=".newPassword">
                                     <input type="text" class="js-password-editor-field" 
-                                        autocomplete="false" maxlength="64" style="display:none;">
+                                        autocomplete="off" maxlength="64" style="display:none;">
                                     <tags:password path="password1" cssClass="js-password-editor-field js-password-1" 
-                                        autocomplete="false" maxlength="64"/>
+                                        autocomplete="off" maxlength="64"/>
                                 </tags:nameValue2>
                                 <tags:nameValue2 nameKey=".confirmPassword">
                                     <input type="text" class="js-password-editor-field" 
-                                        autocomplete="false" maxlength="64" style="display:none;">
+                                        autocomplete="off" maxlength="64" style="display:none;">
                                     <tags:password path="password2" cssClass="js-password-editor-field js-password-2" 
-                                        autocomplete="false" maxlength="64"/>
+                                        autocomplete="off" maxlength="64"/>
                                 </tags:nameValue2>
                             </tags:nameValueContainer2>
                             <div class="action-area">

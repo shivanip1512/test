@@ -30,10 +30,10 @@
                 <input type="hidden" name="userId" value="${userId}">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".password">
-                        <tags:password path="password" cssClass="js-new-password"/>
+                        <tags:password path="password" cssClass="js-new-password" autocomplete="off"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".confirmPassword">
-                        <tags:password path="confirmPassword" cssClass="js-confirm-password"/>
+                        <tags:password path="confirmPassword" cssClass="js-confirm-password" autocomplete="off"/>
                     </tags:nameValue2>
                     <tags:nameValue2 excludeColon="true">
                         <div class="js-password-mismatch error">
@@ -134,10 +134,8 @@
                             disabled="${disabled}"/>
                         <d:confirm on=".js-delete-user" nameKey="delete.confirm"/>
                         
-                        <cti:url var="cancelUrl" value="view">
-                            <cti:param name="userId" value="${user.userId}"/>
-                        </cti:url>
-                        <cti:button nameKey="cancel" href="${cancelUrl}"/>
+                        <cti:url var="url" value="/admin/users/${user.userId}"/>
+                        <cti:button nameKey="cancel" href="${url}"/>
                         
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">

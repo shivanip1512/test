@@ -37,13 +37,13 @@
         <tags:nameValue2 rowClass="js-pw-row ${clazz}" excludeColon="true">
             <cti:msg2 var="password" key=".password.placeholder"/>
             <tags:input inputClass="js-pw" path="password.password" password="true" 
-                placeholder="${password}" maxlength="64"/>
+                placeholder="${password}" maxlength="64" autocomplete="off"/>
         </tags:nameValue2>
         
         <tags:nameValue2 rowClass="js-pw-row ${clazz}" excludeColon="true">
             <cti:msg2 var="confirm" key=".password.confirm.placeholder"/>
             <tags:input inputClass="js-pw-confirm" path="password.confirmPassword" password="true" 
-                placeholder="${confirm}" maxlength="64"/>
+                placeholder="${confirm}" maxlength="64" autocomplete="off"/>
         </tags:nameValue2>
         
         <cti:msg2 var="none" key="yukon.common.none.choice"/>

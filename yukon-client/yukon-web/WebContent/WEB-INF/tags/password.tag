@@ -3,12 +3,15 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<%@ attribute name="path" required="true"%>
-<%@ attribute name="disabled" type="java.lang.Boolean"%>
+<%@ attribute name="path" required="true" %>
+<%@ attribute name="disabled" type="java.lang.Boolean" %>
 <%@ attribute name="size" %>
 <%@ attribute name="maxlength" %>
-<%@ attribute name="autocomplete" type="java.lang.Boolean"%>
+<%@ attribute name="autocomplete" 
+        description="HTML input autocomplete attribute. Possible values: 'on|off'. Default: 'on'." %>
 <%@ attribute name="cssClass" %>
+
+<cti:default var="autocomplete" value="on"/>
 
 <spring:bind path="${path}">
 
@@ -26,7 +29,7 @@
 </c:if>
 
 <form:password path="${path}" disabled="${pageScope.disabled}" size="${pageScope.size}" maxlength="${pageScope.maxlength}" 
-    autocomplete="${pageScope.autocomplete}" cssClass="${inputClass} ${pageScope.cssClass}"/>
+    autocomplete="${autocomplete}" cssClass="${inputClass} ${pageScope.cssClass}"/>
 <c:if test="${status.error}"><br><form:errors path="${path}" cssClass="error"/></c:if>
 
 </cti:displayForPageEditModes>

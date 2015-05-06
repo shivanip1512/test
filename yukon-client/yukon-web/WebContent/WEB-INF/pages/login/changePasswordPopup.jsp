@@ -14,12 +14,12 @@
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".newPassword">
                     <tags:input path="password1" password="true" inputClass="js-new-password" maxlength="64" 
-                            autocomplete="false"/>
+                            autocomplete="off"/>
                 </tags:nameValue2>
                 <tags:nameValue2 excludeColon="true">
                     <cti:msg2 var="placeholder" key=".confirm"/>
                     <tags:input path="password2" password="true" inputClass="js-confirm-password" maxlength="64" 
-                            autocomplete="false" placeholder="${placeholder}"/>
+                            autocomplete="off" placeholder="${placeholder}"/>
                 </tags:nameValue2>
                 <tr>
                     <td></td>

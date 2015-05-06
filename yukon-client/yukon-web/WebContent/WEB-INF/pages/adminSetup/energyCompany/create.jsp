@@ -61,10 +61,10 @@
                     <tags:nameValueContainer2>
                         <tags:inputNameValue nameKey=".username" path="adminUsername"/>
                         <tags:nameValue2 nameKey=".password">
-                            <tags:password path="adminPassword1"/>
+                            <tags:password path="adminPassword1" autocomplete="off"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".confirmPassword">
-                            <tags:password path="adminPassword2"/>
+                            <tags:password path="adminPassword2" autocomplete="off"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </tags:sectionContainer2>

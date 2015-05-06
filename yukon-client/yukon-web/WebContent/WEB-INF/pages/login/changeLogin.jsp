@@ -21,11 +21,11 @@
                 <c:if test="${!empty param.retrySeconds}">
                     <br/>
                     <cti:msg key="yukon.web.changelogin.error.RETRY" argument="${param.retrySeconds}"></cti:msg>
-                </c:if>            
+                </c:if>
         </Span>
         <br/>
     </c:if>
-
+    
     <cti:checkRolesAndProperties  value="RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_USERNAME">
     <cti:msg key="yukon.web.changelogin.changeUsername" var="changeUsernameTitle"/>
     <tags:boxContainer title="${changeUsernameTitle}" hideEnabled="false">
@@ -46,7 +46,9 @@
                         <cti:msg key="yukon.web.changelogin.oldPassword"/>
                     </td>
                     <td align="left">
-                        <input maxlength="64" type="password" name="oldPassword" value="" <c:if test="${disablePasswordChange}">disabled</c:if>>
+                        <input maxlength="64" type="password" name="oldPassword" value="" 
+                            <c:if test="${disablePasswordChange}">disabled</c:if>
+                            autocomplete="off">
                     </td>
                 </tr>
                 <tr>
@@ -76,19 +78,25 @@
                     <tr>
                         <td><cti:msg key="yukon.web.changelogin.oldPassword"/></td>
                         <td>
-                            <input maxlength="64" type="password" name="oldPassword" value="" <c:if test="${disablePasswordChange}">disabled</c:if>>
+                            <input maxlength="64" type="password" name="oldPassword" value="" 
+                                <c:if test="${disablePasswordChange}">disabled</c:if>
+                                autocomplete="off">
                         </td>
                     </tr>
                     <tr>
                         <td><cti:msg key="yukon.web.changelogin.newPassword"/></td>
                         <td>
-                            <input maxlength="64" type="password" name="newPassword" value="" <c:if test="${disablePasswordChange}">disabled</c:if>>
+                            <input maxlength="64" type="password" name="newPassword" value="" 
+                                <c:if test="${disablePasswordChange}">disabled</c:if>
+                                autocomplete="off">
                         </td>
                     </tr>
                     <tr>
                         <td><cti:msg key="yukon.web.changelogin.confirm"/></td>
                         <td>
-                            <input maxlength="64" type="password" name="confirm" value="" <c:if test="${disablePasswordChange}">disabled</c:if>>
+                            <input maxlength="64" type="password" name="confirm" value="" 
+                                <c:if test="${disablePasswordChange}">disabled</c:if>
+                                autocomplete="off">
                         </td>
                     </tr>
                 </table>

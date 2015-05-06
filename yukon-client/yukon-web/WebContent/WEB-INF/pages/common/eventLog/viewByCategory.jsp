@@ -47,7 +47,7 @@ $(function () {
                 </tags:nameValue2>
                 
                 <tags:nameValue2 nameKey=".filterValue">
-                    <tags:input path="filterValue" autocomplete="false"/>
+                    <tags:input path="filterValue" autocomplete="off"/>
                 </tags:nameValue2>
                 
                 <tags:nameValue2 nameKey=".dateRange">
