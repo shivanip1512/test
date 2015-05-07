@@ -23,7 +23,7 @@ struct KeepAlivePolicy : Policy
 
     virtual Actions DisableRemoteControl() = 0;
 
-    OperatingMode getOperatingMode();
+    virtual OperatingMode getOperatingMode();
 
 protected:
 

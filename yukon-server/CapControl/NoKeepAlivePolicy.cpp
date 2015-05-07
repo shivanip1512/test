@@ -42,6 +42,11 @@ Policy::Actions NoKeepAlivePolicy::DisableRemoteControl()
     };
 }
 
+KeepAlivePolicy::OperatingMode NoKeepAlivePolicy::getOperatingMode()
+{
+    return RemoteMode;
+}
+
 }
 }
 

@@ -98,9 +98,12 @@ try
 {
     long keepalive = getValueByAttribute( PointAttribute::KeepAlive );
 
-    keepalive = ( static_cast<long>( keepalive ) + 1 ) % 32768;     // limit range and handle rollover.
+    if ( 0 <= keepalive && keepalive <= 32767 )
+    {
+        return ( keepalive + 1 ) % 32768;     // limit range and handle rollover.
+    }
 
-    return keepalive; 
+    return 0;       // if we got some value outside the normal range -- send default of 0
 }
 catch ( UninitializedPointValue & )
 {

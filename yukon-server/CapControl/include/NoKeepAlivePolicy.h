@@ -18,6 +18,8 @@ struct NoKeepAlivePolicy : KeepAlivePolicy
     Actions EnableRemoteControl( const long keepAliveValue ) override;
     
     Actions DisableRemoteControl() override;
+
+    OperatingMode getOperatingMode() override;
 };
 
 }
