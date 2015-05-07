@@ -408,7 +408,6 @@ public:
         Command_ReadQueue,
         Command_DirectTransmission,
         Command_TimeSync,
-        Command_TimeRead,
         Command_LoadRoutes,
 
         Command_Raw

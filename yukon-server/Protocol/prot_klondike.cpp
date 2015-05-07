@@ -56,8 +56,6 @@ KlondikeProtocol::command_state_map_t::command_state_map_t()
 
     (*this)[Command_TimeSync ].push_back(CommandCode_TimeSyncCCU);
 
-    (*this)[Command_TimeRead ].push_back(CommandCode_ConfigurationMemoryRead);
-
     (*this)[Command_DirectTransmission].push_back(CommandCode_DirectMessageRequest);
 
     (*this)[Command_LoadRoutes].push_back(CommandCode_RoutingTableClear);

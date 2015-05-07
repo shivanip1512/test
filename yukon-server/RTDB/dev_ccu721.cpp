@@ -53,15 +53,6 @@ YukonError_t Ccu721Device::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser
 
             break;
         }
-        case GetConfigRequest:
-        {
-            if( parse.isKeyValid("time") )
-            {
-                OutMessage->Sequence = KlondikeProtocol::Command_TimeRead;
-
-                nRet = ClientErrors::None;
-            }
-        }
         case PutConfigRequest:
         {
             if( parse.isKeyValid("raw") )
