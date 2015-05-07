@@ -8,10 +8,10 @@
 <%@ attribute name="size" %>
 <%@ attribute name="maxlength" %>
 <%@ attribute name="autocomplete" 
-        description="HTML input autocomplete attribute. Possible values: 'on|off'. Default: 'on'." %>
+        description="HTML input autocomplete attribute. Possible values: 'on|off'. Default: 'off'." %>
 <%@ attribute name="cssClass" %>
 
-<cti:default var="autocomplete" value="on"/>
+<cti:default var="autocomplete" value="off"/>
 
 <spring:bind path="${path}">
 
