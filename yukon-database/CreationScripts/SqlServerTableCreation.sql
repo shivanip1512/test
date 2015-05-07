@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/8/2015 4:40:09 PM                          */
+/* Created on:     5/7/2015 3:00:34 PM                          */
 /*==============================================================*/
 
 
@@ -1746,6 +1746,19 @@ INSERT INTO Command VALUES (-189, 'getvalue instant line data', 'Read instant li
 INSERT INTO Command VALUES (-190, 'getvalue outage ?''Outage Log (1 - 10)''', 'Read two outages per read.  Specify 1(1&2), 3(3&4), 5(5&6), 7(7&8), 9(9&10)', 'MCT-440-2131B');
 INSERT INTO Command VALUES (-191, 'putstatus reset alarms', 'Reset meter alarms', 'MCT-440-2131B');
 INSERT INTO Command VALUES (-192, 'getstatus eventlog', 'Read event log', 'MCT-440-2131B');
+
+INSERT INTO Command VALUES (-193, 'getconfig install all', 'Read configuration', 'ALL RFNs');
+INSERT INTO Command VALUES (-194, 'getconfig install display', 'Read display metrics', 'ALL RFNs');
+INSERT INTO Command VALUES (-195, 'getconfig install freezeday', 'Read demand freeze day and last freeze timestamp', 'ALL RFNs');
+INSERT INTO Command VALUES (-196, 'getconfig tou', 'Read TOU status', 'ALL RFNs');
+INSERT INTO Command VALUES (-197, 'getconfig holidays', 'Read holiday schedule', 'ALL RFNs');
+INSERT INTO Command VALUES (-198, 'getvalue voltage profile ?''MM/DD/YYYY'' ?''HH:mm'' ?''MM/DD/YYYY'' ?''HH:mm''', 'Read voltage profile data, start date required, rest of fields optional', 'ALL RFNs');
+
+INSERT INTO Command VALUES (-199, 'getconfig install', 'Read configuration', 'All Two Way LCR');
+INSERT INTO Command VALUES (-200, 'getconfig address', 'Read addressing', 'All Two Way LCR');
+INSERT INTO Command VALUES (-201, 'getvalue temperature', 'Read temperature', 'All Two Way LCR');
+INSERT INTO Command VALUES (-202, 'getconfig time', 'Read Date/Time', 'All Two Way LCR');
+INSERT INTO Command VALUES (-203, 'getvalue power', 'Read transmit power', 'All Two Way LCR');
 
 /*==============================================================*/
 /* Table: CommandGroup                                          */
@@ -3684,35 +3697,35 @@ INSERT INTO DeviceTypeCommand VALUES (-375, -12, 'MCT-410CL', 12, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-376, -13, 'MCT-410CL', 13, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-377, -30, 'MCT-248', 14, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-378, -31, 'MCT-248', 15, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-379, -98, 'All MCT-4xx Series', 14, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-380, -99, 'All MCT-4xx Series', 15, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-379, -98, 'MCT-410IL', 14, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-380, -99, 'MCT-410IL', 15, 'Y', -1);
 
-INSERT INTO DeviceTypeCommand VALUES (-381, -98, 'All MCT-4xx Series', 14, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-382, -99, 'All MCT-4xx Series', 15, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-381, -98, 'MCT-410CL', 14, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-382, -99, 'MCT-410CL', 15, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-383, -100, 'SENTINEL', 1, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-384, -101, 'SENTINEL', 2, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-385, -102, 'SENTINEL', 3, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-386, -103, 'SENTINEL', 4, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-387, -104, 'SENTINEL', 5, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-388, -105, 'All MCT-4xx Series', 16, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-388, -105, 'MCT-410IL', 16, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-389, -106, 'MCT-410IL', 17, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-390, -107, 'MCT-410IL', 18, 'Y', -1);
 
 INSERT INTO DeviceTypeCommand VALUES (-391, -108, 'MCT-410IL', 19, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-392, -109, 'All MCT-4xx Series', 20, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-392, -109, 'MCT-410IL', 20, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-394, -111, 'MCT-410IL', 22, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-395, -112, 'All MCT-4xx Series', 23, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-396, -113, 'All MCT-4xx Series', 24, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-395, -112, 'MCT-410IL', 23, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-396, -113, 'MCT-410IL', 24, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-397, -114, 'MCT-410IL', 25, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-398, -105, 'All MCT-4xx Series', 16, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-398, -105, 'MCT-410CL', 16, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-399, -106, 'MCT-410CL', 17, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-400, -107, 'MCT-410CL', 18, 'Y', -1);
 
 INSERT INTO DeviceTypeCommand VALUES (-401, -108, 'MCT-410CL', 19, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-402, -109, 'All MCT-4xx Series', 20, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-402, -109, 'MCT-410CL', 20, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-404, -111, 'MCT-410CL', 22, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-405, -112, 'All MCT-4xx Series', 23, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-406, -113, 'All MCT-4xx Series', 24, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-405, -112, 'MCT-410CL', 23, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-406, -113, 'MCT-410CL', 24, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-407, -114, 'MCT-410CL', 25, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-408, -1, 'MCT-470', 1, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-409, -2, 'MCT-470', 2, 'Y', -1);
@@ -3820,17 +3833,17 @@ INSERT INTO DeviceTypeCommand VALUES (-514, -84, 'MCT-410FL', 10, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-515, -11, 'MCT-410FL', 11, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-516, -12, 'MCT-410FL', 12, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-517, -13, 'MCT-410FL', 13, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-518, -98, 'All MCT-4xx Series', 14, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-519, -99, 'All MCT-4xx Series', 15, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-520, -105, 'All MCT-4xx Series', 16, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-518, -98, 'MCT-410FL', 14, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-519, -99, 'MCT-410FL', 15, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-520, -105, 'MCT-410FL', 16, 'Y', -1);
 
 INSERT INTO DeviceTypeCommand VALUES (-521, -106, 'MCT-410FL', 17, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-522, -107, 'MCT-410FL', 18, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-523, -108, 'MCT-410FL', 19, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-524, -109, 'All MCT-4xx Series', 20, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-524, -109, 'MCT-410FL', 20, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-526, -111, 'MCT-410FL', 22, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-527, -112, 'All MCT-4xx Series', 23, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-528, -113, 'All MCT-4xx Series', 24, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-527, -112, 'MCT-410FL', 23, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-528, -113, 'MCT-410FL', 24, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-529, -114, 'MCT-410FL', 25, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-530, -1, 'MCT-410GL', 1, 'Y', -1);
 
@@ -3847,17 +3860,17 @@ INSERT INTO DeviceTypeCommand VALUES (-540, -11, 'MCT-410GL', 11, 'Y', -1);
 
 INSERT INTO DeviceTypeCommand VALUES (-541, -12, 'MCT-410GL', 12, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-542, -13, 'MCT-410GL', 13, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-543, -98, 'All MCT-4xx Series', 14, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-544, -99, 'All MCT-4xx Series', 15, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-545, -105, 'All MCT-4xx Series', 16, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-543, -98, 'MCT-410GL', 14, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-544, -99, 'MCT-410GL', 15, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-545, -105, 'MCT-410GL', 16, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-546, -106, 'MCT-410GL', 17, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-547, -107, 'MCT-410GL', 18, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-548, -108, 'MCT-410GL', 19, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-549, -109, 'All MCT-4xx Series', 20, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-549, -109, 'MCT-410GL', 20, 'Y', -1);
 
 INSERT INTO DeviceTypeCommand VALUES (-551, -111, 'MCT-410GL', 22, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-552, -112, 'All MCT-4xx Series', 23, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-553, -113, 'All MCT-4xx Series', 24, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-552, -112, 'MCT-410GL', 23, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-553, -113, 'MCT-410GL', 24, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-554, -114, 'MCT-410GL', 25, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-555, -3, 'MCT-430SL', 1, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-556, -20, 'MCT-430SL', 2, 'Y', -1);
@@ -4323,6 +4336,131 @@ INSERT INTO DeviceTypeCommand VALUES (-1016, -191, 'MCT-440-2133B', 12, 'Y', -1)
 INSERT INTO DeviceTypeCommand VALUES (-1017, -192, 'MCT-440-2131B', 12, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1018, -192, 'MCT-440-2132B', 12, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1019, -192, 'MCT-440-2133B', 12, 'Y', -1);
+
+INSERT INTO DeviceTypeCommand VALUES (-1020, -193, 'RFN-410fL', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1021, -194, 'RFN-410fL', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1022, -195, 'RFN-410fL', 3, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1023, -196, 'RFN-410fL', 4, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1024, -197, 'RFN-410fL', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1025, -198, 'RFN-410fL', 6, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1026, -193, 'RFN-410fX', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1027, -194, 'RFN-410fX', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1028, -195, 'RFN-410fX', 3, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1029, -196, 'RFN-410fX', 4, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1030, -197, 'RFN-410fX', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1031, -198, 'RFN-410fX', 6, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1032, -193, 'RFN-410fD', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1033, -194, 'RFN-410fD', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1034, -195, 'RFN-410fD', 3, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1035, -196, 'RFN-410fD', 4, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1036, -197, 'RFN-410fD', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1037, -198, 'RFN-410fD', 6, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1038, -193, 'RFN-420fL', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1039, -194, 'RFN-420fL', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1040, -195, 'RFN-420fL', 3, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1041, -196, 'RFN-420fL', 4, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1042, -197, 'RFN-420fL', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1043, -198, 'RFN-420fL', 6, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1044, -193, 'RFN-420fX', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1045, -194, 'RFN-420fX', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1046, -195, 'RFN-420fX', 3, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1047, -196, 'RFN-420fX', 4, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1048, -197, 'RFN-420fX', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1049, -198, 'RFN-420fX', 6, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1050, -193, 'RFN-420fD', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1051, -194, 'RFN-420fD', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1052, -195, 'RFN-420fD', 3, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1053, -196, 'RFN-420fD', 4, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1054, -197, 'RFN-420fD', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1055, -198, 'RFN-420fD', 6, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1056, -193, 'RFN-420fRX', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1057, -194, 'RFN-420fRX', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1058, -195, 'RFN-420fRX', 3, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1059, -196, 'RFN-420fRX', 4, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1060, -197, 'RFN-420fRX', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1061, -198, 'RFN-420fRX', 6, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1062, -193, 'RFN-420fRD', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1063, -194, 'RFN-420fRD', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1064, -195, 'RFN-420fRD', 3, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1065, -196, 'RFN-420fRD', 4, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1066, -197, 'RFN-420fRD', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1067, -198, 'RFN-420fRD', 6, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1068, -193, 'RFN-410cL', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1069, -194, 'RFN-410cL', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1070, -195, 'RFN-410cL', 3, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1071, -196, 'RFN-410cL', 4, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1072, -197, 'RFN-410cL', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1073, -198, 'RFN-410cL', 6, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1074, -193, 'RFN-420cL', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1075, -194, 'RFN-420cL', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1076, -195, 'RFN-420cL', 3, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1077, -196, 'RFN-420cL', 4, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1078, -197, 'RFN-420cL', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1079, -198, 'RFN-420cL', 6, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1080, -193, 'RFN-420cD', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1081, -194, 'RFN-420cD', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1082, -195, 'RFN-420cD', 3, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1083, -196, 'RFN-420cD', 4, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1084, -197, 'RFN-420cD', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1085, -198, 'RFN-420cD', 6, 'Y', -1);
+ 
+INSERT INTO DeviceTypeCommand VALUES (-1086, -193, 'RFN-430A3D', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1087, -194, 'RFN-430A3D', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1088, -195, 'RFN-430A3D', 3, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1089, -196, 'RFN-430A3D', 4, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1090, -197, 'RFN-430A3D', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1091, -193, 'RFN-430A3T', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1092, -194, 'RFN-430A3T', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1093, -195, 'RFN-430A3T', 3, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1094, -196, 'RFN-430A3T', 4, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1095, -197, 'RFN-430A3T', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1096, -193, 'RFN-430A3K', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1097, -194, 'RFN-430A3K', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1098, -195, 'RFN-430A3K', 3, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1099, -196, 'RFN-430A3K', 4, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1100, -197, 'RFN-430A3K', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1101, -193, 'RFN-430A3R', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1102, -194, 'RFN-430A3R', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1103, -195, 'RFN-430A3R', 3, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1104, -196, 'RFN-430A3R', 4, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1105, -197, 'RFN-430A3R', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1106, -193, 'RFN-430KV', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1107, -194, 'RFN-430KV', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1108, -195, 'RFN-430KV', 3, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1109, -196, 'RFN-430KV', 4, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1110, -197, 'RFN-430KV', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1111, -193, 'RFN-430SL0', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1112, -194, 'RFN-430SL0', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1113, -195, 'RFN-430SL0', 3, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1114, -196, 'RFN-430SL0', 4, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1115, -197, 'RFN-430SL0', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1116, -193, 'RFN-430SL1', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1117, -194, 'RFN-430SL1', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1118, -195, 'RFN-430SL1', 3, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1119, -196, 'RFN-430SL1', 4, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1120, -197, 'RFN-430SL1', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1121, -193, 'RFN-430SL2', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1122, -194, 'RFN-430SL2', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1123, -195, 'RFN-430SL2', 3, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1124, -196, 'RFN-430SL2', 4, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1125, -197, 'RFN-430SL2', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1126, -193, 'RFN-430SL3', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1127, -194, 'RFN-430SL3', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1128, -195, 'RFN-430SL3', 3, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1129, -196, 'RFN-430SL3', 4, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1130, -197, 'RFN-430SL3', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1131, -193, 'RFN-430SL4', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1132, -194, 'RFN-430SL4', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1133, -195, 'RFN-430SL4', 3, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1134, -196, 'RFN-430SL4', 4, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1135, -197, 'RFN-430SL4', 5, 'Y', -1);
+
+INSERT INTO DeviceTypeCommand VALUES (-1136, -199, 'LCR-3102', 11, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1137, -200, 'LCR-3102', 12, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1138, -201, 'LCR-3102', 13, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1139, -202, 'LCR-3102', 14, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1140, -203, 'LCR-3102', 15, 'Y', -1);
+
 
 /*==============================================================*/
 /* Index: Indx_DevTypeCmd_GroupID                               */
@@ -7845,6 +7983,14 @@ create table ReportedAddressExpressCom (
 go
 
 /*==============================================================*/
+/* Index: AK_RepAddExpressCom_DeviceId                          */
+/*==============================================================*/
+create index AK_RepAddExpressCom_DeviceId on ReportedAddressExpressCom (
+DeviceId ASC
+)
+go
+
+/*==============================================================*/
 /* Table: ReportedAddressRelayExpressCom                        */
 /*==============================================================*/
 create table ReportedAddressRelayExpressCom (
@@ -8152,16 +8298,21 @@ INSERT INTO State VALUES(-17, 3, 'Emergency Voltage', 3, 6, 0);
 INSERT INTO State VALUES(-17, 4, 'Time ONOFF', 4, 6, 0);
 INSERT INTO State VALUES(-17, 5, 'OVUV Control', 5, 6, 0);
 INSERT INTO State VALUES(-17, 6, 'VAR', 7, 6, 0);
-INSERT INTO State VALUES(-17, 7, 'Analog 1', 8, 6, 0);
-INSERT INTO State VALUES(-17, 8, 'Analog 2', 1, 6, 0);
-INSERT INTO State VALUES(-17, 9, 'Analog 3', 2, 6, 0);
-INSERT INTO State VALUES(-17, 10, 'Analog 4', 3, 6, 0);
-INSERT INTO State VALUES(-17, 11, 'Analog 5', 4, 6, 0);
-INSERT INTO State VALUES(-17, 12, 'Analog 6', 5, 6, 0);
+INSERT INTO State VALUES(-17, 7, 'Va', 8, 6, 0);
+INSERT INTO State VALUES(-17, 8, 'Vb', 1, 6, 0);
+INSERT INTO State VALUES(-17, 9, 'Vc', 2, 6, 0);
+INSERT INTO State VALUES(-17, 10, 'Ia', 3, 6, 0);
+INSERT INTO State VALUES(-17, 11, 'Ib', 4, 6, 0);
+INSERT INTO State VALUES(-17, 12, 'Ic', 5, 6, 0);
 INSERT INTO State VALUES(-17, 13, 'Temp', 7, 6, 0);
-INSERT INTO State VALUES(-17, 14, 'Remote', 8, 6, 0);
+INSERT INTO State VALUES(-17, 14, 'N/A', 8, 6, 0);
 INSERT INTO State VALUES(-17, 15, 'Time', 1, 6, 0);
 INSERT INTO State VALUES(-17, 16, 'N/A', 2, 6, 0);
+INSERT INTO State VALUES(-17, 17, 'Bad Active Relay', 3, 6, 0);
+INSERT INTO State VALUES(-17, 18, 'NC Lockout', 4, 6, 0);
+INSERT INTO State VALUES(-17, 19, 'Control Accepted', 5, 6, 0);
+INSERT INTO State VALUES(-17, 20, 'Auto Mode', 7, 6, 0);
+INSERT INTO State VALUES(-17, 21, 'Reclose Block', 8, 6, 0);
 INSERT INTO State VALUES(-16, 0, 'Cleared', 0, 6, 0);
 INSERT INTO State VALUES(-16, 1, 'Active', 1, 6, 0);
 INSERT INTO State VALUES(-15, 0, 'No Signal', 0, 6, 0); 
