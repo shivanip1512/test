@@ -393,9 +393,15 @@ void ActiveMQConnectionManager::dispatchTempQueueReplies()
         {
             const auto &expirationHandler = itr->second;
 
-            _temporaryConsumers.erase(expirationHandler.queueName);
+            const auto consumer_itr = _temporaryConsumers.find(expirationHandler.queueName);
 
-            expirationHandler.callback();
+            //  if the queue consumer still exists, we never got a response
+            if( consumer_itr != _temporaryConsumers.end() )
+            {
+                _temporaryConsumers.erase(consumer_itr);
+
+                expirationHandler.callback();
+            }
         }
 
         _temporaryExpirations.erase(_temporaryExpirations.begin(), end);
