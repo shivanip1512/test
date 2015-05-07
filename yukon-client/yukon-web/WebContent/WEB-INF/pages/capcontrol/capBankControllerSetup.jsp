@@ -297,9 +297,15 @@
                             <x:outputLabel for="cntrlOmitTime" value="Omit Time Request: " 
                                 title="Whether or not DNP scans omit the time request."/>
                             <x:outputLabel for="cntrlOmitTimeVal" value="#{capControlForm.CBControllerEditor.dnpConfiguration.omitTimeRequest}"/>
-                            <x:outputLabel for="cntrlUnsolicited" value="Enable Unsolicited: " 
-                                title="Whether or not the DNP device's unsolicited messaging is enabled following a device restart."/>
-                            <x:outputLabel for="cntrlUnsolicitedVal" value="#{capControlForm.CBControllerEditor.dnpConfiguration.enableUnsolicitedMessages}"/>
+                            <x:outputLabel for="cntrlUnsolicitedClass1" value="Unsolicited Class 1: " 
+                                title="Whether or not the DNP device's Class 1 unsolicited messaging is enabled following a device restart."/>
+                            <x:outputLabel for="cntrlUnsolicitedClass1Val" value="#{capControlForm.CBControllerEditor.dnpConfiguration.enableUnsolicitedMessageClass1}"/>
+                            <x:outputLabel for="cntrlUnsolicitedClass2" value="Unsolicited Class 2: " 
+                                title="Whether or not the DNP device's Class 2 unsolicited messaging is enabled following a device restart."/>
+                            <x:outputLabel for="cntrlUnsolicitedClass2Val" value="#{capControlForm.CBControllerEditor.dnpConfiguration.enableUnsolicitedMessageClass2}"/>
+                            <x:outputLabel for="cntrlUnsolicitedClass3" value="Unsolicited Class 3: " 
+                                title="Whether or not the DNP device's Class 3 unsolicited messaging is enabled following a device restart."/>
+                            <x:outputLabel for="cntrlUnsolicitedClass3Val" value="#{capControlForm.CBControllerEditor.dnpConfiguration.enableUnsolicitedMessageClass3}"/>
                         </x:panelGrid>
                     </x:div>
                 </x:htmlTag>
