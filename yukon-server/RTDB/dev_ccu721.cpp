@@ -91,6 +91,15 @@ YukonError_t Ccu721Device::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser
     }
     else
     {
+        CTILOG_ERROR(dout, "Couldn't come up with an operation for device "<< getName() <<". Command: " << pReq->CommandString());
+
+        retList.push_back(
+                new CtiReturnMsg(
+                        getID( ),
+                        OutMessage->Request,
+                        "NoMethod or invalid command.",
+                        nRet));
+
         delete OutMessage;
         OutMessage = NULL;
     }
