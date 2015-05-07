@@ -21,11 +21,12 @@ using Cti::CapControl::MissingPointAttribute;
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiCCTwoWayPoints::CtiCCTwoWayPoints(long paoid, string paotype)
+CtiCCTwoWayPoints::CtiCCTwoWayPoints( const long paoid, const std::string & paotype, std::unique_ptr<LastControlReason> reason )
     :   _paoid( paoid ),
         _paotype( paotype ),
         _insertDynamicDataFlag( true ),
-        _dirty( true )
+        _dirty( true ),
+        _lastControlReason( std::move( reason ) )
 {
     _attributes = AttributePoint
     {
@@ -475,11 +476,9 @@ void CtiCCTwoWayPoints::setDynamicData(Cti::RowReader& rdr, LONG cbcState, CtiTi
 // ------------------------------
 
 
-CtiCCTwoWayPointsCbcDnp::CtiCCTwoWayPointsCbcDnp( long paoid, std::string paotype  )
-    :   CtiCCTwoWayPoints(paoid, paotype)
+CtiCCTwoWayPointsCbcDnp::CtiCCTwoWayPointsCbcDnp( const long paoid, const std::string & paotype, std::unique_ptr<LastControlReason> reason )
+    :   CtiCCTwoWayPoints( paoid, paotype, std::move( reason ) )
 {
-    setLastControlReasonDecoder( std::make_unique<LastControlReasonCbcDnp>() );
-
     _statusOffsetAttribute = OffsetAttributeMappings
     {
         {     1, PointAttribute::CapacitorBankState             }
@@ -490,11 +489,9 @@ CtiCCTwoWayPointsCbcDnp::CtiCCTwoWayPointsCbcDnp( long paoid, std::string paotyp
 // ------------------------------
 
 
-CtiCCTwoWayPointsCbc702x::CtiCCTwoWayPointsCbc702x( long paoid, std::string paotype  )
-    :   CtiCCTwoWayPoints(paoid, paotype)
+CtiCCTwoWayPointsCbc702x::CtiCCTwoWayPointsCbc702x( const long paoid, const std::string & paotype, std::unique_ptr<LastControlReason> reason )
+    :   CtiCCTwoWayPoints( paoid, paotype, std::move( reason ) )
 {
-    setLastControlReasonDecoder( std::make_unique<LastControlReasonCbc702x>() );
-
     _analogOffsetAttribute = OffsetAttributeMappings
     {
         {     5, PointAttribute::CbcVoltage                     },
@@ -557,11 +554,9 @@ CtiCCTwoWayPointsCbc702x::CtiCCTwoWayPointsCbc702x( long paoid, std::string paot
 // ------------------------------
 
 
-CtiCCTwoWayPointsCbc802x::CtiCCTwoWayPointsCbc802x( long paoid, std::string paotype  )
-    :   CtiCCTwoWayPoints(paoid, paotype)
+CtiCCTwoWayPointsCbc802x::CtiCCTwoWayPointsCbc802x( const long paoid, const std::string & paotype, std::unique_ptr<LastControlReason> reason )
+    :   CtiCCTwoWayPoints( paoid, paotype, std::move( reason ) )
 {
-    setLastControlReasonDecoder( std::make_unique<LastControlReasonCbc802x>() );
-
     _analogOffsetAttribute = OffsetAttributeMappings
     {
         {     2, PointAttribute::LastControlReason              },
@@ -599,21 +594,21 @@ CtiCCTwoWayPoints * CtiCCTwoWayPointsFactory::Create( const long paoID, const st
 {
     if ( stringContainsIgnoreCase( paoType, "CBC 702" ) )
     {
-        return new CtiCCTwoWayPointsCbc702x( paoID, paoType );
+        return new CtiCCTwoWayPointsCbc702x( paoID, paoType, std::make_unique<LastControlReasonCbc702x>() );
     }
     if ( stringContainsIgnoreCase( paoType, "CBC 802" ) )
     {
-        return new CtiCCTwoWayPointsCbc802x( paoID, paoType );
+        return new CtiCCTwoWayPointsCbc802x( paoID, paoType, std::make_unique<LastControlReasonCbc802x>() );
     }
     if ( stringContainsIgnoreCase( paoType, "CBC DNP" ) )
     {
-        return new CtiCCTwoWayPointsCbcDnp( paoID, paoType );
+        return new CtiCCTwoWayPointsCbcDnp( paoID, paoType, std::make_unique<LastControlReasonCbcDnp>() );
     }
 
     // Apparently 1-way devices need one of these guys even though they don't use it for anything,
     // returning a NULL here gives null pointer exceptions in 1-way code. Original behavior gave a set
     //  of CBC8000 points to 1-way devices, so maintain that behavior.
     // return 0;
-    return new CtiCCTwoWayPointsCbc802x( paoID, paoType );
+    return new CtiCCTwoWayPointsCbc802x( paoID, paoType, std::make_unique<LastControlReasonCbc802x>() );
 }
 

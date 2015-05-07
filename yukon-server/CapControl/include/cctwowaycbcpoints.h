@@ -17,7 +17,7 @@ namespace Database {
 class CtiCCTwoWayPoints
 {
 public:
-    CtiCCTwoWayPoints(long paoid, std::string paotype);
+    CtiCCTwoWayPoints( const long paoid, const std::string & paotype, std::unique_ptr<LastControlReason> reason );
 
     long getPAOId() const;
 
@@ -41,8 +41,6 @@ public:
     void restore(Cti::RowReader& rdr);
     void setDynamicData(Cti::RowReader& rdr, LONG cbcState, const CtiTime timestamp);
 
-    void setLastControlReasonDecoder( std::unique_ptr<LastControlReason> && reason );
-
 protected:
 
     typedef std::map<int, PointAttribute>   OffsetAttributeMappings;
@@ -50,6 +48,8 @@ protected:
     OffsetAttributeMappings _statusOffsetAttribute,
                             _analogOffsetAttribute,
                             _accumulatorOffsetAttribute;
+
+    void setLastControlReasonDecoder( std::unique_ptr<LastControlReason> && reason );
 
     std::unique_ptr<LastControlReason>  _lastControlReason;
 
@@ -95,7 +95,7 @@ class CtiCCTwoWayPointsCbcDnp : public CtiCCTwoWayPoints
 {
 public:
 
-    CtiCCTwoWayPointsCbcDnp(long paoid, std::string paotype);
+    CtiCCTwoWayPointsCbcDnp( const long paoid, const std::string & paotype, std::unique_ptr<LastControlReason> reason );
 };
 
 
@@ -106,7 +106,7 @@ class CtiCCTwoWayPointsCbc702x : public CtiCCTwoWayPoints
 {
 public:
 
-    CtiCCTwoWayPointsCbc702x(long paoid, std::string paotype);
+    CtiCCTwoWayPointsCbc702x( const long paoid, const std::string & paotype, std::unique_ptr<LastControlReason> reason );
 };
 
 
@@ -117,7 +117,7 @@ class CtiCCTwoWayPointsCbc802x : public CtiCCTwoWayPoints
 {
 public:
 
-    CtiCCTwoWayPointsCbc802x(long paoid, std::string paotype);
+    CtiCCTwoWayPointsCbc802x( const long paoid, const std::string & paotype, std::unique_ptr<LastControlReason> reason );
 };
 
 
