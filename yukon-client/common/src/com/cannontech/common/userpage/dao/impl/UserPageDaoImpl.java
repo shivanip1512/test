@@ -30,6 +30,7 @@ import com.cannontech.database.AdvancedFieldMapper;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SqlParameterChildSink;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -168,7 +169,7 @@ public class UserPageDaoImpl implements UserPageDao {
         jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
-                labelArgumentsByUserPageId.put(rs.getInt("UserPageId"), rs.getString("Parameter"));
+                labelArgumentsByUserPageId.put(rs.getInt("UserPageId"), SqlUtils.convertDbValueToString(rs.getString("Parameter")));
             }
         });
 
@@ -229,7 +230,7 @@ public class UserPageDaoImpl implements UserPageDao {
             int id = nextValueHelper.getNextValue("UserPageParam");
             sql.append("insert into UserPageParam");
             sql.append("(UserPageParamId, UserPageId, ParamNumber, Parameter)");
-            sql.values(id, page.getId(), index, labelArgument);
+            sql.values(id, page.getId(), index, SqlUtils.convertStringToDbValue(labelArgument));
             jdbcTemplate.update(sql);
         }
         return page;
