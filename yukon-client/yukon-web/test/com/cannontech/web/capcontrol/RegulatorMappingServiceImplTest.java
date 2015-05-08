@@ -103,7 +103,6 @@ public class RegulatorMappingServiceImplTest {
                                                        .put("PoRegulator-Forward Bandwidth", 212)
                                                        .build();
     
-    @SuppressWarnings("unchecked")
     @Test
     public void test_initiateTask() {
         
@@ -178,10 +177,8 @@ public class RegulatorMappingServiceImplTest {
         
         //This mock expects to have 2 methods hit twice, for both Voltage Y points that will be mapped.
         CcMonitorBankListDao ccmblDao = EasyMock.createStrictMock(CcMonitorBankListDao.class);
-        EasyMock.expect(ccmblDao.deleteNonMatchingRegulatorPoint(1, 108)).andReturn(true);
-        EasyMock.expect(ccmblDao.addRegulatorPoint(1)).andReturn(1);
-        EasyMock.expect(ccmblDao.deleteNonMatchingRegulatorPoint(2, 208)).andReturn(true);
-        EasyMock.expect(ccmblDao.addRegulatorPoint(2)).andReturn(2);
+        EasyMock.expect(ccmblDao.updateRegulatorVoltagePoint(1, 108)).andReturn(true);
+        EasyMock.expect(ccmblDao.updateRegulatorVoltagePoint(2, 208)).andReturn(true);
         EasyMock.replay(ccmblDao);
         
         RecentResultsCache<RegulatorMappingTask> cache =  new RecentResultsCache<>();
