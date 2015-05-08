@@ -11,19 +11,64 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.cannontech.msp.beans.v3.ArrayOfErrorObject;
 import com.cannontech.msp.beans.v3.ArrayOfMeter;
+import com.cannontech.msp.beans.v3.CDDeviceAddNotification;
+import com.cannontech.msp.beans.v3.CDDeviceAddNotificationResponse;
+import com.cannontech.msp.beans.v3.CDDeviceChangedNotification;
+import com.cannontech.msp.beans.v3.CDDeviceChangedNotificationResponse;
+import com.cannontech.msp.beans.v3.CDDeviceExchangeNotification;
+import com.cannontech.msp.beans.v3.CDDeviceExchangeNotificationResponse;
+import com.cannontech.msp.beans.v3.CDDeviceRemoveNotification;
+import com.cannontech.msp.beans.v3.CDDeviceRemoveNotificationResponse;
+import com.cannontech.msp.beans.v3.CDDeviceRetireNotification;
+import com.cannontech.msp.beans.v3.CDDeviceRetireNotificationResponse;
 import com.cannontech.msp.beans.v3.ConnectDisconnectEvent;
+import com.cannontech.msp.beans.v3.CustomerChangedNotification;
+import com.cannontech.msp.beans.v3.CustomerChangedNotificationResponse;
+import com.cannontech.msp.beans.v3.DomainMembersChangedNotification;
+import com.cannontech.msp.beans.v3.DomainMembersChangedNotificationResponse;
+import com.cannontech.msp.beans.v3.DomainNamesChangedNotification;
+import com.cannontech.msp.beans.v3.DomainNamesChangedNotificationResponse;
 import com.cannontech.msp.beans.v3.ErrorObject;
 import com.cannontech.msp.beans.v3.GetCDMeterState;
 import com.cannontech.msp.beans.v3.GetCDMeterStateResponse;
 import com.cannontech.msp.beans.v3.GetCDSupportedMeters;
 import com.cannontech.msp.beans.v3.GetCDSupportedMetersResponse;
+import com.cannontech.msp.beans.v3.GetDomainMembers;
+import com.cannontech.msp.beans.v3.GetDomainMembersResponse;
+import com.cannontech.msp.beans.v3.GetDomainNames;
+import com.cannontech.msp.beans.v3.GetDomainNamesResponse;
+import com.cannontech.msp.beans.v3.GetMethods;
 import com.cannontech.msp.beans.v3.GetMethodsResponse;
+import com.cannontech.msp.beans.v3.GetModifiedCDMeters;
+import com.cannontech.msp.beans.v3.GetModifiedCDMetersResponse;
+import com.cannontech.msp.beans.v3.GetPublishMethodsResponse;
+import com.cannontech.msp.beans.v3.GetRegistrationInfoByID;
+import com.cannontech.msp.beans.v3.GetRegistrationInfoByIDResponse;
+import com.cannontech.msp.beans.v3.InitiateArmCDDevice;
+import com.cannontech.msp.beans.v3.InitiateArmCDDeviceResponse;
+import com.cannontech.msp.beans.v3.InitiateCDStateRequest;
+import com.cannontech.msp.beans.v3.InitiateCDStateRequestResponse;
 import com.cannontech.msp.beans.v3.InitiateConnectDisconnect;
 import com.cannontech.msp.beans.v3.InitiateConnectDisconnectResponse;
+import com.cannontech.msp.beans.v3.InitiateDisableCDDevice;
+import com.cannontech.msp.beans.v3.InitiateDisableCDDeviceResponse;
+import com.cannontech.msp.beans.v3.InitiateEnableCDDevice;
+import com.cannontech.msp.beans.v3.InitiateEnableCDDeviceResponse;
 import com.cannontech.msp.beans.v3.LoadActionCode;
 import com.cannontech.msp.beans.v3.Meter;
+import com.cannontech.msp.beans.v3.MeterChangedNotification;
+import com.cannontech.msp.beans.v3.MeterChangedNotificationResponse;
 import com.cannontech.msp.beans.v3.ObjectFactory;
+import com.cannontech.msp.beans.v3.PingURL;
 import com.cannontech.msp.beans.v3.PingURLResponse;
+import com.cannontech.msp.beans.v3.RegisterForService;
+import com.cannontech.msp.beans.v3.RegisterForServiceResponse;
+import com.cannontech.msp.beans.v3.RequestRegistrationID;
+import com.cannontech.msp.beans.v3.RequestRegistrationIDResponse;
+import com.cannontech.msp.beans.v3.ServiceLocationChangedNotification;
+import com.cannontech.msp.beans.v3.ServiceLocationChangedNotificationResponse;
+import com.cannontech.msp.beans.v3.UnregisterForService;
+import com.cannontech.msp.beans.v3.UnregisterForServiceResponse;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
@@ -44,7 +89,7 @@ public class CDServiceEndpoint {
 
     @PayloadRoot(localPart = "PingURL", namespace = MultispeakDefines.NAMESPACE_v3)
     public @ResponsePayload
-    PingURLResponse pingUrl() throws MultispeakWebServiceException {
+    PingURLResponse pingUrl(@RequestPayload PingURL pingURL) throws MultispeakWebServiceException {
         PingURLResponse response = objectFactory.createPingURLResponse();
 
         cd_server.pingURL();
@@ -56,7 +101,7 @@ public class CDServiceEndpoint {
 
     @PayloadRoot(localPart = "GetMethods", namespace = MultispeakDefines.NAMESPACE_v3)
     public @ResponsePayload
-    GetMethodsResponse getMethods() throws MultispeakWebServiceException {
+    GetMethodsResponse getMethods(@RequestPayload GetMethods getMethods) throws MultispeakWebServiceException {
         GetMethodsResponse response = objectFactory.createGetMethodsResponse();
         
         List<String> methodNames = cd_server.getMethods();
@@ -65,13 +110,15 @@ public class CDServiceEndpoint {
     }
 
     @PayloadRoot(localPart = "GetDomainNames", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void getDomainNames() throws MultispeakWebServiceException {
+    public @ResponsePayload GetDomainNamesResponse getDomainNames(
+            @RequestPayload GetDomainNames getDomainNames) throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetDomainMembers", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void getDomainMembers() throws MultispeakWebServiceException {
+    public @ResponsePayload GetDomainMembersResponse getDomainMembers(
+            @RequestPayload GetDomainMembers getDomainMembers) throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
@@ -91,7 +138,9 @@ public class CDServiceEndpoint {
     }
 
     @PayloadRoot(localPart = "GetModifiedCDMeters", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void getModifiedCDMeters() throws MultispeakWebServiceException {
+    public @ResponsePayload GetModifiedCDMetersResponse getModifiedCDMeters(
+            @RequestPayload GetModifiedCDMeters getModifiedCDMeters)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
@@ -124,116 +173,153 @@ public class CDServiceEndpoint {
     }
 
     @PayloadRoot(localPart = "ServiceLocationChangedNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void serviceLocationChangedNotification() throws MultispeakWebServiceException {
+    public @ResponsePayload ServiceLocationChangedNotificationResponse serviceLocationChangedNotification(
+            @RequestPayload ServiceLocationChangedNotification serviceLocationChangedNotification)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "MeterChangedNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void meterChangedNotification() throws MultispeakWebServiceException {
+    public @ResponsePayload MeterChangedNotificationResponse meterChangedNotification(
+            @RequestPayload MeterChangedNotification meterChangedNotification)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "CustomerChangedNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void customerChangedNotification() throws MultispeakWebServiceException {
+    public @ResponsePayload CustomerChangedNotificationResponse customerChangedNotification(
+            @RequestPayload CustomerChangedNotification customerChangedNotification)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "CDDeviceAddNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void CDDeviceAddNotification() throws MultispeakWebServiceException {
+    public @ResponsePayload CDDeviceAddNotificationResponse CDDeviceAddNotification(
+            @RequestPayload CDDeviceAddNotification cdDeviceAddNotification)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "CDDeviceChangedNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void CDDeviceChangedNotification() throws MultispeakWebServiceException {
+    public @ResponsePayload CDDeviceChangedNotificationResponse CDDeviceChangedNotification(
+            @RequestPayload CDDeviceChangedNotification cdDeviceChangedNotification)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "CDDeviceExchangeNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void CDDeviceExchangeNotification() throws MultispeakWebServiceException {
+    public @ResponsePayload CDDeviceExchangeNotificationResponse CDDeviceExchangeNotification(
+            @RequestPayload CDDeviceExchangeNotification cdDeviceExchangeNotification)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "CDDeviceRemoveNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void CDDeviceRemoveNotification() throws MultispeakWebServiceException {
+    public @ResponsePayload CDDeviceRemoveNotificationResponse CDDeviceRemoveNotification(
+            @RequestPayload CDDeviceRemoveNotification cdDeviceRemoveNotification)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "CDDeviceRetireNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void CDDeviceRetireNotification() throws MultispeakWebServiceException {
+    public @ResponsePayload CDDeviceRetireNotificationResponse CDDeviceRetireNotification(
+            @RequestPayload CDDeviceRetireNotification cdDeviceRetireNotification)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "RequestRegistrationID", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void requestRegistrationID() throws MultispeakWebServiceException {
+    public @ResponsePayload RequestRegistrationIDResponse requestRegistrationID(
+            @RequestPayload RequestRegistrationID requestRegistrationID)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
 
     }
 
     @PayloadRoot(localPart = "RegisterForService", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void registerForService() throws MultispeakWebServiceException {
+    public @ResponsePayload RegisterForServiceResponse registerForService(
+            @RequestPayload RegisterForService registerForService)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "UnregisterForService", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void unregisterForService() throws MultispeakWebServiceException {
+    public @ResponsePayload UnregisterForServiceResponse unregisterForService(
+            @RequestPayload UnregisterForService unregisterForService)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetRegistrationInfoByID", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void getRegistrationInfoByID() throws MultispeakWebServiceException {
+    public @ResponsePayload GetRegistrationInfoByIDResponse getRegistrationInfoByID(
+            @RequestPayload GetRegistrationInfoByID getRegistrationInfoByID)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetPublishMethods", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void getPublishMethods() throws MultispeakWebServiceException {
+    public @ResponsePayload GetPublishMethodsResponse getPublishMethods()
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "DomainMembersChangedNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void domainMembersChangedNotification() throws MultispeakWebServiceException {
+    public @ResponsePayload DomainMembersChangedNotificationResponse domainMembersChangedNotification(
+            @RequestPayload DomainMembersChangedNotification domainMembersChangedNotification)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "DomainNamesChangedNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void domainNamesChangedNotification() throws MultispeakWebServiceException {
+    public @ResponsePayload DomainNamesChangedNotificationResponse domainNamesChangedNotification(
+            @RequestPayload DomainNamesChangedNotification domainNamesChangedNotification)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "InitiateCDStateRequest", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void initiateCDStateRequest() throws MultispeakWebServiceException {
+    public @ResponsePayload InitiateCDStateRequestResponse initiateCDStateRequest(
+            @RequestPayload InitiateCDStateRequest initiateCDStateRequest)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "InitiateArmCDDevice", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void initiateArmCDDevice() throws MultispeakWebServiceException {
+    public @ResponsePayload InitiateArmCDDeviceResponse initiateArmCDDevice(
+            @RequestPayload InitiateArmCDDevice initiateArmCDDevice)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "InitiateEnableCDDevice", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void initiateEnableCDDevice() throws MultispeakWebServiceException {
+    public @ResponsePayload InitiateEnableCDDeviceResponse initiateEnableCDDevice(
+            @RequestPayload InitiateEnableCDDevice initiateEnableCDDevice)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "InitiateDisableCDDevice", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void initiateDisableCDDevice() throws MultispeakWebServiceException {
+    public @ResponsePayload InitiateDisableCDDeviceResponse initiateDisableCDDevice(
+            @RequestPayload InitiateDisableCDDevice initiateDisableCDDevice)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }

@@ -33,7 +33,7 @@ public class MRServiceEndPoint {
 
     @PayloadRoot(localPart = "PingURL", namespace = MultispeakDefines.NAMESPACE_v3)
     public @ResponsePayload
-    PingURLResponse pingURL() throws MultispeakWebServiceException {
+    PingURLResponse pingURL(@RequestPayload PingURL pingURL) throws MultispeakWebServiceException {
         PingURLResponse response = objectFactory.createPingURLResponse();
 
         mr_server.pingURL();
@@ -45,7 +45,7 @@ public class MRServiceEndPoint {
 
     @PayloadRoot(localPart = "GetMethods", namespace = MultispeakDefines.NAMESPACE_v3)
     public @ResponsePayload
-    GetMethodsResponse getMethods() throws MultispeakWebServiceException {
+    GetMethodsResponse getMethods(@RequestPayload GetMethods getMethods) throws MultispeakWebServiceException {
         GetMethodsResponse response = objectFactory.createGetMethodsResponse();
 
         List<String> methods = mr_server.getMethods();
@@ -280,12 +280,13 @@ public class MRServiceEndPoint {
     }
 
     @PayloadRoot(localPart = "GetSupportedReadingTypes", namespace = MultispeakDefines.NAMESPACE_v3)
-    public @ResponsePayload
-    GetSupportedReadingTypesResponse getSupportedReadingTypes() throws MultispeakWebServiceException {
+    public @ResponsePayload GetSupportedReadingTypesResponse getSupportedReadingTypes(
+            @RequestPayload GetSupportedReadingTypes getSupportedReadingTypes)
+            throws MultispeakWebServiceException {
         GetSupportedReadingTypesResponse response = objectFactory.createGetSupportedReadingTypesResponse();
 
         Set<String> readingTypes = mr_server.getSupportedReadingTypes();
-        
+
         MRArrayOfString2 supportedReadingTypes = objectFactory.createMRArrayOfString2();
         supportedReadingTypes.getString().addAll(readingTypes);
         response.setGetSupportedReadingTypesResult(supportedReadingTypes);
@@ -526,345 +527,452 @@ public class MRServiceEndPoint {
     }
 
     @PayloadRoot(localPart = "CancelPlannedOutage", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void cancelPlannedOutage() throws MultispeakWebServiceException {
+    public @ResponsePayload CancelPlannedOutageResponse cancelPlannedOutage(
+            @RequestPayload CancelPlannedOutage cancelPlannedOutage)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "CustomerChangedNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void customerChangedNotification() throws MultispeakWebServiceException {
+    public @ResponsePayload CustomerChangedNotificationResponse customerChangedNotification(
+            @RequestPayload CustomerChangedNotification customerChangedNotification)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
 
     }
 
     @PayloadRoot(localPart = "CustomersAffectedByOutageNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void customersAffectedByOutageNotification() throws MultispeakWebServiceException {
+    public @ResponsePayload CustomersAffectedByOutageNotificationResponse customersAffectedByOutageNotification(
+            @RequestPayload CustomersAffectedByOutageNotification customersAffectedByOutageNotification)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "DeleteReadingSchedule", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void deleteReadingSchedule() throws MultispeakWebServiceException {
+    public @ResponsePayload DeleteReadingScheduleResponse deleteReadingSchedule(
+            @RequestPayload DeleteReadingSchedule deleteReadingSchedule)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "DeleteSchedule", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void deleteSchedule() throws MultispeakWebServiceException {
+    public @ResponsePayload DeleteScheduleResponse deleteSchedule(
+            @RequestPayload DeleteSchedule deleteSchedule) throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "DisableReadingSchedule", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void disableReadingSchedule() throws MultispeakWebServiceException {
+    public @ResponsePayload DisableReadingScheduleResponse disableReadingSchedule(
+            @RequestPayload DisableReadingSchedule disableReadingSchedule)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "DomainMembersChangedNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void domainMembersChangedNotification() throws MultispeakWebServiceException {
+    public @ResponsePayload DomainMembersChangedNotificationResponse domainMembersChangedNotification(
+            @RequestPayload DomainMembersChangedNotification domainMembersChangedNotification)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "DomainNamesChangedNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void domainNamesChangedNotification() throws MultispeakWebServiceException {
+    public @ResponsePayload DomainNamesChangedNotificationResponse domainNamesChangedNotification(
+            @RequestPayload DomainNamesChangedNotification domainNamesChangedNotification)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "EnableReadingSchedule", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void enableReadingSchedule() throws MultispeakWebServiceException {
+    public @ResponsePayload EnableReadingScheduleResponse enableReadingSchedule(
+            @RequestPayload EnableReadingSchedule enableReadingSchedule)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "EndDeviceShipmentNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void endDeviceShipmentNotification() throws MultispeakWebServiceException {
+    public @ResponsePayload EndDeviceShipmentNotificationResponse endDeviceShipmentNotification(
+            @RequestPayload EndDeviceShipmentNotification endDeviceShipmentNotification)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "EstablishReadingSchedules", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void establishReadingSchedules() throws MultispeakWebServiceException {
+    public @ResponsePayload EstablishReadingSchedulesResponse establishReadingSchedules(
+            @RequestPayload EstablishReadingSchedules establishReadingSchedules)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "EstablishSchedules", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void establishSchedules() throws MultispeakWebServiceException {
+    public @ResponsePayload EstablishSchedulesResponse establishSchedules(
+            @RequestPayload EstablishSchedules establishSchedules)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetDomainMembers", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void getDomainMembers() throws MultispeakWebServiceException {
+    public @ResponsePayload GetDomainMembersResponse getDomainMembers(
+            @RequestPayload GetDomainMembers getDomainMembers) throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
 
     }
 
     @PayloadRoot(localPart = "GetDomainNames", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void getDomainNames() throws MultispeakWebServiceException {
+    public @ResponsePayload GetDomainNamesResponse getDomainNames(
+            @RequestPayload GetDomainNames getDomainNames) throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
 
     }
 
     @PayloadRoot(localPart = "GetFormattedBlockTemplates", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void getFormattedBlockTemplates() throws MultispeakWebServiceException {
+    public @ResponsePayload GetFormattedBlockTemplatesResponse getFormattedBlockTemplates(
+            @RequestPayload GetFormattedBlockTemplates getFormattedBlockTemplates)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
 
     }
 
     @PayloadRoot(localPart = "GetHistoryLogByMeterNo", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void getHistoryLogByMeterNo() throws MultispeakWebServiceException {
+    public @ResponsePayload GetHistoryLogByMeterNoResponse getHistoryLogByMeterNo(
+            @RequestPayload GetHistoryLogByMeterNo getHistoryLogByMeterNo)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
 
     }
 
     @PayloadRoot(localPart = "GetHistoryLogsByDate", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void getHistoryLogsByDate() throws MultispeakWebServiceException {
+    public @ResponsePayload GetHistoryLogsByDateResponse getHistoryLogsByDate(
+            @RequestPayload GetHistoryLogsByDate getHistoryLogsByDate)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
 
     }
 
     @PayloadRoot(localPart = "GetHistoryLogsByDateAndEventCode", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void getHistoryLogsByDateAndEventCode() throws MultispeakWebServiceException {
+    public @ResponsePayload GetHistoryLogsByDateAndEventCodeResponse getHistoryLogsByDateAndEventCode(
+            @RequestPayload GetHistoryLogsByDateAndEventCode getHistoryLogsByDateAndEventCode)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetHistoryLogsByMeterNoAndEventCode", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void getHistoryLogsByMeterNoAndEventCode() throws MultispeakWebServiceException {
+    public @ResponsePayload GetHistoryLogsByMeterNoAndEventCodeResponse getHistoryLogsByMeterNoAndEventCode(
+            @RequestPayload GetHistoryLogsByMeterNoAndEventCode getHistoryLogsByMeterNoAndEventCode)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetLatestMeterReadingsByMeterGroup", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void getLatestMeterReadingsByMeterGroup() throws MultispeakWebServiceException {
+    public @ResponsePayload GetLatestMeterReadingsByMeterGroupResponse getLatestMeterReadingsByMeterGroup(
+            @RequestPayload GetLatestMeterReadingsByMeterGroup getLatestMeterReadingsByMeterGroup)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetLatestReadingsByMeterNoList", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void getLatestReadingsByMeterNoList() throws MultispeakWebServiceException {
+    public @ResponsePayload GetLatestReadingsByMeterNoListResponse getLatestReadingsByMeterNoList(
+            @RequestPayload GetLatestReadingsByMeterNoList getLatestReadingsByMeterNoList)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetLatestReadingsByMeterNoListFormattedBlock", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void getLatestReadingsByMeterNoListFormattedBlock() throws MultispeakWebServiceException {
+    public @ResponsePayload GetLatestReadingsByMeterNoListFormattedBlockResponse getLatestReadingsByMeterNoListFormattedBlock(
+            @RequestPayload GetLatestReadingsByMeterNoListFormattedBlock getLatestReadingsByMeterNoListFormattedBlock)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
 
     }
 
     @PayloadRoot(localPart = "GetModifiedAMRMeters", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void getModifiedAMRMeters() throws MultispeakWebServiceException {
+    public @ResponsePayload GetModifiedAMRMetersResponse getModifiedAMRMeters(
+            @RequestPayload GetModifiedAMRMeters getModifiedAMRMeters)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetPublishMethods", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void getPublishMethods() throws MultispeakWebServiceException {
+    public @ResponsePayload GetPublishMethodsResponse getPublishMethods(
+            @RequestPayload GetPublishMethods getPublishMethods)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetReadingByMeterNumberFormattedBlock", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void getReadingByMeterNumberFormattedBlock() throws MultispeakWebServiceException {
+    public @ResponsePayload GetReadingByMeterNumberFormattedBlockResponse getReadingByMeterNumberFormattedBlock(
+            @RequestPayload GetReadingByMeterNumberFormattedBlock getReadingByMeterNumberFormattedBlock)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetReadingsByDateFormattedBlock", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void getReadingsByDateFormattedBlock() throws MultispeakWebServiceException {
+    public @ResponsePayload GetReadingsByDateFormattedBlockResponse getReadingsByDateFormattedBlock(
+            @RequestPayload GetReadingsByDateFormattedBlock getReadingsByDateFormattedBlock)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetReadingsByUOMAndDate", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void getReadingsByUOMAndDate() throws MultispeakWebServiceException {
+    public @ResponsePayload GetReadingsByUOMAndDateResponse getReadingsByUOMAndDate(
+            @RequestPayload GetReadingsByUOMAndDate getReadingsByUOMAndDate)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetReadingScheduleByID", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void getReadingScheduleByID() throws MultispeakWebServiceException {
+    public @ResponsePayload GetReadingScheduleByIDResponse getReadingScheduleByID(
+            @RequestPayload GetReadingScheduleByID getReadingScheduleByID)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetReadingSchedules", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void getReadingSchedules() throws MultispeakWebServiceException {
+    public @ResponsePayload GetReadingSchedulesResponse getReadingSchedules(
+            @RequestPayload GetReadingSchedules getReadingSchedules)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetRegistrationInfoByID", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void getRegistrationInfoByID() throws MultispeakWebServiceException {
+    public @ResponsePayload GetRegistrationInfoByIDResponse getRegistrationInfoByID(
+            @RequestPayload GetRegistrationInfoByID getRegistrationInfoByID)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "GetScheduleByID", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void getScheduleByID() throws MultispeakWebServiceException {
+    public @ResponsePayload GetScheduleByIDResponse getScheduleByID(
+            @RequestPayload GetScheduleByID getScheduleByID) throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
 
     }
 
     @PayloadRoot(localPart = "GetSchedules", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void getSchedules() throws MultispeakWebServiceException {
+    public @ResponsePayload GetSchedulesResponse getSchedules(
+            @RequestPayload GetSchedules getSchedules) throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "InHomeDisplayAddNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void inHomeDisplayAddNotification() throws MultispeakWebServiceException {
+    public @ResponsePayload InHomeDisplayAddNotificationResponse inHomeDisplayAddNotification(
+            @RequestPayload InHomeDisplayAddNotification inHomeDisplayAddNotification)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "InHomeDisplayChangedNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void inHomeDisplayChangedNotification() throws MultispeakWebServiceException {
+    public @ResponsePayload InHomeDisplayChangedNotificationResponse inHomeDisplayChangedNotification(
+            @RequestPayload InHomeDisplayChangedNotification inHomeDisplayChangedNotification)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "InHomeDisplayExchangeNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void inHomeDisplayExchangeNotification() throws MultispeakWebServiceException {
+    public @ResponsePayload InHomeDisplayExchangeNotificationResponse inHomeDisplayExchangeNotification(
+            @RequestPayload InHomeDisplayExchangeNotification inHomeDisplayExchangeNotification)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "InHomeDisplayRemoveNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void inHomeDisplayRemoveNotification() throws MultispeakWebServiceException {
+    public @ResponsePayload InHomeDisplayRemoveNotificationResponse inHomeDisplayRemoveNotification(
+            @RequestPayload InHomeDisplayRemoveNotification inHomeDisplayRemoveNotification)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "InHomeDisplayRetireNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void inHomeDisplayRetireNotification() throws MultispeakWebServiceException {
+    public @ResponsePayload InHomeDisplayRetireNotificationResponse inHomeDisplayRetireNotification(
+            @RequestPayload InHomeDisplayRetireNotification inHomeDisplayRetireNotification)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "InitiateGroupMeterRead", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void initiateGroupMeterRead() throws MultispeakWebServiceException {
+    public @ResponsePayload InitiateGroupMeterReadResponse initiateGroupMeterRead(
+            @RequestPayload InitiateGroupMeterRead initiateGroupMeterRead)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "InitiateMeterReadByObject", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void initiateMeterReadByObject() throws MultispeakWebServiceException {
+    public @ResponsePayload InitiateMeterReadByObjectResponse initiateMeterReadByObject(
+            @RequestPayload InitiateMeterReadByObject initiateMeterReadByObject)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "InitiateMeterReadsByFieldName", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void initiateMeterReadsByFieldName() throws MultispeakWebServiceException {
+    public @ResponsePayload InitiateMeterReadsByFieldNameResponse initiateMeterReadsByFieldName(
+            @RequestPayload InitiateMeterReadsByFieldName initiateMeterReadsByFieldName)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "InitiatePlannedOutage", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void initiatePlannedOutage() throws MultispeakWebServiceException {
+    public @ResponsePayload InitiatePlannedOutageResponse initiatePlannedOutage(
+            @RequestPayload InitiatePlannedOutage initiatePlannedOutage)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "InsertMetersInConfigurationGroup", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void insertMetersInConfigurationGroup() throws MultispeakWebServiceException {
+    public @ResponsePayload InsertMetersInConfigurationGroupResponse insertMetersInConfigurationGroup(
+            @RequestPayload InsertMetersInConfigurationGroup insertMetersInConfigurationGroup)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "MeterBaseAddNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void meterBaseAddNotification() throws MultispeakWebServiceException {
+    public @ResponsePayload MeterBaseAddNotificationResponse meterBaseAddNotification(
+            @RequestPayload MeterBaseAddNotification meterBaseAddNotification)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "MeterBaseChangedNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void meterBaseChangedNotification() throws MultispeakWebServiceException {
+    public @ResponsePayload MeterBaseChangedNotificationResponse meterBaseChangedNotification(
+            @RequestPayload MeterBaseChangedNotification meterBaseChangedNotification)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "MeterBaseExchangeNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void meterBaseExchangeNotification() throws MultispeakWebServiceException {
+    public @ResponsePayload MeterBaseExchangeNotificationResponse meterBaseExchangeNotification(
+            @RequestPayload MeterBaseExchangeNotification meterBaseExchangeNotification)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "MeterBaseRemoveNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void meterBaseRemoveNotification() throws MultispeakWebServiceException {
+    public @ResponsePayload MeterBaseRemoveNotificationResponse meterBaseRemoveNotification(
+            @RequestPayload MeterBaseRemoveNotification meterBaseRemoveNotification)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "MeterConnectivityNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void meterConnectivityNotification() throws MultispeakWebServiceException {
+    public @ResponsePayload MeterConnectivityNotificationResponse meterConnectivityNotification(
+            @RequestPayload MeterConnectivityNotification meterConnectivityNotification)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "MeterExchangeNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void meterExchangeNotification() throws MultispeakWebServiceException {
+    public @ResponsePayload MeterExchangeNotificationResponse meterExchangeNotification(
+            @RequestPayload MeterExchangeNotification meterExchangeNotification)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "MeterRetireNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void meterRetireNotification() throws MultispeakWebServiceException {
+    public @ResponsePayload MeterRetireNotificationResponse meterRetireNotification(
+            @RequestPayload MeterRetireNotification meterRetireNotification)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "RegisterForService", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void registerForService() throws MultispeakWebServiceException {
+    public @ResponsePayload RegisterForServiceResponse registerForService(
+            @RequestPayload RegisterForService registerForService)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "RemoveMetersFromConfigurationGroup", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void removeMetersFromConfigurationGroup() throws MultispeakWebServiceException {
+    public @ResponsePayload RemoveMetersFromConfigurationGroupResponse removeMetersFromConfigurationGroup(
+            @RequestPayload RemoveMetersFromConfigurationGroup removeMetersFromConfigurationGroup)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "RequestRegistrationID", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void requestRegistrationID() throws MultispeakWebServiceException {
+    public @ResponsePayload RequestRegistrationIDResponse requestRegistrationID(
+            @RequestPayload RequestRegistrationID requestRegistrationID)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "ScheduleGroupMeterRead", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void ScheduleGroupMeterRead() throws MultispeakWebServiceException {
+    public @ResponsePayload ScheduleGroupMeterReadResponse ScheduleGroupMeterRead(
+            @RequestPayload ScheduleGroupMeterRead scheduleGroupMeterRead)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "UnregisterForService", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void unregisterForService() throws MultispeakWebServiceException {
+    public @ResponsePayload UnregisterForServiceResponse unregisterForService(
+            @RequestPayload UnregisterForService unregisterForService)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "UpdateServiceLocationDisplays", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void updateServiceLocationDisplays() throws MultispeakWebServiceException {
+    public @ResponsePayload UpdateServiceLocationDisplaysResponse updateServiceLocationDisplays(
+            @RequestPayload UpdateServiceLocationDisplays updateServiceLocationDisplays)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 
     @PayloadRoot(localPart = "MeterBaseRetireNotification", namespace = MultispeakDefines.NAMESPACE_v3)
-    public void meterBaseRetireNotification() throws MultispeakWebServiceException {
+    public @ResponsePayload MeterBaseRetireNotificationResponse meterBaseRetireNotification(
+            @RequestPayload MeterBaseRetireNotification meterBaseRetireNotification)
+            throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
     }
@@ -882,7 +990,7 @@ public class MRServiceEndPoint {
         String billingCycle = getReadingsByBillingCycle.getBillingCycle();
         String formattedBlockTemplateName = getReadingsByBillingCycle.getFormattedBlockTemplateName();
         int kWLookForward = getReadingsByBillingCycle.getKWLookForward();
-        
+
         if (billingDate == null) {
             throw new MultispeakWebServiceException("Invalid date/time.");
         }
@@ -892,7 +1000,8 @@ public class MRServiceEndPoint {
                                                                                    kWhLookBack,
                                                                                    kWLookBack,
                                                                                    kWLookForward,
-                                                                                   lastReceived, formattedBlockTemplateName);
+                                                                                   lastReceived,
+                                                                                   formattedBlockTemplateName);
 
         ArrayOfFormattedBlock arrayOfFormattedBlock = objectFactory.createArrayOfFormattedBlock();
         List<FormattedBlock> formattedBlockList = arrayOfFormattedBlock.getFormattedBlock();
