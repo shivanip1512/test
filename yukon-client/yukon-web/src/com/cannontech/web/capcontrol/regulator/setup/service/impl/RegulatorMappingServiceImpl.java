@@ -180,8 +180,7 @@ public class RegulatorMappingServiceImpl implements RegulatorMappingService {
             // Assign the point to the regulator
             extraPaoPointAssignmentDao.addAssignment(regulatorPao, pointForMapping.getPointID(), mapping, true);
             if (mapping == RegulatorPointMapping.VOLTAGE_Y) {
-                ccMonitorBankListDao.deleteNonMatchingRegulatorPoint(id.getPaoId(), pointForMapping.getPointID());
-                ccMonitorBankListDao.addRegulatorPoint(id.getPaoId());
+                ccMonitorBankListDao.updateRegulatorVoltagePoint(id.getPaoId(), pointForMapping.getPointID());
             }
             
             // Save a successful result

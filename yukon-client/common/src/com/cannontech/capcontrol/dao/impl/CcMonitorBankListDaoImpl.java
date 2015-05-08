@@ -20,7 +20,7 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -61,7 +61,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
             }
             double lowerLimit = rs.getDouble("LowerBandwidth");
             double upperLimit = rs.getDouble("UpperBandwidth");
-            boolean overrideStrategy = rs.getBooleanYN("OverrideStrategy");
+            boolean overrideStrategy = rs.getBoolean("OverrideStrategy");
             
             VoltageLimitedDeviceInfo deviceInfo = new VoltageLimitedDeviceInfo();
             deviceInfo.setParentPaoIdentifier(paoIdentifier);
@@ -245,7 +245,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
     }
     
     @Override
-    public void updateRegulatorPoint(int regulatorId, Phase phase) {
+    public void updateRegulatorPhase(int regulatorId, Phase phase) {
         ZonePointPhaseHolder zonePointPhase = getZonePointPhaseByRegulatorId(regulatorId);
         if(zonePointPhase == null) {
             return;
@@ -287,6 +287,42 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
             // like we just deleted something, so we return true (below)
         }
         return true;
+    }
+    @Override
+    public boolean updateRegulatorVoltagePoint(int regulatorId, int newPointId) {
+        SqlStatementBuilder getRegulatorPointSql = new SqlStatementBuilder();
+        getRegulatorPointSql.append("SELECT cc.PointId");
+        getRegulatorPointSql.append("FROM CcMonitorBankList cc");
+        getRegulatorPointSql.append("JOIN ExtraPaoPointAssignment eppa ON cc.DeviceId = eppa.PAObjectId");
+        getRegulatorPointSql.append("WHERE cc.DeviceId").eq(regulatorId);
+        getRegulatorPointSql.append("AND eppa.Attribute").eq_k(RegulatorPointMapping.VOLTAGE_Y);
+        
+        try {
+            //if there is no voltage_y point assigned, this will throw an exception
+            int existingPointId = yukonJdbcTemplate.queryForInt(getRegulatorPointSql);
+            
+            //check to see if it matches the specified pointId. Only delete if it
+            //DOESN'T match.
+            if(existingPointId != newPointId) {
+                updateVoltagePoint(regulatorId, existingPointId, newPointId);
+            } else {
+                return false;
+            }
+        } catch(EmptyResultDataAccessException e) {
+            // An entry doesn't exist, that's fine. We are treating this
+            // like we just deleted something, so we return true (below)
+        }
+        return true;
+    }
+    
+    private void updateVoltagePoint(int deviceId, Integer existingPointId, int newPointId) {
+       
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE CcMonitorBankList");
+        sql.set("PointId", newPointId);
+        sql.append("WHERE DeviceId").eq(deviceId);
+        sql.append("AND PointId").eq(existingPointId);
+        yukonJdbcTemplate.update(sql);
     }
     
     @Override
@@ -348,6 +384,25 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         }
     }
     
+    public Phase getPhaseByRegulatorId(int regulatorId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT cc.Phase");
+        sql.append("FROM CcMonitorBankList cc");
+        sql.append("WHERE DeviceId").eq(regulatorId);
+        
+        Phase phase = yukonJdbcTemplate.queryForObject(sql, new YukonRowMapper<Phase>() {
+
+            @Override
+            public Phase mapRow(YukonResultSet rs) throws SQLException {
+                Phase phase = rs.getEnum("Phase", Phase.class);
+                if (phase == null) phase = Phase.ALL;
+                return phase;
+            }
+        });
+        
+        return phase;
+    }
+    
     private StrategyLimitsHolder getLimitsFromStrategyByZoneId(int zoneId) {
         SqlStatementBuilder getStrategyIdSql = new SqlStatementBuilder();
         getStrategyIdSql.append("SELECT StrategyId");
@@ -365,7 +420,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         getStrategyIdSql.append("SELECT StrategyId");
         getStrategyIdSql.append("FROM CcSeasonStrategyAssignment");
         getStrategyIdSql.append("WHERE PAObjectId").eq(substationBusId);
-        List<Integer> strategyIds = yukonJdbcTemplate.query(getStrategyIdSql, new IntegerRowMapper());
+        List<Integer> strategyIds = yukonJdbcTemplate.query(getStrategyIdSql, RowMapper.INTEGER);
         
         if(strategyIds.size() == 1) {
             //subbus strategy found

@@ -104,7 +104,7 @@ public class RegulatorPointMappingImportServiceImpl implements RegulatorPointMap
                             result = updatePointMapping(row, regulatorPao);
                             break;
                         case REMOVE:
-                            result = removePointMapping(row, regulatorPao, regulatorName);
+                            result = removePointMapping(row, regulatorPao);
                             break;
                         default:
                             result = new CsvImportResult(action, CsvImportResultType.INVALID_IMPORT_ACTION, row.getValue("NAME"));
@@ -190,7 +190,7 @@ public class RegulatorPointMappingImportServiceImpl implements RegulatorPointMap
         return new CsvImportResult(ImportAction.UPDATE, CsvImportResultType.SUCCESS, mapping.toString());
     }
     
-    private ImportResult removePointMapping(ImportRow row, YukonPao regulatorPao, String regulatorName) {
+    private ImportResult removePointMapping(ImportRow row, YukonPao regulatorPao) {
         RegulatorPointMapping mapping = RegulatorPointMapping.valueOf(row.getValue("MAPPING"));
         boolean removedSuccessfully = extraPaoPointAssignmentDao.removeAssignment(regulatorPao.getPaoIdentifier(), mapping);
         if(removedSuccessfully) {
@@ -206,8 +206,7 @@ public class RegulatorPointMappingImportServiceImpl implements RegulatorPointMap
         //If mapping is voltage y, update ccmonitorbanklist
         if(mapping == RegulatorPointMapping.VOLTAGE_Y) {
             int regulatorId = regulatorPao.getPaoIdentifier().getPaoId();
-            ccMonitorBankListDao.deleteNonMatchingRegulatorPoint(regulatorId, pointId);
-            ccMonitorBankListDao.addRegulatorPoint(regulatorId);
+            ccMonitorBankListDao.updateRegulatorVoltagePoint(regulatorId, pointId);
         }
     }
 }

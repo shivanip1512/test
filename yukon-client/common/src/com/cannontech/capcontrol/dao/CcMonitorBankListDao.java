@@ -53,13 +53,16 @@ public interface CcMonitorBankListDao {
     /**
      * Updates the entry for voltage Y point on the specified regulator.
      */
-    public void updateRegulatorPoint(int regulatorId, Phase phase);
+    public void updateRegulatorPhase(int regulatorId, Phase phase);
     
     /**
      * Removes the voltage Y point entry for the specified regulator unless
      * the voltage Y pointId matches the specified pointId.
      * @return true if a point was deleted, otherwise false
+     * 
+     * @deprecated use {@link #updateRegulatorVoltagePoint()} or {@link #removeByDeviceId()}
      */
+    @Deprecated
     public boolean deleteNonMatchingRegulatorPoint(int regulatorId, int pointIdToMatch);
     
     /**
@@ -94,4 +97,6 @@ public interface CcMonitorBankListDao {
      * @return 
      */
     public int addDeviceInfo(VoltageLimitedDeviceInfo info);
+
+    boolean updateRegulatorVoltagePoint(int regulatorId, int newPointId);
 }

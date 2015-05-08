@@ -14,16 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
-import com.cannontech.capcontrol.exception.OrphanedRegulatorException;
 import com.cannontech.capcontrol.model.Regulator;
-import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
-import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.ObjectFormattingService;
-import com.cannontech.common.model.Phase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.model.CompleteRegulator;
@@ -126,35 +122,12 @@ public class VoltageRegulatorService {
 
         extraPaoPointAssignmentDao.saveAssignments(completeRegulator.getPaoIdentifier(), eppMappings);
         
-        
         //Regulator voltage point for CcMonitorBankList
 
-        //remove voltage Y CcMonitorBankList entry, if one exists and is different from the new one
-        boolean isNewVoltageYPoint = false;
         if (voltageYPointId > 0) {
-            isNewVoltageYPoint = ccMonitorBankListDao.deleteNonMatchingRegulatorPoint(completeRegulator.getPaObjectId(), voltageYPointId);
+            ccMonitorBankListDao.updateRegulatorVoltagePoint(completeRegulator.getPaObjectId(), voltageYPointId);
         } else {
             ccMonitorBankListDao.removeByDeviceId(completeRegulator.getPaObjectId(), null);
-        }
-
-        Zone zone = null;
-        try {
-            zone = zoneDao.getZoneByRegulatorId(completeRegulator.getPaObjectId());
-        } catch(OrphanedRegulatorException e) {
-            // this regulator is not assigned to a zone - which is fine - move along
-        }
-
-        //add voltage_y CcMonitorBankList entry, if a point is assigned
-        if (isNewVoltageYPoint && zone != null) {
-            Phase phase = Phase.ALL;
-            for (RegulatorToZoneMapping regToZone : zone.getRegulators()) {
-                if (regToZone.getRegulatorId() == completeRegulator.getPaObjectId()) {
-                    phase = regToZone.getPhase();
-                    break;
-                }
-            }
-            // it's ok if phase is null here - that just means this is a gang regulator with no phase
-            ccMonitorBankListDao.addRegulatorPoint(completeRegulator.getPaObjectId(), phase, zone.getSubstationBusId());
         }
 
         return completeRegulator.getPaObjectId();

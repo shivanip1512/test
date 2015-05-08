@@ -77,7 +77,7 @@ public class ZoneServiceImpl implements ZoneService {
         for(RegulatorToZoneMapping regToZone : zone.getRegulators()) {
             Integer regId = regToZone.getRegulatorId();
             if(oldRegulatorIds.contains(regId)) {
-                ccMonitorBankListDao.updateRegulatorPoint(regId, regToZone.getPhase());
+                ccMonitorBankListDao.updateRegulatorPhase(regId, regToZone.getPhase());
                 oldRegulatorIds.remove(regId);
             } else {
                 ccMonitorBankListDao.addRegulatorPoint(regId, regToZone.getPhase(), abstractZone.getSubstationBusId());
