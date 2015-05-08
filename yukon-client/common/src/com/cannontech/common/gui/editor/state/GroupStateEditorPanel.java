@@ -47,7 +47,7 @@ import com.klg.jclass.util.value.JCValueListener;
 public class GroupStateEditorPanel extends DataInputPanel implements JCValueListener, ActionListener, ItemListener,
         CaretListener, DataInputPanelListener {
     // this must be changed whenever the number or states are changed
-    public static final int STATE_COUNT = 17;
+    public static final int STATE_COUNT = 22;
 
     private JLabel[] rawStateLabels = null;
     private JTextField[] stateNameTextFields = null;
@@ -343,7 +343,7 @@ public class GroupStateEditorPanel extends DataInputPanel implements JCValueList
      */
     private JTextField buildStateNameTextField() {
         JTextField stateNameTextField = new JTextField();
-        stateNameTextField.setPreferredSize(new java.awt.Dimension(1300, 22));
+        stateNameTextField.setPreferredSize(new java.awt.Dimension(130, 22));
         stateNameTextField.setMinimumSize(new java.awt.Dimension(130, 22));
         stateNameTextField.setColumns(0);
         stateNameTextField.setDocument(new TextFieldDocument(TextFieldDocument.MAX_STATE_NAME_LENGTH));
@@ -408,10 +408,10 @@ public class GroupStateEditorPanel extends DataInputPanel implements JCValueList
                 ivjStatesPanel = new JPanel();
                 ivjStatesPanel.setName("StatesPanel");
                 ivjStatesPanel.setLayout(new java.awt.GridBagLayout());
-                ivjStatesPanel.setMaximumSize(new java.awt.Dimension(353, 540));
-                ivjStatesPanel.setPreferredSize(new java.awt.Dimension(353, 540));
+                ivjStatesPanel.setMaximumSize(new java.awt.Dimension(353, 690));
+                ivjStatesPanel.setPreferredSize(new java.awt.Dimension(353, 690));
                 ivjStatesPanel.setBounds(0, 0, 352, 370);
-                ivjStatesPanel.setMinimumSize(new java.awt.Dimension(353, 540));
+                ivjStatesPanel.setMinimumSize(new java.awt.Dimension(353, 690));
 
                 java.awt.GridBagConstraints constraintsRepeaterLabel = new java.awt.GridBagConstraints();
                 constraintsRepeaterLabel.gridx = 3;
