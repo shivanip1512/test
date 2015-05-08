@@ -201,7 +201,7 @@ public class WorkOrderBaseDaoImpl implements WorkOrderBaseDao {
     public boolean orderNumberExists(String orderNumber, int ecId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*)");
-        sql.append("FROM WorkOrderBase wob, ECToWorkOrderMapping map");
+        sql.append("FROM WorkOrderBase wob JOIN ECToWorkOrderMapping map on wob.OrderId = map.WorkOrderId");
         sql.append("WHERE map.EnergyCompanyId").eq(ecId);
         sql.append("AND wob.OrderNumber").eq(orderNumber);
 
