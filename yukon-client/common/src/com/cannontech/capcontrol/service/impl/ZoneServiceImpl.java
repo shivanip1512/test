@@ -1,5 +1,6 @@
 package com.cannontech.capcontrol.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -304,5 +305,21 @@ public class ZoneServiceImpl implements ZoneService {
     @Override
     public Map<Integer, Phase> getMonitorPointsForBankAndPhase(int bankId) {
         return zoneDao.getMonitorPointsForBankAndPhase(bankId);
+    }
+    
+    @Override
+    public List<Integer> getRegulatorsForZone(int id) {
+        
+        List<Integer> regulatorIds = new ArrayList<>();
+            
+        Zone zone = getZoneById(id);
+            
+        List<RegulatorToZoneMapping> mappings = zone.getRegulators();
+        
+        for (RegulatorToZoneMapping mapping : mappings) {
+            regulatorIds.add(mapping.getRegulatorId());
+        }
+        
+        return regulatorIds;
     }
 }

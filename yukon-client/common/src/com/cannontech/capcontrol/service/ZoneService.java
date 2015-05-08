@@ -137,4 +137,10 @@ public interface ZoneService {
      * @return
      */
     public List<CcEvent> getLatestEvents(int zoneId, int subBusId, int rowLimit, ReadableInstant from, ReadableInstant to);
+    
+    /**
+     * Returns a list of Regulator ids that are assigned to the zone of the given id.
+     */
+    List<Integer> getRegulatorsForZone(int id);
+    
 }

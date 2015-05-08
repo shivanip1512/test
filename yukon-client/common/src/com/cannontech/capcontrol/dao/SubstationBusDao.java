@@ -95,4 +95,10 @@ public interface SubstationBusDao {
      * @return
      */
     public List<String> getAssignedFeederPaoNames(int subbusId);
-    }
+    
+    /**
+     * Returns a list of Regulator ids that are assigned to the bus of the given id.
+     */
+    List<Integer> getRegulatorsForBus(int id);
+
+}

@@ -2,6 +2,7 @@ package com.cannontech.capcontrol.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,16 +11,17 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.capcontrol.dao.FeederDao;
 import com.cannontech.capcontrol.dao.SubstationBusDao;
+import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.model.CymePaoPoint;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.capcontrol.model.PointIdContainer;
+import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
 import com.cannontech.capcontrol.model.SubstationBus;
+import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.impl.LitePaoRowMapper;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlParameterSink;
@@ -29,14 +31,16 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.util.Validator;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class SubstationBusDaoImpl implements SubstationBusDao {
     
     private static final YukonRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
     
-    @Autowired private PaoDao paoDao;
+    @Autowired private IDatabaseCache dbCache;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private ZoneDao zoneDao;
     
     static {
         liteCapControlObjectRowMapper = CapbankControllerDaoImpl.createLiteCapControlObjectRowMapper();
@@ -141,8 +145,14 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     
     @Override
     public boolean assignSubstationBus(int subBusId, String substationName) {
-        YukonPao pao = paoDao.findYukonPao(substationName, PaoType.CAP_CONTROL_SUBSTATION);
-        return (pao == null) ? false : assignSubstationBus(pao.getPaoIdentifier().getPaoId(), subBusId);
+        
+        for (LiteYukonPAObject station : dbCache.getAllCapControlSubStations()) {
+            if (station.getPaoName().equals(substationName)) {
+                return assignSubstationBus(station.getLiteID(), subBusId);
+            }
+        }
+        
+        return false;
     }
     
     @Override
@@ -170,10 +180,10 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         boolean result = (rowsAffected == 1);
         
         if (result) {
-            YukonPao subBus = paoDao.getYukonPao(substationBusId);
-            YukonPao substation = paoDao.getYukonPao(substationId);
-            dbChangeManager.processPaoDbChange(subBus, DbChangeType.UPDATE);
-            dbChangeManager.processPaoDbChange(substation, DbChangeType.UPDATE);
+            LiteYukonPAObject bus = dbCache.getAllYukonPAObjects().get(substationBusId);
+            LiteYukonPAObject station = dbCache.getAllYukonPAObjects().get(substationBusId);
+            dbChangeManager.processPaoDbChange(bus, DbChangeType.UPDATE);
+            dbChangeManager.processPaoDbChange(station, DbChangeType.UPDATE);
         }
         
         return result;
@@ -238,5 +248,24 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         sql.append("WHERE FSA.SubStationBusID").eq(subbusId);
         
         return yukonJdbcTemplate.query(sql, RowMapper.STRING);
-    }    
+    }
+    
+    @Override
+    public List<Integer> getRegulatorsForBus(int id) {
+        
+        List<Integer> regulatorIds = new ArrayList<>();
+        
+        List<Zone> busZones = zoneDao.getZonesBySubBusId(id);
+        
+        for (Zone zone : busZones) {
+            List<RegulatorToZoneMapping> mappings = zone.getRegulators();
+            
+            for (RegulatorToZoneMapping mapping : mappings) {
+                regulatorIds.add(mapping.getRegulatorId());
+            }
+            
+        }
+        
+        return regulatorIds;
+    }
 }

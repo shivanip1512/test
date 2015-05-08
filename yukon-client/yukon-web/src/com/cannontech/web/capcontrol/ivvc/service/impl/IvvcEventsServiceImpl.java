@@ -11,15 +11,10 @@ import org.springframework.stereotype.Service;
 import com.cannontech.capcontrol.dao.RegulatorEventsDao;
 import com.cannontech.capcontrol.model.RegulatorEvent;
 import com.cannontech.capcontrol.model.RegulatorEvent.EventType;
-import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
-import com.cannontech.capcontrol.model.Zone;
-import com.cannontech.capcontrol.service.ZoneService;
-import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.TimeRange;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.ivvc.service.IvvcEventsService;
 import com.cannontech.yukon.IDatabaseCache;
@@ -28,11 +23,9 @@ import com.google.common.collect.ImmutableMap;
 @Service
 public class IvvcEventsServiceImpl implements IvvcEventsService {
     
-    @Autowired private CapControlCache ccCache;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private RegulatorEventsDao eventsDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    @Autowired private ZoneService zoneService;
     
     private static final Map<RegulatorEvent.EventType, String> classNameForEventType;
     
@@ -88,44 +81,4 @@ public class IvvcEventsServiceImpl implements IvvcEventsService {
         return events;
     }
     
-    @Override
-    public List<Integer> getRegulatorsForBus(int id) {
-        
-        List<Integer> regulatorIds = new ArrayList<>();
-        
-        SubBus bus = ccCache.getSubBus(id);
-        
-        if (bus != null) {
-            
-            List<Zone> busZones = zoneService.getZonesBySubBusId(bus.getCcId());
-            
-            for (Zone zone : busZones) {
-                List<RegulatorToZoneMapping> mappings = zone.getRegulators();
-                
-                for (RegulatorToZoneMapping mapping : mappings) {
-                    regulatorIds.add(mapping.getRegulatorId());
-                }
-                
-            }
-                
-        }        
-        
-        return regulatorIds;
-    }
-    
-    @Override
-    public List<Integer> getRegulatorsForZone(int id) {
-        
-        List<Integer> regulatorIds = new ArrayList<>();
-            
-        Zone zone = zoneService.getZoneById(id);
-            
-        List<RegulatorToZoneMapping> mappings = zone.getRegulators();
-        
-        for (RegulatorToZoneMapping mapping : mappings) {
-            regulatorIds.add(mapping.getRegulatorId());
-        }
-        
-        return regulatorIds;
-    }
 }

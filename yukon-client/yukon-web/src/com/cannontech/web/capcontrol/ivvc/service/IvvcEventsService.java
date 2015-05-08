@@ -10,7 +10,4 @@ public interface IvvcEventsService {
     
     List<Map<String,Object>> getEventsForRegulatorIds(Iterable<Integer> regulatorIds, TimeRange range, YukonUserContext userContext);
     
-    List<Integer> getRegulatorsForBus(int id);
-    
-    List<Integer> getRegulatorsForZone(int id);
 }
