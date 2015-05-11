@@ -301,7 +301,9 @@ public class JobManagerImpl implements JobManager {
     }
 
     /**
-     * This method will decide whether job needs to be rescheduled.
+     * Decides whether job needs to be rescheduled based on the flag
+     * isToBeStopped against the JobId It extracts the flag information in order
+     * to stop further rescheduling of the Job.
      */
     private boolean stopRescheduleForJob(Integer jobId) {
         boolean isToBeStopped = true;
@@ -453,7 +455,7 @@ public class JobManagerImpl implements JobManager {
             jobException = new JobException(status.getJob().getId(), e.getClass().getName(), true);
             boolean isJobException = jobExceptions.add(jobException);
             if (!isJobException) {
-                updateExceptionForJobReschedule(status.getJob().getId());
+                cancelExceptionReceived(status.getJob().getId());
             }
         } finally {
             currentlyRunning.remove(status.getJob());
@@ -465,9 +467,12 @@ public class JobManagerImpl implements JobManager {
     }
 
     /**
-     * This method sets isExeptionRecieved to false
+     * Cancels the exception received by setting isExeptionRecieved flag to
+     * false It is called when a job fails for second time If the given JobId
+     * exists in a jobExceptions set then the isExeptionRecieved flag is set in
+     * order to cancel job reschedule
      */
-    private void updateExceptionForJobReschedule(Integer jobId) {
+    private void cancelExceptionReceived(Integer jobId) {
         for (JobException it : jobExceptions) {
             if (it.jobId == jobId) {
                 it.isExeptionRecieved = false;
@@ -628,6 +633,12 @@ public class JobManagerImpl implements JobManager {
         }
     }
 
+    /**
+     * The purpose of JobException is to keep a record for the exception
+     * received against a JobId. Its required for persisting the details for an
+     * exception received while running a particular Job which will be stored in
+     * the Set for analyzing later.
+     */
     private class JobException {
         int jobId;
         String exception;
