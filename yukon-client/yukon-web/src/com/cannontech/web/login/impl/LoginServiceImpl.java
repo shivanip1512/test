@@ -143,20 +143,26 @@ public class LoginServiceImpl implements LoginService {
         
         String redirect = this.getRedirect(request);
         
+        log.trace("redirect = '" + redirect + "'");
+        
         try {
             LiteYukonUser user = ServletUtil.getYukonUser(request);
+            log.trace("user = '" + user + "'");
             HttpSession session = request.getSession(false);
-            SavedSession p = (SavedSession) session.getAttribute(SAVED_YUKON_USERS);
+            SavedSession savedUsers = (SavedSession) session.getAttribute(SAVED_YUKON_USERS);
+            log.trace("savedUsers = '" + savedUsers + "'");
             session.invalidate();
             
             redirect = "/" + rolePropertyDao.getPropertyStringValue(YukonRoleProperty.LOG_IN_URL, user);
+            log.trace("Role Property: redirect = '" + redirect + "'");
             ActivityLogger.logEvent(user.getUserID(),LOGOUT_ACTIVITY_LOG, "User " + user.getUsername() + " (userid="
                 + user.getUserID() + ") has logged out from " + request.getRemoteAddr());
             
-            if (p != null) {
+            if (savedUsers != null) {
                 
-                Properties oldContext = p.getProperties();
-                redirect = p.getReferer();
+                Properties oldContext = savedUsers.getProperties();
+                redirect = savedUsers.getReferer();
+                log.trace("SavedUsers: redirect = '" + redirect + "'");
                 
                 // Restore saved session context
                 session = request.getSession( true );
@@ -170,9 +176,11 @@ public class LoginServiceImpl implements LoginService {
             }
         } catch (NotLoggedInException | UserNotInRoleException e) {
             redirect = LoginController.LOGIN_URL;
+            log.trace("Caught Exception: redirect = '" + redirect + "'");
         }
         
         redirect = ServletUtil.createSafeRedirectUrl(request, redirect);
+        log.trace("Safe redirect = '" + redirect + "'");
         
         response.sendRedirect(redirect);
     }
@@ -222,6 +230,7 @@ public class LoginServiceImpl implements LoginService {
                         redirect += "?" + INVALID_PARAMS;
                     }
                 } else {
+
                     redirect = VOICE_ROOT + LoginController.INVALID_URI;
                 }
             }
