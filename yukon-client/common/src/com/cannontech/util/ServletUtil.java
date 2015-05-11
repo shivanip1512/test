@@ -562,10 +562,14 @@ public class ServletUtil {
         if (request instanceof HttpServletRequest) {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             if (url.startsWith("/")) {
-                return httpRequest.getContextPath() + url;
+                url = httpRequest.getContextPath() + url;
             }
-            return url;
         }
+        /*
+         * Replace any multiple consecutive '/' with a single '/'
+         * Except immediately after a colon (to allow 'http://')
+         */
+        url = url.replaceAll("(?<!\\:)/+", "/");
         return url;
     }
 
