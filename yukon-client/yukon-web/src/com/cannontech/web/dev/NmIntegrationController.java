@@ -256,7 +256,7 @@ public class NmIntegrationController {
         model.addAttribute("isRunning", dataSimulator.isRunning());
         SimulatorSettings currentSettings = dataSimulator.getCurrentSettings();
         if (currentSettings == null) {
-            currentSettings = new SimulatorSettings(100000, 200000, 300000, 320000, 123456789, 1390000000);
+            currentSettings = new SimulatorSettings(100000, 200000, 300000, 320000, 123456789, 1390000000, 0.0);
         }
         model.addAttribute("currentSettings", currentSettings);
         return "rfn/dataSimulator.jsp";
@@ -265,9 +265,9 @@ public class NmIntegrationController {
     @RequestMapping(value="startDataSimulator", method=RequestMethod.GET)
     public String startDataSimulator(@RequestParam int lcr6200serialFrom, @RequestParam int lcr6200serialTo,
             @RequestParam int lcr6600serialFrom, @RequestParam int lcr6600serialTo,
-            @RequestParam long messageId, @RequestParam long messageIdTimestamp) {
+            @RequestParam long messageId, @RequestParam long messageIdTimestamp, double daysBehind) {
         SimulatorSettings settings = new SimulatorSettings(lcr6200serialFrom, lcr6200serialTo,
-            lcr6600serialFrom, lcr6600serialTo, messageId, messageIdTimestamp);
+            lcr6600serialFrom, lcr6600serialTo, messageId, messageIdTimestamp, daysBehind);
 
         dataSimulator.startSimulator(settings);
 

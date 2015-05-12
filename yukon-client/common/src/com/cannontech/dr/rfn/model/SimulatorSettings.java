@@ -8,16 +8,18 @@ public class SimulatorSettings {
     private final int lcr6600serialTo;
     private final long messageId;
     private final long messageIdTimestamp;
+    private final double daysBehind;
     
 
     public SimulatorSettings(int lcr6200serialFrom, int lcr6200serialTo, int lcr6600serialFrom, int lcr6600serialTo,
-            long messageId, long messageIdTimestamp) {
+            long messageId, long messageIdTimestamp, double daysBehind) {
         this.lcr6200serialFrom = lcr6200serialFrom;
         this.lcr6200serialTo = lcr6200serialTo;
         this.lcr6600serialFrom = lcr6600serialFrom;
         this.lcr6600serialTo = lcr6600serialTo;
         this.messageId = messageId;
         this.messageIdTimestamp = messageIdTimestamp;
+        this.daysBehind = daysBehind;
     }
 
     public int getLcr6200serialFrom() {
@@ -44,4 +46,7 @@ public class SimulatorSettings {
         return messageIdTimestamp;
     }
 
+    public double getDaysBehind() {
+        return daysBehind;
+    }
 }

@@ -143,8 +143,15 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
         
         public void initializeSimulator(SimulatorSettings simulatorSettings) {
             // Determine current message group based on system time.
-            currentMessagingGroup = new Instant().get(DateTimeFieldType.minuteOfDay()) % messageGroupCount;
             this.simulatorSettings = simulatorSettings;
+            int ticks = (int) (simulatorSettings.getDaysBehind() * messageGroupCount);
+            
+            currentMessagingGroup = (new Instant().get(DateTimeFieldType.minuteOfDay()) - ticks) % messageGroupCount;
+            
+            //  kick off the backed-up readings
+            for(int i = 0; i < ticks; ++i) {
+                simulateRfnLcrNetwork();
+            }
         }
     }
 

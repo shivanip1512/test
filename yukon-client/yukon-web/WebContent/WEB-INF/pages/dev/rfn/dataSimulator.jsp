@@ -13,7 +13,8 @@ $(function() {
                 'lcr6600serialFrom': $("input[name='Lcr6600serialFrom']").val(),
                 'lcr6600serialTo': $("input[name='Lcr6600serialTo']").val(),
                 'messageId': $("input[name='messageId']").val(),
-                'messageIdTimestamp': $("input[name='messageIdTimestamp']").val()};
+                'messageIdTimestamp': $("input[name='messageIdTimestamp']").val(),
+                'daysBehind': $("input[name='daysBehind']").val()};
         $.ajax({
             url: yukon.url('/dev/rfn/startDataSimulator'),
             type: 'GET',
@@ -43,6 +44,9 @@ $(function() {
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".lcrDataSimulator.messageIdTimestamp">
             <input name="messageIdTimestamp" type="text" value="1390000000">
+        </tags:nameValue2>
+        <tags:nameValue2 nameKey=".lcrDataSimulator.daysBehind">
+            <input name="daysBehind" type="text" value="0">
         </tags:nameValue2>
     </tags:nameValueContainer2>
     <div>

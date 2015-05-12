@@ -240,6 +240,7 @@
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.serialNumberRangeLcr6600">RFN LCR 6600 Serial Number Range</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.messageId">MessageId</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.messageIdTimestamp">MessageId Timestamp</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.daysBehind">Number of days behind</entry>
     
     <!-- Ecobee Test -->
     <entry key="yukon.web.modules.dev.ecobee.mockTest.pageName">Ecobee Test</entry>
