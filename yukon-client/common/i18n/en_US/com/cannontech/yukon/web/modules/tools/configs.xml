@@ -2,6 +2,10 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
     
+    <!-- common config words -->
+    <entry key="yukon.web.modules.tools.configs.title">Configurations</entry>
+    <entry key="yukon.web.modules.tools.categories.title">Categories</entry>
+    
     <!-- Enumerations -->
     <entry key="yukon.web.modules.tools.configs.enum.relayTiming.seconds">{0} sec</entry>
     <entry key="yukon.web.modules.tools.configs.enum.relayTiming.millis">{0} ms</entry>
@@ -522,15 +526,8 @@
     <entry key="yukon.web.modules.tools.configs.contextualPageName">Device Configuration</entry>
     <entry key="yukon.web.modules.tools.configs.configDetails.table.noConfigs">There are no existing configurations.</entry>
     <entry key="yukon.web.modules.tools.configs.configDetails.table.toCreate">To create a new configuration, click the Create button below.</entry>
-    <entry key="yukon.web.modules.tools.configs.configDetails.table.configName">Configuration Name</entry>
-    <entry key="yukon.web.modules.tools.configs.configDetails.table.numDevices">Number of Devices</entry>
     <entry key="yukon.web.modules.tools.configs.categoryDetails.table.noCategories">There are no existing categories.</entry>
     <entry key="yukon.web.modules.tools.configs.categoryDetails.table.toCreate">To create a new category, click the Create button below.</entry>
-    <entry key="yukon.web.modules.tools.configs.categoryDetails.table.categoryName">Category Name</entry>
-    <entry key="yukon.web.modules.tools.configs.categoryDetails.table.categoryType">Category Type</entry>
-    <entry key="yukon.web.modules.tools.configs.categoryDetails.table.numAssignments">Assignments</entry>
-    <entry key="yukon.web.modules.tools.configs.existingConfigs">Existing Configurations</entry>
-    <entry key="yukon.web.modules.tools.configs.existingCategories">Existing Categories</entry>
 
     <!-- category entries -->
     <entry key="yukon.web.modules.tools.configs.category.VIEW.pageName">Category</entry>

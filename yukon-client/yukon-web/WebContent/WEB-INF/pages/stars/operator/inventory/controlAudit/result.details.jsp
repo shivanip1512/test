@@ -16,7 +16,7 @@
     <tags:sectionContainer2 nameKey="controlledDevices"  hideEnabled="true" styleClass="stacked cl">
         <div class="form-control stacked">
             <span class="name">
-                <i:inline key="yukon.web.defaults.devices"/>:
+                <i:inline key="yukon.common.Devices"/>:
                 <span class="badge badge-controlled">${fn:length(audit.controlled)}</span> 
                 (<fmt:formatNumber pattern="##0.###%" value="${percent}" type="percent" maxFractionDigits="3"/>)
             </span>
@@ -48,7 +48,7 @@
     <tags:sectionContainer2 nameKey="uncontrolledDevices"  hideEnabled="true" styleClass="stacked cl">
         <div class="form-control stacked">
             <span class="name">
-                <i:inline key="yukon.web.defaults.devices"/>:
+                <i:inline key="yukon.common.Devices"/>:
                 <span class="badge badge-uncontrolled">${fn:length(audit.uncontrolled)}</span> 
                 (<fmt:formatNumber pattern="##0.###%" value="${percent}" type="percent" maxFractionDigits="3"/>)
             </span>
@@ -80,7 +80,7 @@
     <tags:sectionContainer2 nameKey="unknownDevices"  hideEnabled="true" styleClass="stacked cl">
         <div class="form-control stacked">
             <span class="name">
-                <i:inline key="yukon.web.defaults.devices"/>:
+                <i:inline key="yukon.common.Devices"/>:
                 <span class="badge badge-unknown">${fn:length(audit.unknown)}</span> 
                 (<fmt:formatNumber pattern="##0.###%" value="${percent}" type="percent" maxFractionDigits="3"/>)
             </span>
@@ -112,7 +112,7 @@
     <tags:sectionContainer2 nameKey="unsupportedDevices"  hideEnabled="true" styleClass="stacked cl">
         <div class="form-control stacked">
             <span class="name">
-                <i:inline key="yukon.web.defaults.devices"/>:
+                <i:inline key="yukon.common.Devices"/>:
                 <span class="badge  badge-unsupported">${fn:length(audit.unsupported)}</span> 
                 (<fmt:formatNumber pattern="##0.###%" value="${percent}" type="percent" maxFractionDigits="3"/>)
             </span>

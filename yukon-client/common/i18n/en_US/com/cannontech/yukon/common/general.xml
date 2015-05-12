@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
-
+<!-- KEEP ALPHABETIZED BY KEY -->
 <properties>
 <entry key="yukon.common.address">Address</entry>
+<entry key="yukon.common.assignments">Assignments</entry>
 <entry key="yukon.common.attribute">Attribute</entry>
 <entry key="yukon.common.attribute.select">Select Attribute</entry>
 <entry key="yukon.common.attribute.select.multi">Select Attribute(s)</entry>
@@ -69,6 +70,7 @@
 <entry key="yukon.common.device.selection.file">File</entry>
 <entry key="yukon.common.device.selection.file.selected">file: {0}</entry>
 <entry key="yukon.common.devices">device(s)</entry>
+<entry key="yukon.common.Devices">Devices</entry>
 <entry key="yukon.common.deviceName">Device Name</entry>
 <entry key="yukon.common.deviceType">Device Type</entry>
 <entry key="yukon.common.disable">Disable</entry>
@@ -188,6 +190,7 @@
 <entry key="yukon.common.To">To</entry>
 <entry key="yukon.common.to">to</entry>
 <entry key="yukon.common.true">True</entry>
+<entry key="yukon.common.type">Type</entry>
 <entry key="yukon.common.undo">Undo</entry>
 <entry key="yukon.common.units">Units</entry>
 <entry key="yukon.common.unsupported">Unsupported</entry>
@@ -227,7 +230,6 @@
 <entry key="yukon.web.defaults.default">(default)</entry>
 <entry key="yukon.web.defaults.degree">°</entry>
 <entry key="yukon.web.defaults.deviceCount">Device Count</entry>
-<entry key="yukon.web.defaults.devices">Devices</entry>
 <entry key="yukon.web.defaults.download">Download</entry>
 <entry key="yukon.web.defaults.fahrenheit">°F</entry>
 <entry key="yukon.web.defaults.hourAbbreviation">{0} hr</entry>

@@ -50,7 +50,7 @@
                             </c:if>
                             <cti:button nameKey="create" icon="icon-plus-green" id="b-create"/>
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey="yukon.web.defaults.devices">
+                        <tags:nameValue2 nameKey="yukon.common.Devices">
                             <a href="javascript:void(0);" class="selectDevices clearfix fl" title="<cti:msg2 key=".chooseDevices.tooltip"/>">
                                 <c:if test="${empty archivedValuesExporter.deviceCollection.deviceCount}">
                                     <span class="empty-list"><i:inline key="yukon.web.defaults.noDevices"/></span>
