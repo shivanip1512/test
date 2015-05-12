@@ -3,7 +3,7 @@ package com.cannontech.stars.service;
 import java.text.ParseException;
 
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.ws.LmDeviceDto;
 
 public interface LmDeviceDtoConverter {
@@ -16,7 +16,7 @@ public interface LmDeviceDtoConverter {
      * @return
      * @throws ParseException
      */
-    public LmDeviceDto createNewDto(String accountNumber, String[] hwFields, LiteStarsEnergyCompany energyCompany) throws ParseException;
+    public LmDeviceDto createNewDto(String accountNumber, String[] hwFields, YukonEnergyCompany energyCompany) throws ParseException;
 
     /**
      * Creates a device DTO for a customer account, based on an existing hardware device.
@@ -25,7 +25,7 @@ public interface LmDeviceDtoConverter {
      * @param energyCompany
      * @return
      */
-    public LmDeviceDto getDtoForHardware(String accountNumber, LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany);
+    public LmDeviceDto getDtoForHardware(String accountNumber, LiteInventoryBase liteInv, YukonEnergyCompany energyCompany);
 
     /**
      * Updates a device DTO based on an array of hardware data as supplied by the IportCustAccountsTask.
@@ -34,5 +34,5 @@ public interface LmDeviceDtoConverter {
      * @param energyCompany
      * @throws ParseException
      */
-    public void updateDtoWithHwFields (LmDeviceDto dto, String[] hwFields, LiteStarsEnergyCompany energyCompany) throws ParseException;
+    public void updateDtoWithHwFields (LmDeviceDto dto, String[] hwFields, YukonEnergyCompany energyCompany) throws ParseException;
 }

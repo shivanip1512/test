@@ -2,7 +2,6 @@ package com.cannontech.yukon.api.account;
 
 import com.cannontech.core.dao.UserNameUnavailableException;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.exception.AccountNumberUnavailableException;
 import com.cannontech.stars.dr.account.exception.InvalidAccountNumberException;
 import com.cannontech.stars.dr.account.model.AccountDto;
@@ -49,7 +48,7 @@ public class AccountServiceAdapter implements AccountService {
 
 	@Override
 	public AccountDto getAccountDto(String accountNumber,
-			LiteStarsEnergyCompany ec) {
+			YukonEnergyCompany ec) {
 		throw new UnsupportedOperationException("Not Implemented");
 	}
 

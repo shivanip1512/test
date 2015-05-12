@@ -16,7 +16,7 @@ import org.joda.time.Instant;
 
 import com.cannontech.common.util.Completable;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.web.bulk.util.BulkFileUpload;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -119,7 +119,7 @@ public class AccountImportResult implements Completable {
     private Instant startTime;
     private Instant stopTime;
     private int totalCount;
-    private LiteStarsEnergyCompany energyCompany = null;
+    private YukonEnergyCompany energyCompany = null;
     private String email = null;
     private boolean insertSpecified = false;
     private LiteYukonUser currentUser;
@@ -201,11 +201,11 @@ public class AccountImportResult implements Completable {
         this.stopTime = stopTime;
     }
 
-    public LiteStarsEnergyCompany getEnergyCompany() {
+    public YukonEnergyCompany getEnergyCompany() {
         return energyCompany;
     }
 
-    public void setEnergyCompany(LiteStarsEnergyCompany energyCompany) {
+    public void setEnergyCompany(YukonEnergyCompany energyCompany) {
         this.energyCompany = energyCompany;
     }
 

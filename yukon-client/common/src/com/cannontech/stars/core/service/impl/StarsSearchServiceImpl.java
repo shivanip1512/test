@@ -35,6 +35,7 @@ import com.cannontech.stars.database.db.report.WorkOrderBase;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.collect.Lists;
 
 public class StarsSearchServiceImpl implements StarsSearchService {
@@ -74,7 +75,7 @@ public class StarsSearchServiceImpl implements StarsSearchService {
 
     @Override
     @Deprecated
-    public LiteAccountInfo searchAccountByAccountNo(LiteStarsEnergyCompany energyCompany, String accountNo) {
+    public LiteAccountInfo searchAccountByAccountNo(YukonEnergyCompany energyCompany, String accountNo) {
         List<Integer> accountIds = searchAccountByAccountNumber(energyCompany, accountNo, false, true);
         int accountNumberLength = 
                 energyCompanySettingDao.getInteger(EnergyCompanySettingType.ACCOUNT_NUMBER_LENGTH, energyCompany.getEnergyCompanyId());
@@ -117,7 +118,7 @@ public class StarsSearchServiceImpl implements StarsSearchService {
     }
 
     @Override
-    public List<Integer> searchAccountByAccountNumber(LiteStarsEnergyCompany energyCompany, String accountNumber,
+    public List<Integer> searchAccountByAccountNumber(YukonEnergyCompany energyCompany, String accountNumber,
             boolean searchMembers, boolean partialMatch) {
 
         List<Integer> allEnergyCompanyIDs = new ArrayList<>();

@@ -3,7 +3,6 @@ package com.cannontech.stars.dr.account.service;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.UserNameUnavailableException;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.exception.AccountNumberUnavailableException;
 import com.cannontech.stars.dr.account.exception.InvalidAccountNumberException;
 import com.cannontech.stars.dr.account.model.AccountDto;
@@ -93,7 +92,7 @@ public interface AccountService {
      */
     public AccountDto getAccountDto(String accountNumber, LiteYukonUser yukonUser);
 
-    public AccountDto getAccountDto(String accountNumber, LiteStarsEnergyCompany ec);
+    public AccountDto getAccountDto(String accountNumber, YukonEnergyCompany ec);
 
     public AccountDto getAccountDto(int accountId, int energyCompanyId, YukonUserContext userContext);
 }

@@ -1,8 +1,8 @@
 package com.cannontech.stars.service;
 
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.model.UpdatableAccount;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
 public interface UpdatableAccountConverter {
 
@@ -12,7 +12,7 @@ public interface UpdatableAccountConverter {
 	 * @param ec
 	 * @return
 	 */
-	public UpdatableAccount createNewUpdatableAccount(String[] custFields, LiteStarsEnergyCompany ec);
+	public UpdatableAccount createNewUpdatableAccount(String[] custFields, YukonEnergyCompany ec);
 	
 	/**
 	 * Creates a UpdatableAccount based on an existing LiteStarsCustAccountInformation account number, loads current data for customer
@@ -22,6 +22,6 @@ public interface UpdatableAccountConverter {
 	 * @param ec
 	 * @return
 	 */
-	public UpdatableAccount getUpdatedUpdatableAccount(LiteAccountInfo starsCustAcctInfo, String[] custFields, LiteStarsEnergyCompany ec);
+	public UpdatableAccount getUpdatedUpdatableAccount(LiteAccountInfo starsCustAcctInfo, String[] custFields, YukonEnergyCompany ec);
 	
 }

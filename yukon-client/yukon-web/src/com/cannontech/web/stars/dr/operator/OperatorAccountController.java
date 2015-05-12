@@ -873,8 +873,7 @@ public class OperatorAccountController {
         result.setCurrentUser(user);
         result.setAccountFileUpload(accountFileUpload);
         result.setHardwareFileUpload(hardwareFileUpload);
-        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(user);
-        final LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
+        YukonEnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
         result.setEnergyCompany(energyCompany);
         result.setEmail(email);
         result.setPrescan(prescan);

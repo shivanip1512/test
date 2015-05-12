@@ -8,10 +8,10 @@ import com.cannontech.common.model.SiteInformation;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.stars.core.dao.SiteInformationDao;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.model.AccountDto;
 import com.cannontech.stars.dr.account.model.UpdatableAccount;
 import com.cannontech.stars.dr.account.service.AccountService;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.UpdatableAccountConverter;
 import com.cannontech.stars.web.util.ImportFields;
 
@@ -21,7 +21,7 @@ public class UpdatableAccountConverterImpl implements UpdatableAccountConverter 
     private SiteInformationDao siteInformationDao;
 
     @Override
-    public UpdatableAccount createNewUpdatableAccount(String[] custFields, LiteStarsEnergyCompany ec) {
+    public UpdatableAccount createNewUpdatableAccount(String[] custFields, YukonEnergyCompany ec) {
 
         // create new UpdatableAccount with acct number from custFields
         UpdatableAccount acct = new UpdatableAccount();
@@ -39,7 +39,7 @@ public class UpdatableAccountConverterImpl implements UpdatableAccountConverter 
 
     @Override
     public UpdatableAccount getUpdatedUpdatableAccount(LiteAccountInfo starsCustAcctInfo, String[] custFields,
-            LiteStarsEnergyCompany ec) {
+            YukonEnergyCompany ec) {
 
         String accountNumber = starsCustAcctInfo.getCustomerAccount().getAccountNumber();
 

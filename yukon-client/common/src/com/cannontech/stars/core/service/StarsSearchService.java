@@ -5,6 +5,7 @@ import java.util.List;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteWorkOrderBase;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
 public interface StarsSearchService {
 
@@ -22,14 +23,14 @@ public interface StarsSearchService {
      * Use LiteStarsEnergyCompany.searchAccountByAccountNumber or CustomerAccountDao.getByAccountNumber
      */
     @Deprecated
-    LiteAccountInfo searchAccountByAccountNo(LiteStarsEnergyCompany energyCompany, String accountNo);
+    LiteAccountInfo searchAccountByAccountNo(YukonEnergyCompany energyCompany, String accountNo);
     
     /**
      * Search customer accounts by account #, search results based on partial match.
      * 
      * Returns a list of account ids
      */
-    List<Integer> searchAccountByAccountNumber(LiteStarsEnergyCompany energyCompany, String accountNumber, 
+    List<Integer> searchAccountByAccountNumber(YukonEnergyCompany energyCompany, String accountNumber, 
         boolean searchMembers, boolean partialMatch);
     
     /**

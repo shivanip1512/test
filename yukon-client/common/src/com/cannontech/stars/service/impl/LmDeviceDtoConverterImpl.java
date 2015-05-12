@@ -2,18 +2,19 @@ package com.cannontech.stars.service.impl;
 
 import java.text.ParseException;
 import java.util.Date;
-import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.model.ServiceCompanyDto;
+import com.cannontech.core.dao.ServiceCompanyDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
-import com.cannontech.stars.database.data.lite.LiteServiceCompany;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.service.LmDeviceDtoConverter;
 import com.cannontech.stars.util.StarsUtils;
@@ -23,11 +24,12 @@ import com.cannontech.util.ServletUtil;
 
 public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
 
-    @Autowired private YukonListDao yukonListDao;
     @Autowired private EnergyCompanyService ecService;
+    @Autowired private ServiceCompanyDao serviceCompanyDao;
+    @Autowired private YukonListDao yukonListDao;
     
     @Override
-    public LmDeviceDto createNewDto(String accountNo, String[] hwFields, LiteStarsEnergyCompany lsec) throws ParseException {
+    public LmDeviceDto createNewDto(String accountNo, String[] hwFields, YukonEnergyCompany lsec) throws ParseException {
         
         LmDeviceDto dto = new LmDeviceDto();
         dto.setAccountNumber(accountNo);
@@ -66,7 +68,7 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
 
     
     @Override
-    public LmDeviceDto getDtoForHardware(String accountNo, LiteInventoryBase lib, LiteStarsEnergyCompany lsec) {
+    public LmDeviceDto getDtoForHardware(String accountNo, LiteInventoryBase lib, YukonEnergyCompany lsec) {
         
         // init dto with existing hardware
         LmDeviceDto dto = new LmDeviceDto();
@@ -82,19 +84,19 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
             dto.setSerialNumber(((LiteLmHardwareBase)lib).getManufacturerSerialNumber());
         }
         int installationCompanyId = lib.getInstallationCompanyID();
-        List<LiteServiceCompany> companies = lsec.getAllServiceCompanies();
-        for (LiteServiceCompany company : companies) {
-            if (company.getCompanyID() == installationCompanyId) {
-                dto.setServiceCompanyName(company.getCompanyName());
-                break;
-            }
+        
+        try {
+            ServiceCompanyDto serviceCompany = serviceCompanyDao.getCompanyById(installationCompanyId);
+            dto.setServiceCompanyName(serviceCompany.getCompanyName());
+        } catch (IncorrectResultSizeDataAccessException e) {
+            // we didn't find one...should have but guess we didn't...don't fail because of it though.
         }
         
         return dto;
     }
     
     @Override
-    public void updateDtoWithHwFields (LmDeviceDto dto, String[] hwFields, LiteStarsEnergyCompany energyCompany) 
+    public void updateDtoWithHwFields (LmDeviceDto dto, String[] hwFields, YukonEnergyCompany energyCompany) 
             throws ParseException {
         
         if (!StringUtils.isEmpty(hwFields[ImportFields.IDX_DEVICE_LABEL])) {

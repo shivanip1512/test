@@ -40,18 +40,17 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.service.StarsSearchService;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
-import com.cannontech.stars.database.data.lite.LiteApplianceCategory;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.model.UpdatableAccount;
 import com.cannontech.stars.dr.account.service.AccountService;
+import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
+import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
@@ -84,9 +83,10 @@ public class AccountImportService {
     
     @Autowired private AccountEventLogService accountLog;
     @Autowired private AccountService accountService;
+    @Autowired private ApplianceCategoryDao applianceCategoryDao;
     @Autowired private ContactDao contactDao;
     @Autowired private EmailService emailService;
-    @Autowired private EnergyCompanyService ecDao;
+    @Autowired private EnergyCompanyService ecService;
     @Autowired private EnergyCompanySettingDao ecSettingDao;
     @Autowired private EnrollmentHelperService enrollmentHelperService;
     @Autowired private GlobalSettingDao globalSettingDao;
@@ -101,7 +101,6 @@ public class AccountImportService {
     @Autowired private UpdatableAccountConverter accountConverter;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private YukonListDao yukonListDao;
-    @Autowired private EnergyCompanyDao energycompanyDao;
     @Autowired @Qualifier("longRunning") private Executor executor;
     
     private static final Logger log = YukonLogManager.getLogger(AccountImportService.class);
@@ -120,7 +119,6 @@ public class AccountImportService {
     
     @SuppressWarnings("deprecation")
     private void processAccountImport(AccountImportResult result, LiteYukonUser user) {
-        YukonEnergyCompany energyCompany = energycompanyDao.getEnergyCompanyByOperator(user);
         boolean preScan = result.isPrescan();
         final File custFile = result.getCustomerFile();
         final File hwFile = result.getHardwareFile();
@@ -155,8 +153,8 @@ public class AccountImportService {
 
         try {
             final String fs = System.getProperty("file.separator");
-            LiteStarsEnergyCompany lsec = result.getEnergyCompany();
-            File baseDir = getBaseDir(lsec, user);
+            YukonEnergyCompany energyCompany = result.getEnergyCompany();
+            File baseDir = getBaseDir(energyCompany, user);
             
             //  Gets the archive directory found inside the default directory
             File archiveDir = new File(baseDir, fs + "archive");
@@ -195,15 +193,15 @@ public class AccountImportService {
             importLog = new PrintWriter(new FileWriter(logFile), true);
             
             importLog.println("Start time: " 
-                    + StarsUtils.formatDate(now, ecDao.getDefaultTimeZone(lsec.getEnergyCompanyId())));
+                    + StarsUtils.formatDate(now, ecService.getDefaultTimeZone(energyCompany.getEnergyCompanyId())));
             importLog.println();
             
             // Creates a list of all the appliance categories names
-            Iterable<LiteApplianceCategory> allApplianceCategories = lsec.getAllApplianceCategories();
+            Iterable<ApplianceCategory> allApplianceCategories = applianceCategoryDao.getApplianceCategoriesByEcId(result.getEnergyCompany().getEnergyCompanyId());
             List<String> applianceNameList = Lists.newArrayList(); 
             
-            for (LiteApplianceCategory liteApplianceCategory : allApplianceCategories) {
-                applianceNameList.add(liteApplianceCategory.getDescription());
+            for (ApplianceCategory applianceCategory : allApplianceCategories) {
+                applianceNameList.add(applianceCategory.getDescription());
             }
             
             boolean automatedImport = result.isAutomatedImport();
@@ -349,7 +347,7 @@ public class AccountImportService {
                      * as valid comparable, non-rotation digits of the account number is expressed in a role property. 
                      */
                     LiteAccountInfo liteAcctInfo = 
-                            starsSearchService.searchAccountByAccountNo(lsec, custFields[ImportFields.IDX_ACCOUNT_NO]);
+                            starsSearchService.searchAccountByAccountNo(energyCompany, custFields[ImportFields.IDX_ACCOUNT_NO]);
                     
                     // Nothing is done to existing Accounts when CUST_ACTION is set to INSERT.
                     if ((liteAcctInfo != null) && result.isInsertSpecified()) {
@@ -364,7 +362,7 @@ public class AccountImportService {
                     
                     if (!preScan) {
                         try {
-                            liteAcctInfo = importAccount(custFields, lsec, result, user, energyCompany);
+                            liteAcctInfo = importAccount(custFields, result, user);
                         } catch (Exception ex) {
                             result.custFileErrors++;
                             String[] value = result.getCustLines().get(lineNoKey);
@@ -554,7 +552,7 @@ public class AccountImportService {
 
                         result.setInsertSpecified(hwFields[ImportFields.IDX_HARDWARE_ACTION].equalsIgnoreCase("INSERT"));
                         
-                        YukonSelectionList devTypeList = selectionListService.getSelectionList(lsec, 
+                        YukonSelectionList devTypeList = selectionListService.getSelectionList(energyCompany, 
                                                        YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE);
                         YukonListEntry deviceType = yukonListDao.getYukonListEntry(devTypeList, hwFields[ImportFields.IDX_DEVICE_TYPE]);
                         
@@ -593,11 +591,11 @@ public class AccountImportService {
                                 LiteInventoryBase liteInv = null;
                                 
                                 // IMPORT HARDWARE
-                                liteInv = importHardware(hwFields, liteAcctInfo, lsec, result, user, energyCompany);
+                                liteInv = importHardware(hwFields, liteAcctInfo, result, user);
 
                                 if (hwFields[ImportFields.IDX_PROGRAM_NAME].trim().length() > 0
                                         && !hwFields[ImportFields.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
-                                    programSignUp(hwFields, appFields, liteAcctInfo, liteInv, lsec, result);
+                                    programSignUp(hwFields, appFields, liteAcctInfo, liteInv, result);
                                 }
                             } catch (Exception e) {
                                 result.custFileErrors++;
@@ -610,9 +608,9 @@ public class AccountImportService {
                         } else {
                             String acctNo = hwFieldsMap.get(hwFields[ImportFields.IDX_SERIAL_NO]);
                             if (acctNo == null) {
-                                LiteLmHardwareBase liteHw = starsSearchDao.searchLmHardwareBySerialNumber(hwFields[ImportFields.IDX_SERIAL_NO], lsec);
+                                LiteLmHardwareBase liteHw = starsSearchDao.searchLmHardwareBySerialNumber(hwFields[ImportFields.IDX_SERIAL_NO], energyCompany);
                                 if (liteHw != null && liteHw.getAccountID() > 0) {
-                                    acctNo = scaiDao.getById(liteHw.getAccountID(), lsec.getEnergyCompanyId()).getCustomerAccount().getAccountNumber();
+                                    acctNo = scaiDao.getById(liteHw.getAccountID(), energyCompany.getEnergyCompanyId()).getCustomerAccount().getAccountNumber();
                                 }
                             }
                             
@@ -792,7 +790,7 @@ public class AccountImportService {
                         continue;
                     }
                     
-                    YukonSelectionList devTypeList = selectionListService.getSelectionList(lsec, 
+                    YukonSelectionList devTypeList = selectionListService.getSelectionList(energyCompany, 
                                                        YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE);
                     YukonListEntry deviceType = yukonListDao.getYukonListEntry(devTypeList, hwFields[ImportFields.IDX_DEVICE_TYPE]);
                     if (deviceType == null) {
@@ -836,7 +834,7 @@ public class AccountImportService {
                          * to only consider the accountnumber itself.  The number of digits to consider
                          * as valid comparable, non-rotation digits of the account number is expressed in a role property. 
                          */
-                        liteAcctInfo = starsSearchService.searchAccountByAccountNo(lsec, hwFields[ImportFields.IDX_ACCOUNT_ID]);
+                        liteAcctInfo = starsSearchService.searchAccountByAccountNo(energyCompany, hwFields[ImportFields.IDX_ACCOUNT_ID]);
                         if (liteAcctInfo == null) {
                             if (hwFields[ImportFields.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
                                 importLog.println("WARNING at " + result.getPosition() + ": account #" + hwFields[ImportFields.IDX_ACCOUNT_ID] + " doesn't exist, record ignored");
@@ -874,11 +872,11 @@ public class AccountImportService {
                     if (!preScan) {
                         LiteInventoryBase liteInv;
                         try {
-                            liteInv = importHardware(hwFields, liteAcctInfo, lsec, result, user, energyCompany);                           
+                            liteInv = importHardware(hwFields, liteAcctInfo, result, user);                           
 
                             if (hwFields[ImportFields.IDX_PROGRAM_NAME].trim().length() > 0
                                     && !hwFields[ImportFields.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
-                                programSignUp(hwFields, appFields, liteAcctInfo, liteInv, lsec, result);
+                                programSignUp(hwFields, appFields, liteAcctInfo, liteInv, result);
                             }
                         } catch (Exception e) {
                             result.hwFileErrors++;
@@ -891,9 +889,9 @@ public class AccountImportService {
                     } else {
                         String acctNo = hwFieldsMap.get(hwFields[ImportFields.IDX_SERIAL_NO]);
                         if (acctNo == null) {
-                            LiteLmHardwareBase liteHw = starsSearchDao.searchLmHardwareBySerialNumber(hwFields[ImportFields.IDX_SERIAL_NO], lsec);
+                            LiteLmHardwareBase liteHw = starsSearchDao.searchLmHardwareBySerialNumber(hwFields[ImportFields.IDX_SERIAL_NO], energyCompany);
                             if (liteHw != null && liteHw.getAccountID() > 0) {
-                                acctNo = scaiDao.getById(liteHw.getAccountID(), lsec.getEnergyCompanyId()).getCustomerAccount().getAccountNumber();
+                                acctNo = scaiDao.getById(liteHw.getAccountID(), energyCompany.getEnergyCompanyId()).getCustomerAccount().getAccountNumber();
                             }
                         }
                         
@@ -998,7 +996,7 @@ public class AccountImportService {
             
             importLog.println("Stop time: "
                     + StarsUtils.formatDate(new Date(), 
-                          ecDao.getDefaultTimeZone(result.getEnergyCompany().getEnergyCompanyId())));
+                          ecService.getDefaultTimeZone(result.getEnergyCompany().getEnergyCompanyId())));
             importLog.println();
             importLog.close();
 
@@ -1014,10 +1012,10 @@ public class AccountImportService {
     
     private LiteInventoryBase importHardware(String[] hwFields, 
                                              LiteAccountInfo liteAcctInfo, 
-                                             LiteStarsEnergyCompany lsec, 
                                              AccountImportResult result, 
-                                             LiteYukonUser user, YukonEnergyCompany energyCompany) throws Exception {
+                                             LiteYukonUser user) throws Exception {
         
+        YukonEnergyCompany energyCompany = result.getEnergyCompany();
         LiteInventoryBase liteInv = null;
 
         for (Integer inventoryId : liteAcctInfo.getInventories()) {
@@ -1040,10 +1038,10 @@ public class AccountImportService {
                 }
                 
                 // REMOVE HARDWARE
-                LmDeviceDto dto = dtoConverter.getDtoForHardware(accountNumber, liteInv, lsec);
+                LmDeviceDto dto = dtoConverter.getDtoForHardware(accountNumber, liteInv, energyCompany);
                 
                 if (!StringUtils.isBlank(hwFields[ImportFields.IDX_REMOVE_DATE])) {
-                    TimeZone ecTimezone = ecDao.getDefaultTimeZone(result.getEnergyCompany().getEnergyCompanyId());
+                    TimeZone ecTimezone = ecService.getDefaultTimeZone(result.getEnergyCompany().getEnergyCompanyId());
                     Date removeDate = 
                             ServletUtil.parseDateStringLiberally(hwFields[ImportFields.IDX_REMOVE_DATE], ecTimezone);
                     if (removeDate == null) {
@@ -1059,7 +1057,7 @@ public class AccountImportService {
                 hardwareLog.hardwareCreationAttempted(user, accountNumber, hwFields[ImportFields.IDX_SERIAL_NO], EventSource.ACCOUNT_IMPORTER);
                 
                 // ADD HARDWARE
-                LmDeviceDto dto = dtoConverter.createNewDto(accountNumber, hwFields, lsec);
+                LmDeviceDto dto = dtoConverter.createNewDto(accountNumber, hwFields, energyCompany);
                 liteInv = deviceHelper.addDeviceToAccount(dto, result.getCurrentUser(), energyCompany);
                 
                 result.getHardwareAdded().add(hwFields[ImportFields.IDX_SERIAL_NO]);
@@ -1067,8 +1065,8 @@ public class AccountImportService {
                 hardwareLog.hardwareUpdateAttempted(user, accountNumber, hwFields[ImportFields.IDX_SERIAL_NO], EventSource.ACCOUNT_IMPORTER);
                 
                 // UPDATE HARDWARE
-                LmDeviceDto dto = dtoConverter.getDtoForHardware(accountNumber, liteInv, lsec);
-                dtoConverter.updateDtoWithHwFields(dto, hwFields, lsec);
+                LmDeviceDto dto = dtoConverter.getDtoForHardware(accountNumber, liteInv, energyCompany);
+                dtoConverter.updateDtoWithHwFields(dto, hwFields, energyCompany);
                 liteInv = deviceHelper.updateDeviceOnAccount(dto, result.getCurrentUser(), energyCompany);
                 
                 result.getHardwareUpdated().add(hwFields[ImportFields.IDX_SERIAL_NO]);
@@ -1082,12 +1080,10 @@ public class AccountImportService {
     }
     
     @SuppressWarnings("deprecation")
-    private LiteAccountInfo importAccount(String[] custFields, 
-                                                          LiteStarsEnergyCompany lsec, 
-                                                          AccountImportResult result,
-                                                          LiteYukonUser user, YukonEnergyCompany energyCompany) throws Exception {
+    private LiteAccountInfo importAccount(String[] custFields, AccountImportResult result, LiteYukonUser user) throws Exception {
+        YukonEnergyCompany energyCompany = result.getEnergyCompany();
         LiteAccountInfo liteAcctInfo = 
-                starsSearchService.searchAccountByAccountNo(lsec, custFields[ImportFields.IDX_ACCOUNT_NO]);
+                starsSearchService.searchAccountByAccountNo(energyCompany, custFields[ImportFields.IDX_ACCOUNT_NO]);
         try {
             
             if (custFields[ImportFields.IDX_ACCOUNT_ACTION].equalsIgnoreCase("REMOVE")) {
@@ -1116,9 +1112,9 @@ public class AccountImportService {
                 ServletUtils.formatPin(custFields[ImportFields.IDX_IVR_PIN]);
                 
                 // ADD ACCOUNT
-                UpdatableAccount updatableAccount = accountConverter.createNewUpdatableAccount(custFields, lsec);
+                UpdatableAccount updatableAccount = accountConverter.createNewUpdatableAccount(custFields, energyCompany);
                 accountService.addAccount(updatableAccount, user, energyCompany);
-                liteAcctInfo = starsSearchService.searchAccountByAccountNo(lsec, custFields[ImportFields.IDX_ACCOUNT_NO]);
+                liteAcctInfo = starsSearchService.searchAccountByAccountNo(energyCompany, custFields[ImportFields.IDX_ACCOUNT_NO]);
                 result.getAccountsAdded().add(custFields[ImportFields.IDX_ACCOUNT_NO]);
             } else if (!result.isInsertSpecified()) {
                 accountLog.accountUpdateAttempted(user, custFields[ImportFields.IDX_ACCOUNT_NO], EventSource.ACCOUNT_IMPORTER);
@@ -1128,7 +1124,7 @@ public class AccountImportService {
                 ServletUtils.formatPin(custFields[ImportFields.IDX_IVR_PIN]);
                 
                 // UPDATE ACCOUNT
-                UpdatableAccount updatableAccount = accountConverter.getUpdatedUpdatableAccount(liteAcctInfo, custFields, lsec);
+                UpdatableAccount updatableAccount = accountConverter.getUpdatedUpdatableAccount(liteAcctInfo, custFields, energyCompany);
                 accountService.updateAccount(updatableAccount, user, energyCompany);
                 
                 result.getAccountsUpdated().add(custFields[ImportFields.IDX_ACCOUNT_NO]);
@@ -1315,11 +1311,11 @@ public class AccountImportService {
         }
     }
     
-    private File getBaseDir(LiteStarsEnergyCompany lsec, LiteYukonUser user) {
+    private File getBaseDir(YukonEnergyCompany energyCompany, LiteYukonUser user) {
         final String fs = System.getProperty("file.separator");
-        String ecName = lsec.getName();
+        String ecName = energyCompany.getName();
         if (ecName.indexOf('<') > -1) {
-            ecName = "EnergyCompany" + lsec.getEnergyCompanyId();
+            ecName = "EnergyCompany" + energyCompany.getEnergyCompanyId();
         }
         
         // Check to see if it exist in role property if not use default.
@@ -1363,7 +1359,6 @@ public class AccountImportService {
                                String[] appFields, 
                                LiteAccountInfo liteAcctInfo, 
                                LiteInventoryBase liteInv, 
-                               LiteStarsEnergyCompany lsec, 
                                AccountImportResult result) throws Exception {
        if (appFields == null) {
            appFields = prepareFields(ImportFields.NUM_APP_FIELDS);

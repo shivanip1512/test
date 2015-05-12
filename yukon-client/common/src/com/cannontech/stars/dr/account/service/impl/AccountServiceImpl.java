@@ -900,8 +900,8 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountDto getAccountDto(String accountNumber, LiteStarsEnergyCompany ec) {
-        YukonUserContext userContext = userContextService.getEnergyCompanyDefaultUserContext(ec.getUser());
+    public AccountDto getAccountDto(String accountNumber, YukonEnergyCompany ec) {
+        YukonUserContext userContext = userContextService.getEnergyCompanyDefaultUserContext(ec.getEnergyCompanyUser());
 
         CustomerAccount customerAccount = getCustomerAccountForAccountNumberAndEnergyCompany(accountNumber, ec);
         return getAccountDto(customerAccount, userContext);
