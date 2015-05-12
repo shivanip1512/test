@@ -17,6 +17,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.exception.ParseExiException;
 import com.cannontech.common.inventory.InventoryIdentifier;
@@ -85,7 +86,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
             Instant startTime = new Instant();
             
             // Make sure dispatch message handling isn't blocked up.
-            boolean pausingEnabled = false;  //configSource.getBoolean(MasterConfigBoolean.PAUSE_FOR_DISPATCH_MESSAGE_BACKUP, true);
+            boolean pausingEnabled = configSource.getBoolean(MasterConfigBoolean.PAUSE_FOR_DISPATCH_MESSAGE_BACKUP, true);
             if (pausingEnabled && dispatch.isBehind()) {
                 
                 numPausedQueues.incrementAndGet();
