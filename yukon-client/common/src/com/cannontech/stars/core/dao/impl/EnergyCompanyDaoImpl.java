@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -58,6 +59,7 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
 
     private Map<Integer, List<Integer>> cachedRouteIds = new ConcurrentHashMap<>();
     private Map<Integer, EnergyCompany> energyCompanies;
+    private Map<Integer, Integer> ecIdByOperatorId = new HashMap<Integer, Integer>(); //<UserId, EcId>
 
     @Autowired
     public EnergyCompanyDaoImpl(AsyncDynamicDataSource asyncDynamicDataSource){
@@ -75,6 +77,7 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
             public void eventReceived(DatabaseChangeEvent event) {
                 synchronized (EnergyCompanyDaoImpl.this) {
                     energyCompanies = null;
+                    ecIdByOperatorId.clear();
                 }
             }
         });
@@ -92,6 +95,8 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
                                 }
                             }
                         }
+
+                        ecIdByOperatorId.remove(dbChange.getId());
                     }
                 }
             }
@@ -107,17 +112,21 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
 
     @Override
     public EnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ECOLL.EnergyCompanyId");
-        sql.append("FROM EnergyCompanyOperatorLoginList ECOLL");
-        sql.append("WHERE ECOLL.OperatorLoginId").eq(operator.getUserID());
-
-        try {
-            int energyCompanyId = jdbcTemplate.queryForInt(sql);
-            return getEnergyCompany(energyCompanyId);
-        } catch (EmptyResultDataAccessException e) {
-            throw new EnergyCompanyNotFoundException("No energy company found for user id: " + operator.getUserID(), e);
+        Integer energyCompanyId = ecIdByOperatorId.get(operator.getUserID());
+        if (energyCompanyId == null) { // populate cache
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT ECOLL.EnergyCompanyId");
+            sql.append("FROM EnergyCompanyOperatorLoginList ECOLL");
+            sql.append("WHERE ECOLL.OperatorLoginId").eq(operator.getUserID());
+    
+            try {
+                energyCompanyId = jdbcTemplate.queryForInt(sql);
+                ecIdByOperatorId.put(operator.getUserID(), energyCompanyId);
+            } catch (EmptyResultDataAccessException e) {
+                throw new EnergyCompanyNotFoundException("No energy company found for user id: " + operator.getUserID(), e);
+            }
         }
+        return getEnergyCompany(energyCompanyId);
     }
 
     @Override
