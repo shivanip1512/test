@@ -449,7 +449,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         }
 		
 		LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(liteInventoryBase.getInventoryID());
-    	EnrollmentHelperHolder enrollmentHelperHolder = new EnrollmentHelperHolder(enrollmentHelper, customerAccount, lmHardwareBase, energyCompany);
+    	EnrollmentHelperHolder enrollmentHelperHolder = new EnrollmentHelperHolder(enrollmentHelper, customerAccount, lmHardwareBase);
     	return enrollmentHelperHolder;
     }
 }

@@ -182,8 +182,8 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
 
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public CustomerAccount getByAccountNumber(final String accountNumber, final LiteYukonUser user) {
-        EnergyCompany ec = ecDao.getEnergyCompanyByOperator(user);
+    public CustomerAccount getByAccountNumber(final String accountNumber, final LiteYukonUser ecOperator) {
+        EnergyCompany ec = ecDao.getEnergyCompanyByOperator(ecOperator);
         return getByAccountNumber(accountNumber, ec.getDescendants(true));
     }
 

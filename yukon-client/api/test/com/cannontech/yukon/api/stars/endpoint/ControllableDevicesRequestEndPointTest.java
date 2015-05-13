@@ -22,7 +22,6 @@ import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.dr.account.exception.StarsAccountNotFoundException;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.StarsClientRequestException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
 import com.cannontech.stars.ws.LmDeviceDto;
@@ -111,12 +110,6 @@ public class ControllableDevicesRequestEndPointTest {
         }
 
         @Override
-        public LiteInventoryBase addDeviceToAccount(LmDeviceDto dto, LiteYukonUser user,
-                YukonEnergyCompany energyCompany) {
-            return addDeviceToAccount(dto, user);
-        }
-
-        @Override
         public LiteInventoryBase updateDeviceOnAccount(
                 LmDeviceDto deviceInfo, LiteYukonUser user) {
             if (deviceInfo.getAccountNumber().equals(ACCOUNT_NUM_NOT_FOUND)) {
@@ -133,12 +126,6 @@ public class ControllableDevicesRequestEndPointTest {
         }
 
         @Override
-        public LiteInventoryBase updateDeviceOnAccount(LmDeviceDto dto, LiteYukonUser user,
-                YukonEnergyCompany energyCompany) {
-            return updateDeviceOnAccount(dto, user);
-        }
-
-        @Override
         public void removeDeviceFromAccount(
                 LmDeviceDto deviceInfo, LiteYukonUser user) {
             if (deviceInfo.getAccountNumber().equals(ACCOUNT_NUM_NOT_FOUND)) {
@@ -151,11 +138,6 @@ public class ControllableDevicesRequestEndPointTest {
             } else {
                 // valid case, no exceptions
             }
-        }
-
-        @Override
-        public void removeDeviceFromAccount(LmDeviceDto dto, LiteYukonUser user, YukonEnergyCompany energyCompany) {
-             removeDeviceFromAccount(dto, user);
         }
     }
 

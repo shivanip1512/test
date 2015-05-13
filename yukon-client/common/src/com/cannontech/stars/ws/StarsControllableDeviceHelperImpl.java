@@ -1,6 +1,7 @@
 package com.cannontech.stars.ws;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -16,11 +17,13 @@ import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.model.ServiceCompanyDto;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.ServiceCompanyDao;
 import com.cannontech.core.roleproperties.SerialNumberValidation;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.DbChangeManager;
@@ -33,7 +36,6 @@ import com.cannontech.stars.core.service.StarsInventoryBaseService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
-import com.cannontech.stars.database.data.lite.LiteServiceCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.exception.StarsAccountNotFoundException;
@@ -47,29 +49,32 @@ import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.dr.util.YukonListEntryHelper;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.StarsClientRequestException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.Lists;
 
 public class StarsControllableDeviceHelperImpl implements StarsControllableDeviceHelper {
 
-    @Autowired private StarsSearchDao starsSearchDao;
-    @Autowired private CustomerAccountDao customerAccountDao;    
-    @Autowired private StarsInventoryBaseService starsInventoryBaseService;
-    @Autowired private StarsDatabaseCache starsCache;
-    @Autowired private IDatabaseCache cache;
-    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private ConfigurationSource configurationSource;
-    @Autowired private DeviceCreationService deviceCreationService;
-    @Autowired private RfnDeviceDao rfnDeviceDao;
-    @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private DbChangeManager dbChangeManager;
-    @Autowired private SelectionListService selectionListService;
+    @Autowired private DeviceCreationService deviceCreationService;
     @Autowired private EcobeeBuilder ecobeeBuilder;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private EnergyCompanySettingDao ecSettingDao;
-
+    @Autowired private IDatabaseCache cache;
+    @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
+    @Autowired private SelectionListService selectionListService;
+    @Autowired private ServiceCompanyDao serviceCompanyDao;
+    @Autowired private StarsDatabaseCache starsCache;
+    @Autowired private StarsInventoryBaseService starsInventoryBaseService;
+    @Autowired private StarsSearchDao starsSearchDao;
+    
     private String getAccountNumber(LmDeviceDto dto) {
         String acctNum = dto.getAccountNumber();
         if (StringUtils.isBlank(acctNum)) {
@@ -122,10 +127,10 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         return deviceType;
     }
 
-    private CustomerAccount getCustomerAccount(LmDeviceDto dto, YukonEnergyCompany energyCompany) {
+    private CustomerAccount getCustomerAccount(LmDeviceDto dto, EnergyCompany energyCompany) {
         CustomerAccount custAcct = null;
         try {
-            custAcct = customerAccountDao.getByAccountNumber(getAccountNumber(dto), energyCompany.getEnergyCompanyId());
+            custAcct = customerAccountDao.getByAccountNumber(getAccountNumber(dto), energyCompany.getDescendants(true));
         } catch (NotFoundException e) {
             // convert to a better, Account not found exception
             throw new StarsAccountNotFoundException(getAccountNumber(dto), energyCompany.getName(), e);
@@ -142,15 +147,15 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
      * @throws StarsInvalidDeviceTypeException if yukonListEntry is not found for deviceInfo.deviceType 
      */
     private YukonListEntry getDeviceType(LmDeviceDto dto, YukonEnergyCompany yec) {
-    	String deviceType = getDeviceTypeString(dto);
-    	try {
-    		YukonListEntry entry = YukonListEntryHelper.getEntryForEntryText(deviceType, 
-    				YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, 
-    				yec);
-    		
-    		return entry;
-    		
-    	} catch (NotFoundException e) {
+        String deviceType = getDeviceTypeString(dto);
+        try {
+            YukonListEntry entry = YukonListEntryHelper.getEntryForEntryText(deviceType,
+                                                                             YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE,
+                                                                             yec);
+
+            return entry;
+
+        } catch (NotFoundException e) {
             throw new StarsInvalidDeviceTypeException(deviceType, yec.getName());
         }
     }
@@ -160,32 +165,23 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     public LiteInventoryBase addDeviceToAccount(LmDeviceDto dto, LiteYukonUser user) {
         
         //Get energyCompany for the user
-        YukonEnergyCompany yec = ecDao.getEnergyCompanyByOperator(user);
-        return addDeviceToAccount(dto, user, yec);
-        
-    }
-    
-    @Override
-    @Transactional
-    public LiteInventoryBase addDeviceToAccount(LmDeviceDto dto, LiteYukonUser user, YukonEnergyCompany yec) {
-
-        LiteStarsEnergyCompany lsec = starsCache.getEnergyCompany(yec);
+        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
         
         // Get Inventory, if exists on account
-        LiteInventoryBase  liteInv = getInventoryOnAccount(dto, lsec);
+        LiteInventoryBase  liteInv = getInventoryOnAccount(dto, energyCompany);
         // Inventory already exists on the account
         if (liteInv != null) {
-            throw new StarsDeviceAlreadyExistsException(getAccountNumber(dto), getSerialNumber(dto, lsec), yec.getName());
+            throw new StarsDeviceAlreadyExistsException(getAccountNumber(dto), getSerialNumber(dto, energyCompany), energyCompany.getName());
         }
                 
         // add device to account
-        liteInv = internalAddDeviceToAccount(dto, lsec, user);
+        liteInv = internalAddDeviceToAccount(dto, energyCompany, user);
 
         return liteInv;
     }
 
     // Gets Inventory if exists on the account
-    private LiteInventoryBase getInventoryOnAccount(LmDeviceDto dto, LiteStarsEnergyCompany energyCompany) {
+    private LiteInventoryBase getInventoryOnAccount(LmDeviceDto dto, EnergyCompany energyCompany) {
         
         LiteInventoryBase lib = null;
 
@@ -202,17 +198,17 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     // Gets Inventory if exists for the energyCompany
     // Handles only LMHardware devices for now, will need to support other
     // device types later.
-    private LiteInventoryBase getInventory(LmDeviceDto dto, LiteStarsEnergyCompany lsec) {
+    private LiteInventoryBase getInventory(LmDeviceDto dto, YukonEnergyCompany yec) {
         
         LiteInventoryBase lib = null;
         try {
-            YukonListEntry deviceType = getDeviceType(dto, lsec);
+            YukonListEntry deviceType = getDeviceType(dto, yec);
             HardwareType type = HardwareType.valueOf(deviceType.getYukonDefID());
             
             boolean lmHardware = type.isLmHardware();
             if (lmHardware) {
                 LiteLmHardwareBase lmhw =
-                    starsSearchDao.searchLmHardwareBySerialNumber(getSerialNumber(dto, lsec), lsec);
+                    starsSearchDao.searchLmHardwareBySerialNumber(getSerialNumber(dto, yec), yec);
                 lib = lmhw;
             }
         } catch (ObjectInOtherEnergyCompanyException e) {
@@ -225,19 +221,19 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     // Creates new Inventory based on the deviceType
     // Handles only LMHardware devices for now, will need to support other
     // device types later.
-    private LiteInventoryBase buildLiteInventoryBase(LmDeviceDto dto, LiteStarsEnergyCompany lsec) {
+    private LiteInventoryBase buildLiteInventoryBase(LmDeviceDto dto, YukonEnergyCompany yec) {
         
         LiteInventoryBase lib = null;
 
-        YukonListEntry deviceType = getDeviceType(dto, lsec);
+        YukonListEntry deviceType = getDeviceType(dto, yec);
         HardwareType type = HardwareType.valueOf(deviceType.getYukonDefID());
         boolean lmHardware = type.isLmHardware();
         
         if (lmHardware) {
             LiteLmHardwareBase lmhw = new LiteLmHardwareBase();
-            lmhw.setCategoryID(selectionListService.getListEntry(lsec, type.getInventoryCategory().getDefinitionId()).getEntryID());
+            lmhw.setCategoryID(selectionListService.getListEntry(yec, type.getInventoryCategory().getDefinitionId()).getEntryID());
             lmhw.setLmHardwareTypeID(deviceType.getEntryID());
-            lmhw.setManufacturerSerialNumber(getSerialNumber(dto, lsec));
+            lmhw.setManufacturerSerialNumber(getSerialNumber(dto, yec));
             lmhw.setInstallDate(new Date().getTime());
             // force not null
             lmhw.setAlternateTrackingNumber("");
@@ -251,17 +247,17 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     }
 
     private LiteInventoryBase internalAddDeviceToAccount(LmDeviceDto dto,
-                                                         LiteStarsEnergyCompany lsec, 
+                                                         EnergyCompany energyCompany, 
                                                          LiteYukonUser user) {
 
         boolean isNewDevice = false;
-        LiteInventoryBase lib = getInventory(dto, lsec);
+        LiteInventoryBase lib = getInventory(dto, energyCompany);
         
         // See if Inventory exists
         if (lib != null) {
             // Inventory associated to an account, error out
             if (lib.getAccountID() > 0) {
-                throw new StarsDeviceAlreadyAssignedException(getAccountNumber(dto), getSerialNumber(dto, lsec), lsec.getName());
+                throw new StarsDeviceAlreadyAssignedException(getAccountNumber(dto), getSerialNumber(dto, energyCompany), energyCompany.getName());
             }
             // existing inventory, reset some fields
             // currentStateId should be retained
@@ -270,22 +266,23 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         }
         else {
             // Inventory doesn't exist, create a new one
-            lib = buildLiteInventoryBase(dto, lsec);
+            lib = buildLiteInventoryBase(dto, energyCompany);
             isNewDevice = true;
         }
 
         // By this point, we should have an existing or new Inventory to add
         // to account
         if (lib == null) {
-            throw new StarsInvalidDeviceTypeException(getDeviceTypeString(dto), lsec.getName());
+            throw new StarsInvalidDeviceTypeException(getDeviceTypeString(dto), energyCompany.getName());
         }
         // set common fields on the Inventory
-        setInventoryValues(dto, lib, lsec);
+        setInventoryValues(dto, lib, energyCompany);
 
+        LiteStarsEnergyCompany lsec = starsCache.getEnergyCompany(energyCompany);
         // call service to add device on the customer account
         lib = starsInventoryBaseService.addDeviceToAccount(lib, lsec, user, true);
         if (isNewDevice) {
-            YukonListEntry deviceType = getDeviceType(dto, lsec);
+            YukonListEntry deviceType = getDeviceType(dto, energyCompany);
             HardwareType ht = HardwareType.valueOf(deviceType.getYukonDefID());
             if (ht.isRf()) {
                 try {
@@ -318,7 +315,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         return lib;
     }
 
-    private void setInventoryValues(LmDeviceDto dto, LiteInventoryBase lib, LiteStarsEnergyCompany lsec) {
+    private void setInventoryValues(LmDeviceDto dto, LiteInventoryBase lib, EnergyCompany energyCompany) {
         // update install date, if specified
         Date installDate = dto.getFieldInstallDate();
         if (installDate != null) {
@@ -334,7 +331,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         }
 
         // Derive Account Id
-        CustomerAccount custAcct = getCustomerAccount(dto, lsec);
+        CustomerAccount custAcct = getCustomerAccount(dto, energyCompany);
         lib.setAccountID(custAcct.getAccountId());
 
         // Derive and update Installation Company id, if specified
@@ -343,73 +340,59 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
             if (StringUtils.isBlank(serviceCompany)) {
                 lib.setInstallationCompanyID(0);
             } else {
-                List<LiteServiceCompany> companies = lsec.getAllServiceCompanies();
-                for (LiteServiceCompany entry : companies) {
+                List<Integer> parentIds = Lists.transform(energyCompany.getAncestors(true), EnergyCompanyDao.TO_ID_FUNCTION);
+                List<ServiceCompanyDto> companies = serviceCompanyDao.getAllServiceCompaniesForEnergyCompanies(new HashSet<>(parentIds));
+                for (ServiceCompanyDto entry : companies) {
                     if (entry.getCompanyName().equalsIgnoreCase(serviceCompany)) {
-                        lib.setInstallationCompanyID(entry.getCompanyID());
+                        lib.setInstallationCompanyID(entry.getCompanyId());
                         break;
                     }
                 }
-
             }
         }
     }
 
     @Override
-    public LiteInventoryBase updateDeviceOnAccount(LmDeviceDto dto, LiteYukonUser user) {
+    public LiteInventoryBase updateDeviceOnAccount(LmDeviceDto dto, LiteYukonUser ecOperator) {
 
         //Get energyCompany for the user
-        YukonEnergyCompany yec = ecDao.getEnergyCompanyByOperator(user);
-        return updateDeviceOnAccount(dto, user, yec);
-        
-    }
-    
-    @Override
-    public LiteInventoryBase updateDeviceOnAccount(LmDeviceDto dto, LiteYukonUser user, YukonEnergyCompany yec) {
+        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(ecOperator);
+
         LiteInventoryBase lib = null;
         
-        LiteStarsEnergyCompany lsec = starsCache.getEnergyCompany(yec);
-        
         // Get Inventory if exists on account
-        lib = getInventoryOnAccount(dto, lsec);
+        lib = getInventoryOnAccount(dto, energyCompany);
         // Inventory exists on the account
         if (lib != null) {
             // existing inventory, reset some fields
             lib.setRemoveDate(0);
 
             // set common fields on the Inventory
-            setInventoryValues(dto, lib, lsec);
+            setInventoryValues(dto, lib, energyCompany);
 
+            LiteStarsEnergyCompany lsec = starsCache.getEnergyCompany(energyCompany);
             // call service to update device on the customer account
-            lib = starsInventoryBaseService.updateDeviceOnAccount(lib, lsec, user);
+            lib = starsInventoryBaseService.updateDeviceOnAccount(lib, lsec, ecOperator);
         } else {
             // add device to account
-            lib = internalAddDeviceToAccount(dto, lsec, user);
+            lib = internalAddDeviceToAccount(dto, energyCompany, ecOperator);
         }
         return lib;
     };
 
     @Override
-    public void removeDeviceFromAccount(LmDeviceDto dto, LiteYukonUser user) {
-        
-        //Get energyCompany for the user
-        YukonEnergyCompany yec = ecDao.getEnergyCompanyByOperator(user);
-        removeDeviceFromAccount(dto, user, yec);
-        
-    }
-    
-    @Override
-    public void removeDeviceFromAccount(LmDeviceDto dto, LiteYukonUser user, YukonEnergyCompany yec) {
+    public void removeDeviceFromAccount(LmDeviceDto dto, LiteYukonUser ecOperator) {
         
         LiteInventoryBase liteInv = null;
         
-        LiteStarsEnergyCompany lsec = starsCache.getEnergyCompany(yec);
+        //Get energyCompany for the user
+        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(ecOperator);
         
         // Get Inventory if exists on account
-        liteInv = getInventoryOnAccount(dto, lsec);
+        liteInv = getInventoryOnAccount(dto, energyCompany);
         // Error, if Inventory not found on the account
         if (liteInv == null) {
-            throw new StarsDeviceNotFoundOnAccountException(getAccountNumber(dto), getSerialNumber(dto, lsec), lsec.getName());
+            throw new StarsDeviceNotFoundOnAccountException(getAccountNumber(dto), getSerialNumber(dto, energyCompany), energyCompany.getName());
         }
 
         // Remove date defaults to current date, if not specified
@@ -419,8 +402,8 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         }
         liteInv.setRemoveDate(removeDate.getTime());
 
+        LiteStarsEnergyCompany lsec = starsCache.getEnergyCompany(energyCompany);
         // Remove device from the account
-        starsInventoryBaseService.removeDeviceFromAccount(liteInv, lsec, user);
+        starsInventoryBaseService.removeDeviceFromAccount(liteInv, lsec, ecOperator);
     }
-
 }

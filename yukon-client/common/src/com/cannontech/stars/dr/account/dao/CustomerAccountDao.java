@@ -7,7 +7,6 @@ import java.util.Map;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -22,18 +21,14 @@ public interface CustomerAccountDao {
     CustomerAccount getById(int accountId);
 
     /**
-     * Use {@link StarsDatabaseCache#getEnergyCompanyByUser(LiteYukonUser)} to get the Energy Company for the
-     * user, then calls {@link #getByAccountNumberForDescendentsOfEnergyCompany(String, YukonEnergyCompany)}.
-     * 
+     * Returns the customer account for the user (EC Operator), including any EC Descendants.
      * @param user the user calling the method, only makes sense as an operator
-     * @deprecated call getByAccountNumberForDescendentsOfEnergyCompany directly, get EC from
-     *             EnergyCompanyDao
      */
-    @Deprecated
-    CustomerAccount getByAccountNumber(String accountNumber, LiteYukonUser user);
+    CustomerAccount getByAccountNumber(String accountNumber, LiteYukonUser ecOperator);
 
     /**
      * Return a list all customer accounts for user, including Primary and Additional contact relationships.
+     * user is assumed to be tied directly to the account, and NOT the ec operator.
      */
     List<CustomerAccount> getByUser(LiteYukonUser user);
 
@@ -73,8 +68,16 @@ public interface CustomerAccountDao {
      */
     CustomerAccountWithNames getAcountWithNamesByAccountNumber(String accountNumber, int ecId);
 
+    /**
+     * Returns the customer account for the user (EC Operator), NOT including EC Descendants.
+     * Only use this method when you are certain that member ECs shall not be included, such as for an "add".
+     * Otherwise, use {@link #getByAccountNumber(String, LiteYukonUser)}
+     */
     CustomerAccount getByAccountNumber(String accountNumber, int energyCompanyId);
 
+    /**
+     * Returns the customer account for the list of energyCompanies. (Expectation is this list is this.EC plus descendants)
+     */
     CustomerAccount getByAccountNumber(String accountNumber, Iterable<? extends YukonEnergyCompany> energyCompanies);
 
     CustomerAccount findByAccountNumber(String accountNumber, Iterable<? extends YukonEnergyCompany> energyCompanies);

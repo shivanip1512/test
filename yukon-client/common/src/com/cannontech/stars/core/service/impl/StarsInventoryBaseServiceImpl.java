@@ -385,7 +385,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         LMHardwareBase lmHardwareBase = hardwareBaseDao.getById(liteInv.getInventoryID());
         enrollmentHelper.setSerialNumber(lmHardwareBase.getManufacturerSerialNumber());
         
-        EnrollmentHelperHolder enrollmentHelperHolder = new EnrollmentHelperHolder(enrollmentHelper, customerAccount, lmHardwareBase, energyCompany);
+        EnrollmentHelperHolder enrollmentHelperHolder = new EnrollmentHelperHolder(enrollmentHelper, customerAccount, lmHardwareBase);
         enrollmentService.doEnrollment(enrollmentHelperHolder, EnrollmentEnum.UNENROLL, user);        
     }
     
