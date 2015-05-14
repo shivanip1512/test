@@ -87,20 +87,17 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration )
         const std::vector< unsigned char > response {
             0x89, 0x00, 0x00, 0x01, 0x01, 0x07, 0x01, 0x00, 0x2d, 0x00, 0x23, 0x05, 0x03 };
 
-        try
-        {
-            RfnCommandResult rcv = command.decodeCommand( execute_time, response );
+        RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
-            BOOST_FAIL("Did not throw");
+        BOOST_CHECK_EQUAL( rcv.description,
+                           "Status: Success (0)"
+                           "\nState: Alarm Enabled (1)"
+                           "\nHigh Temperature Threshold: 45 degrees (0x002d)"
+                           "\nLow Temperature Threshold: 35 degrees (0x0023)"
+                           "\nAlarm Repeat Interval: 5 minutes"
+                           "\nAlarm Repeat Count: 3 counts" );
 
-            BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)" );
-
-            BOOST_CHECK_EQUAL( true, command.isSupported() );
-        }
-        catch( RfnCommand::CommandException &ex )
-        {
-
-        }
+        BOOST_CHECK_EQUAL( true, command.isSupported() );
     }
     // decode -- failure response
     {
@@ -257,8 +254,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration_decode_exc
         ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0x8a)" ) )
         ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x01)" ) )
         ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Status (3)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (1)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response length (6)" ) );
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Incomplete data for TLV" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV type (0x00)" ) );
 
     RfnTemperatureAlarmCommand::AlarmConfiguration  configuration =
     {
@@ -315,10 +312,10 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration )
 
         BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)"
                                             "\nState: Alarm Enabled (1)"
-                                            "\nHigh Temperature Threshold: 50 degree(s) (0x0032)"
-                                            "\nLow Temperature Threshold: 40 degree(s) (0x0028)"
-                                            "\nAlarm Repeat Interval: 15 minute(s)"
-                                            "\nAlarm Repeat Count: 3 count(s)" );
+                                            "\nHigh Temperature Threshold: 50 degrees (0x0032)"
+                                            "\nLow Temperature Threshold: 40 degrees (0x0028)"
+                                            "\nAlarm Repeat Interval: 15 minutes"
+                                            "\nAlarm Repeat Count: 3 counts" );
 
         BOOST_CHECK_EQUAL( true, command.isSupported() );
 
@@ -339,10 +336,10 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration )
 
         BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)"
                                             "\nState: Alarm Enabled (1)"
-                                            "\nHigh Temperature Threshold: -16 degree(s) (0xfff0)"
-                                            "\nLow Temperature Threshold: -26 degree(s) (0xffe6)"
-                                            "\nAlarm Repeat Interval: 15 minute(s)"
-                                            "\nAlarm Repeat Count: 3 count(s)" );
+                                            "\nHigh Temperature Threshold: -16 degrees (0xfff0)"
+                                            "\nLow Temperature Threshold: -26 degrees (0xffe6)"
+                                            "\nAlarm Repeat Interval: 15 minutes"
+                                            "\nAlarm Repeat Count: 3 counts" );
 
         BOOST_CHECK_EQUAL( true, command.isSupported() );
 
@@ -352,6 +349,30 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration )
         BOOST_CHECK_EQUAL(  -16, configuration.alarmHighTempThreshold );
         BOOST_CHECK_EQUAL(   15, configuration.alarmRepeatInterval );
         BOOST_CHECK_EQUAL(    3, configuration.alarmRepeatCount );
+    }
+    // decode -- success response with singular degree, minute, count
+    {
+        const std::vector< unsigned char > response = list_of
+            ( 0x89 )( 0x01 )( 0x00 )( 0x01 )
+                ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x01 )( 0xff )( 0xf7 )( 0x01 )( 0x01 );
+
+        RfnCommandResult rcv = command.decodeCommand( execute_time, response );
+
+        BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)"
+                                            "\nState: Alarm Enabled (1)"
+                                            "\nHigh Temperature Threshold: 1 degree (0x0001)"
+                                            "\nLow Temperature Threshold: -9 degrees (0xfff7)"
+                                            "\nAlarm Repeat Interval: 1 minute"
+                                            "\nAlarm Repeat Count: 1 count" );
+
+        BOOST_CHECK_EQUAL( true, command.isSupported() );
+
+        RfnTemperatureAlarmCommand::AlarmConfiguration configuration = command.getAlarmConfiguration();
+
+        BOOST_CHECK_EQUAL( true, configuration.alarmEnabled );
+        BOOST_CHECK_EQUAL(    1, configuration.alarmHighTempThreshold );
+        BOOST_CHECK_EQUAL(    1, configuration.alarmRepeatInterval );
+        BOOST_CHECK_EQUAL(    1, configuration.alarmRepeatCount );
     }
     // decode -- unsupported response -- with TLV
     {

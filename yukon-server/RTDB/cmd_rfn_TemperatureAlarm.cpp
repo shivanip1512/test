@@ -117,6 +117,56 @@ RfnCommandResult RfnTemperatureAlarmCommand::decodeResponseHeader( const CtiTime
 }
 
 
+auto RfnTemperatureAlarmCommand::decodeAlarmConfigTlv(const TypeLengthValue &tlv) -> TemperatureConfig
+{
+    TemperatureConfig config;
+
+    // Validate TLV type
+
+    validate( Condition( tlv.type == TlvType_TemperatureAlarmConfiguration, ClientErrors::InvalidData )
+            << "Invalid TLV type (" << CtiNumStr(tlv.type).xhex(2) << ")" );
+
+    // Validate the Alarm State
+
+    boost::optional<std::string> enabledState = mapFind( alarmStateResolver, tlv.value[0] );
+
+    validate( Condition( !! enabledState, ClientErrors::InvalidData )
+            << "Invalid Alarm Enabled State ( " << tlv.value[0] << ")" );
+
+    config.value.alarmEnabled = ( tlv.value[0] == AlarmState_AlarmEnabled );
+
+    config.description += "State: Alarm " + *enabledState + " (" + CtiNumStr(tlv.value[0]) + ")";
+
+    // Decode the rest of the data
+
+    boost::int16_t highThreshold = ( tlv.value[1] << 8 ) | tlv.value[2];
+
+    config.value.alarmHighTempThreshold = highThreshold;  // sign extend as necessary
+
+    config.description += "\nHigh Temperature Threshold: " + CtiNumStr(config.value.alarmHighTempThreshold)
+            + (config.value.alarmHighTempThreshold == 1 ? " degree (" : " degrees (") + CtiNumStr(highThreshold).xhex(4) + ")";
+
+    boost::int16_t lowThreshold = ( tlv.value[3] << 8 ) | tlv.value[4];
+
+    int lowTempThreshold = lowThreshold;    // sign extend as necessary
+
+    config.description += "\nLow Temperature Threshold: " + CtiNumStr(lowTempThreshold) +
+            + (lowTempThreshold == 1 ? " degree (" : " degrees (") + CtiNumStr(lowThreshold).xhex(4) + ")";
+
+    config.value.alarmRepeatInterval = tlv.value[5];
+
+    config.description += "\nAlarm Repeat Interval: " + CtiNumStr(config.value.alarmRepeatInterval)
+            + (config.value.alarmRepeatInterval == 1 ? " minute" : " minutes");
+
+    config.value.alarmRepeatCount = tlv.value[6];
+
+    config.description += "\nAlarm Repeat Count: " + CtiNumStr(config.value.alarmRepeatCount)
+            + (config.value.alarmRepeatCount == 1 ? " count" : " counts");
+
+    return config;
+}
+
+
 ////
 
 
@@ -187,15 +237,28 @@ RfnCommandResult RfnSetTemperatureAlarmConfigurationCommand::decodeCommand( cons
 {
     RfnCommandResult  result = decodeResponseHeader( now, response );
 
-    // We need 4 bytes
+    // We need at least 4 bytes
 
-    validate( Condition( response.size() == 4, ClientErrors::InvalidData )
+    validate( Condition( response.size() >= 4, ClientErrors::InvalidData )
             << "Invalid Response length (" << response.size() << ")" );
 
-    // Validate TLV count is 0
+    //  if no TLVs, just return immediately
+    if( response[3] == 0 )
+    {
+        return result;
+    }
 
-    validate( Condition( response[3] == 0, ClientErrors::InvalidData )
-            << "Invalid TLV count (" << response[3] << ")" );
+    const auto tlvs = getTlvsFromBytes( Bytes( response.begin() + 3 , response.end() ));
+
+    //  otherwise, require just one
+    validate( Condition( tlvs.size() == 1, ClientErrors::InvalidData )
+            << "Invalid TLV count (" << tlvs.size() << ")" );
+
+    const auto config = decodeAlarmConfigTlv(tlvs[0]);
+
+    _configuration = config.value;
+
+    result.description += "\n" + config.description;
 
     return result;
 }
@@ -245,52 +308,16 @@ RfnCommandResult RfnGetTemperatureAlarmConfigurationCommand::decodeCommand( cons
 
     // Decode the TLV
 
-    const std::vector<TypeLengthValue> tlvs = getTlvsFromBytes( Bytes( response.begin() + 3 , response.end() ));
+    const auto tlvs = getTlvsFromBytes( Bytes( response.begin() + 3 , response.end() ));
 
     validate( Condition( tlvs.size() == 1, ClientErrors::InvalidData )
             << "Invalid TLV count (" << tlvs.size() << ")" );
 
-    const TypeLengthValue &tlv = tlvs[0];
+    const auto config = decodeAlarmConfigTlv(tlvs[0]);
 
-    // Validate TLV type
+    _configuration = config.value;
 
-    validate( Condition( tlv.type == TlvType_TemperatureAlarmConfiguration, ClientErrors::InvalidData )
-            << "Invalid TLV type (" << CtiNumStr(tlv.type).xhex(2) << ")" );
-
-    // Validate the Alarm State
-
-    boost::optional<std::string> enabledState = mapFind( alarmStateResolver, tlv.value[0] );
-
-    validate( Condition( !! enabledState, ClientErrors::InvalidData )
-            << "Invalid Alarm Enabled State ( " << tlv.value[0] << ")" );
-
-    _configuration.alarmEnabled = ( tlv.value[0] == AlarmState_AlarmEnabled );
-
-    result.description += "\nState: Alarm " + *enabledState + " (" + CtiNumStr(tlv.value[0]) + ")";
-
-    // Decode the rest of the data
-
-    boost::int16_t highThreshold = ( tlv.value[1] << 8 ) | tlv.value[2];
-
-    _configuration.alarmHighTempThreshold = highThreshold;  // sign extend as necessary
-
-    result.description += "\nHigh Temperature Threshold: " + CtiNumStr(_configuration.alarmHighTempThreshold) + " degree(s) ("
-                       + CtiNumStr(highThreshold).xhex(4) + ")";
-
-    boost::int16_t lowThreshold = ( tlv.value[3] << 8 ) | tlv.value[4];
-
-    int lowTempThreshold = lowThreshold;    // sign extend as necessary
-
-    result.description += "\nLow Temperature Threshold: " + CtiNumStr(lowTempThreshold) + " degree(s) ("
-                       + CtiNumStr(lowThreshold).xhex(4) + ")";
-
-    _configuration.alarmRepeatInterval = tlv.value[5];
-
-    result.description += "\nAlarm Repeat Interval: " + CtiNumStr(_configuration.alarmRepeatInterval) + " minute(s)";
-
-    _configuration.alarmRepeatCount = tlv.value[6];
-
-    result.description += "\nAlarm Repeat Count: " + CtiNumStr(_configuration.alarmRepeatCount) + " count(s)";
+    result.description += "\n" + config.description;
 
     return result;
 }

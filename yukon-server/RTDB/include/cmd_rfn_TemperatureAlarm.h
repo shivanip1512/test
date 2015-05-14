@@ -73,6 +73,14 @@ protected:
     RfnCommandResult decodeResponseHeader( const CtiTime now,
                                            const RfnResponsePayload & response );
 
+    struct TemperatureConfig
+    {
+        AlarmConfiguration value;
+        std::string description;
+    };
+
+    static TemperatureConfig decodeAlarmConfigTlv(const TypeLengthValue &tlv);
+
     bool _isSupported;
 
     AlarmConfiguration  _configuration;
