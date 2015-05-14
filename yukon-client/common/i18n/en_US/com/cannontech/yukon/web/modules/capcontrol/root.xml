@@ -672,13 +672,13 @@
     <entry key="yukon.web.modules.capcontrol.regulator.zone">Parent Zone</entry>
     <entry key="yukon.web.modules.capcontrol.regulator.events.title">Events</entry>
     <entry key="yukon.web.modules.capcontrol.regulator.events.shown">Show for Last: </entry>
-    <entry key="yukon.web.modules.capcontrol.regulator.emptylist">No Events</entry>
     <entry key="yukon.web.modules.capcontrol.regulator.mappings">Attribute Mappings</entry>
     <entry key="yukon.web.modules.capcontrol.regulator.delete.hovertext">Regulator cannot be deleted while it is attached to a zone.</entry>
     <entry key="yukon.web.modules.capcontrol.regulator.error.invalidType">Unable to change device type</entry>
     <entry key="yukon.web.modules.capcontrol.regulator.error.invalidConfig">Configuration is not assignable for selected device type.</entry>
     <entry key="yukon.web.modules.capcontrol.regulator.error.noVoltageY">Voltage Load is required when attached to a zone.</entry>
 
+    <entry key="yukon.web.modules.capcontrol.events.emptylist">No Events</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.eventType.TAP_UP"><![CDATA[Phase <strong>{0}</strong> Tap Up]]></entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.eventType.TAP_DOWN"><![CDATA[Phase <strong>{0}</strong> Tap Down]]></entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.eventType.INCREASE_SETPOINT"><![CDATA[Phase <strong>{0}</strong> Increase Set Point]]></entry>
