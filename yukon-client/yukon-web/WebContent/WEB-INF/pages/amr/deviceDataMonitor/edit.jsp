@@ -12,11 +12,11 @@
 
     <%@ include file="shared.jspf"%>
 
-    <form action="toggleEnabled" method="post" class="js-toggle_enabled_form">
+    <form action="toggleEnabled" method="post" class="js-toggle-enabled-form">
         <cti:csrfToken/>
         <input type="hidden" name="monitorId" value="${monitor.id}"/>
     </form>
-    <form action="delete" method="post" class="js-delete_form">
+    <form action="delete" method="post" class="js-delete-form">
         <cti:csrfToken/>
         <input type="hidden" name="monitorId" value="${monitor.id}"/>
     </form>
@@ -29,10 +29,10 @@
     <cti:displayForPageEditModes modes="CREATE">
         <cti:url value="/amr/deviceDataMonitor/create" var="action"/>
     </cti:displayForPageEditModes>
-    <form:form commandName="monitor" action="${action}" method="post" cssClass="js-monitor_form">
+    <form:form commandName="monitor" action="${action}" method="post" cssClass="js-monitor-form">
         <cti:csrfToken/>
         <cti:displayForPageEditModes modes="EDIT">
-            <form:hidden path="id" id="monitorId" /> <!-- Giving this an id so we can easily grab it in js -->
+            <form:hidden path="id" id="monitor-id" />
             <form:hidden path="enabled" />
         </cti:displayForPageEditModes>
 
@@ -45,8 +45,11 @@
                     <tags:nameValue2 nameKey=".violations">${violationsCount}</tags:nameValue2>
                 </cti:displayForPageEditModes>
                 <tags:nameValue2 nameKey=".monitoring">
-                    <span id="canonicalCalculatingSpan" class="dn"><cti:icon icon="icon-spinner"/><span class="b-label"><i:inline key=".calculating"/></span></span>
-                    <span class="js-device_group_count"><fmt:formatNumber type="number" value="${monitoringCount}" /></span>
+                    <span class="dn js-calc-indicator">
+                        <cti:icon icon="icon-spinner"/>
+                        <span class="b-label"><i:inline key=".calculating"/></span>
+                    </span>
+                    <span class="js-device-group-count"><fmt:formatNumber type="number" value="${monitoringCount}" /></span>
                 </tags:nameValue2>
                 
                 <tags:nameValueGap2 gapHeight="20px"/>
@@ -57,10 +60,8 @@
                 
                 <%-- device group --%>
                 <tags:nameValue2 nameKey=".deviceGroup">
-                    <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" />
-                    <tags:deviceGroupNameSelector fieldName="groupName"
-                        fieldValue="${monitor.groupName}" dataJson="${groupDataJson}"
-                        linkGroupName="true" submitCallback="yukon.DeviceDataMonitor.device_group_changed"/>
+                    <cti:list var="group"><cti:item value="${monitor.groupName}"/></cti:list>
+                    <tags:deviceGroupPicker inputName="groupName" inputValue="${group}" classes="js-monitor-group"/>
                 </tags:nameValue2>
 
                 <cti:displayForPageEditModes modes="EDIT">
@@ -71,14 +72,14 @@
                 </cti:displayForPageEditModes>
                 
                 <tags:nameValue2 excludeColon="true">
-                    <a href="javascript:void(0);" id="refreshViolationsAfterAddingPoint" class="dn" data-add-key="">
+                    <a href="javascript:void(0);" id="refresh-violations" class="dn" data-add-key="">
                         <cti:icon icon="icon-arrow-refresh"/>
                         <span><i:inline key=".refreshViolations"/></span>
                     </a>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
-        <div id="pointUnknownNumberHelp" class="dn" target-title="<i:inline key=".missingPOINT.limitedQuery.help.title" />"><i:inline key=".missingPOINT.limitedQuery.help" /></div>
+        <div id="point-unknown-number-help" class="dn" target-title="<i:inline key=".missingPOINT.limitedQuery.help.title" />"><i:inline key=".missingPOINT.limitedQuery.help" /></div>
         
         <span id="str_na" class="dn"><i:inline key="yukon.web.defaults.na"/></span>
         <tags:sectionContainer2 nameKey="processors" styleClass="${processors_section_class}">
@@ -89,7 +90,7 @@
                 noBlockOnAdd="true" 
                 disableAddButton="${disableAddProcessAtStart}">
             <div>
-            <table class="compact-results-table js-processors_table device_data_processors full-width dashed with-form-controls">
+            <table class="compact-results-table js-processors-table device_data_processors full-width dashed with-form-controls">
                 <thead>
                     <tr>
                         <th><i:inline key=".processors.attribute" /></th>
@@ -99,7 +100,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="js-new_row_model" style="display: none;">
+                    <tr class="js-new-row-model" style="display: none;">
                         <input type="hidden" data-name="processors[0].processorId"/>
                         <input type="hidden" data-name="processors[0].monitorId"/>
                         <input type="hidden" data-name="processors[0].deletion" value="false" class="isDeletionField"/>
@@ -118,13 +119,13 @@
                             </select>
                         </td>
                         <td>
-                            <div class="js-state_group"><input type="hidden" name="" value="" data-name="processors[0].stateGroup"></div>
+                            <div class="js-state-group"><input type="hidden" name="" value="" data-name="processors[0].stateGroup"></div>
                         </td>
                         <td>
                             <div class="js-states"><input type="hidden" name="" value="" data-name="processors[0].state"></div>
                         </td>
                         <td class="actions">
-                            <cti:button nameKey="delete" renderMode="buttonImage" classes="removeBtn fr" icon="icon-cross"/>
+                            <cti:button nameKey="delete" renderMode="buttonImage" classes="js-remove-btn fr" icon="icon-cross"/>
                         </td>
                     </tr>
                     <tags:dynamicTableUndoRow columnSpan="4" nameKey="dynamicTable.undoRow"/>
@@ -156,7 +157,7 @@
                             <c:set var="ctrlName" value="processors[${status.index}].stateGroup"/>
                             <c:choose>
                                 <c:when test="${stateGroups.size() > 1}">
-                                <form:select path="${ctrlName}" cssClass="js-state_group">
+                                <form:select path="${ctrlName}" cssClass="js-state-group">
                                     <c:forEach items="${stateGroups}" var="stateGroup">
                                         <c:set var="selected" value=""/>
                                         <c:if test="${processor.stateGroup == stateGroup}">
@@ -166,7 +167,7 @@
                                     </c:forEach>
                                 </form:select>
                                 </c:when><c:otherwise>
-                                    <div class="js-state_group"><input type="hidden" name="${ctrlName}" value="${processor.stateGroup.liteID}">${processor.stateGroup.stateGroupName}</div>
+                                    <div class="js-state-group"><input type="hidden" name="${ctrlName}" value="${processor.stateGroup.liteID}">${processor.stateGroup.stateGroupName}</div>
                                 </c:otherwise>
                             </c:choose>
                             </td>
@@ -195,15 +196,15 @@
 
     <cti:msg2 var="updateCreateTitleVerb" key=".${mode}.areYouSureTitleVerb"/>
     <cti:msg2 var="updateCreateMsgVerb" key=".${mode}.areYouSureMsgVerb"/>
-    <!-- This okEvent value should be kept equal to yukon.DeviceDataMonitor._update_or_create_event in yukon.monitor.device.data.js -->
-    <c:set var="okEvent" value="e_ddm_update_or_create"/>
     <c:set var="nameKey" value="areYouSureUpdateOrCreateDialog"/>
     <c:set var="options" value="{width: 550}"/>
-    <d:inline id="update_loading_dialog" okEvent="${okEvent}" nameKey="${nameKey}" options="${options}" arguments="${updateCreateTitleVerb}">
+    <d:inline id="update-loading-dialog" okEvent="yukon:ami:ddm:save" 
+            nameKey="${nameKey}" options="${options}" arguments="${updateCreateTitleVerb}">
         <h3 class="error"><i:inline key="yukon.common.warning"/></h3>
         <cti:msg2 key=".areYouSureLoading" arguments="${updateCreateMsgVerb}"/>
     </d:inline>
-    <d:inline id="update_missing_dialog" okEvent="${okEvent}" nameKey="${nameKey}" options="${options}" arguments="${updateCreateTitleVerb}">
+    <d:inline id="update-missing-dialog" okEvent="yukon:ami:ddm:save" 
+            nameKey="${nameKey}" options="${options}" arguments="${updateCreateTitleVerb}">
         <h3 class="error"><i:inline key="yukon.common.warning"/></h3>
         <cti:msg2 key=".areYouSureMissing" arguments="${updateCreateMsgVerb}"/>
     </d:inline>
@@ -211,12 +212,12 @@
     <%-- update / enable_disable / delete / cancel --%>
     <div class="page-action-area">
         <cti:displayForPageEditModes modes="EDIT">
-            <cti:button nameKey="update" classes="js-update_monitor primary action"/>
+            <cti:button nameKey="update" classes="js-save-monitor primary action"/>
             <c:if test="${monitor.enabled}">
-                <cti:button classes="js-toggle_enabled" nameKey="disable"/>
+                <cti:button classes="js-toggle-enabled" nameKey="disable"/>
             </c:if>
             <c:if test="${!monitor.enabled}">
-                <cti:button classes="js-toggle_enabled" nameKey="enable"/>
+                <cti:button classes="js-toggle-enabled" nameKey="enable"/>
             </c:if>
             <cti:button id="deleteButton" nameKey="delete" classes="delete"/>
             <d:confirm nameKey="deleteConfirmation" argument="${monitor.name}" on="#deleteButton"  />
@@ -226,7 +227,7 @@
             <cti:button nameKey="back" href="${viewMonitorUrl}" />
         </cti:displayForPageEditModes>
         <cti:displayForPageEditModes modes="CREATE">
-            <cti:button nameKey="create" classes="js-update_monitor primary action"/>
+            <cti:button nameKey="create" classes="js-save-monitor primary action"/>
             <cti:url var="startMonitorUrl" value="/meter/start"/>
             <cti:button nameKey="cancel" href="${startMonitorUrl}"/>
         </cti:displayForPageEditModes>

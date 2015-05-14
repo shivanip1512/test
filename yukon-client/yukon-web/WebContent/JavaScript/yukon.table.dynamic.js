@@ -19,11 +19,11 @@ $(function () {
             function(event) {
                 callOnDynamicTable(event, 'moveItemDown');
             });
-    $(document).on('click', '.dynamicTableWrapper .removeBtn',
+    $(document).on('click', '.dynamicTableWrapper .js-remove-btn',
             function(event) {
                 callOnDynamicTable(event, 'removeItem');
             });
-    $(document).on('click', '.dynamicTableWrapper .undoRemoveBtn',
+    $(document).on('click', '.dynamicTableWrapper .js-undo-remove-btn',
             function(event) {
                 callOnDynamicTable(event, 'undoRemoveItem');
             });
@@ -308,7 +308,7 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
         if ($(newRow).find("input:first[type='text']")) {
             $(newRow).find("input:first[type='text']").focus();
         }
-        noItemsMessageDiv = $(this.wrapper).find('.noItemsMessage')[0];
+        noItemsMessageDiv = $(this.wrapper).find('.js-no-items-message')[0];
         if (noItemsMessageDiv) {
             noItemsMessageDiv.parentNode.removeChild(noItemsMessageDiv);
         }

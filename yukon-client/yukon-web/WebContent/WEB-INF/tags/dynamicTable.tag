@@ -41,7 +41,7 @@ ${id} = new DynamicTable('${id}', ${fn:length(items)}, ${addItemParameters});
 <div id="${id}_wrapper" class="dynamicTableWrapper">
     <jsp:doBody/>
     <c:if test="${empty items}">
-        <div class="noItemsMessage">${pageScope.noItemsMsg}</div>
+        <div class="js-no-items-message">${pageScope.noItemsMsg}</div>
     </c:if>
     <div class="action-area">
         <cti:button nameKey="add" classes="${blockOnAdd} ${addButtonClass}" icon="icon-add" disabled="${disableAddButton}"/>

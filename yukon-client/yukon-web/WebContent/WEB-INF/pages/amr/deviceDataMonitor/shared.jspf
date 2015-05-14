@@ -5,10 +5,10 @@
 <cti:includeScript link="/JavaScript/yukon.table.dynamic.js"/>
 <cti:includeScript link="/JavaScript/yukon.monitor.device.data.js" />
 
-<c:set var="settings_section_class" value="js-settings_section"/>
-<c:set var="processors_section_class" value="js-processors_section"/>
+<c:set var="settings_section_class" value="js-settings-section"/>
+<c:set var="processors_section_class" value="js-processors-section"/>
 
-<d:inline okEvent="none" nameKey="settings.helpDialog" on=".js-open_settings_help" options="{width: 550}">
+<d:inline okEvent="none" nameKey="settings.helpDialog" on=".js-open-settings-help" options="{width: 550}">
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".deviceGroup"><i:inline key=".deviceGroup.help"/></tags:nameValue2>
         <tags:nameValue2 nameKey=".monitoring"><i:inline key=".deviceGroupCount.help"/></tags:nameValue2>
@@ -19,7 +19,7 @@
     </tags:nameValueContainer2>
 </d:inline>
 
-<d:inline okEvent="none" nameKey="processors.helpDialog" on=".js-open_processors_help" options="{width: 550}">
+<d:inline okEvent="none" nameKey="processors.helpDialog" on=".js-open-processors-help" options="{width: 550}">
     <h3><i:inline key=".processors.helpDialog.findingViolations.title"/></h3>
     <p class="stacked"><i:inline key=".processors.helpDialog.findingViolations.body"/></p>
     <h3><i:inline key=".processors.helpDialog.addingRemoving.title"/></h3>
@@ -37,13 +37,13 @@
 <input type="hidden" class="js-add_points_text" value="${addPoints_i18n_text}"/>
 
 <c:if test="${areViolationsBeingCalculated}">
-    <input type="hidden" class="js-violations_loading"/>
+    <input type="hidden" class="js-violations-loading"/>
 </c:if>
 <c:set var="supportedDevicesInner">
     <span class="js-loading"><cti:icon icon="icon-spinner"/><i:inline key=".calculating"/></span>
-    <span class="js-supported_counts"></span>
+    <span class="js-supported-counts"></span>
     <div class="js-details dn" title="${missing_i18n_text}">
-        <div class="js-missing_list"></div>
+        <div class="js-missing-list"></div>
         <cti:checkRolesAndProperties value="ADD_REMOVE_POINTS">
             <c:if test="${deviceCollection != null}">
                 <cti:url value="/bulk/addPoints/home" var="addPointsLink">
@@ -65,7 +65,7 @@
     </div>
 </c:set>
 <c:set var="supportedDevices">
-    <span class="js-supported_devices_count">
+    <span class="js-supported-devices-count">
         ${supportedDevicesInner}
     </span>
 </c:set>
@@ -98,13 +98,13 @@
         deviceGroup="${violationsDeviceGroup}">${pdfFormat}</cti:simpleReportLinkFromNameTag>)
 </c:set>
 
-<span class="js-violation_report_links dn">&nbsp;${violationReportLinks}</span>
+<span class="js-violation-report-links dn">&nbsp;${violationReportLinks}</span>
 
 <c:set var="violationsCount">
     <c:choose>
         <c:when test="${areViolationsBeingCalculated}">
             <span>
-                <i class="icon icon-spinner js-violations_loading">&nbsp;</i><i:inline key=".calculating"/>
+                <i class="icon icon-spinner js-violations-loading">&nbsp;</i><i:inline key=".calculating"/>
             </span>
         </c:when>
         <c:when test="${not empty violationsCount && violationsCount > 0}">
