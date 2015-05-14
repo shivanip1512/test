@@ -50,6 +50,10 @@ public class ApplianceCategory {
         this.applianceCategoryId = applianceCategoryId;
     }
 
+    /**
+     * This is the applianceCategory.description, 
+     *  similar to the liteApplianceCategory.description field.
+     */
     public String getName() {
         return name;
     }
@@ -110,6 +114,10 @@ public class ApplianceCategory {
         return ApplianceCategoryIcon.getByFilename(getIcon());
     }
 
+    /**
+     * This is the webConfiguration.description, 
+     *  not to be confused with the applianceCategory.description {@link #getName()}
+     */
     public String getDescription() {
         return webConfiguration.getDescription();
     }

@@ -59,7 +59,7 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
 
     private Map<Integer, List<Integer>> cachedRouteIds = new ConcurrentHashMap<>();
     private Map<Integer, EnergyCompany> energyCompanies;
-    private Map<Integer, Integer> ecIdByOperatorId = new HashMap<Integer, Integer>(); //<UserId, EcId>
+    private Map<Integer, Integer> operatorIdToEcId = new HashMap<Integer, Integer>(); //<UserId, EcId>
 
     @Autowired
     public EnergyCompanyDaoImpl(AsyncDynamicDataSource asyncDynamicDataSource){
@@ -77,7 +77,7 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
             public void eventReceived(DatabaseChangeEvent event) {
                 synchronized (EnergyCompanyDaoImpl.this) {
                     energyCompanies = null;
-                    ecIdByOperatorId.clear();
+                    operatorIdToEcId.clear();
                 }
             }
         });
@@ -96,7 +96,7 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
                             }
                         }
 
-                        ecIdByOperatorId.remove(dbChange.getId());
+                        operatorIdToEcId.remove(dbChange.getId());
                     }
                 }
             }
@@ -112,7 +112,7 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
 
     @Override
     public EnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator) {
-        Integer energyCompanyId = ecIdByOperatorId.get(operator.getUserID());
+        Integer energyCompanyId = operatorIdToEcId.get(operator.getUserID());
         if (energyCompanyId == null) { // populate cache
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("SELECT ECOLL.EnergyCompanyId");
@@ -121,7 +121,7 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
     
             try {
                 energyCompanyId = jdbcTemplate.queryForInt(sql);
-                ecIdByOperatorId.put(operator.getUserID(), energyCompanyId);
+                operatorIdToEcId.put(operator.getUserID(), energyCompanyId);
             } catch (EmptyResultDataAccessException e) {
                 throw new EnergyCompanyNotFoundException("No energy company found for user id: " + operator.getUserID(), e);
             }
