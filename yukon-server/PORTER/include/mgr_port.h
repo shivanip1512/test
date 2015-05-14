@@ -8,11 +8,10 @@ namespace Cti {
     class RowReader;
 }
 
-class IM_EX_PRTDB CtiPortManager
+class CtiPortManager
 {
 private:
 
-    CTI_PORTTHREAD_FUNC_FACTORY_PTR     _portThreadFuncFactory;
     CtiSmartMap< CtiPort >      _smartMap;
 
     void RefreshDialableEntries(bool &rowFound, Cti::RowReader& rdr);
@@ -32,10 +31,6 @@ public:
     typedef CtiSmartMap< CtiPort >::ptr_type    ptr_type;
     typedef CtiSmartMap< CtiPort >::spiterator  spiterator;
     typedef CtiSmartMap< CtiPort >::insert_pair insert_pair;
-
-    CtiPortManager(CTI_PORTTHREAD_FUNC_FACTORY_PTR fn);
-
-    virtual ~CtiPortManager();
 
     void RefreshList();
 

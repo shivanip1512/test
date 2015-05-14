@@ -54,6 +54,7 @@ porter.obj \
 portersu.obj \
 portfield.obj \
 portfill.obj \
+mgr_port.obj \
 port_thread_tcp.obj \
 tcp_connection_manager.obj \
 tcp_connection.obj \

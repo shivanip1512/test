@@ -1,14 +1,9 @@
 #pragma once
 
-#include <windows.h>
-#include <iostream>
-
-#include "dsm2.h"
 #include "port_base.h"
 #include "port_dialable.h"
 
-
-class CtiPortDialin : public CtiPortDialable
+class IM_EX_PRTDB CtiPortDialin : public CtiPortDialable
 {
     YukonError_t modemReset(USHORT Trace, BOOL dcdTest = TRUE);
     INT modemSetup(USHORT Trace, BOOL dcdTest = TRUE);

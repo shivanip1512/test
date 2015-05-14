@@ -31,7 +31,6 @@ INCLPATHS+= \
 
 YUKONPORTDLLOBJS=\
 $(PRECOMPILED_OBJ) \
-mgr_port.obj \
 port_base.obj \
 port_dialable.obj \
 port_dialin.obj \

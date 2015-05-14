@@ -4,7 +4,7 @@
 #include "tbl_port_settings.h"
 #include "tbl_port_timing.h"
 
-class CtiPortSerial : public CtiPort
+class IM_EX_PRTDB CtiPortSerial : public CtiPort
 {
     CtiTablePortSettings _tblPortSettings;
     CtiTablePortTimings _tblPortTimings;

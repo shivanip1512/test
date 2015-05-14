@@ -4,7 +4,6 @@
 
 #include "dbaccess.h"
 #include "resolvers.h"
-#include "module_util.h"
 
 #include "port_direct.h"
 #include "port_dialin.h"
@@ -28,32 +27,6 @@ using std::endl;
 using std::vector;
 
 
-BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
-{
-    switch( ul_reason_for_call )
-    {
-        case DLL_PROCESS_ATTACH:
-        {
-            Cti::identifyProject(CompileInfo);
-            break;
-        }
-        case DLL_THREAD_ATTACH:
-        {
-            break;
-        }
-        case DLL_THREAD_DETACH:
-        {
-            break;
-        }
-        case DLL_PROCESS_DETACH:
-        {
-            break;
-        }
-    }
-
-    return TRUE;
-}
-
 inline bool isNotUpdated(CtiPortSPtr &Port, void* d)
 {
     // Return TRUE if it is NOT SET
@@ -76,14 +49,6 @@ void ApplyInvalidateNotUpdated(const long key, CtiPortSPtr Port, void* d)
     {
         Port->setValid(FALSE);   //   NOT NOT NOT Valid
     }
-}
-
-CtiPortManager::CtiPortManager(CTI_PORTTHREAD_FUNC_FACTORY_PTR fn) :
-_portThreadFuncFactory(fn)
-{}
-
-CtiPortManager::~CtiPortManager()
-{
 }
 
 void CtiPortManager::RefreshList()
@@ -229,6 +194,35 @@ CtiPortManager::ptr_type CtiPortManager::getPortById(LONG pid)
     return p;
 }
 
+
+extern void PortThread(void *);
+extern void PortPoolDialoutThread(void *);
+extern void PortDialbackThread(void *);
+
+namespace Cti {
+namespace Porter {
+
+extern void PortRfDaThread(void *);
+extern void PortTcpThread(void *);
+extern void PortUdpThread(void *);
+
+}
+}
+
+CTI_PORTTHREAD_FUNC_PTR PortThreadFactory(int porttype)
+{
+    switch(porttype)
+    {
+        case PortTypeRfDa:          return Cti::Porter::PortRfDaThread;
+        case PortTypeTcp:           return Cti::Porter::PortTcpThread;
+        case PortTypeUdp:           return Cti::Porter::PortUdpThread;
+        case PortTypeLocalDialBack: return PortDialbackThread;
+        case PortTypePoolDialout:   return PortPoolDialoutThread;
+    }
+
+    return PortThread;
+}
+
 void CtiPortManager::RefreshEntries(bool &rowFound, Cti::RowReader& rdr)
 {
     LONG     portID = 0;
@@ -285,10 +279,7 @@ void CtiPortManager::RefreshEntries(bool &rowFound, Cti::RowReader& rdr)
             {
                 pSp->DecodeDatabaseReader(rdr);         // Fills himself in from the reader
 
-                if(_portThreadFuncFactory)
-                {
-                    pSp->setPortThreadFunc( (*_portThreadFuncFactory)( pSp->getType() ) );  // Make the thing know who runs it.
-                }
+                pSp->setPortThreadFunc( PortThreadFactory(pSp->getType()) );  // Make the thing know who runs it.
 
                 pSp->setUpdatedFlag();              // Mark it updated
                 pSp->setValid();

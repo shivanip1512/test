@@ -5,7 +5,7 @@
 #include "tbl_port_dialup.h"
 
 
-class CtiPortDialable : private boost::noncopyable
+class IM_EX_PRTDB CtiPortDialable : private boost::noncopyable
 {
     BOOL                _shouldDisconnect;
     std::string         _dialedUpNumber;

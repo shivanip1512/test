@@ -1,22 +1,5 @@
 #include "precompiled.h"
 
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   port_dialout
-*
-* Date:   9/17/2002
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2005/12/20 17:20:28 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-
 #include "dsm2.h"
 #include "logger.h"
 #include "port_dialout.h"
@@ -25,10 +8,6 @@ using std::iostream;
 using std::pair;
 using std::endl;
 using std::string;
-
-CtiPortDialout::CtiPortDialout()
-{
-}
 
 YukonError_t CtiPortDialout::connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace)
 {

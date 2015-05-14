@@ -94,7 +94,6 @@ static int MyAllocHook(int nAllocType, void *pvData,
 
 
 
-CTI_PORTTHREAD_FUNC_PTR PortThreadFactory(int);
 void DisplayTraceList( CtiPortSPtr Port, list< CtiMessage* > &traceList, bool consume);
 void LoadPorterGlobals(void);
 INT  RefreshPorterRTDB(const CtiDBChangeMsg *ptr = 0);
@@ -117,7 +116,7 @@ DLLIMPORT extern BOOL PorterQuit;
 extern INT RunningInConsole;              // From portmain.cpp
 
 // Some Global Manager types to allow us some RTDB stuff.
-CtiPortManager     PortManager(PortThreadFactory);
+CtiPortManager     PortManager;
 CtiDeviceManager   DeviceManager;
 CtiPointManager    PorterPointManager;
 CtiRouteManager    RouteManager;
@@ -479,14 +478,14 @@ static char* metric_names[] = {
 void applyDeviceQueueReport(const long unusedid, CtiDeviceSPtr RemoteDevice, void *lprtid)
 {
     LONG PortID = (LONG)lprtid;
-    ULONG QueWorkCnt = 0L;
     ULONG QueEntCnt = 0L;
     ULONG AQueEntCnt = 0L;
 
     if(lprtid == NULL || PortID == RemoteDevice->getPortID())
     {
-        QueWorkCnt = RemoteDevice->queuedWorkCount();
-        CtiTime ent(RemoteDevice->getExclusion().getEvaluateNextAt());
+        const auto QueWorkCnt    = RemoteDevice->queuedWorkCount();
+        const auto ent           = RemoteDevice->getExclusion().getEvaluateNextAt();
+        const auto hasExclusions = RemoteDevice->getExclusion().hasExclusions();
 
         switch( RemoteDevice->getType() )
         {
@@ -505,7 +504,12 @@ void applyDeviceQueueReport(const long unusedid, CtiDeviceSPtr RemoteDevice, voi
 
                         if( QueWorkCnt )
                         {
-                            logmsg << endl << QueWorkCnt <<" queued work elements. Evaluate next at "<< ent <<".";
+                            logmsg << endl << QueWorkCnt <<" queued work elements.";
+
+                            if( hasExclusions )
+                            {
+                                logmsg << " Evaluate next at "<< ent <<".";
+                            }
                         }
 
                         logmsg << endl
@@ -538,9 +542,7 @@ void applyDeviceQueueReport(const long unusedid, CtiDeviceSPtr RemoteDevice, voi
                 using Cti::Devices::Ccu721Device;
                 Cti::Devices::Ccu721SPtr ccu = boost::static_pointer_cast<Ccu721Device>(RemoteDevice);
 
-                //  don't lock dout while we do this - the CCU locks internally, and we want to avoid acquiring any muxes out of order
-                string queue_report = ccu->queueReport();
-
+                const auto queue_report = ccu->queueReport();
 
                 CTILOG_INFO(dout, RemoteDevice->getName() <<" queue report: "<<
                         endl << queue_report);
@@ -553,9 +555,16 @@ void applyDeviceQueueReport(const long unusedid, CtiDeviceSPtr RemoteDevice, voi
                 if(QueWorkCnt > 0)
                 {
                     Cti::StreamBuffer output;
-                    output << QueWorkCnt <<" queued commands. Evaluate next at "<< ent <<". Transmitter: "<< RemoteDevice->getName();
+                    output << QueWorkCnt <<" queued commands. ";
 
-                    if( ent < ent.now() )
+                    if( hasExclusions )
+                    {
+                        output << "Evaluate next at "<< ent <<". ";
+                    }
+
+                    output << "Transmitter: "<< RemoteDevice->getName();
+
+                    if( hasExclusions && (ent < ent.now()) )
                     {
                         output <<". PAST DUE: "<< (ent.now().seconds() - ent.seconds()) <<" seconds.";
                     }
@@ -1617,45 +1626,6 @@ void DisplayTraceList( CtiPortSPtr Port, list< CtiMessage* > &traceList, bool co
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
-}
-
-
-CTI_PORTTHREAD_FUNC_PTR PortThreadFactory(int porttype)
-{
-    extern void PortPoolDialoutThread(void *pid);
-
-    CTI_PORTTHREAD_FUNC_PTR fptr = PortThread;
-
-    switch(porttype)
-    {
-    case PortTypeRfDa:
-        {
-            fptr = Cti::Porter::PortRfDaThread;
-            break;
-        }
-    case PortTypeTcp:
-        {
-            fptr = Cti::Porter::PortTcpThread;
-            break;
-        }
-    case PortTypeUdp:
-        {
-            fptr = Cti::Porter::PortUdpThread;
-            break;
-        }
-    case PortTypeLocalDialBack:
-        {
-            fptr = PortDialbackThread;
-            break;
-        }
-    case PortTypePoolDialout:
-        {
-            fptr = PortPoolDialoutThread;
-            break;
-        }
-    }
-
-    return fptr;
 }
 
 string GetDeviceName( ULONG id )

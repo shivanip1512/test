@@ -1,7 +1,5 @@
 #include "precompiled.h"
 
-#include <iostream>
-
 #include "cparms.h"
 #include "port_base.h"
 #include "prot_emetcon.h"
@@ -14,6 +12,8 @@
 
 #include "numstr.h"
 
+#include "module_util.h"
+
 #define SCREEN_WIDTH    80
 
 #define DEBUG_INPUT_FROM_SCADA 0x00000010
@@ -21,6 +21,32 @@
 #define DEFAULT_QUEUE_GRIPE_POINT 50
 
 using namespace std;
+
+BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
+{
+    switch( ul_reason_for_call )
+    {
+        case DLL_PROCESS_ATTACH:
+        {
+            Cti::identifyProject(CompileInfo);
+            break;
+        }
+        case DLL_THREAD_ATTACH:
+        {
+            break;
+        }
+        case DLL_THREAD_DETACH:
+        {
+            break;
+        }
+        case DLL_PROCESS_DETACH:
+        {
+            break;
+        }
+    }
+
+    return TRUE;
+}
 
 YukonError_t CtiPort::traceIn(CtiXfer& Xfer, list< CtiMessage* > &traceList, CtiDeviceSPtr  Dev, YukonError_t ErrorCode) const
 {
