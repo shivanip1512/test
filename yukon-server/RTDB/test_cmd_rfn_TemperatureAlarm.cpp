@@ -82,6 +82,26 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration )
 
         BOOST_CHECK_EQUAL( true, command.isSupported() );
     }
+    // decode -- full description response
+    {
+        const std::vector< unsigned char > response {
+            0x89, 0x00, 0x00, 0x01, 0x01, 0x07, 0x01, 0x00, 0x2d, 0x00, 0x23, 0x05, 0x03 };
+
+        try
+        {
+            RfnCommandResult rcv = command.decodeCommand( execute_time, response );
+
+            BOOST_FAIL("Did not throw");
+
+            BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)" );
+
+            BOOST_CHECK_EQUAL( true, command.isSupported() );
+        }
+        catch( RfnCommand::CommandException &ex )
+        {
+
+        }
+    }
     // decode -- failure response
     {
         const std::vector< unsigned char > response = list_of
