@@ -246,6 +246,8 @@ void CtiLoadManager::controlLoop()
                 currentDateTime = CtiTime();
                 LONG secondsFromBeginningOfDay = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
 
+                dout->poke();  //  called 4x/second (see sleep at top of loop)
+
                 if( Cti::isTimeToReportMemory(currentDateTime) )
                 {
                     CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));

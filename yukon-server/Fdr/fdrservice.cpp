@@ -255,6 +255,8 @@ void CtiFDRService::Run( )
 
         do
         {
+            dout->poke();  //  called every 10 seconds (see while() condition)
+
             if( Cti::isTimeToReportMemory(CtiTime::now()) )
             {
                 CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));

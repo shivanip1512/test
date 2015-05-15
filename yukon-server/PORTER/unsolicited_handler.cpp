@@ -1117,6 +1117,8 @@ void UnsolicitedHandler::trace()
 {
     if( _traceList.empty() )
     {
+        _portLog->poke();  //  called 2x-10x/second, depending if _activeDevices is empty
+
         return;
     }
 

@@ -76,6 +76,8 @@ void PortPoolDialoutThread(void *pid)
             continue;
         }
 
+        ParentPort->getPortLog()->poke();  //  called 2x/second if idle (see WaitForSingleObject below)
+
         if( status = ParentPort->readQueue( &ReadLength, (PPVOID) &OutMessage, DCWW_WAIT, &ReadPriority, &QueEntries) )
         {
             /*

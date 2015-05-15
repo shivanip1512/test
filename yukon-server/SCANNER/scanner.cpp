@@ -496,6 +496,8 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     {
         loop_timer.reset();
 
+        dout->poke();  //  called 2x/second  (see Sleep at bottom of loop)
+
         if( Cti::isTimeToReportMemory(TimeNow) )
         {
             CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));

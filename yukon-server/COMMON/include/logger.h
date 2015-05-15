@@ -61,6 +61,7 @@ public:
 
     void formatAndForceLog (Level level, StreamBufferSink& logStream, const char* file, const char* func, int line);
     bool isLevelEnable     (Level level) const;
+    void poke();
 };
 
 typedef boost::shared_ptr<Logger> LoggerPtr;

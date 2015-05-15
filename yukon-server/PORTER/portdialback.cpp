@@ -76,6 +76,10 @@ void PortDialbackThread(void *pid)
                     {
                         CTILOG_INFO(dout, Port->getName() <<" - Waiting for DCD");
                     }
+                    else
+                    {
+                        Port->getPortLog()->poke();  //  called 2x/second
+                    }
 
                     if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 500L) )
                     {

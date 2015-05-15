@@ -56,12 +56,17 @@ void TruncatingConsoleAppender::setInterval(const Cti::Timing::Chrono interval)
     _interval = interval.milliseconds() * 1000;
 }
 
+extern const log4cxx::spi::LoggingEventPtr PokeEvent;
 
 void TruncatingConsoleAppender::subAppend(const log4cxx::spi::LoggingEventPtr& event, log4cxx::helpers::Pool& p)
 {
-    if( event->getTimeStamp() > _intervalEnd )
+    const auto Now = apr_time_now();
+    const auto eventTimestamp = (event != PokeEvent) ? event->getTimeStamp() : Now;
+
+    if( eventTimestamp > _intervalEnd )
     {
-        _intervalEnd = std::max(apr_time_now(),  event->getTimeStamp() + _interval);
+        _intervalEnd = Now + _interval;
+
         _currentBurst = 0;
 
         for each(const log4cxx::spi::LoggingEventPtr &event in _burstBuffer)
@@ -72,25 +77,28 @@ void TruncatingConsoleAppender::subAppend(const log4cxx::spi::LoggingEventPtr& e
         _burstBuffer.clear();
     }
 
-    if( _currentBurst < _maxBurstSize )
+    if( event != PokeEvent )
     {
-        WriterAppender::subAppend(event, p);
-
-        _currentBurst += 1 + boost::range::count(event->getMessage(), '\n');
-
-        if( _currentBurst >= _maxBurstSize )
+        if( _currentBurst < _maxBurstSize )
         {
-            StreamBuffer sb;
+            WriterAppender::subAppend(event, p);
 
-            sb << "Console output truncated, max burst size of " << _maxBurstSize << " reached.";
+            _currentBurst += 1 + boost::range::count(event->getMessage(), '\n');
 
-            log4cxx::helpers::LogLog::warn(toLogStr(sb.extractToString()));
+            if( _currentBurst >= _maxBurstSize )
+            {
+                StreamBuffer sb;
+
+                sb << "Console output truncated, max burst size of " << _maxBurstSize << " reached.";
+
+                log4cxx::helpers::LogLog::warn(toLogStr(sb.extractToString()));
+            }
         }
-    }
-    else
-    {
-        //  circular buffer, only retains BurstBufferLength elements
-        _burstBuffer.push_back(event);
+        else
+        {
+            //  circular buffer, only retains BurstBufferLength elements
+            _burstBuffer.push_back(event);
+        }
     }
 }
 

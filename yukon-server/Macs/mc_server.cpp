@@ -100,6 +100,8 @@ void CtiMCServer::run()
             /* Main Loop */
             while(true)
             {
+                dout->poke();  //  called roughly each minute (see _main_queue.getQueue() below)
+
                 if( Cti::isTimeToReportMemory(CtiTime::now()) )
                 {
                     CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));

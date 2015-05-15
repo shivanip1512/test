@@ -156,8 +156,8 @@ void Logger::formatAndForceLog(Level level, StreamBufferSink& logStream, const c
                 return;
             }
 
-            // the logManager as just been started!
-            // log all saved event before logging our own event
+            // the logManager has just been started!
+            // log all saved events before logging the new event
             log4cxx::helpers::Pool pool;
             for each(const LogEvent& event in _preBufferedLogEvents)
             {
@@ -169,13 +169,31 @@ void Logger::formatAndForceLog(Level level, StreamBufferSink& logStream, const c
         }
     }
 
-    log4cxx::helpers::Pool pool;
-    _logger->_logger->callAppenders(event, pool);
+    _logger->_logger->callAppenders(event, log4cxx::helpers::Pool{});
 }
 
 bool Logger::isLevelEnable(Level level) const
 {
     return _logger->_logger->isEnabledFor(getLogLevel(level));
+}
+
+const log4cxx::LogString NoLogger, PokeEventName = LOG4CXX_STR("Poke Event");
+
+extern const log4cxx::spi::LoggingEventPtr PokeEvent =
+        new log4cxx::spi::LoggingEvent(
+                NoLogger,
+                log4cxx::Level::getFatal(),
+                PokeEventName,
+                log4cxx::spi::LocationInfo{});
+
+void Logger::poke()
+{
+    if( _ready )
+    {
+        _logger->_logger->callAppenders(
+                PokeEvent,  //  poke event is handled as a refresh by our custom appenders (LogFileAppender, TruncatingConsoleAppender)
+                log4cxx::helpers::Pool{});
+    }
 }
 
 }

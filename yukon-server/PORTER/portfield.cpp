@@ -67,7 +67,7 @@ void PortThread(void *pid)
 {
     YukonError_t   status;
 
-    CtiTime        nowTime, nextExpireTime;
+    CtiTime        nowTime, nextExpireTime, nextLogPoke;
     YukonError_t   i;
     INMESS         InMessage;
     OUTMESS        *OutMessage = 0;
@@ -127,6 +127,12 @@ void PortThread(void *pid)
                 {
                     CTILOG_INFO(dout, "Port "<< Port->getName() <<" purged "<< entries <<" expired OM's");
                 }
+            }
+            if( nowTime > nextLogPoke )
+            {
+                nextLogPoke = nowTime + 2;
+
+                Port->getPortLog()->poke();
             }
 
             if( Port->isInhibited() )

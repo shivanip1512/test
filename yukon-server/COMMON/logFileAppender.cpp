@@ -245,17 +245,23 @@ bool LogFileAppender::tryResumeWriting(const long long timestamp, log4cxx::helpe
     return false;
 }
 
+extern const log4cxx::spi::LoggingEventPtr PokeEvent;
+
 void LogFileAppender::subAppend(
         const log4cxx::spi::LoggingEventPtr& event,
         log4cxx::helpers::Pool& p)
 {
     log4cxx::LogString msg;
-    layout->format(msg, event, p);
+
+    if( event != PokeEvent )
+    {
+        layout->format(msg, event, p);
+    }
+
+    const long long timestamp = event != PokeEvent ? event->getTimeStamp() : apr_time_now();
 
     {
         log4cxx::helpers::synchronized sync(mutex);
-
-        const long long timestamp = event->getTimeStamp();
 
         if( ! rollover(timestamp, p) )
         {
@@ -284,7 +290,10 @@ void LogFileAppender::subAppend(
 
         if( _writer != NULL )
         {
-            _writer->write(msg, p);
+            if( event != PokeEvent )
+            {
+                _writer->write(msg, p);
+            }
             if( getImmediateFlush() || timestamp > _nextFlush )
             {
                 _writer->flush(p);

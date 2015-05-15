@@ -387,6 +387,8 @@ void CtiCalcLogicService::Run( )
                 {
                     const CtiTime Now;
 
+                    dout->poke();  //  called around once/second (see Sleep below)
+
                     if( Cti::isTimeToReportMemory(Now) )
                     {
                         CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));

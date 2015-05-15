@@ -476,6 +476,8 @@ void CtiCapController::controlLoop()
                 const CtiTime Now;
                 unsigned long secondsFrom1970 = Now.seconds();
 
+                dout->poke();  //  called around 2x/second (see boost::this_thread::sleep at bottom of loop)
+
                 if( Cti::isTimeToReportMemory(Now) )
                 {
                     CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));

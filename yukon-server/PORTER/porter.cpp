@@ -937,6 +937,8 @@ INT PorterMainFunction (INT argc, CHAR **argv)
             PorterPointManager.processExpired();
         }
 
+        dout->poke();  //  called 4x/second (see sleep at bottom of loop)
+
         if( Cti::isTimeToReportMemory(Now) )
         {
             CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
