@@ -14,6 +14,7 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/trim.hpp>
+#include <boost/algorithm/string/case_conv.hpp>
 
 using namespace std;
 
@@ -3976,14 +3977,31 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
             }
         }
 
+        // cbc-8000 local control enable and disable
+        if ( ! (token = matchRegex(CmdStr, "(var|temp|time) (en|dis)able")).empty() )
+        {
+            CtiTokenizer tok( token );
+
+            _cmd[ "local_control_type" ]  = tok();      // (var|temp|time)
+            _cmd[ "local_control_state" ] = tok();      // (en|dis)able
+
+            _actionItems.push_back( boost::algorithm::to_upper_copy( token ) );
+        }
+        // if i knew for sure that the cbc-8000 code was the only device to use the following block
+        //  i could fold it into the preceding one.  As it is, i will add the keys here so the device can
+        //  be quasi-agnostic as to the type of local control
         if(!(token = matchRegex(CmdStr, "ovuv[ =]+((ena(ble)?)|(dis(able)?))")).empty())
         {
             int   op = 0;
             CHAR  op_name[20];
 
+            _cmd[ "local_control_type" ]  = CtiParseValue( "ovuv" );
+            _cmd[ "local_control_state" ] = CtiParseValue( "disable" );
+
             if(containsString(token, "ena"))
             {
                 op = 1;
+                _cmd[ "local_control_state" ] = CtiParseValue( "enable" );
                 _snprintf(op_name, sizeof(op_name), "ENABLE");
             }
             else if(containsString(token, "dis"))

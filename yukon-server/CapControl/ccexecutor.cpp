@@ -730,11 +730,7 @@ void CtiCCCommandExecutor::enableOvUv(long bankId,
         return;
     }
 
-    bool cbc702 = false;
-    if (stringContainsIgnoreCase( capBank->getControlDeviceType(),"CBC 702"))
-    {
-        cbc702 = true;
-    }
+    const bool cbc702 = stringContainsIgnoreCase( capBank->getControlDeviceType(), "CBC 702" );
 
     //Logging Action
     string text = string("Cap Bank OV/UV Enabled");
@@ -797,8 +793,6 @@ void CtiCCCommandExecutor::enableOvUv(long bankId,
     }
     reqMsg->setSOE(5);
     requests.push_back(reqMsg);
-
-    return;
 }
 
 
@@ -828,11 +822,7 @@ void CtiCCCommandExecutor::disableOvUv(long bankId,
         return;
     }
 
-    bool cbc702 = false;
-    if (stringContainsIgnoreCase( capBank->getControlDeviceType(),"CBC 702"))
-    {
-        cbc702 = true;
-    }
+    const bool cbc702 = stringContainsIgnoreCase( capBank->getControlDeviceType(), "CBC 702" );
 
     //Logging Action
     string text = string("Cap Bank OV/UV Disabled");
@@ -896,8 +886,6 @@ void CtiCCCommandExecutor::disableOvUv(long bankId,
 
     reqMsg->setSOE(5);
     requests.push_back(reqMsg);
-
-    return;
 }
 
 void CtiCCCommandExecutor::enableTempControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, std::vector<CtiRequestMsg*>& requests)
@@ -921,11 +909,7 @@ void CtiCCCommandExecutor::enableTempControl(long bankId,std::vector<CtiSignalMs
         return;
     }
 
-    if (!stringContainsIgnoreCase( capBank->getControlDeviceType(),"CBC 702"))
-    {
-        CTILOG_WARN(dout, commandName << " command rejected, CBC must be a 702x. ");
-        return;
-    }
+    const bool cbc702 = stringContainsIgnoreCase( capBank->getControlDeviceType(), "CBC 702" );
 
     //Logging Action
     string text = string("Cap Bank Temp Control Enabled");
@@ -954,47 +938,54 @@ void CtiCCCommandExecutor::enableTempControl(long bankId,std::vector<CtiSignalMs
     events.push_back(EventLogEntry(0, capBank->getControlPointId(), spAreaId, areaId, stationId, subId, feederId, capControlEnableOvUv, seqId, 1, text, _command->getUser()));
 
     //Actual Command Work
-    //Compute new value.
-    CtiCCTwoWayPoints & points = capBank->getTwoWayPoints();
-
-    /* Hardware Code
-    struct
-    {
-        INT8U TimedCtrlEn :1;    //LSB
-        INT8U SetONOFFCtrl: 1;
-        INT8U SaturdayCtrlEn : 1;
-        INT8U SundayCtrlEn  : 1;
-        INT8U HolidayEn:1;
-        INT8U unused: 2;
-        INT8U TempCtrlEn : 1;
-    }TimeTempFlags;
-    */
-
-    int offsetOne = 26;
-    unsigned char seasonOneValue = (unsigned char)points.getPointValueByAttribute(PointAttribute::TimeTempSeasonOne);
-
-    //Changing the MSB to 1
-    seasonOneValue |= 0x80;
-
-    //Send point update message with new value.
     CtiRequestMsg* reqMsg = NULL;
-    string commandStringOne = "putvalue analog " + CtiNumStr(offsetOne).toString() + " " + CtiNumStr((int)seasonOneValue).toString();
-    reqMsg = createPorterRequestMsg(controllerId,commandStringOne);
+
+    if ( cbc702 )
+    {
+        //Compute new value.
+        CtiCCTwoWayPoints & points = capBank->getTwoWayPoints();
+
+        /* Hardware Code
+        struct
+        {
+            INT8U TimedCtrlEn :1;    //LSB
+            INT8U SetONOFFCtrl: 1;
+            INT8U SaturdayCtrlEn : 1;
+            INT8U SundayCtrlEn  : 1;
+            INT8U HolidayEn:1;
+            INT8U unused: 2;
+            INT8U TempCtrlEn : 1;
+        }TimeTempFlags;
+        */
+
+        int offsetOne = 26;
+        unsigned char seasonOneValue = (unsigned char)points.getPointValueByAttribute(PointAttribute::TimeTempSeasonOne);
+
+        //Changing the MSB to 1
+        seasonOneValue |= 0x80;
+
+        //Send point update message with new value.
+        string commandStringOne = "putvalue analog " + CtiNumStr(offsetOne).toString() + " " + CtiNumStr((int)seasonOneValue).toString();
+        reqMsg = createPorterRequestMsg(controllerId,commandStringOne);
+        reqMsg->setSOE(5);
+        requests.push_back(reqMsg);
+
+        int offsetTwo = 42;
+        unsigned char seasonTwoValue = points.getPointValueByAttribute(PointAttribute::TimeTempSeasonTwo);
+
+        //Changing the MSB to 1
+        seasonTwoValue |= 0x80;
+
+        string commandStringTwo = "putvalue analog " + CtiNumStr(offsetTwo).toString() + " " + CtiNumStr((int)seasonTwoValue).toString();
+        reqMsg = createPorterRequestMsg(controllerId,commandStringTwo);
+    }
+    else
+    {
+        reqMsg = createPorterRequestMsg(controllerId,"putconfig temp enable");
+    }
+
     reqMsg->setSOE(5);
     requests.push_back(reqMsg);
-
-    int offsetTwo = 42;
-    unsigned char seasonTwoValue = points.getPointValueByAttribute(PointAttribute::TimeTempSeasonTwo);
-
-    //Changing the MSB to 1
-    seasonTwoValue |= 0x80;
-
-    string commandStringTwo = "putvalue analog " + CtiNumStr(offsetTwo).toString() + " " + CtiNumStr((int)seasonTwoValue).toString();
-    reqMsg = createPorterRequestMsg(controllerId,commandStringTwo);
-    reqMsg->setSOE(5);
-    requests.push_back(reqMsg);
-
-        return;
 }
 
 void CtiCCCommandExecutor::disableTempControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, std::vector<CtiRequestMsg*>& requests)
@@ -1018,11 +1009,7 @@ void CtiCCCommandExecutor::disableTempControl(long bankId,std::vector<CtiSignalM
         return;
     }
 
-    if (!stringContainsIgnoreCase( capBank->getControlDeviceType(),"CBC 702"))
-    {
-        CTILOG_WARN(dout, commandName << " command rejected, CBC must be a 702x. ");
-        return;
-    }
+    const bool cbc702 = stringContainsIgnoreCase( capBank->getControlDeviceType(), "CBC 702" );
 
     //Logging Action
     string text = string("Cap Bank Temp Control Disabled");
@@ -1051,34 +1038,41 @@ void CtiCCCommandExecutor::disableTempControl(long bankId,std::vector<CtiSignalM
     events.push_back(EventLogEntry(0, capBank->getControlPointId(), spAreaId, areaId, stationId, subId, feederId, capControlEnableOvUv, seqId, 1, text, _command->getUser()));
 
     //Actual Command Work
-    //Compute new value.
-    CtiCCTwoWayPoints & points = capBank->getTwoWayPoints();
-
-    int offsetOne = 26;
-    unsigned char seasonOneValue = (unsigned char)points.getPointValueByAttribute(PointAttribute::TimeTempSeasonOne);
-
-    //Zeroing the MSB
-    seasonOneValue &= 0x7f;
-
-    //Send point update message with new value.
     CtiRequestMsg* reqMsg = NULL;
-    string commandStringOne = "putvalue analog " + CtiNumStr(offsetOne).toString() + " " + CtiNumStr((int)seasonOneValue).toString();
-    reqMsg = createPorterRequestMsg(controllerId,commandStringOne);
+
+    if ( cbc702 )
+    {
+        //Compute new value.
+        CtiCCTwoWayPoints & points = capBank->getTwoWayPoints();
+
+        int offsetOne = 26;
+        unsigned char seasonOneValue = (unsigned char)points.getPointValueByAttribute(PointAttribute::TimeTempSeasonOne);
+
+        //Zeroing the MSB
+        seasonOneValue &= 0x7f;
+
+        //Send point update message with new value.
+        string commandStringOne = "putvalue analog " + CtiNumStr(offsetOne).toString() + " " + CtiNumStr((int)seasonOneValue).toString();
+        reqMsg = createPorterRequestMsg(controllerId,commandStringOne);
+        reqMsg->setSOE(5);
+        requests.push_back(reqMsg);
+
+        int offsetTwo = 42;
+        unsigned char seasonTwoValue = points.getPointValueByAttribute(PointAttribute::TimeTempSeasonTwo);
+
+        //Zeroing the MSB
+        seasonTwoValue &= 0x7f;
+
+        string commandStringTwo = "putvalue analog " + CtiNumStr(offsetTwo).toString() + " " + CtiNumStr((int)seasonTwoValue).toString();
+        reqMsg = createPorterRequestMsg(controllerId,commandStringTwo);
+    }
+    else
+    {
+        reqMsg = createPorterRequestMsg(controllerId,"putconfig temp disable");
+    }
+
     reqMsg->setSOE(5);
     requests.push_back(reqMsg);
-
-    int offsetTwo = 42;
-    unsigned char seasonTwoValue = points.getPointValueByAttribute(PointAttribute::TimeTempSeasonTwo);
-
-    //Zeroing the MSB
-    seasonTwoValue &= 0x7f;
-
-    string commandStringTwo = "putvalue analog " + CtiNumStr(offsetTwo).toString() + " " + CtiNumStr((int)seasonTwoValue).toString();
-    reqMsg = createPorterRequestMsg(controllerId,commandStringTwo);
-    reqMsg->setSOE(5);
-    requests.push_back(reqMsg);
-
-    return;
 }
 
 void CtiCCCommandExecutor::enableVarControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, std::vector<CtiRequestMsg*>& requests)
@@ -1102,11 +1096,7 @@ void CtiCCCommandExecutor::enableVarControl(long bankId,std::vector<CtiSignalMsg
         return;
     }
 
-    if (!stringContainsIgnoreCase( capBank->getControlDeviceType(),"CBC 702"))
-    {
-        CTILOG_WARN(dout, commandName << " command rejected, CBC must be a 702x. ");
-        return;
-    }
+    const bool cbc702 = stringContainsIgnoreCase( capBank->getControlDeviceType(), "CBC 702" );
 
     //Logging Action
     string text = string("Cap Bank Var Control Enabled");
@@ -1135,33 +1125,40 @@ void CtiCCCommandExecutor::enableVarControl(long bankId,std::vector<CtiSignalMsg
     events.push_back(EventLogEntry(0, capBank->getControlPointId(), spAreaId, areaId, stationId, subId, feederId, capControlEnableOvUv, seqId, 1, text, _command->getUser()));
 
     //Actual Command Work
-    //Compute new value.
-    CtiCCTwoWayPoints & points = capBank->getTwoWayPoints();
-
-    int offset = 68;
-    unsigned char varValue = (unsigned char)points.getPointValueByAttribute(PointAttribute::VarControl);
-
-    /* Hardware Code
-        struct
-        {
-            INT8U EnableVARControl:1;        //LSB
-            INT8U SamplingMethod:1;
-            INT8U VARAlarmEnable:1;
-            INT8U unused:5;
-        }VARControl;
-    */
-
-    //Changing the LSB to 1
-    varValue |= 0x01;
-
-    //Send point update message with new value.
     CtiRequestMsg* reqMsg = NULL;
-    string commandString = "putvalue analog " + CtiNumStr(offset).toString() + " " + CtiNumStr((int)varValue).toString();
-    reqMsg = createPorterRequestMsg(controllerId,commandString);
+
+    if ( cbc702 )
+    {
+        //Compute new value.
+        CtiCCTwoWayPoints & points = capBank->getTwoWayPoints();
+
+        int offset = 68;
+        unsigned char varValue = (unsigned char)points.getPointValueByAttribute(PointAttribute::VarControl);
+
+        /* Hardware Code
+            struct
+            {
+                INT8U EnableVARControl:1;        //LSB
+                INT8U SamplingMethod:1;
+                INT8U VARAlarmEnable:1;
+                INT8U unused:5;
+            }VARControl;
+        */
+
+        //Changing the LSB to 1
+        varValue |= 0x01;
+
+        //Send point update message with new value.
+        string commandString = "putvalue analog " + CtiNumStr(offset).toString() + " " + CtiNumStr((int)varValue).toString();
+        reqMsg = createPorterRequestMsg(controllerId,commandString);
+    }
+    else
+    {
+        reqMsg = createPorterRequestMsg(controllerId,"putconfig var enable");
+    }
+
     reqMsg->setSOE(5);
     requests.push_back(reqMsg);
-
-    return;
 }
 
 void CtiCCCommandExecutor::disableVarControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, std::vector<CtiRequestMsg*>& requests)
@@ -1185,11 +1182,7 @@ void CtiCCCommandExecutor::disableVarControl(long bankId,std::vector<CtiSignalMs
         return;
     }
 
-    if (!stringContainsIgnoreCase( capBank->getControlDeviceType(),"CBC 702"))
-    {
-        CTILOG_WARN(dout, commandName << " command rejected, CBC must be a 702x. ");
-        return;
-    }
+    const bool cbc702 = stringContainsIgnoreCase( capBank->getControlDeviceType(), "CBC 702" );
 
     //Logging Action
     string text = string("Cap Bank Var Control Disabled");
@@ -1218,33 +1211,40 @@ void CtiCCCommandExecutor::disableVarControl(long bankId,std::vector<CtiSignalMs
     events.push_back(EventLogEntry(0, capBank->getControlPointId(), spAreaId, areaId, stationId, subId, feederId, capControlEnableOvUv, seqId, 1, text, _command->getUser()));
 
     //Actual Command Work
-    //Compute new value.
-    CtiCCTwoWayPoints & points = capBank->getTwoWayPoints();
-
-    int offset = 68;
-    unsigned char varValue = (unsigned char)points.getPointValueByAttribute(PointAttribute::VarControl);
-
-    /* Hardware Code
-        struct
-        {
-            INT8U EnableVARControl:1;        //LSB
-            INT8U SamplingMethod:1;
-            INT8U VARAlarmEnable:1;
-            INT8U unused:5;
-        }VARControl;
-    */
-
-    //Zeroing LSB
-    varValue &= 0xfe;
-
-    //Send point update message with new value.
     CtiRequestMsg* reqMsg = NULL;
-    string commandString = "putvalue analog " + CtiNumStr(offset).toString() + " " + CtiNumStr((int)varValue).toString();
-    reqMsg = createPorterRequestMsg(controllerId,commandString);
+
+    if ( cbc702 )
+    {
+        //Compute new value.
+        CtiCCTwoWayPoints & points = capBank->getTwoWayPoints();
+
+        int offset = 68;
+        unsigned char varValue = (unsigned char)points.getPointValueByAttribute(PointAttribute::VarControl);
+
+        /* Hardware Code
+            struct
+            {
+                INT8U EnableVARControl:1;        //LSB
+                INT8U SamplingMethod:1;
+                INT8U VARAlarmEnable:1;
+                INT8U unused:5;
+            }VARControl;
+        */
+
+        //Zeroing LSB
+        varValue &= 0xfe;
+
+        //Send point update message with new value.
+        string commandString = "putvalue analog " + CtiNumStr(offset).toString() + " " + CtiNumStr((int)varValue).toString();
+        reqMsg = createPorterRequestMsg(controllerId,commandString);
+    }
+    else
+    {
+        reqMsg = createPorterRequestMsg(controllerId,"putconfig var disable");
+    }
+
     reqMsg->setSOE(5);
     requests.push_back(reqMsg);
-
-    return;
 }
 
 void CtiCCCommandExecutor::enableTimeControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, std::vector<CtiRequestMsg*>& requests)
@@ -1269,11 +1269,7 @@ void CtiCCCommandExecutor::enableTimeControl(long bankId,std::vector<CtiSignalMs
         return;
     }
 
-    if (!stringContainsIgnoreCase( capBank->getControlDeviceType(),"CBC 702"))
-    {
-        CTILOG_WARN(dout, commandName << " command rejected, CBC must be a 702x. ");
-        return;
-    }
+    const bool cbc702 = stringContainsIgnoreCase( capBank->getControlDeviceType(), "CBC 702" );
 
     //Logging Action
     string text = string("Cap Bank Time Control Enabled");
@@ -1302,47 +1298,54 @@ void CtiCCCommandExecutor::enableTimeControl(long bankId,std::vector<CtiSignalMs
     events.push_back(EventLogEntry(0, capBank->getControlPointId(), spAreaId, areaId, stationId, subId, feederId, capControlEnableOvUv, seqId, 1, text, _command->getUser()));
 
     //Actual Command Work
-    //Compute new value.
-    CtiCCTwoWayPoints & points = capBank->getTwoWayPoints();
-
-    /* Hardware Code
-    struct
-    {
-        INT8U TimedCtrlEn :1;    //LSB
-        INT8U SetONOFFCtrl: 1;
-        INT8U SaturdayCtrlEn : 1;
-        INT8U SundayCtrlEn  : 1;
-        INT8U HolidayEn:1;
-        INT8U unused: 2;
-        INT8U TempCtrlEn : 1;
-    }TimeTempFlags;
-    */
-
-    int offsetOne = 26;
-    unsigned char seasonOneValue = (unsigned char)points.getPointValueByAttribute(PointAttribute::TimeTempSeasonOne);
-
-    //Changing the LSB to 1
-    seasonOneValue |= 0x01;
-
-    //Send point update message with new value.
     CtiRequestMsg* reqMsg = NULL;
-    string commandStringOne = "putvalue analog " + CtiNumStr(offsetOne).toString() + " " + CtiNumStr((int)seasonOneValue).toString();
-    reqMsg = createPorterRequestMsg(controllerId,commandStringOne);
+
+    if ( cbc702 )
+    {
+        //Compute new value.
+        CtiCCTwoWayPoints & points = capBank->getTwoWayPoints();
+
+        /* Hardware Code
+        struct
+        {
+            INT8U TimedCtrlEn :1;    //LSB
+            INT8U SetONOFFCtrl: 1;
+            INT8U SaturdayCtrlEn : 1;
+            INT8U SundayCtrlEn  : 1;
+            INT8U HolidayEn:1;
+            INT8U unused: 2;
+            INT8U TempCtrlEn : 1;
+        }TimeTempFlags;
+        */
+
+        int offsetOne = 26;
+        unsigned char seasonOneValue = (unsigned char)points.getPointValueByAttribute(PointAttribute::TimeTempSeasonOne);
+
+        //Changing the LSB to 1
+        seasonOneValue |= 0x01;
+
+        //Send point update message with new value.
+        string commandStringOne = "putvalue analog " + CtiNumStr(offsetOne).toString() + " " + CtiNumStr((int)seasonOneValue).toString();
+        reqMsg = createPorterRequestMsg(controllerId,commandStringOne);
+        reqMsg->setSOE(5);
+        requests.push_back(reqMsg);
+
+        int offsetTwo = 42;
+        unsigned char seasonTwoValue = points.getPointValueByAttribute(PointAttribute::TimeTempSeasonTwo);
+
+        //Changing the LSB to 1
+        seasonTwoValue |= 0x01;
+
+        string commandStringTwo = "putvalue analog " + CtiNumStr(offsetTwo).toString() + " " + CtiNumStr((int)seasonTwoValue).toString();
+        reqMsg = createPorterRequestMsg(controllerId,commandStringTwo);
+    }
+    else
+    {
+        reqMsg = createPorterRequestMsg(controllerId,"putconfig time enable");
+    }
+
     reqMsg->setSOE(5);
     requests.push_back(reqMsg);
-
-    int offsetTwo = 42;
-    unsigned char seasonTwoValue = points.getPointValueByAttribute(PointAttribute::TimeTempSeasonTwo);
-
-    //Changing the LSB to 1
-    seasonTwoValue |= 0x01;
-
-    string commandStringTwo = "putvalue analog " + CtiNumStr(offsetTwo).toString() + " " + CtiNumStr((int)seasonTwoValue).toString();
-    reqMsg = createPorterRequestMsg(controllerId,commandStringTwo);
-    reqMsg->setSOE(5);
-    requests.push_back(reqMsg);
-
-    return;
 }
 
 void CtiCCCommandExecutor::disableTimeControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, std::vector<CtiRequestMsg*>& requests)
@@ -1367,11 +1370,7 @@ void CtiCCCommandExecutor::disableTimeControl(long bankId,std::vector<CtiSignalM
         return;
     }
 
-    if (!stringContainsIgnoreCase( capBank->getControlDeviceType(),"CBC 702"))
-    {
-        CTILOG_WARN(dout, commandName << " command rejected, CBC must be a 702x. ");
-        return;
-    }
+    const bool cbc702 = stringContainsIgnoreCase( capBank->getControlDeviceType(), "CBC 702" );
 
     //Logging Action
     string text = string("Cap Bank Time Control Disabled");
@@ -1400,34 +1399,42 @@ void CtiCCCommandExecutor::disableTimeControl(long bankId,std::vector<CtiSignalM
     events.push_back(EventLogEntry(0, capBank->getControlPointId(), spAreaId, areaId, stationId, subId, feederId, capControlEnableOvUv, seqId, 1, text, _command->getUser()));
 
     //Actual Command Work
-    //Compute new value.
-    CtiCCTwoWayPoints & points = capBank->getTwoWayPoints();
-
-    int offsetOne = 26;
-    unsigned char seasonOneValue = (unsigned char)points.getPointValueByAttribute(PointAttribute::TimeTempSeasonOne);
-
-    //Zeroing the LSB
-    seasonOneValue &= 0xfe;
-
-    //Send point update message with new value.
     CtiRequestMsg* reqMsg = NULL;
-    string commandStringOne = "putvalue analog " + CtiNumStr(offsetOne).toString() + " " + CtiNumStr((int)seasonOneValue).toString();
-    reqMsg = createPorterRequestMsg(controllerId,commandStringOne);
+
+    if ( cbc702 )
+    {
+        //Compute new value.
+        CtiCCTwoWayPoints & points = capBank->getTwoWayPoints();
+
+        int offsetOne = 26;
+        unsigned char seasonOneValue = (unsigned char)points.getPointValueByAttribute(PointAttribute::TimeTempSeasonOne);
+
+        //Zeroing the LSB
+        seasonOneValue &= 0xfe;
+
+        //Send point update message with new value.
+        CtiRequestMsg* reqMsg = NULL;
+        string commandStringOne = "putvalue analog " + CtiNumStr(offsetOne).toString() + " " + CtiNumStr((int)seasonOneValue).toString();
+        reqMsg = createPorterRequestMsg(controllerId,commandStringOne);
+        reqMsg->setSOE(5);
+        requests.push_back(reqMsg);
+
+        int offsetTwo = 42;
+        unsigned char seasonTwoValue = points.getPointValueByAttribute(PointAttribute::TimeTempSeasonTwo);
+
+        //Zeroing the LSB
+        seasonTwoValue &= 0xfe;
+
+        string commandStringTwo = "putvalue analog " + CtiNumStr(offsetTwo).toString() + " " + CtiNumStr((int)seasonTwoValue).toString();
+        reqMsg = createPorterRequestMsg(controllerId,commandStringTwo);
+    }
+    else
+    {
+        reqMsg = createPorterRequestMsg(controllerId,"putconfig time disable");
+    }
+
     reqMsg->setSOE(5);
     requests.push_back(reqMsg);
-
-    int offsetTwo = 42;
-    unsigned char seasonTwoValue = points.getPointValueByAttribute(PointAttribute::TimeTempSeasonTwo);
-
-    //Zeroing the LSB
-    seasonTwoValue &= 0xfe;
-
-    string commandStringTwo = "putvalue analog " + CtiNumStr(offsetTwo).toString() + " " + CtiNumStr((int)seasonTwoValue).toString();
-    reqMsg = createPorterRequestMsg(controllerId,commandStringTwo);
-    reqMsg->setSOE(5);
-    requests.push_back(reqMsg);
-
-    return;
 }
 
 void CtiCCCommandExecutor::queueCapBankTimeSyncPilMessages(CtiMultiMsg_vec& pilMessages, CapBankList capBanks)

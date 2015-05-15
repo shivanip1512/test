@@ -3,6 +3,7 @@
 #include "dev_cbc8020.h"
 
 #include "pt_status.h"
+#include "std_helper.h"
 
 #include <boost/optional.hpp>
 using namespace std;
@@ -119,16 +120,28 @@ void Cbc8020Device::processPoints( Protocols::Interface::pointlist_t &points )
 
 YukonError_t Cbc8020Device::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    YukonError_t nRet = ClientErrors::NoMethod;
-    bool didExecute = false;
-
     if( parse.getCommand() == PutConfigRequest )
     {
-        if(parse.isKeyValid("ovuv"))
+        if ( parse.isKeyValid( "local_control_type" ) && parse.isKeyValid( "local_control_state" ) )
         {
-            string cmd = parse.getiValue("ovuv") == 0 ? " open " : " close "; //0 = disable, 1 = enable
-            pReq->setCommandString("control " +  cmd + " offset 14");
-            parse = CtiCommandParser (pReq->CommandString());
+            static const std::map<std::string, int> _offsetLookup
+            {
+                { "ovuv",   14 },
+                { "var",    15 },
+                { "temp",   16 },
+                { "time",   23 }
+            };
+
+            const std::string controlType   = parse.getsValue("local_control_type");
+            const std::string controlAction = parse.getsValue("local_control_state") == "enable" ? "close" : "open";
+
+            if ( auto offset = Cti::mapFind( _offsetLookup, controlType ) )
+            {
+                const std::string command = "control " + controlAction + " offset " + std::to_string( *offset );
+
+                pReq->setCommandString( command );
+                parse = CtiCommandParser( pReq->CommandString() );
+            }
         }
     }
     if( parse.getCommand() == ControlRequest )
@@ -163,9 +176,7 @@ YukonError_t Cbc8020Device::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser
         }
     }
 
-    nRet = Inherited::ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList);
-
-    return nRet;
+    return Inherited::ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList);
 }
 
 }
