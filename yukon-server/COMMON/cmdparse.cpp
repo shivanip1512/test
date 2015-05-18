@@ -3996,7 +3996,6 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
             CHAR  op_name[20];
 
             _cmd[ "local_control_type" ]  = CtiParseValue( "ovuv" );
-            _cmd[ "local_control_state" ] = CtiParseValue( "disable" );
 
             if(containsString(token, "ena"))
             {
@@ -4007,6 +4006,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
             else if(containsString(token, "dis"))
             {
                 op = 0;
+                _cmd[ "local_control_state" ] = CtiParseValue( "disable" );
                 _snprintf(op_name, sizeof(op_name), "DISABLE");
             }
 
