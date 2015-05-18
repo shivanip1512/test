@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.junit.Assert;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
 import org.joda.time.LocalDateTime;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -155,6 +155,11 @@ public class DataDownloadServiceImplTest {
 
         @Override
         public List<SetNode> getHierarchy() {
+            throw new UnsupportedOperationException("Method not implemented.");
+        }
+
+        @Override
+        public void deleteDevice(String serialNumber) {
             throw new UnsupportedOperationException("Method not implemented.");
         }
     }

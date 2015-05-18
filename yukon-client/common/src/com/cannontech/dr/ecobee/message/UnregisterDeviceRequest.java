@@ -5,19 +5,19 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
-public final class RegisterDeviceRequest extends DeviceRequest{
+public class UnregisterDeviceRequest extends DeviceRequest {
     private final String thermostats;
     
     @JsonCreator
-    public RegisterDeviceRequest(@JsonProperty("thermostats") String serialNumber) {
-        super("register");
+    public UnregisterDeviceRequest(@JsonProperty("thermostats") String serialNumber) {
+        super("unregister");
         thermostats = serialNumber;
     }
     
     public String getThermostats() {
         return thermostats;
     }
-    
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -37,7 +37,7 @@ public final class RegisterDeviceRequest extends DeviceRequest{
         if (getClass() != obj.getClass()) {
             return false;
         }
-        RegisterDeviceRequest other = (RegisterDeviceRequest) obj;
+        UnregisterDeviceRequest other = (UnregisterDeviceRequest) obj;
         if (thermostats == null) {
             if (other.thermostats != null) {
                 return false;

@@ -46,6 +46,7 @@ import com.cannontech.dr.ecobee.message.MoveSetRequest;
 import com.cannontech.dr.ecobee.message.RegisterDeviceRequest;
 import com.cannontech.dr.ecobee.message.RuntimeReportRequest;
 import com.cannontech.dr.ecobee.message.StandardResponse;
+import com.cannontech.dr.ecobee.message.UnregisterDeviceRequest;
 import com.cannontech.dr.ecobee.message.partial.RuntimeReport;
 import com.cannontech.dr.ecobee.message.partial.RuntimeReportRow;
 import com.cannontech.dr.ecobee.message.partial.SetNode;
@@ -106,7 +107,29 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
 
         return response.getSuccess();
     }
-
+    
+    @Override
+    public void deleteDevice(String serialNumber) {
+        log.debug("Deleting ecobee device with serial number " + serialNumber);
+        
+        String url = getUrlBase() + modifyThermostatUrlPart;
+        
+        UnregisterDeviceRequest request = new UnregisterDeviceRequest(serialNumber);
+        HttpEntity<UnregisterDeviceRequest> requestEntity = new HttpEntity<>(request, new HttpHeaders());
+        
+        StandardResponse response = queryEcobee(url, requestEntity, EcobeeQueryType.SYSTEM, StandardResponse.class);
+        
+        if (response.hasCode(NOT_AUTHORIZED)) {
+            //ecobee status codes are crap - "not authorized" usually means the device doesn't exist in ecobee.
+            //It should therefore be safe to delete the Yukon device...probably.
+        } else if (!response.getSuccess()) {
+            //If we get any other error response, the operation failed and we need to roll back.
+            log.debug("Unregister device failed with status code: " + response.getStatus().getCode() + ". Message: \"" 
+                      + response.getStatus().getMessage() + "\".");
+            throw new EcobeeCommunicationException("Unable to unregister device.");
+        }
+    }
+    
     @Override
     public boolean moveDeviceToSet(String serialNumber, String setPath) 
             throws EcobeeDeviceDoesNotExistException, EcobeeSetDoesNotExistException {
