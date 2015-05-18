@@ -66,7 +66,7 @@
                     <select name="delimiterSelect" id="delimiters">
                         <c:forEach var="delimiter" items="${delimiters}">
                             <c:choose>
-                                <c:when test="${backingBean.format.delimiterType == delimiter}">
+                                <c:when test="${format.delimiterType == delimiter}">
                                     <c:set var="selected">selected="selected"</c:set>
                                  </c:when>
                                 <c:otherwise><c:set var="selected" value=""/></c:otherwise>
