@@ -124,9 +124,11 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
             //It should therefore be safe to delete the Yukon device...probably.
         } else if (!response.getSuccess()) {
             //If we get any other error response, the operation failed and we need to roll back.
-            log.debug("Unregister device failed with status code: " + response.getStatus().getCode() + ". Message: \"" 
-                      + response.getStatus().getMessage() + "\".");
-            throw new EcobeeCommunicationException("Unable to unregister device.");
+            int statusCode = response.getStatus().getCode();
+            String message = response.getStatus().getMessage();
+            log.debug("Unregister device failed with status code: " + statusCode + ". Message: \""  + message + "\".");
+            throw new EcobeeCommunicationException("Unable to unregister device. Ecobee status code: " + statusCode 
+                                                   + ". Message: \""  + message + "\".");
         }
     }
     
