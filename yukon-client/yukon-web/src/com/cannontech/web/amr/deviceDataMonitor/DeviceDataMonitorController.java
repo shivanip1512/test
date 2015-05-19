@@ -479,19 +479,13 @@ public class DeviceDataMonitorController {
         
         returnObj.put("totalSupportedCount", totalSupportedCount);
         
-        String keySuffix = null;
+        String keySuffix = "message";
         if (allAttributesAreNull) {
-            keySuffix = "noAttributes";
-        } else {
-            if (totalDeviceCount == 0) { 
-                keySuffix = "noDevices";
-            } else {
-                if (monitor.getAttributeStateGroups().size() == 0) {
-                    keySuffix = "noProcessors";
-                } else {
-                    keySuffix = "message";
-                }
-            }
+          keySuffix = "noAttributes";
+        } else if (totalDeviceCount == 0) {
+          keySuffix = "noDevices";
+        } else if (monitor.getAttributeStateGroups().size() == 0) {
+          keySuffix = "noProcessors";
         }
         
         final String keyPrefix = baseKey + ".fullySupported.";
