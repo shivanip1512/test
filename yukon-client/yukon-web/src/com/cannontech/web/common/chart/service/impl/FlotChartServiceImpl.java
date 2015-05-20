@@ -26,6 +26,7 @@ import com.cannontech.web.common.chart.model.FlotOptionKey;
 import com.cannontech.web.common.chart.model.FlotPieDatas;
 import com.cannontech.web.common.chart.service.ChartService;
 import com.cannontech.web.common.chart.service.FlotChartService;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
 public class FlotChartServiceImpl implements FlotChartService {
@@ -209,7 +210,7 @@ public class FlotChartServiceImpl implements FlotChartService {
             xAxis.put(FlotOptionKey.XAXIS_MIN.getKey(), 0);
         }
 
-        Map<String, Object> options = Maps.newHashMapWithExpectedSize(2);
+        Map<String, Object> options = new HashMap<>();
         options.put(FlotOptionKey.XAXIS.getKey(), xAxis);
         
         Map<String, Object> yAxis = new HashMap<>();
@@ -219,6 +220,10 @@ public class FlotChartServiceImpl implements FlotChartService {
         yAxis.put(FlotOptionKey.YAXIS_MAX.getKey(), graph.getSettings().getyMax());
         yAxis.put(FlotOptionKey.YAXIS_AUTOSCALEMARGIN.getKey(), 0.1);
         options.put(FlotOptionKey.YAXIS.getKey(), yAxis);
+        
+        Map<String, Object> lines = ImmutableMap.of("fill", false);
+        Map<String, Object> series = ImmutableMap.of("lines", lines);
+        options.put("series", series);
         
         Map<String, ?> yAxisFrom = Collections.singletonMap(FlotOptionKey.GRID_MARKINGS_YAXIS_FROM.getKey(),
                                                             graph.getSettings().getYUpperBound());
