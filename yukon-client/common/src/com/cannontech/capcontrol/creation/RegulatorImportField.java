@@ -18,9 +18,6 @@ public enum RegulatorImportField {
 
     DESCRIPTION(InputType.OPTIONAL, "DESCRIPTION", String.class),
     DISABLED(InputType.OPTIONAL, "DISABLED", StrictBoolean.class),
-    KEEP_ALIVE_TIMER(InputType.OPTIONAL, "KEEP ALIVE TIMER", Integer.class),
-    KEEP_ALIVE_CONFIG(InputType.OPTIONAL, "KEEP ALIVE CONFIG", Integer.class),
-    VOLT_CHANGE_PER_TAP(InputType.OPTIONAL, "VOLT CHANGE PER TAP", Double.class),
     ;
 
     public enum InputType {REQUIRED, VALUE_DEPENDENT, OPTIONAL}

@@ -15,9 +15,6 @@ public class Regulator implements YukonPao {
     private String name;
     private PaoType type;
     private String description;
-    private double voltChangePerTap = 0.75;
-    private int keepAliveConfig;
-    private int keepAliveTimer;
     private boolean disabled;
     private int configId;
     private Map<RegulatorPointMapping, Integer> mappings = new LinkedHashMap<>();
@@ -45,24 +42,6 @@ public class Regulator implements YukonPao {
     }
     public void setDescription(String description) {
         this.description = description;
-    }
-    public double getVoltChangePerTap() {
-        return voltChangePerTap;
-    }
-    public void setVoltChangePerTap(double voltChangePerTap) {
-        this.voltChangePerTap = voltChangePerTap;
-    }
-    public int getKeepAliveConfig() {
-        return keepAliveConfig;
-    }
-    public void setKeepAliveConfig(int keepAliveConfig) {
-        this.keepAliveConfig = keepAliveConfig;
-    }
-    public int getKeepAliveTimer() {
-        return keepAliveTimer;
-    }
-    public void setKeepAliveTimer(int keepAliveTimer) {
-        this.keepAliveTimer = keepAliveTimer;
     }
     public boolean isDisabled() {
         return disabled;
@@ -94,14 +73,11 @@ public class Regulator implements YukonPao {
         
         complete.setDescription(description);
         complete.setDisabled(disabled);
-        complete.setKeepAliveConfig(keepAliveConfig);
-        complete.setKeepAliveTimer(keepAliveTimer);
         if (id != null) {
             complete.setPaoIdentifier(PaoIdentifier.of(id, type));
         }
         complete.setPaoName(name);
         complete.setStatistics("");
-        complete.setVoltChangePerTap(voltChangePerTap);
         
         return complete;
     }
@@ -113,11 +89,8 @@ public class Regulator implements YukonPao {
         regulator.setType(complete.getPaoType());
         regulator.setId(complete.getPaObjectId());
         regulator.setDisabled(complete.isDisabled());
-        regulator.setKeepAliveConfig(complete.getKeepAliveConfig());
-        regulator.setKeepAliveTimer(complete.getKeepAliveTimer());
         regulator.setName(complete.getPaoName());
         regulator.setDescription(complete.getDescription());
-        regulator.setVoltChangePerTap(complete.getVoltChangePerTap());
         
         return regulator;
     }
@@ -125,8 +98,8 @@ public class Regulator implements YukonPao {
     @Override
     public String toString() {
         return String.format(
-            "Regulator [id=%s, name=%s, type=%s, description=%s, voltChangePerTap=%s, keepAliveConfig=%s, keepAliveTimer=%s, disabled=%s, mappings=%s]",
-            id, name, type, description, voltChangePerTap, keepAliveConfig, keepAliveTimer, disabled, mappings);
+            "Regulator [id=%s, name=%s, type=%s, description=%s, disabled=%s, mappings=%s]",
+            id, name, type, description, disabled, mappings);
     }
     
 }

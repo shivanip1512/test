@@ -51,10 +51,6 @@ public class RegulatorValidator extends SimpleValidator<Regulator> {
             }
         }
 
-        YukonValidationUtils.checkIsPositiveInt(errors, "keepAliveConfig", regulator.getKeepAliveConfig());
-        YukonValidationUtils.checkIsPositiveInt(errors, "keepAliveTimer", regulator.getKeepAliveTimer());
-        YukonValidationUtils.checkIsPositiveDouble(errors, "voltChangePerTap", regulator.getVoltChangePerTap());
-
         LightDeviceConfiguration config = new LightDeviceConfiguration(regulator.getConfigId(), null, null);
         if (!deviceConfigurationDao.isTypeSupportedByConfiguration(config, regulator.getType())) {
             errors.rejectValue("configId", basekey + "invalidConfig");

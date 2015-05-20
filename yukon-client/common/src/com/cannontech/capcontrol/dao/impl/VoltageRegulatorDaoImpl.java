@@ -13,49 +13,12 @@ import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.google.common.collect.Lists;
 
 public class VoltageRegulatorDaoImpl implements VoltageRegulatorDao {
     
     private YukonJdbcTemplate yukonJdbcTemplate;
-    
-    @Override
-    public int getKeepAliveTimerForRegulator(int regulatorId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        
-        sql.append("SELECT KeepAliveTimer");
-        sql.append("FROM Regulator");
-        sql.append("WHERE RegulatorId").eq(regulatorId);
-        
-        int result = yukonJdbcTemplate.queryForInt(sql);
-        return result;
-    }
-    
-    @Override
-    public int getKeepAliveConfigForRegulator(int regulatorId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        
-        sql.append("SELECT KeepAliveConfig");
-        sql.append("FROM Regulator");
-        sql.append("WHERE RegulatorId").eq(regulatorId);
-        
-        int result = yukonJdbcTemplate.queryForInt(sql);
-        return result;
-    }
-    
-    @Override
-    public double getVoltChangePerTapForRegulator(int regulatorId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        
-        sql.append("SELECT VoltChangePerTap");
-        sql.append("FROM Regulator");
-        sql.append("WHERE RegulatorId").eq(regulatorId);
-        
-        Double result = yukonJdbcTemplate.queryForObject(sql, RowMapper.DOUBLE);
-        return result;
-    }
     
     @Override
     public List<LiteCapControlObject> getOrphans() {

@@ -287,15 +287,6 @@ public class RegulatorImportServiceImpl implements RegulatorImportService {
                 case DISABLED:
                     regulator.setDisabled(Boolean.valueOf(value));
                     break;
-                case KEEP_ALIVE_CONFIG:
-                    regulator.setKeepAliveConfig(Integer.valueOf(value));
-                    break;
-                case KEEP_ALIVE_TIMER:
-                    regulator.setKeepAliveTimer(Integer.valueOf(value));
-                    break;
-                case VOLT_CHANGE_PER_TAP:
-                    regulator.setVoltChangePerTap(Double.valueOf(value));
-                    break;
                 default:
                     break;
                 }
