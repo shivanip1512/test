@@ -258,13 +258,13 @@ public:
     void writeAnalogOutputMessageToPIL(long deviceid, long pointid, long value, const CtiCommandMsg *Cmd);
     int processControlMessage(CtiLMControlHistoryMsg *pMsg);
 
-    INT updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, std::string user, CtiMultiMsg &sigList);
-    INT updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, std::string user, CtiMultiMsg &sigList);
+    bool updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, std::string user, CtiMultiMsg &sigList);
+    bool updatePointStaticTables (LONG pid, UINT setmask, UINT tagmask, std::string user, CtiMultiMsg &sigList);
     void adjustDeviceDisableTags(LONG id = 0, bool dbchange = false, std::string user = std::string("System"));
     void loadDeviceLites(LONG id);
     void activatePointAlarm(int alarm, CtiMultiWrapper &aWrap, const CtiPointBase &point, CtiDynamicPointDispatch &dpd, bool activate);
 
-    int processTagMessage(CtiTagMsg &tagMsg);
+    void processTagMessage(CtiTagMsg &tagMsg);
     void updateGroupPseduoControlPoint(const CtiPointBase &point, const CtiTime &delaytime);
 
     bool addToPendingSet(CtiPendingPointOperations *&pendingOp, CtiTime &updatetime = CtiTime());

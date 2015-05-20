@@ -4222,7 +4222,7 @@ bool CtiVanGogh::ablementPoint(const CtiPointBase &point, bool &devicedifferent,
             {
                 addnl += string("Point tags: ") + (pttags_cnt > currpttags_cnt ? " point disable" : " point enable");
 
-                if(updatePointStaticTables(point.getPointID(), pttags, tagmask, user, Multi))
+                if( ! updatePointStaticTables(point.getPointID(), pttags, tagmask, user, Multi) )
                 {
                     CTILOG_ERROR(dout, "Could not update point static table");
                 }
@@ -4736,7 +4736,7 @@ void CtiVanGogh::writeMessageToScanner(const CtiCommandMsg *Cmd)
     }
 }
 
-INT CtiVanGogh::updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, string user, CtiMultiMsg &sigList)
+bool CtiVanGogh::updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, string user, CtiMultiMsg &sigList)
 {
     bool paobjectSuccess = false;
     bool deviceSuccess = false;
@@ -4757,7 +4757,6 @@ INT CtiVanGogh::updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, s
                 << ( TAG_DISABLE_DEVICE_BY_DEVICE & setmask ? std::string("Y") : std::string("N") )
                 << did;
 
-            //FIXME : expected zero rows affected ?
             paobjectSuccess = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
         }
 
@@ -4770,7 +4769,6 @@ INT CtiVanGogh::updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, s
                 << ( TAG_DISABLE_CONTROL_BY_DEVICE & setmask ? std::string("Y") : std::string("N") )
                 << did;
 
-            //FIXME : expected zero rows affected ?
             deviceSuccess = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
         }
     }
@@ -4783,11 +4781,13 @@ INT CtiVanGogh::updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, s
         sigList.insert(dbChange);
     }
 
-    return ( paobjectSuccess && deviceSuccess ) ? ClientErrors::None : ClientErrors::Unknown;
+    return paobjectSuccess && deviceSuccess;
 }
 
-INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, string user, CtiMultiMsg &Multi)
+bool CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, string user, CtiMultiMsg &Multi)
 {
+    using namespace Cti::Database;
+
     bool pointSuccess = false;
     bool pointStatusSuccess = false;
 
@@ -4798,29 +4798,29 @@ INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, st
         {
             static const std::string sql_point_update = "update point set serviceflag = ? where pointid = ?";
 
-            Cti::Database::DatabaseConnection   conn;
-            Cti::Database::DatabaseWriter       updater(conn, sql_point_update);
+            DatabaseConnection   conn;
+            DatabaseWriter       updater(conn, sql_point_update);
 
             updater
-                << ( TAG_DISABLE_POINT_BY_POINT & setmask ? std::string("Y") : std::string("N") )
+                << ( TAG_DISABLE_POINT_BY_POINT & setmask ? "Y" : "N" )
                 << pid;
 
-            //FIXME : expected zero rows affected ?
-            pointSuccess = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
+            pointSuccess = executeUpdater( updater, __FILE__, __LINE__ );
         }
 
         if (TAG_DISABLE_CONTROL_BY_POINT & tagmask)
         {
             static const std::string sql_pointstatus_update = "update pointcontrol set controlinhibit = ? where pointid = ?";
 
-            Cti::Database::DatabaseConnection   conn;
-            Cti::Database::DatabaseWriter       updater(conn, sql_pointstatus_update);
+            DatabaseConnection   conn;
+            DatabaseWriter       updater(conn, sql_pointstatus_update);
 
             updater
-                << ( TAG_DISABLE_CONTROL_BY_POINT & setmask ? std::string("Y") : std::string("N") )
+                << ( TAG_DISABLE_CONTROL_BY_POINT & setmask ? "Y" : "N" )
                 << pid;
 
-            pointStatusSuccess = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
+            //  no error if the point doesn't have a control table entry
+            pointStatusSuccess = executeUpdater( updater, __FILE__, __LINE__, LogDebug(isDebugLudicrous()), LogNoRowsAffected::Disable );
         }
     }
 
@@ -4831,9 +4831,11 @@ INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, st
         dbChange->setSource(DISPATCH_APPLICATION_NAME);
         dbChange->setMessagePriority(15);
         Multi.insert(dbChange);
+
+        return true;
     }
 
-    return ( pointSuccess && pointStatusSuccess ) ? ClientErrors::None : ClientErrors::Unknown;
+    return false;
 }
 
 /**
@@ -4900,7 +4902,7 @@ void CtiVanGogh::adjustDeviceDisableTags(LONG id, bool dbchange, string user)
                         setmask |= (dLite.isDisabled() ? TAG_DISABLE_DEVICE_BY_DEVICE : 0 );
                         setmask |= (dLite.isControlInhibited() ? TAG_DISABLE_CONTROL_BY_DEVICE : 0 );
 
-                        if(updateDeviceStaticTables(dLite.getID(), setmask, tagmask, user, *pMulti))
+                        if( ! updateDeviceStaticTables(dLite.getID(), setmask, tagmask, user, *pMulti) )
                         {
                             CTILOG_ERROR(dout, "Could not update device static table");
                         }
@@ -5587,69 +5589,44 @@ void CtiVanGogh::acknowledgeAlarmCondition( const CtiPointBase &point, const Cti
     }
 }
 
-int CtiVanGogh::processTagMessage(CtiTagMsg &tagMsg)
+void CtiVanGogh::processTagMessage(CtiTagMsg &tagMsg)
 {
-    int status = ClientErrors::None;
+    const auto resultAction = _tagManager.processTagMsg(tagMsg);
 
-    int resultAction = _tagManager.processTagMsg(tagMsg);
-
-
-    bool disable = false;
-    LONG id       = tagMsg.getPointID();
-    int  tagmask  = 0;           // This mask represents all the bits which are to be adjusted.
-    int  setmask  = 0;         // This mask represents the state of the adjusted-masked bit.. Ok, read it again.
-
-    switch(resultAction)
+    if( resultAction == CtiTagManager::Actions::None )
     {
-    case (CtiTagManager::ActionPointControlInhibit):
-        {
-            disable = true;
-            break;
-        }
-    case (CtiTagManager::ActionPointInhibitRemove):
-        {
-            disable = false;
-            break;
-        }
+        return;
     }
 
-    if(resultAction != CtiTagManager::ActionNone)
+    const long id       = tagMsg.getPointID();
+
+    if( CtiPointSPtr pPt = PointMgr.getPoint(id) )
     {
-        CtiMultiMsg *pMulti = CTIDBG_new CtiMultiMsg;
+        auto pMulti = std::make_unique<CtiMultiMsg>();
 
-        if(pMulti)
+        pMulti->setSource(DISPATCH_APPLICATION_NAME);
+        pMulti->setUser(tagMsg.getUser());
+
+        const int  tagmask  = TAG_DISABLE_CONTROL_BY_POINT;
+        const int  setmask  =
+                (resultAction == CtiTagManager::Actions::PointControlInhibit) //  set or clear the DISABLE_CONTROL_BY_POINT tag?
+                    ? TAG_DISABLE_CONTROL_BY_POINT
+                    : 0;
+
+        bool devicedifferent;
+
+        ablementPoint(*pPt, devicedifferent, setmask, tagmask, tagMsg.getUser(), *pMulti);
+
+        if( devicedifferent )     // The device became interesting because of this change.
         {
-            pMulti->setSource(DISPATCH_APPLICATION_NAME);
-            pMulti->setUser(tagMsg.getUser());
+            CTILOG_INFO(dout, "Device enabled/disabled change due to Command to pointid "<< id);
+        }
 
-            tagmask = TAG_DISABLE_CONTROL_BY_POINT;
-            setmask |= (disable ? TAG_DISABLE_CONTROL_BY_POINT : 0);    // Set it, or clear it?
-
-            if( CtiPointSPtr pPt = PointMgr.getPoint(id) )
-            {
-                bool devicedifferent;
-
-                ablementPoint(*pPt, devicedifferent, setmask, tagmask, tagMsg.getUser(), *pMulti);
-
-                if( devicedifferent )     // The device became interesting because of this change.
-                {
-                    CTILOG_INFO(dout, "Device enabled/disabled change due to Command to pointid "<< id);
-                }
-            }
-
-            if(pMulti->getData().size())
-            {
-                MainQueue_.putQueue(pMulti);
-                pMulti = 0;
-            }
-            else
-            {
-                delete pMulti;
-            }
+        if(pMulti->getData().size())
+        {
+            MainQueue_.putQueue(pMulti.release());
         }
     }
-
-    return status;
 }
 
 void CtiVanGogh::VGDBSignalWriterThread()

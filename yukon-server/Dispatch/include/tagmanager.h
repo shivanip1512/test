@@ -1,9 +1,5 @@
 #pragma once
 
-#include <map>
-#include <set>
-#include <utility>
-
 #include "dlldefs.h"
 #include "msg_tag.h"
 #include "msg_multi.h"
@@ -14,28 +10,21 @@
 #include "tbl_tag.h"
 #include "tbl_taglog.h"
 
-
+#include <map>
+#include <set>
+#include <utility>
 
 class IM_EX_CTIVANGOGH CtiTagManager : public CtiThread
 {
-public:
-
-    typedef std::map< int, CtiTagMsg* >    TagMgrMap_t;
-    typedef std::map< int, CtiTableTag >   TagTblMap_t;
-
-    typedef std::map< int, CtiTableDynamicTag >   TagTblDynamicMap_t;
-
-    enum {
-        ActionNone,
-        ActionPointControlInhibit,
-        ActionPointInhibitRemove
-    };
-
 protected:
 
-    CtiFIFOQueue< CtiTableTagLog >            _tagLogQueue;
+    CtiFIFOQueue< CtiTableTagLog > _tagLogQueue;
     // This is a vector of the rows in the dynamic table which need to be Deleted.
     std::vector< int > _dynamicLogRemovals;
+
+    using TagTblDynamicMap_t = std::map< int, CtiTableDynamicTag >;
+    using TagMgrMap_t        = std::map< int, CtiTagMsg* >;
+    using TagTblMap_t        = std::map< int, CtiTableTag >;
 
     TagTblDynamicMap_t _dynTagLogMap;
     TagTblMap_t _staticTagTableMap;     // Holds STATIC tag information frmo the table called "Tags"
@@ -68,7 +57,13 @@ public:
     CtiTagManager();
     virtual ~CtiTagManager();
 
-    int processTagMsg(CtiTagMsg &tag);
+    enum class Actions {
+        None,
+        PointControlInhibit,
+        PointInhibitRemove
+    };
+
+    Actions processTagMsg(CtiTagMsg &tag);
 
     CtiTagMsg* getTagMsg(long instanceid) const;
     CtiMultiMsg* getPointTags(long pointid) const;
@@ -85,5 +80,4 @@ public:
     bool dirty() const;
     void setDirty(bool set = true);
     bool isPointControlInhibited(LONG pid);
-
 };

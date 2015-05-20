@@ -1,23 +1,5 @@
 #include "precompiled.h"
 
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tagmanager
-*
-* Date:   12/22/2003
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2007/10/24 14:51:29 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-
-
 #include "dbaccess.h"
 #include "logger.h"
 #include "guard.h"
@@ -70,9 +52,9 @@ CtiTagManager::~CtiTagManager()
     }
 }
 
-int CtiTagManager::processTagMsg(CtiTagMsg &tag)
+CtiTagManager::Actions CtiTagManager::processTagMsg(CtiTagMsg &tag)
 {
-    int resultAction = ActionNone;
+    auto resultAction = Actions::None;
     int instance = tag.getInstanceID();
 
     try
@@ -120,12 +102,12 @@ int CtiTagManager::processTagMsg(CtiTagMsg &tag)
             if(pre == true)
             {
                 // We were inhibited and now are not.
-                resultAction = ActionPointInhibitRemove;
+                resultAction = Actions::PointInhibitRemove;
             }
             else
             {
                 // We were not inhibited but now are.
-                resultAction = ActionPointControlInhibit;
+                resultAction = Actions::PointControlInhibit;
             }
         }
     }
