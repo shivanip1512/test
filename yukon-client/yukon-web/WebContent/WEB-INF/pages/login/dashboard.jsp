@@ -27,12 +27,12 @@
                                     <cti:msg2 var="removedText" key=".favorites.removed" htmlEscapeArguments="false"
                                         arguments="${favoritePageName}"/>
                                     <li class="favorite" data-removed-text="${removedText}">
+                                        <cti:listAsSafeString var="labelArgs" list="${favorite.arguments}"/>
                                         <cti:button classes="b-favorite remove" nameKey="favorite" renderMode="image" icon="icon-star" 
                                             data-name="${favorite.name}"
                                             data-module="${favorite.moduleName}"
                                             data-path="${favorite.path}"
-                                            data-label-args="${com.cannontech.common.util.StringUtils.listAsJsSafeString(favorite.arguments)}"/>
-
+                                            data-label-args="${labelArgs}"/>
                                         <a href="<cti:url value="${favorite.path}"/>">${favoritePageName}</a>
                                     </li>
                                 </c:forEach>

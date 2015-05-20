@@ -497,6 +497,23 @@
   </tag>
   
   <tag>
+    <name>listAsSafeString</name>
+    <tag-class>com.cannontech.web.taglib.ListAsSafeString</tag-class>
+    <body-content>empty</body-content>
+    <description>Converts a list of strings to a value that is safe to use in attributes and javascript.</description>
+    <attribute>
+      <name>list</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
     <name>outputContent</name>
     <tag-class>com.cannontech.web.taglib.OutputContentTag</tag-class>
     <body-content>empty</body-content>
