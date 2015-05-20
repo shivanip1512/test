@@ -589,12 +589,10 @@
     <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.DISABLED">Whether or not this object should be disabled.&lt;br&gt;Options: True or False. If omitted on Add, the device will be enabled</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.TYPE">Required when ACTION is Add&lt;br&gt;Type of Regulator&lt;br&gt;Options:LTC, Phase_Operated, Gang_Operated</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.DESCRIPTION">Any description desired for the object</entry>
-    <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.KEEP ALIVE TIMER">Time interval to resend keep alive message (in seconds)</entry>
-    <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.VOLT CHANGE PER TAP">Voltage Change per Tap&lt;br&gt;(Default:0.75)</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.CONFIGURATION">Configuration to assign to the Regulator.&lt;br&gt;If not present for add, the default configuration will be used.</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.POINT_MAPPING.REGULATOR NAME">Parent regulator to map the point to</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.POINT_MAPPING.ACTION">Options: Add, Update, or Remove</entry>
-    <entry key="yukon.web.modules.capcontrol.import.description.POINT_MAPPING.MAPPING">Attribute the point will be associated with on the parent regulator&lt;br&gt;Options: Auto/Remote Control, Auto Block Enable, Raise Tap Position, Lower Tap Position, Tap Position, Terminate, Voltage X, Voltage Y, Keep Alive, Keep Alive Timer</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.POINT_MAPPING.MAPPING">Attribute the point will be associated with on the parent regulator&lt;br&gt;Options: Auto/Remote Control, Auto Block Enable, Raise Tap Position, Lower Tap Position, Tap Position, Terminate, Voltage X, Voltage Y, Keep Alive</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.POINT_MAPPING.POINT NAME">Required when ACTION is Add or Update&lt;br&gt;Name of the point to map</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.POINT_MAPPING.DEVICE TYPE">Required when ACTION is Add or Update&lt;br&gt;Type of physical device which reports points&lt;br&gt;Ex. RTU_DNP</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.POINT_MAPPING.DEVICE NAME">Required when ACTION is Add or Update&lt;br&gt;Name of the Physical device</entry>
@@ -627,7 +625,6 @@
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.VOLTAGE_X">Voltage Source</entry>
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.VOLTAGE_Y">Voltage Load</entry>
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.KEEP_ALIVE">Keep Alive</entry>
-    <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.KEEP_ALIVE_TIMER">Keep Alive Timer</entry>
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.FORWARD_SET_POINT">Set Point</entry>
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.FORWARD_BANDWIDTH">Set Point Bandwidth</entry>
     
@@ -666,7 +663,6 @@
     <entry key="yukon.web.modules.capcontrol.regulator.description">Description</entry>
     <entry key="yukon.web.modules.capcontrol.regulator.voltChangePerTap">Volt Change Per Tap</entry>
     <entry key="yukon.web.modules.capcontrol.regulator.keepAliveConfig">Keep Alive Config</entry>
-    <entry key="yukon.web.modules.capcontrol.regulator.keepAliveTimer">Keep Alive Timer</entry>
     <entry key="yukon.web.modules.capcontrol.regulator.config">Configuration</entry>
     <entry key="yukon.web.modules.capcontrol.regulator.type">Type</entry>
     <entry key="yukon.web.modules.capcontrol.regulator.zone">Parent Zone</entry>

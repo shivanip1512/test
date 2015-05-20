@@ -19,7 +19,6 @@ public enum RegulatorPointMapping implements DisplayableEnum {
     VOLTAGE_X("Voltage X", PointType.Analog, PointType.CalcAnalog),
     VOLTAGE_Y("Voltage Y", PointType.Analog, PointType.CalcAnalog),
     KEEP_ALIVE("Keep Alive", PointType.Analog, PointType.CalcAnalog),
-    KEEP_ALIVE_TIMER("Keep Alive Timer", PointType.Analog, PointType.CalcAnalog),
     FORWARD_SET_POINT("Forward Set Point", PointType.Analog, PointType.CalcAnalog),
     FORWARD_BANDWIDTH("Forward Bandwidth", PointType.Analog, PointType.CalcAnalog),
     ;
@@ -43,7 +42,6 @@ public enum RegulatorPointMapping implements DisplayableEnum {
         b.add(AUTO_BLOCK_ENABLE);
         b.add(TERMINATE);
         b.add(VOLTAGE_X);
-        b.add(KEEP_ALIVE_TIMER);
         phaseAndGangRegulatorMappings = b.build();
         
         regulatorPointMappings = ImmutableMap.of(PaoType.LOAD_TAP_CHANGER, ltcRegulatorMappings,

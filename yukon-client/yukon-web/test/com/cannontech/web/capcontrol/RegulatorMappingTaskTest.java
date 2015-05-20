@@ -56,7 +56,7 @@ public class RegulatorMappingTaskTest {
         task.addResult(partSuccessRegulator, RegulatorPointMapping.FORWARD_BANDWIDTH, RegulatorPointMappingResult.SUCCESS);
         task.addResult(partSuccessRegulator, RegulatorPointMapping.FORWARD_SET_POINT, RegulatorPointMappingResult.SUCCESS_WITH_OVERWRITE);
         task.addResult(partSuccessRegulator, RegulatorPointMapping.KEEP_ALIVE, RegulatorPointMappingResult.NO_POINTS_FOUND);
-        task.addResult(partSuccessRegulator, RegulatorPointMapping.KEEP_ALIVE_TIMER, RegulatorPointMappingResult.MULTIPLE_POINTS_FOUND);
+        task.addResult(partSuccessRegulator, RegulatorPointMapping.AUTO_BLOCK_ENABLE, RegulatorPointMappingResult.MULTIPLE_POINTS_FOUND);
         task.deviceComplete(partSuccessRegulator);
         
         Assert.assertEquals("Incorrect success count.", 1, task.getSuccessCount());
