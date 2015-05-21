@@ -46,12 +46,11 @@ class IM_EX_MSG CtiConnection : public Cti::Messaging::BaseConnection
 public:
 
     typedef  CtiQueue<CtiMessage, std::greater<CtiMessage> > Que_t;
-    // typedef  CtiFIFOQueue<CtiMessage> Que_t;
 
 protected:
 
     CtiConnection( const std::string& title, Que_t *inQ = NULL, int termSeconds = 3 );
-    virtual ~CtiConnection();
+    virtual ~CtiConnection();  //  definition in cpp file to isolate use of cms types
 
     std::string _name;
     std::string _peerName;
