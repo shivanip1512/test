@@ -37,6 +37,7 @@ public class TDCDeviceTreeModel extends AbstractDeviceTreeModel {
         IDatabaseCache cache = DefaultDatabaseCache.getInstance();
         synchronized (cache) {
             List<LiteYukonPAObject> paos = getCacheList(cache);
+            Collections.sort(paos, LiteComparators.litePaoTypeComparator);
             
             rootNode.removeAllChildren();
 

@@ -83,7 +83,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.database.db.graph.GraphRenderers;
-import com.cannontech.database.model.DeviceTree_CustomPointsModel;
+import com.cannontech.database.model.AbstractDeviceTreeModel;
 import com.cannontech.database.model.GraphDefinitionTreeModel;
 import com.cannontech.debug.gui.AboutDialog;
 import com.cannontech.graph.buffer.html.HTMLBuffer;
@@ -1573,7 +1573,7 @@ public class GraphClient extends JPanel implements DBChangeListener, GraphDefine
                         // Refreshes the device trees in the createGraphPanel if
                         // that's the panel that is open panel.
                         if (createPanel != null) {
-                            ((DeviceTree_CustomPointsModel) createPanel.getTreeViewPanel().getTree().getModel()).update();
+                            ((AbstractDeviceTreeModel) createPanel.getTreeViewPanel().getTree().getModel()).update();
                         }
                     }
                     // limit to only refresh trend tree for trend db changes.
