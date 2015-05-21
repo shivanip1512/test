@@ -299,6 +299,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
                 // update model only if the model for the new device is not a valid model choice for the old
                 // device
                 rfnAddress.setModel(rfnManufacturerModels.get(0).getModel());
+                rfnAddress.setManufacturer(rfnManufacturerModels.get(0).getManufacturer());
             }
             ((RfnBase) newDevice).setRfnAddress(rfnAddress);
         }
