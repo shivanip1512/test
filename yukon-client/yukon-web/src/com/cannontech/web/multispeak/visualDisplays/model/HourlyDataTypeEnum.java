@@ -25,7 +25,7 @@ public enum HourlyDataTypeEnum implements DisplayableEnum {
 		}
 	};
 	
-	private final String keyPrefix = "yukon.web.modules.visualDisplays.hourlyDataTypeEnum.";
+	private final String keyPrefix = "yukon.web.modules.dr.hourlyDataTypeEnum.";
 	
 	@Override
     public String getFormatKey() {

@@ -30,7 +30,7 @@ public enum DataTypeEnum implements DisplayableEnum {
 		}
 	};
 	
-	private final String keyPrefix = "yukon.web.modules.visualDisplays.dataTypeEnum.";
+	private final String keyPrefix = "yukon.web.modules.dr.dataTypeEnum.";
 	
 	@Override
     public String getFormatKey() {

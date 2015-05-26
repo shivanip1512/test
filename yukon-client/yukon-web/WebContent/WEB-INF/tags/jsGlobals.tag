@@ -23,6 +23,7 @@ var yg = {
     
     formats: {
         date: {
+            both: 'MM/DD/YYYY HH:mm:ss',
             full: 'MM/DD/YYYY HH:mm:ss zz',
             full_hm: 'MM/DD/YYYY HH:mm zz',
             long_date_time: 'MMM DD hh:mm:ss A',

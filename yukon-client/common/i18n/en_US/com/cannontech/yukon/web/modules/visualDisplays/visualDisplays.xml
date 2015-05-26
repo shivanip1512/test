@@ -2,34 +2,42 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
-    
-	<!-- loadManagement.jsp -->
-    <entry key="yukon.web.modules.visualDisplays.loadManagement.siteMapName">Power Supplier Loads</entry>
-    <entry key="yukon.web.modules.visualDisplays.loadManagement.pageTitle">Load Management</entry>
-    <entry key="yukon.web.modules.visualDisplays.loadManagement.currentDayLabel">Current Day</entry>
-    <entry key="yukon.web.modules.visualDisplays.loadManagement.peakDayLabel">Peak Day</entry>
-    <entry key="yukon.web.modules.visualDisplays.loadManagement.hrEndLabel">HR End</entry>
-    <entry key="yukon.web.modules.visualDisplays.loadManagement.hrLabel">HR</entry>
-    
-    <!-- probabilityForPeakLoad.jsp -->
-    <entry key="yukon.web.modules.visualDisplays.probabilityForPeakLoad.pageTitle">Probability For Peak Load</entry>
-    <entry key="yukon.web.modules.visualDisplays.probabilityForPeakLoad.todayLabel">Today</entry>
-    <entry key="yukon.web.modules.visualDisplays.probabilityForPeakLoad.tomorrowLabel">Tomorrow</entry>
+<entry key="yukon.web.modules.dr.lastTransmitted">Last Transmitted:</entry>
+<entry key="yukon.web.modules.dr.hrEndLabel">HR End</entry>
+<entry key="yukon.web.modules.dr.hrLabel">HR</entry>
 
-	<!--  HourlyDataTypeEnum.java -->
-    <entry key="yukon.web.modules.visualDisplays.hourlyDataTypeEnum.TODAY_INTEGRATED_HOURLY_DATA">Today Integrated Hourly Data</entry>
-        
-    <!--  DataTypeEnum.java -->
-    <entry key="yukon.web.modules.visualDisplays.dataTypeEnum.CURRENT_LOAD">Current Load</entry>
-    <entry key="yukon.web.modules.visualDisplays.dataTypeEnum.CURRENT_IH">Current IH</entry>
-    <entry key="yukon.web.modules.visualDisplays.dataTypeEnum.LOAD_TO_PEAK">Load to Peak</entry>
-    <entry key="yukon.web.modules.visualDisplays.dataTypeEnum.PEAK_IH_LOAD">Peak IH Load</entry>
-    <entry key="yukon.web.modules.visualDisplays.dataTypeEnum.PEAK_DAY_TIMESTAMP">Peak Day Timestamp</entry>
-    
-    <!--  HourlyDataTypeEnum.java -->
-    <entry key="yukon.web.modules.visualDisplays.hourlyDataTypeEnum.TODAY_INTEGRATED_HOURLY_DATA">Today Integrated Hourly Data</entry>
-	<entry key="yukon.web.modules.visualDisplays.hourlyDataTypeEnum.PEAK_DAY_INTEGRATED_HOURLY_DATA">Peak Day Integrated Hourly Data</entry>
-	<entry key="yukon.web.modules.visualDisplays.hourlyDataTypeEnum.TODAY_LOAD_CONTROL_PREDICATION_DATA">Today Load Control Prediction Data</entry>
-	<entry key="yukon.web.modules.visualDisplays.hourlyDataTypeEnum.TOMORROW_LOAD_CONTROL_PREDICTION_DATA">Tomorrow Load Control Prediction Data</entry>
-	
+<!--  HourlyDataTypeEnum.java -->
+<entry key="yukon.web.modules.dr.hourlyDataTypeEnum.TODAY_INTEGRATED_HOURLY_DATA">Today Integrated Hourly Data</entry>
+
+<!--  DataTypeEnum.java -->
+<entry key="yukon.web.modules.dr.dataTypeEnum.CURRENT_LOAD">Current Load</entry>
+<entry key="yukon.web.modules.dr.dataTypeEnum.CURRENT_IH">Current IH</entry>
+<entry key="yukon.web.modules.dr.dataTypeEnum.LOAD_TO_PEAK">Load to Peak</entry>
+<entry key="yukon.web.modules.dr.dataTypeEnum.PEAK_IH_LOAD">Peak IH Load</entry>
+<entry key="yukon.web.modules.dr.dataTypeEnum.PEAK_DAY_TIMESTAMP">Peak Day Timestamp</entry>
+
+<!--  HourlyDataTypeEnum.java -->
+<entry key="yukon.web.modules.dr.hourlyDataTypeEnum.TODAY_INTEGRATED_HOURLY_DATA">Today Integrated Hourly Data</entry>
+<entry key="yukon.web.modules.dr.hourlyDataTypeEnum.PEAK_DAY_INTEGRATED_HOURLY_DATA">Peak Day Integrated Hourly Data</entry>
+<entry key="yukon.web.modules.dr.hourlyDataTypeEnum.TODAY_LOAD_CONTROL_PREDICATION_DATA">Today Load Control Prediction Data</entry>
+<entry key="yukon.web.modules.dr.hourlyDataTypeEnum.TOMORROW_LOAD_CONTROL_PREDICTION_DATA">Tomorrow Load Control Prediction Data</entry>
+
+<!-- loadManagement.jsp -->
+<entry key="yukon.web.modules.dr.loadManagement.siteMapName">Power Supplier Loads</entry>
+<entry key="yukon.web.modules.dr.loadManagement.pageTitle">Power Supplier Loads</entry>
+<entry key="yukon.web.modules.dr.loadManagement.pageHeading">Power Supplier Loads</entry>
+<entry key="yukon.web.modules.dr.loadManagement.crumbTitle">Power Supplier Loads</entry>
+<entry key="yukon.web.modules.dr.loadManagement.powerSupplier">Power Supplier</entry>
+<entry key="yukon.web.modules.dr.loadManagement.currentDayLabel">Current Day</entry>
+<entry key="yukon.web.modules.dr.loadManagement.peakDayLabel">Peak Day</entry>
+<entry key="yukon.web.modules.dr.hrEndLabel">HR End</entry>
+<entry key="yukon.web.modules.dr.hrLabel">HR</entry>
+
+<!-- probabilityForPeakLoad.jsp -->
+<entry key="yukon.web.modules.dr.probabilityForPeakLoad.pageTitle">Probability For Peak Load</entry>
+<entry key="yukon.web.modules.dr.probabilityForPeakLoad.pageHeading">Probability For Peak Load</entry>
+<entry key="yukon.web.modules.dr.probabilityForPeakLoad.crumbTitle">Probability For Peak Load</entry>
+<entry key="yukon.web.modules.dr.probabilityForPeakLoad.todayLabel">Today</entry>
+<entry key="yukon.web.modules.dr.probabilityForPeakLoad.tomorrowLabel">Tomorrow</entry>
+
 </properties>

@@ -22,8 +22,8 @@
     
     <bean id="saajSoapMessageFactory11" class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
         <qualifier value="soap11" />
-	</bean>
-
+    </bean>
+    
     <bean id="saajSoapMessageFactory12" class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
         <property name="soapVersion">
              <util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_12" />
@@ -35,14 +35,12 @@
     <bean id="messageDispatcher" class="org.springframework.ws.soap.server.SoapMessageDispatcher"/>
     
     <bean class="org.springframework.ws.transport.http.WsdlDefinitionHandlerAdapter">
-    <property name="transformLocations" value="true" />
+        <property name="transformLocations" value="true"/>
     </bean>
     
     <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="mappings">
             <props>
-                <prop key="/visualDisplays/loadManagement/*">visualDisplaysLoadManagementController</prop>
-                <prop key="/visualDisplays/probabilityForPeak/*">visualDisplaysProbabilityForPeakLoadController</prop>
                 <prop key="/CB_ServerSoap.wsdl">cb_server</prop>
                 <prop key="/CD_ServerSoap.wsdl">cd_server</prop>
                 <prop key="/EA_ServerSoap.wsdl">ea_server</prop>
@@ -60,18 +58,18 @@
         </property>
         <property name="defaultHandler" ref="messageDispatcher"/>
     </bean>
-            
+    
     <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
        
     <sws:interceptors>
-    	<bean class="org.springframework.ws.soap.server.endpoint.interceptor.SoapEnvelopeLoggingInterceptor"/>
+        <bean class="org.springframework.ws.soap.server.endpoint.interceptor.SoapEnvelopeLoggingInterceptor"/>
     </sws:interceptors>
 
-	<bean id="cb_server"
-		class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
-		<constructor-arg value="classpath:com/cannontech/multispeak/wsdl/CB_Server.wsdl" />
-	</bean>  
-	
+    <bean id="cb_server"
+        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
+        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/CB_Server.wsdl" />
+    </bean>  
+    
     <bean id="cd_server"
         class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
         <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/CD_Server.wsdl" />
@@ -150,44 +148,34 @@
     </bean>
     <!-- End Exception Handling  -->
     
-	<bean id="viewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
-		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
-		<property name="prefix" value="/WEB-INF/pages/multispeak/" />
-	</bean>
-
-	<bean id="multispeakController" class="com.cannontech.web.multispeak.MultispeakController"/>
-	
-	<bean class="com.cannontech.web.multispeak.deviceGroupSync.MultispeakDeviceGroupSyncController" />
-
-	<bean id="methodNameResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
-		<property name="methodParamNames">
-			<list>
-				<value>view</value>
-				<value>add</value>
-				<value>remove</value>
-				<value>removeAll</value>
-				<value>update</value>
-			</list>
-		</property>
-	</bean>
-	
-	<!--  VISUAL DISPLAYS -->
-	<!-- LOAD MANAGEMENT CONTROLLER -->
-	<bean id="visualDisplaysLoadManagementController" class="com.cannontech.web.multispeak.visualDisplays.VisualDisplaysLoadManagementController" >
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+        <property name="prefix" value="/WEB-INF/pages/multispeak/" />
     </bean>
     
-    <!-- PROBABILITY FOR PEAK LOAD CONTROLLER -->
-	<bean id="visualDisplaysProbabilityForPeakLoadController" class="com.cannontech.web.multispeak.visualDisplays.VisualDisplaysProbabilityForPeakLoadController" >
+    <bean id="multispeakController" class="com.cannontech.web.multispeak.MultispeakController"/>
+    
+    <bean class="com.cannontech.web.multispeak.deviceGroupSync.MultispeakDeviceGroupSyncController" />
+    
+    <bean id="methodNameResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
+        <property name="methodParamNames">
+            <list>
+                <value>view</value>
+                <value>add</value>
+                <value>remove</value>
+                <value>removeAll</value>
+                <value>update</value>
+            </list>
+        </property>
     </bean>
     
     <!-- VISUAL DISPLAYS SERVICE -->
-    <bean id="visualDisplaysService" class="com.cannontech.web.multispeak.visualDisplays.service.impl.VisualDisplaysServiceImpl" >
-    </bean>
+    <bean id="visualDisplaysService" class="com.cannontech.web.multispeak.visualDisplays.service.impl.VisualDisplaysServiceImpl"/>
     
     <!-- POWER SUPPLIER FACTORY -->
-    <bean id="powerSupplierFactory" class="com.cannontech.web.multispeak.visualDisplays.service.PowerSupplierFactory" >
-    </bean>
-	<sws:interceptors>
-		<bean class="com.cannontech.multispeak.client.MessageContextHolderInterceptor" />
-	</sws:interceptors>
+    <bean id="powerSupplierFactory" class="com.cannontech.web.multispeak.visualDisplays.service.PowerSupplierFactory"/>
+    
+    <sws:interceptors>
+        <bean class="com.cannontech.multispeak.client.MessageContextHolderInterceptor" />
+    </sws:interceptors>
 </beans>

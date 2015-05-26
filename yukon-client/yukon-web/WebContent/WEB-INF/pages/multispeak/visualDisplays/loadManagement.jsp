@@ -1,112 +1,99 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="vdTags" tagdir="/WEB-INF/tags/visualDisplays"%>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="vdTags" tagdir="/WEB-INF/tags/visualDisplays" %>
 
-<cti:msg var="pageTitle" key="yukon.web.modules.visualDisplays.loadManagement.pageTitle" />
+<cti:standardPage module="dr" page="loadManagement">
+<cti:includeScript link="/JavaScript/yukon.dr.psd.js"/>
 
-<cti:standardPage title="${pageTitle}" module="visualDisplays">
+<%-- LAST TRANSMITTED --%>
+<div class="stacked">
+    <span class="name"><i:inline key=".lastTransmitted"/>&nbsp;</span>
+    <span id="last-transmitted" class="value"><cti:formatDate type="BOTH" value="${now}"/></span>
+</div>
 
-	<cti:standardMenu menuSelection="visualDisplays|loadManagement"/>
-	
-	<cti:breadCrumbs>
-	    <cti:crumbLink url="/dashboard" title="Home"  />
-	    <cti:crumbLink title="${pageTitle}"  />
-	</cti:breadCrumbs>
-	
-	<cti:includeScript link="/JavaScript/visualDisplays.js"/>
-	
-	<h2>${pageTitle}</h2>
-    <br>
+<%-- POWER SUPPLIER DATA TABLE: Current Load, Currnt IH, Load To Peak, Peak IH Load --%>
+<table class="results-table row-highlighting stacked-lg">
     
-    <%-- LAST TRANSMITTED --%>
-    <div class="fwb">
-    	Last Transmitted: <span id="lastTransmitted"><cti:formatDate type="BOTH" value="${now}"/></span>
-    </div>
-    <br>
+    <thead>
+        <%-- header row --%>
+        <tr>
+            <th><i:inline key=".powerSupplier"/></th>
+            <th colspan="2"><cti:msg2 key=".dataTypeEnum.CURRENT_LOAD"/></th>
+            <th colspan="2"><cti:msg2 key=".dataTypeEnum.CURRENT_IH"/></th>
+            <th colspan="2"><cti:msg2 key=".dataTypeEnum.LOAD_TO_PEAK"/></th>
+            <th colspan="2"><cti:msg2 key=".dataTypeEnum.PEAK_IH_LOAD"/></th>
+        </tr>
+    </thead>
+    <tfoot></tfoot>
+    <tbody>
+        <%-- power supplier rows --%>
+        <c:forEach var="powerSupplier" items="${powerSuppliers}">
+            <tr>
+                <td>${powerSupplier.powerSupplierType.description}</td>
+                <vdTags:valueQuality pointId="${powerSupplier.currentLoadPointId}"/>
+                <vdTags:valueQuality pointId="${powerSupplier.currentIhPointId}"/>
+                <vdTags:valueQuality pointId="${powerSupplier.loadToPeakPointId}"/>
+                <vdTags:valueQuality pointId="${powerSupplier.peakIhLoadPointId}"/>
+            </tr>
+        </c:forEach>
+    </tbody>
+</table>
 
-	<%-- POWER SUPPLIER DATA TABLE: Current Load, Currnt IH, Load To Peak, Peak IH Load --%>
-	<table class="results-table" style="width:800px;">
-	
-		<%-- header row --%>
-		<tr>
-			<th>Power Supplier</th>
-			<th colspan="2"><cti:msg key="yukon.web.modules.visualDisplays.dataTypeEnum.CURRENT_LOAD"/></th>
-			<th colspan="2"><cti:msg key="yukon.web.modules.visualDisplays.dataTypeEnum.CURRENT_IH"/></th>
-			<th colspan="2"><cti:msg key="yukon.web.modules.visualDisplays.dataTypeEnum.LOAD_TO_PEAK"/></th>
-			<th colspan="2"><cti:msg key="yukon.web.modules.visualDisplays.dataTypeEnum.PEAK_IH_LOAD"/></th>
-		</tr>
-		
-		<%-- power supplier rows --%>
-		<c:forEach var="powerSupplier" items="${powerSuppliers}">
-			<tr >
-				<td style="font-weight:bold;padding-left:10px;">${powerSupplier.powerSupplierType.description}</td>
-				<vdTags:valueQuality pointId="${powerSupplier.currentLoadPointId}"/>
-				<vdTags:valueQuality pointId="${powerSupplier.currentIhPointId}"/>
-				<vdTags:valueQuality pointId="${powerSupplier.loadToPeakPointId}"/>
-				<vdTags:valueQuality pointId="${powerSupplier.peakIhLoadPointId}"/>
-			</tr>
-		</c:forEach>	  
-		
-	</table>
-	<br><br>
-	
-	<%-- HOURLY DATA TABLE: Current Day vs Peak Day --%>
-	<c:set var="hourNumberCellWidth" value="60" />
-	<c:set var="powerSuplierCellWidth" value="${fn:length(powerSuppliers) * 300 + hourNumberCellWidth}" />
-	
-	<table class="results-table" style="width:${powerSuplierCellWidth}px">
-
-		<%-- header row (hr + power supplier names) --%>
-		<tr>
-			<th style="width:${hourNumberCellWidth}px" nowrap><cti:msg key="yukon.web.modules.visualDisplays.loadManagement.hrEndLabel"/></th>
-			<c:forEach var="powerSupplier" items="${powerSuppliers}">
-				<th colspan="4">${powerSupplier.powerSupplierType.description}</th>
-			</c:forEach>	  
-		</tr>
-		
-		<%-- current vs peak day per power supplier row--%>
-		<c:set var="alternate" value="${true}" scope="request"/>
-		<tr>
-		
-			<td>&nbsp;</td>
-		
-			<c:forEach var="powerSupplier" items="${powerSuppliers}">
-		
-				<td colspan="2" align="center" nowrap>
-					<span style="font-weight:bold;"><cti:msg key="yukon.web.modules.visualDisplays.loadManagement.currentDayLabel"/></span>
-				</td>
-				
-				<td colspan="2" align="center" nowrap>
-					<span style="font-weight:bold;"><cti:msg key="yukon.web.modules.visualDisplays.loadManagement.peakDayLabel"/></span>
-					<br>
-					<cti:pointValue format="{time|MM/dd/yyyy}" pointId="${powerSupplier.peakIhLoadPointId}"/>
-					<br>
-					<cti:msg key="yukon.web.modules.visualDisplays.loadManagement.hrLabel"/> <cti:pointValue format="{time|HH zz}" pointId="${powerSupplier.peakIhLoadPointId}"/>
-				</td>
-		
-			</c:forEach>	  
-		</tr>
-		
-		
-		<%-- hourly data rows --%>
-		<c:forEach var="i" begin="1" end="24">
-			<tr>
-				
-				<td align="right" style="font-weight:bold;">${i}</td>
-			
-				<c:forEach var="powerSupplier" items="${powerSuppliers}">
-					
-					<vdTags:valueQuality pointId="${powerSupplier.todayIntegratedHourlyDataPointIdList[i-1]}"/>
-					<vdTags:valueQuality pointId="${powerSupplier.peakDayIntegratedHourlyDataPointIdList[i-1]}"/>
-					
-				</c:forEach>
-			</tr>
-			
-		</c:forEach>
-	  
+<%-- HOURLY DATA TABLE: Current Day vs Peak Day --%>
+<div class="oa">
+    <table class="results-table row-highlighting">
+        <thead>
+            <%-- header row (hr + power supplier names) --%>
+            <tr>
+                <th>&nbsp;</th>
+                
+                <c:forEach var="powerSupplier" items="${powerSuppliers}">
+                    <th colspan="4" class="supplier-loads-supplier tac">${powerSupplier.powerSupplierType.description}</th>
+                </c:forEach>
+            </tr>
+            
+            <%-- current vs peak day per power supplier row--%>
+            <tr>
+                <th class="wsnw vab tar" style="width: 60px;">
+                    <cti:msg2 key=".hrEndLabel"/>
+                </th>
+                
+                <c:forEach var="powerSupplier" items="${powerSuppliers}">
+                    
+                    <th colspan="2" class="tac wsnw supplier-loads-supplier">
+                        <span class="fwb"><cti:msg2 key=".currentDayLabel"/></span>
+                    </th>
+                    
+                    <th colspan="2" class="tac wsnw">
+                        <span class="fwb"><cti:msg2 key=".peakDayLabel"/></span>
+                        <br>
+                        <cti:pointValue format="{time|MM/dd/yyyy}" pointId="${powerSupplier.peakIhLoadPointId}"/>
+                        <br>
+                        <cti:msg2 key=".hrLabel"/>&nbsp;
+                        <cti:pointValue format="{time|HH zz}" pointId="${powerSupplier.peakIhLoadPointId}"/>
+                    </th>
+                    
+                </c:forEach>
+            </tr>
+        </thead>
+        <tfoot></tfoot>
+        
+        <tbody>
+            <%-- hourly data rows --%>
+            <c:forEach var="i" begin="1" end="24">
+                <tr>
+                    <td class="tar fwb">${i}</td>
+                    <c:forEach var="powerSupplier" items="${powerSuppliers}">
+                        <vdTags:valueQuality pointId="${powerSupplier.todayIntegratedHourlyDataPointIdList[i-1]}"/>
+                        <vdTags:valueQuality pointId="${powerSupplier.peakDayIntegratedHourlyDataPointIdList[i-1]}"/>
+                    </c:forEach>
+                </tr>
+            </c:forEach>
+        </tbody>
     </table>
-	    
+</div>
+
 </cti:standardPage>

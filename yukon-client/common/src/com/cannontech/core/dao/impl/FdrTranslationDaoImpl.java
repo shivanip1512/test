@@ -17,27 +17,30 @@ import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 
 public class FdrTranslationDaoImpl implements FdrTranslationDao {
-    private static final ParameterizedRowMapper<FdrTranslation> rowMapper;
-    private YukonJdbcTemplate yukonJdbcTemplate;
+    
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    
+    private static final ParameterizedRowMapper<FdrTranslation> mapper;
     
     static {
-        rowMapper = new ParameterizedRowMapper<FdrTranslation>() {
+        mapper = new ParameterizedRowMapper<FdrTranslation>() {
+            
             public FdrTranslation mapRow(ResultSet rs, int rowNum) throws SQLException {
-            	
-            	FdrTranslation fdrTranslation = new FdrTranslation();
-            	fdrTranslation.setPointId(rs.getInt("PointID"));
-            	
-            	String direction = rs.getString("DirectionType");
-            	fdrTranslation.setDirection(FdrDirection.getEnum(direction));
-            	
-            	String interfacetype = rs.getString("InterfaceType");
-            	fdrTranslation.setInterfaceType(FdrInterfaceType.valueOf(interfacetype));
-            	
-            	String translation = rs.getString("Translation");
-            	fdrTranslation.setTranslation(translation);
-            	Map<String,String> parameterMap = fdrTranslation.getParameterMap();
-
-            	parameterMap.clear();
+                
+                FdrTranslation fdrTranslation = new FdrTranslation();
+                fdrTranslation.setPointId(rs.getInt("PointID"));
+                
+                String direction = rs.getString("DirectionType");
+                fdrTranslation.setDirection(FdrDirection.getEnum(direction));
+                
+                String interfacetype = rs.getString("InterfaceType");
+                fdrTranslation.setInterfaceType(FdrInterfaceType.valueOf(interfacetype));
+                
+                String translation = rs.getString("Translation");
+                fdrTranslation.setTranslation(translation);
+                Map<String,String> parameterMap = fdrTranslation.getParameterMap();
+                
+                parameterMap.clear();
                     
                 String [] parameters = translation.split(";");
                 
@@ -47,13 +50,14 @@ public class FdrTranslationDaoImpl implements FdrTranslationDao {
                         parameterMap.put(paramSet.substring(0, splitSpot), paramSet.substring(splitSpot+1));
                     }
                 }
-        	
+                
                 return fdrTranslation;
             }
         };
     }
     
     public boolean add(FdrTranslation translation) {
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink sink = sql.insertInto("FdrTranslation");
         sink.addValue("PointId", translation.getPointId());
@@ -62,22 +66,24 @@ public class FdrTranslationDaoImpl implements FdrTranslationDao {
         sink.addValue("Destination", translation.getDestination());
         sink.addValue("Translation", translation.getTranslation());
         
-        int rowsAffected = yukonJdbcTemplate.update(sql);
+        int rowsAffected = jdbcTemplate.update(sql);
         
         return rowsAffected == 1;
     }
     
-	public FdrTranslation getByPointIdAndType(int pointId, FdrInterfaceType type) {
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	sql.append("SELECT PointId, DirectionType, InterfaceType, Translation");
-    	sql.append("FROM FdrTranslation");
-    	sql.append("WHERE PointId").eq(pointId);
-    	sql.append(  "AND InterfaceType").eq(type);
-
-	    return yukonJdbcTemplate.queryForObject(sql, rowMapper);
-	}
+    public FdrTranslation getByPointIdAndType(int pointId, FdrInterfaceType type) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT PointId, DirectionType, InterfaceType, Translation");
+        sql.append("FROM FdrTranslation");
+        sql.append("WHERE PointId").eq(pointId);
+        sql.append(  "AND InterfaceType").eq(type);
+        
+        return jdbcTemplate.queryForObject(sql, mapper);
+    }
     
     public List<FdrTranslation> getByPaobjectIdAndType(int paoId, FdrInterfaceType type) {
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT FDRT.PointId, FDRT.DirectionType, FDRT.InterfaceType, FDRT.Translation");
         sql.append("FROM FdrTranslation FDRT, Point P");
@@ -85,38 +91,42 @@ public class FdrTranslationDaoImpl implements FdrTranslationDao {
         sql.append(  "AND FDRT.InterfaceType").eq(type.toString());
         sql.append(  "AND P.PAObjectId").eq(paoId);
         
-        return yukonJdbcTemplate.query(sql, rowMapper);        
+        return jdbcTemplate.query(sql, mapper);
     }
     
-	public List<FdrTranslation> getByInterfaceType(FdrInterfaceType type) {
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	sql.append("SELECT PointId, DirectionType, InterfaceType, Translation");
-    	sql.append("FROM FdrTranslation");
-    	sql.append("WHERE InterfaceType").eq(type.toString());
-	    
-    	return yukonJdbcTemplate.query(sql, rowMapper);
-	}
+    public List<FdrTranslation> getByInterfaceType(FdrInterfaceType type) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT PointId, DirectionType, InterfaceType, Translation");
+        sql.append("FROM FdrTranslation");
+        sql.append("WHERE InterfaceType").eq(type.toString());
+        
+        return jdbcTemplate.query(sql, mapper);
+    }
     
-	public List<FdrTranslation> getByInterfaceTypeAndTranslation(FdrInterfaceType type, String translation) {
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	sql.append("SELECT PointId, DirectionType, InterfaceType, Translation");
-    	sql.append("FROM FdrTranslation");
-    	sql.append("WHERE InterfaceType").eq(type.toString());
-    	sql.append(  "AND Translation").eq(translation);
-	    
-    	return yukonJdbcTemplate.query(sql, rowMapper);
-	}
+    public List<FdrTranslation> getByInterfaceTypeAndTranslation(FdrInterfaceType type, String translation) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT PointId, DirectionType, InterfaceType, Translation");
+        sql.append("FROM FdrTranslation");
+        sql.append("WHERE InterfaceType").eq(type.toString());
+        sql.append(  "AND Translation").eq(translation);
+        
+        return jdbcTemplate.query(sql, mapper);
+    }
     
     public List<FdrTranslation> getAllTranslations() {
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PointId, DirectionType, InterfaceType, Translation");
         sql.append("FROM FdrTranslation");
         sql.append("ORDER BY InterfaceType");
         
-        return yukonJdbcTemplate.query(sql, rowMapper);
+        return jdbcTemplate.query(sql, mapper);
     }
     
     public boolean delete(FdrTranslation translation) {
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM FdrTranslation");
         sql.append("WHERE PointId").eq(translation.getPointId());
@@ -125,13 +135,9 @@ public class FdrTranslationDaoImpl implements FdrTranslationDao {
         sql.append(  "AND Destination").eq(translation.getDestination());
         sql.append(  "AND Translation").eq(translation.getTranslation());
         
-        int rowsAffected = yukonJdbcTemplate.update(sql);
+        int rowsAffected = jdbcTemplate.update(sql);
         
         return rowsAffected == 1;
     }
     
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
 }

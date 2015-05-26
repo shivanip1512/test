@@ -454,6 +454,8 @@
     <skin name="STANDARD" />
     <search bean="drSearchProducer" />
     <pages>
+      <page name="probabilityForPeakLoad" type="BASIC"/>
+      <page name="loadManagement" type="BASIC"/>
       <page name="cc.home" type="BASIC">
         <pages>
             <page name="cc.init" type="BASIC">
@@ -1365,10 +1367,6 @@
     </module>
   
   <module name="userlm">
-    <skin name="STANDARD" />
-  </module>
-
-  <module name="visualDisplays">
     <skin name="STANDARD" />
   </module>
   

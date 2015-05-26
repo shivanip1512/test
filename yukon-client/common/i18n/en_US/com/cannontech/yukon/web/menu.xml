@@ -212,10 +212,6 @@
 <entry key="yukon.web.menu.config.consumer.leftMenu.expandIcon">/WebConfig/yukon/Icons/triangle-right_white.gif</entry>
 <entry key="yukon.web.menu.config.consumer.leftMenu.collapseIcon">/WebConfig/yukon/Icons/triangle-down_white.gif</entry>
 
-<!-- Visual Displays Module -->
-<entry key="yukon.web.menu.config.visualDisplays.loadManagement">Load Management</entry>
-<entry key="yukon.web.menu.config.visualDisplays.probabilityForPeakLoad">Probability For Peak Load</entry>
-
 <!-- "Monitors" -->
 <entry key="yukon.web.menu.config.monitors.validation">Validation</entry>
 <entry key="yukon.web.menu.config.monitors.validation.review">Review</entry>

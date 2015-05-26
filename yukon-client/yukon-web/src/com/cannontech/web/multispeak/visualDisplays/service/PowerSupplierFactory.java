@@ -14,93 +14,86 @@ import com.cannontech.web.multispeak.visualDisplays.model.PowerSupplier;
 import com.cannontech.web.multispeak.visualDisplays.model.PowerSuppliersEnum;
 
 public class PowerSupplierFactory {
-
-	private FdrTranslationDao fdrTranslationDao;
-	private MultispeakLMService multispeakLMService;
-	
-	public PowerSupplier getPowerSupplierForType(PowerSuppliersEnum powerSupplierType) {
-		
-		PowerSupplier powerSupplier = new PowerSupplier(powerSupplierType);
-		
-		// SET DATA POINT IDS
-		int currentLoadObjectId = DataTypeEnum.CURRENT_LOAD.getObjectIdForPowerSupplierType(powerSupplierType);
-		int currentIhObjectId = DataTypeEnum.CURRENT_IH.getObjectIdForPowerSupplierType(powerSupplierType);
-		int loadToPeakObjectId = DataTypeEnum.LOAD_TO_PEAK.getObjectIdForPowerSupplierType(powerSupplierType);
-		int peakIhLoadObjectId = DataTypeEnum.PEAK_IH_LOAD.getObjectIdForPowerSupplierType(powerSupplierType);
-		int peakDayTimestampObjectId = DataTypeEnum.PEAK_DAY_TIMESTAMP.getObjectIdForPowerSupplierType(powerSupplierType);
-		
-		powerSupplier.setCurrentLoadPointId(getPointIdForObjectId(currentLoadObjectId));
-		powerSupplier.setCurrentIhPointId(getPointIdForObjectId(currentIhObjectId));
-		powerSupplier.setLoadToPeakPointId(getPointIdForObjectId(loadToPeakObjectId));
-		powerSupplier.setPeakIhLoadPointId(getPointIdForObjectId(peakIhLoadObjectId));
-		powerSupplier.setPeakDayTimestampPointId(getPointIdForObjectId(peakDayTimestampObjectId));
-
-		
-		// SET HOURLY DATA POINT IDS
-		List<Integer> todayIntegratedHourlyDataObjectIdList = powerSupplier.getTodayIntegratedHourlyDataObjectIdList();
-		List<Integer> todayIntegratedHourlyDataPointIdList = powerSupplier.getTodayIntegratedHourlyDataPointIdList();
-		
-		List<Integer> peakDayIntegratedHourlyDataObjectIdList = powerSupplier.getPeakDayIntegratedHourlyDataObjectIdList();
-		List<Integer> peakDayIntegratedHourlyDataPointIdList = powerSupplier.getPeakDayIntegratedHourlyDataPointIdList();
-		
-		List<Integer> todayLoadControlPredictionObjectIdList = powerSupplier.getTodayLoadControlPredictionObjectIdList();
-		List<Integer> todayLoadControlPredictionPointIdList = powerSupplier.getTodayLoadControlPredictionPointIdList();
-		
-		List<Integer> tomorrowLoadControlPredictionObjectIdList = powerSupplier.getTomorrowLoadControlPredictionObjectIdList();
-		List<Integer> tomorrowLoadControlPredictionPointIdList = powerSupplier.getTomorrowLoadControlPredictionPointIdList();
-		
-		// loop per hour
-		for (int i = 1; i <= 24; i++) {
-			
-			// loop per data type
-			for (HourlyDataTypeEnum dataType : HourlyDataTypeEnum.values()) {
-				
-				int objectId = dataType.getObjectIdForHourEndForPowerSupplier(i, powerSupplierType);
-				int pointId = getPointIdForObjectId(objectId);
-				
-				// setup objectId to pointId maps
-				if (dataType.equals(HourlyDataTypeEnum.TODAY_INTEGRATED_HOURLY_DATA)) {
-					todayIntegratedHourlyDataObjectIdList.add(objectId);
-					todayIntegratedHourlyDataPointIdList.add(pointId);
-				} else if (dataType.equals(HourlyDataTypeEnum.PEAK_DAY_INTEGRATED_HOURLY_DATA)) {
-					peakDayIntegratedHourlyDataObjectIdList.add(objectId);
-					peakDayIntegratedHourlyDataPointIdList.add(pointId);
-				} else if (dataType.equals(HourlyDataTypeEnum.TODAY_LOAD_CONTROL_PREDICATION_DATA)) {
-					todayLoadControlPredictionObjectIdList.add(objectId);
-					todayLoadControlPredictionPointIdList.add(pointId);
-				} else if (dataType.equals(HourlyDataTypeEnum.TOMORROW_LOAD_CONTROL_PREDICTION_DATA)) {
-					tomorrowLoadControlPredictionObjectIdList.add(objectId);
-					tomorrowLoadControlPredictionPointIdList.add(pointId);
-				} else {
-					throw new IllegalArgumentException("Unsupported powerSupplierType: " + dataType.toString());
-				}
-			}
-		}
-		
-		return powerSupplier;
-	}
-	
-	private int getPointIdForObjectId(int objectId) {
-		
-		String translation = multispeakLMService.buildFdrMultispeakLMTranslation((new Integer(objectId)).toString());
-		List<FdrTranslation> fdrTranslationList = fdrTranslationDao.getByInterfaceTypeAndTranslation(FdrInterfaceType.MULTISPEAK_LM, translation);
-		
-		int pointId = -1;
-		if (fdrTranslationList.size() > 0) {
-			FdrTranslation fdrTranslation = fdrTranslationList.get(0);
-			pointId = fdrTranslation.getPointId();
-		}
-		
-		return pointId;
-	}
-	
-	@Autowired
-	public void setFdrTranslationDao(FdrTranslationDao fdrTranslationDao) {
-		this.fdrTranslationDao = fdrTranslationDao;
-	}
-	
-	@Autowired
-	public void setMultispeakLMService(MultispeakLMService multispeakLMService) {
-		this.multispeakLMService = multispeakLMService;
-	}
+    
+    @Autowired private FdrTranslationDao fdrTranslationDao;
+    @Autowired private MultispeakLMService multispeakLMService;
+    
+    private static final FdrInterfaceType lm = FdrInterfaceType.MULTISPEAK_LM;
+    
+    public PowerSupplier getPowerSupplierForType(PowerSuppliersEnum powerSupplierType) {
+        
+        PowerSupplier powerSupplier = new PowerSupplier(powerSupplierType);
+        
+        // SET DATA POINT IDS
+        int currentLoadObjectId = DataTypeEnum.CURRENT_LOAD.getObjectIdForPowerSupplierType(powerSupplierType);
+        int currentIhObjectId = DataTypeEnum.CURRENT_IH.getObjectIdForPowerSupplierType(powerSupplierType);
+        int loadToPeakObjectId = DataTypeEnum.LOAD_TO_PEAK.getObjectIdForPowerSupplierType(powerSupplierType);
+        int peakIhLoadObjectId = DataTypeEnum.PEAK_IH_LOAD.getObjectIdForPowerSupplierType(powerSupplierType);
+        int peakDayTimestampObjectId = DataTypeEnum.PEAK_DAY_TIMESTAMP.getObjectIdForPowerSupplierType(powerSupplierType);
+        
+        powerSupplier.setCurrentLoadPointId(getPointIdForObjectId(currentLoadObjectId));
+        powerSupplier.setCurrentIhPointId(getPointIdForObjectId(currentIhObjectId));
+        powerSupplier.setLoadToPeakPointId(getPointIdForObjectId(loadToPeakObjectId));
+        powerSupplier.setPeakIhLoadPointId(getPointIdForObjectId(peakIhLoadObjectId));
+        powerSupplier.setPeakDayTimestampPointId(getPointIdForObjectId(peakDayTimestampObjectId));
+        
+        // SET HOURLY DATA POINT IDS
+        List<Integer> todayIntegratedHourlyDataObjectIdList = powerSupplier.getTodayIntegratedHourlyDataObjectIdList();
+        List<Integer> todayIntegratedHourlyDataPointIdList = powerSupplier.getTodayIntegratedHourlyDataPointIdList();
+        
+        List<Integer> peakDayIntegratedHourlyDataObjectIdList = powerSupplier.getPeakDayIntegratedHourlyDataObjectIdList();
+        List<Integer> peakDayIntegratedHourlyDataPointIdList = powerSupplier.getPeakDayIntegratedHourlyDataPointIdList();
+        
+        List<Integer> todayLoadControlPredictionObjectIdList = powerSupplier.getTodayLoadControlPredictionObjectIdList();
+        List<Integer> todayLoadControlPredictionPointIdList = powerSupplier.getTodayLoadControlPredictionPointIdList();
+        
+        List<Integer> tomorrowLoadControlPredictionObjectIdList = powerSupplier.getTomorrowLoadControlPredictionObjectIdList();
+        List<Integer> tomorrowLoadControlPredictionPointIdList = powerSupplier.getTomorrowLoadControlPredictionPointIdList();
+        
+        // loop per hour
+        for (int i = 1; i <= 24; i++) {
+            
+            // loop per data type
+            for (HourlyDataTypeEnum dataType : HourlyDataTypeEnum.values()) {
+                
+                int objectId = dataType.getObjectIdForHourEndForPowerSupplier(i, powerSupplierType);
+                int pointId = getPointIdForObjectId(objectId);
+                
+                // setup objectId to pointId maps
+                if (dataType.equals(HourlyDataTypeEnum.TODAY_INTEGRATED_HOURLY_DATA)) {
+                    todayIntegratedHourlyDataObjectIdList.add(objectId);
+                    todayIntegratedHourlyDataPointIdList.add(pointId);
+                } else if (dataType.equals(HourlyDataTypeEnum.PEAK_DAY_INTEGRATED_HOURLY_DATA)) {
+                    peakDayIntegratedHourlyDataObjectIdList.add(objectId);
+                    peakDayIntegratedHourlyDataPointIdList.add(pointId);
+                } else if (dataType.equals(HourlyDataTypeEnum.TODAY_LOAD_CONTROL_PREDICATION_DATA)) {
+                    todayLoadControlPredictionObjectIdList.add(objectId);
+                    todayLoadControlPredictionPointIdList.add(pointId);
+                } else if (dataType.equals(HourlyDataTypeEnum.TOMORROW_LOAD_CONTROL_PREDICTION_DATA)) {
+                    tomorrowLoadControlPredictionObjectIdList.add(objectId);
+                    tomorrowLoadControlPredictionPointIdList.add(pointId);
+                } else {
+                    throw new IllegalArgumentException("Unsupported powerSupplierType: " + dataType.toString());
+                }
+            }
+        }
+        
+        return powerSupplier;
+    }
+    
+    private int getPointIdForObjectId(int objectId) {
+        
+        String objectString = Integer.valueOf(objectId).toString();
+        String translation = multispeakLMService.buildFdrMultispeakLMTranslation(objectString);
+        List<FdrTranslation> translations = fdrTranslationDao.getByInterfaceTypeAndTranslation(lm, translation);
+        
+        int pointId = -1;
+        if (translations.size() > 0) {
+            FdrTranslation fdrTranslation = translations.get(0);
+            pointId = fdrTranslation.getPointId();
+        }
+        
+        return pointId;
+    }
+    
 }

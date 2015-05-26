@@ -13,43 +13,36 @@ import com.cannontech.web.multispeak.visualDisplays.model.PowerSuppliersEnum;
 import com.cannontech.web.multispeak.visualDisplays.service.VisualDisplaysService;
 
 public class VisualDisplaysServiceImpl implements VisualDisplaysService {
-	
-	private MultispeakLMService multispeakLMService;
-	private FdrTranslationDao fdrTranslationDao;
-
-	public List<PowerSuppliersEnum> getAvailablePowerSuppliers() {
-		
-		List<PowerSuppliersEnum> availablePowerSuppliers = new ArrayList<PowerSuppliersEnum>();
-		
-		for (PowerSuppliersEnum powerSupplier : PowerSuppliersEnum.values()) {
-			
-			int currentLoadObjectId = powerSupplier.getCurrentLoadId();
-			
-			String translation = multispeakLMService.buildFdrMultispeakLMTranslation((new Integer(currentLoadObjectId)).toString());
-			List<FdrTranslation> fdrTranslationList = fdrTranslationDao.getByInterfaceTypeAndTranslation(FdrInterfaceType.MULTISPEAK_LM, translation);
-			
-			int pointId = -1;
-			if (fdrTranslationList.size() > 0) {
-				FdrTranslation fdrTranslation = fdrTranslationList.get(0);
-				pointId = fdrTranslation.getPointId();
-			}
-			
-			if (pointId > 0) {
-				availablePowerSuppliers.add(powerSupplier);
-			}
-		}
-		
-		
-		return availablePowerSuppliers;
-	}
-	
-	@Autowired
-	public void setMultispeakLMService(MultispeakLMService multispeakLMService) {
-		this.multispeakLMService = multispeakLMService;
-	}
-	
-	@Autowired
-	public void setFdrTranslationDao(FdrTranslationDao fdrTranslationDao) {
-		this.fdrTranslationDao = fdrTranslationDao;
-	}
+    
+    @Autowired private MultispeakLMService multispeakLMService;
+    @Autowired private FdrTranslationDao fdrTranslationDao;
+    
+    private static final FdrInterfaceType lm = FdrInterfaceType.MULTISPEAK_LM;
+    
+    public List<PowerSuppliersEnum> getAvailablePowerSuppliers() {
+        
+        List<PowerSuppliersEnum> available = new ArrayList<>();
+        
+        for (PowerSuppliersEnum supplier : PowerSuppliersEnum.values()) {
+            
+            int currentLoadObjectId = supplier.getCurrentLoadId();
+            
+            String pointString = Integer.valueOf(currentLoadObjectId).toString();
+            String translation = multispeakLMService.buildFdrMultispeakLMTranslation(pointString);
+            List<FdrTranslation> translations = fdrTranslationDao.getByInterfaceTypeAndTranslation(lm, translation);
+            
+            int pointId = -1;
+            if (translations.size() > 0) {
+                FdrTranslation fdrTranslation = translations.get(0);
+                pointId = fdrTranslation.getPointId();
+            }
+            
+            if (pointId > 0) {
+                available.add(supplier);
+            }
+        }
+        
+        return available;
+    }
+    
 }

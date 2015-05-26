@@ -4,52 +4,45 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.system.GlobalSettingType;
 import com.cannontech.web.multispeak.visualDisplays.model.PowerSupplier;
 import com.cannontech.web.multispeak.visualDisplays.model.PowerSuppliersEnum;
 import com.cannontech.web.multispeak.visualDisplays.service.PowerSupplierFactory;
 import com.cannontech.web.multispeak.visualDisplays.service.VisualDisplaysService;
+import com.cannontech.web.security.annotation.CheckGlobalSetting;
 
-public class VisualDisplaysLoadManagementController extends VisualDisplaysBaseController {
-
-	private VisualDisplaysService visualDisplaysService;
-	private PowerSupplierFactory powerSupplierFactory;
-	
-	public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-
-        ModelAndView mav = new ModelAndView("visualDisplays/loadManagement.jsp");
+@Controller
+@CheckGlobalSetting(GlobalSettingType.MSP_LM_MAPPING_SETUP)
+public class VisualDisplaysLoadManagementController {
+    
+    @Autowired private VisualDisplaysService displaysService;
+    @Autowired private PowerSupplierFactory powerSupplierFactory;
+    @Autowired private DateFormattingService dateFormatting;
+    
+    @RequestMapping("visualDisplays/loadManagement/home")
+    public String home(ModelMap model) {
         
         // available power suppliers
-        List<PowerSuppliersEnum> availablePowerSuppliers = visualDisplaysService.getAvailablePowerSuppliers();
+        List<PowerSuppliersEnum> suppliers = displaysService.getAvailablePowerSuppliers();
         
         List<PowerSupplier> powerSuppliers = new ArrayList<PowerSupplier>();
-        for (PowerSuppliersEnum powerSupplierEnum : availablePowerSuppliers) {
-        	
-        	PowerSupplier powerSupplier = powerSupplierFactory.getPowerSupplierForType(powerSupplierEnum);
-        	powerSuppliers.add(powerSupplier);
+        for (PowerSuppliersEnum supplier : suppliers) {
+            PowerSupplier powerSupplier = powerSupplierFactory.getPowerSupplierForType(supplier);
+            powerSuppliers.add(powerSupplier);
         }
-        mav.addObject("powerSuppliers", powerSuppliers);
+        model.addAttribute("powerSuppliers", powerSuppliers);
         
         // current time
         Date now  = new Date();
-        mav.addObject("now", now);
+        model.addAttribute("now", now);
         
-        return mav;
+        return "visualDisplays/loadManagement.jsp";
     }
-	
-	@Autowired
-	public void setVisualDisplaysService(VisualDisplaysService visualDisplaysService) {
-		this.visualDisplaysService = visualDisplaysService;
-	}
-
-	@Autowired
-	public void setPowerSupplierFactory(PowerSupplierFactory powerSupplierFactory) {
-		this.powerSupplierFactory = powerSupplierFactory;
-	}
+    
 }
