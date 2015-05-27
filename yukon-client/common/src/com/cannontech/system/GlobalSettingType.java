@@ -31,8 +31,6 @@ public enum GlobalSettingType implements DisplayableEnum {
     AUTH_PORT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 1812),
     ACCT_PORT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 1813),
     SECRET_KEY(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "cti"),
-    AUTH_METHOD(GlobalSettingSubCategory.AUTHENTICATION, stringType(), null),
-    AUTHENTICATION_MODE(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "Yukon"),
     AUTH_TIMEOUT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 30),
 
     // Authentication > LDAP (only enabled when DEFAULT_AUTH_TYPE = LDAP)

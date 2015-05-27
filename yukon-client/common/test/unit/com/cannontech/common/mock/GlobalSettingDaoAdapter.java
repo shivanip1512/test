@@ -47,4 +47,9 @@ public class GlobalSettingDaoAdapter implements GlobalSettingDao {
     public Integer getNullableInteger(GlobalSettingType type) {
         throw new MethodNotImplementedException();
     }
+
+    @Override
+    public GlobalSetting findSetting(GlobalSettingType setting) {
+        throw new MethodNotImplementedException();
+    }
 }

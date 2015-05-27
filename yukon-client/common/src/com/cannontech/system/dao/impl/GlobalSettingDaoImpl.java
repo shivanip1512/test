@@ -140,7 +140,8 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
         return returnType.cast(getSetting(setting).getValue());
     }
 
-    private GlobalSetting findSetting(GlobalSettingType setting) {
+    @Override
+    public GlobalSetting findSetting(GlobalSettingType setting) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT GlobalSettingId, Value, Name, Comments, LastChangedDate");
         sql.append("FROM GlobalSetting");

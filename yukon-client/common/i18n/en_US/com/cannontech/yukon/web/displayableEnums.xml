@@ -260,10 +260,6 @@
     <entry key="yukon.common.setting.DEFAULT_AUTH_TYPE.description">Default authentication type, possible values: Active Directory, Encrypted, LDAP, Radius, No Login.</entry>
     <entry key="yukon.common.setting.AUTH_TIMEOUT">Authentication Timeout</entry>
     <entry key="yukon.common.setting.AUTH_TIMEOUT.description">Number of seconds before the authentication process times out</entry>
-    <entry key="yukon.common.setting.AUTHENTICATION_MODE">Authentication Mode</entry>
-    <entry key="yukon.common.setting.AUTHENTICATION_MODE.description">Authentication mode to use, possible values: Yukon, Radius.</entry>
-    <entry key="yukon.common.setting.AUTH_METHOD">Authentication Method</entry>
-    <entry key="yukon.common.setting.AUTH_METHOD.description">Authentication method, possible values: leave empty, PAP.</entry>
     <entry key="yukon.common.setting.SECRET_KEY">Secret Key</entry>
     <entry key="yukon.common.setting.SECRET_KEY.description">Client machine secret key value, defined by the server.</entry>
     <entry key="yukon.common.setting.ACCT_PORT">Accounting Port</entry>

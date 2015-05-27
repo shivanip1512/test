@@ -87,6 +87,14 @@ public interface GlobalSettingDao {
      */
     public void verifySetting(GlobalSettingType setting) throws NotAuthorizedException;
     
+    /**
+     * Returns the setting value of the specified Yukon setting based on
+     * different conditions.It will first check if the value exists in the cache else it will fetch it from database 
+     * or directly returns the default value
+     * @param setting - any GlobalSetting setting with an GlobalSetting return type
+     * @return Object of GlobalSetting
+     */
+
     public GlobalSetting getSetting(GlobalSettingType globalSetting);
 
     /**
@@ -96,4 +104,11 @@ public interface GlobalSettingDao {
      * 
      */
     public void valueChanged();
+    
+    /**
+     * Returns the setting value of the specified Yukon setting directly from database.
+     * @param setting - any GlobalSetting setting with an GlobalSetting return type
+     * @return Object of GlobalSetting
+     */
+    public GlobalSetting findSetting(GlobalSettingType setting);
 }
