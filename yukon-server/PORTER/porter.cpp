@@ -150,21 +150,18 @@ static CtiCommFailPoints_t commFailDeviceIDToPointIDMap;
 
 ULONG WorkCountPointOffset = 0;
 
-struct isTAPTerm
-{
-    bool operator()(const CtiDeviceSPtr &devsptr)
-    {
-        return devsptr->getType() == TYPE_TAPTERM;
-    }
-};
-
 bool isTAPTermPort(LONG PortNumber)
 {
     vector<CtiDeviceManager::ptr_type> devices;
 
     DeviceManager.getDevicesByPortID(PortNumber, devices);
 
-    return find_if(devices.begin(), devices.end(), isTAPTerm()) != devices.end();
+    static const auto isTapTerm = [](const CtiDeviceSPtr &devsptr)
+    {
+        return devsptr->getType() == TYPE_TAPTERM;
+    };
+
+    return find_if(devices.begin(), devices.end(), isTapTerm) != devices.end();
 }
 
 void populateRouteAssociations(CtiDeviceManager *DM, CtiRouteManager *RM)
@@ -1094,7 +1091,7 @@ void APIENTRY PorterCleanUp (ULONG Reason)
 
     if( _statisticsThread.isRunning() )
     {
-        while( ! _dispThread.tryJoinFor(Cti::Timing::Chrono::milliseconds(1500)) )
+        while( ! _statisticsThread.tryJoinFor(Cti::Timing::Chrono::milliseconds(1500)) )
         {
             CTILOG_ERROR(dout, "_statisticsThread has not shutdown");
         }
