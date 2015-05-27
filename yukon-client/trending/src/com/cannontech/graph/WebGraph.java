@@ -262,8 +262,9 @@ public class WebGraph implements Runnable {
             if (createTimeInterval == null) {
                 createTimeInterval = globalSettingDao.getInteger(GlobalSettingType.RUN_INTERVAL);
             } else {
-                Integer updatedCreateTimeInterval = (Integer) globalSettingDao.findSetting(GlobalSettingType.RUN_INTERVAL).getValue();
-                if (updatedCreateTimeInterval!=null && !(updatedCreateTimeInterval.intValue() == createTimeInterval.intValue())) {
+                Integer updatedCreateTimeInterval = (Integer) globalSettingDao.findSetting(GlobalSettingType.RUN_INTERVAL)
+                                                                              .getValue();
+                if (updatedCreateTimeInterval != null && !(updatedCreateTimeInterval.intValue() == createTimeInterval.intValue())) {
                     createTimeInterval = updatedCreateTimeInterval;
                 }
             }
