@@ -251,8 +251,7 @@ static void applyNewLoad(const long unusedid, CtiPortSPtr ptPort, void *unusedPt
 
     if((PorterDebugLevel & PORTER_DEBUG_VERBOSE) && ptPort->isTAP())
     {
-        //TODO: verify if 'ptPort->isTAP()' can ever return true, remove log if not
-        CTILOG_DEBUG(dout, ptPort->getName() << " has a TAP device on it.  This currently sets the port to 7E1 mode for ALL devices on the port");
+        CTILOG_DEBUG(dout, ptPort->getName() << " has a TAP device on it.");
     }
 
     ptPort->verifyPortIsRunnable(hPorterEvents[P_QUIT_EVENT]);
