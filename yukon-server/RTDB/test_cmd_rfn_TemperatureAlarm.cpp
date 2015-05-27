@@ -409,6 +409,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration_decode_exc
                     ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x32 )( 0x00 )( 0x28 )( 0x0f )( 0x03 ) )
         ( list_of( 0x89 )( 0x01 )( 0x03 )( 0x01 )
                     ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x32 )( 0x00 )( 0x28 )( 0x0f )( 0x03 ) )
+        ( list_of( 0x89 )( 0x01 )( 0x01 )( 0x00 ) )
         ( list_of( 0x89 )( 0x01 )( 0x00 )( 0x02 )
                     ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x32 )( 0x00 )( 0x28 )( 0x0f )( 0x03 ) )
         ( list_of( 0x89 )( 0x01 )( 0x00 )( 0x01 )
@@ -418,6 +419,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration_decode_exc
         ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0x8a)" ) )
         ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x00)" ) )
         ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Status (3)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response length (4)" ) )
         ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (2)" ) )
         ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response length (12)" ) );
 
