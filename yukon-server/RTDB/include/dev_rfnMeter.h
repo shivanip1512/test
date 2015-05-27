@@ -71,9 +71,8 @@ protected:
     YukonError_t executePutConfigInstallChannels          (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
     YukonError_t executeGetConfigInstallChannels          (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 
-    void handleCommandResult( const Commands::RfnSetTemperatureAlarmConfigurationCommand  & cmd ) override;
-    void handleCommandResult( const Commands::RfnGetTemperatureAlarmConfigurationCommand  & cmd ) override;
-    void handleCommandResult( const Commands::RfnChannelSelectionCommand                  & cmd ) override;
+    void handleCommandResult( const Commands::RfnTemperatureAlarmCommand & cmd ) override;
+    void handleCommandResult( const Commands::RfnChannelSelectionCommand & cmd ) override;
     void handleCommandResult( const Commands::RfnChannelIntervalRecording::GetConfigurationCommand       & cmd ) override;
     void handleCommandResult( const Commands::RfnChannelIntervalRecording::GetActiveConfigurationCommand & cmd ) override;
     void handleCommandResult( const Commands::RfnChannelIntervalRecording::SetConfigurationCommand       & cmd ) override;

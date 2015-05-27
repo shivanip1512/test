@@ -2,16 +2,15 @@
 
 #include "cmd_rfn.h"
 
-
-
 namespace Cti        {
 namespace Devices    {
 namespace Commands   {
 
-
 class IM_EX_DEVDB RfnTemperatureAlarmCommand : public RfnCommand
 {
 public:
+
+    void invokeResultHandler( ResultHandler & rh ) const override;
 
     virtual RfnCommandResult decodeCommand( const CtiTime now,
                                             const RfnResponsePayload & response ) = 0;
@@ -23,6 +22,8 @@ public:
                     alarmRepeatCount;
         int         alarmHighTempThreshold;
     };
+
+    virtual boost::optional<AlarmConfiguration> getAlarmConfiguration() const = 0;
 
     bool isSupported() const;
 
@@ -51,22 +52,15 @@ protected:
         AlarmState_AlarmEnabled     = 0x01
     };
 
-    enum AlarmStatus
-    {
-        AlarmStatus_Unsupported     = 0x02
-    };
-
     RfnTemperatureAlarmCommand( const Operation operation );
 
-    RfnTemperatureAlarmCommand( const Operation operation, const AlarmConfiguration & configuration );
+    ASID getApplicationServiceId() const override;
 
-    virtual ASID getApplicationServiceId() const;
+    unsigned char getCommandCode() const override;
 
-    virtual unsigned char getCommandCode() const;
+    unsigned char getOperation() const override;
 
-    virtual unsigned char getOperation() const;
-
-    virtual Bytes getCommandData();
+    Bytes getCommandData() override;
 
     const Operation _operation;
 
@@ -81,9 +75,19 @@ protected:
 
     static TemperatureConfig decodeAlarmConfigTlv(const TypeLengthValue &tlv);
 
-    bool _isSupported;
+    enum class CommandStatus
+    {
+        Invalid,
+        Success,
+        Failure,
+        Unsupported
+    };
 
-    AlarmConfiguration  _configuration;
+    CommandStatus commandStatus() const;
+
+private:
+
+    CommandStatus _commandStatus = CommandStatus::Invalid;
 };
 
 
@@ -96,23 +100,16 @@ public:
 
     RfnSetTemperatureAlarmConfigurationCommand( const AlarmConfiguration & configuration );
 
-    virtual Bytes getCommandData();
+    Bytes getCommandData() override;
 
-    virtual void invokeResultHandler( ResultHandler & rh ) const;
+    RfnCommandResult decodeCommand( const CtiTime now,
+                                    const RfnResponsePayload & response ) override;
 
-    virtual RfnCommandResult decodeCommand( const CtiTime now,
-                                            const RfnResponsePayload & response );
+    boost::optional<AlarmConfiguration> getAlarmConfiguration() const override;
+
 protected:
 
-    enum ConfigurationLimits
-    {
-        Limit_HighTempThresholdMinimum  = -40,
-        Limit_HighTempThresholdMaximum  = 185,
-        Limit_RepeatIntervalMinimum     = 0,
-        Limit_RepeatIntervalMaximum     = 255,
-        Limit_RepeatCountMinimum        = 0,
-        Limit_RepeatCountMaximum        = 255
-    };
+    AlarmConfiguration _configuration;
 };
 
 
@@ -125,12 +122,14 @@ public:
 
     RfnGetTemperatureAlarmConfigurationCommand();
 
-    AlarmConfiguration getAlarmConfiguration() const;
+    RfnCommandResult decodeCommand( const CtiTime now,
+                                    const RfnResponsePayload & response ) override;
 
-    virtual void invokeResultHandler( ResultHandler & rh ) const;
+    boost::optional<AlarmConfiguration> getAlarmConfiguration() const override;
 
-    virtual RfnCommandResult decodeCommand( const CtiTime now,
-                                            const RfnResponsePayload & response );
+protected:
+
+    boost::optional<AlarmConfiguration> _configuration;
 };
 
 

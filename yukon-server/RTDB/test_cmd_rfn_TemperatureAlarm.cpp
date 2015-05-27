@@ -293,6 +293,22 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration )
 
         BOOST_CHECK_EQUAL_RANGES( rcv, exp );
     }
+    // decode -- failure response
+    {
+        const std::vector< unsigned char > response {
+                0x89, 0x01, 0x01, 0x00 };
+
+        RfnCommandResult rcv = command.decodeCommand( execute_time, response );
+
+        BOOST_CHECK_EQUAL( rcv.description, "Status: Failure (1)" );
+
+        BOOST_CHECK_EQUAL( true, command.isSupported() );
+
+        auto configuration = command.getAlarmConfiguration();
+
+        //  no config returned
+        BOOST_CHECK( ! configuration );
+    }
     // decode -- success response
     {
         const std::vector< unsigned char > response {
@@ -310,12 +326,13 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration )
 
         BOOST_CHECK_EQUAL( true, command.isSupported() );
 
-        RfnTemperatureAlarmCommand::AlarmConfiguration configuration = command.getAlarmConfiguration();
+        auto configuration = command.getAlarmConfiguration();
 
-        BOOST_CHECK_EQUAL( true, configuration.alarmEnabled );
-        BOOST_CHECK_EQUAL(   50, configuration.alarmHighTempThreshold );
-        BOOST_CHECK_EQUAL(   15, configuration.alarmRepeatInterval );
-        BOOST_CHECK_EQUAL(    3, configuration.alarmRepeatCount );
+        BOOST_REQUIRE( !! configuration );
+        BOOST_CHECK_EQUAL( true, configuration->alarmEnabled );
+        BOOST_CHECK_EQUAL(   50, configuration->alarmHighTempThreshold );
+        BOOST_CHECK_EQUAL(   15, configuration->alarmRepeatInterval );
+        BOOST_CHECK_EQUAL(    3, configuration->alarmRepeatCount );
     }
     // decode -- success response with negative threshold
     {
@@ -334,12 +351,13 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration )
 
         BOOST_CHECK_EQUAL( true, command.isSupported() );
 
-        RfnTemperatureAlarmCommand::AlarmConfiguration configuration = command.getAlarmConfiguration();
+        auto configuration = command.getAlarmConfiguration();
 
-        BOOST_CHECK_EQUAL( true, configuration.alarmEnabled );
-        BOOST_CHECK_EQUAL(  -16, configuration.alarmHighTempThreshold );
-        BOOST_CHECK_EQUAL(   15, configuration.alarmRepeatInterval );
-        BOOST_CHECK_EQUAL(    3, configuration.alarmRepeatCount );
+        BOOST_REQUIRE( !! configuration );
+        BOOST_CHECK_EQUAL( true, configuration->alarmEnabled );
+        BOOST_CHECK_EQUAL(  -16, configuration->alarmHighTempThreshold );
+        BOOST_CHECK_EQUAL(   15, configuration->alarmRepeatInterval );
+        BOOST_CHECK_EQUAL(    3, configuration->alarmRepeatCount );
     }
     // decode -- success response with singular degree, minute, count
     {
@@ -358,12 +376,13 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration )
 
         BOOST_CHECK_EQUAL( true, command.isSupported() );
 
-        RfnTemperatureAlarmCommand::AlarmConfiguration configuration = command.getAlarmConfiguration();
+        auto configuration = command.getAlarmConfiguration();
 
-        BOOST_CHECK_EQUAL( true, configuration.alarmEnabled );
-        BOOST_CHECK_EQUAL(    1, configuration.alarmHighTempThreshold );
-        BOOST_CHECK_EQUAL(    1, configuration.alarmRepeatInterval );
-        BOOST_CHECK_EQUAL(    1, configuration.alarmRepeatCount );
+        BOOST_REQUIRE( !! configuration );
+        BOOST_CHECK_EQUAL( true, configuration->alarmEnabled );
+        BOOST_CHECK_EQUAL(    1, configuration->alarmHighTempThreshold );
+        BOOST_CHECK_EQUAL(    1, configuration->alarmRepeatInterval );
+        BOOST_CHECK_EQUAL(    1, configuration->alarmRepeatCount );
     }
     // decode -- unsupported response -- with TLV
     {
@@ -400,7 +419,6 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration_decode_exc
                     0x01, 0x07, 0x01, 0x00, 0x32, 0x00, 0x28, 0x0f, 0x03 },
             { 0x89, 0x01, 0x03, 0x01,
                     0x01, 0x07, 0x01, 0x00, 0x32, 0x00, 0x28, 0x0f, 0x03 },
-            { 0x89, 0x01, 0x01, 0x00 },
             { 0x89, 0x01, 0x00, 0x02,
                     0x01, 0x07, 0x01, 0x00, 0x32, 0x00, 0x28, 0x0f, 0x03 },
             { 0x89, 0x01, 0x00, 0x01,
@@ -410,7 +428,6 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration_decode_exc
             RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0x8a)" ),
             RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x00)" ),
             RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Status (3)" ),
-            RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response length (4)" ),
             RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (2)" ),
             RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response length (12)" ) };
 

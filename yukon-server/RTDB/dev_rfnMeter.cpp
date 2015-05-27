@@ -594,7 +594,7 @@ YukonError_t RfnMeterDevice::executeGetConfigTemperatureAlarm( CtiRequestMsg * p
     return ClientErrors::None;
 }
 
-void RfnMeterDevice::handleCommandResult( const Commands::RfnSetTemperatureAlarmConfigurationCommand & cmd )
+void RfnMeterDevice::handleCommandResult( const Commands::RfnTemperatureAlarmCommand & cmd )
 {
     const bool unsupported = ! cmd.isSupported();
 
@@ -602,24 +602,12 @@ void RfnMeterDevice::handleCommandResult( const Commands::RfnSetTemperatureAlarm
     {
         setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_TempAlarmUnsupported, true );
     }
-}
-
-void RfnMeterDevice::handleCommandResult( const Commands::RfnGetTemperatureAlarmConfigurationCommand & cmd )
-{
-    const bool unsupported = ! cmd.isSupported();
-
-    if ( unsupported )
+    else if ( const auto configuration = cmd.getAlarmConfiguration() )
     {
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_TempAlarmUnsupported, true );
-    }
-    else
-    {
-        Commands::RfnTemperatureAlarmCommand::AlarmConfiguration    configuration = cmd.getAlarmConfiguration();
-
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmIsEnabled,         configuration.alarmEnabled );
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmRepeatInterval,    configuration.alarmRepeatInterval );
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmRepeatCount,       configuration.alarmRepeatCount );
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmHighTempThreshold, configuration.alarmHighTempThreshold );
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmIsEnabled,         configuration->alarmEnabled );
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmRepeatInterval,    configuration->alarmRepeatInterval );
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmRepeatCount,       configuration->alarmRepeatCount );
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmHighTempThreshold, configuration->alarmHighTempThreshold );
     }
 }
 

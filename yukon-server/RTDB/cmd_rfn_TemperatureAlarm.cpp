@@ -14,38 +14,16 @@ namespace Devices    {
 namespace Commands   {
 
 
-namespace   {
-
-const std::map<unsigned char, std::string>  statusResolver = boost::assign::map_list_of
-    ( 0x00, "Success" )
-    ( 0x01, "Failure" )
-    ( 0x02, "Unsupported" );
-
-
-const std::map<unsigned char, std::string>  alarmStateResolver = boost::assign::map_list_of
-    ( 0x00, "Disabled" )
-    ( 0x01, "Enabled" );
-
-}
-
-
-////
-
-
 RfnTemperatureAlarmCommand::RfnTemperatureAlarmCommand( const Operation operation )
-    :   _operation( operation ),
-        _isSupported( false )
+    :   _operation( operation )
 {
     // empty
 }
 
 
-RfnTemperatureAlarmCommand::RfnTemperatureAlarmCommand( const Operation operation, const AlarmConfiguration & configuration )
-    :   _operation( operation ),
-        _isSupported( false ),
-        _configuration( configuration )
+void RfnTemperatureAlarmCommand::invokeResultHandler( ResultHandler & rh ) const
 {
-    // empty
+    rh.handleCommandResult( *this );
 }
 
 
@@ -70,7 +48,13 @@ unsigned char RfnTemperatureAlarmCommand::getOperation() const
 
 bool RfnTemperatureAlarmCommand::isSupported() const
 {
-    return _isSupported;
+    return _commandStatus != CommandStatus::Unsupported;
+}
+
+
+auto RfnTemperatureAlarmCommand::commandStatus() const -> CommandStatus
+{
+    return _commandStatus;
 }
 
 
@@ -102,16 +86,21 @@ RfnCommandResult RfnTemperatureAlarmCommand::decodeResponseHeader( const CtiTime
 
     // Validate Status code
 
-    boost::optional<std::string> status = mapFind( statusResolver, response[2] );
+    using CommandStatusDescription = std::pair<CommandStatus, std::string>;
 
-    validate( Condition( !! status, ClientErrors::InvalidData )
+    static const std::map<unsigned char, CommandStatusDescription>  statusResolver = {
+            { 0x00, { CommandStatus::Success,     "Success" } },
+            { 0x01, { CommandStatus::Failure,     "Failure" } },
+            { 0x02, { CommandStatus::Unsupported, "Unsupported" } } };
+
+    auto statusDescription = mapFind( statusResolver, response[2] );
+
+    validate( Condition( !! statusDescription, ClientErrors::InvalidData )
             << "Invalid Status (" << response[2] << ")" );
 
-    result.description += "Status: " + *status + " (" + CtiNumStr(response[2]) + ")";
+    _commandStatus = statusDescription->first;
 
-    // Determine the Supported/Unsupported status
-
-    _isSupported = ( response[2] != AlarmStatus_Unsupported );
+    result.description += "Status: " + statusDescription->second + " (" + CtiNumStr(response[2]) + ")";
 
     return result;
 }
@@ -128,7 +117,11 @@ auto RfnTemperatureAlarmCommand::decodeAlarmConfigTlv(const TypeLengthValue &tlv
 
     // Validate the Alarm State
 
-    boost::optional<std::string> enabledState = mapFind( alarmStateResolver, tlv.value[0] );
+    static const std::map<unsigned char, std::string> AlarmStateResolver = {
+            { 0x00, "Disabled" },
+            { 0x01, "Enabled"  } };
+
+    boost::optional<std::string> enabledState = mapFind( AlarmStateResolver, tlv.value[0] );
 
     validate( Condition( !! enabledState, ClientErrors::InvalidData )
             << "Invalid Alarm Enabled State ( " << tlv.value[0] << ")" );
@@ -171,8 +164,19 @@ auto RfnTemperatureAlarmCommand::decodeAlarmConfigTlv(const TypeLengthValue &tlv
 
 
 RfnSetTemperatureAlarmConfigurationCommand::RfnSetTemperatureAlarmConfigurationCommand( const AlarmConfiguration & configuration )
-    :   RfnTemperatureAlarmCommand( Operation_SetConfiguration, configuration )
+    :   RfnTemperatureAlarmCommand( Operation_SetConfiguration ),
+        _configuration( configuration )
 {
+    enum ConfigurationLimits
+    {
+        Limit_HighTempThresholdMinimum  = -40,
+        Limit_HighTempThresholdMaximum  = 185,
+        Limit_RepeatIntervalMinimum     = 0,
+        Limit_RepeatIntervalMaximum     = 255,
+        Limit_RepeatCountMinimum        = 0,
+        Limit_RepeatCountMaximum        = 255
+    };
+
     validate( Condition( configuration.alarmHighTempThreshold >= Limit_HighTempThresholdMinimum, ClientErrors::BadParameter )
             << "Invalid High Temperature Threshold: (" << configuration.alarmHighTempThreshold
             << ") underflow (minimum: "<< Limit_HighTempThresholdMinimum << ")" );
@@ -199,9 +203,14 @@ RfnSetTemperatureAlarmConfigurationCommand::RfnSetTemperatureAlarmConfigurationC
 }
 
 
-void RfnSetTemperatureAlarmConfigurationCommand::invokeResultHandler( ResultHandler & rh ) const
+auto RfnSetTemperatureAlarmConfigurationCommand::getAlarmConfiguration() const -> boost::optional<AlarmConfiguration>
 {
-    rh.handleCommandResult( *this );
+    if( commandStatus() == CommandStatus::Success )
+    {
+        return _configuration;
+    }
+
+    return boost::none;
 }
 
 
@@ -274,15 +283,9 @@ RfnGetTemperatureAlarmConfigurationCommand::RfnGetTemperatureAlarmConfigurationC
 }
 
 
-RfnTemperatureAlarmCommand::AlarmConfiguration RfnGetTemperatureAlarmConfigurationCommand::getAlarmConfiguration() const
+auto RfnGetTemperatureAlarmConfigurationCommand::getAlarmConfiguration() const -> boost::optional<AlarmConfiguration>
 {
     return _configuration;
-}
-
-
-void RfnGetTemperatureAlarmConfigurationCommand::invokeResultHandler( ResultHandler & rh ) const
-{
-    rh.handleCommandResult( *this );
 }
 
 
@@ -292,6 +295,12 @@ RfnCommandResult RfnGetTemperatureAlarmConfigurationCommand::decodeCommand( cons
     RfnCommandResult  result = decodeResponseHeader( now, response );
 
     if ( ! isSupported() )  // bail out if device returns 'Unsupported'
+    {
+        return result;
+    }
+
+    //  if no TLVs, just return immediately
+    if( response[3] == 0 )
     {
         return result;
     }
@@ -315,7 +324,10 @@ RfnCommandResult RfnGetTemperatureAlarmConfigurationCommand::decodeCommand( cons
 
     const auto config = decodeAlarmConfigTlv(tlvs[0]);
 
-    _configuration = config.value;
+    if( commandStatus() == CommandStatus::Success )
+    {
+        _configuration = config.value;
+    }
 
     result.description += "\n" + config.description;
 
