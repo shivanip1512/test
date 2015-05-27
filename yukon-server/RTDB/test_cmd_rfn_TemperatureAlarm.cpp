@@ -1,12 +1,9 @@
 #include <boost/test/unit_test.hpp>
-#include <boost/assign/list_of.hpp>
 
 #include "ctidate.h"
 #include "cmd_rfn_TemperatureAlarm.h"
 #include "boost_test_helpers.h"
 
-
-using boost::assign::list_of;
 
 using Cti::Devices::Commands::RfnCommand;
 using Cti::Devices::Commands::RfnCommandResult;
@@ -15,7 +12,7 @@ using Cti::Devices::Commands::RfnSetTemperatureAlarmConfigurationCommand;
 using Cti::Devices::Commands::RfnGetTemperatureAlarmConfigurationCommand;
 
 
-// --- defined in RTDB\test_main.cpp -- so BOOST_CHECK_EQUAL_COLLECTIONS() works for RfnCommand::CommandException
+// --- defined in RTDB\test_main.cpp -- so BOOST_CHECK_EQUAL_*() works for RfnCommand::CommandException
 namespace boost         {
 namespace test_tools    {
     bool operator!=( const RfnCommand::CommandException & lhs, const RfnCommand::CommandException & rhs );
@@ -62,19 +59,18 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration )
 
     // execute
     {
-        const std::vector< unsigned char > exp = list_of
-            ( 0x88 )( 0x00 )( 0x01 )
-                ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x32 )( 0x00 )( 0x28 )( 0x0f )( 0x03 );
+        const std::vector< unsigned char > exp {
+                0x88, 0x00, 0x01,
+                    0x01, 0x07, 0x01, 0x00, 0x32, 0x00, 0x28, 0x0f, 0x03 };
 
         RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
 
-        BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
-                                       exp.begin() , exp.end() );
+        BOOST_CHECK_EQUAL_RANGES( rcv, exp );
     }
     // decode -- success response
     {
-        const std::vector< unsigned char > response = list_of
-            ( 0x89 )( 0x00 )( 0x00 )( 0x00 );
+        const std::vector< unsigned char > response {
+                0x89, 0x00, 0x00, 0x00 };
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
@@ -101,8 +97,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration )
     }
     // decode -- failure response
     {
-        const std::vector< unsigned char > response = list_of
-            ( 0x89 )( 0x00 )( 0x01 )( 0x00 );
+        const std::vector< unsigned char > response {
+                0x89, 0x00, 0x01, 0x00 };
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
@@ -112,8 +108,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration )
     }
     // decode -- unsupported response
     {
-        const std::vector< unsigned char > response = list_of
-            ( 0x89 )( 0x00 )( 0x02 )( 0x00 );
+        const std::vector< unsigned char > response {
+                0x89, 0x00, 0x02, 0x00 };
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
@@ -128,11 +124,11 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration_constructi
 {
     // Currently there is no way to test underflow as we are data type limited to unsigned with a valid minimum of 0
 
-    const std::vector< unsigned > inputs = boost::assign::list_of
-        ( 300 );
+    const std::vector< unsigned > inputs {
+            300 };
 
-    const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Repeat Interval: (300) overflow (maximum: 255)" ) );
+    const std::vector< RfnCommand::CommandException >   expected {
+            RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Repeat Interval: (300) overflow (maximum: 255)" ) };
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -144,7 +140,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration_constructi
         50          // alarmHighTempThreshold
     };
 
-    for each ( const unsigned input in inputs )
+    for ( const auto input : inputs )
     {
         try
         {
@@ -158,8 +154,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration_constructi
         }
     }
 
-    BOOST_CHECK_EQUAL_COLLECTIONS( actual.begin(),   actual.end(),
-                                   expected.begin(), expected.end() );
+    BOOST_CHECK_EQUAL_RANGES( actual, expected );
 }
 
 
@@ -167,11 +162,11 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration_constructi
 {
     // Currently there is no way to test underflow as we are data type limited to unsigned with a valid minimum of 0
 
-    const std::vector< unsigned > inputs = boost::assign::list_of
-        ( 400 );
+    const std::vector< unsigned > inputs {
+            400 };
 
-    const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Repeat Count: (400) overflow (maximum: 255)" ) );
+    const std::vector< RfnCommand::CommandException >   expected {
+            RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Repeat Count: (400) overflow (maximum: 255)" ) };
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -183,7 +178,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration_constructi
         50          // alarmHighTempThreshold
     };
 
-    for each ( const unsigned input in inputs )
+    for ( const auto input : inputs )
     {
         try
         {
@@ -197,20 +192,19 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration_constructi
         }
     }
 
-    BOOST_CHECK_EQUAL_COLLECTIONS( actual.begin(),   actual.end(),
-                                   expected.begin(), expected.end() );
+    BOOST_CHECK_EQUAL_RANGES( actual, expected );
 }
 
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration_construction_exceptions_threshold )
 {
-    const std::vector< unsigned > inputs = boost::assign::list_of
-        ( -50 )
-        ( 200 );
+    const std::vector< int > inputs {
+            -50,
+            200 };
 
-    const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid High Temperature Threshold: (-50) underflow (minimum: -40)" ) )
-        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid High Temperature Threshold: (200) overflow (maximum: 185)" ) );
+    const std::vector< RfnCommand::CommandException >   expected {
+            RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid High Temperature Threshold: (-50) underflow (minimum: -40)" ),
+            RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid High Temperature Threshold: (200) overflow (maximum: 185)" ) };
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -222,7 +216,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration_constructi
         0           // alarmHighTempThreshold
     };
 
-    for each ( const unsigned input in inputs )
+    for ( const auto input : inputs )
     {
         try
         {
@@ -236,26 +230,25 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration_constructi
         }
     }
 
-    BOOST_CHECK_EQUAL_COLLECTIONS( actual.begin(),   actual.end(),
-                                   expected.begin(), expected.end() );
+    BOOST_CHECK_EQUAL_RANGES( actual, expected );
 }
 
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration_decode_exceptions )
 {
-    const std::vector< RfnCommand::RfnResponsePayload >   responses = list_of
-        ( list_of( 0x8a )( 0x00 )( 0x00 )( 0x00 ) )
-        ( list_of( 0x89 )( 0x01 )( 0x00 )( 0x00 ) )
-        ( list_of( 0x89 )( 0x00 )( 0x03 )( 0x00 ) )
-        ( list_of( 0x89 )( 0x00 )( 0x00 )( 0x01 ) )
-        ( list_of( 0x89 )( 0x00 )( 0x00 )( 0x01 )( 0x00 )( 0x00 ) );
+    const std::vector< RfnCommand::RfnResponsePayload >   responses {
+            { 0x8a, 0x00, 0x00, 0x00 },
+            { 0x89, 0x01, 0x00, 0x00 },
+            { 0x89, 0x00, 0x03, 0x00 },
+            { 0x89, 0x00, 0x00, 0x01 },
+            { 0x89, 0x00, 0x00, 0x01, 0x00, 0x00 } };
 
-    const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0x8a)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x01)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Status (3)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Incomplete data for TLV" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV type (0x00)" ) );
+    const std::vector< RfnCommand::CommandException >   expected {
+            RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0x8a)" ),
+            RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x01)" ),
+            RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Status (3)" ),
+            RfnCommand::CommandException( ClientErrors::InvalidData, "Incomplete data for TLV" ),
+            RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV type (0x00)" ) };
 
     RfnTemperatureAlarmCommand::AlarmConfiguration  configuration =
     {
@@ -269,7 +262,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration_decode_exc
 
     std::vector< RfnCommand::CommandException > actual;
 
-    for each ( const RfnCommand::RfnResponsePayload & response in responses )
+    for ( const auto & response : responses )
     {
         BOOST_CHECK_THROW( command.decodeCommand( execute_time, response ), RfnCommand::CommandException );
 
@@ -283,8 +276,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration_decode_exc
         }
     }
 
-    BOOST_CHECK_EQUAL_COLLECTIONS( actual.begin(),   actual.end(),
-                                   expected.begin(), expected.end() );
+    BOOST_CHECK_EQUAL_RANGES( actual, expected );
 }
 
 
@@ -294,19 +286,18 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration )
 
     // execute
     {
-        const std::vector< unsigned char > exp = list_of
-            ( 0x88 )( 0x01 )( 0x00 );
+        const std::vector< unsigned char > exp {
+                0x88, 0x01, 0x00 };
 
         RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
 
-        BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
-                                       exp.begin() , exp.end() );
+        BOOST_CHECK_EQUAL_RANGES( rcv, exp );
     }
     // decode -- success response
     {
-        const std::vector< unsigned char > response = list_of
-            ( 0x89 )( 0x01 )( 0x00 )( 0x01 )
-                ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x32 )( 0x00 )( 0x28 )( 0x0f )( 0x03 );
+        const std::vector< unsigned char > response {
+                0x89, 0x01, 0x00, 0x01,
+                    0x01, 0x07, 0x01, 0x00, 0x32, 0x00, 0x28, 0x0f, 0x03 };
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
@@ -328,9 +319,9 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration )
     }
     // decode -- success response with negative threshold
     {
-        const std::vector< unsigned char > response = list_of
-            ( 0x89 )( 0x01 )( 0x00 )( 0x01 )
-                ( 0x01 )( 0x07 )( 0x01 )( 0xff )( 0xf0 )( 0xff )( 0xe6 )( 0x0f )( 0x03 );
+        const std::vector< unsigned char > response {
+                0x89, 0x01, 0x00, 0x01,
+                    0x01, 0x07, 0x01, 0xff, 0xf0, 0xff, 0xe6, 0x0f, 0x03 };
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
@@ -352,9 +343,9 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration )
     }
     // decode -- success response with singular degree, minute, count
     {
-        const std::vector< unsigned char > response = list_of
-            ( 0x89 )( 0x01 )( 0x00 )( 0x01 )
-                ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x01 )( 0xff )( 0xf7 )( 0x01 )( 0x01 );
+        const std::vector< unsigned char > response {
+                0x89, 0x01, 0x00, 0x01,
+                    0x01, 0x07, 0x01, 0x00, 0x01, 0xff, 0xf7, 0x01, 0x01 };
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
@@ -376,9 +367,9 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration )
     }
     // decode -- unsupported response -- with TLV
     {
-        const std::vector< unsigned char > response = list_of
-            ( 0x89 )( 0x01 )( 0x02 )( 0x01 )
-                ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x32 )( 0x00 )( 0x28 )( 0x0f )( 0x03 );
+        const std::vector< unsigned char > response {
+                0x89, 0x01, 0x02, 0x01,
+                    0x01, 0x07, 0x01, 0x00, 0x32, 0x00, 0x28, 0x0f, 0x03 };
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
@@ -388,8 +379,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration )
     }
     // decode -- unsupported response -- without TLV
     {
-        const std::vector< unsigned char > response = list_of
-            ( 0x89 )( 0x01 )( 0x02 )( 0x00 );
+        const std::vector< unsigned char > response {
+                0x89, 0x01, 0x02, 0x00 };
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
@@ -402,32 +393,32 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration )
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration_decode_exceptions )
 {
-    const std::vector< RfnCommand::RfnResponsePayload >   responses = list_of
-        ( list_of( 0x8a )( 0x01 )( 0x00 )( 0x01 )
-                    ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x32 )( 0x00 )( 0x28 )( 0x0f )( 0x03 ) )
-        ( list_of( 0x89 )( 0x00 )( 0x00 )( 0x01 )
-                    ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x32 )( 0x00 )( 0x28 )( 0x0f )( 0x03 ) )
-        ( list_of( 0x89 )( 0x01 )( 0x03 )( 0x01 )
-                    ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x32 )( 0x00 )( 0x28 )( 0x0f )( 0x03 ) )
-        ( list_of( 0x89 )( 0x01 )( 0x01 )( 0x00 ) )
-        ( list_of( 0x89 )( 0x01 )( 0x00 )( 0x02 )
-                    ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x32 )( 0x00 )( 0x28 )( 0x0f )( 0x03 ) )
-        ( list_of( 0x89 )( 0x01 )( 0x00 )( 0x01 )
-                    ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x32 )( 0x00 )( 0x28 )( 0x0f ) );
+    const std::vector< RfnCommand::RfnResponsePayload >   responses {
+            { 0x8a, 0x01, 0x00, 0x01,
+                    0x01, 0x07, 0x01, 0x00, 0x32, 0x00, 0x28, 0x0f, 0x03 },
+            { 0x89, 0x00, 0x00, 0x01,
+                    0x01, 0x07, 0x01, 0x00, 0x32, 0x00, 0x28, 0x0f, 0x03 },
+            { 0x89, 0x01, 0x03, 0x01,
+                    0x01, 0x07, 0x01, 0x00, 0x32, 0x00, 0x28, 0x0f, 0x03 },
+            { 0x89, 0x01, 0x01, 0x00 },
+            { 0x89, 0x01, 0x00, 0x02,
+                    0x01, 0x07, 0x01, 0x00, 0x32, 0x00, 0x28, 0x0f, 0x03 },
+            { 0x89, 0x01, 0x00, 0x01,
+                    0x01, 0x07, 0x01, 0x00, 0x32, 0x00, 0x28, 0x0f } };
 
-    const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0x8a)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x00)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Status (3)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response length (4)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (2)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response length (12)" ) );
+    const std::vector< RfnCommand::CommandException >   expected {
+            RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0x8a)" ),
+            RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x00)" ),
+            RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Status (3)" ),
+            RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response length (4)" ),
+            RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (2)" ),
+            RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response length (12)" ) };
 
     RfnGetTemperatureAlarmConfigurationCommand  command;
 
     std::vector< RfnCommand::CommandException > actual;
 
-    for each ( const RfnCommand::RfnResponsePayload & response in responses )
+    for ( const auto  & response : responses )
     {
         BOOST_CHECK_THROW( command.decodeCommand( execute_time, response ), RfnCommand::CommandException );
 
@@ -441,8 +432,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration_decode_exc
         }
     }
 
-    BOOST_CHECK_EQUAL_COLLECTIONS( actual.begin(),   actual.end(),
-                                   expected.begin(), expected.end() );
+    BOOST_CHECK_EQUAL_RANGES( actual, expected );
 }
 
 
