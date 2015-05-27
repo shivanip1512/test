@@ -95,6 +95,7 @@ test_dev_mct440_2131b.obj \
 test_dev_mct440_2132b.obj \
 test_dev_mct440_2133b.obj \
 test_dev_rf_da.obj \
+test_dev_rfnMeter.obj \
 test_dev_rfnCommercial.obj \
 test_dev_rfnResidential.obj \
 test_dev_rfn420centron.obj \
