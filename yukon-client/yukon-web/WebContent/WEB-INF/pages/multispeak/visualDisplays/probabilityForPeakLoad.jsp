@@ -24,6 +24,7 @@
                 <c:forEach var="powerSupplier" items="${powerSuppliers}">
                     <th colspan="2" class="tac">${powerSupplier.powerSupplierType.description}</th>
                 </c:forEach>
+                <th>&nbsp;</th>
             </tr>
             
             <%-- current vs peak day per power supplier row--%>
@@ -44,6 +45,8 @@
                             pointId="${powerSupplier.tomorrowLoadControlPredictionPointIdList[0]}"/>
                     </th>
                 </c:forEach>
+                
+                <th class="wsnw vab"><i:inline key=".hrEndLabel"/></th>
             </tr>
         </thead>
         <tfoot></tfoot>
@@ -58,6 +61,7 @@
                             todayPointId="${powerSupplier.todayLoadControlPredictionPointIdList[i-1]}" 
                             tomorrowPointId="${powerSupplier.tomorrowLoadControlPredictionPointIdList[i-1]}"/>
                     </c:forEach>
+                    <td class="tar fwb">${i}</td>
                 </tr>
             </c:forEach>
         </tbody>

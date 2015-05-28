@@ -53,6 +53,8 @@
                 <c:forEach var="powerSupplier" items="${powerSuppliers}">
                     <th colspan="4" class="supplier-loads-supplier tac">${powerSupplier.powerSupplierType.description}</th>
                 </c:forEach>
+                
+                <th>&nbsp;</th>
             </tr>
             
             <%-- current vs peak day per power supplier row--%>
@@ -77,6 +79,10 @@
                     </th>
                     
                 </c:forEach>
+                
+                <th class="wsnw vab tar" style="width: 60px;">
+                    <cti:msg2 key=".hrEndLabel"/>
+                </th>
             </tr>
         </thead>
         <tfoot></tfoot>
@@ -90,6 +96,7 @@
                         <vdTags:valueQuality pointId="${powerSupplier.todayIntegratedHourlyDataPointIdList[i-1]}"/>
                         <vdTags:valueQuality pointId="${powerSupplier.peakDayIntegratedHourlyDataPointIdList[i-1]}"/>
                     </c:forEach>
+                    <td class="tar fwb">${i}</td>
                 </tr>
             </c:forEach>
         </tbody>
