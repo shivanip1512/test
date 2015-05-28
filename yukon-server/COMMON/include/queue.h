@@ -154,18 +154,6 @@ public:
                     CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
 
-                /*if(!gConfigParms.isTrue("YUKON_NOSORT_QUEUES"))
-                {
-                    try
-                    {
-                        getCollection().sort( std::greater<struct QueueDataStruct>() );
-                    }
-                    catch(...)
-                    {
-                        resetCollection();     // Dump the queue?
-                    }
-                }*/
-
                 // mutex automatically released in LockGuard destructor
             }
         }
@@ -323,11 +311,6 @@ public:
             empty = _col->empty();
         }
         return empty;
-    }
-
-    BOOL  isFull(void)
-    {
-        return(FALSE);
     }
 
     void clearAndDestroy(void)      // Destroys pointed to objects as well.

@@ -66,6 +66,8 @@ protected:
     Que_t  _outQueue; // contains message to send
     Que_t* _inQueue;  // contains message received
 
+    std::atomic<size_t> _outQueueSizeWarning = 100;
+
     typedef Cti::readers_writer_lock_t Lock;
     typedef Lock::reader_lock_guard_t  ReaderGuard;
     typedef Lock::writer_lock_guard_t  WriterGuard;

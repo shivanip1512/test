@@ -2,6 +2,7 @@
 
 #include "boost/optional/optional.hpp"
 #include "dlldefs.h"
+#include "loggable.h"
 
 namespace Cti {
 namespace Timing {
@@ -9,7 +10,7 @@ namespace Timing {
 /**
  * Hold finite or infinite duration with milliseconds precision.
  */
-class IM_EX_CTIBASE Chrono
+class IM_EX_CTIBASE Chrono : public Loggable
 {
     enum DurationType {
         Milliseconds,
@@ -23,7 +24,7 @@ class IM_EX_CTIBASE Chrono
 
 public:
     unsigned long milliseconds() const;
-    std::string toString() const;
+    std::string toString() const override;
 
     operator bool() const
     {

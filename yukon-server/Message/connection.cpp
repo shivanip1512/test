@@ -187,10 +187,10 @@ void CtiConnection::outThreadFunc()
     }
     catch(...)
     {
-        _valid = false;
-
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, who() <<" - Unexpected exception caught");
     }
+
+    _valid = false;
 }
 
 /**
@@ -297,18 +297,6 @@ void CtiConnection::onMessage( const cms::Message* message )
     {
         CTILOG_ERROR(dout, who() << " - _inQueue is NULL.");
         return;
-    }
-
-    try
-    {
-        if( _inQueue->isFull() )
-        {
-            CTILOG_WARN(dout, who() << " - queue is full. Will BLOCK. It allows " << _inQueue->size() << " entries.");
-        }
-    }
-    catch(...)
-    {
-        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, who() <<" - Error calling _inQueue->isFull()");
     }
 
     if( isDebugLudicrous() )
@@ -479,7 +467,7 @@ void CtiConnection::close()
 int CtiConnection::WriteConnQue( CtiMessage *QEnt, unsigned timeoutMillis )
 {
     // take ownership of the message
-    auto_ptr<CtiMessage> msg( QEnt );
+    std::unique_ptr<CtiMessage> msg( QEnt );
 
     if( ! isConnectionUsable() )
     {
@@ -487,9 +475,17 @@ int CtiConnection::WriteConnQue( CtiMessage *QEnt, unsigned timeoutMillis )
         return ClientErrors::Abnormal;
     }
 
-    if( _outQueue.isFull() )
+    const auto outQueueSize = _outQueue.size();
+    auto outQueueSizeWarning = _outQueueSizeWarning.load();
+
+    if( outQueueSize > outQueueSizeWarning )
     {
-        CTILOG_WARN(dout, who() << " - queue is full. Will BLOCK.");
+        CTILOG_WARN(dout, who() <<" - outQueue has more than " << outQueueSizeWarning << " elements (" << outQueueSize << ")");
+
+        if( ! _outQueueSizeWarning.compare_exchange_strong(outQueueSizeWarning, outQueueSizeWarning * 2) )
+        {
+            CTILOG_WARN(dout, who() <<" - could not update _outQueueSizeWarning, value was set to " << outQueueSizeWarning << " by another thread");
+        }
     }
 
     if( timeoutMillis > 0 )

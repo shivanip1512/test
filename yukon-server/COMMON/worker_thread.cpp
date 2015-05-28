@@ -148,7 +148,7 @@ void WorkerThread::executeWrapper()
     // verbose is enable by default
     if( _function._verbose )
     {
-        CTILOG_INFO(dout, "Started " << _function._name);
+        CTILOG_INFO(dout, "Thread starting : " << _function._name);
     }
 
     try
@@ -160,17 +160,17 @@ void WorkerThread::executeWrapper()
         // verbose is enable by default
         if( _function._verbose )
         {
-            CTILOG_WARN(dout, _function._name <<"Thread "<< _function._name <<" interrupted");
+            CTILOG_WARN(dout, _function._name <<"Thread interrupted: "<< _function._name);
         }
     }
     catch( ... )
     {
-        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Thread "<< _function._name <<" aborting due to unhandled exception");
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Thread aborting due to unhandled exception: "<< _function._name);
     }
 
     if( _function._verbose )
     {
-        CTILOG_INFO(dout, "Terminating thread " << _function._name);
+        CTILOG_INFO(dout, "Thread exiting: "<< _function._name);
     }
 }
 
