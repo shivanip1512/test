@@ -3162,20 +3162,22 @@ YukonError_t DoProcessInMessage(YukonError_t CommResult, CtiPortSPtr Port, INMES
 }
 
 
-Cti::Optional<repeater_info> findRepeaterInRouteByAddress( const int routeId, const MacroOffset& macroOffset, const unsigned echo_address )
+Cti::Optional<repeater_info> findRepeaterInRouteByAddress( const int routeId, const MacroOffset& retryMacroOffset, const unsigned echo_address )
 {
     CtiRouteSPtr route = RouteManager.getRouteById(routeId);
 
-    if( macroOffset )
+    if( route->getType() == RouteTypeMacro )
     {
-        if( route->getType() == RouteTypeMacro )
-        {
-            Cti::Routes::MacroRouteSPtr macroRoute = boost::static_pointer_cast<Cti::Routes::MacroRoute>(route);
+        Cti::Routes::MacroRouteSPtr macroRoute = boost::static_pointer_cast<Cti::Routes::MacroRoute>(route);
 
-            if( CtiRouteSPtr subroute = macroRoute->getSubroute(*macroOffset) )
-            {
-                route = subroute;
-            }
+        const unsigned originalMacroOffset =
+                (retryMacroOffset && *retryMacroOffset)
+                    ? *retryMacroOffset - 1
+                    : 0;
+
+        if( CtiRouteSPtr subroute = macroRoute->getSubroute(originalMacroOffset) )
+        {
+            route = subroute;
         }
     }
 

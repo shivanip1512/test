@@ -446,7 +446,6 @@ public:
 
    LONG        DeviceID;                     // 083199 CGP     // The device id of the transmitter device.
    LONG        TargetID;                     // 022701 CGP     // The device id of the end-of-line device. May be the same as DeviceID depending on protocol
-   LONG        RouteID;                      // 083199 CGP
    INT         Sequence;                     // 083199 CGP
 
    INT         Port;
