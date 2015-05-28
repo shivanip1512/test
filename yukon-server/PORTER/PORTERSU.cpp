@@ -67,19 +67,20 @@ YukonError_t SendError (OUTMESS *&OutMessage, YukonError_t ErrorCode, INMESS *Pa
             OutEchoToIN( *OutMessage, DefaultInMessage );
 
             DefaultInMessage.InLength  = 0;
-            DefaultInMessage.ErrorCode     = ErrorCode;
+            DefaultInMessage.ErrorCode = ErrorCode;
 
             CtiTime now;
 
             DefaultInMessage.Time = now.seconds();
 
-            DefaultInMessage.MilliTime = 0; // TimeB.millitm;
+            DefaultInMessage.MilliTime = 0;
             if(now.isDST())
+            {
                 DefaultInMessage.MilliTime |= DSTACTIVE;
+            }
 
             if(OutMessage->EventCode & BWORD)
             {
-                /* save the names */
                 DefaultInMessage.Buffer.DSt.Time = DefaultInMessage.Time;
                 DefaultInMessage.Buffer.DSt.DSTFlag = DefaultInMessage.MilliTime & DSTACTIVE;
             }
@@ -98,6 +99,12 @@ YukonError_t SendError (OUTMESS *&OutMessage, YukonError_t ErrorCode, INMESS *Pa
             {
                 CTILOG_DEBUG(dout, "SendError returning an Inmessage for "<< tempDev->getName() <<" error "<< ErrorCode);
             }
+        }
+
+        if( OutMessage->Command == CMND_LGRPQ )
+        {
+            //  If this was an LGRPQ to a CCU-711, dequeue all of the queued OutMessages!
+            DeQueue(InMessage);
         }
 
         /* send message back to originating process */

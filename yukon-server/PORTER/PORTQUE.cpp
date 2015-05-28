@@ -276,6 +276,16 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
            InMessage.Sequence & 0x8000 &&
            (ErrorReturnCode != ClientErrors::ReqackFlagSet || OutMessage->Retry == 0))
         {
+            /* set the time */
+            struct timeb TimeB;
+            UCTFTime (&TimeB);
+            InMessage.Time = TimeB.time;
+            InMessage.MilliTime = TimeB.millitm;
+            if(TimeB.dstflag)
+            {
+                InMessage.MilliTime |= DSTACTIVE;
+            }
+
             return DeQueue(InMessage);       // Removes all queue entries placed upon in the queue via this message.
         }
         else if(InMessage.Sequence & 0x8000)
@@ -1307,6 +1317,7 @@ INT BuildLGrpQ (CtiDeviceSPtr Dev)
                 OutMessage->Remote         = Dev->getAddress();
                 OutMessage->Port           = Dev->getPortID();
                 OutMessage->Sequence       = QueueEntrySequence;              // Tells us on return that we are queued ( >= 0x8000 )
+                OutMessage->ExpirationTime = 0;
                 OutMessage->Request.UserID = QUEUED_MSG_REQ_ID_BASE + Dev->getAddress();
                 OutMessage->EventCode      = NOWAIT | RESULT | RCONT;
                 OutMessage->TimeOut        = TIMEOUT;
@@ -1614,21 +1625,11 @@ INT BuildActinShed (CtiDeviceSPtr Dev)
 
 /* Routine to take messages off because of errant LGRPQ */
 /* Dequeues only those entries marked as having QueueEntrySequence equal to the inbound message sequence*/
-YukonError_t DeQueue (INMESS &InMessage)
+YukonError_t DeQueue (const INMESS &InMessage)
 {
     YukonError_t status = ClientErrors::None;
-    struct timeb TimeB;
     ULONG i;
     INMESS ResultMessage;
-
-    /* set the time */
-    UCTFTime (&TimeB);
-    InMessage.Time = TimeB.time;
-    InMessage.MilliTime = TimeB.millitm;
-    if(TimeB.dstflag)
-    {
-        InMessage.MilliTime |= DSTACTIVE;
-    }
 
     /* Make sure this is one of em */
     if(!(InMessage.Sequence & 0x8000))
@@ -1640,6 +1641,16 @@ YukonError_t DeQueue (INMESS &InMessage)
 
     if(TransmitterDev)
     {
+        Cti::FormattedList list;
+
+        list.add("Device name") << TransmitterDev->getName();
+        list.add("Device ID")           << InMessage.DeviceID;
+        list.add("InMessage sequence")  << InMessage.Sequence;
+        list.add("Error code")          << InMessage.ErrorCode;
+        list.add("Error text")  << GetErrorString(InMessage.ErrorCode);
+
+        CTILOG_DEBUG(dout, "Flushing CCU queue entries" << list);
+
         CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)TransmitterDev->getTrxInfo();
 
         /* loop through queue entry slots and send back messages */

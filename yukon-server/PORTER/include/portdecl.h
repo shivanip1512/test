@@ -40,7 +40,7 @@ bool RemoteReset (CtiDeviceSPtr &Device, const CtiPortSPtr &pPort);
 void QueueThread();
 YukonError_t CCUResponseDecode (INMESS &, CtiDeviceSPtr , OUTMESS *OutMessage);
 void KickerThread();
-YukonError_t DeQueue(INMESS &);
+YukonError_t DeQueue(const INMESS &);
 INT QueueFlush       (CtiDeviceSPtr Dev);
 INT BuildLGrpQ       (CtiDeviceSPtr Dev);
 INT BuildActinShed   (CtiDeviceSPtr Dev);
