@@ -153,7 +153,7 @@ BOOST_AUTO_TEST_CASE( test_get_hectowatt_hours )
         {       0, CtiTime(CtiDate( 8, 1, 2011), 2, 0, 0),  631940 },
         {     489, CtiTime(CtiDate( 4, 4, 2012), 8, 0, 0), 1579254 },
         {     489, CtiTime(CtiDate( 8, 1, 2011), 2, 0, 0), 1335763 },
-        { 2049998, CtiTime(CtiDate(28, 5, 2015), 2, 0, 0), 4293492460 }  //  my spoon is too big
+        { 2049998, CtiTime(CtiDate(28, 5, 2015), 2, 0, 0), 3240896 }
     };
 
     std::vector<unsigned> result, expected;

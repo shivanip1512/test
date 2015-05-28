@@ -846,12 +846,12 @@ unsigned Mct410Sim::getHectoWattHours(const unsigned address, const CtiTime now 
         distinguishing.                                                     */
     const double offset = (address % 1000) * 7350;
 
-    int reading = consumption_Wh + (offset * getConsumptionMultiplier(address));
+    long long reading = consumption_Wh + (offset * getConsumptionMultiplier(address));
 
     // Mod the hWh by 10000000 to reduce the range from 0 to 9999999,
     // since the MCT Device reads hWh this corresponds to 999,999.9 kWh
     // which is the desired changeover point.
-    return int(reading / 100.0) % 10000000;
+    return (reading / 100) % 10000000;
 }
 
 bytes Mct410Sim::getAllRecentDemandReadings()
