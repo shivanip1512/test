@@ -743,33 +743,34 @@ void TimeSyncThread()
     {
         threadStatus.monitorCheck(TimeSyncRate + CtiThreadMonitor::StandardMonitorTime, CtiThreadRegData::None);
 
-        // CTIResetEventSem (TimeSyncSem, &PostCount);
         ResetEvent(hPorterEvents[P_TIMESYNC_EVENT]);
 
         const ULONG EventWait = 1000L * (getNextTimeSync() - CtiTime().seconds());
 
         const DWORD dwWait = WaitForMultipleObjects(2, hTimeSyncArray, FALSE, EventWait);
 
-        if(dwWait != WAIT_TIMEOUT)
+        switch( dwWait )
         {
-            switch( dwWait - WAIT_OBJECT_0 )
-            {
             case WAIT_OBJECT_0: // P_QUIT_EVENT:
-                {
-                    PorterQuit = TRUE;
-                    break;
-                }
+            {
+                PorterQuit = TRUE;
+
+                return;
+            }
+            case WAIT_TIMEOUT:          // the normal case - waiting undisturbed until the next time sync
             case WAIT_OBJECT_0 + 1:     // P_TIMESYNC_EVENT:
-                {
-                    /* Send time Sync messages */
-                    PortManager.apply(applyPortSendTime, NULL);
-                    break;
-                }
+            {
+                PortManager.apply(applyPortSendTime, NULL);
+
+                continue;
+            }
             default:
-                {
-                    Sleep(1000);
-                    break;
-                }
+            {
+                CTILOG_ERROR(dout, "WaitForMultipleObjects returned "<< dwWait);
+
+                Sleep(1000);
+
+                continue;
             }
         }
     }
