@@ -171,23 +171,16 @@ public class WebGraph implements Runnable {
      */
     private String getHomeDirectory() {
         GlobalSettingDao globalSettingDao = YukonSpringHook.getBean(GlobalSettingDao.class);
-        boolean isDirCreateReq = false;
-        if (homeDirectory == null) {
-            homeDirectory = globalSettingDao.getString(GlobalSettingType.HOME_DIRECTORY);
-            isDirCreateReq = true;
-        } else {
-            String updatedHomeDirectory = (String) globalSettingDao.findSetting(GlobalSettingType.HOME_DIRECTORY)
-                                                                   .getValue();
-            if (updatedHomeDirectory != null && !updatedHomeDirectory.equalsIgnoreCase(homeDirectory)) {
-                homeDirectory = updatedHomeDirectory;
-                isDirCreateReq = true;
-            }
-        }
-        if (isDirCreateReq) {
+        String updatedHomeDirectory = globalSettingDao.getString(GlobalSettingType.HOME_DIRECTORY);
+
+        if (homeDirectory == null || !homeDirectory.equalsIgnoreCase(updatedHomeDirectory)) {
+            homeDirectory = updatedHomeDirectory;
+
             java.io.File file = new java.io.File(homeDirectory);
             file.mkdirs();
             CTILogger.info("WebGraph Home Directory: " + homeDirectory);
         }
+
         return homeDirectory;
     }
 
@@ -257,23 +250,8 @@ public class WebGraph implements Runnable {
      */
     private java.lang.Integer getWebgraphRunInterval() {
         GlobalSettingDao globalSettingDao = YukonSpringHook.getBean(GlobalSettingDao.class);
-
-        try {
-            if (createTimeInterval == null) {
-                createTimeInterval = globalSettingDao.getInteger(GlobalSettingType.RUN_INTERVAL);
-            } else {
-                Integer updatedCreateTimeInterval = (Integer) globalSettingDao.findSetting(GlobalSettingType.RUN_INTERVAL)
-                                                                              .getValue();
-                if (updatedCreateTimeInterval != null && !(updatedCreateTimeInterval.intValue() == createTimeInterval.intValue())) {
-                    createTimeInterval = updatedCreateTimeInterval;
-                }
-            }
-            CTILogger.info("RunTime Interval set to: " + createTimeInterval + " seconds.");
-        } catch (Exception e) {
-            createTimeInterval = new Integer(900);
-            CTILogger.info("Problems parsing RunTime Interval, default to: " + createTimeInterval + " seconds.");
-        }
-
+        createTimeInterval = globalSettingDao.getInteger(GlobalSettingType.RUN_INTERVAL);
+        CTILogger.info("RunTime Interval set to: " + createTimeInterval + " seconds.");
         return createTimeInterval;
     }
 

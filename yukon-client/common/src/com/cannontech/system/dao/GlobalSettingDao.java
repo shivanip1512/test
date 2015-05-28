@@ -104,11 +104,4 @@ public interface GlobalSettingDao {
      * 
      */
     public void valueChanged();
-    
-    /**
-     * Returns the setting value of the specified Yukon setting directly from database.
-     * @param setting - any GlobalSetting setting with an GlobalSetting return type
-     * @return Object of GlobalSetting
-     */
-    public GlobalSetting findSetting(GlobalSettingType setting);
 }

@@ -48,8 +48,4 @@ public class GlobalSettingDaoAdapter implements GlobalSettingDao {
         throw new MethodNotImplementedException();
     }
 
-    @Override
-    public GlobalSetting findSetting(GlobalSettingType setting) {
-        throw new MethodNotImplementedException();
-    }
 }
