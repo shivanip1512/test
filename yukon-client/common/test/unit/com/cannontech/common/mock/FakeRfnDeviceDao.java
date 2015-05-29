@@ -65,4 +65,9 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
     public List<RfnDevice> getDevicesByPaoIds(Iterable<Integer> paoIds) {
         throw new MethodNotImplementedException();
     }
+
+    @Override
+    public boolean deviceExists(RfnIdentifier rfnIdentifier) {
+        throw new MethodNotImplementedException();
+    }
 }

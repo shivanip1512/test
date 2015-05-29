@@ -55,6 +55,25 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     };
     
     @Override
+    public boolean deviceExists(RfnIdentifier rfnIdentifier) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select ypo.PaoName");
+        sql.append("from YukonPaObject ypo");
+        sql.append("join RfnAddress rfn on ypo.PAObjectID = rfn.DeviceId");
+        sql.append("where rfn.SerialNumber").eq(rfnIdentifier.getSensorSerialNumber());
+        sql.append("and rfn.Manufacturer").eq(rfnIdentifier.getSensorManufacturer());
+        sql.append("and rfn.Model").eq(rfnIdentifier.getSensorModel());
+        
+        try {
+            jdbcTemplate.queryForString(sql);
+            return true;
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
+    }
+    
+    @Override
     public RfnDevice getDeviceForExactIdentifier(RfnIdentifier rfnIdentifier) throws NotFoundException {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();

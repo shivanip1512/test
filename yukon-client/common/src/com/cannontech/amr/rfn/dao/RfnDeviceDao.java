@@ -20,26 +20,31 @@ public interface RfnDeviceDao {
      * @return RfnDevice
      * @throws NotFoundException
      */
-    public RfnDevice getDeviceForExactIdentifier(RfnIdentifier rfnIdentifier) throws NotFoundException;
+    RfnDevice getDeviceForExactIdentifier(RfnIdentifier rfnIdentifier) throws NotFoundException;
+    
+    /**
+     * Returns true if a device exists with the specified RfnIdentifier.
+     */
+    boolean deviceExists(RfnIdentifier rfnIdentifier);
     
     /**
      * Returns RfnDevice for pao. 
      * Will return at minimum RfnDevice populated with pao.
      * NOTE: If no RfnAddress is found for pao, an RfnDevice object will still be returned with a "blank" RfnIdentifier.
      */
-    public RfnDevice getDevice(YukonPao pao);
+    RfnDevice getDevice(YukonPao pao);
 
     /**
      * Get a map of YukonPao -> RfnIdentifier for the specified PAOs.  PAOs in the list not matching any
      * RfnIdentifier will simply be ignored.
      */
-    public <T extends YukonPao> Map<T, RfnIdentifier> getRfnIdentifiersByPao(Iterable<T> paos);
+    <T extends YukonPao> Map<T, RfnIdentifier> getRfnIdentifiersByPao(Iterable<T> paos);
 
     /**
      * Returns RfnDevice for deviceId.
      * @throws NotFoundException - when no rfn meter exists, joined against RfnAddress table
      */
-    public RfnDevice getDeviceForId(int deviceId) throws NotFoundException;
+    RfnDevice getDeviceForId(int deviceId) throws NotFoundException;
     
     /** 
      * Updates the fields (currently just the RfnIdentifier fields) for the device 
@@ -47,19 +52,19 @@ public interface RfnDeviceDao {
      * @param device
      * @throws NotFoundException
      */
-    public void updateDevice(RfnDevice device) throws NotFoundException;
+    void updateDevice(RfnDevice device) throws NotFoundException;
     
     /**
      * Returns List of RfnDevices of the given PaoType. An empty list is returned if no RfnDevices
      * of the given PaoType exist.
      */
-    public List<RfnDevice> getDevicesByPaoType(PaoType paoType);
+    List<RfnDevice> getDevicesByPaoType(PaoType paoType);
     
     /**
      * Returns List of RfnDevices of the given PaoTypes. An empty list is returned if no RfnDevices
      * of the given PaoTypes exist.
      */
-    public List<RfnDevice> getDevicesByPaoTypes(Iterable<PaoType> paoTypes);
+    List<RfnDevice> getDevicesByPaoTypes(Iterable<PaoType> paoTypes);
     
     /**
      * Returns a map of paoId to RfnDevice for all devices of the specified PaoType.
@@ -70,5 +75,6 @@ public interface RfnDeviceDao {
      * Returns a List of RfnDevices with the given paoIds. Any invalid ids will not cause an error - they will be
      * ignored.
      */
-    List<RfnDevice> getDevicesByPaoIds(Iterable<Integer> paoIds); 
+    List<RfnDevice> getDevicesByPaoIds(Iterable<Integer> paoIds);
+
 }

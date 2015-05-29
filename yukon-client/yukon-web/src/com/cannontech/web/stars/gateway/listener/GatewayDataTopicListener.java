@@ -1,5 +1,7 @@
 package com.cannontech.web.stars.gateway.listener;
 
+import static com.cannontech.common.rfn.service.RfnDeviceCreationService.*;
+
 import java.io.Serializable;
 
 import javax.jms.JMSException;
@@ -10,6 +12,7 @@ import javax.jms.ObjectMessage;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.dao.GatewayCertificateUpdateDao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -34,6 +37,7 @@ public class GatewayDataTopicListener implements MessageListener {
     
     @Autowired private RfnGatewayDataCache cache;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private GatewayCertificateUpdateDao certificateUpdateDao;
     
     @Override
@@ -62,7 +66,25 @@ public class GatewayDataTopicListener implements MessageListener {
             log.debug("Handling gateway data message: " + message);
             cache.put(rfnDevice.getPaoIdentifier(), new RfnGatewayData(message));
         } catch (NotFoundException e) {
-            log.info("Unable to add gateway data to cache. Device lookup failed for " + rfnIdentifier);
+            
+            //Exact match wasn't found. Look for a device that is identical, except for the model.
+            //This may be a gateway 2.0 that got put into the system as a gateway 1.x.
+            if (rfnIdentifier.getSensorModel().equals(GATEWAY_2_MODEL_STRING)) {
+                RfnIdentifier model1Identifier = new RfnIdentifier(rfnIdentifier.getSensorSerialNumber(),
+                                                                   rfnIdentifier.getSensorManufacturer(),
+                                                                   GATEWAY_1_MODEL_STRING);
+                if (rfnDeviceDao.deviceExists(model1Identifier)) {
+                    //Found a match. Update the gateway model to 2.0
+                    RfnDevice device = rfnDeviceDao.getDeviceForExactIdentifier(model1Identifier);
+                    RfnDevice updatedDevice = new RfnDevice(device.getName(),
+                                                            device.getPaoIdentifier(),
+                                                            rfnIdentifier);
+                    rfnDeviceDao.updateDevice(updatedDevice);
+                    cache.put(updatedDevice.getPaoIdentifier(), new RfnGatewayData(message));
+                }
+            } else {
+                log.info("Unable to add gateway data to cache. Device lookup failed for " + rfnIdentifier);
+            }
         }
     }
     

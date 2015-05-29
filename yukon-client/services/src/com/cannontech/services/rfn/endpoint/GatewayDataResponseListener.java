@@ -38,7 +38,7 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
         protected RfnDevice processCreation(RfnIdentifyingMessage message, RfnIdentifier identifier) {
             //We got data for a gateway that is not in the database.
             //Don't do anything - we will expect to get a GatewayArchiveRequest soon
-            log.warn("Received data for a gateway that is not in the database. Creating " + identifier);
+            log.warn("Received data for a gateway that is not in the database: " + identifier);
             throw new RuntimeException("Creation not attempted for " + identifier);
         }
         

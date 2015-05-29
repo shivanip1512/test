@@ -9,7 +9,10 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface RfnDeviceCreationService {
-
+    
+    public static final String GATEWAY_1_MODEL_STRING = "RFGateway";
+    public static final String GATEWAY_2_MODEL_STRING = "RFGateway2";
+    
     /**
      * Creates an rfn device using {@link DeviceCreationService} using an
      * expected pao template name derived from the {@link RfnIdentifier}.
