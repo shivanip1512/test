@@ -3,56 +3,142 @@
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
 <f:verbatim>
-    <script type="text/javascript">
-        var substationBusDisableBusPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'voltReductionPointPicker', 
-                '', 'substationBusDisableBusPointPicker', 
-                'pointId:subDisablePointValue;pointName:disableBusPoint;deviceName:disableBusDevice');
-        substationBusDisableBusPointPicker.destinationFieldId = 'subDisablePointValue';
-        substationBusDisableBusPointPicker.memoryGroup = 'pointPicker';
-        <cti:pickerProperties var="voltReductionPickerOutputColumns" property="OUTPUT_COLUMNS" type="voltReductionPointPicker"/>
-        substationBusDisableBusPointPicker.outputColumns = ${voltReductionPickerOutputColumns};
 
-        var substationBusVoltReductionPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'voltReductionPointPicker',
-                '', 'substationBusVoltReductionPointPicker', 
-                'pointId:subReductionPointValue;pointName:substationBusVoltReductionPoint;deviceName:substationBusDevice');
-        substationBusVoltReductionPointPicker.destinationFieldId = 'subReductionPointValue';
-        substationBusVoltReductionPointPicker.memoryGroup = 'pointPicker';
-        substationBusVoltReductionPointPicker.outputColumns = ${voltReductionPickerOutputColumns};
+<cti:pickerProperties var="voltReductionPickerOutputColumns" property="OUTPUT_COLUMNS" type="voltReductionPointPicker"/>
+<cti:pickerProperties var="varPickerOutputColumns" property="OUTPUT_COLUMNS" type="varPointPicker"/>
+<cti:pickerProperties var="wattPickerOutputColumns" property="OUTPUT_COLUMNS" type="wattPointPicker"/>
+<cti:pickerProperties var="voltPickerOutputColumns" property="OUTPUT_COLUMNS" type="voltPointPicker"/>
 
-        var sub_Var_PointPicker = new Picker('OK', 'Cancel', '(none selected)', 'varPointPicker', '', 'sub_Var_PointPicker', 
-                'pointId:var_point;pointName:sub_Var_Point;deviceName:sub_Var_Device');
-        sub_Var_PointPicker.destinationFieldId = 'var_point';
-        sub_Var_PointPicker.memoryGroup = 'pointPicker';
-        <cti:pickerProperties var="varPickerOutputColumns" property="OUTPUT_COLUMNS" type="varPointPicker"/>
-        sub_Var_PointPicker.outputColumns = ${varPickerOutputColumns};
+<cti:pickerProperties var="voltReductionPickerIdField" property="ID_FIELD_NAME" type="voltReductionPointPicker"/>
+<cti:pickerProperties var="varPickerIdField" property="ID_FIELD_NAME" type="varPointPicker"/>
+<cti:pickerProperties var="wattPickerIdField" property="ID_FIELD_NAME" type="wattPointPicker"/>
+<cti:pickerProperties var="voltPickerIdField" property="ID_FIELD_NAME" type="voltPointPicker"/>
 
-        var sub_Var_PhaseB_PointPicker = new Picker('OK', 'Cancel', '(none selected)', 'varPointPicker', '', 'sub_Var_PhaseB_PointPicker',
-                'pointId:var_phase_b_point;pointName:sub_Var_PhaseB_Point;deviceName:sub_Var_PhaseB_Device');
-        sub_Var_PhaseB_PointPicker.destinationFieldId = 'var_phase_b_point';
-        sub_Var_PhaseB_PointPicker.memoryGroup = 'pointPicker';
-        sub_Var_PhaseB_PointPicker.outputColumns = ${varPickerOutputColumns};
+<script type="text/javascript">
+(function () {
+    
+    yukon.pickers = yukon.pickers || {};
+    
+    var substationBusDisableBusPointPicker = new Picker('OK', 
+            'Cancel', 
+            '(none selected)', 
+            'voltReductionPointPicker', 
+            '', 
+            'substationBusDisableBusPointPicker', 
+            'pointId:subDisablePointValue;pointName:disableBusPoint;deviceName:disableBusDevice');
+    substationBusDisableBusPointPicker.destinationFieldId = 'subDisablePointValue';
+    substationBusDisableBusPointPicker.memoryGroup = 'pointPicker';
+    substationBusDisableBusPointPicker.outputColumns = ${voltReductionPickerOutputColumns};
+    substationBusDisableBusPointPicker.idFieldName = '${voltReductionPickerIdField}';
 
-        var sub_Var_PhaseC_PointPicker = new Picker('OK', 'Cancel', '(none selected)', 'varPointPicker', '', 'sub_Var_PhaseC_PointPicker', 
-                'pointId:var_phase_c_point;pointName:sub_Var_PhaseC_Point;deviceName:sub_Var_PhaseC_Device');
-        sub_Var_PhaseC_PointPicker.destinationFieldId = 'var_phase_c_point';
-        sub_Var_PhaseC_PointPicker.memoryGroup = 'pointPicker';
-        sub_Var_PhaseC_PointPicker.outputColumns = ${varPickerOutputColumns};
+    var substationBusVoltReductionPointPicker = new Picker('OK', 
+            'Cancel', 
+            '(none selected)', 
+            'voltReductionPointPicker',
+            '', 
+            'substationBusVoltReductionPointPicker', 
+            'pointId:subReductionPointValue;pointName:substationBusVoltReductionPoint;deviceName:substationBusDevice');
+    substationBusVoltReductionPointPicker.destinationFieldId = 'subReductionPointValue';
+    substationBusVoltReductionPointPicker.memoryGroup = 'pointPicker';
+    substationBusVoltReductionPointPicker.outputColumns = ${voltReductionPickerOutputColumns};
+    substationBusVoltReductionPointPicker.idFieldName = '${voltReductionPickerIdField}';
 
-        var subWattPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'wattPointPicker', '', 'subWattPointPicker', 
-                'pointId:watt_point;pointName:subWattPoint;deviceName:subWattDevice');
-        subWattPointPicker.destinationFieldId = 'watt_point';
-        subWattPointPicker.memoryGroup = 'pointPicker';
-        <cti:pickerProperties var="wattPickerOutputColumns" property="OUTPUT_COLUMNS" type="wattPointPicker"/>
-        subWattPointPicker.outputColumns = ${wattPickerOutputColumns};
+    var sub_Var_PointPicker = new Picker('OK', 
+            'Cancel', 
+            '(none selected)', 
+            'varPointPicker', 
+            '', 
+            'sub_Var_PointPicker', 
+            'pointId:var_point;pointName:sub_Var_Point;deviceName:sub_Var_Device');
+    sub_Var_PointPicker.destinationFieldId = 'var_point';
+    sub_Var_PointPicker.memoryGroup = 'pointPicker';
+    sub_Var_PointPicker.outputColumns = ${varPickerOutputColumns};
+    sub_Var_PointPicker.idFieldName = '${varPickerIdField}';
 
-        var subVoltPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'voltPointPicker', '', 'subVoltPointPicker',
-                'pointId:volt_point;pointName:subVoltPoint;deviceName:subVoltDevice');
-        subVoltPointPicker.destinationFieldId = 'volt_point';
-        subVoltPointPicker.memoryGroup = 'pointPicker';
-        <cti:pickerProperties var="voltPickerOutputColumns" property="OUTPUT_COLUMNS" type="voltPointPicker"/>
-        subVoltPointPicker.outputColumns = ${voltPickerOutputColumns};
-    </script>
+    var sub_Var_PhaseB_PointPicker = new Picker('OK', 
+            'Cancel', 
+            '(none selected)', 
+            'varPointPicker', 
+            '', 
+            'sub_Var_PhaseB_PointPicker',
+            'pointId:var_phase_b_point;pointName:sub_Var_PhaseB_Point;deviceName:sub_Var_PhaseB_Device');
+    sub_Var_PhaseB_PointPicker.destinationFieldId = 'var_phase_b_point';
+    sub_Var_PhaseB_PointPicker.memoryGroup = 'pointPicker';
+    sub_Var_PhaseB_PointPicker.outputColumns = ${varPickerOutputColumns};
+    sub_Var_PhaseB_PointPicker.idFieldName = '${varPickerIdField}';
+
+    var sub_Var_PhaseC_PointPicker = new Picker('OK', 
+            'Cancel', 
+            '(none selected)', 
+            'varPointPicker', 
+            '', 
+            'sub_Var_PhaseC_PointPicker', 
+            'pointId:var_phase_c_point;pointName:sub_Var_PhaseC_Point;deviceName:sub_Var_PhaseC_Device');
+    sub_Var_PhaseC_PointPicker.destinationFieldId = 'var_phase_c_point';
+    sub_Var_PhaseC_PointPicker.memoryGroup = 'pointPicker';
+    sub_Var_PhaseC_PointPicker.outputColumns = ${varPickerOutputColumns};
+    sub_Var_PhaseC_PointPicker.idFieldName = '${varPickerIdField}';
+
+    var subWattPointPicker = new Picker('OK', 
+            'Cancel', 
+            '(none selected)', 
+            'wattPointPicker', 
+            '', 
+            'subWattPointPicker', 
+            'pointId:watt_point;pointName:subWattPoint;deviceName:subWattDevice');
+    subWattPointPicker.destinationFieldId = 'watt_point';
+    subWattPointPicker.memoryGroup = 'pointPicker';
+    subWattPointPicker.outputColumns = ${wattPickerOutputColumns};
+    subWattPointPicker.idFieldName = '${wattPickerIdField}';
+
+    var subVoltPointPicker = new Picker('OK', 
+            'Cancel', 
+            '(none selected)', 
+            'voltPointPicker', 
+            '', 
+            'subVoltPointPicker',
+            'pointId:volt_point;pointName:subVoltPoint;deviceName:subVoltDevice');
+    subVoltPointPicker.destinationFieldId = 'volt_point';
+    subVoltPointPicker.memoryGroup = 'pointPicker';
+    subVoltPointPicker.outputColumns = ${voltPickerOutputColumns};
+    subVoltPointPicker.idFieldName = '${voltPickerIdField}';
+    
+    yukon.pickers['substationBusDisableBusPointPicker'] = substationBusDisableBusPointPicker;
+    yukon.pickers['substationBusVoltReductionPointPicker'] = substationBusVoltReductionPointPicker;
+    yukon.pickers['sub_Var_PointPicker'] = sub_Var_PointPicker;
+    yukon.pickers['sub_Var_PhaseB_PointPicker'] = sub_Var_PhaseB_PointPicker;
+    yukon.pickers['sub_Var_PhaseC_PointPicker'] = sub_Var_PhaseC_PointPicker;
+    yukon.pickers['subWattPointPicker'] = subWattPointPicker;
+    yukon.pickers['subVoltPointPicker'] = subVoltPointPicker;
+    
+    $(function () {
+        $('.js-disable-point').click(function () {
+            yukon.pickers['substationBusDisableBusPointPicker'].show();
+        });
+        $('.js-volt-reduction-point').click(function () {
+            yukon.pickers['substationBusVoltReductionPointPicker'].show();
+        });
+        $('.js-var-point').click(function () {
+            yukon.pickers['sub_Var_PointPicker'].show();
+        });
+        $('.js-var-phase-b-point').click(function () {
+            yukon.pickers['sub_Var_PhaseB_PointPicker'].show();
+        });
+        $('.js-var-phase-c-point').click(function () {
+            yukon.pickers['sub_Var_PhaseC_PointPicker'].show();
+        });
+        $('.js-watt-point').click(function () {
+            yukon.pickers['subWattPointPicker'].show();
+        });
+        $('.js-volt-point').click(function () {
+            yukon.pickers['subVoltPointPicker'].show();
+        });
+    });
+    
+})();
+</script>
 </f:verbatim>
 
 <f:subview id="subBusSetup" rendered="#{capControlForm.visibleTabs['CBCSubstationBus']}">
@@ -62,30 +148,30 @@
                 <x:htmlTag value="fieldSet" styleClass="fieldSet">
                     <x:htmlTag value="legend"><x:outputText value="Subtation Bus Info"/></x:htmlTag>
 
-					<x:panelGrid columns="2" styleClass="gridLayout" columnClasses="gridCell, gridCell">
+                    <x:panelGrid columns="2" styleClass="gridLayout" columnClasses="gridCell, gridCell">
 
-						<x:outputLabel for="subAreaName"
-							value="#{capControlForm.PAODescLabel}: "
-							title="Physical location of the Substation Bus"
-							rendered="#{!empty capControlForm.PAODescLabel}" />
+                        <x:outputLabel for="subAreaName"
+                            value="#{capControlForm.PAODescLabel}: "
+                            title="Physical location of the Substation Bus"
+                            rendered="#{!empty capControlForm.PAODescLabel}" />
 
-						<x:inputText id="subAreaName"
-							value="#{capControlForm.PAOBase.geoAreaName}" required="true"
-							maxlength="60" styleClass="char32Label"
-							rendered="#{!empty capControlForm.PAODescLabel}" />
+                        <x:inputText id="subAreaName"
+                            value="#{capControlForm.PAOBase.geoAreaName}" required="true"
+                            maxlength="60" styleClass="char32Label"
+                            rendered="#{!empty capControlForm.PAODescLabel}" />
 
-						<x:outputLabel for="subMapLocID" value="Map Location ID: "
-							title="Mapping code/string used for third-party systems" />
+                        <x:outputLabel for="subMapLocID" value="Map Location ID: "
+                            title="Mapping code/string used for third-party systems" />
 
-						<x:inputText id="subMapLocID"
-							value="#{capControlForm.PAOBase.capControlSubstationBus.mapLocationID}"
-							required="true" maxlength="64" styleClass="char32Label" />
+                        <x:inputText id="subMapLocID"
+                            value="#{capControlForm.PAOBase.capControlSubstationBus.mapLocationID}"
+                            required="true" maxlength="64" styleClass="char32Label" />
 
-					</x:panelGrid>
+                    </x:panelGrid>
 
-				</x:htmlTag>
+                </x:htmlTag>
                 <x:htmlTag value="br"/>
-	
+    
                 <x:htmlTag value="fieldset" styleClass="fieldSet">
                     <x:htmlTag value="legend"><x:outputText value="Volt Reduction Control Point Setup"/></x:htmlTag>
     
@@ -95,16 +181,17 @@
                         <x:outputText id="substationBusDevice" forceId="true" value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlSubstationBus.voltReductionPointId]}"/> 
                         <x:outputText id="substationBusDevicePointSeperator" forceId="true" value=" : " />
                         <x:outputText id="substationBusVoltReductionPoint" forceId="true" value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlSubstationBus.voltReductionPointId]}" /> 
-	    
+        
                         <x:htmlTag value="br"/>
-	    
-                        <h:outputLink  value="javascript:substationBusVoltReductionPointPicker.show.call(substationBusVoltReductionPointPicker)" rendered="#{capControlForm.editingAuthorized}">
+        
+                        <h:outputLink  value="javascript:void(0);" styleClass="js-volt-reduction-point" 
+                            rendered="#{capControlForm.editingAuthorized}">
                             <h:outputText value="Select point"/>
                         </h:outputLink>
-	
+    
                         <x:htmlTag value="br"/>
                         <x:htmlTag value="br"/>
-	    
+        
                         <x:commandLink id="substationBusVoltReductionPoint_setNone" 
                             rendered="#{capControlForm.editingAuthorized}"
                             title="Do not use a point for control." 
@@ -117,7 +204,7 @@
                 </x:htmlTag>
                 
                  <x:htmlTag value="br"/>
-	
+    
                 <x:htmlTag value="fieldset" styleClass="fieldSet">
                     <x:htmlTag value="legend"><x:outputText value="Substation Bus Disable Point Setup"/></x:htmlTag>
     
@@ -127,16 +214,17 @@
                         <x:outputText id="disableBusDevice" forceId="true" value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlSubstationBus.disableBusPointId]}"/> 
                         <x:outputText id="disableBusDevicePointSeperator" forceId="true" value=" : " />
                         <x:outputText id="disableBusPoint" forceId="true" value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlSubstationBus.disableBusPointId]}" /> 
-	    
+        
                         <x:htmlTag value="br"/>
-	    
-                        <h:outputLink  value="javascript:substationBusDisableBusPointPicker.show.call(substationBusDisableBusPointPicker)" rendered="#{capControlForm.editingAuthorized}">
+        
+                        <h:outputLink  value="javascript:void(0)" styleClass="js-disable-point" 
+                            rendered="#{capControlForm.editingAuthorized}">
                             <h:outputText value="Select point"/>
                         </h:outputLink>
-	
+    
                         <x:htmlTag value="br"/>
                         <x:htmlTag value="br"/>
-	    
+        
                         <x:commandLink id="substationBusDisableBusPoint_setNone" 
                             rendered="#{capControlForm.editingAuthorized}"
                             title="Do not use a point for control." 
@@ -155,58 +243,58 @@
                         <x:htmlTag value="legend"><x:outputText value="Substation Bus Points"/></x:htmlTag>
                     
                         <x:div forceId="true" id="SubstationBusEditorScrollDiv" styleClass="scrollSmall">
-	                        <x:tree2 
-	                            id="SubstationBusEditPointTree"
-	                            value="#{capControlForm.pointTreeForm.pointList}" var="node"
-	                            showRootNode="false" varNodeToggler="t" preserveToggle="true"
-	                            clientSideToggle="true" showLines="false">
-	
-	                            <f:facet name="root">
-	                                <x:panelGroup>
-	                                    <x:outputText id="rootLink" value="#{node.description}" />
-	                                </x:panelGroup>
-	                            </f:facet>
-					
-	                            <f:facet name="pointtype">
-	                                <x:panelGroup>
-	                                    <x:outputText id="paChCnt"
-	                                        value="#{node.description} (#{node.childCount})"
-	                                        rendered="#{!empty node.children}" />
-	                                </x:panelGroup>
-	                            </f:facet>
-	
-	                            <f:facet name="sublevels">
-	                                <x:panelGroup>
-	                                    <x:outputText id="subLvlCnt"
-	                                        value="#{node.description} (#{node.childCount})"
-	                                        rendered="#{!empty node.children}" />
-	                                </x:panelGroup>
-	                            </f:facet>
-	
-	                            <f:facet name="points">
-	                                <x:panelGroup>
-	                                    <x:commandLink id="ptLink" value="#{node.description}"
-	                                        actionListener="#{capControlForm.pointTreeForm.pointClick}">
-	                                        <f:param name="ptID" value="#{node.identifier}" />
-	                                        <f:param name="tabId" value="1"/>
-	                                    </x:commandLink>
-	                                </x:panelGroup>
-	                            </f:facet>
-	                        </x:tree2>
+                            <x:tree2 
+                                id="SubstationBusEditPointTree"
+                                value="#{capControlForm.pointTreeForm.pointList}" var="node"
+                                showRootNode="false" varNodeToggler="t" preserveToggle="true"
+                                clientSideToggle="true" showLines="false">
+    
+                                <f:facet name="root">
+                                    <x:panelGroup>
+                                        <x:outputText id="rootLink" value="#{node.description}" />
+                                    </x:panelGroup>
+                                </f:facet>
+                    
+                                <f:facet name="pointtype">
+                                    <x:panelGroup>
+                                        <x:outputText id="paChCnt"
+                                            value="#{node.description} (#{node.childCount})"
+                                            rendered="#{!empty node.children}" />
+                                    </x:panelGroup>
+                                </f:facet>
+    
+                                <f:facet name="sublevels">
+                                    <x:panelGroup>
+                                        <x:outputText id="subLvlCnt"
+                                            value="#{node.description} (#{node.childCount})"
+                                            rendered="#{!empty node.children}" />
+                                    </x:panelGroup>
+                                </f:facet>
+    
+                                <f:facet name="points">
+                                    <x:panelGroup>
+                                        <x:commandLink id="ptLink" value="#{node.description}"
+                                            actionListener="#{capControlForm.pointTreeForm.pointClick}">
+                                            <f:param name="ptID" value="#{node.identifier}" />
+                                            <f:param name="tabId" value="1"/>
+                                        </x:commandLink>
+                                    </x:panelGroup>
+                                </f:facet>
+                            </x:tree2>
                         </x:div>
                     </x:htmlTag>
                 </x:panelGroup>
-                <x:htmlTag value="br"/>	
-	
+                <x:htmlTag value="br"/>    
+    
                 <h:outputText styleClass="tableHeader" value="Point Editor: " rendered="#{capControlForm.editingAuthorized}"/>
-	
+    
                 <x:commandLink id="addPtLnk" value="Add Point" actionListener="#{capControlForm.pointTreeForm.addPointClick}" rendered="#{capControlForm.editingAuthorized}">
                     <f:param name="parentId" value="#{capControlForm.pointTreeForm.pao.PAObjectID}" />
                     <f:param name="tabId" value="1"/>
                 </x:commandLink>
                 
-                <x:outputText value=" | " rendered="#{capControlForm.editingAuthorized}"/>	
-	
+                <x:outputText value=" | " rendered="#{capControlForm.editingAuthorized}"/>    
+    
                 <x:commandLink id="deletePtLnk" value="Delete Point" actionListener="#{capControlForm.pointTreeForm.deletePointClick}" rendered="#{capControlForm.editingAuthorized}">
                     <f:param name="tabId" value="1"/>
                 </x:commandLink>
@@ -214,7 +302,7 @@
             </h:column>
         
             <h:column>
-	
+    
                 <x:htmlTag value="fieldset" styleClass="fieldSet">
                     <x:htmlTag value="legend"><x:outputText value="VAR Point Setup"/></x:htmlTag>
     
@@ -227,7 +315,7 @@
                             value="Use Per Phase Var Data" 
                             title="Check this box to use 3 phase var data." 
                             styleClass="smallStaticLabel"/>
-                 	
+                     
                         <x:htmlTag value="br"/> 
     
                         <h:selectBooleanCheckbox id="Use_Totalized_Value_Checkbox" 
@@ -252,7 +340,8 @@
     
                         <x:htmlTag value="br"/> 
     
-                        <h:outputLink  value="javascript:sub_Var_PointPicker.show.call(sub_Var_PointPicker)" rendered="#{capControlForm.editingAuthorized}">
+                        <h:outputLink value="javascript:void(0);" styleClass="js-var-point" 
+                            rendered="#{capControlForm.editingAuthorized}">
                             <h:outputText value="Select point" rendered="#{!capControlForm.PAOBase.capControlSubstationBus.usePhaseDataBoolean}"/>
                             <h:outputText value="Select point for Phase A" rendered="#{capControlForm.PAOBase.capControlSubstationBus.usePhaseDataBoolean}"/>
                         </h:outputLink>
@@ -268,13 +357,14 @@
                             <x:outputText id="sub_Var_PhaseB_Device" forceId="true" value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlSubstationBus.phaseB]}" /> 
                             <x:outputText id="sub_Var_PhaseB_Device_Point_Seperator" forceId="true" value=" : "/>
                             <x:outputText id="sub_Var_PhaseB_Point" forceId="true" value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlSubstationBus.phaseB]}"/> 
-	
+    
                             <x:htmlTag value="br"/> 
-	
-                            <h:outputLink  value="javascript:sub_Var_PhaseB_PointPicker.show.call(sub_Var_PhaseB_PointPicker)" rendered="#{capControlForm.editingAuthorized}">
+    
+                            <h:outputLink  value="javascript:void(0);" styleClass="js-var-phase-b-point" 
+                                rendered="#{capControlForm.editingAuthorized}">
                                 <h:outputText value="Select point for Phase B"/>
                             </h:outputLink>
-	
+    
                             <x:htmlTag value="br"/> 
                             <x:htmlTag value="br"/> 
                  
@@ -287,7 +377,8 @@
                  
                             <x:htmlTag value="br"/> 
     
-                            <h:outputLink  value="javascript:sub_Var_PhaseC_PointPicker.show.call(sub_Var_PhaseC_PointPicker)" rendered="#{capControlForm.editingAuthorized}">
+                            <h:outputLink  value="javascript:void(0);" styleClass="js-var-phase-c-point" 
+                                rendered="#{capControlForm.editingAuthorized}">
                                 <h:outputText value="Select point for Phase C"/>
                             </h:outputLink>
     
@@ -322,10 +413,11 @@
                         <x:outputText id="sub_Watt_Device_Point_Seperator" forceId="true" value=" : "/>
                         <x:outputText id="subWattPoint" forceId="true" 
                             value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlSubstationBus.currentWattLoadPointID]}" /> 
-	    
+        
                         <x:htmlTag value="br"/> 
-	    
-                        <h:outputLink  value="javascript:subWattPointPicker.show.call(subWattPointPicker)" rendered="#{capControlForm.editingAuthorized}">
+        
+                        <h:outputLink  value="javascript:void(0);" styleClass="js-watt-point" 
+                            rendered="#{capControlForm.editingAuthorized}">
                             <h:outputText value="Select point..."/>
                         </h:outputLink>
                     </x:div>
@@ -354,10 +446,11 @@
                         <x:outputText id="sub_Volt_Device_Point_Seperator" forceId="true" value=" : "/>
                         <x:outputText id="subVoltPoint" forceId="true" 
                             value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlSubstationBus.currentVoltLoadPointID]}" /> 
-	    
+        
                         <x:htmlTag value="br"/> 
-	                
-                        <h:outputLink  value="javascript:subVoltPointPicker.show.call(subVoltPointPicker)" rendered="#{capControlForm.editingAuthorized}">
+                    
+                        <h:outputLink  value="javascript:void(0);" styleClass="js-volt-point" 
+                            rendered="#{capControlForm.editingAuthorized}">
                             <h:outputText value="Select point..."/>
                         </h:outputLink>
                     </x:div>
@@ -373,5 +466,5 @@
                 </x:htmlTag>
             </h:column>
         </x:panelGrid>
-	</f:subview>
+    </f:subview>
 </f:subview>

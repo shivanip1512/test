@@ -4,14 +4,32 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <f:verbatim>
-    <script type="text/javascript">
-                    var areaVoltReductionPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'voltReductionPointPicker',
-                            '', 'areaVoltReductionPointPicker', 
-                            'pointId:areaVoltReductionPointValue;pointName:areaVoltReductionPoint;deviceName:areaDevice');
-                    areaVoltReductionPointPicker.destinationFieldId = 'areaVoltReductionPointValue';
-                    <cti:pickerProperties var="outputColumns" property="OUTPUT_COLUMNS" type="voltReductionPointPicker"/>
-                    areaVoltReductionPointPicker.outputColumns = ${outputColumns};
-                </script>
+<script type="text/javascript">
+(function () {
+    
+    yukon.pickers = yukon.pickers || {};
+    yukon.pickers['areaVoltReductionPointPicker'] = new Picker('OK', 
+                'Cancel', 
+                '(none selected)', 
+                'voltReductionPointPicker',
+                '', 
+                'areaVoltReductionPointPicker', 
+                'pointId:areaVoltReductionPointValue;pointName:areaVoltReductionPoint;deviceName:areaDevice');
+                
+    yukon.pickers['areaVoltReductionPointPicker'].destinationFieldId = 'areaVoltReductionPointValue';
+    <cti:pickerProperties var="outputColumns" property="OUTPUT_COLUMNS" type="voltReductionPointPicker"/>
+    <cti:pickerProperties var="idField" property="ID_FIELD_NAME" type="voltReductionPointPicker"/>
+    yukon.pickers['areaVoltReductionPointPicker'].outputColumns = ${outputColumns};
+    yukon.pickers['areaVoltReductionPointPicker'].idFieldName = '${idField}';
+    
+    $(function () {
+        $('.js-volt-reduction-picker').click(function () {
+            yukon.pickers['areaVoltReductionPointPicker'].show();
+        });
+    });
+
+})();
+</script>
 </f:verbatim>
 
 <f:subview id="areaSetup" rendered="#{capControlForm.visibleTabs['CBCArea']}">
@@ -82,7 +100,7 @@
                     <f:param name="tabId" value="3"/>
                 </x:commandLink>
     
-			    <x:outputText value=" | " rendered="#{capControlForm.editingAuthorized}"/>
+                <x:outputText value=" | " rendered="#{capControlForm.editingAuthorized}"/>
     
                 <x:commandLink id="deletePtLnk" value="Delete Point" actionListener="#{capControlForm.pointTreeForm.deletePointClick}" rendered="#{capControlForm.editingAuthorized}">
                     <f:param name="tabId" value="3"/>
@@ -105,12 +123,13 @@
     
                         <x:htmlTag value="br"/>
                             
-                        <h:outputLink  value="javascript:areaVoltReductionPointPicker.show.call(areaVoltReductionPointPicker)" rendered="#{capControlForm.editingAuthorized}">
+                        <h:outputLink value="javascript:void(0);" styleClass="js-volt-reduction-picker" 
+                            rendered="#{capControlForm.editingAuthorized}">
                             <h:outputText value="Select point"/>
                         </h:outputLink>
                  
-						<x:htmlTag value="br"/>
-						<x:htmlTag value="br"/>
+                        <x:htmlTag value="br"/>
+                        <x:htmlTag value="br"/>
                         
                         <x:commandLink id="areaVoltReductionPoint_setNone" 
                             title="Do not use a point for control." 

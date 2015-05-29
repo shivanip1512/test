@@ -4,13 +4,36 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <f:verbatim>
-    <script type="text/javascript">
-        var specAreaVoltReductionPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'statusPointPicker', '',
-                'specAreaVoltReductionPointPicker', 'pointId:specAreaVoltReductionPointValue;pointName:specAreaVoltReductionPoint;deviceName:areaDevice');
-        specAreaVoltReductionPointPicker.destinationFieldId = 'specAreaVoltReductionPointValue';
-        <cti:pickerProperties var="outputColumns" property="OUTPUT_COLUMNS" type="statusPointPicker"/>
-        specAreaVoltReductionPointPicker.outputColumns = ${outputColumns};
-    </script>
+
+<cti:pickerProperties var="outputColumns" property="OUTPUT_COLUMNS" type="statusPointPicker"/>
+<cti:pickerProperties var="idField" property="ID_FIELD_NAME" type="statusPointPicker"/>
+
+<script type="text/javascript">
+(function () {
+    
+    yukon.pickers = yukon.pickers || {};
+    
+    var specAreaVoltReductionPointPicker = new Picker('OK', 
+            'Cancel', 
+            '(none selected)', 
+            'statusPointPicker', 
+            '',
+            'specAreaVoltReductionPointPicker', 
+            'pointId:specAreaVoltReductionPointValue;pointName:specAreaVoltReductionPoint;deviceName:areaDevice');
+    
+    specAreaVoltReductionPointPicker.destinationFieldId = 'specAreaVoltReductionPointValue';
+    specAreaVoltReductionPointPicker.outputColumns = ${outputColumns};
+    specAreaVoltReductionPointPicker.idFieldName = '${idField}';
+    
+    yukon.pickers['specAreaVoltReductionPointPicker'] = specAreaVoltReductionPointPicker;
+    
+    $(function () {
+        $('.js-volt-reduction-point').click(function () {
+            yukon.pickers['specAreaVoltReductionPointPicker'].show();
+        });
+    });
+})();
+</script>
 </f:verbatim>
 
 <f:subview id="specialAreaSetup" rendered="#{capControlForm.visibleTabs['CBCSpecialArea']}">
@@ -105,7 +128,8 @@
     
                         <x:htmlTag value="br"/>
     
-                        <h:outputLink  value="javascript:specAreaVoltReductionPointPicker.show.call(specAreaVoltReductionPointPicker)" rendered="#{capControlForm.editingAuthorized}">
+                        <h:outputLink  value="javascript:void(0);" styleClass="js-volt-reduction-point"
+                            rendered="#{capControlForm.editingAuthorized}">
                             <h:outputText value="Select point"/>
                         </h:outputLink>
                  
