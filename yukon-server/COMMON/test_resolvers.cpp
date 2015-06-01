@@ -311,7 +311,7 @@ BOOST_AUTO_TEST_CASE(test_isKnownUnsupportedDevice)
 {
     BOOST_CHECK(isKnownUnsupportedDevice("digi gateway"));
     BOOST_CHECK(isKnownUnsupportedDevice("rf gateway"));
-    BOOST_CHECK(isKnownUnsupportedDevice("rf gateway 2"));
+    BOOST_CHECK(isKnownUnsupportedDevice("gwy-800"));
     BOOST_CHECK(isKnownUnsupportedDevice("zigbee endpoint"));
     BOOST_CHECK(isKnownUnsupportedDevice("rfn-440-2131td"));
     BOOST_CHECK(isKnownUnsupportedDevice("rfn-440-2132td"));

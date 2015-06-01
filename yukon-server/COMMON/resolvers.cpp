@@ -385,7 +385,7 @@ bool isKnownUnsupportedDevice(const string& typeStr)
     {
         "digi gateway",
         "rf gateway",
-        "rf gateway 2",
+        "gwy-800",
         "zigbee endpoint",
         "rfn-440-2131td",
         "rfn-440-2132td",
