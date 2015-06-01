@@ -101,7 +101,7 @@ public class MctOptionPanel extends DataInputPanel implements CaretListener {
                 routeLabel = new JLabel();
                 routeLabel.setName("RouteLabel");
                 routeLabel.setFont(new java.awt.Font("dialog", 0, 14));
-                routeLabel.setText("Communtication Route:");
+                routeLabel.setText("Communication Route:");
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);
             }
