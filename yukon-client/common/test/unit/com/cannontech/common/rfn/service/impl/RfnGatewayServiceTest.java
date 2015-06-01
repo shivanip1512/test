@@ -33,8 +33,8 @@ import com.cannontech.common.rfn.model.GatewayUpdateException;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
-import com.cannontech.common.rfn.model.RfnGateway2;
 import com.cannontech.common.rfn.model.RfnGatewayData;
+import com.cannontech.common.rfn.model.RfnGwy800;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.core.dao.DeviceDao;
@@ -66,7 +66,7 @@ public class RfnGatewayServiceTest {
     private Double longitude2 = 4.0;
     private final String ipAddress2 = "123.123.123.124";
     private final String gateway2Name = "Test Gateway 2";
-    private final PaoIdentifier gateway2PaoId = new PaoIdentifier(101, PaoType.RFN_GATEWAY_2);
+    private final PaoIdentifier gateway2PaoId = new PaoIdentifier(101, PaoType.GWY800);
     private static final RfnIdentifier gateway2RfnId = new RfnIdentifier("10001", "CPS", "RFGateway2");
     
     @Before
@@ -162,7 +162,7 @@ public class RfnGatewayServiceTest {
         
         // Test that we got the expected values
         RfnGateway rfnGateway = new RfnGateway(gatewayName, gatewayPaoId, gatewayRfnId, createEmptyRfnGatewayData(gatewayRfnId));
-        RfnGateway2 rfnGateway2 = new RfnGateway2(gateway2Name, gateway2PaoId, gateway2RfnId, createEmptyRfnGatewayData(gateway2RfnId));
+        RfnGwy800 rfnGateway2 = new RfnGwy800(gateway2Name, gateway2PaoId, gateway2RfnId, createEmptyRfnGatewayData(gateway2RfnId));
         Assert.assertTrue("Gateway not retrieved from getAllGateways()", allGateways.contains(rfnGateway));
         Assert.assertTrue("Gateway 2.0 not retrieved from getAllGateways()", allGateways.contains(rfnGateway2));
     }
@@ -241,7 +241,7 @@ public class RfnGatewayServiceTest {
         Assert.assertEquals("PaoIdentifier does not match", gateway2PaoId, rfnGateway.getPaoIdentifier());
         Assert.assertEquals("RfnIdentifier does not match", gateway2RfnId, rfnGateway.getRfnIdentifier());
         Assert.assertEquals("PaoLocation does not match", paoLocation, rfnGateway.getLocation());
-        Assert.assertTrue("Gateway 2.0 returned as incorrect type.", rfnGateway instanceof RfnGateway2);
+        Assert.assertTrue("Gateway 2.0 returned as incorrect type.", rfnGateway instanceof RfnGwy800);
     }
     
     @Test(expected=NotFoundException.class)

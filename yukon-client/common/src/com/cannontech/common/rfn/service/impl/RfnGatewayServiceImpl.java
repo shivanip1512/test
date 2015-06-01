@@ -45,8 +45,8 @@ import com.cannontech.common.rfn.model.GatewayUpdateException;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
-import com.cannontech.common.rfn.model.RfnGateway2;
 import com.cannontech.common.rfn.model.RfnGatewayData;
+import com.cannontech.common.rfn.model.RfnGwy800;
 import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
@@ -94,12 +94,12 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         
         this.dataCache = dataCache;
         this.connectionFactory = connectionFactory;
-        this.configSource = configurationSource;
-        this.creationService = rfnDeviceCreationService;
+        configSource = configurationSource;
+        creationService = rfnDeviceCreationService;
         this.paoLocationDao = paoLocationDao;
         this.rfnDeviceDao = rfnDeviceDao;
         this.deviceDao = deviceDao;
-        this.dbCache = serverDatabaseCache;
+        dbCache = serverDatabaseCache;
     }
     
     @PostConstruct
@@ -151,8 +151,8 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         RfnIdentifier rfId = device.getRfnIdentifier();
         PaoIdentifier paoId = device.getPaoIdentifier();
         
-        if (paoId.getPaoType() == PaoType.RFN_GATEWAY_2) {
-            gateway = new RfnGateway2(name, paoId, rfId, data);
+        if (paoId.getPaoType() == PaoType.GWY800) {
+            gateway = new RfnGwy800(name, paoId, rfId, data);
         } else {
             gateway = new RfnGateway(name, paoId, rfId, data);
         }

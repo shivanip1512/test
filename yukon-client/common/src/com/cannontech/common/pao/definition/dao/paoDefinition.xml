@@ -4544,9 +4544,9 @@
         <displayName>RFN Gateway</displayName>
     </pao>
     
-    <pao id="RFN_GATEWAY_2" inherits="RFN_GATEWAY_BASE" creatable="false">
-    <!-- Creatable=false means it cannot be created in DBEditor, nor listed as a type in device configurations...to-date -->
-        <displayName>RFN Gateway 2</displayName>
+    <pao id="GWY800" inherits="RFN_GATEWAY_BASE" creatable="false">
+        <!-- Creatable=false means it cannot be created in DBEditor, nor listed as a type in device configurations...to-date -->
+        <displayName>GWY-800</displayName>
     </pao>
     
     <!-- RF LCRs -->

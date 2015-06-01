@@ -139,7 +139,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     LCR6600_RFN(DeviceTypes.LCR6600_RFN, "LCR-6600 RFN", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     RFN_GATEWAY(DeviceTypes.RFN_GATEWAY, "RF Gateway", PaoCategory.DEVICE, PaoClass.RFMESH),
-    RFN_GATEWAY_2(DeviceTypes.RFN_GATEWAY_2, "RF Gateway 2", PaoCategory.DEVICE, PaoClass.RFMESH),
+    GWY800(DeviceTypes.GWY800, "GWY-800", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     ION_7700(DeviceTypes.ION_7700, "ION-7700", PaoCategory.DEVICE, PaoClass.RTU),
     ION_8300(DeviceTypes.ION_8300, "ION-8300", PaoCategory.DEVICE, PaoClass.RTU),
@@ -555,7 +555,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         
         rfGatewayTypes = ImmutableSet.of(
             RFN_GATEWAY,
-            RFN_GATEWAY_2);
+            GWY800);
         
         Builder<PaoType> capControlTypeBuilder = ImmutableSet.builder();
         for (PaoType paoType : PaoType.values()) {

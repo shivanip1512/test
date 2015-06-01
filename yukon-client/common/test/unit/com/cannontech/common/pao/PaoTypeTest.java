@@ -208,7 +208,7 @@ public class PaoTypeTest {
                             PaoType.SYSTEM,
                             PaoType.VIRTUAL_SYSTEM,
                             PaoType.RFN_GATEWAY,
-                            PaoType.RFN_GATEWAY_2);
+                            PaoType.GWY800);
     
     private static final ImmutableSet<PaoType> nonCbcTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -394,7 +394,7 @@ public class PaoTypeTest {
                         PaoType.ECOBEE_3,
                         PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY,
-                        PaoType.RFN_GATEWAY_2);
+                        PaoType.GWY800);
 
     private static final ImmutableSet<PaoType> nonMeterTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -515,7 +515,7 @@ public class PaoTypeTest {
                         PaoType.ECOBEE_3,
                         PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY,
-                        PaoType.RFN_GATEWAY_2,
+                        PaoType.GWY800,
                         PaoType.RFN_1200);
 
     private static final ImmutableSet<PaoType> nonMctTypes =
@@ -683,7 +683,7 @@ public class PaoTypeTest {
                         PaoType.ECOBEE_3,
                         PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY,
-                        PaoType.RFN_GATEWAY_2);
+                        PaoType.GWY800);
 
     private static final ImmutableSet<PaoType> nonIedTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -861,7 +861,7 @@ public class PaoTypeTest {
                         PaoType.ECOBEE_3,
                         PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY,
-                        PaoType.RFN_GATEWAY_2);
+                        PaoType.GWY800);
 
     private static final ImmutableSet<PaoType> nonRtuTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -1055,7 +1055,7 @@ public class PaoTypeTest {
                         PaoType.ECOBEE_3,
                         PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY,
-                        PaoType.RFN_GATEWAY_2);
+                        PaoType.GWY800);
 
     private static final ImmutableSet<PaoType> nonPortTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -1242,7 +1242,7 @@ public class PaoTypeTest {
                         PaoType.ECOBEE_3,
                         PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY,
-                        PaoType.RFN_GATEWAY_2);
+                        PaoType.GWY800);
     
     @Test
     public void testIsMeter() {

@@ -469,8 +469,8 @@ public final class DeviceFactory {
         case RFN_GATEWAY:
             returnDevice = new RfnGateway();
             break;
-        case RFN_GATEWAY_2:
-            returnDevice = new RfnGateway2();
+        case GWY800:
+            returnDevice = new RfnGwy800();
             break;
         default:
             CTILogger.error("PaoType " + paoType + " is undefined for DeviceFactory");

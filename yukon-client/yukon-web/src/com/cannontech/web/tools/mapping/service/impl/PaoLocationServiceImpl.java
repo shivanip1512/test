@@ -55,7 +55,7 @@ public class PaoLocationServiceImpl implements PaoLocationService {
         }
         icons.put(PaoType.RFWMETER, Icon.METER_WATER);
         icons.put(PaoType.RFN_GATEWAY, Icon.TRANSMITTER);
-        icons.put(PaoType.RFN_GATEWAY_2, Icon.TRANSMITTER);
+        icons.put(PaoType.GWY800, Icon.TRANSMITTER);
         
     }
     
@@ -110,7 +110,9 @@ public class PaoLocationServiceImpl implements PaoLocationService {
         
         List<PaoDistance> nearby = new ArrayList<>();
         for (PaoLocation current : locations) {
-            if (location.equals(current)) continue;
+            if (location.equals(current)) {
+                continue;
+            }
             double distanceTo = location.distanceTo(current, unit);
             if (distanceTo <= distance) {
                 LiteYukonPAObject pao = cache.getAllPaosMap().get(current.getPaoIdentifier().getPaoId());
