@@ -291,8 +291,9 @@ public class PointUtil {
             AnalogPoint analogPoint = (AnalogPoint) pointBase;
 
             analogPoint.getPointAnalog().setMultiplier(pointTemplate.getMultiplier());
-            analogPoint.getPointUnit().setUomID(pointTemplate.getUnitOfMeasure());
             analogPoint.getPoint().setStateGroupID(pointTemplate.getStateGroupId());
+            analogPoint.getPointUnit().setUomID(pointTemplate.getUnitOfMeasure());
+            analogPoint.getPointUnit().setDecimalPlaces(pointTemplate.getDecimalPlaces());
 
         } else if (pointBase instanceof StatusPoint) {
 
@@ -309,8 +310,9 @@ public class PointUtil {
             AccumulatorPoint accumulatorPoint = (AccumulatorPoint) pointBase;
 
             accumulatorPoint.getPointAccumulator().setMultiplier(pointTemplate.getMultiplier());
-            accumulatorPoint.getPointUnit().setUomID(pointTemplate.getUnitOfMeasure());
             accumulatorPoint.getPoint().setStateGroupID(pointTemplate.getStateGroupId());
+            accumulatorPoint.getPointUnit().setUomID(pointTemplate.getUnitOfMeasure());
+            accumulatorPoint.getPointUnit().setDecimalPlaces(pointTemplate.getDecimalPlaces());
 
         } else if (pointBase instanceof CalculatedPoint) {
             addCalcPointTemplateAttributesToPointBase(pointTemplate, (CalculatedPoint) pointBase);
