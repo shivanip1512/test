@@ -7,7 +7,7 @@
             <value>
                 /error-code.xml=friendlyErrorBaseController
                 /porter_error.xsl=friendlyErrorBaseController
-                /JRE/*.exe=yukonBaseController
+                /*=yukonBaseController
             </value>
         </property>
         <property name="order" value="1"/>

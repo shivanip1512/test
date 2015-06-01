@@ -3,11 +3,13 @@ package com.cannontech.web.util;
 import java.io.FileInputStream;
 import java.io.FileReader;
 
+import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.apache.naming.resources.FileDirContext;
 import org.apache.naming.resources.ResourceAttributes;
 import org.springframework.util.FileCopyUtils;
@@ -15,9 +17,12 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.util.UrlPathHelper;
 
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.exception.ResourceNotFoundException;
 import com.cannontech.common.util.CtiUtilities;
 
 public class YukonBaseStaticController extends AbstractController {
+    private static final Logger log = YukonLogManager.getLogger(YukonBaseStaticController.class);
     private UrlPathHelper urlPathHelper = new UrlPathHelper();
     private String prefix;
 
@@ -29,8 +34,14 @@ public class YukonBaseStaticController extends AbstractController {
         String docBase = dirContext.getDocBase();
 
         String pathWithinServletMapping = urlPathHelper.getPathWithinServletMapping(request);
+        Attributes atts = null;
+        try {
+            atts = dirContext.getAttributes(pathWithinServletMapping);
+        } catch (NamingException e) {
+            log.warn("file not found for download: " + pathWithinServletMapping.substring(pathWithinServletMapping.lastIndexOf("/") + 1));
+            throw new ResourceNotFoundException();
+        }
 
-        Attributes atts = dirContext.getAttributes(pathWithinServletMapping);
         if (!(atts instanceof ResourceAttributes)) {
             atts = new ResourceAttributes(atts);
         }
