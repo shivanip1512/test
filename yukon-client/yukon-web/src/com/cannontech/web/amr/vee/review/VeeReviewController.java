@@ -14,6 +14,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.model.DefaultItemsPerPage;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.validation.dao.RphTagUiDao;
@@ -45,10 +46,61 @@ public class VeeReviewController {
         ACCEPT;
     }
     
-    private void setUpModel(HttpServletRequest request, ModelMap model, PagingParameters pagingParameters) {
+    @RequestMapping("home")
+    public String home(HttpServletRequest request, ModelMap model, 
+            @DefaultItemsPerPage(25) PagingParameters paging) {
+        setUpModel(request, model, paging);
+        return "vee/review/review.jsp";
+    }
+    
+    @RequestMapping("reviewTable")
+    public String reviewTable(HttpServletRequest request, ModelMap model, 
+            @DefaultItemsPerPage(25) PagingParameters paging) {
+        setUpModel(request,  model, paging);
+        return "vee/review/reviewTable.jsp";
+    }
+    
+    @RequestMapping("save")
+    public String save(HttpServletRequest request, ModelMap model, LiteYukonUser user, 
+            @DefaultItemsPerPage(25) PagingParameters paging) 
+    throws NumberFormatException {
+        
+        // gather changeIds
+        List<Long> deleteChangeIds = Lists.newArrayList();
+        List<Long> acceptChangeIds = Lists.newArrayList();
+        
+        Map<String, String> actionParameters = ServletUtil.getStringParameters(request, "ACTION_");
+        for (String changeIdStr : actionParameters.keySet()) {
+            
+            String actionTypeStr = actionParameters.get(changeIdStr);
+            if (!StringUtils.isBlank(actionTypeStr)) {
+                ActionType actionType = ActionType.valueOf(actionTypeStr);
+                if (actionType == ActionType.DELETE) {
+                    deleteChangeIds.add(Long.valueOf(changeIdStr));
+                } else if (ActionType.ACCEPT.equals(actionType)) {
+                    acceptChangeIds.add(Long.valueOf(changeIdStr));
+                }
+            }
+        }
+        
+        // delete
+        for (long deleteChangeId : deleteChangeIds) {
+            validationHelperService.deleteRawPointHistoryRow(deleteChangeId, user);
+        }
+        // accept
+        for (long acceptChangeId : acceptChangeIds) {
+            validationHelperService.acceptRawPointHistoryRow(acceptChangeId, user);
+        }
+        
+        setUpModel(request,  model, paging);
+        
+        return "vee/review/reviewTable.jsp";
+    }
+    
+    private void setUpModel(HttpServletRequest request, ModelMap model, PagingParameters paging) {
         
         List<RphTag> selectedTags = getSelectedTags(request);
-        SearchResults<ReviewPoint> searchResults = rphTagUiDao.getReviewPoints(pagingParameters, selectedTags);
+        SearchResults<ReviewPoint> searchResults = rphTagUiDao.getReviewPoints(paging, selectedTags);
         List<ReviewPoint> allReviewPoints = searchResults.getResultList();
         
         // group by device for the purpose of the narrowing step, this way the changeIds used as (linked) map keys stay in device order
@@ -79,69 +131,21 @@ public class VeeReviewController {
             
         }
         
-        // tag counts
         Map<RphTag, Integer> tagCounts = rphTagUiDao.getAllValidationTagCounts();
         model.addAttribute("tagCounts", tagCounts);
         
-        // mav
         int sumOfSelectedTagCounts = addDisplayTypesToModel(selectedTags, tagCounts, model);
         model.addAttribute("groupedExtendedReviewPoints", groupedExtendedReviewPoints);
         
-        //for pagination
-        SearchResults<ExtendedReviewPoint> pagedRows = SearchResults.pageBasedForSublist(extendedReviewPoints, 
-                pagingParameters.getPage(), pagingParameters.getItemsPerPage(),
-                sumOfSelectedTagCounts);
+        SearchResults<ExtendedReviewPoint> pagedRows = 
+                SearchResults.pageBasedForSublist(extendedReviewPoints, paging, sumOfSelectedTagCounts);
         model.addAttribute("result", pagedRows);
         
-    }
-    
-    @RequestMapping("home")
-    public String home(HttpServletRequest request, ModelMap model, PagingParameters pagingParameters) {
-        setUpModel(request, model, pagingParameters);
-        return "vee/review/review.jsp";
-    }
-    
-    @RequestMapping("reviewTable")
-    public String reviewTable(HttpServletRequest request, ModelMap model, PagingParameters pagingParameters) {
-        setUpModel(request,  model, pagingParameters);
-        return "vee/review/reviewTable.jsp";
-    }
-    @RequestMapping("save")
-    public String save(HttpServletRequest request, ModelMap model, LiteYukonUser user, PagingParameters pagingParameters) 
-            throws NumberFormatException {
-        // gather changeIds
-        List<Long> deleteChangeIds = Lists.newArrayList();
-        List<Long> acceptChangeIds = Lists.newArrayList();
-        
-        Map<String, String> actionParameters = ServletUtil.getStringParameters(request, "ACTION_");
-        for (String changeIdStr : actionParameters.keySet()) {
-            
-            String actionTypeStr = actionParameters.get(changeIdStr);
-            if (!StringUtils.isBlank(actionTypeStr)) {
-                ActionType actionType = ActionType.valueOf(actionTypeStr);
-                if (actionType == ActionType.DELETE) {
-                    deleteChangeIds.add(Long.valueOf(changeIdStr));
-                } else if (ActionType.ACCEPT.equals(actionType)) {
-                    acceptChangeIds.add(Long.valueOf(changeIdStr));
-                }
-            }
-        }
-        
-        // delete
-        for (long deleteChangeId : deleteChangeIds) {
-            validationHelperService.deleteRawPointHistoryRow(deleteChangeId, user);
-        }
-        
-        // accept
-        for (long acceptChangeId : acceptChangeIds) {
-            validationHelperService.acceptRawPointHistoryRow(acceptChangeId, user);
-        }
-
-        setUpModel(request,  model, pagingParameters);
-        return "vee/review/reviewTable.jsp";
+        model.addAttribute("paging", paging);
     }
     
     private int addDisplayTypesToModel(List<RphTag> selectedTags, Map<RphTag, Integer> tagCounts, ModelMap model) {
+        
         int sumOfSelectedTagCounts = 0;
         List<DisplayType> displayTypes = new ArrayList<DisplayType>();
         for (RphTag tag : RphTag.getAllValidation()) {
@@ -185,7 +189,7 @@ public class VeeReviewController {
     private List<RphTag> getSelectedTags(HttpServletRequest request) {
         
         List<RphTag> tags = new ArrayList<RphTag>();
-
+        
         for (RphTag rphTag : RphTag.getAllValidation()) {
             
             boolean tagChecked = ServletRequestUtils.getBooleanParameter(request, rphTag.name(), false);
@@ -223,7 +227,7 @@ public class VeeReviewController {
         public PointValueHolder getNextPointValue() {
             return nextPointValue;
         }
-
+        
     }
     
 }
