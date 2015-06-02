@@ -326,6 +326,9 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
     Test_CtiCCSubstationBusStore* store = new Test_CtiCCSubstationBusStore();
     CtiCCSubstationBusStore::setInstance(store);
 
+    std::auto_ptr<test_AttributeService> attributeService(new test_AttributeService);
+    store->setAttributeService(std::auto_ptr<AttributeService>(attributeService.release()));
+
     _MAX_KVAR = 20000;
     _SEND_TRIES = 1;
 
