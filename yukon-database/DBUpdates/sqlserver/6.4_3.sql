@@ -31,6 +31,10 @@ INSERT INTO DeviceTypeCommand VALUES (-1155, -210, 'CBC 8024', 7, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1156, -211, 'CBC 8024', 8, 'Y', -1);
 /* End YUK-14327 */
 
+/* Start YUK-14350 */
+DELETE FROM GlobalSetting WHERE Name IN ('AUTH_METHOD', 'AUTHENTICATION_MODE');
+/* End YUK-14350 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
