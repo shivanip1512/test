@@ -21,8 +21,12 @@
                     </div>
                     
                     <tags:nameValueContainer2>
-                        <tags:nameValue2 nameKey=".accountImportFile" ><input type="file" name="accountImportFile" size="35"></tags:nameValue2>
-                        <tags:nameValue2 nameKey=".hardwareImportFile"><input type="file" name="hardwareImportFile" size="35"></tags:nameValue2>
+                        <tags:nameValue2 nameKey=".accountImportFile" >
+                            <tags:file name="accountImportFile" size="35" />
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".hardwareImportFile">
+                      		<tags:file name="hardwareImportFile" size="35" />
+                        </tags:nameValue2>
                         <tags:inputNameValue nameKey=".email" path="email" size="35"/>
                     </tags:nameValueContainer2>
                     

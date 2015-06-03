@@ -118,7 +118,7 @@
                                         <cti:csrfToken/>
                                         <tags:nameValueContainer2>
                                             <tags:nameValue2 nameKey=".fileLabel">
-                                                <input type="file" id="fileUpload.dataFile" name="fileUpload.dataFile">
+                                                <tags:file name="fileUpload.dataFile" id="fileUpload.dataFile" />
                                                 <input type="hidden" name="collectionType" value="fileUpload">
                                                 <input type="hidden" name="fileUpload.energyCompanyId" 
                                                     value="${energyCompanyId}">

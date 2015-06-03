@@ -52,8 +52,8 @@
                 <table width="500" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                   <tr> 
                     <td width="30%" align="right">File Path and Name: </td>
-                    <td width="70%"> 
-                      <input type="file" name="GenericFile" size="35">
+                    <td width="70%">                      
+                       <tags:file name="GenericFile" size="35" />
                     </td>
                   </tr>
                  </table>

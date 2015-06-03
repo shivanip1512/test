@@ -15,7 +15,7 @@
 
 <tags:nameValueContainer2 tableClass="with-form-controls">
     <tags:nameValue2 nameKey=".file">
-        <input type="file" name="file">
+        <tags:file name="file"  />
     </tags:nameValue2>
 </tags:nameValueContainer2>
 

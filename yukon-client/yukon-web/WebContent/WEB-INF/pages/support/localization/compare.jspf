@@ -31,7 +31,7 @@
                             <form:radiobutton path="modifiedChoice" value="CUSTOM" />
                             <i:inline key=".custom" />
                         </label>
-                        <input type="file" name="modifiedCustom">
+                        <tags:file name="modifiedCustom" />
                     </div>
                 </div>
 
@@ -58,7 +58,7 @@
                             <form:radiobutton path="baseChoice" value="CUSTOM" />
                             <i:inline key=".custom" />
                         </label>
-                        <input type="file" name="baseCustom">
+                        <tags:file name="baseCustom" />
                     </div>
                 </div>
         </div>

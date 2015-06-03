@@ -47,7 +47,7 @@
                             <form:radiobutton path="searchInChoice" value="CUSTOM" />
                             <i:inline key=".custom" />
                         </label>
-                        <input type="file" name="searchInCustom">
+                        <tags:file name="searchInCustom" />
                     </div>
                 </div>
         </div>

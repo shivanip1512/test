@@ -18,8 +18,8 @@
             <cti:csrfToken/>
             <label for="uploader-${cti:escapeJavaScript(category)}" class="uploadLabel">
                 <i:inline key=".uploadNew"/>
-            </label>
-            <input id="uploader-${cti:escapeJavaScript(category)}" type="file" name="file" multiple accept="image/*" class="b-upload fr">
+            </label> 
+            <tags:file id="uploader-${cti:escapeJavaScript(category)}" name="file" multiple="" accept="image/*" classes="b-upload fr"/>
             <div class="upload-progress"></div><div class="upload-percent"></div>
         </form>
     </div>

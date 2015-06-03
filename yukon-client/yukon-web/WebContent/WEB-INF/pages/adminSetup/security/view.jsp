@@ -40,7 +40,7 @@
                 <cti:csrfToken/>
                 <tags:nameValue2 nameKey=".importKeyFile">
                     <tags:bind path="file">
-                        <input type="file" name="keyFile">
+                        <tags:file name="keyFile" />
                     </tags:bind>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".keyName">
