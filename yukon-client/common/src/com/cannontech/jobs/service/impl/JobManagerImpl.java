@@ -461,6 +461,7 @@ public class JobManagerImpl implements JobManager {
             currentlyRunning.remove(status.getJob());
         }
 
+        removeJobException(status.getJob().getId(), status.getJobState());
         // record status in database
         status.setStopTime(timeSource.getCurrentTime());
         jobStatusDao.saveOrUpdate(status);
@@ -476,6 +477,19 @@ public class JobManagerImpl implements JobManager {
         for (JobException it : jobExceptions) {
             if (it.jobId == jobId) {
                 it.isExeptionRecieved = false;
+            }
+        }
+    }
+
+    /**
+     * If the job succeed in second time then it will remove exception from set
+     * jobExceptions
+     */
+
+    private void removeJobException(Integer jobId, JobState jobStatus) {
+        for (JobException it : jobExceptions) {
+            if (it.jobId == jobId && jobStatus == JobState.COMPLETED) {
+                jobExceptions.remove(it);
             }
         }
     }
