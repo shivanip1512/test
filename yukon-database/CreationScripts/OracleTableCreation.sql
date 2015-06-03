@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/27/2015 4:26:33 PM                         */
+/* Created on:     6/3/2015 3:43:02 PM                          */
 /*==============================================================*/
 
 
@@ -12438,8 +12438,8 @@ alter table RegulatorEvents
       on delete cascade;
 
 alter table RegulatorToZoneMapping
-   add constraint FK_ZoneReg_Reg foreign key (RegulatorId)
-      references Regulator (RegulatorId)
+   add constraint FK_RegulatorToZoneMap_Device foreign key (RegulatorId)
+      references DEVICE (DEVICEID)
       on delete cascade;
 
 alter table RegulatorToZoneMapping

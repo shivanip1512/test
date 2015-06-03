@@ -35,6 +35,16 @@ INSERT INTO DeviceTypeCommand VALUES (-1156, -211, 'CBC 8024', 8, 'Y', -1);
 DELETE FROM GlobalSetting WHERE Name IN ('AUTH_METHOD', 'AUTHENTICATION_MODE');
 /* End YUK-14350 */
 
+/* Start YUK-14334 */
+ALTER TABLE RegulatorToZoneMapping
+    DROP CONSTRAINT FK_ZoneReg_Reg;
+
+ALTER TABLE RegulatorToZoneMapping
+    ADD CONSTRAINT FK_RegulatorToZoneMap_Device FOREIGN KEY (RegulatorId)
+        REFERENCES Regulator (RegulatorId)
+           ON DELETE CASCADE;
+/* End YUK-14334 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
