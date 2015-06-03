@@ -735,8 +735,12 @@ void VoltageRegulator::submitControlCommands( Policy::Action                  & 
 void VoltageRegulator::executeIntegrityScan( const std::string & user )
 try
 {
+    bool logEvent = false;
+
     for ( auto & action : _scanPolicy->IntegrityScan() )
     {
+        logEvent = true;
+
         auto & signal  = action.first;
         auto & request = action.second;
 
@@ -751,15 +755,15 @@ try
         sendCapControlOperationMessage( 
             Messaging::CapControl::CapControlOperationMessage::createScanDeviceMessage(
                 pointPaoID, CtiTime() ) );
+    }
 
-        if ( user != SystemUser )    // only log user issued commands
-        {
-            enqueueRegulatorEvent(
-                RegulatorEvent::makeScanEvent( RegulatorEvent::IntegrityScan,
-                                               getPaoId(),
-                                               _phase,
-                                               user ) );
-        }
+    if ( logEvent && user != SystemUser )   // only log user issued commands
+    {
+        enqueueRegulatorEvent(
+            RegulatorEvent::makeScanEvent( RegulatorEvent::IntegrityScan,
+                                           getPaoId(),
+                                           _phase,
+                                           user ) );
     }
 }
 catch ( FailedAttributeLookup & missingAttribute )
