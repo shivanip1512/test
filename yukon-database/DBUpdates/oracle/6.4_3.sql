@@ -41,7 +41,7 @@ ALTER TABLE RegulatorToZoneMapping
 
 ALTER TABLE RegulatorToZoneMapping
     ADD CONSTRAINT FK_RegulatorToZoneMap_Device FOREIGN KEY (RegulatorId)
-        REFERENCES Regulator (RegulatorId)
+        REFERENCES Device (DeviceId)
            ON DELETE CASCADE;
 /* End YUK-14334 */
 
