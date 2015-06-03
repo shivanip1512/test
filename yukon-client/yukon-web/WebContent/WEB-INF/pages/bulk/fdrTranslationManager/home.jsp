@@ -58,7 +58,7 @@
                     <cti:msg2 key="yukon.common.file" var="fileName"/>
                     <tags:nameValueContainer>
                         <tags:nameValue name="${fileName}">                          
-                            <tags:file name="importFile"  />
+                            <tags:file name="importFile"/>
                         </tags:nameValue>
                         <tags:nameValue name="">
                             <label><input type="checkbox" name="ignoreInvalidColumns">&nbsp;<i:inline key=".ignoreInvalidText"/></label>
