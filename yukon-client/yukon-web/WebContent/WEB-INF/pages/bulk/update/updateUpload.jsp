@@ -48,7 +48,7 @@
                 <div>
                     <%-- file select --%>
                     <strong><i:inline key="yukon.common.device.bulk.updateUpload.updateFileLabel"/></strong>
-                    <tags:file name="dataFile" size="30px" />
+                    <tags:file name="dataFile"/>
                     <div class="action-area">
                         <cti:button nameKey="load" type="submit" classes="primary action" busy="true"/>
                     </div> 
