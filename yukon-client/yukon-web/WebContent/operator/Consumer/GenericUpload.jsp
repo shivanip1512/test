@@ -53,7 +53,7 @@
                   <tr> 
                     <td width="30%" align="right">File Path and Name: </td>
                     <td width="70%">                      
-                       <tags:file name="GenericFile" size="35" />
+                       <tags:file name="GenericFile"/>
                     </td>
                   </tr>
                  </table>
