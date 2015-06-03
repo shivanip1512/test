@@ -27252,6 +27252,15 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_REGULATORTOZONEMAP_DEVICE</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>REGULATORID</i__columnName>
+            <i__foreignColumnName>DEVICEID</i__foreignColumnName>
+            <i__foreignTableName>DEVICE</i__foreignTableName>
+            <i__updateRule>0</i__updateRule>
+            <i__deleteRule>0</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>FK_MCTBCM_DEVICE_MCTID</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>MCTID</i__columnName>
@@ -50422,17 +50431,7 @@
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
         </columnList>
         <i__primaryKeys/>
-        <i__foreignKeys>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_ZONEREG_REG</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>REGULATORID</i__columnName>
-            <i__foreignColumnName>REGULATORID</i__foreignColumnName>
-            <i__foreignTableName>REGULATOR</i__foreignTableName>
-            <i__updateRule>0</i__updateRule>
-            <i__deleteRule>0</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-        </i__foreignKeys>
+        <i__foreignKeys/>
         <i__indexes>
           <entry>
             <string>PK_REG</string>
