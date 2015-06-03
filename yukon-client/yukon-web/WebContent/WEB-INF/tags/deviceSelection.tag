@@ -311,7 +311,7 @@ function validateAddressRange() {
                         </tags:nameValue>
                         
                         <tags:nameValue name="${dataFileLabel}">
-                            <tags:file id="fileUpload.dataFile" name="fileUpload.dataFile" size="40"/>
+                            <tags:file id="fileUpload.dataFile" name="fileUpload.dataFile"/>
                             <br>
                             <span id="${byFileUploadId}_fileNote" style="font-size: .7em; color: blue;">${dateFileNoteAddress}</span>
                         </tags:nameValue>
