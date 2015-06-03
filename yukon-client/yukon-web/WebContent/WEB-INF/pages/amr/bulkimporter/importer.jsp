@@ -40,7 +40,7 @@
     <tags:nameValueContainer>
         <%-- UPLOAD FILE --%>
         <tags:nameValue name="${actionsLoadDataLabel}">
-            <tags:file name="dataFile" />
+            <tags:file name="dataFile"/>
             <cti:button type="submit" name="importFile" value="Load" label="Load"/>
             <%-- IMPORT MSG --%>
             <c:if test="${not empty msgStr}">
