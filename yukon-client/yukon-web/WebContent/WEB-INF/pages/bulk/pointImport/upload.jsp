@@ -26,11 +26,11 @@
                                 </tags:nameValue2>
                                 <tags:nameValue2 nameKey=".calculationUploadLabel" rowId="calculationFile">
                                     <cti:icon icon="icon-folder-edit"/>
-                                    <tags:file name="calculationFile"  />
+                                    <tags:file name="calculationFile"/>
                                 </tags:nameValue2>
                                 <tags:nameValue2 nameKey=".pointUploadLabel">
                                     <cti:icon icon="icon-folder-edit"/>
-                                    <tags:file name="dataFile"  />
+                                    <tags:file name="dataFile"/>
                                 </tags:nameValue2>
                                 <tags:nameValue2 nameKey=".empty" excludeColon="true">
                                     <input type="checkbox" name="ignoreInvalidColumns" style="padding-left:0; margin-left:0;">

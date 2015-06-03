@@ -25,7 +25,7 @@
 	<tags:nameValue name="Local File" nameColumnWidth="100px">
 		<form id="loadLocalFileForm" action="/support/database/migration/loadLocalFile" method="post" enctype="multipart/form-data">
             <cti:csrfToken/>
-            <tags:file name="dataFile" size="30px" />
+            <tags:file name="dataFile"/>
             <cti:button nameKey="load" type="submit"/>
 		</form>
 	</tags:nameValue>
