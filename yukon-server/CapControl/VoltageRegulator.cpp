@@ -735,11 +735,11 @@ void VoltageRegulator::submitControlCommands( Policy::Action                  & 
 void VoltageRegulator::executeIntegrityScan( const std::string & user )
 try
 {
-    bool logEvent = false;
+    bool scanSent = false;
 
     for ( auto & action : _scanPolicy->IntegrityScan() )
     {
-        logEvent = true;
+        scanSent = true;
 
         auto & signal  = action.first;
         auto & request = action.second;
@@ -757,7 +757,12 @@ try
                 pointPaoID, CtiTime() ) );
     }
 
-    if ( logEvent && user != SystemUser )   // only log user issued commands
+    // only log user commanded scans, not system issued commands
+    //  and
+    // only record a single integrity scan event no matter how many voltage points we are scanning
+    //  on the regulator
+
+    if ( scanSent && user != SystemUser )
     {
         enqueueRegulatorEvent(
             RegulatorEvent::makeScanEvent( RegulatorEvent::IntegrityScan,
