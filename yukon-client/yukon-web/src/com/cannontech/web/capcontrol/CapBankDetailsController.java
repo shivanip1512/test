@@ -2,6 +2,7 @@ package com.cannontech.web.capcontrol;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -128,7 +129,7 @@ public class CapBankDetailsController {
         model.addAttribute("pointMap", pointTimestamps);
 
         PaoType paoType = paoDao.getLiteYukonPAO(cbcId).getPaoType();
-        Map<LitePoint, String> formatForAnalogPoints = new HashMap<>();
+        Map<LitePoint, String> formatForAnalogPoints = new LinkedHashMap<>();
 
         for (LitePoint point : pointTimestamps.get(CBCPointGroup.ANALOG)) {
             PointIdentifier pid = PointIdentifier.createPointIdentifier(point);

@@ -2,21 +2,19 @@ package com.cannontech.core.dao.impl;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.joda.time.DateMidnight;
-import org.joda.time.Duration;
-import org.joda.time.Instant;
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.capcontrol.CBCPointGroup;
 import com.cannontech.capcontrol.LiteCapBankAdditional;
 import com.cannontech.capcontrol.OrphanCBC;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.util.MapQueue;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
@@ -34,6 +32,7 @@ import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.capcontrol.CCEventLog;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
 public class CapControlDaoImpl implements CapControlDao {
@@ -43,165 +42,69 @@ public class CapControlDaoImpl implements CapControlDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
 
-    private static MapQueue<CBCPointGroup, String> cbcPointGroupConfig = new MapQueue<>();
-
-    // Initialize point group config
-    static {
-
-        // Analog Group
-        cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Average Line Voltage");
-        cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Last Control Reason");
-        cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "High Voltage");
-        cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Low Voltage");
-        cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Delta Voltage");
-        cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Line Voltage THD");
-        cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Temperature");
-        cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Neutral Current Sensor");
-        cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Analog Input 1");
-        cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "RSSI");
-        cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Control Ignored Reason");
-        cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Ignored Control Reason");
-        cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Serial Number");
-        cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "IP Address");
-        cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "UDP Port");
-        cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Firmware Version");
-        cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Comms Loss Time");
-        cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Comms Retry Delay Time");
-        cbcPointGroupConfig.add(CBCPointGroup.ANALOG, "Yukon Poll Time");
-
-        // Accumulator Group
-        cbcPointGroupConfig.add(CBCPointGroup.ACCUMULATOR, "Total Op Count");
-        cbcPointGroupConfig.add(CBCPointGroup.ACCUMULATOR, "UV Op Count");
-        cbcPointGroupConfig.add(CBCPointGroup.ACCUMULATOR, "OV Op Count");
-
-        // Status Group
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Capacitor Bank State");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Control Mode");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Auto Control Mode");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Manual Control Mode");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Remote Control Mode");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "CVR Mode");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "SCADA Override");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Re-Close Blocked");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Reclose Block");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Last Control - Local");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Last Control - Remote");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Last Control - OVUV");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Last Control - Neutral Fault");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Last Control - Scheduled");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Last Control - Digital");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Last Control - Analog");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Last Control - Temperature");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Auto Volt Control");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Line Voltage High");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Line Voltage Low");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "OV Condition");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "UV Condition");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Voltage Delta Abnormal");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Abnormal Delta Voltage");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Operation Failed");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Op Failed - Neutral Current");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Neutral Current Fault");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Neutral Lockout");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Relay Sense Failed");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Bad Relay");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Bad Active Close Relay");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Bad Active Trip Relay");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Daily Max Ops");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Max Operation Count");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Temp Alarm");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Temperature High");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Temperature Low");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "DST Active");
-        cbcPointGroupConfig.add(CBCPointGroup.STATUS, "Control Ignored Indicator");
-
-        // Configurable Parameters
-        cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Daily Control Limit");
-        cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Close Op Count");
-        cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Open Op Count");
-        cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "UV Threshold");
-        cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "OV Threshold");
-        cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Control OVUV Track Time");
-        cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Emergency OV Threshold");
-        cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Emergency UV Threshold");
-        cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Emergency OVUV Track Time");
-        cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "CVR UV Threshold");
-        cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "CVR OV Threshold");
-        cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Comms Loss OV Threshold");
-        cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Comms Loss UV Threshold");
-        cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Neutral Current Alarm Threshold");
-        cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Close Delay Time");
-        cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Auto Close Delay Time");
-        cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Manual Close Delay Time");
-        cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Open Delay Time");
-        cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Re-Close Delay Time");
-        cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Bank Control Time");
-        cbcPointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Average Line Voltage Time");
-
-    }
-
     @Override
     public Map<CBCPointGroup, List<LitePoint>> getSortedCBCPointTimeStamps(Integer cbcId) {
 
-        List<LitePoint> allPoints = pointDao.getLitePointsByPaObjectId(cbcId);
+        List<LitePoint> allPoints = new ArrayList<>(pointDao.getLitePointsByPaObjectId(cbcId));
+        
+        Collections.sort(allPoints, new Comparator<LitePoint>() {
 
-        Map<String, LitePoint> pointNameMap = new HashMap<>();
-        for (LitePoint point : allPoints) {
-            pointNameMap.put(point.getPointName(), point);
-        }
-
-        Map<CBCPointGroup, List<LitePoint>> returnMap = new HashMap<>();
-
-        // Add Analog group points
+            @Override
+            public int compare(LitePoint o1, LitePoint o2) {
+                return o1.getPointName().compareTo(o2.getPointName());
+            }
+        });
+        
+        
         List<LitePoint> analogList = new ArrayList<>();
-        for (String pointName : cbcPointGroupConfig.get(CBCPointGroup.ANALOG)) {
-            LitePoint point = pointNameMap.get(pointName);
-            if (point != null) {
-                pointNameMap.remove(pointName);
-                analogList.add(point);
-            }
-        }
-        returnMap.put(CBCPointGroup.ANALOG, analogList);
-
-        // Add Accumulator group points
-        List<LitePoint> accumulatorList = new ArrayList<>();
-        for (String pointName : cbcPointGroupConfig.get(CBCPointGroup.ACCUMULATOR)) {
-            LitePoint point = pointNameMap.get(pointName);
-            if (point != null) {
-                pointNameMap.remove(pointName);
-                accumulatorList.add(point);
-            }
-        }
-        returnMap.put(CBCPointGroup.ACCUMULATOR, accumulatorList);
-
-        // Add Status group points
-        List<LitePoint> statusList = new ArrayList<>();
-        for (String pointName : cbcPointGroupConfig.get(CBCPointGroup.STATUS)) {
-            LitePoint point = pointNameMap.get(pointName);
-            if (point != null) {
-                pointNameMap.remove(pointName);
-                statusList.add(point);
-            }
-        }
-        returnMap.put(CBCPointGroup.STATUS, statusList);
-
-        // Add Configurable Parameters group points
         List<LitePoint> configList = new ArrayList<>();
-        for (String pointName : cbcPointGroupConfig.get(CBCPointGroup.CONFIGURABLE_PARAMETERS)) {
-            LitePoint point = pointNameMap.get(pointName);
-            if (point != null) {
-                pointNameMap.remove(pointName);
-                configList.add(point);
+        List<LitePoint> accumList = new ArrayList<>();
+        List<LitePoint> statusList = new ArrayList<>();
+        List<LitePoint> miscList = new ArrayList<>();
+
+        for (LitePoint point : allPoints) {
+            
+            switch (point.getPointTypeEnum()) {
+            case Analog:
+            case AnalogOutput:
+            case CalcAnalog:
+                
+                if (point.getPointOffset() > 10000) {
+                    configList.add(point);
+                } else {
+                    analogList.add(point);
+                }
+                break;
+                
+            case DemandAccumulator:
+            case PulseAccumulator:
+                
+                accumList.add(point);
+                break;
+                
+            case Status:
+            case CalcStatus:
+            case StatusOutput:
+                
+                statusList.add(point);
+                break;
+                
+            default:
+                
+                miscList.add(point);
+                break;
             }
         }
-        returnMap.put(CBCPointGroup.CONFIGURABLE_PARAMETERS, configList);
-
-        // Add all other points
-        List<LitePoint> miscList = new ArrayList<>();
-        miscList.addAll(pointNameMap.values());
-        returnMap.put(CBCPointGroup.MISC, miscList);
-
-        return returnMap;
+        
+        Map<CBCPointGroup, List<LitePoint>> result = ImmutableMap.of(
+            CBCPointGroup.ANALOG, analogList,
+            CBCPointGroup.ACCUMULATOR, accumList,
+            CBCPointGroup.STATUS, statusList,
+            CBCPointGroup.CONFIGURABLE_PARAMETERS, configList,
+            CBCPointGroup.MISC, miscList
+        );
+        
+        return result;
     }
 
     @Override
@@ -306,7 +209,7 @@ public class CapControlDaoImpl implements CapControlDao {
         sql.append("SELECT LogId, PointId, DateTime, SubId, FeederId, EventType, SeqId, Value, Text, Username");
         sql.append("FROM").append(CCEventLog.TABLE_NAME).append("WHERE");
 
-        DateMidnight date = new DateMidnight(Instant.now().minus(Duration.standardDays(prevDaysCount)));
+        LocalDateTime date = LocalDateTime.now().minusDays(prevDaysCount).withTime(0, 0, 0, 0);
 
         if (type == PaoType.CAP_CONTROL_FEEDER) {
             sql.append("FeederId").eq(id);

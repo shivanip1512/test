@@ -8,10 +8,11 @@
 
     <div>
 
-        <table class="compact-results-table three-column-table stacked">
+        <table class="compact-results-table stacked">
             <thead>
                 <tr>
                     <th><i:inline key=".analogPoints"/></th>
+                    <th></th>
                     <th><i:inline key=".value"/></th>
                     <th><i:inline key=".timestamp"/></th>
                 </tr>
@@ -23,10 +24,12 @@
                     <c:set var="format" value="${formatForAnalogPoint.value}" />
                     <tr>
                         <td>${fn:escapeXml(point.pointName)}</td>
-                        <td>
+                        <td class="state-indicator">
                             <c:if test="${point.stateGroupID != 0}">
                               <cti:pointStatus pointId="${point.pointID}" />
                             </c:if>
+                        </td>
+                        <td>
                             <cti:pointValue pointId="${point.pointID}" format="${format}"/>
                         </td>
                         <td><cti:pointValue pointId="${point.pointID}" format="DATE"/></td>
@@ -34,6 +37,8 @@
                 </c:forEach>
             </tbody>            
         </table>
+        
+        <c:if test="${not empty pointMap[cbcPointGroup.ACCUMULATOR]}">
         <table class="compact-results-table three-column-table stacked">
             <thead>
                 <tr>
@@ -53,11 +58,14 @@
                 </c:forEach>
             </tbody>    
         </table>
+        </c:if>
         
-        <table class="compact-results-table three-column-table stacked">
+        <c:if test="${not empty pointMap[cbcPointGroup.STATUS]}">
+        <table class="compact-results-table stacked">
             <thead>
                 <tr>
                     <th><i:inline key=".statusPoints"/></th>
+                    <th></th>
                     <th><i:inline key=".state"/></th>
                     <th><i:inline key=".timestamp"/></th>
                 </tr>
@@ -66,9 +74,11 @@
             <tbody>
                 <c:forEach var="point" items="${pointMap[cbcPointGroup.STATUS]}">
                     <tr>
-                        <td>${point.pointName}</td>
-                        <td class="b">
+                        <td>${fn:escapeXml(point.pointName)}</td>
+                        <td class="state-indicator">
                             <cti:pointStatus pointId="${point.pointID}" />
+                        </td>
+                        <td>
                             <cti:pointValue pointId="${point.pointID}" format="VALUE"/>
                         </td>
                         <td><cti:pointValue pointId="${point.pointID}" format="DATE"/></td>
@@ -76,8 +86,10 @@
                 </c:forEach>
             </tbody>
         </table>
+        </c:if>        
         
-        <table class="compact-results-table three-column-table stacked">
+        <c:if test="${not empty pointMap[cbcPointGroup.CONFIGURABLE_PARAMETERS]}">
+        <table class="compact-results-table stacked">
             <thead>
                 <tr>
                     <th><i:inline key=".configParams"/></th>
@@ -96,9 +108,10 @@
                 </c:forEach>
             </tbody>
         </table>
+        </c:if>
         
         <c:if test="${not empty pointMap[cbcPointGroup.MISC]}">
-            <table class="compact-results-table row-highlighting three-column-table stacked">
+            <table class="compact-results-table row-highlighting stacked">
                 <thead>
                     <tr>
                         <th><i:inline key=".misc"/></th>
