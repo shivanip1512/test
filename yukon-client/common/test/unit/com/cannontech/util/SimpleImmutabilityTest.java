@@ -86,8 +86,8 @@ import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.MasterConfigDeprecatedKey;
-import com.cannontech.common.config.MasterConfigDoubleKeysEnum;
-import com.cannontech.common.config.MasterConfigIntegerKeysEnum;
+import com.cannontech.common.config.MasterConfigDouble;
+import com.cannontech.common.config.MasterConfigInteger;
 import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.constants.SelectionListCategory;
 import com.cannontech.common.constants.YukonDefinition;
@@ -355,8 +355,8 @@ public class SimpleImmutabilityTest {
             InventoryCollectionType.class,
             MasterConfigBoolean.class,
             MasterConfigDeprecatedKey.class,
-            MasterConfigDoubleKeysEnum.class,
-            MasterConfigIntegerKeysEnum.class,
+            MasterConfigDouble.class,
+            MasterConfigInteger.class,
             MasterConfigString.class,
             MatchStyle.class,
             MonthYear.class,

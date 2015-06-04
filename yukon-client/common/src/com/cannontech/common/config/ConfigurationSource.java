@@ -96,7 +96,7 @@ public interface ConfigurationSource {
      * @param key
      * @return the value of the key, or null if the key didn't exist
      */
-    public Double getDouble(MasterConfigDoubleKeysEnum key);
+    public Double getDouble(MasterConfigDouble key);
 
     /**
      * Returns boolean value of key from the configuration file. Returns a defaultValue if
@@ -160,5 +160,5 @@ public interface ConfigurationSource {
      * Returns value of key from the configuration file. Returns defaultVlaue if
      * the key did not exist in the file.
      */
-    public int getInteger(MasterConfigIntegerKeysEnum key, int defaultValue);
+    public int getInteger(MasterConfigInteger key, int defaultValue);
 }

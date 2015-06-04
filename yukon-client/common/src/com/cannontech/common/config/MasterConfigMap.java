@@ -176,7 +176,7 @@ public class MasterConfigMap implements ConfigurationSource {
     }
 
     @Override
-    public Double getDouble(MasterConfigDoubleKeysEnum key) {
+    public Double getDouble(MasterConfigDouble key) {
         String string = getString(key.toString());
         if (string == null) {
             return null;
@@ -256,7 +256,7 @@ public class MasterConfigMap implements ConfigurationSource {
     }
 
     @Override
-    public int getInteger(MasterConfigIntegerKeysEnum key, int defaultValue) {
+    public int getInteger(MasterConfigInteger key, int defaultValue) {
         String string = getString(key.name());
         if (string == null) {
             return defaultValue;

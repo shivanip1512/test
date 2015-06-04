@@ -16,7 +16,7 @@ import com.cannontech.amr.disconnect.service.DisconnectPlcService;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigIntegerKeysEnum;
+import com.cannontech.common.config.MasterConfigInteger;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
@@ -53,7 +53,7 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
     
     @Autowired
     public DisconnectPlcServiceImpl(ConfigurationSource configurationSource) {
-        minutesToWait = configurationSource.getInteger(MasterConfigIntegerKeysEnum.PLC_ACTIONS_CANCEL_TIMEOUT, 10);
+        minutesToWait = configurationSource.getInteger(MasterConfigInteger.PLC_ACTIONS_CANCEL_TIMEOUT, 10);
     }
     
     @Override

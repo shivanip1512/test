@@ -23,7 +23,7 @@ import com.cannontech.amr.worker.ServiceWorker;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigIntegerKeysEnum;
+import com.cannontech.common.config.MasterConfigInteger;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -105,12 +105,12 @@ public class DeviceDataMonitorServiceImpl extends ServiceWorker<DeviceDataMonito
 
     @Override
     protected int getWorkerCount() {
-        return configurationSource.getInteger(MasterConfigIntegerKeysEnum.DEVICE_DATA_MONITOR_WORKER_COUNT, 3);
+        return configurationSource.getInteger(MasterConfigInteger.DEVICE_DATA_MONITOR_WORKER_COUNT, 3);
     }
 
     @Override
     protected int getQueueSize() {
-        return configurationSource.getInteger(MasterConfigIntegerKeysEnum.DEVICE_DATA_MONITOR_QUEUE_SIZE, 10);
+        return configurationSource.getInteger(MasterConfigInteger.DEVICE_DATA_MONITOR_QUEUE_SIZE, 10);
     }
 
     @Override

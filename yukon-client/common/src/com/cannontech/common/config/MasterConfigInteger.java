@@ -1,6 +1,6 @@
 package com.cannontech.common.config;
 
-public enum MasterConfigIntegerKeysEnum {
+public enum MasterConfigInteger {
 
     DEVICE_DATA_MONITOR_WORKER_COUNT,
     DEVICE_DATA_MONITOR_QUEUE_SIZE,

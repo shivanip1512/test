@@ -1,6 +1,7 @@
 package com.cannontech.database;
 
 import static com.cannontech.common.config.MasterConfigBoolean.*;
+import static com.cannontech.common.config.MasterConfigInteger.*;
 import static com.cannontech.common.config.MasterConfigString.*;
 
 import java.sql.Connection;
@@ -22,7 +23,6 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigHelper;
-import com.cannontech.common.config.MasterConfigIntegerKeysEnum;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.debug.LoggingDataSource;
@@ -156,17 +156,17 @@ public class PoolManager {
         primaryUser = configSource.getRequiredString(DB_USERNAME);
         String password = configSource.getRequiredString(DB_PASSWORD);
         
-        int initialConnections = configSource.getInteger(MasterConfigIntegerKeysEnum.DB_JAVA_INITCONS, 0);
+        int initialConnections = configSource.getInteger(DB_JAVA_INITCONS, 0);
         log.info("DB initialSize=" + initialConnections);
         
-        int minIdleConnections = configSource.getInteger(MasterConfigIntegerKeysEnum.DB_JAVA_MINIDLECONS, 0);
+        int minIdleConnections = configSource.getInteger(DB_JAVA_MINIDLECONS, 0);
         log.info("DB minIdle=" + minIdleConnections);
         
         int defaultMaxIdle = CtiUtilities.isRunningAsClient() ? defaultMaxIdleForClient : defaultMaxIdleForOther;
-        int maxIdleConnections = configSource.getInteger(MasterConfigIntegerKeysEnum.DB_JAVA_MAXIDLECONS, defaultMaxIdle);
+        int maxIdleConnections = configSource.getInteger(DB_JAVA_MAXIDLECONS, defaultMaxIdle);
         log.info("DB maxIdle=" + maxIdleConnections);
         
-        int maxActiveConnections = configSource.getInteger(MasterConfigIntegerKeysEnum.DB_JAVA_MAXCONS, -1);
+        int maxActiveConnections = configSource.getInteger(DB_JAVA_MAXCONS, -1);
         log.info("DB maxActive=" + maxActiveConnections);
         
         //If Max Active is 0 or negative, we want total connections to be unlimited. 

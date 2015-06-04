@@ -73,7 +73,7 @@ public class MockConfigurationSource implements ConfigurationSource {
     }
 
     @Override
-    public Double getDouble(MasterConfigDoubleKeysEnum key) {
+    public Double getDouble(MasterConfigDouble key) {
         throw new UnsupportedOperationException();
     }
 
@@ -83,7 +83,7 @@ public class MockConfigurationSource implements ConfigurationSource {
     }
 
     @Override
-    public int getInteger(MasterConfigIntegerKeysEnum key, int defaultValue) {
+    public int getInteger(MasterConfigInteger key, int defaultValue) {
         throw new UnsupportedOperationException();
     }
 }

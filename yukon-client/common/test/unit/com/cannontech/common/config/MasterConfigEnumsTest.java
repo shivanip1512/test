@@ -31,7 +31,7 @@ public class MasterConfigEnumsTest {
             booleanKeys.add(key.name());
         }
 
-        for (MasterConfigDoubleKeysEnum key : MasterConfigDoubleKeysEnum.values()) {
+        for (MasterConfigDouble key : MasterConfigDouble.values()) {
             doubleKeys.add(key.name());
         }
     }

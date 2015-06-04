@@ -10,7 +10,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigDoubleKeysEnum;
+import com.cannontech.common.config.MasterConfigDouble;
 import com.cannontech.common.exception.AuthenticationThrottleException;
 import com.cannontech.core.authentication.model.AuthenticationThrottleDto;
 import com.cannontech.core.authentication.service.AuthenticationThrottleService;
@@ -38,7 +38,7 @@ public class IncreasingAuthenticationThrottleServiceImpl implements Authenticati
     public void init() throws Exception {
 
         // Check and see if we need to change the AUTH_THROTTLE_DELTA_KEY value.
-        Double authThrottleExpBase = configurationSource.getDouble(MasterConfigDoubleKeysEnum.AUTH_THROTTLE_EXP_BASE);
+        Double authThrottleExpBase = configurationSource.getDouble(MasterConfigDouble.AUTH_THROTTLE_EXP_BASE);
         if (authThrottleExpBase != null) {
             if (Math.abs(authThrottleExpBase) > 1.0) {
                 this.authThrottleExpBase = Math.abs(authThrottleExpBase);
@@ -46,7 +46,7 @@ public class IncreasingAuthenticationThrottleServiceImpl implements Authenticati
         }
 
         // Check and see if we need to change the AUTH_THROTTLE_DELTA_KEY value.
-        Double authThrottleDeltaStr = configurationSource.getDouble(MasterConfigDoubleKeysEnum.AUTH_THROTTLE_DELTA);
+        Double authThrottleDeltaStr = configurationSource.getDouble(MasterConfigDouble.AUTH_THROTTLE_DELTA);
         if (authThrottleDeltaStr != null) {
             if (Math.abs(authThrottleDelta) > 0.0) {
                 this.authThrottleDelta = Math.abs(authThrottleDelta);

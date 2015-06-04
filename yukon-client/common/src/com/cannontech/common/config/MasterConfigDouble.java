@@ -1,6 +1,6 @@
 package com.cannontech.common.config;
 
-public enum MasterConfigDoubleKeysEnum {
+public enum MasterConfigDouble {
 
     AUTH_THROTTLE_DELTA,
     AUTH_THROTTLE_EXP_BASE,
