@@ -101,25 +101,31 @@ public class DeviceCommandServiceImpl implements DeviceCommandService{
                 }));
             supportedDevices.addAll(supportedDevicesByCommand);
         } else if (attributes != null && !attributes.isEmpty()) {
-            List<PaoMultiPointIdentifier> supportedDevicesByAttribute = new ArrayList<>();
             PaoMultiPointIdentifierWithUnsupported paoPointIdentifiers =
                 attributeService.findPaoMultiPointIdentifiersForAttributesWithUnsupported(devices, attributes);
-            unsupportedDevices = paoPointIdentifiers.getUnsupportedDevices();
-            for (PaoMultiPointIdentifier identifier : paoPointIdentifiers.getSupportedDevicesAndPoints()) {
-                if (supportsPorterRequests(identifier.getPao().getPaoType())) {
-                    supportedDevicesByAttribute.add(identifier);
-                } else {
-                    unsupportedDevices.add(identifier.getPao());
+            if (meterReadCommandGeneratorService.isReadable(paoPointIdentifiers.getSupportedDevicesAndPoints())) {
+                List<PaoMultiPointIdentifier> supportedDevicesByAttribute = new ArrayList<>();
+                unsupportedDevices = paoPointIdentifiers.getUnsupportedDevices();
+                for (PaoMultiPointIdentifier identifier : paoPointIdentifiers.getSupportedDevicesAndPoints()) {
+                    if (supportsPorterRequests(identifier.getPao().getPaoType())) {
+                        supportedDevicesByAttribute.add(identifier);
+                    } else {
+                        unsupportedDevices.add(identifier.getPao());
+                    }
+                }
+                commandRequests.addAll(meterReadCommandGeneratorService.getCommandRequests(supportedDevicesByAttribute));
+                supportedDevices.addAll(Lists.transform(supportedDevicesByAttribute,
+                    new Function<PaoMultiPointIdentifier, SimpleDevice>() {
+                        @Override
+                        public SimpleDevice apply(PaoMultiPointIdentifier device) {
+                            return new SimpleDevice(device.getPao());
+                        }
+                    }));
+            } else {
+                for (SimpleDevice device : devices) {
+                    unsupportedDevices.add(device);
                 }
             }
-            commandRequests.addAll(meterReadCommandGeneratorService.getCommandRequests(supportedDevicesByAttribute));
-            supportedDevices.addAll(Lists.transform(supportedDevicesByAttribute,
-                new Function<PaoMultiPointIdentifier, SimpleDevice>() {
-                    @Override
-                    public SimpleDevice apply(PaoMultiPointIdentifier device) {
-                        return new SimpleDevice(device.getPao());
-                    }
-                }));  
         } else {
             throw new UnsupportedOperationException("A command string or attribute is required to initiate read");
         }

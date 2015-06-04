@@ -6,6 +6,7 @@
     <entry key="yukon.common.device.attributeRead.general.noStrategy">No read strategy for type {0}</entry>
     <entry key="yukon.common.device.attributeRead.general.noAttribute">Selected attributes are not supported for type {0}</entry>
     <entry key="yukon.common.device.attributeRead.general.noPoint">No read strategy for type {0}</entry>
+    <entry key="yukon.common.device.attributeRead.general.noCommand">Command is not found for type {0}</entry>
     <entry key="yukon.common.device.attributeRead.general.readError">Read error: {0}</entry>
     <entry key="yukon.common.device.attributeRead.general.timeout">Request timed out.</entry>
     
