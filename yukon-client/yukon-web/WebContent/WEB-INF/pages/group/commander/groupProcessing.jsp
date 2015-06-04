@@ -74,18 +74,14 @@ function validateGroupIsSelected(btn, alertText) {
 
     <br><br>
       <c:if test="${!isSmtpConfigured}">
-        <cti:msg var="sendEmailAddressLabel" key="yukon.common.email.send" />
-        <div>
-            ${sendEmailAddressLabel} &nbsp;&nbsp;&nbsp; : <input type="checkbox" name="sendEmail" data-toggle="email-address">
-        </div>
-        <br>
-        
-        <%-- EMAIL --%>
+    <%-- EMAIL --%>
         <div class="stacked">
-            <div>
-                <i:inline key="yukon.common.email.address" /> : <input type="text" name="emailAddress"  size="40" disabled="disabled" value="${email}" data-toggle-group="email-address">
-            </div>
-           
+            <tags:nameValueContainer2>
+                <tags:nameValue2 nameKey="yukon.common.email.address">
+                    <tags:switchButton name="sendEmail" toggleGroup="email-address"/>
+                    <input type="text" name="emailAddress"  size="40" disabled="disabled" value="${email}" data-toggle-group="email-address">
+                </tags:nameValue2>
+            </tags:nameValueContainer2>
         </div>
 	  </c:if>
     <%-- EXECUTE BUTTON --%>

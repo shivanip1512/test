@@ -12,12 +12,12 @@
             <%-- only show widget if user has permission --%>
             <c:choose>
                 <c:when test="${readable}">
-    
-        
-                    <div id="meterinfo" style="width: 600px">
-                        <tags:widget bean="meterInformationWidget" identify="false" deviceId="${deviceId}" hideEnabled="false"/>
-                        <br>
-                        <div id="moveout">
+                    <div class="column-12-12 clearfix">
+                        <div class="column one">
+                        <tags:widget bean="meterInformationWidget" identify="false" deviceId="${deviceId}" 
+                            hideEnabled="false" container="section"/>                        
+                        </div>
+                        <div class="column two nogutter">
                             <jsp:include page="/WEB-INF/pages/amr/meter/moveOutForm.jsp"/>
                         </div>
                     </div>

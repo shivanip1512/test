@@ -2,6 +2,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <c:forEach items="${validationErrors}" var="error">
     <div class="error" style>${error}</div>
@@ -9,9 +10,9 @@
 
 <form action="<cti:url value="/meter/moveInRequest?deviceId=${meter.deviceId}"/>" id="moveInForm" method="post">
     <cti:csrfToken/>
-    <tags:boxContainer2 nameKey="moveInForm" hideEnabled="false">
+    <tags:sectionContainer2 nameKey="moveInForm" >
 
-        <tags:nameValueContainer2>
+        <tags:nameValueContainer2 tableClass="with-form-controls">
         
             <tags:nameValue2 nameKey=".meterNumber">
                 <input name="meterNumber" size="10" type="text" value="${meter.meterNumber}" />
@@ -24,20 +25,16 @@
             </tags:nameValue2>
             
             <c:if test="${!isSmtpConfigured}">
-                <tags:nameValue2 nameKey="yukon.common.email.send">
-                    <label><input type="checkbox" name="sendEmail" data-toggle="email-address">
-                        <i:inline key="yukon.web.modules.amr.moveIn.sendEmailNotification" /></label>
-                </tags:nameValue2>
-    
                 <tags:nameValue2 nameKey="yukon.common.email.address">
+                    <tags:switchButton name="sendEmail" toggleGroup="email-address" offClasses="M0"/>
                     <input name="emailAddress" type="text" disabled="disabled" value="${email}" data-toggle-group="email-address"/>
                 </tags:nameValue2>
             </c:if>
         </tags:nameValueContainer2>
 
-        <div class="page-action-area">
+        <div class="action-area">
             <cti:msg2 var="moveIn" key=".moveIn"/>
             <cti:button label="${moveIn}" type="submit" busy="true" classes="primary action"/>
         </div>
-    </tags:boxContainer2>
+    </tags:sectionContainer2>
 </form>

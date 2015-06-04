@@ -11,28 +11,26 @@
     <cti:csrfToken/>
     <input name="deviceId" type="hidden" value="${meter.deviceId}">
 
-    <tags:boxContainer2 nameKey="moveOutForm" hideEnabled="false">
+    <tags:sectionContainer2 nameKey="moveOutForm" >
              
-        <tags:nameValueContainer2>
+        <tags:nameValueContainer2 tableClass="with-form-controls">
         
             <tags:nameValue2 nameKey=".moveOutDate">
                 <dt:date name="moveOutDate" value="${currentDate}"/>
             </tags:nameValue2>
 
             <c:if test="${!isSmtpConfigured}">
-                <tags:nameValue2 nameKey="yukon.common.email.send">
-                    <label><input type="checkbox" name="sendEmail" data-toggle="email-address">
-                        <i:inline key="yukon.web.modules.amr.moveOut.sendemailNotification" /></label>
-                </tags:nameValue2>
-
                 <tags:nameValue2 nameKey="yukon.common.email.address">
-                    <input name="emailAddress" type="text" disabled="disabled" value="${email}" data-toggle-group="email-address">
+                    <tags:switchButton name="sendEmail" toggleGroup="email-address" offClasses="M0"/>
+                    <input name="emailAddress" type="text" disabled="disabled" value="${email}" 
+                        data-toggle-group="email-address">
                 </tags:nameValue2>
             </c:if>
         </tags:nameValueContainer2>
+        <div class="action-area">
+            <cti:msg2 var="moveOut" key=".moveOut"/>
+            <cti:button label="${moveOut}" busy="true" type="submit" classes="primary action"/>
+        </div>
 
-        <cti:msg2 var="moveOut" key=".moveOut"/>
-        <cti:button label="${moveOut}" busy="true" type="submit" classes="primary action"/>
-
-    </tags:boxContainer2>
+    </tags:sectionContainer2>
 </form>
