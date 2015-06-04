@@ -1,17 +1,7 @@
 package com.cannontech.database;
 
-import static com.cannontech.common.config.MasterConfigBoolean.DB_JAVA_TEST_ON_BORROW;
-import static com.cannontech.common.config.MasterConfigBoolean.DB_JAVA_TEST_ON_RETURN;
-import static com.cannontech.common.config.MasterConfigBoolean.DB_JAVA_TEST_WHILE_IDLE;
-import static com.cannontech.common.config.MasterConfigBoolean.DB_SSL_ENABLED;
-import static com.cannontech.common.config.MasterConfigString.DB_JAVA_DRIVER;
-import static com.cannontech.common.config.MasterConfigString.DB_JAVA_URL;
-import static com.cannontech.common.config.MasterConfigString.DB_JAVA_VALIDATION_QUERY;
-import static com.cannontech.common.config.MasterConfigString.DB_PASSWORD;
-import static com.cannontech.common.config.MasterConfigString.DB_SQLSERVER;
-import static com.cannontech.common.config.MasterConfigString.DB_SQLSERVER_HOST;
-import static com.cannontech.common.config.MasterConfigString.DB_TYPE;
-import static com.cannontech.common.config.MasterConfigString.DB_USERNAME;
+import static com.cannontech.common.config.MasterConfigBoolean.*;
+import static com.cannontech.common.config.MasterConfigString.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -32,6 +22,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigHelper;
+import com.cannontech.common.config.MasterConfigIntegerKeysEnum;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.debug.LoggingDataSource;
@@ -41,6 +32,9 @@ public class PoolManager {
     private static final Logger dsLog = YukonLogManager.getLogger("com.cannontech.datasource");
     private static final Logger log = YukonLogManager.getLogger(PoolManager.class);
 	
+    private static final int defaultMaxIdleForClient = 4;
+    private static final int defaultMaxIdleForOther = 15;
+    
     public static final String[] ALL_DRIVERS = { 
         "oracle.jdbc.OracleDriver",
         "com.microsoft.jdbc.sqlserver.SQLServerDriver",
@@ -75,7 +69,7 @@ public class PoolManager {
 	    String urlCharacter;
 	    
 	    DatabaseVendor(String urlChar) {
-	        this.urlCharacter = urlChar;
+	        urlCharacter = urlChar;
 	    }
 	    
 	    public String getUrlCharacter() {
@@ -162,33 +156,22 @@ public class PoolManager {
         primaryUser = configSource.getRequiredString(DB_USERNAME);
         String password = configSource.getRequiredString(DB_PASSWORD);
         
-        String maxActiveConns = configSource.getString("DB_JAVA_MAXCONS");
-        int maxActive = -1;
-        if (StringUtils.isNotBlank(maxActiveConns)) {
-            maxActive = Integer.valueOf(maxActiveConns);
-        }
-        log.info("DB maxActive=" + maxActive);
-
-        String maxIdleConns = configSource.getString("DB_JAVA_MAXIDLECONS");
-        int maxIdle = CtiUtilities.isRunningAsClient() ? 4 : 15;
-        if (StringUtils.isNotBlank(maxIdleConns)) {
-            maxIdle = Integer.valueOf(maxIdleConns);
-        }
-        log.info("DB maxIdle=" + maxIdle);
+        int initialConnections = configSource.getInteger(MasterConfigIntegerKeysEnum.DB_JAVA_INITCONS, 0);
+        log.info("DB initialSize=" + initialConnections);
         
-        String minIdleConns = configSource.getString("DB_JAVA_MINIDLECONS");
-        int minIdle = 0;
-        if (StringUtils.isNotBlank(minIdleConns)) {
-            minIdle = Integer.valueOf(minIdleConns);
-        }
-        log.info("DB minIdle=" + minIdle);
+        int minIdleConnections = configSource.getInteger(MasterConfigIntegerKeysEnum.DB_JAVA_MINIDLECONS, 0);
+        log.info("DB minIdle=" + minIdleConnections);
         
-        String initConns = configSource.getString("DB_JAVA_INITCONS");
-        int initialSize = 0;
-        if (StringUtils.isNotBlank(initConns)) {
-            initialSize = Integer.valueOf(initConns);
-        }
-        log.info("DB initialSize=" + initialSize);
+        int defaultMaxIdle = CtiUtilities.isRunningAsClient() ? defaultMaxIdleForClient : defaultMaxIdleForOther;
+        int maxIdleConnections = configSource.getInteger(MasterConfigIntegerKeysEnum.DB_JAVA_MAXIDLECONS, defaultMaxIdle);
+        log.info("DB maxIdle=" + maxIdleConnections);
+        
+        int maxActiveConnections = configSource.getInteger(MasterConfigIntegerKeysEnum.DB_JAVA_MAXCONS, -1);
+        log.info("DB maxActive=" + maxActiveConnections);
+        
+        //If Max Active is 0 or negative, we want total connections to be unlimited. 
+        int maxTotalConnections = (maxActiveConnections <= 0) ? -1 : maxActiveConnections + maxIdleConnections;
+        log.info("DB maxTotal=" + maxTotalConnections);
         
         String defaultValidationQuery;
         switch (connectionDescription.type) {
@@ -224,10 +207,10 @@ public class PoolManager {
         bds.setUrl(primaryUrl);
         bds.setUsername(primaryUser);
         bds.setPassword(password);
-        bds.setInitialSize(initialSize);
-        bds.setMaxTotal(maxActive + maxIdle);
-        bds.setMaxIdle(maxIdle);
-        bds.setMinIdle(minIdle);
+        bds.setInitialSize(initialConnections);
+        bds.setMaxTotal(maxTotalConnections);
+        bds.setMaxIdle(maxIdleConnections);
+        bds.setMinIdle(minIdleConnections);
         bds.setMaxWaitMillis(TimeUnit.SECONDS.toMillis(60));
         bds.setValidationQuery(validationQuery);
         bds.setTestOnBorrow(testOnBorrow);
