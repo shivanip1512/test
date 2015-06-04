@@ -71,18 +71,24 @@ yukon.da.schedules = (function () {
             });
             $(document).on('yukon:da:schedules:delete', function (ev) {
 
-                var dialog = $(ev.target),
-                    id = dialog.find('input[name="id"]').val(),
-                    deleteMessage = dialog.find('form').data('deleteMessage');
-
-                $.ajax(yukon.url('/capcontrol/schedules/' + id + '/delete'))
-                .done(function () {
-                    $(document).find('[data-schedule-id="' + id + '"]').remove();
-                    $('.main-container').addMessage({
-                        message: deleteMessage,
-                        messageClass: 'success'
-                    });
+                var dialog = $(ev.target);
+                var id = dialog.find('input[name="id"]').val();
+                var form = dialog.find('form[data-delete-message]');
+                var deleteMessage = form.data('deleteMessage');
+                
+                form.ajaxSubmit({
+                   success: function (data, status, xhr) {
+                       $(document).find('[data-schedule-id="' + id + '"]').remove();
+                       $('.main-container').addMessage({
+                           message: deleteMessage,
+                           messageClass: 'success'
+                       });
+                   },
+                   error: function (xhr, status, error) {
+                       window.location.reload();
+                   }
                 });
+
                 dialog.dialog('close');
             });
 

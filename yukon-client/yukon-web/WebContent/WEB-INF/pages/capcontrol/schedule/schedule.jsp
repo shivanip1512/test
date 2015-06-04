@@ -16,8 +16,7 @@
     <cti:displayForPageEditModes modes="EDIT,VIEW">
         <input type="hidden" class="js-popup-title" value="${schedule.name}">
     </cti:displayForPageEditModes>
-    <cti:msg2 var="deleteMessage"  key=".deleteSuccess"/>
-    <form:form commandName="schedule" action="" method="post" data-mode="${mode}" data-delete-message="${deleteMessage}">
+    <form:form commandName="schedule" action="" method="post" data-mode="${mode}">
         <cti:csrfToken/>
         <form:hidden path="id"/>
         <form:hidden path="lastRunTime"/>
@@ -101,4 +100,6 @@
             </c:if>
         </cti:displayForPageEditModes>
     </form:form>
+    <cti:msg2 var="deleteMessage"  key=".deleteSuccess" />
+    <form:form method="DELETE" data-delete-message="${deleteMessage}"></form:form>
 </cti:msgScope>

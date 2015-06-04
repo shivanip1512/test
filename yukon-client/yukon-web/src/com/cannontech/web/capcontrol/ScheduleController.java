@@ -244,7 +244,7 @@ public class ScheduleController {
                 paoScheduleDao.save(schedule);
             //Name Conflict
             } catch (DataIntegrityViolationException e) {
-            	response.setStatus(HttpStatus.BAD_REQUEST.value());
+                response.setStatus(HttpStatus.BAD_REQUEST.value());
                 bindingResult.rejectValue("name", "yukon.web.modules.capcontrol.schedules.error.nameConflict");
                 return setupEditModelMap(model, schedule);
             }
@@ -253,9 +253,24 @@ public class ScheduleController {
     }
 
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
-    @RequestMapping(value="{id}/delete")
-    public String delete(@PathVariable int id) {
+    @RequestMapping(value="{id}", method=RequestMethod.DELETE)
+    public String delete(HttpServletResponse response, @PathVariable int id) {
+        
+        List<PaoScheduleAssignment> assignments = paoScheduleDao.getScheduleAssignmentByScheduleId(id);
         paoScheduleDao.delete(id);
+        
+        for (PaoScheduleAssignment assignment : assignments) {
+            
+            DBChangeMsg dbChange = new DBChangeMsg(assignment.getPaoId(),
+                DBChangeMsg.CHANGE_PAO_DB,
+                PaoType.CAP_CONTROL_SUBBUS.getPaoCategory().getDbString(),
+                PaoType.CAP_CONTROL_SUBBUS.getDbString(),
+                DbChangeType.UPDATE);
+            
+            dbChangeManager.processDbChange(dbChange);
+        }
+        
+        response.setStatus(HttpStatus.NO_CONTENT.value());
         return null;
     }
 
