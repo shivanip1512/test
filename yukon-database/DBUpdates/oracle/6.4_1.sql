@@ -175,7 +175,9 @@ WHERE ChangeId IN  (SELECT ChangeId FROM RPHTag WHERE TagName = 'OK');
 ALTER TABLE RPHTag
     DROP CONSTRAINT PK_RPHTag;
 
+/* @error ignore-begin */
 DROP INDEX PK_RPHTag;
+/* @error ignore-end */
 
 /* Delete duplicate rows */
 DELETE FROM RPHTag WHERE ROWID in (
