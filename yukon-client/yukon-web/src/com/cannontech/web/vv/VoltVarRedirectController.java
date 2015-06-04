@@ -9,11 +9,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.mbean.ServerDatabaseCache;
 
 @Controller
 public class VoltVarRedirectController {
 
+    @Autowired private ServerDatabaseCache dbCache;
     @Autowired private CapControlCache cache;
     @Autowired private CapbankDao capbankDao;
 
@@ -58,13 +62,21 @@ public class VoltVarRedirectController {
     private String editorOrSubstationDetail(ModelMap model, int id) {
 
         int areaId = cache.getParentAreaId(id);
-
+        
         if (areaId <= CtiUtilities.NONE_ZERO_ID) {
             return editorPage(id);
+        } else {
+            LiteYukonPAObject pao = dbCache.getAllPaosMap().get(areaId);
+            if (pao.getPaoType() == PaoType.CAP_CONTROL_SPECIAL_AREA) {
+                // When a substation is assigned to a special area but 
+                // not a normal area...the CapControlCache#getParentAreaId
+                // returns the special area id.
+                return editorPage(id);
+            }
         }
-
+        
         int substationId = cache.getParentSubStationId(id);
-
+        
         model.addAttribute("substationId", substationId);
         return "redirect:/capcontrol/tier/feeders";
     }
