@@ -28,6 +28,7 @@ import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IEDMeter;
+import com.cannontech.database.data.device.IonBase;
 import com.cannontech.database.data.device.LCUBase;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.device.RTCBase;
@@ -1003,7 +1004,8 @@ public class DeviceScanRateEditorPanel extends DataInputPanel implements ActionL
                 Integer generalGroup = new Integer(getPeriodicHealthGroupComboBox().getSelectedIndex());
                 newScanRateMap.put(DeviceScanRate.TYPE_GENERAL, new DeviceScanRate(deviceID, DeviceScanRate.TYPE_GENERAL, generalRate, generalGroup, altRate));
             }
-        } else if ((val instanceof RTUBase) || (val instanceof MCTBase) || (val instanceof LCUBase) || (val instanceof CapBankController6510) || (val instanceof CapBankController702x) || (val instanceof CapBankControllerDNP) || (val instanceof DNPBase) || (val instanceof Series5Base) || (val instanceof TwoWayLCR)) {
+        } else if ((val instanceof RTUBase) || (val instanceof MCTBase) || (val instanceof LCUBase) || (val instanceof CapBankController6510) || (val instanceof CapBankController702x) ||
+                (val instanceof CapBankControllerDNP) || (val instanceof DNPBase) || (val instanceof Series5Base) || (val instanceof TwoWayLCR) || (val instanceof IonBase)) {
             if (getPeriodicHealthCheckBox().isSelected() && getPeriodicHealthCheckBox().isVisible()) {
                 if (val instanceof MCTBase) {
                     Integer generalRate = SwingUtil.getIntervalComboBoxSecondsValue(getPeriodicHealthIntervalComboBox());
@@ -1402,7 +1404,8 @@ public class DeviceScanRateEditorPanel extends DataInputPanel implements ActionL
                     SwingUtil.setIntervalComboBoxSelectedItem(getJComboBoxAltHealthChk(), scanRate.getAlternateRate().intValue());
                 }
             }
-        } else if ((val instanceof RTUBase) || (val instanceof MCTBase) || (val instanceof LCUBase) || (val instanceof CapBankController6510) || (val instanceof CapBankController702x) || (val instanceof CapBankControllerDNP) || (val instanceof DNPBase) || (val instanceof Series5Base) || (val instanceof TwoWayLCR)) {
+        } else if ((val instanceof RTUBase) || (val instanceof MCTBase) || (val instanceof LCUBase) || (val instanceof CapBankController6510) || (val instanceof CapBankController702x) ||
+                (val instanceof CapBankControllerDNP) || (val instanceof DNPBase) || (val instanceof Series5Base) || (val instanceof TwoWayLCR) || (val instanceof IonBase)) {
 
             DeviceScanRate statusRate = scanRateMap.get(DeviceScanRate.TYPE_EXCEPTION);
             if (statusRate == null) {
