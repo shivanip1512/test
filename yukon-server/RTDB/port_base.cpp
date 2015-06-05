@@ -746,7 +746,7 @@ INT CtiPort::traceBytes(const BYTE *Message, ULONG Length, CtiTraceMsg &trace, l
 
 void CtiPort::fileTraces(list< CtiMessage* > &traceList) const
 {
-    if(gLogPorts)
+	if (gLogPorts && ! traceList.empty())
     {
         Cti::StreamBuffer output;
 
