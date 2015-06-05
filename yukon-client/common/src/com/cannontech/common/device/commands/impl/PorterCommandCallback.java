@@ -27,10 +27,14 @@ public class PorterCommandCallback implements CommandCallback {
         
         return generatedCommand;
     }
-    
+      
     @Override
     public String toString() {
         return commandString;
     }
     
+    @Override
+    public String getGeneratedCommand() {
+        return commandString;
+    }
 }

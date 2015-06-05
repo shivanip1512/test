@@ -189,6 +189,17 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
         result.setErrorCode(errorCode);
         saveOrUpdate(result);
     }
+    
+    @Override
+    public void saveCommandRequestExecutionResult(int executionId, int deviceId, int errorCode, String command) {
+        CommandRequestExecutionResult result = new CommandRequestExecutionResult();
+        result.setCommandRequestExecutionId(executionId);
+        result.setCommand(command);
+        result.setCompleteTime(new Date());
+        result.setDeviceId(deviceId);
+        result.setErrorCode(errorCode);
+        saveOrUpdate(result);
+    }
 
     @PostConstruct
     public void postConstruct() {

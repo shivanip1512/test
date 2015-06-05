@@ -12,35 +12,37 @@ import com.cannontech.common.pao.YukonPao;
 
 public interface CommandRequestExecutionResultDao {
 
-    public void saveOrUpdate(CommandRequestExecutionResult commandRequestExecutionResult);
+    void saveOrUpdate(CommandRequestExecutionResult commandRequestExecutionResult);
 
-    public int getCountByExecutionId(int commandRequestExecutionId);
+    int getCountByExecutionId(int commandRequestExecutionId);
 
-    public int getSucessCountByExecutionId(int commandRequestExecutionId);
+    int getSucessCountByExecutionId(int commandRequestExecutionId);
 
-    public int getFailCountByExecutionId(int commandRequestExecutionId);
+    int getFailCountByExecutionId(int commandRequestExecutionId);
 
     /**
      * If type is null, returns the count for all unsupported types.
      */
-    public int getUnsupportedCountByExecutionId(int commandRequestExecutionId, CommandRequestUnsupportedType type);
+    int getUnsupportedCountByExecutionId(int commandRequestExecutionId, CommandRequestUnsupportedType type);
 
-    public List<PaoIdentifier> getDeviceIdsByExecutionId(int commandRequestExecutionId);
+    List<PaoIdentifier> getDeviceIdsByExecutionId(int commandRequestExecutionId);
 
-    public List<PaoIdentifier> getSucessDeviceIdsByExecutionId(int commandRequestExecutionId);
+    List<PaoIdentifier> getSucessDeviceIdsByExecutionId(int commandRequestExecutionId);
 
-    public List<PaoIdentifier> getFailDeviceIdsByExecutionId(int commandRequestExecutionId);
+    List<PaoIdentifier> getFailDeviceIdsByExecutionId(int commandRequestExecutionId);
 
-    public List<PaoIdentifier> getUnsupportedDeviceIdsByExecutionId(int commandRequestExecutionId,
+    List<PaoIdentifier> getUnsupportedDeviceIdsByExecutionId(int commandRequestExecutionId,
             CommandRequestUnsupportedType type);
 
-    public List<CommandRequestExecutionResult> getResultsByExecutionId(int commandRequestExecutionId,
+    List<CommandRequestExecutionResult> getResultsByExecutionId(int commandRequestExecutionId,
             CommandRequestExecutionResultsFilterType reportFilterType);
 
-    public void saveUnsupported(CommandRequestUnsupported unsupportedCmd);
+    void saveUnsupported(CommandRequestUnsupported unsupportedCmd);
 
-    public void saveUnsupported(Set<? extends YukonPao> devices, int commandRequestExecutionId,
+    void saveUnsupported(Set<? extends YukonPao> devices, int commandRequestExecutionId,
                                 CommandRequestUnsupportedType type);
     
-    public void saveCommandRequestExecutionResult(CommandRequestExecution execution, int deviceId, int errorCode);
+    void saveCommandRequestExecutionResult(CommandRequestExecution execution, int deviceId, int errorCode);
+
+    void saveCommandRequestExecutionResult(int executionId, int deviceId, int errorCode, String command);
 }

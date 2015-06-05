@@ -7,4 +7,10 @@ public interface CommandCallback {
      */
     public String generateCommand(CommandRequestExecutionParameterDto parameterDto);
     
+    
+    /**
+     * Returns generated command or null if command was not generated
+     */
+    public String getGeneratedCommand();
+    
 }

@@ -28,5 +28,10 @@ public class CommandCallbackBase implements CommandCallback {
     public String toString() {
         return commandString;
     }
+
+    @Override
+    public String getGeneratedCommand() {
+        return commandString;
+    }
     
 }

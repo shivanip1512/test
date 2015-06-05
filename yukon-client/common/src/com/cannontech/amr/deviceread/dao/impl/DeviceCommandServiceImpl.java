@@ -51,6 +51,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class DeviceCommandServiceImpl implements DeviceCommandService{
@@ -149,7 +151,9 @@ public class DeviceCommandServiceImpl implements DeviceCommandService{
 
         CommandRequestExecutionObjects<CommandRequestDevice> executionObjects = null;
        
-        RetryCallback retryCallback = new RetryCallback(supportedDevices, execution, retryParameters.getStopRetryAfterDate(), callback);
+        RetryCallback retryCallback =
+            new RetryCallback(supportedDevices, execution, retryParameters.getStopRetryAfterDate(), callback,
+                commandRequests);
         if (!commandRequests.isEmpty()) {
             execution.setRequestCount(commandRequests.size());
             commandRequestExecutionDao.saveOrUpdate(execution);
@@ -181,9 +185,11 @@ public class DeviceCommandServiceImpl implements DeviceCommandService{
         private final List<SimpleDevice> timeoutDevices = new ArrayList<>();
         private final CommandRequestExecution execution;
         private final CommandCompletionCallbackAdapter<CommandRequestDevice> callback;
+        private final List<CommandRequestDevice> commandRequests;
 
         RetryCallback(List<SimpleDevice> allDevices, CommandRequestExecution execution,
-                Date stopRetryAfterDate, CommandCompletionCallbackAdapter<CommandRequestDevice> callback) {
+                Date stopRetryAfterDate, CommandCompletionCallbackAdapter<CommandRequestDevice> callback,
+                List<CommandRequestDevice> commandRequests) {
             timeoutDevices.addAll(allDevices);
             creationTime = new Instant();
             /*
@@ -205,6 +211,7 @@ public class DeviceCommandServiceImpl implements DeviceCommandService{
             }
             this.execution = execution;
             this.callback = callback;
+            this.commandRequests = commandRequests;
         }
 
         @Override
@@ -268,9 +275,20 @@ public class DeviceCommandServiceImpl implements DeviceCommandService{
                 if (log.isDebugEnabled() && !timeoutDevices.isEmpty()) {
                     log.debug("Timed out devices:" + timeoutDevices);
                 }
+                
                 for (SimpleDevice device : timeoutDevices) {
-                    commandRequestExecutionResultDao.saveCommandRequestExecutionResult(execution, device.getDeviceId(),
-                        DeviceError.TIMEOUT.getCode());
+                    Iterable<CommandRequestDevice> commands =
+                        Iterables.filter(commandRequests, new Predicate<CommandRequestDevice>() {
+                            @Override
+                            public boolean apply(CommandRequestDevice command) {
+                                return command.getDevice().equals(device);
+                            }
+                        });
+                    for (CommandRequestDevice command : commands) {
+                        commandRequestExecutionResultDao.saveCommandRequestExecutionResult(execution.getId(),
+                            device.getDeviceId(), DeviceError.TIMEOUT.getCode(),
+                            command.getCommandCallback().getGeneratedCommand());
+                    }
                 }
                 complete();
             }
