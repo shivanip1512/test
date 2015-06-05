@@ -2437,24 +2437,44 @@ void CtiLMControlArea::updateTimedPrograms(LONG secondsFromBeginningOfDay)
                 resultStop = CtiTime::neg_infin;
             }
 
-            if( !lm_direct->getManualControlReceivedFlag() &&
-                lm_direct->getDirectStopTime() != resultStop )
+            if( lm_direct->getManualControlReceivedFlag() ||
+                lm_direct->getDirectStopTime() == resultStop )
             {
-                lm_direct->setDirectStartTime(resultStart);
-                lm_direct->setDirectStopTime(resultStop);
-
-                if( lm_direct->isControlling() )
-                {   // If we are controlling already, we dont want to send another start message. This happens
-                    // when the control window is moved around.
-                    lm_direct->scheduleStopNotificationForTimedControl(resultStop);
-                }
-                else
-                {
-                    lm_direct->scheduleNotificationForTimedControl(resultStart, resultStop);
-                }
-
-                setUpdatedFlag(TRUE);
+                continue;
             }
+
+            if( ! lm_direct->getConstraintOverride() )
+            {
+                CtiLMProgramConstraintChecker con_checker{*lm_direct, beginTime};
+
+                if( ! con_checker.checkAutomaticProgramConstraints(resultStart, resultStop) )
+                {
+                    if( _LM_DEBUG & LM_DEBUG_CONSTRAINTS )
+                    {
+                        if( const boost::optional<std::string> violations = con_checker.dumpViolations() )
+                        {
+                            CTILOG_DEBUG(dout, *violations);
+                        }
+                    }
+
+                    continue;
+                }
+            }
+
+            lm_direct->setDirectStartTime(resultStart);
+            lm_direct->setDirectStopTime(resultStop);
+
+            if( lm_direct->isControlling() )
+            {   // If we are controlling already, we dont want to send another start message. This happens
+                // when the control window is moved around.
+                lm_direct->scheduleStopNotificationForTimedControl(resultStop);
+            }
+            else
+            {
+                lm_direct->scheduleNotificationForTimedControl(resultStart, resultStop);
+            }
+
+            setUpdatedFlag(TRUE);
         }
     }
 }
