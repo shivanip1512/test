@@ -40,7 +40,7 @@ public class GroupValidatorController {
             if (file == null || StringUtils.isBlank(file.getOriginalFilename())) {
                 throw new IllegalArgumentException("Blank file.");
             }
-            if (!file.getContentType().startsWith("text") && !file.getContentType().endsWith("excel")) {
+            if(!file.getContentType().startsWith("text") && !file.getContentType().endsWith("excel")) {
                 throw new IllegalArgumentException("File must be text or csv");
             }
             DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
