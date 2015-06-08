@@ -79,6 +79,7 @@ public:
         IncludeTimezone
     };
 
+    std::string getTZ() const;
     std::string asString(DisplayOffset offset, DisplayTimezone timezone) const;
     std::string asString() const;
 

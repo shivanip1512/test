@@ -3,11 +3,13 @@
 #include "guard.h"
 #include "logManager.h"
 #include "logger.h"
+#include "ctitime.h"
 
 #include "log4cxx/logger.h"
 #include "log4cxx/helpers/transcoder.h"
 #include "log4cxx/helpers/pool.h"
 #include "log4cxx/spi/loggingevent.h"
+#include <log4cxx/mdc.h>
 
 #include "boost/algorithm/string/replace.hpp"
 
@@ -129,6 +131,8 @@ void Logger::formatAndForceLog(Level level, StreamBufferSink& logStream, const c
 
         methodName = itr->second.c_str();
     }
+
+    log4cxx::MDC::put("tz", CtiTime::now().getTZ());
 
     const log4cxx::spi::LoggingEventPtr event =
             new log4cxx::spi::LoggingEvent(
