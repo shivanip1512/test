@@ -20,8 +20,9 @@
             </tags:nameValue2>
 
             <c:if test="${!isSmtpConfigured}">
-                <tags:nameValue2 nameKey="yukon.common.email.address">
-                    <tags:switchButton name="sendEmail" toggleGroup="email-address" offClasses="M0"/>
+                <tags:nameValue2 nameKey="yukon.common.email.send">
+                    <tags:switchButton name="sendEmail" toggleGroup="email-address" offClasses="M0" 
+                        offNameKey=".no.label" onNameKey=".yes.label"/>
                     <input name="emailAddress" type="text" disabled="disabled" value="${email}" 
                         data-toggle-group="email-address">
                 </tags:nameValue2>
