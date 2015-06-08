@@ -341,6 +341,9 @@ public class ZoneDaoImpl implements ZoneDao {
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         sqlBuilder.append("SELECT PointId");
         sqlBuilder.append("FROM PointToZoneMapping");
+        sqlBuilder.append("UNION");
+        sqlBuilder.append("SELECT PointID");
+        sqlBuilder.append("FROM CCMONITORBANKLIST");
         
         return yukonJdbcTemplate.query(sqlBuilder, RowMapper.INTEGER);
     }

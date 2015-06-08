@@ -55,4 +55,11 @@ public abstract class ZoneAssignmentRow {
     public void setDeletion(boolean isDeletion) {
         this.isDeletion = isDeletion;
     }
+
+    @Override
+    public String toString() {
+        return String.format(
+            "ZoneAssignmentRow [id=%s, name=%s, device=%s, graphPositionOffset=%s, distance=%s, isDeletion=%s]", id, name,
+            device, graphPositionOffset, distance, isDeletion);
+    }
 }

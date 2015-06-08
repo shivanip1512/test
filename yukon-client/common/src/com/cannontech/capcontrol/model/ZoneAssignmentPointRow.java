@@ -14,4 +14,10 @@ public class ZoneAssignmentPointRow extends ZoneAssignmentRow {
     public void setPhase(Phase phase) {
         this.phase = phase;
     }
+    @Override
+    public String toString() {
+        return String.format(
+            "ZoneAssignmentPointRow [phase=%s, getId()=%s, getName()=%s, getDevice()=%s, getGraphPositionOffset()=%s, getDistance()=%s, isDeletion()=%s]",
+            phase, getId(), getName(), getDevice(), getGraphPositionOffset(), getDistance(), isDeletion());
+    }
 }
