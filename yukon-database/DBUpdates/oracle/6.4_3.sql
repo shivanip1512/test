@@ -45,6 +45,12 @@ ALTER TABLE RegulatorToZoneMapping
            ON DELETE CASCADE;
 /* End YUK-14334 */
 
+/* Start YUK-14375 */
+UPDATE YukonPaObject
+SET Type = 'GWY-800'
+WHERE Type = 'RF Gateway 2';
+/* End YUK-14375 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
