@@ -78,7 +78,7 @@ function validateGroupIsSelected(btn, alertText) {
         <div class="stacked">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey="yukon.common.email.address">
-                    <tags:switchButton name="sendEmail" toggleGroup="email-address"/>
+                    <tags:switchButton name="sendEmail" toggleGroup="email-address" offClasses="M0"/>
                     <input type="text" name="emailAddress"  size="40" disabled="disabled" value="${email}" data-toggle-group="email-address">
                 </tags:nameValue2>
             </tags:nameValueContainer2>
