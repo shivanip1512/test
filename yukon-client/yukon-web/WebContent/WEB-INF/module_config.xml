@@ -279,7 +279,7 @@
               </page>
             </pages>
           </page>
-          <page name="archivedValueExporterScheduleSetup" type="BASIC">
+          <page name="bulk.archivedValueExporterScheduleSetup" type="BASIC">
             <link>/tools/data-exporterscheduleReport</link>
           </page>
           <page name="bulk.deviceSelection" type="BASIC">
