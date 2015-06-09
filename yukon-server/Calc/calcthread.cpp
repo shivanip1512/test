@@ -1043,7 +1043,7 @@ void CtiCalculateThread::startThreads()
     _periodicThreadFunc.start();
     _onUpdateThreadFunc.start();
 
-    if (_historicalPoints.size() > 0)
+    if (!_historicalPoints.empty())
     {
         _historicalThreadFunc.start();
     }
@@ -1149,7 +1149,7 @@ void CtiCalculateThread::resumeThreads()
 {
     try
     {
-        CTILOG_DEBUG( dout, "Resuming thread: numberOfHistoricalPoints=" << _historicalPoints.size() <<
+        CTILOG_DEBUG( dout, "Resuming threads: numberOfHistoricalPoints=" << _historicalPoints.size() <<
             ", historical thread is " << (_historicalThreadFunc.isRunning() ? "" : "not ") << "currently running" );
 
         _onUpdateThreadFunc.resume();
@@ -1157,7 +1157,7 @@ void CtiCalculateThread::resumeThreads()
 
         if (_historicalThreadFunc.isRunning())
         {
-            if (_historicalPoints.size() == 0)
+            if (_historicalPoints.empty())
             {
                 _historicalThreadFunc.interrupt();
                 _historicalThreadFunc.tryJoinOrTerminateFor( Cti::Timing::Chrono::seconds( 30 ) );
@@ -1169,7 +1169,7 @@ void CtiCalculateThread::resumeThreads()
         }
         else
         {
-            if (_historicalPoints.size() > 0)
+            if (!_historicalPoints.empty())
             {
                 _historicalThreadFunc.start();
             }
