@@ -193,7 +193,7 @@ public class MeterEventsReportController {
         MeterEventsFilter meterEventsFilter = 
                 new MeterEventsFilter(fromInstant, toInstant, availableEventAttributes, false, false, false);
         meterEventsTable(model, meterEventsFilter, PagingParameters.of(10, 1), 
-                SortingParameters.of("DATE", Direction.asc), collection, userContext);
+                SortingParameters.of("DATE", Direction.desc), collection, userContext);
 
         model.addAttribute("numSelectedEventTypes", availableEventAttributes.size());
 
@@ -229,7 +229,7 @@ public class MeterEventsReportController {
         MeterEventsFilter meterEventsFilter = new MeterEventsFilter(fromInstantStartOfDay, toInstantMidnight, 
                 availableEventAttributes, false, false, false);
         meterEventsTable(model, meterEventsFilter, PagingParameters.of(10, 1), 
-                SortingParameters.of("DATE", Direction.asc), collection, userContext);
+                SortingParameters.of("DATE", Direction.desc), collection, userContext);
 
         model.addAttribute("numSelectedEventTypes", availableEventAttributes.size());
 
@@ -275,7 +275,7 @@ public class MeterEventsReportController {
     public String meterEventsTable(ModelMap model, 
             MeterEventsFilter meterEventsFilter,
             @DefaultItemsPerPage(10) PagingParameters paging,
-            @DefaultSort(sort="DATE", dir=Direction.asc) SortingParameters sorting,
+            @DefaultSort(sort="DATE", dir=Direction.desc) SortingParameters sorting,
             DeviceCollection collection,
             YukonUserContext userContext) {
         
