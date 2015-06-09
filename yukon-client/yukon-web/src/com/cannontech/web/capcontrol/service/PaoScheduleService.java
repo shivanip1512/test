@@ -1,6 +1,5 @@
 package com.cannontech.web.capcontrol.service;
 
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +12,7 @@ public interface PaoScheduleService {
     
     /**
      * For a given schedule id, 
-     * return a Map of assigned device names to their command names
+     * @return a Map of assigned device names to their command names
      * 
      */
     Map<String, Collection<String>> getDeviceToCommandMapForSchedule(int id);
@@ -64,7 +63,6 @@ public interface PaoScheduleService {
      * @return true for successful excecution, false for error cases
      */
     boolean sendStop(int deviceId, LiteYukonUser user);
-
     
     /**
      * Sends out Stop commands for all schedules meeting the filtered criterion.
@@ -75,7 +73,5 @@ public interface PaoScheduleService {
      * @return number of successful commands sent out
      */
     int sendStopCommands(String command, String schedule, LiteYukonUser user);
-    
-    
     
 }
