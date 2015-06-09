@@ -395,35 +395,36 @@ void CtiTime::extract(struct tm* ctm) const
 
 //This map is not exhaustive. It is designed to supplement the UTC offset, which is the time zone.
 //After the common abbreviation, 3 letters indicate a non-USA country code, 2 letters indicate a US state
-static const std::map<std::wstring, std::string> timeZoneAbbrevMap = map_list_of
-(L"Hawaiian Standard Time", "HST")
-(L"Pacific Standard Time", "PST")
-(L"Pacific Daylight Time", "PDT")
-(L"US Mountain Standard Time", "MST-AZ") //Used only for 'UTC-07:00 Arizona'
-(L"Mountain Standard Time", "MST")
-(L"Mountain Daylight Time", "MDT")
-(L"Mountain Standard Time (Mexico)", "MST-MEX")
-(L"Mountain Daylight Time (Mexico)", "MDT-MEX")
-(L"Central Standard Time", "CST")
-(L"Central Daylight Time", "CDT")
-(L"Central Standard Time (Mexico)", "CST-MEX")
-(L"Central Daylight Time (Mexico)", "CDT-MEX")
-(L"Canada Central Standard Time", "CST-CAN")
-(L"Canada Central Daylight Time", "CDT-CAN")
-(L"Eastern Standard Time", "EST")
-(L"Eastern Daylight Time", "EDT")
-(L"US Eastern Standard Time", "EST-IN") //Used only for 'UTC-05:00 Indiana (East)'
-(L"US Eastern Daylight Time", "EDT-IN") //Used only for 'UTC-05:00 Indiana (East)'
-(L"Atlantic Standard Time", "AST-CAN")
-(L"Atlantic Daylight Time", "ADT-CAN")
-(L"Newfoundland Standard Time", "NT-CAN")
-(L"Newfoundland Daylight Time", "NDT-CAN")
-(L"E. South America Standard Time", "BRT-BRA")
-(L"E. South America Daylight Time", "BRST-BRA")
-(L"Argentina Standard Time", "ART-ARG")
-(L"GMT Standard Time", "GMT")
-(L"Coordinated Universal Time", "GMT")
-(L"Greenwich Standard Time", "GMT-GBR");
+static const std::map<std::wstring, std::string> timeZoneAbbrevMap {
+    { L"Hawaiian Standard Time", "HST" },
+    { L"Pacific Standard Time", "PST" },
+    { L"Pacific Daylight Time", "PDT" },
+    { L"US Mountain Standard Time", "MST-AZ" }, //Used only for 'UTC-07:00 Arizona'
+    { L"Mountain Standard Time", "MST" },
+    { L"Mountain Daylight Time", "MDT" },
+    { L"Mountain Standard Time {Mexico},", "MST-MEX" },
+    { L"Mountain Daylight Time {Mexico},", "MDT-MEX" },
+    { L"Central Standard Time", "CST" },
+    { L"Central Daylight Time", "CDT" },
+    { L"Central Standard Time {Mexico},", "CST-MEX" },
+    { L"Central Daylight Time {Mexico},", "CDT-MEX" },
+    { L"Canada Central Standard Time", "CST-CAN" },
+    { L"Canada Central Daylight Time", "CDT-CAN" },
+    { L"Eastern Standard Time", "EST" },
+    { L"Eastern Daylight Time", "EDT" },
+    { L"US Eastern Standard Time", "EST-IN" }, //Used only for 'UTC-05:00 Indiana {East},'
+    { L"US Eastern Daylight Time", "EDT-IN" }, //Used only for 'UTC-05:00 Indiana {East},'
+    { L"Atlantic Standard Time", "AST-CAN" },
+    { L"Atlantic Daylight Time", "ADT-CAN" },
+    { L"Newfoundland Standard Time", "NT-CAN" },
+    { L"Newfoundland Daylight Time", "NDT-CAN" },
+    { L"E. South America Standard Time", "BRT-BRA" },
+    { L"E. South America Daylight Time", "BRST-BRA" },
+    { L"Argentina Standard Time", "ART-ARG" },
+    { L"GMT Standard Time", "GMT" },
+    { L"Coordinated Universal Time", "GMT" },
+    { L"Greenwich Standard Time", "GMT-GBR" } 
+};
 
 /**
  * Return the TZ for the given CtiTime object.
