@@ -76,5 +76,10 @@ public interface RfnDeviceDao {
      * ignored.
      */
     List<RfnDevice> getDevicesByPaoIds(Iterable<Integer> paoIds);
+    
+    /**
+     * Updates the YukonPaObject.Type of the gateway to GWY-800.
+     */
+    void updateGatewayType(RfnDevice device);
 
 }

@@ -73,14 +73,14 @@ public class GatewayDataTopicListener implements MessageListener {
                 RfnIdentifier model1Identifier = new RfnIdentifier(rfnIdentifier.getSensorSerialNumber(),
                                                                    rfnIdentifier.getSensorManufacturer(),
                                                                    GATEWAY_1_MODEL_STRING);
+                
                 if (rfnDeviceDao.deviceExists(model1Identifier)) {
                     //Found a match. Update the gateway model to 2.0
                     RfnDevice device = rfnDeviceDao.getDeviceForExactIdentifier(model1Identifier);
-                    RfnDevice updatedDevice = new RfnDevice(device.getName(),
-                                                            device.getPaoIdentifier(),
-                                                            rfnIdentifier);
-                    rfnDeviceDao.updateDevice(updatedDevice);
-                    cache.put(updatedDevice.getPaoIdentifier(), new RfnGatewayData(message));
+                    rfnDeviceDao.updateGatewayType(device);
+                    
+                    //update cache
+                    cache.put(device.getPaoIdentifier(), new RfnGatewayData(message));
                 }
             } else {
                 log.info("Unable to add gateway data to cache. Device lookup failed for " + rfnIdentifier);

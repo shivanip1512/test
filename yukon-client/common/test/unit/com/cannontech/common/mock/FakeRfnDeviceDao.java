@@ -70,4 +70,9 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
     public boolean deviceExists(RfnIdentifier rfnIdentifier) {
         throw new MethodNotImplementedException();
     }
+
+    @Override
+    public void updateGatewayType(RfnDevice device) {
+        throw new MethodNotImplementedException();
+    }
 }

@@ -1,5 +1,7 @@
 package com.cannontech.common.rfn.service.impl;
 
+import static com.cannontech.common.rfn.service.RfnDeviceCreationService.*;
+
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -21,6 +23,7 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.gateway.GatewayDataRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayDataResponse;
 import com.cannontech.common.rfn.model.NmCommunicationException;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
@@ -45,8 +48,10 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
     private RequestReplyTemplate<GatewayDataResponse> requestTemplate;
     
     @Autowired
-    public RfnGatewayDataCacheImpl(ConnectionFactory connectionFactory, ConfigurationSource configurationSource, 
-                                final RfnDeviceDao rfnDeviceDao, @Qualifier("gatewayCache") Executor executor) {
+    public RfnGatewayDataCacheImpl(ConnectionFactory connectionFactory, 
+                                   ConfigurationSource configurationSource, 
+                                   final RfnDeviceDao rfnDeviceDao, 
+                                   @Qualifier("gatewayCache") Executor executor) {
         
         this.connectionFactory = connectionFactory;
         this.configurationSource = configurationSource;
@@ -133,7 +138,8 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
             }
             
             //Prepare the request
-            RfnIdentifier rfnIdentifier = rfnDeviceDao.getDeviceForId(key.getPaoId()).getRfnIdentifier();
+            RfnDevice device = rfnDeviceDao.getDeviceForId(key.getPaoId());
+            RfnIdentifier rfnIdentifier = device.getRfnIdentifier();
             GatewayDataRequest request = new GatewayDataRequest();
             request.setRfnIdentifier(rfnIdentifier);
             
@@ -141,9 +147,17 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
             BlockingJmsReplyHandler<GatewayDataResponse> replyHandler = new BlockingJmsReplyHandler<>(GatewayDataResponse.class);
             requestTemplate.send(request, replyHandler);
             GatewayDataResponse response = replyHandler.waitForCompletion();
-            data = new RfnGatewayData(response);
+            
+            //If the response rfnId has a newer model, update the Yukon gateway device
+            RfnIdentifier responseRfnIdentifier = response.getRfnIdentifier();
+            if (rfnIdentifier.getSensorModel().equalsIgnoreCase(GATEWAY_1_MODEL_STRING) &&
+                    responseRfnIdentifier.getSensorModel().equalsIgnoreCase(GATEWAY_2_MODEL_STRING)) {
+                
+                rfnDeviceDao.updateGatewayType(device);
+            }
             
             //Update the cache and return the data
+            data = new RfnGatewayData(response);
             cacheMap.put(key, data);
             return data;
         }

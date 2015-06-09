@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -17,12 +18,14 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -159,7 +162,34 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         Map<T, RfnIdentifier> retVal = template.mappedQuery(sqlGenerator, paos, rowMapper, typeMapper);
         return retVal;
     }
-
+    
+    @Override
+    @Transactional
+    public void updateGatewayType(RfnDevice device) {
+        if (device.getPaoIdentifier().getPaoType() != PaoType.RFN_GATEWAY) {
+            throw new IllegalArgumentException("updateGatewayType only accepts RFN_GATEWAY");
+        }
+        
+        PaoIdentifier paoIdentifier = new PaoIdentifier(device.getPaoIdentifier().getPaoId(), PaoType.GWY800);
+        RfnIdentifier rfnIdentifier = new RfnIdentifier(device.getRfnIdentifier().getSensorSerialNumber(),
+                                                        device.getRfnIdentifier().getSensorManufacturer(),
+                                                        RfnDeviceCreationService.GATEWAY_2_MODEL_STRING);
+        RfnDevice updatedDevice = new RfnDevice(device.getName(),
+                                                paoIdentifier,
+                                                rfnIdentifier);
+        
+        // Update the pao type
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlParameterSink sink = sql.update("YukonPaObject");
+        sink.addValue("Type", PaoType.GWY800);
+        sql.append("WHERE PaObjectId").eq(device.getPaoIdentifier().getPaoId());
+        
+        jdbcTemplate.update(sql);
+        
+        // Update the rfn address
+        updateDevice(updatedDevice);
+    }
+    
     @Override
     public void updateDevice(RfnDevice device) {
         if (device.getRfnIdentifier().isBlank()) {
