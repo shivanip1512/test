@@ -34,7 +34,6 @@ using Cti::ThreadStatusKeeper;
 
 BOOL UserQuit = FALSE;
 bool _shutdownOnThreadTimeout = false;
-bool _runCalcHistorical = false;
 bool _runCalcBaseline = false;
 bool _ignoreTimeValidTag = false;
 std::string _logFile = "calc"; // default to calc
@@ -1277,13 +1276,6 @@ void CtiCalcLogicService::loadConfigParameters()
     if(DebugLevel & CALC_DEBUG_CALC_INIT)
     {
         CTILOG_DEBUG(dout, "Configuration Parameter CALC_SHUTDOWN_ON_THREAD_TIMEOUT default : "<< _shutdownOnThreadTimeout);
-    }
-
-    strcpy(var, "CALC_LOGIC_RUN_HISTORICAL");
-    _runCalcHistorical = ciStringEqual(gConfigParms.getValueAsString(var),"true");
-    if(DebugLevel & CALC_DEBUG_CALC_INIT)
-    {
-        CTILOG_DEBUG(dout, "Configuration Parameter CALC_LOGIC_RUN_HISTORICAL default : "<< _runCalcHistorical);
     }
 
     strcpy(var, "CALC_LOGIC_RUN_BASELINE");

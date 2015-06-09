@@ -28,7 +28,6 @@ using Cti::ThreadStatusKeeper;
 extern ULONG _CALC_DEBUG;
 extern BOOL  UserQuit;
 extern bool _shutdownOnThreadTimeout;
-extern bool _runCalcHistorical;
 extern bool _runCalcBaseline;
 
 
@@ -1031,12 +1030,20 @@ void CtiCalculateThread::calcThread( void )
     }
 }
 
+/** 
+  * Called when the calc-logic service is started.  
+  * This method starts the periodic, onUpdate, historical and calc Baseline threads.
+  * The historical thread is only started if there are calc points defined.
+  */
 void CtiCalculateThread::startThreads()
 {
+    CTILOG_DEBUG( dout, "Starting threads: numberOfHistoricalPoints=" << _historicalPoints.size() <<
+        ", historical thread is " << (_historicalThreadFunc.isRunning() ? "" : "not ") << "currently running" );
+
     _periodicThreadFunc.start();
     _onUpdateThreadFunc.start();
 
-    if( _runCalcHistorical )
+    if (_historicalPoints.size() > 0)
     {
         _historicalThreadFunc.start();
     }
@@ -1047,12 +1054,20 @@ void CtiCalculateThread::startThreads()
     }
 }
 
-void CtiCalculateThread::joinThreads(  )
+/** 
+  * Called when the calc-logic service is stopped.
+  * This method stops (joins) the periodic, onUpdate, historical and calc Baseline threads.
+  * The historical thread is only stopped if it has been running.
+  */
+void CtiCalculateThread::joinThreads()
 {
-    _periodicThreadFunc.tryJoinOrTerminateFor(Cti::Timing::Chrono::seconds(30));
+    CTILOG_DEBUG( dout, "Stopping threads: numberOfHistoricalPoints=" << _historicalPoints.size() <<
+        ", historical thread is " << (_historicalThreadFunc.isRunning() ? "" : "not ") << "currently running" );
+
+    _periodicThreadFunc.tryJoinOrTerminateFor( Cti::Timing::Chrono::seconds( 30 ) );
     _onUpdateThreadFunc.tryJoinOrTerminateFor(Cti::Timing::Chrono::seconds(30));
 
-    if( _runCalcHistorical )
+    if (_historicalThreadFunc.isRunning())
     {
         _historicalThreadFunc.tryJoinOrTerminateFor(Cti::Timing::Chrono::seconds(30));
     }
@@ -1063,12 +1078,20 @@ void CtiCalculateThread::joinThreads(  )
     }
 }
 
+/** 
+  * Called when the calc-logic service is stopped.
+  * This method interupts (signals to stop) the periodic, onUpdate, historical and calc Baseline threads.
+  * The historical thread is only interrupted if it has been running.
+  */
 void CtiCalculateThread::interruptThreads()
 {
+    CTILOG_DEBUG( dout, "Interrupting threads: numberOfHistoricalPoints=" << _historicalPoints.size() <<
+        ", historical thread is " << (_historicalThreadFunc.isRunning() ? "" : "not ") << "currently running" );
+
     _periodicThreadFunc.interrupt();
     _onUpdateThreadFunc.interrupt();
 
-    if( _runCalcHistorical )
+    if (_historicalThreadFunc.isRunning())
     {
         _historicalThreadFunc.interrupt();
     }
@@ -1085,14 +1108,22 @@ void CtiCalculateThread::interruptThreads()
 
 }
 
+/** 
+  * Called when the calc-logic service is updated.
+  * This method pauses the periodic, onUpdate, historical and calc Baseline threads.
+  * The historical thread is only paused if it has been running.
+  */
 void CtiCalculateThread::pauseThreads()
 {
     try
     {
+        CTILOG_DEBUG( dout, "Pausing threads: numberOfHistoricalPoints=" << _historicalPoints.size() <<
+            ", historical thread is " << (_historicalThreadFunc.isRunning() ? "" : "not ") << "currently running" );
+
         _onUpdateThreadFunc.pause();
         _periodicThreadFunc.pause();
 
-        if( _runCalcHistorical )
+        if (_historicalThreadFunc.isRunning())
         {
             _historicalThreadFunc.pause();
         }
@@ -1108,16 +1139,40 @@ void CtiCalculateThread::pauseThreads()
     }
 }
 
-void CtiCalculateThread::resumeThreads(  )
+/** 
+  * Called when the calc-logic service is updated.
+  * This method restarts the periodic, onUpdate, historical and calc Baseline threads.
+  * The historical thread is started if it has not been running and there are now calculation points, or
+  * Stopped if it has been running and there are no longer calculation points to process.
+  */
+void CtiCalculateThread::resumeThreads()
 {
     try
     {
+        CTILOG_DEBUG( dout, "Resuming thread: numberOfHistoricalPoints=" << _historicalPoints.size() <<
+            ", historical thread is " << (_historicalThreadFunc.isRunning() ? "" : "not ") << "currently running" );
+
         _onUpdateThreadFunc.resume();
         _periodicThreadFunc.resume();
 
-        if( _runCalcHistorical )
+        if (_historicalThreadFunc.isRunning())
         {
-            _historicalThreadFunc.resume();
+            if (_historicalPoints.size() == 0)
+            {
+                _historicalThreadFunc.interrupt();
+                _historicalThreadFunc.tryJoinOrTerminateFor( Cti::Timing::Chrono::seconds( 30 ) );
+            }
+            else
+            {
+                _historicalThreadFunc.resume();
+            }
+        }
+        else
+        {
+            if (_historicalPoints.size() > 0)
+            {
+                _historicalThreadFunc.start();
+            }
         }
 
         if( _runCalcBaseline )
