@@ -234,7 +234,7 @@
     <div id="value-help" title="<cti:msg2 key=".helper.value.title"/>" class="dn" data-width="700">
         <jsp:include page="/WEB-INF/pages/amr/dynamicBilling/valueHelper.jsp"/>
     </div>
-    <div id="timestamp-help" title="<cti:msg2 key=".helper.timestamp.title"/>" class="dn" data-width="700">
+    <div id="timestamp-help" title="<cti:msg2 key=".helper.timestamp.title"/>" class="dn" data-width="600">
         <jsp:include page="/WEB-INF/pages/amr/dynamicBilling/timestampHelper.jsp"/>
     </div>
 

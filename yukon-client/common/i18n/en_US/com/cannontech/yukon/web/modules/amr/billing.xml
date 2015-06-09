@@ -3,52 +3,52 @@
 <properties>
 
 <!-- schedule.jsp (scheduled billing) -->
-	<entry key="yukon.web.modules.amr.billing.pageName">Billing</entry>
-	<entry key="yukon.web.modules.amr.billing.schedule.pageName">Scheduled Billing Export</entry>
-	<entry key="yukon.web.modules.amr.billing.schedule.pageTitle">Scheduled Billing File Export Editor</entry>
-	<entry key="yukon.web.modules.amr.billing.schedule.billingParameters.title">Billing Parameters</entry>
-	<entry key="yukon.web.modules.amr.billing.schedule.deviceGroups">Device Groups</entry>
-	<entry key="yukon.web.modules.amr.billing.schedule.exportParameters.title">Schedule Parameters</entry>
-	<entry key="yukon.web.modules.amr.billing.schedule.scheduleName">Schedule Name</entry>
-	<entry key="yukon.web.modules.amr.billing.schedule.exportPath">Export Path</entry>
-	<entry key="yukon.web.modules.amr.billing.schedule.exportFileName">Export File Name</entry>
-	<entry key="yukon.web.modules.amr.billing.schedule.appendDateToFileName">Append Date to File Name</entry>
-	<entry key="yukon.web.modules.amr.billing.schedule.scheduleCronString">Schedule</entry>
-	<entry key="yukon.web.modules.amr.billing.schedule.notificationEmailAddresses">Notification Email Addresses</entry>
-	<entry key="yukon.web.modules.amr.billing.schedule.cancelButton.label">Cancel</entry>
-	<entry key="yukon.web.modules.amr.billing.schedule.submitButton">Schedule</entry>
-	<entry key="yukon.web.modules.amr.billing.schedule.updateButton">Update</entry>
-	<entry key="yukon.web.modules.amr.billing.schedule.invalidCron">Invalid schedule or cron string.</entry>
-	<entry key="yukon.web.modules.amr.billing.schedule.exportPathInfo">The location where the file will be generated. This should be a complete, valid file path that does not include the file name. For example, 'C:\Exports\Test'</entry>
-	<entry key="yukon.web.modules.amr.billing.schedule.exportFileNameInfo"><![CDATA[A valid file name, with no file extension. Cannot start with a space or include any of the following characters: / \ : * ? &quot; &lt; &gt; |]]></entry>
-	
+    <entry key="yukon.web.modules.amr.billing.pageName">Billing</entry>
+    <entry key="yukon.web.modules.amr.billing.schedule.pageName">Scheduled Billing Export</entry>
+    <entry key="yukon.web.modules.amr.billing.schedule.pageTitle">Scheduled Billing File Export Editor</entry>
+    <entry key="yukon.web.modules.amr.billing.schedule.billingParameters.title">Billing Parameters</entry>
+    <entry key="yukon.web.modules.amr.billing.schedule.deviceGroups">Device Groups</entry>
+    <entry key="yukon.web.modules.amr.billing.schedule.exportParameters.title">Schedule Parameters</entry>
+    <entry key="yukon.web.modules.amr.billing.schedule.scheduleName">Schedule Name</entry>
+    <entry key="yukon.web.modules.amr.billing.schedule.exportPath">Export Path</entry>
+    <entry key="yukon.web.modules.amr.billing.schedule.exportFileName">Export File Name</entry>
+    <entry key="yukon.web.modules.amr.billing.schedule.appendDateToFileName">Append Date to File Name</entry>
+    <entry key="yukon.web.modules.amr.billing.schedule.scheduleCronString">Schedule</entry>
+    <entry key="yukon.web.modules.amr.billing.schedule.notificationEmailAddresses">Notification Email Addresses</entry>
+    <entry key="yukon.web.modules.amr.billing.schedule.cancelButton.label">Cancel</entry>
+    <entry key="yukon.web.modules.amr.billing.schedule.submitButton">Schedule</entry>
+    <entry key="yukon.web.modules.amr.billing.schedule.updateButton">Update</entry>
+    <entry key="yukon.web.modules.amr.billing.schedule.invalidCron">Invalid schedule or cron string.</entry>
+    <entry key="yukon.web.modules.amr.billing.schedule.exportPathInfo">The location where the file will be generated. This should be a complete, valid file path that does not include the file name. For example, 'C:\Exports\Test'</entry>
+    <entry key="yukon.web.modules.amr.billing.schedule.exportFileNameInfo"><![CDATA[A valid file name, with no file extension. Cannot start with a space or include any of the following characters: / \ : * ? &quot; &lt; &gt; |]]></entry>
+    
 <!-- scheduled billing validation -->
-	<entry key="yukon.web.modules.amr.billing.schedule.validation.invalidName">Schedule name cannot be empty.</entry>
+    <entry key="yukon.web.modules.amr.billing.schedule.validation.invalidName">Schedule name cannot be empty.</entry>
     <entry key="yukon.web.modules.amr.billing.schedule.validation.emptyExportPath">Export path cannot be empty.</entry>
-	<entry key="yukon.web.modules.amr.billing.schedule.validation.invalidExportPath">Export path is invalid or does not exist.</entry>
-	<entry key="yukon.web.modules.amr.billing.schedule.validation.invalidFileName">File name cannot be empty.</entry>
+    <entry key="yukon.web.modules.amr.billing.schedule.validation.invalidExportPath">Export path is invalid or does not exist.</entry>
+    <entry key="yukon.web.modules.amr.billing.schedule.validation.invalidFileName">File name cannot be empty.</entry>
     <entry key="yukon.web.modules.amr.billing.schedule.validation.emptyFileExtension">File extension cannot be empty.</entry>
     <entry key="yukon.web.modules.amr.billing.schedule.validation.emptyTimestampPattern">Timestamp pattern cannot be empty.</entry>
-	<entry key="yukon.web.modules.amr.billing.schedule.validation.invalidEmailAddress">The email address {0} is invalid.</entry>
-	<entry key="yukon.web.modules.amr.billing.schedule.validation.badCharacters">A file name cannot contain any of the following characters:  / \ : * ? &quot; &lt; &gt; |</entry>
+    <entry key="yukon.web.modules.amr.billing.schedule.validation.invalidEmailAddress">The email address {0} is invalid.</entry>
+    <entry key="yukon.web.modules.amr.billing.schedule.validation.badCharacters">A file name cannot contain any of the following characters:  / \ : * ? &quot; &lt; &gt; |</entry>
     <entry key="yukon.web.modules.amr.billing.schedule.validation.invalidPattern">The format of the timestamp pattern is invalid.</entry>
-	
+    
 <!-- scheduled billing jobs list -->
-	<entry key="yukon.web.modules.amr.billing.jobs.title">Schedules</entry>
-	<entry key="yukon.web.modules.amr.billing.jobs.jobCreated">Scheduled Billing Export "{0}" successfully created.</entry>
-	<entry key="yukon.web.modules.amr.billing.jobs.jobUpdated">Scheduled Billing Export "{0}" successfully updated.</entry>
-	<entry key="yukon.web.modules.amr.billing.jobs.pageName">Scheduled Billing Exports</entry>
-	<entry key="yukon.web.modules.amr.billing.jobs.pageTitle">Scheduled Billing Exports</entry>
-	<entry key="yukon.web.modules.amr.billing.jobs.nameHeader">Name</entry>
-	<entry key="yukon.web.modules.amr.billing.jobs.scheduleHeader">Schedule</entry>
-	<entry key="yukon.web.modules.amr.billing.jobs.nextRunHeader">Next Run</entry>
-	<entry key="yukon.web.modules.amr.billing.jobs.actions">Actions</entry>
-	<entry key="yukon.web.modules.amr.billing.jobs.history.hoverText">View export history</entry>
-	<entry key="yukon.web.modules.amr.billing.jobs.edit.hoverText">Edit this schedule</entry>
-	<entry key="yukon.web.modules.amr.billing.jobs.delete.hoverText">Delete this schedule</entry>
-	<entry key="yukon.web.modules.amr.billing.jobs.deletedSuccess">Successfully deleted scheduled billing export "{0}".</entry>
-	<entry key="yukon.web.modules.amr.billing.jobs.noJobs">No scheduled billing file exports exist.</entry>
-	
+    <entry key="yukon.web.modules.amr.billing.jobs.title">Schedules</entry>
+    <entry key="yukon.web.modules.amr.billing.jobs.jobCreated">Scheduled Billing Export "{0}" successfully created.</entry>
+    <entry key="yukon.web.modules.amr.billing.jobs.jobUpdated">Scheduled Billing Export "{0}" successfully updated.</entry>
+    <entry key="yukon.web.modules.amr.billing.jobs.pageName">Scheduled Billing Exports</entry>
+    <entry key="yukon.web.modules.amr.billing.jobs.pageTitle">Scheduled Billing Exports</entry>
+    <entry key="yukon.web.modules.amr.billing.jobs.nameHeader">Name</entry>
+    <entry key="yukon.web.modules.amr.billing.jobs.scheduleHeader">Schedule</entry>
+    <entry key="yukon.web.modules.amr.billing.jobs.nextRunHeader">Next Run</entry>
+    <entry key="yukon.web.modules.amr.billing.jobs.actions">Actions</entry>
+    <entry key="yukon.web.modules.amr.billing.jobs.history.hoverText">View export history</entry>
+    <entry key="yukon.web.modules.amr.billing.jobs.edit.hoverText">Edit this schedule</entry>
+    <entry key="yukon.web.modules.amr.billing.jobs.delete.hoverText">Delete this schedule</entry>
+    <entry key="yukon.web.modules.amr.billing.jobs.deletedSuccess">Successfully deleted scheduled billing export "{0}".</entry>
+    <entry key="yukon.web.modules.amr.billing.jobs.noJobs">No scheduled billing file exports exist.</entry>
+    
 <!-- overview.jsp (dynamicBilling) -->
     <entry key="yukon.web.modules.amr.billing.DETAIL.title">Field Setup</entry>
     <entry key="yukon.web.modules.amr.billing.DETAIL.pageName">Billing Format Editor</entry>
@@ -168,79 +168,17 @@ greater than one.
         </tr>
     </table>]]></entry>
     
-	<!-- timestampHelper.jsp -->    
-    <entry key="yukon.web.modules.amr.billing.timestampHelper.description"><![CDATA[The timestamp pattern input box will accept a textual pattern that represents a date and time format.  The format will be applied
-    to the selected field when the billing file is generated. <br><br>Be careful as it is case sensitive and enter only the characters listed 
-    in the examples below. <br><br>If no pattern is specified, the default pattern is: 'MM/dd/yyyy hh:mm:ss zZ'
-
-    <h3>Example Formats</h3>
-    <table  border="1" cellpadding="5px" cellspacing="0px" width="95%">
-        <tr>
-            <th>Input</th>
-            <th>Result</th>
-            <th>Description</th>
-        </tr>
-        <tr>
-            <td>yy;yyyy</td>
-            <td>07;2007</td>
-            <td>year, the digits showed</td>
-        </tr>
-        <tr>
-            <td>M;MM;MMM;MMMM</td>
-            <td>7;07;Jul;July</td>
-            <td>Month in number and word</td>
-        </tr>
-        <tr>
-            <td>dd</td>
-            <td>15</td>
-            <td>calendar day</td>
-        </tr>
-        <tr>
-            <td>EEE;EEEE</td>
-            <td>Wed;Wednesday</td>
-            <td>Day name in the week</td>
-        </tr>
-        <tr>
-            <td>HH</td>
-            <td>14</td>
-            <td>Hours in a day(0-24)</td>
-        </tr>
-        <tr>
-            <td>h</td>
-            <td>12</td>
-            <td>Hour in AM/PM</td>
-        </tr>
-        <tr>
-            <td>a</td>
-            <td>AM</td>
-            <td>AM/PM marker</td>
-        </tr>
-        <tr>
-            <td>mm</td>
-            <td>45</td>
-            <td>Minute in an hour</td>
-        </tr>
-        <tr>
-            <td>ss</td>
-            <td>55</td>
-            <td>Second in a minute</td>
-        </tr>
-        <tr>
-            <td>SSS</td>
-            <td>181</td>
-            <td>Millisecond</td>
-        </tr>
-        <tr>
-            <td>z; zzzz</td>
-            <td>CDT; Central Daylight Time</td>
-            <td>Timezone in general</td>
-        </tr>
-        <tr>
-            <td>Z</td>
-            <td>-0800</td>
-            <td>hour difference timezone</td>
-        </tr>
-    </table>]]></entry>
+    <!-- timestampHelper.jsp -->
+    <entry key="yukon.web.modules.amr.billing.timestamp.description">
+    The timestamp pattern input box will accept a textual pattern that represents a date and time format.  
+    The format will be applied to the selected field when the billing file is generated.
+    </entry>
+    <entry key="yukon.web.modules.amr.billing.timestamp.warning">
+    Be careful as it is case sensitive and enter only the characters listed in the examples below.
+    </entry>
+    <entry key="yukon.web.modules.amr.billing.timestamp.default">
+    If no pattern is specified, the default pattern is: 'MM/dd/yyyy hh:mm:ss zZ'
+    </entry>
     
     <entry key="yukon.web.billing.mustSelectGroup">Billing group must be selected.</entry>
     <entry key="yukon.web.billing.invalidDemandDaysPrevious">Demand Days Previous must be a positive integer.</entry>   
@@ -248,14 +186,14 @@ greater than one.
     <entry key="yukon.web.billing.formatNameCopy">{0} (copy)</entry>
     <entry key="yukon.web.billing.nonUniqueFormatName">The format name is not unique.  Please supply a unique format name.</entry>
 
-	<!-- _schedule.jsp, _settings.jsp -->
-	<entry key="yukon.web.billing.fileFormat">File Format</entry>
-	<entry key="yukon.web.billing.billingEndDate">Billing End Date</entry>
-	<entry key="yukon.web.billing.demandDaysPrevious">Demand Days Previous</entry>
-	<entry key="yukon.web.billing.energyDaysPrevious">Energy Days Previous</entry>
-	<entry key="yukon.web.billing.removeMultiplier">Remove Multiplier</entry>
-	<entry key="yukon.web.billing.billingGroup">Device Group(s)</entry>
-	<entry key="yukon.web.billing.timeZoneDisclaimer">* All times are {0}</entry>
+    <!-- _schedule.jsp, _settings.jsp -->
+    <entry key="yukon.web.billing.fileFormat">File Format</entry>
+    <entry key="yukon.web.billing.billingEndDate">Billing End Date</entry>
+    <entry key="yukon.web.billing.demandDaysPrevious">Demand Days Previous</entry>
+    <entry key="yukon.web.billing.energyDaysPrevious">Energy Days Previous</entry>
+    <entry key="yukon.web.billing.removeMultiplier">Remove Multiplier</entry>
+    <entry key="yukon.web.billing.billingGroup">Device Group(s)</entry>
+    <entry key="yukon.web.billing.timeZoneDisclaimer">* All times are {0}</entry>
 
     <entry key="yukon.web.billing.tab.generation.title">Generation</entry>
     <entry key="yukon.web.billing.tab.setup.title">Setup</entry>

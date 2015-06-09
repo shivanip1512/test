@@ -38,7 +38,8 @@
     <tags:nameValue2 nameKey=".timestampPatternField">
         <tags:input id="timestampPatternField" path="timestampPatternField" maxlength="20" />
         <div id="export-timestamp-info" class="dn" data-title="<cti:msg2 key=".appendDateToFileName"/>" data-width="500">
-            <i:inline key=".exportTimestampInfo"/>
+            <div class="stacked"><i:inline key=".exportTimestampInfo"/></div>
+            <tags:timestampFormat classes="full-width striped"/>
         </div>
         <cti:icon icon="icon-information" classes="fn cp" data-popup="#export-timestamp-info" data-popup-toggle=""/>
     </tags:nameValue2>
@@ -59,7 +60,6 @@
         </div>
         <cti:icon icon="icon-information" classes="fn cp" data-popup="#export-file-extension-info" data-popup-toggle=""/>
     </tags:nameValue2>
-
 
     <tags:nameValue2 nameKey="yukon.web.defaults.blank" excludeColon="true">
         <label>
