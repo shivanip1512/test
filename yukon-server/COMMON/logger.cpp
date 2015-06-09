@@ -140,6 +140,8 @@ void Logger::formatAndForceLog(Level level, StreamBufferSink& logStream, const c
                     getLogLevel(level),
                     msg,
                     log4cxx::spi::LocationInfo(file, methodName, line));
+    
+    event->getMDCCopy();
 
     if( ! _ready )
     {
