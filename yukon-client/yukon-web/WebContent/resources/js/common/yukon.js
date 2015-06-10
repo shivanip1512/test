@@ -1927,6 +1927,7 @@ yukon.ui = (function () {
 $(function () {
     
     yukon.ui.init();
+    console.log('yukon.ui initialized');
     
     //turn off ajax caching application-wide by default
     $.ajaxSetup({cache: false});
