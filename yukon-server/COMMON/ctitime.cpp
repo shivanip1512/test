@@ -10,6 +10,7 @@
 #include "ctidate.h"
 #include "ctitime.h"
 #include "boost/assign.hpp"
+#include "std_helper.h"
 
 using std::string;
 using namespace std;
@@ -455,10 +456,9 @@ string CtiTime::getTZ() const
         wideTimeZoneName = tzinfo.StandardName;
     }
 
-    std::map<std::wstring, std::string>::const_iterator found = timeZoneAbbrevMap.find(wideTimeZoneName);
-    if (found != timeZoneAbbrevMap.end())
+    if (auto result = Cti::mapFind( timeZoneAbbrevMap, wideTimeZoneName ))
     {
-        timeZoneName = found->second;
+        timeZoneName = *result;
     }
 
     return timeZoneName;
@@ -535,10 +535,9 @@ string CtiTime::asString(DisplayOffset offset, DisplayTimezone timezone) const
             bias -= tzinfo.StandardBias;
         }
 
-        std::map<std::wstring, std::string>::const_iterator found = timeZoneAbbrevMap.find(wideTimeZoneName);
-        if(found != timeZoneAbbrevMap.end())
+        if (auto result = Cti::mapFind( timeZoneAbbrevMap, wideTimeZoneName ))
         {
-            timeZoneName = found->second;
+            timeZoneName = *result;
         }
 
         int biasHours = bias / MINUTES_PER_HOUR;
