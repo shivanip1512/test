@@ -6,6 +6,7 @@
 #include "Ccu721.h"
 #include "DelayBehavior.h"
 #include "BchBehavior.h"
+#include "NackBehavior.h"
 #include "cparms.h"
 #include "StreamSocketListener.h"
 #include "module_util.h"
@@ -126,7 +127,7 @@ int SimulatorMainFunction(int argc, char **argv)
     // Create the directory if necessary.
     if( filesystem::create_directory( mctFilePath ) )
     {
-        logger.log("Directory " + DeviceMemoryManager::memoryMapDirectory + " has been created for simulator MCT memory maps."); 
+        logger.log("Directory " + DeviceMemoryManager::memoryMapDirectory + " has been created for simulator MCT memory maps.");
     }
     else
     {
@@ -160,15 +161,18 @@ int SimulatorMainFunction(int argc, char **argv)
 void loadGloabalSimulatorBehaviors(Logger &logger)
 {
     if( double chance = gConfigParms.getValueAsDouble("SIMULATOR_PLC_BEHAVIOR_BCH_ERROR_PROBABILITY") )
-    {   
+    {
         logger.log("BCH Behavior Enabled - Probability " + CtiNumStr(chance, 2) + "%");
-        std::auto_ptr<PlcBehavior> d(new BchBehavior());
-        d->setChance(chance);
-        Grid.setBehavior(d);
+        Grid.setBehavior(std::make_unique<BchBehavior>(chance));
+    }
+    if( double chance = gConfigParms.getValueAsDouble("SIMULATOR_PLC_BEHAVIOR_NACK_ERROR_PROBABILITY") )
+    {
+        logger.log("NACK Behavior Enabled - Probability " + CtiNumStr(chance, 2) + "%");
+        Grid.setBehavior(std::make_unique<NackBehavior>(chance));
     }
 }
 
-bool confirmCcu710(int ccu_address, int portNumber, Logger &logger) 
+bool confirmCcu710(int ccu_address, int portNumber, Logger &logger)
 {
     static const string Ccu710AType = "CCU-710A";
     stringstream ss_addr, ss_port;
@@ -179,7 +183,7 @@ bool confirmCcu710(int ccu_address, int portNumber, Logger &logger)
                          "JOIN DeviceIdlcRemote DIR ON PAO.PAObjectId = DIR.DeviceId "
                          "JOIN DeviceDirectCommSettings DDCS ON PAO.PAObjectID = DDCS.DEVICEID "
                          "JOIN PORTTERMINALSERVER PTS ON DDCS.PORTID = PTS.PORTID "
-                       "WHERE DIR.Address = " + ss_addr.str() + " " + 
+                       "WHERE DIR.Address = " + ss_addr.str() + " " +
                          "AND PTS.SocketPortNumber = " + ss_port.str();
 
     Cti::Database::DatabaseConnection connection;
@@ -203,11 +207,21 @@ bool confirmCcu710(int ccu_address, int portNumber, Logger &logger)
 
 bool getPorts(vector<int> &ports)
 {
-    static const string sql =  "SELECT Distinct P.SOCKETPORTNUMBER "
-                               "FROM YukonPAObject Y, PORTTERMINALSERVER P, DeviceDirectCommSettings D, CommPort C "
-                               "WHERE Y.PAObjectID = D.DEVICEID AND D.PORTID = C.PORTID AND C.PORTID = P.PORTID AND "
-                                 "Y.PAOClass = 'TRANSMITTER' AND (P.IPADDRESS = '127.0.0.1' OR P.IPADDRESS = 'localhost') "
-                                 "AND Y.Type like 'CCU%'";
+    static const string sql =
+        "SELECT"
+            " Distinct P.SOCKETPORTNUMBER"
+        " FROM"
+            " YukonPAObject Ccu"
+            " join DeviceDirectCommSettings D on Ccu.PAObjectID = D.DEVICEID"
+            " join YukonPAObject CcuPort on CcuPort.PAObjectID = D.PORTID"
+            " join PORTTERMINALSERVER P on CcuPort.PAObjectID = P.PORTID"
+        " WHERE"
+            " CCU.PAOClass = 'TRANSMITTER'"
+            " AND (P.IPADDRESS = '127.0.0.1' OR P.IPADDRESS = 'localhost')"
+            " AND Ccu.Type like 'CCU%'"
+            " AND CcuPort.DisableFlag <> 'Y'"
+            " AND Ccu.DisableFlag <> 'Y'";
+
     unsigned port;
 
     DatabaseConnection conn;
@@ -292,9 +306,9 @@ void startRequestHandler(StreamSocketConnection &mySocket, int strategy, int por
         if( double chance = gConfigParms.getValueAsDouble("SIMULATOR_COMMS_DELAY_PROBABILITY") )
         {
             logger.log("Delay Behavior Enabled - Probability " + CtiNumStr(chance, 2) + "%");
-            std::auto_ptr<CommsBehavior> d(new DelayBehavior());
+            auto d = std::make_unique<DelayBehavior>();
             d->setChance(chance);
-            socket_interface.setBehavior(d);
+            socket_interface.setBehavior(std::move(d));
         }
 
         //  both the CCU-710 and CCU-711 have their address info in the first two bytes
@@ -317,7 +331,7 @@ void startRequestHandler(StreamSocketConnection &mySocket, int strategy, int por
     }
     catch(...)
     {
-        logger.log("Caught unhandled exception");
+        logger.log("Caught unhandled exception:\n" + Cti::Logging::getUnknownExceptionCause());
     }
 }
 

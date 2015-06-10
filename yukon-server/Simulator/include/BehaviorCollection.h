@@ -1,8 +1,5 @@
 #pragma once
 
-#include <boost/noncopyable.hpp>
-#include <boost/ptr_container/ptr_vector.hpp>
-
 #include <vector>
 #include <memory>
 
@@ -12,34 +9,26 @@ namespace Cti {
 namespace Simulator{
 
 template<class T>
-class BehaviorCollection : boost::noncopyable
+class BehaviorCollection
 {
-private:
-    boost::ptr_vector<T> _behaviors;
+    std::vector<std::unique_ptr<T>> _behaviors;
 
 public:
     typedef typename T::target_type Type;
 
-    BehaviorCollection() {};
-    error_t processMessage(Type &value, Logger &logger)
+    void processMessage(Type &value, Logger &logger)
     {
-        boost::ptr_vector<T>::iterator itr = _behaviors.begin();
-        for (;itr != _behaviors.end(); itr++)
+        for( const auto &behavior : _behaviors )
         {
-            (itr)->apply(value, logger);
+            behavior->apply(value, logger);
         }
-
-        return error_t::success;
     }
-    error_t push_back(std::auto_ptr<T> behavior)
+    void push_back(std::unique_ptr<T> &&behavior)
     {
-        _behaviors.push_back(behavior);
-        return error_t::success;
-    }
-    error_t clear()
-    {
-        _behaviors.clear();
-        return error_t::success;
+        if( behavior )
+        {
+            _behaviors.push_back(std::move(behavior));
+        }
     }
 };
 

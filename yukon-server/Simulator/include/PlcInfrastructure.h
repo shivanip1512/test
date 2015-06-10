@@ -37,9 +37,9 @@ public:
 
     PlcInfrastructure();
 
-    void setBehavior(std::auto_ptr<PlcBehavior> behavior);
+    void setBehavior(std::unique_ptr<PlcBehavior> &&behavior);
 
-    bool processMessage(bytes &buf, Logger &logger);
+    void processMessage(bytes &buf, Logger &logger);
 
     bool oneWayCommand(const bytes &request, Logger &logger);
     bool twoWayCommand(const bytes &request, bytes &reply_buf, Logger &logger);

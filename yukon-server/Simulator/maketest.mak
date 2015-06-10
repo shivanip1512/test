@@ -38,6 +38,7 @@ test_ccusim.obj \
 test_behavior_collection.obj \
 test_delay_behavior.obj \
 test_bch_behavior.obj \
+test_nack_behavior.obj \
 test_frozen_read_parity_behavior.obj \
 test_frozen_peak_timestamp_behavior.obj \
 test_random_consumption_behavior.obj \
@@ -59,6 +60,7 @@ DeviceMemoryManager.obj \
 Mct410.obj \
 DelayBehavior.obj \
 BchBehavior.obj \
+NackBehavior.obj \
 FrozenPeakTimestampBehavior.obj \
 FrozenReadParityBehavior.obj \
 RandomConsumptionBehavior.obj \

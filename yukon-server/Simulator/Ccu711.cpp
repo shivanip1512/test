@@ -860,11 +860,15 @@ error_t Ccu711::processRequest(const idlc_request &request, idlc_reply &reply, L
     {
         case IdlcLink_GeneralRequest:
         {
-            //  I think this is the right place... ?
-            if( request.header.control_sequence != _expected_sequence )
+            if( request.header.control_sequence == _expected_sequence )
+            {
+                _status.stats.nsadj = false;
+            }
+            else
             {
                 reply.header.control_command = IdlcLink_RejectWithRestart;
                 reply.header.control_sequence_expected = _expected_sequence;
+                _status.stats.nsadj = true;
 
                 //  sequence mismatch, we need to re-send any queue entries we just sent
                 _queue.completed.insert(_queue.returned.begin(),

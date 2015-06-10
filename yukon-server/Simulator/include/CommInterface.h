@@ -34,10 +34,10 @@ protected:
 public:
     CommsIn  &asInput()  { return *(static_cast<CommsIn *> (this)); };
     CommsOut &asOutput() { return *(static_cast<CommsOut *>(this)); };
-    virtual bool write(const bytes &buf, Logger &logger);
+    bool write(const bytes &buf, Logger &logger) override;
 private:
-    virtual bool writeMessage(const bytes &buf)=0;
-    bool ProcessMessage(bytes &buf, Logger &logger);
+    virtual bool writeMessage(const bytes &buf) = 0;
+    void ProcessMessage(bytes &buf, Logger &logger);
 };
 
 
@@ -54,14 +54,14 @@ private:
 public:
     SocketComms(StreamSocketConnection &nexus, unsigned baud);
 
-    virtual bool read(byte_appender &destination, unsigned expected);
-    virtual bool peek(byte_appender &destination, unsigned expected);
+    bool read(byte_appender &destination, unsigned expected) override;
+    bool peek(byte_appender &destination, unsigned expected) override;
 
-    virtual bool available(unsigned aCount);
+    bool available(unsigned aCount) override;
 
-    virtual bool writeMessage(const bytes &buf);
+    bool writeMessage(const bytes &buf) override;
 
-    void setBehavior(std::auto_ptr<CommsBehavior> behavior);
+    void setBehavior(std::unique_ptr<CommsBehavior> &&behavior);
     void clear();
 };
 
@@ -74,27 +74,10 @@ private:
 public:
     BufferCommsIn(const bytes &input);
 
-    virtual bool read(byte_appender &destination, unsigned expected);
-    virtual bool peek(byte_appender &destination, unsigned expected);
+    bool read(byte_appender &destination, unsigned expected) override;
+    bool peek(byte_appender &destination, unsigned expected) override;
 
-    virtual bool available(unsigned aCount);
-};
-
-class BufferCommsOut : public CommsOut
-{
-private:
-    byte_appender _output;
-
-public:
-    BufferCommsOut(byte_appender &output);
-
-    virtual bool write(const bytes &buf);
-};
-
-class BufferComms : public Comms, public BufferCommsIn, public BufferCommsOut
-{
-public:
-    BufferComms(const bytes &input, byte_appender &output);
+    bool available(unsigned aCount) override;
 };
 
 }

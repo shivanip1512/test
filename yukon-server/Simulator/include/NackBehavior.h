@@ -6,10 +6,10 @@
 namespace Cti {
 namespace Simulator{
 
-class BchBehavior : public PlcBehavior
+class NackBehavior : public PlcBehavior
 {
 public:
-    BchBehavior(double chance);
+    NackBehavior(double chance);
     void apply(target_type &message, Logger &logger) override;
 
 private:

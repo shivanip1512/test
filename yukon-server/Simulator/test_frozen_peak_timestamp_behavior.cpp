@@ -11,10 +11,10 @@ BOOST_AUTO_TEST_CASE(test_frozen_peak_timestamp_behavior)
 {
     SimulatorLogger logger(dout);
     BehaviorCollection<MctBehavior> behaviorCollection;
-    std::auto_ptr<MctBehavior> d(new FrozenPeakTimestampBehavior());
+    auto d = std::make_unique<FrozenPeakTimestampBehavior>();
     d->setChance(1000);
 
-    behaviorCollection.push_back(d);
+    behaviorCollection.push_back(std::move(d));
 
     {
         bytes message, reference;

@@ -21,9 +21,9 @@ bool Comms::write(const bytes &buf, Logger &logger)
     return true;
 }
 
-bool Comms::ProcessMessage(bytes &buf, Logger &logger)
+void Comms::ProcessMessage(bytes &buf, Logger &logger)
 {
-    return _behaviorCollection.processMessage(buf, logger);
+    _behaviorCollection.processMessage(buf, logger);
 }
 
 SocketComms::SocketComms(StreamSocketConnection &nexus, unsigned baud) :
@@ -86,15 +86,15 @@ bool SocketComms::writeMessage(const bytes &buf)
     copy(buf.begin(), buf.end(), temp.get());
 
     const unsigned bytesWritten = _nexus.write(temp.get(), buf.size(), Chrono::seconds(SocketTimeout));
-    
+
     commDelay(bytesWritten);
 
     return bytesWritten == buf.size();
 }
 
-void SocketComms::setBehavior(std::auto_ptr<CommsBehavior> behavior)
+void SocketComms::setBehavior(std::unique_ptr<CommsBehavior> &&behavior)
 {
-    _behaviorCollection.push_back(behavior);
+    _behaviorCollection.push_back(std::move(behavior));
 }
 
 void SocketComms::clear()
@@ -106,17 +106,6 @@ void SocketComms::clear()
 BufferCommsIn::BufferCommsIn(const bytes &input) :
     _itr(input.begin()),
     _end(input.end())
-{
-}
-
-BufferCommsOut::BufferCommsOut(byte_appender &output) :
-    _output(output)
-{
-}
-
-BufferComms::BufferComms(const bytes &input, byte_appender &output) :
-    BufferCommsIn(input),
-    BufferCommsOut(output)
 {
 }
 
@@ -156,14 +145,6 @@ bool BufferCommsIn::available(unsigned aCount)
 {
     return distance(_itr, _end) >= aCount;
 }
-
-bool BufferCommsOut::write(const bytes &buf)
-{
-    copy(buf.begin(), buf.end(), _output);
-
-    return true;
-}
-
 
 }
 }

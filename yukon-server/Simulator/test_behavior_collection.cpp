@@ -39,30 +39,39 @@ BOOST_AUTO_TEST_CASE(test_behavior_collection)
 {
     SimulatorLogger logger(dout);
 
-    BehaviorCollection<IntBehavior> behaviorCollection;
-    std::auto_ptr<IntBehavior> multiply(new MultByTwentyBehavior());
-    std::auto_ptr<IntBehavior> add(new AddOneBehavior());
-    behaviorCollection.push_back(multiply);
-    behaviorCollection.push_back(add);
+    {
+        BehaviorCollection<IntBehavior> behaviorCollection;
 
-    int value = 3;
+        int value = 3;
 
-    behaviorCollection.processMessage(value, logger);
+        behaviorCollection.processMessage(value, logger);
 
-    BOOST_CHECK_EQUAL(value, 61);
+        BOOST_CHECK_EQUAL(value, 3);
 
-    behaviorCollection.clear();
+        behaviorCollection.push_back(std::make_unique<MultByTwentyBehavior>());
+        behaviorCollection.push_back(std::make_unique<AddOneBehavior>());
 
-    value = 10;
+        behaviorCollection.processMessage(value, logger);
 
-    std::auto_ptr<IntBehavior> multiply2(new MultByTwentyBehavior());
-    std::auto_ptr<IntBehavior> add2(new AddOneBehavior());
-    behaviorCollection.push_back(add2);
-    behaviorCollection.push_back(multiply2);
+        BOOST_CHECK_EQUAL(value, 61);
+    }
 
-    behaviorCollection.processMessage(value, logger);
+    {
+        BehaviorCollection<IntBehavior> behaviorCollection;
 
-    BOOST_CHECK_EQUAL(value, 220);
+        int value = 10;
+
+        behaviorCollection.processMessage(value, logger);
+
+        BOOST_CHECK_EQUAL(value, 10);
+
+        behaviorCollection.push_back(std::make_unique<AddOneBehavior>());
+        behaviorCollection.push_back(std::make_unique<MultByTwentyBehavior>());
+
+        behaviorCollection.processMessage(value, logger);
+
+        BOOST_CHECK_EQUAL(value, 220);
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

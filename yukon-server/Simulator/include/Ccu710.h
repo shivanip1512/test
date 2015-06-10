@@ -98,17 +98,10 @@ private:
 
     struct feeder_operation_t
     {
-        feeder_operation_t() :
-            bus(0),
-            amp(0),
-            repeater_count(0),
-            length(0)
-        {};
-
-        unsigned bus;
-        unsigned amp;
-        unsigned repeater_count;
-        unsigned length;
+        unsigned bus = 0;
+        unsigned amp = 0;
+        unsigned repeater_count = 0;
+        unsigned length = 0;
 
         words_t words;
     };
@@ -169,7 +162,7 @@ private:
     static unsigned char makeReplyControl(unsigned address, ReplyControls reply_control);
 
     error_t readRequest(CommsIn &comms, request_t &request) const;
-    error_t extractFeederOperation(const bytes &feeder_op_buf, feeder_operation_t &feeder_operation) const;
+    static feeder_operation_t extractFeederOperation(const bytes &feeder_op_buf);
 
     std::string describeRequest(const request_t &request) const;
 

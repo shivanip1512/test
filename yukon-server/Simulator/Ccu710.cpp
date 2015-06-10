@@ -182,10 +182,8 @@ error_t Ccu710::readRequest(CommsIn &comms_in, request_t &request) const
         {
             return "Invalid parity in address/operation";
         }
-        if( error = extractFeederOperation(request.message, request.feeder_operation) )
-        {
-            return "Error extracting feeder operation / " + error;
-        }
+
+        request.feeder_operation = extractFeederOperation(request.message);
 
         bytes feeder_word_buf;
         byte_appender feeder_word_oitr = byte_appender(feeder_word_buf);
@@ -244,14 +242,16 @@ error_t Ccu710::readRequest(CommsIn &comms_in, request_t &request) const
 }
 
 
-error_t Ccu710::extractFeederOperation(const bytes &feeder_op_buf, feeder_operation_t &feeder_operation) const
+auto Ccu710::extractFeederOperation(const bytes &feeder_op_buf) -> feeder_operation_t
 {
+    feeder_operation_t feeder_operation;
+
     feeder_operation.bus            = feeder_op_buf[0] & 0x38 >> 3;
     feeder_operation.amp            = feeder_op_buf[0] & 0x40 >> 6;
     feeder_operation.repeater_count = feeder_op_buf[1] & 0x07;
     feeder_operation.length         = feeder_op_buf[2] & 0x3f;
 
-    return error_t::success;
+    return feeder_operation;
 }
 
 
@@ -450,33 +450,36 @@ error_t Ccu710::processRequest(const request_t &request, reply_t &reply, Logger 
 //  TODO-P4: We will actually be able to use a common transmit portion, and this "listen" portion will be optional
 
 //  TODO-P2: Add check to verify we got back the correct number of words
-//  TODO-P2: Change to words-expected to determine the delay, not the size of the reply from Grid.
 
-                Sleep(dlc_time(reply_buf.size() * 8) * (request.feeder_operation.repeater_count + 1));
+                Sleep(dlc_time(words_expected * 56) * (request.feeder_operation.repeater_count + 1));
 
                 *reply_oitr++ = makeReplyControl(_address, ReplyControl_StartOfDlcReply);
 
-//  TODO-P2: Add NACK processing for partial returns (and crosstalk)
-//          Basically, we'd need to try to decode the words to see where they failed...
-//          The NACK padding is a CCU function, so it will need to be applied by the CCU,
-//          not the Emetcon words
-
                 words_t reply_words;
 
-                //  For now, this assumes that we're getting whole words (no errors) back from Grid
-                if( !EmetconWord::restoreWords(reply_buf, reply_words) )
-                {
-                    return "Error restoring reply words";
-                }
+                EmetconWord::restoreWords(reply_buf, reply_words);
 
                 words_t::const_iterator words_itr = reply_words.begin(),
                                         words_end = reply_words.end();
 
                 for( ; words_itr != words_end; ++words_itr )
                 {
+                    --words_expected;
+
                     (*words_itr)->serialize(reply_oitr);
 
                     *reply_oitr++ = makeReplyControl(_address, ReplyControl_Acknowledge);
+                }
+
+                while( words_expected-- )
+                {
+                    //  NACK pad any remaining words
+                    const auto nak_s = makeReplyControl(_address, ReplyControl_NoAcknowledgeSignal);
+
+                    for( size_t wordBytes = 8; wordBytes-- > 0; )
+                    {
+                        *reply_oitr++ = nak_s;
+                    }
                 }
             }
 

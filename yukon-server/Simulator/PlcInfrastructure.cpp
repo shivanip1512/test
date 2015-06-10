@@ -82,14 +82,14 @@ bool PlcInfrastructure::twoWayCommand(const bytes &request, bytes &reply, Logger
     return true;
 }
 
-void PlcInfrastructure::setBehavior(std::auto_ptr<PlcBehavior> behavior)
+void PlcInfrastructure::setBehavior(std::unique_ptr<PlcBehavior> &&behavior)
 {
-    _behaviorCollection.push_back(behavior);
+    _behaviorCollection.push_back(std::move(behavior));
 }
 
-bool PlcInfrastructure::processMessage(bytes &buf, Logger &logger)
+void PlcInfrastructure::processMessage(bytes &buf, Logger &logger)
 {
-    return _behaviorCollection.processMessage(buf, logger);
+    _behaviorCollection.processMessage(buf, logger);
 }
 
 PlcInfrastructure::mct_map_t::ptr_type PlcInfrastructure::getMct(const words_t &request_words)

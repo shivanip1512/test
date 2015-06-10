@@ -1073,7 +1073,7 @@ error_t Ccu721::processDtranRequest(const idlc_request &request, idlc_reply &rep
 
     Sleep(dlc_time(request_buf.size() * 8) * (request.info.dtran.bookkeeperEntry.request.stagesToFollow + 1));
 
-    if( !request.info.dtran.bookkeeperEntry.request.b_word.words_to_follow )
+    if( request.info.dtran.bookkeeperEntry.request.write )
     {
         Grid.oneWayCommand(request_buf, logger);
     }
@@ -1084,24 +1084,33 @@ error_t Ccu721::processDtranRequest(const idlc_request &request, idlc_reply &rep
 
         Grid.twoWayCommand(request_buf, reply_buf, logger);
 
-        Sleep(dlc_time(reply_buf.size() * 8) * (request.info.dtran.bookkeeperEntry.request.stagesToFollow + 1));
+        size_t wordsExpected = request.info.dtran.bookkeeperEntry.request.b_word.words_to_follow;
+
+        Sleep(dlc_time(wordsExpected * 8) * (request.info.dtran.bookkeeperEntry.request.stagesToFollow + 1));
 
         words_t reply_words;
 
         //  For now, this assumes that we're getting whole words (no errors) back from Grid
-        if( !EmetconWord::restoreWords(reply_buf, reply_words) )
-        {
-            return "Error restoring reply words";
-        }
+        EmetconWord::restoreWords(reply_buf, reply_words);
 
         reply_buf.clear();
 
-        words_t::const_iterator words_itr = reply_words.begin(),
-                                words_end = reply_words.end();
-
-        for( ; words_itr != words_end; ++words_itr )
+        for( const auto &word : reply_words )
         {
-            (*words_itr)->serialize(reply_oitr++);
+            word->serialize(reply_oitr);
+            --wordsExpected;
+        }
+
+        if( wordsExpected )
+        {
+            EmetconWordE eWord;
+
+            eWord.errors.incoming_no_response = true;
+
+            while( wordsExpected-- > 0 )
+            {
+                eWord.serialize(reply_oitr);
+            }
         }
 
         reply.info.dtran.message.assign(reply_buf.begin(), reply_buf.end());

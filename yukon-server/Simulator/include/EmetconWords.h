@@ -255,22 +255,27 @@ struct EmetconWordE : public EmetconWord, public EmetconWordDescriptor<0x0e, 52>
         alarm(false)
     {
         memset(diagnostic_data, 0, sizeof(diagnostic_data));
+        bch = std::numeric_limits<unsigned>::max();
     };
 
     unsigned repeater_variable;
     unsigned echo_address;
 
-//  TODO-P2: Add constructor for E word
-//  TODO-P2: Add error data elements for E word
-/*
-    bool incoming_bch_error;
-    bool incoming_no_response;
-    bool listen_ahead_bch_error;
-    bool listen_ahead_no_response;
-    bool weak_signal;
-    bool repeater_code_mismatch;
-*/
-    unsigned char diagnostic_data[3];
+    union
+    {
+        struct
+        {
+            unsigned char incoming_bch_error        : 1;
+            unsigned char incoming_no_response      : 1;
+            unsigned char listen_ahead_bch_error    : 1;
+            unsigned char listen_ahead_no_response  : 1;
+            unsigned char weak_signal               : 1;
+            unsigned char repeater_code_mismatch    : 1;
+        }
+        errors;
+
+        unsigned char diagnostic_data[3];
+    };
 
     bool power_fail;
     bool alarm;

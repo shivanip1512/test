@@ -6,7 +6,8 @@
 namespace Cti {
 namespace Simulator{
 
-BchBehavior::BchBehavior()
+BchBehavior::BchBehavior(double chance) :
+    _chance(chance)
 {
 }
 
@@ -28,20 +29,6 @@ void BchBehavior::apply(target_type &message, Logger &logger)
         logger.breadcrumbLog("***** MESSAGE BCH MUTILATED *****");
         message.back() ^= 0x10;
     }
-}
-
-/**
- * Sets the BchBehavior's chance to be applied to a given
- * message.
- *
- * @param chance The percent chance for the BchBehavior to be
- * applied to a message as defined in the master.cfg file under
- * the CPARM value
- * SIMULATOR_PLC_BEHAVIOR_BCH_ERROR_PROBABILITY
- */
-void BchBehavior::setChance(double chance)
-{
-    _chance = chance;
 }
 
 }
