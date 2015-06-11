@@ -9,7 +9,7 @@
 
 <cti:standardPage module="adminSetup" page="survey.list">
 
-    <cti:includeScript link="/JavaScript/yukon.surveys.edit.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.surveys.edit.js"/>
 
     <div class="stacked" data-url="listTable">
         <%@ include file="listTable.jsp" %>

@@ -5,7 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="controlHistory">
-    <cti:includeScript link="/JavaScript/yukon.assets.controlhistory.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.assets.controlhistory.js"/>
     <div data-account-id="${accountId}">
         <tags:sectionContainer2 nameKey="currentEnrollmentControlHistory">
             <div class="clearfix stacked js-block-this js-current-enrollment-history" style="min-height: 50px">

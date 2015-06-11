@@ -12,7 +12,6 @@
 <cti:includeScript link="${timeFormatter}"/>
 <cti:includeScript link="/resources/js/common/yukon.temperature.js"/>
 <cti:includeScript link="/resources/js/common/yukon.thermostat.js"/>
-<cti:includeScript link="/JavaScript/lib/JSON/2.0/json2.js"/>
 
 <script type="text/javascript">
 var TIME_SLIDER = null;

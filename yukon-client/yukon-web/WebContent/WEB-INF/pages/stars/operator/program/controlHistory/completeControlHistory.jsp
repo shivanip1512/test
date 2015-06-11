@@ -4,7 +4,7 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
 <cti:standardPage module="operator" page="completeControlHistory">
-    <cti:includeScript link="/JavaScript/yukon.assets.controlhistory.detail.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.assets.controlhistory.detail.js"/>
     
     <c:set var="controls">
         <i:inline key=".viewTitle"/>

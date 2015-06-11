@@ -7,7 +7,7 @@
 
 <cti:standardPage module="adminSetup" page="survey.edit">
 
-<cti:includeScript link="/JavaScript/yukon.surveys.edit.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.surveys.edit.js"/>
 
 <div id="question-popup" title="<cti:msg2 key=".surveyQuestion"/>"></div>
 

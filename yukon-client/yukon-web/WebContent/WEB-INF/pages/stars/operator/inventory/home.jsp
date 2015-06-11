@@ -7,7 +7,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="inventory.home">
-<cti:includeScript link="/JavaScript/yukon.assets.dashboard.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.assets.dashboard.js"/>
 
 <cti:checkEnergyCompanyOperator showError="true" >
 

@@ -317,6 +317,6 @@
     <cti:toJson id="method-to-algorithms" object="${methodToAlgorithms}"/>
     <cti:toJson id="algorithm-to-settings" object="${algorithmToSettings}"/>
     
-    <cti:includeScript link="/JavaScript/yukon.da.strategy.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.da.strategy.js"/>
     
 </cti:standardPage>

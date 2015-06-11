@@ -7,7 +7,7 @@
 
 <cti:standardPage module="operator" page="enrollmentList">
 
-<cti:includeScript link="/JavaScript/yukon.assets.enroll.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.assets.enroll.js"/>
 
 <cti:msg2 var="removeTitle" key=".remove.title"/>
 <cti:msg2 var="editTitle" key=".edit.title"/>

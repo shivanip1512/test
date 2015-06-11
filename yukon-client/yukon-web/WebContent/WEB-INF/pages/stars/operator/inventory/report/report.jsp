@@ -5,7 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="inventory.report">
-<cti:includeScript link="/JavaScript/yukon.assets.report.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.assets.report.js"/>
 <style>
 #device-report { min-height: 300px; }
 </style>
