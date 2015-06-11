@@ -63,8 +63,13 @@
                 </c:choose>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".nextRunTime">
+       
+                    <tags:switchButton path="later" onNameKey="yukon.common.later" 
+                        offNameKey="yukon.common.now" offClasses="M0" color="false" toggleGroup="nextRun"/>
+                
                 <spring:bind path="nextRunTime">
-                    <dt:dateTime path="nextRunTime" cssClass="${status.error ? 'error' : ''}"/>
+                    <dt:dateTime path="nextRunTime" minDate="${nowTime}" cssClass="${status.error ? 'error' : ''}" 
+                            toggleGroup="nextRun" disabled="${!schedule.later}"/>
                     <c:if test="${status.error}"><br><form:errors path="${path}" cssClass="clear db error"/></c:if>
                 </spring:bind>
             </tags:nameValue2>
