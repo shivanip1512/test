@@ -467,7 +467,7 @@ public class MeterEventsReportController {
     public void csv(HttpServletResponse response, 
             MeterEventsFilter meterEventsFilter,
             DeviceCollection collection,
-            @DefaultSort(sort="DATE", dir=Direction.asc) SortingParameters sorting,
+            @DefaultSort(sort="DATE", dir=Direction.desc) SortingParameters sorting,
             YukonUserContext userContext) throws IOException, DeviceCollectionCreationException {
 
         MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
