@@ -11,14 +11,14 @@ public class ControlMethodConverter implements Converter {
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) throws ConverterException {
-        ControlMethod algorithm = ControlMethod.valueOf(value);
-        return algorithm;
+        ControlMethod method = ControlMethod.valueOf(value);
+        return method;
     }
 
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object value) throws ConverterException {
-        ControlMethod algorithm = (ControlMethod)value;
-        return algorithm.name();
+        ControlMethod method = (ControlMethod)value;
+        return method.name();
     }
 
 }

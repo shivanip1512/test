@@ -606,7 +606,7 @@ public class UpdaterHelper {
             
             if (subBus.getControlMethod() == ControlMethod.TIME_OF_DAY) {
                 return accessor.getMessage(keyPrefix + "tod");
-            } else if (subBus.getControlMethod() == ControlMethod.NONE) {
+            } else if (subBus.getControlMethod() == null) {
                 return accessor.getMessage("yukon.web.defaults.none");
             } 
             
@@ -868,7 +868,7 @@ public class UpdaterHelper {
             
             if (feeder.getControlmethod() == ControlMethod.TIME_OF_DAY) {
                 return accessor.getMessage(keyPrefix + "tod");
-            } else if (feeder.getControlmethod() == ControlMethod.NONE) {
+            } else if (feeder.getControlmethod() == null) {
                 return accessor.getMessage("yukon.web.defaults.none");
             } 
 
@@ -1098,7 +1098,7 @@ public class UpdaterHelper {
         }
 
         String formatted = CommonUtils.formatDecimalPlaces(value * (compute ? 100 : 1), decPlaces);
-        return accessor.getMessage(keyPrefix + "pfPercent", formatted);
+        return accessor.getMessage("yukon.common.percent", formatted);
     }
 
     public String getHTMLFgColor(SubStation subBus) {
@@ -1206,7 +1206,11 @@ public class UpdaterHelper {
         }
         
         case SUB_ONELINE_CTL_METHOD_COLUMN: {
-            return subBus.getControlMethod().getDisplayName();
+            ControlMethod controlMethod = subBus.getControlMethod();
+            if (controlMethod != null) {
+                return accessor.getMessage(controlMethod);
+            }
+            return accessor.getMessage("yukon.common.none.choice");
         }
 
         case SUB_TARGET_COLUMN: {

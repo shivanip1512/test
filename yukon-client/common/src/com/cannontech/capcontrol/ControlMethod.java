@@ -1,72 +1,58 @@
 package com.cannontech.capcontrol;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.common.i18n.DisplayableEnum;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 
 public enum ControlMethod implements DisplayableEnum {
 
-    INDIVIDUAL_FEEDER("Individual Feeder", true, ControlAlgorithm.KVAR, ControlAlgorithm.KVAR,
-                      ControlAlgorithm.MULTI_VOLT, ControlAlgorithm.MULTI_VOLT_VAR, ControlAlgorithm.PFACTOR_KW_KVAR,
-                      ControlAlgorithm.VOLTS),
+    INDIVIDUAL_FEEDER("Individual Feeder", ControlAlgorithm.KVAR,
+                                           ControlAlgorithm.VOLTS,
+                                           ControlAlgorithm.MULTI_VOLT,
+                                           ControlAlgorithm.MULTI_VOLT_VAR, 
+                                           ControlAlgorithm.PFACTOR_KW_KVAR),
 
-    SUBSTATION_BUS("Substation Bus", true, ControlAlgorithm.KVAR, ControlAlgorithm.INTEGRATED_VOLT_VAR,
-                   ControlAlgorithm.KVAR, ControlAlgorithm.MULTI_VOLT, ControlAlgorithm.MULTI_VOLT_VAR,
-                   ControlAlgorithm.PFACTOR_KW_KVAR, ControlAlgorithm.VOLTS),
+    SUBSTATION_BUS("Substation Bus", ControlAlgorithm.KVAR, 
+                                     ControlAlgorithm.VOLTS,
+                                     ControlAlgorithm.MULTI_VOLT,
+                                     ControlAlgorithm.MULTI_VOLT_VAR,
+                                     ControlAlgorithm.PFACTOR_KW_KVAR,
+                                     ControlAlgorithm.INTEGRATED_VOLT_VAR),
 
-    BUSOPTIMIZED_FEEDER("Bus Optimized Feeder", true, ControlAlgorithm.KVAR, ControlAlgorithm.KVAR,
-                        ControlAlgorithm.INTEGRATED_VOLT_VAR, ControlAlgorithm.PFACTOR_KW_KVAR, ControlAlgorithm.VOLTS),
+    BUSOPTIMIZED_FEEDER("Bus Optimized Feeder", ControlAlgorithm.KVAR,
+                                                ControlAlgorithm.VOLTS,
+                                                ControlAlgorithm.PFACTOR_KW_KVAR, 
+                                                ControlAlgorithm.INTEGRATED_VOLT_VAR),
 
-    MANUAL_ONLY("Manual Only", true, ControlAlgorithm.KVAR, ControlAlgorithm.KVAR, ControlAlgorithm.PFACTOR_KW_KVAR,
-                ControlAlgorithm.VOLTS),
+    MANUAL_ONLY("Manual Only", ControlAlgorithm.KVAR, 
+                               ControlAlgorithm.PFACTOR_KW_KVAR,
+                               ControlAlgorithm.VOLTS),
 
-    TIME_OF_DAY("Time of Day", true, ControlAlgorithm.TIME_OF_DAY, ControlAlgorithm.TIME_OF_DAY),
-
-    NONE("NONE", false, null);
+    TIME_OF_DAY("Time of Day", ControlAlgorithm.TIME_OF_DAY),
+    ;
 
     private String displayName;
-    private boolean display;
     private ControlAlgorithm defaultAlgorithm;
     private Set<ControlAlgorithm> supportedAlgorithms;
-    private static List<ControlMethod> valuesForDisplay;
 
-    static {
-        ArrayList<ControlMethod> controlMethods = Lists.newArrayList();
-        for (ControlMethod controlMethod : values()) {
-            if (controlMethod.display) {
-                controlMethods.add(controlMethod);
-            }
-        }
-        valuesForDisplay = ImmutableList.copyOf(controlMethods);
-    }
-
-    private ControlMethod(String displayName, boolean display, ControlAlgorithm defaultAlgorithm,
+    private ControlMethod(String displayName, ControlAlgorithm defaultAlgorithm,
             ControlAlgorithm... supportedAlgorithms) {
         this.displayName = displayName;
-        this.display = display;
         this.defaultAlgorithm = defaultAlgorithm;
-        this.supportedAlgorithms = ImmutableSet.copyOf(supportedAlgorithms);
-    }
-
-    public static List<ControlMethod> valuesForDisplay() {
-        return valuesForDisplay;
+        
+        ImmutableSet.Builder<ControlAlgorithm> builder = ImmutableSet.builder();
+        builder.add(defaultAlgorithm);
+        builder.addAll(Arrays.asList(supportedAlgorithms));
+        
+        this.supportedAlgorithms = builder.build();
     }
 
     public String getDisplayName() {
         return displayName;
-    }
-
-    public boolean isDisplayed() {
-        return display;
-    }
-
-    public void setDefaultAlgorithm(ControlAlgorithm defaultAlgorithm) {
-        this.defaultAlgorithm = defaultAlgorithm;
     }
 
     public ControlAlgorithm getDefaultAlgorithm() {
@@ -83,7 +69,22 @@ public enum ControlMethod implements DisplayableEnum {
 
     @Override
     public String getFormatKey() {
-        return "yukon.web.modules.capcontrol.controlAlgorithm." + name();
+        return "yukon.web.modules.capcontrol.controlMethod." + name();
+    }
+
+    private static final Map<ControlMethod, Set<ControlAlgorithm>> methodToAlgorithms;
+    
+    static {
+        ImmutableMap.Builder<ControlMethod, Set<ControlAlgorithm>> builder = ImmutableMap.builder();
+        for (ControlMethod method : ControlMethod.values()) {
+            builder.put(method, method.getSupportedAlgorithms());
+        }
+        
+        methodToAlgorithms = builder.build();
+    }
+    
+    public static Map<ControlMethod, Set<ControlAlgorithm>> getMethodToAlgorithms() {
+        return methodToAlgorithms;
     }
 
 }

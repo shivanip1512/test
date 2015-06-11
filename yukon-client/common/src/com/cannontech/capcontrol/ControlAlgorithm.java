@@ -28,4 +28,4 @@ public enum ControlAlgorithm implements DisplayableEnum {
         return "yukon.web.modules.capcontrol.controlAlgorithm." + name();
     }
 
-};
+}

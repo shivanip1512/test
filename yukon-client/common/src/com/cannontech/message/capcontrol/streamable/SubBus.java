@@ -26,7 +26,7 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
 
     private int currentVarLoadPointID;
     private int currentWattLoadPointID;
-    private ControlAlgorithm controlUnits;
+    private ControlAlgorithm algorithm;
     private int estimatedVarLoadPointID;
     private int dailyOperationsAnalogPointId;
     private int powerFactorPointId;
@@ -300,8 +300,8 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
         verificationFlag = boolean1;
     }
 
-    public ControlAlgorithm getControlUnits() {
-        return controlUnits;
+    public ControlAlgorithm getAlgorithm() {
+        return algorithm;
     }
 
     public int getCurrentVarLoadPointID() {
@@ -312,8 +312,8 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
         return currentWattLoadPointID;
     }
 
-    public void setControlUnits(ControlAlgorithm units) {
-        controlUnits = units;
+    public void setAlgorithm(ControlAlgorithm algorithm) {
+        this.algorithm = algorithm;
     }
 
     public void setCurrentVarLoadPointID(int integer) {
@@ -505,7 +505,7 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
     }
 
     public boolean isPowerFactorControlled() {
-        return controlUnits == ControlAlgorithm.PFACTOR_KW_KVAR;
+        return algorithm == ControlAlgorithm.PFACTOR_KW_KVAR;
     }
 
     public boolean getPrimaryBusFlag() {

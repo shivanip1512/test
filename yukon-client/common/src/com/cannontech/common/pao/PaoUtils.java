@@ -22,6 +22,8 @@ import com.google.common.collect.Multimaps;
 
 public class PaoUtils {
     
+    public static final String DEFAULT_PAO_STATS = "-----";
+    
     // A place holder for a LiteYukonPAObject used to show a dummy element
     public static final LiteYukonPAObject LITEPAOBJECT_SYSTEM = new LiteYukonPAObject(0, "System Device", PaoType.SYSTEM, CtiUtilities.STRING_NONE, CtiUtilities.STRING_NONE);
     

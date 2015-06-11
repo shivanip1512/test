@@ -17,6 +17,7 @@ import com.cannontech.web.updater.UpdateValue;
 
 @Configurable("capControlValueTagPrototype")
 public class CapControlValueTag extends YukonTagSupport {
+    
     private DataUpdaterService updaterService;
     private int paoId;
     private boolean isPaoIdSet;

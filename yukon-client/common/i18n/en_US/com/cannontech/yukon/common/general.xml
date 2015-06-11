@@ -3,6 +3,7 @@
 <!-- KEEP ALPHABETIZED BY KEY -->
 <properties>
 <entry key="yukon.common.address">Address</entry>
+<entry key="yukon.common.assigned">Assigned</entry>
 <entry key="yukon.common.assignments">Assignments</entry>
 <entry key="yukon.common.attribute">Attribute</entry>
 <entry key="yukon.common.attribute.select">Select Attribute</entry>
@@ -128,10 +129,15 @@
 <entry key="yukon.common.now">Now</entry>
 <entry key="yukon.common.okButton">OK</entry>
 <entry key="yukon.common.operationSuccess">Operation Successful</entry>
+<entry key="yukon.common.pao.info.error.name.required">Name is required.</entry>
+<entry key="yukon.common.pao.info.error.name.unique">Name is unavailable.</entry>
+<entry key="yukon.common.pao.info.error.name.length">Name must be 60 characters or less.</entry>
+<entry key="yukon.common.pao.info.error.description.length">Description must be 60 characters or less.</entry>
 <entry key="yukon.common.password.confirm.placeholder">confirm</entry>
 <entry key="yukon.common.password.placeholder">password</entry>
 <entry key="yukon.common.pdf">PDF</entry>
 <entry key="yukon.common.pending">Pending</entry>
+<entry key="yukon.common.percent">{0}%</entry>
 <entry key="yukon.common.phase">Phase</entry>
 <entry key="yukon.common.phase.ALL">All</entry>
 <entry key="yukon.common.phase.A">A</entry>

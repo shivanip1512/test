@@ -11,14 +11,14 @@ public class BusDetails {
     private LitePoint wattPoint;
     private LitePoint voltPoint;
     private ControlMethod controlMethod;
-    private ControlAlgorithm controlUnits;
+    private ControlAlgorithm algorithm;
 
     public BusDetails() {
     }
 
     public BusDetails(SubBus bus) {
         controlMethod = bus.getControlMethod();
-        controlUnits = bus.getControlUnits();
+        algorithm = bus.getAlgorithm();
     }
 
     public final LitePoint getVarPoint() {
@@ -45,10 +45,10 @@ public class BusDetails {
     public final void setControlMethod(ControlMethod controlMethod) {
         this.controlMethod = controlMethod;
     }
-    public final ControlAlgorithm getControlUnits() {
-        return controlUnits;
+    public final ControlAlgorithm getAlgorithm() {
+        return algorithm;
     }
-    public final void setControlUnits(ControlAlgorithm controlUnits) {
-        this.controlUnits = controlUnits;
+    public final void setAlgorithm(ControlAlgorithm algorithm) {
+        this.algorithm = algorithm;
     }
 }

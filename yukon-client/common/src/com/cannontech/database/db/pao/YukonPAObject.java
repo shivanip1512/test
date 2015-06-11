@@ -1,20 +1,26 @@
 package com.cannontech.database.db.pao;
 
+import java.sql.SQLException;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.userpage.dao.UserPageDao;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.db.DBPersistent;
 import com.cannontech.spring.YukonSpringHook;
 
-public class YukonPAObject extends com.cannontech.database.db.DBPersistent implements YukonPao {
-    private Integer paObjectID = null;
-    private String paoName = null;
-    private PaoType paoType = null;
-    private String description = com.cannontech.common.util.CtiUtilities.STRING_NONE;
+public class YukonPAObject extends DBPersistent implements YukonPao {
+    
+    private Integer paObjectID;
+    private String paoName;
+    private PaoType paoType;
+    private String description = CtiUtilities.STRING_NONE;
     private Character disableFlag = new Character('N');
-    private String paoStatistics = "-----";
+    private String paoStatistics = PaoUtils.DEFAULT_PAO_STATS;
 
     public static final String SETTER_COLUMNS[] = { "Category", "PAOClass",
             "PAOName", "Type", "Description", "DisableFlag", "PAOStatistics" };
@@ -33,7 +39,7 @@ public class YukonPAObject extends com.cannontech.database.db.DBPersistent imple
     }
     
     @Override
-    public void add() throws java.sql.SQLException {
+    public void add() throws SQLException {
         Object addValues[] = {
                 paObjectID,
                 paoType.getPaoCategory().getDbString(),
@@ -49,7 +55,7 @@ public class YukonPAObject extends com.cannontech.database.db.DBPersistent imple
     }
 
     @Override
-    public void delete() throws java.sql.SQLException {
+    public void delete() throws SQLException {
         Object values[] = { paObjectID };
 
         delete(TABLE_NAME, CONSTRAINT_COLUMNS, values);
@@ -58,23 +64,23 @@ public class YukonPAObject extends com.cannontech.database.db.DBPersistent imple
         userPageDao.deletePagesForPao(getPaoIdentifier());
     }
 
-    public java.lang.String getDescription() {
+    public String getDescription() {
         return description;
     }
 
-    public java.lang.Character getDisableFlag() {
+    public Character getDisableFlag() {
         return disableFlag;
     }
 
-    public java.lang.Integer getPaObjectID() {
+    public Integer getPaObjectID() {
         return paObjectID;
     }
 
-    public java.lang.String getPaoName() {
+    public String getPaoName() {
         return paoName;
     }
 
-    public java.lang.String getPaoStatistics() {
+    public String getPaoStatistics() {
         return paoStatistics;
     }
 
@@ -87,7 +93,7 @@ public class YukonPAObject extends com.cannontech.database.db.DBPersistent imple
     }
     
     @Override
-    public void retrieve() throws java.sql.SQLException {
+    public void retrieve() throws SQLException {
         Object constraintValues[] = { paObjectID };
         Object results[] = retrieve(SETTER_COLUMNS,
                                     TABLE_NAME,
@@ -107,23 +113,23 @@ public class YukonPAObject extends com.cannontech.database.db.DBPersistent imple
 
     }
 
-    public void setDescription(java.lang.String newDescription) {
+    public void setDescription(String newDescription) {
         description = newDescription;
     }
 
-    public void setDisableFlag(java.lang.Character newDisableFlag) {
+    public void setDisableFlag(Character newDisableFlag) {
         disableFlag = newDisableFlag;
     }
 
-    public void setPaObjectID(java.lang.Integer newPaObjectID) {
+    public void setPaObjectID(Integer newPaObjectID) {
         paObjectID = newPaObjectID;
     }
 
-    public void setPaoName(java.lang.String newPaoName) {
+    public void setPaoName(String newPaoName) {
         paoName = newPaoName;
     }
 
-    public void setPaoStatistics(java.lang.String newPaoStatistics) {
+    public void setPaoStatistics(String newPaoStatistics) {
         paoStatistics = newPaoStatistics;
     }
 
@@ -132,7 +138,7 @@ public class YukonPAObject extends com.cannontech.database.db.DBPersistent imple
     }
     
     @Override
-    public void update() throws java.sql.SQLException {
+    public void update() throws SQLException {
 
         Object setValues[] = { 
                 paoType.getPaoCategory().getDbString(), 
@@ -155,4 +161,5 @@ public class YukonPAObject extends com.cannontech.database.db.DBPersistent imple
         UserPageDao userPageDao = YukonSpringHook.getBean(UserPageDao.class);
         userPageDao.updatePagesForPao(getPaoIdentifier(), paoName);
     }
+    
 }

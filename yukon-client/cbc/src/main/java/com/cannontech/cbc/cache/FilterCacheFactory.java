@@ -11,11 +11,13 @@ public class FilterCacheFactory {
     public void setCache(CapControlCache cache) {
         this.cache = cache;
     }
-
+    
     public CapControlCache createUserAccessFilteredCache(final LiteYukonUser user) {
+        
         FilterCapControlCacheImpl filteredCache = new FilterCapControlCacheImpl();
         filteredCache.setFilter(new UserAccessCacheFilter(user));
         filteredCache.setCache(cache);
+        
         return filteredCache;
     }
     

@@ -86,4 +86,8 @@ public final class SimpleDevice implements YukonDevice {
     public static SimpleDevice of(PaoIdentifier pao) {
         return new SimpleDevice(pao.getPaoId(), pao.getPaoType());
     }
+    
+    public static SimpleDevice of(int id, PaoType type) {
+        return new SimpleDevice(id, type);
+    }
 }

@@ -1,20 +1,23 @@
 package com.cannontech.database.db.capcontrol;
 
-import java.util.List;
-
-import com.google.common.collect.Lists;
+import java.util.HashMap;
+import java.util.Map;
 
 public class VoltageViolationSettingsHelper {
-    public static List<VoltageViolationSetting> getVoltageViolationDefaults() {
-        List<VoltageViolationSetting> settings = Lists.newArrayListWithCapacity(2);
-        settings.add(new VoltageViolationSetting(VoltageViolationSettingNameType.LOW_VOLTAGE_VIOLATION,
-                                                 VoltageViolationSettingType.BANDWIDTH.getDefaultLowValue(),
-                                                 VoltageViolationSettingType.COST.getDefaultLowValue(),
-                                                 VoltageViolationSettingType.EMERGENCY_COST.getDefaultLowValue()));
-        settings.add(new VoltageViolationSetting(VoltageViolationSettingNameType.HIGH_VOLTAGE_VIOLATION,
-                                                 VoltageViolationSettingType.BANDWIDTH.getDefaultHighValue(),
-                                                 VoltageViolationSettingType.COST.getDefaultHighValue(),
-                                                 VoltageViolationSettingType.EMERGENCY_COST.getDefaultHighValue()));
+    public static Map<VoltViolationType, VoltageViolationSetting> getVoltageViolationDefaults() {
+        
+        Map<VoltViolationType, VoltageViolationSetting> settings = new HashMap<>();
+        
+        settings.put(VoltViolationType.LOW_VOLTAGE_VIOLATION,
+            new VoltageViolationSetting(
+                VoltageViolationSettingType.BANDWIDTH.getDefaultLowValue(),
+                VoltageViolationSettingType.COST.getDefaultLowValue(),
+                VoltageViolationSettingType.EMERGENCY_COST.getDefaultLowValue()));
+        settings.put(VoltViolationType.HIGH_VOLTAGE_VIOLATION,
+            new VoltageViolationSetting(
+                VoltageViolationSettingType.BANDWIDTH.getDefaultHighValue(),
+                VoltageViolationSettingType.COST.getDefaultHighValue(),
+                VoltageViolationSettingType.EMERGENCY_COST.getDefaultHighValue()));
         return settings;
     }    
 }

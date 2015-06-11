@@ -39,7 +39,7 @@ public class Feeder extends StreamableCapObject implements PointQualityCheckable
     private int currentVarPtQuality;
     private boolean waiveControlFlag;
 
-    private ControlAlgorithm controlUnits = ControlAlgorithm.KVAR;
+    private ControlAlgorithm algorithm = ControlAlgorithm.KVAR;
     private int decimalPlaces;
     private boolean peakTimeFlag;
 
@@ -249,8 +249,8 @@ public class Feeder extends StreamableCapObject implements PointQualityCheckable
         waiveControlFlag = boolean1;
     }
 
-    public ControlAlgorithm getControlUnits() {
-        return controlUnits;
+    public ControlAlgorithm getAlgorithm() {
+        return algorithm;
     }
 
     public int getDecimalPlaces() {
@@ -261,8 +261,8 @@ public class Feeder extends StreamableCapObject implements PointQualityCheckable
         return peakTimeFlag;
     }
 
-    public void setControlUnits(ControlAlgorithm units) {
-        controlUnits = units;
+    public void setAlgorithm(ControlAlgorithm algorithm) {
+        this.algorithm = algorithm;
     }
 
     public void setDecimalPlaces(int i) {
@@ -453,7 +453,7 @@ public class Feeder extends StreamableCapObject implements PointQualityCheckable
     }
 
     public boolean isPowerFactorControlled() {
-        return controlUnits == ControlAlgorithm.PFACTOR_KW_KVAR;
+        return algorithm == ControlAlgorithm.PFACTOR_KW_KVAR;
     }
 
     public int getOriginalParentId() {

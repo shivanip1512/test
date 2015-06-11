@@ -1,47 +1,30 @@
 package com.cannontech.database.db.capcontrol;
 
 public class PeakTargetSetting {
-    private TargetSettingType type;
-    private String peakValue;
-    private String offPeakValue;
-    private final static String PEAK_TYPE = "PEAK";
-    private final static String OFFPEAK_TYPE = "OFFPEAK";
+
+    private double peakValue = 0;
+    private double offPeakValue = 0;
     
-    public PeakTargetSetting(TargetSettingType type, String peakValue, String offPeakValue){
-        this.type = type;
+    public PeakTargetSetting() {}
+    
+    public PeakTargetSetting(double peakValue, double offPeakValue) {
         this.peakValue = peakValue;
         this.offPeakValue = offPeakValue;
     }
 
-    public TargetSettingType getType() {
-        return type;
-    }
-
-    public void setType(TargetSettingType name) {
-        this.type = name;
-    }
-
-    public String getPeakValue() {
+    public double getPeakValue() {
         return peakValue;
     }
 
-    public void setPeakValue(String peakValue) {
+    public void setPeakValue(double peakValue) {
         this.peakValue = peakValue;
     }
     
-    public String getOffPeakValue() {
+    public double getOffPeakValue() {
         return offPeakValue;
     }
 
-    public void setOffPeakValue(String offPeakValue) {
+    public void setOffPeakValue(double offPeakValue) {
         this.offPeakValue = offPeakValue;
-    }
-
-    public static String getPeakType() {
-        return PEAK_TYPE;
-    }
-
-    public static String getOffpeakType() {
-        return OFFPEAK_TYPE;
     }
 }

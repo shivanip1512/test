@@ -1,5 +1,7 @@
 package com.cannontech.messaging.serialization.thrift.serializer.capcontrol.streamable;
 
+import org.apache.commons.lang3.EnumUtils;
+
 import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.message.capcontrol.streamable.Feeder;
@@ -57,13 +59,13 @@ public class SubBusSerializer extends
         msg.setCurrentWattLoadPointID(entity.get_currentWattLoadPointId());
         msg.setCurrentWattLoadPointValue(entity.get_wattValue());
         msg.setMapLocationID(entity.get_mapLocationId());
-        msg.setControlUnits(ControlAlgorithm.valueOf(entity.get_strategy_controlUnits()));
+        msg.setAlgorithm(ControlAlgorithm.valueOf(entity.get_strategy_controlUnits()));
         msg.setDecimalPlaces(entity.get_decimalPlaces());
         msg.setNewPointDataReceivedFlag(entity.is_newPointDataReceivedFlag());
         msg.setBusUpdateFlag(entity.is_busUpdatedflag());
         msg.setLastCurrentVarPointUpdateTime(ConverterHelper.millisecToDate(entity.get_lastCurrentVarPointUpdateTime()));
         msg.setEstimatedVarLoadPointID(entity.get_estimatedVarLoadPointId());
-        msg.setEstimatedVarLoadPointValue((double) entity.get_estimatedVarLoadPointValue());
+        msg.setEstimatedVarLoadPointValue(entity.get_estimatedVarLoadPointValue());
         msg.setDailyOperationsAnalogPointId(entity.get_dailyOperationsAnalogPointId());
         msg.setPowerFactorPointId(entity.get_powerFactorPointId());
         msg.setEstimatedPowerFactorPointId(entity.get_estimatedPowerFactorPointId());
@@ -91,7 +93,9 @@ public class SubBusSerializer extends
         msg.setOvUvDisabledFlag(entity.is_ovUvDisabledFlag());
         msg.setPeakPFSetPoint(entity.get_strategy_peakPFSetPoint());
         msg.setOffpeakPFSetPoint(entity.get_strategy_offPeakPFSetPoint());
-        msg.setControlMethod(ControlMethod.valueOf(entity.get_strategy_controlMethod()));
+        
+        ControlMethod controlMethod = EnumUtils.getEnum(ControlMethod.class, entity.get_strategy_controlMethod());
+        msg.setControlMethod(controlMethod);
         msg.setPhaseA(entity.get_phaseAValue());
         msg.setPhaseB(entity.get_phaseBValue());
         msg.setPhaseC(entity.get_phaseCValue());

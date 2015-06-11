@@ -79,8 +79,8 @@ public class BusViewController {
         
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
         
-        setupBreadCrumbs(model, cache, subBusId, userContext);
-        setupZoneList(model, cache, subBusId);
+        setupBreadCrumbs(model, cache, subBusId);
+        setupZoneList(model, subBusId);
         setupStrategyDetails(model, cache, subBusId);
         
         setupChart(model, userContext, subBusId);
@@ -130,12 +130,12 @@ public class BusViewController {
         StrategyLimitsHolder strategyLimitsHolder = strategyDao.getStrategyLimitsHolder(strategyId);
         
         model.addAttribute("strategyLimits", strategyLimitsHolder);
-        model.addAttribute("strategyId", strategyLimitsHolder.getStrategy().getStrategyID());
-        model.addAttribute("strategyName", strategyLimitsHolder.getStrategy().getStrategyName());
+        model.addAttribute("strategyId", strategyLimitsHolder.getStrategy().getId());
+        model.addAttribute("strategyName", strategyLimitsHolder.getStrategy().getName());
         model.addAttribute("strategySettings", strategyLimitsHolder.getStrategy().getTargetSettings());
     }
     
-    private void setupBreadCrumbs(ModelMap model, CapControlCache cache, int subBusId, YukonUserContext userContext) {
+    private void setupBreadCrumbs(ModelMap model, CapControlCache cache, int subBusId) {
         
         StreamableCapObject subBus = cache.getSubBus(subBusId);
         SubStation station = cache.getSubstation(subBus.getParentID());
@@ -153,7 +153,7 @@ public class BusViewController {
         model.addAttribute("subBusName", subBusName);
     }
     
-    private void setupZoneList(ModelMap model, CapControlCache cache, int subBusId) {
+    private void setupZoneList(ModelMap model, int subBusId) {
         
         ZoneHierarchy hierarchy = zoneService.getZoneHierarchyBySubBusId(subBusId);
         model.addAttribute("zones",hierarchy);

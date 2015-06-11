@@ -1,6 +1,6 @@
 package com.cannontech.util;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -229,7 +229,7 @@ import com.cannontech.database.db.capcontrol.CommReportingPercentageSettingType;
 import com.cannontech.database.db.capcontrol.PeaksTargetType;
 import com.cannontech.database.db.capcontrol.PowerFactorCorrectionSettingName;
 import com.cannontech.database.db.capcontrol.PowerFactorCorrectionSettingType;
-import com.cannontech.database.db.capcontrol.VoltageViolationSettingNameType;
+import com.cannontech.database.db.capcontrol.VoltViolationType;
 import com.cannontech.database.db.capcontrol.VoltageViolationSettingType;
 import com.cannontech.database.db.customer.CICustomerPointType;
 import com.cannontech.database.db.graph.GraphRenderers;
@@ -456,7 +456,7 @@ public class SimpleImmutabilityTest {
             StatusControlType.class,
             TransactionType.class,
             TrueFalse.class,
-            VoltageViolationSettingNameType.class,
+            VoltViolationType.class,
             VoltageViolationSettingType.class,
             YNBoolean.class,
             YukonRowMapperAdapter.class,

@@ -56,7 +56,7 @@ public final class CapControlUtils {
     private static final YukonUserContextMessageSourceResolver messageResolver = YukonSpringHook.getBean(YukonUserContextMessageSourceResolver.class);
     private static Map<String, List<String>> kvarPropertiesAsLists = new HashMap<>();
     private final static Logger log = YukonLogManager.getLogger(CapControlUtils.class);
-
+    
     public static final Comparator<SubBus> SUB_DISPLAY_COMPARATOR = new Comparator<SubBus>() {
         @Override
         public int compare(SubBus o1, SubBus o2) {

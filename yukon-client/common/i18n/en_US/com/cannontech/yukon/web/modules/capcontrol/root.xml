@@ -6,6 +6,7 @@
     
     <!-- common capcontrol words -->
     
+    <entry key="yukon.web.modules.capcontrol.edit.info">Edit {0}</entry>
     <entry key="yukon.web.modules.capcontrol.create.title">Create Volt/Var Object</entry>
     <entry key="yukon.web.modules.capcontrol.resetOpCount.label">Reset All Op Counters</entry>
     <entry key="yukon.web.modules.capcontrol.disableSystem.hoverText">Disable everything system wide.</entry>
@@ -17,7 +18,7 @@
     <entry key="yukon.web.modules.capcontrol.lastOperation">Last Operation</entry>
     <entry key="yukon.web.modules.capcontrol.zoneType">Type</entry>
     <entry key="yukon.web.modules.capcontrol.noPreviousOperation">No Previous Operation</entry>
-    <entry key="yukon.web.modules.capcontrol.voltReductionActive">Voltage Reduction is Active</entry>
+    <entry key="yukon.web.modules.capcontrol.voltReductionActive">Voltage reduction is active.</entry>
     <entry key="yukon.web.modules.capcontrol.enabled">Enabled</entry>
     <entry key="yukon.web.modules.capcontrol.disabled">Disabled</entry>
     <entry key="yukon.web.modules.capcontrol.pending">Pending</entry>
@@ -50,8 +51,6 @@
     <entry key="yukon.web.modules.capcontrol.dailyMaxTotalOps">{0} / {1} / {2}</entry>
     <entry key="yukon.web.modules.capcontrol.pfEstPf">{0} / {1}</entry>
     
-    <entry key="yukon.web.modules.capcontrol.pfPercent">{0}%</entry>
-    
     <entry key="yukon.web.modules.capcontrol.attributes.voltage">Voltage</entry>
     <entry key="yukon.web.modules.capcontrol.attributes.tapPosition">Tap Position</entry>
     <entry key="yukon.web.modules.capcontrol.attributes.controlMode">Local/Remote Mode</entry>
@@ -77,7 +76,7 @@
     <entry key="yukon.web.modules.capcontrol.trippedKvars">Tripped</entry>
     <entry key="yukon.web.modules.capcontrol.pfactorEstimated">PFactor / Est.</entry>
     <entry key="yukon.web.modules.capcontrol.likeDay">Operating in like-day history control.</entry>
-    <entry key="yukon.web.modules.capcontrol.voltReduction">Volt reduction is active.</entry>
+    <entry key="yukon.web.modules.capcontrol.voltReduction">Volt Reduction</entry>
     <entry key="yukon.web.modules.capcontrol.maxDailyOps">Max daily operations.</entry>
     <entry key="yukon.web.modules.capcontrol.ovuvSituation">OV/UV situation.</entry>
     <entry key="yukon.web.modules.capcontrol.signalQuality">(*)</entry>
@@ -266,6 +265,7 @@
     <entry key="yukon.web.modules.capcontrol.areas.feeders">{0} {0,choice,0#Feeders|1#Feeder|1&lt;Feeders}</entry>
     <entry key="yukon.web.modules.capcontrol.areas.banks">{0} {0,choice,0#Banks|1#Bank|1&lt;Banks}</entry>
     <entry key="yukon.web.modules.capcontrol.areas.stationCount">{0} {0,choice,0#Substations|1#Substation|1&lt;Substations}</entry>
+    <entry key="yukon.web.modules.capcontrol.areas.subs.updated">Substions updated successfully.</entry>
     
     <!-- area.jsp -->
     <entry key="yukon.web.modules.capcontrol.area.pageName">Area</entry>
@@ -273,6 +273,7 @@
     <entry key="yukon.web.modules.capcontrol.area.infoContainer.title">Info</entry>
     <entry key="yukon.web.modules.capcontrol.area.statsContainer.title">Statistics</entry>
     <entry key="yukon.web.modules.capcontrol.area.substationsContainer.title">Substations</entry>
+    <entry key="yukon.web.modules.capcontrol.area.edit.stations">Add/Remove Substations</entry>
     
     <!-- substation.jsp -->
     <entry key="yukon.web.modules.capcontrol.substation.pageName">Substation</entry>
@@ -431,9 +432,8 @@
     <entry key="yukon.web.modules.capcontrol.strategies.passFail">Pass/Fail(%)</entry>
     <entry key="yukon.web.modules.capcontrol.strategies.peakSetting">Peak Setting</entry>
     <entry key="yukon.web.modules.capcontrol.strategies.offPeakSetting">Off Peak Setting</entry>
-    <entry key="yukon.web.modules.capcontrol.strategies.startStopTimes">{0} / {1}</entry>
     <entry key="yukon.web.modules.capcontrol.strategies.confirmDelete">Are you sure you want to delete {0}?</entry>
-    <entry key="yukon.web.modules.capcontrol.strategies.deleteSuccess">Strategy {0} was deleted successfully</entry>
+    <entry key="yukon.web.modules.capcontrol.strategies.deleteSuccess">Strategy {0} was deleted successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.strategies.deleteFailed">
     Strategy {0} was not deleted. Strategy still in use by
     {1} {1,choice,1#item|1&lt;item}:
@@ -443,6 +443,22 @@
     {1,choice,3# |4# {5}.|4&lt;...}
     </entry>
     
+    <entry key="yukon.web.modules.capcontrol.strategy.VIEW.pageTitle">Strategy: {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.strategy.VIEW.pageHeading">{0}</entry>
+    <entry key="yukon.web.modules.capcontrol.strategy.VIEW.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.capcontrol.strategy.EDIT.pageTitle">Strategy: {0} Edit</entry>
+    <entry key="yukon.web.modules.capcontrol.strategy.EDIT.pageHeading">Edit {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.strategy.EDIT.crumbTitle">Edit</entry>
+    <entry key="yukon.web.modules.capcontrol.strategy.CREATE.pageTitle">Create Strategy</entry>
+    <entry key="yukon.web.modules.capcontrol.strategy.CREATE.pageHeading">Create Strategy</entry>
+    <entry key="yukon.web.modules.capcontrol.strategy.CREATE.crumbTitle">Create</entry>
+    
+    <entry key="yukon.web.modules.capcontrol.strategy.error.voltageViolation.low.cost">Cost must be less than or equal to zero.</entry>
+    <entry key="yukon.web.modules.capcontrol.strategy.error.voltageViolation.low.emergencyCost">Emergency Cost must be less than or equal to cost.</entry>
+    <entry key="yukon.web.modules.capcontrol.strategy.error.voltageViolation.bandwith">Bandwidth must be greater than zero.</entry>
+    <entry key="yukon.web.modules.capcontrol.strategy.error.voltageViolation.high.cost">Cost must be greater than or equal to zero.</entry>
+    <entry key="yukon.web.modules.capcontrol.strategy.error.voltageViolation.high.emergencyCost">Emergency Cost must be greater than or equal to cost.</entry>
+
     <!-- schedules.jsp -->
     <entry key="yukon.web.modules.capcontrol.schedules.pageName">Schedules</entry>
     <entry key="yukon.web.modules.capcontrol.schedules.tab.title">Schedules</entry>
@@ -599,22 +615,43 @@
     <entry key="yukon.web.modules.capcontrol.import.description.POINT_MAPPING.DEVICE NAME">Required when ACTION is Add or Update&lt;br&gt;Name of the Physical device</entry>
     
     <!-- ControlAlgorithm.java -->
-    <entry key="yukon.web.modules.capcontrol.controlAlgorithm.NONE">NONE</entry>
+    <entry key="yukon.web.modules.capcontrol.controlAlgorithm.NONE">None</entry>
     <entry key="yukon.web.modules.capcontrol.controlAlgorithm.KVAR">kVAr</entry>
-    <entry key="yukon.web.modules.capcontrol.controlAlgorithm.VOLTS">VOLTS</entry>
+    <entry key="yukon.web.modules.capcontrol.controlAlgorithm.VOLTS">Volts</entry>
     <entry key="yukon.web.modules.capcontrol.controlAlgorithm.MULTI_VOLT">Multi Volt</entry>
     <entry key="yukon.web.modules.capcontrol.controlAlgorithm.MULTI_VOLT_VAR">Multi Volt Var</entry>
     <entry key="yukon.web.modules.capcontrol.controlAlgorithm.PFACTOR_KW_KVAR">P-Factor kW/kVAr</entry>
     <entry key="yukon.web.modules.capcontrol.controlAlgorithm.INTEGRATED_VOLT_VAR">Integrated Volt/Var</entry>
     <entry key="yukon.web.modules.capcontrol.controlAlgorithm.TIME_OF_DAY">Time of Day</entry>
     
+    <!-- 
+         Control Algorithm Setting String Arguments
+         0 kvarLag 
+         1 kvarLead
+         2 lowerVolt
+         3 upperVolt
+         4 minBankClose
+         5 minBankOpen
+         6 targetPF
+     -->
+    <entry key="yukon.web.modules.capcontrol.controlAlgorithm.settings.None">(None)</entry>
+    <entry key="yukon.web.modules.capcontrol.controlAlgorithm.settings.KVAR">{0}&lt;kVar&lt;{1}</entry>
+    <entry key="yukon.web.modules.capcontrol.controlAlgorithm.settings.VOLTS">{2}&lt;Volt&lt;{3}</entry>
+    <entry key="yukon.web.modules.capcontrol.controlAlgorithm.settings.MULTI_VOLT">{2}&lt;Volt&lt;{3}</entry>
+    <entry key="yukon.web.modules.capcontrol.controlAlgorithm.settings.MULTI_VOLT_VAR">{2}&lt;Volt&lt;{3} : {0}&lt;kVar&lt;{1}</entry>
+    <entry key="yukon.web.modules.capcontrol.controlAlgorithm.settings.PFACTOR_KW_KVAR">{4}%C | {6} | {5}%O</entry>
+    <entry key="yukon.web.modules.capcontrol.controlAlgorithm.settings.INTEGRATED_VOLT_VAR">{2}&lt;Volt&lt;{3} : {4}%C | {6} | {5}%O</entry>
+    <entry key="yukon.web.modules.capcontrol.controlAlgorithm.settings.TIME_OF_DAY">Time of Day</entry>
+    
     <!-- ControlMethod.java -->
-    <entry key="yukon.web.modules.capcontrol.controlAlgorithm.NONE">NONE</entry>
-    <entry key="yukon.web.modules.capcontrol.controlAlgorithm.INDIVIDUAL_FEEDER">Individual Feeder</entry>
-    <entry key="yukon.web.modules.capcontrol.controlAlgorithm.SUBSTATION_BUS">Substation Bus</entry>
-    <entry key="yukon.web.modules.capcontrol.controlAlgorithm.BUSOPTIMIZED_FEEDER">Bus Optimized Feeder</entry>
-    <entry key="yukon.web.modules.capcontrol.controlAlgorithm.MANUAL_ONLY">Manual Only</entry>
-    <entry key="yukon.web.modules.capcontrol.controlAlgorithm.TIME_OF_DAY">Time of Day</entry>
+    <entry key="yukon.web.modules.capcontrol.controlMethod.INDIVIDUAL_FEEDER">Individual Feeder</entry>
+    <entry key="yukon.web.modules.capcontrol.controlMethod.SUBSTATION_BUS">Substation Bus</entry>
+    <entry key="yukon.web.modules.capcontrol.controlMethod.BUSOPTIMIZED_FEEDER">Bus Optimized Feeder</entry>
+    <entry key="yukon.web.modules.capcontrol.controlMethod.MANUAL_ONLY">Manual Only</entry>
+    <entry key="yukon.web.modules.capcontrol.controlMethod.TIME_OF_DAY">Time of Day</entry>
+    
+    
+    
     
     <!-- RegulatorPointMapping Enum -->
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.AUTO_REMOTE_CONTROL">Auto/Remote Control</entry>
@@ -628,6 +665,43 @@
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.KEEP_ALIVE">Keep Alive</entry>
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.FORWARD_SET_POINT">Set Point</entry>
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.FORWARD_BANDWIDTH">Set Point Bandwidth</entry>
+    
+    <entry key="yukon.web.modules.capcontrol.targetSetting.UPPER_VOLT_LIMIT">Upper Volt Limit</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.LOWER_VOLT_LIMIT">Lower Volt Limit</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.KVAR_LEADING">KVAR Leading</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.KVAR_LAGGING">KVAR Lagging</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.TARGET_PF">Target PF</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.MIN_BANK_OPEN">Min % of Bank Open</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.MIN_BANK_CLOSE">Min % of Bank Close</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.VOLT_WEIGHT">Volt Weight</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.PF_WEIGHT">PF Weight</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.DECISION_WEIGHT">Decision Weight</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.VOLTAGE_REGULATION_MARGIN">Voltage Regulation Margin</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.MAX_CONSECUTIVE_BANK_OPERATIONS">Max Consecutive Bank Ops</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.HOUR_ZERO">00:00</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.HOUR_ONE">01:00</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.HOUR_TWO">02:00</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.HOUR_THREE">03:00</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.HOUR_FOUR">04:00</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.HOUR_FIVE">05:00</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.HOUR_SIX">06:00</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.HOUR_SEVEN">07:00</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.HOUR_EIGHT">08:00</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.HOUR_NINE">09:00</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.HOUR_TEN">10:00</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.HOUR_ELEVEN">11:00</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.HOUR_TWELVE">12:00</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.HOUR_THIRTEEN">13:00</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.HOUR_FOURTEEN">14:00</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.HOUR_FIFTEEN">15:00</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.HOUR_SIXTEEN">16:00</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.HOUR_SEVENTEEN">17:00</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.HOUR_EIGHTEEN">18:00</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.HOUR_NINETEEN">19:00</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.HOUR_TWENTY">20:00</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.HOUR_TWENTYONE">21:00</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.HOUR_TWENTYTWO">22:00</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.HOUR_TWENTYTHREE">23:00</entry>
     
     <!-- RegulatorMappingResultType enum -->
     <entry key="yukon.web.modules.capcontrol.regulatorMappingResultType.SUCCESSFUL">Successful</entry>

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
+import com.cannontech.capcontrol.dao.CapbankControllerDao;
 import com.cannontech.capcontrol.dao.FeederDao;
 import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
@@ -26,7 +27,6 @@ import com.cannontech.core.dao.impl.LitePaoRowMapper;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -35,16 +35,10 @@ import com.cannontech.yukon.IDatabaseCache;
 
 public class SubstationBusDaoImpl implements SubstationBusDao {
     
-    private static final YukonRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
-    
     @Autowired private IDatabaseCache dbCache;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private ZoneDao zoneDao;
-    
-    static {
-        liteCapControlObjectRowMapper = CapbankControllerDaoImpl.createLiteCapControlObjectRowMapper();
-    }
     
     private static final ParameterizedRowMapper<SubstationBus> rowMapper = new ParameterizedRowMapper<SubstationBus>() {
         @Override
@@ -138,7 +132,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         sql.append("    AND PAObjectID not in (SELECT SubstationBusId FROM CCSubstationSubBusList)");
         sql.append("ORDER BY PAOName");
         
-        List<LiteCapControlObject> orphans = yukonJdbcTemplate.query(sql, liteCapControlObjectRowMapper);
+        List<LiteCapControlObject> orphans = yukonJdbcTemplate.query(sql, CapbankControllerDao.LITE_ORPHAN_MAPPER);
         
         return orphans;
     }

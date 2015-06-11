@@ -30,8 +30,8 @@ public class Season {
         return scheduleId;
     }
     
-    public void setScheduleId(Integer strategyID) {
-        this.scheduleId = strategyID;
+    public void setScheduleId(Integer scheduleId) {
+        this.scheduleId = scheduleId;
     }
     
     public String toString() {

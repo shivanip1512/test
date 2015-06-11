@@ -20,7 +20,7 @@ import com.cannontech.user.YukonUserContext;
 public class DatePropertyEditorFactory {
     private DateFormattingService dateFormattingService;
     
-    public static enum BlankMode {ERROR, NULL, CURRENT};
+    public static enum BlankMode {ERROR, NULL, CURRENT}
 
     private class DatePropertyEditor extends PropertyEditorSupport {
         private DateFormattingService.DateOnlyMode dateOnlyMode;

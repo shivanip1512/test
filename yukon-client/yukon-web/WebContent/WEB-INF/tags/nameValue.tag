@@ -1,4 +1,4 @@
-<%@ tag trimDirectiveWhitespaces="true" %>
+<%@ tag trimDirectiveWhitespaces="true" dynamic-attributes="attrs" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
@@ -17,7 +17,7 @@
             </c:when>
             <c:otherwise><c:set var="withWidth" value=""/></c:otherwise>
         </c:choose>
-        <tr <c:if test="${not empty pageScope.id}">id="${id}"</c:if>>
+        <tr <c:if test="${not empty pageScope.id}">id="${id}"</c:if> <c:forEach items="${pageScope.attrs}" var="attr">${attr.key}="${attr.value}"</c:forEach>>
             <td class="name ${pageScope.nameClass}" ${withWidth}>${name}${(not empty name)? ':' : '&nbsp;'}</td>
             <td class="value ${pageScope.valueClass}"><jsp:doBody/></td>
         </tr>

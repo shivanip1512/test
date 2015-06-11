@@ -592,8 +592,8 @@
         <link>/capcontrol/tier/areas</link>
         <pages>
           <page name="area" type="DETAIL">
-            <link>/capcontrol/tier/substations?bc_areaId=${bc_areaId}</link>
-            <labelArgument>${bc_areaName}</labelArgument>
+            <link>/capcontrol/areas/${areaId}</link>
+            <labelArgument>${areaName}</labelArgument>
             <pages>
               <page name="substation" type="DETAIL">
                 <link>/capcontrol/tier/feeders?substationId=${substationId}</link>
@@ -632,7 +632,19 @@
             <link>/capcontrol/schedules</link>
           </page>
           <page name="strategies" type="BASIC">
-            <link>/capcontrol/strategy/strategies</link>
+            <link>/capcontrol/strategies</link>
+            <pages>
+              <page name="strategy.CREATE" type="BASIC" />
+              <page name="strategy.VIEW" type="BASIC">
+                <link>/capcontrol/strategies/${strategy.id}</link>
+                <labelArgument>${strategy.name}</labelArgument>
+                <pages>
+                  <page name="strategy.EDIT" type="BASIC" hideFavorite="true">
+                    <labelArgument>${strategy.name}</labelArgument>
+                  </page>
+                </pages>
+              </page>
+            </pages>
           </page>
           <page name="movedCapBanks" type="BASIC">
             <link>/capcontrol/move/movedCapBanks</link>

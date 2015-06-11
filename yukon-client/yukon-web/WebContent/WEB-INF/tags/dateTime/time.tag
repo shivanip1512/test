@@ -18,6 +18,7 @@
 <%@ attribute name="minDate" type="java.lang.Object" description="Set a minimum selectable date via an object consumable by the DateFormatingService#format method (Date, ReadablePartial, ReadableInstant, Long)." %>
 <%@ attribute name="stepHour" description="Steps when incrementing/decrementing hours." %>
 <%@ attribute name="stepMinute" description="Steps when incrementing/decrementing minutes." %>
+<%@ attribute name="wrapClass" description="Class added to the wrapper of the widget." %>
 
 <dt:pickerIncludes/>
 
@@ -68,10 +69,10 @@
     <c:when test="${not empty pageScope.path}">
         <spring:bind path="${path}">
             <cti:displayForPageEditModes modes="VIEW">
-                ${status.value}
+                <cti:formatDate type="TIME" value="${status.actualValue}"/>
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT,CREATE">
-                <span class="datetimeEntry_wrap">
+                <span class="datetimeEntry_wrap ${wrapClass}">
                     <form:input id="${id}" 
                         path="${path}"
                         value="${timeValue}"
@@ -99,7 +100,7 @@
                 ${timeValue}
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT,CREATE">
-                <span class="datetimeEntry_wrap">
+                <span class="datetimeEntry_wrap ${wrapClass}">
                     <input id="${id}" 
                         <c:if test="${!empty pageScope.name}">name="${pageScope.name}"</c:if>
                         value="${timeValue}"

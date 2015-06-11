@@ -102,6 +102,7 @@ import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.CapControlSubstationBus;
 import com.cannontech.database.db.capcontrol.PeakTargetSetting;
 import com.cannontech.database.db.capcontrol.StrategyPeakSettingsHelper;
+import com.cannontech.database.db.capcontrol.TargetSettingType;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.database.db.holiday.HolidaySchedule;
 import com.cannontech.database.db.pao.PAOScheduleAssign;
@@ -236,8 +237,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
 			cbcStrategies = Lists.newArrayList();
 			cbcStrategies.add(new SelectItem(-1, "(none)"));
 			for (CapControlStrategy strategy : cbcDBStrats) {
-				cbcStrategies.add(new SelectItem(strategy.getStrategyID(), strategy.getStrategyName()));
-				getCbcStrategiesMap().put(strategy.getStrategyID(), strategy);
+				cbcStrategies.add(new SelectItem(strategy.getId(), strategy.getName()));
+				getCbcStrategiesMap().put(strategy.getId(), strategy);
 			}
 		}
 		return cbcStrategies;
@@ -248,8 +249,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
         List<CapControlStrategy> cbcDBStrats = strategyDao.getAllStrategies();
         cbcHolidayStrategies = Lists.newArrayList();
         for (CapControlStrategy strategy : cbcDBStrats) {
-            cbcHolidayStrategies.add(new SelectItem(strategy.getStrategyID(), strategy.getStrategyName()));
-            getCbcStrategiesMap().put(strategy.getStrategyID(), strategy);
+            cbcHolidayStrategies.add(new SelectItem(strategy.getId(), strategy.getName()));
+            getCbcStrategiesMap().put(strategy.getId(), strategy);
         }
         return cbcHolidayStrategies;
     }
@@ -293,7 +294,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
         HashMap<Integer, String> map = new HashMap<Integer, String>();
         List<CapControlStrategy> strats = strategyDao.getAllStrategies();
         for(CapControlStrategy strat : strats) {
-            map.put(strat.getStrategyID(), strat.getStrategyName());
+            map.put(strat.getId(), strat.getName());
         }
         return map;
     }
@@ -321,13 +322,13 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
     public int getCurrentStrategyID() {
 		int stratID = CtiUtilities.NONE_ZERO_ID;
         if (getDbPersistent() instanceof CapControlStrategy) {
-            stratID = ((CapControlStrategy)getDbPersistent()).getStrategyID();
+            stratID = ((CapControlStrategy)getDbPersistent()).getId();
         }
 		return stratID;
 	}
     
     public String getCurrentStratName() {
-        return getStrategy().getStrategyName();
+        return getStrategy().getName();
     }
     
     public void newStrategySelected (ValueChangeEvent vce) {
@@ -499,7 +500,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
     
             case DBEditorTypes.EDITOR_STRATEGY:
                 dbObj = new CapControlStrategy();
-                ((CapControlStrategy)dbObj).setStrategyID(new Integer(id));
+                ((CapControlStrategy)dbObj).setId(new Integer(id));
                 break;
 		}
 		setDbPersistent(dbObj);
@@ -563,9 +564,9 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
 		} else if (getDbPersistent() instanceof CapControlStrategy) {
 		    
             CapControlStrategy strat = (CapControlStrategy)getDbPersistent();
-            itemId = strat.getStrategyID().intValue();
+            itemId = strat.getId().intValue();
             editingCBCStrategy = true;
-            currentControlAlgorithm = strat.getControlUnits();
+            currentControlAlgorithm = strat.getAlgorithm();
             currentControlMethod = strat.getControlMethod();
             initPanels(CapControlTypes.CAP_CONTROL_STRATEGY);
         }
@@ -754,8 +755,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
     }
     
     public boolean checkStrategy(CapControlStrategy strat) {
-        boolean integratedControl = strat.getIntegrateFlag().equalsIgnoreCase("Y");
-        if(integratedControl) {
+        if(strat.isIntegrateFlag()) {
             int integrationSeconds = strat.getIntegratePeriod();
             int analysisSeconds = strat.getControlInterval();
             if(integrationSeconds > analysisSeconds) {
@@ -1432,40 +1432,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
 	}
 
 	@Override
-    public void setStratDaysOfWeek(String[] newDaysOfWeek) {
-
-		CapControlStrategy strat = getCbcStrategiesMap().get(new Integer(getCurrentStrategyID()));
-
-		if (strat == null || newDaysOfWeek == null) {
-			return;
-        }
-		StringBuffer buff = new StringBuffer("NNNNNNNN");
-		for (int i = 0; i < newDaysOfWeek.length; i++) {
-			buff.setCharAt(Integer.parseInt(newDaysOfWeek[i]), 'Y');
-		}
-		strat.setDaysOfWeek(buff.toString());
-	}
-
-	@Override
-    public String[] getStratDaysOfWeek() {
-
-		CapControlStrategy strat = getCbcStrategiesMap().get(new Integer(getCurrentStrategyID()));
-
-		if (strat == null) {
-			return new String[0];
-        }
-		List<String> retList = new ArrayList<>();
-		for (int i = 0; i < strat.getDaysOfWeek().length(); i++) {
-			if (strat.getDaysOfWeek().charAt(i) == 'Y') {
-				retList.add(Integer.toString(i));
-            }
-		}
-
-		String[] strArray = new String[retList.size()];
-		return retList.toArray(strArray);
-	}
-
-	@Override
     public boolean isControllerCBC() {
     	if (getDbPersistent() instanceof CapBank) {
     		int controlPointId = ((CapBank) getDbPersistent()).getCapBank().getControlPointID().intValue();
@@ -1519,7 +1485,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
     public boolean isVoltageControl() {
 		if (getCurrentStrategyID() != CtiUtilities.NONE_ZERO_ID) {
 			CapControlStrategy strat = getCbcStrategiesMap().get(new Integer(getCurrentStrategyID()));
-			return strat != null && ControlAlgorithm.VOLTS.getDisplayName().equals(strat.getControlUnits());
+			return strat != null && ControlAlgorithm.VOLTS.getDisplayName().equals(strat.getAlgorithm());
 		} else {
 			return false;
         }
@@ -1681,7 +1647,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
 	    	if (getDbPersistent() instanceof YukonPAObject) {
 	        	retStr = ((YukonPAObject)getDbPersistent()).getPAOName();
 	        } else if (getDbPersistent() instanceof CapControlStrategy) {
-	            retStr = ((CapControlStrategy)getDbPersistent()).getStrategyName();
+	            retStr = ((CapControlStrategy)getDbPersistent()).getName();
 	        }
     	}
         return retStr;
@@ -1722,7 +1688,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
 	//delegate to this class because generic class doesn't have to know about business rules	
 	public SelectItem[] getControlMethods () {
 	    List<SelectItem> controlMethods = Lists.newArrayList();
-	    for(ControlMethod controlMethod : ControlMethod.valuesForDisplay()) {
+	    for(ControlMethod controlMethod : ControlMethod.values()) {
 	        controlMethods.add(new SelectItem(controlMethod, controlMethod.getDisplayName()));
 	    }
 	    return controlMethods.toArray(new SelectItem[0]);
@@ -1948,6 +1914,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
         capbankTab = -1;
     }
     
+    //TODO Remove after deleting JSF strategyEditor.jsp
     public List<SelectItem> getControlAlgorithims() {
         ControlMethod currentMethod = getStrategy().getControlMethod();
         Set<ControlAlgorithm> supportedAlgorithms = currentMethod.getSupportedAlgorithms();
@@ -2003,11 +1970,11 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
     }
     
     public Boolean getIntegrateFlag() {
-        return getStrategy().getIntegrateFlag().equalsIgnoreCase("Y");
+        return getStrategy().isIntegrateFlag();
     }
 
     public void setIntegrateFlag(Boolean integrateFlag) {
-        getStrategy().setIntegrateFlag((integrateFlag) ? "Y" : "N");
+        getStrategy().setIntegrateFlag(integrateFlag);
     }
 
     public Integer getIntegratePeriod() {
@@ -2018,17 +1985,17 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
         getStrategy().setIntegratePeriod(integratePeriod);
     }
     public Boolean getLikeDayFallBack() {
-        return getStrategy().getLikeDayFallBack().equalsIgnoreCase("Y");
+        return getStrategy().isLikeDayFallBack();
     }
 
     public void setLikeDayFallBack(Boolean fallBackFlag) {
-        getStrategy().setLikeDayFallBack((fallBackFlag) ? "Y" : "N");
+        getStrategy().setLikeDayFallBack(fallBackFlag);
     }
     
-    public void controlUnitsChanged(ValueChangeEvent e) {
+    public void algorithmChanged(ValueChangeEvent e) {
         ControlAlgorithm newControlAlgorithm = ControlAlgorithm.valueOf(e.getNewValue().toString());
         currentControlAlgorithm = newControlAlgorithm;
-        List<PeakTargetSetting> newTargetSettings = determineCorrectDefaultTargetSettings(currentControlMethod, currentControlAlgorithm); 
+        Map<TargetSettingType, PeakTargetSetting> newTargetSettings = StrategyPeakSettingsHelper.getSettingDefaults(currentControlAlgorithm);
         getStrategy().setTargetSettings(newTargetSettings);
     }
     
@@ -2045,26 +2012,15 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
             
             /* Set new control algorithm */
             currentControlAlgorithm = currentControlMethod.getDefaultAlgorithm();
-            getStrategy().setControlUnits(currentControlAlgorithm);
+            getStrategy().setAlgorithm(currentControlAlgorithm);
             
             /* Set new target settings */
-            List<PeakTargetSetting> newTargetSettings = determineCorrectDefaultTargetSettings(currentControlMethod, currentControlAlgorithm); 
+            Map<TargetSettingType, PeakTargetSetting> newTargetSettings = StrategyPeakSettingsHelper.getSettingDefaults(currentControlAlgorithm); 
             getStrategy().setTargetSettings(newTargetSettings);
             
             /* Set new control method */
             getStrategy().setControlMethod(currentControlMethod);
         }
-    }
-    
-    private static List<PeakTargetSetting> determineCorrectDefaultTargetSettings(ControlMethod method, ControlAlgorithm algorithm) {
-        List<PeakTargetSetting> defaultTargetSettings;
-        if (method == ControlMethod.TIME_OF_DAY) {
-            defaultTargetSettings = StrategyPeakSettingsHelper.getSettingDefaults(ControlAlgorithm.TIME_OF_DAY);
-        } else {
-            defaultTargetSettings = StrategyPeakSettingsHelper.getSettingDefaults(algorithm);
-        }
-        
-        return defaultTargetSettings;
     }
     
     public String getPeakHeader() {

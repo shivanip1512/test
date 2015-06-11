@@ -2,23 +2,23 @@ package com.cannontech.database.db.capcontrol;
 
 public class LiteCapControlStrategy {
 
-	private int strategyId;
-	private String strategyName;
-	
-	public int getStrategyId() {
-		return strategyId;
-	}
-	
-	public void setStrategyId(int strategyId) {
-		this.strategyId = strategyId;
-	}
-	
-	public String getStrategyName() {
-		return strategyName;
-	}
+    private int id;
+    private String name;
 
-	public void setStrategyName(String strategyName) {
-		this.strategyName = strategyName;
-	}
-	
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int strategyId) {
+        this.id = strategyId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String strategyName) {
+        this.name = strategyName;
+    }
+
 }

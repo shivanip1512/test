@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
+import com.cannontech.capcontrol.dao.CapbankControllerDao;
 import com.cannontech.capcontrol.dao.FeederDao;
 import com.cannontech.capcontrol.model.FeederPhaseData;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
@@ -19,23 +20,16 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.impl.LitePaoRowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class FeederDaoImpl implements FeederDao {
     
-    private static final YukonRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
-    
     @Autowired private PaoDao paoDao;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     
-    static {
-        liteCapControlObjectRowMapper = CapbankControllerDaoImpl.createLiteCapControlObjectRowMapper();
-    }
-
     @Override
     public List<LiteYukonPAObject> getUnassignedFeeders() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -80,10 +74,10 @@ public class FeederDaoImpl implements FeederDao {
         
         return yukonJdbcTemplate.queryForObject(sql, mapper);
     }
-
+    
     @Override
     public List<LiteCapControlObject> getOrphans() {
-
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PAObjectID, PAOName, Type, Description");
         sql.append("FROM YukonPAObject");
@@ -91,7 +85,7 @@ public class FeederDaoImpl implements FeederDao {
         sql.append("    AND PAObjectID not in (SELECT FeederId FROM CCFeederSubAssignment)");
         sql.append("ORDER BY PAOName");
         
-        List<LiteCapControlObject> orphans = yukonJdbcTemplate.query(sql, liteCapControlObjectRowMapper);
+        List<LiteCapControlObject> orphans = yukonJdbcTemplate.query(sql, CapbankControllerDao.LITE_ORPHAN_MAPPER);
         
         return orphans;
     }

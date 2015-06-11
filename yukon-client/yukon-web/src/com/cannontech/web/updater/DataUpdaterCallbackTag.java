@@ -22,14 +22,6 @@ public class DataUpdaterCallbackTag extends YukonTagSupport implements DynamicAt
     @Override
     public void doTag() throws JspException, IOException {
         
-        Map<String,String> identifierValues = new HashMap<String, String>();
-        for(String identifierName : identifierAttributes.keySet()) {
-            UpdateValue identifierValue = dataUpdaterService.getFirstValue((String)identifierAttributes.get(identifierName), getUserContext());
-            if (!identifierValue.isUnavailable()) {
-                identifierValues.put(identifierName, identifierValue.getValue());
-            }
-        }
-        
         JspWriter out = getJspContext().getOut();
         out.print("<script>");
         
@@ -48,8 +40,18 @@ public class DataUpdaterCallbackTag extends YukonTagSupport implements DynamicAt
         
         if (initialize) {
             // now actually print out a call to the function
+            
+            Map<String,String> identifierValues = new HashMap<String, String>();
+            for(String identifierName : identifierAttributes.keySet()) {
+                String fullIdentifier = (String) identifierAttributes.get(identifierName);
+                UpdateValue identifierValue = dataUpdaterService.getFirstValue(fullIdentifier, getUserContext());
+                if (!identifierValue.isUnavailable()) {
+                    identifierValues.put(identifierName, identifierValue.getValue());
+                }
+            }
+            
             out.print(function + "({");
-
+            
             firstId = true;
             for(String identifierName : identifierAttributes.keySet()) {
                 if (identifierValues.containsKey(identifierName)) {

@@ -26,7 +26,7 @@ public class ControlAreaDaoImpl implements ControlAreaDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
 
     private static class ControlAreaRowMapper implements ParameterizedRowMapper<ControlArea>  {
-        private final Map<Integer, List<ControlAreaTrigger>> triggerMap;        
+        private final Map<Integer, List<ControlAreaTrigger>> triggerMap;
         ControlAreaRowMapper(Map<Integer, List<ControlAreaTrigger>> triggerMap){
             this.triggerMap = triggerMap;
         }

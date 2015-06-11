@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.taglib.YukonTagSupport;
 import com.cannontech.web.updater.UpdateValue;
 
@@ -20,7 +21,9 @@ public class PointValueTag extends YukonTagSupport {
     
     @Autowired private PointDataRegistrationService registrationService;
     @Autowired private PointDao pointDao;
-
+    
+    private static final String stateColor = "{stateColor|#%02X%02X%02X}";
+    
     private String format = Format.FULL.toString();
     private int pointId = 0;
     private boolean pointIdSet;
@@ -35,7 +38,8 @@ public class PointValueTag extends YukonTagSupport {
             throw new JspException("pointId must be set");
         }
         
-        UpdateValue value = registrationService.getLatestValue(pointId, format, getUserContext());
+        YukonUserContext userContext = getUserContext();
+        UpdateValue value = registrationService.getLatestValue(pointId, format, userContext);
         
         String outputText;
         if (value.isUnavailable()) {
@@ -53,12 +57,18 @@ public class PointValueTag extends YukonTagSupport {
         PointType type = pointDao.getPaoPointIdentifier(pointId).getPointIdentifier().getPointType();
         boolean useColor = colorForStatus && type.isStatus();
         if (useColor) {
-            final UpdateValue latestValue = registrationService.getLatestValue(pointId, "{stateColor|#%02X%02X%02X}", getUserContext());
+            
+            final UpdateValue latestValue = registrationService.getLatestValue(pointId, stateColor, userContext);
             final String color = latestValue.isUnavailable() ? "black" :  latestValue.getValue();
-            out.print("<span style=\"color: " + color + " !important;\" data-color-updater=\"" + latestValue.getIdentifier().getFullIdentifier() + "\">");
+            String colorUpdater = latestValue.getIdentifier().getFullIdentifier();
+            
+            out.print("<span style=\"color: " + color + " !important;\" " 
+                    + "data-color-updater=\"" + colorUpdater + "\">");
         }
         
-        out.print("<span data-updater=\"" + value.getIdentifier().getFullIdentifier() + "\" class=\"pointValueTagSpan " + cssClass +"\" >");
+        String updater = value.getIdentifier().getFullIdentifier();
+        out.print("<span title=\"PointId : " + pointId + "\" data-updater=\"" + updater + "\" " 
+                + "class=\"" + cssClass +"\">");
         out.print(outputText);
         out.print("</span>");
         if (useColor) {

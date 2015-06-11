@@ -25,6 +25,7 @@
     COLLECTION PICKER
     COLOR PICKER
     IMAGE PICKER
+    SELECT BOX
     DATE/TIME PICKER
     TIMELINE WIDGET
     DROPDOWN MENUS
@@ -190,6 +191,10 @@ textarea[disabled] {
     border: 1px solid #e5e5e5;
 }
 
+select.with-option-hiding option[disabled] {
+    display: none;
+}
+
 input[type=email], 
 input[type=number], 
 input[type=password], 
@@ -277,7 +282,8 @@ input[type=radio] {
 
 /** Styles for a 'toggle button' checkbox and radio buttons **/
 .switch-btn .switch-btn-checkbox,
-.radio-btn input[type=radio] {
+.radio-btn input[type=radio],
+.check-btn input[type=checkbox] {
     border: 0;
     clip: rect(0 0 0 0);
     height: 1px;
@@ -298,11 +304,13 @@ input[type=radio] {
 }
 
 .switch-btn:not(.inverse) .switch-btn-checkbox:checked ~ .yes:not(.no-color) .b-label,
-.switch-btn.inverse .switch-btn-checkbox:not(:checked) ~ .yes:not(.no-color) .b-label {
+.switch-btn.inverse .switch-btn-checkbox:not(:checked) ~ .yes:not(.no-color) .b-label,
+.radio-btn input:checked ~ .yes:not(.no-color) .b-label {
     color: @green;
 }
 .switch-btn:not(.inverse) .switch-btn-checkbox:not(:checked) ~ .no:not(.no-color) .b-label ,
-.switch-btn.inverse .switch-btn-checkbox:checked ~ .no:not(.no-color) .b-label {
+.switch-btn.inverse .switch-btn-checkbox:checked ~ .no:not(.no-color) .b-label,
+.radio-btn input:checked ~ .no:not(.no-color) .b-label {
     color: @red;
 }
 
@@ -424,6 +432,12 @@ table.natural-width { width: auto; }
 table.nowrap th, 
 table.nowrap td { 
     white-space: nowrap;
+}
+
+/* Header row matches section containers */
+.section-table thead th {
+  padding-top: 5px;
+  padding-bottom: 6px;
 }
 
 .link-table {
@@ -1206,12 +1220,63 @@ hr.dashed,
 .image-picker {
     .image {
         border: 2px solid transparent;
-        &.selected, &:hover {cursor: pointer; border-color: @primary-color}
+        &.selected, &:hover {
+            cursor: pointer;
+            border-color: @primary-color;
+        }
     }
-    .simple-input-image {border-color: transparent;}
-    .upload-percent, .upload-progress {display: inline-block; float: left;}
-    .upload-progress {width: 200px;}
-    .upload-percent {line-height: @form-control-height; margin-left: 15px;}
+    .simple-input-image {
+        border-color: transparent;
+    }
+    
+    .upload-percent,
+    .upload-progress {
+        display: inline-block;
+        float: left;
+    }
+    
+    .upload-progress {
+        width: 200px;
+    }
+    
+    .upload-percent {
+        line-height: @form-control-height;
+        margin-left: 15px;
+    }
+}
+
+/* SELECT BOX */
+.select-box .select-box-item {
+    background-color: #fafafa;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    margin: 5px 0;
+    padding: 10px 80px 10px 50px;
+    position: relative;
+}
+.select-box .select-box-available .select-box-item {
+    padding-right: 10px;
+}
+.select-box .select-box-item-add,
+.select-box .select-box-item-remove,
+.select-box .select-box-item-movers {
+    float: none;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+}
+.select-box .select-box-item-add,
+.select-box .select-box-item-remove {
+    left: 10px;
+}
+.select-box .select-box-item-movers {
+    display: inline-block;
+    height: @form-control-height;
+    right: 10px;
+}
+.select-box .select-box-item-movers .button {
+    margin: 0;
 }
 
 /* DATE/TIME PICKER */
@@ -1233,7 +1298,7 @@ hr.dashed,
     float: left;
     height: 24px;
     border: solid 1px white;
-    font-size:14px !important; /* jquery ui is messing up the font-size */
+    font-size: 14px !important; /* jquery ui is messing up the font-size */
 }
 .datetimeEntry_wrap img { margin: 5px; }
 .datetimeEntry_wrap .datetimeEntry_control { display: none !important; }

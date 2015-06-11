@@ -88,7 +88,7 @@
 				
                 <x:outputLabel for="stratName" value="Name: " title="System wide label for this object" />
 				
-                <x:inputText id="stratName" value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].strategyName}"
+                <x:inputText id="stratName" value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].name}"
 					styleClass="char32Label" required="true" maxlength="32"/>
 				
 			</h:panelGroup>

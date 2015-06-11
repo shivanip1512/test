@@ -2,13 +2,13 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.pageName">IVVC Zone Detail</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.pageName">IVVC Zone Detail</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.pageDescription">{0}</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.title">Zone Info</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.table.zone">Zone Type</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.table.regulator">Regulator</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.table.actions">Actions</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.table.name">Name</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.table.regulator">Regulator</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.table.actions">Actions</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.table.name">Name</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.table.type">Type</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.table.phase.A">Phase A</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.table.phase.B">Phase B</entry>
@@ -81,8 +81,7 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.strategyDetails.table.peak">Peak</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.strategyDetails.table.offPeak">Off Peak</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.strategyDetails.table.units">Units</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.busView.zoneList.title">Zone List</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.busView.zoneList.name">Zone Name</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.busView.zones.title">Zones</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.zoneList.unassignedBanks">Some Capacitor Banks are not assigned to any Zone.</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.busDetail.title">Substation Values</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.busDetail.table.kvar">kVAr</entry>
@@ -92,8 +91,6 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.deleteConfirmation.title">Delete Zone</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.deleteConfirmation.message">Are you sure you want to delete zone {0}?</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.deleteConfirmation.ok">Delete</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.busView.ivvcAnalysisContainer.title">IVVC Analysis Message</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.busView.noIvvcMessage">No IVVC analysis has been performed.</entry>
     
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.analysisScenario.unknown">unknown</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.analysisScenario1">{0} - IVVC Analysis: Stale data encountered for {1}. Received updates for {2}% of required CBC voltage points. Minimum was {3}%.</entry>

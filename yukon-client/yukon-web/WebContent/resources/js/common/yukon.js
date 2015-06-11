@@ -463,7 +463,7 @@ yukon.ui = (function () {
         /** 
          * Show a popup. Popup style/behavior should be stored in data attributes described below.
          * 
-         * @param {sting|object} popup - DOM Object, jQuery DOM object, or css selector string of the popup
+         * @param {jQuery|string} popup - DOM Object, jQuery DOM object, or css selector string of the popup
          *                               element, usually a div, to use as a popup.
          * @param {string} [url] - If provided, the popup element will be loaded with the response from an
          *                         ajax request to that url. It will override the [data-url] attribute value 
@@ -797,11 +797,11 @@ yukon.ui = (function () {
                 var button = $(this), group, form;
                 
                 if (button.is(':input')) {
-                    this.disabled = true;
+                    button.prop('disabled', true);
                     group = button.attr('data-disable-group');
                     if (group !== '') {
                         $("[data-disable-group='" + group + "']").each(function (idx) {
-                            this.disabled = true;
+                            button.prop('disabled', true);
                         });
                     }
                     
@@ -926,27 +926,28 @@ yukon.ui = (function () {
             
             /** Init page 'Actions' button */
             var pageActions = $('#page-actions');
+            var pageActionsButton = $('#b-page-actions');
             if (pageActions.length) {
-                $('#page-actions').remove();
-                var menu = $('#b-page-actions .dropdown-menu');
+                pageActions.remove();
+                var menu = pageActionsButton.find('.dropdown-menu');
                 menu.html(pageActions.html());
                 if (menu.find('.icon').length === menu.find('.icon-blank').length) {
                     menu.addClass('no-icons');
                 }
-                $('#b-page-actions').show();
+                pageActionsButton.show();
             }
             
             /** Init page buttons */
             var pageButtons = $('#page-buttons');
             if (pageButtons.length) {
-                $('#page-buttons').remove();
+                pageButtons.remove();
                 $('.page-actions').append(pageButtons.html());
             }
             
             /** Add additional options to page 'Actions' button */
             $('.js-page-additional-actions').each(function (index, elem) {
                 elem = $(elem);
-                $('#b-page-actions .dropdown-menu').append(elem.html());
+                pageActionsButton.find('.dropdown-menu').append(elem.html());
                 elem.remove();
             });
             
@@ -982,6 +983,7 @@ yukon.ui = (function () {
                 var focus = popup.find('.js-focus');
                 if (focus.length) focus.focus();
             });
+            
         },
         
         /**
@@ -1162,7 +1164,7 @@ yukon.ui = (function () {
          * Reindex the name of every input in a table to support spring binding.
          * Will also enable/disable any move up/move down buttons properly.
          * 
-         * @param {element, string} table - Element or css selector for the table/table ancestor.
+         * @param {jQuery, string} table - Element or css selector for the table/table ancestor.
          * @param {function} [rowCallback] - Optional function to fire after processing each row.
          *                                   Takes the row element as an arg.
          */
@@ -1210,7 +1212,7 @@ yukon.ui = (function () {
          * Adjusts row move up/down buttons so that the first row's move up
          * and the last row's move down buttons are disabled. 
          * 
-         * @param {element, string} table - Element or css selector for the table/table ancestor.
+         * @param {jQuery|string} table - Element or css selector for the table/table ancestor.
          * @param {function} [rowCallback] - Optional function to fire after processing each row.
          *                                   Takes the row element as an arg.
          */
@@ -1254,7 +1256,14 @@ yukon.ui = (function () {
             return str;
         },
         
-        /** Format time, (do we still need yukon.format.time.js?) */
+        /**
+         * Format time, (do we still need yukon.format.time.js?)
+         *
+         * @param {Date} time - time to format
+         * @param {Object} [opts]
+         * @param {boolean} [opts.pad = false] - display leading 0 on single-digit hour
+         * @param {boolean} [opts.meridian = false] - append am/pm to the string
+         */
         formatTime : function (time, opts) {
             
             var timeStr = '';
@@ -1276,7 +1285,7 @@ yukon.ui = (function () {
                 }
                 
                 if (opts.pad) {
-                    timeStr = pad(hours, 2) + ':' + mod.pad(time.getMinutes(), 2) + meridian;
+                    timeStr = mod.pad(hours, 2) + ':' + mod.pad(time.getMinutes(), 2) + meridian;
                 } else {
                     timeStr = hours + ':' + mod.pad(time.getMinutes(), 2) + meridian;
                 }
@@ -1447,7 +1456,7 @@ yukon.ui = (function () {
         },
         
         /**
-         * @param {string|Object} row - Element (or selector to element) to be removed.
+         * @param {jQuery|String} row - Element (or selector to element) to be removed.
          *    Expected to have attributes:
          *    data-removed-text: text to confirm operation (eg. 'Item removed from list')
          *    data-undo-text: text to revert change (eg. 'Undo')
@@ -1601,8 +1610,8 @@ yukon.ui = (function () {
     /** 
      * Flash an element's background with a color for a duration.
      * @param {object} [options] - Options hash containing color and duration.
-     * @param {number} [duration=1500] - The duration in milliseconds the animation will last. Default 1500. 
-     * @param {string} [color=#fff288] - The color to flash the background. Default #fff288 (yellowish).
+     * @param {number} [options.duration=1500] - The duration in milliseconds the animation will last. Default 1500.
+     * @param {string} [options.color=#fff288] - The color to flash the background. Default #fff288 (yellowish).
      */
     $.fn.flash = function (options) {
         return this.each(function () {
@@ -1666,14 +1675,14 @@ yukon.ui = (function () {
                         messages.push(args.message[i]);
                     }
                 } else {
-                    for (var key in args.message) {
+                    Object.keys(args.messages).forEach(function (key) {
                         if (typeof (args.message[key]) === 'number' ||
                             typeof (args.message[key]) === 'string') {
                             messages.push(args.message[key]);
                         }
+                    });
                     }
                 }
-            }
             
             alertbox.empty().removeClass('error success info warning pending').addClass(args.messageClass);
             
@@ -1732,6 +1741,7 @@ yukon.ui = (function () {
         
         /** 
          * Add events to the timeline
+         * @param {Object[]} events
          * @param {string} events[].id - Unique identifier key. Will override any existing event with that id.
          * @param {number} events[].timestamp - Time of event. expressed as epoch timestamp.
          * @param {string} [events[].icon=icon-blank] - Icon to show on the timeline.
@@ -1756,7 +1766,7 @@ yukon.ui = (function () {
         
         /** 
          * Remove an event from the timeline and redraws the timeline.
-         * @param {string[]} eventId - Unique identifiers of the events to remove.
+         * @param {string[]} eventIds - Unique identifiers of the events to remove.
          */
         removeEvents: function (eventIds) {
             var _self = this;

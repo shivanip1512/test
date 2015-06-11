@@ -64,30 +64,19 @@
     <div class="column-12-12 clearfix">
         <div class="column one">
             <tags:sectionContainer2 nameKey="infoContainer" hideEnabled="true">
-                <div class="column-12-12 clearfix">
-                    <div class="column one">
-                        <tags:nameValueContainer2 tableClass="name-collapse">
-                            <tags:nameValue2 nameKey=".name" valueClass="wbba">
-                                <span>${fn:escapeXml(bc_areaName)}</span>
-                            </tags:nameValue2>
-                            <tags:nameValue2 nameKey=".geoName">
-                                <span>${fn:escapeXml(description)}</span>
-                            </tags:nameValue2>
-                        </tags:nameValueContainer2>
-                    </div>
-                    <div class="column two nogutter">
-                        <tags:nameValueContainer2 tableClass="name-collapse">
-                            <tags:nameValue2 nameKey=".state" rowClass="wsnw">
-                                <span class="box state-box js-cc-state-updater" data-pao-id="${bc_areaId}">&nbsp;</span>
-                                <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" value="${type}/${bc_areaId}/STATE_FLAGS"/>
-                                <cti:capControlValue paoId="${bc_areaId}" type="${type}" format="STATE" />
-                             </tags:nameValue2>
-                             <tags:nameValue2 nameKey=".substations">
-                                ${fn:length(subStations)}
-                             </tags:nameValue2>
-                        </tags:nameValueContainer2>
-                    </div>
-                </div>
+                <tags:nameValueContainer2>
+                    <tags:nameValue2 nameKey=".name" valueClass="wbba">
+                        <span>${fn:escapeXml(bc_areaName)}</span>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".geoName">
+                        <span>${fn:escapeXml(description)}</span>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".state" rowClass="wsnw">
+                        <span class="box state-box js-cc-state-updater" data-pao-id="${bc_areaId}">&nbsp;</span>
+                        <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" value="${type}/${bc_areaId}/STATE_FLAGS"/>
+                        <cti:capControlValue paoId="${bc_areaId}" type="${type}" format="STATE" />
+                     </tags:nameValue2>
+                </tags:nameValueContainer2>
                 <capTags:warningImg paoId="${bc_areaId}" type="${type}" alertBox="true"/>
             </tags:sectionContainer2>
         </div>
@@ -160,7 +149,7 @@
                         <a href="${feederLink}" id="anc_${substationId}">
                             ${fn:escapeXml(subStation.ccName)}
                         </a>
-                        <div class="error textFieldLabel">
+                        <div class="error">
                             <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="SA_ENABLED_MSG" defaultBlank="true"/>
                         </div>
                     </td>

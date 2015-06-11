@@ -8,6 +8,7 @@ import com.cannontech.web.updater.DataUpdaterService;
 import com.cannontech.web.updater.UpdateValue;
 
 public class PointDataRegistrationServiceImpl implements PointDataRegistrationService {
+    
     private DataUpdaterService updaterService;
     
     public UpdateValue getLatestValue(int pointId, String format, YukonUserContext userContext) {
@@ -15,20 +16,22 @@ public class PointDataRegistrationServiceImpl implements PointDataRegistrationSe
         UpdateValue result = updaterService.getFirstValue(id, userContext);
         return result;
     }
-
+    
     public String getRawPointDataUpdaterSpan(int pointId, String format, YukonUserContext userContext) {
-	    UpdateValue updateValue = getLatestValue(pointId, format, userContext);
-	
-	    String spanStr = "<span title=\"pointId:" + pointId + "\" data-updater=\"" + 
-	    updateValue.getIdentifier().getFullIdentifier() + "\" class=\"pointValueTagSpan\" >";
-	    
-	    spanStr += (updateValue.isUnavailable() ? "..." : updateValue.getValue());
-	    spanStr += "</span>";
-	    return spanStr;
+        
+        UpdateValue updateValue = getLatestValue(pointId, format, userContext);
+        
+        String spanStr = "<span title=\"PointId : " + pointId + "\" data-updater=\"" + 
+        updateValue.getIdentifier().getFullIdentifier() + "\">";
+        
+        spanStr += (updateValue.isUnavailable() ? "..." : updateValue.getValue());
+        spanStr += "</span>";
+        return spanStr;
     }
     
     @Required
     public void setUpdaterService(DataUpdaterService updaterService) {
         this.updaterService = updaterService;
     }
+    
 }

@@ -50,6 +50,24 @@
 <entry key="yukon.common.time.min">Min</entry>
 <entry key="yukon.common.time.second">second</entry>
 
+<entry key="yukon.common.day.SUNDAY">Sunday</entry>
+<entry key="yukon.common.day.MONDAY">Monday</entry>
+<entry key="yukon.common.day.TUESDAY">Tuesday</entry>
+<entry key="yukon.common.day.WEDNESDAY">Wednesday</entry>
+<entry key="yukon.common.day.THURSDAY">Thursday</entry>
+<entry key="yukon.common.day.FRIDAY">Friday</entry>
+<entry key="yukon.common.day.SATURDAY">Saturday</entry>
+<entry key="yukon.common.day.HOLIDAY">Holiday</entry>
+
+<entry key="yukon.common.day.SUNDAY.short">Sun</entry>
+<entry key="yukon.common.day.MONDAY.short">Mon</entry>
+<entry key="yukon.common.day.TUESDAY.short">Tue</entry>
+<entry key="yukon.common.day.WEDNESDAY.short">Wed</entry>
+<entry key="yukon.common.day.THURSDAY.short">Thu</entry>
+<entry key="yukon.common.day.FRIDAY.short">Fri</entry>
+<entry key="yukon.common.day.SATURDAY.short">Sat</entry>
+<entry key="yukon.common.day.HOLIDAY.short">Holiday</entry>
+
 <entry key="yukon.common.error.time.startBeforeStop">The start time must occur before the stop time.</entry>
 <entry key="yukon.common.error.date.startBeforeStop">The start date must occur before the stop date.</entry>
 <entry key="yukon.common.error.date.invalid">The date entered is invalid.</entry>

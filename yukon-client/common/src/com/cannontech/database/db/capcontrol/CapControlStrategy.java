@@ -1,14 +1,17 @@
 package com.cannontech.database.db.capcontrol;
 
 import java.sql.SQLException;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.joda.time.LocalTime;
+import org.joda.time.Minutes;
 
 import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.capcontrol.dao.StrategyDao;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -19,270 +22,257 @@ import com.cannontech.spring.YukonSpringHook;
  * Strategy of control for a SubBus or Feeder.
  */
 public class CapControlStrategy extends DBPersistent implements CTIDbChange {
-	
-	private Integer strategyID = null;
-	private String strategyName = null;
-	private ControlMethod controlMethod = ControlMethod.INDIVIDUAL_FEEDER;
-	private Integer maxDailyOperation = new Integer(0);
-	private Character maxOperationDisableFlag = new Character('N');
-	private Integer peakStartTime = new Integer(0);
-	private Integer peakStopTime = new Integer(86400);  //24:00
-	private Integer controlInterval = new Integer(900);
-	private Integer minResponseTime = new Integer(900);
-	private Integer minConfirmPercent = new Integer(75);
-	private Integer failurePercent = new Integer(25);
-	private String daysOfWeek = new String("NYYYYYNN");
-	private ControlAlgorithm controlUnits = ControlAlgorithm.KVAR;
-	private Integer controlDelayTime = new Integer(0);
-	private Integer controlSendRetries = new Integer(0);
-    private String integrateFlag = "N";
-    private Integer integratePeriod = new Integer (0);
-    private String likeDayFallBack = "N";
-    private String endDaySettings = CtiUtilities.STRING_NONE;
-    private List<PeakTargetSetting> targetSettings = StrategyPeakSettingsHelper.getSettingDefaults(ControlAlgorithm.KVAR);
-    private List<VoltageViolationSetting> voltageViolationSettings = VoltageViolationSettingsHelper.getVoltageViolationDefaults();
+    
+    public static final LocalTime MAX_TIME = LocalTime.MIDNIGHT.withHourOfDay(23).withMinuteOfHour(59).withSecondOfMinute(59);
+
+    private Integer id = null;
+    private String name = null;
+    private ControlMethod controlMethod = ControlMethod.INDIVIDUAL_FEEDER;
+    private int maxDailyOperation = 0;
+    private boolean maxOperationDisabled = false;
+    private LocalTime peakStartTime = LocalTime.MIDNIGHT;
+    private LocalTime peakStopTime = MAX_TIME;
+    private int controlInterval = Minutes.minutes(15).toStandardSeconds().getSeconds();
+    private int minResponseTime = Minutes.minutes(15).toStandardSeconds().getSeconds();
+    private int minConfirmPercent = 75;
+    private int failurePercent = 25;
+    
+    private ControlAlgorithm algorithm = ControlAlgorithm.KVAR;
+    private int controlDelayTime = 0;
+    private int controlSendRetries = 0;
+    private boolean integrateFlag = false;
+    private int integratePeriod = 0;
+    private boolean likeDayFallBack = false;
+    private String endDaySettings = "";
+    private Map<TargetSettingType, PeakTargetSetting> targetSettings = StrategyPeakSettingsHelper.getAllSettingDefaults();
+    private Map<VoltViolationType, VoltageViolationSetting> voltageViolationSettings =
+        VoltageViolationSettingsHelper.getVoltageViolationDefaults();
     private PowerFactorCorrectionSetting powerFactorCorrectionSetting = new PowerFactorCorrectionSetting();
     private CommReportingPercentageSetting minCommunicationPercentageSetting = new CommReportingPercentageSetting();
     
-	public static final String SETTER_COLUMNS[] = { 
-		"StrategyName", "ControlMethod", "MaxDailyOperation",
-		"MaxOperationDisableFlag",
-		"PeakStartTime", "PeakStopTime",
-		"ControlInterval", "MinResponseTime", "MinConfirmPercent",
-		"FailurePercent", "DaysOfWeek",
-		"ControlUnits", "ControlDelayTime", "ControlSendRetries",
-		"IntegrateFlag", "IntegratePeriod",
-        "LikeDayFallBack", "EndDaySettings"
-	};
-	public static final String CONSTRAINT_COLUMNS[] = { "StrategyID" };
-	public static final String TABLE_NAME = "CapControlStrategy";
-	public static boolean todExists = false;
-	private StrategyDao strategyDao = YukonSpringHook.getBean(StrategyDao.class);
-	
-	@Override
-    public void add() throws SQLException {
-		Object[] addValues = {
-			getStrategyID(), getStrategyName(), getControlMethod().name(), getMaxDailyOperation(), 
-			getMaxOperationDisableFlag(), getPeakStartTime(), getPeakStopTime(),
-			getControlInterval(), getMinResponseTime(), getMinConfirmPercent(),
-			getFailurePercent(), getDaysOfWeek(), getControlUnits().name(),
-			getControlDelayTime(), getControlSendRetries(),
-			getIntegrateFlag(), getIntegratePeriod(), 
-            getLikeDayFallBack(), getEndDaySettings()
-		};
-		add( TABLE_NAME, addValues );
-	}
-	
-	@Override
-    public void update() throws SQLException {
-        Object setValues[]= { 
-            getStrategyName(), getControlMethod().name(), getMaxDailyOperation(), 
-            getMaxOperationDisableFlag(), getPeakStartTime(), getPeakStopTime(),
-            getControlInterval(), getMinResponseTime(), getMinConfirmPercent(),
-            getFailurePercent(), getDaysOfWeek(), getControlUnits().name(),
-            getControlDelayTime(), getControlSendRetries(),
-            getIntegrateFlag(), getIntegratePeriod(),
-            getLikeDayFallBack(), getEndDaySettings()
-        };
-        Object constraintValues[] = { getStrategyID() };
-        update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
-        
-        strategyDao.savePeakSettings(this);
-        strategyDao.saveVoltageViolationSettings(this);
-        strategyDao.savePowerFactorCorrectionSetting(this);
-        strategyDao.saveMinCommunicationPercentageSetting(this);
-    }
-	
-	@Override
-    public void retrieve() throws SQLException {
-        Object constraintValues[] = { getStrategyID() };
-        Object results[] = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
+    private Map<DayOfWeek, Boolean> peakDays = new HashMap<>(defaultPeakDays);
     
-        if( results.length == SETTER_COLUMNS.length ) {
-            setStrategyName( (String) results[0] );
-            setControlMethod( ControlMethod.valueOf((String) results[1]) );
-            setMaxDailyOperation( (Integer) results[2] );
-            setMaxOperationDisableFlag( new Character(results[3].toString().charAt(0)) );       
-            setPeakStartTime( (Integer)results[4] );
-            setPeakStopTime( (Integer)results[5] );         
-            setControlInterval( (Integer) results[6] );
-            setMinResponseTime( (Integer) results[7] );
-            setMinConfirmPercent( (Integer) results[8] );
-            setFailurePercent( (Integer) results[9] );
-            setDaysOfWeek( (String) results[10] );
-            setControlUnits( ControlAlgorithm.valueOf((String) results[11]) );
-            setControlDelayTime( (Integer) results[12] );
-            setControlSendRetries( (Integer) results[13] );
-            setIntegrateFlag((String)results[14]);
-            setIntegratePeriod((Integer)results[15]);
-            setLikeDayFallBack((String)results[16]);
-            setEndDaySettings((String)results[17]);
-        } else {
-            throw new IncorrectResultSizeDataAccessException(SETTER_COLUMNS.length, results.length);
+    public static enum DayOfWeek implements DisplayableEnum {
+        SUNDAY,
+        MONDAY,
+        TUESDAY,
+        WEDNESDAY,
+        THURSDAY,
+        FRIDAY,
+        SATURDAY,
+        HOLIDAY;
+
+        @Override
+        public String getFormatKey() {
+            return "yukon.common.day." + name() + ".short";
         }
-        retrieveTargetSettings(this);
-        retrieveVoltageViolationSettings(this);
-        retrievePowerFactorCorrectionSetting(this);
-        retrieveMinCommunicationPercentageSetting(this);
+        
     }
-	
-	@Override
+    
+    public static enum EndDaySetting implements DisplayableEnum, DatabaseRepresentationSource {
+        NONE("(none)"),
+        TRIP("Trip"),
+        CLOSE("Close");
+        
+        private String dbString;
+        
+        EndDaySetting(String dbString) {
+            this.dbString = dbString;
+        }
+
+        @Override
+        public String getFormatKey() {
+            return "yukon.web.modules.capcontrol.strategies.endDay." + name();
+        }
+
+        @Override
+        public Object getDatabaseRepresentation() {
+            return dbString;
+        }
+        
+    }
+    
+    private static final Map<DayOfWeek, Boolean> defaultPeakDays = new HashMap<>();
+    
+    static {
+        for (DayOfWeek  day : DayOfWeek.values()) {
+            defaultPeakDays.put(day, false);
+        }
+    }
+    
+
+    public static final String TABLE_NAME = "CapControlStrategy";
+    private StrategyDao strategyDao = YukonSpringHook.getBean(StrategyDao.class);
+
+    @Override
+    public void add() throws SQLException {
+
+        strategyDao.add(getName());
+        strategyDao.save(this);
+    }
+
+    @Override
+    public void update() throws SQLException {
+        strategyDao.save(this);
+    }
+
+    /*
+     * This looks weird because it is halfway through converting this from a db persistent
+     * to properly use a Dao.
+     * Ideally, i would just do this = that, but thats not legal.
+     */
+    @Override
+    public void retrieve() throws SQLException {
+
+        CapControlStrategy that = strategyDao.getForId(getId());
+
+        setName(that.getName());
+        setControlMethod(that.getControlMethod());
+        setMaxDailyOperation(that.getMaxDailyOperation());
+        setMaxOperationDisabled(that.isMaxOperationDisabled());
+        setPeakStartTime(that.getPeakStartTime());
+        setPeakStopTime(that.getPeakStopTime());
+        setControlInterval(that.getControlInterval());
+        setMinResponseTime(that.getMinResponseTime());
+        setMinConfirmPercent(that.getMinConfirmPercent());
+        setFailurePercent(that.getFailurePercent());
+        setPeakDays(that.getPeakDays());
+        setAlgorithm(that.getAlgorithm());
+        setControlDelayTime(that.getControlDelayTime());
+        setControlSendRetries(that.getControlSendRetries());
+        setIntegrateFlag(that.isIntegrateFlag());
+        setIntegratePeriod(that.getIntegratePeriod());
+        setLikeDayFallBack(that.isLikeDayFallBack());
+        setEndDaySettings(that.getEndDaySettings());
+
+        setTargetSettings(that.getTargetSettings());
+        setVoltageViolationSettings(that.getVoltageViolationSettings());
+        setPowerFactorCorrectionSetting(that.getPowerFactorCorrectionSetting());
+        setMinCommunicationPercentageSetting(that.getMinCommunicationPercentageSetting());
+    }
+
+    @Override
     public void delete() throws java.sql.SQLException {
-		delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getStrategyID() );	
-	}
-	
-	public Integer getControlInterval() {
-		return controlInterval;
-	}
-	
-	public ControlMethod getControlMethod() {
-		return controlMethod;
-	}
-	
-	public ControlAlgorithm getControlUnits() {
-		return controlUnits;
-	}
-	
-	public String getDaysOfWeek() {
-		return daysOfWeek;
-	}
-	
-	public Integer getFailurePercent() {
-		return failurePercent;
-	}
-	
-	public Integer getMaxDailyOperation() {
-		return maxDailyOperation;
-	}
-	
-	public Character getMaxOperationDisableFlag() {
-		return maxOperationDisableFlag;
-	}
+        strategyDao.delete(getId());
+    }
 
-	public boolean isMaxOperationDisabled() {
-		return CtiUtilities.isTrue(getMaxOperationDisableFlag());
-	}
-	
-	public void setMaxOperationDisabled( boolean val ) {
-		setMaxOperationDisableFlag( (val ? CtiUtilities.trueChar : CtiUtilities.falseChar) );
-	}
+    public Integer getControlInterval() {
+        return controlInterval;
+    }
 
-	public Integer getMinConfirmPercent() {
-		return minConfirmPercent;
-	}
-	
-	public Integer getMinResponseTime() {
-		return minResponseTime;
-	}
-	
-	public Integer getPeakStartTime() {
-		return peakStartTime;
-	}
+    public ControlMethod getControlMethod() {
+        return controlMethod;
+    }
 
-	public String getOffPeakSettingsString() {
-	    return StrategyPeakSettingsHelper.getOffPeakSettingsString(this);
-	}
-	
-	public Integer getPeakStopTime() {
-		return peakStopTime;
-	}
+    public ControlAlgorithm getAlgorithm() {
+        return algorithm;
+    }
 
-	public Integer getControlDelayTime() {
-		return controlDelayTime;
-	}
-	
-	public Integer getControlSendRetries() {
-		return controlSendRetries;
-	}
-	
-	public void setControlInterval(Integer newValue) {
-		this.controlInterval = newValue;
-	}
-	
-	public void setControlMethod(ControlMethod newControlMethod) {
-		controlMethod = newControlMethod;
-	}
-	
-	public void setControlUnits(ControlAlgorithm newControlUnits) {
-		controlUnits = newControlUnits;
-	}
-	
-	public void setDaysOfWeek(String newDaysOfWeek) {
-		daysOfWeek = newDaysOfWeek;
-	}
+    public Integer getFailurePercent() {
+        return failurePercent;
+    }
 
-	public void setFailurePercent(Integer newValue) {
-		this.failurePercent = newValue;
-	}
-	
-	public void setMaxDailyOperation(Integer newValue) {
-		this.maxDailyOperation = newValue;
-	}
-	
-	public void setMaxOperationDisableFlag(Character newMaxOperationDisableFlag) {
-		maxOperationDisableFlag = newMaxOperationDisableFlag;
-	}
-	
-	public void setMinConfirmPercent(Integer newValue) {
-		this.minConfirmPercent = newValue;
-	}
-	
-	public void setMinResponseTime(Integer newValue) {
-		this.minResponseTime = newValue;
-	}
+    public Integer getMaxDailyOperation() {
+        return maxDailyOperation;
+    }
 
-	public void setPeakStartTime(Integer newPeakStartTime) {
-		peakStartTime = newPeakStartTime;
-	}
-	
-	public void setPeakStopTime(Integer newPeakStopTime) {
-		peakStopTime = newPeakStopTime;
-	}
 
-	public void setControlDelayTime(Integer newValue) {
-		controlDelayTime = newValue;
-	}
-	
-	public void setControlSendRetries(Integer newTime) {
-		controlSendRetries = newTime;
-	}
-	
-	private void retrieveTargetSettings(CapControlStrategy strategy) {
-	    targetSettings = strategyDao.getPeakSettings(strategy);
-	}
-	
-	private void retrieveVoltageViolationSettings(CapControlStrategy strategy) {
-	    voltageViolationSettings = strategyDao.getVoltageViolationSettings(strategy);
-	}
-	
-	private void retrievePowerFactorCorrectionSetting(CapControlStrategy strategy) {
-	    powerFactorCorrectionSetting = strategyDao.getPowerFactorCorrectionSetting(strategy);
-	}
-	
-	private void retrieveMinCommunicationPercentageSetting(CapControlStrategy strategy) {
-	    minCommunicationPercentageSetting = strategyDao.getMinCommunicationPercentageSetting(strategy);
-	}
+    public boolean isMaxOperationDisabled() {
+        return maxOperationDisabled;
+    }
 
-	@Override
+    public void setMaxOperationDisabled(boolean maxOperationDisabled) {
+        this.maxOperationDisabled = maxOperationDisabled;
+    }
+
+    public Integer getMinConfirmPercent() {
+        return minConfirmPercent;
+    }
+
+    public Integer getMinResponseTime() {
+        return minResponseTime;
+    }
+
+    public LocalTime getPeakStartTime() {
+        return peakStartTime;
+    }
+
+    public LocalTime getPeakStopTime() {
+        return peakStopTime;
+    }
+
+    public Integer getControlDelayTime() {
+        return controlDelayTime;
+    }
+
+    public Integer getControlSendRetries() {
+        return controlSendRetries;
+    }
+
+    public void setControlInterval(Integer newValue) {
+        this.controlInterval = newValue;
+    }
+
+    public void setControlMethod(ControlMethod newControlMethod) {
+        controlMethod = newControlMethod;
+    }
+
+    public void setAlgorithm(ControlAlgorithm algorithm) {
+        this.algorithm = algorithm;
+    }
+
+    public void setFailurePercent(Integer newValue) {
+        this.failurePercent = newValue;
+    }
+
+    public void setMaxDailyOperation(Integer newValue) {
+        this.maxDailyOperation = newValue;
+    }
+
+    public void setMinConfirmPercent(Integer newValue) {
+        this.minConfirmPercent = newValue;
+    }
+
+    public void setMinResponseTime(Integer newValue) {
+        this.minResponseTime = newValue;
+    }
+
+    public void setPeakStartTime(LocalTime peakStart) {
+        peakStartTime = peakStart;
+    }
+
+    public void setPeakStopTime(LocalTime localTime) {
+        peakStopTime = localTime;
+    }
+
+    public void setControlDelayTime(Integer newValue) {
+        controlDelayTime = newValue;
+    }
+
+    public void setControlSendRetries(Integer newTime) {
+        controlSendRetries = newTime;
+    }
+
+    @Override
     public String toString() {
-		return getStrategyName();
-	}
+        return getName();
+    }
 
-	public Integer getStrategyID() {
-		return strategyID;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public String getStrategyName() {
-		return strategyName;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setStrategyID(Integer integer) {
-		strategyID = integer;
-	}
+    public void setId(Integer integer) {
+        id = integer;
+    }
 
-	public void setStrategyName(String string) {
-		strategyName = string;
-	}
+    public void setName(String string) {
+        name = string;
+    }
 
     public Integer getIntegratePeriod() {
         return integratePeriod;
@@ -292,23 +282,23 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
         this.integratePeriod = integratedPeriod;
     }
 
-    public String getIntegrateFlag() {
+    public boolean isIntegrateFlag() {
         return integrateFlag;
     }
 
-    public void setIntegrateFlag(String integratedFlad) {
+    public void setIntegrateFlag(boolean integratedFlad) {
         this.integrateFlag = integratedFlad;
     }
 
-	public String getLikeDayFallBack() {
-		return likeDayFallBack;
-	}
-
-	public void setLikeDayFallBack(String likeDayFallBack) {
-		this.likeDayFallBack = likeDayFallBack;
-	}
-	
-	public String getEndDaySettings() {
+    public boolean isLikeDayFallBack() {
+        return likeDayFallBack;
+    }
+    
+    public void setLikeDayFallBack(boolean fallBackFlag) {
+        this.likeDayFallBack = fallBackFlag;
+    }
+    
+    public String getEndDaySettings() {
         return endDaySettings;
     }
 
@@ -316,19 +306,19 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
         this.endDaySettings = endDaySettings;
     }
 
-    public List<PeakTargetSetting> getTargetSettings() {
+    public Map<TargetSettingType, PeakTargetSetting> getTargetSettings() {
         return targetSettings;
     }
     
-    public void setTargetSettings(List<PeakTargetSetting> targetSettings) {
-        this.targetSettings = targetSettings;
+    public void setTargetSettings(Map<TargetSettingType, PeakTargetSetting> newTargetSettings) {
+        this.targetSettings = newTargetSettings;
     }
     
-    public List<VoltageViolationSetting> getVoltageViolationSettings() {
+    public Map<VoltViolationType, VoltageViolationSetting> getVoltageViolationSettings() {
         return voltageViolationSettings;
     }
 
-    public void setVoltageViolationSettings(List<VoltageViolationSetting> voltageViolationSettings) {
+    public void setVoltageViolationSettings(Map<VoltViolationType, VoltageViolationSetting> voltageViolationSettings) {
         this.voltageViolationSettings = voltageViolationSettings;
     }
 
@@ -348,54 +338,60 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
         this.minCommunicationPercentageSetting = minCommunicationPercentageSetting;
     }
 
-    public boolean isKVarAlgorithm () {
-        return controlUnits == ControlAlgorithm.KVAR;
+    public boolean isKVarAlgorithm() {
+        return algorithm == ControlAlgorithm.KVAR;
     }
-    
-    public boolean isPFAlgorithm () {
-        return controlUnits == ControlAlgorithm.PFACTOR_KW_KVAR;
+
+    public boolean isPFAlgorithm() {
+        return algorithm == ControlAlgorithm.PFACTOR_KW_KVAR;
     }
-    
-    public boolean isVoltVar () {
-        return controlUnits == ControlAlgorithm.MULTI_VOLT_VAR;
+
+    public boolean isVoltVar() {
+        return algorithm == ControlAlgorithm.MULTI_VOLT_VAR;
     }
-    
-    public boolean isIvvc () {
-        return controlUnits == ControlAlgorithm.INTEGRATED_VOLT_VAR;
+
+    public boolean isIvvc() {
+        return algorithm == ControlAlgorithm.INTEGRATED_VOLT_VAR;
     }
-    
+
+    //TODO Remove after deleting JSF strategyEditor.jsp
     public boolean isBusOptimized() {
         return controlMethod == ControlMethod.BUSOPTIMIZED_FEEDER;
     }
-    
+
     public boolean isVoltStrat() {
-        if (controlUnits == ControlAlgorithm.MULTI_VOLT)
+        if (algorithm == ControlAlgorithm.MULTI_VOLT)
             return true;
-        else if (controlUnits == ControlAlgorithm.VOLTS)
+        else if (algorithm == ControlAlgorithm.VOLTS)
             return true;
         else
             return false;
     }
-    
-    public boolean isTimeOfDay(){
+
+    public boolean isTimeOfDay() {
         return controlMethod == ControlMethod.TIME_OF_DAY;
     }
-    
+
     /**
      * Generates a DBChange msg.
      */
     @Override
     public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
-        DBChangeMsg[] dbChange = new DBChangeMsg[1];
 
-        //add the basic change method
-        dbChange[0] = new DBChangeMsg(
-                        getStrategyID().intValue(),
-                        DBChangeMsg.CHANGE_CBC_STRATEGY_DB,
-                        DBChangeMsg.CAT_CBC_STRATEGY,
-                        dbChangeType);
+        // add the basic change method
+        DBChangeMsg dbChange =
+            new DBChangeMsg(getId().intValue(), DBChangeMsg.CHANGE_CBC_STRATEGY_DB, DBChangeMsg.CAT_CBC_STRATEGY,
+                dbChangeType);
 
-        return dbChange;
+        return new DBChangeMsg[] { dbChange };
     }
-    
+
+    public Map<DayOfWeek, Boolean> getPeakDays() {
+        return peakDays;
+    }
+
+    public void setPeakDays(Map<DayOfWeek, Boolean> peakDays) {
+        this.peakDays = peakDays;
+    }
+
 }

@@ -73,10 +73,10 @@
     <c:if test="${addPermission}">
         <div id="newRow" style="display: none;">
             <span><i:inline key=".enterText"/></span>
-            <span class="textFieldLabel">
+            <span>
                 <input type="text" id="newCommentInput" onKeyPress="return yukon.da.comments.addOrCancel(event)">
             </span>
-            <span class="textFieldLabel"><a href="javascript:yukon.da.comments.addComment()"><i:inline key=".save"/></a> <a href="javascript:yukon.da.comments.hideNewRow()"><i:inline key=".cancel"/></a></span>
+            <span><a href="javascript:yukon.da.comments.addComment()"><i:inline key=".save"/></a> <a href="javascript:yukon.da.comments.hideNewRow()"><i:inline key=".cancel"/></a></span>
         </div>
         <div class="compactResultsFooter">
             <cti:button nameKey="add" icon="icon-add" onclick="javascript:yukon.da.comments.showNewRow()"/>

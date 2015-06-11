@@ -74,6 +74,7 @@ public enum JsLibrary {
     YUKON_SIMPLE_POPUPS("/resources/js/common/yukon.simple.popups.js"),
     YUKON_TIME_FORMATTER("/resources/js/common/yukon.format.time.js"),
     YUKON_TOOLTIP("/resources/js/common/yukon.tooltip.js"),
+    YUKON_UI_MOVABLES("/resources/js/common/yukon.ui.movables.js"),
     YUKON_UI_UTIL("/resources/js/common/yukon.ui.util.js"),
     YUKON_UPDATER("/resources/js/common/yukon.data.updater.js"),
     

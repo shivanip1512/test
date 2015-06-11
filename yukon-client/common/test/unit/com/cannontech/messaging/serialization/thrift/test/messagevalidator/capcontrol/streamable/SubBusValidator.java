@@ -65,7 +65,7 @@ public class SubBusValidator extends AutoInitializedClassValidator<SubBus> {
         // Strategies
         ctrlObj.setMaxDailyOperation(generator.generateInt());
         ctrlObj.setMaxOperationDisableFlag(generator.generateBoolean());
-        ctrlObj.setControlUnits(generator.generateEnum(ControlAlgorithm.class));
+        ctrlObj.setAlgorithm(generator.generateEnum(ControlAlgorithm.class));
         ctrlObj.setControlMethod(generator.generateEnum(ControlMethod.class));
         ctrlObj.setPeakLag(generator.generateDouble());
         ctrlObj.setOffPkLag(generator.generateDouble());

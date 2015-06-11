@@ -44,8 +44,8 @@
 
 <f:verbatim>
 <script type="text/JavaScript">
-	yukon.da.common.addLockButtonForButtonGroup("hdr_buttons");
-	yukon.da.common.addLockButtonForButtonGroup("foot_buttons");
+    yukon.da.common.addLockButtonForButtonGroup("hdr_buttons");
+    yukon.da.common.addLockButtonForButtonGroup("foot_buttons");
 </script>
 </f:verbatim>
     <x:panelLayout id="page" styleClass="pageLayout" headerClass="pageHeader" navigationClass="pageNavigation" bodyClass="pageBody" footerClass="pageFooter" >
@@ -59,7 +59,7 @@
                 
                 <x:outputText styleClass="editorHeader" value="#{capControlForm.editorTitle} Editor:" /> 
                 <x:outputText rendered="#{!capControlForm.editingAStrategy}" styleClass="bigFont" value="#{capControlForm.paoName}"/>
-                <x:outputText rendered="#{capControlForm.editingAStrategy}" styleClass="bigFont" value="#{capControlForm.strategy.strategyName}"/>
+                <x:outputText rendered="#{capControlForm.editingAStrategy}" styleClass="bigFont" value="#{capControlForm.strategy.name}"/>
                 
                 <x:htmlTag value="br"/>
                 

@@ -48,9 +48,8 @@ public abstract class CapControlYukonPAOBase extends com.cannontech.database.dat
         seasonScheduleDao.deleteStrategyAssigment(paoId);
         delete("DynamicCCOperationStatistics", "PAObjectID", paoId);
         super.delete();
-    }    
-
-
+    }
+    
     public static String[] getAllUsedCapControlMapIDs() {
         return getAllUsedCapControlMapIDs( CapControlYukonPAOBase.DEFAULT_MAPLOCATION_ID );
     }

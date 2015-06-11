@@ -4,8 +4,8 @@ import java.text.NumberFormat;
 import java.util.List;
 
 import com.cannontech.cbc.cache.CapControlCache;
-import com.cannontech.cbc.util.UpdaterHelper;
 import com.cannontech.cbc.util.CapControlUtils;
+import com.cannontech.cbc.util.UpdaterHelper;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;

@@ -29,9 +29,9 @@
                             <cti:msg2 var="titleText" key=".editStrategy"/>
                             <cti:url var="strategyUrl" value="/editor/cbcBase.jsf">
                                 <cti:param name="type" value="5"/>
-                                <cti:param name="itemid" value="${strategy.strategyID}"/>
+                                <cti:param name="itemid" value="${strategy.id}"/>
                             </cti:url>
-                            <span class="sub">(<a href="${strategyUrl}" title="${titleText}">${strategy.strategyName}</a>)</span>
+                            <span class="sub">(<a href="${strategyUrl}" title="${titleText}">${strategy.name}</a>)</span>
                         </th>
                     </tr>
                 </thead>

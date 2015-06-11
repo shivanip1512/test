@@ -8,6 +8,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.capcontrol.BankOpState;
+import com.cannontech.capcontrol.dao.CapbankControllerDao;
 import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.capcontrol.model.CapbankAdditional;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
@@ -29,15 +30,9 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class CapbankDaoImpl implements CapbankDao {
     
-    private static final YukonRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
-    
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private PaoDao paoDao;
     @Autowired private DbChangeManager dbChangeManager;
-    
-    static {        
-        liteCapControlObjectRowMapper = CapbankControllerDaoImpl.createLiteCapControlObjectRowMapper();
-    }
     
     private static final YukonRowMapper<CapbankAdditional> capBankAdditionalRowMapper = new YukonRowMapper<CapbankAdditional>() {
         @Override
@@ -102,7 +97,7 @@ public class CapbankDaoImpl implements CapbankDao {
         sql.append(      " FROM CCFeederBankList)");
         sql.append("ORDER BY PAOName");
         
-        List<LiteCapControlObject> orphans = yukonJdbcTemplate.query(sql, liteCapControlObjectRowMapper);
+        List<LiteCapControlObject> orphans = yukonJdbcTemplate.query(sql, CapbankControllerDao.LITE_ORPHAN_MAPPER);
         
         return orphans;
     }

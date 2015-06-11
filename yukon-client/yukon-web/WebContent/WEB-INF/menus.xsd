@@ -22,18 +22,18 @@
     </xsd:complexType>
 
     <xsd:complexType name="Options">
-    	<xsd:sequence maxOccurs="unbounded">
-    		<xsd:element name="option" type="m:Option"/>
-    	</xsd:sequence>
+        <xsd:sequence maxOccurs="unbounded">
+            <xsd:element name="option" type="m:Option"/>
+        </xsd:sequence>
     </xsd:complexType>
 
     <xsd:complexType name="Option">
-    	<xsd:sequence maxOccurs="unbounded">
+        <xsd:sequence maxOccurs="unbounded">
             <xsd:element name="permissions" type="m:Permissions" minOccurs="0"/>
-    		<xsd:element name="link" type="xsd:string"/>
-    	</xsd:sequence>
-    	<xsd:attribute name="name" type="xsd:string"/>
-    	<xsd:attribute name="section" type="xsd:boolean" default="false"/>
+            <xsd:element name="link" type="xsd:string"/>
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string"/>
+        <xsd:attribute name="section" type="xsd:boolean" default="false"/>
     </xsd:complexType>
 
     <xsd:complexType name="RoleProperty">

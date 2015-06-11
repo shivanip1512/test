@@ -48,7 +48,7 @@ public class CapControlWebUtilsServiceImpl implements CapControlWebUtilsService 
         for (SubBus subBus: subBusList) {
             ViewableSubBus viewable = new ViewableSubBus();
             viewable.setSubBusInfo(subBus);
-            viewable.setShowTargetTooltip(showToolTipAlgorithms.contains(subBus.getControlUnits()));
+            viewable.setShowTargetTooltip(showToolTipAlgorithms.contains(subBus.getAlgorithm()));
             
             if (subBus.getAlternateBusId() > 0) {
                 SubBus linkedSub = capControlCache.getSubBus(subBus.getAlternateBusId());
@@ -76,7 +76,7 @@ public class CapControlWebUtilsServiceImpl implements CapControlWebUtilsService 
         for (Feeder feeder: feeders) {
             ViewableFeeder viewable = new ViewableFeeder();
             viewable.setFeederInfo(feeder);
-            ControlAlgorithm algorithm = feeder.getControlUnits();
+            ControlAlgorithm algorithm = feeder.getAlgorithm();
             viewable.setShowTargetTooltip(showToolTipAlgorithms.contains(algorithm));
 
             viewableList.add(viewable);

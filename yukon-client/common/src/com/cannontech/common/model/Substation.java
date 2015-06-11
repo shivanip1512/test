@@ -2,7 +2,8 @@ package com.cannontech.common.model;
 
 import com.cannontech.common.model.Substation;
 
-public class Substation {
+public class Substation implements Comparable<Substation> {
+    
     private int id;
     private String name;
     
@@ -30,11 +31,6 @@ public class Substation {
     }
     
     @Override
-    public String toString() {
-        return name;
-    }
-
-    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -60,6 +56,16 @@ public class Substation {
         } else if (!name.equals(other.name))
             return false;
         return true;
+    }
+
+    @Override
+    public int compareTo(Substation substation) {
+        return name.compareToIgnoreCase(substation.getName());
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("Substation [id=%s, name=%s]", id, name);
     }
     
 }

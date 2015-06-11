@@ -22,38 +22,62 @@
                         <th><i:inline key=".strategyName"/></th>
                         <th><i:inline key=".method"/></th>
                         <th><i:inline key=".algorithm"/></th>
-                        <th><i:inline key=".startStop"/></th>
+                        <th colspan="2"><i:inline key=".startStop"/></th>
                         <th><i:inline key=".interval"/></th>
                         <th><i:inline key=".confirmTime"/></th>
-                        <th><i:inline key=".passFail"/></th>
+                        <th colspan="2"><i:inline key=".passFail"/></th>
                         <th><i:inline key=".peakSetting"/></th>
                         <th><i:inline key=".offPeakSetting"/></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <c:forEach var="item" items="${strategies}">
-                        <tr data-strategy-id="${item.strategyId}">
+                    <c:forEach var="strategy" items="${strategies}">
+                        <tr data-strategy-id="${strategy.id}">
                             <td>
+                                <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
+                                    <cti:url var="url" value="/capcontrol/strategies/${strategy.id}" />
+                                    <a href="${url}">New Editor</a>
+                                    <br>
+                                </cti:checkGlobalRolesAndProperties>
+                                
                                 <cti:url var="editUrl" value="/editor/cbcBase.jsf">
                                     <cti:param name="type" value="5"/>
-                                    <cti:param name="itemid" value="${item.strategyId}"/>
+                                    <cti:param name="itemid" value="${strategy.id}"/>
                                 </cti:url>
-                                <a href="${editUrl}">${fn:escapeXml(item.strategyName)}</a>
+                                <a href="${editUrl}">${fn:escapeXml(strategy.name)}</a>
                             </td>
-                            <td>${fn:escapeXml(item.controlMethod)}</td>
-                            <td>${fn:escapeXml(item.controlUnits)}</td>
+                            <td><i:inline key="${strategy.controlMethod}"/></td>
+                            <td><i:inline key="${strategy.algorithm}"/></td>
                             <td>
-                                <cti:list var="arguments">
-                                    <cti:item value="${item.peakStartTime}"/>
-                                    <cti:item value="${item.peakStopTime}"/>
-                                </cti:list>
-                                <i:inline key=".startStopTimes" arguments="${arguments}"/>
+                                <cti:formatDate value="${strategy.peakStartTime}" type="TIME"/>
                             </td>
-                            <td>${fn:escapeXml(item.controlInterval)}</td>
-                            <td>${fn:escapeXml(item.minResponseTime)}</td>
-                            <td>${fn:escapeXml(item.passFailPercent)}</td>
-                            <td>${fn:escapeXml(item.peakSettings)}</td>
-                            <td>${fn:escapeXml(item.offPeakSettings)}</td>
+                            <td>
+                                <cti:formatDate value="${strategy.peakStopTime}" type="TIME"/>
+                            </td>
+                            <td><cti:formatDuration type="MS_ABBR" value="${strategy.controlInterval * 1000}"/></td>
+                            <td><cti:formatDuration type="MS_ABBR" value="${strategy.minResponseTime * 1000}"/></td>
+                            
+                            <td><i:inline key="yukon.common.percent" arguments="${strategy.minConfirmPercent}"/></td>
+                            <td><i:inline key="yukon.common.percent" arguments="${strategy.failurePercent}"/></td>
+                            
+                            <td>
+                                <cti:list var="peakArgs">
+                                    <c:forEach var="arg" items="${settingArgs}">
+                                        <cti:item>${strategy.targetSettings[arg].peakValue}</cti:item>
+                                    </c:forEach>
+                                </cti:list>
+                                
+                                <cti:msg2 key=".controlAlgorithm.settings.${strategy.algorithm}" arguments="${peakArgs}" htmlEscape="true"/>
+                            </td>
+                            <td>
+                                <cti:list var="offPeakArgs">
+                                    <c:forEach var="arg" items="${settingArgs}">
+                                        <cti:item>${strategy.targetSettings[arg].offPeakValue}</cti:item>
+                                    </c:forEach>
+                                </cti:list>
+                                
+                                <i:inline key=".controlAlgorithm.settings.${strategy.algorithm}" arguments="${offPeakArgs}" htmlEscape="true"/>
+                            </td>
                         </tr>
                     </c:forEach>
                 </tbody>

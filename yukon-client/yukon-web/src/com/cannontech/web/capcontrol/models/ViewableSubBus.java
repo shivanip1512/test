@@ -1,6 +1,7 @@
 package com.cannontech.web.capcontrol.models;
 
 import com.cannontech.capcontrol.ControlAlgorithm;
+import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.message.capcontrol.streamable.SubBus;
 
 public class ViewableSubBus {
@@ -18,8 +19,9 @@ public class ViewableSubBus {
         ccId = bus.getCcId();
         ccName = bus.getCcName();
         usePhaseData = bus.getUsePhaseData();
-        busControlled = bus.getControlMethod().isBusControlled();
-        ivvcControlled = bus.getControlUnits() == ControlAlgorithm.INTEGRATED_VOLT_VAR;
+        ControlMethod controlMethod = bus.getControlMethod();
+        busControlled = controlMethod != null ? controlMethod.isBusControlled() : false;
+        ivvcControlled = bus.getAlgorithm() == ControlAlgorithm.INTEGRATED_VOLT_VAR;
     }
 
     public final int getCcId() {

@@ -60,7 +60,7 @@ public enum SiteMapPage implements DisplayableEnum {
             MatchStyle.all, YukonRoleProperty.CAP_CONTROL_ACCESS),
     IVVC_SCHEDULES(SiteMapCategory.VV, "yukon.web.modules.capcontrol.schedules.pageName", "/capcontrol/schedules",
             MatchStyle.all, YukonRoleProperty.CAP_CONTROL_ACCESS),
-    STRATEGIES(SiteMapCategory.VV, "yukon.web.modules.capcontrol.strategies.pageName", "/capcontrol/strategy/strategies",
+    STRATEGIES(SiteMapCategory.VV, "yukon.web.modules.capcontrol.strategies.pageName", "/capcontrol/strategies",
             MatchStyle.all, YukonRoleProperty.CAP_CONTROL_ACCESS),
     MOVED_CAP_BANKS(SiteMapCategory.VV, "yukon.web.modules.capcontrol.movedCapBanks.pageName", "/capcontrol/move/movedCapBanks",
             MatchStyle.all, YukonRoleProperty.CAP_CONTROL_ACCESS),

@@ -1,6 +1,5 @@
 package com.cannontech.capcontrol.dao.impl;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +19,6 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.YukonResultSet;
-import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -32,35 +29,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
     @Autowired private PaoDao paoDao;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private AttributeService attributeService;
-
-    private static final YukonRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
-
-    static {
-        liteCapControlObjectRowMapper =
-            CapbankControllerDaoImpl.createLiteCapControlObjectRowMapper();
-    }
-
-    public static final YukonRowMapper<LiteCapControlObject> createLiteCapControlObjectRowMapper() {
-        YukonRowMapper<LiteCapControlObject> rowMapper =
-            new YukonRowMapper<LiteCapControlObject>() {
-                @Override
-                public LiteCapControlObject mapRow(YukonResultSet rs) throws SQLException {
-
-                    LiteCapControlObject lco = new LiteCapControlObject();
-                    lco.setId(rs.getInt("PAObjectID"));
-                    lco.setType(rs.getString("TYPE"));
-                    lco.setDescription(rs.getString("Description"));
-                    lco.setName(rs.getString("PAOName"));
-                    // This is used for orphans. We will need to adjust the SQL if we intend to use
-                    // this
-                    // for anything other than orphaned cbcs.
-                    lco.setParentId(0);
-                    return lco;
-                }
-            };
-        return rowMapper;
-    }
-
+    
     @Override
     public boolean assignController(int controllerId, String capbankName) {
         YukonPao pao = paoDao.findYukonPao(capbankName, PaoType.CAPBANK);
@@ -129,8 +98,8 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
         sql.append("    AND PAObjectID").notIn(controlSql);
         sql.append("ORDER BY PAOName");
         
-        List<LiteCapControlObject> orphans = yukonJdbcTemplate.query(sql, liteCapControlObjectRowMapper);
-
+        List<LiteCapControlObject> orphans = yukonJdbcTemplate.query(sql, CapbankControllerDao.LITE_ORPHAN_MAPPER);
+        
         return orphans;
     }
     

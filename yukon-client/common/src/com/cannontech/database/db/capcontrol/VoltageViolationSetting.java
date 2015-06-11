@@ -1,25 +1,20 @@
 package com.cannontech.database.db.capcontrol;
 
 public class VoltageViolationSetting {
-    private VoltageViolationSettingNameType name;
     private double bandwidth;
     private double cost;
     private double emergencyCost;
+    
+    public VoltageViolationSetting() {
+        this.bandwidth = 0.2;
+        this.cost = 0;
+        this.emergencyCost = 0;
+    }
 
-    public VoltageViolationSetting(VoltageViolationSettingNameType name, double bandwidth,
-                                    double cost, double emergencyCost) {
-        this.name = name;
+    public VoltageViolationSetting(double bandwidth, double cost, double emergencyCost) {
         this.bandwidth = bandwidth;
         this.cost = cost;
         this.emergencyCost = emergencyCost;
-    }
-
-    public VoltageViolationSettingNameType getName() {
-        return name;
-    }
-
-    public void setName(VoltageViolationSettingNameType name) {
-        this.name = name;
     }
 
     public double getBandwidth() {

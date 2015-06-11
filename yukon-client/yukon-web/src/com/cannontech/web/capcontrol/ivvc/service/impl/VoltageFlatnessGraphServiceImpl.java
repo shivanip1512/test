@@ -624,25 +624,27 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         return lineSetting;
     }
     
-	public double getUpperVoltLimitForSubBus(CapControlCache cache, int subBusId) {
-    	CapControlStrategy strategy = strategyDao.getForId(cache.getSubBus(subBusId).getStrategyId());
-        double yUpper = Double.parseDouble(TargetSettingType.UPPER_VOLT_LIMIT.getDefaultValue());
-        for ( PeakTargetSetting setting : strategy.getTargetSettings()) {
-            if (setting.getType() == TargetSettingType.UPPER_VOLT_LIMIT) {
-                yUpper = Double.parseDouble(setting.getPeakValue());
-            }
+    public double getUpperVoltLimitForSubBus(CapControlCache cache, int subBusId) {
+        CapControlStrategy strategy = strategyDao.getForId(cache.getSubBus(subBusId).getStrategyId());
+        double yUpper = TargetSettingType.UPPER_VOLT_LIMIT.getDefaultValue();
+        
+        PeakTargetSetting upperLimit = strategy.getTargetSettings().get(TargetSettingType.UPPER_VOLT_LIMIT);
+        if (upperLimit != null) {
+            yUpper = upperLimit.getPeakValue();
         }
+        
         return yUpper;
     }
     
     public double getLowerVoltLimitForSubBus(CapControlCache cache, int subBusId) {
-    	CapControlStrategy strategy = strategyDao.getForId(cache.getSubBus(subBusId).getStrategyId());
-        double yLower = Double.parseDouble(TargetSettingType.LOWER_VOLT_LIMIT.getDefaultValue());
-        for ( PeakTargetSetting setting : strategy.getTargetSettings()) {
-            if (setting.getType() == TargetSettingType.LOWER_VOLT_LIMIT) {
-                yLower = Double.parseDouble(setting.getPeakValue());
-            }
+        CapControlStrategy strategy = strategyDao.getForId(cache.getSubBus(subBusId).getStrategyId());
+        double yLower = TargetSettingType.LOWER_VOLT_LIMIT.getDefaultValue();
+        
+        PeakTargetSetting lowerLimit = strategy.getTargetSettings().get(TargetSettingType.LOWER_VOLT_LIMIT);
+        if (lowerLimit != null) {
+            yLower = lowerLimit.getPeakValue();
         }
+        
         return yLower;
     }
 

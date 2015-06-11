@@ -12,10 +12,11 @@ import com.cannontech.message.capcontrol.streamable.SpecialArea;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.spring.YukonSpringHook;
 
-public class UserAccessCacheFilter implements CacheFilter<StreamableCapObject>
-{
-    PaoAuthorizationService paoAuthorizationService = YukonSpringHook.getBean("paoAuthorizationService", PaoAuthorizationService.class);   
-    LiteYukonUser user;
+public class UserAccessCacheFilter implements CacheFilter<StreamableCapObject> {
+    
+    private PaoAuthorizationService paoAuth = 
+            YukonSpringHook.getBean("paoAuthorizationService", PaoAuthorizationService.class);   
+    private LiteYukonUser user;
     
     public UserAccessCacheFilter(LiteYukonUser user) {
         setUser(user);
@@ -33,16 +34,17 @@ public class UserAccessCacheFilter implements CacheFilter<StreamableCapObject>
      *  
      *  However if they belong to multiple groups, only one groups needs to not be denied in order to see it.
      */
-	public boolean valid(StreamableCapObject capObject) {
-	    if (!(capObject instanceof Area || 
-	          capObject instanceof SpecialArea)) return false;
-	    
+    public boolean valid(StreamableCapObject capObject) {
+        
+        if (!(capObject instanceof Area || 
+              capObject instanceof SpecialArea)) return false;
+        
         int paoId = capObject.getCcId();
         PaoType type = PaoType.getForDbString(capObject.getCcType());
         
         PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, type);
-        boolean ret = paoAuthorizationService.isAuthorized(user, Permission.PAO_VISIBLE, paoIdentifier);
-        return ret;
-	}
-	
+        
+        return paoAuth.isAuthorized(user, Permission.PAO_VISIBLE, paoIdentifier);
+    }
+    
 }

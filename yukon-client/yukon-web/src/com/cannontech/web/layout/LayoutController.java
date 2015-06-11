@@ -114,6 +114,7 @@ public class LayoutController {
         b.add(JsLibrary.YUKON_ALERTS.getPath(dev));
         b.add(JsLibrary.YUKON_CONFIRM.getPath(dev));
         b.add(JsLibrary.YUKON_UI_UTIL.getPath(dev));
+        b.add(JsLibrary.YUKON_UI_MOVABLES.getPath(dev));
         b.add(JsLibrary.YUKON_UPDATER.getPath(dev));
         b.add(JsLibrary.YUKON_DROPDOWN.getPath(dev));
         b.add(JsLibrary.YUKON_TOOLTIP.getPath(dev));

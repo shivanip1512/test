@@ -140,9 +140,9 @@
                 <x:panelGrid forceId="true" id="strategyPeaksGrid" columns="2">
                 
                     <x:outputLabel for="Control_Algorithm" value="Control Algorithm: " title="The units and process we use to make control decisions"/>
-                    <x:selectOneMenu id="Control_Algorithm" disabled="#{!capControlForm.hasEditingRole || !capControlForm.editingCBCStrategy}" value="#{capControlForm.strategy.controlUnits}" 
+                    <x:selectOneMenu id="Control_Algorithm" disabled="#{!capControlForm.hasEditingRole || !capControlForm.editingCBCStrategy}" value="#{capControlForm.strategy.algorithm}" 
                         converter="controlAlgorithmConverter" onchange="submit();"
-                        valueChangeListener="#{capControlForm.controlUnitsChanged}">
+                        valueChangeListener="#{capControlForm.algorithmChanged}">
                         <f:selectItems value="#{capControlForm.controlAlgorithims}"/>
                     </x:selectOneMenu>
 

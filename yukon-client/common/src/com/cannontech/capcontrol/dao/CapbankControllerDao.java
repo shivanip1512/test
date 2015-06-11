@@ -1,13 +1,34 @@
 package com.cannontech.capcontrol.dao;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 
 public interface CapbankControllerDao {
-	
+    
+    public static final YukonRowMapper<LiteCapControlObject> LITE_ORPHAN_MAPPER =
+            new YukonRowMapper<LiteCapControlObject>() {
+                @Override
+                public LiteCapControlObject mapRow(YukonResultSet rs) throws SQLException {
+                    
+                    LiteCapControlObject lco = new LiteCapControlObject();
+                    lco.setId(rs.getInt("PAObjectID"));
+                    lco.setType(rs.getString("TYPE"));
+                    lco.setDescription(rs.getString("Description"));
+                    lco.setName(rs.getString("PAOName"));
+                    // This is used for orphans. We will need to adjust the SQL if we intend to use
+                    // this
+                    // for anything other than orphaned cbcs.
+                    lco.setParentId(0);
+                    return lco;
+                }
+            };
+    
     /**
      * Assigns a cbc to a capbank and performs the necessary dbchange message sending.
      * @param controllerId the id of the CBC being assigned

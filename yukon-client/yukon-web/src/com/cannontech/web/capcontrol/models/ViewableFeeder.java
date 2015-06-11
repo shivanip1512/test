@@ -18,7 +18,7 @@ public class ViewableFeeder {
         ccId = feeder.getCcId();
         ccName  = feeder.getCcName();
         parentId = feeder.getParentID();
-        ivvcControlled = feeder.getControlUnits() == ControlAlgorithm.INTEGRATED_VOLT_VAR;
+        ivvcControlled = feeder.getAlgorithm() == ControlAlgorithm.INTEGRATED_VOLT_VAR;
         individualFeederControlled = feeder.getControlmethod() == ControlMethod.INDIVIDUAL_FEEDER;
         usePhaseData = feeder.getUsePhaseData();
     }

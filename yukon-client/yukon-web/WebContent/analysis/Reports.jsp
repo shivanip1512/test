@@ -725,9 +725,9 @@ function makeFirstSelectedFilterValueVisible () {
                                         
                                        <%}else if (object instanceof LiteCapControlStrategy){
                                        
-                                           objectStringVal = ((LiteCapControlStrategy)object).getStrategyName();%>
+                                           objectStringVal = ((LiteCapControlStrategy)object).getName();%>
                                            
-                                           <option value='<c:out value="<%=((LiteCapControlStrategy)object).getStrategyId()%>" />' <% if (selectedReportFilterValues != null && selectedReportFilterValues.contains(objectStringVal)) {%>selected<%} %>>
+                                           <option value='<c:out value="<%=((LiteCapControlStrategy)object).getId()%>" />' <% if (selectedReportFilterValues != null && selectedReportFilterValues.contains(objectStringVal)) {%>selected<%} %>>
                                                <c:out value="<%=objectStringVal%>" />
                                            </option>
                                            

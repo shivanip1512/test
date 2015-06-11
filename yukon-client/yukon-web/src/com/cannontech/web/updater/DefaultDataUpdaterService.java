@@ -97,10 +97,12 @@ public class DefaultDataUpdaterService implements DataUpdaterService {
 
     @Override
     public UpdateValue getFirstValue(String fullIdentifier, YukonUserContext userContext) {
+        
         UpdateIdentifier identifier = new UpdateIdentifier(fullIdentifier);
         if (log.isTraceEnabled()) {
             log.trace("getFirstValue - handling " + identifier);
         }
+        
         UpdateValue updateValue = null;
         UpdateBackingService back = backs.get(identifier.getType());
         BulkUpdateBackingService bulkBack = bulkBacks.get(identifier.getType());

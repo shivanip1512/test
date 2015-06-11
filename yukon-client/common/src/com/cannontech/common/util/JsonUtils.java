@@ -2,6 +2,11 @@ package com.cannontech.common.util;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -10,6 +15,8 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class JsonUtils {
+    
+    private static final Logger log = YukonLogManager.getLogger(JsonUtils.class);
     
     public static final TypeReference<String> STRING_TYPE = new TypeReference<String>() {};
     public static final TypeReference<Integer> INT_TYPE = new TypeReference<Integer>() {};
@@ -51,6 +58,28 @@ public class JsonUtils {
     
     public static ObjectWriter getWriter() {
         return writer;
+    }
+    
+    /**
+     * Attempts to write the object as a JSON response payload.
+     * @param resp - The response to write to.
+     * @param json - The object to convert to a JSON payload.
+     * @throws {@link JsonReponseException} if anything goes wrong writing out the response.
+     * @return null - Returns null as a convenience for request mapping methods that need to return a String view.
+     */
+    public static String writeResponse(HttpServletResponse resp, Object json) {
+        
+        resp.setContentType("application/json");
+        
+        try {
+            writer.writeValue(resp.getOutputStream(), json);
+        } catch (Exception e) {
+            log.error("Unable to write object as JSON response body.", e);
+            throw new JsonReponseException("Unable to write object as JSON response body.", e);
+        }
+        
+        // Return null to be used as a view for request mapping methods returning String views.
+        return null;
     }
     
 }

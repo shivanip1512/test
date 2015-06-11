@@ -1,5 +1,7 @@
 package com.cannontech.messaging.serialization.thrift.serializer.capcontrol.streamable;
 
+import org.apache.commons.lang3.EnumUtils;
+
 import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
@@ -49,8 +51,10 @@ public class FeederSerializer extends ThriftInheritanceSerializer<Feeder, Stream
         ThriftConverterHelper helper = msgFactory.getConverterHelper();
 
         msg.setCcCapBanks(helper.convertToMessageVector(entity.get_ccCapbanks(), CapBankDevice.class));
-        msg.setControlmethod(ControlMethod.valueOf(entity.get_strategy_controlMethod()));
-        msg.setControlUnits(ControlAlgorithm.valueOf(entity.get_strategy_controlUnits()));
+        
+        ControlMethod controlMethod = EnumUtils.getEnum(ControlMethod.class, entity.get_strategy_controlMethod());
+        msg.setControlmethod(controlMethod);
+        msg.setAlgorithm(ControlAlgorithm.valueOf(entity.get_strategy_controlUnits()));
         msg.setCurrentDailyOperations(entity.get_currentDailyOperations());
         msg.setCurrentVarLoadPointID(entity.get_currentVarLoadPointId());
         msg.setCurrentVarLoadPointValue(entity.get_currentVarLoadPointValue());

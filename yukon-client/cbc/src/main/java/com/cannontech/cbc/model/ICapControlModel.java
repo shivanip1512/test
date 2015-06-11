@@ -62,10 +62,6 @@ public interface ICapControlModel {
 
     public abstract void setChildLabel(String string);
 
-    public abstract void setStratDaysOfWeek(String[] newDaysOfWeek);
-
-    public abstract String[] getStratDaysOfWeek();
-
     public abstract boolean isControllerCBC();
 
     public abstract boolean isBankControlPtVisible();
