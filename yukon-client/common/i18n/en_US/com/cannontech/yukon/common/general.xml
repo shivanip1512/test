@@ -113,6 +113,7 @@
 <entry key="yukon.common.instructions">Instructions</entry>
 <entry key="yukon.common.invalidCron">Invalid Cron Expression</entry>
 <entry key="yukon.common.ipaddress">IP Address</entry>
+<entry key="yukon.common.later">Later</entry>
 <entry key="yukon.common.left">Left</entry>
 <entry key="yukon.common.loading">Loading...</entry>
 <entry key="yukon.common.loginStatus.DISABLED">Disabled</entry>
@@ -124,6 +125,7 @@
 <entry key="yukon.common.none.choice">(none)</entry>
 <entry key="yukon.common.note">Note</entry>
 <entry key="yukon.common.noPhase">No Phase</entry>
+<entry key="yukon.common.now">Now</entry>
 <entry key="yukon.common.okButton">OK</entry>
 <entry key="yukon.common.operationSuccess">Operation Successful</entry>
 <entry key="yukon.common.password.confirm.placeholder">confirm</entry>

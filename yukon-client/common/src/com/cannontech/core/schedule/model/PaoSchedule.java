@@ -11,6 +11,7 @@ public class PaoSchedule {
     private int repeatSeconds;
     private String name;
     private boolean disabled;
+    private boolean later;
 
     public final Integer getId() {
         return id;
@@ -53,6 +54,12 @@ public class PaoSchedule {
     }
     public final void setDisabled(boolean disabled) {
         this.disabled = disabled;
+    }
+    public boolean isLater() {
+        return later;
+    }
+    public void setLater(boolean later) {
+        this.later = later;
     }
 
     public enum ScheduleInterval {

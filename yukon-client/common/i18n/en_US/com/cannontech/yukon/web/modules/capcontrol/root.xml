@@ -456,6 +456,7 @@
     <entry key="yukon.web.modules.capcontrol.schedules.create">Create Schedule</entry>
     <entry key="yukon.web.modules.capcontrol.schedules.error.nameConflict">Name already exists</entry>
     <entry key="yukon.web.modules.capcontrol.schedules.error.date">Invalid date</entry>
+    <entry key="yukon.web.modules.capcontrol.schedules.error.date.past">Date cannot occur in the past.</entry>
     <entry key="yukon.web.modules.capcontrol.schedules.assignments">Assignments</entry>
     <entry key="yukon.web.modules.capcontrol.schedules.assignments.none">No Assignments</entry>
     
