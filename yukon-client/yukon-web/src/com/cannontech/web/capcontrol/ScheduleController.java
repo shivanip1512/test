@@ -163,7 +163,9 @@ public class ScheduleController {
     public String create(ModelMap model) {
         model.addAttribute("mode", PageEditMode.CREATE);
         PaoSchedule schedule = new PaoSchedule();
-        schedule.setNextRunTime(Instant.now());
+        Instant nowTime = Instant.now();
+        schedule.setNextRunTime(nowTime);
+        model.addAttribute("nowTime", nowTime);
         return setupEditModelMap(model, schedule);
     }
 
@@ -182,6 +184,9 @@ public class ScheduleController {
             schedule.setLastRunTime(epoch1990);
         }
         scheduleValidator.validate(schedule, bindingResult);
+        if (!schedule.isLater()) {
+            schedule.setNextRunTime(Instant.now());
+        }
         if (bindingResult.hasErrors()) {
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             return setupEditModelMap(model, schedule);

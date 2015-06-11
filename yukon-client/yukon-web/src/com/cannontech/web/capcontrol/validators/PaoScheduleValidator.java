@@ -13,6 +13,7 @@ import com.cannontech.core.schedule.model.PaoSchedule;
 public class PaoScheduleValidator extends SimpleValidator<PaoSchedule> {
     
     @Autowired PaoScheduleDao paoScheduleDao;
+    private String key="yukon.web.modules.capcontrol.schedules.error.";
     
     public PaoScheduleValidator() {
         super(PaoSchedule.class);
@@ -20,6 +21,7 @@ public class PaoScheduleValidator extends SimpleValidator<PaoSchedule> {
 
     @Override
     public void doValidation(PaoSchedule schedule, Errors errors) {
+        
         YukonValidationUtils.rejectIfEmptyOrWhitespace(
             errors, "name", "yukon.web.error.isBlank");
 
@@ -27,18 +29,19 @@ public class PaoScheduleValidator extends SimpleValidator<PaoSchedule> {
         if (schedule.getId() == null) {
             boolean nameTaken = paoScheduleDao.doesNameExist(schedule.getName());
             if (nameTaken) {
-                errors.rejectValue("name", "yukon.web.modules.capcontrol.schedules.error.nameConflict");
+                errors.rejectValue("name", key+"nameConflict");
             }
         //For edit, we cannot take a different schedules name
         } else {
             PaoSchedule existingWithName = paoScheduleDao.findForName(schedule.getName());
             if (existingWithName != null && ! existingWithName.getId().equals(schedule.getId())) {
-                errors.rejectValue("name", "yukon.web.modules.capcontrol.schedules.error.nameConflict");
+                errors.rejectValue("name", key+"nameConflict");
             }
         }
-
-        if (schedule.getNextRunTime() == null) {
-            errors.rejectValue("nextRunTime", "yukon.web.modules.capcontrol.schedules.error.date");
+        if (schedule.isLater()) {
+            if (schedule.getNextRunTime() == null) {
+                errors.rejectValue("nextRunTime", key+"date");
+            }
         }
     }
 }
