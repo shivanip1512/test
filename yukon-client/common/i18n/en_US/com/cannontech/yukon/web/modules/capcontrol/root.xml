@@ -453,6 +453,10 @@
     <entry key="yukon.web.modules.capcontrol.strategy.CREATE.pageHeading">Create Strategy</entry>
     <entry key="yukon.web.modules.capcontrol.strategy.CREATE.crumbTitle">Create</entry>
     
+    <entry key="yukon.web.modules.capcontrol.strategy.endDaySetting.NONE">(none)</entry>
+    <entry key="yukon.web.modules.capcontrol.strategy.endDaySetting.TRIP">Trip</entry>
+    <entry key="yukon.web.modules.capcontrol.strategy.endDaySetting.CLOSE">Close</entry>
+    
     <entry key="yukon.web.modules.capcontrol.strategy.error.voltageViolation.low.cost">Cost must be less than or equal to zero.</entry>
     <entry key="yukon.web.modules.capcontrol.strategy.error.voltageViolation.low.emergencyCost">Emergency Cost must be less than or equal to cost.</entry>
     <entry key="yukon.web.modules.capcontrol.strategy.error.voltageViolation.bandwith">Bandwidth must be greater than zero.</entry>

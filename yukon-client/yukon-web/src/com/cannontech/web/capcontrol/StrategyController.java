@@ -101,6 +101,7 @@ public class StrategyController {
         
         model.addAttribute("ControlMethods",  ControlMethod.values());
         model.addAttribute("ControlAlgorithms",  ControlAlgorithm.values());
+        model.addAttribute("EndDaySettings",  CapControlStrategy.EndDaySetting.values());
         model.addAttribute("VoltViolationTypes",  VoltViolationType.values());
         model.addAttribute("TargetSettingTypes",  TargetSettingType.values());
         model.addAttribute("algorithmToSettings",  StrategyPeakSettingsHelper.getAlgorithmToSettings());

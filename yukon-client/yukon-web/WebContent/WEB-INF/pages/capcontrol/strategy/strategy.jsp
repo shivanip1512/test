@@ -108,12 +108,11 @@
                         
                         <tags:nameValue name="End Day Settings">
                             <div class="button-group">
-                                <tags:selectWithItems items="" path=""/>
-                                <tags:radio path="endDaySettings" value="(none)" label="(none)" classes="yes"/>
-                                <tags:radio path="endDaySettings" value="Trip" label="Trip" classes="yes"/>
-                                <tags:radio path="endDaySettings" value="Close" label="Close" classes="yes"/>
+                                <c:forEach var="endDaySetting" items="${EndDaySettings}">
+                                    <tags:radio path="endDaySettings" value="${endDaySetting}" key="${endDaySetting}" 
+                                        classes="yes"/>
+                                </c:forEach>
                             </div>
-                                <%-- '(none)', 'Trip', 'Close'  --%>
                         </tags:nameValue>
                         
                     </tags:nameValueContainer>

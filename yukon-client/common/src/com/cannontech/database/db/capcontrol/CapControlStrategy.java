@@ -43,7 +43,7 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
     private boolean integrateFlag = false;
     private int integratePeriod = 0;
     private boolean likeDayFallBack = false;
-    private String endDaySettings = "";
+    private EndDaySetting endDaySettings = EndDaySetting.NONE;
     private Map<TargetSettingType, PeakTargetSetting> targetSettings = StrategyPeakSettingsHelper.getAllSettingDefaults();
     private Map<VoltViolationType, VoltageViolationSetting> voltageViolationSettings =
         VoltageViolationSettingsHelper.getVoltageViolationDefaults();
@@ -82,12 +82,21 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
 
         @Override
         public String getFormatKey() {
-            return "yukon.web.modules.capcontrol.strategies.endDay." + name();
+            return "yukon.web.modules.capcontrol.strategy.endDaySetting." + name();
         }
 
         @Override
         public Object getDatabaseRepresentation() {
             return dbString;
+        }
+
+        public static EndDaySetting from(String dbString) {
+            for (EndDaySetting setting : values()) {
+                if (setting.dbString.equals(dbString)) {
+                    return setting;
+                }
+            }
+            return null;
         }
         
     }
@@ -298,11 +307,11 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
         this.likeDayFallBack = fallBackFlag;
     }
     
-    public String getEndDaySettings() {
+    public EndDaySetting getEndDaySettings() {
         return endDaySettings;
     }
 
-    public void setEndDaySettings(String endDaySettings) {
+    public void setEndDaySettings(EndDaySetting endDaySettings) {
         this.endDaySettings = endDaySettings;
     }
 

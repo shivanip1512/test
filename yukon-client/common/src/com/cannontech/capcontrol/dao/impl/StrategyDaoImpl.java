@@ -32,6 +32,7 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.YukonRowMapperAdapter;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.CapControlStrategy.DayOfWeek;
+import com.cannontech.database.db.capcontrol.CapControlStrategy.EndDaySetting;
 import com.cannontech.database.db.capcontrol.CommReportingPercentageSetting;
 import com.cannontech.database.db.capcontrol.CommReportingPercentageSettingName;
 import com.cannontech.database.db.capcontrol.CommReportingPercentageSettingType;
@@ -270,7 +271,7 @@ public class StrategyDaoImpl implements StrategyDao {
             strategy.setIntegrateFlag(rs.getBoolean("IntegrateFlag"));
             strategy.setIntegratePeriod(rs.getInt("IntegratePeriod"));
             strategy.setLikeDayFallBack(rs.getBoolean("LikeDayFallBack"));
-            strategy.setEndDaySettings(rs.getString("EndDaySettings"));
+            strategy.setEndDaySettings(EndDaySetting.from(rs.getString("EndDaySettings")));
             return strategy;
         }
 
