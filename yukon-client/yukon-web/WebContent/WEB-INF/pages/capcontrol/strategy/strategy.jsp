@@ -189,15 +189,15 @@
                 <tags:sectionContainer title="Power Factor Correction Settings" styleClass="stacked-lg js-bus-ivvc-only">
                     <tags:nameValueContainer tableClass="natural-width ${viewMode ? 'joe' : 'with-form-controls'}">
                         
-                        <tags:nameValue name="Bandwidth">
+                        <tags:nameValue name="Bandwidth" valueClass="tar">
                             <tags:input path="powerFactorCorrectionSetting.bandwidth" size="5"/>
                         </tags:nameValue>
                         
-                        <tags:nameValue name="Cost">
+                        <tags:nameValue name="Cost" valueClass="tar">
                             <tags:input path="powerFactorCorrectionSetting.cost" size="5" />
                         </tags:nameValue>
                         
-                        <tags:nameValue name="Max Cost">
+                        <tags:nameValue name="Max Cost" valueClass="tar">
                             <tags:input path="powerFactorCorrectionSetting.maxCost" size="5" />
                         </tags:nameValue>
                         
@@ -207,17 +207,17 @@
                 <tags:sectionContainer title="Comm Percentage Setting" styleClass="stacked-lg js-ivvc-only">
                     <tags:nameValueContainer tableClass="natural-width ${tableClass}">
                         
-                        <tags:nameValue name="Banks">
+                        <tags:nameValue name="Banks" valueClass="tar">
                             <tags:input path="minCommunicationPercentageSetting.banksReportingRatio" size="5"/>
                             %
                         </tags:nameValue>
                         
-                        <tags:nameValue name="Regulator">
+                        <tags:nameValue name="Regulator" valueClass="tar">
                             <tags:input path="minCommunicationPercentageSetting.regulatorReportingRatio" size="5"/>
                             %
                         </tags:nameValue>
                         
-                        <tags:nameValue name="Voltage Monitors">
+                        <tags:nameValue name="Voltage Monitors" valueClass="tar">
                             <tags:input path="minCommunicationPercentageSetting.voltageMonitorReportingRatio" size="5"/>
                             %
                         </tags:nameValue>

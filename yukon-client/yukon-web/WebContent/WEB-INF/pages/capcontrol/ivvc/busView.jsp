@@ -9,7 +9,7 @@
 
 <cti:standardPage module="capcontrol" page="ivvc.busView">
     
-<cti:includeScript link="/resources/js/pages/yukon.table.dynamic.js"/>
+<cti:includeScript link="/resources/js/common/yukon.table.dynamic.js"/>
 
 <%@ include file="/capcontrol/capcontrolHeader.jspf" %>
 
@@ -123,20 +123,23 @@
                         <th></th>
                         <th><i:inline key=".strategyDetails.table.peak"/></th>
                         <th><i:inline key=".strategyDetails.table.offPeak"/></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tfoot></tfoot>
                 <tbody>
                     <c:forEach var="setting" items="${strategySettings}">
                         <tr>
-                            <td>${fn:escapeXml(setting.type.displayName)}</td>
-                            <td>
-                                ${fn:escapeXml(setting.peakValue)}&nbsp;
-                                ${fn:escapeXml(setting.type.units)}
+                        
+                            <td><i:inline key="${setting.key}"/></td>
+                            <td class="tar">
+                                ${setting.value.peakValue}
+                            </td>
+                            <td class="tar">
+                                ${setting.value.offPeakValue}
                             </td>
                             <td>
-                                ${fn:escapeXml(setting.offPeakValue)}&nbsp;
-                                ${fn:escapeXml(setting.type.units)}
+                                ${setting.key.units}
                             </td>
                         </tr>
                     </c:forEach>
