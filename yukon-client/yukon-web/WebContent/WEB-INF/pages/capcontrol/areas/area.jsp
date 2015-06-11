@@ -8,7 +8,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="capcontrol" page="area">
-<cti:includeScript link="/JavaScript/yukon.da.area.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.da.area.js"/>
 <%@ include file="/capcontrol/capcontrolHeader.jspf" %>
 
 <%-- EDIT INFO POPUP --%>
