@@ -9,6 +9,7 @@
 
 <%@ attribute name="path" description="Spring binding path." %>
 <%@ attribute name="name" description="Name of the input." %>
+<%@ attribute name="toggleGroup" description="Used to setup a toggle group driven by a checkbox." %>
 
 <%@ attribute name="id" description="Id of the input." %>
 <%@ attribute name="value" type="java.lang.Object" description="Default: null. Sets the initial value of the input." %>
@@ -92,7 +93,8 @@
                         data-step-minute="${pageScope.stepMinute}"
                         data-time-zone-short="${timeZoneShort}"
                         data-time-zone-full="${timeZoneFull}"
-                        data-class="${pageScope.cssDialogClass}" 
+                        data-class="${pageScope.cssDialogClass}"
+                        data-toggle-group="${pageScope.toggleGroup}" 
                         autocomplete="off"/>
                 </span>
             </cti:displayForPageEditModes>
