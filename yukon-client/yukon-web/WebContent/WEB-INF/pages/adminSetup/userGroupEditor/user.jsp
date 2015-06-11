@@ -7,7 +7,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="adminSetup" page="auth.user.${mode}">
-<cti:includeScript link="/JavaScript/yukon.admin.user.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.admin.user.js"/>
 
 <cti:msg2 var="none" key="yukon.common.none.choice"/>
 

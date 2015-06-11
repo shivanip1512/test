@@ -3,7 +3,7 @@
 
 <cti:standardPage page="substationToRouteMapping" module="adminSetup">
     
-    <cti:includeScript link="/JavaScript/yukon.substation.route.mapping.js" />
+    <cti:includeScript link="/resources/js/pages/yukon.substation.route.mapping.js" />
 
     <table>
         <tr>

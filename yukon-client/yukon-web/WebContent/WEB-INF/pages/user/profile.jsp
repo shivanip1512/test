@@ -223,6 +223,6 @@
 </table>
 </cti:displayForPageEditModes>
 
-<cti:includeScript link="/JavaScript/yukon.user.profile.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.user.profile.js"/>
 
 </cti:standardPage>

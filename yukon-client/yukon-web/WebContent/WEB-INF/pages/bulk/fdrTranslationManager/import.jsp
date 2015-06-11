@@ -6,7 +6,7 @@
 
 <cti:standardPage module="tools" page="bulk.fdrTranslationManagement.import">
 
-    <cti:includeScript link="/JavaScript/yukon.import.logger.js" />
+    <cti:includeScript link="/resources/js/pages/yukon.import.logger.js" />
     
     <cti:icon icon="icon-folder-edit"/>&nbsp;<span>${fn:escapeXml(fileName)}</span>
     <c:if test="${ignoreInvalidColumns}">

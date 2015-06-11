@@ -9,7 +9,7 @@
 
 <cti:standardPage module="capcontrol" page="ivvc.busView">
     
-    <cti:includeScript link="/JavaScript/yukon.table.dynamic.js"/>
+    <cti:includeScript link="/resources/js/common/yukon.table.dynamic.js"/>
     
     <%@ include file="/capcontrol/capcontrolHeader.jspf" %>
     

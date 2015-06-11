@@ -10,7 +10,7 @@
 
 <cti:standardPage module="operator" page="controlAudit">
 <cti:includeScript link="HIGH_STOCK"/>
-<cti:includeScript link="/JavaScript/yukon.assets.control.audit.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.assets.control.audit.js"/>
 
 <style>
 .badge-controlled { background-color: #093; }

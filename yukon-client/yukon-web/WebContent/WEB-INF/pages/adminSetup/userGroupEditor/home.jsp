@@ -4,7 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="adminSetup" page="auth.home">
-<cti:includeScript link="/JavaScript/yukon.admin.users.home.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.admin.users.home.js"/>
 
 <div id="page-buttons">
     <cm:dropdown icon="icon-plus-green" key="yukon.common.create" type="button" menuClasses="no-icons">

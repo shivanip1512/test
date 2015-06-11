@@ -5,7 +5,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <cti:standardPage module="dev" page="bulkPointInjection">
-<cti:includeScript link="/JavaScript/yukon.field.helper.js"/>
+<cti:includeScript link="/resources/js/common/yukon.field.helper.js"/>
 
 <script type="text/javascript">
 $(document).on('click', '.bulkInject', function(event) {

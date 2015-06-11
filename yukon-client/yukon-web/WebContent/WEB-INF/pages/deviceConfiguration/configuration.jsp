@@ -8,8 +8,8 @@
 
 <cti:standardPage module="tools" page="configs.config.${mode}">
 
-<cti:includeScript link="/JavaScript/yukon.dialog.ajax.js"/>
-<cti:includeScript link="/JavaScript/yukon.device.config.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.dialog.ajax.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.device.config.js"/>
 
 <style>
     .category-fields-title {padding-left: 5px;}

@@ -15,7 +15,7 @@
 <%@ attribute name="classes" description="CSS class names applied to the container." %>
 <%@ attribute name="barClasses" description="CSS class names applied to the progress bar." %>
 
-<cti:includeScript link="/JavaScript/yukon.ui.progressbar.js"/>
+<cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>
 <cti:uniqueIdentifier var="pDescId" prefix="pgd_"/>
 
 <div class="stacked clearfix ${pageScope.classes}">

@@ -14,7 +14,7 @@
 <%@ attribute name="containerClasses" description="Class names applied to the container element." %>
 <%@ attribute name="barClasses" description="Class names applied to the progress bar." %>
 
-<cti:includeScript link="/JavaScript/yukon.ui.progressbar.js"/>
+<cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>
 <cti:uniqueIdentifier var="pbarId" prefix="progress-bar-"/>
 
 <c:if test="${empty pageScope.hidePercent}">

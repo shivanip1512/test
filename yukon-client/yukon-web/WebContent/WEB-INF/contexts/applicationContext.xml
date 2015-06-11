@@ -1338,7 +1338,7 @@
                 <value>ALLOW|/servlet/Download|RESIDENTIAL_CUSTOMER</value>
                 <value>ALLOW|/include/trending_print.jsp|RESIDENTIAL_CUSTOMER</value>
                 <value>ALLOW|/include/options_popup.jsp|RESIDENTIAL_CUSTOMER</value>
-                <value>ALLOW|/JavaScript/yukon.date.time.picker.js.jsp|RESIDENTIAL_CUSTOMER</value>
+                <value>ALLOW|/resources/js/tags/yukon.date.time.picker.js.jsp|RESIDENTIAL_CUSTOMER</value>
 
                 <value>ALLOW|/spring/**|RESIDENTIAL_CUSTOMER</value>
 

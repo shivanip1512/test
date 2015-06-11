@@ -5,7 +5,7 @@
 
 <cti:standardPage module="operator" page="inventory.config.send">
 
-<cti:includeScript link="/JavaScript/yukon.assets.config.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.assets.config.js"/>
     
 <div class="stacked-md"><tags:selectedInventory inventoryCollection="${inventoryCollection}"/></div>
 <div class="stacked-md">

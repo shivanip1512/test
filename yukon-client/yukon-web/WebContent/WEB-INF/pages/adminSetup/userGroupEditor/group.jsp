@@ -7,7 +7,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="adminSetup" page="auth.role.group.${mode}">
-<cti:includeScript link="/JavaScript/yukon.admin.role.group.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.admin.role.group.js"/>
 
 <tags:setFormEditMode mode="${mode}"/>
 <c:set var="groupName" value="${group.groupName}"/>

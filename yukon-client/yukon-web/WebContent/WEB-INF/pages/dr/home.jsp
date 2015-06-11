@@ -12,8 +12,8 @@
 <cti:standardPage module="dr" page="home">
     
 <cti:includeScript link="YUKON_TIME_FORMATTER"/>
-<cti:includeScript link="/JavaScript/yukon.dr.dashboard.js"/>
-<cti:includeScript link="/JavaScript/yukon.dr.dataUpdater.showAction.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.dr.dashboard.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.dr.dataUpdater.showAction.js"/>
 
 <tags:simpleDialog id="drDialog"/>
 <c:if test="${showSeasonReset}">

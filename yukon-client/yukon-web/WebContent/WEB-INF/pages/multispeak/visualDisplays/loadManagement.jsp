@@ -6,7 +6,7 @@
 <%@ taglib prefix="vdTags" tagdir="/WEB-INF/tags/visualDisplays" %>
 
 <cti:standardPage module="dr" page="loadManagement">
-<cti:includeScript link="/JavaScript/yukon.dr.psd.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.dr.psd.js"/>
 
 <%-- LAST TRANSMITTED --%>
 <div class="stacked">

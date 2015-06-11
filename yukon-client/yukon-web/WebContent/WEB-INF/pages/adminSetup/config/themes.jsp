@@ -34,7 +34,7 @@
 <cti:msg2 key="yukon.common.okButton" var="okText"/>
 <cti:msg2 key="yukon.common.cancel" var="cancelText"/>
 
-<cti:includeScript link="/JavaScript/yukon.themes.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.themes.js"/>
     <input id="button-keys" type="hidden"
         data-button-keys='{
             "chooseText" : "${cti:escapeJavaScript(chooseText)}",

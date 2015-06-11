@@ -15,7 +15,7 @@
 <%@ attribute name="arguments" type="java.lang.Object" %>
 <%@ attribute name="classes" %>
 
-<cti:includeScript link="/JavaScript/yukon.dialog.ajax.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.dialog.ajax.js"/>
 
 <cti:msgScope paths=".${nameKey},components.dialog.${nameKey},components.dialog">
     <c:choose>

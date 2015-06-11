@@ -7,7 +7,7 @@
 
 <cti:standardPage module="amr" page="meterDetail.electric">
     
-    <cti:includeScript link="/JavaScript/yukon.ami.meter.details.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.ami.meter.details.js"/>
     
     <input id="device-id" type="hidden" value="${deviceId}">
     

@@ -10,8 +10,8 @@
 <cti:standardPage module="dr" page="controlAreaList">
     
     <tags:simpleDialog id="drDialog"/>
-    <cti:includeScript link="/JavaScript/yukon.dr.estimated.load.js"/>
-    <cti:includeScript link="/JavaScript/yukon.dr.dataUpdater.showAction.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.dr.estimated.load.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.dr.dataUpdater.showAction.js"/>
     
     <c:set var="baseUrl" value="/dr/controlArea/list"/>
     <cti:url var="baseUrlWithContextPath" value="${baseUrl}"/>

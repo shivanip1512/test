@@ -5,7 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="tools" page="scripts.stop">
-    <cti:includeScript link="/JavaScript/yukon.ami.macs.js" />
+    <cti:includeScript link="/resources/js/pages/yukon.ami.macs.js" />
     <form id="stopform" method="post" action="action">
         <cti:csrfToken/>
         <tags:sectionContainer2 nameKey=".start" styleClass="clearfix">

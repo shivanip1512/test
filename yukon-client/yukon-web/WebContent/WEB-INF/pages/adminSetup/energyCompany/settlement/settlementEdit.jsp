@@ -7,7 +7,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:standardPage module="adminSetup" page="settlements.${mode}">
-<cti:includeScript link="/JavaScript/yukon.field.helper.js"/>
+<cti:includeScript link="/resources/js/common/yukon.field.helper.js"/>
 
     <tags:setFormEditMode mode="${mode}"/>
     

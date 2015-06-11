@@ -17,7 +17,7 @@
 
 <cti:default var="classes" value=""/>
 
-<cti:includeScript link="/JavaScript/yukon.widget.js"/>
+<cti:includeScript link="/resources/js/widgets/yukon.widget.js"/>
 
 <cti:beanLookup bean="${bean}" var="beanInst"/>
 

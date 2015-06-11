@@ -11,9 +11,9 @@
 
 <%@include file="/capcontrol/capcontrolHeader.jspf"%>
 
-<cti:includeScript link="/JavaScript/yukon.table.dynamic.js"/>
-<cti:includeScript link="/JavaScript/yukon.da.zone.js" />
-<cti:includeScript link="/JavaScript/yukon.da.command.js" />
+<cti:includeScript link="/resources/js/common/yukon.table.dynamic.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.da.zone.js" />
+<cti:includeScript link="/resources/js/pages/yukon.da.command.js" />
 
 <!-- Zone Wizard Dialog -->
 <tags:simpleDialog id="zoneWizardPopup" title=""/>

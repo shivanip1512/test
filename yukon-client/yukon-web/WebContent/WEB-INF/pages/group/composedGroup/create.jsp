@@ -77,5 +77,5 @@
     <tags:deviceGroupPicker inputName="groups[?].groupFullName" callbacks="${callbacks}"/>
     <cti:button classes="fr js-remove-rule" nameKey="remove"  renderMode="buttonImage" icon="icon-cross"/>
 </div>
-<cti:includeScript link="/JavaScript/yukon.tools.composed.group.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.tools.composed.group.js"/>
 </cti:standardPage>

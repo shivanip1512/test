@@ -7,11 +7,11 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:includeScript link="/JavaScript/yukon.dr.dataUpdater.showAction.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.dr.dataUpdater.showAction.js"/>
 
 <cti:msgScope paths="modules.dr.programList">
 
-    <cti:includeScript link="/JavaScript/yukon.dr.estimated.load.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.dr.estimated.load.js"/>
 
     <%-- Program filtering popup section --%>
     <div id="filter-popup" class="dn" data-title="<cti:msg2 key=".filters"/>">

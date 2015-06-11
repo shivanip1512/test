@@ -15,7 +15,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:uniqueIdentifier prefix="pdp_" var="id"/>
-<cti:includeScript link="/JavaScript/yukon.peak.day.profile.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.peak.day.profile.js"/>
 
 <cti:formatDate var="preStartDate" value="${preResult.rangeStartDate}" type="DATE" />
 <cti:formatDate var="preStopDate" value="${preResult.rangeStopDate}" type="DATE_MIDNIGHT_PREV" />

@@ -7,7 +7,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="inventory.config.new">
-<cti:includeScript link="/JavaScript/yukon.assets.config.new.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.assets.config.new.js"/>
 
 <cti:msgScope paths=",yukon.common">
 

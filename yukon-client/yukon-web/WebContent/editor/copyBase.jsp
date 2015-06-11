@@ -11,7 +11,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <f:view>
     <cti:standardPage title="CapControl Copy Object" module="capcontrol">
-	    <cti:includeScript link="/JavaScript/yukon.da.common.js"/>
+	    <cti:includeScript link="/resources/js/pages/yukon.da.common.js"/>
 	    <cti:includeCss link="/editor/css/CapcontrolEditorStyles.css"/>
 		<%
 		    //****

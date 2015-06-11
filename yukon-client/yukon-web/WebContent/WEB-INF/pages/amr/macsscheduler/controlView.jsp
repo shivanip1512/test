@@ -5,7 +5,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="tools" page="scripts.start">
-    <cti:includeScript link="/JavaScript/yukon.ami.macs.js" />
+    <cti:includeScript link="/resources/js/pages/yukon.ami.macs.js" />
     <div>
         <form id="startform" method="post" action="action">
             <cti:csrfToken/>

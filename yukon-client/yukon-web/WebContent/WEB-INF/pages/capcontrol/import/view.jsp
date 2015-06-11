@@ -5,7 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="capcontrol" page="import">
-<cti:includeScript link="/JavaScript/yukon.da.import.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.da.import.js"/>
 
 <div class="stacked-lg">
     <cti:url var="url" value="/capcontrol/import/cbcFile"/>

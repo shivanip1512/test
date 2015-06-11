@@ -8,7 +8,7 @@
 
 <cti:standardPage module="amr" page="statusPointMonitorEditor">
 
-    <cti:includeScript link="/JavaScript/yukon.monitor.status.point.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.monitor.status.point.js"/>
     
     <cti:msg2 var="deviceGroupTitle" key=".popupInfo.deviceGroup.title"/>
     

@@ -6,7 +6,7 @@
 
 <cti:standardPage module="support" page="indexes">
 
-<cti:includeScript link="/JavaScript/yukon.index.manager.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.index.manager.js"/>
 
 <table id="index-table" class="with-form-controls full-width striped">
     <thead>

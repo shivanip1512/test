@@ -6,7 +6,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="amr" page="validation.review">
-<cti:includeScript link="/JavaScript/yukon.ami.validation.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.ami.validation.js"/>
 
 <cti:msg2 var="reloading" key=".reloading"/>
 

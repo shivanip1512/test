@@ -5,7 +5,7 @@
 
 <cti:standardPage module="adminSetup" page="deviceGroupSyncProgress">
 
-    <cti:includeScript link="/JavaScript/yukon.ui.progressbar.js"/>
+    <cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>
 
     <tags:sectionContainer2 nameKey="progressDetailContainer">
     

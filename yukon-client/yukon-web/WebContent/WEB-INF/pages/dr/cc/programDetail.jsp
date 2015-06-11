@@ -7,7 +7,7 @@
 
 <cti:standardPage module="dr" page="cc.programDetail">
 <cti:msgScope paths="yukon.web.modules.commercialcurtailment.ccurtSetup">
-<cti:includeScript link="/JavaScript/yukon.curtailment.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.curtailment.js"/>
 
 <form id="program" name="program" data-program-id="${program.id}" method="POST" action="<cti:url value="/dr/cc/programSave/${program.id}"/>">
 <cti:csrfToken/>

@@ -8,7 +8,7 @@
 
 <cti:standardPage module="dr" page="cc.home">
 <cti:standardMenu menuSelection=".ccurt_setup"/>
-<cti:includeScript link="/JavaScript/yukon.curtailment.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.curtailment.js"/>
 <cti:msgScope paths="yukon.web.modules.commercialcurtailment.ccurtSetup">
     
     <div class="column-24">

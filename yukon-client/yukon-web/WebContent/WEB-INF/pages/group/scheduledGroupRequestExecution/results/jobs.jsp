@@ -11,7 +11,7 @@
 
 <cti:standardPage module="tools" page="schedules.all">
     
-<cti:includeScript link="/JavaScript/yukon.jobs.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.jobs.js"/>
   
 <%-- FILTER POPUP --%>
 <div id="filter-popup" class="dn" data-title="<cti:msg2 key=".filter.section"/>">

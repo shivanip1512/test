@@ -10,7 +10,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <cti:includeScript link="YUKON_TIME_FORMATTER"/>
-<cti:includeScript link="/JavaScript/yukon.dr.ecobee.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.dr.ecobee.js"/>
 
 <cti:msgScope  paths="modules.dr.home, modules.dr">
     <tags:sectionContainer2 nameKey="ecobee">

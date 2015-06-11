@@ -9,8 +9,8 @@
 
 <cti:msgScope paths="modules.operator.thermostatManual">
 
-<cti:includeScript link="/JavaScript/yukon.thermostat.js"/>
-<cti:includeScript link="/JavaScript/yukon.temperature.js"/>
+<cti:includeScript link="/resources/js/common/yukon.thermostat.js"/>
+<cti:includeScript link="/resources/js/common/yukon.temperature.js"/>
 
 <cti:includeCss link="/WebConfig/yukon/styles/consumer/StarsConsumerStyles.css"/>
 <cti:includeCss link="/WebConfig/yukon/styles/shared/thermostat.css"/>

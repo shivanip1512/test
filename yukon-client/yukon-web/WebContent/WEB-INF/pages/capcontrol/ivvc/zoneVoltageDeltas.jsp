@@ -7,7 +7,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <cti:standardPage module="capcontrol" page="ivvc.zoneVoltageDeltas">
-    <cti:includeScript link="/JavaScript/yukon.da.voltage.deltas.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.da.voltage.deltas.js"/>
 
     <cti:url var="action" value="/capcontrol/ivvc/zone/deltaUpdate"/>
     <form:form id="delta-form" action="${action}" method="POST" commandName="zoneVoltageDeltas">

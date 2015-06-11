@@ -8,7 +8,7 @@
 <cti:standardPage module="adminSetup" page="auth.${page}.permissions">
 <cti:msgScope paths="modules.adminSetup.auth.permissions">
 
-<cti:includeScript link="/JavaScript/yukon.admin.permissions.js"/>
+<cti:includeScript link="/resources/js/pages/pages/yukon.admin.permissions.js"/>
 
 <cti:toJson id="permission-data" object="${data}"/>
 

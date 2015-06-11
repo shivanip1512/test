@@ -230,7 +230,7 @@
     <cti:toJson object="${text}" id="gateway-text"/>
 </div>
 
-<cti:includeScript link="/JavaScript/yukon.assets.gateway.list.js"/>
-<cti:includeScript link="/JavaScript/yukon.assets.gateway.shared.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.assets.gateway.list.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.assets.gateway.shared.js"/>
 
 </cti:standardPage>

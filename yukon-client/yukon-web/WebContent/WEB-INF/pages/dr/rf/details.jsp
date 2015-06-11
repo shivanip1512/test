@@ -13,7 +13,7 @@
     
     <cti:includeScript link="JQUERY_FLOTCHARTS"/>
     <cti:includeScript link="JQUERY_FLOTCHARTS_PIE"/>
-    <cti:includeScript link="/JavaScript/yukon.dr.rf.performance.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.dr.rf.performance.js"/>
     
     <div class="clearfix column-16-8 stacked">
         <div class="column one">

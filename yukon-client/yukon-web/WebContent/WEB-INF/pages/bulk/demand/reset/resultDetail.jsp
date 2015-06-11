@@ -5,7 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="tools" page="bulk.demandReset.results">
-    <cti:includeScript link="/JavaScript/yukon.ui.progressbar.js"/>
+    <cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>
     <cti:url var="recentResultsUrl" value="/common/commandRequestExecutionResults/list"/>
     <cti:list var="arguments">
         <cti:item value="${recentResultsUrl}" />

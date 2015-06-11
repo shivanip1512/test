@@ -6,7 +6,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="saveToFile">
-<cti:includeScript link="/JavaScript/yukon.assets.config.batch.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.assets.config.batch.js"/>
 
 <div class="stacked-md" data-single-config="${singleConfigType}">
     <tags:selectedInventory inventoryCollection="${inventoryCollection}" id="inventoryCollection"/>

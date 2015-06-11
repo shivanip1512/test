@@ -9,7 +9,7 @@
 
 <cti:standardPage module="dr" page="searchResults">
 
-    <cti:includeScript link="/JavaScript/yukon.dr.dataUpdater.showAction.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.dr.dataUpdater.showAction.js"/>
 
     <tags:simpleDialog id="drDialog"/>
 

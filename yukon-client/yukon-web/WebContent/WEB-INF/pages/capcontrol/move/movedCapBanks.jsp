@@ -7,7 +7,7 @@
 
 <cti:standardPage module="capcontrol" page="movedCapBanks">
     <%@include file="/capcontrol/capcontrolHeader.jspf"%>
-    <cti:includeScript link="/JavaScript/yukon.da.moved.banks.js" />
+    <cti:includeScript link="/resources/js/pages/yukon.da.moved.banks.js" />
 
     <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="" />
 

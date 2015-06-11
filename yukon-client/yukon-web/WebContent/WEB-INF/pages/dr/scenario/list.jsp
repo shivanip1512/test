@@ -10,7 +10,7 @@
 <cti:standardPage module="dr" page="scenarioList">
     
     <tags:simpleDialog id="drDialog"/>
-    <cti:includeScript link="/JavaScript/yukon.dr.estimated.load.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.dr.estimated.load.js"/>
     
     <div id="filter-popup" class="dn" data-title="<cti:msg2 key=".filters"/>">
         

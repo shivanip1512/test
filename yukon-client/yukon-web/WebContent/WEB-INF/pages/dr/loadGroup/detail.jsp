@@ -18,7 +18,7 @@
     <cti:includeScript link="JQUERY_FLOTCHARTS_RESIZE"/>
     <cti:includeScript link="JQUERY_FLOTCHARTS_TIME"/>
     <!--[if lte IE 8]><cti:includeScript link="JQUERY_EXCANVAS"/><![endif]-->
-    <cti:includeScript link="/JavaScript/yukon.ui.progressbar.js"/>
+    <cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>
     <cti:includeCss link="/WebConfig/yukon/styles/flotChart.css"/>
     
     <tags:simpleDialog id="drDialog"/>
@@ -26,7 +26,7 @@
     <c:set var="loadGroupId" value="${loadGroup.paoIdentifier.paoId}"/>
 
     <input id="assetId" type="hidden" value="${loadGroupId}"/>
-    <cti:includeScript link="/JavaScript/yukon.dr.asset.details.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.dr.asset.details.js"/>
 
     <c:if test="${loadGroup.paoIdentifier.paoType != 'MACRO_GROUP'}">
         <div class="column-12-12 clearfix">

@@ -25,7 +25,7 @@
 
 <dt:pickerIncludes/>
 <cti:includeScript link="YUKON_TIME_FORMATTER"/>
-<cti:includeScript link="/JavaScript/yukon.dr.ecobee.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.dr.ecobee.js"/>
 
     <div class="column-12-12">
         <div class="column one">

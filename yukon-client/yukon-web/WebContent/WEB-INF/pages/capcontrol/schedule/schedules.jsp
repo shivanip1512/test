@@ -7,7 +7,7 @@
 
 <cti:standardPage module="capcontrol" page="schedules">
     <dt:pickerIncludes/>
-    <cti:includeScript link="/JavaScript/yukon.da.schedules.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.da.schedules.js"/>
 
     <cti:linkTabbedContainer mode="section">
         <cti:linkTab selectorKey="yukon.web.modules.capcontrol.schedules.tab.title"

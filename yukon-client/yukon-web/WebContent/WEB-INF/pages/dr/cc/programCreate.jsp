@@ -8,7 +8,7 @@
 
 <cti:standardPage module="dr" page="cc.programCreate">
 <cti:msgScope paths="yukon.web.modules.commercialcurtailment.ccurtSetup">
-<cti:includeScript link="/JavaScript/yukon.curtailment.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.curtailment.js"/>
 
 <div class="column-24">
     <h3><i:inline key=".programCreate"/></h3>

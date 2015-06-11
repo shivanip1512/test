@@ -81,6 +81,6 @@
         </c:otherwise>
     </c:choose>
         
-    <cti:includeScript link="/JavaScript/yukon.ami.search.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.ami.search.js"/>
     
 </cti:standardPage>

@@ -5,7 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="capcontrol" page="regulator.setup">
-<cti:includeScript link="/JavaScript/yukon.da.regulator.setup.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.da.regulator.setup.js"/>
 
 <tags:pickerDialog type="regulatorPicker" id="mappingPicker" linkType="none"
             endEvent="yukon:da:regulator:mapping:build"

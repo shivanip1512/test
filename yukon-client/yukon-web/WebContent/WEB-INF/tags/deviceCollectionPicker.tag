@@ -60,7 +60,7 @@
 <cti:includeScript link="JQUERY_TREE_HELPERS"/>
 <cti:includeScript link="JQUERY_FILE_UPLOAD"/>
 <!--[if lte IE 8]><cti:includeScript link="JQUERY_IFRAME_TRANSPORT" /><![endif]-->
-<cti:includeScript link="/JavaScript/yukon.device.selection.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.device.selection.js"/>
 
 <cti:deviceGroupHierarchyJson var="groups" predicates="${predicates}" callbacks="${callbacks}"/>
 <cti:uniqueIdentifier var="id" prefix="collection"/>

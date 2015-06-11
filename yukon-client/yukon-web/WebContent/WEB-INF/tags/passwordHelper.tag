@@ -66,4 +66,4 @@
     </ul>
 </div>
 
-<cti:includeScript link="/JavaScript/yukon.ui.passwords.js" force="true"/>
+<cti:includeScript link="/resources/js/tags/yukon.ui.passwords.js" force="true"/>

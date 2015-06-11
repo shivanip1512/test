@@ -7,7 +7,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="tools" page="commander">
-<cti:includeScript link="/JavaScript/yukon.tools.commander.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.tools.commander.js"/>
 <style>
 .console { min-height: 200px; }
 .console .title-bar {

@@ -20,7 +20,7 @@
 		    deleteForm.initItem();
 		%>
 	
-	    <cti:includeScript link="/JavaScript/yukon.da.common.js"/>
+	    <cti:includeScript link="/resources/js/pages/yukon.da.common.js"/>
 		<f:verbatim>
 			<script type="text/JavaScript">
 			    yukon.da.common.addLockButtonForButtonGroup("buttons");

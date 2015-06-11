@@ -8,7 +8,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 
-<cti:includeScript link="/JavaScript/yukon.table.dynamic.js"/>
+<cti:includeScript link="/resources/js/common/yukon.table.dynamic.js"/>
 
 <c:if test="${empty pageScope.skipMoveButtons}">
     <c:set var="skipMoveButtons" value="false"/>

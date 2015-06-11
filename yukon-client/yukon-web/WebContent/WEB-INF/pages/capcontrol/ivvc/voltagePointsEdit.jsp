@@ -9,7 +9,7 @@
 <cti:standardPage module="capcontrol" page="ivvc.voltagePoints">
     <%@include file="/capcontrol/capcontrolHeader.jspf"%>
     
-    <cti:includeScript link="/JavaScript/yukon.da.voltage.points.edit.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.da.voltage.points.edit.js"/>
     
     <tags:boxContainer2 nameKey=".title">
         <form:form id="voltagePointsForm" action="updateVoltagePoints" commandName="zoneVoltagePointsHolder">

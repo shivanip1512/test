@@ -10,8 +10,8 @@
 <cti:standardPage module="consumer" page="history">
 <cti:standardMenu/>
 
-<cti:includeScript link="/JavaScript/yukon.thermostat.js"/>
-<cti:includeScript link="/JavaScript/yukon.temperature.js"/>
+<cti:includeScript link="/resources/js/common/yukon.thermostat.js"/>
+<cti:includeScript link="/resources/js/common/yukon.temperature.js"/>
 <cti:includeCss link="/WebConfig/yukon/styles/consumer/StarsConsumerStyles.css"/>
 <cti:includeCss link="/WebConfig/yukon/styles/shared/thermostat.css"/>
 <cti:msg var="timeFormatter" key="yukon.common.timeFormatter" />

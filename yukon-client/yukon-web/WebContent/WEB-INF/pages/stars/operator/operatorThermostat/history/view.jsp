@@ -7,7 +7,7 @@
 
 <cti:standardPage module="operator" page="thermostatHistory.${pageNameSuffix}">
 
-<cti:includeScript link="/JavaScript/yukon.thermostat.js"/>
+<cti:includeScript link="/resources/js/common/yukon.thermostat.js"/>
     
 <script type="text/javascript">
 $(function(){

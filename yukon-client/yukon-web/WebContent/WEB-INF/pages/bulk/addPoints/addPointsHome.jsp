@@ -6,7 +6,7 @@
 <cti:standardPage page="bulk.addPointsHome" module="tools">
 <cti:checkRolesAndProperties value="ADD_REMOVE_POINTS">
 
-<cti:includeScript link="/JavaScript/yukon.bulk.point.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.bulk.point.js"/>
 
 <script type="text/javascript">
 $(function() {

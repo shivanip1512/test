@@ -10,8 +10,8 @@
 
 <cti:standardPage module="amr" page="waterLeakReport.report">
 
-    <cti:includeScript link="/JavaScript/yukon.ami.water.leak.report.js"/>
-    <cti:includeScript link="/JavaScript/yukon.field.helper.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.ami.water.leak.report.js"/>
+    <cti:includeScript link="/resources/js/common/yukon.field.helper.js"/>
 
     <div id="algorithm-popup" class="dn"
         data-width="600" 

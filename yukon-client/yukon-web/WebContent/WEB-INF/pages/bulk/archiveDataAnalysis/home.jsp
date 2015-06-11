@@ -8,7 +8,7 @@
 
 <cti:standardPage module="tools" page="bulk.analysis.home">
     
-    <cti:includeScript link="/JavaScript/yukon.data.analysis.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.data.analysis.js"/>
     
     <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.analysis.home" deviceCollection="${deviceCollection}">
     

@@ -13,8 +13,8 @@
 
 <cti:standardPage module="amr" page="billing">
 
-<cti:includeScript link="/JavaScript/yukon.ami.billing.js"/>
-<cti:includeScript link="/JavaScript/yukon.ami.billing.dynamic.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.ami.billing.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.ami.billing.dynamic.js"/>
 
 <cti:tabs id="billing_tab_container">
 

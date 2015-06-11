@@ -10,7 +10,7 @@
     .take16 { height:16px; }
 </style>
 
-<cti:includeScript link="/JavaScript/yukon.jobs.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.jobs.js"/>
 
 <cti:url var="submitUrl" value="/group/scheduledGroupRequestExecution/home"/>
 <form action="${submitUrl}" method="get">

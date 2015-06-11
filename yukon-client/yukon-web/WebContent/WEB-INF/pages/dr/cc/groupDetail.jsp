@@ -7,7 +7,7 @@
 
 <cti:standardPage module="dr" page="cc.groupDetail">
 <cti:msgScope paths="yukon.web.modules.commercialcurtailment.ccurtSetup">
-<cti:includeScript link="/JavaScript/yukon.curtailment.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.curtailment.js"/>
 
 <form id="group" name="group" data-group-id="${group.id}" method="POST" action="<cti:url value="/dr/cc/groupSave/${group.id}"/>">
 <cti:csrfToken/>

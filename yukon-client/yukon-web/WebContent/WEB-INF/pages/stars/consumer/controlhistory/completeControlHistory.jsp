@@ -6,7 +6,7 @@
 <cti:url var="controlHistoryView" value="/stars/consumer/controlhistory"/>
 
 <cti:standardPage module="consumer" page="completecontrolhistory">
-    <cti:includeScript link="/JavaScript/yukon.assets.controlhistory.consumer.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.assets.controlhistory.consumer.js"/>
     <cti:standardMenu />
     <c:set var="controls">    
         <i:inline key="yukon.dr.consumer.completecontrolhistory.viewTitle"/>

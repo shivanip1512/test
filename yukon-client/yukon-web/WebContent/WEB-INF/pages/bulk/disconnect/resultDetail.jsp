@@ -5,7 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="tools" page="bulk.${command.toString().toLowerCase()}.results">
-    <cti:includeScript link="/JavaScript/yukon.ui.progressbar.js"/>
+    <cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>
     <cti:url var="recentResultsUrl" value="/bulk/disconnect/recentResults"/>
     <cti:msg2 var="help" key=".bulk.disconnect.results.${command.toString().toLowerCase()}.help"/>
     <cti:list var="arguments">
@@ -347,6 +347,6 @@
             value="DISCONNECT/${result.key}/IS_COMPLETE" />
     </c:if>
     
-    <cti:includeScript link="/JavaScript/yukon.tools.disconnect.js" />
+    <cti:includeScript link="/resources/js/pages/yukon.tools.disconnect.js" />
     
 </cti:standardPage>

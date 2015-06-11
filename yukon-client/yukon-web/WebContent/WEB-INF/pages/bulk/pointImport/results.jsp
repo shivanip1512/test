@@ -8,7 +8,7 @@
 <cti:url var="updateUrl" value="/bulk/pointImport/updateLog">
     <cti:param name="resultId" value="${resultId}" />
 </cti:url>
-<cti:includeScript link="/JavaScript/yukon.import.logger.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.import.logger.js"/>
 <script>
     $(document).ready( function () {
         initiateLogUpdate("${updateUrl}", 1);

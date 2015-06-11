@@ -5,7 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="amr" page="phaseDetect.readBetweenPhaseTest">
-<cti:includeScript link="/JavaScript/yukon.ui.progressbar.js"/>
+<cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>
 
     <script type="text/javascript">
 

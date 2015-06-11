@@ -8,7 +8,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="capcontrol" page="regulator.${mode}">
-<cti:includeScript link="/JavaScript/yukon.da.regulator.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.da.regulator.js"/>
 <tags:setFormEditMode mode="${mode}"/>
 
 <cti:toJson object="${hours}" id="range-hours"/>

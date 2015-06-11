@@ -60,5 +60,5 @@
             </c:otherwise>
         </c:choose>
     </div>
-    <cti:includeScript link="/JavaScript/yukon.tools.trends.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.tools.trends.js"/>
 </cti:standardPage>

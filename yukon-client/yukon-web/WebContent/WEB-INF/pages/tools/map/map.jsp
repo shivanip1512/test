@@ -170,6 +170,6 @@
 
     <cti:includeScript link="OPEN_LAYERS"/>
     <cti:includeCss link="/resources/js/lib/open-layers/ol.css"/>
-    <cti:includeScript link="/JavaScript/yukon.tools.map.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.tools.map.js"/>
 
 </cti:standardPage>

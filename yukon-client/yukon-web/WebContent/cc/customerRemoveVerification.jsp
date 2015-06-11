@@ -6,7 +6,7 @@
 <cti:standardPage title="Group List" module="commercialcurtailment">
 <cti:standardMenu />
 
-<cti:includeScript link="/JavaScript/yukon.curtailment.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.curtailment.js"/>
 
 <h2>Remove Customer(s) from <t:outputText value="#{sNotificationDetail.event.program.programType.name} #{sNotificationDetail.event.program.name}"/> Event</h2>
 <h3>Verify Customers</h3>

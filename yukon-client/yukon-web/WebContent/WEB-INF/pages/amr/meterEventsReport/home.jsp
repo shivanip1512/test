@@ -11,8 +11,8 @@
 
 <cti:standardPage module="amr" page="meterEventsReport.report">
 
-    <cti:includeScript link="/JavaScript/yukon.field.helper.js"/>
-    <cti:includeScript link="/JavaScript/yukon.ami.meter.events.report.js"/>
+    <cti:includeScript link="/resources/js/common/yukon.field.helper.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.ami.meter.events.report.js"/>
     
     <c:if test="${not empty deviceCollection}">
 

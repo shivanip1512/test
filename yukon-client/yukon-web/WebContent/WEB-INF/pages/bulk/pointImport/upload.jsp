@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="tools" page="bulk.pointImport">
-    <cti:includeScript link="/JavaScript/yukon.import.point.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.import.point.js"/>
     
         <div class="column-12-12">
                 <div class="column one">

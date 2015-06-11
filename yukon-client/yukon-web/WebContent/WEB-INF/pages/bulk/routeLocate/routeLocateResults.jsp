@@ -3,7 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="tools" page="bulk.routeLocateResults">
-    <cti:includeScript link="/JavaScript/yukon.bulk.routeLocate.results.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.bulk.routeLocate.results.js"/>
 
     <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.routeLocateResults" deviceCollection="${result.deviceCollection}">
         <div class="clearfix stacked">

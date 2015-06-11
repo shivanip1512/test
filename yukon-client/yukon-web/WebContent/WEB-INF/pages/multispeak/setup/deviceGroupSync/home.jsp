@@ -22,7 +22,7 @@
     </cti:linkTab>
 </cti:linkTabbedContainer>
 
-    <cti:includeScript link="/JavaScript/yukon.ui.progressbar.js"/>
+    <cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>
     
     <script type="text/javascript">
     

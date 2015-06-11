@@ -4,7 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="adminSetup" page="lmMappings">
-  <cti:includeScript link="/JavaScript/yukon.substation.mappings.js"/>
+  <cti:includeScript link="/resources/js/pages/yukon.substation.mappings.js"/>
 
 <cti:linkTabbedContainer mode="section" id="page_header_tab_container">
     <cti:linkTab tabId="deviceTab" selectorKey="yukon.web.modules.adminSetup.interfaces.home.tab.title">

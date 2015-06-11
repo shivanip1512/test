@@ -5,7 +5,7 @@
 
 <cti:standardPage module="tools" page="groupCommand.details">
 
-    <cti:includeScript link="/JavaScript/yukon.ui.progressbar.js"/>
+    <cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>
     <cti:url var="resultListUrl" value="/group/commander/resultList"/>
 
     <script type="text/javascript">

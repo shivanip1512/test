@@ -2,8 +2,8 @@
 <tags:setFormEditMode mode="${mode}" />
 
 <!-- adding dynamicTable here manually before our device_data_monitor.js so its event handlers fire first  -->
-<cti:includeScript link="/JavaScript/yukon.table.dynamic.js"/>
-<cti:includeScript link="/JavaScript/yukon.monitor.device.data.js" />
+<cti:includeScript link="/resources/js/common/yukon.table.dynamic.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.monitor.device.data.js" />
 
 <c:set var="settings_section_class" value="js-settings-section"/>
 <c:set var="processors_section_class" value="js-processors-section"/>

@@ -3,7 +3,7 @@
 
 <%@ attribute name="lastRunTimestampValue" required="true" type="com.cannontech.web.multispeak.deviceGroupSync.LastRunTimestampValue"%>
 
-<cti:includeScript link="/JavaScript/yukon.ui.progressbar.js"/>
+<cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>
 <cti:uniqueIdentifier var="uniqueId"/>
 				
 <span id="noLinkableProgressLinkSpan${uniqueId}" style="display:none;">

@@ -10,7 +10,7 @@
 
 <tags:setFormEditMode mode="${mode}"/>
 
-    <cti:includeScript link="/JavaScript/yukon.device.config.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.device.config.js"/>
     <c:set var="categoryEditBean" value="${categoryEditBean}" scope="request"/>
     <c:set var="categoryTemplate" value="${categoryTemplate}" scope="request"/>
     <c:forEach var="field" items="${categoryTemplate.fields}" >

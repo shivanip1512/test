@@ -17,10 +17,10 @@
 </cti:isPropertyFalse>
 
 <!-- Included JavaScript -->
-<cti:includeScript link="/JavaScript/yukon.da.common.js"/>
-<cti:includeScript link="/JavaScript/yukon.da.command.js"/>
-<cti:includeScript link="/JavaScript/yukon.da.updaters.js"/>
-<cti:includeScript link="/JavaScript/yukon.da.comments.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.da.common.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.da.command.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.da.updaters.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.da.comments.js"/>
 
 <!-- Beans -->
 <jsp:useBean id="ccSession" class="com.cannontech.web.capcontrol.CCSessionInfo" type="com.cannontech.web.capcontrol.CCSessionInfo" scope="session"/>

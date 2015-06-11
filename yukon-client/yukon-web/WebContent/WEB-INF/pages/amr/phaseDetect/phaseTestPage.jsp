@@ -5,7 +5,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <cti:standardPage module="amr" page="phaseDetect.sendTest">
-<cti:includeScript link="/JavaScript/yukon.ui.progressbar.js"/>
+<cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>
 
 <script type="text/javascript">
     var readingMsg = '<cti:msg2 key=".reading" javaScriptEscape="true"/>';

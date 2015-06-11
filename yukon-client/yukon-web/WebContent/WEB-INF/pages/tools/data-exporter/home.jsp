@@ -175,6 +175,6 @@
          </form:form>
     </div>
 
-    <cti:includeScript link="/JavaScript/yukon.tools.data.exporter.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.tools.data.exporter.js"/>
     <dt:pickerIncludes/>
 </cti:standardPage>

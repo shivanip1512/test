@@ -5,7 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:standardPage module="support" page="logTail">
-<cti:includeScript link="/JavaScript/yukon.support.logs.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.support.logs.js"/>
 <style>
 .logLine { white-space: pre-wrap; word-break: break-all; }
 .spaced { margin-right: 50px; }

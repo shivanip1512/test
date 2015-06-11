@@ -7,7 +7,7 @@
 <cti:standardPage module="tools" page="bulk.importUpload">
 <cti:msgScope paths=", yukon.common.device.bulk">
 
-<cti:includeScript link="/JavaScript/yukon.tools.import.upload.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.tools.import.upload.js"/>
 
 <div class="stacked">
     <strong class="label label-info"><i:inline key=".importUpload.noteLabel"/></strong>

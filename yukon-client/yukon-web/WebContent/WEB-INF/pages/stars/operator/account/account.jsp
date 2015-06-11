@@ -8,7 +8,7 @@
 
 <cti:standardPage module="operator" page="account.${mode}">
 
-<cti:includeScript link="/JavaScript/yukon.assets.account.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.assets.account.js"/>
     
 <!-- TODO: make this a picker and delete style -->
 <style type="text/css">.group-dropdown {max-width: 260px;}</style>

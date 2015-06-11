@@ -6,7 +6,7 @@
 <cti:standardPage title="Group List" module="commercialcurtailment">
 <cti:standardMenu />
 
-<cti:includeScript link="/JavaScript/yukon.curtailment.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.curtailment.js"/>
 
 <h2>Create <t:outputText value="#{sCustomerSelectionBean.eventBean.program.programType.name} #{sCustomerSelectionBean.eventBean.program.name}"/> Event</h2>
 <h3>Verify Customers</h3>

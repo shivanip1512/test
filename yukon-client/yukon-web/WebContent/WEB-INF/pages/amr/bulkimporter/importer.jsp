@@ -7,7 +7,7 @@
 <cti:standardPage page="bulk.bulkImporter" module="tools">
 
 <cti:url var="refreshUrl" value="/amr/bulkimporter/refreshResults" />
-<cti:includeScript link="/JavaScript/yukon.ami.bulk.import.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.ami.bulk.import.js"/>
 
 <script type="text/javascript">
     setupRefreshStuff("${refreshUrl}", "${refreshRate}");
