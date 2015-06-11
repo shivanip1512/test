@@ -10,18 +10,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="support" page="eventViewer.byType">
-
-<script>
-$(function () {
-    $('#events-container').attr('data-url', 'viewByType?' + $('#filter-form').serialize());
-    
-    $('#filter-btn').click(function (ev) {
-        var itemsPerPage = $('#events-container .paging-area').data('pageSize');
-        $('#filter-form').append('<input type="hidden" name="itemsPerPage" value="' + itemsPerPage + '">');
-        $('#filter-form').submit();
-    });
-});
-</script>
+<cti:includeScript link="/resources/js/pages/yukon.support.eventlog.type.js"/>
 
     <cti:linkTabbedContainer>
         <cti:msg2 key=".byCategory.contextualPageName" var="byCategoryTab"/>
@@ -33,43 +22,10 @@ $(function () {
             <c:url value="viewByType" />
         </cti:linkTab>
     </cti:linkTabbedContainer>
-    
+   
     <%-- Filtering popup --%>
     <cti:msg2 var="eventLogFiltersTitle" key=".eventLogFilters" />
-    <div id="filter-popup" data-title="${eventLogFiltersTitle}" class="dn">
-        <c:choose>
-            <c:when test="${not empty filter}">
-                <form:form id="filter-form" commandName="filter" method="get">
-                    <form:hidden path="eventLogType"/>
-                    <tags:nameValueContainer2>
-        
-                        <tags:nameValue2 nameKey=".eventLogDateRange">
-                            <dt:dateRange startPath="startDate" endPath="stopDate" />
-                        </tags:nameValue2>
-        
-                        <c:forEach var="eventLogFilter" items="${filter.eventLogFilters}" varStatus="status">
-                            <c:if test="${eventLogFilter.eventLogColumnType eq 'STRING'}" >
-                                <filterValue:stringFilterValue eventLogFilter="${eventLogFilter}" count="${status.count}" />
-                            </c:if>
-                            <c:if test="${eventLogFilter.eventLogColumnType eq 'NUMBER'}" >
-                                <filterValue:numberFilterValue eventLogFilter="${eventLogFilter}" count="${status.count}"/>
-                            </c:if>
-                            <c:if test="${eventLogFilter.eventLogColumnType eq 'DATE'}">
-                                <filterValue:dateFilterValue eventLogFilter="${eventLogFilter}" count="${status.count}" />
-                            </c:if>
-                        </c:forEach>
-                        
-                    </tags:nameValueContainer2>
-                    <div class="action-area">
-                        <cti:button id="filter-btn" nameKey="filter" classes="action primary"/>
-                    </div>
-                </form:form>
-            </c:when>
-            <c:otherwise>
-                <i:inline key=".noFilterOptionsAvailable"/>
-            </c:otherwise>
-        </c:choose>
-    </div>
+   
 
     <%-- Event Type Section with Event Type popup tree --%>
     <table>
@@ -110,9 +66,38 @@ $(function () {
                              includeControlBar="true"/>
             </td>
         </tr>
-        
+       
     </table>
+     <c:choose>
+            <c:when test="${not empty filter}">
+                <form:form id="filter-form" commandName="filter" method="get">
+                    <form:hidden path="eventLogType"/>
+                    <tags:nameValueContainer2 >
+        
+                        <tags:nameValue2 nameKey=".eventLogDateRange">
+                            <dt:dateRange startPath="startDate" endPath="stopDate" />
+                        </tags:nameValue2>
+        
+                        <c:forEach var="eventLogFilter" items="${filter.eventLogFilters}" varStatus="status">
+                            <c:if test="${eventLogFilter.eventLogColumnType eq 'STRING'}" >
+                                <filterValue:stringFilterValue eventLogFilter="${eventLogFilter}" count="${status.count}" />
+                            </c:if>
+                            <c:if test="${eventLogFilter.eventLogColumnType eq 'NUMBER'}" >
+                                <filterValue:numberFilterValue eventLogFilter="${eventLogFilter}" count="${status.count}"/>
+                            </c:if>
+                            <c:if test="${eventLogFilter.eventLogColumnType eq 'DATE'}">
+                                <filterValue:dateFilterValue eventLogFilter="${eventLogFilter}" count="${status.count}" />
+                            </c:if>
+                        </c:forEach>
+                        
+                    </tags:nameValueContainer2>
+                </form:form>
+            </c:when>
+        </c:choose>
     <div class="action-area stacked">
+        <c:if test="${not empty filter}">
+            <cti:button id="filter-btn" nameKey="filter" classes="action primary fl"/>
+        </c:if>
         <c:choose>
             <c:when test="${maxCsvRows > searchResult.hitCount}">
                 <cti:button nameKey="download" href="${csvLink}" icon="icon-page-excel"/>
@@ -124,13 +109,10 @@ $(function () {
         </c:choose>
     </div>
     
+  
+    
     <cti:msg var="eventsTitle" key="yukon.common.events.title"/>
-    <c:set var="controls">
-        <a href="javascript:void(0);" data-popup="#filter-popup" data-popup-toggle>
-            <cti:icon icon="icon-filter"/>&nbsp;
-            <i:inline key="yukon.common.filter"/>
-        </a>
-    </c:set>
+   
     <tags:sectionContainer title="${eventsTitle}" controls="${controls}">
         <c:choose>
             <c:when test="${fn:length(searchResult.resultList) == 0}">
