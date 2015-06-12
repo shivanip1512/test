@@ -111,10 +111,7 @@
         <cti:msg2 key=".strategyDetails.title" arguments="${strategyName}" var="strategyTitle"/>
         <div class="dn js-strategy-details" data-title="${strategyTitle}">
             <c:if test="${hasEditingRole}">
-                <cti:url var="url" value="/editor/cbcBase.jsf">
-                    <cti:param name="type" value="5"/>
-                    <cti:param name="itemid" value="${strategyId}"/>
-                </cti:url>
+                <cti:url var="url" value="/capcontrol/strategies/${strategyId}" />
                 <i:inline key=".strategyDetails.link"/><a href="${url}">${fn:escapeXml(strategyName)}</a>
             </c:if>
             <table class="full-width striped" >

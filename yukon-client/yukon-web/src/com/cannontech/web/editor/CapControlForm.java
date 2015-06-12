@@ -8,13 +8,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
-import javax.faces.event.PhaseId;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
@@ -30,8 +28,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
 import org.springframework.validation.ObjectError;
 
-import com.cannontech.capcontrol.ControlAlgorithm;
-import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.capcontrol.creation.service.CapControlCreationService;
 import com.cannontech.capcontrol.dao.CapbankControllerDao;
 import com.cannontech.capcontrol.dao.CapbankDao;
@@ -100,9 +96,6 @@ import com.cannontech.database.db.capcontrol.CCFeederSubAssignment;
 import com.cannontech.database.db.capcontrol.CCSubstationSubBusList;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.CapControlSubstationBus;
-import com.cannontech.database.db.capcontrol.PeakTargetSetting;
-import com.cannontech.database.db.capcontrol.StrategyPeakSettingsHelper;
-import com.cannontech.database.db.capcontrol.TargetSettingType;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.database.db.holiday.HolidaySchedule;
 import com.cannontech.database.db.pao.PAOScheduleAssign;
@@ -136,7 +129,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
     private int capbankTab = -1;
     private String paoDescLabel = "Description";
 	private String childLabel = "Children";
-	private boolean editingCBCStrategy = false;
 	private boolean editingController = false;
 	private boolean hasEditingRole = false;
 	private int itemId = -1;
@@ -179,8 +171,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
     private TransactionTemplate transactionTemplate;
     
     Logger log = YukonLogManager.getLogger(CapControlForm.class);
-    private ControlAlgorithm currentControlAlgorithm;
-    private ControlMethod currentControlMethod;
     
     public DeviceConfiguration getDefaultDnpConfiguration() {
         DeviceConfiguration configuration = deviceConfigurationDao.getDefaultDNPConfiguration();
@@ -316,22 +306,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
             getCbcHolidayStrategies();
         }
         return cbcHolidayStrategiesMap;
-    }
-
-	@Override
-    public int getCurrentStrategyID() {
-		int stratID = CtiUtilities.NONE_ZERO_ID;
-        if (getDbPersistent() instanceof CapControlStrategy) {
-            stratID = ((CapControlStrategy)getDbPersistent()).getId();
-        }
-		return stratID;
-	}
-    
-    public String getCurrentStratName() {
-        return getStrategy().getName();
-    }
-    
-    public void newStrategySelected (ValueChangeEvent vce) {
     }
     
     public void newScheduleSelected (ValueChangeEvent vce) {
@@ -498,10 +472,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
     			dbObj = PAOFactory.createPAObject(id);
     			break;
     
-            case DBEditorTypes.EDITOR_STRATEGY:
-                dbObj = new CapControlStrategy();
-                ((CapControlStrategy)dbObj).setId(new Integer(id));
-                break;
 		}
 		setDbPersistent(dbObj);
 		initItem();
@@ -560,22 +530,10 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
             PointBase point = (PointBase) getDbPersistent();
 			itemId = point.getPoint().getPointID().intValue();
 			initPanels(PointTypes.getType(point.getPoint().getPointType()));
-			
-		} else if (getDbPersistent() instanceof CapControlStrategy) {
-		    
-            CapControlStrategy strat = (CapControlStrategy)getDbPersistent();
-            itemId = strat.getId().intValue();
-            editingCBCStrategy = true;
-            currentControlAlgorithm = strat.getAlgorithm();
-            currentControlMethod = strat.getControlMethod();
-            initPanels(CapControlTypes.CAP_CONTROL_STRATEGY);
         }
 		
 		/* Restore the value of the dual bus from DB */
 		resetDualBusEnabled();
-        if (!(getDbPersistent() instanceof CapControlStrategy)) {
-            editingCBCStrategy = false;
-        }
         initEditorPanels();
         getPointTreeForm().init(itemId);
 	}
@@ -599,7 +557,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
         cbControllerEditor = null;
         cbcStrategies = null;
         cbcStrategiesMap = null;
-        editingCBCStrategy = false;
         editingController = false;
         isDualSubBusEdited = false;
         pointTreeForm = null; 
@@ -654,7 +611,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
 		getVisibleTabs().put("CBCController", Boolean.FALSE);
 		getVisibleTabs().put("GeneralSchedule", Boolean.FALSE);
         getVisibleTabs().put("CBAddInfo", Boolean.FALSE);
-        getVisibleTabs().put("CBCStrategy", Boolean.FALSE);
 
         switch (paoType) {
 
@@ -724,12 +680,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
     			getVisibleTabs().put("CBCController", Boolean.TRUE);
     			break;
     
-            case CapControlTypes.CAP_CONTROL_STRATEGY:
-                setEditorTitle("Strategy");
-                getVisibleTabs().put("GeneralPAO", Boolean.FALSE);
-                getVisibleTabs().put("CBCStrategy", Boolean.TRUE);
-                break;
-
     		case PointTypes.ANALOG_POINT:
     			break;
     
@@ -754,17 +704,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
         currentInstance.addMessage("cti_db_update", facesMessage);
     }
     
-    public boolean checkStrategy(CapControlStrategy strat) {
-        if(strat.isIntegrateFlag()) {
-            int integrationSeconds = strat.getIntegratePeriod();
-            int analysisSeconds = strat.getControlInterval();
-            if(integrationSeconds > analysisSeconds) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
 	@Override
     public void update() throws SQLException {
 	    if(!isEditingAuthorized()) {
@@ -774,19 +713,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
         facesMsg.setDetail(CBCExceptionMessages.DB_UPDATE_SUCCESS);
         Connection connection = getDbPersistent().getDbConnection();
 		try {
-			// update the CBCStrategy object if we are editing it
-			if (isEditingCBCStrategy() && (! (getDbPersistent() instanceof CapControlStrategy))) {
-                CapControlStrategy currentStrategy = getStrategy();
-                boolean ok = checkStrategy(currentStrategy);
-                if(ok) {
-                    updateDBObject(currentStrategy, facesMsg);
-    				cbcStrategies = null;
-                    setEditingCBCStrategy(false);
-                }else {
-                    facesMsg.setDetail("ERROR: When using Integrate Control, the analysis interval must be greater than or equal to the integration interval.");
-                    facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
-                }
-			}
 			// update the CBC object if we are editing it
 			if (isEditingController()) {
                 try {
@@ -849,17 +775,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
             connection = CBCDBUtil.getConnection();
             dbPers.setDbConnection(connection);
             
-            if (dbPers instanceof CapControlStrategy) {
-                CapControlStrategy strategy = getStrategy();
-                boolean ok = checkStrategy(strategy);
-                if(ok) {
-                    setEditingCBCStrategy(false);
-                    updateDBObject(strategy, facesMsg);
-                }else {
-                	facesMsg.setDetail("ERROR: When using Integrate Control, the analysis interval must be greater than or equal to the integration interval.");
-                    facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
-                }
-            }else if(dbPers instanceof CapControlSpecialArea) {
+            if (dbPers instanceof CapControlSpecialArea) {
                 
                 if(dataModelOK) {
                     updateDBObject(dbPers, facesMsg);
@@ -967,11 +883,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
      * @return
      */
     private int getEditorType(int type) {
-        if (type == CapControlTypes.CAP_CONTROL_STRATEGY) {
-            return DBEditorTypes.EDITOR_STRATEGY;
-        }else {
-            return DBEditorTypes.EDITOR_CAPCONTROL;
-        }
+        return DBEditorTypes.EDITOR_CAPCONTROL;
     }
 
     /**
@@ -1375,29 +1287,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
     public void setPaoDescLabel(String string) {
 		paoDescLabel = string;
 	}
-	
-	/*
-	 * Remembers if the edit checkbox is checked on the startegy editor.
-	 */
-	@Override
-    public boolean isEditingCBCStrategy() {
-		return editingCBCStrategy;
-	}
-	
-	/*
-	 * Tells us whether or not the pao we are editing is a strategy.
-	 */
-	public boolean isEditingAStrategy() {
-        if(getDbPersistent() instanceof CapControlStrategy) {
-            return true;
-        }
-        return false;
-    }
-
-	@Override
-    public void setEditingCBCStrategy(boolean b) {
-		editingCBCStrategy = b;
-	}
 
 	public boolean isHasEditingRole() {
         return hasEditingRole;
@@ -1481,16 +1370,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
 		return wizData;
 	}
 
-	@Override
-    public boolean isVoltageControl() {
-		if (getCurrentStrategyID() != CtiUtilities.NONE_ZERO_ID) {
-			CapControlStrategy strat = getCbcStrategiesMap().get(new Integer(getCurrentStrategyID()));
-			return strat != null && ControlAlgorithm.VOLTS.getDisplayName().equals(strat.getAlgorithm());
-		} else {
-			return false;
-        }
-	}
-
     @Override
     public LiteYukonPAObject[] getSubBusList() {
 		if (subBusList == null) {
@@ -1539,7 +1418,9 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
     @Override
     public int getSelectedPanelIndex() {
         if (isEditingController()) {
-           if (getDbPersistent() instanceof CapBankController || getDbPersistent() instanceof CapBankController702x || getDbPersistent() instanceof CapBankControllerDNP) {
+           if (getDbPersistent() instanceof CapBankController || 
+               getDbPersistent() instanceof CapBankController702x ||
+               getDbPersistent() instanceof CapBankControllerDNP) {
                return CBCSelectionLists.CapBankControllerSetup;
            }
         } else if (getDbPersistent() instanceof CapControlArea) {
@@ -1554,8 +1435,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
             return substationTab > -1 ? substationTab : CBCSelectionLists.CapControlSubstationSetup;
         } else if (getDbPersistent() instanceof CapControlFeeder) {
             return feederTab > -1 ? feederTab : CBCSelectionLists.CapControlFeederSetup;
-        }else if (getDbPersistent() instanceof CapControlStrategy) {
-            return CBCSelectionLists.CapControlStrategyEditor;
         }
         return CBCSelectionLists.General;
     }
@@ -1646,8 +1525,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
     	if (getDbPersistent() != null) {
 	    	if (getDbPersistent() instanceof YukonPAObject) {
 	        	retStr = ((YukonPAObject)getDbPersistent()).getPAOName();
-	        } else if (getDbPersistent() instanceof CapControlStrategy) {
-	            retStr = ((CapControlStrategy)getDbPersistent()).getName();
 	        }
     	}
         return retStr;
@@ -1685,16 +1562,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
         }
     }
 
-	//delegate to this class because generic class doesn't have to know about business rules	
-	public SelectItem[] getControlMethods () {
-	    List<SelectItem> controlMethods = Lists.newArrayList();
-	    for(ControlMethod controlMethod : ControlMethod.values()) {
-	        controlMethods.add(new SelectItem(controlMethod, controlMethod.getDisplayName()));
-	    }
-	    return controlMethods.toArray(new SelectItem[0]);
-	    
-	}
-    
     @Override
     public Map<Integer, String> getPointNameMap () {
 
@@ -1879,32 +1746,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
         return strategyDao.getAllStrategies();
     }
     
-    @SuppressWarnings("unchecked")
-    public void editCBCStrat( ActionEvent ev ) {
-        FacesContext context = FacesContext.getCurrentInstance();
-        Map<Integer, String> paramMap = context.getExternalContext().getRequestParameterMap();
-        int elemID = Integer.parseInt( paramMap.get("stratID") );
-        HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
-        CtiNavObject navObject = (CtiNavObject) session.getAttribute("CtiNavObject");
-        HttpServletRequest req = (HttpServletRequest)context.getExternalContext().getRequest();
-        String currentPage = req.getRequestURL().toString();
-        navObject.setPreviousPage(currentPage);
-        navObject.getHistory().push(currentPage);
-        String location = "/editor/cbcBase.jsf?type=5&itemid="+elemID;
-        navObject.setCurrentPage(location);
-        try {
-            context.getExternalContext().redirect(location);
-        } catch (IOException e) {
-            log.error(e);
-        }
-        FacesContext.getCurrentInstance().responseComplete();
-    }
-    
-    public boolean isTimeOfDay() {
-        boolean timeOfDay = getStrategy().isTimeOfDay();
-        return timeOfDay;
-    }
-    
     public void resetTabIndex() {
         specialAreaTab = -1;
         areaTab = -1;
@@ -1912,17 +1753,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
         subBusTab = -1;
         feederTab = -1;
         capbankTab = -1;
-    }
-    
-    //TODO Remove after deleting JSF strategyEditor.jsp
-    public List<SelectItem> getControlAlgorithims() {
-        ControlMethod currentMethod = getStrategy().getControlMethod();
-        Set<ControlAlgorithm> supportedAlgorithms = currentMethod.getSupportedAlgorithms();
-        List<SelectItem> items = Lists.newArrayList();
-        for(ControlAlgorithm algorithm : supportedAlgorithms) {
-            items.add(new SelectItem(algorithm, algorithm.getDisplayName()));
-        }
-        return items;
     }
     
     public void setItemId(int itemId) {
@@ -1964,72 +1794,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
 	public void setUnassignedSubBuses(List<LiteYukonPAObject> unassignedSubBuses) {
 		this.unassignedSubBuses = unassignedSubBuses;
 	}
-	
-    public CapControlStrategy getStrategy() {
-        return getCbcStrategiesMap().get(getCurrentStrategyID());
-    }
-    
-    public Boolean getIntegrateFlag() {
-        return getStrategy().isIntegrateFlag();
-    }
-
-    public void setIntegrateFlag(Boolean integrateFlag) {
-        getStrategy().setIntegrateFlag(integrateFlag);
-    }
-
-    public Integer getIntegratePeriod() {
-        return getStrategy().getIntegratePeriod();
-    }
-
-    public void setIntegratePeriod(Integer integratePeriod) {
-        getStrategy().setIntegratePeriod(integratePeriod);
-    }
-    public Boolean getLikeDayFallBack() {
-        return getStrategy().isLikeDayFallBack();
-    }
-
-    public void setLikeDayFallBack(Boolean fallBackFlag) {
-        getStrategy().setLikeDayFallBack(fallBackFlag);
-    }
-    
-    public void algorithmChanged(ValueChangeEvent e) {
-        ControlAlgorithm newControlAlgorithm = ControlAlgorithm.valueOf(e.getNewValue().toString());
-        currentControlAlgorithm = newControlAlgorithm;
-        Map<TargetSettingType, PeakTargetSetting> newTargetSettings = StrategyPeakSettingsHelper.getSettingDefaults(currentControlAlgorithm);
-        getStrategy().setTargetSettings(newTargetSettings);
-    }
-    
-    public void controlMethodChanged(ValueChangeEvent e) {
-        PhaseId phaseId = e.getPhaseId();
-        //queue the event to the update phase - after the model is updated, so our changes won't 
-        //be overwritten, but before the view is built, so the UI sees the changes.
-        if(phaseId.equals(PhaseId.ANY_PHASE)) {
-            e.setPhaseId(PhaseId.UPDATE_MODEL_VALUES);
-            e.queue();
-        } else if(phaseId.equals(PhaseId.UPDATE_MODEL_VALUES)) {
-            ControlMethod newMethod = ControlMethod.valueOf(e.getNewValue().toString());
-            currentControlMethod = newMethod;
-            
-            /* Set new control algorithm */
-            currentControlAlgorithm = currentControlMethod.getDefaultAlgorithm();
-            getStrategy().setAlgorithm(currentControlAlgorithm);
-            
-            /* Set new target settings */
-            Map<TargetSettingType, PeakTargetSetting> newTargetSettings = StrategyPeakSettingsHelper.getSettingDefaults(currentControlAlgorithm); 
-            getStrategy().setTargetSettings(newTargetSettings);
-            
-            /* Set new control method */
-            getStrategy().setControlMethod(currentControlMethod);
-        }
-    }
-    
-    public String getPeakHeader() {
-        return isTimeOfDay() ? "Close" : "Peak";
-    }
-    
-    public String getOffPeakHeader() {
-        return isTimeOfDay() ? "Close" : "Off Peak";
-    }
 
     //for subBusSchedule.jsp
     public List<SelectItem> getPaoScheduleSelectItems() {

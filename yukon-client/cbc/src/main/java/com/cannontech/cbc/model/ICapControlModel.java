@@ -16,8 +16,6 @@ public interface ICapControlModel {
 
     public abstract HashMap<Integer, CapControlStrategy> getCbcStrategiesMap();
 
-    public abstract int getCurrentStrategyID();
-
     public abstract void initItem(int id, int type);
 
     public abstract void initWizard(int paoType);
@@ -50,10 +48,6 @@ public interface ICapControlModel {
 
     public abstract void setPaoDescLabel(String string);
 
-    public abstract boolean isEditingCBCStrategy();
-
-    public abstract void setEditingCBCStrategy(boolean b);
-
     public abstract List<LiteYukonPAObject> getUnassignedBanks();
 
     public abstract List<LiteYukonPAObject> getUnassignedFeeders();
@@ -69,8 +63,6 @@ public interface ICapControlModel {
     public abstract String addSchedule();
 
     public abstract EditorDataModel getWizData();
-
-    public abstract boolean isVoltageControl();
 
     public abstract LiteYukonPAObject[] getSubBusList();
 

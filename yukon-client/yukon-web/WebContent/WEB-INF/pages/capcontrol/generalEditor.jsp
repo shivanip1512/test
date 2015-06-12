@@ -15,7 +15,7 @@
     				<x:panelGroup>
 
                         <x:outputText value="#{capControlForm.PAOBase.paoType} (id: #{capControlForm.PAOBase.PAObjectID})"
-                            rendered="#{!capControlForm.editingController && !capControlForm.editingCBCStrategy}"/>
+                            rendered="#{!capControlForm.editingController}"/>
                     
                         <x:selectOneMenu id="Select_702XCBC_PAOType" value="#{capControlForm.CBControllerEditor.deviceType}"
         					rendered="#{capControlForm.CBControllerEditor.device702X && capControlForm.PAOBase.paoType != com.cannontech.common.pao.PaoType.CAPBANK}">
@@ -51,19 +51,19 @@
     				
                     <x:panelGroup>
                         <x:inputText id="paoName" value="#{capControlForm.PAOBase.PAOName}" styleClass="char32Label" required="true" maxlength="60"
-                            rendered="#{!capControlForm.editingCBCStrategy && capControlForm.PAOBase.paoType != com.cannontech.common.pao.PaoType.CAPBANK}" />
+                            rendered="#{capControlForm.PAOBase.paoType != com.cannontech.common.pao.PaoType.CAPBANK}" />
                         
                         <x:inputText id="paoNameForCaps" value="#{capBankEditor.capBank.PAOName}" styleClass="char32Label"
-                            required="true" maxlength="60" rendered="#{!capControlForm.editingCBCStrategy && capControlForm.PAOBase.paoType == com.cannontech.common.pao.PaoType.CAPBANK}" />
+                            required="true" maxlength="60" rendered="#{capControlForm.PAOBase.paoType == com.cannontech.common.pao.PaoType.CAPBANK}" />
                     </x:panelGroup>
     				
                 </x:panelGrid>
 				
                 <h:selectBooleanCheckbox id="disablePao" value="#{capControlForm.PAOBase.disabled}"
-					rendered="#{!capControlForm.editingCBCStrategy && capControlForm.PAOBase.paoType != com.cannontech.common.pao.PaoType.CAPBANK}"/>
+					rendered="#{capControlForm.PAOBase.paoType != com.cannontech.common.pao.PaoType.CAPBANK}"/>
 				
                 <h:selectBooleanCheckbox id="disablePaoForCaps" value="#{capBankEditor.capBank.disabled}"
-					rendered="#{!capControlForm.editingCBCStrategy && capControlForm.PAOBase.paoType == com.cannontech.common.pao.PaoType.CAPBANK}"/>
+					rendered="#{capControlForm.PAOBase.paoType == com.cannontech.common.pao.PaoType.CAPBANK}"/>
 
 				<x:outputLabel for="disablePao" value="Disable" title="Disables/Enables the object." styleClass="padCheckBoxLabel"/>
                 
@@ -84,14 +84,6 @@
                 
 			</h:panelGroup>
 
-			<h:panelGroup id="cbcStrat" rendered="#{capControlForm.visibleTabs['CBCStrategy']}">
-				
-                <x:outputLabel for="stratName" value="Name: " title="System wide label for this object" />
-				
-                <x:inputText id="stratName" value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].name}"
-					styleClass="char32Label" required="true" maxlength="32"/>
-				
-			</h:panelGroup>
 		</x:div>
 	</x:htmlTag>
 </f:subview>

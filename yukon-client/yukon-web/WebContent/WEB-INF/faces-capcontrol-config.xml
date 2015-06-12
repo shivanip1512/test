@@ -141,14 +141,4 @@
         </navigation-case>
     </navigation-rule>
     
-    <converter>
-        <converter-id>controlAlgorithmConverter</converter-id>
-        <converter-class>com.cannontech.web.capcontrol.converter.ControlAlgorithmConverter</converter-class>
-    </converter>
-    
-    <converter>
-        <converter-id>controlMethodConverter</converter-id>
-        <converter-class>com.cannontech.web.capcontrol.converter.ControlMethodConverter</converter-class>
-    </converter>
-    
 </faces-config>

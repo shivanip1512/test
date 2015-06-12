@@ -27,10 +27,7 @@
                         <th>
                             <span class="fl"><i:inline key=".table.header.overrideStrategy"/>&nbsp;</span>
                             <cti:msg2 var="titleText" key=".editStrategy"/>
-                            <cti:url var="strategyUrl" value="/editor/cbcBase.jsf">
-                                <cti:param name="type" value="5"/>
-                                <cti:param name="itemid" value="${strategy.id}"/>
-                            </cti:url>
+                            <cti:url var="strategyUrl" value="/capcontrol/strategies/${strategy.id}" />
                             <span class="sub">(<a href="${strategyUrl}" title="${titleText}">${strategy.name}</a>)</span>
                         </th>
                     </tr>

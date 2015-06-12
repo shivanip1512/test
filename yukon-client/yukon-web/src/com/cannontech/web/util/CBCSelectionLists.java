@@ -1,14 +1,11 @@
 package com.cannontech.web.util;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
 import javax.faces.model.SelectItem;
 
-import com.cannontech.capcontrol.ControlAlgorithm;
-import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.capcontrol.service.CbcHelperService;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -18,10 +15,8 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.capcontrol.CapBank;
-import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.pao.DBEditorTypes;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.point.AnalogControlType;
 import com.cannontech.database.data.point.PointArchiveType;
@@ -54,7 +49,6 @@ public class CBCSelectionLists {
     public static final int CapBankAdditionalInfo = 13;
     public static final int AreaSubs = 14;
     public static final int SpecialAreaSubs = 15;
-    public static final int CapControlStrategyEditor = 16;
     
     /* MyFaces 1.10 does not seem to show the correct time with h:outPutText, */
 	/* so we only show date for now within our pages */
@@ -129,17 +123,6 @@ public class CBCSelectionLists {
 	final private SelectItem[] controllerTypes = JSFUtil.convertSelectionListByName(YukonSelectionListDefs.YUK_LIST_ID_CONTROLLER_TYPE);
 	final private SelectItem[] switchManufacturers = JSFUtil.convertSelectionListByName(YukonSelectionListDefs.YUK_LIST_ID_SWITCH_MANUFACTURER);
 	final private SelectItem[] switchTypes = JSFUtil.convertSelectionListByName(YukonSelectionListDefs.YUK_LIST_ID_SWITCH_TYPE);
-	
-	private static final SelectItem[] daySelection =  {
-		//value, label
-		new SelectItem("0", "Sunday" ),
-		new SelectItem("1", "Monday" ),
-		new SelectItem("2", "Tuesday" ),
-		new SelectItem("3", "Wednesday" ),
-		new SelectItem("4", "Thursday" ),
-		new SelectItem("5", "Friday" ),
-		new SelectItem("6", "Saturday" )
-	};
 
 	private static final SelectItem[] scheduleCmds =  {
 		//value, label
@@ -154,25 +137,6 @@ public class CBCSelectionLists {
         new SelectItem("Send Time Syncs","Send Time Syncs")
 	};
 
-
-	private static final SelectItem[] cbcControlMethods =  {
-		//value, label
-		new SelectItem(ControlMethod.INDIVIDUAL_FEEDER, ControlMethod.INDIVIDUAL_FEEDER.getDisplayName()),
-		new SelectItem(ControlMethod.BUSOPTIMIZED_FEEDER, ControlMethod.BUSOPTIMIZED_FEEDER.getDisplayName()),		
-		new SelectItem(ControlMethod.MANUAL_ONLY, ControlMethod.MANUAL_ONLY.getDisplayName()),		
-		new SelectItem(ControlMethod.SUBSTATION_BUS, ControlMethod.SUBSTATION_BUS.getDisplayName()),
-		new SelectItem(ControlMethod.TIME_OF_DAY, ControlMethod.TIME_OF_DAY.getDisplayName())
-	};
-
-
-	private static final SelectItem[] cbcControlAlgorithim =  {
-		new SelectItem(ControlAlgorithm.KVAR, ControlAlgorithm.KVAR.getDisplayName()),
-		new SelectItem(ControlAlgorithm.PFACTOR_KW_KVAR, ControlAlgorithm.PFACTOR_KW_KVAR.getDisplayName()),
-		new SelectItem(ControlAlgorithm.MULTI_VOLT, ControlAlgorithm.MULTI_VOLT.getDisplayName()),
-		new SelectItem(ControlAlgorithm.VOLTS, ControlAlgorithm.VOLTS.getDisplayName()),
-        new SelectItem(ControlAlgorithm.MULTI_VOLT_VAR, ControlAlgorithm.MULTI_VOLT_VAR.getDisplayName()),
-    };
-	
 	private static SelectItem[] capBankOpStates =  {
 		new SelectItem(CapBank.FIXED_OPSTATE, CapBank.FIXED_OPSTATE),
 		new SelectItem(CapBank.STANDALONE_OPSTATE, CapBank.STANDALONE_OPSTATE),
@@ -393,27 +357,6 @@ public class CBCSelectionLists {
 	/**
 	 * @return
 	 */
-	public SelectItem[] getDaySelections() {
-		return daySelection;
-	}
-
-	/**
-	 * @return
-	 */
-	public SelectItem[] getCbcControlMethods() {
-		return cbcControlMethods;
-	}
-
-	/**
-	 * @return
-	 */
-	public SelectItem[] getCbcControlAlgorithim() {
-		return cbcControlAlgorithim;
-	}
-	
-	/**
-	 * @return
-	 */
 	public SelectItem[] getScheduleCmds() {
 		return scheduleCmds;
 	}
@@ -523,29 +466,6 @@ public class CBCSelectionLists {
 		return TIME_INTERVAL;
 	}
     
-    public SelectItem[] getIntegrationPeriods () {
-        return getIntegrationPeriods;
-    }
-    
-    private static final SelectItem[] getIntegrationPeriods =  {
-        new SelectItem(new Integer (60), "1 minute"),
-        new SelectItem(new Integer (120), "2 minutes"),
-        new SelectItem(new Integer (180), "3 minutes"),
-        new SelectItem(new Integer (240), "4 minutes"),
-        new SelectItem(new Integer (300), "5 minutes"),
-        new SelectItem(new Integer (360), "6 minutes"),
-        new SelectItem(new Integer (420), "7 minutes"),
-        new SelectItem(new Integer (480), "8 minutes"),
-        new SelectItem(new Integer (540), "9 minutes"),
-        new SelectItem(new Integer (600), "10 minutes"),
-        new SelectItem(new Integer (660), "11 minutes"),
-        new SelectItem(new Integer (720), "12 minutes"),
-        new SelectItem(new Integer (780), "13 minutes"),
-        new SelectItem(new Integer (840), "14 minutes"),
-        new SelectItem(new Integer (900), "15 minutes")
-        
-    };
- 
     public Integer getSubstationType () {
         return PaoType.CAP_CONTROL_SUBSTATION.getDeviceTypeId();
     }
@@ -559,10 +479,6 @@ public class CBCSelectionLists {
     
     public Integer getCapType () {
         return DeviceTypes.CAPBANK;
-    }
-    
-    public Integer getStrategyEditorType () {
-        return DBEditorTypes.EDITOR_STRATEGY;
     }
     
     public SelectItem[] getCapBankConfigs (){

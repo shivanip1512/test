@@ -67,10 +67,14 @@ public class EditorDataModelImpl implements EditorDataModel {
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(itemId);
 
         String url;
-        if (pao != null && pao.getPaoType().isRegulator()) {
-            url = "/capcontrol/regulators/" + itemId;
+        if (type.equals("strategy")) {
+            url = "/capcontrol/strategies/" + itemId;
         } else {
-            url = "/editor/cbcBase.jsf?type=" + type + "&itemid=" + itemId;
+            if (pao != null && pao.getPaoType().isRegulator()) {
+                url = "/capcontrol/regulators/" + itemId;
+            } else {
+                url = "/editor/cbcBase.jsf?type=" + type + "&itemid=" + itemId;
+            }
         }
 
         JSFUtil.redirect(url);
