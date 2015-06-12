@@ -29,18 +29,18 @@ public class PaoScheduleValidator extends SimpleValidator<PaoSchedule> {
         if (schedule.getId() == null) {
             boolean nameTaken = paoScheduleDao.doesNameExist(schedule.getName());
             if (nameTaken) {
-                errors.rejectValue("name", key+"nameConflict");
+                errors.rejectValue("name", key + "nameConflict");
             }
         //For edit, we cannot take a different schedules name
         } else {
             PaoSchedule existingWithName = paoScheduleDao.findForName(schedule.getName());
             if (existingWithName != null && ! existingWithName.getId().equals(schedule.getId())) {
-                errors.rejectValue("name", key+"nameConflict");
+                errors.rejectValue("name", key + "nameConflict");
             }
         }
         if (schedule.isLater()) {
             if (schedule.getNextRunTime() == null) {
-                errors.rejectValue("nextRunTime", key+"date");
+                errors.rejectValue("nextRunTime", key + "date");
             }
         }
     }
