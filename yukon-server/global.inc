@@ -167,8 +167,8 @@ D_BOOST_ENABLE_ASSERT_HANDLER = /DBOOST_ENABLE_ASSERT_HANDLER
 !IFDEF DEBUG
 #note on above:  apparently the "!" is not a NOT -- hence this part is the DEBUG SECTION
 #echo debug build used
-CFLAGS  = /nologo /Zi /O2 /EHa     /MDd /Zm200 /D_DEBUG  $(D_VERSION) $(D_VERSION_DETAILS) $(D_BOOST_ENABLE_ASSERT_HANDLER)
-DLLFLAGS= /nologo /Zi /O2 /EHa /LD /MDd /Zm200 /D_DEBUG  $(D_VERSION) $(D_VERSION_DETAILS) $(D_BOOST_ENABLE_ASSERT_HANDLER)
+CFLAGS  = /nologo /Zi /Od /EHa     /MDd /Zm200 /D_DEBUG  $(D_VERSION) $(D_VERSION_DETAILS) $(D_BOOST_ENABLE_ASSERT_HANDLER)
+DLLFLAGS= /nologo /Zi /Od /EHa /LD /MDd /Zm200 /D_DEBUG  $(D_VERSION) $(D_VERSION_DETAILS) $(D_BOOST_ENABLE_ASSERT_HANDLER)
 !ELSE
 #This part is the non-debug section a/k/a release or retail build
 #echo non-debug build used
