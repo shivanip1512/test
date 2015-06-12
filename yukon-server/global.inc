@@ -172,8 +172,8 @@ DLLFLAGS= /nologo /Zi /O2 /EHa /LD /MDd /Zm200 /D_DEBUG  $(D_VERSION) $(D_VERSIO
 !ELSE
 #This part is the non-debug section a/k/a release or retail build
 #echo non-debug build used
-CFLAGS  = /nologo /Zi /Od /Oy- /EHa     /MD /Zm200 $(D_VERSION) $(D_VERSION_DETAILS) $(BOOST_ENABLE_ASSERT_HANDLER)
-DLLFLAGS= /nologo /Zi /Od /Oy- /EHa /LD /MD /Zm200 $(D_VERSION) $(D_VERSION_DETAILS) $(BOOST_ENABLE_ASSERT_HANDLER)
+CFLAGS  = /nologo /Zi /O2 /Oy- /EHa     /MD /Zm200 $(D_VERSION) $(D_VERSION_DETAILS) $(BOOST_ENABLE_ASSERT_HANDLER)
+DLLFLAGS= /nologo /Zi /O2 /Oy- /EHa /LD /MD /Zm200 $(D_VERSION) $(D_VERSION_DETAILS) $(BOOST_ENABLE_ASSERT_HANDLER)
 !ENDIF
 
 
