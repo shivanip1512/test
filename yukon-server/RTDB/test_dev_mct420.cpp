@@ -37,6 +37,7 @@ struct test_Mct420Device : Cti::Devices::Mct420Device
 
     using Mct4xxDevice::getUsageReportDelay;
 
+    using Mct420Device::getDemandData;
     using Mct420Device::executeGetValue;
 
     using Mct420Device::decodeGetValueDailyRead;
@@ -164,7 +165,80 @@ BOOST_AUTO_TEST_CASE(test_isSupported_Mct4xxFeature_TouPeaks)
     BOOST_CHECK_EQUAL(true, mct.test_isSupported_Mct4xxFeature_TouPeaks());
 }
 
-BOOST_AUTO_TEST_CASE(test_decodeDisconnectConfig)
+BOOST_AUTO_TEST_CASE( test_dev_mct420_getDemandData )
+{
+    test_Mct420CL dev;
+
+    const unsigned char *none = 0;
+
+    const unsigned char even = 12;
+    const unsigned char odd = 13;
+
+    struct demand_checks
+    {
+        const unsigned char raw_value[2];
+        const unsigned char *freeze_counter;
+        const double value;
+        const bool freeze_bit;
+    };
+
+    demand_checks dc[10] = {
+        { { 0x30, 0x05 }, none, 0.005, 1 },     // freeze bit is the lowest bit of the raw data when no counter
+        { { 0x30, 0x05 }, &odd, 0.005, 0 },     // freeze bit is the inverse of lowest bit of the counter
+        { { 0x30, 0x04 }, none, 0.004, 0 },     // freeze bit is the lowest bit of the raw data when no counter
+        { { 0x30, 0x04 }, &even, 0.004, 1 },    // freeze bit is the inverse of lowest bit of the counter
+        { { 0x2f, 0x0f }, none, 38.55, 1 },
+        { { 0x2f, 0x0f }, &odd, 38.55, 0 },
+        { { 0x2f, 0x0e }, none, 38.54, 0 },
+        { { 0x2f, 0x0e }, &even, 38.54, 1 },
+        { { 0x01, 0x11 }, none, 273, 1 },
+        { { 0x01, 0x11 }, &odd, 273, 0 }
+    };
+
+    test_Mct420Device::frozen_point_info pi;
+
+    pi = dev.getDemandData( dc[0].raw_value, 2, dc[0].freeze_counter );
+    BOOST_CHECK_EQUAL( pi.value, dc[0].value );
+    BOOST_CHECK_EQUAL( pi.freeze_bit, dc[0].freeze_bit );
+
+    pi = dev.getDemandData( dc[1].raw_value, 2, dc[1].freeze_counter );
+    BOOST_CHECK_EQUAL( pi.value, dc[1].value );
+    BOOST_CHECK_EQUAL( pi.freeze_bit, dc[1].freeze_bit );
+
+    pi = dev.getDemandData( dc[2].raw_value, 2, dc[2].freeze_counter );
+    BOOST_CHECK_EQUAL( pi.value, dc[2].value );
+    BOOST_CHECK_EQUAL( pi.freeze_bit, dc[2].freeze_bit );
+
+    pi = dev.getDemandData( dc[3].raw_value, 2, dc[3].freeze_counter );
+    BOOST_CHECK_EQUAL( pi.value, dc[3].value );
+    BOOST_CHECK_EQUAL( pi.freeze_bit, dc[3].freeze_bit );
+
+    pi = dev.getDemandData( dc[4].raw_value, 2, dc[4].freeze_counter );
+    BOOST_CHECK_EQUAL( pi.value, dc[4].value );
+    BOOST_CHECK_EQUAL( pi.freeze_bit, dc[4].freeze_bit );
+
+    pi = dev.getDemandData( dc[5].raw_value, 2, dc[5].freeze_counter );
+    BOOST_CHECK_EQUAL( pi.value, dc[5].value );
+    BOOST_CHECK_EQUAL( pi.freeze_bit, dc[5].freeze_bit );
+
+    pi = dev.getDemandData( dc[6].raw_value, 2, dc[6].freeze_counter );
+    BOOST_CHECK_EQUAL( pi.value, dc[6].value );
+    BOOST_CHECK_EQUAL( pi.freeze_bit, dc[6].freeze_bit );
+
+    pi = dev.getDemandData( dc[7].raw_value, 2, dc[7].freeze_counter );
+    BOOST_CHECK_EQUAL( pi.value, dc[7].value );
+    BOOST_CHECK_EQUAL( pi.freeze_bit, dc[7].freeze_bit );
+
+    pi = dev.getDemandData( dc[8].raw_value, 2, dc[8].freeze_counter );
+    BOOST_CHECK_EQUAL( pi.value, dc[8].value );
+    BOOST_CHECK_EQUAL( pi.freeze_bit, dc[8].freeze_bit );
+
+    pi = dev.getDemandData( dc[9].raw_value, 2, dc[9].freeze_counter );
+    BOOST_CHECK_EQUAL( pi.value, dc[9].value );
+    BOOST_CHECK_EQUAL( pi.freeze_bit, dc[9].freeze_bit );
+}
+
+BOOST_AUTO_TEST_CASE( test_decodeDisconnectConfig )
 {
     //  Test case permutations:
     //    MCT type:  MCT420CL, MCT420CD, MCT420FL, MCT420FD
@@ -316,7 +390,7 @@ BOOST_AUTO_TEST_CASE(test_decodePulseAccumulator)
 {
     unsigned char kwh_read[3] = { 0x00, 0x02, 0x00 };
 
-    CtiDeviceSingle::point_info pi;
+    Cti::Devices::Mct4xxDevice::frozen_point_info pi;
 
     pi = Cti::Devices::Mct420Device::decodePulseAccumulator(kwh_read, 3, 0);
 

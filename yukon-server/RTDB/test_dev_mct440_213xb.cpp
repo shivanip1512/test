@@ -272,7 +272,7 @@ BOOST_AUTO_TEST_CASE(test_decodePulseAccumulator)
 {
     unsigned char kwh_read[3] = { 0x00, 0x02, 0x00 };
 
-    CtiDeviceSingle::point_info pi;
+    Cti::Devices::Mct4xxDevice::frozen_point_info pi;
 
     pi = Cti::Devices::Mct440_213xBDevice::decodePulseAccumulator(kwh_read, 3, 0);
 

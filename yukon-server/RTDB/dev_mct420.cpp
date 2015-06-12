@@ -954,15 +954,15 @@ YukonError_t Mct420Device::decodeGetConfigDailyReadInterest(const INMESS &InMess
 }
 
 
-Mct420Device::point_info Mct420Device::decodePulseAccumulator(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter)
+Mct420Device::frozen_point_info Mct420Device::decodePulseAccumulator(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter)
 {
     return Mct4xxDevice::decodePulseAccumulator(buf, len, freeze_counter);
 }
 
 
-Mct420Device::point_info Mct420Device::getAccumulatorData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const
+Mct420Device::frozen_point_info Mct420Device::getAccumulatorData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const
 {
-    point_info pi = Mct420Device::decodePulseAccumulator(buf, len, freeze_counter);
+    frozen_point_info pi = Mct420Device::decodePulseAccumulator(buf, len, freeze_counter);
 
     if( freeze_counter )
     {
@@ -974,9 +974,9 @@ Mct420Device::point_info Mct420Device::getAccumulatorData(const unsigned char *b
 }
 
 
-Mct420Device::point_info Mct420Device::getDemandData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const
+Mct420Device::frozen_point_info Mct420Device::getDemandData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const
 {
-    point_info pi = Mct410Device::getData(buf, len, ValueType_DynamicDemand);
+    frozen_point_info pi = Mct410Device::getData(buf, len, ValueType_DynamicDemand);
 
     if( freeze_counter )
     {

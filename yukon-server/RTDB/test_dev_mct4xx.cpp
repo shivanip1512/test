@@ -15,10 +15,10 @@ struct test_Mct4xxDevice : Cti::Devices::Mct4xxDevice
         {  BOOST_FAIL("this virtual should never be called during this unit test");  return 0;  }
     const FunctionReadValueMappings *getFunctionReadValueMaps() const
         {  BOOST_FAIL("this virtual should never be called during this unit test");  return 0;  }
-    point_info getDemandData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const
-        {  BOOST_FAIL("this virtual should never be called during this unit test");  return point_info();  }
-    point_info getAccumulatorData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const
-        {  BOOST_FAIL("this virtual should never be called during this unit test");  return point_info();  };
+    frozen_point_info getDemandData( const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter ) const
+        {  BOOST_FAIL("this virtual should never be called during this unit test");  return frozen_point_info();  }
+    frozen_point_info getAccumulatorData( const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter ) const
+        {  BOOST_FAIL("this virtual should never be called during this unit test");  return frozen_point_info();  };
     point_info getLoadProfileData(unsigned channel, long interval_len, const unsigned char *buf, unsigned len)
         {  BOOST_FAIL("this virtual should never be called during this unit test");  return point_info();  }
     long getLoadProfileInterval(unsigned channel)
@@ -36,7 +36,7 @@ struct test_Mct4xxDevice : Cti::Devices::Mct4xxDevice
 
     typedef Mct4xxDevice Inherited;
 
-    typedef point_info test_point_info;  //  expose it publicly for our testing
+    typedef frozen_point_info test_point_info;  //  expose it publicly for our testing
 
     //  I don't know of a better way to do this - "using Inherited::ValueType4xx;" doesn't work
     enum test_ValueType4xx

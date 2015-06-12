@@ -325,7 +325,7 @@ unsigned char Mct4xxDevice::crc8( const unsigned char *buf, unsigned int len )
 }
 
 
-Mct4xxDevice::point_info Mct4xxDevice::decodePulseAccumulator(const unsigned char *buf, unsigned len, const unsigned char *freeze_counter)
+Mct4xxDevice::frozen_point_info Mct4xxDevice::decodePulseAccumulator( const unsigned char *buf, unsigned len, const unsigned char *freeze_counter )
 {
     return freeze_counter ?
         getData(buf, len, ValueType_FrozenAccumulator) :
@@ -333,12 +333,12 @@ Mct4xxDevice::point_info Mct4xxDevice::decodePulseAccumulator(const unsigned cha
 }
 
 
-Mct4xxDevice::point_info Mct4xxDevice::getData( const unsigned char *buf, const unsigned len, const ValueType4xx vt )
+Mct4xxDevice::frozen_point_info Mct4xxDevice::getData( const unsigned char *buf, const unsigned len, const ValueType4xx vt )
 {
     unsigned long error_code = 0xffffffff;  //  filled with 0xff because some data types are less than 32 bits
 
     long long value = 0;
-    point_info  retval;
+    frozen_point_info  retval;
 
     for( int i = 0; i < len; i++ )
     {
@@ -370,9 +370,9 @@ Mct4xxDevice::point_info Mct4xxDevice::getData( const unsigned char *buf, const 
 }
 
 
-CtiDeviceSingle::point_info Mct4xxDevice::getDataError(unsigned error_code, const Mct4xxDevice::error_map &error_codes)
+Mct4xxDevice::frozen_point_info Mct4xxDevice::getDataError( unsigned error_code, const Mct4xxDevice::error_map &error_codes )
 {
-    point_info pi;
+    frozen_point_info pi;
 
     pi.value = 0;
     pi.freeze_bit = 0;
@@ -3052,9 +3052,9 @@ YukonError_t Mct4xxDevice::decodeGetValuePeakDemand(const INMESS &InMessage, con
     YukonError_t status = ClientErrors::None;
     int        channel,
                pointoffset;
-    point_info pi_kw,
-               pi_kw_time,
-               pi_kwh;
+    frozen_point_info pi_kw,
+               pi_kw_time;
+    frozen_point_info pi_kwh;
     CtiTime    kw_time,
                kwh_time;
     string     result_string;

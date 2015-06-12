@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dev_mct.h"
+#include "dev_single.h"
 #include "config_device.h"
 #include "config_data_mct.h"
 
@@ -14,10 +15,18 @@
 namespace Cti {
 namespace Devices {
 
+
 class IM_EX_DEVDB Mct4xxDevice :
     public MctDevice,
     protected Commands::Mct4xxCommand::ResultHandler
 {
+
+public:
+    struct frozen_point_info : CtiDeviceSingle::point_info
+    {
+        bool freeze_bit = false;
+    };
+
 protected:
 
     typedef std::vector<const char *> ConfigPartsList;
@@ -44,8 +53,6 @@ private:
 
     int executePutConfigSingle(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly);
     int executePutConfigMultiple(ConfigPartsList & partsList, CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly);
-
-    virtual unsigned getUsageReportDelay(const unsigned interval_length, const unsigned days) const = 0;
 
 protected:
 
@@ -246,10 +253,10 @@ protected:
     virtual const FunctionReadValueMappings *getFunctionReadValueMaps() const = 0;
 
     //  overridden by the 410, 420, and 470 so they can use the same peak/TOU decode function
-    virtual point_info getDemandData     (const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const = 0;
-    virtual point_info getAccumulatorData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const = 0;
+    virtual frozen_point_info getDemandData     (const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const = 0;
+    virtual frozen_point_info getAccumulatorData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const = 0;
 
-    static point_info decodePulseAccumulator(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter);
+    static frozen_point_info decodePulseAccumulator( const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter );
 
     virtual long getLoadProfileInterval(unsigned channel) = 0;
     virtual point_info getLoadProfileData(unsigned channel, long interval_len, const unsigned char *buf, unsigned len) = 0;
@@ -356,10 +363,12 @@ public:
         ValueType_Raw,
     };
 
-    static point_info getData(const unsigned char *buf, const unsigned len, const ValueType4xx vt);
-    static point_info getDataError(unsigned error_code, const error_map &error_codes);
+    static frozen_point_info getData(const unsigned char *buf, const unsigned len, const ValueType4xx vt);
+    static frozen_point_info getDataError(unsigned error_code, const error_map &error_codes);
 
     static unsigned loadTimeSync(unsigned char *buf);
+
+    virtual unsigned getUsageReportDelay( const unsigned interval_length, const unsigned days ) const = 0;
 
 };
 

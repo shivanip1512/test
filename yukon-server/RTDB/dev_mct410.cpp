@@ -232,7 +232,7 @@ int Mct410Device::Utility::makeDynamicDemand(double input)
 }
 
 
-Mct410Device::point_info Mct410Device::getDemandData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const
+Mct410Device::frozen_point_info Mct410Device::getDemandData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const
 {
     return freeze_counter ?
         getData(buf, len, ValueType_FrozenDynamicDemand) :
@@ -240,15 +240,15 @@ Mct410Device::point_info Mct410Device::getDemandData(const unsigned char *buf, c
 }
 
 
-Mct410Device::point_info Mct410Device::getAccumulatorData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const
+Mct410Device::frozen_point_info Mct410Device::getAccumulatorData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const
 {
     return Mct410Device::decodePulseAccumulator(buf, len, freeze_counter);
 }
 
 
-Mct410Device::point_info Mct410Device::decodePulseAccumulator(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter)
+Mct410Device::frozen_point_info Mct410Device::decodePulseAccumulator(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter)
 {
-    point_info pi = Mct4xxDevice::decodePulseAccumulator(buf, len, freeze_counter);
+    frozen_point_info pi = Mct4xxDevice::decodePulseAccumulator(buf, len, freeze_counter);
 
     const long value = static_cast<long>(pi.value);
 
@@ -259,7 +259,7 @@ Mct410Device::point_info Mct410Device::decodePulseAccumulator(const unsigned cha
 }
 
 
-Mct4xxDevice::point_info Mct410Device::getData(const unsigned char *buf, const unsigned len, const ValueType410 vt) const
+Mct4xxDevice::frozen_point_info Mct410Device::getData(const unsigned char *buf, const unsigned len, const ValueType410 vt) const
 {
     PointQuality_t quality = NormalQuality;
     unsigned long error_code = 0xffffffff,  //  filled with 0xff because some data types are less than 32 bits
@@ -270,7 +270,7 @@ Mct4xxDevice::point_info Mct410Device::getData(const unsigned char *buf, const u
 
     string description;
     long long value = 0;
-    point_info  retval;
+    frozen_point_info  retval;
 
     for( int i = 0; i < len; i++ )
     {
@@ -2571,7 +2571,7 @@ YukonError_t Mct410Device::decodeGetValueKWH(const INMESS &InMessage, const CtiT
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
-    point_info pi, pi_freezecount;
+    frozen_point_info pi, pi_freezecount;
 
     CtiPointSPtr   pPoint;
     CtiReturnMsg  *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -2681,7 +2681,7 @@ YukonError_t Mct410Device::decodeGetValueTOUkWh(const INMESS &InMessage, const C
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
-    point_info pi, pi_freezecount;
+    frozen_point_info pi, pi_freezecount;
 
     CtiPointSPtr   pPoint;
     CtiReturnMsg  *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi

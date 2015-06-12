@@ -27,7 +27,6 @@ public:
     {
         point_data()
         {
-            freeze_bit = false;  //  This is obnoxious.  The freeze_bit only applies to frozen kWh, but it's polluting everything else.
             tags = 0;
         }
 

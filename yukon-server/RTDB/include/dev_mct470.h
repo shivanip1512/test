@@ -220,10 +220,10 @@ protected:
         ValueType_IED,
     };
 
-    virtual point_info getDemandData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const;
-    virtual point_info getAccumulatorData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const;
+    virtual frozen_point_info getDemandData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const;
+    virtual frozen_point_info getAccumulatorData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const;
 
-    point_info getData(const unsigned char *buf, const unsigned len, const ValueType470 vt) const;
+    frozen_point_info getData(const unsigned char *buf, const unsigned len, const ValueType470 vt) const;
 
     virtual void decodeReadDataForKey(const CtiTableDynamicPaoInfo::PaoInfoKeys key, const unsigned char *begin, const unsigned char *end);
 
@@ -539,7 +539,7 @@ public:
 
     ULONG calcNextLPScanTime( void ) override;
 
-    static point_info decodePulseAccumulator(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter);
+    static frozen_point_info decodePulseAccumulator( const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter );
 };
 
 }

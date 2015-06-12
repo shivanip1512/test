@@ -378,7 +378,6 @@ void DlcBaseDevice::findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNo
                 pi.description  = pdata.description;
                 pi.quality      = pdata.quality;
                 pi.value        = pdata.value;
-                pi.freeze_bit   = false;
 
                 insertPointDataReport(pdata.type, pdata.offset, ReturnMsg, pi, pdata.name, pdata.time);
             }

@@ -232,7 +232,6 @@ YukonError_t Lcr3102Device::decodeGetValueIntervalLast( const INMESS &InMessage,
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     point_info pi;
-    pi.freeze_bit = false;
 
     string results = getName() + " / Last Interval kW:";
 
@@ -536,7 +535,6 @@ YukonError_t Lcr3102Device::decodeGetValueControlTime( const INMESS &InMessage, 
 
         pi.value       = half_seconds / halfSecondsPerSecond; // Convert to seconds. Is this the unit we want for this?
         pi.quality     = NormalQuality;
-        pi.freeze_bit  = false;
         pi.description = "Control Time Remaining Relay " + CtiNumStr(relay);
 
         string results = getName() + " / " + identifier;
@@ -573,7 +571,6 @@ YukonError_t Lcr3102Device::decodeGetValuePropCount( const INMESS &InMessage, co
 
     pi.value       = DSt->Message[0];
     pi.quality     = NormalQuality;
-    pi.freeze_bit  = false;
     pi.description = "Propagation Counter";
 
     insertPointDataReport(AnalogPointType, PointOffset_PropCount, ReturnMsg, pi, "PropCount");
@@ -1491,7 +1488,6 @@ int Lcr3102Device::parsePreviousValue(CtiCommandParser &parse)
 CtiDeviceSingle::point_info Lcr3102Device::getSixBitValueFromBuffer(const unsigned char buffer[], unsigned int valuePosition, unsigned int bufferSize)
 {
     point_info retVal;
-    retVal.freeze_bit = false;
     retVal.quality    = InvalidQuality;
     retVal.value      = 0x3F;
 

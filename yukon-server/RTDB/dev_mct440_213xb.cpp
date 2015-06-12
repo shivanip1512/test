@@ -940,7 +940,6 @@ YukonError_t Mct440_213xBDevice::decodeGetValueInstantLineData(const INMESS    &
                                                                 /* Bits {31:20}    Voltage in units of 0.1V, range 0 to 409.5V  */
         PhaseVoltage.value       = (PhaseData[0] << 4) | (PhaseData[1] >> 4);
         PhaseVoltage.quality     = NormalQuality;
-        PhaseVoltage.freeze_bit  = false;
 
         switch( phase_nbr )
         {
@@ -962,7 +961,6 @@ YukonError_t Mct440_213xBDevice::decodeGetValueInstantLineData(const INMESS    &
                                                                 /* Bits {19:8} Current in units of 0.1 V, range 0 to 409.5A     */
         PhaseCurrent.value       = ((PhaseData[1] & 0xf) << 8) | (PhaseData[2]);
         PhaseCurrent.quality     = NormalQuality;
-        PhaseCurrent.freeze_bit  = false;
 
         switch( phase_nbr )
         {
@@ -988,7 +986,6 @@ YukonError_t Mct440_213xBDevice::decodeGetValueInstantLineData(const INMESS    &
         {
             PowerFactor.value       = 0.0;
             PowerFactor.quality     = (PowerFactorVal > 100) ? ExceedsHighQuality : ExceedsLowQuality;
-            PowerFactor.freeze_bit  = false;
 
             status = ClientErrors::InvalidData;
         }
@@ -996,7 +993,6 @@ YukonError_t Mct440_213xBDevice::decodeGetValueInstantLineData(const INMESS    &
         {
             PowerFactor.value       = static_cast<double>(PowerFactorVal) / 100.0;
             PowerFactor.quality     = NormalQuality;
-            PowerFactor.freeze_bit  = false;
         }
 
         switch( phase_nbr )
@@ -1065,7 +1061,7 @@ YukonError_t Mct440_213xBDevice::decodeGetValueTOUkWh(const INMESS    &InMessage
 
     if( !status )
     {
-        point_info pi;
+        frozen_point_info pi;
         CtiTime    point_time = TimeNow;
 
         for( int rate_nbr = 0; rate_nbr < 4; rate_nbr++ )
@@ -3359,7 +3355,7 @@ YukonError_t Mct440_213xBDevice::decodeGetValueKWH(const INMESS   &InMessage,
             channels = 1;
         }
 
-        point_info pi;
+        frozen_point_info pi;
         CtiTime    point_time = TimeNow;
 
         for( int chan_nbr = 0; chan_nbr < channels; chan_nbr++ )

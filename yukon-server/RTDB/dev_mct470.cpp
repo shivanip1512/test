@@ -798,21 +798,21 @@ unsigned Mct470Device::getUsageReportDelay(const unsigned interval_length, const
 }
 
 
-Mct470Device::point_info Mct470Device::getDemandData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const
+Mct470Device::frozen_point_info Mct470Device::getDemandData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const
 {
     return getData(buf, len, ValueType_PulseDemand);
 }
 
 
-Mct470Device::point_info Mct470Device::getAccumulatorData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const
+Mct470Device::frozen_point_info Mct470Device::getAccumulatorData( const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter ) const
 {
     return decodePulseAccumulator(buf, len, freeze_counter);
 }
 
 
-Mct470Device::point_info Mct470Device::decodePulseAccumulator(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter)
+Mct470Device::frozen_point_info Mct470Device::decodePulseAccumulator( const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter )
 {
-    point_info pi = Mct4xxDevice::decodePulseAccumulator(buf, len, freeze_counter);
+    frozen_point_info pi = Mct4xxDevice::decodePulseAccumulator( buf, len, freeze_counter );
 
     const long value = static_cast<long>(pi.value);
 
@@ -823,7 +823,7 @@ Mct470Device::point_info Mct470Device::decodePulseAccumulator(const unsigned cha
 }
 
 
-Mct470Device::point_info Mct470Device::getData(const unsigned char *buf, const unsigned len, const ValueType470 vt) const
+Mct470Device::frozen_point_info Mct470Device::getData( const unsigned char *buf, const unsigned len, const ValueType470 vt ) const
 {
     PointQuality_t quality = NormalQuality;
     unsigned long error_code = 0xffffffff,  //  filled with 0xff because some data types are less than 32 bits
@@ -838,7 +838,7 @@ Mct470Device::point_info Mct470Device::getData(const unsigned char *buf, const u
 
     string description;
     long long value = 0;
-    point_info  retval;
+    frozen_point_info  retval;
 
     for( int i = 0; i < len; i++ )
     {
@@ -3675,7 +3675,7 @@ YukonError_t Mct470Device::decodeGetValueKWH(const INMESS &InMessage, const CtiT
             //  if we have a point for this offset OR it's the first index and we have no points defined
             if( points.test(i) || (i == 0 && points.none()) )
             {
-                point_info pi;
+                frozen_point_info pi;
 
                 if( InMessage.Sequence == Cti::Protocols::EmetconProtocol::Scan_Accum ||
                     InMessage.Sequence == Cti::Protocols::EmetconProtocol::GetValue_KWH )

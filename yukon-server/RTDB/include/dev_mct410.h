@@ -50,7 +50,6 @@ class IM_EX_DEVDB Mct410Device :
     void readSspec(const OUTMESS &OutMessage, OutMessageList &outList) const;
 
     virtual unsigned getUsageReportDelay(const unsigned interval_length, const unsigned days) const;
-
 protected:
 
     struct daily_read_info_t
@@ -365,10 +364,10 @@ protected:
         ValueType_OutageCount
     };
 
-    virtual point_info getDemandData     (const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const;
-    virtual point_info getAccumulatorData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const;
+    virtual frozen_point_info getDemandData     (const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const;
+    virtual frozen_point_info getAccumulatorData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const;
 
-    point_info getData(const unsigned char *buf, const unsigned len, const ValueType410 vt) const;
+    frozen_point_info getData(const unsigned char *buf, const unsigned len, const ValueType410 vt) const;
 
     long getLoadProfileInterval(unsigned channel);
     point_info getLoadProfileData(unsigned channel, long interval_len, const unsigned char *buf, unsigned len);
@@ -472,7 +471,7 @@ public:
 
     static bool buildPhaseDetectOutMessage(CtiCommandParser & parse, OUTMESS *&OutMessage);
 
-    static point_info decodePulseAccumulator(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter);
+    static frozen_point_info decodePulseAccumulator(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter);
 };
 
 typedef boost::shared_ptr<Mct410Device> Mct410DeviceSPtr;

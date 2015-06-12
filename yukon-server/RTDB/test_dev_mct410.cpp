@@ -261,7 +261,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_getDemandData)
         {{0x01, 0x11},  none, 273,   1},
         {{0x01, 0x11}, &odd,  272,   1}};
 
-    test_Mct410Device::point_info pi;
+    test_Mct410Device::frozen_point_info pi;
 
     pi = dev.getDemandData(dc[0].raw_value, 2, dc[0].freeze_counter);
     BOOST_CHECK_EQUAL(pi.value, dc[0].value);
@@ -309,7 +309,7 @@ BOOST_AUTO_TEST_CASE(test_decodePulseAccumulator)
 {
     unsigned char kwh_read[3] = { 0x00, 0x02, 0x00 };
 
-    CtiDeviceSingle::point_info pi;
+    Cti::Devices::Mct4xxDevice::frozen_point_info pi;
 
     pi = Cti::Devices::Mct410Device::decodePulseAccumulator(kwh_read, 3, 0);
 

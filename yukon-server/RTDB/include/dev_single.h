@@ -58,7 +58,6 @@ public:
     {
         double         value;
         PointQuality_t quality;
-        bool           freeze_bit;
         std::string         description;
     };
 
