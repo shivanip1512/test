@@ -1,19 +1,20 @@
 #pragma once
 
-#include "types.h"
-#include "SimulatorLogger.h"
+#include "Behavior.h"
 
 namespace Cti {
 namespace Simulator{
 
-class CommsBehavior
+struct CommsBehavior : Behavior
 {
-public:
+    CommsBehavior(double probability)
+        :   Behavior(probability)
+    {
+    }
 
     typedef bytes target_type;
 
     virtual void apply(target_type &message, Logger &logger) = 0;
-    virtual void setChance(double chance) = 0;
 };
 
 }

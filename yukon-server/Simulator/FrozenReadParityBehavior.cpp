@@ -2,18 +2,21 @@
 
 #include "FrozenReadParityBehavior.h"
 
+#include "SimulatorLogger.h"
+
 namespace Cti {
 namespace Simulator{
 
-FrozenReadParityBehavior::FrozenReadParityBehavior()
+FrozenReadParityBehavior::FrozenReadParityBehavior(double probability)
+    :   MctBehavior(probability)
 {
 }
 
 /**
- * Applies the FrozenReadParityBehavior to the message by, on 
- * reads that contain a frozen meter read, inverting the LSB of 
- * the data to incorrectly state which freeze command was 
- * responsible for this meter read. 
+ * Applies the FrozenReadParityBehavior to the message by, on
+ * reads that contain a frozen meter read, inverting the LSB of
+ * the data to incorrectly state which freeze command was
+ * responsible for this meter read.
  */
 void FrozenReadParityBehavior::apply(target_type &message, Logger &logger)
 {
@@ -32,27 +35,11 @@ void FrozenReadParityBehavior::apply(target_type &message, Logger &logger)
 
 void FrozenReadParityBehavior::invertFrozenParityBit(unsigned char &byte, Logger &logger)
 {
-    double dist = rand() / double(RAND_MAX+1);
-    double chance = dist * 100;
-    if(chance < _chance)
+    if( behaviorOccurs() )
     {
         logger.breadcrumbLog("***** FROZEN READ PARITY INVERTED *****");
         byte ^= 0x01;
     }
-}
-
-/**
- * Sets the FrozenReadParityBehavior's chance to be applied to a 
- * given message. 
- *  
- * @param chance The percent chance for the 
- * FrozenReadParityBehavior to be applied to a message as 
- * defined in the master.cfg file under the CPARM value 
- * SIMULATOR_INVALID_FROZEN_READ_PARITY_PROBABILITY 
- */
-void FrozenReadParityBehavior::setChance(double chance)
-{
-    _chance = chance;
 }
 
 }

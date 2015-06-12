@@ -78,7 +78,7 @@ private:
     static double makeValue_instantaneousDemand(const unsigned address, const CtiTime &c_time);
     static double makeValue_averageDemand      (const unsigned address, const CtiTime &begin_time, const unsigned duration);
 
-    static int getDynamicDemand(const unsigned address, const unsigned demandIntervalSeconds, unsigned nowSeconds); 
+    static int getDynamicDemand(const unsigned address, const unsigned demandIntervalSeconds, unsigned nowSeconds);
 
     void writeNewPeakDemand(const int dynamicDemand, const unsigned seconds);
 
@@ -221,7 +221,7 @@ private:
             PowerFailEvent = 0x01
         */
     };
-    
+
     enum EventFlags2StatusFlags
     {
         EF2_ZeroUsage = 0x01
@@ -271,7 +271,7 @@ protected:
     static void fillLoadProfile    (const unsigned address, const CtiTime &blockStart, const unsigned interval_length, byte_appender &out_itr);
     static void fillLongLoadProfile(const unsigned address, const CtiTime &blockStart, const unsigned interval_length, byte_appender &out_itr);
 
-    static bytes formatAllFrozenChannel1Readings(const unsigned long frozenRead, const unsigned long frozenTime, 
+    static bytes formatAllFrozenChannel1Readings(const unsigned long frozenRead, const unsigned long frozenTime,
                                                  const unsigned hwh, const unsigned freezeCounter, const short peakDemand);
 
     static bytes formatAllCurrentMeterReadings(const unsigned address);
@@ -283,10 +283,10 @@ protected:
 
     static bytes formatFrozenKwh(const bytes &frozenData, unsigned freezeCounter);
 
-    static bytes formatLoadProfile(const unsigned offset, const unsigned channel, const unsigned address, 
+    static bytes formatLoadProfile(const unsigned offset, const unsigned channel, const unsigned address,
                                    const CtiTime readTime, const unsigned lpIntervalSeconds);
 
-    static peak_demand_t checkForNewPeakDemand(const unsigned address, const unsigned demandInterval, 
+    static peak_demand_t checkForNewPeakDemand(const unsigned address, const unsigned demandInterval,
                                                const unsigned lastFreezeTimestamp, const CtiTime c_time);
 };
 

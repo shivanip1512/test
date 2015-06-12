@@ -2,29 +2,30 @@
 
 #include "RandomConsumptionBehavior.h"
 
+#include "SimulatorLogger.h"
+
 namespace Cti {
 namespace Simulator {
 
-RandomConsumptionBehavior::RandomConsumptionBehavior()
+RandomConsumptionBehavior::RandomConsumptionBehavior(double probability)
+    :   MctBehavior(probability)
 {
 }
 
 /**
- * Applies the RandomConsumptionBehavior to the message by, on 
- * reads that contain a current meter read, replacing the kWh 
- * value in the message with a random value instead. 
+ * Applies the RandomConsumptionBehavior to the message by, on
+ * reads that contain a current meter read, replacing the kWh
+ * value in the message with a random value instead.
  */
 void RandomConsumptionBehavior::apply(target_type &message, Logger &logger)
 {
     if( message.function_read && message.function == 0x90 )
     {
-        double dist = rand() / double(RAND_MAX+1);
-        double chance = dist * 100.0;
-        if( chance < _chance )
+        if( behaviorOccurs() )
         {
             logger.breadcrumbLog("***** RANDOM CONSUMPTION VALUE GENERATED *****");
 
-            unsigned kwh = makeRandomConsumptionValue();
+            unsigned kwh = _consumptionValueGenerator;
 
             // Remove the first three elements.
             message.data.erase(message.data.begin(), message.data.begin() + 3);
@@ -38,17 +39,6 @@ void RandomConsumptionBehavior::apply(target_type &message, Logger &logger)
             message.data.insert(message.data.begin(), kwhData.begin(), kwhData.end());
         }
     }
-}
-
-unsigned RandomConsumptionBehavior::makeRandomConsumptionValue()
-{
-    double dist = rand() / double(RAND_MAX+1);
-    return int(dist * 10000000);
-}
-
-void RandomConsumptionBehavior::setChance(double chance)
-{
-    _chance = chance;
 }
 
 }

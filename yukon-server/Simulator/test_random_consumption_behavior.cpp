@@ -11,10 +11,9 @@ BOOST_AUTO_TEST_CASE(test_random_consumption_behavior)
 {
     SimulatorLogger logger(dout);
     BehaviorCollection<MctBehavior> behaviorCollection;
-    auto d = std::make_unique<RandomConsumptionBehavior>();
-    d->setChance(1000);
 
-    behaviorCollection.push_back(std::move(d));
+    behaviorCollection.push_back(
+            std::make_unique<RandomConsumptionBehavior>(1000));
 
     {
         bytes message;

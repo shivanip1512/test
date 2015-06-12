@@ -1,13 +1,14 @@
 #include "precompiled.h"
 
 #include "BchBehavior.h"
-#include "logger.h"
+
+#include "SimulatorLogger.h"
 
 namespace Cti {
 namespace Simulator{
 
-BchBehavior::BchBehavior(double chance) :
-    _chance(chance)
+BchBehavior::BchBehavior(double probability)
+    :   PlcBehavior(probability)
 {
 }
 
@@ -22,9 +23,7 @@ BchBehavior::BchBehavior(double chance) :
  */
 void BchBehavior::apply(target_type &message, Logger &logger)
 {
-    double dist = rand() / double(RAND_MAX+1);
-    double chance = dist * 100;
-    if(chance < _chance)
+    if( behaviorOccurs() )
     {
         logger.breadcrumbLog("***** MESSAGE BCH MUTILATED *****");
         message.back() ^= 0x10;

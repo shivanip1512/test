@@ -9,15 +9,13 @@ class FrozenReadParityBehavior : public MctBehavior
 {
 public:
 
-    FrozenReadParityBehavior();
+    FrozenReadParityBehavior(double probability);
+
     void apply(target_type &message, Logger &logger) override;
-    void setChance(double chance) override;
 
 private:
 
     void invertFrozenParityBit(unsigned char &byte, Logger &logger);
-
-    double _chance;
 };
 
 }

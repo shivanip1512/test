@@ -12,10 +12,9 @@ BOOST_AUTO_TEST_CASE(test_delay_behavior)
     SimulatorLogger logger(dout);
 
     BehaviorCollection<CommsBehavior> behaviorCollection;
-    auto d = std::make_unique<DelayBehavior>();
-    d->setChance(1000);
 
-    behaviorCollection.push_back(std::move(d));
+    behaviorCollection.push_back(
+            std::make_unique<DelayBehavior>(1000));
 
     bytes message, reference;
 

@@ -6,14 +6,11 @@
 namespace Cti {
 namespace Simulator{
 
-class BchBehavior : public PlcBehavior
+struct BchBehavior : PlcBehavior
 {
-public:
-    BchBehavior(double chance);
-    void apply(target_type &message, Logger &logger) override;
+    BchBehavior(double probability);
 
-private:
-    double _chance;
+    void apply(target_type &message, Logger &logger) override;
 };
 
 }

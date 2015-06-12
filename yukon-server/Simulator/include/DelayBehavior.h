@@ -9,13 +9,13 @@ namespace Simulator{
 class DelayBehavior : public CommsBehavior
 {
 public:
-    DelayBehavior();
-    virtual void apply(bytes &message, Logger &logger);
-    void setChance(double chance);
+
+    DelayBehavior(double probability);
+    void apply(bytes &message, Logger &logger) override;
 
 private:
+
     bytes _delayed;
-    double _chance;
 };
 
 }

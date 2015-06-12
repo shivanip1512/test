@@ -1,12 +1,14 @@
 #include "precompiled.h"
 
 #include "DelayBehavior.h"
-#include "logger.h"
+
+#include "SimulatorLogger.h"
 
 namespace Cti {
 namespace Simulator{
 
-DelayBehavior::DelayBehavior()
+DelayBehavior::DelayBehavior(double probability)
+    :   CommsBehavior(probability)
 {
 }
 
@@ -14,9 +16,7 @@ void DelayBehavior::apply(bytes &message, Logger &logger)
 {
     if (_delayed.empty())
     {
-        double dist = rand() / double(RAND_MAX+1);
-        double chance = dist * 100;
-        if (chance < _chance)
+        if (behaviorOccurs())
         {
             logger.breadcrumbLog("***** MESSAGE STALLED *****");
             _delayed = message;
@@ -37,11 +37,6 @@ void DelayBehavior::apply(bytes &message, Logger &logger)
         _delayed.clear();
         return;
     }
-}
-
-void DelayBehavior::setChance(double chance)
-{
-    _chance = chance;
 }
 
 }

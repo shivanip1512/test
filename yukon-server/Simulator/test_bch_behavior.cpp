@@ -13,7 +13,8 @@ BOOST_AUTO_TEST_CASE(test_bch_behavior)
     SimulatorLogger logger(dout);
     BehaviorCollection<PlcBehavior> behaviorCollection;
 
-    behaviorCollection.push_back(std::make_unique<BchBehavior>(1000));
+    behaviorCollection.push_back(
+            std::make_unique<BchBehavior>(1000));
 
     bytes message, reference;
 

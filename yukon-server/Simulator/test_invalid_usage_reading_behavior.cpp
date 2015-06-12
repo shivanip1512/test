@@ -12,10 +12,9 @@ BOOST_AUTO_TEST_CASE( test_invalid_usage_reading )
 {
     SimulatorLogger logger(dout);
     BehaviorCollection<MctBehavior> behaviorCollection;
-    auto d = std::make_unique<InvalidUsageReadingBehavior>();
-    d->setChance(100);
 
-    behaviorCollection.push_back(std::move(d));
+    behaviorCollection.push_back(
+            std::make_unique<InvalidUsageReadingBehavior>(100));
 
     {
         const bytes message = boost::assign::list_of

@@ -5,16 +5,11 @@
 namespace Cti {
 namespace Simulator {
 
-class InvalidUsageReadingBehavior : public MctBehavior
+struct InvalidUsageReadingBehavior : MctBehavior
 {
-    double _chance;
-
-public:
-
-    InvalidUsageReadingBehavior();
+    InvalidUsageReadingBehavior(double probability);
 
     void apply(target_type &message, Logger &logger) override;
-    void setChance(double chance) override;
 };
 
 }

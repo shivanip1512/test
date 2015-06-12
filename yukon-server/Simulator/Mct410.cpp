@@ -191,30 +191,34 @@ void Mct410Sim::initBehaviors(Logger &logger)
         if( double parityChance = gConfigParms.getValueAsDouble("SIMULATOR_INVALID_FROZEN_READ_PARITY_PROBABILITY") )
         {
             logger.log("Frozen Read Parity Behavior Enabled - Probability: " + CtiNumStr(parityChance, 2) + "%");
-            auto parity = std::make_unique<FrozenReadParityBehavior>();
-            parity->setChance(parityChance);
-            _behaviorCollection.push_back(std::move(parity));
+
+            _behaviorCollection.push_back(
+                    std::make_unique<FrozenReadParityBehavior>(
+                            parityChance));
         }
         if( double timestampChance = gConfigParms.getValueAsDouble("SIMULATOR_INVALID_FROZEN_PEAK_TIMESTAMP_PROBABILITY") )
         {
             logger.log("Frozen Peak Timestamp Behavior Enabled - Probability: " + CtiNumStr(timestampChance, 2) + "%");
-            auto timestamp = std::make_unique<FrozenPeakTimestampBehavior>();
-            timestamp->setChance(timestampChance);
-            _behaviorCollection.push_back(std::move(timestamp));
+
+            _behaviorCollection.push_back(
+                    std::make_unique<FrozenPeakTimestampBehavior>(
+                            timestampChance));
         }
         if( double randomReadingChance = gConfigParms.getValueAsDouble("SIMULATOR_RANDOM_READING_CHANCE_PERCENT") )
         {
             logger.log("Random Consimption Behavior Enabled - Probability: " + CtiNumStr(randomReadingChance, 2) + "%");
-            auto consumption = std::make_unique<RandomConsumptionBehavior>();
-            consumption->setChance(randomReadingChance);
-            _behaviorCollection.push_back(std::move(consumption));
+
+            _behaviorCollection.push_back(
+                    std::make_unique<RandomConsumptionBehavior>(
+                            randomReadingChance));
         }
         if( double invalidUsageReadingChance = gConfigParms.getValueAsDouble("SIMULATOR_INVALID_USAGE_READING_CHANCE_PERCENT") )
         {
             logger.log("Invalid usage reading behavior enabled - Probability: " + CtiNumStr(invalidUsageReadingChance, 2) + "%");
-            auto invalidUsage = std::make_unique<InvalidUsageReadingBehavior>();
-            invalidUsage->setChance(invalidUsageReadingChance);
-            _behaviorCollection.push_back(std::move(invalidUsage));
+
+            _behaviorCollection.push_back(
+                    std::make_unique<InvalidUsageReadingBehavior>(
+                            invalidUsageReadingChance));
         }
 
         _behaviorsInited = true;

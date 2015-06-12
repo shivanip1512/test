@@ -306,9 +306,9 @@ void startRequestHandler(StreamSocketConnection &mySocket, int strategy, int por
         if( double chance = gConfigParms.getValueAsDouble("SIMULATOR_COMMS_DELAY_PROBABILITY") )
         {
             logger.log("Delay Behavior Enabled - Probability " + CtiNumStr(chance, 2) + "%");
-            auto d = std::make_unique<DelayBehavior>();
-            d->setChance(chance);
-            socket_interface.setBehavior(std::move(d));
+
+            socket_interface.setBehavior(
+                    std::make_unique<DelayBehavior>(chance));
         }
 
         //  both the CCU-710 and CCU-711 have their address info in the first two bytes
@@ -358,7 +358,7 @@ void handleRequests(SocketComms &socket_interface, int strategy, int portNumber,
                 scope.log("Please remove the CBC/RTU from this comm channel to eliminate this message.");
                 socket_interface.clear();
             }
-            else 
+            else
             {
                 if( peek_buf[0] == CcuIDLC::Hdlc_FramingFlag )
                 {
@@ -368,14 +368,14 @@ void handleRequests(SocketComms &socket_interface, int strategy, int portNumber,
                         Sleep(500);
                         continue;
                     }
-                    
+
                     if( error = CcuIDLC::peekAddress(socket_interface, ccu_address) )
                     {
                         scope.log("Invalid message received, clearing socket / " + error);
-                    
+
                         socket_interface.clear();
                     }
-                    
+
                     if( ccu_list.find(ccu_address) == ccu_list.end() )
                     {
                         stringstream ss_address, ss_port;
@@ -391,7 +391,7 @@ void handleRequests(SocketComms &socket_interface, int strategy, int portNumber,
                                                         "Y.TYPE = 'CCU-721' AND A.SlaveAddress = " + ss_address.str() + " AND "
                                                         "D.PORTID = P.PORTID AND Y.PAObjectID = D.DEVICEID AND "
                                                         "P.SOCKETPORTNUMBER = " + ss_port.str();
-                    
+
                         const string sql_Ccu711 =   "SELECT DISTINCT Y.TYPE "
                                                     "FROM YukonPAObject Y, DEVICEIDLCREMOTE D, Device V, PORTTERMINALSERVER P, "
                                                         "DeviceDirectCommSettings S "
@@ -399,12 +399,12 @@ void handleRequests(SocketComms &socket_interface, int strategy, int portNumber,
                                                         "Y.TYPE = 'CCU-711' AND D.ADDRESS = " + ss_address.str() + " AND "
                                                         "S.PORTID = P.PORTID AND Y.PAObjectID = S.DEVICEID AND "
                                                         "P.SOCKETPORTNUMBER = " + ss_port.str();
-                    
+
                         Cti::Database::DatabaseConnection connection;
                         Cti::Database::DatabaseReader rdr(connection, sql_Ccu721);
-                    
+
                         rdr.execute();
-                    
+
                         if( rdr() )
                         {
                             // The database query result wasn't empty, so the device SHOULD BE a 721. Check this.
@@ -419,7 +419,7 @@ void handleRequests(SocketComms &socket_interface, int strategy, int portNumber,
                         {
                             rdr.setCommandText(sql_Ccu711);
                             rdr.execute();
-                    
+
                             if( rdr() )
                             {
                                 string str;

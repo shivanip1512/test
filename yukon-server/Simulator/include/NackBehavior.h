@@ -6,14 +6,11 @@
 namespace Cti {
 namespace Simulator{
 
-class NackBehavior : public PlcBehavior
+struct NackBehavior : PlcBehavior
 {
-public:
-    NackBehavior(double chance);
-    void apply(target_type &message, Logger &logger) override;
+    NackBehavior(double probability);
 
-private:
-    double _chance;
+    void apply(target_type &message, Logger &logger) override;
 };
 
 }

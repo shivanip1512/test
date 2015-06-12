@@ -13,7 +13,8 @@ BOOST_AUTO_TEST_CASE(test_nack_behavior)
     SimulatorLogger logger(dout);
     BehaviorCollection<PlcBehavior> behaviorCollection;
 
-    behaviorCollection.push_back(std::make_unique<NackBehavior>(1000));
+    behaviorCollection.push_back(
+            std::make_unique<NackBehavior>(1000));
 
     bytes message, reference;
 

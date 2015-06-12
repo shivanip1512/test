@@ -9,15 +9,12 @@ class RandomConsumptionBehavior : public MctBehavior
 {
 public:
 
-    RandomConsumptionBehavior();
+    RandomConsumptionBehavior(double probability);
     void apply(target_type &message, Logger &logger) override;
-    void setChance(double chance) override;
 
 private:
 
-    unsigned makeRandomConsumptionValue();
-
-    double _chance;
+    RandomGenerator<unsigned> _consumptionValueGenerator { 10000000 };
 };
 
 }

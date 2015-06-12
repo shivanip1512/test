@@ -2,26 +2,21 @@
 
 #include "InvalidUsageReadingBehavior.h"
 
+#include "SimulatorLogger.h"
+
 namespace Cti {
 namespace Simulator {
 
-InvalidUsageReadingBehavior::InvalidUsageReadingBehavior() :
-    _chance(0)
+InvalidUsageReadingBehavior::InvalidUsageReadingBehavior(double probability)
+    :   MctBehavior(probability)
 {
-}
-
-void InvalidUsageReadingBehavior::setChance(double chance)
-{
-    _chance = chance;
 }
 
 void InvalidUsageReadingBehavior::apply(target_type &message, Logger &logger)
 {
     if( message.function_read && message.function == 0x90 )
     {
-        double dist = rand() / double(RAND_MAX+1);
-        double chance = dist * 100.0;
-        if( chance < _chance )
+        if( behaviorOccurs() )
         {
             logger.breadcrumbLog("***** INVALID USAGE READING GENERATED *****");
 
