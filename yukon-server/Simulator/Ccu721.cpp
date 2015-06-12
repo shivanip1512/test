@@ -1145,34 +1145,33 @@ void Ccu721::processQueue(Logger &logger)
                  EmetconWord::serializer(byte_appender(request_buf)));
 
             Grid.oneWayCommand(request_buf, logger);
-
-            entry.result.completion_status = queue_entry::result_info::CompletionStatus_Successful;
         }
         else
         {
-            bytes reply_buf;
-
-            Grid.twoWayCommand(request_buf, reply_buf, logger);
-
-            words_t reply_words;
+            Grid.twoWayCommand(request_buf, entry.result.data, logger);
 
 //  TODO-P3: return more interesting errors if we get crosstalk, etc
-//  TODO-P2: validate that we got the expected data back, i.e.:
-//            if( b_word->words_to_follow == reply_words.size() )
+//           also, this expects full words back from Grid - it won't handle partial responses yet
 
-            EmetconWord::restoreWords(reply_buf, reply_words);
+            EmetconWord::restoreWords(entry.result.data, entry.result.as_words);
 
-            error_t error;
+            size_t wordsExpected = entry.request.b_word.words_to_follow;
 
-            if( error = extractData(reply_words, byte_appender(entry.result.data)) )
+            //  Append E words for any missing reply words
+            if( wordsExpected > entry.result.as_words.size() )
             {
-                logger.log("Error extracting data from reply words / " + error);
+                wordsExpected -= entry.result.as_words.size();
 
-                entry.result.completion_status = queue_entry::result_info::CompletionStatus_TransponderFailure;
-            }
-            else
-            {
-                entry.result.completion_status = queue_entry::result_info::CompletionStatus_Successful;
+                byte_appender reply_oitr(entry.result.data);
+
+                EmetconWordE eWord;
+
+                eWord.errors.incoming_no_response = true;
+
+                while( wordsExpected-- )
+                {
+                    eWord.serialize(reply_oitr);
+                }
             }
         }
 
@@ -1670,62 +1669,6 @@ error_t Ccu721::validateCrc(const bytes &message) const
     return error_t::success;
 }
 
-template<class DataWord>
-void extractWordData(const DataWord &dw, byte_appender &output)
-{
-    copy(dw.data, dw.data + DataWord::PayloadLength, output);
-}
-
-error_t Ccu721::extractData(const words_t &reply_words, byte_appender &output)
-{
-    if( reply_words.empty() )
-    {
-        return error_t::success;
-    }
-    if( !reply_words[0] )
-    {
-        return "reply_words[0] is null";
-    }
-    if( reply_words[0]->type != EmetconWord::WordType_D1 )
-    {
-        return error_t("reply_words[0] is not a D1 word").neq(reply_words[0]->type, EmetconWord::WordType_D1);
-    }
-
-    extractWordData(*(boost::static_pointer_cast<const EmetconWordD1>(reply_words[0])), output);
-
-    if( reply_words.size() < 2 )
-    {
-        return error_t::success;
-    }
-    if( !reply_words[1] )
-    {
-        return "reply_words[1] is null";
-    }
-    if( reply_words[1]->type != EmetconWord::WordType_D2 )
-    {
-        return error_t("reply_words[1] is not a D2 word").neq(reply_words[1]->type, EmetconWord::WordType_D2);
-    }
-
-    extractWordData(*(boost::static_pointer_cast<const EmetconWordD2>(reply_words[1])), output);
-
-    if( reply_words.size() < 3 )
-    {
-        return error_t::success;
-    }
-    if( !reply_words[2] )
-    {
-        return "reply_words[2] is null";
-    }
-    if( reply_words[2]->type != EmetconWord::WordType_D3 )
-    {
-        return error_t("reply_words[2] is not a D3 word").neq(reply_words[2]->type, EmetconWord::WordType_D3);
-    }
-
-    extractWordData(*(boost::static_pointer_cast<const EmetconWordD3>(reply_words[2])), output);
-
-    return error_t::success;
-}
-
 error_t Ccu721::writeIdlcHeader(const idlc_header &header, byte_appender &out_itr) const
 {
     *out_itr++ = Hdlc_FramingFlag;
@@ -1852,62 +1795,12 @@ error_t Ccu721::writeReplyInfo(const reply_info &info, byte_appender &out_itr) c
 
                 unsigned data_size = completed_itr->result.data.size();
 
-                bytes d_data, dword_buf;
-                byte_appender dword_out_itr(dword_buf);
-                d_data.insert(d_data.end(),
-                              completed_itr->result.data.begin(),
-                              completed_itr->result.data.end());
-
-                d_data.resize(13, 0);
-
-                int dwords = 0;
-
-                if( data_size )
-                {
-                    EmetconWordD1 dword1(completed_itr->request.b_word.repeater_variable,
-                                         completed_itr->request.b_word.dlc_address,
-                                         d_data[0],
-                                         d_data[1],
-                                         d_data[2],
-                                         false,
-                                         false);
-
-                    dword1.serialize(dword_out_itr);
-                    dwords++;
-                }
-                if( data_size > 3)
-                {
-                    EmetconWordD2 dword2(d_data[3],
-                                         d_data[4],
-                                         d_data[5],
-                                         d_data[6],
-                                         d_data[7],
-                                         false,
-                                         false);
-
-                    dword2.serialize(dword_out_itr);
-                    dwords++;
-                }
-                if( data_size > 8 )
-                {
-                    EmetconWordD3 dword3(d_data[8],
-                                         d_data[9],
-                                         d_data[10],
-                                         d_data[11],
-                                         d_data[12],
-                                         false,
-                                         false);
-
-                    dword3.serialize(dword_out_itr);
-                    dwords++;
-                }
-
                 // Message Length
-                completed_entry_buf.push_back(dwords * DWordBytesLength);
+                completed_entry_buf.push_back(completed_itr->result.data.size());
 
                 completed_entry_buf.insert(completed_entry_buf.end(),
-                                           dword_buf.begin(),
-                                           dword_buf.end());
+                                           completed_itr->result.data.begin(),
+                                           completed_itr->result.data.end());
 
                 data_buf.insert(data_buf.end(),
                                 completed_entry_buf.begin(),
