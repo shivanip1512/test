@@ -135,7 +135,7 @@ yukon.tools.trends = (function () {
                 var h = chart.chartHeight;
                 chart.print();               
                 setTimeout(function() {
-                    chart.setSize(w,h, false);
+                    chart.setSize(w, h, false);
                 }, 100);
             });
             $(document).on('click', '.js-dl-png', function (ev) {
