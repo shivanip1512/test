@@ -268,8 +268,9 @@
     <entry key="yukon.web.modules.capcontrol.areas.subs.updated">Substions updated successfully.</entry>
     
     <!-- area.jsp -->
-    <entry key="yukon.web.modules.capcontrol.area.pageName">Area</entry>
-    <entry key="yukon.web.modules.capcontrol.area.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.capcontrol.area.pageTitle">Area {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.area.pageHeading">Area {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.area.crumbTitle">Area {0}</entry>
     <entry key="yukon.web.modules.capcontrol.area.infoContainer.title">Info</entry>
     <entry key="yukon.web.modules.capcontrol.area.statsContainer.title">Statistics</entry>
     <entry key="yukon.web.modules.capcontrol.area.substationsContainer.title">Substations</entry>

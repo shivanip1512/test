@@ -79,7 +79,7 @@
 
 <c:if test="${pageScope.viewOnlyMode}">
     <c:set var="viewMode" value="true"/>
-    <span id="picker-${id}-btn"><span></span></span>
+    <span id="picker-${id}-btn" data-picker-id="${id}"><span></span></span>
 </c:if>
 <c:if test="${!pageScope.viewOnlyMode}">
     <c:set var="viewMode" value="false"/>
@@ -92,6 +92,7 @@
                         <c:set var="renderMode" value="${pageScope.buttonRenderMode}"/>
                     </c:if>
                     <cti:button id="picker-${id}-btn"
+                                data-picker-id="${id}"
                                 nameKey="${pageScope.nameKey}" 
                                 onclick="${id}.show.call(${id})" 
                                 renderMode="${pageScope.renderMode}" 
@@ -108,6 +109,7 @@
                     </c:if>
                     <c:set var="icon" value="${empty pageScope.icon ? 'icon-database-add' : icon}"/>
                     <cti:button id="picker-${id}-btn" 
+                                data-picker-id="${id}"
                                 nameKey="${pageScope.nameKey}" 
                                 classes="noSelectionPickerLabel ${pageScope.buttonStyleClass}" 
                                 renderMode="labeledImage" 

@@ -14,7 +14,7 @@
     <form:hidden path="id"/>
     <form:hidden path="type"/>
     
-    <tags:nameValueContainer2 tableClass="with-form-controls">
+    <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
         <%-- NAME --%>
         <tags:nameValue2 nameKey="yukon.common.name">
             <tags:input path="name" size="35" maxlength="60"/>
@@ -34,9 +34,12 @@
         </tags:nameValue2>
         <%-- VOLTAGE REDUCTION --%>
         <tags:nameValue2 nameKey=".voltReduction">
-            <c:set var="initial" value="${empty area.voltReductionPoint ? '' : area.voltReductionPoint}"/>
+            <c:set var="active" value="${not empty area.voltReductionPoint}"/>
+            <tags:switchButton name="vrActive" checked="${active}" offClasses="M0" classes="js-volt-reduct"/>
+            <c:set var="initial" value="${not active ? '' : area.voltReductionPoint}"/>
             <tags:pickerDialog type="voltReductionPointPicker" id="voltReduction" allowEmptySelection="true"
-                destinationFieldName="voltReductionPoint" initialId="${initial}"
+                destinationFieldName="voltReductionPoint" initialId="${initial}" 
+                buttonStyleClass="js-picker-btn ${not active ? 'dn' : ''}"
                 linkType="selection" selectionProperty="pointName"/>
         </tags:nameValue2>
         

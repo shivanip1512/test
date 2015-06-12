@@ -23,10 +23,7 @@ public class VoltVarRedirectController {
 
     @RequestMapping("area/{id}")
     public String area(ModelMap model, @PathVariable int id) {
-
-        model.addAttribute("bc_areaId", id);
-
-        return "redirect:/capcontrol/tier/substations";
+        return "redirect:/capcontrol/areas/" + id;
     }
 
     @RequestMapping("substation/{id}")

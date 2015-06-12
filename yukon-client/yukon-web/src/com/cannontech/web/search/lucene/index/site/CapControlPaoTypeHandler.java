@@ -47,7 +47,7 @@ public class CapControlPaoTypeHandler implements PaoTypeHandler {
             
             builder.pageType(PageType.USER_PAGE);
             builder.pageName("area");
-            builder.path("/capcontrol/tier/substations?bc_areaId=" + paoId);
+            builder.path("/capcontrol/areas/" + paoId);
             builder.pageArgs(paoName);
 
         } else if (paoType == PaoType.CAP_CONTROL_SUBSTATION) {

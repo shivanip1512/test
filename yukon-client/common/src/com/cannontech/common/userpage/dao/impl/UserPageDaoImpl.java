@@ -329,7 +329,7 @@ public class UserPageDaoImpl implements UserPageDao {
 
         paoUrls.addAll(drFavoritesUrls);
 
-        capControlUrls.add(compileUrlParam("/capcontrol/tier/substations", "bc_areaId"));
+        capControlUrls.add(Pattern.compile("/capcontrol/areas/(\\d+)"));
         capControlUrls.add(compileUrlParam("/capcontrol/tier/feeders", "substationId"));
         capControlUrls.add(compileUrlParam("/capcontrol/ivvc/bus/detail", "subBusId"));
         capControlUrls.add(Pattern.compile("/capcontrol/regulators/(\\d+)"));

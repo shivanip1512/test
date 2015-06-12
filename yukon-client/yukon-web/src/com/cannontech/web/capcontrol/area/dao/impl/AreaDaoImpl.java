@@ -89,6 +89,9 @@ public class AreaDaoImpl implements AreaDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         DbChangeType change = DbChangeType.UPDATE;
         
+        // Volt Reduction Point of 0 means no volt reduction.
+        int voltReductionPoint = area.getVoltReductionPoint() == null ? 0 : area.getVoltReductionPoint();
+        
         if (area.getId() == null) {
             // INSERT
             area.setId(nextValue.getNextValue("YukonPAObject"));
@@ -107,7 +110,7 @@ public class AreaDaoImpl implements AreaDao {
             sql = new SqlStatementBuilder();
             values = sql.insertInto("CapControlArea");
             values.addValue("AreaId", area.getId());
-            values.addValue("VoltReductionPointId", area.getVoltReductionPoint());
+            values.addValue("VoltReductionPointId", voltReductionPoint);
             jdbcTemplate.update(sql);
             
             change = DbChangeType.ADD;
@@ -123,7 +126,7 @@ public class AreaDaoImpl implements AreaDao {
             
             sql = new SqlStatementBuilder();
             values = sql.update("CapControlArea");
-            values.addValue("VoltReductionPointId", area.getVoltReductionPoint());
+            values.addValue("VoltReductionPointId", voltReductionPoint);
             sql.append("WHERE AreaId").eq(area.getId());
             jdbcTemplate.update(sql);
             

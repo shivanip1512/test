@@ -812,13 +812,23 @@ yukon.protoPicker = function (okText,
     
     yukon.protoPicker.prototype.clearEntireSelection = function () {
         this.selectedItems = [];
-        this.jqAllPagesSelectedParentNode.hide();
-        this.jqClearEntireSelectionLinkParentNode.hide();
-        this.jqEntireSelectionCleared.show();
-        this.allLinks.forEach(function (item, index, arr) {
-            item.link.closest('tr').removeClass('highlighted');
-        });
-        this.selectAllCheckBox.checked = false;
+        if (this.jqAllPagesSelectedParentNode) {
+            this.jqAllPagesSelectedParentNode.hide();
+        }
+        if (this.jqClearEntireSelectionLinkParentNode) {
+            this.jqClearEntireSelectionLinkParentNode.hide();
+        }
+        if (this.jqEntireSelectionCleared) {
+            this.jqEntireSelectionCleared.show();
+        }
+        if (this.allLinks) {
+            this.allLinks.forEach(function (item, index, arr) {
+                item.link.closest('tr').removeClass('highlighted');
+            });
+        }
+        if (this.selectAllCheckBox) {
+            this.selectAllCheckBox.checked = false;
+        }
     };
     
     yukon.protoPicker.prototype.clearSelected = function () {

@@ -57,6 +57,24 @@ yukon.da.area = (function () {
                 });
             });
             
+            /** User clicked volt reduction toggle button; show hide point picker. */
+            $(document).on('click', '.js-volt-reduct', function () {
+                
+                var toggle = $(this),
+                    row = toggle.closest('tr'),
+                    picker,
+                    btn = row.find('.js-picker-btn'),
+                    active = row.find('.switch-btn-checkbox').prop('checked');
+                
+                btn.toggleClass('dn', !active);
+                
+                if (!active) {
+                    picker = yukon.pickers[btn.data('pickerId')];
+                    picker.clearSelected();
+                    picker.clearEntireSelection();
+                }
+            });
+            
             _initialized = true;
             debug.debug('yukon.da.area module initialized.');
         }

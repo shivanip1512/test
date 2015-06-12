@@ -33,16 +33,14 @@
                 <%--Setup Variables --%>
                 <c:set var="areaId" value="${viewableArea.ccId}"/>
 
-                <cti:url var="substationUrl" value="/capcontrol/tier/substations">
-                    <cti:param name="bc_areaId" value="${areaId}"/>
-                </cti:url>
                 <tr data-tooltip="#station-count-${areaId}">
                     <td>
                         <capTags:warningImg paoId="${areaId}" type="${areaType.updaterType}"/>
                         <div id="station-count-${areaId}" class="dn"><i:inline key=".stationCount" arguments="${viewableArea.stationCount}"/></div>
                     </td>
                     <td>
-                        <a href="${substationUrl}">${fn:escapeXml(viewableArea.ccName)}</a>
+                        <cti:url var="url" value="/capcontrol/areas/${areaId}"/>
+                        <a href="${url}">${fn:escapeXml(viewableArea.ccName)}</a>
                     </td>
                     <td class="state-indicator">
                         <span class="box state-box js-cc-state-updater" data-pao-id="${areaId}">&nbsp;</span>
