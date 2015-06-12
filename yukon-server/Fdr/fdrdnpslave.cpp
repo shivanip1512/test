@@ -590,13 +590,13 @@ DnpId DnpSlave::ForeignToYukonId(const CtiFDRDestination &pointDestination)
     using boost::algorithm::to_lower_copy;
 
     static const std::map<std::string, CtiPointType_t> PointTypeNames {
-        { boost::to_lower_copy(dnpPointStatusString),       StatusPointType },
-        { boost::to_lower_copy(dnpPointAnalogString),       AnalogPointType },
-        { boost::to_lower_copy(dnpPointCalcAnalogString),   AnalogPointType },
-        { boost::to_lower_copy(dnpPointCounterString),      PulseAccumulatorPointType }
+        { to_lower_copy(dnpPointStatusString),       StatusPointType },
+        { to_lower_copy(dnpPointAnalogString),       AnalogPointType },
+        { to_lower_copy(dnpPointCalcAnalogString),   AnalogPointType },
+        { to_lower_copy(dnpPointCounterString),      PulseAccumulatorPointType }
     };
 
-    if( const auto type = mapFind(PointTypeNames, boost::to_lower_copy(pointType)) )
+    if( const auto type = mapFind(PointTypeNames, to_lower_copy(pointType)) )
     {
         dnpId.PointType = *type;
     }
