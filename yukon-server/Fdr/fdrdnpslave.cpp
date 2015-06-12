@@ -9,8 +9,7 @@
 #include "std_helper.h"
 
 #include <boost/scoped_ptr.hpp>
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string.hpp>
 
 using Cti::Fdr::DnpSlave;
 using Cti::Logging::Vector::Hex::operator<<;
@@ -585,28 +584,28 @@ DnpId DnpSlave::ForeignToYukonId(const CtiFDRDestination &pointDestination)
         return dnpId;
     }
 
-    dnpId.MasterId = atoi(masterId.c_str());
-    dnpId.SlaveId = atoi(slaveId.c_str());
+    dnpId.MasterId  = std::stoi(masterId);
+    dnpId.SlaveId   = std::stoi(slaveId);
 
-    if (ciStringEqual(pointType, dnpPointStatusString))
+    using boost::algorithm::to_lower_copy;
+
+    static const std::map<std::string, CtiPointType_t> PointTypeNames {
+        { boost::to_lower_copy(dnpPointStatusString),       StatusPointType },
+        { boost::to_lower_copy(dnpPointAnalogString),       AnalogPointType },
+        { boost::to_lower_copy(dnpPointCalcAnalogString),   AnalogPointType },
+        { boost::to_lower_copy(dnpPointCounterString),      PulseAccumulatorPointType }
+    };
+
+    if( const auto type = mapFind(PointTypeNames, boost::to_lower_copy(pointType)) )
     {
-        dnpId.PointType = StatusPointType;
-    }
-    else if (ciStringEqual(pointType, dnpPointAnalogString) ||
-             ciStringEqual(pointType, dnpPointCalcAnalogString))
-    {
-        dnpId.PointType = AnalogPointType;
-    }
-    else if (ciStringEqual(pointType, dnpPointCounterString))
-    {
-        dnpId.PointType = PulseAccumulatorPointType;
+        dnpId.PointType = *type;
     }
     else
     {
         dnpId.PointType = InvalidPointType;
     }
 
-    dnpId.Offset = atoi(dnpOffset.c_str());
+    dnpId.Offset = std::stoi(dnpOffset);
     dnpId.MasterServerName = pointDestination.getDestination();
     if (dnpMultiplier.empty())
     {
@@ -614,7 +613,7 @@ DnpId DnpSlave::ForeignToYukonId(const CtiFDRDestination &pointDestination)
     }
     else
     {
-        dnpId.Multiplier = atof(dnpMultiplier.c_str());
+        dnpId.Multiplier = std::stof(dnpMultiplier);
     }
     dnpId.valid = true;
 
