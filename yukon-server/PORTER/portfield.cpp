@@ -1284,7 +1284,7 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
 
                                 if( om && im )
                                 {
-                                    if( (status == ClientErrors::EWordReceived || im->ErrorCode == ClientErrors::EWordReceived) && im->Buffer.RepeaterError.ESt )
+                                    if( (im->ErrorCode == ClientErrors::EWordReceived) && im->Buffer.RepeaterError.ESt )
                                     {
                                         im->Buffer.RepeaterError.Details =
                                             findRepeaterInRouteByAddress(
@@ -1292,13 +1292,12 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
                                                 om->Request.RetryMacroOffset,
                                                 im->Buffer.RepeaterError.ESt->echo_address);
                                     }
-                                    else if( ! status )
+                                    else if( ! im->ErrorCode )
                                     {
                                         if( const CtiDeviceSPtr temDevice = DeviceManager.getDeviceByID(im ->TargetID) )
                                         {
                                             if( DlcBaseDevice::dlcAddressMismatch(im->Buffer.DSt, *temDevice) )
                                             {
-                                                status = ClientErrors::WrongAddress;
                                                 im->ErrorCode = ClientErrors::WrongAddress;
                                             }
                                         }
@@ -2793,7 +2792,12 @@ YukonError_t DoProcessInMessage(YukonError_t CommResult, CtiPortSPtr Port, INMES
 
     if( OutMessage )
     {
-        InMessage.ErrorCode = CommResult;
+        //  CCU-721 DTRAN InMessage.ErrorCode is already set in the DeviceSingle loop in CommunicateDevice, so don't overwrite it here
+        //    This could be extended to all devices who process their InMessages similarly in CommunicateDevice
+        if( Device->getType() != TYPE_CCU721 )
+        {
+            InMessage.ErrorCode = CommResult;
+        }
 
         switch(Device->getType())
         {
@@ -2802,13 +2806,12 @@ YukonError_t DoProcessInMessage(YukonError_t CommResult, CtiPortSPtr Port, INMES
                 if( (OutMessage->EventCode & BWORD) &&
                     (OutMessage->Buffer.BSt.IO & EmetconProtocol::IO_Read ) )
                 {
-                    if( !CommResult && !status )
+                    if( ! CommResult && ! InMessage.ErrorCode )
                     {
                         if( const CtiDeviceSPtr temDevice = DeviceManager.getDeviceByID(InMessage.TargetID) )
                         {
                             if( DlcBaseDevice::dlcAddressMismatch(InMessage.Buffer.DSt, *temDevice ))
                             {
-                                status = CommResult = ClientErrors::WrongAddress;
                                 InMessage.ErrorCode = ClientErrors::WrongAddress;
                             }
                         }
@@ -2825,9 +2828,16 @@ YukonError_t DoProcessInMessage(YukonError_t CommResult, CtiPortSPtr Port, INMES
                     }
                 }
 
+                status = InMessage.ErrorCode;
+
+                if( ! CommResult && status )
+                {
+                    CommResult = status;
+                }
+
                 if( InMessage.TargetID != InMessage.DeviceID ) // The CCU itself is account for elsewhere
                 {
-                    addCommResult(InMessage.TargetID, CommResult, OutMessage->Retry > 0);
+                    addCommResult(InMessage.TargetID, InMessage.ErrorCode, false);
                 }
 
                 break;
@@ -3039,17 +3049,7 @@ YukonError_t DoProcessInMessage(YukonError_t CommResult, CtiPortSPtr Port, INMES
 
                         pInfo->setNextCommandTime(pInfo->getNextCommandTime() + TimeB.time);
 
-    #ifdef OLD_CRAP
-                        for(j = 0; j <= MAXIDLC; j++)
-                        {
-                            if(CCUInfo[ThreadPortNumber][j] != NULL && CCUInfo[ThreadPortNumber][j]->Type == TYPE_TCU5500)
-                            {
-                                CCUInfo[ThreadPortNumber][j]->setNextCommandTime(CCUInfo[ThreadPortNumber][Device->getAddress()]->getNextCommandTime());
-                            }
-                        }
-    #else
                         CTILOG_WARN(dout, "Function Incomplete");
-    #endif
                     }
 
                     /* Lets check if this command needs to be queued again */

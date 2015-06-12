@@ -560,7 +560,7 @@ YukonError_t Ccu721Device::recvCommRequest(OUTMESS *OutMessage)
 
 YukonError_t Ccu721Device::sendCommResult(INMESS &InMessage)
 {
-    YukonError_t status = translateKlondikeError(_klondike.errorCode());
+    InMessage.ErrorCode = translateKlondikeError(_klondike.errorCode());
 
     //  if the CCU owns the InMessage - we don't end up owning the DTRAN InMessage, the MCT does...
     //    so there's no use in putting a string in there, since we won't decode it anyway
@@ -619,11 +619,9 @@ YukonError_t Ccu721Device::sendCommResult(INMESS &InMessage)
 
                 copy(dtran_result.begin(), dtran_result.end(), InMessage.Buffer.InMessage);
 
-                //  unlike in Command_LoadQueue/Command_ReadQueue, the InMessage.EventCode is set by
-                //    the CommResult/status later on in CtiDeviceSingle::ProcessResult
-                if( !status )
+                if( ! InMessage.ErrorCode )
                 {
-                    status = processInbound(_current_om, InMessage);
+                    InMessage.ErrorCode = processInbound(_current_om, InMessage);
                 }
 
                 break;
@@ -665,7 +663,8 @@ YukonError_t Ccu721Device::sendCommResult(INMESS &InMessage)
         }
     }
 
-    return status;
+    //  This method only sets error codes in the InMessage
+    return ClientErrors::None;
 }
 
 
