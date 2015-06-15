@@ -1,6 +1,6 @@
-<%@ prefix="f" taglib uri="http://java.sun.com/jsf/core" %>
-<%@ prefix="h" taglib uri="http://java.sun.com/jsf/html" %>
-<%@ prefix="x" taglib uri="http://myfaces.apache.org/tomahawk" %>
+<%@ taglib prefix="f" uri="http://java.sun.com/jsf/core" %>
+<%@ taglib prefix="h" uri="http://java.sun.com/jsf/html" %>
+<%@ taglib prefix="x" uri="http://myfaces.apache.org/tomahawk" %>
 <f:subview id="outerView">
     <x:panelGrid id="subStrategyBody" columns="2" styleClass="gridLayout" columnClasses="gridCell, gridCell">
         <h:column>
