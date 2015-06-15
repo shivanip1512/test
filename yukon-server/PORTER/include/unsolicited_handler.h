@@ -198,7 +198,6 @@ protected:
     void traceOutbound( const device_record &dr, YukonError_t socket_status );
     void traceInbound ( std::string location, YukonError_t status, const unsigned char *message, int count, const device_record *dr = 0 );
 
-    static bool isDnpDevice  (const CtiDeviceSingle &ds);
     static bool isGpuffDevice(const CtiDeviceSingle &ds);
     static bool isRdsDevice (const CtiDeviceSingle &ds);
 

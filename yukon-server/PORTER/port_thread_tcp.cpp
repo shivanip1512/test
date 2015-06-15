@@ -329,7 +329,7 @@ bool TcpPortHandler::collectInbounds( const MillisecondTimer & timer, const unsi
         {
             packet *p = 0;
 
-            if( isDnpDevice(*dr->device) )
+            if( isDnpDeviceType(dr->device->getType()) )
             {
                 while( p = findPacket(device_id, Protocols::DNP::DnpPacketFinder()) )
                 {

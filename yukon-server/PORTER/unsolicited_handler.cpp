@@ -485,7 +485,7 @@ void UnsolicitedHandler::generateKeepalives(CtiPortSPtr &port)
             continue;
         }
 
-        if( isDnpDevice(*dr->device) &&
+        if( isDnpDeviceType(dr->device->getType()) &&
             isDnpKeepaliveNeeded(*dr, TimeNow) )
         {
             generateDnpKeepalive(port, *dr, TimeNow);
@@ -494,22 +494,6 @@ void UnsolicitedHandler::generateKeepalives(CtiPortSPtr &port)
     }
 }
 
-
-bool UnsolicitedHandler::isDnpDevice(const CtiDeviceSingle &ds)
-{
-    switch( ds.getType() )
-    {
-        case TYPE_DNPRTU:
-        case TYPECBC7020:
-        case TYPECBC8020:
-        case TYPECBCDNP:
-        {
-            return true;
-        }
-    }
-
-    return false;
-}
 
 bool UnsolicitedHandler::isRdsDevice(const CtiDeviceSingle &ds)
 {
@@ -600,7 +584,7 @@ void UnsolicitedHandler::startPendingRequest(device_record *dr)
     else if( ! dr->inbound.empty() )
     {
         //  no new outbound work, so process the unexpected inbound
-        if( isDnpDevice(*dr->device) )
+        if( isDnpDeviceType(dr->device->getType()) )
         {
             //  there is no outmessage, so we don't call recvCommRequest -
             //    we have to call the Device::DNP-specific initUnsolicited

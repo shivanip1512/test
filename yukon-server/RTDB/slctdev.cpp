@@ -375,28 +375,34 @@ DLLEXPORT CtiRouteBase* RouteFactory(Cti::RowReader &rdr)
 }
 
 namespace {
-const std::set<int> carrierLpDeviceTypes = boost::assign::list_of
-        (TYPELMT2)
-        (TYPEDCT501)
-        (TYPEMCT240)
-        (TYPEMCT242)
-        (TYPEMCT248)
-        (TYPEMCT250)
-        (TYPEMCT310IL)
-        (TYPEMCT318L)
-        (TYPEMCT410CL)
-        (TYPEMCT410FL)
-        (TYPEMCT410GL)
-        (TYPEMCT410IL)
-        (TYPEMCT420CL)
-        (TYPEMCT420CD)
-        (TYPEMCT420FL)
-        (TYPEMCT420FD)
-        (TYPEMCT430A)
-        (TYPEMCT430A3)
-        (TYPEMCT430S4)
-        (TYPEMCT430SL)
-        (TYPEMCT470);
+const std::set<int> carrierLpDeviceTypes = {
+        TYPELMT2,
+        TYPEDCT501,
+        TYPEMCT240,
+        TYPEMCT242,
+        TYPEMCT248,
+        TYPEMCT250,
+        TYPEMCT310IL,
+        TYPEMCT318L,
+        TYPEMCT410CL,
+        TYPEMCT410FL,
+        TYPEMCT410GL,
+        TYPEMCT410IL,
+        TYPEMCT420CL,
+        TYPEMCT420CD,
+        TYPEMCT420FL,
+        TYPEMCT420FD,
+        TYPEMCT430A,
+        TYPEMCT430A3,
+        TYPEMCT430S4,
+        TYPEMCT430SL,
+        TYPEMCT470 };
+
+const std::set<int> dnpDeviceTypes = {
+        TYPE_DNPRTU,
+        TYPECBC7020,
+        TYPECBC8020,
+        TYPECBCDNP };
 }
 
 DLLEXPORT bool isCarrierLPDeviceType(const int type)
@@ -404,3 +410,7 @@ DLLEXPORT bool isCarrierLPDeviceType(const int type)
     return carrierLpDeviceTypes.count(type);
 }
 
+DLLEXPORT bool isDnpDeviceType(const int type)
+{
+    return dnpDeviceTypes.count(type);
+}

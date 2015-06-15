@@ -143,7 +143,7 @@ void UdpPortHandler::addDeviceProperties(const CtiDeviceSingle &device)
                     ". Please update the type/serial values for this device to be unique.");
         }
     }
-    else if( isDnpDevice(device) )
+    else if( isDnpDeviceType(device.getType()) )
     {
         std::pair<dnp_address_id_bimap::iterator, bool> insertResult =
             _dnpAddress_to_id.insert(dnp_address_id_bimap::value_type(makeDnpAddressPair(device), device_id));
@@ -218,7 +218,7 @@ void UdpPortHandler::updateDeviceProperties(const CtiDeviceSingle &device)
             addDeviceProperties(device);
         }
     }
-    else if( isDnpDevice(device) )
+    else if( isDnpDeviceType(device.getType()) )
     {
         dnp_address_id_bimap::right_iterator itr = _dnpAddress_to_id.right.find(device_id);
 

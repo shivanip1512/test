@@ -27,13 +27,41 @@ BOOST_AUTO_TEST_CASE(test_is_carrier_lp_device_type)
         (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  70
         (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  80
         (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  90
-        .repeat(9900, _);
+        .repeat(100, _);
 
     std::vector<bool> results;
 
-    for ( int type = 0; type < 10000; ++type )
+    for ( int type = 0; type < 200; ++type )
     {
         results.push_back(isCarrierLPDeviceType(type));
+    }
+
+    BOOST_CHECK_EQUAL_RANGES( expected, results );
+}
+
+
+BOOST_AUTO_TEST_CASE(test_is_dnp_device_type)
+{
+    const bool X = true, _ = false;
+
+    const std::vector<bool> expected = boost::assign::list_of
+        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //   0
+        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  10
+        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  20
+        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  30
+        (_)(_)(_)(_)(_) (_)(_)(X)(X)(X)  //  40
+        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  50
+        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  60
+        (_)(_)(_)(_)(_) (_)(_)(_)(_)(X)  //  70
+        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  80
+        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  90
+        .repeat(100, _);
+
+    std::vector<bool> results;
+
+    for ( int type = 0; type < 200; ++type )
+    {
+        results.push_back(isDnpDeviceType(type));
     }
 
     BOOST_CHECK_EQUAL_RANGES( expected, results );
@@ -258,7 +286,7 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "mct-213",                        "class Cti::Devices::Mct210Device" },
         { "mct-224",                        "class Cti::Devices::Mct22xDevice" },
         { "mct-226",                        "class Cti::Devices::Mct22xDevice" },
-        //  30                                                                 
+        //  30
         { "mct-240",                        "class Cti::Devices::Mct24xDevice" },
         { "mct-242",                        "class Cti::Devices::Mct24xDevice" },
         { "mct-248",                        "class Cti::Devices::Mct24xDevice" },
@@ -269,7 +297,7 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "mct-310idl",                     "class Cti::Devices::Mct310Device" },
         { "mct-310il",                      "class Cti::Devices::Mct310Device" },
         { "mct-318",                        "class Cti::Devices::Mct31xDevice" },
-        //  40                                                                 
+        //  40
         { "mct-318l",                       "class Cti::Devices::Mct31xDevice" },
         { "mct-360",                        "class Cti::Devices::Mct31xDevice" },
         { "mct-370",                        "class Cti::Devices::Mct31xDevice" },
@@ -280,7 +308,7 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "mct-420cl",                      "class Cti::Devices::Mct420Device" },
         { "mct-420cd",                      "class Cti::Devices::Mct420Device" },
         { "mct-420fl",                      "class Cti::Devices::Mct420Device" },
-        //  50                                                                 
+        //  50
         { "mct-420fd",                      "class Cti::Devices::Mct420Device" },
         { "mct-430a",                       "class Cti::Devices::Mct470Device" },
         { "mct-430a3",                      "class Cti::Devices::Mct470Device" },
@@ -401,7 +429,7 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "snuffleupagus",                  "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
         { "giraffe",                        "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
         { "ecobee program",                 "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
-        //  160                                                                                   
+        //  160
         { "ecobee group",                   "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
         { "ltc",                            "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
         { "go_regulator",                   "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },

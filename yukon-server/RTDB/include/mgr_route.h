@@ -6,6 +6,7 @@
 #include "slctdev.h"
 #include "smartmap.h"
 #include "loggable.h"
+#include "database_connection.h"
 
 class IM_EX_DEVDB CtiRouteManager : public Cti::Loggable
 {
