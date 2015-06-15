@@ -3053,8 +3053,8 @@ YukonError_t Mct4xxDevice::decodeGetValuePeakDemand(const INMESS &InMessage, con
     int        channel,
                pointoffset;
     frozen_point_info pi_kw,
-               pi_kw_time;
-    frozen_point_info pi_kwh;
+               pi_kw_time,
+               pi_kwh;
     CtiTime    kw_time,
                kwh_time;
     string     result_string;
