@@ -42,7 +42,6 @@ DnpProtocol::DnpProtocol() :
 
 DnpProtocol::~DnpProtocol()
 {
-    delete_container(_string_results);
     delete_container(_point_results);
 }
 
@@ -392,7 +391,7 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
 
     if( _app_layer.errorCondition() )
     {
-        _string_results.push_back(CTIDBG_new string("Operation failed"));
+        _string_results.push_back("Operation failed");
         setCommand(Command_Complete);
 
         return retVal;
@@ -436,7 +435,7 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
                                 o << "(offset = " << od.index << ", value " << ao->getValue() << ")";
                             }
 
-                            _string_results.push_back(new string(o.str()));
+                            _string_results.push_back(o.str());
 
                             break;
                         }
@@ -446,7 +445,7 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
 
             retVal = ClientErrors::Abnormal;
 
-            _string_results.push_back(new string("Analog output block not echoed"));
+            _string_results.push_back("Analog output block not echoed");
 
             break;
         }
@@ -480,7 +479,7 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
                     if( !_command_parameters.empty() )
                     {
                         //  make a copy because _command_parameters will be cleared out when setCommand is called...  freaky deaky
-                        output_point op = _command_parameters.at(0);
+                        output_point op = _command_parameters[0];
 
                         if( od.index == op.control_offset )
                         {
@@ -488,7 +487,7 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
                             setCommand(Command_SetDigitalOut_SBO_Operate, op);
                             final = false;
 
-                            _string_results.push_back(CTIDBG_new string("Select successful, sending operate"));
+                            _string_results.push_back("Select successful, sending operate");
                         }
                         else
                         {
@@ -500,7 +499,7 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
                             str += CtiNumStr(op.control_offset);
                             str += ")";
 
-                            _string_results.push_back(CTIDBG_new string(str));
+                            _string_results.push_back(str);
                             retVal = ClientErrors::Abnormal;
                         }
                     }
@@ -508,16 +507,16 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
                     {
                         CTILOG_ERROR(dout, "empty command parameters for SBO operate");
 
-                        _string_results.push_back(CTIDBG_new string("Empty command parameter list for operate"));
+                        _string_results.push_back("Empty command parameter list for operate");
                         retVal = ClientErrors::Abnormal;
                     }
                 }
 
-                _string_results.push_back(CTIDBG_new string(getControlResultString(boc->getStatus())));
+                _string_results.push_back(getControlResultString(boc->getStatus()));
             }
             else
             {
-                _string_results.push_back(CTIDBG_new string("Device did not return a control result"));
+                _string_results.push_back("Device did not return a control result");
                 retVal = ClientErrors::Abnormal;
             }
 
@@ -534,7 +533,7 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
                 || _object_blocks.front()->getVariation() != DNP::Time::T_TimeAndDate
                 || !_object_blocks.front()->at(0).object )
             {
-                _string_results.push_back(CTIDBG_new string("Device did not return a time result"));
+                _string_results.push_back("Device did not return a time result");
                 retVal = ClientErrors::Abnormal;
             }
 
@@ -543,28 +542,28 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
 
         case Command_WriteTime:
         {
-            _string_results.push_back(CTIDBG_new string("Time sync sent"));
+            _string_results.push_back("Time sync sent");
 
             break;
         }
 
         case Command_UnsolicitedEnable:
         {
-            _string_results.push_back(CTIDBG_new string("Unsolicited reporting enabled"));
+            _string_results.push_back("Unsolicited reporting enabled");
 
             break;
         }
 
         case Command_UnsolicitedDisable:
         {
-            _string_results.push_back(CTIDBG_new string("Unsolicited reporting disabled"));
+            _string_results.push_back("Unsolicited reporting disabled");
 
             break;
         }
 
         case Command_Loopback:
         {
-            _string_results.push_back(CTIDBG_new string("Loopback successful"));
+            _string_results.push_back("Loopback successful");
 
             break;
         }
@@ -638,11 +637,11 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
                                 "will not complain again until "<< _nextTimeComplaint);
                     }
 
-                    _string_results.push_back(CTIDBG_new string(s));
+                    _string_results.push_back(s);
                 }
                 else
                 {
-                    _string_results.push_back(CTIDBG_new string("Device did not return a time result"));
+                    _string_results.push_back("Device did not return a time result");
                     retVal = ClientErrors::Abnormal;
                 }
             }
@@ -670,13 +669,11 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
     {
         if( _command == Command_UnsolicitedInbound )
         {
-            delete_container(_string_results);
-
             _string_results.clear();
         }
         else
         {
-            _string_results.push_back(CTIDBG_new string(_app_layer.getInternalIndications()));
+            _string_results.push_back(_app_layer.getInternalIndications());
 
             switch( _command )
             {
@@ -689,7 +686,7 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
                 case Command_Class1230Read:
                 case Command_Class1230Read_WithTime:
                 {
-                    _string_results.push_back(CTIDBG_new string(pointSummary(5)));
+                    _string_results.push_back(pointSummary(5));
 
                     break;
                 }
@@ -715,7 +712,7 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
 
             if (_command != Command_ResetDeviceRestartBit )
             {
-                _string_results.push_back(new string("Attempting to clear Device Restart bit"));
+                _string_results.push_back("Attempting to clear Device Restart bit");
                 setCommand(Command_ResetDeviceRestartBit);
             }
 
@@ -913,11 +910,13 @@ void DnpProtocol::getInboundPoints( pointlist_t &points )
 }
 
 
-void DnpProtocol::getInboundStrings( stringlist_t &strings )
+auto DnpProtocol::getInboundStrings() -> stringlist_t
 {
-    strings.insert(strings.end(), _string_results.begin(), _string_results.end());
+    stringlist_t tmp;
 
-    _string_results.clear();
+    tmp.swap(_string_results);
+
+    return std::move(tmp);
 }
 
 
@@ -929,34 +928,39 @@ bool DnpProtocol::isTransactionComplete( void ) const
 }
 
 
-const std::map<int, const char *> ControlResultStrings = boost::assign::map_list_of
-        (BinaryOutputControl::Status_Success,           "Request accepted, initiated, or queued.")
-        (BinaryOutputControl::Status_Timeout,           "Request not accepted because the operate message was received after the arm timer timed out. The arm timer was started when the select operation for the same point was received.")
-        (BinaryOutputControl::Status_NoSelect,          "Request not accepted because no previous matching select request exists. (An operate message was sent to activate an output that was not previously armed with a matching select message.)")
-        (BinaryOutputControl::Status_FormatError,       "Request not accepted because there were formatting errors in the control request.")
-        (BinaryOutputControl::Status_NotSupported,      "Request not accepted because a control operation is not supported for this point.")
-        (BinaryOutputControl::Status_AlreadyActive,     "Request not accepted, because the control queue is full or the point is already active.")
-        (BinaryOutputControl::Status_HardwareError,     "Request not accepted because of control hardware problems.")
-        (BinaryOutputControl::Status_Local,             "Request not accepted because Local/Remote switch is in Local position.")
-        (BinaryOutputControl::Status_TooManyObjs,       "Request not accepted because too many objects appeared in the same request.")
-        (BinaryOutputControl::Status_NotAuthorized,     "Request not accepted because of insufficient authorization.")
-        (BinaryOutputControl::Status_AutomationInhibit, "Request not accepted because it was inhibited by a local automation process.")
-        (BinaryOutputControl::Status_ProcessingLimited, "Request not accepted because the device cannot process any more activities than are presently in progress.")
-        (BinaryOutputControl::Status_OutOfRange,        "Request not accepted because the value is outside the acceptable range permitted for this point.")
-        (BinaryOutputControl::Status_NonParticipating,  "Outstation shall not issue or perform the control operation.")
-        (BinaryOutputControl::Status_Undefined,         "Request not accepted because of some other undefined reason.")
-        ;
+const auto ControlResultStrings = std::map<int, const char *> {
+        { BinaryOutputControl::Status_Success,           "Request accepted, initiated, or queued."},
+        { BinaryOutputControl::Status_Timeout,           "Request not accepted because the operate message was received after the arm timer timed out. The arm timer was started when the select operation for the same point was received."},
+        { BinaryOutputControl::Status_NoSelect,          "Request not accepted because no previous matching select request exists. {An operate message was sent to activate an output that was not previously armed with a matching select message.},"},
+        { BinaryOutputControl::Status_FormatError,       "Request not accepted because there were formatting errors in the control request."},
+        { BinaryOutputControl::Status_NotSupported,      "Request not accepted because a control operation is not supported for this point."},
+        { BinaryOutputControl::Status_AlreadyActive,     "Request not accepted, because the control queue is full or the point is already active."},
+        { BinaryOutputControl::Status_HardwareError,     "Request not accepted because of control hardware problems."},
+        { BinaryOutputControl::Status_Local,             "Request not accepted because Local/Remote switch is in Local position."},
+        { BinaryOutputControl::Status_TooManyObjs,       "Request not accepted because too many objects appeared in the same request."},
+        { BinaryOutputControl::Status_NotAuthorized,     "Request not accepted because of insufficient authorization."},
+        { BinaryOutputControl::Status_AutomationInhibit, "Request not accepted because it was inhibited by a local automation process."},
+        { BinaryOutputControl::Status_ProcessingLimited, "Request not accepted because the device cannot process any more activities than are presently in progress."},
+        { BinaryOutputControl::Status_OutOfRange,        "Request not accepted because the value is outside the acceptable range permitted for this point."},
+        { BinaryOutputControl::Status_NonParticipating,  "Outstation shall not issue or perform the control operation."},
+        { BinaryOutputControl::Status_Undefined,         "Request not accepted because of some other undefined reason."}};
 
-const char *DnpProtocol::getControlResultString( int result_status ) const
+std::string DnpProtocol::getControlResultString( int result_status ) const
 {
     const boost::optional<const char *> controlResultString = mapFind(ControlResultStrings, result_status);
 
-    if( ! controlResultString )
+    std::string result = "Control result (" + std::to_string(result_status) + "): ";
+
+    if( controlResultString )
     {
-        return "Unknown error code (Reserved for future use.)";
+        result += *controlResultString;
+    }
+    else
+    {
+        result += "Unknown error code (Reserved for future use.)";
     }
 
-    return *controlResultString;
+    return result;
 }
 
 

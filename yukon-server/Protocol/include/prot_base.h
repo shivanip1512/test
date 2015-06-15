@@ -27,7 +27,7 @@ protected:
 public:
 
     typedef std::vector< CtiPointDataMsg * > pointlist_t;
-    typedef std::vector< std::string * >     stringlist_t;
+    typedef std::vector< std::string >       stringlist_t;
 
     virtual ~Interface() { }
 
@@ -36,7 +36,7 @@ public:
     virtual YukonError_t recvCommResult ( const INMESS &InMessage, std::list< OUTMESS* > &outList );
 
     virtual void getInboundPoints ( pointlist_t  &point_list );
-    virtual void getInboundStrings( stringlist_t &string_list );
+    virtual stringlist_t getInboundStrings();
 
     //  porter-side (portfield, specificially) functions
     virtual YukonError_t recvCommRequest( OUTMESS *OutMessage );

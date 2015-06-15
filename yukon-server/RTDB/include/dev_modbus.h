@@ -44,7 +44,7 @@ protected:
     Protocols::ModbusProtocol _modbus;
     CtiTableDeviceAddress  _modbus_address;
 
-    Protocols::Interface::stringlist_t _string_results;
+    std::vector<std::string> _pointdata_strings;
     Protocols::Interface::pointlist_t  _point_results;
 
     Protocols::Interface *getProtocol() override;

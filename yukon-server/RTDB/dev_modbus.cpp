@@ -339,42 +339,24 @@ YukonError_t ModbusDevice::sendCommResult(INMESS &InMessage)
     char *buf;
     int offset;
     string result_string;
-    ModbusProtocol::stringlist_t strings;
-    ModbusProtocol::stringlist_t::iterator itr;
 
     buf = reinterpret_cast<char *>(InMessage.Buffer.InMessage);
     offset = 0;
 
-    _modbus.getInboundStrings(strings);
-
     //  this needs to be smarter and send the device name and point data elements seperately...
-    for( itr = strings.begin(); itr != strings.end(); itr++ )
+    for( const auto &str : _modbus.getInboundStrings() )
     {
-        result_string += getName().data();
+        result_string += getName();
         result_string += " / ";
-        result_string += *(*itr);
+        result_string += str;
         result_string += "\n";
-    }
-
-    while( !strings.empty() )
-    {
-        delete strings.back();
-
-        strings.pop_back();
     }
 
     //  ... as does this
-    for( itr = _string_results.begin(); itr != _string_results.end(); itr++ )
+    for( const auto &str : _pointdata_strings )
     {
-        result_string += *(*itr);
+        result_string += str;
         result_string += "\n";
-    }
-
-    while( !_string_results.empty() )
-    {
-        delete _string_results.back();
-
-        _string_results.pop_back();
     }
 
     if( result_string.size() >= sizeof(InMessage.Buffer.InMessage) )
@@ -430,37 +412,13 @@ void ModbusDevice::sendDispatchResults(CtiConnection &vg_connection)
 
         if( pt_msg )
         {
-            _string_results.push_back(CTIDBG_new string(pt_msg->getString()));
+            _pointdata_strings.push_back(pt_msg->getString());
 
             vgMsg->PointData().push_back(pt_msg);
         }
     }
 
     points.erase(points.begin(), points.end());
-
-    //  now send the pseudos related to the control point
-    //    note:  points are the domain of the device, not the protocol,
-    //           so i have to handle pseudo points here, in the device code
-/*    switch( _porter_info.protocol_command )
-    {
-        case Protocol::Modbus::Command_SetDigitalOut_Direct:
-        case Protocol::Modbus::Command_SetDigitalOut_SBO_Select:  //  presumably this will transition...  we need to verify this...
-        case Protocol::Modbus::Command_SetDigitalOut_SBO_Operate:
-        {
-            if( _porter_info.pseudo_info.is_pseudo  )  //  ... for example, make sure the control was successful
-           {
-                CtiPointDataMsg *msg = CTIDBG_new CtiPointDataMsg(_porter_info.pseudo_info.pointid,
-                                                                  _porter_info.pseudo_info.state,
-                                                                  NormalQuality,
-                                                                  StatusPointType,
-                                                                  "This point has been controlled");
-                msg->setUser(_porter_info.user.data());
-                vgMsg->PointData().append(msg);
-            }
-
-            break;
-        }
-    }*/
 
     vg_connection.WriteConnQue(vgMsg);
 }

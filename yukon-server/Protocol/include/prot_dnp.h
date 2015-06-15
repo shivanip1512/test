@@ -51,7 +51,7 @@ class IM_EX_PROT DnpProtocol : public Interface
     std::string pointSummary(unsigned points);
     std::string pointDataReport(const std::map<unsigned, double> &pointdata, unsigned points);
 
-    const char *getControlResultString( int result_status ) const;
+    std::string getControlResultString( int result_status ) const;
 
     unsigned convertLocalSecondsToUtcSeconds( const unsigned seconds );
     unsigned convertUtcSecondsToLocalSeconds( const unsigned seconds );
@@ -79,7 +79,7 @@ public:
     bool isTransactionComplete( void ) const override;
 
     void getInboundPoints ( pointlist_t  &point_list ) override;
-    void getInboundStrings( stringlist_t &string_list ) override;
+    stringlist_t getInboundStrings() override;
 
     enum OutputPointType
     {

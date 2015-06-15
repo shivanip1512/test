@@ -192,8 +192,8 @@ YukonError_t ModbusProtocol::decode( CtiXfer &xfer, YukonError_t status )
                             else if(xfer.getInBuffer()[0] == xfer.getOutBuffer()[0] && xfer.getInBuffer()[1] == (xfer.getOutBuffer()[1] | 0x80))
                             {
                                 //this means error code was set, but response was right. Report the error code
-                                _string_results.push_back(CTIDBG_new string("There is a read with function " + CtiNumStr((*_points_start).pointType) + " starting at point " + CtiNumStr((*_points_start).pointOffset) +
-                                                                            " that cannot be read."));
+                                _string_results.push_back("There is a read with function " + CtiNumStr((*_points_start).pointType) + " starting at point " + CtiNumStr((*_points_start).pointOffset) +
+                                                          " that cannot be read.");
                                 retVal = ClientErrors::Unknown;//some error code should be set!
 
                                 _status = Continue;
@@ -215,7 +215,7 @@ YukonError_t ModbusProtocol::decode( CtiXfer &xfer, YukonError_t status )
 
                                 if(_retries++>Retries_Default)//retry and if that doesnt work, quit!
                                 {
-                                    _string_results.push_back(new std::string("Unknown data received"));
+                                    _string_results.push_back("Unknown data received");
                                     clearPoints();
                                     _status = End;
                                 }
@@ -550,11 +550,13 @@ void ModbusProtocol::getInboundPoints( pointlist_t &points )
 }
 
 
-void ModbusProtocol::getInboundStrings( stringlist_t &strings )
+auto ModbusProtocol::getInboundStrings() -> stringlist_t
 {
-    strings.insert(strings.end(), _string_results.begin(), _string_results.end());
+    stringlist_t tmp;
 
-    _string_results.erase(_string_results.begin(), _string_results.end());
+    tmp.swap(_string_results);
+
+    return std::move(tmp);
 }
 
 

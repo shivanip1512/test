@@ -249,8 +249,8 @@ BOOST_AUTO_TEST_CASE(test_dev_dnp_control_sbo)
     BOOST_CHECK_EQUAL(
             retMsg->ResultString(),
             "Test DNP device / Select successful, sending operate"
-            "\nTest DNP device / Request accepted, initiated, or queued."
-            "\nTest DNP device / Request accepted, initiated, or queued."
+            "\nTest DNP device / Control result (0): Request accepted, initiated, or queued."
+            "\nTest DNP device / Control result (0): Request accepted, initiated, or queued."
             "\nTest DNP device / "
             "\n");
 }

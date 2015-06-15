@@ -21,7 +21,7 @@ bool Interface::isTransactionComplete( void ) const {   return true;    }
 bool Interface::errorCondition       ( void ) const {   return false;   }
 
 void Interface::getInboundPoints ( pointlist_t  &point_list )   {  };
-void Interface::getInboundStrings( stringlist_t &string_list )  {  };
+Interface::stringlist_t Interface::getInboundStrings()  {  return stringlist_t();  };
 
 void Interface::setName( const std::string &name )
 {

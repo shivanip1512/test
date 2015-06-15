@@ -718,27 +718,16 @@ YukonError_t DnpDevice::sendCommResult(INMESS &InMessage)
 {
     char *buf;
     string result_string;
-    Protocols::DnpProtocol::stringlist_t strings;
-    Protocols::DnpProtocol::stringlist_t::iterator itr;
 
     buf = reinterpret_cast<char *>(InMessage.Buffer.InMessage);
 
-    _dnp.getInboundStrings(strings);
-
     //  this needs to be smarter and send the device name and point data elements seperately...
-    for( itr = strings.begin(); itr != strings.end(); itr++ )
+    for( const auto &str : _dnp.getInboundStrings() )
     {
-        result_string += getName().c_str();
+        result_string += getName();
         result_string += " / ";
-        result_string += *(*itr);
+        result_string += str;
         result_string += "\n";
-    }
-
-    while( !strings.empty() )
-    {
-        delete strings.back();
-
-        strings.pop_back();
     }
 
     InMessage.InLength = result_string.size() + 1;

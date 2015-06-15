@@ -98,8 +98,8 @@ public:
     void addAnalogPoint(int point);
     void clearPoints();
 
-    virtual void getInboundPoints ( pointlist_t  &point_list );
-    virtual void getInboundStrings( stringlist_t &string_list );
+    void getInboundPoints ( pointlist_t  &point_list ) override;
+    stringlist_t getInboundStrings() override;
 
     enum OutputPointType
     {

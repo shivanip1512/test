@@ -190,27 +190,24 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
             BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
-        stringlist_t string_list;
+        auto string_list = dnp.getInboundStrings();
 
-        dnp.getInboundStrings(string_list);
+        BOOST_REQUIRE_EQUAL(4, string_list.size());
 
-        BOOST_CHECK_EQUAL(4, string_list.size());
-
-        BOOST_CHECK_EQUAL(*string_list[0],
+        BOOST_CHECK_EQUAL(string_list[0],
             "Loopback successful");
-        BOOST_CHECK_EQUAL(*string_list[1],
+        BOOST_CHECK_EQUAL(string_list[1],
             "Internal indications:\n"
             "Time synchronization needed\n"
             "Device restart\n"
             "Request parameters out of range\n");
-        BOOST_CHECK_EQUAL(*string_list[2],
+        BOOST_CHECK_EQUAL(string_list[2],
             "Attempting to clear Device Restart bit");
-        BOOST_CHECK_EQUAL(*string_list[3],
+        BOOST_CHECK_EQUAL(string_list[3],
             "Internal indications:\n"
             "Time synchronization needed\n");
 
         delete_container(point_list);
-        delete_container(string_list);
     }
 }
 
@@ -301,7 +298,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
 
         dnp.getInboundPoints(point_list);
 
-        BOOST_CHECK_EQUAL(4, point_list.size());
+        BOOST_REQUIRE_EQUAL(4, point_list.size());
 
         {
             CtiPointDataMsg *pd = point_list[0];
@@ -343,19 +340,17 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
             BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
-        stringlist_t string_list;
-
-        dnp.getInboundStrings(string_list);
+        auto string_list = dnp.getInboundStrings();
 
         BOOST_CHECK_EQUAL(2, string_list.size());
 
-        BOOST_CHECK_EQUAL(*string_list[0],
+        BOOST_CHECK_EQUAL(string_list[0],
             "Internal indications:\n"
             "Broadcast message received\n"
             "Class 1 data available\n"
             "Class 2 data available\n"
             "Class 3 data available\n");
-        BOOST_CHECK_EQUAL(*string_list[1],
+        BOOST_CHECK_EQUAL(string_list[1],
             "Point data report:\n"
             "AI:     1; AO:     0; DI:     1; DO:     0; Counters:     1; \n"
             "First/Last 5 points of each type returned:\n"
@@ -367,7 +362,6 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
             "[1:19]\n");
 
         delete_container(point_list);
-        delete_container(string_list);
     }
 }
 
@@ -457,7 +451,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_no_ack_required)
 
         dnp.getInboundPoints(point_list);
 
-        BOOST_CHECK_EQUAL(4, point_list.size());
+        BOOST_REQUIRE_EQUAL(4, point_list.size());
 
         {
             CtiPointDataMsg *pd = point_list[0];
@@ -499,19 +493,17 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_no_ack_required)
             BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
-        stringlist_t string_list;
-
-        dnp.getInboundStrings(string_list);
+        auto string_list = dnp.getInboundStrings();
 
         BOOST_CHECK_EQUAL(2, string_list.size());
 
-        BOOST_CHECK_EQUAL(*string_list[0],
+        BOOST_CHECK_EQUAL(string_list[0],
             "Internal indications:\n"
             "Broadcast message received\n"
             "Class 1 data available\n"
             "Class 2 data available\n"
             "Class 3 data available\n");
-        BOOST_CHECK_EQUAL(*string_list[1],
+        BOOST_CHECK_EQUAL(string_list[1],
             "Point data report:\n"
             "AI:     1; AO:     0; DI:     1; DO:     0; Counters:     1; \n"
             "First/Last 5 points of each type returned:\n"
@@ -523,7 +515,6 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_no_ack_required)
             "[1:19]\n");
 
         delete_container(point_list);
-        delete_container(string_list);
     }
 }
 
@@ -636,7 +627,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_ack_required)
 
         dnp.getInboundPoints(point_list);
 
-        BOOST_CHECK_EQUAL(4, point_list.size());
+        BOOST_REQUIRE_EQUAL(4, point_list.size());
 
         {
             CtiPointDataMsg *pd = point_list[0];
@@ -678,19 +669,17 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_ack_required)
             BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
-        stringlist_t string_list;
-
-        dnp.getInboundStrings(string_list);
+        auto string_list = dnp.getInboundStrings();
 
         BOOST_CHECK_EQUAL(2, string_list.size());
 
-        BOOST_CHECK_EQUAL(*string_list[0],
+        BOOST_CHECK_EQUAL(string_list[0],
             "Internal indications:\n"
             "Broadcast message received\n"
             "Class 1 data available\n"
             "Class 2 data available\n"
             "Class 3 data available\n");
-        BOOST_CHECK_EQUAL(*string_list[1],
+        BOOST_CHECK_EQUAL(string_list[1],
             "Point data report:\n"
             "AI:     1; AO:     0; DI:     1; DO:     0; Counters:     1; \n"
             "First/Last 5 points of each type returned:\n"
@@ -702,7 +691,6 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_ack_required)
             "[1:19]\n");
 
         delete_container(point_list);
-        delete_container(string_list);
     }
 }
 
@@ -962,19 +950,17 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
             BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
-        stringlist_t string_list;
-
-        dnp.getInboundStrings(string_list);
+        auto string_list = dnp.getInboundStrings();
 
         BOOST_CHECK_EQUAL(2, string_list.size());
 
-        BOOST_CHECK_EQUAL(*string_list[0],
+        BOOST_CHECK_EQUAL(string_list[0],
             "Internal indications:\n"
             "Broadcast message received\n"
             "Class 1 data available\n"
             "Class 2 data available\n"
             "Class 3 data available\n");
-        BOOST_CHECK_EQUAL(*string_list[1],
+        BOOST_CHECK_EQUAL(string_list[1],
             "Point data report:\n"
             "AI:     2; AO:     0; DI:     2; DO:     0; Counters:     2; \n"
             "First/Last 5 points of each type returned:\n"
@@ -986,7 +972,6 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
             "[1:19, 17:19]\n");
 
         delete_container(point_list);
-        delete_container(string_list);
     }
 }
 
@@ -1075,7 +1060,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan)
 
         dnp.getInboundPoints(point_list);
 
-        BOOST_CHECK_EQUAL(4, point_list.size());
+        BOOST_REQUIRE_EQUAL(4, point_list.size());
 
         {
             CtiPointDataMsg *pd = point_list[0];
@@ -1117,19 +1102,17 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan)
             BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
-        stringlist_t string_list;
-
-        dnp.getInboundStrings(string_list);
+        auto string_list = dnp.getInboundStrings();
 
         BOOST_CHECK_EQUAL(2, string_list.size());
 
-        BOOST_CHECK_EQUAL(*string_list[0],
+        BOOST_CHECK_EQUAL(string_list[0],
             "Internal indications:\n"
             "Broadcast message received\n"
             "Class 1 data available\n"
             "Class 2 data available\n"
             "Class 3 data available\n");
-        BOOST_CHECK_EQUAL(*string_list[1],
+        BOOST_CHECK_EQUAL(string_list[1],
             "Point data report:\n"
             "AI:     1; AO:     0; DI:     1; DO:     0; Counters:     1; \n"
             "First/Last 5 points of each type returned:\n"
@@ -1141,7 +1124,6 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan)
             "[1:19]\n");
 
         delete_container(point_list);
-        delete_container(string_list);
     }
 }
 
@@ -1230,7 +1212,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_no_ack_required)
 
         dnp.getInboundPoints(point_list);
 
-        BOOST_CHECK_EQUAL(4, point_list.size());
+        BOOST_REQUIRE_EQUAL(4, point_list.size());
 
         {
             CtiPointDataMsg *pd = point_list[0];
@@ -1272,19 +1254,17 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_no_ack_required)
             BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
-        stringlist_t string_list;
-
-        dnp.getInboundStrings(string_list);
+        auto string_list = dnp.getInboundStrings();
 
         BOOST_CHECK_EQUAL(2, string_list.size());
 
-        BOOST_CHECK_EQUAL(*string_list[0],
+        BOOST_CHECK_EQUAL(string_list[0],
             "Internal indications:\n"
             "Broadcast message received\n"
             "Class 1 data available\n"
             "Class 2 data available\n"
             "Class 3 data available\n");
-        BOOST_CHECK_EQUAL(*string_list[1],
+        BOOST_CHECK_EQUAL(string_list[1],
             "Point data report:\n"
             "AI:     1; AO:     0; DI:     1; DO:     0; Counters:     1; \n"
             "First/Last 5 points of each type returned:\n"
@@ -1296,7 +1276,6 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_no_ack_required)
             "[1:19]\n");
 
         delete_container(point_list);
-        delete_container(string_list);
     }
 }
 
@@ -1407,7 +1386,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_ack_required)
 
         dnp.getInboundPoints(point_list);
 
-        BOOST_CHECK_EQUAL(4, point_list.size());
+        BOOST_REQUIRE_EQUAL(4, point_list.size());
 
         {
             CtiPointDataMsg *pd = point_list[0];
@@ -1449,19 +1428,17 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_ack_required)
             BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
-        stringlist_t string_list;
-
-        dnp.getInboundStrings(string_list);
+        auto string_list = dnp.getInboundStrings();
 
         BOOST_CHECK_EQUAL(2, string_list.size());
 
-        BOOST_CHECK_EQUAL(*string_list[0],
+        BOOST_CHECK_EQUAL(string_list[0],
             "Internal indications:\n"
             "Broadcast message received\n"
             "Class 1 data available\n"
             "Class 2 data available\n"
             "Class 3 data available\n");
-        BOOST_CHECK_EQUAL(*string_list[1],
+        BOOST_CHECK_EQUAL(string_list[1],
             "Point data report:\n"
             "AI:     1; AO:     0; DI:     1; DO:     0; Counters:     1; \n"
             "First/Last 5 points of each type returned:\n"
@@ -1473,7 +1450,6 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_ack_required)
             "[1:19]\n");
 
         delete_container(point_list);
-        delete_container(string_list);
     }
 }
 
@@ -1732,19 +1708,17 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
             BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
-        stringlist_t string_list;
-
-        dnp.getInboundStrings(string_list);
+        auto string_list = dnp.getInboundStrings();
 
         BOOST_CHECK_EQUAL(2, string_list.size());
 
-        BOOST_CHECK_EQUAL(*string_list[0],
+        BOOST_CHECK_EQUAL(string_list[0],
             "Internal indications:\n"
             "Broadcast message received\n"
             "Class 1 data available\n"
             "Class 2 data available\n"
             "Class 3 data available\n");
-        BOOST_CHECK_EQUAL(*string_list[1],
+        BOOST_CHECK_EQUAL(string_list[1],
             "Point data report:\n"
             "AI:     2; AO:     0; DI:     2; DO:     0; Counters:     2; \n"
             "First/Last 5 points of each type returned:\n"
@@ -1756,7 +1730,121 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
             "[1:19, 17:19]\n");
 
         delete_container(point_list);
-        delete_container(string_list);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_reversed_start_stop)
+{
+    DnpProtocol dnp;
+
+    BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
+
+    dnp.setAddresses(1234, 1);
+    dnp.setName("Test DNP device");
+    dnp.setCommand(DnpProtocol::Command_Class1230Read);
+
+    CtiXfer xfer;
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+
+        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
+
+        const byte_str expected(
+                "05 64 14 c4 d2 04 01 00 d5 d3 "
+                "c0 c1 01 3c 02 06 3c 03 06 3c "
+                "04 06 3c 01 06 7a 6f");
+
+        //  copy them into int vectors so they display nicely
+        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
+
+        BOOST_CHECK_EQUAL_RANGES(expected, output);
+    }
+    {
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+
+        BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
+    }
+    {
+        {
+            const byte_str response(
+                    "05 64 27 44 01 00 d2 04 79 6f");
+
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+
+            xfer.setInCountActual(response.size());
+        }
+
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+
+        BOOST_CHECK_EQUAL(40, xfer.getInCountExpected());
+    }
+    {
+        {
+            const byte_str response(
+                    "c0 ca 81 0f 00 1e 01 00 ff 00 03 00 3f 01 00 00 2b ac "
+                    "01 02 18 01 00 01 00 14 01 18 01 00 00 00 13 00 95 4f "
+                    "00 00 ff ff");
+
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+
+            xfer.setInCountActual(response.size());
+        }
+
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
+
+        BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
+
+        pointlist_t point_list;
+
+        dnp.getInboundPoints(point_list);
+
+        BOOST_REQUIRE_EQUAL(1, point_list.size());
+
+        {
+            CtiPointDataMsg *pd = point_list[0];
+
+            BOOST_CHECK_EQUAL(pd->getValue(), 0);
+
+            BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
+
+            BOOST_CHECK_EQUAL(pd->getId(), 2001);
+        }
+
+        auto string_list = dnp.getInboundStrings();
+
+        BOOST_CHECK_EQUAL(2, string_list.size());
+
+        BOOST_CHECK_EQUAL(string_list[0],
+            "Internal indications:\n"
+            "Broadcast message received\n"
+            "Class 1 data available\n"
+            "Class 2 data available\n"
+            "Class 3 data available\n");
+        BOOST_CHECK_EQUAL(string_list[1],
+            "Point data report:\n"
+            "AI:     0; AO:     0; DI:     0; DO:     0; Counters:     0; \n"
+            "(No points returned)\n");
+
+        delete_container(point_list);
     }
 }
 
@@ -1847,7 +1935,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_unsolicited)
 
         dnp.getInboundPoints(point_list);
 
-        BOOST_CHECK_EQUAL(4, point_list.size());
+        BOOST_REQUIRE_EQUAL(4, point_list.size());
 
         {
             CtiPointDataMsg *pd = point_list[0];
@@ -1889,14 +1977,11 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_unsolicited)
             BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
-        stringlist_t string_list;
-
-        dnp.getInboundStrings(string_list);
+        auto string_list = dnp.getInboundStrings();
 
         BOOST_CHECK_EQUAL(0, string_list.size());
 
         delete_container(point_list);
-        delete_container(string_list);
     }
 }
 
@@ -2166,31 +2251,28 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
             BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
-        stringlist_t string_list;
-
-        dnp.getInboundStrings(string_list);
+        auto string_list = dnp.getInboundStrings();
 
         BOOST_CHECK_EQUAL(6, string_list.size());
 
-        BOOST_CHECK_EQUAL(*string_list[0],
+        BOOST_CHECK_EQUAL(string_list[0],
             "Loopback successful");
-        BOOST_CHECK_EQUAL(*string_list[1],
+        BOOST_CHECK_EQUAL(string_list[1],
             "Internal indications:\n"
             "Time synchronization needed\n"
             "Device restart\n"
             "Request parameters out of range\n");
-        BOOST_CHECK_EQUAL(*string_list[2],
+        BOOST_CHECK_EQUAL(string_list[2],
             "Attempting to clear Device Restart bit");
-        BOOST_CHECK_EQUAL(*string_list[3],
+        BOOST_CHECK_EQUAL(string_list[3],
             "Internal indications:\n"
             "Time synchronization needed\n");
-        BOOST_CHECK_EQUAL(*string_list[4],
+        BOOST_CHECK_EQUAL(string_list[4],
             "Time sync sent");
-        BOOST_CHECK_EQUAL(*string_list[5],
+        BOOST_CHECK_EQUAL(string_list[5],
             ""); // no internal indication
 
         delete_container(point_list);
-        delete_container(string_list);
     }
 }
 
@@ -2285,18 +2367,14 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_inhibited_by_local_automation)
 
         BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
-        stringlist_t string_list;
-
-        dnp.getInboundStrings(string_list);
+        auto string_list = dnp.getInboundStrings();
 
         BOOST_CHECK_EQUAL(2, string_list.size());
 
-        BOOST_CHECK_EQUAL(*string_list[0],
-            "Request not accepted because it was inhibited by a local automation process.");
-        BOOST_CHECK_EQUAL(*string_list[1],
+        BOOST_CHECK_EQUAL(string_list[0],
+            "Control result (10): Request not accepted because it was inhibited by a local automation process.");
+        BOOST_CHECK_EQUAL(string_list[1],
             "");  //  no internal indications
-
-        delete_container(string_list);
     }
 }
 
@@ -2391,18 +2469,14 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_not_supported)
 
         BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
-        stringlist_t string_list;
-
-        dnp.getInboundStrings(string_list);
+        auto string_list = dnp.getInboundStrings();
 
         BOOST_CHECK_EQUAL(2, string_list.size());
 
-        BOOST_CHECK_EQUAL(*string_list[0],
-            "Request not accepted because a control operation is not supported for this point.");
-        BOOST_CHECK_EQUAL(*string_list[1],
+        BOOST_CHECK_EQUAL(string_list[0],
+            "Control result (4): Request not accepted because a control operation is not supported for this point.");
+        BOOST_CHECK_EQUAL(string_list[1],
             "");  //  no internal indications
-
-        delete_container(string_list);
     }
 }
 
@@ -2498,18 +2572,14 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_sbo)
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
 
-        stringlist_t string_list;
-
-        dnp.getInboundStrings(string_list);
+        auto string_list = dnp.getInboundStrings();
 
         BOOST_CHECK_EQUAL(2, string_list.size());
 
-        BOOST_CHECK_EQUAL(*string_list[0],
+        BOOST_CHECK_EQUAL(string_list[0],
             "Select successful, sending operate");
-        BOOST_CHECK_EQUAL(*string_list[1],
-            "Request accepted, initiated, or queued.");
-
-        delete_container(string_list);
+        BOOST_CHECK_EQUAL(string_list[1],
+            "Control result (0): Request accepted, initiated, or queued.");
     }
     //  Operate
     {
@@ -2576,18 +2646,14 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_sbo)
 
         BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
-        stringlist_t string_list;
-
-        dnp.getInboundStrings(string_list);
+        auto string_list = dnp.getInboundStrings();
 
         BOOST_CHECK_EQUAL(2, string_list.size());
 
-        BOOST_CHECK_EQUAL(*string_list[0],
-            "Request accepted, initiated, or queued.");
-        BOOST_CHECK_EQUAL(*string_list[1],
+        BOOST_CHECK_EQUAL(string_list[0],
+            "Control result (0): Request accepted, initiated, or queued.");
+        BOOST_CHECK_EQUAL(string_list[1],
             "");
-
-        delete_container(string_list);
     }
 }
 
