@@ -10,6 +10,7 @@
 <cti:standardPage module="capcontrol" page="ivvc.busView">
     
 <cti:includeScript link="/resources/js/common/yukon.table.dynamic.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.da.busview.js"/>
 
 <%@ include file="/capcontrol/capcontrolHeader.jspf" %>
 
@@ -188,21 +189,14 @@
         <tbody>
             <cti:navigableHierarchy var="zone" depth="depth" hierarchy="${zones}">
                 <tr>
-                    <td>
+                    <td class="half-width">
                         <cti:url var="url" value="/capcontrol/ivvc/zone/detail">
                             <cti:param name="zoneId" value="${zone.zoneId}"/>
                         </cti:url>
                         <a href="${url}">${fn:escapeXml(zone.name)}</a>
                     </td>
                     <td>
-                        <c:choose>
-                            <c:when test="${zone.zoneType == singlePhaseZone}">
-                                <i:inline key="${zone.zoneType}"/>:&nbsp;<i:inline key="${zone.regulator.phase}"/>
-                            </c:when>
-                            <c:otherwise>
-                                <i:inline key="${zone.zoneType}"/>
-                            </c:otherwise>
-                        </c:choose>
+                       <div class="js-events-timeline clear" data-zone-id="${zone.zoneId}"></div>
                     </td>
                 </tr>
             </cti:navigableHierarchy>
