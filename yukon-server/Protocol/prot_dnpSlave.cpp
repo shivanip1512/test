@@ -3,6 +3,7 @@
 #include "prot_dnpSlave.h"
 
 #include "dnp_object_analoginput.h"
+#include "dnp_object_analogoutput.h"
 #include "dnp_object_binaryinput.h"
 #include "dnp_object_binaryoutput.h"
 #include "dnp_object_counter.h"
@@ -161,11 +162,17 @@ auto DnpSlaveProtocol::identifyRequest( const char* data, unsigned int size ) ->
                             application_payload.data() + 2,
                             application_payload.size() - 2);
 
-            if( blocks.size() == 1
-                && blocks[0]->getGroup()     == BinaryOutputControl::Group
-                && blocks[0]->getVariation() == BinaryOutputControl::BOC_ControlRelayOutputBlock )
+            if( ! blocks.empty() )
             {
-                return { Commands::SetDigitalOut_Direct, ObjectBlockPtr{ std::move(blocks[0]) } };
+                if( blocks[0]->getGroup()     == BinaryOutputControl::Group &&
+                    blocks[0]->getVariation() == BinaryOutputControl::BOC_ControlRelayOutputBlock )
+                {
+                    return { Commands::SetDigitalOut_Direct, ObjectBlockPtr{ std::move(blocks[0]) } };
+                }
+                if( blocks[0]->getGroup() == AnalogOutput::Group )
+                {
+                    return { Commands::SetAnalogOut_Direct, ObjectBlockPtr{ std::move(blocks[0]) } };
+                }
             }
         }
     }
@@ -283,6 +290,25 @@ void DnpSlaveProtocol::setControlCommand( const DnpSlave::control_request &contr
                     BlockFactoryFunc(
                           std::move(boc),
                           control.offset));
+
+    //  finalize the request
+    _application.initForSlaveOutput();
+}
+
+
+void DnpSlaveProtocol::setAnalogOutputCommand( const DnpSlave::output_analog &point )
+{
+    _command = Commands::SetAnalogOut_Direct;
+
+    auto aoc = std::make_unique<AnalogOutput>(AnalogOutput::AO_16Bit);
+
+    aoc->setControl(point.value);
+
+    _application.setCommand(
+            ApplicationLayer::ResponseResponse,
+            ObjectBlock::makeIndexedBlock(
+                    std::move(aoc),
+                    point.offset));
 
     //  finalize the request
     _application.initForSlaveOutput();

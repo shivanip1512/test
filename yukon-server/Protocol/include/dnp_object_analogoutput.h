@@ -62,7 +62,7 @@ public:
 };
 
 
-class AnalogOutput : public Object
+class IM_EX_PROT AnalogOutput : public Object
 {
 private:
     long   _longValue;

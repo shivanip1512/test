@@ -7,6 +7,9 @@
 
 #include "amq_constants.h"
 
+#include "resolvers.h"
+#include "slctdev.h"
+
 #include "std_helper.h"
 
 #include <boost/scoped_ptr.hpp>
@@ -281,6 +284,15 @@ int DnpSlave::processMessageFromForeignSystem (ServerConnection& connection,
             }
             return processControlRequest(connection, *requestType.second);
         }
+        case DnpSlaveProtocol::Commands::SetAnalogOut_Direct:
+        {
+            if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+            {
+                CTILOG_DEBUG(dout, logNow() <<" received DNP analog output request message"<<
+                        arrayToRange(reinterpret_cast<const unsigned char*>(data), size));
+            }
+            return processAnalogOutputRequest(connection, *requestType.second);
+        }
     }
 
     if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
@@ -421,6 +433,30 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection)
 }
 
 
+bool isDnpDeviceId (long deviceId)
+{
+    const std::string sql = "select paotype from yukonpaobject where paobjectid=?";
+
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader rdr(connection, sql);
+
+    rdr << deviceId;
+
+    rdr.execute();
+
+    if( rdr() )
+    {
+        std::string paoTypeStr;
+
+        rdr[0] >> paoTypeStr;
+
+        return isDnpDeviceType(resolveDeviceType(paoTypeStr));
+    }
+
+    return false;
+}
+
+
 int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectBlock &ob)
 {
     if( ob.getGroup()     != BinaryOutputControl::Group ||
@@ -542,6 +578,144 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
     }
 
     _dnpSlave.setControlCommand(control);
+
+    CtiXfer xfer;
+
+    //  reply with success
+    while( !_dnpSlave.isTransactionComplete() )
+    {
+        if( _dnpSlave.generate(xfer) == ClientErrors::None )
+        {
+            if (xfer.getOutBuffer() != NULL && xfer.getOutCount() > 0)
+            {
+                int bufferSize = xfer.getOutCount();
+                char* buffer = new CHAR[bufferSize];
+                std::memcpy(buffer, xfer.getOutBuffer(), bufferSize);
+                if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+                {
+                    CTILOG_DEBUG(dout, logNow() <<" sending DNP scan response message."<<
+                                        arrayToRange(reinterpret_cast<const unsigned char*>(buffer), bufferSize));
+                }
+                connection.queueMessage(buffer,bufferSize, MAXPRIORITY - 1);
+            }
+
+            _dnpSlave.decode(xfer);
+        }
+        else if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+        {
+            CTILOG_DEBUG(dout, logNow() <<" was not able to generate control response.");
+        }
+    }
+
+    return 0;
+}
+
+
+int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const ObjectBlock &control)
+{
+    if( control.getGroup() != AnalogOutput::Group ||
+        control.empty() )
+    {
+        return -1;
+    }
+
+    auto &ob = control[0];
+
+    if( ! ob.object )
+    {
+        return -1;
+    }
+
+    const auto aoc = dynamic_cast<const AnalogOutput *>(ob.object);
+
+    if( ! aoc )
+    {
+        return -1;
+    }
+
+    Protocols::DnpSlave::output_analog point;
+
+    //  create the point so we can echo it back in the DNP response
+    point.offset = ob.index;
+    point.value  = aoc->getValue();
+
+    //  look for the point with the correct control offset
+    for( const auto &kv : _receiveMap )
+    {
+        const DnpId &dnpId = kv.second;
+        if( dnpId.SlaveId      == _dnpSlave.getSrcAddr()
+            && dnpId.MasterId  == _dnpSlave.getDstAddr()
+            && dnpId.Offset    == ob.index
+            && dnpId.PointType == AnalogPointType )
+        {
+            const CtiFDRDestination &fdrdest = kv.first;
+            CtiFDRPoint* fdrPoint = fdrdest.getParentPoint();
+
+            {
+                CtiLockGuard<CtiMutex> recvGuard(getReceiveFromList().getMutex());
+
+                if ( ! findPointIdInList(fdrPoint->getPointID(),getReceiveFromList(),*fdrPoint) )
+                {
+                    continue;
+                }
+            }
+
+            if( fdrPoint->isControllable() )
+            {
+                if( isDnpDeviceId(fdrPoint->getPaoID()) )
+                {
+                    //  validate that the the point is on an analog output point (offset 10,000+), else fail with...  unsupported?
+                    //
+                    //  Analog outputs as well...  no control outputs, but confirm that we are assigned to an analog output point.
+                    //  Analog output translation type?
+                    //
+                    //  DNP passthrough control via Porter...  but set timeouts, I guess?  If we have multiple points in the receiveMap...
+                    //    Forget it.  It only makes sense to do one for a given translation.
+
+                    std::regex re { "Control result \\(([0-9]+)\\)" };
+
+                    std::smatch results;
+
+                    std::string resultString;
+
+                    if( std::regex_search(resultString, results, re) )
+                    {
+                        try
+                        {
+                            int error = std::stoi(results[0].str());
+                        }
+                        catch( std::invalid_argument & )
+                        {
+                        }
+                        catch( std::out_of_range & )
+                        {
+                        }
+                    }
+
+                    return 0;
+                }
+                else
+                {
+                    std::string translationName = "DNP offset " + std::to_string(dnpId.Offset);
+
+                    if (fdrPoint->isControllable())
+                    {
+                        CtiCommandMsg *aoMsg = createAnalogOutputMessage(fdrPoint->getPointID(), translationName, point.value);
+                        sendMessageToDispatch(aoMsg);
+                        return  ClientErrors::None;
+                    }
+
+                    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+                    {
+                        CTILOG_DEBUG(dout, "Analog point "<< translationName <<" value "<< point.value <<" from "<< getInterfaceName() <<
+                                " assigned to point "<< fdrPoint->getPointID());
+                    }
+                }
+            }
+        }
+    }
+
+    _dnpSlave.setAnalogOutputCommand(point);
 
     CtiXfer xfer;
 

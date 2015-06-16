@@ -10,6 +10,7 @@ INCLPATHS+= \
 -I$(MSG)\include \
 -I$(COMMON)\include \
 -I$(PROT)\include \
+-I$(RTDB)\include \
 -I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
 -I$(FDR)\Telegyr\inc \
@@ -27,6 +28,7 @@ INCLPATHS+= \
 ;$(SERVER)\include \
 ;$(PIL)\include \
 ;$(PROT)\include \
+;$(RTDB)\include \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
 ;$(SIGNAL)\include \
@@ -351,10 +353,10 @@ fdrtristatesub.dll: fdrtristatesub.obj Makefile $(OBJ)\fdrtristatesub.res
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
-fdrdnpslave.dll: fdrdnpslave.obj Makefile $(OBJ)\fdrdnpslave.res
+fdrdnpslave.dll: fdrdnpslave.obj $(PRECOMPILED_OBJ) Makefile $(OBJ)\fdrdnpslave.res
                 @%cd $(OBJ)
                 @echo Building  ..\$@
-                $(CC) $(DLLFLAGS) fdrdnpslave.obj $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib Ws2_32.lib /Fe..\$@ fdrdnpslave.res
+                $(CC) $(DLLFLAGS) fdrdnpslave.obj $(PRECOMPILED_OBJ) $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\ctidevdb.lib $(COMPILEBASE)\lib\cti_fdr.lib Ws2_32.lib /Fe..\$@ fdrdnpslave.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
@@ -520,7 +522,7 @@ fdrdnpslave.obj : fdrdnpslave.cpp
                 @echo:
                 @echo Compiling: $< Output: ..\$@
                 @echo:
-                $(CC) $(CCOPTS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRDNPSLAVE -DWINDOWS -Fo$(OBJ)\  -c $<
+                $(CC) $(CCOPTS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) -D_DLL_FDRDNPSLAVE -Fo$(OBJ)\  -c $<
 
 fdrxa21lm.obj : fdrxa21lm.cpp
                 @echo:
@@ -685,7 +687,8 @@ fdrdnpslave.obj:	precompiled.h fdrdnpslave.h dlldefs.h queues.h \
 		dnp_object_time.h prot_dnpSlave.h dnp_application.h \
 		dnp_transport.h dnp_datalink.h dnp_datalink_packet.h \
 		dnp_configuration.h dnp_object_binaryoutput.h prot_dnp.h \
-		packet_finder.h amq_constants.h std_helper.h
+		packet_finder.h dnp_object_analogoutput.h amq_constants.h \
+		resolvers.h db_entry_defines.h slctdev.h std_helper.h
 fdrdsm2filein.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		cparms.h configkey.h configval.h msg_cmd.h message.h \
 		ctidbgmem.h collectable.h loggable.h pointtypes.h dllbase.h \

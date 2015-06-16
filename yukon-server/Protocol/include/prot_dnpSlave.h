@@ -22,6 +22,7 @@ public:
     enum class Commands
     {
         Class1230Read,
+        SetAnalogOut_Direct,
         SetDigitalOut_Direct,
         LinkStatus,
         ResetLink,
@@ -35,6 +36,7 @@ public:
     std::pair<Commands, DNP::ObjectBlockPtr> identifyRequest(const char* data, unsigned int size);
     void setScanCommand( std::vector<std::unique_ptr<DnpSlave::output_point>> outputPoints );
     void setControlCommand( const DnpSlave::control_request &control );
+    void setAnalogOutputCommand( const DnpSlave::output_analog &point );
 
     YukonError_t decode( CtiXfer &xfer );
     YukonError_t generate( CtiXfer &xfer );

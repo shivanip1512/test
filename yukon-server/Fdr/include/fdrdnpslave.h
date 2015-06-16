@@ -73,10 +73,11 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
     private:
         DnpId ForeignToYukonId(const CtiFDRDestination &pointDestination);
         bool  YukonToForeignQuality(const int aQuality, const CtiTime lastTimeStamp, const CtiTime Now);
-        int processScanSlaveRequest(ServerConnection &connection);
-        int processControlRequest  (ServerConnection &connection, const Protocols::DNP::ObjectBlock &control);
-        int processDataLinkConfirmationRequest(ServerConnection& connection);
-        int processDataLinkReset              (ServerConnection& connection);
+        int processScanSlaveRequest           (ServerConnection &connection);
+        int processControlRequest             (ServerConnection &connection, const Protocols::DNP::ObjectBlock &control);
+        int processAnalogOutputRequest        (ServerConnection &connection, const Protocols::DNP::ObjectBlock &control);
+        int processDataLinkConfirmationRequest(ServerConnection &connection);
+        int processDataLinkReset              (ServerConnection &connection);
 
         std::string dumpDNPMessage(const char* data, unsigned int size);
 
