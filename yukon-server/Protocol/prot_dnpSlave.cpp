@@ -50,13 +50,14 @@ auto DnpSlaveProtocol::identifyRequest( const char* data, unsigned int size ) ->
         return Invalid;
     }
 
-    const DatalinkPacket::dl_packet &packet = *reinterpret_cast<const DatalinkPacket::dl_packet *>(data);
-
-    if( ! DatalinkPacket::isEntirePacket(packet, size) )
+    if( ! DatalinkLayer::isPacketValid(reinterpret_cast<const unsigned char *>(data), size) )
     {
         return Invalid;
     }
-    if( packet.header.fmt.control.p.direction == 0 )
+
+    const DatalinkPacket::dl_packet &packet = *reinterpret_cast<const DatalinkPacket::dl_packet *>(data);
+
+    if (packet.header.fmt.control.p.direction == 0)
     {
         return Invalid;
     }
@@ -199,56 +200,53 @@ std::vector<unsigned char> DnpSlaveProtocol::createDatalinkAck()
     return std::vector<unsigned char> { buf, buf + DatalinkPacket::calcPacketLength(packet.header.fmt.len) };
 }
 
-void DnpSlaveProtocol::setScanCommand( std::vector<input_point> inputPoints )
+void DnpSlaveProtocol::setScanCommand( std::vector<std::unique_ptr<DnpSlave::output_point>> outputPoints )
 {
     _command = Commands::Class1230Read;
 
-    std::map<unsigned, std::unique_ptr<const AnalogInput>> analogs;
-    std::map<unsigned, std::unique_ptr<const BinaryInput>> digitals;
-    std::map<unsigned, std::unique_ptr<const Counter>>     counters;
-
-    for( const auto &ip : inputPoints )
+    struct PointSorter : DnpSlave::OutputPointHandler
     {
-        switch( ip.type )
+        std::map<unsigned, std::unique_ptr<const DNP::AnalogInput>> analogs;
+        std::map<unsigned, std::unique_ptr<const DNP::BinaryInput>> digitals;
+        std::map<unsigned, std::unique_ptr<const DNP::Counter>>     counters;
+
+        void handle(const DnpSlave::output_analog &a) override
         {
-            case AnalogInputType:
-            {
-                auto ain = std::make_unique<AnalogInput>(AnalogInput::AI_32Bit);
-                ain->setValue(ip.ain.value);
-                ain->setOnlineFlag(ip.online);
+            auto ain = std::make_unique<AnalogInput>(AnalogInput::AI_32Bit);
+            ain->setValue(a.value);
+            ain->setOnlineFlag(a.online);
 
-                analogs.emplace(ip.offset, std::move(ain));
-
-                break;
-            }
-            case DigitalInput:
-            {
-                auto bin = std::make_unique<BinaryInput>(BinaryInput::BI_WithStatus);
-                bin->setStateValue(ip.din.trip_close);
-                bin->setOnlineFlag(ip.online);
-
-                digitals.emplace(ip.offset, std::move(bin));
-
-                break;
-            }
-            case Counters:
-            {
-                auto counterin = std::make_unique<Counter>(Counter::C_Binary32Bit);
-                counterin->setValue(ip.counterin.value);
-                counterin->setOnlineFlag(ip.online);
-
-                counters.emplace(ip.offset, std::move(counterin));
-
-                break;
-            }
+            analogs.emplace(a.offset, std::move(ain));
         }
+        void handle(const DnpSlave::output_digital &d) override
+        {
+            auto bin = std::make_unique<BinaryInput>(BinaryInput::BI_WithStatus);
+            bin->setStateValue(d.trip_close);
+            bin->setOnlineFlag(d.online);
+
+            digitals.emplace(d.offset, std::move(bin));
+        }
+        void handle(const DnpSlave::output_counter &c) override
+        {
+            auto counterin = std::make_unique<Counter>(Counter::C_Binary32Bit);
+            counterin->setValue(c.value);
+            counterin->setOnlineFlag(c.online);
+
+            counters.emplace(c.offset, std::move(counterin));
+        }
+    }
+    ps;
+
+    for( const auto &point : outputPoints )
+    {
+        point->identify(ps);
     }
 
     std::vector<ObjectBlockPtr> dobs;
 
-    if( ! analogs.empty() )     dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(analogs)));
-    if( ! digitals.empty() )    dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(digitals)));
-    if( ! counters.empty() )    dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(counters)));
+    if( ! ps.analogs.empty() )     dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(ps.analogs)));
+    if( ! ps.digitals.empty() )    dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(ps.digitals)));
+    if( ! ps.counters.empty() )    dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(ps.counters)));
 
     _application.setCommand(
             ApplicationLayer::ResponseResponse,
@@ -258,54 +256,33 @@ void DnpSlaveProtocol::setScanCommand( std::vector<input_point> inputPoints )
 }
 
 
-void DnpSlaveProtocol::setControlCommand( const DNP::ObjectBlock &ob, const DNP::BinaryOutputControl::Status status )
+void DnpSlaveProtocol::setControlCommand( const DnpSlave::output_digital point )
 {
-    if( ob.getGroup()     == BinaryOutputControl::Group &&
-        ob.getVariation() == BinaryOutputControl::BOC_ControlRelayOutputBlock &&
-        ! ob.empty() )
-    {
-        auto &od = ob[0];
+    _command = Commands::SetDigitalOut_Direct;
 
-        if( const auto request = dynamic_cast<const BinaryOutputControl *>(od.object) )
-        {
-            _command = Commands::SetDigitalOut_Direct;
+    auto boc = std::make_unique<BinaryOutputControl>(BinaryOutputControl::BOC_ControlRelayOutputBlock);
 
-            auto boc = std::make_unique<BinaryOutputControl>(BinaryOutputControl::BOC_ControlRelayOutputBlock);
+    boc->setControlBlock(
+            point.on_time,
+            point.off_time,
+            point.count,
+            point.control,
+            point.queue,
+            point.clear,
+            point.trip_close);
+    boc->setStatus(
+            point.status);
 
-            boc->setControlBlock(
-                    request->getOnTime(),
-                    request->getOffTime(),
-                    request->getCount(),
-                    request->getControlCode(),
-                    request->getQueue(),
-                    request->getClear(),
-                    request->getTripClose());
-            boc->setStatus(
-                    status);
+    const auto BlockFactoryFunc =
+            point.isLongIndexed
+                ? ObjectBlock::makeLongIndexedBlock
+                : ObjectBlock::makeIndexedBlock;
 
-            if( ob.getQuantityLength() == 2 && ob.getIndexLength() == 2 )
-            {
-                _application.setCommand(
-                        ApplicationLayer::ResponseResponse,
-                        ObjectBlock::makeLongIndexedBlock(
-                                std::move(boc),
-                                od.index));
-            }
-            else
-            {
-                _application.setCommand(
-                        ApplicationLayer::ResponseResponse,
-                        ObjectBlock::makeIndexedBlock(
-                                std::move(boc),
-                                od.index));
-            }
-        }
-    }
-    else
-    {
-        CTILOG_ERROR(dout, "Input point invalid for control");
-        _command = Commands::Invalid;
-    }
+    _application.setCommand(
+            ApplicationLayer::ResponseResponse,
+                    BlockFactoryFunc(
+                          std::move(boc),
+                          point.offset));
 
     //  finalize the request
     _application.initForSlaveOutput();

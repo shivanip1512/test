@@ -3,6 +3,7 @@
 #include "fdrdnpslave.h"
 
 #include "prot_dnp.h"
+#include "dnp_object_analogoutput.h"
 
 #include "amq_constants.h"
 
@@ -10,6 +11,9 @@
 
 #include <boost/scoped_ptr.hpp>
 #include <boost/algorithm/string.hpp>
+
+#include <regex>
+#include <memory>
 
 using Cti::Fdr::DnpSlave;
 using Cti::Logging::Vector::Hex::operator<<;
@@ -322,7 +326,6 @@ int DnpSlave::processDataLinkReset(ServerConnection& connection)
 
     connection.queueMessage(bufForConnection, buf.size(), MAXPRIORITY - 1);
 
-
     return 0;
 }
 
@@ -330,7 +333,7 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection)
 {
     const CtiTime Now;
 
-    std::vector<DnpSlaveProtocol::input_point> inputPoints;
+    std::vector<std::unique_ptr<Protocols::DnpSlave::output_point>> outputPoints;
 
     for( const auto &kv : _sendMap )
     {
@@ -344,29 +347,29 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection)
             if (!findPointIdInList(fdrPoint->getPointID(),getSendToList(),*fdrPoint) )
                 continue;
 
-            DnpSlaveProtocol::input_point iPoint;
-
-            iPoint.online = YukonToForeignQuality(fdrPoint->getQuality(), fdrPoint->getLastTimeStamp(), Now);
-            iPoint.offset = dnpId.Offset - 1;  //  convert to DNP's 0-based indexing
+            std::unique_ptr<Protocols::DnpSlave::output_point> point;
 
             switch (dnpId.PointType)
             {
                 case StatusPointType:
                 {
-                    iPoint.din.trip_close = (fdrPoint->getValue() == 0)?(BinaryOutputControl::Trip):(BinaryOutputControl::Close);
-                    iPoint.type = DnpSlaveProtocol::DigitalInput;
+                    auto s = std::make_unique<Protocols::DnpSlave::output_digital>();
+                    s->trip_close = fdrPoint->getValue() ? BinaryOutputControl::Close : BinaryOutputControl::Trip;
+                    point = std::move(s);
                     break;
                 }
                 case AnalogPointType:
                 {
-                    iPoint.ain.value =  (fdrPoint->getValue() * dnpId.Multiplier);
-                    iPoint.type = DnpSlaveProtocol::AnalogInputType;
+                    auto a = std::make_unique<Protocols::DnpSlave::output_analog>();
+                    a->value = fdrPoint->getValue() * dnpId.Multiplier;
+                    point = std::move(a);
                     break;
                 }
                 case PulseAccumulatorPointType:
                 {
-                    iPoint.counterin.value =  (fdrPoint->getValue() * dnpId.Multiplier);
-                    iPoint.type = DnpSlaveProtocol::Counters;
+                    auto c = std::make_unique<Protocols::DnpSlave::output_counter>();
+                    c->value = fdrPoint->getValue() * dnpId.Multiplier;
+                    point = std::move(c);
                     break;
                 }
                 default:
@@ -375,11 +378,14 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection)
                 }
             }
 
-            inputPoints.emplace_back(iPoint);
+            point->online = YukonToForeignQuality(fdrPoint->getQuality(), fdrPoint->getLastTimeStamp(), Now);
+            point->offset = dnpId.Offset - 1;  //  convert to DNP's 0-based indexing
+
+            outputPoints.emplace_back(std::move(point));
         }
     }
 
-    _dnpSlave.setScanCommand(std::move(inputPoints));
+    _dnpSlave.setScanCommand(std::move(outputPoints));
 
     CtiXfer xfer;
 
@@ -433,7 +439,20 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
         return -1;
     }
 
-    auto status = BinaryOutputControl::Status_NotSupported;
+    Protocols::DnpSlave::output_digital point;
+
+    point.offset     = ob.index;
+    point.control    = boc->getControlCode();
+    point.queue      = boc->getQueue();
+    point.clear      = boc->getClear();
+    point.trip_close = boc->getTripClose();
+    point.count      = boc->getCount();
+    point.on_time    = boc->getOnTime();
+    point.off_time   = boc->getOffTime();
+    point.status     = BinaryOutputControl::Status_NotSupported;  //  actually need to parse and preserve the passed status...  confirm it's Normal before sending control
+    point.isLongIndexed =
+        (control.getIndexLength()    == 2 &&
+         control.getQuantityLength() == 2);
 
     boost::optional<unsigned> controlState;
 
@@ -473,7 +492,7 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
 
     if ( ! controlState)
     {
-        status = BinaryOutputControl::Status_FormatError;
+        point.status = BinaryOutputControl::Status_FormatError;
     }
     else
     {
@@ -516,13 +535,13 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
                         CTILOG_DEBUG(dout, logNow() << " Control " << (*controlState ? "close" : "open") << " sent to pointid " << fdrPoint->getPointID());
                     }
 
-                    status = BinaryOutputControl::Status_Success;
+                    point.status = BinaryOutputControl::Status_Success;
                 }
             }
         }
     }
 
-    _dnpSlave.setControlCommand(control, status);
+    _dnpSlave.setControlCommand(point);
 
     CtiXfer xfer;
 
@@ -596,17 +615,11 @@ DnpId DnpSlave::ForeignToYukonId(const CtiFDRDestination &pointDestination)
         { to_lower_copy(dnpPointCounterString),      PulseAccumulatorPointType }
     };
 
-    if( const auto type = mapFind(PointTypeNames, to_lower_copy(pointType)) )
-    {
-        dnpId.PointType = *type;
-    }
-    else
-    {
-        dnpId.PointType = InvalidPointType;
-    }
+    dnpId.PointType = mapFindOrDefault(PointTypeNames, to_lower_copy(pointType), InvalidPointType);
 
     dnpId.Offset = std::stoi(dnpOffset);
     dnpId.MasterServerName = pointDestination.getDestination();
+
     if (dnpMultiplier.empty())
     {
         dnpId.Multiplier = 1;

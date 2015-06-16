@@ -23,6 +23,19 @@ boost::optional<typename Map::mapped_type> mapFind( Map &m, const typename Map::
     return itr->second;
 }
 
+template <class Map>
+typename Map::mapped_type mapFindOrDefault( Map &m, const typename Map::key_type &key, const typename Map::mapped_type defaultValue )
+{
+    Map::const_iterator itr = m.find(key);
+
+    if( itr != m.end() )
+    {
+        return itr->second;
+    }
+
+    return defaultValue;
+}
+
 // This needs a comment saying that it can be removed when we upgrade to Boost 1.50+.
 template<typename MappedType, class MapViewType, typename KeyType>
 boost::optional<MappedType> bimapFind( const MapViewType &mapView, KeyType key )
