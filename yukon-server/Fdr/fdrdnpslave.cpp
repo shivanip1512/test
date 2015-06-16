@@ -354,7 +354,7 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection)
                 case StatusPointType:
                 {
                     auto s = std::make_unique<Protocols::DnpSlave::output_digital>();
-                    s->trip_close = fdrPoint->getValue() ? BinaryOutputControl::Close : BinaryOutputControl::Trip;
+                    s->status = fdrPoint->getValue();
                     point = std::move(s);
                     break;
                 }
@@ -421,38 +421,38 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection)
 }
 
 
-int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectBlock &control)
+int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectBlock &ob)
 {
-    if( control.getGroup()     != BinaryOutputControl::Group ||
-        control.getVariation() != BinaryOutputControl::BOC_ControlRelayOutputBlock ||
-        control.empty() )
+    if( ob.getGroup()     != BinaryOutputControl::Group ||
+        ob.getVariation() != BinaryOutputControl::BOC_ControlRelayOutputBlock ||
+        ob.empty() )
     {
         return -1;
     }
 
-    auto &ob = control[0];
+    auto &objectDescriptor = ob[0];
 
-    const auto boc = dynamic_cast<const BinaryOutputControl *>(ob.object);
+    const auto boc = dynamic_cast<const BinaryOutputControl *>(objectDescriptor.object);
 
     if( ! boc )
     {
         return -1;
     }
 
-    Protocols::DnpSlave::output_digital point;
+    Protocols::DnpSlave::control_request control;
 
-    point.offset     = ob.index;
-    point.control    = boc->getControlCode();
-    point.queue      = boc->getQueue();
-    point.clear      = boc->getClear();
-    point.trip_close = boc->getTripClose();
-    point.count      = boc->getCount();
-    point.on_time    = boc->getOnTime();
-    point.off_time   = boc->getOffTime();
-    point.status     = BinaryOutputControl::Status_NotSupported;  //  actually need to parse and preserve the passed status...  confirm it's Normal before sending control
-    point.isLongIndexed =
-        (control.getIndexLength()    == 2 &&
-         control.getQuantityLength() == 2);
+    control.offset     = objectDescriptor.index;
+    control.control    = boc->getControlCode();
+    control.queue      = boc->getQueue();
+    control.clear      = boc->getClear();
+    control.trip_close = boc->getTripClose();
+    control.count      = boc->getCount();
+    control.on_time    = boc->getOnTime();
+    control.off_time   = boc->getOffTime();
+    control.status     = BinaryOutputControl::Status_NotSupported;  //  actually need to parse and preserve the passed status...  confirm it's Normal before sending control
+    control.isLongIndexed =
+        (ob.getIndexLength()    == 2 &&
+         ob.getQuantityLength() == 2);
 
     boost::optional<unsigned> controlState;
 
@@ -492,7 +492,7 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
 
     if ( ! controlState)
     {
-        point.status = BinaryOutputControl::Status_FormatError;
+        control.status = BinaryOutputControl::Status_FormatError;
     }
     else
     {
@@ -503,7 +503,7 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
             if( dnpId.PointType   == StatusPointType
                 && dnpId.SlaveId  == _dnpSlave.getSrcAddr()
                 && dnpId.MasterId == _dnpSlave.getDstAddr()
-                && dnpId.Offset   == ob.index )
+                && dnpId.Offset   == control.offset )
             {
                 const CtiFDRDestination &fdrdest = kv.first;
                 CtiFDRPoint* fdrPoint = fdrdest.getParentPoint();
@@ -535,13 +535,13 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
                         CTILOG_DEBUG(dout, logNow() << " Control " << (*controlState ? "close" : "open") << " sent to pointid " << fdrPoint->getPointID());
                     }
 
-                    point.status = BinaryOutputControl::Status_Success;
+                    control.status = BinaryOutputControl::Status_Success;
                 }
             }
         }
     }
 
-    _dnpSlave.setControlCommand(point);
+    _dnpSlave.setControlCommand(control);
 
     CtiXfer xfer;
 

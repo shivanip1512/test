@@ -221,7 +221,7 @@ void DnpSlaveProtocol::setScanCommand( std::vector<std::unique_ptr<DnpSlave::out
         void handle(const DnpSlave::output_digital &d) override
         {
             auto bin = std::make_unique<BinaryInput>(BinaryInput::BI_WithStatus);
-            bin->setStateValue(d.trip_close);
+            bin->setStateValue(d.status);
             bin->setOnlineFlag(d.online);
 
             digitals.emplace(d.offset, std::move(bin));
@@ -256,25 +256,25 @@ void DnpSlaveProtocol::setScanCommand( std::vector<std::unique_ptr<DnpSlave::out
 }
 
 
-void DnpSlaveProtocol::setControlCommand( const DnpSlave::output_digital point )
+void DnpSlaveProtocol::setControlCommand( const DnpSlave::control_request &control )
 {
     _command = Commands::SetDigitalOut_Direct;
 
     auto boc = std::make_unique<BinaryOutputControl>(BinaryOutputControl::BOC_ControlRelayOutputBlock);
 
     boc->setControlBlock(
-            point.on_time,
-            point.off_time,
-            point.count,
-            point.control,
-            point.queue,
-            point.clear,
-            point.trip_close);
+            control.on_time,
+            control.off_time,
+            control.count,
+            control.control,
+            control.queue,
+            control.clear,
+            control.trip_close);
     boc->setStatus(
-            point.status);
+            control.status);
 
     const auto BlockFactoryFunc =
-            point.isLongIndexed
+            control.isLongIndexed
                 ? ObjectBlock::makeLongIndexedBlock
                 : ObjectBlock::makeIndexedBlock;
 
@@ -282,7 +282,7 @@ void DnpSlaveProtocol::setControlCommand( const DnpSlave::output_digital point )
             ApplicationLayer::ResponseResponse,
                     BlockFactoryFunc(
                           std::move(boc),
-                          point.offset));
+                          control.offset));
 
     //  finalize the request
     _application.initForSlaveOutput();

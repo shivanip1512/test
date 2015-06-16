@@ -11,6 +11,8 @@ namespace DnpSlave {
     struct output_analog;
     struct output_digital;
     struct output_counter;
+
+    struct control_request;
 }
 
 class IM_EX_PROT DnpSlaveProtocol
@@ -32,7 +34,7 @@ public:
 
     std::pair<Commands, DNP::ObjectBlockPtr> identifyRequest(const char* data, unsigned int size);
     void setScanCommand( std::vector<std::unique_ptr<DnpSlave::output_point>> outputPoints );
-    void setControlCommand( const DnpSlave::output_digital point );
+    void setControlCommand( const DnpSlave::control_request &control );
 
     YukonError_t decode( CtiXfer &xfer );
     YukonError_t generate( CtiXfer &xfer );
@@ -86,6 +88,20 @@ struct output_digital : output_point
 {
     void identify(OutputPointHandler &h) override { h.handle(*this); }
 
+    bool status;
+};
+
+struct output_counter : output_point
+{
+    void identify(OutputPointHandler &h) override { h.handle(*this); }
+
+    double value;
+};
+
+struct control_request
+{
+    unsigned long offset;
+
     DNP::BinaryOutputControl::ControlCode control;
     DNP::BinaryOutputControl::TripClose trip_close;
     unsigned long on_time;
@@ -96,13 +112,6 @@ struct output_digital : output_point
     DNP::BinaryOutputControl::Status status;
 
     bool isLongIndexed;
-};
-
-struct output_counter : output_point
-{
-    void identify(OutputPointHandler &h) override { h.handle(*this); }
-
-    double value;
 };
 
 }
