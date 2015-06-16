@@ -16,6 +16,7 @@ import com.cannontech.capcontrol.dao.SubstationDao;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.schedule.dao.PaoScheduleDao;
 import com.cannontech.core.schedule.model.PaoSchedule;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -150,8 +151,8 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
                              int capBankIndex) {
         String capBankName = "CapBank " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex) + Integer.toString(feederIndex) + Integer.toString(capBankIndex);
         createCapControlObject(devCapControl, PaoType.CAPBANK, capBankName, false, 0);
-        int capBankPaoId = getPaoIdByName(capBankName);
-        capbankDao.assignCapbank(capBankPaoId, feederName);
+        YukonPao capBankPao = getPaoByName(capBankName);
+        capbankDao.assignCapbank(capBankPao, feederName);
         logCapControlAssignment(capBankName, feederName);
 //        complete++;
 //        log.info(complete + " / " + total);
@@ -161,8 +162,8 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
     private String createAndAssignFeeder(DevCapControl devCapControl, int areaIndex, int subIndex, int subBusIndex, String subBusName, int feederIndex) {
         String feederName = "Feeder " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex) + Integer.toString(feederIndex);
         createCapControlObject(devCapControl, PaoType.CAP_CONTROL_FEEDER, feederName, false, 0);
-        int feederPaoId = getPaoIdByName(feederName);
-        feederDao.assignFeeder(feederPaoId, subBusName);
+        YukonPao feederPao = getPaoByName(feederName);
+        feederDao.assignFeeder(feederPao, subBusName);
         logCapControlAssignment(feederName, subBusName);
 //        complete++;
 //        log.info(complete + " / " + total);
@@ -172,8 +173,8 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
     private String createAndAssignSubstationBus(DevCapControl devCapControl, int areaIndex, int subIndex, String subName, int subBusIndex) {
         String subBusName = "Substation Bus " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex);
         createCapControlObject(devCapControl, PaoType.CAP_CONTROL_SUBBUS, subBusName, false, 0);
-        int subBusPaoId = getPaoIdByName(subBusName);
-        substationBusDao.assignSubstationBus(subBusPaoId, subName);
+        YukonPao subBusPao = getPaoByName(subBusName);
+        substationBusDao.assignSubstationBus(subBusPao, subName);
         logCapControlAssignment(subBusName, subName);
 //        complete++;
 //        log.info(complete + " / " + total);
@@ -183,8 +184,8 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
     private String createSubstation(DevCapControl devCapControl, int areaIndex, String areaName, int subIndex) {
         String subName = "Substation " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex);
         createCapControlObject(devCapControl, PaoType.CAP_CONTROL_SUBSTATION, subName, false, 0);
-        int subPaoId = getPaoIdByName(subName);
-        substationDao.assignSubstation(subPaoId, areaName);
+        YukonPao subPao = getPaoByName(subName);
+        substationDao.assignSubstation(subPao, areaName);
         logCapControlAssignment(subName, areaName);
 //        complete++;
 //        log.info(complete + " / " + total);

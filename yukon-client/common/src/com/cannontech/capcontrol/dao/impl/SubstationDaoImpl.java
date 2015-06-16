@@ -81,72 +81,72 @@ public class SubstationDaoImpl implements SubstationDao {
         return stations;
     }
     
-    @Override 
-    public boolean assignSubstation(int substationId, String areaName) {
-        YukonPao pao = paoDao.findYukonPao(areaName, PaoType.CAP_CONTROL_AREA);
-        return (pao == null) ? false : assignSubstation(pao.getPaoIdentifier().getPaoId(), substationId);
-    };
-    
     @Override
-    public boolean assignSubstation(int areaId, int substationId) {
-        
-        YukonPao area = dbCache.getAllPaosMap().get(areaId);
-        String tableName = area.getPaoIdentifier().getPaoType() == PaoType.CAP_CONTROL_AREA ? 
-                "CCSubAreaAssignment" : "CCSubSpecialAreaAssignment";
-        
+    public boolean assignSubstation(YukonPao substation, String areaName) {
+        YukonPao area = paoDao.findYukonPao(areaName, PaoType.CAP_CONTROL_AREA);
+        return (area == null) ? false : assignSubstation(area, substation);
+    };
+
+    @Override
+    public boolean assignSubstation(YukonPao area, YukonPao substation) {
+        int areaId = area.getPaoIdentifier().getPaoId();
+        int substationId = substation.getPaoIdentifier().getPaoId();
+
+        String tableName = area.getPaoIdentifier().getPaoType() == PaoType.CAP_CONTROL_AREA ? "CCSubAreaAssignment"
+                : "CCSubSpecialAreaAssignment";
+
         SqlStatementBuilder displaySql = new SqlStatementBuilder();
-        
+
         displaySql.append("SELECT MAX(DisplayOrder)");
         displaySql.append("FROM " + tableName);
         displaySql.append("WHERE AreaId").eq(areaId);
-        
-        int displayOrder = jdbcTemplate.queryForInt(displaySql);    
-        
+
+        int displayOrder = jdbcTemplate.queryForInt(displaySql);
+
         // Remove any existing assignment.
-        unassignSubstation(substationId);
-        
+        unassignSubstation(substation);
+
         SqlStatementBuilder assignSql = new SqlStatementBuilder();
-        
+
         SqlParameterSink params = assignSql.insertInto(tableName);
         params.addValue("AreaID", areaId);
         params.addValue("SubstationBusID", substationId);
         params.addValue("DisplayOrder", ++displayOrder);
-        
+
         int rowsAffected = jdbcTemplate.update(assignSql);
-        
+
         boolean result = (rowsAffected == 1);
-        
+
         if (result) {
-            YukonPao substation = dbCache.getAllPaosMap().get(substationId);
             dbChangeManager.processPaoDbChange(substation, DbChangeType.UPDATE);
             dbChangeManager.processPaoDbChange(area, DbChangeType.UPDATE);
         }
-        
+
         return result;
     }
     
     @Override
     public boolean unassignSubstations(int areaId) {
-        
+
         YukonPao area = dbCache.getAllPaosMap().get(areaId);
-        String tableName = area.getPaoIdentifier().getPaoType() == PaoType.CAP_CONTROL_AREA ? 
-                "CCSubAreaAssignment" : "CCSubSpecialAreaAssignment";
-        
+        String tableName = area.getPaoIdentifier().getPaoType() == PaoType.CAP_CONTROL_AREA ? "CCSubAreaAssignment"
+                : "CCSubSpecialAreaAssignment";
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM " + tableName);
         sql.append("WHERE AreaId").eq(areaId);
-        
+
         int rowsAffected = jdbcTemplate.update(sql);
-        
+
         boolean result = rowsAffected == 1;
-        
+
         if (result) {
             dbChangeManager.processPaoDbChange(area, DbChangeType.UPDATE);
         }
-        
+
         return result;
     }
-    
+
     @Override
     @Transactional
     public void updateSubAssignments(int areaId, List<Integer> subs) {
@@ -177,16 +177,16 @@ public class SubstationDaoImpl implements SubstationDao {
     }
     
     @Override
-    public boolean unassignSubstation(int substationId) {
-        
+    public boolean unassignSubstation(YukonPao substation) {
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM CCSubAreaAssignment");
-        sql.append("WHERE SubstationBusID").eq(substationId);
-        
+        sql.append("WHERE SubstationBusID").eq(substation.getPaoIdentifier().getPaoId());
+
         int rowsAffected = jdbcTemplate.update(sql);
-        
+
         boolean result = (rowsAffected == 1);
-        
+
         return result;
     }
     

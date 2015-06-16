@@ -133,84 +133,85 @@ public class CapbankDaoImpl implements CapbankDao {
     
         return state == BankOpState.SWITCHED;
     }
-    
+      
     @Override
-    public boolean assignCapbank(int capbankId, String feederName) {
-        YukonPao pao = paoDao.findYukonPao(feederName, PaoType.CAP_CONTROL_FEEDER);
-        return (pao == null) ? false : assignCapbank(pao.getPaoIdentifier().getPaoId(), capbankId);
+    public boolean assignCapbank(YukonPao capbank, String feederName) {
+        YukonPao feeder = paoDao.findYukonPao(feederName, PaoType.CAP_CONTROL_FEEDER);
+        return (feeder == null) ? false : assignCapbank(feeder, capbank);
     };
 
     @Override
-    public boolean assignCapbank(int feederId, int capbankId) {
+    public boolean assignCapbank(YukonPao feeder, YukonPao capBank) {
         SqlStatementBuilder tripSql = new SqlStatementBuilder();
-        
+        int feederId = feeder.getPaoIdentifier().getPaoId();
+        int capbankId = capBank.getPaoIdentifier().getPaoId();
+
         tripSql.append("UPDATE CCFeederBankList");
         tripSql.append("SET TripOrder = TripOrder + 1");
         tripSql.append("WHERE FeederId").eq(feederId);
-        
+
         SqlStatementBuilder insertSql = new SqlStatementBuilder();
-        
+
         SqlParameterSink params = insertSql.insertInto("CCFeederBankList");
         params.addValue("FeederID", feederId);
         params.addValue("DeviceID", capbankId);
         params.addValue("ControlOrder", 1);
         params.addValue("CloseOrder", 1);
         params.addValue("TripOrder", 1);
-        
+
         // This guy looks rough.
         SqlStatementBuilder assignSql = new SqlStatementBuilder();
-        //Manually building this query because of the inner select. .insertInto() method generates bad grammar sql.
+        // Manually building this query because of the inner select.
+        // .insertInto() method generates bad grammar sql.
         assignSql.append("INSERT INTO CCFeederBankList (FeederID, DeviceID, ControlOrder, CloseOrder, TripOrder) ");
-        assignSql.append(   "SELECT " + feederId + ", " + capbankId + ", MAX(ControlOrder) + 1,MAX(CloseOrder) + 1, 1");
-        assignSql.append(   "FROM CCFeederBankList");
-        assignSql.append(   "WHERE FeederID").eq(feederId);
-        
-        //remove any existing assignment
-        unassignCapbank(capbankId);
-        
-        //Check if any assignments exist.
+        assignSql.append("SELECT " + feederId + ", " + capbankId + ", MAX(ControlOrder) + 1,MAX(CloseOrder) + 1, 1");
+        assignSql.append("FROM CCFeederBankList");
+        assignSql.append("WHERE FeederID").eq(feederId);
+
+        // remove any existing assignment
+        unassignCapbank(capBank);
+
+        // Check if any assignments exist.
         int rowsAffected = 0;
-        
+
         SqlStatementBuilder countSql = new SqlStatementBuilder();
-        
+
         countSql.append("SELECT COUNT(FeederID)");
         countSql.append("FROM CCFeederBankList");
         countSql.append("WHERE FeederID").eq(feederId);
-        
+
         int count = yukonJdbcTemplate.queryForInt(countSql);
-        
+
         if (count > 0) {
-            //Change trip orders to +1 so the new one can be 1
+            // Change trip orders to +1 so the new one can be 1
             yukonJdbcTemplate.update(tripSql);
-            
-            //Insert new assignment
+
+            // Insert new assignment
             rowsAffected = yukonJdbcTemplate.update(assignSql);
         } else {
-            //This is the first assignment. Insert with defaults
+            // This is the first assignment. Insert with defaults
             rowsAffected = yukonJdbcTemplate.update(insertSql);
         }
-        
+
         boolean result = (rowsAffected == 1);
-        
+
         if (result) {
-            YukonPao capBank = paoDao.getYukonPao(capbankId);
-            YukonPao feeder = paoDao.getYukonPao(feederId);
             dbChangeManager.processPaoDbChange(capBank, DbChangeType.UPDATE);
             dbChangeManager.processPaoDbChange(feeder, DbChangeType.UPDATE);
         }
-        
+
         return result;
     }
     
     @Override
-    public boolean unassignCapbank(int capbankId) {
+    public boolean unassignCapbank(YukonPao capbank) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        
+
         sql.append("DELETE FROM CCFeederBankList");
-        sql.append("WHERE DeviceID").eq(capbankId);
-        
+        sql.append("WHERE DeviceID").eq(capbank.getPaoIdentifier().getPaoId());
+
         int rowsAffected = yukonJdbcTemplate.update(sql);
-        
+
         boolean result = (rowsAffected == 1);
         return result;
     }
@@ -266,5 +267,5 @@ public class CapbankDaoImpl implements CapbankDao {
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("Parent Subbus was not found for CapBank with ID: " + bankId);
         }
-    }
+    }   
 }

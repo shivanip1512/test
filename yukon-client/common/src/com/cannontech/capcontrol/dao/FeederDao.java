@@ -8,6 +8,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import com.cannontech.capcontrol.model.FeederPhaseData;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.capcontrol.model.PointIdContainer;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -48,33 +49,38 @@ public interface FeederDao {
     public List<LiteCapControlObject> getOrphans();
     
     /**
-     * This method returns the SubBus ID that owns the given feeder ID.
-     * If no parent is found, CtiUtilities.NONE_ZERO_ID is returned.
+     * This method returns the SubBus ID that owns the given feeder ID. If no
+     * parent is found, CtiUtilities.NONE_ZERO_ID is returned.
      */
     public int getParentSubBusID( int feederID ) throws EmptyResultDataAccessException;
     
     /**
-     * This method assigns a feeder to a subbus and does all necessary db change messaging.
-     * @param feederId the paoId of the feeder being assigned
+     * This method assigns a feeder to a subbus and does all necessary db change
+     * messaging.
+     * @param feeder the YukonPao of the feeder being assigned
      * @param subBusName the name of the subbus being assigned to.
-     * @return true if the assignment occurred and only updated one row in the db, false otherwise.
+     * @return true if the assignment occurred and only updated one row in the
+     *         db, false otherwise.
      */
-    public boolean assignFeeder(int feederId, String subBusName);
-    
+    public boolean assignFeeder(YukonPao feederId, String subBusName);
+
     /**
-     * This method assigns a feeder to a subbus and does all necessary db change messaging.
-     * @param feederId the paoId of the feeder being assigned
-     * @param substationBusId the paoId of the subbus being assigned to.
-     * @return true if the assignment occurred and only updated one row in the db, false otherwise.
+     * This method assigns a feeder to a subbus and does all necessary db change
+     * messaging.
+     * @param feeder the YukonPao of the feeder being assigned
+     * @param substationBus the YukonPao of the subbus being assigned to.
+     * @return true if the assignment occurred and only updated one row in the
+     *         db, false otherwise.
      */
-    public boolean assignFeeder(int substationBusId, int feederId);
+    public boolean assignFeeder(YukonPao substationBus, YukonPao feeder);
 
     /**
      * This method removes all assignments for a given feeder.
-     * @param feederId the paoId of the feeder.
-     * @return true if the unassignment occurred and only updated one row in the db, false otherwise.
+     * @param feeder the YukonPao of the feeder.
+     * @return true if the unassignment occurred and only updated one row in the
+     *         db, false otherwise.
      */
-    public boolean unassignFeeder(int feederId);
+    public boolean unassignFeeder(YukonPao feeder);
     
     /**
      * Returns a container with the PointId's selected by the pickers for the feeder with the given Pao Id.

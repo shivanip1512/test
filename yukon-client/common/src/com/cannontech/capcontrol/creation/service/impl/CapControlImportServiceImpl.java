@@ -491,55 +491,56 @@ public class CapControlImportServiceImpl implements CapControlImportService {
     @Override
     @Transactional
     public void createHierarchyObject(HierarchyImportData hierarchyImportData,
-                                      List<HierarchyImportResult> results) throws NotFoundException {
+            List<HierarchyImportResult> results) throws NotFoundException {
         YukonPao yukonPao = findHierarchyPao(hierarchyImportData);
         if (yukonPao != null) {
-            // We were told to add an object that already exists. This is an error!
+            // We were told to add an object that already exists. This is an
+            // error!
             results.add(new HierarchyImportCompleteDataResult(hierarchyImportData,
                                                               HierarchyImportResultType.OBJECT_EXISTS));
             return;
         }
 
-        CompleteYukonPao pao = createHierarchyCompletePao(hierarchyImportData, results);
-        paoPersistenceService.createPaoWithDefaultPoints(pao, hierarchyImportData.getPaoType());
-        int childId = pao.getPaObjectId();
-        
-        // This will throw if the parent doesn't exist, preventing creation of the child, as
-        // desired.
+        CompleteYukonPao child = createHierarchyCompletePao(hierarchyImportData, results);
+        paoPersistenceService.createPaoWithDefaultPoints(child, hierarchyImportData.getPaoType());
+
+        // This will throw if the parent doesn't exist, preventing creation of
+        // the child, as desired.
         String parentName = hierarchyImportData.getParent();
         if (!StringUtils.isBlank(parentName)) {
-            int parentId = getParentId(parentName, PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL);
-            if (!createHierarchyParentLink(hierarchyImportData, parentId, childId, results)) {
-                // Invalid child type or parent type. We don't have a success here.
+            YukonPao parent = getParent(parentName, PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL);
+            if (!createHierarchyParentLink(hierarchyImportData, parent, child, results)) {
+                // Invalid child type or parent type. We don't have a success
+                // here.
                 return;
             }
         }
 
-        results.add(new HierarchyImportCompleteDataResult(hierarchyImportData, HierarchyImportResultType.SUCCESS));
+        results.add(new HierarchyImportCompleteDataResult(hierarchyImportData,
+                                                          HierarchyImportResultType.SUCCESS));
     }
 
     @Override
     @Transactional
     public void updateHierarchyObject(HierarchyImportData hierarchyImportData,
                                       List<HierarchyImportResult> results) throws NotFoundException {
-        YukonPao pao = findHierarchyPao(hierarchyImportData);
-        if (pao == null) {
+        YukonPao child = findHierarchyPao(hierarchyImportData);
+        if (child == null) {
             // We were told to remove an object that doesn't exist. This is an error!
             results.add(new HierarchyImportCompleteDataResult(hierarchyImportData,
                                                               HierarchyImportResultType.NO_SUCH_OBJECT));
             return;
         }
-
-        int childId = pao.getPaoIdentifier().getPaoId();
         
-        PaoRetriever paoRetriever = paoRetrievers.get(pao.getPaoIdentifier().getPaoType());
+        int childId = child.getPaoIdentifier().getPaoId();
+        
+        PaoRetriever paoRetriever = paoRetrievers.get(child.getPaoIdentifier().getPaoType());
         if (paoRetriever == null) {
             results.add(new HierarchyImportCompleteDataResult(hierarchyImportData,
                                                               HierarchyImportResultType.INVALID_TYPE));
             return;
         }
-        CompleteYukonPao completePao = paoRetriever.retrievePao(pao.getPaoIdentifier(), hierarchyImportData);
-        
+        CompleteYukonPao completePao = paoRetriever.retrievePao(child.getPaoIdentifier(), hierarchyImportData);
         if (hierarchyImportData.isDisabled() != null) {
             completePao.setDisabled(hierarchyImportData.isDisabled());
         }
@@ -554,10 +555,10 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         String parentName = hierarchyImportData.getParent();
         if (parentName != null) {
             if (parentName.isEmpty()) {
-                removeHierarchyParentLink(hierarchyImportData, childId);
+                removeHierarchyParentLink(hierarchyImportData, child);
             } else {
-                int parentId = getParentId(parentName, PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL);
-                if (!createHierarchyParentLink(hierarchyImportData, parentId, childId, results)) {
+                YukonPao parent = getParent(parentName, PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL);
+                if (!createHierarchyParentLink(hierarchyImportData, parent, child, results)) {
                     // Invalid child type or parent type. We don't have a success here.
                     return;
                 }
@@ -571,34 +572,34 @@ public class CapControlImportServiceImpl implements CapControlImportService {
     @Override
     @Transactional
     public void removeHierarchyObject(HierarchyImportData hierarchyImportData,
-                                      List<HierarchyImportResult> results) {
+            List<HierarchyImportResult> results) {
         YukonPao pao = findHierarchyPao(hierarchyImportData);
         if (pao == null) {
-            // We were told to remove a device that doesn't exist. This is an error!
+            // We were told to remove a device that doesn't exist. This is an
+            // error!
             results.add(new HierarchyImportCompleteDataResult(hierarchyImportData,
                                                               HierarchyImportResultType.NO_SUCH_OBJECT));
             return;
         }
 
         PaoIdentifier paoIdentifier = pao.getPaoIdentifier();
-        
+
         try {
-            removeHierarchyParentLink(hierarchyImportData, pao.getPaoIdentifier().getPaoId());
-    
+            removeHierarchyParentLink(hierarchyImportData, pao);
             paoPersistenceService.deletePao(paoIdentifier);
-            
+
             results.add(new HierarchyImportCompleteDataResult(hierarchyImportData,
                                                               HierarchyImportResultType.SUCCESS));
         } catch (CapControlHierarchyImportException e) {
             log.debug(e);
-            results.add(new HierarchyImportCompleteDataResult(hierarchyImportData, e.getImportResultType()));
+            results.add(new HierarchyImportCompleteDataResult(hierarchyImportData,
+                                                              e.getImportResultType()));
         }
     };
     
-    private boolean parentTypeIsValid(int childId, int parentId) {
-        PaoType parentType = paoDao.getYukonPao(parentId).getPaoIdentifier().getPaoType();
-        PaoType childType  = paoDao.getYukonPao(childId).getPaoIdentifier().getPaoType();
-        
+    private boolean parentTypeIsValid(YukonPao child, YukonPao parent) {
+        PaoType parentType = parent.getPaoIdentifier().getPaoType();
+        PaoType childType = child.getPaoIdentifier().getPaoType();
         switch (childType) {
         case CAP_CONTROL_AREA:
             return true;
@@ -616,12 +617,14 @@ public class CapControlImportServiceImpl implements CapControlImportService {
     }
 
     private int getParentId(String parentName, PaoType paoType) throws NotFoundException {
-        return getParentId(parentName, paoType.getPaoCategory(), paoType.getPaoClass());
-    }
-    
-    private int getParentId(String parentName, PaoCategory paoCategory, PaoClass paoClass) throws NotFoundException {
-        YukonPao parentPao = paoDao.getYukonPao(parentName, paoCategory, paoClass);
+        YukonPao parentPao = paoDao.getYukonPao(parentName,paoType.getPaoCategory(),
+                                                paoType.getPaoClass());
         return parentPao.getPaoIdentifier().getPaoId();
+    }
+
+    private YukonPao getParent(String parentName, PaoCategory paoCategory, PaoClass paoClass)
+            throws NotFoundException {
+        return paoDao.getYukonPao(parentName, paoCategory, paoClass);
     }
 
     private YukonPao findHierarchyPao(HierarchyImportData data) {
@@ -638,10 +641,10 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         return paoDao.findYukonPao(name, PaoCategory.DEVICE, PaoClass.CAPCONTROL);
     }
 
-    private boolean createHierarchyParentLink(HierarchyImportData hierarchyImportData, int parentId,
-                                           int childId,
-                                           List<HierarchyImportResult> results) {
-        if(!parentTypeIsValid(childId, parentId)) {
+    private boolean createHierarchyParentLink(HierarchyImportData hierarchyImportData, YukonPao parent,
+                                           YukonPao child, List<HierarchyImportResult> results) {
+    
+        if(!parentTypeIsValid(child, parent)) {
             results.add(new HierarchyImportCompleteDataResult(hierarchyImportData,
                                                               HierarchyImportResultType.INVALID_PARENT));
             return false;
@@ -653,13 +656,13 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             // We don't want to do anything here, areas don't have parents
             return true;
         case CAP_CONTROL_SUBSTATION:
-            return substationDao.assignSubstation(parentId, childId);
+            return substationDao.assignSubstation(parent, child);
         case CAP_CONTROL_SUBBUS:
-            return substationBusDao.assignSubstationBus(parentId, childId);
+            return substationBusDao.assignSubstationBus(parent, child);
         case CAP_CONTROL_FEEDER:
-            return feederDao.assignFeeder(parentId, childId);
+            return feederDao.assignFeeder(parent, child);
         case CAPBANK:
-            return capbankDao.assignCapbank(parentId, childId);
+            return capbankDao.assignCapbank(parent, child);
         default:
             results.add(new HierarchyImportCompleteDataResult(hierarchyImportData,
                                                               HierarchyImportResultType.INVALID_TYPE));
@@ -667,22 +670,23 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         }
     }
     
-    private void removeHierarchyParentLink(HierarchyImportData hierarchyImportData, int childId) {
+    private void removeHierarchyParentLink(HierarchyImportData hierarchyImportData, YukonPao child) {
+        
         switch(hierarchyImportData.getPaoType()) {
         case CAP_CONTROL_AREA:
         case CAP_CONTROL_SPECIAL_AREA:
             break;
         case CAP_CONTROL_SUBSTATION:
-            substationDao.unassignSubstation(childId);
+            substationDao.unassignSubstation(child);
             break;
         case CAP_CONTROL_SUBBUS:
-            substationBusDao.unassignSubstationBus(childId);
+            substationBusDao.unassignSubstationBus(child);
             break;
         case CAP_CONTROL_FEEDER:
-            feederDao.unassignFeeder(childId);
+            feederDao.unassignFeeder(child);
             break;
         case CAPBANK:
-            capbankDao.unassignCapbank(childId);
+            capbankDao.unassignCapbank(child);
             break;
         default:
             throw new CapControlHierarchyImportException("Attempted to remove assignment link for an " +

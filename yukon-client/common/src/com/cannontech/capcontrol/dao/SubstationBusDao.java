@@ -10,6 +10,7 @@ import com.cannontech.capcontrol.model.Substation;
 import com.cannontech.capcontrol.model.SubstationBus;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -54,29 +55,33 @@ public interface SubstationBusDao {
     public List<LiteCapControlObject> getOrphans();
     
     /**
-     * This method assigns a {@link SubstationBus} to a {@link Substation} and performs all
-     * necessary db change messaging.
-     * @param subBusId the PaoId of the {@link SubstationBus} being assigned.
-     * @param substationName the name of the {@link Substation} being assigned to.
-     * @return true if the assignment occurred and only updated one row in the db, false otherwise.
+     * This method assigns a {@link SubstationBus} to a {@link Substation} and
+     * performs all necessary db change messaging.
+     * @param subBus the Pao of the {@link SubstationBus} being assigned.
+     * @param substationName the name of the {@link Substation} being assigned
+     *            to.
+     * @return true if the assignment occurred and only updated one row in the
+     *         db, false otherwise.
      */
-    public boolean assignSubstationBus(int subBusId, String substationName);
+    public boolean assignSubstationBus(YukonPao subBus, String substationName);
     
     /**
-     * This method assigns a {@link SubstationBus} to a {@link Substation} and performs all
-     * necessary db change messaging.
-     * @param substationBusId the PaoId of the {@link SubstationBus} being assigned.
-     * @param substationId the PaoId of the {@link Substation} being assigned to.
-     * @return true if the assignment occurred and only updated one row in the db, false otherwise.
+     * This method assigns a {@link SubstationBus} to a {@link Substation} and
+     * performs all necessary db change messaging.
+     * @param substationBus the Pao of the {@link SubstationBus} being assigned.
+     * @param substation the Pao of the {@link Substation} being assigned to.
+     * @return true if the assignment occurred and only updated one row in the
+     *         db, false otherwise.
      */
-    public boolean assignSubstationBus(int substationId, int substationBusId);
+    public boolean assignSubstationBus(YukonPao substation, YukonPao substationBus);
     
     /**
      * This method removes all assignments for a given {@link SubstationBus}.
-     * @param substationBusId the PaoId of the {@link SubstationBus}.
-     * @return true if the unassignment occurred and only updated one row in the db, false otherwise.
+     * @param substationBus the Pao of the {@link SubstationBus}.
+     * @return true if the unassignment occurred and only updated one row in the
+     *         db, false otherwise.
      */
-    public boolean unassignSubstationBus(int substationBusId);
+    public boolean unassignSubstationBus(YukonPao substationBus);
     
 
     public List<CymePaoPoint> getBankStatusPointPaoIdsBySubbusId(int substationBusId);

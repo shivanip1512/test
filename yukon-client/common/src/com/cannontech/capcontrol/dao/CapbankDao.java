@@ -7,6 +7,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import com.cannontech.capcontrol.model.CapbankAdditional;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
@@ -47,28 +48,32 @@ public interface CapbankDao {
     public boolean isSwitchedBank( Integer paoID );
     
     /**
-     * Assigns a capbank to a feeder and processes the necessary dbchange messages.
-     * @param capbankId the id of the capbank being assigned
+     * Assigns a capbank to a feeder and processes the necessary dbchange
+     * messages.
+     * @param capbank the YukonPao of the capbank being assigned
      * @param feederName name of the feeder being assigned to.
-     * @return true if the assignment occurred with only one row in the db updated, false otherwise.
+     * @return true if the assignment occurred with only one row in the db
+     *         updated, false otherwise.
      */
-    public boolean assignCapbank(int capbankId, String feederName);
+    public boolean assignCapbank(YukonPao capbank, String feederName);
     
     /**
-     * Assigns a capbank to a feeder and processes the necessary dbchange messages.
-     * @param feederId the id of the feeder being assigned to
-     * @param capbankId the id of the capbank being assigned
-     * @return true if the assignment occurred with only one row in the db updated, false otherwise.
+     * Assigns a capbank to a feeder and processes the necessary dbchange
+     * messages.
+     * @param feeder the YukonPao of the feeder being assigned to
+     * @param capbank the YukonPao of the capbank being assigned
+     * @return true if the assignment occurred with only one row in the db
+     *         updated, false otherwise.
      */
-    public boolean assignCapbank(int feederId, int capbankId);
+    public boolean assignCapbank(YukonPao feederId,YukonPao capbankId);
     
     /**
      * Removes all assignments in the database for a given capbank.
-     * @param capbankId the id of the capbank being unassigned.
-     * @return true if the unassignment occurred with only one row in the db 
-     * updated, false otherwise.
+     * @param capbank the YukonPao of the capbank being unassigned.
+     * @return true if the unassignment occurred with only one row in the db
+     *         updated, false otherwise.
      */
-    public boolean unassignCapbank(int capbankId);
+    public boolean unassignCapbank(YukonPao capbank);
     
     /**
      * Looks up the subbus that the bank is attached to.

@@ -5,42 +5,37 @@ import java.util.Map;
 
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.capcontrol.model.Substation;
+import com.cannontech.common.pao.YukonPao;
 
 public interface SubstationDao {
-    
+
     /**
-     * This method assigns a {@link Substation} to an Area and performs the necessary db
-     * change messaging.
-     * 
-     * Works for both areas and special areas.
-     * 
-     * @param substationId the paoId of the {@link Substation} being assigned.
+     * This method assigns a {@link Substation} to an Area and performs the
+     * necessary db change messaging. Works for both areas and special areas.
+     * @param substation the pao of the {@link Substation} being assigned.
      * @param areaName the name of the area being assigned to.
-     * @return true if the assignment occurred and only one row in the db was updated, 
-     * false otherwise.
+     * @return true if the assignment occurred and only one row in the db was
+     *         updated, false otherwise.
      */
-    public boolean assignSubstation(int substationId, String areaName);
-    
+    public boolean assignSubstation(YukonPao substation, String areaName);
+
     /**
-     * This method assigns a {@link Substation} to an Area and performs the necessary db
-     * change messaging.
-     * 
-     * Works for both areas and special areas.
-     * 
-     * @param substationId the paoId of the {@link Substation} being assigned.
-     * @param areaId the paoId of the area being assigned to.
-     * @return true if the assignment occurred and only one row in the db was updated, 
-     * false otherwise.
+     * This method assigns a {@link Substation} to an Area and performs the
+     * necessary db change messaging. Works for both areas and special areas.
+     * @param substation the pao of the {@link Substation} being assigned.
+     * @param area the pao of the area being assigned to.
+     * @return true if the assignment occurred and only one row in the db was
+     *         updated, false otherwise.
      */
-    public boolean assignSubstation(int areaId, int substationId);
+    public boolean assignSubstation(YukonPao area, YukonPao substation);
     
     /**
      * This method removes all assignments for a given substation.
-     * @param substationId the paoId of the substation whose assignments are being removed.
-     * @return true if the unassignment occurred and only one row in the db was updated,
-     * false otherwise.
+     * @param substation the pao of the substation whose assignments are being removed.
+     * @return true if the unassignment occurred and only one row in the db was
+     *         updated, false otherwise.
      */
-    public boolean unassignSubstation(int substationId);
+    public boolean unassignSubstation(YukonPao substation);
     
     /**
      * This method returns a list of integers representing the paoIds of all

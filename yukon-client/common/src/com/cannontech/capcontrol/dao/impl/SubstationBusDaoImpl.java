@@ -21,8 +21,10 @@ import com.cannontech.capcontrol.model.SubstationBus;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.impl.LitePaoRowMapper;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlParameterSink;
@@ -39,6 +41,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private ZoneDao zoneDao;
+    @Autowired private PaoDao paoDao;
     
     private static final ParameterizedRowMapper<SubstationBus> rowMapper = new ParameterizedRowMapper<SubstationBus>() {
         @Override
@@ -138,62 +141,57 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     }
     
     @Override
-    public boolean assignSubstationBus(int subBusId, String substationName) {
-        
-        for (LiteYukonPAObject station : dbCache.getAllCapControlSubStations()) {
-            if (station.getPaoName().equals(substationName)) {
-                return assignSubstationBus(station.getLiteID(), subBusId);
-            }
-        }
-        
-        return false;
-    }
-    
+    public boolean assignSubstationBus(YukonPao subBus, String substationName) {
+
+        YukonPao substation = paoDao.findYukonPao(substationName, PaoType.CAP_CONTROL_AREA);
+        return (substation == null) ? false : assignSubstationBus(substation, subBus);
+    };
+  
     @Override
-    public boolean assignSubstationBus(int substationId, int substationBusId) {
+    public boolean assignSubstationBus(YukonPao substation, YukonPao substationBus) {
         SqlStatementBuilder displaySql = new SqlStatementBuilder();
-        
+        int substationId = substation.getPaoIdentifier().getPaoId();
+        int substationBusId = substationBus.getPaoIdentifier().getPaoId();
+
         displaySql.append("SELECT MAX(DisplayOrder)");
         displaySql.append("FROM CCSubstationSubBusList");
         displaySql.append("WHERE SubstationID").eq(substationId);
-        
+
         int displayOrder = yukonJdbcTemplate.queryForInt(displaySql);
-        
-        //remove any existing assignment
-        unassignSubstationBus(substationBusId);
-        
+
+        // remove any existing assignment
+        unassignSubstationBus(substationBus);
+
         SqlStatementBuilder assignSql = new SqlStatementBuilder();
-        
+
         SqlParameterSink params = assignSql.insertInto("CCSubstationSubBusList");
         params.addValue("SubstationID", substationId);
         params.addValue("SubstationBusID", substationBusId);
         params.addValue("DisplayOrder", ++displayOrder);
 
         int rowsAffected = yukonJdbcTemplate.update(assignSql);
-        
+
         boolean result = (rowsAffected == 1);
-        
+
         if (result) {
-            LiteYukonPAObject bus = dbCache.getAllYukonPAObjects().get(substationBusId);
-            LiteYukonPAObject station = dbCache.getAllYukonPAObjects().get(substationBusId);
-            dbChangeManager.processPaoDbChange(bus, DbChangeType.UPDATE);
-            dbChangeManager.processPaoDbChange(station, DbChangeType.UPDATE);
+            dbChangeManager.processPaoDbChange(substationBus, DbChangeType.UPDATE);
+            dbChangeManager.processPaoDbChange(substation, DbChangeType.UPDATE);
         }
-        
+
         return result;
     }
     
     @Override
-    public boolean unassignSubstationBus(int substationBusId) {
+    public boolean unassignSubstationBus(YukonPao substationBus) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        
+
         sql.append("DELETE FROM CCSubstationSubBusList");
-        sql.append("WHERE SubstationBusID").eq(substationBusId);
-        
+        sql.append("WHERE SubstationBusID").eq(substationBus.getPaoIdentifier().getPaoId());
+
         int rowsAffected = yukonJdbcTemplate.update(sql);
-        
+
         boolean result = (rowsAffected == 1);
-        
+
         return result;
     }
     
