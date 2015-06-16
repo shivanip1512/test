@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_CASE( test_datalink_reset )
     1e 00   - source 30
     */
     const byte_str request(
-            "05 64 05 c0 1e 00 02 00 43 6e");
+            "05 64 05 c0 1e 00 02 00 16 67");
 
     Test_ServerConnection connection;
 
@@ -880,8 +880,8 @@ BOOST_AUTO_TEST_CASE( test_control_request_shortIndexShortQuantity )
     }
 
     const byte_str request(
-            "05 64 18 c4 f6 01 e8 03 36 79 "
-            "c0 c1 05 0c 01 28 00 01 00 00 41 01 00 00 00 00 de cf "
+            "05 64 1a c4 f6 01 e8 03 81 5f "
+            "c0 c1 05 0c 01 28 01 00 00 00 41 01 00 00 00 00 7d d2 "
             "00 00 00 00 00 ff ff");
 
     Test_ServerConnection connection;
