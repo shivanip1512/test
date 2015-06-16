@@ -19,7 +19,7 @@ yukon.da.busview = (function () {
         var range = 'DAY_1';
         $(".js-events-timeline").each(function () {
             
-            var _id = this.getAttribute('data-zone-id');
+            var _id = $(this).data('zoneId');
             $.ajax({
                 url : yukon.url('/capcontrol/zones/' + _id + '/events'),
                 data : {
@@ -46,7 +46,6 @@ yukon.da.busview = (function () {
                     timeline.timeline(options);
                     timeline.timeline('addEvents', toAdd);
                 }
-                timeline.timeline(options);
                 timeline.timeline('draw');
 
             });
@@ -56,7 +55,7 @@ yukon.da.busview = (function () {
 
     };
 
-    mod = {
+   var mod = {
 
         /** Initialize this module. */
         init : function () {
