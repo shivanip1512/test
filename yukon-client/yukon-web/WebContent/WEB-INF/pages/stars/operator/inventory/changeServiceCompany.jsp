@@ -28,7 +28,7 @@
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".newServiceCompany">
                     <select name="serviceCompanyId">
-                        <option value="0" selected/><cti:msg2 key="yukon.web.defaults.none"/></option>
+                        <option value="0" selected/><cti:msg2 key="yukon.common.none"/></option>
                         <c:forEach items="${serviceCompanies}" var="sc">
                             <option value="${sc.liteID}">${fn:escapeXml(sc.companyName)}</option>
                         </c:forEach>

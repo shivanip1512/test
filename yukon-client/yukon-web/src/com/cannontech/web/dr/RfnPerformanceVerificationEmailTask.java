@@ -154,7 +154,7 @@ public class RfnPerformanceVerificationEmailTask extends YukonTaskBase {
         theaderData.put("rowStyle", "");
         theaderData.put("cell", "th");
         theaderData.put("cellStyle", thStyle);
-        theaderData.put("date", accessor.getMessage("yukon.web.defaults.date"));
+        theaderData.put("date", accessor.getMessage("yukon.common.date"));
         theaderData.put("successful", accessor.getMessage("yukon.web.modules.dr.home.rfPerformance.successful"));
         theaderData.put("failure", accessor.getMessage("yukon.web.modules.dr.home.rfPerformance.failure"));
         theaderData.put("unknown",accessor.getMessage("yukon.web.modules.dr.home.rfPerformance.unknown"));

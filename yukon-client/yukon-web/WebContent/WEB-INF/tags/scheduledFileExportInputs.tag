@@ -28,7 +28,7 @@
         <cti:icon icon="icon-information" classes="fn cp" data-popup="#export-file-name-info" data-popup-toggle=""/>
     </tags:nameValue2>
 
-    <tags:nameValue2 nameKey="yukon.web.defaults.blank" excludeColon="true">
+    <tags:nameValue2 nameKey="yukon.common.blank" excludeColon="true">
         <label>
             <form:checkbox path="appendDateToFileName" id="appendDateToFileName"/>
             <i:inline key=".appendDateToFileName"/>
@@ -44,7 +44,7 @@
         <cti:icon icon="icon-information" classes="fn cp" data-popup="#export-timestamp-info" data-popup-toggle=""/>
     </tags:nameValue2>
 
-    <tags:nameValue2 nameKey="yukon.web.defaults.blank" excludeColon="true">
+    <tags:nameValue2 nameKey="yukon.common.blank" excludeColon="true">
         <label>
             <form:checkbox id="overrideFileExtension" path="overrideFileExtension"/>
             <i:inline key=".overrideFileExtension"/>
@@ -61,7 +61,7 @@
         <cti:icon icon="icon-information" classes="fn cp" data-popup="#export-file-extension-info" data-popup-toggle=""/>
     </tags:nameValue2>
 
-    <tags:nameValue2 nameKey="yukon.web.defaults.blank" excludeColon="true">
+    <tags:nameValue2 nameKey="yukon.common.blank" excludeColon="true">
         <label>
             <form:checkbox id="includeExportCopy" path="includeExportCopy"/>
             <i:inline key=".includeExportCopy"/>

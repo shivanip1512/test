@@ -35,7 +35,7 @@
                 <div>
                     <h4><i:inline key="modules.user.additionContactInfo.title"/></h4>
                     <c:set var="classes" value="${not empty userProfile.contact.otherNotifications ? 'dn' : ''}"/>
-                    <div class="empty-list js-no-other-notifs ${classes}"><i:inline key="yukon.web.defaults.na"/></div>
+                    <div class="empty-list js-no-other-notifs ${classes}"><i:inline key="yukon.common.na"/></div>
                     <tags:nameValueContainer2 id="contact-notif-table">
                         <c:forEach var="contactNotif" items="${userProfile.contact.otherNotifications}" varStatus="row">
                             <c:set var="notifType" value="${contactNotif.contactNotificationType}"/>
@@ -178,7 +178,7 @@
     <tags:sectionContainer2 nameKey="groups" arguments="${userGroupName}">
         <c:choose>
             <c:when test="${empty categoryRoleMap}">
-                <i:inline key="yukon.web.defaults.na"/>
+                <i:inline key="yukon.common.na"/>
             </c:when>
             <c:otherwise>
                 <div class="wsnw">
@@ -206,7 +206,7 @@
 <table class="dn">
     <tr id="contact-notif-template">
         <td class="name">
-            <cti:msg2 key="yukon.web.defaults.selector.selectOne" var="txt_selectOne"/>
+            <cti:msg2 key="yukon.common.selector.selectOne" var="txt_selectOne"/>
             <tags:simpleSelect name="contact.otherNotifications[?].contactNotificationType" 
                 items="${notificationTypes}" itemLabelKey="formatKey" 
                 defaultItemValue="-1" 

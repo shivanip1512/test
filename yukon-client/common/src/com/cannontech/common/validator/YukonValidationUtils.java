@@ -191,9 +191,9 @@ public class YukonValidationUtils extends ValidationUtils {
     public static void rejectValues(Errors errors, String errorMessageKey, Object[] errorArgs, String... fields) {
         for (int i = 0; i < fields.length - 1; i++) {
             String fieldName = fields[i];
-            errors.rejectValue(fieldName, "yukon.web.defaults.blank");
+            errors.rejectValue(fieldName, "yukon.common.blank");
         }
-        errors.rejectValue(fields[fields.length - 1], errorMessageKey, errorArgs, "yukon.web.defaults.blank");
+        errors.rejectValue(fields[fields.length - 1], errorMessageKey, errorArgs, "yukon.common.blank");
     }
 
 }

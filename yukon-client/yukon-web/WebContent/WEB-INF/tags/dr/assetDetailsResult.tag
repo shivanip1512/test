@@ -15,7 +15,7 @@
     <cti:param name="filter[]" value="${filter}"/>
 </cti:url>
 <cti:msgScope paths="modules.operator.hardware.assetAvailability">
-<cti:msg2 var="noDateMsg" key="yukon.web.defaults.na"/>
+<cti:msg2 var="noDateMsg" key="yukon.common.na"/>
 <div data-url="${baseUrl}">
     <table class="compact-results-table">
         <thead>

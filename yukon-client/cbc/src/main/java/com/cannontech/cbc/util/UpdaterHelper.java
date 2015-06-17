@@ -177,7 +177,7 @@ public class UpdaterHelper {
             PaoIdentifier pao = new PaoIdentifier(controlDeviceId, PaoType.getForDbString(capBank.getCcType()));
             controllerName = paoLoadingService.getDisplayablePao(pao).getName();
         } else {
-            controllerName = accessor.getMessage("yukon.web.defaults.dashes");
+            controllerName = accessor.getMessage("yukon.common.dashes");
         }
         
         switch (dataType) {
@@ -241,7 +241,7 @@ public class UpdaterHelper {
         case CB_TIME_STAMP_COLUMN: {
             Date date = capBank.getLastStatusChangeTime();
             if (date.getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime()) {
-                return accessor.getMessage("yukon.web.defaults.dashes");
+                return accessor.getMessage("yukon.common.dashes");
             }
             return dateFormattingService.format(date, DateFormatEnum.BOTH, context);
         }
@@ -249,7 +249,7 @@ public class UpdaterHelper {
         case CB_SHORT_TIME_STAMP_COLUMN: {
             Date date = capBank.getLastStatusChangeTime();
             if (date.getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime()) {
-                return accessor.getMessage("yukon.web.defaults.dashes");
+                return accessor.getMessage("yukon.common.dashes");
             }
             return dateFormattingService.format(date, DateFormatEnum.VERY_SHORT, context);
         }
@@ -259,7 +259,7 @@ public class UpdaterHelper {
             if (parentId > 0 ) {
                 return paoLoadingService.getDisplayablePao(PaoIdentifier.of(parentId, PaoType.CAP_CONTROL_FEEDER)).getName();
             } else {
-                return accessor.getMessage("yukon.web.defaults.dashes");
+                return accessor.getMessage("yukon.common.dashes");
             }
         }
         
@@ -607,7 +607,7 @@ public class UpdaterHelper {
             if (subBus.getControlMethod() == ControlMethod.TIME_OF_DAY) {
                 return accessor.getMessage(keyPrefix + "tod");
             } else if (subBus.getControlMethod() == null) {
-                return accessor.getMessage("yukon.web.defaults.none");
+                return accessor.getMessage("yukon.common.none.choice");
             } 
             
             /* Treat peak and off peak normally */
@@ -667,7 +667,7 @@ public class UpdaterHelper {
             int max = subBus.getMaxDailyOperation();
             
             if (max <= 0) {
-                String na = accessor.getMessage("yukon.web.defaults.na");
+                String na = accessor.getMessage("yukon.common.na");
                 return accessor.getMessage(keyPrefix + "dailyOps", current, na);
             } else {
                 return accessor.getMessage(keyPrefix + "dailyOps", current, max);
@@ -676,7 +676,7 @@ public class UpdaterHelper {
 
         case SUB_VAR_LOAD_COLUMN: {
             if (subBus.getCurrentVarLoadPointID() <= PointTypes.SYS_PID_SYSTEM)
-                return accessor.getMessage("yukon.web.defaults.dashes");
+                return accessor.getMessage("yukon.common.dashes");
             else {
                 return CommonUtils.formatDecimalPlaces(subBus.getCurrentVarLoadPointValue(), decPlaces);
             }
@@ -684,7 +684,7 @@ public class UpdaterHelper {
         
         case SUB_VAR_EST_LOAD_COLUMN: {
             if (subBus.getCurrentVarLoadPointID() <= PointTypes.SYS_PID_SYSTEM)
-                return accessor.getMessage("yukon.web.defaults.dashes");
+                return accessor.getMessage("yukon.common.dashes");
             else {
                 return CommonUtils.formatDecimalPlaces(subBus.getEstimatedVarLoadPointValue(), decPlaces);
             }
@@ -726,7 +726,7 @@ public class UpdaterHelper {
         
         case SUB_WATTS_COLUMN: {
             if (subBus.getCurrentWattLoadPointID() <= PointTypes.SYS_PID_SYSTEM)
-                return accessor.getMessage("yukon.web.defaults.dashes");
+                return accessor.getMessage("yukon.common.dashes");
             else {
                 return CommonUtils.formatDecimalPlaces(subBus.getCurrentWattLoadPointValue(), decPlaces);
             }
@@ -734,7 +734,7 @@ public class UpdaterHelper {
         
         case SUB_VOLTS_COLUMN: {
             if (subBus.getCurrentVoltLoadPointID() <= PointTypes.SYS_PID_SYSTEM)
-                return accessor.getMessage("yukon.web.defaults.dashes");
+                return accessor.getMessage("yukon.common.dashes");
             else {
                 return CommonUtils.formatDecimalPlaces(subBus.getCurrentVoltLoadPointValue(), decPlaces);
             }
@@ -743,7 +743,7 @@ public class UpdaterHelper {
         case SUB_TIME_STAMP_COLUMN: {
             Date date = subBus.getLastCurrentVarPointUpdateTime();
             if (date.getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime()) {
-                return accessor.getMessage("yukon.web.defaults.dashes");
+                return accessor.getMessage("yukon.common.dashes");
             } else {
                 return dateFormattingService.format(date, DateFormatEnum.BOTH, context);
             }
@@ -752,7 +752,7 @@ public class UpdaterHelper {
         case SUB_SHORT_TIME_STAMP_COLUMN: {
             Date date = subBus.getLastCurrentVarPointUpdateTime();
             if (date.getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime()) {
-                return accessor.getMessage("yukon.web.defaults.dashes");
+                return accessor.getMessage("yukon.common.dashes");
             } else {
                 return dateFormattingService.format(date, DateFormatEnum.VERY_SHORT, context);
             }
@@ -779,7 +779,7 @@ public class UpdaterHelper {
         }
 
         default:
-            return accessor.getMessage("yukon.web.defaults.dashes");
+            return accessor.getMessage("yukon.common.dashes");
         }
 
     }
@@ -869,7 +869,7 @@ public class UpdaterHelper {
             if (feeder.getControlmethod() == ControlMethod.TIME_OF_DAY) {
                 return accessor.getMessage(keyPrefix + "tod");
             } else if (feeder.getControlmethod() == null) {
-                return accessor.getMessage("yukon.web.defaults.none");
+                return accessor.getMessage("yukon.common.none.choice");
             } 
 
             if (feeder.getPeakTimeFlag()) {
@@ -932,7 +932,7 @@ public class UpdaterHelper {
             int max = feeder.getMaxDailyOperation();
             
             if (max <= 0) {
-                String na = accessor.getMessage("yukon.web.defaults.na");
+                String na = accessor.getMessage("yukon.common.na");
                 return accessor.getMessage(keyPrefix + "dailyOps", current, na);
             } else {
                 return accessor.getMessage(keyPrefix + "dailyOps", current, max);
@@ -941,7 +941,7 @@ public class UpdaterHelper {
 
         case FDR_VAR_LOAD_COLUMN: {
             if (feeder.getCurrentVarLoadPointID() <= PointTypes.SYS_PID_SYSTEM) {
-                return accessor.getMessage("yukon.web.defaults.dashes");
+                return accessor.getMessage("yukon.common.dashes");
             } else {
                 return CommonUtils.formatDecimalPlaces(feeder.getCurrentVarLoadPointValue(), decPlaces);
             }
@@ -949,7 +949,7 @@ public class UpdaterHelper {
         
         case FDR_VAR_EST_LOAD_COLUMN: {
             if (feeder.getCurrentVarLoadPointID() <= PointTypes.SYS_PID_SYSTEM) {
-                return accessor.getMessage("yukon.web.defaults.dashes");
+                return accessor.getMessage("yukon.common.dashes");
             } else {
                 return CommonUtils.formatDecimalPlaces(feeder.getEstimatedVarLoadPointValue(), decPlaces);
             }
@@ -984,7 +984,7 @@ public class UpdaterHelper {
         
         case FDR_WATTS_COLUMN: {
             if (feeder.getCurrentWattLoadPointID() <= PointTypes.SYS_PID_SYSTEM) {
-                return accessor.getMessage("yukon.web.defaults.dashes");
+                return accessor.getMessage("yukon.common.dashes");
             } else {
                 return CommonUtils.formatDecimalPlaces(feeder.getCurrentWattLoadPointValue(), decPlaces);
             }
@@ -992,7 +992,7 @@ public class UpdaterHelper {
         
         case FDR_VOLTS_COLUMN: {
             if (feeder.getCurrentVoltLoadPointID() <= PointTypes.SYS_PID_SYSTEM) {
-                return accessor.getMessage("yukon.web.defaults.dashes");
+                return accessor.getMessage("yukon.common.dashes");
             } else {
                 return CommonUtils.formatDecimalPlaces(feeder.getCurrentVoltLoadPointValue(), decPlaces);
             }
@@ -1001,7 +1001,7 @@ public class UpdaterHelper {
         case FDR_TIME_STAMP_COLUMN: {
             Date date = feeder.getLastCurrentVarPointUpdateTime();
             if (date.getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime()) {
-                return accessor.getMessage("yukon.web.defaults.dashes");
+                return accessor.getMessage("yukon.common.dashes");
             } else {
                 return dateFormattingService.format(date, DateFormatEnum.BOTH, context);
             }
@@ -1010,7 +1010,7 @@ public class UpdaterHelper {
         case FDR_SHORT_TIME_STAMP_COLUMN: {
             Date date = feeder.getLastCurrentVarPointUpdateTime();
             if (date.getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime() ) {
-                return accessor.getMessage("yukon.web.defaults.dashes");
+                return accessor.getMessage("yukon.common.dashes");
             } else {
                 return dateFormattingService.format(date, DateFormatEnum.VERY_SHORT, context);
             }
@@ -1018,7 +1018,7 @@ public class UpdaterHelper {
 
         case FDR_ONELINE_WATTS_COLUMN: {
             if (feeder.getCurrentWattLoadPointID() <= PointTypes.SYS_PID_SYSTEM) {
-                return accessor.getMessage("yukon.web.defaults.dashes");
+                return accessor.getMessage("yukon.common.dashes");
             } else {
                 return CommonUtils.formatDecimalPlaces(feeder.getCurrentWattLoadPointValue(), decPlaces);
             }
@@ -1026,7 +1026,7 @@ public class UpdaterHelper {
         
         case FDR_ONELINE_VOLTS_COLUMN: {
             if (feeder.getCurrentVoltLoadPointID() <= PointTypes.SYS_PID_SYSTEM) {
-                return accessor.getMessage("yukon.web.defaults.dashes");
+                return accessor.getMessage("yukon.common.dashes");
             } else {
                 return CommonUtils.formatDecimalPlaces(feeder.getCurrentVoltLoadPointValue(), decPlaces);
             }
@@ -1034,7 +1034,7 @@ public class UpdaterHelper {
         
         case FDR_ONELINE_VAR_LOAD_COLUMN: {
             if (feeder.getCurrentVarLoadPointID() <= PointTypes.SYS_PID_SYSTEM) {
-                return accessor.getMessage("yukon.web.defaults.dashes");
+                return accessor.getMessage("yukon.common.dashes");
             } else {
                 return CommonUtils.formatDecimalPlaces(feeder.getCurrentVarLoadPointValue(), decPlaces);
             }
@@ -1059,14 +1059,14 @@ public class UpdaterHelper {
         case FDR_ONELINE_WATTS_VOLTS_COLUMN: {
             String watts = "";
         	if (feeder.getCurrentWattLoadPointID() <= PointTypes.SYS_PID_SYSTEM) {
-                watts = accessor.getMessage("yukon.web.defaults.dashes");
+                watts = accessor.getMessage("yukon.common.dashes");
         	} else {
         	    watts = CommonUtils.formatDecimalPlaces(feeder.getCurrentWattLoadPointValue(), decPlaces);
             }
         	
         	String volts = "";
         	if (feeder.getCurrentVoltLoadPointID() <= PointTypes.SYS_PID_SYSTEM) {
-        	    volts = accessor.getMessage("yukon.web.defaults.dashes");
+        	    volts = accessor.getMessage("yukon.common.dashes");
             } else {
         		volts = CommonUtils.formatDecimalPlaces(feeder.getCurrentVoltLoadPointValue(), decPlaces);
         	}
@@ -1074,7 +1074,7 @@ public class UpdaterHelper {
         }
 
         default:
-            return accessor.getMessage("yukon.web.defaults.dashes");
+            return accessor.getMessage("yukon.common.dashes");
         }
     }
 
@@ -1086,7 +1086,7 @@ public class UpdaterHelper {
      */
     public String getPowerFactorText(double value, boolean compute, LiteYukonUser user, MessageSourceAccessor accessor) {
         if (value <= CapControlConst.PF_INVALID_VALUE) {
-            return accessor.getMessage("yukon.web.defaults.na");
+            return accessor.getMessage("yukon.common.na");
         }
 
         int decPlaces;
@@ -1255,7 +1255,7 @@ public class UpdaterHelper {
 
         case SUB_ONELINE_MAX_OPCNT_COLUMN: {
             if (subBus.getMaxDailyOperation() <= 0) {
-                return accessor.getMessage("yukon.web.defaults.na");
+                return accessor.getMessage("yukon.common.na");
             } else {
                 return Integer.toString(subBus.getMaxDailyOperation());
             }
@@ -1266,7 +1266,7 @@ public class UpdaterHelper {
             int max = subBus.getMaxDailyOperation();
             
             if (max <= 0) {
-                String na = accessor.getMessage("yukon.web.defaults.na");
+                String na = accessor.getMessage("yukon.common.na");
                 return accessor.getMessage(keyPrefix + "dailyOps", current, na);
             } else {
                 return accessor.getMessage(keyPrefix + "dailyOps", current, max);
@@ -1283,7 +1283,7 @@ public class UpdaterHelper {
         
         case SUB_ONELINE_KVAR_LOAD_COLUMN: {
             if (subBus.getCurrentVarLoadPointID() <= PointTypes.SYS_PID_SYSTEM) {
-                return accessor.getMessage("yukon.web.defaults.dashes");
+                return accessor.getMessage("yukon.common.dashes");
             } else {
                 return CommonUtils.formatDecimalPlaces(subBus.getCurrentVarLoadPointValue(), decPlaces);
             }
@@ -1291,7 +1291,7 @@ public class UpdaterHelper {
         
         case SUB_ONELINE_KVAR_ESTMATED_COLUMN: {
             if (subBus.getCurrentVarLoadPointID() <= PointTypes.SYS_PID_SYSTEM) {
-                return accessor.getMessage("yukon.web.defaults.dashes");
+                return accessor.getMessage("yukon.common.dashes");
             } else {
                 return CommonUtils.formatDecimalPlaces(subBus.getEstimatedVarLoadPointValue(), decPlaces);
             }
@@ -1307,7 +1307,7 @@ public class UpdaterHelper {
 
         case SUB_ONELINE_WATT_COLUMN: {
             if (subBus.getCurrentWattLoadPointID() <= PointTypes.SYS_PID_SYSTEM) {
-                return accessor.getMessage("yukon.web.defaults.dashes");
+                return accessor.getMessage("yukon.common.dashes");
             } else {
                 return CommonUtils.formatDecimalPlaces(subBus.getCurrentWattLoadPointValue(), decPlaces);
             }
@@ -1315,7 +1315,7 @@ public class UpdaterHelper {
         
         case SUB_ONELINE_VOLT_COLUMN: {
             if (subBus.getCurrentVoltLoadPointID() <= PointTypes.SYS_PID_SYSTEM) {
-                return accessor.getMessage("yukon.web.defaults.dashes");
+                return accessor.getMessage("yukon.common.dashes");
             } else {
                 return CommonUtils.formatDecimalPlaces(subBus.getCurrentVoltLoadPointValue(), decPlaces);
             }
@@ -1324,7 +1324,7 @@ public class UpdaterHelper {
         case SUB_TIME_STAMP_COLUMN: {
             Date date = subBus.getLastCurrentVarPointUpdateTime();
             if (date.getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime()) {
-                return accessor.getMessage("yukon.web.defaults.dashes");
+                return accessor.getMessage("yukon.common.dashes");
             } else {
                 return dateFormattingService.format(date, DateFormatEnum.BOTH, context);
             }
@@ -1333,14 +1333,14 @@ public class UpdaterHelper {
         case SUB_SHORT_TIME_STAMP_COLUMN: {
             Date date = subBus.getLastCurrentVarPointUpdateTime();
             if (date.getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime()) {
-                return accessor.getMessage("yukon.web.defaults.dashes");
+                return accessor.getMessage("yukon.common.dashes");
             } else {
                 return dateFormattingService.format(date, DateFormatEnum.VERY_SHORT, context);
             }
         }
         
         default:
-            return accessor.getMessage("yukon.web.defaults.dashes");
+            return accessor.getMessage("yukon.common.dashes");
         }
 
     }

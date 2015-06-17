@@ -16,13 +16,13 @@
 <%@ attribute name="buttonKey" 
     description="i18n object to use for the button text. Note: key can be an i18n key String, 
                  MessageSourceResolvable, Displayable, DisplayableEnum, or ResolvableTemplate.
-                 Default: 'yukon.web.defaults.upload'." %>
+                 Default: 'yukon.common.upload'." %>
 <%@ attribute name="promptKey" 
     description="i18n object to use for the prompt text. Note: key can be an i18n key String, 
                  MessageSourceResolvable, Displayable, DisplayableEnum, or ResolvableTemplate.
-                 Default: 'yukon.web.defaults.chooseFile'." %>
+                 Default: 'yukon.common.chooseFile'." %>
 
-<cti:msgScope paths=", yukon.web.defaults">
+<cti:msgScope paths=", yukon.common">
 
 <cti:default var="name" value="dataFile"/>
 <cti:default var="icon" value="icon-upload"/>

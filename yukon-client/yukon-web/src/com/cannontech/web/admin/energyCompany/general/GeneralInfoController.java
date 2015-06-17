@@ -343,7 +343,7 @@ public class GeneralInfoController {
     @ModelAttribute("none")
     public String getNone(YukonUserContext context) {
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
-        return messageSourceAccessor.getMessage("yukon.web.defaults.none");
+        return messageSourceAccessor.getMessage("yukon.common.none.choice");
     }
     
     @ModelAttribute("routes")

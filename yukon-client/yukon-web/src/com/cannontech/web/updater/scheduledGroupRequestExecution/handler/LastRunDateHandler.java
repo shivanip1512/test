@@ -29,7 +29,7 @@ public class LastRunDateHandler implements ScheduledGroupRequestExecutionUpdater
 
 		// This can happen if the schedule has never been run or if it is currently running.
 		MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-		return messageSourceAccessor.getMessage("yukon.web.defaults.na");
+		return messageSourceAccessor.getMessage("yukon.common.na");
 	}
 	
 	@Override

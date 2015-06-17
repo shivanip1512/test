@@ -179,9 +179,9 @@ BILLING_ERRORS = {
                                 </ct:nameValue2>
                                 <ct:nameValue2 nameKey=".padding">
                                     <select id="readingPadSide" onchange="updateFormat('reading', 'padSide');">
-                                        <option value="none"><cti:msg2 key=".none"/></option>
-                                        <option value="left"><cti:msg2 key=".left"/></option>
-                                        <option value="right"><cti:msg2 key=".right"/></option> 
+                                        <option value="none"><cti:msg2 key="yukon.common.none.choice"/></option>
+                                        <option value="left"><cti:msg2 key="yukon.common.left"/></option>
+                                        <option value="right"><cti:msg2 key="yukon.common.right"/></option> 
                                     </select>
                                     <cti:msg2 key=".character"/>
                                     <select id="readingPadCharSelect" onchange="updateFormat('reading', 'padCharSelect');">
@@ -230,9 +230,9 @@ BILLING_ERRORS = {
                                 </ct:nameValue2>
                                 <ct:nameValue2 nameKey=".padding">
                                     <select id="timestampPadSide" onchange="updateFormat('timestamp', 'padSide');">
-                                        <option value="none"><cti:msg2 key=".none"/></option>
-                                        <option value="left"><cti:msg2 key=".left"/></option>
-                                        <option value="right"><cti:msg2 key=".right"/></option> 
+                                        <option value="none"><cti:msg2 key="yukon.common.none.choice"/></option>
+                                        <option value="left"><cti:msg2 key="yukon.common.left"/></option>
+                                        <option value="right"><cti:msg2 key="yukon.common.right"/></option> 
                                     </select>
                                     <cti:msg2 key=".character"/>
                                     <select id="timestampPadCharSelect" onchange="updateFormat('timestamp', 'padCharSelect');">
@@ -262,9 +262,9 @@ BILLING_ERRORS = {
                             </ct:nameValue2>
                             <ct:nameValue2 nameKey=".padding">
                                 <select id="genericPadSide" onchange="updateFormat('generic', 'padSide');">
-                                    <option value="none"><cti:msg2 key=".none"/></option>
-                                    <option value="left"><cti:msg2 key=".left"/></option>
-                                    <option value="right"><cti:msg2 key=".right"/></option> 
+                                    <option value="none"><cti:msg2 key="yukon.common.none.choice"/></option>
+                                    <option value="left"><cti:msg2 key="yukon.common.left"/></option>
+                                    <option value="right"><cti:msg2 key="yukon.common.right"/></option> 
                                 </select>
                                 <cti:msg2 key=".character"/>
                                 <select id="genericPadCharSelect" onchange="updateFormat('generic', 'padCharSelect');">

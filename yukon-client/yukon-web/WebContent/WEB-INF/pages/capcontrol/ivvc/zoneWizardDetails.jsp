@@ -112,7 +112,7 @@
         <tags:nameValue2 nameKey=".label.parentZone">
             <c:choose>
                 <c:when test="${zoneDto.parentId == null}">
-                    <i:inline key="yukon.web.defaults.dashes"/>
+                    <i:inline key="yukon.common.dashes"/>
                 </c:when>
                 <c:otherwise>
                     <c:choose>

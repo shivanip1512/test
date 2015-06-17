@@ -28,7 +28,7 @@
                 </div>
             </c:when>
             <c:otherwise>
-                <span><i:inline key=".none"/></span>
+                <span><i:inline key="yukon.common.none"/></span>
                 <div class="page-action-area">
                     <cti:button nameKey="back" onclick="history.back(-1);"/>
                 </div>

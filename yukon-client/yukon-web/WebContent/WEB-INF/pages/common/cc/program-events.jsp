@@ -12,7 +12,7 @@
 <h3>Current Events</h3>
 <c:choose>
     <c:when test="${empty currentEvents}">
-        <div class="empty-list"><i:inline key="yukon.web.defaults.none"/></div>
+        <div class="empty-list"><i:inline key="yukon.common.none.choice"/></div>
     </c:when>
     <c:otherwise>
         <c:set var="events" value="${currentEvents}"/>
@@ -23,7 +23,7 @@
 <h3>Pending Events</h3>
 <c:choose>
     <c:when test="${empty pendingEvents}">
-        <div class="empty-list"><i:inline key="yukon.web.defaults.none"/></div>
+        <div class="empty-list"><i:inline key="yukon.common.none.choice"/></div>
     </c:when>
     <c:otherwise>
         <c:set var="events" value="${pendingEvents}"/>
@@ -34,7 +34,7 @@
 <h3>Recent Events</h3>
 <c:choose>
     <c:when test="${empty recentEvents}">
-        <div class="empty-list"><i:inline key="yukon.web.defaults.none"/></div>
+        <div class="empty-list"><i:inline key="yukon.common.none.choice"/></div>
     </c:when>
     <c:otherwise>
         <c:set var="events" value="${recentEvents}"/>

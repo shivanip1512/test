@@ -40,7 +40,7 @@ public class VoltageRegulatorTapTooltipHandler implements VoltageRegulatorUpdate
             TapOperation tapOp = regulatorFlags.getLastOperation();
 
             if (tapOp == TapOperation.NONE) {
-                String na = messageSourceAccessor.getMessage("yukon.web.defaults.na");
+                String na = messageSourceAccessor.getMessage("yukon.common.na");
                 return na;
             }
             

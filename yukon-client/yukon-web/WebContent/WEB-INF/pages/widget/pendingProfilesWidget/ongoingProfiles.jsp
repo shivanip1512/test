@@ -29,7 +29,7 @@
         </div>
     </c:when>
     <c:otherwise>
-        <span class="empty-list"><i:inline key=".none"/></span>
+        <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
     </c:otherwise>
 </c:choose>
 </div>

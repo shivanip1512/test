@@ -73,14 +73,14 @@ $(function() {
                                             <!-- Temperature and Degree Units -->
                                             <c:if test="${historyItem.manualCoolTemp.value != 0}">
                                                 <cti:msg key="yukon.web.modules.operator.thermostatManual.manualDetailsCoolTemp" arguments="<span class='raw_temperature_F' raw_temperature_F='${historyItem.manualCoolTemp.value}'></span>"/>
-                                                <span class="C_label unit_label"><cti:msg htmlEscape="false" key="yukon.web.defaults.celsius" /></span>
-                                                <span class="F_label unit_label"><cti:msg htmlEscape="false" key="yukon.web.defaults.fahrenheit" /></span>
+                                                <span class="C_label unit_label"><cti:msg htmlEscape="false" key="yukon.common.celsius" /></span>
+                                                <span class="F_label unit_label"><cti:msg htmlEscape="false" key="yukon.common.fahrenheit" /></span>
                                             </c:if>
     
                                             <c:if test="${historyItem.manualHeatTemp.value != 0}">
                                                 <cti:msg key="yukon.web.modules.operator.thermostatManual.manualDetailsHeatTemp" arguments="<span class='raw_temperature_F' raw_temperature_F='${historyItem.manualHeatTemp.value}'></span>"/>
-                                                <span class="C_label unit_label"><cti:msg htmlEscape="false" key="yukon.web.defaults.celsius" /></span>
-                                                <span class="F_label unit_label"><cti:msg htmlEscape="false" key="yukon.web.defaults.fahrenheit" /></span>
+                                                <span class="C_label unit_label"><cti:msg htmlEscape="false" key="yukon.common.celsius" /></span>
+                                                <span class="F_label unit_label"><cti:msg htmlEscape="false" key="yukon.common.fahrenheit" /></span>
                                             </c:if>
                                             
                                             <!-- Heat/Cool Mode -->
@@ -112,7 +112,7 @@ $(function() {
                                             </c:choose> 
                                         </c:if>
                                         <c:if test="${historyItem.eventType == 'RESTORE'}">
-                                            <i:inline key="yukon.web.defaults.dashes"/>
+                                            <i:inline key="yukon.common.dashes"/>
                                         </c:if>
                                     </td>
                                 </tr>

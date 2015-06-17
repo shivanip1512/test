@@ -86,8 +86,8 @@
 
                 <div class="temperatureUnit clear">
                     <ul class="list-piped">
-                        <li class="unit <c:if test="${temperatureUnit == 'C'}">selected</c:if>" unit="C"><i:inline key="yukon.web.defaults.celsius" /></li>
-                        <li class="unit <c:if test="${temperatureUnit == 'F'}">selected</c:if>" unit="F"><i:inline key="yukon.web.defaults.fahrenheit" /></li>
+                        <li class="unit <c:if test="${temperatureUnit == 'C'}">selected</c:if>" unit="C"><i:inline key="yukon.common.celsius" /></li>
+                        <li class="unit <c:if test="${temperatureUnit == 'F'}">selected</c:if>" unit="F"><i:inline key="yukon.common.fahrenheit" /></li>
                     </ul>
                 </div>
             </div>
@@ -160,11 +160,11 @@
         <tags:nameValueContainer2>
 
             <tags:nameValue2 nameKey=".coolTemperature" rowId="coolTemperatureConfirm">
-                <span id="coolTemperatureValueConfirm" class="coolTemperatureConfirm"></span><span class="C unit"><i:inline key="yukon.web.defaults.celsius" /></span><span class="F unit"><i:inline key="yukon.web.defaults.fahrenheit" /></span>
+                <span id="coolTemperatureValueConfirm" class="coolTemperatureConfirm"></span><span class="C unit"><i:inline key="yukon.common.celsius" /></span><span class="F unit"><i:inline key="yukon.common.fahrenheit" /></span>
             </tags:nameValue2>
 
             <tags:nameValue2 nameKey=".heatTemperature" rowId="heatTemperatureConfirm">
-                <span id="heatTemperatureValueConfirm" class="heatTemperatureConfirm"></span><span class="C unit"><i:inline key="yukon.web.defaults.celsius" /></span><span class="F unit"><i:inline key="yukon.web.defaults.fahrenheit" /></span>
+                <span id="heatTemperatureValueConfirm" class="heatTemperatureConfirm"></span><span class="C unit"><i:inline key="yukon.common.celsius" /></span><span class="F unit"><i:inline key="yukon.common.fahrenheit" /></span>
             </tags:nameValue2>
             
             <tags:nameValue2 nameKey=".mode" rowId="modeConfirm">

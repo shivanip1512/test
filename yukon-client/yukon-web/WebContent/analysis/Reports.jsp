@@ -242,13 +242,13 @@ function makeFirstSelectedFilterValueVisible () {
         <div class="content">
             <table style="width:100%;">
               <tr>
-                <td class="column-header"><cti:msg key="yukon.web.reports"/></td>
+                <td class="column-header"><cti:msg key="yukon.common.reports"/></td>
                 <td class="column-header">&nbsp;</td>
                 <td class="column-header"><cti:msg key="yukon.common.date.start"/></td>
                 <td class="column-header">&nbsp;</td>
                 <td class="column-header"><cti:msg key="yukon.common.date.stop"/></td>
                 <td class="column-header">&nbsp;</td>
-                <td class="column-header"><cti:msg key="yukon.web.format"/></td>
+                <td class="column-header"><cti:msg key="yukon.common.format"/></td>
               </tr>
               <tr>
                 <td class="main">&nbsp;</td>
@@ -511,7 +511,7 @@ function makeFirstSelectedFilterValueVisible () {
                                                      endAction="setPickerSelectedPaoNamesFunction('selectedProgramNamesSpan');">
                                  
                                 <cti:icon icon="icon-add"/>
-                                 <cti:msg key="yukon.web.choosePrograms" />
+                                 <cti:msg key="yukon.common.choosePrograms" />
                                 </tags:pickerDialog>
                                     
                                 <%    
@@ -527,7 +527,7 @@ function makeFirstSelectedFilterValueVisible () {
                                                      immediateSelectMode="true">
                                                      
                                  <cti:icon icon="icon-add"/>
-                                <cti:msg key="yukon.web.chooseProgram" />
+                                <cti:msg key="yukon.common.chooseProgram" />
                                 </tags:pickerDialog>
                                     
                                 <%    
@@ -553,7 +553,7 @@ function makeFirstSelectedFilterValueVisible () {
                                                      endAction="setPickerSelectedPaoNamesFunction('selectedGroupNamesSpan');">
                                  
                                  <cti:icon icon="icon-add"/>
-                                <cti:msg key="yukon.web.chooseGroups" />
+                                <cti:msg key="yukon.common.chooseGroups" />
                                  </tags:pickerDialog>
                                 <br>
                                 <span id="selectedGroupNamesSpan" style="font-weight:bold;font-size:12px;"></span>
@@ -574,7 +574,7 @@ function makeFirstSelectedFilterValueVisible () {
                                                      endAction="setPickerSelectedPaoNamesFunction('selectedControlAreaNamesSpan');">
                                  
                                  <cti:icon icon="icon-add"/>
-                                <cti:msg key="yukon.web.chooseControlAreas" />
+                                <cti:msg key="yukon.common.chooseControlAreas" />
                                 </tags:pickerDialog>
                                  
                                 <br>
@@ -596,7 +596,7 @@ function makeFirstSelectedFilterValueVisible () {
                                                      endAction="setPickerSelectedPaoNamesFunction('selectedScenarioNamesSpan');">
                                  
                                  <cti:icon icon="icon-add"/>
-                                <cti:msg key="yukon.web.chooseScenarios" />
+                                <cti:msg key="yukon.common.chooseScenarios" />
                                 </tags:pickerDialog>
                                  
                                 <br>
@@ -619,7 +619,7 @@ function makeFirstSelectedFilterValueVisible () {
                                                     endAction="setPickerSelectedAccountNumberNamesFunction('selectedAccountNumberNamesSpan');">
                                 
                                 <cti:icon icon="icon-add"/>
-                                <cti:msg key="yukon.web.chooseAccountNumbers" />
+                                <cti:msg key="yukon.common.chooseAccountNumbers" />
                                 </tags:pickerDialog>
                                  
                                 <br>
@@ -643,7 +643,7 @@ function makeFirstSelectedFilterValueVisible () {
                                                     endAction="setPickerSelectedSerialNumberNamesFunction('selectedSerialNumberNamesSpan');">
                                 
                                 <cti:icon icon="icon-add"/>
-                                <cti:msg key="yukon.web.chooseSerialNumbers" />
+                                <cti:msg key="yukon.common.chooseSerialNumbers" />
                                 </tags:pickerDialog>
                                  
                                 <br>
@@ -667,7 +667,7 @@ function makeFirstSelectedFilterValueVisible () {
                                                     endAction="setPickerSelectedUserNamesFunction('selectedUserNamesSpan');">
                                 
                                 <cti:icon icon="icon-add"/>
-                                <cti:msg key="yukon.web.chooseUsers" />
+                                <cti:msg key="yukon.common.chooseUsers" />
                                 </tags:pickerDialog>
                                  
                                 <br>
@@ -744,8 +744,8 @@ function makeFirstSelectedFilterValueVisible () {
                             </select>
                             <BR>
                             <%if(filter.isMultiSelect()){ %>
-                                <span class='NavText'><cti:msg key="yukon.web.help.multiSelect"/></span><br>
-                                <span class='NavText'><cti:msg key="yukon.web.help.rangeSelect"/></span>
+                                <span class='NavText'><cti:msg key="yukon.common.help.multiSelect"/></span><br>
+                                <span class='NavText'><cti:msg key="yukon.common.help.rangeSelect"/></span>
                             <%} else { %>
                                 <span class='NavText'><cti:msg key="yukon.common.reports.selectFilter"/></span>
                             <%} %>

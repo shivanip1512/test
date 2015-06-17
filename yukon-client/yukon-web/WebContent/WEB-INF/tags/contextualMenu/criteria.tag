@@ -11,8 +11,8 @@
 <%@ attribute name="value" description="Text representing the criteria currently chosen, ie: 'RFN-420fL, RFN-420fD'" %>
 <%@ attribute name="menuClasses" description="Class names applied to the menu container element." %>
 
-<cti:msg2 key="yukon.web.defaults.all" var="allText"/>
-<cti:msg2 key="yukon.web.defaults.none" var="noneText"/>
+<cti:msg2 key="yukon.common.all" var="allText"/>
+<cti:msg2 key="yukon.common.none.choice" var="noneText"/>
 
 <div class="dropdown-trigger usn ${pageScope.triggerClasses}" <c:if test="${not empty pageScope.id}">id="${id}"</c:if>>
     <button type="button" class="criteria-button" data-all-text="${allText}" data-none-text="${noneText}">

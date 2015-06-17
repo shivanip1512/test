@@ -44,7 +44,7 @@
               description="Set of callbacks to be preformed on each node in the device group tree. Can be used to disable 
                            selecting certain nodes." %>
               
-<cti:msgScope paths=", yukon.common.device.bulk.deviceSelection, yukon.common, yukon.web.defaults, yukon.common.device.selection">
+<cti:msgScope paths=", yukon.common.device.bulk.deviceSelection, yukon.common, yukon.common.device.selection">
 
 <cti:default var="type" value="link"/>
 <cti:default var="classes" value=""/>

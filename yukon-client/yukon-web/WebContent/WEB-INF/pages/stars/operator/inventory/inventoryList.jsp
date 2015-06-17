@@ -139,7 +139,7 @@
                                                 </td>
                                             </c:when>
                                             <c:otherwise>
-                                                <i:inline key="yukon.web.defaults.none"/>
+                                                <i:inline key="yukon.common.none"/>
                                             </c:otherwise>
                                         </c:choose>
                                     </c:if>

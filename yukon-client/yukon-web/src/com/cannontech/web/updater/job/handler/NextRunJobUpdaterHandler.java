@@ -27,7 +27,7 @@ public class NextRunJobUpdaterHandler implements JobUpdaterHandler {
 	
 	@Override
 	public String handle(int jobId, YukonUserContext userContext) {
-	    String dateStr = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.defaults.na");
+	    String dateStr = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.common.na");
 	    ScheduledRepeatingJob job = null;
 	    try {
 	        job = scheduledRepeatingJobDao.getById(jobId);

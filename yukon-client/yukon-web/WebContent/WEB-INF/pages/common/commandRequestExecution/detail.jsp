@@ -114,7 +114,7 @@
             
             <tags:nameValue name="${infoStopTimeText}">
                 <c:choose>
-                    <c:when test="${cre.commandRequestExecutionStatus == 'FAILED'}"><i:inline key="yukon.web.defaults.na"/></c:when>
+                    <c:when test="${cre.commandRequestExecutionStatus == 'FAILED'}"><i:inline key="yukon.common.na"/></c:when>
                     <c:otherwise>
                         <cti:dataUpdaterCallback function="countUpdateCallback()" initialize="true" isComplete="COMMAND_REQUEST_EXECUTION/${cre.id}/IS_COMPLETE" />
                         <div id="creStopTimeDiv" <c:if test="${not isComplete}">style="display:none;"</c:if>>

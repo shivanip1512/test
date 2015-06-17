@@ -108,7 +108,7 @@
                                 <a href="javascript:void(0);" data-popup="#file-upload-popup">
                                     <i:inline key=".selectFileButton.label"/>
                                 </a>
-                                <cti:msg2 var="uploadText" key="yukon.web.defaults.upload"/>
+                                <cti:msg2 var="uploadText" key="yukon.common.upload"/>
                                 <div id="file-upload-popup" class="dn" data-dialog data-form 
                                     data-ok-text="${uploadText}" 
                                     data-title="${fileUploadTitle}" 

@@ -651,7 +651,7 @@ public class OperatorHardwareController {
         EnergyCompany energyCompany = ecDao.getEnergyCompany(lsec.getEnergyCompanyId());
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        model.addAttribute("none", accessor.getMessage("yukon.web.defaults.none"));
+        model.addAttribute("none", accessor.getMessage("yukon.common.none.choice"));
         
         String defaultRoute;
         try {

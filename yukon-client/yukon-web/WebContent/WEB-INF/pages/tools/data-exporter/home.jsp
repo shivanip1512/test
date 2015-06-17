@@ -53,7 +53,7 @@
                         <tags:nameValue2 nameKey="yukon.common.Devices">
                             <a href="javascript:void(0);" class="selectDevices clearfix fl" title="<cti:msg2 key=".chooseDevices.tooltip"/>">
                                 <c:if test="${empty archivedValuesExporter.deviceCollection.deviceCount}">
-                                    <span class="empty-list"><i:inline key="yukon.web.defaults.noDevices"/></span>
+                                    <span class="empty-list"><i:inline key="yukon.common.noDevices"/></span>
                                 </c:if>
                                 <c:if test="${not empty archivedValuesExporter.deviceCollection.deviceCount}">
                                     <span class="b-label"><i:inline key="${archivedValuesExporter.deviceCollection.description}"/></span><i class="icon icon-folder-edit"></i>
@@ -64,7 +64,7 @@
                             </c:if>
                         </tags:nameValue2>
                         <c:if test="${archivedValuesExporter.deviceCollection.deviceCount > 0}">
-                            <tags:nameValue2 nameKey="yukon.web.defaults.deviceCount">${archivedValuesExporter.deviceCollection.deviceCount}</tags:nameValue2>
+                            <tags:nameValue2 nameKey="yukon.common.deviceCount">${archivedValuesExporter.deviceCollection.deviceCount}</tags:nameValue2>
                         </c:if>
                     </c:if>
                     <tags:nameValue2 nameKey=".attribute" rowId="attributeRow">

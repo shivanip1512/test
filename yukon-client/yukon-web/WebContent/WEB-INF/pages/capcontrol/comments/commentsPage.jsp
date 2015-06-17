@@ -47,7 +47,7 @@
                                 </td>
                                 <c:choose>
                                     <c:when test="${comment.userName == null}">
-                                        <td><i:inline key="yukon.web.defaults.dashes"/></td>
+                                        <td><i:inline key="yukon.common.dashes"/></td>
                                     </c:when>
                                     <c:otherwise>
                                         <td>${fn:escapeXml(comment.userName)}</td>
@@ -56,8 +56,8 @@
                                 <td><cti:formatDate value="${comment.date}" type="BOTH" /></td>
                                 <td>
                                     <c:choose>
-                                        <c:when test="${comment.altered}"><i:inline key="yukon.web.defaults.yes"/></c:when>
-                                        <c:otherwise><i:inline key="yukon.web.defaults.no"/></c:otherwise>
+                                        <c:when test="${comment.altered}"><i:inline key="yukon.common.yes"/></c:when>
+                                        <c:otherwise><i:inline key="yukon.common.no"/></c:otherwise>
                                     </c:choose>
                                 </td>
                                 <td class="remove-column">

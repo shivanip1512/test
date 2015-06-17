@@ -21,7 +21,7 @@ public class ControlHistoryEventServiceImpl implements ControlHistoryEventServic
     public List<String> getHistoricalGearNames(int programId, List<DateTime> startDates, List<DateTime> endDates,
             YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        String na = accessor.getMessage("yukon.web.defaults.na");
+        String na = accessor.getMessage("yukon.common.na");
         List<String> gearNames = new ArrayList<>();
         
         DateTime endDate = null;

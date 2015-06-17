@@ -62,11 +62,11 @@ $(function(){
 <div id="tempSlider" class="slider">
     <div class="chevron"></div>
     <div class="box fl startLabel ${temperatureUnit}">
-        <div class="tempHolder fl"></div><i:inline key="yukon.web.defaults.degree"/><span class="C">${celsius_char}</span><span class="F">${fahrenheit_char}</span>
+        <div class="tempHolder fl"></div><i:inline key="yukon.common.degree"/><span class="C">${celsius_char}</span><span class="F">${fahrenheit_char}</span>
     </div>
     <div class="track"></div>
     <div class="box fr endLabel ${temperatureUnit}">
-        <div class="tempHolder fl"></div><i:inline key="yukon.web.defaults.degree"/><span class="C">${celsius_char}</span><span class="F">${fahrenheit_char}</span>
+        <div class="tempHolder fl"></div><i:inline key="yukon.common.degree"/><span class="C">${celsius_char}</span><span class="F">${fahrenheit_char}</span>
     </div>
 </div>
 
@@ -80,8 +80,8 @@ $(function(){
         <div class="tempControls fl">
             <form method="post" action="${postUrl}">
                 <cti:csrfToken/>
-                <label><input name="units" type="radio" value="C" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.celsius"/></label>
-                <label><input name="units" type="radio" value="F" <c:if test="${temperatureUnit eq 'F'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.fahrenheit"/></label>
+                <label><input name="units" type="radio" value="C" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><i:inline key="yukon.common.celsius"/></label>
+                <label><input name="units" type="radio" value="F" <c:if test="${temperatureUnit eq 'F'}" >checked="checked"</c:if>><i:inline key="yukon.common.fahrenheit"/></label>
             </form>
         </div>
         <br>
@@ -113,8 +113,8 @@ $(function(){
                 <div class="tempControls fl">
                     <form method="post" action="${postUrl}">
                         <cti:csrfToken/>
-                        <label><input name="units" type="radio" value="C" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.celsius"/></label>
-                        <label><input name="units" type="radio" value="F" <c:if test="${temperatureUnit eq 'F'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.fahrenheit"/></label>
+                        <label><input name="units" type="radio" value="C" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><i:inline key="yukon.common.celsius"/></label>
+                        <label><input name="units" type="radio" value="F" <c:if test="${temperatureUnit eq 'F'}" >checked="checked"</c:if>><i:inline key="yukon.common.fahrenheit"/></label>
                     </form>
                 </div>
             </div>

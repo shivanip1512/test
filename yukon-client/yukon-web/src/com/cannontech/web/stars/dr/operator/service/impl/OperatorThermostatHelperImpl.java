@@ -172,7 +172,7 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
     		// energy company default
     		if (ats.getAccountId() == 0) {
     			
-    			String defaultWord = messageSourceAccessor.getMessage("yukon.web.defaults.default");
+    			String defaultWord = messageSourceAccessor.getMessage("yukon.common.default");
     			newScheduleName = typeName + " - " + defaultWord;
     		
     		// associated with a specific account

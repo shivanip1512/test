@@ -19,7 +19,7 @@ public class ViolationsCountUpdaterHandler implements DeviceDataUpdaterHandler {
     
     private static final Logger log = YukonLogManager.getLogger(ViolationsCountUpdaterHandler.class);
     
-    private static final String NA_MSG_KEY = "yukon.web.defaults.na";
+    private static final String NA_MSG_KEY = "yukon.common.na";
 
     @Autowired private DeviceDataMonitorService deviceDataMonitorService;
     @Autowired private DeviceDataMonitorDao deviceDataMonitorDao;

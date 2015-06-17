@@ -300,7 +300,7 @@ public class PorterResponseMonitorController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
         // Default values in case group does not exist.
-        String supportedDevicesMessage = accessor.getMessage("yukon.web.defaults.na");
+        String supportedDevicesMessage = accessor.getMessage("yukon.common.na");
         int totalGroupCount = 0;
         int missingPointCount = 0;
         

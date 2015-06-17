@@ -52,7 +52,7 @@
                         </c:if>
                     </tags:nameValue2>
                     
-                    <tags:nameValue2 nameKey="yukon.web.defaults.blank" excludeColon="true">
+                    <tags:nameValue2 nameKey="yukon.common.blank" excludeColon="true">
                         <label>
                             <input type="checkbox" name="includeDisabledPaos"><i:inline key=".filter.includeDisabledDevices"/>
                         </label>
@@ -67,7 +67,7 @@
                             endValue="${meterEventsFilter.toInstant}" startName="fromInstant" endName="toInstant"/>
                     </tags:nameValue2>
     
-                    <tags:nameValue2 nameKey="yukon.web.defaults.blank" excludeColon="true">
+                    <tags:nameValue2 nameKey="yukon.common.blank" excludeColon="true">
                         <label>
                             <input type="checkbox" name="onlyLatestEvent" class="fl" id="filter_onlyLatestEvent">
                             <i:inline key=".filter.onlyLatestEvent"/>
@@ -78,7 +78,7 @@
                         </div>
                     </tags:nameValue2>
     
-                    <tags:nameValue2 nameKey="yukon.web.defaults.blank" excludeColon="true">
+                    <tags:nameValue2 nameKey="yukon.common.blank" excludeColon="true">
                         <label>
                             <input type="checkbox" name="onlyAbnormalEvents" class="fl">
                             <i:inline key=".filter.onlyAbnormalEvents"/>

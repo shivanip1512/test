@@ -46,7 +46,7 @@ public class WeatherDataBackingService implements UpdateBackingService {
             if (Field.getFrom(identifier) == Field.JSON_META_DATA) {
                 return getJson(Collections.singletonMap("invalidPaoError", "true"));
             }
-            return messageAccessor.getMessage("yukon.web.defaults.na");
+            return messageAccessor.getMessage("yukon.common.na");
         }
 
         WeatherObservation weatherObs;
@@ -56,7 +56,7 @@ public class WeatherDataBackingService implements UpdateBackingService {
             if (Field.getFrom(identifier) == Field.JSON_META_DATA) {
                 return getJson(Collections.singletonMap("dispatchError", "true"));
             }
-            return messageAccessor.getMessage("yukon.web.defaults.na");
+            return messageAccessor.getMessage("yukon.common.na");
         }
 
         String value;
@@ -110,7 +110,7 @@ public class WeatherDataBackingService implements UpdateBackingService {
             break;
         default:
         case UNKNOWN_FIELD:
-            value = messageAccessor.getMessage("yukon.web.defaults.na");
+            value = messageAccessor.getMessage("yukon.common.na");
             log.error("Identifier: " + identifier + " is invalid for a WEATHER_STATION data updater");
             break;
         }

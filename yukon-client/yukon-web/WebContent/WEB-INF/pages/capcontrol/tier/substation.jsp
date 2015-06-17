@@ -70,7 +70,7 @@ $(function() {
     <cm:dropdownOption  key="components.button.${editKey}.label" icon="icon-pencil" href="${editUrl}" />
 
     <c:if test="${hasSubstationControl}">
-        <cm:dropdownOption linkId="substationState_${substationId}" key="defaults.actions" icon="icon-cog" href="javascript:void(0);" />
+        <cm:dropdownOption linkId="substationState_${substationId}" key="yukon.common.actions" icon="icon-cog" href="javascript:void(0);" />
     </c:if>
 </div>
 
@@ -95,7 +95,7 @@ $(function() {
                                     <c:when test="${areaId > 0}">
                                         <cti:deviceName deviceId="${areaId}"/>
                                     </c:when>
-                                    <c:otherwise><i:inline key="yukon.web.defaults.none"/></c:otherwise>
+                                    <c:otherwise><i:inline key="yukon.common.none.choice"/></c:otherwise>
                                 </c:choose>
                             </span>
                         </tags:nameValue2>
@@ -119,7 +119,7 @@ $(function() {
                                             <cti:deviceName deviceId="${specialAreaId}"/>: <cti:capControlValue paoId="${specialAreaId}" type="CBCSPECIALAREA" format="STATE"/>
                                         </cti:classUpdater>
                                     </c:when>
-                                    <c:otherwise><i:inline key="yukon.web.defaults.none"/></c:otherwise>
+                                    <c:otherwise><i:inline key="yukon.common.none.choice"/></c:otherwise>
                                 </c:choose>
                             </span>
                         </tags:nameValue2>

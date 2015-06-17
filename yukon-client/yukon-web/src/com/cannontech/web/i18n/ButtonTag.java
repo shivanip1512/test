@@ -148,7 +148,7 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
             }
             
             if (dialogButton && !override) {
-                String ellipsis = getMessageSource().getMessage("yukon.web.defaults.moreInfoSuffix");
+                String ellipsis = getMessageSource().getMessage("yukon.common.moreInfoSuffix");
                 labelText += ellipsis;
             }
             

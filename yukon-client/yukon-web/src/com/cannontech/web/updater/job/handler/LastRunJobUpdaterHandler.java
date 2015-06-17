@@ -22,7 +22,7 @@ public class LastRunJobUpdaterHandler implements JobUpdaterHandler {
 
 		Date lastRun = jobStatusDao.findJobLastSuccessfulRunDate(jobId);
 
-		String dateStr = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.defaults.na");
+		String dateStr = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.common.na");
 		if (lastRun != null) {
 			dateStr = dateFormattingService.format(lastRun, DateFormatEnum.DATEHM, userContext);
 		}

@@ -27,7 +27,7 @@
             <tags:nameValue2 nameKey=".interval">
                 <cti:displayForPageEditModes modes="VIEW">
                     <c:if test="${schedule.repeatSeconds == 0}">
-                        <cti:msg2 key="defaults.none"/>
+                        <cti:msg2 key="yukon.common.none.choice"/>
                     </c:if>
                     <c:if test="${schedule.repeatSeconds != 0}">
                         <cti:formatDuration type="DHMS_REDUCED" value="${schedule.repeatDuration}"/>
@@ -42,7 +42,7 @@
                             </c:if>
                             <option value="${interval.seconds}" ${selected}>
                                 <c:if test="${interval.seconds == 0}">
-                                    <cti:msg2 key="defaults.none"/>
+                                    <cti:msg2 key="yukon.common.none.choice"/>
                                 </c:if>
                                 <c:if test="${interval.seconds != 0}">
                                     <cti:formatDuration type="DHMS_REDUCED" value="${interval.duration}"/>
@@ -55,7 +55,7 @@
             <tags:nameValue2 nameKey=".lastRunTime">
                 <c:choose>
                     <c:when test="${empty schedule.lastRunTime or schedule.lastRunTime.millis < epoch1990.millis}">
-                        <i:inline key="yukon.web.defaults.dashes"/>
+                        <i:inline key="yukon.common.dashes"/>
                     </c:when>
                     <c:otherwise>
                         <cti:formatDate value="${schedule.lastRunTime}" type="DATEHM"/>

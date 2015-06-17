@@ -59,7 +59,7 @@ public class ProgramEstimatedLoadField extends EstimatedLoadBackingFieldBase {
     private String createErrorJson(int programId, EstimatedLoadException exception, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
-        MessageSourceResolvable na = new YukonMessageSourceResolvable("yukon.web.defaults.na");
+        MessageSourceResolvable na = new YukonMessageSourceResolvable("yukon.common.na");
         MessageSourceResolvable exceptionMessage = backingServiceHelper.resolveException(exception, userContext);
 
         Map<String, String> errorNode = Maps.newHashMapWithExpectedSize(5);

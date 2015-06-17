@@ -39,7 +39,7 @@ public class MonitoringCountUpdaterHandler implements DeviceDataUpdaterHandler {
 		}
 		
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        return messageSourceAccessor.getMessage("yukon.web.defaults.na");
+        return messageSourceAccessor.getMessage("yukon.common.na");
 	}
 
 	@Override

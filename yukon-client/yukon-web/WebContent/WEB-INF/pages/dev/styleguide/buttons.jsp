@@ -492,7 +492,7 @@ yukon.ui.unbusy('#busy-test-3');
 <div class="column-4-20 clearfix button-example">
     <div class="column one"><h4 class="subtle">Example:</h4></div>
     <div class="column two nogutter">
-        <cm:dropdown type="button" key="yukon.web.defaults.actions">
+        <cm:dropdown type="button" key="yukon.common.actions">
             <cm:dropdownOption icon="icon-pencil" href="buttons#drop-down-example">Edit</cm:dropdownOption>
             <cm:dropdownOption icon="icon-page-copy" disabled="true" key="yukon.web.components.button.copy.label"/>
             <cm:dropdownOption icon="icon-cross" label="Delete" classes="js-delete-all-the-things"/>
@@ -518,7 +518,7 @@ yukon.ui.unbusy('#busy-test-3');
 </div>
 <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
-&lt;cm:dropdown type=&quot;button&quot; key=&quot;yukon.web.defaults.actions&quot; triggerClasses=&quot;fl&quot;&gt;
+&lt;cm:dropdown type=&quot;button&quot; key=&quot;yukon.common.actions&quot; triggerClasses=&quot;fl&quot;&gt;
     &lt;cm:dropdownOption icon=&quot;icon-pencil&quot; href=&quot;buttons#drop-down-example&quot;&gt;Edit&lt;/cm:dropdownOption&gt;
     &lt;cm:dropdownOption icon=&quot;icon-page-copy&quot; disabled=&quot;true&quot; key=&quot;yukon.web.components.button.copy.label&quot;/&gt;
     &lt;cm:dropdownOption icon=&quot;icon-cross&quot; label=&quot;Delete&quot; classes=&quot;js-delete-all-the-things&quot;/&gt;

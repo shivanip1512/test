@@ -48,7 +48,7 @@
         </table>
     </c:when>
     
-    <c:otherwise><i:inline key="yukon.web.defaults.none"/></c:otherwise>
+    <c:otherwise><i:inline key="yukon.common.none.choice"/></c:otherwise>
     
 </c:choose>
 

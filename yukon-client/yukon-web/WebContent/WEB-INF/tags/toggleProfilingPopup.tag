@@ -18,10 +18,10 @@
 
 <c:choose>
     <c:when test="${newToggleVal}">
-        <cti:msg2 var="toggleDesc" key="yukon.web.defaults.start"/>
+        <cti:msg2 var="toggleDesc" key="yukon.common.start"/>
     </c:when>
     <c:otherwise>
-        <cti:msg2 var="toggleDesc" key="yukon.web.defaults.stop"/>
+        <cti:msg2 var="toggleDesc" key="yukon.common.stop"/>
     </c:otherwise>
 </c:choose>
 

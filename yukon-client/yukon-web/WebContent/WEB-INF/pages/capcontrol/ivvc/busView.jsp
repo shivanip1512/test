@@ -50,7 +50,7 @@
             <li class="divider">
             <c:set var="dividerAdded" value="true" />
         </c:if>
-        <cm:dropdownOption linkId="subbusState_${subBusId}" key="defaults.actions" icon="icon-cog"/>
+        <cm:dropdownOption linkId="subbusState_${subBusId}" key="yukon.common.actions" icon="icon-cog"/>
     </div>
 </c:if>
 

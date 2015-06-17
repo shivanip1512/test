@@ -53,7 +53,7 @@
                         uniqueId="filterSelector"/>
                 </tags:nameValue2>
 
-                <tags:nameValue2 nameKey="yukon.web.defaults.blank" excludeColon="true">
+                <tags:nameValue2 nameKey="yukon.common.blank" excludeColon="true">
                     <label>
                         <form:checkbox path="includeDisabledPaos"/>
                         <i:inline key=".filter.includeDisabledDevices"/>

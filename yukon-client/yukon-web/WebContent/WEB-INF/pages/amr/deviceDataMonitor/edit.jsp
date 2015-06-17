@@ -81,7 +81,7 @@
         </tags:sectionContainer2>
         <div id="point-unknown-number-help" class="dn" target-title="<i:inline key=".missingPOINT.limitedQuery.help.title" />"><i:inline key=".missingPOINT.limitedQuery.help" /></div>
         
-        <span id="str_na" class="dn"><i:inline key="yukon.web.defaults.na"/></span>
+        <span id="str_na" class="dn"><i:inline key="yukon.common.na"/></span>
         <tags:sectionContainer2 nameKey="processors" styleClass="${processors_section_class}">
             <tags:dynamicTable items="${monitor.processors}" 
                 nameKey="dynamicTable"
@@ -106,7 +106,7 @@
                         <input type="hidden" data-name="processors[0].deletion" value="false" class="isDeletionField"/>
                         <td>
                             <select class="js-attribute" data-name="processors[0].attribute">
-                                <option value="-1"><i:inline key="yukon.web.defaults.selector.selectOne" /></option>
+                                <option value="-1"><i:inline key="yukon.common.selector.selectOne" /></option>
                                 <c:forEach items="${allGroupedReadableAttributes}" var="group">
                                     <optgroup label="<cti:msg2 key="${group.key}"/>">
                                         <c:forEach items="${group.value}" var="item">

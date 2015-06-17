@@ -97,7 +97,7 @@ public class GatewayControllerHelper {
                     dataJson.put("versionConflicts", StringUtils.join(conflicts, ", "));
                 }
             } else {
-                dataJson.put("versionConflicts", accessor.getMessage("yukon.web.defaults.none"));
+                dataJson.put("versionConflicts", accessor.getMessage("yukon.common.none.choice"));
             }
             
             dataJson.put("appMode", data.getMode());

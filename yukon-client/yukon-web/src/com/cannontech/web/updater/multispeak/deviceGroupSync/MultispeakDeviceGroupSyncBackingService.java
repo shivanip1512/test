@@ -274,7 +274,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
 		
 		if (instant == null) {
 			MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-			return messageSourceAccessor.getMessage("yukon.web.defaults.na");
+			return messageSourceAccessor.getMessage("yukon.common.na");
 		}
 		
 		String dateStr = dateFormattingService.format(instant, DateFormatEnum.FULL, userContext);

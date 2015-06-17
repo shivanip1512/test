@@ -80,7 +80,7 @@
                                     <td>
                                     <c:choose>
                                         <c:when test="${exportHistoryEntry.exportPath == null}">
-                                            <cti:msg2 key="yukon.web.defaults.dashes"/>
+                                            <cti:msg2 key="yukon.common.dashes"/>
                                         </c:when>
                                         <c:otherwise>
                                             ${exportHistoryEntry.exportPath}

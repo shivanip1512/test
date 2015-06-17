@@ -81,7 +81,7 @@
                                         <cti:pointValue pointId="${voltagePoint.pointId}" format="VALUE" />
                                     </c:when>
                                     <c:otherwise>
-                                        <i:inline key="yukon.web.defaults.dashes" />
+                                        <i:inline key="yukon.common.dashes" />
                                     </c:otherwise>
                                 </c:choose>
                             </td>

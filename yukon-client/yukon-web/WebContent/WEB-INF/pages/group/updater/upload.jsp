@@ -46,7 +46,7 @@
                 <cti:csrfToken/>
                 <tags:nameValueContainer2 tableClass="name-collapse">
                     <tags:nameValue2 nameKey="yukon.common.file"><tags:file/></tags:nameValue2>
-                    <tags:nameValue2 excludeColon="true" nameKey="yukon.web.defaults.blank">
+                    <tags:nameValue2 excludeColon="true" nameKey="yukon.common.blank">
                         <label><input type="checkbox" name="createGroups" class="fl"><span class="fl"><i:inline key=".autoCreate"/></span></label><cti:icon icon="icon-help" id="help_icon" classes="cp"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>

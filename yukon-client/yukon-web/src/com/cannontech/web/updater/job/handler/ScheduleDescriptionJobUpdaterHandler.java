@@ -19,7 +19,7 @@ public class ScheduleDescriptionJobUpdaterHandler implements JobUpdaterHandler {
 	@Override
 	public String handle(int jobId, YukonUserContext userContext) {
 
-		String scheduleDescription = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.defaults.na");
+		String scheduleDescription = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.common.na");
 		
 		try {
 			

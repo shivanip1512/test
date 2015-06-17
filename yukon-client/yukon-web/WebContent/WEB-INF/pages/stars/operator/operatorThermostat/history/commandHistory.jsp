@@ -119,7 +119,7 @@ $(function(){
                                 </c:choose> 
                             </c:if>
                             <c:if test="${historyItem.eventType == 'RESTORE'}">
-                                <i:inline key="yukon.web.defaults.dashes"/>
+                                <i:inline key="yukon.common.dashes"/>
                             </c:if>
                         </td>
                     </tr>

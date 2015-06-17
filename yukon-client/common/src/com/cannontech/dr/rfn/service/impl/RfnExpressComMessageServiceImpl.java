@@ -61,7 +61,7 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
             @Override
             public void handleException(Exception e) {
                 MessageSourceResolvable message = 
-                        YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.common.rfnExpressComMessage.error", e.toString());
+                        YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.rfnExpressComMessage.error", e.toString());
                 callback.processingExceptionOccured(message);
             }
 
@@ -106,7 +106,7 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
             @Override
             public void handleException(Exception e) {
                 MessageSourceResolvable message = 
-                        YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.common.rfnExpressComMessage.error", e.toString());
+                        YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.rfnExpressComMessage.error", e.toString());
                 callback.processingExceptionOccured(message);
             }
 

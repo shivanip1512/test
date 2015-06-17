@@ -23,7 +23,7 @@
                 deviceCallback="yukon.ami.waterLeakReport.schedule_individual_selected_callback"
                 uniqueId="scheduleSelector"/>
         </tags:nameValue2>
-        <tags:nameValue2 nameKey="yukon.web.defaults.blank" excludeColon="true">
+        <tags:nameValue2 nameKey="yukon.common.blank" excludeColon="true">
             <label>
                 <input type="checkbox" name="includeDisabledPaos" ${includeDisabledPaos ? "checked" : ""}>
                 <i:inline key=".filter.includeDisabledDevices"/>

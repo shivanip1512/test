@@ -9,9 +9,9 @@ public enum OnOff implements DisplayableEnum {
     @Override
     public String getFormatKey() {
         if(this == ON){
-            return "yukon.web.defaults.on";
+            return "yukon.common.on";
         }
-        return "yukon.web.defaults.off";
+        return "yukon.common.off";
     }
 
     public boolean isOn() {

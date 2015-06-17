@@ -160,7 +160,7 @@ public class AddHardwareByRangeController {
         model.addAttribute("serviceCompanies", serviceCompanyDao.getAllServiceCompanies(energyCompanyIds));
         model.addAttribute("defaultRoute", defaultRoute);
         model.addAttribute("routes", routes);
-        model.addAttribute("none", accessor.getMessage("yukon.web.defaults.none"));
+        model.addAttribute("none", accessor.getMessage("yukon.common.none.choice"));
     }
     
     @RequestMapping(value="do", params="start")

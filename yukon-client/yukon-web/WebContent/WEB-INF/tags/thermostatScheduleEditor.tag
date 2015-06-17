@@ -39,8 +39,8 @@
                 <input type="text" name="scheduleName" value="${fn:escapeXml(schedule.scheduleName)}" initialValue="${fn:escapeXml(schedule.scheduleName)}" size="40" maxlength="60">
             </div>
             <div class="box fr tempLabel ${temperatureUnit}">
-                <span class="F"><i:inline key="yukon.web.defaults.fahrenheit"/></span>
-                <span class="C"><i:inline key="yukon.web.defaults.celsius"/></span>
+                <span class="F"><i:inline key="yukon.common.fahrenheit"/></span>
+                <span class="C"><i:inline key="yukon.common.celsius"/></span>
             </div>
         </div>
         
@@ -90,7 +90,7 @@
 
                                         <div class="temp heat ${pageScope.temperatureUnit}" title="${heatLabel}">
                                             <input type="text" class="heat_F"
-                                                   maxlength="4" data-temperatureMode="HEAT"><i:inline key="yukon.web.defaults.degree"/>
+                                                   maxlength="4" data-temperatureMode="HEAT"><i:inline key="yukon.common.degree"/>
                                             <input type="hidden"
                                                    value="${period.heatTemp.value}"
                                                    initialValue="${period.heatTemp.value}"
@@ -99,7 +99,7 @@
                                         </div>
                                         <div class="temp cool ${pageScope.temperatureUnit}" title="${coolLabel}">
                                             <input type="text" class="cool_F"
-                                                   maxlength="4" data-temperatureMode="COOL"><i:inline key="yukon.web.defaults.degree"/>
+                                                   maxlength="4" data-temperatureMode="COOL"><i:inline key="yukon.common.degree"/>
                                             <input type="hidden"
                                                    value="${period.coolTemp.value}" 
                                                    initialValue="${period.coolTemp.value}" 

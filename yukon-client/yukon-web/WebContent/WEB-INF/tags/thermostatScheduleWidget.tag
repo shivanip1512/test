@@ -77,10 +77,10 @@
                                         <input type="hidden" class="time" name="secondsFromMidnight" value="${period.startTime}">
                                     </div>
                                     <div class="temp heat ${temperatureUnit}" title="${heatLabel}">
-                                        <span class="value "></span><input type="hidden" value="${period.heatTemp.value}" name="heat_F"><i:inline key="yukon.web.defaults.degree"/>
+                                        <span class="value "></span><input type="hidden" value="${period.heatTemp.value}" name="heat_F"><i:inline key="yukon.common.degree"/>
                                     </div>
                                     <div class="temp cool ${temperatureUnit}" title="${coolLabel}">
-                                        <span class="value "></span><input type="hidden" value="${period.coolTemp.value}" name="cool_F"><i:inline key="yukon.web.defaults.degree"/>
+                                        <span class="value "></span><input type="hidden" value="${period.coolTemp.value}" name="cool_F"><i:inline key="yukon.common.degree"/>
                                     </div>
                                 </div>
                             </c:if>
@@ -118,7 +118,7 @@
                        id="editSchedule_${schedule.accountThermostatScheduleId}" 
                        on=".edit_${schedule.accountThermostatScheduleId}, .copy_${schedule.accountThermostatScheduleId}">
                        
-                        <cti:msg2 var="copyPrefix" key="yukon.web.defaults.copy.prefix"/>
+                        <cti:msg2 var="copyPrefix" key="yukon.common.copy.prefix"/>
                         <input type="hidden" name="copyName" value="${copyPrefix} ${fn:escapeXml(schedule.scheduleName)}"/>
                         <input type="hidden" name="copyTitle" value="<i:inline key=".createSchedule.title"/>"/>
                         <input type="hidden" name="editTitle" value="<i:inline key=".editSchedule.title" arguments="${fn:escapeXml(schedule.scheduleName)}"/>"/>

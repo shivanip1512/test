@@ -57,7 +57,7 @@
                                     
                                     <c:choose>
                                         <c:when test="${event.pointId == null || event.pointId <= 0}">
-                                            <td><i:inline key="yukon.web.defaults.dashes"/></td>
+                                            <td><i:inline key="yukon.common.dashes"/></td>
                                         </c:when>
                                         <c:otherwise>
                                             <td><spring:escapeBody htmlEscape="true">${event.deviceControlled}</spring:escapeBody></td>
@@ -66,7 +66,7 @@
         
                                     <c:choose>
                                         <c:when test="${event.timestamp == null}">
-                                            <td><i:inline key="yukon.web.defaults.dashes"/></td>
+                                            <td><i:inline key="yukon.common.dashes"/></td>
                                         </c:when>
                                         <c:otherwise>
                                             <td><spring:escapeBody htmlEscape="true">${event.item}</spring:escapeBody></td>
@@ -75,7 +75,7 @@
         
                                     <c:choose>
                                         <c:when test="${event.event == null}">
-                                            <td><i:inline key="yukon.web.defaults.dashes"/></td>
+                                            <td><i:inline key="yukon.common.dashes"/></td>
                                         </c:when>
                                         <c:otherwise>
                                             <td><spring:escapeBody htmlEscape="true">${event.event}</spring:escapeBody></td>
@@ -84,7 +84,7 @@
         
                                     <c:choose>
                                         <c:when test="${event.user == null}">
-                                            <td><i:inline key="yukon.web.defaults.dashes"/></td>
+                                            <td><i:inline key="yukon.common.dashes"/></td>
                                         </c:when>
                                         <c:otherwise>
                                             <td><spring:escapeBody htmlEscape="true">${event.user}</spring:escapeBody></td>

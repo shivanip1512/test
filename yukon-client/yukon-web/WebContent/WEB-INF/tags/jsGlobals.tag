@@ -50,7 +50,7 @@ var yg = {
     text: {
         cancel: '<cti:msg2 key="yukon.web.components.button.cancel.label"/>',
         close: '<cti:msg2 key="yukon.web.components.button.close.label"/>',
-        confirm: '<cti:msg2 key="yukon.web.defaults.confirm"/>',
+        confirm: '<cti:msg2 key="yukon.common.confirm"/>',
         complete: '<cti:msg2 key="yukon.common.complete"/>',
         'delete': '<cti:msg2 key="yukon.web.components.button.delete.label"/>',
         edit: '<cti:msg2 key="yukon.web.components.button.edit.label"/>',
@@ -59,12 +59,12 @@ var yg = {
         finished: '<cti:msg2 key="yukon.common.finished"/>',
         map: '<cti:msg2 key="yukon.common.map"/>',
         more: '<cti:msg2 key="yukon.common.selectGroup.more"/>',
-        no: '<cti:msg2 key="yukon.web.defaults.no"/>',
+        no: '<cti:msg2 key="yukon.common.no"/>',
         ok: '<cti:msg2 key="yukon.web.components.button.ok.label"/>',
         save: '<cti:msg2 key="yukon.web.components.button.save.label"/>',
         successful: '<cti:msg2 key="yukon.common.successful"/>',
         view: '<cti:msg2 key="yukon.web.components.button.view.label"/>',
-        yes: '<cti:msg2 key="yukon.web.defaults.yes"/>'
+        yes: '<cti:msg2 key="yukon.common.yes"/>'
     },
     
     timezone: jstz.determine().name(),

@@ -194,7 +194,7 @@ public class LayoutController {
                     pageDetailTemp.setPageTitle(accessor.getMessage(pageTitleKey));
                 } catch (NoSuchMessageException e) {
                     pageDetailTemp.setPageTitle(accessor.getMessageWithDefault(
-                        "yukon.web.defaults.pageTitle", ""));
+                        "yukon.common.pageTitle", ""));
                 }
                 
             }

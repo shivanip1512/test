@@ -39,11 +39,11 @@
                     <c:when test="${empty c.jobInfos}">
                         <tr>
                             <c:if test="${c.channelProfilingOn}">
-                                <td><strong class="success"><i:inline key="yukon.web.defaults.on"/></strong></td>
+                                <td><strong class="success"><i:inline key="yukon.common.on"/></strong></td>
                                 <td><i:inline key=".scanning.neverStops"/></td>
                             </c:if>
                             <c:if test="${not c.channelProfilingOn}">
-                                <td><strong class="error"><i:inline key="yukon.web.defaults.off"/></strong></td>
+                                <td><strong class="error"><i:inline key="yukon.common.off"/></strong></td>
                                 <td><i:inline key=".scanning.neverStarts"/></td>
                             </c:if>                        
                         </tr>
@@ -54,10 +54,10 @@
                                 <c:when test="${status.count == 1}">
                                     <tr>
                                         <c:if test="${c.channelProfilingOn}">
-                                            <td><strong class="success"><i:inline key="yukon.web.defaults.on"/></strong></td>
+                                            <td><strong class="success"><i:inline key="yukon.common.on"/></strong></td>
                                         </c:if>
                                         <c:if test="${not c.channelProfilingOn}">
-                                            <td><strong class="error"><i:inline key="yukon.web.defaults.off"/></strong></td>
+                                            <td><strong class="error"><i:inline key="yukon.common.off"/></strong></td>
                                         </c:if>        
                                 </c:when>
                                 <c:otherwise>

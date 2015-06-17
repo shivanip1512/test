@@ -112,7 +112,7 @@
             ${violationReportLinks}
         </c:when>
         <c:when test="${!monitor.enabled}">
-            <i:inline key="yukon.web.defaults.na"/>
+            <i:inline key="yukon.common.na"/>
         </c:when>
         <c:otherwise>0</c:otherwise>
     </c:choose>

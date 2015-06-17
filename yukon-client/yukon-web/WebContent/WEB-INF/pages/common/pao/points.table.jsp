@@ -25,7 +25,7 @@
             <tr>
                 <td>
                     <c:choose>
-                        <c:when test="${empty pointResultRow.attribute}"><i:inline key="yukon.web.defaults.na"/></c:when> 
+                        <c:when test="${empty pointResultRow.attribute}"><i:inline key="yukon.common.na"/></c:when> 
                         <c:otherwise><i:inline key="${pointResultRow.attribute}"/></c:otherwise> 
                     </c:choose>
                 </td>

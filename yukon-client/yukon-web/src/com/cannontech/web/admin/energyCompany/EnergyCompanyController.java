@@ -226,7 +226,7 @@ public class EnergyCompanyController {
     @ModelAttribute("none")
     public String getNone(YukonUserContext userContext) {
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        return messageSourceAccessor.getMessage("yukon.web.defaults.none");
+        return messageSourceAccessor.getMessage("yukon.common.none.choice");
     }
     
     /* Helper Methods */

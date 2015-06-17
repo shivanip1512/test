@@ -17,7 +17,7 @@
     <c:set var="origEndDate" value="${BILLING_BEAN.endDate}"></c:set>
     <c:set var="systemTimezone" value="${tzFormat.format(origEndDate)}"></c:set>
 
-    <cti:msg key="yukon.web.settings" var="settingsLabel"/>
+    <cti:msg key="yukon.common.settings" var="settingsLabel"/>
     <tags:sectionContainer title="${settingsLabel}" id="billingContainer">
 
         <form id="MForm" name="MForm" action="<cti:url value="/servlet/BillingServlet" />" method="post">

@@ -24,7 +24,7 @@
                     </c:forEach>
                 </select>
             </tags:nameValue2>
-            <tags:nameValue2 nameKey="yukon.web.defaults.dateRange">
+            <tags:nameValue2 nameKey="yukon.common.dateRange">
                 <dt:dateRange startName="startDateStr" 
                               startValue="${startDate}"
                               endName="stopDateStr"

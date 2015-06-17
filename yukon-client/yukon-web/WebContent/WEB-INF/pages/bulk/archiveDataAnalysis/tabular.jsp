@@ -25,7 +25,7 @@
                         <td>
                             <c:choose>
                                 <c:when test="${empty pointValue}">
-                                    <i:inline key="yukon.web.defaults.dashesTwo"/>
+                                    <i:inline key="yukon.common.dashesTwo"/>
                                 </c:when>
                                 <c:otherwise>
                                     <cti:pointValueFormatter value="${pointValue}" format="SHORT"/>

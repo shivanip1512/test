@@ -49,7 +49,7 @@
                             <td>
                                 <c:choose>
                                     <c:when test="${schedule.lastRunTime.millis < epoch1990.millis}">
-                                        <i:inline key="yukon.web.defaults.dashes"/>
+                                        <i:inline key="yukon.common.dashes"/>
                                     </c:when>
                                     <c:otherwise>
                                         <cti:formatDate value="${schedule.lastRunTime}" type="DATEHM" />
@@ -59,7 +59,7 @@
                             <td>
                                 <c:choose>
                                     <c:when test="${schedule.nextRunTime.millis < epoch1990.millis}">
-                                        <i:inline key="yukon.web.defaults.dashes"/>
+                                        <i:inline key="yukon.common.dashes"/>
                                     </c:when>
                                     <c:otherwise>
                                         <cti:formatDate value="${schedule.nextRunTime}" type="DATEHM" />
@@ -68,7 +68,7 @@
                             </td>
                             <td>
                                 <c:if test="${schedule.repeatSeconds == 0}">
-                                    <cti:msg2 key="defaults.none"/>
+                                    <cti:msg2 key="yukon.common.none.choice"/>
                                 </c:if>
                                 <c:if test="${schedule.repeatSeconds != 0}">
                                     <cti:formatDuration type="DHMS_REDUCED" value="${schedule.repeatDuration}"/>
@@ -77,10 +77,10 @@
                             <td>
                                 <c:choose>
                                     <c:when test="${schedule.disabled}">
-                                         <span class="red"><i:inline key="yukon.web.defaults.no"/></span>
+                                         <span class="red"><i:inline key="yukon.common.no"/></span>
                                     </c:when>
                                     <c:otherwise>
-                                         <span class="green"><i:inline key="yukon.web.defaults.yes"/></span>
+                                         <span class="green"><i:inline key="yukon.common.yes"/></span>
                                     </c:otherwise>
                                 </c:choose>
                             </td>

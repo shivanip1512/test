@@ -130,7 +130,7 @@
                         <td>
                             <c:choose>
                                 <c:when test="${not empty row.meterNumber}">${row.meterNumber}</c:when>
-                                <c:otherwise><i:inline key="yukon.web.defaults.na"/></c:otherwise>
+                                <c:otherwise><i:inline key="yukon.common.na"/></c:otherwise>
                             </c:choose>
                         </td>
                         <td>${row.missingIntervals}</td>

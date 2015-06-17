@@ -435,7 +435,7 @@ public class DeviceDataMonitorController {
     private Map<String, Object> getSupportedCountsForMonitor(DeviceDataMonitor monitor, YukonUserContext userContext) {
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        accessor.getMessage("yukon.web.defaults.na");
+        accessor.getMessage("yukon.common.na");
         
         DeviceGroup monitoring = deviceGroupService.findGroupName(monitor.getGroupName());
         long totalSupportedCount = 0;
