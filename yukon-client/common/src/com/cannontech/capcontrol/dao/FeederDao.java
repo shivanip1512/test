@@ -62,7 +62,7 @@ public interface FeederDao {
      * @return true if the assignment occurred and only updated one row in the
      *         db, false otherwise.
      */
-    public boolean assignFeeder(YukonPao feederId, String subBusName);
+    public boolean assignFeeder(YukonPao feeder, String subBusName);
 
     /**
      * This method assigns a feeder to a subbus and does all necessary db change

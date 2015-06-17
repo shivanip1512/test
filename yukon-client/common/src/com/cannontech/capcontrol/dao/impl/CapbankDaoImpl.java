@@ -141,10 +141,10 @@ public class CapbankDaoImpl implements CapbankDao {
     };
 
     @Override
-    public boolean assignCapbank(YukonPao feeder, YukonPao capBank) {
+    public boolean assignCapbank(YukonPao feeder, YukonPao capbank) {
         SqlStatementBuilder tripSql = new SqlStatementBuilder();
         int feederId = feeder.getPaoIdentifier().getPaoId();
-        int capbankId = capBank.getPaoIdentifier().getPaoId();
+        int capbankId = capbank.getPaoIdentifier().getPaoId();
 
         tripSql.append("UPDATE CCFeederBankList");
         tripSql.append("SET TripOrder = TripOrder + 1");
@@ -169,7 +169,7 @@ public class CapbankDaoImpl implements CapbankDao {
         assignSql.append("WHERE FeederID").eq(feederId);
 
         // remove any existing assignment
-        unassignCapbank(capBank);
+        unassignCapbank(capbank);
 
         // Check if any assignments exist.
         int rowsAffected = 0;
@@ -196,7 +196,7 @@ public class CapbankDaoImpl implements CapbankDao {
         boolean result = (rowsAffected == 1);
 
         if (result) {
-            dbChangeManager.processPaoDbChange(capBank, DbChangeType.UPDATE);
+            dbChangeManager.processPaoDbChange(capbank, DbChangeType.UPDATE);
             dbChangeManager.processPaoDbChange(feeder, DbChangeType.UPDATE);
         }
 

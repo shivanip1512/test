@@ -113,8 +113,6 @@ public class FeederDaoImpl implements FeederDao {
     @Override
     public boolean assignFeeder(YukonPao substationBus, YukonPao feeder) {
         int substationBusId = substationBus.getPaoIdentifier().getPaoId();
-        int feederId = feeder.getPaoIdentifier().getPaoId();
-
         SqlStatementBuilder displaySql = new SqlStatementBuilder();
 
         displaySql.append("SELECT MAX(DisplayOrder)");
@@ -130,7 +128,7 @@ public class FeederDaoImpl implements FeederDao {
         SqlParameterSink params = assignSql.insertInto("CCFeederSubAssignment");
 
         params.addValue("SubStationBusID", substationBusId);
-        params.addValue("FeederID", feederId);
+        params.addValue("FeederID", feeder.getPaoIdentifier().getPaoId());
         params.addValue("DisplayOrder", ++displayOrder);
 
         int rowsAffected = yukonJdbcTemplate.update(assignSql);

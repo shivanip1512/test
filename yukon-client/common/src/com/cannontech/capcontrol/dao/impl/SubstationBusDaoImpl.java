@@ -151,8 +151,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     public boolean assignSubstationBus(YukonPao substation, YukonPao substationBus) {
         SqlStatementBuilder displaySql = new SqlStatementBuilder();
         int substationId = substation.getPaoIdentifier().getPaoId();
-        int substationBusId = substationBus.getPaoIdentifier().getPaoId();
-
+        
         displaySql.append("SELECT MAX(DisplayOrder)");
         displaySql.append("FROM CCSubstationSubBusList");
         displaySql.append("WHERE SubstationID").eq(substationId);
@@ -166,7 +165,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 
         SqlParameterSink params = assignSql.insertInto("CCSubstationSubBusList");
         params.addValue("SubstationID", substationId);
-        params.addValue("SubstationBusID", substationBusId);
+        params.addValue("SubstationBusID", substationBus.getPaoIdentifier().getPaoId());
         params.addValue("DisplayOrder", ++displayOrder);
 
         int rowsAffected = yukonJdbcTemplate.update(assignSql);

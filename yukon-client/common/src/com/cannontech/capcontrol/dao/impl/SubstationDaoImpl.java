@@ -90,7 +90,6 @@ public class SubstationDaoImpl implements SubstationDao {
     @Override
     public boolean assignSubstation(YukonPao area, YukonPao substation) {
         int areaId = area.getPaoIdentifier().getPaoId();
-        int substationId = substation.getPaoIdentifier().getPaoId();
 
         String tableName = area.getPaoIdentifier().getPaoType() == PaoType.CAP_CONTROL_AREA ? "CCSubAreaAssignment"
                 : "CCSubSpecialAreaAssignment";
@@ -110,7 +109,7 @@ public class SubstationDaoImpl implements SubstationDao {
 
         SqlParameterSink params = assignSql.insertInto(tableName);
         params.addValue("AreaID", areaId);
-        params.addValue("SubstationBusID", substationId);
+        params.addValue("SubstationBusID", substation.getPaoIdentifier().getPaoId());
         params.addValue("DisplayOrder", ++displayOrder);
 
         int rowsAffected = jdbcTemplate.update(assignSql);
