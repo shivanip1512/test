@@ -65,7 +65,7 @@ public class StrategyDaoImpl implements StrategyDao {
             p.addValue("StrategyName", o.getName());
             p.addValue("ControlMethod", o.getControlMethod());
             p.addValue("MaxDailyOperation", o.getMaxDailyOperation());
-            p.addValue("MaxOperationDisableFlag", o.isMaxOperationDisabled());
+            p.addValue("MaxOperationDisableFlag", !o.isMaxOperationEnabled());
             p.addValue("PeakStartTime", o.getPeakStartTime().getMillisOfDay() / 1000);
             p.addValue("PeakStopTime", o.getPeakStopTime().getMillisOfDay() / 1000);
             p.addValue("ControlInterval", o.getControlInterval());
@@ -229,7 +229,7 @@ public class StrategyDaoImpl implements StrategyDao {
             strategy.setName( rs.getString("StrategyName") );
             strategy.setControlMethod( ControlMethod.valueOf(rs.getString("ControlMethod")) );
             strategy.setMaxDailyOperation( rs.getInt("MaxDailyOperation") );
-            strategy.setMaxOperationDisabled( rs.getBoolean("MaxOperationDisableFlag"));
+            strategy.setMaxOperationEnabled(!rs.getBoolean("MaxOperationDisableFlag"));
             
             int peakStartSeconds = rs.getInt("PeakStartTime");
             LocalTime peakStart = LocalTime.fromMillisOfDay(peakStartSeconds * 1000);

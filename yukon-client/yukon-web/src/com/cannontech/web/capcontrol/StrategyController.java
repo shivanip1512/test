@@ -30,6 +30,7 @@ import com.cannontech.database.db.capcontrol.VoltViolationType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
+import com.cannontech.web.capcontrol.models.TimeIntervals;
 import com.cannontech.web.capcontrol.service.StrategyService;
 import com.cannontech.web.capcontrol.validators.StrategyValidator;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -107,6 +108,8 @@ public class StrategyController {
         model.addAttribute("algorithmToSettings",  StrategyPeakSettingsHelper.getAlgorithmToSettings());
         model.addAttribute("methodToAlgorithms",  ControlMethod.getMethodToAlgorithms());
         model.addAttribute("DaysOfWeek",  CapControlStrategy.DayOfWeek.values());
+        model.addAttribute("integrateIntervals", TimeIntervals.getIntegrateIntervals());
+        model.addAttribute("analysisIntervals", TimeIntervals.getAnalysisIntervals());
         
         return "strategy/strategy.jsp";
     }

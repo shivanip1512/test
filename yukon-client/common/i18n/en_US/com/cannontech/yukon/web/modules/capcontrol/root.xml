@@ -458,6 +458,7 @@
     <entry key="yukon.web.modules.capcontrol.strategy.endDaySetting.TRIP">Trip</entry>
     <entry key="yukon.web.modules.capcontrol.strategy.endDaySetting.CLOSE">Close</entry>
     
+    <entry key="yukon.web.modules.capcontrol.strategy.newDataOnly">On New Data</entry>
     <entry key="yukon.web.modules.capcontrol.strategy.error.voltageViolation.low.cost">Cost must be less than or equal to zero.</entry>
     <entry key="yukon.web.modules.capcontrol.strategy.error.voltageViolation.low.emergencyCost">Emergency Cost must be less than or equal to cost.</entry>
     <entry key="yukon.web.modules.capcontrol.strategy.error.voltageViolation.bandwith">Bandwidth must be greater than zero.</entry>

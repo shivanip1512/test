@@ -34,16 +34,7 @@
                     <c:forEach var="strategy" items="${strategies}">
                         <tr data-strategy-id="${strategy.id}">
                             <td>
-                                <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
-                                    <cti:url var="url" value="/capcontrol/strategies/${strategy.id}" />
-                                    <a href="${url}">New Editor</a>
-                                    <br>
-                                </cti:checkGlobalRolesAndProperties>
-                                
-                                <cti:url var="editUrl" value="/editor/cbcBase.jsf">
-                                    <cti:param name="type" value="5"/>
-                                    <cti:param name="itemid" value="${strategy.id}"/>
-                                </cti:url>
+                                <cti:url var="editUrl" value="/capcontrol/strategies/${strategy.id}" />
                                 <a href="${editUrl}">${fn:escapeXml(strategy.name)}</a>
                             </td>
                             <td><i:inline key="${strategy.controlMethod}"/></td>

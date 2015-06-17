@@ -27,6 +27,8 @@ yukon.da.strategy = (function () {
             $('[data-mapping="' + setting + '"]').show().find('input').prop('disabled', false);
         });
         
+        $('.js-time-of-day-only').toggle(algorithm === 'TIME_OF_DAY');
+        $('.js-not-time-of-day').toggle(algorithm !== 'TIME_OF_DAY');
         $('.js-ivvc-only').toggle(algorithm === 'INTEGRATED_VOLT_VAR');
         $('.js-bus-ivvc-only').toggle(algorithm === 'INTEGRATED_VOLT_VAR' &&
                                       method === 'BUSOPTIMIZED_FEEDER');

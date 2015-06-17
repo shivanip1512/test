@@ -44,69 +44,69 @@
                                 inputClass="with-option-hiding" />
                         </tags:nameValue>
                         
-                        <tags:nameValue name="Analysis Interval">
-                            <%-- Update Only (0) , 1 Sec, 1 Day --%>
-                            <tags:input path="controlInterval" size="5"/>
-                            sec
+                        <tags:nameValue name="Analysis Interval" class="js-not-time-of-day">
+                            <%-- How often the system should check to determine the need for control --%>
+                            <tags:intervalStepper path="controlInterval" intervals="${analysisIntervals}" noneKey=".newDataOnly"/>
                         </tags:nameValue>
                         
                         <tags:nameValue name="Max Confirm Time">
-                            <%-- None (0) , 1 Sec, 1 Day --%>
-                            <tags:input path="minResponseTime" size="5"/>
-                            sec
+                            <%-- How much time the system waits until the control is considered successful --%>
+                            <tags:intervalStepper path="minResponseTime" intervals="${analysisIntervals}" />
                         </tags:nameValue>
-                        
-                        <tags:nameValue name="Failure Percent">
-                            <tags:input path="failurePercent" size="3"/>
-                            %
-                        </tags:nameValue>
-                        
-                        <tags:nameValue name="Pass Percent">
+                        <tags:nameValue name="Pass Percent" >
+                            <%--This amount of change or higher is considered to be a successful control --%>
                             <tags:input path="minConfirmPercent" size="3"/>
                             %
                         </tags:nameValue>
                         
+                        <tags:nameValue name="Failure Percent">
+                            <%-- This amount of change or lower is considered to be a failed control --%>
+                            <tags:input path="failurePercent" size="3"/>
+                            %
+                        </tags:nameValue>
+                        
                         <tags:nameValue name="Send Retries" size="3">
+                            <%-- How many times the control should be repeatedly sent out to the field --%>
                             <tags:input path="controlSendRetries" size="3"/>
                         </tags:nameValue>
                         
-                        <tags:nameValue name="Delay Time">
-                            <%-- None (0), 1 sec, 1 day--%>
-                            <tags:input path="controlDelayTime" size="5"/>
-                            sec
+                        <tags:nameValue name="Delay Time" class="js-not-time-of-day">
+                            <%-- How much time we should wait before sending the control command into the field --%>
+                            <tags:intervalStepper path="controlDelayTime" intervals="${analysisIntervals}" />
                         </tags:nameValue>
                         
-                        <tags:nameValue name="Integrate Control?">
+                        <tags:nameValue name="Integrate Control" class="js-not-time-of-day">
                             <spring:bind path="integrateFlag">
                                 <c:if test="${not viewMode or not status.value}">
                                     <tags:switchButton path="integrateFlag" toggleGroup="integrateControl"
                                         color="${not viewMode}" />
                                 </c:if>
                                 <c:if test="${not viewMode or status.value}">
-                                    <%--1 min - 15 min--%>
-                                    <tags:input path="integratePeriod" size="4" toggleGroup="integrateControl"/>
-                                    sec
+                                    <tags:intervalStepper path="integratePeriod" intervals="${integrateIntervals}" toggleGroup="integrateControl" />
                                 </c:if>
                             </spring:bind>
                         </tags:nameValue>
                         
                         <tags:nameValue name="Like-day Control Fallback">
+                            <%-- Fall back to like-day history control --%>
                             <tags:switchButton path="likeDayFallBack" color="${not viewMode}"/>
                         </tags:nameValue>
                         
-                        <tags:nameValue name="Max Daily Operation">
-                            <spring:bind path="maxOperationDisabled">
+                        <tags:nameValue name="Max Daily Operation" class="js-not-time-of-day">
+                            <spring:bind path="maxOperationEnabled">
                                 <c:if test="${not viewMode or not status.value}">
-                                    <tags:switchButton path="maxOperationDisabled" toggleGroup="maxOperation"
+                                    <%-- Disable automatic control on this device upon reaching the max number of operations --%>
+                                    <tags:switchButton path="maxOperationEnabled" toggleGroup="maxOperation"
                                         color="${not viewMode}" />
                                 </c:if>
                                 <c:if test="${not viewMode or status.value}">
+                                    <%-- The total number of controls allowed per day. 0=Unlimited --%>
                                     <tags:input path="maxDailyOperation" size="3" toggleGroup="maxOperation"/>
                                 </c:if>
                             </spring:bind>
                         </tags:nameValue>
                         
-                        <tags:nameValue name="End Day Settings">
+                        <tags:nameValue name="End Day Settings" class="js-not-time-of-day">
                             <div class="button-group">
                                 <c:forEach var="endDaySetting" items="${EndDaySettings}">
                                     <tags:radio path="endDaySettings" value="${endDaySetting}" key="${endDaySetting}" 
@@ -118,7 +118,7 @@
                     </tags:nameValueContainer>
                 </tags:sectionContainer>
                 
-                <tags:sectionContainer title="Peak Settings">
+                <tags:sectionContainer title="Peak Settings" styleClass="js-not-time-of-day">
                     <tags:nameValueContainer tableClass="name-collapse natural-width ${tableClass}">
                         <tags:nameValue name="Peak Days">
                             <div class="button-group stacked">
@@ -157,11 +157,18 @@
             
                 <table class="stacked-lg full-width section-table striped ${tableClass}">
                     <thead>
-                        <tr>
+                        <tr class="js-not-time-of-day">
                             <th>Target Setting</th>
                             <th class="tar">Peak</th>
                             <th></th>
                             <th class="tar">Off Peak</th>
+                            <th></th>
+                        </tr>
+                        <tr class="js-time-of-day-only">
+                            <th>Time</th>
+                            <th class="tar">Weekday</th>
+                            <th></th>
+                            <th class="tar">Weekend</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -175,12 +182,12 @@
                                 <td class="tar">
                                     <tags:input path="targetSettings[${targetSettingType}].peakValue" size="5" />
                                 </td>
-                                <td class="tal">${targetSettingType.units}</td>
+                                <td class="tal"><span class="js-time-of-day-only">Close&nbsp;</span>${targetSettingType.units}</td>
                                 
                                 <td class="tar">
                                     <tags:input path="targetSettings[${targetSettingType}].offPeakValue" size="5" />
                                 </td>
-                                <td class="tal">${targetSettingType.units}</td>
+                                <td class="tal"><span class="js-time-of-day-only">Close&nbsp;</span>${targetSettingType.units}</td>
                             </tr>
                         </c:forEach>
                     </tbody>

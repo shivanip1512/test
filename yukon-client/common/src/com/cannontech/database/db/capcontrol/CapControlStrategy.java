@@ -1,6 +1,5 @@
 package com.cannontech.database.db.capcontrol;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,19 +8,13 @@ import org.joda.time.Minutes;
 
 import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.ControlMethod;
-import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.DatabaseRepresentationSource;
-import com.cannontech.database.db.CTIDbChange;
-import com.cannontech.database.db.DBPersistent;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Strategy of control for a SubBus or Feeder.
  */
-public class CapControlStrategy extends DBPersistent implements CTIDbChange {
+public class CapControlStrategy {
     
     public static final LocalTime MAX_TIME = LocalTime.MIDNIGHT.withHourOfDay(23).withMinuteOfHour(59).withSecondOfMinute(59);
 
@@ -29,7 +22,7 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
     private String name = null;
     private ControlMethod controlMethod = ControlMethod.INDIVIDUAL_FEEDER;
     private int maxDailyOperation = 0;
-    private boolean maxOperationDisabled = false;
+    private boolean maxOperationEnabled = true;
     private LocalTime peakStartTime = LocalTime.MIDNIGHT;
     private LocalTime peakStopTime = MAX_TIME;
     private int controlInterval = Minutes.minutes(15).toStandardSeconds().getSeconds();
@@ -109,62 +102,6 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
         }
     }
     
-
-    public static final String TABLE_NAME = "CapControlStrategy";
-    private StrategyDao strategyDao = YukonSpringHook.getBean(StrategyDao.class);
-
-    @Override
-    public void add() throws SQLException {
-
-        strategyDao.add(getName());
-        strategyDao.save(this);
-    }
-
-    @Override
-    public void update() throws SQLException {
-        strategyDao.save(this);
-    }
-
-    /*
-     * This looks weird because it is halfway through converting this from a db persistent
-     * to properly use a Dao.
-     * Ideally, i would just do this = that, but thats not legal.
-     */
-    @Override
-    public void retrieve() throws SQLException {
-
-        CapControlStrategy that = strategyDao.getForId(getId());
-
-        setName(that.getName());
-        setControlMethod(that.getControlMethod());
-        setMaxDailyOperation(that.getMaxDailyOperation());
-        setMaxOperationDisabled(that.isMaxOperationDisabled());
-        setPeakStartTime(that.getPeakStartTime());
-        setPeakStopTime(that.getPeakStopTime());
-        setControlInterval(that.getControlInterval());
-        setMinResponseTime(that.getMinResponseTime());
-        setMinConfirmPercent(that.getMinConfirmPercent());
-        setFailurePercent(that.getFailurePercent());
-        setPeakDays(that.getPeakDays());
-        setAlgorithm(that.getAlgorithm());
-        setControlDelayTime(that.getControlDelayTime());
-        setControlSendRetries(that.getControlSendRetries());
-        setIntegrateFlag(that.isIntegrateFlag());
-        setIntegratePeriod(that.getIntegratePeriod());
-        setLikeDayFallBack(that.isLikeDayFallBack());
-        setEndDaySettings(that.getEndDaySettings());
-
-        setTargetSettings(that.getTargetSettings());
-        setVoltageViolationSettings(that.getVoltageViolationSettings());
-        setPowerFactorCorrectionSetting(that.getPowerFactorCorrectionSetting());
-        setMinCommunicationPercentageSetting(that.getMinCommunicationPercentageSetting());
-    }
-
-    @Override
-    public void delete() throws java.sql.SQLException {
-        strategyDao.delete(getId());
-    }
-
     public Integer getControlInterval() {
         return controlInterval;
     }
@@ -186,12 +123,12 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
     }
 
 
-    public boolean isMaxOperationDisabled() {
-        return maxOperationDisabled;
+    public boolean isMaxOperationEnabled() {
+        return maxOperationEnabled;
     }
 
-    public void setMaxOperationDisabled(boolean maxOperationDisabled) {
-        this.maxOperationDisabled = maxOperationDisabled;
+    public void setMaxOperationEnabled(boolean maxOperationEnabled) {
+        this.maxOperationEnabled = maxOperationEnabled;
     }
 
     public Integer getMinConfirmPercent() {
@@ -347,52 +284,12 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
         this.minCommunicationPercentageSetting = minCommunicationPercentageSetting;
     }
 
-    public boolean isKVarAlgorithm() {
-        return algorithm == ControlAlgorithm.KVAR;
-    }
-
-    public boolean isPFAlgorithm() {
-        return algorithm == ControlAlgorithm.PFACTOR_KW_KVAR;
-    }
-
-    public boolean isVoltVar() {
-        return algorithm == ControlAlgorithm.MULTI_VOLT_VAR;
-    }
-
     public boolean isIvvc() {
         return algorithm == ControlAlgorithm.INTEGRATED_VOLT_VAR;
     }
 
-    //TODO Remove after deleting JSF strategyEditor.jsp
-    public boolean isBusOptimized() {
-        return controlMethod == ControlMethod.BUSOPTIMIZED_FEEDER;
-    }
-
-    public boolean isVoltStrat() {
-        if (algorithm == ControlAlgorithm.MULTI_VOLT)
-            return true;
-        else if (algorithm == ControlAlgorithm.VOLTS)
-            return true;
-        else
-            return false;
-    }
-
     public boolean isTimeOfDay() {
         return controlMethod == ControlMethod.TIME_OF_DAY;
-    }
-
-    /**
-     * Generates a DBChange msg.
-     */
-    @Override
-    public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
-
-        // add the basic change method
-        DBChangeMsg dbChange =
-            new DBChangeMsg(getId().intValue(), DBChangeMsg.CHANGE_CBC_STRATEGY_DB, DBChangeMsg.CAT_CBC_STRATEGY,
-                dbChangeType);
-
-        return new DBChangeMsg[] { dbChange };
     }
 
     public Map<DayOfWeek, Boolean> getPeakDays() {
