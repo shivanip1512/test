@@ -188,6 +188,7 @@
 <entry key="yukon.common.point">Point</entry>
 <entry key="yukon.common.pointName">Point Name</entry>
 <entry key="yukon.common.pointOffset">Point Offset</entry>
+<entry key="yukon.common.points.none">No point attached to this object.</entry>
 <entry key="yukon.common.pointType">Point Type</entry>
 <entry key="yukon.common.prefixedByteValue.exbi">{0,number,#,##0.0} EB</entry>
 <entry key="yukon.common.prefixedByteValue.gibi">{0,number,#,##0.0} GB</entry>

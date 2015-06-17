@@ -6,6 +6,11 @@
     
     <!-- common capcontrol words -->
     
+    <entry key="yukon.web.modules.capcontrol.strat.assignment.updated">Strategy assignments updated successfully.</entry>
+    <entry key="yukon.web.modules.capcontrol.schedule.season">Season Schedule</entry>
+    <entry key="yukon.web.modules.capcontrol.schedule.holiday">Holiday Schedule</entry>
+    <entry key="yukon.web.modules.capcontrol.season">Season</entry>
+    <entry key="yukon.web.modules.capcontrol.strategy">Strategy</entry>
     <entry key="yukon.web.modules.capcontrol.edit.info">Edit {0}</entry>
     <entry key="yukon.web.modules.capcontrol.create.title">Create Volt/Var Object</entry>
     <entry key="yukon.web.modules.capcontrol.resetOpCount.label">Reset All Op Counters</entry>
@@ -265,16 +270,21 @@
     <entry key="yukon.web.modules.capcontrol.areas.feeders">{0} {0,choice,0#Feeders|1#Feeder|1&lt;Feeders}</entry>
     <entry key="yukon.web.modules.capcontrol.areas.banks">{0} {0,choice,0#Banks|1#Bank|1&lt;Banks}</entry>
     <entry key="yukon.web.modules.capcontrol.areas.stationCount">{0} {0,choice,0#Substations|1#Substation|1&lt;Substations}</entry>
-    <entry key="yukon.web.modules.capcontrol.areas.subs.updated">Substions updated successfully.</entry>
     
     <!-- area.jsp -->
     <entry key="yukon.web.modules.capcontrol.area.pageTitle">Area {0}</entry>
     <entry key="yukon.web.modules.capcontrol.area.pageHeading">Area {0}</entry>
     <entry key="yukon.web.modules.capcontrol.area.crumbTitle">Area {0}</entry>
     <entry key="yukon.web.modules.capcontrol.area.infoContainer.title">Info</entry>
+    <entry key="yukon.web.modules.capcontrol.area.pointsContainer.title">Points</entry>
     <entry key="yukon.web.modules.capcontrol.area.statsContainer.title">Statistics</entry>
+    <entry key="yukon.web.modules.capcontrol.area.stratContainer.title">Strategy</entry>
     <entry key="yukon.web.modules.capcontrol.area.substationsContainer.title">Substations</entry>
     <entry key="yukon.web.modules.capcontrol.area.edit.stations">Add/Remove Substations</entry>
+    <entry key="yukon.web.modules.capcontrol.area.edit.strategy">Edit Strategy Assignment</entry>
+    <entry key="yukon.web.modules.capcontrol.area.info.updated">Area info updated successfully.</entry>
+    <entry key="yukon.web.modules.capcontrol.area.subs.updated">Substions updated successfully.</entry>
+    <entry key="yukon.web.modules.capcontrol.area.strat.updated">Strategy assignment updated successfully.</entry>
     
     <!-- substation.jsp -->
     <entry key="yukon.web.modules.capcontrol.substation.pageName">Substation</entry>

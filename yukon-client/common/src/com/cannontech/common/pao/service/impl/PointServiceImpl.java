@@ -1,9 +1,16 @@
 package com.cannontech.common.pao.service.impl;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +19,7 @@ import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.PreviousReadings;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -31,8 +39,10 @@ import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
@@ -46,7 +56,45 @@ public class PointServiceImpl implements PointService {
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
-
+    
+    public @Override Map<PointType, List<LitePoint>> getSortedPointTree(int paoId, MessageSourceAccessor accessor) {
+        
+        List<LitePoint> points = pointDao.getLitePointsByPaObjectId(paoId);
+        Map<PointType, List<LitePoint>> typeToPoints = new LinkedHashMap<>();
+        Map<PointType, List<LitePoint>> initial = new HashMap<>();
+        Set<PointType> types = new HashSet<>();
+        
+        // Build distinct set of point types and store points in lists
+        for (LitePoint point : points) {
+            PointType type = point.getPointTypeEnum();
+            types.add(type);
+            List<LitePoint> pointList = initial.get(type);
+            if (pointList == null) {
+                pointList = new ArrayList<>();
+                initial.put(type, pointList);
+            }
+            pointList.add(point);
+        }
+        
+        // Sort distinct list of point types
+        List<PointType> distinctTypes = new ArrayList<>(types);
+        Collections.sort(distinctTypes, new Comparator<PointType>() {
+            @Override
+            public int compare(PointType o1, PointType o2) {
+                return accessor.getMessage(o1).compareTo(accessor.getMessage(o2));
+            }
+        });
+        
+        // Map the sorted point types to point lists; remembering insertion order.
+        for (PointType type : distinctTypes) {
+            List<LitePoint> sortedPoints = initial.get(type);
+            Collections.sort(sortedPoints, LiteComparators.liteNameComparator);
+            typeToPoints.put(type, sortedPoints);
+        }
+        
+        return typeToPoints;
+    }
+    
     @Override
     public LitePoint getPointForPao(YukonPao pao, PointIdentifier pointIdentifier) throws NotFoundException {
 

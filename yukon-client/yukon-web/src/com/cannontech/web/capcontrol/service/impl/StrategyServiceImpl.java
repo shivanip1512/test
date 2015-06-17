@@ -1,12 +1,17 @@
 package com.cannontech.web.capcontrol.service.impl;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.capcontrol.dao.StrategyDao;
+import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
+import com.cannontech.database.db.capcontrol.LiteCapControlStrategy;
+import com.cannontech.database.model.Season;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -17,6 +22,7 @@ public class StrategyServiceImpl implements StrategyService {
     
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private StrategyDao strategyDao;
+    @Autowired private SeasonScheduleDao seasonSchedules;
 
     @Override
     public int save(CapControlStrategy strategy) {
@@ -59,6 +65,24 @@ public class StrategyServiceImpl implements StrategyService {
     @Override
     public List<String> getAllPaoNamesUsingStrategyAssignment(int id) {
         return strategyDao.getAllPaoNamesUsingStrategyAssignment(id);
+    }
+    
+    @Override
+    public Map<Season, LiteCapControlStrategy> getSeasonStrategyAssignments(int id) {
+        
+        Map<Season, Integer> seasonToStratId = seasonSchedules.getUserFriendlySeasonStrategyAssignments(id);
+        Map<Season, LiteCapControlStrategy> seasonToStrat = new LinkedHashMap<>();
+        for (Season season : seasonToStratId.keySet()) {
+            Integer strategyId = seasonToStratId.get(season);
+            if (strategyId == -1) {
+                seasonToStrat.put(season, null);
+            } else {
+                LiteCapControlStrategy strategy = strategyDao.getLiteStrategy(strategyId);
+                seasonToStrat.put(season, strategy);
+            }
+        }
+        
+        return seasonToStrat;
     }
 
 }

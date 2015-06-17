@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.HolidayScheduleDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -128,8 +129,14 @@ public class HolidayScheduleDaoImpl implements HolidayScheduleDao{
     
     @Override
     public List<HolidaySchedule> getAllHolidaySchedules() {
-       String sql = "select HolidayScheduleID, HolidayScheduleName from HolidaySchedule where HolidayScheduleId <> 0 order by HolidayScheduleName";
-       return jdbcTemplate.query(sql, holidayScheduleRowMapper);
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT HolidayScheduleID, HolidayScheduleName");
+        sql.append("FROM HolidaySchedule");
+        sql.append("WHERE HolidayScheduleId <> 0");
+        sql.append("ORDER BY HolidayScheduleName");
+        
+        return jdbcTemplate.query(sql, holidayScheduleRowMapper);
     }
 
     @Override

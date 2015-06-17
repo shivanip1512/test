@@ -1,8 +1,10 @@
 package com.cannontech.web.capcontrol.models;
 
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 
-public abstract class PaoModel {
+public abstract class PaoModel implements YukonPao {
     
     protected Integer id;
     protected PaoType type;
@@ -48,6 +50,11 @@ public abstract class PaoModel {
     
     public void setDisabled(boolean disabled) {
         this.disabled = disabled;
+    }
+    
+    @Override
+    public PaoIdentifier getPaoIdentifier() {
+        return PaoIdentifier.of(id, type);
     }
     
     @Override

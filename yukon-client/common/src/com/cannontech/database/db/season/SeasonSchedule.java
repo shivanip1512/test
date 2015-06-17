@@ -6,7 +6,6 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**

@@ -29,7 +29,6 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.database.YukonRowMapperAdapter;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.CapControlStrategy.DayOfWeek;
 import com.cannontech.database.db.capcontrol.CapControlStrategy.EndDaySetting;
@@ -54,6 +53,17 @@ public class StrategyDaoImpl implements StrategyDao {
     
     private final ParameterizedRowMapper<CapControlStrategy> rowMapper = new StrategyRowMapper();
     private SimpleTableAccessTemplate<CapControlStrategy> strategyTemplate;
+    private static final YukonRowMapper<LiteCapControlStrategy> liteMapper = new YukonRowMapper<LiteCapControlStrategy>() {
+        @Override
+        public LiteCapControlStrategy mapRow(YukonResultSet rs) throws SQLException {
+            
+            LiteCapControlStrategy strategy = new LiteCapControlStrategy();
+            strategy.setId(rs.getInt("StrategyId"));
+            strategy.setName(rs.getString("StrategyName"));
+            
+            return strategy;
+        }
+    };
     
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
@@ -146,28 +156,29 @@ public class StrategyDaoImpl implements StrategyDao {
 
         return rowsAffected == 1;
     }
-
+    
+    @Override
+    public LiteCapControlStrategy getLiteStrategy(int id) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT StrategyId, StrategyName");
+        sql.append("FROM CapControlStrategy");
+        sql.append("WHERE StrategyId").eq(id);
+        
+        LiteCapControlStrategy strategy = jdbcTemplate.queryForObject(sql, liteMapper);
+        
+        return strategy;
+    }
+    
     @Override
     public List<LiteCapControlStrategy> getAllLiteStrategies() {
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT StrategyId, StrategyName");
         sql.append("FROM CapControlStrategy");
         sql.append("ORDER BY StrategyName");
         
-        YukonRowMapperAdapter< LiteCapControlStrategy> rowMapperAdapter = new YukonRowMapperAdapter<LiteCapControlStrategy>( 
-                new YukonRowMapper<LiteCapControlStrategy>() {
-
-            @Override
-            public LiteCapControlStrategy mapRow(YukonResultSet rs) throws SQLException {
-                LiteCapControlStrategy liteStrategy = new LiteCapControlStrategy();
-                liteStrategy.setId(rs.getInt("strategyId"));
-                liteStrategy.setName(rs.getString("strategyName"));
-                return liteStrategy;
-            }
-            
-        } );
-        
-        return jdbcTemplate.query(sql, rowMapperAdapter);
+        return jdbcTemplate.query(sql, liteMapper);
     }
     
     @Override

@@ -1,34 +1,24 @@
+
 package com.cannontech.web.capcontrol.models;
 
 public class SeasonStrategyAssignment {
     
-    private int paoId;
-    private int scheduleId;
-    private String season;
+    private String seasonName;
     private int strategyId;
     
-    public int getPaoId() {
-        return paoId;
+    public SeasonStrategyAssignment() {/* Default Constructor for Spring */}
+    
+    public SeasonStrategyAssignment(String seasonName, int strategyId) {
+        this.seasonName = seasonName;
+        this.strategyId = strategyId;
     }
     
-    public void setPaoId(int paoId) {
-        this.paoId = paoId;
+    public String getSeasonName() {
+        return seasonName;
     }
     
-    public int getScheduleId() {
-        return scheduleId;
-    }
-    
-    public void setScheduleId(int scheduleId) {
-        this.scheduleId = scheduleId;
-    }
-    
-    public String getSeason() {
-        return season;
-    }
-    
-    public void setSeason(String season) {
-        this.season = season;
+    public void setSeasonName(String seasonName) {
+        this.seasonName = seasonName;
     }
     
     public int getStrategyId() {
@@ -39,9 +29,13 @@ public class SeasonStrategyAssignment {
         this.strategyId = strategyId;
     }
     
+    public static SeasonStrategyAssignment of(String seasonName, int strategyId) {
+        return new SeasonStrategyAssignment(seasonName, strategyId);
+    }
+    
     @Override
     public String toString() {
-        return String.format("SeasonStrategyAssignment [paoId=%s, scheduleId=%s, season=%s, strategyId=%s]", paoId, scheduleId, season, strategyId);
+        return String.format("SeasonStrategyAssignment [seasonName=%s, strategyId=%s]", seasonName, strategyId);
     }
     
 }

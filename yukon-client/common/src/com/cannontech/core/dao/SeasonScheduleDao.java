@@ -8,20 +8,30 @@ import com.cannontech.database.db.season.SeasonSchedule;
 
 public interface SeasonScheduleDao {
 
-    public List<Season> getSeasonsForSchedule(Integer scheduleId);
+    List<Season> getSeasonsForSchedule(Integer scheduleId);
     
-    public List<Season> getUserFriendlySeasonsForSchedule(Integer scheduleId);
+    List<Season> getUserFriendlySeasonsForSchedule(Integer scheduleId);
     
-    public Map<Season, Integer> fixSeasonMapForEndOfYearJump(Map<Season, Integer> map, List<Season> actualSeasons);
+    Map<Season, Integer> fixSeasonMapForEndOfYearJump(Map<Season, Integer> map, List<Season> actualSeasons);
     
-    public Map<Season,Integer> getSeasonStrategyAssignments(int paoId);
+    Map<Season,Integer> getSeasonStrategyAssignments(int paoId);
     
-    public Map<Season, Integer> getUserFriendlySeasonStrategyAssignments(int paoId);
+    /**
+     * Returns a LinkedHashMap of season to strategy id assigment.  The
+     * order of insertion is the same as they are retrieved from the db.
+     */
+    Map<Season, Integer> getUserFriendlySeasonStrategyAssignments(int paoId);
     
-    public void saveSeasonStrategyAssigment(int paoId, Map<Season,Integer> map, int scheduleId);
+    void saveSeasonStrategyAssigment(int paoId, Map<Season,Integer> map, int scheduleId);
     
-    public SeasonSchedule getScheduleForPao(int paoId);
+    SeasonSchedule getScheduleForPao(int paoId);
     
-    public void deleteStrategyAssigment(int paoId);
+    /**
+     * Returns all schedules except the "Default Season Schedule".
+     * Apparently no one cares about him.
+     */
+    List<SeasonSchedule> getAllSchedules();
+    
+    void deleteStrategyAssigment(int paoId);
 
 }
