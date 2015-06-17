@@ -481,8 +481,28 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
                         log.debug("Match by name failed - deleting point");
                     }
                 } catch (NotFoundException e) {
-                    // this point must be a user created point since the template is not found, do nothing
-                    log.debug("User created point - ignoring");
+                    log.debug("User created point");      
+                    /*
+                     * Check if user created point has the same name as the template name for the point to be created.
+                     */
+                    if (!isTransferable(point.getPoint().getPointName(), pointsToTransfer)) {
+                        /*
+                         * Example:
+                         * MCT-420cL - add a Status Point Called "Power Failure" with offset 43 and change type to RFN-420cL
+                         * 
+                         * For RFN-420cL
+                         * Attribute=POWER_FAIL_FLAG
+                         * Point 'Power Fail' will change to 'Power Failure'
+                         * 
+                         * The user created point 'Power Failure' should be deleted so the transfer by attribute 'Power
+                         * Fail' -> 'Power Failure' can occur.
+                         */
+                        pointsToDelete.add(point);
+                        log.debug("User created point - deleting");
+                    } else {
+                        // this point must be a user created point since the template is not found, do nothing
+                        log.debug("User created point - ignoring");
+                    }
                 }
             }
         }
