@@ -124,7 +124,7 @@
                                     
                                     <c:set var="prefName" value="${preference.toString()}"/>
                                     <c:set var="defaultVal" value="${preference.defaultValue}"/>
-                                    <c:set var="prefValue" value="${userPreferenceMap.get(prefName) != null ? userPreferenceMap.get(prefName).value : preference.defaultValue}"/>
+                                    <c:set var="prefValue" value="${userPreferenceMap.get(prefName) != null ? userPreferenceMap.get(prefName).value : preference.defaultValue}"/>                                   
                                     <c:set var="prefOptions" value="${preference.valueType.optionList}"/>
                                     <c:set var="prefDisplayOptMap" value="${userPreferencesNameToDisplayOptions.get(prefName)}"/>
                                     
@@ -133,13 +133,15 @@
                                     
                                     <div class="button-group button-group-toggle fl">
                                         <c:forEach var="prefOption" items="${prefOptions}" varStatus="stat">
+                                            <c:set var="cssClass" value="${prefOption.value eq 'OFF' ? 'no' : 'yes'}"/>
                                             <cti:msg2 var="prefText" key="${prefOption.message}"/>
                                             <c:set var="iconOnly" value='${prefDisplayOptMap != null && (prefDisplayOptMap.containsKey("iconONLY"))}'/>
+                                            
                                             <c:choose>
                                                 <c:when test="${prefOption.value.equals(prefValue)}">
-                                                    <c:set var="classes" value="on"/>
+                                                    <c:set var="classes" value="${cssClass} on"/>
                                                 </c:when>
-                                                <c:otherwise><c:set var="classes" value=""/></c:otherwise>
+                                                <c:otherwise><c:set var="classes" value="${cssClass}"/></c:otherwise>
                                             </c:choose>
                                             <c:choose>
                                                 <c:when test="${iconOnly}">
