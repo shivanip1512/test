@@ -167,7 +167,6 @@ public class BusViewController {
         // Check for any unassigned banks and flag it
         List<Integer> unassignedBankIds = zoneService.getUnassignedCapBankIdsForSubBusId(subBusId);
         
-        model.addAttribute("unassignedBanksExist", unassignedBankIds.size() > 0);
         model.addAttribute("unassignedBanksCount", unassignedBankIds.size());
         
         List<ZoneVoltagePointsHolder> zoneVoltagePointsHolders = Lists.newArrayList();
