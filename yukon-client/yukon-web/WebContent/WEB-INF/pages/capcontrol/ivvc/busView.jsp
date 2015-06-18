@@ -205,9 +205,9 @@
     
     <c:if test="${hasEditingRole}">
         <div class="action-area">
-            <c:if test="${unassignedBanksExist}">
-                <span class="warning fl"><i:inline key=".zoneList.unassignedBanks"/></span>
-            </c:if>
+            <c:if test="${unassignedBanksCount > 0}">
+                <span class="warning fl">${unassignedBanksCount} <i:inline key=".zoneList.unassignedBanksCount"/></span>
+            </c:if>            
             <cti:button nameKey="add" onclick="javascript:showZoneCreationWizard('${zoneCreatorUrl}');" icon="icon-add"/>
         </div>
     </c:if>

@@ -83,6 +83,7 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.strategyDetails.table.units">Units</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.zones.title">Zones</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.zoneList.unassignedBanks">Some Capacitor Banks are not assigned to any Zone.</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.busView.zoneList.unassignedBanksCount">bank(s) are not assigned to a Zone.</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.busDetail.title">Substation Values</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.busDetail.table.kvar">kVAr</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.busDetail.table.kw">kW</entry>

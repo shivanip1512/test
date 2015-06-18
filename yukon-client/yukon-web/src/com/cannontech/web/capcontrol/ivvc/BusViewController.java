@@ -168,6 +168,7 @@ public class BusViewController {
         List<Integer> unassignedBankIds = zoneService.getUnassignedCapBankIdsForSubBusId(subBusId);
         
         model.addAttribute("unassignedBanksExist",unassignedBankIds.size()>0);
+        model.addAttribute("unassignedBanksCount",unassignedBankIds.size());
         
         List<ZoneVoltagePointsHolder> zoneVoltagePointsHolders = Lists.newArrayList();
         setupZoneVoltagePoints(zoneVoltagePointsHolders, hierarchy);
