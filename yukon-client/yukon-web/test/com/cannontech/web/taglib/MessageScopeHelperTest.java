@@ -91,7 +91,7 @@ public class MessageScopeHelperTest {
 
         messageScope.pushScope("modules.someModule.somePage");
 
-        List<String> actual = messageScope.getFullKeys("defaults.suffix", "yukon.common.");
+        List<String> actual = messageScope.getFullKeys("suffix", "yukon.common.");
 
         ImmutableList<String> expected = ImmutableList.of("yukon.common.suffix");
 
