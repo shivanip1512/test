@@ -133,16 +133,12 @@
                                     
                                     <div class="button-group button-group-toggle fl">
                                         <c:forEach var="prefOption" items="${prefOptions}" varStatus="stat">
-                                            <c:set var="cssClass" value="${prefOption.value eq 'OFF' ? 'no' : 'yes'}"/>
                                             <cti:msg2 var="prefText" key="${prefOption.message}"/>
                                             <c:set var="iconOnly" value='${prefDisplayOptMap != null && (prefDisplayOptMap.containsKey("iconONLY"))}'/>
-                                            
-                                            <c:choose>
-                                                <c:when test="${prefOption.value.equals(prefValue)}">
-                                                    <c:set var="classes" value="${cssClass} on"/>
-                                                </c:when>
-                                                <c:otherwise><c:set var="classes" value="${cssClass}"/></c:otherwise>
-                                            </c:choose>
+                                            <c:set var="classes" value="${prefOption.value eq 'OFF' ? 'no' : 'yes'}"/>
+                                            <c:if test="${prefOption.value.equals(prefValue)}">
+                                                <c:set var="classes" value="${classes} on"/>
+                                            </c:if>
                                             <c:choose>
                                                 <c:when test="${iconOnly}">
                                                     <c:set var="title" value="${prefText}"/>
