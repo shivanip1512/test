@@ -94,7 +94,7 @@ class IM_EX_FDRBASE CtiFDRInterface
         bool findTranslationNameInList(std::string aTranslationName, CtiFDRPointList &aList,CtiFDRPoint &aPoint);
         bool findPointIdInList(long aPointId, CtiFDRPointList &aList,CtiFDRPoint &aPoint);
         bool updatePointByIdInList(CtiFDRPointList &aList, CtiPointDataMsg *aMessage);
-        long getClientLinkStatusID(std::string &aClientName);
+        long getClientLinkStatusID(const std::string &aClientName);
         virtual void setCurrentClientLinkStates();
 
         std::string logNow();

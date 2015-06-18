@@ -62,6 +62,7 @@ fdrsocketserver.obj \
 fdrscadaserver.obj \
 fdrclientserverconnection.obj \
 fdrscadahelper.obj \
+fdrutility.obj
 
 
 FDRTELEGYROBJS=\

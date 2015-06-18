@@ -109,7 +109,7 @@ CtiFDRInterface& CtiFDRInterface::setReceiveFromList (CtiFDRPointList &aList)
     return *this;
 }
 
-long CtiFDRInterface::getClientLinkStatusID(string &aClientName)
+long CtiFDRInterface::getClientLinkStatusID(const std::string &aClientName)
 {
     bool                successful(false);
     CtiFDRPointSPtr     translationPoint;

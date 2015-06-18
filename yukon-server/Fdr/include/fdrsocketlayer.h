@@ -23,14 +23,14 @@ class IM_EX_FDRBASE CtiFDRSocketLayer
              Client_Multiple
         } FDRConnectionType;
 
-        CtiFDRSocketLayer::CtiFDRSocketLayer(std::string & interfaceName,
+        CtiFDRSocketLayer::CtiFDRSocketLayer(const std::string & interfaceName,
                                              FDRConnectionType aType,
                                              CtiFDRSocketInterface *aParent);
-        CtiFDRSocketLayer::CtiFDRSocketLayer(std::string & interfaceName,
+        CtiFDRSocketLayer::CtiFDRSocketLayer(const std::string & interfaceName,
                                              CtiFDRServerConnection *aInBoundConnection,
                                              FDRConnectionType aType,
                                              CtiFDRSocketInterface *aParent);
-        CtiFDRSocketLayer::CtiFDRSocketLayer(std::string & interfaceName,
+        CtiFDRSocketLayer::CtiFDRSocketLayer(const std::string & interfaceName,
                                              SOCKET aInBound,
                                              SOCKET aOutBound,
                                              FDRConnectionType aType,

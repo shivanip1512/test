@@ -118,6 +118,7 @@ class IM_EX_FDRINET CtiFDR_Inet : public CtiFDRSocketInterface
         static const CHAR * KEY_SERVER_LIST;
         static const CHAR * KEY_DEBUG_MODE;
         static const CHAR * KEY_QUEUE_FLUSH_RATE;
+        static const CHAR * KEY_LINK_TIMEOUT;
 
         enum {Inet_Invalid=0,
               Inet_Open,
@@ -147,7 +148,7 @@ class IM_EX_FDRINET CtiFDR_Inet : public CtiFDRSocketInterface
 
         bool readConfig() override;
         virtual void setCurrentClientLinkStates();
-        int   findConnectionByNameInList(std::string aName);
+        int   findConnectionByNameInList(const std::string &aName);
         int   findClientInList(const Cti::SocketAddress& aAddr);
         virtual bool  findAndInitializeClients( void );
 

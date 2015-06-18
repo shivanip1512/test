@@ -46,8 +46,8 @@ HCTIQUEUE & CtiFDRClientConnection::getQueueHandle()
 
 int CtiFDRClientConnection::init ()
 {
-    // this will be false only if the client and server are using the same socket
-    if( !getAddr() )
+    // this will be true only if the client and server are using the same socket
+    if ( getParent() && getParent()->getConnectionType() == CtiFDRSocketLayer::Server_Single )
     {
         return ClientErrors::None;
     }
@@ -68,9 +68,9 @@ int CtiFDRClientConnection::stop ()
     closeAndFailConnection();
 
     iThreadSend.interrupt();
-    iThreadSend.tryJoinOrTerminateFor(Cti::Timing::Chrono::seconds(10));
-
     iThreadHeartbeat.interrupt();
+
+    iThreadSend.tryJoinOrTerminateFor(Cti::Timing::Chrono::seconds(10));
     iThreadHeartbeat.tryJoinOrTerminateFor(Cti::Timing::Chrono::seconds(10));
 
     return ClientErrors::None;

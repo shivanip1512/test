@@ -37,7 +37,9 @@ test_main.obj \
 test_fdrDnpSlave.obj \
 test_fdrTextImport.obj \
 test_fdrTristateSub.obj \
-test_fdrTelegyr.obj
+test_fdrTelegyr.obj \
+test_fdrutility.obj
+
 
 CTIFDRLIBS=\
 $(COMPILEBASE)\lib\ctibase.lib \
