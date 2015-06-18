@@ -195,7 +195,7 @@
                         </cti:url>
                         <a href="${url}">${fn:escapeXml(zone.name)}</a>
                     </td>
-                    <td>
+                    <td class="half-width">
                        <div class="js-events-timeline clear" data-zone-id="${zone.zoneId}"></div>
                     </td>
                 </tr>
@@ -206,7 +206,7 @@
     <c:if test="${hasEditingRole}">
         <div class="action-area">
             <c:if test="${unassignedBanksCount > 0}">
-                <span class="warning fl">${unassignedBanksCount} <i:inline key=".zoneList.unassignedBanksCount"/></span>
+                <span class="warning fl"><i:inline key=".zoneList.unassignedBanksCount" arguments="${unassignedBanksCount}"/></span>
             </c:if>            
             <cti:button nameKey="add" onclick="javascript:showZoneCreationWizard('${zoneCreatorUrl}');" icon="icon-add"/>
         </div>
@@ -214,4 +214,35 @@
     
 </tags:sectionContainer2>
 
+<div class="clear">
+    <tags:sectionContainer2 nameKey="ivvcEvents">
+        <input type="hidden" value="0" id="ivvc-events-last-update">
+        <input type="hidden" value="${subBusId}" id="ivvc-sub-id">
+        <div class="empty-list js-ivvc-events-empty">
+            <i:inline key=".events.emptylist"/>
+        </div>
+        <div class="scroll-lg dn js-ivvc-events-holder stacked-md clear">
+            <table id="ivvc-events" class="has-alerts full-width dashed stacked striped">
+                <thead></thead>
+                <tfoot></tfoot>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </tags:sectionContainer2>
+</div>
+
+<table class="dn">
+    <tr data-event-id="?" class="js-event-template">
+        <td><cti:icon icon="js-event-icon"/></td>
+        <td>
+            <div class="js-device-name"></div>
+        </td>
+        <td>
+            <div class="js-message"></div>
+        </td>
+        <td class="js-user"></td>
+        <td class="tar js-timestamp"></td>
+    </tr>
+</table>
 </cti:standardPage>
