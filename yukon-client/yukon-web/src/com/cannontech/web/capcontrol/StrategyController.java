@@ -168,51 +168,27 @@ public class StrategyController {
 
     @RequestMapping(value="strategies/{id}", method=RequestMethod.DELETE)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
-    public String delete(@PathVariable int id, FlashScope flash) {
+    public String delete(ModelMap model, @PathVariable int id, FlashScope flash) {
+        
+        CapControlStrategy strat = strategyDao.getForId(id);
 
-        String name = strategyDao.getForId(id).getName();
         List<String> paosUsingStrategy = strategyDao.getAllPaoNamesUsingStrategyAssignment(id);
         if (paosUsingStrategy.isEmpty()) {
             strategyService.delete(id);
-            flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".deleteSuccess", name));
+            flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".deleteSuccess", strat.getName()));
         } else {
             List<Object> params = new ArrayList<>();
-            params.add(name);
+            params.add(strat.getName());
             params.add(paosUsingStrategy.size());
             params.addAll(paosUsingStrategy);
 
             flash.setError(new YukonMessageSourceResolvable(baseKey + ".deleteFailed", 
                                                             params.toArray()));
+            
+            return setUpModel(model, strat);
         }
 
-        return "redirect:strategies";
-    }
-    
-    /*
-     * This is used by the faces editor (cbcBase.jsp).
-     * Get rid of this endpoint as soon as that can be removed.
-     */
-    @Deprecated
-    @RequestMapping(value="/strategy/deleteStrategy")
-    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
-    public String deleteStrategy(int strategyId, FlashScope flash) {
-        
-        String name = strategyDao.getForId(strategyId).getName();
-        List<String> otherPaosUsingStrategy = strategyService.getAllPaoNamesUsingStrategyAssignment(strategyId);
-        if (otherPaosUsingStrategy.isEmpty()) {
-            strategyService.delete(strategyId);
-            flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".deleteSuccess", name));
-        } else {
-            List<Object> params = new ArrayList<>();
-            params.add(name);
-            params.add(otherPaosUsingStrategy.size());
-            params.addAll(otherPaosUsingStrategy);
-
-            flash.setError(new YukonMessageSourceResolvable(baseKey + ".deleteFailed", 
-                                                            params.toArray()));
-        }
-
-        return "redirect:strategies";
+        return "redirect:/capcontrol/strategies";
     }
     
     @InitBinder

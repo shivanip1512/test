@@ -16,6 +16,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 /**
  * A utility service to house methods solving common needs of controllers and views.
@@ -49,8 +50,12 @@ public class WebUtilityService {
             
             Object mapValue = data.get(scope + id);
             String stringify = JsonUtils.toJson(mapValue);
-            T value = JsonUtils.fromJson(stringify, expected);
-            if (value != null) result = value;
+            try {
+                T value = JsonUtils.fromJson(stringify, expected);
+                if (value != null) result = value;
+            } catch (InvalidFormatException e) {
+                //Just use the default
+            }
         }
         
         return result;

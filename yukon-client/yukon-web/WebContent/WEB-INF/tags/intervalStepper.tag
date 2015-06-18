@@ -18,11 +18,12 @@
 <cti:default var="classes" value=""/>
 <cti:uniqueIdentifier prefix="stepper-" var="thisId"/>
 <cti:default var="id" value="${thisId}"/>
-<cti:default var="noneKey" value="defaults.none"/>
+<cti:default var="noneKey" value="yukon.common.none"/>
 
 <cti:displayForPageEditModes modes="CREATE,EDIT">
 
     <label class="stepper ${classes}" >
+    	<%-- Vat --%>
         <cti:button classes="stepper-prev left" renderMode="buttonImage" icon="icon-resultset-previous-gray"
                 data-toggle-group="${toggleGroup}"
         /><form:select cssClass="stepper-select middle" path="${path}" id="${id}" data-toggle-group="${toggleGroup}">

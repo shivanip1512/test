@@ -139,6 +139,7 @@
 <entry key="yukon.common.help">Help</entry>
 <entry key="yukon.common.help.multiSelect">Hold CTRL key down to select multiple values</entry>
 <entry key="yukon.common.help.rangeSelect">Hold Shift key down to select range of values</entry>
+<entry key="yukon.common.high">High</entry>
 <entry key="yukon.common.historyTooltip">Click to view history</entry>
 <entry key="yukon.common.hourAbbreviation">{0} hr</entry>
 <entry key="yukon.common.html">HTML</entry>
@@ -150,6 +151,7 @@
 <entry key="yukon.common.loading">Loading...</entry>
 <entry key="yukon.common.loginStatus.DISABLED">Disabled</entry>
 <entry key="yukon.common.loginStatus.ENABLED">Enabled</entry>
+<entry key="yukon.common.low">Low</entry>
 <entry key="yukon.common.map">Map</entry>
 <entry key="yukon.common.min">Min</entry>
 <entry key="yukon.common.minuteAbbreviation">{0} min</entry>
@@ -279,6 +281,8 @@
 <entry key="yukon.common.undo">Undo</entry>
 <entry key="yukon.common.units">Units</entry>
 <entry key="yukon.common.upload">Upload</entry>
+<entry key="yukon.common.units.VOLTS">Volts</entry>
+<entry key="yukon.common.units.PERCENT">%</entry>
 <entry key="yukon.common.unsupported">Unsupported</entry>
 <entry key="yukon.common.user">User</entry>
 <entry key="yukon.common.user.editor">User Editor</entry>
@@ -290,6 +294,8 @@
 <entry key="yukon.common.viewAll">View All</entry>
 <entry key="yukon.common.warning">Warning</entry>
 <entry key="yukon.common.warningMessage">Warning: {0}</entry>
+<entry key="yukon.common.weekday">Weekday</entry>
+<entry key="yukon.common.weekend">Weekend</entry>
 <entry key="yukon.common.year">Year</entry>
 <entry key="yukon.common.yes">Yes</entry>
 </properties>

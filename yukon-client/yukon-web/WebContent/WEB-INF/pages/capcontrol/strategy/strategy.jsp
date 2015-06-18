@@ -22,134 +22,140 @@
         <cti:displayForPageEditModes modes="VIEW">
             <c:set var="viewMode" value="${true}" />
         </cti:displayForPageEditModes>
+
         <c:set var="tableClass" value="${viewMode ? '' : 'with-form-controls'}" />
         
         <div class="column-12-12 clearfix">
             <div class="column one">
-            
-                <tags:sectionContainer title="Strategy Info" styleClass="stacked-lg">
-                    <tags:nameValueContainer tableClass="natural-width ${tableClass}">
+                <tags:sectionContainer2 nameKey="info" styleClass="stacked-lg">
+                    <tags:nameValueContainer2 tableClass="natural-width ${tableClass}">
                     
-                        <tags:nameValue name="Name">
+                        <tags:nameValue2 nameKey="yukon.common.name">
                             <tags:input path="name" />
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="Control Method">
+                        <tags:nameValue2 nameKey=".controlMethod">
                             <tags:selectWithItems id="control-method" path="controlMethod" items="${ControlMethods}" 
                                 inputClass="with-option-hiding"/>
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="Control Algorithm">
+                        <tags:nameValue2 nameKey=".controlAlgorithm">
                             <tags:selectWithItems id="control-algorithm" path="algorithm" items="${ControlAlgorithms}" 
                                 inputClass="with-option-hiding" />
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="Analysis Interval" class="js-not-time-of-day">
+                        <tags:nameValue2 nameKey=".controlInterval" rowClass="js-not-time-of-day">
                             <%-- How often the system should check to determine the need for control --%>
                             <tags:intervalStepper path="controlInterval" intervals="${analysisIntervals}" noneKey=".newDataOnly"/>
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="Max Confirm Time">
+                        <tags:nameValue2 nameKey=".minResponseTime">
                             <%-- How much time the system waits until the control is considered successful --%>
                             <tags:intervalStepper path="minResponseTime" intervals="${analysisIntervals}" />
-                        </tags:nameValue>
-                        <tags:nameValue name="Pass Percent" >
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".minConfirmPercent">
                             <%--This amount of change or higher is considered to be a successful control --%>
                             <tags:input path="minConfirmPercent" size="3"/>
-                            %
-                        </tags:nameValue>
+                            <i:inline key="yukon.common.units.PERCENT"/>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="Failure Percent">
+                        <tags:nameValue2 nameKey=".failurePercent">
                             <%-- This amount of change or lower is considered to be a failed control --%>
                             <tags:input path="failurePercent" size="3"/>
-                            %
-                        </tags:nameValue>
+                            <i:inline key="yukon.common.units.PERCENT"/>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="Send Retries" size="3">
+                        <tags:nameValue2 nameKey=".controlSendRetries" >
                             <%-- How many times the control should be repeatedly sent out to the field --%>
                             <tags:input path="controlSendRetries" size="3"/>
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="Delay Time" class="js-not-time-of-day">
+                        <tags:nameValue2 nameKey=".controlDelayTime" rowClass="js-not-time-of-day">
                             <%-- How much time we should wait before sending the control command into the field --%>
                             <tags:intervalStepper path="controlDelayTime" intervals="${analysisIntervals}" />
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="Integrate Control" class="js-not-time-of-day">
+                        <tags:nameValue2 nameKey=".integrateControl" rowClass="js-not-time-of-day">
                             <spring:bind path="integrateFlag">
                                 <c:if test="${not viewMode or not status.value}">
-                                    <tags:switchButton path="integrateFlag" toggleGroup="integrateControl"
-                                        color="${not viewMode}" />
+                                    <tags:switchButton path="integrateFlag" offClasses="M0"
+                                        toggleGroup="integrateControl" toggleAction="hide" color="${not viewMode}" />
                                 </c:if>
                                 <c:if test="${not viewMode or status.value}">
-                                    <tags:intervalStepper path="integratePeriod" intervals="${integrateIntervals}" toggleGroup="integrateControl" />
+                                    <tags:intervalStepper classes="vat"
+                                    path="integratePeriod" 
+                                    intervals="${integrateIntervals}" toggleGroup="integrateControl" />
                                 </c:if>
                             </spring:bind>
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="Like-day Control Fallback">
+                        <tags:nameValue2 nameKey=".likeDay">
                             <%-- Fall back to like-day history control --%>
-                            <tags:switchButton path="likeDayFallBack" color="${not viewMode}"/>
-                        </tags:nameValue>
+                            <tags:switchButton path="likeDayFallBack" offClasses="M0" color="${not viewMode}"/>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="Max Daily Operation" class="js-not-time-of-day">
+                        <tags:nameValue2 nameKey=".maxDailyOperation"  rowClass="js-not-time-of-day">
                             <spring:bind path="maxOperationEnabled">
                                 <c:if test="${not viewMode or not status.value}">
                                     <%-- Disable automatic control on this device upon reaching the max number of operations --%>
-                                    <tags:switchButton path="maxOperationEnabled" toggleGroup="maxOperation"
-                                        color="${not viewMode}" />
+                                    <tags:switchButton path="maxOperationEnabled" offClasses="M0"
+                                    toggleGroup="maxOperation" toggleAction="hide" color="${not viewMode}" />
                                 </c:if>
                                 <c:if test="${not viewMode or status.value}">
                                     <%-- The total number of controls allowed per day. 0=Unlimited --%>
                                     <tags:input path="maxDailyOperation" size="3" toggleGroup="maxOperation"/>
                                 </c:if>
                             </spring:bind>
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="End Day Settings" class="js-not-time-of-day">
+                        <tags:nameValue2 nameKey=".endDaySetting" rowClass="js-not-time-of-day">
                             <div class="button-group">
                                 <c:forEach var="endDaySetting" items="${EndDaySettings}">
                                     <tags:radio path="endDaySettings" value="${endDaySetting}" key="${endDaySetting}" 
-                                        classes="yes"/>
+                                        classes="yes M0" />
                                 </c:forEach>
                             </div>
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                    </tags:nameValueContainer>
-                </tags:sectionContainer>
+                    </tags:nameValueContainer2>
+                </tags:sectionContainer2>
                 
-                <tags:sectionContainer title="Peak Settings" styleClass="js-not-time-of-day">
-                    <tags:nameValueContainer tableClass="name-collapse natural-width ${tableClass}">
-                        <tags:nameValue name="Peak Days">
+                <tags:sectionContainer2 nameKey="peakSettings" styleClass="js-not-time-of-day">
+                    <tags:nameValueContainer2 tableClass="name-collapse natural-width ${tableClass}">
+                        <tags:nameValue2 nameKey=".peakDays">
                             <div class="button-group stacked">
                                 <c:set var="noDaysSelected" value="${true}"/>
+                                <c:set var="daysString" value=""/>
                                 <c:forEach var="dayOfWeek" items="${DaysOfWeek}">
                                     <cti:displayForPageEditModes modes="VIEW">
                                         <spring:bind path="peakDays[${dayOfWeek}]">
                                             <c:if test="${status.value}">
-                                                <c:if test="${not noDaysSelected}">, </c:if>
-                                                <c:set var="noDaysSelected" value="${false}"/>
+                                                <c:if test="${not empty daysString }">
+                                                    <c:set var="daysString">${daysString}<i:inline key="yukon.common.comma"/>&nbsp;<i:inline key="${dayOfWeek}"/></c:set>
+                                                </c:if>
+                                                <c:if test="${empty daysString }">
+                                                    <c:set var="daysString"><i:inline key="${dayOfWeek}"/></c:set>
+                                                </c:if>
                                             </c:if>
                                         </spring:bind>
                                     </cti:displayForPageEditModes>
-                                    <tags:check path="peakDays[${dayOfWeek}]" key="${dayOfWeek}"/>
+                                    <cti:displayForPageEditModes modes="CREATE,EDIT">
+                                        <tags:check path="peakDays[${dayOfWeek}]" key="${dayOfWeek}"/>
+                                    </cti:displayForPageEditModes>
                                 </c:forEach>
                                 <cti:displayForPageEditModes modes="VIEW">
-                                    <c:if test="${noDaysSelected}">
-                                        <span class="empty-list">None</span>
-                                    </c:if>
+                                    <c:if test="${not empty daysString}">${daysString}</c:if>
+                                    <c:if test="${empty daysString}"><span class="empty-list"><i:inline key="yukon.common.none"/></span></c:if>
                                 </cti:displayForPageEditModes>
                             </div>
-                        </tags:nameValue>
-                        <tags:nameValue name="Peak Times">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".peakTimes">
                             <dt:time path="peakStartTime" wrapClass="fn"/>
-                            <span class="${viewMode ? '' : 'vatb'}">&nbsp;to&nbsp;</span>
+                            <span class="${viewMode ? '' : 'vatb'}">&nbsp;<i:inline key="yukon.common.to"/>&nbsp;</span>
                             <dt:time path="peakStopTime" wrapClass="fn"/>
-                        </tags:nameValue>
-                    </tags:nameValueContainer>
-                    <div class="clear">
-                    </div>
-                </tags:sectionContainer>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
+                </tags:sectionContainer2>
                 
             </div>
 
@@ -158,17 +164,17 @@
                 <table class="stacked-lg full-width section-table striped ${tableClass}">
                     <thead>
                         <tr class="js-not-time-of-day">
-                            <th>Target Setting</th>
-                            <th class="tar">Peak</th>
+                            <th><i:inline key=".targetSetting"/></th>
+                            <th class="tar"><i:inline key=".peak"/></th>
                             <th></th>
-                            <th class="tar">Off Peak</th>
+                            <th class="tar"><i:inline key=".offPeak"/></th>
                             <th></th>
                         </tr>
                         <tr class="js-time-of-day-only">
                             <th>Time</th>
-                            <th class="tar">Weekday</th>
+                            <th class="tar"><i:inline key="yukon.common.weekday"/></th>
                             <th></th>
-                            <th class="tar">Weekend</th>
+                            <th class="tar"><i:inline key="yukon.common.weekend"/></th>
                             <th></th>
                         </tr>
                     </thead>
@@ -182,83 +188,83 @@
                                 <td class="tar">
                                     <tags:input path="targetSettings[${targetSettingType}].peakValue" size="5" />
                                 </td>
-                                <td class="tal"><span class="js-time-of-day-only">Close&nbsp;</span>${targetSettingType.units}</td>
+                                <td class="tal"><span class="js-time-of-day-only"><i:inline key="yukon.common.close"/>&nbsp;</span>${targetSettingType.units}</td>
                                 
                                 <td class="tar">
                                     <tags:input path="targetSettings[${targetSettingType}].offPeakValue" size="5" />
                                 </td>
-                                <td class="tal"><span class="js-time-of-day-only">Close&nbsp;</span>${targetSettingType.units}</td>
+                                <td class="tal"><span class="js-time-of-day-only"><i:inline key="yukon.common.close"/>&nbsp;</span>${targetSettingType.units}</td>
                             </tr>
                         </c:forEach>
                     </tbody>
                 </table>
             
-                <tags:sectionContainer title="Power Factor Correction Settings" styleClass="stacked-lg js-bus-ivvc-only">
-                    <tags:nameValueContainer tableClass="natural-width ${viewMode ? 'joe' : 'with-form-controls'}">
+                <tags:sectionContainer2 nameKey="powerFactorSettings" styleClass="stacked-lg js-bus-ivvc-only">
+                    <tags:nameValueContainer2 tableClass="natural-width ${viewMode ? 'joe' : 'with-form-controls'}">
                         
-                        <tags:nameValue name="Bandwidth" valueClass="tar">
+                        <tags:nameValue2 nameKey=".bandwidth" valueClass="tar">
                             <tags:input path="powerFactorCorrectionSetting.bandwidth" size="5"/>
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="Cost" valueClass="tar">
+                        <tags:nameValue2 nameKey=".cost" valueClass="tar">
                             <tags:input path="powerFactorCorrectionSetting.cost" size="5" />
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="Max Cost" valueClass="tar">
+                        <tags:nameValue2 nameKey=".maxCost" valueClass="tar">
                             <tags:input path="powerFactorCorrectionSetting.maxCost" size="5" />
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         
-                    </tags:nameValueContainer>
-                </tags:sectionContainer>
+                    </tags:nameValueContainer2>
+                </tags:sectionContainer2>
                 
-                <tags:sectionContainer title="Comm Percentage Setting" styleClass="stacked-lg js-ivvc-only">
-                    <tags:nameValueContainer tableClass="natural-width ${tableClass}">
+                <tags:sectionContainer2 nameKey="commPercentage" styleClass="stacked-lg js-ivvc-only">
+                    <tags:nameValueContainer2 tableClass="natural-width ${tableClass}">
                         
-                        <tags:nameValue name="Banks" valueClass="tar">
+                         <tags:nameValue2 nameKey=".banks" valueClass="tar">
                             <tags:input path="minCommunicationPercentageSetting.banksReportingRatio" size="5"/>
-                            %
-                        </tags:nameValue>
+                            <i:inline key="yukon.common.units.PERCENT"/>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="Regulator" valueClass="tar">
+                        <tags:nameValue2 nameKey=".regulators" valueClass="tar">
                             <tags:input path="minCommunicationPercentageSetting.regulatorReportingRatio" size="5"/>
-                            %
-                        </tags:nameValue>
+                            <i:inline key="yukon.common.units.PERCENT"/>
+                        </tags:nameValue2>
                         
-                        <tags:nameValue name="Voltage Monitors" valueClass="tar">
+                        <tags:nameValue2 nameKey=".voltageMonitors" valueClass="tar">
                             <tags:input path="minCommunicationPercentageSetting.voltageMonitorReportingRatio" size="5"/>
-                            %
-                        </tags:nameValue>
+                            <i:inline key="yukon.common.units.PERCENT"/>
+                        </tags:nameValue2>
                         
-                    </tags:nameValueContainer>
-                </tags:sectionContainer>
+                    </tags:nameValueContainer2>
+                </tags:sectionContainer2>
                     
-                <tags:sectionContainer title="Voltage Violations" styleClass="js-ivvc-only">
+                <tags:sectionContainer2 nameKey="voltViolations" styleClass="js-ivvc-only">
                 
                     <table>
                         <thead>
-                            <td></td>
-                            <td class="tar">Low</td>
-                            <td></td>
-                            <td class="tar">High</td>
-                            <td></td>
+                            <th></th>
+                            <th class="tar"><i:inline key="yukon.common.low"/></th>
+                            <th></th>
+                            <th class="tar"><i:inline key="yukon.common.high"/></th>
+                            <th></th>
                         </thead>
                         <tfoot></tfoot>
                         <tbody>
                             <tr>
-                                <td>Bandwidth</td>
+                                <td><i:inline key=".bandwidth"/></td>
                                 
                                 <td class="tar">
                                     <tags:input path="voltageViolationSettings[LOW_VOLTAGE_VIOLATION].bandwidth" size="5" />
                                 </td>                
-                                <td class="tal">Volts</td>
+                                <td class="tal"><i:inline key="yukon.common.units.VOLTS"/></td>
                                 
                                 <td class="tar">
                                     <tags:input path="voltageViolationSettings[HIGH_VOLTAGE_VIOLATION].bandwidth" size="5" />
                                 </td>
-                                <td class="tal">Volts</td>
+                                <td class="tal"><i:inline key="yukon.common.units.VOLTS"/></td>
                             </tr>                
                             <tr>
-                                <td>Cost</td>
+                                <td><i:inline key=".cost"/></td>
                                 
                                 <td class="tar">
                                     <tags:input path="voltageViolationSettings[LOW_VOLTAGE_VIOLATION].cost" size="5" />
@@ -271,7 +277,7 @@
                                 <td></td>
                             </tr>                
                             <tr>
-                                <td>Emergency Cost</td>
+                                <td><i:inline key=".emergencyCost"/></td>
                                 
                                 <td class="tar">
                                     <tags:input path="voltageViolationSettings[LOW_VOLTAGE_VIOLATION].emergencyCost" size="5" />
@@ -285,7 +291,7 @@
                             </tr>                
                         </tbody>
                     </table>
-                </tags:sectionContainer>
+                </tags:sectionContainer2>
             </div>
         </div>
         
@@ -302,9 +308,9 @@
             
             <cti:displayForPageEditModes modes="EDIT">
                 
-                <cti:button nameKey="delete" classes="delete js-delete" data-ok-event="yukon:da:regulator:delete"
+                <cti:button nameKey="delete" classes="delete js-delete" data-ok-event="yukon:da:strategy:delete"
                     disabled="${deleteDisabled}" title="${deleteTitle}"/>
-                <d:confirm on=".js-delete" nameKey="confirmDelete" argument="${regulator.name}"/>
+                <d:confirm on=".js-delete" nameKey="confirmDelete" argument="${strategy.name}"/>
                 
                 <cti:url var="viewUrl" value="/capcontrol/strategies/${strategy.id}" />
                 <cti:button nameKey="cancel" href="${viewUrl}"/>
@@ -317,7 +323,7 @@
         </div>
     </form:form>
     
-    <cti:url var="url" value="/capcontrol/strategy/${strategy.id}"/>
+    <cti:url var="url" value="/capcontrol/strategies/${strategy.id}"/>
     <form:form id="delete-strategy" method="DELETE" action="${url}"></form:form>
     
     <cti:toJson id="method-to-algorithms" object="${methodToAlgorithms}"/>

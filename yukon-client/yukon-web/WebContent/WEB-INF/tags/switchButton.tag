@@ -15,6 +15,7 @@
                                                                    will be toggled on instead of the green button." %>
                                                                    
 <%@ attribute name="toggleGroup" description="Used to setup a toggle group driven by a checkbox." %>
+<%@ attribute name="toggleAction" description="Action to perform to other inputs. Options: disable,hide Default: disable" %>
 
 <%@ attribute name="onNameKey" description="i18n key used for the on button." %> 
 <%@ attribute name="offNameKey" description="i18n key used for the off button." %> 
@@ -47,12 +48,14 @@
             <c:when test="${not empty name}">
                 <input type="checkbox" name="${name}" id="${id}" class="switch-btn-checkbox" 
                     data-toggle="${pageScope.toggleGroup}" 
+                    data-toggle-action="${pageScope.toggleAction}" 
                     <c:if test="${checked}">checked</c:if> 
                     <c:if test="${disabled}">disabled</c:if>>
             </c:when>
             <c:otherwise>
                 <form:checkbox path="${path}" id="${id}" cssClass="switch-btn-checkbox" 
                     data-toggle="${pageScope.toggleGroup}" 
+                    data-toggle-action="${pageScope.toggleAction}" 
                     disabled="${disabled}"/>
             </c:otherwise>
         </c:choose>

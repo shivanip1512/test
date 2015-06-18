@@ -67,8 +67,13 @@ yukon.da.strategy = (function () {
             $('#control-algorithm').on('change', function () {
                 _algorithmSetup();
             });
+            
             $('#control-method').on('change', function () {
                 _methodSetup();
+            });
+            
+            $(document).on('yukon:da:strategy:delete', function () {
+                $('#delete-strategy').submit();
             });
         }
     };
