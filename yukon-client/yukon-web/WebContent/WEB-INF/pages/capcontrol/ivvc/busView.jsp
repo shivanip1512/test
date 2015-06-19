@@ -217,7 +217,7 @@
 <div class="clear">
     <tags:sectionContainer2 nameKey="ivvcEvents">
         <input type="hidden" value="0" id="ivvc-events-last-update">
-        <input type="hidden" value="${subBusId}" id="ivvc-sub-id">
+        <input type="hidden" value="${subBusId}" id="ivvc-bus-id">
         <div class="empty-list js-ivvc-events-empty">
             <i:inline key=".events.emptylist"/>
         </div>

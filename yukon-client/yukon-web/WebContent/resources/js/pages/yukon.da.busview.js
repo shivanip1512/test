@@ -62,7 +62,7 @@ yukon.da.busview = (function () {
         var _range_hours = {};
         // Range Defaulted to 24 hours
         var range = 'DAY_1';            
-            var _id = $('#ivvc-sub-id').val();
+            var _id = $('#ivvc-bus-id').val();
             $.ajax({
                 url : yukon.url('/capcontrol/buses/' + _id + '/events'),
                 data : {
