@@ -65,7 +65,7 @@ public interface CapbankDao {
      * @return true if the assignment occurred with only one row in the db
      *         updated, false otherwise.
      */
-    public boolean assignCapbank(YukonPao feeder,YukonPao capbank);
+    public boolean assignCapbank(YukonPao feeder, YukonPao capbank);
     
     /**
      * Removes all assignments in the database for a given capbank.
