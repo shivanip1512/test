@@ -6,19 +6,19 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <cti:standardPage module="dr" page="cc.history">
-<cti:msgScope paths="yukon.web.modules.commercialcurtailment.ccurtSetup">
+<cti:msgScope paths=",yukon.web.modules.commercialcurtailment.ccurtSetup">
 
 <div class="column-24">
     <div class="column one nogutter">
-        <h2>${program.name} / ${program.programType.name}</h2>
+        <h2>${program.name} - ${program.programType.name}</h2>
         <table class="compact-results-table">
             <thead>
                 <tr>
-                    <th>Event #</th>
-                    <th>State</th>
-                    <th>Start Time</th>
-                    <th>Duration</th>
-                    <th>Action</th>
+                    <th><i:inline key=".eventNumber"/></th>
+                    <th><i:inline key=".state"/></th>
+                    <th><i:inline key=".startTime"/></th>
+                    <th><i:inline key=".duration"/></th>
+                    <th><i:inline key=".action"/></th>
                 </tr>
             </thead>
             <tfoot></tfoot>
@@ -26,11 +26,11 @@
                 <c:forEach var="event" varStatus="oneEvent" items="${eventHistory}">
                 <tr>
                     <cti:url value="/dr/cc/program/${program.id}/event/${event.id}/detail" var="eventDetailUrl"/>
-                    <td><a href="${eventDetailUrl}">${event.displayName}</a></td>
+                    <td><a href="${eventDetailUrl}">${fn:escapeXml(event.displayName)}</a></td>
                     <td>${event.stateDescription}</td>
                     <td><cti:formatDate value="${event.startTime}" type="DATEHM"/></td>
                     <td>${event.duration}</td>
-                    <td>Delete button</td>
+                    <td>TODO Delete button</td>
                 </tr>
                 </c:forEach>
             </tbody>

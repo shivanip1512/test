@@ -6,8 +6,5 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <cti:standardPage module="dr" page="cc.init">
-<cti:standardMenu menuSelection=".ccurt_setup"/>
-<cti:msgScope paths="yukon.web.modules.commercialcurtailment.ccurtSetup">
-<p>Start</p>
-</cti:msgScope>
+<p>TODO</p>
 </cti:standardPage>

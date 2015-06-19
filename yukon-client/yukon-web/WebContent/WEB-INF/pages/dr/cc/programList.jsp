@@ -6,10 +6,8 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <cti:standardPage module="dr" page="cc.programList">
-<cti:msgScope paths="yukon.web.modules.commercialcurtailment.ccurtSetup">
 
 <div class="column-24">
-    <h3><i:inline key=".programSetup"/></h3>
     <div class="column one nogutter">
         <ol>
         <c:forEach var="entry" items="${programMap}">
@@ -27,5 +25,4 @@
     <div><cti:button nameKey="create" href="${createUrl}"/></div>
 </div>
 
-</cti:msgScope>
 </cti:standardPage>

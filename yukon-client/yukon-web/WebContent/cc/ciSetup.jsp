@@ -43,17 +43,17 @@
                     </t:column>
                 </t:dataTable>
 
-                <h3><i:inline key=".ccurtEventsCurrent"/></h3>
+                <h3><i:inline key=".ccurtEventType.CURRENT"/></h3>
                 <t:aliasBean alias="#{eventListModel}" value="#{rEventOverview.currentEventListModel}">
                     <jsp:include page="include/operatorEventList.jsp"/>
                 </t:aliasBean>
 
-                <h3><i:inline key=".ccurtEventsPending"/></h3>
+                <h3><i:inline key=".ccurtEventType.PENDING"/></h3>
                 <t:aliasBean alias="#{eventListModel}" value="#{rEventOverview.pendingEventListModel}">
                     <jsp:include page="include/operatorEventList.jsp"/>
                 </t:aliasBean>
 
-                <h3><i:inline key=".ccurtEventsRecent"/></h3>
+                <h3><i:inline key=".ccurtEventType.RECENT"/></h3>
                 <t:aliasBean alias="#{eventListModel}" value="#{rEventOverview.recentEventListModel}">
                     <jsp:include page="include/operatorEventList.jsp"/>
                 </t:aliasBean>

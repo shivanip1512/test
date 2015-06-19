@@ -6,7 +6,6 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <cti:standardPage module="dr" page="cc.programDetail">
-<cti:msgScope paths="yukon.web.modules.commercialcurtailment.ccurtSetup">
 <cti:includeScript link="/resources/js/pages/yukon.curtailment.js"/>
 
 <form id="program" name="program" data-program-id="${program.id}" method="POST" action="<cti:url value="/dr/cc/programSave/${program.id}"/>">
@@ -24,16 +23,16 @@
                 <td class="value"><input id="program-name" type="text" name="programName" value="${program.name}" /></td>
             </tr>
             <tr>
-                <td class="name"><i:inline key=".programIdentifierPrefix"/></td>
+                <td class="name"><i:inline key=".identifierPrefix"/></td>
                 <td class="value"><input id="program-identifier-prefix" type="text" name="programIdentifierPrefix" value="${program.identifierPrefix}" /></td>
             </tr>
             <tr>
-                <td class="name"><i:inline key=".programLastIdentifier"/></td>
+                <td class="name"><i:inline key=".identifierPostfix"/></td>
                 <td class="value"><input id="program-last-identifier" type="text" name="programLastIdentifier" value="${program.lastIdentifier}" /></td>
             </tr>
         </table>
         <div>
-        <h3><i:inline key=".programParameters"/></h3>
+        <h3><i:inline key=".parameters"/></h3>
             <table class="name-value-table natural-width" id="program-parameters">
             <c:forEach var="parameter" items="${programParameters}" varStatus="loop">
                 <tr>
@@ -48,7 +47,7 @@
 <div class="column-12-12">
     <div class="column one">
         <div>
-            <h3><i:inline key=".programAssignedGroups"/></h3>
+            <h3><i:inline key=".assignedGroups"/></h3>
             <table class="compact-results-table" id="assigned-groups">
                 <thead>
                     <tr>
@@ -62,7 +61,7 @@
                         <td>
                             <cti:button renderMode="buttonImage" icon="icon-delete" data-group="${assignedProgramGroup.group.id}"/>
                             <input type="hidden" name="${assignedProgramGroup.group.name}" value="${assignedProgramGroup.group.id}" />
-                            ${assignedProgramGroup.group.name}
+                            ${fn:escapeXml(assignedProgramGroup.group.name)}
                         </td>
                     </tr>
                 </c:forEach>
@@ -72,7 +71,7 @@
     </div>
     <div class="column two nogutter">
         <div>
-            <h3><i:inline key=".programAvailableGroups"/></h3>
+            <h3><i:inline key=".availableGroups"/></h3>
             <table class="compact-results-table" id="unassigned-groups">
                 <thead>
                     <tr>
@@ -86,7 +85,7 @@
                         <td>
                             <cti:button renderMode="buttonImage" icon="icon-add" data-group="${unassignedGroup.id}"/>
                             <input type="hidden" name="${unassignedProgramGroup.group.name}" value="${unassignedProgramGroup.group.id}" />
-                        ${unassignedGroup.name}
+                        ${fn:escapeXml(unassignedGroup.name)}
                         </td>
                     </tr>
                 </c:forEach>
@@ -98,7 +97,7 @@
 <div class="column-12-12">
     <div class="column one">
         <div>
-        <h3><i:inline key=".programAssignedNotifications"/></h3>
+        <h3><i:inline key=".assignedNotifGroups"/></h3>
             <table class="compact-results-table" id="assigned-notification-groups">
                 <thead>
                     <tr>
@@ -112,7 +111,7 @@
                         <td>
                             <cti:button renderMode="buttonImage" icon="icon-delete" data-notif-group="${assignedNotifGroupEntry.notificationGroupID}"/>
                             <input type="hidden" name="${assignedNotifGroupEntry.notificationGroupName}" value="${assignedNotifGroupEntry.notificationGroupID}" />
-                            ${assignedNotifGroupEntry.notificationGroupName}
+                            ${fn:escapeXml(assignedNotifGroupEntry.notificationGroupName)}
                         </td>
                     </tr>
                 </c:forEach>
@@ -122,7 +121,7 @@
     </div>
     <div class="column two nogutter">
         <div>
-        <h3><i:inline key=".programAvailableNotifications"/></h3>
+        <h3><i:inline key=".availableNotifGroups"/></h3>
             <table class="compact-results-table" id="unassigned-notification-groups">
                 <thead>
                     <tr>
@@ -136,7 +135,7 @@
                         <td>
                             <cti:button renderMode="buttonImage" icon="icon-add" data-notif-group="${unassignedProgramGroup.notificationGroupID}"/>
                             <input type="hidden" name="${unassignedProgramGroup.notificationGroupName}" value="${unassignedProgramGroup.notificationGroupID}" />
-                            ${unassignedProgramGroup.notificationGroupName}
+                            ${fn:escapeXml(unassignedProgramGroup.notificationGroupName)}
                         </td>
                     </tr>
                 </c:forEach>
@@ -157,5 +156,4 @@
     </div>
 
 </form>
-</cti:msgScope>
 </cti:standardPage>

@@ -114,13 +114,9 @@ public class CcHomeController {
     private DataModel windowDataModel = null;
     private EconomicEventPricing currentRevision = null;
     private ListDataModel otherRevisionsModel = null;
-    private EconomicEvent event = null;
     private List<EconomicEventParticipant> participantList = null;
     private DataModel participantDataModel = null;
     private EconomicStrategy strategy = null;
-    private AccountingEvent acctEvent = null;
-    private CurtailmentEvent curtailmentEvent = null;
-    private String eventTypeBase = "yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvents";
     private String eventHeadingBase = "yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_heading_";
     private String companyHeadingBase = "yukon.web.modules.commercialcurtailment.ccurtSetup.";
     private DataModel assignedGroupModel = new ListDataModel();
@@ -139,21 +135,30 @@ public class CcHomeController {
 
     @RequestMapping("/cc/home")
     public String home (ModelMap model, YukonUserContext userContext) {
-
-        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
+        
+        LiteYukonUser user = userContext.getYukonUser();
+        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
+        
+        //Retrieve current, pending, recent events
         List<BaseEvent> currentEvents = baseEventDao.getAllForEnergyCompany(energyCompany, new CurrentEventPredicate());
         List<BaseEvent> pendingEvents = baseEventDao.getAllForEnergyCompany(energyCompany, new PendingEventPredicate());
         List<BaseEvent> recentEvents = baseEventDao.getAllForEnergyCompany(energyCompany, new RecentEventPredicate());
-        ArrayList<List<BaseEvent>> eventGroups = new ArrayList<List<BaseEvent>>();
         Collections.reverse(currentEvents);
         Collections.reverse(pendingEvents);
         Collections.reverse(recentEvents);
-        eventGroups.add(currentEvents);
-        eventGroups.add(pendingEvents);
-        eventGroups.add(recentEvents);
-        model.addAttribute("eventGroups", eventGroups);
-        List<ProgramType> programTypeList = programService.getProgramTypeList(userContext.getYukonUser());
-        ArrayList<Program> allPrograms = new ArrayList<Program>();
+        
+        //Map events by type
+        Map<EventType, List<BaseEvent>> events = new HashMap<>();
+        events.put(EventType.CURRENT, currentEvents);
+        events.put(EventType.PENDING, pendingEvents);
+        events.put(EventType.RECENT, recentEvents);
+        model.addAttribute("events", events);
+        
+        //Retrieve program types for user
+        List<ProgramType> programTypeList = programService.getProgramTypeList(user);
+        
+        //Retrieve programs by type
+        List<Program> allPrograms = new ArrayList<>();
         for (ProgramType programType : programTypeList) {
             List<Program> programs = programService.getProgramList(programType);
             for (Program program : programs) {
@@ -161,16 +166,7 @@ public class CcHomeController {
             }
         }
         model.addAttribute("programs", allPrograms);
-        ArrayList<String> eventTypes = new ArrayList<String>();
         
-        String[] types = new String[]{"Current", "Pending", "Recent"};
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        for (int ind = 0; ind < types.length; ind += 1) {
-            String resolvable = eventTypeBase + types[ind];
-            String msg = accessor.getMessage(resolvable);
-            eventTypes.add(msg);
-        }
-        model.addAttribute("eventTypes", eventTypes);
         return "dr/cc/home.jsp";
     }
     
@@ -192,6 +188,8 @@ public class CcHomeController {
         
         Program program = lookupProgramById(id, userContext);
         CICurtailmentStrategy strategy = strategyFactory.getStrategy(program);
+        
+        model.addAttribute("program", program);
         // TODO: this is the initialization of the wizard invoked by the "Start" link.
         // See how the legacy app looks and works.
         //List<? extends BaseEvent> eventList = strategy.getEventsForProgram(program);
@@ -217,18 +215,22 @@ public class CcHomeController {
                                     YukonUserContext userContext,
                                     Integer programTypeId,
                                     int id) {
-        acctEvent = accountingEventDao.getForId(id);
+        
+        AccountingEvent acctEvent = accountingEventDao.getForId(id);
         model.addAttribute("event", acctEvent);
         model.addAttribute("programTypeId", programTypeId);
         model.addAttribute("reason", acctEvent.getReason());
         model.addAttribute("duration", acctEvent.getDuration());
+        
         Program acctProgram = acctEvent.getProgram();
-        AccountingStrategy strategy;
-        strategy = (AccountingStrategy) strategyFactory.getStrategy(acctProgram);
+        AccountingStrategy strategy = (AccountingStrategy) strategyFactory.getStrategy(acctProgram);
         List<AccountingEventParticipant> eventNotifications = strategy.getParticipants(acctEvent);
         model.addAttribute("eventNotifications", eventNotifications);
-        model.addAttribute("eventHeadingSpecific", "ccurtEvent_heading_accounting_adjustment");
+        
+        model.addAttribute("programType", acctEvent.getProgram().getProgramType().getName());
+        model.addAttribute("programName", acctEvent.getProgram().getName());
         model.addAttribute("affectedCustomers", composeEventHeading(eventHeadingBase, userContext, "accounting_affected_customers"));
+        
         return "dr/cc/detail.jsp";
     }
 
@@ -237,7 +239,7 @@ public class CcHomeController {
             Integer programTypeId,
             int eventId) {
         
-        curtailmentEvent = notificationEventDao.getForId(eventId);
+        CurtailmentEvent curtailmentEvent = notificationEventDao.getForId(eventId);
         List<CurtailmentEventNotif> eventNotifications = curtailmentNotifDao.getForEvent(curtailmentEvent);
         
         model.addAttribute("event", curtailmentEvent);
@@ -255,25 +257,10 @@ public class CcHomeController {
         
         List<String> notificationTableHead = assembleHeading(userContext, companyHeadingBase, headingSuffixes);;
         model.addAttribute("notificationTableHead", notificationTableHead);
-        String eventHeadingType = curtailmentEvent.getProgram().getName();
-        String eventHeadingSpecific = "";
-        switch(eventHeadingType) {
-        case "Capacity Scheduling":
-            eventHeadingSpecific = "ccurtEvent_heading_capacity_contingency";
-            break;
-        case "Secondary Groups":
-            eventHeadingSpecific = "ccurtEvent_heading_capacity_contingency_secondary";
-            break;
-        case "Irrigation Pumps":
-            eventHeadingSpecific = "ccurtEvent_heading_direct_control_irrigation";
-            break;
-        case "Reserve Event":
-            eventHeadingSpecific = "ccurtEvent_heading_direct_control_reserve";
-            break;
-        default:
-            break;
-        }
-        model.addAttribute("eventHeadingSpecific", eventHeadingSpecific);
+        
+        model.addAttribute("programType", curtailmentEvent.getProgram().getProgramType().getName());
+        model.addAttribute("programName", curtailmentEvent.getProgram().getName());
+        
         return "dr/cc/detail.jsp";
     }
     
@@ -293,26 +280,19 @@ public class CcHomeController {
             @PathVariable int eventId,
             @PathVariable int companyId) {
 
-        event = economicEventDao.getForId(eventId);
+        EconomicEvent event = economicEventDao.getForId(eventId);
         participantList = economicEventParticipantDao.getForEvent(event);
         EconomicEventParticipant participant = getCustomerById(participantList, companyId);
         List<EconomicEventNotif> eventNotifications = economicService.getNotifications(participant);
         model.addAttribute("event", event);
         String tz = userContext.getTimeZone().getDisplayName();
         model.addAttribute("tz", tz);
-        String eventHeadingType = event.getProgram().getName();
-        String eventHeadingSpecific = "";
-        switch(eventHeadingType) {
-        case "Day Ahead":
-            eventHeadingSpecific = "ccurtEvent_heading_economic_day_ahead_for";
-            break;
-        case "Same Day":
-            eventHeadingSpecific = "ccurtEvent_heading_economic_same_day_for";
-            break;
-        default:
-            break;
-        }
-        model.addAttribute("eventHeadingSpecific", eventHeadingSpecific);
+        
+        String programType = event.getProgram().getProgramType().getName();
+        String programName = event.getProgram().getName();
+        
+        model.addAttribute("programType", programType);
+        model.addAttribute("programName", programName);
         model.addAttribute("participant", participant.getCustomer().getCompanyName());
         model.addAttribute("eventNotifications", eventNotifications);
         return "dr/cc/detail.jsp";
@@ -671,7 +651,7 @@ public class CcHomeController {
             int revisionNumber,
             HttpServletRequest request) {
         
-        event = economicEventDao.getForId(eventId);
+        EconomicEvent event = economicEventDao.getForId(eventId);
         participantList = economicEventParticipantDao.getForEvent(event);
         participantDataModel = new ListDataModel(participantList);
         currentRevision = event.getLatestRevision();
@@ -681,7 +661,7 @@ public class CcHomeController {
         getWindowModel(event);
         model.addAttribute("event", event);
 
-        DateTimeFormatter dateTimeFormatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.TIME, YukonUserContext.system);
+        DateTimeFormatter dateTimeFormatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.TIME, userContext);
         List<String> pricingTableTotals = new ArrayList<>();
 
         int nParticipants = participantDataModel.getRowCount();
@@ -768,20 +748,10 @@ public class CcHomeController {
         model.addAttribute("pricingTableHead", pricingTableHead);
         model.addAttribute("tableData", tableData);
         model.addAttribute("pricingTableTotals", pricingTableTotals);
-        String eventHeadingType = event.getProgram().getName();
-        String eventHeadingSpecific = "";
-        switch(eventHeadingType) {
-        case "Day Ahead":
-            eventHeadingSpecific = "ccurtEvent_heading_economic_day_ahead";
-            break;
-        case "Same Day":
-            eventHeadingSpecific = "ccurtEvent_heading_economic_same_day";
-            break;
-        default:
-            break;
-        }
-        model.addAttribute("eventHeadingSpecific", eventHeadingSpecific);
-//        model.addAttribute("eventHeading", composeEventHeading(eventHeadingBase, userContext, eventHeadingSpecific));
+        
+        model.addAttribute("programType", event.getProgram().getProgramType().getName());
+        model.addAttribute("programName", event.getProgram().getName());
+        
         model.addAttribute("economicDetail", "yes");
         model.addAttribute("legend", composeEventHeading(companyHeadingBase, userContext, "ccurtEvent_pricing_legend"));
         Program program = programService.getProgram(programId);
@@ -871,6 +841,7 @@ public class CcHomeController {
     }
     
     public final class CustomerListComparator implements Comparator<GroupCustomerNotif> {
+        @Override
         public int compare(GroupCustomerNotif o1, GroupCustomerNotif o2) {
             return o1.getCustomer().compareTo(o2.getCustomer());
         }
@@ -1006,15 +977,15 @@ public class CcHomeController {
         return windowDataModel;
     }
 
-    public DataModel getWindowModel() {
-        if (windowDataModel == null) {
-            Collection<EconomicEventPricingWindow> values = event.getInitialRevision().getWindows().values();
-            List<EconomicEventPricingWindow> windows = new ArrayList<EconomicEventPricingWindow>(values);
-            Collections.sort(windows);
-            windowDataModel = new ListDataModel(windows);
-        }
-        return windowDataModel;
-    }
+//    public DataModel getWindowModel() {
+//        if (windowDataModel == null) {
+//            Collection<EconomicEventPricingWindow> values = event.getInitialRevision().getWindows().values();
+//            List<EconomicEventPricingWindow> windows = new ArrayList<EconomicEventPricingWindow>(values);
+//            Collections.sort(windows);
+//            windowDataModel = new ListDataModel(windows);
+//        }
+//        return windowDataModel;
+//    }
 
 
     public BigDecimal getColumnPrice(EconomicEvent economicEvent) {
@@ -1030,27 +1001,27 @@ public class CcHomeController {
         return null;
     }
     
-    public BigDecimal getColumnPrice() {
-        DataModel columnModel = getWindowModel();
-        if (columnModel.isRowAvailable()) { // read: isColumnAvailable()
-            EconomicEventPricingWindow pricingWindow = 
-                (EconomicEventPricingWindow) columnModel.getRowData(); // read: getColumnData()
-            getCurrentRevision();
-            if (pricingWindow != null) {
-                EconomicEventPricing revision = getCurrentRevision();
-                int offset = pricingWindow.getOffset();
-                try {
-                EconomicEventPricingWindow window = 
-                    economicService.getFallThroughWindow(revision, 
-                                                         offset);
-                return window.getEnergyPrice();
-                } catch (IllegalArgumentException except) {
-                    
-                }
-            }
-        }
-        return null;
-    }
+//    public BigDecimal getColumnPrice() {
+//        DataModel columnModel = getWindowModel();
+//        if (columnModel.isRowAvailable()) { // read: isColumnAvailable()
+//            EconomicEventPricingWindow pricingWindow = 
+//                (EconomicEventPricingWindow) columnModel.getRowData(); // read: getColumnData()
+//            getCurrentRevision();
+//            if (pricingWindow != null) {
+//                EconomicEventPricing revision = getCurrentRevision();
+//                int offset = pricingWindow.getOffset();
+//                try {
+//                EconomicEventPricingWindow window = 
+//                    economicService.getFallThroughWindow(revision, 
+//                                                         offset);
+//                return window.getEnergyPrice();
+//                } catch (IllegalArgumentException except) {
+//                    
+//                }
+//            }
+//        }
+//        return null;
+//    }
 
     public BigDecimal getColumnValue(DataModel rowModel, EconomicEvent event) {
         if (rowModel.isRowAvailable()) {
@@ -1069,48 +1040,49 @@ public class CcHomeController {
         return null;
     }
     
-    public BigDecimal getColumnValue() {
-        DataModel rowModel = getParticipantModel();
-        if (rowModel.isRowAvailable()) {
-            EconomicEventParticipant row = 
-                (EconomicEventParticipant) rowModel.getRowData();
-            DataModel columnModel = getWindowModel();
-            if (columnModel.isRowAvailable()) { // read: isColumnAvailable()
-                EconomicEventPricingWindow pricingWindow = 
-                    (EconomicEventPricingWindow) columnModel.getRowData(); // read: getColumnData()
-                Integer column = pricingWindow.getOffset();
-                try {
-                    EconomicEventParticipantSelectionWindow selection = 
-                        economicService.getCustomerSelectionWindow(getCurrentRevision(),row,column);
-                    return selection.getEnergyToBuy();
-                } catch (IllegalArgumentException except) {
-                    
-                }
-            }
-        }
-        return null;
-    }
+//    public BigDecimal getColumnValue() {
+//        DataModel rowModel = getParticipantModel();
+//        if (rowModel.isRowAvailable()) {
+//            EconomicEventParticipant row = 
+//                (EconomicEventParticipant) rowModel.getRowData();
+//            DataModel columnModel = getWindowModel();
+//            if (columnModel.isRowAvailable()) { // read: isColumnAvailable()
+//                EconomicEventPricingWindow pricingWindow = 
+//                    (EconomicEventPricingWindow) columnModel.getRowData(); // read: getColumnData()
+//                Integer column = pricingWindow.getOffset();
+//                try {
+//                    EconomicEventParticipantSelectionWindow selection = 
+//                        economicService.getCustomerSelectionWindow(getCurrentRevision(),row,column);
+//                    return selection.getEnergyToBuy();
+//                } catch (IllegalArgumentException except) {
+//                    
+//                }
+//            }
+//        }
+//        return null;
+//    }
 
-    public BigDecimal getColumnTotal() {
-        DataModel columnModel = getWindowModel();
-        if (columnModel.isRowAvailable()) { // read: isColumnAvailable()
-            EconomicEventPricingWindow pricingWindow = 
-                (EconomicEventPricingWindow) columnModel.getRowData(); // read: getColumnData()
-            long total = 0;
-            try {
-                for (EconomicEventParticipant participant : participantList) {
-                    EconomicEventParticipantSelection selection = participant.getSelection(event.getLatestRevision());
-                    EconomicEventParticipantSelectionWindow selectionWindow = 
-                        economicService.getFallThroughWindowSelection(selection, pricingWindow.getOffset());
-                    total += selectionWindow.getEnergyToBuy().longValue();
-                }
-                return BigDecimal.valueOf(total);
-            } catch (IllegalArgumentException except) {
-                
-            }
-        }
-        return null;
-    }
+//    public BigDecimal getColumnTotal() {
+//        DataModel columnModel = getWindowModel();
+//        if (columnModel.isRowAvailable()) { // read: isColumnAvailable()
+//            EconomicEventPricingWindow pricingWindow = 
+//                (EconomicEventPricingWindow) columnModel.getRowData(); // read: getColumnData()
+//            long total = 0;
+//            try {
+//                for (EconomicEventParticipant participant : participantList) {
+//                    EconomicEventParticipantSelection selection = participant.getSelection(event.getLatestRevision());
+//                    EconomicEventParticipantSelectionWindow selectionWindow = 
+//                        economicService.getFallThroughWindowSelection(selection, pricingWindow.getOffset());
+//                    total += selectionWindow.getEnergyToBuy().longValue();
+//                }
+//                return BigDecimal.valueOf(total);
+//            } catch (IllegalArgumentException except) {
+//                
+//            }
+//        }
+//        return null;
+//    }
+    
     public ListDataModel getOtherRevisionsModel(EconomicEvent economicEvent) {
         if (otherRevisionsModel == null) {
             ArrayList<EconomicEventPricing> others = 
@@ -1120,15 +1092,16 @@ public class CcHomeController {
         }
         return otherRevisionsModel;
     }
-    public ListDataModel getOtherRevisionsModel() {
-        if (otherRevisionsModel == null) {
-            ArrayList<EconomicEventPricing> others = 
-                new ArrayList<EconomicEventPricing>(event.getRevisions().values());
-            others.remove(getCurrentRevision());
-            otherRevisionsModel = new ListDataModel(others);
-        }
-        return otherRevisionsModel;
-    }
+    
+//    public ListDataModel getOtherRevisionsModel() {
+//        if (otherRevisionsModel == null) {
+//            ArrayList<EconomicEventPricing> others = 
+//                new ArrayList<EconomicEventPricing>(event.getRevisions().values());
+//            others.remove(getCurrentRevision());
+//            otherRevisionsModel = new ListDataModel(others);
+//        }
+//        return otherRevisionsModel;
+//    }
     
     public EconomicEventPricing getCurrentRevision() {
         return currentRevision;

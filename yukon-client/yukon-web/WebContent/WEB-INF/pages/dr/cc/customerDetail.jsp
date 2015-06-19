@@ -6,26 +6,25 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <cti:standardPage module="dr" page="cc.customerDetail">
-<cti:msgScope paths="yukon.web.modules.commercialcurtailment.ccurtSetup">
 
 <div class="column-12-12">
     <div class="column one">
-        <h2><i:inline key=".customerDetail"/> ${customer.companyName}</h2>
-        <h3><i:inline key=".customerData"/></h3>
-        <div><i:inline key=".customerSatisfiedPointGroups"/></div>
-        <ul>
-            <c:forEach var="pointGroup" items="${satisifedPointGroups}">
-                <li>${pointGroup}</li>
-            </c:forEach>
-        </ul>
-        <h3><i:inline key=".customerAttachedPoints"/></h3>
+        <h3><i:inline key=".satisfiedPointGroups"/></h3>
+        <c:choose>
+	        <c:when test="${not empty satisfiedPointGroups}">
+		        <ul>
+		            <c:forEach var="pointGroup" items="${satisifedPointGroups}">
+		                <li>${pointGroup}</li>
+		            </c:forEach>
+		        </ul>
+	        </c:when>
+	        <c:otherwise>
+	            <div class="empty-list"><i:inline key=".noSatisfiedPointGroups"/></div>
+	        </c:otherwise>
+        </c:choose>
+        
+        <h3><i:inline key=".attachedPoints"/></h3>
         <table class="compact-results-table">
-            <thead>
-                <tr>
-                </tr>
-            </thead>
-            <tfoot></tfoot>
-            <tbody>
             <c:forEach var="pointType" items="${pointTypeList}">
                 <c:set var="pointValue" value="${pointValueCache[pointType]}"/>
                 <c:choose>
@@ -39,20 +38,19 @@
                 <c:otherwise>
                 <tr>
                     <td>${pointType.label}</td>
-                    <td><em><i:inline key=".customerCreatePoint"/></em></td>
+                    <td><em><i:inline key=".createPoint"/></em></td>
                     <td></td>
                 </tr>
                 </c:otherwise>
                 </c:choose>
             </c:forEach>
-            </tbody>
         </table>
     </div>
     <div class="column two nogutter"></div>
 </div>
 <div class="column-12-12">
     <div class="column one">
-        <h3><i:inline key=".customerAssignedPrograms"/></h3>
+        <h3><i:inline key=".assignedPrograms"/></h3>
         <table class="compact-results-table">
             <thead>
                 <tr>
@@ -72,7 +70,7 @@
         </table>
     </div>
     <div class="column two nogutter">
-        <h3><i:inline key=".customerAvailablePrograms"/></h3>
+        <h3><i:inline key=".availablePrograms"/></h3>
         <table class="compact-results-table">
             <thead>
                 <tr>
@@ -93,5 +91,4 @@
     </div>
 </div>
 
-</cti:msgScope>
 </cti:standardPage>

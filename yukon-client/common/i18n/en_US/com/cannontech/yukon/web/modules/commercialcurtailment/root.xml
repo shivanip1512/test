@@ -1,57 +1,157 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
+    
+    <!-- home.jsp -->
+    <entry key="yukon.web.modules.dr.cc.home.pageTitle">Commercial Curtailment</entry>
+    <entry key="yukon.web.modules.dr.cc.home.pageName">Commercial Curtailment</entry>
+    <entry key="yukon.web.modules.dr.cc.home.programs">Programs</entry>
+    <entry key="yukon.web.modules.dr.cc.home.availablePrograms">Available Programs</entry>
+    <entry key="yukon.web.modules.dr.cc.home.start">Start</entry>
+    <entry key="yukon.web.modules.dr.cc.home.history">History</entry>
+    <entry key="yukon.web.modules.dr.cc.home.programType">Program Type</entry>
+    <entry key="yukon.web.modules.dr.cc.home.programName">Program Name</entry>
+    <entry key="yukon.web.modules.dr.cc.home.programEvent">Event #</entry>
+    <entry key="yukon.web.modules.dr.cc.home.programState">State</entry>
+    <entry key="yukon.web.modules.dr.cc.home.programStart">Start Time</entry>
+    <entry key="yukon.web.modules.dr.cc.home.programStop">Stop Time</entry>
+    <entry key="yukon.web.modules.dr.cc.home.noEvents">No events</entry>
+    <entry key="yukon.web.modules.dr.cc.home.setup">Setup</entry>
+    <entry key="yukon.web.modules.dr.cc.home.groups">Groups</entry>
+    <entry key="yukon.web.modules.dr.cc.home.customers">Customers</entry>
+    <entry key="yukon.web.modules.dr.cc.home.trends">Trends</entry>
+    
+    <!-- detail.jsp -->
+    <entry key="yukon.web.modules.dr.cc.detail.pageTitle">{0}</entry>
+    <entry key="yukon.web.modules.dr.cc.detail.pageHeading">{1} - {2} Event</entry>
+    <entry key="yukon.web.modules.dr.cc.detail.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.dr.cc.detail.eventNumber">Event Number</entry>
+    <entry key="yukon.web.modules.dr.cc.detail.startDate">Start Date</entry>
+    <entry key="yukon.web.modules.dr.cc.detail.notificationTime">Notification Time</entry>
+    <entry key="yukon.web.modules.dr.cc.detail.startTime">Start Time</entry>
+    <entry key="yukon.web.modules.dr.cc.detail.stopTime">Stop Time</entry>
+    <entry key="yukon.web.modules.dr.cc.detail.duration">Duration</entry>
+    <entry key="yukon.web.modules.dr.cc.detail.durationMinutes">{0} minutes</entry>
+    <entry key="yukon.web.modules.dr.cc.detail.state">State</entry>
+    <entry key="yukon.web.modules.dr.cc.detail.message">Message</entry>
+    <entry key="yukon.web.modules.dr.cc.detail.initialEvent">Initial Event</entry>
+    <entry key="yukon.web.modules.dr.cc.detail.latestRevision">Latest Revision</entry>
+    <entry key="yukon.web.modules.dr.cc.detail.operations">Operations</entry>
+    <entry key="yukon.web.modules.dr.cc.detail.company">Company</entry>
+    <entry key="yukon.web.modules.dr.cc.detail.reason">Reason</entry>
+    <entry key="yukon.web.modules.dr.cc.detail.notificationType">Notification Type</entry>
+    
+    <!-- customerList.jsp -->
+    <entry key="yukon.web.modules.dr.cc.customerList.pageTitle">Curtailment Customers</entry>
+    <entry key="yukon.web.modules.dr.cc.customerList.pageName">Customers</entry>
+    
+    <!-- customerDetail.jsp -->
+    <entry key="yukon.web.modules.dr.cc.customerDetail.pageTitle">Customer: {0}</entry>
+    <entry key="yukon.web.modules.dr.cc.customerDetail.pageHeading">{0}</entry>
+    <entry key="yukon.web.modules.dr.cc.customerDetail.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.dr.cc.customerDetail.customerData">Customer Data</entry>
+    <entry key="yukon.web.modules.dr.cc.customerDetail.satisfiedPointGroups">Satisfied Point Groups</entry>
+    <entry key="yukon.web.modules.dr.cc.customerDetail.attachedPoints">Attached Points</entry>
+    <entry key="yukon.web.modules.dr.cc.customerDetail.assignedPrograms">Assigned Programs</entry>
+    <entry key="yukon.web.modules.dr.cc.customerDetail.createPoint">Create Point</entry>
+    <entry key="yukon.web.modules.dr.cc.customerDetail.availablePrograms">Available Programs</entry>
+    <entry key="yukon.web.modules.dr.cc.customerDetail.noSatisfiedPointGroups">No satisfied point groups</entry>
 
+    <!-- economicDetail.jspf -->
+    <entry key="yukon.web.modules.dr.cc.eventPricing.customer">Customer</entry>
+    <entry key="yukon.web.modules.dr.cc.eventPricing.ack">ACK</entry>
+    <entry key="yukon.web.modules.dr.cc.eventPricing.notif">NOTIF</entry>
+    <entry key="yukon.web.modules.dr.cc.eventPricing.total">Total</entry>
+    <entry key="yukon.web.modules.dr.cc.eventPricing.kwh">kWH</entry>
+    <entry key="yukon.web.modules.dr.cc.eventPricing.legend">Legend: D-Default Values, A-Customer Acknowledged Values</entry>
+    
+    <!-- groupList.jsp -->
+    <entry key="yukon.web.modules.dr.cc.groupList.pageTitle">Curtailment Groups</entry>
+    <entry key="yukon.web.modules.dr.cc.groupList.pageName">Groups</entry>
+    
+    <!-- groupDetail.jsp -->
+    <entry key="yukon.web.modules.dr.cc.groupDetail.pageTitle">Group: {0}</entry>
+    <entry key="yukon.web.modules.dr.cc.groupDetail.pageHeading">{0}</entry>
+    <entry key="yukon.web.modules.dr.cc.groupDetail.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.dr.cc.groupDetail.groupName">Group Name:</entry>
+    <entry key="yukon.web.modules.dr.cc.groupDetail.customers">Customers</entry>
+    <entry key="yukon.web.modules.dr.cc.groupDetail.emails">Emails</entry>
+    <entry key="yukon.web.modules.dr.cc.groupDetail.voice">Voice</entry>
+    <entry key="yukon.web.modules.dr.cc.groupDetail.sms">SMS</entry>
+    <entry key="yukon.web.modules.dr.cc.groupDetail.availableCustomers">Available Customers</entry>
+    
+    <!-- history.jsp -->
+    <entry key="yukon.web.modules.dr.cc.history.pageTitle">Curtailment History</entry>
+    <entry key="yukon.web.modules.dr.cc.history.pageName">History</entry>
+    <entry key="yukon.web.modules.dr.cc.history.eventNumber">Event #</entry>
+    <entry key="yukon.web.modules.dr.cc.history.state">State</entry>
+    <entry key="yukon.web.modules.dr.cc.history.startTime">Start Time</entry>
+    <entry key="yukon.web.modules.dr.cc.history.duration">Duration</entry>
+    <entry key="yukon.web.modules.dr.cc.history.action">Action</entry>
+    
+    <!-- programList.jsp -->
+    <entry key="yukon.web.modules.dr.cc.programList.pageTitle">Curtailment Programs</entry>
+    <entry key="yukon.web.modules.dr.cc.programList.pageName">Programs</entry>
+    
+    <!-- programCreate.jsp -->
+    <entry key="yukon.web.modules.dr.cc.programCreate.pageTitle">Create Program</entry>
+    <entry key="yukon.web.modules.dr.cc.programCreate.pageName">Create Program</entry>
+    <entry key="yukon.web.modules.dr.cc.programCreate.programType">Program Type</entry>
+    <entry key="yukon.web.modules.dr.cc.programCreate.programName">Program Name</entry>
+    
+    <!-- programDetail.jsp -->
+    <entry key="yukon.web.modules.dr.cc.programDetail.pageTitle">Program: {0}</entry>
+    <entry key="yukon.web.modules.dr.cc.programDetail.pageHeading">{0}</entry>
+    <entry key="yukon.web.modules.dr.cc.programDetail.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.dr.cc.programDetail.programDetail">Program Detail</entry>
+    <entry key="yukon.web.modules.dr.cc.programDetail.programType">Program Type</entry>
+    <entry key="yukon.web.modules.dr.cc.programDetail.programName">Program Name</entry>
+    <entry key="yukon.web.modules.dr.cc.programDetail.identifierPrefix">Identifier Prefix</entry>
+    <entry key="yukon.web.modules.dr.cc.programDetail.identifierPostfix">Identifier Postfix</entry>
+    <entry key="yukon.web.modules.dr.cc.programDetail.parameters">Parameters</entry>
+    <entry key="yukon.web.modules.dr.cc.programDetail.assignedGroups">Assigned Groups</entry>
+    <entry key="yukon.web.modules.dr.cc.programDetail.availableGroups">Available Groups</entry>
+    <entry key="yukon.web.modules.dr.cc.programDetail.assignedNotifGroups">Assigned Notification Groups</entry>
+    <entry key="yukon.web.modules.dr.cc.programDetail.availableNotifGroups">Available Notification Groups</entry>
+    
+    <!-- init.jsp -->
+    <entry key="yukon.web.modules.dr.cc.init.pageTitle">Start Event</entry>
+    <entry key="yukon.web.modules.dr.cc.init.pageHeading">Start {0} / {1} Event</entry>
+    <entry key="yukon.web.modules.dr.cc.init.crumbTitle">Start Event</entry>
+    
+    <!-- EventType.java -->
+    <entry key="yukon.web.modules.dr.cc.eventType.CURRENT">Current Events</entry>
+    <entry key="yukon.web.modules.dr.cc.eventType.PENDING">Pending Events</entry>
+    <entry key="yukon.web.modules.dr.cc.eventType.RECENT">Recent Events</entry>
+    
+    
+    <!-- TEMP for old pages / controller code -->
+    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEventType.CURRENT">current events</entry>
+    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEventType.PENDING">pending events</entry>
+    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEventType.RECENT">recent events</entry>
+    
+    <entry key="yukon.web.modules.commercialcurtailment.moduleName">Commercial Curtailment</entry>
     <entry key="yukon.web.modules.commercialcurtailment.home.pageName">Commercial Curtailment</entry>
     <entry key="yukon.web.modules.commercialcurtailment.home.pageTitle">Commercial Curtailment</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.home.title">Curtailment</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.moduleName">Commercial Curtailment</entry>
     <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtPrograms">Programs</entry>
     <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtAvailable">Available Programs</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEventsCurrent">Current Events</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEventsPending">Pending Events</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEventsRecent">Recent Events</entry>
+    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.programState">State</entry>
     <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.setup">Setup</entry>
     <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.programList">Program List</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.program">Program</entry>
     <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.groupList">Group List</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.group">Group</entry>
     <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.customerList">Customer List</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.customer">Customer</entry>
     <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtTrends">Trends</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.programType">Program Type</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.programName">Program Name</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.programEvent">Event #</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.programState">State</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.programStart">Start Time</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.programStop">Stop Time</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.programSetup">Program Setup</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.programDetail">Program Detail</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.programCreate">Create Program</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.programParameters">Parameters:</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.programAssignedGroups">Assigned Groups:</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.programAvailableGroups">Available Groups:</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.programAssignedNotifications">Assigned Notification Groups</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.programAvailableNotifications">Available Notification Groups</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.programIdentifierPrefix">Identifier Prefix</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.programLastIdentifier">Last Identifier</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.groupDetail">Group Detail</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.groupName">Group Name:</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.groupCustomers">Customers</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.groupEmails">Emails</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.groupVoice">Voice</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.groupSms">SMS</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.groupAvailableCustomers">Available Customers</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.customerDetail">Customer Detail:</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.customerData">Customer Data</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.customerSatisfiedPointGroups">Satisfied Point Groups</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.customerAttachedPoints">Attached Points</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.customerAssignedPrograms">Assigned Programs</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.customerAvailablePrograms">Available Programs</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.customerCreatePoint">Create Point</entry>
+    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.program">Program</entry>
+    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.group">Group</entry>
+    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.customer">Customer</entry>
+
+    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_heading_accounting_company_heading">Company</entry>
+    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_heading_reason">Reason</entry>
+    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_heading_notif_type">NotifType</entry>
+    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_heading_time">Time</entry>
+    
     <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_heading_accounting_adjustment">Accounting Adjustment Event</entry>
     <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_heading_accounting_affected_customers">Affected Customers</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_heading_accounting_company_heading">Company</entry>
     <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_heading_capacity_contingency">Capacity/Contingency Capacity Scheduling Event</entry>
     <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_heading_capacity_contingency_secondary">Capacity/Contingency / Secondary Groups Events</entry>
     <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_heading_direct_control_irrigation">Direct Control / Irrigation Pumps Event</entry>
@@ -60,13 +160,7 @@
     <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_heading_economic_same_day">Events for Economic / Same Day</entry>
     <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_heading_economic_day_ahead_for">Economic Day Ahead Event for</entry>
     <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_heading_economic_same_day_for">Economic Same Day Event for</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_heading_reason">Reason</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_heading_notif_type">NotifType</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_heading_time">Time</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_pricing_customer">Customer</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_pricing_ack">ACK</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_pricing_notif">NOTIF</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_pricing_total">Total</entry>
+    
     <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_pricing_legend">Legend: D-Default Values, A-Customer Acknowledged Values</entry>
-    <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_pricing_kwh">kWH</entry>
+
 </properties>

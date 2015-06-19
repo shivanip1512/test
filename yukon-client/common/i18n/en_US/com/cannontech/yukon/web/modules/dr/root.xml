@@ -5,46 +5,6 @@
     <entry key="yukon.web.modules.dr.pageTitle">Consumer Energy Services</entry>
     <entry key="yukon.web.modules.dr.moduleName">Demand Response</entry>
     
-    <entry key="yukon.web.modules.dr.cc.home.pageTitle">Commercial Curtailment (Overview)</entry>
-    <entry key="yukon.web.modules.dr.cc.home.crumbTitle">Commercial Curtailment</entry>
-    <entry key="yukon.web.modules.dr.cc.home.pageHeading">Commercial Curtailment</entry>
-    
-    <entry key="yukon.web.modules.dr.cc.init.pageTitle">Commercial Curtailment Initialize</entry>
-    <entry key="yukon.web.modules.dr.cc.init.crumbTitle">Commercial Curtailment Initialize</entry>
-    <entry key="yukon.web.modules.dr.cc.init.pageHeading">Commercial Curtailment Initialize</entry>
-
-    <entry key="yukon.web.modules.dr.cc.history.pageTitle">Commercial Curtailment History</entry>
-    <entry key="yukon.web.modules.dr.cc.history.crumbTitle">Commercial Curtailment History</entry>
-    <entry key="yukon.web.modules.dr.cc.history.pageHeading">Commercial Curtailment History</entry>
-
-    <entry key="yukon.web.modules.dr.cc.detail.pageTitle">Commercial Curtailment Event Detail</entry>
-    <entry key="yukon.web.modules.dr.cc.detail.crumbTitle">Commercial Curtailment Event Detail</entry>
-    <entry key="yukon.web.modules.dr.cc.detail.pageHeading">Commercial Curtailment Event Detail</entry>
-
-    <entry key="yukon.web.modules.dr.cc.programList.pageTitle">Commercial Curtailment Programs</entry>
-    <entry key="yukon.web.modules.dr.cc.programList.crumbTitle">Commercial Curtailment Programs</entry>
-    <entry key="yukon.web.modules.dr.cc.programList.pageHeading">Commercial Curtailment Programs</entry>
-
-    <entry key="yukon.web.modules.dr.cc.programDetail.pageTitle">Commercial Curtailment Program Detail</entry>
-    <entry key="yukon.web.modules.dr.cc.programDetail.crumbTitle">Commercial Curtailment Program Detail</entry>
-    <entry key="yukon.web.modules.dr.cc.programDetail.pageHeading">Commercial Curtailment Program Detail</entry>
-
-    <entry key="yukon.web.modules.dr.cc.customerList.pageTitle">Commercial Curtailment Customers</entry>
-    <entry key="yukon.web.modules.dr.cc.customerList.crumbTitle">Commercial Curtailment Customers</entry>
-    <entry key="yukon.web.modules.dr.cc.customerList.pageHeading">Commercial Curtailment Customers</entry>
-
-    <entry key="yukon.web.modules.dr.cc.customerDetail.pageTitle">Commercial Curtailment Customer Detail</entry>
-    <entry key="yukon.web.modules.dr.cc.customerDetail.crumbTitle">Commercial Curtailment Customer Detail</entry>
-    <entry key="yukon.web.modules.dr.cc.customerDetail.pageHeading">Commercial Curtailment Customer Detail</entry>
-
-    <entry key="yukon.web.modules.dr.cc.groupList.pageTitle">Commercial Curtailment Groups</entry>
-    <entry key="yukon.web.modules.dr.cc.groupList.crumbTitle">Commercial Curtailment Groups</entry>
-    <entry key="yukon.web.modules.dr.cc.groupList.pageHeading">Commercial Curtailment Groups</entry>
-
-    <entry key="yukon.web.modules.dr.cc.groupDetail.pageTitle">Commercial Curtailment Group Detail</entry>
-    <entry key="yukon.web.modules.dr.cc.groupDetail.crumbTitle">Commercial Curtailment Group Detail</entry>
-    <entry key="yukon.web.modules.dr.cc.groupDetail.pageHeading">Commercial Curtailment Group Detail</entry>
-    
     <entry key="yukon.web.modules.dr.seasonCntlHrs.reset">Reset Season Control Hours</entry>
     <entry key="yukon.web.modules.dr.seasonCntlHrs.reset.success">Season control hours reset successfully.</entry>
     

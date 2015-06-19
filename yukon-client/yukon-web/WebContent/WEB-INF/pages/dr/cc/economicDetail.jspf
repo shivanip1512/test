@@ -1,15 +1,15 @@
 <table class="compact-results-table" id="programs">
     <thead>
         <tr>
-            <th><i:inline key=".ccurtEvent_pricing_customer"/></th>
-            <th><i:inline key=".ccurtEvent_pricing_ack"/></th>
-            <th><i:inline key=".ccurtEvent_pricing_notif"/></th>
+            <th><i:inline key=".eventPricing.customer"/></th>
+            <th><i:inline key=".eventPricing.ack"/></th>
+            <th><i:inline key=".eventPricing.notif"/></th>
 
             <c:forEach var="heading" items="${pricingTableHead}">
                 <th>
                     <div>${heading[0]}</div>
                     <div>${heading[1]}&nbsp;/</div>
-                    <div><i:inline key=".ccurtEvent_pricing_kwh"/></div>
+                    <div><i:inline key=".eventPricing.kwh"/></div>
                 </th>
             </c:forEach>
         </tr>
@@ -30,7 +30,7 @@
         </tr>
         </c:forEach>
         <tr>
-            <td><i:inline key=".ccurtEvent_pricing_total"/></td>
+            <td><i:inline key=".eventPricing.total"/></td>
             <td></td>
             <td></td>
         <c:forEach var="totalCell" items="${pricingTableTotals}">
