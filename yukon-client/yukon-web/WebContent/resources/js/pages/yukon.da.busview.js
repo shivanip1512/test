@@ -15,8 +15,8 @@ yukon.da.busview = (function () {
 
     var _updateRecentEvents = function () {
 
-        // Range Defaulted to 24 hours
-        var range = 'DAY_1';
+    // Range Defaulted to 24 hours
+    var range = 'DAY_1';
         $(".js-events-timeline").each(function () {
             
             var _id = $(this).data('zoneId');
@@ -63,7 +63,6 @@ yukon.da.busview = (function () {
         // Range Defaulted to 24 hours
         var range = 'DAY_1';            
             var _id = $('#ivvc-sub-id').val();
-            console.log(_id);
             $.ajax({
                 url : yukon.url('/capcontrol/buses/' + _id + '/events'),
                 data : {
@@ -75,7 +74,7 @@ yukon.da.busview = (function () {
                 var body = $('#ivvc-events').find('tbody');
                 var current = body.find('tr[data-event-id]');
                 var eventIds = events.map(function (event) { return event.id; });
-                var toAdd = [], currentIds = [];
+                var currentIds = [];
                 
                 var options = {};
                 options.end = new Date().getTime();
@@ -83,15 +82,12 @@ yukon.da.busview = (function () {
                 var hoursAgo = _range_hours[range];
                 var begin = new Date(now.getTime() - (1000 * 60 * 60 * hoursAgo));
                 options.begin = begin.getTime();
-                
-                var eventsToRemove = [];
                 // Remove any rows in the table and timeline that are not in the retrieved list.
                 current.each(function (idx, row) {
                     row = $(row);
                     var id = row.data('eventId');
                     if (eventIds.indexOf(id) === -1) {
                         row.remove();
-                        eventsToRemove.push(id);
                     } else {
                         currentIds.push(id);
                     }
@@ -129,15 +125,12 @@ yukon.da.busview = (function () {
                         if (!attached) {
                             body.append(row);
                         }
-                        
-                        toAdd.push(event);
                     }
                 });
                 
                 var hasEvents = body.find('[data-event-id]').length > 0;
                 $('.js-ivvc-events-empty').toggle(!hasEvents);
                 $('.js-ivvc-events-holder').toggle(hasEvents);
-                _events_token = setTimeout(_updateRecentEvents, yg.rp.updater_delay);
                 
             });
         setTimeout(_updateRecentEventsTable, yg.rp.updater_delay);
