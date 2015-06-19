@@ -6,6 +6,7 @@
 #include "RfnE2eDataIndicationMsg.h"
 #include "RfnE2eDataConfirmMsg.h"
 #include "RfnE2eDataRequestMsg.h"
+#include "NetworkManagerRequest.h"
 
 #include "readers_writer_lock.h"
 
@@ -69,11 +70,15 @@ public:
     static void sendE2eDt    (const Request &req, const ApplicationServiceIdentifiers asid, Confirm::Callback callback, TimeoutCallback timeout);
     static void sendE2eAp_Dnp(const Request &req, Confirm::Callback callback, TimeoutCallback timeout);
 
+    static void cancelByGroupId(const long groupId);
+
 protected:
 
     virtual void serializeAndQueue(const Request &req, Confirm::Callback callback, TimeoutCallback timeout, const ApplicationServiceIdentifiers asid);
     virtual void setE2eDtHandler(Indication::Callback callback);
     virtual void processTimeouts();
+
+    virtual void cancel(const long id, NetworkManagerCancelRequest::CancelType cancelType);
 
 private:
 

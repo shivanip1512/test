@@ -30,6 +30,7 @@ OBJS=\
 $(PRECOMPILED_OBJ) \
 rfn_e2e_messenger.obj \
 RfnE2eMsgSerialization.obj \
+NetworkManagerSerialization.obj \
 dll_rfn_e2e.obj \
 id_rfn_e2e.obj \
 

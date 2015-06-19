@@ -6,6 +6,8 @@
 
 #include "message_factory.h"
 
+#include "NetworkManagerRequest.h"
+
 #include "std_helper.h"
 
 #include "boostutil.h"
@@ -21,9 +23,11 @@ namespace Rfn {
 enum
 {
     E2EDT_NM_TIMEOUT =  5,
+    NM_TIMEOUT       =  5
 };
 
-extern Serialization::MessageFactory<Rfn::E2eMsg> rfnMessageFactory;
+extern Serialization::MessageFactory<Rfn::E2eMsg>        e2eMessageFactory;
+extern Serialization::MessageFactory<NetworkManagerBase> nmMessageFactory;
 
 E2eMessenger::E2eMessenger() :
     _timeoutProcessor([this]{processTimeouts();})
@@ -161,7 +165,7 @@ void E2eMessenger::handleRfnE2eDataIndicationMsg(const SerializedMessage &msg)
 
     CTILOG_INFO(dout, "Got new SerializedMessage");
 
-    MessagePtr<E2eMsg>::type e2eMsg = rfnMessageFactory.deserialize("com.eaton.eas.yukon.networkmanager.e2e.rfn.E2eDataIndication", msg);
+    MessagePtr<E2eMsg>::type e2eMsg = e2eMessageFactory.deserialize("com.eaton.eas.yukon.networkmanager.e2e.rfn.E2eDataIndication", msg);
 
     if( E2eDataIndicationMsg *indicationMsg = dynamic_cast<E2eDataIndicationMsg *>(e2eMsg.get()) )
     {
@@ -239,7 +243,7 @@ void E2eMessenger::handleRfnE2eDataConfirmMsg(const SerializedMessage &msg)
 
     CTILOG_INFO(dout, "Got new SerializedMessage");
 
-    MessagePtr<E2eMsg>::type e2eMsg = rfnMessageFactory.deserialize("com.eaton.eas.yukon.networkmanager.e2e.rfn.E2eDataConfirm", msg);
+    MessagePtr<E2eMsg>::type e2eMsg = e2eMessageFactory.deserialize("com.eaton.eas.yukon.networkmanager.e2e.rfn.E2eDataConfirm", msg);
 
     if( E2eDataConfirmMsg *confirmMsg = dynamic_cast<E2eDataConfirmMsg *>(e2eMsg.get()) )
     {
@@ -292,10 +296,10 @@ void E2eMessenger::sendE2eAp_Dnp(const Request &req, Confirm::Callback callback,
 }
 
 
+static const char *PorterGuid = "134B8C32-4505-B5EC-1371-8CBC643446A0";
+
 void E2eMessenger::serializeAndQueue(const Request &req, Confirm::Callback callback, TimeoutCallback timeout, const ApplicationServiceIdentifiers asid)
 {
-    static const char *PorterGuid = "134B8C32-4505-B5EC-1371-8CBC643446A0";
-
     E2eDataRequestMsg msg;
 
     msg.applicationServiceId = static_cast<unsigned char>(asid);
@@ -313,7 +317,7 @@ void E2eMessenger::serializeAndQueue(const Request &req, Confirm::Callback callb
 
     SerializedMessage serialized;
 
-    rfnMessageFactory.serialize(msg, serialized);
+    e2eMessageFactory.serialize(msg, serialized);
 
     ActiveMQConnectionManager::enqueueMessageWithCallback(
             ActiveMQ::Queues::OutboundQueue::NetworkManagerE2eDataRequest,
@@ -335,6 +339,41 @@ void E2eMessenger::serializeAndQueue(const Request &req, Confirm::Callback callb
             [=]
             {
                 timeout();
+            });
+}
+
+
+void E2eMessenger::cancelByGroupId(const long groupId)
+{
+    gE2eMessenger->cancel(groupId, NetworkManagerCancelRequest::CancelType::Group);
+}
+
+
+void E2eMessenger::cancel(const long id, NetworkManagerCancelRequest::CancelType cancelType)
+{
+    NetworkManagerCancelRequest msg;
+
+    msg.clientGuid = PorterGuid;
+    msg.sessionId  = _sessionId;
+    msg.type       = cancelType;
+
+    msg.ids.insert(id);
+
+    SerializedMessage serialized;
+
+    nmMessageFactory.serialize(msg, serialized);
+
+    ActiveMQConnectionManager::enqueueMessageWithCallback(
+            ActiveMQ::Queues::OutboundQueue::NetworkManagerRequest,
+            serialized,
+            [=](const SerializedMessage &ack)
+            {
+                //  ignore the ack message itself
+            },
+            CtiTime::now() + NM_TIMEOUT,
+            [=]
+            {
+                CTILOG_ERROR(dout, "Cancel request for id " << id << " timed out");
             });
 }
 

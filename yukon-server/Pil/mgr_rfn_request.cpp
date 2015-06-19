@@ -493,10 +493,10 @@ boost::ptr_deque<RfnDeviceResult> RfnRequestManager::getResults(unsigned max)
 
 void RfnRequestManager::cancelByGroupMessageId(long groupMessageId)
 {
-    //  TODO - perhaps a boost::multi_index container to sort by groupMessageId?
-    //  Or maybe this is a rare enough event we should just iterate over all messages?
-    //  Maybe we even keep a groupMessageId-to-RfnIdentifier mapping?
-    //  priority_queue does not allow iteration and arbitrary erasing, so we will need to change containers at least...
+    //  TODO - scan through local queues looking for group messages to cancel.
+
+    //  Cancel status will be returned for any canceled messages
+    E2eMessenger::cancelByGroupId(groupMessageId);
 }
 
 

@@ -5,8 +5,6 @@
 #include "StreamableMessage.h"
 #include "connection_base.h"
 
-#include "RfnBroadcastReplyMessage.h"
-
 #include <boost/function.hpp>
 #include <boost/optional.hpp>
 #include <boost/scoped_ptr.hpp>
@@ -47,6 +45,7 @@ struct IM_EX_MSG OutboundQueue
     static const OutboundQueue IvvcAnalysisMessage;
     static const OutboundQueue CapControlOperationMessage;
     static const OutboundQueue RfnBroadcast;
+    static const OutboundQueue NetworkManagerRequest;
     static const OutboundQueue NetworkManagerE2eDataRequest;
     static const OutboundQueue ScannerOutMessages;
     static const OutboundQueue ScannerInMessages;
@@ -60,6 +59,7 @@ struct IM_EX_MSG InboundQueue
 {
     std::string name;
 
+    static const InboundQueue NetworkManagerResponse;
     static const InboundQueue NetworkManagerE2eDataConfirm;
     static const InboundQueue NetworkManagerE2eDataIndication;
     static const InboundQueue ScannerOutMessages;
@@ -224,8 +224,6 @@ private:
     void dispatchIncomingMessages();
     void dispatchTempQueueReplies();
 };
-
-template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnBroadcastReplyMessage>(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type message, CallbackFor<Rfn::RfnBroadcastReplyMessage>::type callback, CtiTime expiration, TimeoutCallback timedOut);
 
 }
 }

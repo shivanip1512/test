@@ -3,6 +3,7 @@
 #include "amq_connection.h"
 
 #include "StreamableMessage.h"
+#include "RfnBroadcastReplyMessage.h"
 
 #include "utility.h"
 
@@ -678,6 +679,9 @@ const IM_EX_MSG OutboundQueue
         OutboundQueue::RfnBroadcast
                 ("yukon.qr.obj.dr.rfn.ExpressComBroadcastRequest");
 const IM_EX_MSG OutboundQueue
+        OutboundQueue::NetworkManagerRequest
+                ("com.eaton.eas.yukon.networkmanager.request");
+const IM_EX_MSG OutboundQueue
         OutboundQueue::NetworkManagerE2eDataRequest
                 ("com.eaton.eas.yukon.networkmanager.e2e.rfn.E2eDataRequest");
 const IM_EX_MSG OutboundQueue
@@ -689,6 +693,9 @@ const IM_EX_MSG OutboundQueue
 
 InboundQueue::InboundQueue(std::string name_) : name(name_) {}
 
+const IM_EX_MSG InboundQueue
+        InboundQueue::NetworkManagerResponse
+                ("com.eaton.eas.yukon.networkmanager.response");
 const IM_EX_MSG InboundQueue
         InboundQueue::NetworkManagerE2eDataConfirm
                 ("com.eaton.eas.yukon.networkmanager.e2e.rfn.E2eDataConfirm");
@@ -703,6 +710,10 @@ const IM_EX_MSG InboundQueue
                 ("com.eaton.eas.yukon.scanner.inmessages");
 }
 }
+
+
+template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnBroadcastReplyMessage>(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type message, CallbackFor<Rfn::RfnBroadcastReplyMessage>::type callback, CtiTime expiration, TimeoutCallback timedOut);
+
 
 }
 }

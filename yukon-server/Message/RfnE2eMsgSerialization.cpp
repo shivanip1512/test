@@ -256,15 +256,15 @@ MessagePtr<E2eDataIndicationMsg>::type deserialize( const Thrift::RfnE2eDataIndi
 
 const std::string RfnMessagePrefix = "com.eaton.eas.yukon.networkmanager.e2e.rfn.";
 
-Serialization::MessageFactory<E2eMsg> rfnMessageFactory(RfnMessagePrefix);
+Serialization::MessageFactory<E2eMsg> e2eMessageFactory(RfnMessagePrefix);
 
 struct RfnMessageRegistration  //  must be named so it can have a constructor
 {
     RfnMessageRegistration()
     {
-        rfnMessageFactory.registerSerializer<E2eDataRequestMsg,    Thrift::RfnE2eDataRequest>    ( &serialize, &deserialize, "E2eDataRequest" );
-        rfnMessageFactory.registerSerializer<E2eDataConfirmMsg,    Thrift::RfnE2eDataConfirm>    ( &serialize, &deserialize, "E2eDataConfirm" );
-        rfnMessageFactory.registerSerializer<E2eDataIndicationMsg, Thrift::RfnE2eDataIndication> ( &serialize, &deserialize, "E2eDataIndication" );
+        e2eMessageFactory.registerSerializer<E2eDataRequestMsg,    Thrift::RfnE2eDataRequest>    ( &serialize, &deserialize, "E2eDataRequest" );
+        e2eMessageFactory.registerSerializer<E2eDataConfirmMsg,    Thrift::RfnE2eDataConfirm>    ( &serialize, &deserialize, "E2eDataConfirm" );
+        e2eMessageFactory.registerSerializer<E2eDataIndicationMsg, Thrift::RfnE2eDataIndication> ( &serialize, &deserialize, "E2eDataIndication" );
     }
 
 } rfnMessageRegistration;
