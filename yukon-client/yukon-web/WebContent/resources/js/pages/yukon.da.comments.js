@@ -97,7 +97,7 @@ yukon.da.comments = (function () {
         cancelUpdate : function (commentId) {
             $('#comment_' + commentId).show();
             $('#editCommentSpan_' + commentId).hide();
-            $('#editComment_' + commentId).val($('#comment_' + commentId).html());
+            $('#editComment_' + commentId).val($('#comment_' + commentId).html().trim());
         },
     
         /** Updates the comment.
