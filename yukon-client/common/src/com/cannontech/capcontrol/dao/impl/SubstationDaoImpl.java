@@ -222,7 +222,36 @@ public class SubstationDaoImpl implements SubstationDao {
     }
     
     @Override
-    public List<Integer> getAllSpecialAreaUnassignedSubstationIds (Integer areaId) {
+    public List<LiteCapControlObject> getSubstationsNotInSpecialArea() {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT PAObjectID, PAOName, Type, Description, saa.AreaId ParentId");
+        sql.append("FROM YukonPAObject ypo");
+        sql.append("LEFT JOIN CCSubAreaAssignment saa on saa.SubstationBusId = ypo.PAObjectId");
+        sql.append("WHERE Type").eq(PaoType.CAP_CONTROL_SUBSTATION);
+        sql.append("AND PAObjectID NOT IN (SELECT SubstationBusID FROM CCSubSpecialAreaAssignment)");
+        sql.append("ORDER BY PAOName");
+        
+        List<LiteCapControlObject> subs = jdbcTemplate.query(sql, new YukonRowMapper<LiteCapControlObject>() {
+            @Override
+            public LiteCapControlObject mapRow(YukonResultSet rs) throws SQLException {
+                
+                LiteCapControlObject sub = new LiteCapControlObject();
+                sub.setId(rs.getInt("PAObjectID"));
+                sub.setType(rs.getString("TYPE"));
+                sub.setDescription(rs.getString("Description"));
+                sub.setName(rs.getString("PAOName"));
+                sub.setParentId(rs.getInt("ParentId"));
+                
+                return sub;
+            }
+        });
+        
+        return subs;
+    }
+    
+    @Override
+    public List<Integer> getAllSpecialAreaUnassignedSubstationIds (int areaId) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PAObjectID");
@@ -234,9 +263,9 @@ public class SubstationDaoImpl implements SubstationDao {
         sql.append(      " WHERE AreaID").eq(areaId);
         sql.append(      ")");
         
-        List<Integer> listmap = jdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> subs = jdbcTemplate.query(sql, RowMapper.INTEGER);
         
-        return listmap;
+        return subs;
     }
     
     @Override

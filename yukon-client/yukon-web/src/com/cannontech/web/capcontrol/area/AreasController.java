@@ -239,6 +239,8 @@ public class AreasController {
     @RequestMapping("areas/{areaId}/stations/edit")
     public String subAssignmentPopup(ModelMap model, LiteYukonUser user, @PathVariable int areaId) {
         
+        LiteYukonPAObject pao = dbcache.getAllPaosMap().get(areaId);
+        
         List<Substation> subs = substationDao.getSubstationsByArea(areaId);
         sortSubs(areaId, subs);
         
@@ -250,8 +252,10 @@ public class AreasController {
         });
         model.addAttribute("assigned", assigned);
         
-        List<LiteCapControlObject> orphans = substationDao.getOrphans();
-        List<Assignment> unassigned = Lists.transform(orphans, new Function<LiteCapControlObject, Assignment>() {
+        List<LiteCapControlObject> available = pao.getPaoType() == PaoType.CAP_CONTROL_AREA 
+                ? substationDao.getOrphans()
+                : substationDao.getSubstationsNotInSpecialArea();
+        List<Assignment> unassigned = Lists.transform(available, new Function<LiteCapControlObject, Assignment>() {
             @Override
             public Assignment apply(LiteCapControlObject o) {
                 return Assignment.of(o.getId(), o.getName());

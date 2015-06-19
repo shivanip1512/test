@@ -21,7 +21,9 @@ import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.web.capcontrol.area.dao.AreaDao;
@@ -32,6 +34,7 @@ public class AreaDaoImpl implements AreaDao {
     
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValue;
+    @Autowired private ServerDatabaseCache dbCache;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private HolidayScheduleDao holidayScheduleDao;
     @Autowired private SeasonScheduleDao seasonScheduleDao;
@@ -56,16 +59,17 @@ public class AreaDaoImpl implements AreaDao {
     };
     
     /** SELECT QUERY */
-    private final static String select = 
-        "SELECT cca.AreaId, cca.VoltReductionPointId, " + 
-            "ypo.PaoName, ypo.Type, ypo.Description, ypo.DisableFlag " + 
-        "FROM CapControlArea cca " + 
-            "JOIN YukonPAOBject ypo on ypo.PAObjectId = cca.AreaId";
+    private String selectQuery(PaoType type) {
+        return "SELECT cca.AreaId, cca.VoltReductionPointId, " + 
+                "ypo.PaoName, ypo.Type, ypo.Description, ypo.DisableFlag " + 
+                "FROM " + (type == PaoType.CAP_CONTROL_AREA ? "CapControlArea" : "CapControlSpecialArea") + " cca " + 
+                    "JOIN YukonPAOBject ypo on ypo.PAObjectId = cca.AreaId";
+    }
     
     @Override
-    public List<Area> getAreas() {
+    public List<Area> getAreas(PaoType type) {
         
-        SqlStatementBuilder sql = new SqlStatementBuilder(select);
+        SqlStatementBuilder sql = new SqlStatementBuilder(selectQuery(type));
         List<Area> areas = jdbcTemplate.query(sql, mapper);
         
         return areas;
@@ -74,7 +78,8 @@ public class AreaDaoImpl implements AreaDao {
     @Override
     public Area getArea(int areaId) {
         
-        SqlStatementBuilder sql = new SqlStatementBuilder(select);
+        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(areaId);
+        SqlStatementBuilder sql = new SqlStatementBuilder(selectQuery(pao.getPaoType()));
         sql.append("WHERE cca.AreaId").eq(areaId);
         
         Area area = jdbcTemplate.queryForObject(sql, mapper);
@@ -85,6 +90,8 @@ public class AreaDaoImpl implements AreaDao {
     @Override
     @Transactional
     public void save(Area area) {
+        
+        String table = area.getType() == PaoType.CAP_CONTROL_AREA ? "CapControlArea" : "CapControlSpecialArea";
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         DbChangeType change = DbChangeType.UPDATE;
@@ -108,7 +115,7 @@ public class AreaDaoImpl implements AreaDao {
             jdbcTemplate.update(sql);
             
             sql = new SqlStatementBuilder();
-            values = sql.insertInto("CapControlArea");
+            values = sql.insertInto(table);
             values.addValue("AreaId", area.getId());
             values.addValue("VoltReductionPointId", voltReductionPoint);
             jdbcTemplate.update(sql);
@@ -125,14 +132,14 @@ public class AreaDaoImpl implements AreaDao {
             jdbcTemplate.update(sql);
             
             sql = new SqlStatementBuilder();
-            values = sql.update("CapControlArea");
+            values = sql.update(table);
             values.addValue("VoltReductionPointId", voltReductionPoint);
             sql.append("WHERE AreaId").eq(area.getId());
             jdbcTemplate.update(sql);
             
         }
         
-        dbChangeManager.processPaoDbChange(PaoIdentifier.of(area.getId(), PaoType.CAP_CONTROL_AREA), change);
+        dbChangeManager.processPaoDbChange(PaoIdentifier.of(area.getId(), area.getType()), change);
     }
     
     @Override
@@ -140,14 +147,26 @@ public class AreaDaoImpl implements AreaDao {
     public void delete(PaoIdentifier area) {
         
         int areaId = area.getPaoId();
+        String table;
+        String assignmentTable;
+        String dynamicTable;
+        if (area.getPaoType() == PaoType.CAP_CONTROL_AREA) {
+            table = "CapControlArea";
+            assignmentTable = "CCSubAreaAssignment";
+            dynamicTable = "DynamicCcArea";
+        } else {
+            table = "CapControlSpecialArea";
+            assignmentTable = "CCSubSpecialAreaAssignment";
+            dynamicTable = "DynamicCcSpecialArea";
+        }
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM CCSubAreaAssignment");
+        sql.append("DELETE FROM " + assignmentTable);
         sql.append("WHERE AreaId").eq(areaId);
         jdbcTemplate.update(sql);
         
         sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM DynamicCCArea");
+        sql.append("DELETE FROM " + dynamicTable);
         sql.append("WHERE AreaId").eq(areaId);
         jdbcTemplate.update(sql);
         
@@ -157,7 +176,7 @@ public class AreaDaoImpl implements AreaDao {
         jdbcTemplate.update(sql);
         
         sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM CapControlArea");
+        sql.append("DELETE FROM " + table);
         sql.append("WHERE AreaId").eq(areaId);
         jdbcTemplate.update(sql);
         

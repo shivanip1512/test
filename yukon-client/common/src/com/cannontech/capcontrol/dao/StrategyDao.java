@@ -1,6 +1,7 @@
 package com.cannontech.capcontrol.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.capcontrol.model.StrategyLimitsHolder;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
@@ -35,4 +36,10 @@ public interface StrategyDao {
     boolean isUniqueName(String name);
 
     LiteCapControlStrategy getLiteStrategy(int id);
+
+    /**
+     * Returns a sorted {@link LinkedHashMap} of strategy id to {@link LiteCapControlStrategy}
+     */
+    Map<Integer, LiteCapControlStrategy> getLiteStrategies(Iterable<Integer> strategyIds);
+    
 }

@@ -45,7 +45,8 @@ public interface SubstationDao {
     
     public List<LiteCapControlObject> getOrphans();
     
-    public List<Integer> getAllSpecialAreaUnassignedSubstationIds (Integer areaId);
+    /** Returns substations that are not assigned to a special area. */
+    public List<Integer> getAllSpecialAreaUnassignedSubstationIds (int areaId);
 
     /**
      * This method returns the {@link Substation} specified by the parameter id if it exists,
@@ -90,4 +91,6 @@ public interface SubstationDao {
      * Works for special areas as well.
      */
     List<Substation> getSubstationsByArea(int areaId);
+
+    List<LiteCapControlObject> getSubstationsNotInSpecialArea();
 }

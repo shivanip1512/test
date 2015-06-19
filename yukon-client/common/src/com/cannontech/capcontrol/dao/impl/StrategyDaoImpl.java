@@ -3,6 +3,7 @@ package com.cannontech.capcontrol.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -168,6 +169,24 @@ public class StrategyDaoImpl implements StrategyDao {
         LiteCapControlStrategy strategy = jdbcTemplate.queryForObject(sql, liteMapper);
         
         return strategy;
+    }
+    
+    @Override
+    public Map<Integer, LiteCapControlStrategy> getLiteStrategies(Iterable<Integer> strategyIds) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT StrategyId, StrategyName");
+        sql.append("FROM CapControlStrategy");
+        sql.append("WHERE StrategyId").in(strategyIds);
+        sql.append("ORDER BY StrategyName");
+        
+        Map<Integer, LiteCapControlStrategy> strategies = new LinkedHashMap<>();
+        for (LiteCapControlStrategy strategy : jdbcTemplate.query(sql, liteMapper)) {
+            strategies.put(strategy.getId(), strategy);
+        }
+        
+        return strategies;
+        
     }
     
     @Override

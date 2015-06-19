@@ -71,13 +71,16 @@ public class StrategyServiceImpl implements StrategyService {
     public Map<Season, LiteCapControlStrategy> getSeasonStrategyAssignments(int id) {
         
         Map<Season, Integer> seasonToStratId = seasonSchedules.getUserFriendlySeasonStrategyAssignments(id);
+        Map<Integer, LiteCapControlStrategy> idToStrat = strategyDao.getLiteStrategies(seasonToStratId.values());
+        
         Map<Season, LiteCapControlStrategy> seasonToStrat = new LinkedHashMap<>();
+        
         for (Season season : seasonToStratId.keySet()) {
             Integer strategyId = seasonToStratId.get(season);
             if (strategyId == -1) {
                 seasonToStrat.put(season, null);
             } else {
-                LiteCapControlStrategy strategy = strategyDao.getLiteStrategy(strategyId);
+                LiteCapControlStrategy strategy = idToStrat.get(strategyId);
                 seasonToStrat.put(season, strategy);
             }
         }

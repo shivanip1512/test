@@ -59,7 +59,8 @@ public abstract class PaoModel implements YukonPao {
     
     @Override
     public String toString() {
-        return String.format("PaoModel [id=%s, name=%s, description=%s, disabled=%s]", id, name, description, disabled);
+        return String.format("PaoModel [id=%s, type=%s, name=%s, description=%s, disabled=%s]", 
+                id, type, name, description, disabled);
     }
     
 }
