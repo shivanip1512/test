@@ -10,6 +10,10 @@
 <%@ attribute name="path" description="The path for the select input." %>
 <%@ attribute name="noneKey" description="i18n key for an option with 0 duration" %>
 <%@ attribute name="toggleGroup" description="Used to setup a toggle group driven by a checkbox." %>
+<%@ attribute name="format" description="DurationFormat to use for display. 
+    Options: YMODHMS, DHMS, DHMS_REDUCED, DHMS_SHORT_REDUCED, DH, DH_ABBR, HMS, HM, H, M, S, S_ABBR, S_HSORT, HM_ABBR,
+        HM_SHORT, MS_ABBR
+    Default: DHMS_REDUCED" %>
 
 <%@ attribute name="classes" description="CSS class names applied to the outer wrapper element." %>
 <%@ attribute name="id" description="The html id attribute of the input." %>
@@ -19,10 +23,11 @@
 <cti:uniqueIdentifier prefix="stepper-" var="thisId"/>
 <cti:default var="id" value="${thisId}"/>
 <cti:default var="noneKey" value="yukon.common.none"/>
+<cti:default var="format" value="DHMS_REDUCED"/>
 
 <cti:displayForPageEditModes modes="CREATE,EDIT">
 
-    <label class="stepper ${classes}" >
+    <label class="stepper ${classes}">
     	<%-- Vat --%>
         <cti:button classes="stepper-prev left" renderMode="buttonImage" icon="icon-resultset-previous-gray"
                 data-toggle-group="${toggleGroup}"
@@ -34,7 +39,7 @@
                         <cti:msg2 key="${noneKey}"/>
                     </c:if>
                     <c:if test="${interval.seconds != 0}">
-                        <cti:formatDuration type="DHMS_REDUCED" value="${interval.duration}"/>
+                        <cti:formatDuration type="${format}" value="${interval.duration}"/>
                     </c:if>
                 </form:option>
             </c:forEach>
@@ -46,14 +51,16 @@
 </cti:displayForPageEditModes>
 
 <cti:displayForPageEditModes modes="VIEW">
-    <spring:bind path="${path}">
-        <c:if test="${status.value == 0}">
-            <cti:msg2 key="${noneKey}"/>
-        </c:if>
-        <c:if test="${status.value != 0}">
-            <cti:formatDuration type="DHMS_REDUCED" value="${status.value * 1000}"/>
-        </c:if>
-    </spring:bind>
+    <span class="${classes}">
+        <spring:bind path="${path}">
+            <c:if test="${status.value == 0}">
+                <cti:msg2 key="${noneKey}"/>
+            </c:if>
+            <c:if test="${status.value != 0}">
+                <cti:formatDuration type="${format}" value="${status.value * 1000}"/>
+            </c:if>
+        </spring:bind>
+    </span>
 </cti:displayForPageEditModes>
 
 </cti:msgScope>

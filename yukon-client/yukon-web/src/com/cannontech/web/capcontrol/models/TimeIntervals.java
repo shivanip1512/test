@@ -4,6 +4,7 @@ import java.util.Set;
 
 import org.joda.time.Duration;
 
+import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.google.common.collect.ImmutableSet;
 
 public enum TimeIntervals {
@@ -60,53 +61,64 @@ public enum TimeIntervals {
        return null;
    }
    
+   private static final Set<TimeIntervals> analysisIntervals = ImmutableSet.of(
+       NONE,
+       SECONDS_1,
+       SECONDS_2,
+       SECONDS_5,
+       SECONDS_10,
+       SECONDS_15,
+       SECONDS_30,
+       MINUTES_1,
+       MINUTES_2,
+       MINUTES_3,
+       MINUTES_4,
+       MINUTES_5,
+       MINUTES_7,
+       MINUTES_10,
+       MINUTES_12,
+       MINUTES_15,
+       MINUTES_20,
+       MINUTES_25,
+       MINUTES_30,
+       HOURS_1,
+       HOURS_2,
+       HOURS_6,
+       HOURS_12,
+       DAY_1
+   );
+   
+   /**
+    * Used for {@link CapControlStrategy#getControlInterval()}, {@link CapControlStrategy#getMinResponseTime()}
+    * {@link CapControlStrategy#getControlDelayTime()}.
+    */
    public static Set<TimeIntervals> getAnalysisIntervals() {
-       return ImmutableSet.of(
-           NONE,
-           SECONDS_1,
-           SECONDS_2,
-           SECONDS_5,
-           SECONDS_10,
-           SECONDS_15,
-           SECONDS_30,
-           MINUTES_1,
-           MINUTES_2,
-           MINUTES_3,
-           MINUTES_4,
-           MINUTES_5,
-           MINUTES_7,
-           MINUTES_10,
-           MINUTES_12,
-           MINUTES_15,
-           MINUTES_20,
-           MINUTES_25,
-           MINUTES_30,
-           HOURS_1,
-           HOURS_2,
-           HOURS_6,
-           HOURS_12,
-           DAY_1
-       );
+       return analysisIntervals;
    }
    
+   private static final Set<TimeIntervals> integrateIntervals = ImmutableSet.of(
+       MINUTES_1,
+       MINUTES_2,
+       MINUTES_3,
+       MINUTES_4,
+       MINUTES_5,
+       MINUTES_6,
+       MINUTES_7,
+       MINUTES_8,
+       MINUTES_9,
+       MINUTES_10,
+       MINUTES_11,
+       MINUTES_12,
+       MINUTES_13,
+       MINUTES_14,
+       MINUTES_15
+   );
+   
+   /**
+    * Used for {@link CapControlStrategy#getIntegratePeriod()}
+    */
    public static Set<TimeIntervals> getIntegrateIntervals() {
-       return ImmutableSet.of(
-           MINUTES_1,
-           MINUTES_2,
-           MINUTES_3,
-           MINUTES_4,
-           MINUTES_5,
-           MINUTES_6,
-           MINUTES_7,
-           MINUTES_8,
-           MINUTES_9,
-           MINUTES_10,
-           MINUTES_11,
-           MINUTES_12,
-           MINUTES_13,
-           MINUTES_14,
-           MINUTES_15
-       );
+       return integrateIntervals;
    }
 
 }
