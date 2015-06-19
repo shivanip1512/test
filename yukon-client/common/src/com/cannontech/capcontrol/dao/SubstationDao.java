@@ -45,7 +45,6 @@ public interface SubstationDao {
     
     public List<LiteCapControlObject> getOrphans();
     
-    /** Returns substations that are not assigned to a special area. */
     public List<Integer> getAllSpecialAreaUnassignedSubstationIds (int areaId);
 
     /**
@@ -92,5 +91,6 @@ public interface SubstationDao {
      */
     List<Substation> getSubstationsByArea(int areaId);
 
+    /** Returns substations that are not assigned to a special area. */
     List<LiteCapControlObject> getSubstationsNotInSpecialArea();
 }
