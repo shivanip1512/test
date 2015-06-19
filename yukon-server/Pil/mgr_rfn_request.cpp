@@ -346,6 +346,8 @@ void RfnRequestManager::handleNewRequests(const RfnIdentifierSet &recentCompleti
 {
     RfnIdentifierSet recentlyActive(recentCompletions);
 
+    LockGuard guard(_pendingRequestsMux);
+
     {
         LockGuard guard(_submittedRequestsMux);
 
@@ -353,7 +355,7 @@ void RfnRequestManager::handleNewRequests(const RfnIdentifierSet &recentCompleti
         {
             recentlyActive.insert(r.rfnIdentifier);
 
-            _pendingRequests[r.rfnIdentifier].push(r);
+            _pendingRequests[r.rfnIdentifier].insert(r);
         }
 
         _submittedRequests.clear();
@@ -384,14 +386,17 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
         return;  //  already busy
     }
 
+    //  note that _pendingRequestMux is already acquired by handleNewRequests, so we are safe to access _pendingRequests
     RequestQueue &rq = _pendingRequests[rfnIdentifier];
 
     //  may need to try more than once
     while( ! rq.empty() )
     {
-        RfnDeviceRequest request = rq.top();
+        auto top = rq.begin();
 
-        rq.pop();
+        RfnDeviceRequest request = *top;
+
+        rq.erase(top);
 
         CTILOG_INFO(dout, "Got new request ("<< rq.size() <<" remaining) for device "<< rfnIdentifier);
 
@@ -493,9 +498,46 @@ boost::ptr_deque<RfnDeviceResult> RfnRequestManager::getResults(unsigned max)
 
 void RfnRequestManager::cancelByGroupMessageId(long groupMessageId)
 {
-    //  TODO - scan through local queues looking for group messages to cancel.
+    const auto rfnDeviceRequestGroupIdMatches =
+        [=](const RfnDeviceRequest &r) {
+            return r.groupMessageId == groupMessageId;
+        };
 
-    //  Cancel status will be returned for any canceled messages
+    {
+        LockGuard guard(_pendingRequestsMux);
+
+        {
+            LockGuard guard(_submittedRequestsMux);
+
+            _submittedRequests.erase(
+                    std::remove_if(
+                            _submittedRequests.begin(),
+                            _submittedRequests.end(),
+                            rfnDeviceRequestGroupIdMatches),
+                    _submittedRequests.end());
+        }
+
+        for( auto &kv : _pendingRequests )
+        {
+            auto &queue = kv.second;
+
+            auto itr = queue.begin();
+
+            while( itr != queue.end() )
+            {
+                if( rfnDeviceRequestGroupIdMatches(*itr) )
+                {
+                    queue.erase(itr++);
+                }
+                else
+                {
+                    ++itr;
+                }
+            }
+        }
+    }
+
+    //  Cancel status will be returned via E2eIndication for any canceled messages
     E2eMessenger::cancelByGroupId(groupMessageId);
 }
 

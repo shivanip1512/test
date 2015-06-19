@@ -23,9 +23,9 @@ struct RfnDeviceRequest
     long groupMessageId;
     void *connectionHandle;
 
-    bool operator<(const RfnDeviceRequest &rhs) const
+    bool operator>(const RfnDeviceRequest &rhs) const
     {
-        return priority < rhs.priority;
+        return priority > rhs.priority;
     }
 };
 
@@ -97,7 +97,7 @@ private:
     using IndicationQueue = std::vector<Messaging::Rfn::E2eMessenger::Indication>;
     using ConfirmQueue    = std::vector<Messaging::Rfn::E2eMessenger::Confirm>;
     using ExpirationQueue = std::vector<RfnIdentifier>;
-    using RequestQueue    = std::priority_queue<RfnDeviceRequest>;
+    using RequestQueue    = std::multiset<RfnDeviceRequest, std::greater<RfnDeviceRequest>>;
     using RfnIdToRequestQueue = std::map<RfnIdentifier, RequestQueue>;
 
     using Mutex     = std::mutex;
@@ -120,6 +120,7 @@ private:
 
     ResultQueue _tickResults;
 
+    Mutex                _pendingRequestsMux;
     RfnIdToRequestQueue  _pendingRequests;
 
     struct ActiveRfnRequest
