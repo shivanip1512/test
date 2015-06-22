@@ -8,12 +8,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.joda.time.Hours;
 import org.joda.time.Instant;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.chart.service.NormalizedUsageService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
@@ -39,6 +43,7 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
     @Autowired private MeterDao meterDao;
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
     @Autowired private NormalizedUsageService normalizedUsageService;
+    private static final Logger log = YukonLogManager.getLogger(WaterMeterLeakServiceImpl.class);
 
     private static class MeterPointValueHolder {
         
@@ -134,7 +139,15 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
         if (Iterables.isEmpty(devices)) {
             return new ArrayList<WaterMeterLeak>();
         }
-
+        
+        
+        if (log.isDebugEnabled()) {
+            DateTimeFormatter df = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm");
+            log.debug("start=" + df.print(range.getMin()) + "---stop=" + df.print(range.getMax()));
+            log.debug("range=" + range);
+            log.debug("hours between=" + Hours.hoursBetween(range.getMin(), range.getMax()).getHours());
+        }
+        
         List<MeterPointValueHolder> intervalReadings = Lists.newArrayList();
         Set<YukonMeter> reportingMeters = Sets.newHashSet();
         List<YukonMeter> meters = meterDao.getMetersForYukonPaos(devices);
@@ -179,7 +192,12 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
         }
 
         Collection<Double> values = dateValueMap.values();
+        
+        if(values != null && log.isDebugEnabled()){
+            log.debug("values="+values.size()+"---"+ "numHours="+numHours);
+        }
         if (values == null || values.size() < numHours) {
+            log.debug("leak rate is null");
             return null;
         }
 

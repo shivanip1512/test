@@ -3,10 +3,13 @@ package com.cannontech.web.scheduledFileExport.tasks;
 import java.io.File;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.service.DeviceCollectionService;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -17,7 +20,6 @@ import com.cannontech.common.scheduledFileExport.ExportFileGenerationParameters;
 import com.cannontech.common.scheduledFileExport.WaterLeakExportGenerationParameters;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.waterLeakReport.model.SortBy;
@@ -54,7 +56,11 @@ public class ScheduledWaterLeakFileExportTask extends ScheduledFileExportTask {
         
         Duration timePrevious = Duration.standardHours(hoursPrevious);
         Instant now = new Instant();
-        Range<Instant> range = Range.inclusive(now, now.minus(timePrevious));
+        
+        DateTime min = now.minus(timePrevious).toDateTime().withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0);
+        DateTime max = now.toDateTime().withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0);
+        
+        Range<Instant> range = Range.inclusive(new Instant(min), new Instant(max));
         
         DeviceCollection deviceCollection = deviceCollectionService.loadCollection(collectionId);
         List<SimpleDevice> devices = deviceCollection.getDeviceList();
@@ -69,11 +75,7 @@ public class ScheduledWaterLeakFileExportTask extends ScheduledFileExportTask {
             dataRow[0] = waterLeak.getMeter().getName();
             dataRow[1] = waterLeak.getMeter().getMeterNumber();
             dataRow[2] = waterLeak.getMeter().getPaoType().getDbString();
-            dataRow[3] = String.valueOf(waterLeak.getPointValueHolder().getValue());
-
-            String formattedDate = dateFormattingService.format(waterLeak.getPointValueHolder().getPointDataTimeStamp(),
-                                                                DateFormatEnum.BOTH, userContext);
-            dataRow[4] = formattedDate;
+            dataRow[3] = String.valueOf(waterLeak.getLeakRate());
             dataRows.add(dataRow);
         }
         

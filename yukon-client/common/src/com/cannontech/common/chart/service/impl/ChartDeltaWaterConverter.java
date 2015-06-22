@@ -36,6 +36,7 @@ public class ChartDeltaWaterConverter implements ChartDataConverter {
 
 	private Logger log = YukonLogManager.getLogger(ChartDeltaWaterConverter.class);
 	
+    @Override
     public List<ChartValue<Double>> convertValues(List<ChartValue<Double>> chartValues,
             ChartInterval interval) {
         
@@ -48,7 +49,7 @@ public class ChartDeltaWaterConverter implements ChartDataConverter {
         Double previousValue = null;
         Long previousTime = null;
         double expectedMaxDeltaInMillis = getExpectedMaxDeltaInMillis(interval);
-        
+        int i = 1;   
         for (ChartValue<Double> chartValue : chartValuesCopy) {
 
             double currVal = chartValue.getValue();
@@ -61,13 +62,13 @@ public class ChartDeltaWaterConverter implements ChartDataConverter {
                 // Only use value if delta is positive - usage should always grow
                 if (deltaValue >= 0) {
                     long millisecondDelta = currTime - previousTime;
-
                     // if delta <= expectedDelta, then we'll keep the chart value.
                     if ( millisecondDelta <= expectedMaxDeltaInMillis) {
 	                    chartValue.setValue(deltaValue);
 	                    chartValue.setFormattedValue(pointValueFormat.format(deltaValue));
 	                    convertedValues.add(chartValue);
-	                    log.debug("millisecondDelta:" + millisecondDelta + "; deltaValue:" + deltaValue);
+	                    log.debug(i +"=millisecondDelta:" + millisecondDelta + "; deltaValue:" + deltaValue);
+	                    i++;
                     } else {	// otherwise discard and log
                     	log.warn("Delta is greater than expected delta...value will be skipped: " +
                     			chartValue.toString());
