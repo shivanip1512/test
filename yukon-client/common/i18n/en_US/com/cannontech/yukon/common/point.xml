@@ -277,6 +277,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.USAGE_PER_INTERVAL">Usage per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.WATER_USAGE_PER_INTERVAL">Water Usage per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_KW_LOAD_PROFILE">Delivered kW Load Profile</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_KVAR_LOAD_PROFILE">Delivered kVAr Load Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KW_LOAD_PROFILE">Received kW Load Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KW_LOAD_PROFILE">Sum kW Load Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_KW_LOAD_PROFILE">Net kW Load Profile</entry>

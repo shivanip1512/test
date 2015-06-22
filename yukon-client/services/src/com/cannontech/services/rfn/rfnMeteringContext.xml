@@ -117,7 +117,13 @@
         <property name="loadProfile"><null/></property>
         <qualifier value="WaterUsage"/>
     </bean>
-    
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="KVARH"/>
+        <property name="perInterval" value="null"/>
+        <property name="loadProfile" value="DELIVERED_KVAR_LOAD_PROFILE"><null/></property>
+        <qualifier value="DeliveredKvarh "/>
+    </bean>
+       
     <bean class="com.cannontech.services.calculated.CalculatedPointDataProducer"/>
 
 </beans>

@@ -7901,11 +7901,20 @@
                 <unitofmeasure value="kVA" />
                 <decimalplaces value="4" />
             </point>
+            <point type="Analog" offset="215">
+                <name>Delivered kVAr Load Profile</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVarh" />
+                <decimalplaces value="3" />
+            </point>
         </points>
         <attributes>
             <attribute name="KVAH">
                 <basicLookup point="kVAh Delivered" />
             </attribute>
+			<attribute name="DELIVERED_KVAR_LOAD_PROFILE">
+				<basicLookup point="Delivered kVAr Load Profile" />
+			</attribute>
             <attribute name="RECEIVED_KVAH">
                 <basicLookup point="kVAh Received" />
             </attribute>
@@ -9598,6 +9607,12 @@
                 <unitofmeasure value="kVArh" />
                 <decimalplaces value="3" />
             </point>
+            <point type="Analog" offset="206">
+                <name>Delivered kVAr Load Profile</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVarh" />
+                <decimalplaces value="3" />
+            </point>            
         </points>
         <attributes>
             <!-- Using KVARH attributes for "Delivered kVArh". May need separate 
@@ -9632,6 +9647,9 @@
             <attribute name="RECEIVED_KVARH_RATE_D">
                 <basicLookup point="Received Rate D kVArh" />
             </attribute>
+            <attribute name="DELIVERED_KVAR_LOAD_PROFILE">
+				<basicLookup point="Delivered kVAr Load Profile" />
+			</attribute>       
         </attributes>
     </pao>
 
