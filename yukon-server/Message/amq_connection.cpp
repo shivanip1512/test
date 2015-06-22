@@ -316,8 +316,8 @@ void ActiveMQConnectionManager::dispatchIncomingMessages()
 
     for( const auto &inbound : incomingMessages )
     {
-        const auto &queue     = inbound.first;
-        const auto &messages  = inbound.second;
+        const auto &queue       = inbound.first;
+        const auto &descriptors = inbound.second;
 
         if( debugActivityInfo() )
         {
@@ -326,12 +326,12 @@ void ActiveMQConnectionManager::dispatchIncomingMessages()
 
         const auto queueCallbacks = _callbacks.equal_range(queue);
 
-        for( const auto &msg : messages )
+        for( const auto &md : descriptors )
         {
             if( debugActivityInfo() )
             {
                 CTILOG_DEBUG(dout, "Dispatching message to callbacks from queue \"" << queue->name << "\" id " << reinterpret_cast<unsigned long>(queue) << std::endl
-                        << reinterpret_cast<unsigned long>(queue) << ": " << msg);
+                        << reinterpret_cast<unsigned long>(queue) << ": " << md.msg);
             }
 
             auto cb_itr = queueCallbacks.first;
@@ -345,7 +345,7 @@ void ActiveMQConnectionManager::dispatchIncomingMessages()
                     CTILOG_DEBUG(dout, "Calling callback " << reinterpret_cast<unsigned long>(&callback) << " for queue \"" << queue->name << "\" id " << reinterpret_cast<unsigned long>(queue));
                 }
 
-                callback(msg);
+                callback(md);
             }
         }
     }
@@ -364,24 +364,29 @@ void ActiveMQConnectionManager::dispatchTempQueueReplies()
         _tempQueueReplies.clear();
     }
 
-    for each( const ReplyPerDestination::value_type &reply in replies )
+    for( const auto &kv : replies )
     {
-        TemporaryConsumersByDestination::iterator itr =
-                _temporaryConsumers.find(reply.first);
+        const auto &destination = kv.first;
+        const auto &descriptor  = kv.second;
+
+        //  need the iterator so we can delete later
+        auto itr = _temporaryConsumers.find(destination);
 
         if( itr == _temporaryConsumers.end() )
         {
-            CTILOG_ERROR(dout, "Message received with no consumer; destination [" << reply.first << "]");
+            CTILOG_ERROR(dout, "Message received with no consumer; destination [" << destination << "]");
             continue;
         }
 
+        const auto &consumer = itr->second;
+
         if( debugActivityInfo() )
         {
-            CTILOG_DEBUG(dout, "Calling temp queue callback " << reinterpret_cast<unsigned long>(&(itr->second->callback)) << " for temp queue \"" << reply.first << "\"" << std::endl
-                    << reinterpret_cast<unsigned long>(&(itr->second->callback)) << ": " << reply.second);
+            CTILOG_DEBUG(dout, "Calling temp queue callback " << reinterpret_cast<unsigned long>(&(consumer->callback)) << " for temp queue \"" << destination << "\"" << std::endl
+                    << reinterpret_cast<unsigned long>(&(consumer->callback)) << ": " << descriptor.msg);
         }
 
-        itr->second->callback(reply.second);
+        consumer->callback(descriptor);
 
         _temporaryConsumers.erase(itr);
     }
@@ -428,15 +433,15 @@ struct DeserializationHelper
 
     DeserializationHelper(const CallbackForMsg &callback_) : callback(callback_) {}
 
-    void operator()(const ActiveMQConnectionManager::SerializedMessage &buf) const
+    void operator()(const ActiveMQConnectionManager::MessageDescriptor &md) const
     {
-        if( const boost::optional<Msg> msg = Serialization::MessageSerializer<Msg>::deserialize(buf) )
+        if( const boost::optional<Msg> msg = Serialization::MessageSerializer<Msg>::deserialize(md.msg) )
         {
             callback(*msg);
         }
         else
         {
-            CTILOG_ERROR(dout, "Failed to deserialize " << typeid(Msg).name() << " from payload [" << buf << "]");
+            CTILOG_ERROR(dout, "Failed to deserialize " << typeid(Msg).name() << " from payload [" << md.msg << "]");
         }
     }
 };
@@ -450,7 +455,7 @@ void ActiveMQConnectionManager::enqueueMessageWithCallbackFor(
         CtiTime timeout,
         TimeoutCallback timedOut)
 {
-    SerializedMessageCallback callbackWrapper = DeserializationHelper<Msg>(callback);
+    MessageCallback callbackWrapper = DeserializationHelper<Msg>(callback);
 
     gActiveMQConnection->enqueueOutgoingMessage(queue, message, TemporaryListener{ callbackWrapper, timeout, timedOut });
 }
@@ -459,7 +464,7 @@ void ActiveMQConnectionManager::enqueueMessageWithCallbackFor(
 void ActiveMQConnectionManager::enqueueMessageWithCallback(
         const ActiveMQ::Queues::OutboundQueue &queue,
         const SerializedMessage &message,
-        SerializedMessageCallback callback,
+        MessageCallback callback,
         CtiTime timeout,
         TimeoutCallback timedOut)
 {
@@ -576,18 +581,18 @@ ActiveMQ::QueueProducer &ActiveMQConnectionManager::getQueueProducer(cms::Sessio
 }
 
 
-void ActiveMQConnectionManager::registerHandler(const ActiveMQ::Queues::InboundQueue &queue, SerializedMessageCallback callback)
+void ActiveMQConnectionManager::registerHandler(const ActiveMQ::Queues::InboundQueue &queue, MessageCallback callback)
 {
     gActiveMQConnection->addNewCallback(queue, callback);
 }
 
 
-void ActiveMQConnectionManager::addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, SerializedMessageCallback callback)
+void ActiveMQConnectionManager::addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, MessageCallback callback)
 {
     {
         CtiLockGuard<CtiCriticalSection> lock(_newCallbackMux);
 
-        _newCallbacks.insert(std::make_pair(&queue, callback));
+        _newCallbacks.emplace(&queue, callback);
     }
 
     if( ! isRunning() )
@@ -601,20 +606,24 @@ void ActiveMQConnectionManager::onInboundMessage(const ActiveMQ::Queues::Inbound
 {
     if( const cms::BytesMessage *bytesMessage = dynamic_cast<const cms::BytesMessage *>(message) )
     {
-        SerializedMessage payload(bytesMessage->getBodyLength());
+        MessageDescriptor md;
 
-        bytesMessage->readBytes(payload);
+        md.type = bytesMessage->getCMSType();
+
+        md.msg.resize(bytesMessage->getBodyLength());
+
+        bytesMessage->readBytes(md.msg);
 
         {
             CtiLockGuard<CtiCriticalSection> lock(_newIncomingMessagesMux);
 
-            _newIncomingMessages[queue].push_back(payload);
+            _newIncomingMessages[queue].push_back(md);
         }
 
         if( debugActivityInfo() )
         {
             CTILOG_DEBUG(dout, "Received inbound message for queue \"" << queue->name << "\" id " << reinterpret_cast<unsigned long>(queue) << std::endl
-                    << reinterpret_cast<unsigned long>(queue) << ": " << payload);
+                    << reinterpret_cast<unsigned long>(queue) << ": " << md.msg);
         }
     }
 }
@@ -624,22 +633,26 @@ void ActiveMQConnectionManager::onTempQueueReply(const cms::Message *message)
 {
     if( const cms::BytesMessage *bytesMessage = dynamic_cast<const cms::BytesMessage *>(message) )
     {
-        SerializedMessage payload(bytesMessage->getBodyLength());
-
-        bytesMessage->readBytes(payload);
-
         if( const cms::Destination *dest = message->getCMSDestination() )
         {
+            MessageDescriptor md;
+
+            md.type = bytesMessage->getCMSType();
+
+            md.msg.resize(bytesMessage->getBodyLength());
+
+            bytesMessage->readBytes(md.msg);
+
             {
                 CtiLockGuard<CtiCriticalSection> lock(_tempQueueRepliesMux);
 
-                _tempQueueReplies[ActiveMQ::destPhysicalName(*dest)] = payload;
+                _tempQueueReplies[ActiveMQ::destPhysicalName(*dest)] = md;
             }
 
             if( debugActivityInfo() )
             {
                 CTILOG_DEBUG(dout, "Received temp queue reply for \"" << ActiveMQ::destPhysicalName(*dest) << "\"" << std::endl
-                        << ActiveMQ::destPhysicalName(*dest) << ": " << payload);
+                        << ActiveMQ::destPhysicalName(*dest) << ": " << md.msg);
             }
         }
     }

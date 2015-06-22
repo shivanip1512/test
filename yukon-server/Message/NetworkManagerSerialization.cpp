@@ -46,7 +46,7 @@ mCancel mapping(tCancel t)
 //  NetworkManagerCancelRequest
 //=============================================================================
 
-MessagePtr<Thrift::NetworkManagerCancelRequest>::type serialize( const NetworkManagerCancelRequest& imsg )
+MessagePtr<Thrift::NetworkManagerCancelRequest>::type populateThrift( const NetworkManagerCancelRequest& imsg )
 {
     MessagePtr<Thrift::NetworkManagerCancelRequest>::type omsg( new Thrift::NetworkManagerCancelRequest );
 
@@ -58,7 +58,7 @@ MessagePtr<Thrift::NetworkManagerCancelRequest>::type serialize( const NetworkMa
     return omsg;
 }
 
-MessagePtr<NetworkManagerCancelRequest>::type deserialize( const Thrift::NetworkManagerCancelRequest& imsg )
+MessagePtr<NetworkManagerCancelRequest>::type populateMessage( const Thrift::NetworkManagerCancelRequest& imsg )
 {
     MessagePtr<NetworkManagerCancelRequest>::type omsg( new NetworkManagerCancelRequest );
 
@@ -74,22 +74,22 @@ MessagePtr<NetworkManagerCancelRequest>::type deserialize( const Thrift::Network
 //  NetworkManagerCancelRequestAck
 //=============================================================================
 
-MessagePtr<Thrift::NetworkManagerCancelRequestAck>::type serialize( const NetworkManagerCancelRequestAck& imsg )
+MessagePtr<Thrift::NetworkManagerCancelRequestAck>::type populateThrift( const NetworkManagerCancelRequestAck& imsg )
 {
     MessagePtr<Thrift::NetworkManagerCancelRequestAck>::type omsg( new Thrift::NetworkManagerCancelRequestAck );
 
-    auto request = serialize(static_cast<const NetworkManagerCancelRequest>(imsg));
+    auto request = populateThrift(static_cast<const NetworkManagerCancelRequest>(imsg));
 
     omsg->__set_request( *request );
 
     return omsg;
 }
 
-MessagePtr<NetworkManagerCancelRequestAck>::type deserialize( const Thrift::NetworkManagerCancelRequestAck& imsg )
+MessagePtr<NetworkManagerCancelRequestAck>::type populateMessage( const Thrift::NetworkManagerCancelRequestAck& imsg )
 {
     MessagePtr<NetworkManagerCancelRequestAck>::type omsg( new NetworkManagerCancelRequestAck );
 
-    auto request = deserialize(imsg.request);
+    auto request = populateMessage(imsg.request);
 
     static_cast<NetworkManagerCancelRequest &>(*omsg) = *request;
 
@@ -128,7 +128,7 @@ tStatus mapping(mStatus s)
 
 }
 
-MessagePtr<Thrift::NetworkManagerCancelResponse>::type serialize( const NetworkManagerCancelResponse& imsg )
+MessagePtr<Thrift::NetworkManagerCancelResponse>::type populateThrift( const NetworkManagerCancelResponse& imsg )
 {
     MessagePtr<Thrift::NetworkManagerCancelResponse>::type omsg( new Thrift::NetworkManagerCancelResponse );
 
@@ -147,7 +147,7 @@ MessagePtr<Thrift::NetworkManagerCancelResponse>::type serialize( const NetworkM
     return omsg;
 }
 
-MessagePtr<NetworkManagerCancelResponse>::type deserialize( const Thrift::NetworkManagerCancelResponse& imsg )
+MessagePtr<NetworkManagerCancelResponse>::type populateMessage( const Thrift::NetworkManagerCancelResponse& imsg )
 {
     MessagePtr<NetworkManagerCancelResponse>::type omsg( new NetworkManagerCancelResponse );
 
@@ -171,9 +171,9 @@ struct NetworkManagerMessageRegistration  //  must be named so it can have a con
 {
     NetworkManagerMessageRegistration()
     {
-        nmMessageFactory.registerSerializer<NetworkManagerCancelRequest,    Thrift::NetworkManagerCancelRequest>    ( &serialize, &deserialize, "NetworkManagerCancelRequest" );
-        nmMessageFactory.registerSerializer<NetworkManagerCancelRequestAck, Thrift::NetworkManagerCancelRequestAck> ( &serialize, &deserialize, "NetworkManagerCancelRequestAck" );
-        nmMessageFactory.registerSerializer<NetworkManagerCancelResponse,   Thrift::NetworkManagerCancelResponse>   ( &serialize, &deserialize, "NetworkManagerCancelResponse" );
+        nmMessageFactory.registerSerializer<NetworkManagerCancelRequest,    Thrift::NetworkManagerCancelRequest>    ( &populateThrift, &populateMessage, "NetworkManagerCancelRequest" );
+        nmMessageFactory.registerSerializer<NetworkManagerCancelRequestAck, Thrift::NetworkManagerCancelRequestAck> ( &populateThrift, &populateMessage, "NetworkManagerCancelRequestAck" );
+        nmMessageFactory.registerSerializer<NetworkManagerCancelResponse,   Thrift::NetworkManagerCancelResponse>   ( &populateThrift, &populateMessage, "NetworkManagerCancelResponse" );
     }
 
 } nmMessageRegistration;

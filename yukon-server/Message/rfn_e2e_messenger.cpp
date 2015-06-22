@@ -12,7 +12,7 @@
 
 #include "boostutil.h"
 
-#include <boost/assign/list_of.hpp>
+#include <boost/algorithm/string/join.hpp>
 
 #include <random>
 
@@ -105,16 +105,23 @@ void E2eMessenger::setE2eDtHandler(Indication::Callback callback)
 
     ActiveMQConnectionManager::registerHandler(
             ActiveMQ::Queues::InboundQueue::NetworkManagerE2eDataIndication,
-            [&](const SerializedMessage &msg)
+            [this](const ActiveMQConnectionManager::MessageDescriptor &md)
             {
-                handleRfnE2eDataIndicationMsg(msg);
+                handleRfnE2eDataIndicationMsg(md.msg);
             });
 
     ActiveMQConnectionManager::registerHandler(
             ActiveMQ::Queues::InboundQueue::NetworkManagerE2eDataConfirm,
-            [&](const SerializedMessage &msg)
+            [this](const ActiveMQConnectionManager::MessageDescriptor &md)
             {
-                handleRfnE2eDataConfirmMsg(msg);
+                handleRfnE2eDataConfirmMsg(md.msg);
+            });
+
+    ActiveMQConnectionManager::registerHandler(
+            ActiveMQ::Queues::InboundQueue::NetworkManagerResponse,
+            [this](const ActiveMQConnectionManager::MessageDescriptor &md)
+            {
+                handleNetworkManagerResponseMsg(md.msg, md.type);
             });
 
     ActiveMQConnectionManager::start();
@@ -284,6 +291,53 @@ void E2eMessenger::handleRfnE2eDataConfirmMsg(const SerializedMessage &msg)
 }
 
 
+void E2eMessenger::handleNetworkManagerResponseMsg(const SerializedMessage &msg, const std::string &type)
+{
+    auto omsg = nmMessageFactory.deserialize( type, msg );
+
+    // check for any deserialize failure
+    if( ! omsg.get() )
+    {
+        CTILOG_ERROR(dout, "message: \"" << type << "\" cannot be deserialized.");
+        return;
+    }
+
+    if( auto response = dynamic_cast<const NetworkManagerCancelResponse *>(omsg.get()) )
+    {
+        FormattedList cancelDetails;
+
+        cancelDetails.add("Client GUID") << response->clientGuid;
+        cancelDetails.add("Session ID")  << response->sessionId;
+
+        std::vector<std::string> results_success, results_notFound, results_invalid;
+
+        for( const auto &kv : response->results )
+        {
+            auto result_as_string = std::to_string(kv.first);
+
+            switch(kv.second)
+            {
+                case NetworkManagerCancelResponse::MessageStatus::Success:
+                    results_success .emplace_back(result_as_string);
+                    break;
+                case NetworkManagerCancelResponse::MessageStatus::NotFound:
+                    results_notFound.emplace_back(result_as_string);
+                    break;
+                default:
+                    results_invalid .emplace_back(result_as_string);
+                    break;
+            }
+        }
+
+        cancelDetails.add("Success")   << boost::join(results_success,  ",");
+        cancelDetails.add("Not found") << boost::join(results_notFound, ",");
+        cancelDetails.add("Invalid")   << boost::join(results_invalid,  ",");
+
+        CTILOG_INFO(dout, "Cancel response received:" << cancelDetails);
+    }
+}
+
+
 void E2eMessenger::sendE2eDt(const Request &req, const ApplicationServiceIdentifiers asid, Confirm::Callback callback, TimeoutCallback timeout)
 {
     gE2eMessenger->serializeAndQueue(req, callback, timeout, asid);
@@ -322,7 +376,7 @@ void E2eMessenger::serializeAndQueue(const Request &req, Confirm::Callback callb
     ActiveMQConnectionManager::enqueueMessageWithCallback(
             ActiveMQ::Queues::OutboundQueue::NetworkManagerE2eDataRequest,
             serialized,
-            [=](const SerializedMessage &ack)
+            [=](const ActiveMQConnectionManager::MessageDescriptor &md)
             {
                 //  ignore the ack message itself
 
@@ -366,7 +420,7 @@ void E2eMessenger::cancel(const long id, NetworkManagerCancelRequest::CancelType
     ActiveMQConnectionManager::enqueueMessageWithCallback(
             ActiveMQ::Queues::OutboundQueue::NetworkManagerRequest,
             serialized,
-            [=](const SerializedMessage &ack)
+            [=](const ActiveMQConnectionManager::MessageDescriptor &md)
             {
                 //  ignore the ack message itself
             },

@@ -79,7 +79,14 @@ class IM_EX_MSG ActiveMQConnectionManager :
 public:
 
     using SerializedMessage = std::vector<unsigned char>;
-    using SerializedMessageCallback = std::function<void (const SerializedMessage &)>;
+
+    struct MessageDescriptor
+    {
+        std::string type;
+        SerializedMessage msg;
+    };
+
+    using MessageCallback = std::function<void (const MessageDescriptor &)>;
     using TimeoutCallback = std::function<void()>;
 
     template<class Msg>
@@ -102,9 +109,9 @@ public:
             typename CallbackFor<Msg>::type callback, CtiTime timeout, TimeoutCallback timedOut);
     static void enqueueMessageWithCallback(
             const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message,
-            SerializedMessageCallback callback, CtiTime timeout, TimeoutCallback timedOut);
+            MessageCallback callback, CtiTime timeout, TimeoutCallback timedOut);
 
-    static void registerHandler(const ActiveMQ::Queues::InboundQueue &queue, const SerializedMessageCallback callback);
+    static void registerHandler(const ActiveMQ::Queues::InboundQueue &queue, const MessageCallback callback);
 
     virtual void close();
 
@@ -112,7 +119,7 @@ protected:
 
     struct TemporaryListener
     {
-        SerializedMessageCallback callback;
+        MessageCallback callback;
         CtiTime expiration;
         TimeoutCallback timedOut;
     };
@@ -126,7 +133,7 @@ protected:
             const SerializedMessage &message,
             boost::optional<TemporaryListener> callback);
 
-    void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, const SerializedMessageCallback callback);
+    void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, const MessageCallback callback);
 
     void onInboundMessage(const ActiveMQ::Queues::InboundQueue *queue, const cms::Message *message);
     void onTempQueueReply(const cms::Message *message);
@@ -160,14 +167,14 @@ private:
     CtiCriticalSection _outgoingMessagesMux;
     EnvelopeQueue      _outgoingMessages;
 
-    typedef std::map<const ActiveMQ::Queues::InboundQueue *, std::vector<SerializedMessage>> IncomingPerQueue;
+    typedef std::map<const ActiveMQ::Queues::InboundQueue *, std::vector<MessageDescriptor>> IncomingPerQueue;
     CtiCriticalSection _newIncomingMessagesMux;
     IncomingPerQueue   _newIncomingMessages;
 
     typedef boost::ptr_map<const std::string, ActiveMQ::QueueProducer> ProducersByQueueName;
     ProducersByQueueName _producers;
 
-    typedef std::multimap<const ActiveMQ::Queues::InboundQueue *, SerializedMessageCallback> CallbacksPerQueue;
+    typedef std::multimap<const ActiveMQ::Queues::InboundQueue *, MessageCallback> CallbacksPerQueue;
     CtiCriticalSection _newCallbackMux;
     CallbacksPerQueue  _newCallbacks;
     CallbacksPerQueue  _callbacks;
@@ -187,7 +194,7 @@ private:
     {
         boost::scoped_ptr<ActiveMQ::TempQueueConsumer> managedConsumer;
         boost::scoped_ptr<cms::MessageListener> listener;
-        SerializedMessageCallback callback;
+        MessageCallback callback;
     };
 
     typedef boost::ptr_map<std::string, TempQueueConsumerWithCallback> TemporaryConsumersByDestination;
@@ -201,7 +208,7 @@ private:
 
     std::multimap<CtiTime, ExpirationHandler> _temporaryExpirations;
 
-    typedef std::map<std::string, SerializedMessage> ReplyPerDestination;
+    typedef std::map<std::string, MessageDescriptor> ReplyPerDestination;
     CtiCriticalSection  _tempQueueRepliesMux;
     ReplyPerDestination _tempQueueReplies;
 
