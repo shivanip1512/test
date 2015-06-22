@@ -35,10 +35,10 @@ StreamAmqConnection<Outbound, Inbound>::StreamAmqConnection(
 
     Messaging::ActiveMQConnectionManager::registerHandler(
             inbound,
-            boost::bind(
-                    &StreamAmqConnection::onMessage,
-                    this,
-                    _1));
+            [this](const Messaging::ActiveMQConnectionManager::MessageDescriptor &md)
+            {
+                onMessage(md.msg);
+            });
 }
 
 template <class Outbound, class Inbound>
