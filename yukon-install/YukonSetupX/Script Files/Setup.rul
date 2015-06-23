@@ -30,7 +30,7 @@ begin
 			  "Welcome to the installer for the Yukon Application suite."
 			  + "\nThis program will install Yukon " + IFX_PRODUCT_VERSION
 			  + " on your computer.\nTo continue, click Next.");
-	
+    RemoveCalcHist();
 	Dialog_AskDestinationPath:
 	Enable(BACKBUTTON);
 	sDir = TARGETDIR;
@@ -287,6 +287,7 @@ begin
 					    +".\nClick Next to continue.");
 	Enable(BACKBUTTON);
 	
+	RemoveCalcHist();
 	Dialog_Services:
 	if (AreYukonServicesRunning()) then
 		MessageBox(SERVICE_WARNING, WARNING);	

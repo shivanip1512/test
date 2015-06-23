@@ -14,7 +14,6 @@
 	<classpathentry kind="lib" path="/third-party/batik.jar"/>
 	<classpathentry kind="lib" path="/third-party/mx4j-jmx.jar"/>
 	<classpathentry kind="lib" path="/third-party/mx4j-tools.jar"/>
-	<classpathentry kind="src" path="/calchist"/>
 	<classpathentry kind="src" path="/cbc"/>
 	<classpathentry kind="src" path="/tools"/>
 	<classpathentry kind="lib" path="/third-party/mx4j-impl.jar"/>

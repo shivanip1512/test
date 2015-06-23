@@ -14,6 +14,7 @@
 #define TOMCAT_REG_KEY	"SOFTWARE\\Apache Software Foundation\\Procrun 2.0\\YukonWebApplicationService\\Parameters\\Java"
 #define JVM_MX			"JvmMx"
 #define JVM_OPTIONS		"Options"
+#define JAVA_CALC_HIST  "CalcHist"
 
 //global variable used to store service settings across the upgrade process
 string sServiceSettings(11);
@@ -234,6 +235,17 @@ begin
 	endfor;
 	//all services were stopped
 	return FALSE;
+end;
+
+//-------------------------------------------------------
+// Helper function to remove java Calc Hist service
+//-------------------------------------------------------
+export prototype RemoveCalcHist();
+function RemoveCalcHist()
+begin
+    if(ServiceExistsService(JAVA_CALC_HIST)) then
+	ServiceRemoveService(JAVA_CALC_HIST);
+	endif;
 end;
 
 //---------------------------------------------------

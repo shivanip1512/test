@@ -95,7 +95,6 @@
         <ant dir="${web-common}" target="${dotarget}" />
 
         <ant dir="${billing}" target="${dotarget}" />
-        <ant dir="${calchist}" target="${dotarget}" />
         <ant dir="${trending}" target="${dotarget}" />
         <ant dir="${monitor}" target="${dotarget}" />
         <ant dir="${yukonappserver}" target="${dotarget}" />

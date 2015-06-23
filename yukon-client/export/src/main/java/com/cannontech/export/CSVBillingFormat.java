@@ -9,21 +9,25 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.Vector;
 
-import com.cannontech.calchist.Baseline;
-import com.cannontech.calchist.HoursAndValues;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.KeysAndValues;
 import com.cannontech.common.util.KeysAndValuesFile;
+import com.cannontech.common.util.LogWriter;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.point.PointOffsets;
+import com.cannontech.database.data.point.UnitOfMeasure;
+import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.export.record.CSVBillingCustomerRecord;
 import com.cannontech.export.record.CSVBillingRecord;
@@ -309,7 +313,7 @@ public class CSVBillingFormat extends ExportFormatBase {
                     prevCurtailDate = (GregorianCalendar) curtailDate.clone();
                     Vector<Date> validTimestamps = new Vector<>(1);
                     validTimestamps.add(curtailDate.getTime());
-                    hoursAndValues = Baseline.retrieveData(csvBillingCust.getCurtailPointId(), validTimestamps);
+                    hoursAndValues = retrieveData(csvBillingCust.getCurtailPointId(), validTimestamps);
                 }
                 int hourOfDay = record.getCurtailDate().get(Calendar.HOUR_OF_DAY);
                 if (hoursAndValues != null) {
@@ -449,4 +453,204 @@ public class CSVBillingFormat extends ExportFormatBase {
         logEvent("@" + this.toString() + " Data Collection : Took " + (System.currentTimeMillis() - timer) + " millis",
             com.cannontech.common.util.LogWriter.INFO);
     }
+    
+    private HoursAndValues retrieveData(Integer pointID, Vector<Date> validTimestampsVector) {
+        HoursAndValues returnData = null;
+        StringBuffer sql = new StringBuffer("SELECT VALUE, TIMESTAMP FROM RAWPOINTHISTORY WHERE ");
+
+        sql.append(" POINTID = ");
+        sql.append(pointID);
+
+        // ...for each entry in the baselineCalDatesVector....
+        // Timestamps give us values > 00:00:00 and <= 00:00:00 of the last
+        // day+1
+        // contains java.util.Date values.
+        Vector<Date> sqlQueryDates = new Vector<>();
+        sqlQueryDates = appendTimestamps(sql, validTimestampsVector);
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rset = null;
+
+        try {
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+
+            if (conn == null) {
+                CTILogger.info("Error getting database connection.");
+                logEvent("Error getting database connection.", LogWriter.ERROR);
+                return null;
+            }
+            pstmt = conn.prepareStatement(sql.toString());
+            for (int i = 0; i < sqlQueryDates.size(); i++) {
+                pstmt.setTimestamp(i + 1, new Timestamp(sqlQueryDates.get(i).getTime()));
+            }
+            rset = pstmt.executeQuery();
+
+            // contains Double values (rawPointHistory values).
+            Vector<Double> values = new Vector<>();
+            // contains Integer values (rawPointHistory timestamps.hour).
+            Vector<Integer> hours = new Vector<>();
+
+            while (rset.next()) {
+                values.add(new Double(rset.getDouble(1)));
+
+                Timestamp ts = rset.getTimestamp(2);
+                int keyHour = getAdjustedHour(ts);
+                hours.add(new Integer(keyHour));
+            }
+
+            if (!values.isEmpty() && !hours.isEmpty()) {
+                PointUnit pUnit = new PointUnit();
+                pUnit.setPointID(pointID);
+                pUnit.setDbConnection(conn);
+                pUnit.retrieve();
+
+                TreeMap<?, ?> treeMap = buildTreeMap(values, hours);
+                Set<?> keySet = treeMap.keySet();
+                Collection<?> keyVals = treeMap.values();
+
+                Object[] tempArray = new Double[keyVals.size()];
+                returnData = new HoursAndValues(keySet.size(), keyVals.size());
+                keySet.toArray(returnData.getHours());
+                tempArray = keyVals.toArray();
+
+                for (int i = 0; i < keyVals.size(); i++) {
+                    Double[] v = (Double[]) tempArray[i];
+                    double counter = v[0].doubleValue();
+                    double totalVal = v[1].doubleValue();
+
+                    UnitOfMeasure uom = UnitOfMeasure.getForId(pUnit.getUomID());
+                    if (uom == UnitOfMeasure.KW) {
+                        returnData.values[i] = new Double(totalVal / counter); // kW
+                                                                               // values.
+                    } else if (uom == UnitOfMeasure.KWH) {
+                        returnData.values[i] = new Double(totalVal / validTimestampsVector.size()); // kWh
+                                                                                                    // values
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+                if (rset != null) {
+                    rset.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e2) {
+                e2.printStackTrace(); // sometin is up
+            }
+        }
+
+        return returnData; // hours and values of the retreived data.
+    }
+
+    private static int getAdjustedHour(Timestamp ts) {
+        int min = (new Integer(new SimpleDateFormat("mm").format(ts).toString()).intValue());
+        int hr = (new Integer(new SimpleDateFormat("HH").format(ts).toString()).intValue());
+
+        // have to manipulate the hour associated with the value and timestamps.
+        if (hr == 0) {
+            if (min == 0) {
+                return 23;
+            }
+        } else {
+            if (min == 0) {
+                return (hr - 1);
+            }
+        }
+        return hr;
+    }
+
+    /**
+     * @param sql
+     * @param validTimestampsVector
+     * @return Vector of java.util.Date values that will need to be set for the
+     *         sql statement.
+     */
+    private static Vector<Date> appendTimestamps(StringBuffer sql,
+            Vector<Date> validTimestampsVector) {
+        Vector<Date> vectorOfQueryDates = new Vector<>();
+        boolean newLine = false;
+        for (int i = 0; i < validTimestampsVector.size(); i++) {
+            GregorianCalendar endDate = new GregorianCalendar();
+            endDate.setTime(validTimestampsVector.get(i));
+            endDate.add(java.util.Calendar.DATE, 1);
+            if (i == 0) {
+                sql.append(" AND (( TIMESTAMP <= ?");
+                vectorOfQueryDates.add(endDate.getTime());
+                // System.out.println(" AND (( TIMESTAMP <= " +
+                // endDate.getTime() );
+            } else if (newLine) {
+                sql.append(" OR ( TIMESTAMP <= ?");
+                vectorOfQueryDates.add(endDate.getTime());
+                // System.out.println(" OR ( TIMESTAMP <= " +
+                // endDate.getTime());
+                newLine = false;
+            }
+
+            // The last timestamp to check so we need to close the statement
+            // too.
+            if (i + 1 == validTimestampsVector.size()) {
+                sql.append(" AND TIMESTAMP > ?)");
+                sql.append(") ORDER BY TIMESTAMP");
+                vectorOfQueryDates.add(validTimestampsVector.get(i));
+                // System.out.println("  AND TIMESTAMP > " +
+                // validTimestampsVector.get(i) +
+                // ") ORDER BY TIMESTAMP");
+                break;
+            }
+            // Compare i and i+1 values incremental dates. If they are in order
+            // we may skip the date by making
+            // it inclusive in the where clause
+            GregorianCalendar yesterday = new GregorianCalendar();
+            yesterday.setTime(validTimestampsVector.get(i));
+            yesterday.add(java.util.Calendar.DATE, -1);
+            if (yesterday.getTime().compareTo(validTimestampsVector.get(i + 1)) == 0) {
+                // SKIP
+            } else {
+                sql.append(" AND TIMESTAMP > ?)");
+                vectorOfQueryDates.add(validTimestampsVector.get(i));
+                // System.out.println(" AND TIMESTAMP > " +
+                // validTimestampsVector.get(i));
+                newLine = true;
+            }
+        }
+        return vectorOfQueryDates;
+    }
+
+    private static TreeMap<Integer, Double[]> buildTreeMap(Vector<Double> values,
+            Vector<Integer> hours) {
+        TreeMap<Integer, Double[]> tree = new TreeMap<>();
+        if (!hours.isEmpty() && !values.isEmpty()) {
+            for (int i = 0; i < hours.size(); i++) {
+                Integer d = hours.get(i);
+                Double[] objectValues = tree.get(d);
+
+                if (objectValues == null) {
+                    // objectValues is not in the key already
+                    objectValues = new Double[2]; // 1 for counter, 1 for value
+                    objectValues[0] = new Double(1);
+                    objectValues[1] = values.get(i);
+                    tree.put(d, objectValues);
+                } else {
+                    Double newVal = new Double(objectValues[1].doubleValue() + values.get(i)
+                                                                                     .doubleValue());
+
+                    objectValues[0].doubleValue();
+                    objectValues[0] = new Double(objectValues[0].doubleValue() + 1);
+                    objectValues[1] = newVal;
+
+                    tree.put(d, objectValues);
+                }
+            }
+        }
+        return tree;
+    }
+
 }
