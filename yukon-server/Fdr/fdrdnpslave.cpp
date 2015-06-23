@@ -433,7 +433,7 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection)
 }
 
 
-bool isDnpDeviceId (long deviceId)
+bool DnpSlave::isDnpDeviceId(const long deviceId) const
 {
     const std::string sql = "select paotype from yukonpaobject where paobjectid=?";
 
@@ -485,7 +485,7 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
     control.count      = boc->getCount();
     control.on_time    = boc->getOnTime();
     control.off_time   = boc->getOffTime();
-    control.status     = BinaryOutputControl::Status_NotSupported;  //  actually need to parse and preserve the passed status...  confirm it's Normal before sending control
+    control.status     = ControlStatus::NotSupported;  //  actually need to parse and preserve the passed status...  confirm it's Normal before sending control
     control.isLongIndexed =
         (ob.getIndexLength()    == 2 &&
          ob.getQuantityLength() == 2);
@@ -519,11 +519,11 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
                 }
                 else if( tryDispatchControl(control, fdrPoint->getPointID()) )
                 {
-                    control.status = BinaryOutputControl::Status_Success;
+                    control.status = ControlStatus::Success;
                 }
                 else
                 {
-                    control.status = BinaryOutputControl::Status_FormatError;
+                    control.status = ControlStatus::FormatError;
                 }
 
                 //  only send the control to the first point found
@@ -566,7 +566,7 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
 }
 
 
-Protocols::DNP::BinaryOutputControl::Status DnpSlave::tryPorterControl(const Protocols::DnpSlave::control_request &control)
+Protocols::DNP::ControlStatus DnpSlave::tryPorterControl(const Protocols::DnpSlave::control_request &control)
 {
     //  validate that the control point's setup matches the control request, else fail with...  unsupported?
     //
@@ -592,7 +592,7 @@ Protocols::DNP::BinaryOutputControl::Status DnpSlave::tryPorterControl(const Pro
         }
     }
 
-    return Protocols::DNP::BinaryOutputControl::Status_NotSupported;
+    return Protocols::DNP::ControlStatus::NotSupported;
 }
 
 
@@ -696,6 +696,8 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
     analog.value  = aoc->getValue();
     analog.type   = mapFindOrDefault(Variation, aoc->getVariation(), AnalogOutput::AO_32Bit);
 
+    analog.status = ControlStatus::NotSupported;
+
     //  look for the point with the correct control offset
     for( const auto &kv : _receiveMap )
     {
@@ -721,51 +723,11 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
             {
                 if( isDnpDeviceId(fdrPoint->getPaoID()) )
                 {
-                    //  validate that the the point is on an analog output point (offset 10,000+), else fail with...  unsupported?
-                    //
-                    //  Analog outputs as well...  no control outputs, but confirm that we are assigned to an analog output point.
-                    //  Analog output translation type?
-                    //
-                    //  DNP passthrough control via Porter...  but set timeouts, I guess?
-
-                    std::regex re { "Control result \\(([0-9]+)\\)" };
-
-                    std::smatch results;
-
-                    std::string resultString;
-
-                    if( std::regex_search(resultString, results, re) )
-                    {
-                        try
-                        {
-                            int error = std::stoi(results[0].str());
-                        }
-                        catch( std::invalid_argument & )
-                        {
-                        }
-                        catch( std::out_of_range & )
-                        {
-                        }
-                    }
-
-                    return 0;
+                    analog.status = tryPorterAnalogOutput(analog);
                 }
-                else
+                else if( tryDispatchAnalogOutput(analog, fdrPoint->getPointID()) )
                 {
-                    std::string translationName = "DNP offset " + std::to_string(dnpId.Offset);
-
-                    if (fdrPoint->isControllable())
-                    {
-                        CtiCommandMsg *aoMsg = createAnalogOutputMessage(fdrPoint->getPointID(), translationName, analog.value);
-                        sendMessageToDispatch(aoMsg);
-                        return  ClientErrors::None;
-                    }
-
-                    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-                    {
-                        CTILOG_DEBUG(dout, "Analog point "<< translationName <<" value "<< analog.value <<" from "<< getInterfaceName() <<
-                                " assigned to point "<< fdrPoint->getPointID());
-                    }
+                    analog.status = ControlStatus::Success;
                 }
             }
         }
@@ -802,6 +764,22 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
     }
 
     return 0;
+}
+
+
+auto DnpSlave::tryPorterAnalogOutput(const Protocols::DnpSlave::analog_output_request &analog) -> ControlStatus
+{
+    return ControlStatus::Success;
+}
+
+
+bool DnpSlave::tryDispatchAnalogOutput(const Protocols::DnpSlave::analog_output_request &analog, long pointid)
+{
+    std::string translationName = "DNP offset " + std::to_string(analog.offset);
+
+    CtiCommandMsg *aoMsg = createAnalogOutputMessage(pointid, translationName, analog.value);
+
+    return sendMessageToDispatch(aoMsg);
 }
 
 

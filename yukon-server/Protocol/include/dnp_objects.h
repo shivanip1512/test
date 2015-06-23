@@ -158,6 +158,32 @@ public:
     void getPoints( Interface::pointlist_t &points, const TimeCTO *cto, const Time *arrival ) const;
 };
 
+
+enum class ControlStatus
+{
+    Success           = 0,
+    Timeout           = 1,
+    NoSelect          = 2,
+    FormatError       = 3,
+    NotSupported      = 4,
+    AlreadyActive     = 5,
+    HardwareError     = 6,
+    Local             = 7,
+    TooManyObjs       = 8,
+    NotAuthorized     = 9,
+    AutomationInhibit = 10,
+    ProcessingLimited = 11,
+    OutOfRange        = 12,
+
+    ReservedMin       = 13,
+    ReservedMax       = 125,
+
+    NonParticipating  = 126,
+
+    Undefined         = 127,
+};
+
+
 }
 }
 }

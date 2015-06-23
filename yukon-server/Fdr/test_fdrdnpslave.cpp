@@ -24,6 +24,11 @@ struct Test_FdrDnpSlave : Cti::Fdr::DnpSlave
 
         return true;
     };
+
+    bool isDnpDeviceId(const long deviceid) const override
+    {
+        return deviceid > 100;
+    }
 };
 
 struct Test_ServerConnection : Cti::Fdr::ServerConnection

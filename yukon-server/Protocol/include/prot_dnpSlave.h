@@ -113,7 +113,7 @@ struct control_request
     bool queue;
     bool clear;
     unsigned char count;
-    DNP::BinaryOutputControl::Status status;
+    DNP::ControlStatus status;
 
     bool isLongIndexed;
 };
@@ -124,6 +124,7 @@ struct analog_output_request
 
     double value;
     DNP::AnalogOutput::Variation type;
+    DNP::ControlStatus status;
 
     bool isLongIndexed;
 };

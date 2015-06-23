@@ -189,9 +189,9 @@ void BinaryOutputControl::setControlBlock(unsigned long onTime, unsigned long of
 }
 
 
-void BinaryOutputControl::setStatus(Status s)
+void BinaryOutputControl::setStatus(ControlStatus s)
 {
-    _crob_or_pcb.block.status = s;
+    _crob_or_pcb.block.status = static_cast<unsigned char>(s);
 }
 
 
@@ -316,7 +316,7 @@ int BinaryOutputControl::getSerializedLen(void) const
 }
 
 
-int BinaryOutputControl::getStatus( void ) const
+unsigned char BinaryOutputControl::getStatus( void ) const
 {
     return _crob_or_pcb.block.status;
 }

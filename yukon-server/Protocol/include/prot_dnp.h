@@ -51,7 +51,7 @@ class IM_EX_PROT DnpProtocol : public Interface
     std::string pointSummary(unsigned points);
     std::string pointDataReport(const std::map<unsigned, double> &pointdata, unsigned points);
 
-    std::string getControlResultString( int result_status ) const;
+    std::string getControlResultString( unsigned char result_status ) const;
 
     unsigned convertLocalSecondsToUtcSeconds( const unsigned seconds );
     unsigned convertUtcSecondsToLocalSeconds( const unsigned seconds );

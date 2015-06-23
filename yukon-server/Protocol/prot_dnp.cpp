@@ -474,7 +474,7 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
                 const BinaryOutputControl *boc = reinterpret_cast<const BinaryOutputControl *>(od.object);
 
                 //  if the select went successfully, transition to operate
-                if( _command == Command_SetDigitalOut_SBO_Select && boc->getStatus() == BinaryOutputControl::Status_Success )
+                if( _command == Command_SetDigitalOut_SBO_Select && boc->getStatus() == static_cast<unsigned char>(ControlStatus::Success) )
                 {
                     if( !_command_parameters.empty() )
                     {
@@ -928,24 +928,24 @@ bool DnpProtocol::isTransactionComplete( void ) const
 }
 
 
-const auto ControlResultStrings = std::map<int, const char *> {
-        { BinaryOutputControl::Status_Success,           "Request accepted, initiated, or queued."},
-        { BinaryOutputControl::Status_Timeout,           "Request not accepted because the operate message was received after the arm timer timed out. The arm timer was started when the select operation for the same point was received."},
-        { BinaryOutputControl::Status_NoSelect,          "Request not accepted because no previous matching select request exists. {An operate message was sent to activate an output that was not previously armed with a matching select message.},"},
-        { BinaryOutputControl::Status_FormatError,       "Request not accepted because there were formatting errors in the control request."},
-        { BinaryOutputControl::Status_NotSupported,      "Request not accepted because a control operation is not supported for this point."},
-        { BinaryOutputControl::Status_AlreadyActive,     "Request not accepted, because the control queue is full or the point is already active."},
-        { BinaryOutputControl::Status_HardwareError,     "Request not accepted because of control hardware problems."},
-        { BinaryOutputControl::Status_Local,             "Request not accepted because Local/Remote switch is in Local position."},
-        { BinaryOutputControl::Status_TooManyObjs,       "Request not accepted because too many objects appeared in the same request."},
-        { BinaryOutputControl::Status_NotAuthorized,     "Request not accepted because of insufficient authorization."},
-        { BinaryOutputControl::Status_AutomationInhibit, "Request not accepted because it was inhibited by a local automation process."},
-        { BinaryOutputControl::Status_ProcessingLimited, "Request not accepted because the device cannot process any more activities than are presently in progress."},
-        { BinaryOutputControl::Status_OutOfRange,        "Request not accepted because the value is outside the acceptable range permitted for this point."},
-        { BinaryOutputControl::Status_NonParticipating,  "Outstation shall not issue or perform the control operation."},
-        { BinaryOutputControl::Status_Undefined,         "Request not accepted because of some other undefined reason."}};
+const auto ControlResultStrings = std::map<unsigned char, const char *> {
+        { static_cast<unsigned char>(ControlStatus::Success),           "Request accepted, initiated, or queued."},
+        { static_cast<unsigned char>(ControlStatus::Timeout),           "Request not accepted because the operate message was received after the arm timer timed out. The arm timer was started when the select operation for the same point was received."},
+        { static_cast<unsigned char>(ControlStatus::NoSelect),          "Request not accepted because no previous matching select request exists. {An operate message was sent to activate an output that was not previously armed with a matching select message.},"},
+        { static_cast<unsigned char>(ControlStatus::FormatError),       "Request not accepted because there were formatting errors in the control request."},
+        { static_cast<unsigned char>(ControlStatus::NotSupported),      "Request not accepted because a control operation is not supported for this point."},
+        { static_cast<unsigned char>(ControlStatus::AlreadyActive),     "Request not accepted, because the control queue is full or the point is already active."},
+        { static_cast<unsigned char>(ControlStatus::HardwareError),     "Request not accepted because of control hardware problems."},
+        { static_cast<unsigned char>(ControlStatus::Local),             "Request not accepted because Local/Remote switch is in Local position."},
+        { static_cast<unsigned char>(ControlStatus::TooManyObjs),       "Request not accepted because too many objects appeared in the same request."},
+        { static_cast<unsigned char>(ControlStatus::NotAuthorized),     "Request not accepted because of insufficient authorization."},
+        { static_cast<unsigned char>(ControlStatus::AutomationInhibit), "Request not accepted because it was inhibited by a local automation process."},
+        { static_cast<unsigned char>(ControlStatus::ProcessingLimited), "Request not accepted because the device cannot process any more activities than are presently in progress."},
+        { static_cast<unsigned char>(ControlStatus::OutOfRange),        "Request not accepted because the value is outside the acceptable range permitted for this point."},
+        { static_cast<unsigned char>(ControlStatus::NonParticipating),  "Outstation shall not issue or perform the control operation."},
+        { static_cast<unsigned char>(ControlStatus::Undefined),         "Request not accepted because of some other undefined reason."}};
 
-std::string DnpProtocol::getControlResultString( int result_status ) const
+std::string DnpProtocol::getControlResultString( unsigned char result_status ) const
 {
     const boost::optional<const char *> controlResultString = mapFind(ControlResultStrings, result_status);
 
