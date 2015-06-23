@@ -9,9 +9,6 @@ yukon-client/billing/bin
 yukon-client/billing/build
 yukon-client/build/dist
 yukon-client/build/lib
-yukon-client/calchist/.cvsignore
-yukon-client/calchist/bin
-yukon-client/calchist/build
 yukon-client/cbc/.cvsignore
 yukon-client/cbc/bin
 yukon-client/cbc/build
