@@ -287,28 +287,33 @@ void DnpSlaveProtocol::setControlCommand( const DnpSlave::control_request &contr
 
     _application.setCommand(
             ApplicationLayer::ResponseResponse,
-                    BlockFactoryFunc(
-                          std::move(boc),
-                          control.offset));
+            BlockFactoryFunc(
+                    std::move(boc),
+                    control.offset));
 
     //  finalize the request
     _application.initForSlaveOutput();
 }
 
 
-void DnpSlaveProtocol::setAnalogOutputCommand( const DnpSlave::output_analog &point )
+void DnpSlaveProtocol::setAnalogOutputCommand( const DnpSlave::analog_output_request &analog )
 {
     _command = Commands::SetAnalogOut_Direct;
 
-    auto aoc = std::make_unique<AnalogOutput>(AnalogOutput::AO_16Bit);
+    auto aoc = std::make_unique<AnalogOutput>(analog.type);
 
-    aoc->setControl(point.value);
+    aoc->setControl(analog.value);
+
+    const auto BlockFactoryFunc =
+            analog.isLongIndexed
+                ? ObjectBlock::makeLongIndexedBlock
+                : ObjectBlock::makeIndexedBlock;
 
     _application.setCommand(
             ApplicationLayer::ResponseResponse,
-            ObjectBlock::makeIndexedBlock(
+            BlockFactoryFunc(
                     std::move(aoc),
-                    point.offset));
+                    analog.offset));
 
     //  finalize the request
     _application.initForSlaveOutput();

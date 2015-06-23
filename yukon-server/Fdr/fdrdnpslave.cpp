@@ -490,89 +490,44 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
         (ob.getIndexLength()    == 2 &&
          ob.getQuantityLength() == 2);
 
-    boost::optional<unsigned> controlState;
-
-    switch( boc->getTripClose() )
+    //  look for the point with the correct control offset
+    for( const auto &kv : _receiveMap )
     {
-        case BinaryOutputControl::Trip:
+        const DnpId &dnpId = kv.second;
+        if( dnpId.PointType   == StatusPointType
+            && dnpId.SlaveId  == _dnpSlave.getSrcAddr()
+            && dnpId.MasterId == _dnpSlave.getDstAddr()
+            && dnpId.Offset   == control.offset )
         {
-            controlState = 0;
-            break;
-        }
+            const CtiFDRDestination &fdrdest = kv.first;
+            CtiFDRPoint* fdrPoint = fdrdest.getParentPoint();
 
-        case BinaryOutputControl::Close:
-        {
-            controlState = 1;
-            break;
-        }
-
-        case BinaryOutputControl::NUL:
-        {
-            switch( boc->getControlCode() )
             {
-                case BinaryOutputControl::PulseOn:
-                case BinaryOutputControl::LatchOn:
+                CtiLockGuard<CtiMutex> recvGuard(getReceiveFromList().getMutex());
+
+                if ( ! findPointIdInList(fdrPoint->getPointID(),getReceiveFromList(),*fdrPoint) )
                 {
-                    controlState = 1;
-                    break;
-                }
-                case BinaryOutputControl::PulseOff:
-                case BinaryOutputControl::LatchOff:
-                {
-                    controlState = 0;
-                    break;
+                    continue;
                 }
             }
-        }
-    }
 
-    if ( ! controlState)
-    {
-        control.status = BinaryOutputControl::Status_FormatError;
-    }
-    else
-    {
-        //  look for the point with the correct control offset
-        for( const auto &kv : _receiveMap )
-        {
-            const DnpId &dnpId = kv.second;
-            if( dnpId.PointType   == StatusPointType
-                && dnpId.SlaveId  == _dnpSlave.getSrcAddr()
-                && dnpId.MasterId == _dnpSlave.getDstAddr()
-                && dnpId.Offset   == control.offset )
+            if( fdrPoint->isControllable() )
             {
-                const CtiFDRDestination &fdrdest = kv.first;
-                CtiFDRPoint* fdrPoint = fdrdest.getParentPoint();
-
+                if( isDnpDeviceId(fdrPoint->getPaoID()) )
                 {
-                    CtiLockGuard<CtiMutex> recvGuard(getReceiveFromList().getMutex());
-
-                    if ( ! findPointIdInList(fdrPoint->getPointID(),getReceiveFromList(),*fdrPoint) )
-                    {
-                        continue;
-                    }
+                    control.status = tryPorterControl(control);
                 }
-
-                if( fdrPoint->isControllable() )
+                else if( tryDispatchControl(control, fdrPoint->getPointID()) )
                 {
-                    // build the command message and send the control
-                    std::auto_ptr<CtiCommandMsg> cmdMsg(
-                            new CtiCommandMsg(CtiCommandMsg::ControlRequest));
-
-                    cmdMsg->insert(-1);     // This is the dispatch token and is unimplemented at this time
-                    cmdMsg->insert(0);      // device id, unknown at this point, dispatch will find it
-                    cmdMsg->insert(fdrPoint->getPointID());  // point for control
-                    cmdMsg->insert(*controlState);
-
-                    sendMessageToDispatch(cmdMsg.release());
-
-                    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-                    {
-                        CTILOG_DEBUG(dout, logNow() << " Control " << (*controlState ? "close" : "open") << " sent to pointid " << fdrPoint->getPointID());
-                    }
-
                     control.status = BinaryOutputControl::Status_Success;
                 }
+                else
+                {
+                    control.status = BinaryOutputControl::Status_FormatError;
+                }
+
+                //  only send the control to the first point found
+                break;
             }
         }
     }
@@ -611,6 +566,98 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
 }
 
 
+Protocols::DNP::BinaryOutputControl::Status DnpSlave::tryPorterControl(const Protocols::DnpSlave::control_request &control)
+{
+    //  validate that the control point's setup matches the control request, else fail with...  unsupported?
+    //
+    //  DNP passthrough control via Porter...  but set timeouts, I guess?
+
+    std::string responseString;
+
+    std::regex re { "Control result \\(([0-9]+)\\)" };
+
+    std::smatch results;
+
+    if( std::regex_search(responseString, results, re) )
+    {
+        try
+        {
+            int error = std::stoi(results[0].str());
+        }
+        catch( std::invalid_argument & )
+        {
+        }
+        catch( std::out_of_range & )
+        {
+        }
+    }
+
+    return Protocols::DNP::BinaryOutputControl::Status_NotSupported;
+}
+
+
+bool DnpSlave::tryDispatchControl(const Protocols::DnpSlave::control_request &control, const long pointId)
+{
+    boost::optional<unsigned> controlState;
+
+    switch( control.trip_close )
+    {
+        case BinaryOutputControl::Trip:
+        {
+            controlState = 0;
+            break;
+        }
+
+        case BinaryOutputControl::Close:
+        {
+            controlState = 1;
+            break;
+        }
+
+        case BinaryOutputControl::NUL:
+        {
+            switch( control.control )
+            {
+                case BinaryOutputControl::PulseOn:
+                case BinaryOutputControl::LatchOn:
+                {
+                    controlState = 1;
+                    break;
+                }
+                case BinaryOutputControl::PulseOff:
+                case BinaryOutputControl::LatchOff:
+                {
+                    controlState = 0;
+                    break;
+                }
+            }
+        }
+    }
+
+    if( ! controlState)
+    {
+        return false;
+    }
+
+    // build the command message and send the control
+    auto cmdMsg = std::make_unique<CtiCommandMsg>(CtiCommandMsg::ControlRequest);
+
+    cmdMsg->insert(-1);     // This is the dispatch token and is unimplemented at this time
+    cmdMsg->insert(0);      // device id, unknown at this point, dispatch will find it
+    cmdMsg->insert(pointId);  // point for control
+    cmdMsg->insert(*controlState);
+
+    sendMessageToDispatch(cmdMsg.release());
+
+    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+    {
+        CTILOG_DEBUG(dout, logNow() << " Control " << (*controlState ? "close" : "open") << " sent to pointid " << pointId);
+    }
+
+    return true;
+}
+
+
 int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const ObjectBlock &control)
 {
     if( control.getGroup() != AnalogOutput::Group ||
@@ -633,11 +680,21 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
         return -1;
     }
 
-    Protocols::DnpSlave::output_analog point;
+    using Protocols::DnpSlave::analog_output_request;
+
+    analog_output_request analog;
+
+    static const std::map<int, AnalogOutput::Variation> Variation {
+        { AnalogOutput::AO_16Bit, AnalogOutput::AO_16Bit },
+        { AnalogOutput::AO_32Bit, AnalogOutput::AO_32Bit },
+        { AnalogOutput::AO_SingleFloat, AnalogOutput::AO_SingleFloat },
+        { AnalogOutput::AO_DoubleFloat, AnalogOutput::AO_DoubleFloat },
+    };
 
     //  create the point so we can echo it back in the DNP response
-    point.offset = ob.index;
-    point.value  = aoc->getValue();
+    analog.offset = ob.index;
+    analog.value  = aoc->getValue();
+    analog.type   = mapFindOrDefault(Variation, aoc->getVariation(), AnalogOutput::AO_32Bit);
 
     //  look for the point with the correct control offset
     for( const auto &kv : _receiveMap )
@@ -669,8 +726,7 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
                     //  Analog outputs as well...  no control outputs, but confirm that we are assigned to an analog output point.
                     //  Analog output translation type?
                     //
-                    //  DNP passthrough control via Porter...  but set timeouts, I guess?  If we have multiple points in the receiveMap...
-                    //    Forget it.  It only makes sense to do one for a given translation.
+                    //  DNP passthrough control via Porter...  but set timeouts, I guess?
 
                     std::regex re { "Control result \\(([0-9]+)\\)" };
 
@@ -700,14 +756,14 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
 
                     if (fdrPoint->isControllable())
                     {
-                        CtiCommandMsg *aoMsg = createAnalogOutputMessage(fdrPoint->getPointID(), translationName, point.value);
+                        CtiCommandMsg *aoMsg = createAnalogOutputMessage(fdrPoint->getPointID(), translationName, analog.value);
                         sendMessageToDispatch(aoMsg);
                         return  ClientErrors::None;
                     }
 
                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                     {
-                        CTILOG_DEBUG(dout, "Analog point "<< translationName <<" value "<< point.value <<" from "<< getInterfaceName() <<
+                        CTILOG_DEBUG(dout, "Analog point "<< translationName <<" value "<< analog.value <<" from "<< getInterfaceName() <<
                                 " assigned to point "<< fdrPoint->getPointID());
                     }
                 }
@@ -715,7 +771,7 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
         }
     }
 
-    _dnpSlave.setAnalogOutputCommand(point);
+    _dnpSlave.setAnalogOutputCommand(analog);
 
     CtiXfer xfer;
 

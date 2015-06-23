@@ -79,6 +79,12 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
         int processDataLinkConfirmationRequest(ServerConnection &connection);
         int processDataLinkReset              (ServerConnection &connection);
 
+        auto tryPorterControl  (const Protocols::DnpSlave::control_request &control) -> Protocols::DNP::BinaryOutputControl::Status;
+        bool tryDispatchControl(const Protocols::DnpSlave::control_request &control, const long pointId);
+
+        auto tryPorterAnalogOutput  (const Protocols::DnpSlave::control_request &control) -> Protocols::DNP::BinaryOutputControl::Status;
+        bool tryDispatchAnalogOutput(const Protocols::DnpSlave::control_request &control, const long pointId);
+
         std::string dumpDNPMessage(const char* data, unsigned int size);
 
         typedef std::map<CtiFDRDestination, DnpId> DnpDestinationMap;

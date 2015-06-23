@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dnp_application.h"
+#include "dnp_object_analogoutput.h"
 #include "dnp_object_binaryoutput.h"
 
 namespace Cti {
@@ -12,6 +13,7 @@ namespace DnpSlave {
     struct output_digital;
     struct output_counter;
 
+    struct analog_output_request;
     struct control_request;
 }
 
@@ -36,7 +38,7 @@ public:
     std::pair<Commands, DNP::ObjectBlockPtr> identifyRequest(const char* data, unsigned int size);
     void setScanCommand( std::vector<std::unique_ptr<DnpSlave::output_point>> outputPoints );
     void setControlCommand( const DnpSlave::control_request &control );
-    void setAnalogOutputCommand( const DnpSlave::output_analog &point );
+    void setAnalogOutputCommand( const DnpSlave::analog_output_request &analog );
 
     YukonError_t decode( CtiXfer &xfer );
     YukonError_t generate( CtiXfer &xfer );
@@ -112,6 +114,16 @@ struct control_request
     bool clear;
     unsigned char count;
     DNP::BinaryOutputControl::Status status;
+
+    bool isLongIndexed;
+};
+
+struct analog_output_request
+{
+    unsigned long offset;
+
+    double value;
+    DNP::AnalogOutput::Variation type;
 
     bool isLongIndexed;
 };
