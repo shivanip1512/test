@@ -4,6 +4,7 @@
 #include "dlldefs.h"
 
 #include <boost/optional.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 
 #include <string>
 #include <map>
@@ -22,7 +23,15 @@ public:
     using PropertyValue = std::string;
     using OptionalValue = boost::optional<PropertyValue>;
 
-    using PropertyCollection = std::map<PropertyKey, PropertyValue>;
+    struct Comparator   // case-insensitive key comparisons
+    {
+        bool operator()( const PropertyKey & lhs, const PropertyKey & rhs ) const
+        {
+            return boost::algorithm::ilexicographical_compare( lhs, rhs );
+        }
+    };
+
+    using PropertyCollection = std::map<PropertyKey, PropertyValue, Comparator>;
 
     Translation( const std::string & input );
 

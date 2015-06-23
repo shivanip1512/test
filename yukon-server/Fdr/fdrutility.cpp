@@ -2,9 +2,9 @@
 
 #include "logger.h"
 #include "fdrutility.h"
+#include "std_helper.h"
 
 #include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/classification.hpp>
 
 
@@ -42,15 +42,7 @@ Translation::Translation( const std::string & input )
 
 Translation::OptionalValue Translation::operator[]( const Translation::PropertyKey & key ) const
 {
-    for ( const auto & property : _properties )
-    {
-        if ( boost::algorithm::iequals( property.first, key ) )     // case-insensitive matching
-        {
-            return property.second;
-        }
-    }
-
-    return boost::none;
+    return mapFind( _properties, key );
 }
 
 }

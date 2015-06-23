@@ -68,9 +68,9 @@ inline std::string socketAddressToString(const SOCKADDR *addr, int addrlen)
     char  str[54];              // array of byte that can contain the largest address (IPV6) with port
     DWORD strlen= sizeof(str);  // in case of a WSAEFAULT error, this parameter will contain the required length
 
-    if( WSAAddressToString((LPSOCKADDR)addr, (DWORD)addr, NULL, str, &strlen) == SOCKET_ERROR )
+    if( WSAAddressToString((LPSOCKADDR)addr, (DWORD)addr, NULL, str, &strlen) == SOCKET_ERROR
+        || strlen == 0 )
     {
-        int err_code = WSAGetLastError();
         return std::string();   // on error, return an empty string
     }
 
