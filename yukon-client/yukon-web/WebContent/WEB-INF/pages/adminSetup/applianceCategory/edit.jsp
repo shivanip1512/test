@@ -13,7 +13,7 @@
 <c:set var="applianceCategoryId" value="${applianceCategory.applianceCategoryId}"/>
 
 <cti:includeScript link="/resources/js/pages/yukon.dr.icon.chooser.js"/>
-<cti:includeScript link="/resources/js/yukon.admin.ec.appliance.categories.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.admin.ec.appliance.categories.js"/>
 
 <div id="program-edit" title="<cti:msg2 key=".editAssignedProgram.title"/>" class="dn"></div>
 <div id="program-unassign" title="<cti:msg2 key=".unassignProgram.title"/>" class="dn"></div>
