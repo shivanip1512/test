@@ -23,7 +23,7 @@ public:
     using PropertyValue = std::string;
     using OptionalValue = boost::optional<PropertyValue>;
 
-    struct Comparator   // case-insensitive key comparisons
+    struct KeyIgnoreCase   // case-insensitive key comparisons
     {
         bool operator()( const PropertyKey & lhs, const PropertyKey & rhs ) const
         {
@@ -31,7 +31,7 @@ public:
         }
     };
 
-    using PropertyCollection = std::map<PropertyKey, PropertyValue, Comparator>;
+    using PropertyCollection = std::map<PropertyKey, PropertyValue, KeyIgnoreCase>;
 
     Translation( const std::string & input );
 
