@@ -286,6 +286,9 @@
     <entry key="yukon.web.modules.dev.pickers.pageName">Pickers</entry>
     
     <!-- Style Guide Pages -->
+    <entry key="yukon.web.modules.dev.js-api.pageName">Yukon JavaScript API</entry>
+    
+    <!-- Style Guide Pages -->
     <entry key="yukon.web.modules.dev.jsTesting.pageName">JavaScript Testing</entry>
     <entry key="yukon.web.modules.dev.grids.pageName">Grids</entry>
     

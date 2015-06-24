@@ -14,6 +14,8 @@
 <%@ attribute name="classes" description="CSS class names applied to the outer label element." %>
 <%@ attribute name="id" description="The html id attribute of the checkbox input." %>
 
+<%@ attribute name="toggleGroup" description="Used to setup a toggle group driven by a checkbox." %>
+
 <cti:default var="checked" value="${false}"/>
 <cti:default var="disabled" value="${false}"/>
 <cti:uniqueIdentifier prefix="checkbox-" var="thisId"/>
@@ -25,10 +27,12 @@
         <c:choose>
             <c:when test="${not empty name}">
                 <input class="checkbox-input" type="checkbox" name="${name}" id="${id}" 
-                <c:if test="${checked}">checked</c:if> <c:if test="${disabled}">disabled</c:if>>
+                    data-toggle="${pageScope.toggleGroup}"
+                    <c:if test="${checked}">checked</c:if> <c:if test="${disabled}">disabled</c:if>>
             </c:when>
             <c:otherwise>
-                <form:checkbox cssClass="checkbox-input" path="${path}" id="${id}" disabled="${disabled}"/>
+                <form:checkbox cssClass="checkbox-input" path="${path}" id="${id}" disabled="${disabled}"
+                    data-toggle="${pageScope.toggleGroup}"/>
             </c:otherwise>
         </c:choose>
         <span class="checkbox-value" aria-hidden="true"></span>

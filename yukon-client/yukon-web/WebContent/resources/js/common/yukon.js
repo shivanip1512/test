@@ -156,20 +156,12 @@ var yukon = (function () {
             return Number((count / total * 100).toFixed(decimals)).toString() + '%';
         },
         
-        /** 
-         * Returns and array of the values in an object.  It only returns the objects own 
-         * values, not those from the prototype chain.
-         */
+        /** Returns the values of an Object.keys call. */
         values: function (obj) {
-            var values = Object.keys(obj || {}).map(function (key) {
+            var values = Object.keys(obj).map(function (key) {
                 return obj[key];
             });
             return values;
-        },
-        
-        /** Fire a callback after a duration. */
-        later: function (millis, callback) {
-            setTimeout(function () { callback(); }, millis);
         },
         
         /** General purpose validators */
@@ -197,6 +189,11 @@ var yukon = (function () {
                 }
                 var validator = /^-?((1?[0-7]?|[0-9]?)[0-9]|180)\.[0-9]{1,6}$/;
                 return validator.test(long);
+            },
+            
+            email: function (email) {
+                var isEmail = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+                return isEmail.test(email);
             }
             
         },
@@ -255,6 +252,7 @@ yukon.namespace = function (ns) {
  * 
  * @requires JQUERY
  * @requires blockUI 2.39
+ * @requires yukon
  */
 yukon.namespace('yukon.ui');
 yukon.ui = (function () {
@@ -539,6 +537,7 @@ yukon.ui = (function () {
             if (popup.is('[data-url]') || url) {
                 url = url || popup.data('url');
                 popup.load(url, function () {
+                    
                     // if no title provided, try to find one hidden in the popup contents
                     if (!options.title) {
                         var title = popup.find('.js-popup-title');
@@ -549,6 +548,12 @@ yukon.ui = (function () {
                     if (tabbed) {
                         popup.tabbedDialog(options);
                     } else {
+                        $.extend(options, {
+                            open: function () {
+                                // Check for a focus element
+                                mod.autofocus(popup);
+                            }
+                        });
                         popup.dialog(options);
                     }
                 });
@@ -785,7 +790,7 @@ yukon.ui = (function () {
             $(document).on('click', '[data-href]', function (ev) { window.location = $(this).attr('data-href'); });
             
             /** Page blockers */
-            $(document).on('click', '.js-blocker', mod.block);
+            $(document).on('click', '.js-blocker', function () { mod.block(this); });
             $(document).on('resize', '#modal-glass', mod.blockPage);
             
             /** Clear page blocker */
@@ -801,7 +806,7 @@ yukon.ui = (function () {
                     group = button.attr('data-disable-group');
                     if (group !== '') {
                         $("[data-disable-group='" + group + "']").each(function (idx) {
-                            button.prop('disabled', true);
+                            $(this).prop('disabled', true);
                         });
                     }
                     
@@ -978,10 +983,6 @@ yukon.ui = (function () {
                 
                 // show the popup
                 mod.dialog(popup);
-                
-                // check for focus
-                var focus = popup.find('.js-focus');
-                if (focus.length) focus.focus();
             });
             
         },
@@ -1036,9 +1037,11 @@ yukon.ui = (function () {
         
         AUTOFOCUS_TRIES: 0,
         
-        autofocus: function () {
+        autofocus: function (container) {
             
-            var focusElement = $('[autofocus], .js-focus:first')[0];
+            var focusElement = !container 
+                ? $('[autofocus], .js-focus:first')[0] // find focus in page 
+                : $(container).find('[autofocus], .js-focus:first')[0]; // find focus in container
             
             if (focusElement) {
                 try { //Play nice with IE
@@ -1070,9 +1073,9 @@ yukon.ui = (function () {
             }
         },
         
-        /** Block out the closest valid container to the event's target, or the page */
-        block: function (ev) {
-            var blockElement = $(ev.target).closest('.js-block-this')[0];
+        /** Block out the closest valid container to the target element, or the page */
+        block: function (target) {
+            var blockElement = $(target).closest('.js-block-this')[0];
            if (blockElement) {
                mod.elementGlass.show(blockElement);
            } else {
@@ -1080,9 +1083,9 @@ yukon.ui = (function () {
            }
         },
         
-        /** Unblock the closest valid container to the event's target, or the page */
-        unblock: function (ev) {
-            var blockElement = $(ev.target).closest('.js-block-this')[0];
+        /** Unblock the closest valid container to the target element, or the page */
+        unblock: function (target) {
+            var blockElement = $(target).closest('.js-block-this')[0];
             if (blockElement) {
                 mod.elementGlass.hide(blockElement);
             } else {
@@ -1130,8 +1133,9 @@ yukon.ui = (function () {
         
         /** Format a phone number input */
         formatPhone: function (input) {
+            input = $(input);
             // strip the input down to just numbers, then format
-            var stripped = input.value.replace(/[^\d]/g, ''),
+            var stripped = input.val().replace(/[^\d]/g, ''),
                 i,
                 regex,
                 format;
@@ -1141,12 +1145,12 @@ yukon.ui = (function () {
                     regex = yg.formats.phone[i].regex;
                     format = yg.formats.phone[i].format;
                     if (regex.test(stripped)) {
-                        input.value = stripped.replace(regex, format);
+                        input.val(stripped.replace(regex, format));
                         break;
                     }
                 }
             } else {
-                input.value = '';
+                input.val('');
             }
         },
         
@@ -1156,13 +1160,13 @@ yukon.ui = (function () {
             checkbox = $(checkbox);
             var enable = checkbox.is('[data-toggle-inverse]') ? checkbox.not(':checked') : checkbox.is(':checked'),
                 inputs = $('[data-toggle-group="' + checkbox.data('toggle') + '"]');
-
+                
             var action = checkbox.data('toggleAction');
 
             if (action === 'hide') {
                 inputs.each(function (idx, input) { $(input).toggleClass('dn', !enable); });
             } else {
-                inputs.each(function (idx, input) { $(input).prop('disabled', !enable); });
+            inputs.each(function (idx, input) { $(input).prop('disabled', !enable); });
             }
                 
         },
@@ -1252,74 +1256,6 @@ yukon.ui = (function () {
             });
         },
         
-        /** Pad a string */
-        pad: function (number, length) {
-            
-            var str = '' + number;
-            while (str.length < length) {
-                str = '0' + str;
-            }
-            
-            return str;
-        },
-        
-        /**
-         * Format time, (do we still need yukon.format.time.js?)
-         *
-         * @param {Date} time - time to format
-         * @param {Object} [opts]
-         * @param {boolean} [opts.pad = false] - display leading 0 on single-digit hour
-         * @param {boolean} [opts.meridian = false] - append am/pm to the string
-         */
-        formatTime : function (time, opts) {
-            
-            var timeStr = '';
-            if (!opts) {
-                opts = {};
-            }
-            
-            if (opts['24']) {
-                if (opts.pad) {
-                    timeStr = mod.pad(time.getHours(), 2) + ':' + mod.pad(time.getMinutes(), 2);
-                } else {
-                    timeStr = time.getHours() + ':' + mod.pad(time.getMinutes(), 2);
-                }
-            } else {
-                var hours = time.getHours() % 12 === 0 ? 12 : time.getHours() % 12,
-                    meridian = '';
-                if (opts.meridian) {
-                    meridian = time.getHours() >= 11 ? 'pm' : 'am';
-                }
-                
-                if (opts.pad) {
-                    timeStr = mod.pad(hours, 2) + ':' + mod.pad(time.getMinutes(), 2) + meridian;
-                } else {
-                    timeStr = hours + ':' + mod.pad(time.getMinutes(), 2) + meridian;
-                }
-            }
-            
-            return timeStr;
-        },
-        
-        /** Retrieve a request parameter by name */
-        getParameterByName: function (name) {
-            
-            var regexS,
-                regex,
-                results;
-                
-            name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-            regexS = "[\\?&]"+name+"=([^&#]*)";
-            regex = new RegExp(regexS);
-            results = regex.exec(window.location.href);
-            
-            if (results == null) {
-                return null;
-            } else {
-                return decodeURIComponent(results[1].replace(/\+/g, " "));
-            }
-        },
-        
         /** Manages wizard style paging, useful in complex popups. */
         wizard: {
             
@@ -1339,7 +1275,7 @@ yukon.ui = (function () {
                         });
                     });
                     
-                    $(elem).find('.js-page').each(function (index, elem) {
+                    $(elem).find('.js-page').each(function (idx, elem) {
                         if (idx > 0) {
                             $(elem).hide();
                         } else {
@@ -1383,10 +1319,9 @@ yukon.ui = (function () {
              * Resets the page of the wizard to the first/initial page. Does NOT do
              * anything with the contents
              * 
-             * wizard: can be any element in the DOM. * If it is the js-wizard
-             * container itself, it will reset the page * If it is an arbitrary
-             * node, it will search for and reset ALL js-wizard containers within
-             * 
+             * @param wizard - Can be any element in the DOM. 
+             *                 If it is the js-wizard container itself, it will reset the page. 
+             *                 If it is an arbitrary node, it will search for and reset ALL js-wizard containers within.
              */
             reset: function (wizard) {
                 
