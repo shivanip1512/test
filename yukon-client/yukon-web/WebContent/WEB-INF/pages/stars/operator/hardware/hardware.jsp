@@ -26,7 +26,7 @@ $(function(){
             url += 'decommission';
         }
 
-        yukon.ui.block(event);
+        yukon.ui.block(button);
 
         $.ajax({
             type: 'GET',
@@ -61,7 +61,7 @@ $(function(){
             url += 'decommission';
         }
 
-        yukon.ui.block(event);
+        yukon.ui.block(button);
 
         $.ajax({
             type: 'GET',

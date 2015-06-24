@@ -41,7 +41,7 @@
         <cm:dropdownOption id="recentEventsButton" key="modules.capcontrol.recentEvents.label" icon="icon-application-view-columns"/>
 
         <c:if test="${hasAreaControl}">
-            <cm:dropdownOption linkId="areaState_${bc_areaId}" key="defaults.actions" icon="icon-cog" href="javascript:void(0);" />
+            <cm:dropdownOption linkId="areaState_${bc_areaId}" key="yukon.common.actions" icon="icon-cog" href="javascript:void(0);" />
         </c:if>
     </div>
 

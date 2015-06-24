@@ -95,7 +95,7 @@
                     <tags:nameValue2 nameKey=".confirmPassword"> 
                         <tags:password path="password2" cssClass="js-password-2" autocomplete="off" />
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey="defaults.blank" excludeColon="true">
+                    <tags:nameValue2 nameKey="yukon.common.blank" excludeColon="true">
                         <cti:msg2 key=".generatePassword" var="pwordButton"/>
                         <cti:button label="${pwordButton}" onclick="generatePassword();"/>
                         <label class="fl">

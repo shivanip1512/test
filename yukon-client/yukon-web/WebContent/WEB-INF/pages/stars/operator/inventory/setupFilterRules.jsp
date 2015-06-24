@@ -63,7 +63,7 @@
                                                 </c:when>
                                                 
                                                 <c:when test="${rule.ruleType eq 'DEVICE_STATUS'}">
-                                                    <cti:msg2 var="none" key="defaults.none" />
+                                                    <cti:msg2 var="none" key="yukon.common.none.choice" />
                                                     <tags:yukonListEntrySelect energyCompanyId="${energyCompanyId}" listName="DEVICE_STATUS" 
                                                                                path="filterRules[${row.index}].deviceStatusId" 
                                                                                defaultItemValue="0" defaultItemLabel="${none}" />

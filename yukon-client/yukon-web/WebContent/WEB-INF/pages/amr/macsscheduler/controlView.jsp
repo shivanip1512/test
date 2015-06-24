@@ -14,7 +14,7 @@
             </c:if>
             <div class="column_12_12 clearfix">
                 <div class="column one">
-                    <cti:msg2 var="startText" key="defaults.start"/>
+                    <cti:msg2 var="startText" key="yukon.common.start"/>
                     <tags:sectionContainer title="${startText}">
                     <div>
                         <input type="checkbox" name="startNow" checked="checked"/><i:inline key=".startNow"/>
@@ -23,7 +23,7 @@
                     </tags:sectionContainer>
                 </div>
                 <div class="column two nogutter">
-                    <cti:msg2 var="stopText" key="defaults.stop"/>
+                    <cti:msg2 var="stopText" key="yukon.common.stop"/>
                     <tags:sectionContainer title="${stopText}">
                         <div>&nbsp;</div>
                         <dt:dateTime name="stop" value="${stopTime}" />

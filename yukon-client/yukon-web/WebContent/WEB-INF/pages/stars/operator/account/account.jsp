@@ -32,7 +32,7 @@
         </form>
         <d:confirm on=".js-delete-user" nameKey="delete.user" argument="${accountGeneral.accountDto.accountNumber}"/>
         
-        <cti:msg2 var="naLabel" key="defaults.na"/>
+        <cti:msg2 var="naLabel" key="yukon.common.na"/>
         
         <cti:displayForPageEditModes modes="EDIT">
             <cti:url value="/stars/operator/account/updateAccount" var="action"/>
@@ -146,7 +146,7 @@
                         <tags:nameValueContainer2 id="billingAddressTable">
                         
                             <cti:displayForPageEditModes modes="EDIT,CREATE">
-                                <tags:checkboxNameValue nameKey="defaults.blank" 
+                                <tags:checkboxNameValue nameKey="yukon.common.blank" 
                                     path="operatorGeneralUiExtras.usePrimaryAddressForBilling" 
                                     inputClass="js-use-same-address" 
                                     checkBoxDescriptionNameKey=".usePrimaryAddressForBillingLabel" excludeColon="true"/>
@@ -198,7 +198,7 @@
                                     </label>
                                 </tags:nameValue2>
                                 
-                                <cti:msg2 var="none" key="defaults.none"/>
+                                <cti:msg2 var="none" key="yukon.common.none.choice"/>
                                 <tags:selectNameValue nameKey=".customerGroup" 
                                     path="loginBackingBean.userGroupName" items="${ecResidentialUserGroups}" 
                                     itemValue="userGroupName" itemLabel="userGroupName" defaultItemLabel="${none}"
