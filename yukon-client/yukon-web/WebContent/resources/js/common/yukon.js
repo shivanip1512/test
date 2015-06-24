@@ -1156,8 +1156,15 @@ yukon.ui = (function () {
             checkbox = $(checkbox);
             var enable = checkbox.is('[data-toggle-inverse]') ? checkbox.not(':checked') : checkbox.is(':checked'),
                 inputs = $('[data-toggle-group="' + checkbox.data('toggle') + '"]');
+
+            var action = checkbox.data('toggleAction');
+
+            if (action === 'hide') {
+                inputs.each(function (idx, input) { $(input).toggleClass('dn', !enable); });
+            } else {
+                inputs.each(function (idx, input) { $(input).prop('disabled', !enable); });
+            }
                 
-            inputs.each(function (idx, input) { $(input).prop('disabled', !enable); });
         },
         
         /** 
