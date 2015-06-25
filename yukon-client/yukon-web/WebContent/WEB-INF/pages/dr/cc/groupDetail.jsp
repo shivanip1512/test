@@ -81,5 +81,5 @@
     <cti:button nameKey="cancel" href="${cancelUrl}"/>
  
 </div>
-</form:form>
+</form>
 </cti:standardPage>
