@@ -119,8 +119,8 @@
     </bean>
     <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
         <property name="basedOn" value="KVARH"/>
-        <property name="perInterval" value="null"/>
-        <property name="loadProfile" value="DELIVERED_KVAR_LOAD_PROFILE"><null/></property>
+        <property name="perInterval"><null/></property>
+        <property name="loadProfile" value="DELIVERED_KVAR_LOAD_PROFILE"></property>
         <qualifier value="DeliveredKvarh "/>
     </bean>
        
