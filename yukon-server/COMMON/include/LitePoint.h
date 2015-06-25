@@ -34,6 +34,15 @@ public:
     void setControlOffset(int controlOffset);
     int getControlOffset() const;
 
+    void setControlType(CtiControlType_t controlType);
+    CtiControlType_t getControlType() const;
+
+    void setCloseTime1(int closeTime);
+    int getCloseTime1() const;
+
+    void setCloseTime2(int closeTime);
+    int getCloseTime2() const;
+
     void setStateZeroControl(const std::string & stateZeroControl);
     std::string getStateZeroControl() const;
 
@@ -55,6 +64,9 @@ private:
     int _pointOffset;
     int _controlOffset;
 
+    CtiControlType_t _controlType;
+    int _closeTime1;
+    int _closeTime2;
     std::string _stateZeroControl;
     std::string _stateOneControl;
 

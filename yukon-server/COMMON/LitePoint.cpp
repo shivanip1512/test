@@ -94,6 +94,36 @@ int LitePoint::getControlOffset() const
     return _controlOffset;
 }
 
+void LitePoint::setControlType(CtiControlType_t controlType)
+{
+    _controlType = controlType;
+}
+
+CtiControlType_t LitePoint::getControlType() const
+{
+    return _controlType;
+}
+
+void LitePoint::setCloseTime1(int closeTime1)
+{
+    _closeTime1 = closeTime1;
+}
+
+int LitePoint::getCloseTime1() const
+{
+    return _closeTime1;
+}
+
+void LitePoint::setCloseTime2(int closeTime)
+{
+    _closeTime2 = closeTime;
+}
+
+int LitePoint::getCloseTime2() const
+{
+    return _closeTime2;
+}
+
 void LitePoint::setStateZeroControl(const std::string & stateZeroControl)
 {
     _stateZeroControl = stateZeroControl;

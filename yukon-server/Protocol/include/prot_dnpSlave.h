@@ -24,7 +24,11 @@ public:
     enum class Commands
     {
         Class1230Read,
+        SetAnalogOut_Select,
+        SetAnalogOut_Operate,
         SetAnalogOut_Direct,
+        SetDigitalOut_Select,
+        SetDigitalOut_Operate,
         SetDigitalOut_Direct,
         LinkStatus,
         ResetLink,
@@ -102,6 +106,13 @@ struct output_counter : output_point
     double value;
 };
 
+enum class ControlAction
+{
+    Select,
+    Operate,
+    Direct
+};
+
 struct control_request
 {
     unsigned long offset;
@@ -115,6 +126,8 @@ struct control_request
     unsigned char count;
     DNP::ControlStatus status;
 
+    ControlAction action;
+
     bool isLongIndexed;
 };
 
@@ -125,6 +138,8 @@ struct analog_output_request
     double value;
     DNP::AnalogOutput::Variation type;
     DNP::ControlStatus status;
+
+    ControlAction action;
 
     bool isLongIndexed;
 };

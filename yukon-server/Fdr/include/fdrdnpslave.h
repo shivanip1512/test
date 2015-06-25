@@ -12,6 +12,8 @@
 
 #include <map>
 
+class AttributeService;
+
 namespace Cti {
 namespace Fdr {
 
@@ -48,6 +50,7 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
     public:
         // constructors and destructors
         DnpSlave();
+        ~DnpSlave();  //  delay definition for incomplete AttributeService type
 
         unsigned int getMessageSize(const char* data) override;
 
@@ -65,6 +68,8 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
                                        char** buffer,
                                        unsigned int& bufferSize) override;
 
+        void logCommand(const std::string &description, const char *data, const unsigned size);
+
         int processMessageFromForeignSystem(Cti::Fdr::ServerConnection& connection,
                                            const char* data, unsigned int size) override;
 
@@ -76,12 +81,12 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
         DnpId ForeignToYukonId(const CtiFDRDestination &pointDestination);
         bool  YukonToForeignQuality(const int aQuality, const CtiTime lastTimeStamp, const CtiTime Now);
         int processScanSlaveRequest           (ServerConnection &connection);
-        int processControlRequest             (ServerConnection &connection, const Protocols::DNP::ObjectBlock &control);
-        int processAnalogOutputRequest        (ServerConnection &connection, const Protocols::DNP::ObjectBlock &control);
+        int processControlRequest             (ServerConnection &connection, const Protocols::DNP::ObjectBlock &control, const Protocols::DnpSlave::ControlAction);
+        int processAnalogOutputRequest        (ServerConnection &connection, const Protocols::DNP::ObjectBlock &control, const Protocols::DnpSlave::ControlAction);
         int processDataLinkConfirmationRequest(ServerConnection &connection);
         int processDataLinkReset              (ServerConnection &connection);
 
-        auto tryPorterControl  (const Protocols::DnpSlave::control_request &control) -> Protocols::DNP::ControlStatus;
+        auto tryPorterControl  (const Protocols::DnpSlave::control_request &control, const long pointId) -> Protocols::DNP::ControlStatus;
         bool tryDispatchControl(const Protocols::DnpSlave::control_request &control, const long pointId);
 
         auto tryPorterAnalogOutput  (const Protocols::DnpSlave::analog_output_request &analog) -> Protocols::DNP::ControlStatus;
@@ -100,6 +105,8 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
         typedef std::map<std::string, std::string> ServerNameMap;
         ServerNameMap _serverNameLookup;
         int _staleDataTimeOut;
+
+        std::unique_ptr<AttributeService> _attributeService;
 };
 
 }

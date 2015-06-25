@@ -70,14 +70,17 @@ std::vector<LitePoint> AttributeService::getLitePointsById(const std::vector<int
             "P.PAOBjectId, "
             "P.PointOffset, "
             "P.StateGroupId, "
+            "PC.ControlOffset, "
+            "PSC.ControlType, "
             "PSC.StateZeroControl, "
             "PSC.StateOneControl, "
-            "PC.ControlOffset, "
+            "PSC.CloseTime1, "
+            "PSC.CloseTime2, "
             "X.MULTIPLIER "
         "FROM "
             "Point P "
-            "LEFT OUTER JOIN POINTSTATUSCONTROL PSC ON P.PointId = PSC.PointId "
             "LEFT OUTER JOIN POINTCONTROL PC ON P.PointId = PC.PointId "
+            "LEFT OUTER JOIN POINTSTATUSCONTROL PSC ON PC.PointId = PSC.PointId "
             "LEFT OUTER JOIN ("
                 "SELECT "
                     "PACC.POINTID, "
@@ -134,18 +137,6 @@ std::vector<LitePoint> AttributeService::getLitePointsById(const std::vector<int
             rdr["StateGroupId"] >> tempInt;
             point.setStateGroupId(tempInt);
 
-            if ( ! rdr["StateZeroControl"].isNull() )
-            {
-                rdr["StateZeroControl"] >> tempStr;
-                point.setStateZeroControl(tempStr);
-            }
-
-            if ( ! rdr["StateOneControl"].isNull() )
-            {
-                rdr["StateOneControl"] >> tempStr;
-                point.setStateOneControl(tempStr);
-            }
-
             if ( ! rdr["ControlOffset"].isNull() )
             {
                 rdr["ControlOffset"] >> tempInt;
@@ -156,6 +147,23 @@ std::vector<LitePoint> AttributeService::getLitePointsById(const std::vector<int
             {
                 rdr["MULTIPLIER"] >> multiplier;
                 point.setMultiplier(multiplier);
+            }
+            else if ( ! rdr["ControlType"].isNull() )
+            {
+                rdr["ControlType"] >> tempStr;
+                point.setControlType(resolveControlType(tempStr));
+
+                rdr["CloseTime1"] >> tempInt;
+                point.setCloseTime1(tempInt);
+
+                rdr["CloseTime2"] >> tempInt;
+                point.setCloseTime2(tempInt);
+
+                rdr["StateZeroControl"] >> tempStr;
+                point.setStateZeroControl(tempStr);
+
+                rdr["StateOneControl"] >> tempStr;
+                point.setStateOneControl(tempStr);
             }
 
             points.push_back(point);

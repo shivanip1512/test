@@ -159,7 +159,7 @@ public:
 };
 
 
-enum class ControlStatus
+enum class ControlStatus : unsigned char
 {
     Success           = 0,
     Timeout           = 1,

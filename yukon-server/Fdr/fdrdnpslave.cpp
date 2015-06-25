@@ -7,6 +7,8 @@
 
 #include "amq_constants.h"
 
+#include "AttributeService.h"
+
 #include "resolvers.h"
 #include "slctdev.h"
 
@@ -61,10 +63,13 @@ using namespace Cti::Protocols::DNP;
 DnpSlave::DnpSlave() :
     CtiFDRSocketServer("DNPSLAVE"),
     _staleDataTimeOut(0),
-    _porterConnection(Cti::Messaging::ActiveMQ::Queue::porter)
+    _porterConnection(Cti::Messaging::ActiveMQ::Queue::porter),
+    _attributeService(std::make_unique<AttributeService>())
 {
     _porterConnection.setName("FDR DNP Slave to Porter");
 }
+
+DnpSlave::~DnpSlave() = default;
 
 void DnpSlave::startup()
 {
@@ -241,63 +246,70 @@ bool DnpSlave::buildForeignSystemMessage(const CtiFDRDestination& destination,
     return false;
 }
 
+
+void DnpSlave::logCommand(const std::string &description, const char *data, const unsigned size)
+{
+    if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+    {
+        CTILOG_DEBUG(dout, logNow() <<" received " << description <<
+                     arrayToRange(reinterpret_cast<const unsigned char*>(data), size));
+    }
+}
+
+
+
 int DnpSlave::processMessageFromForeignSystem (ServerConnection& connection,
                                          const char* data, unsigned int size)
 {
     const auto requestType = _dnpSlave.identifyRequest(data, size);
 
-    switch( requestType.first )
+    using Cmd = DnpSlaveProtocol::Commands;
+    using Act = Protocols::DnpSlave::ControlAction;
+
+    static const std::map<Cmd, std::pair<std::string, std::function<int ()>>> commandFunctions {
+        { Cmd::LinkStatus,              { "a DNP data link status request",
+            [&] { return processDataLinkConfirmationRequest(connection); }}},
+
+        { Cmd::ResetLink,               { "a DNP data link reset",
+            [&] { return processDataLinkReset(connection); }}},
+
+        { Cmd::Class1230Read,           { "a DNP scan request",
+            [&] { return processScanSlaveRequest(connection); }}},
+
+        { Cmd::SetDigitalOut_Select,    { "a DNP control select request",
+            [&] { return processControlRequest(connection, *requestType.second, Act::Select); }}},
+
+        { Cmd::SetDigitalOut_Operate,   { "a DNP control operate request",
+            [&] { return processControlRequest(connection, *requestType.second, Act::Operate); }}},
+
+        { Cmd::SetDigitalOut_Direct,    { "a DNP direct control request",
+            [&] { return processControlRequest(connection, *requestType.second, Act::Direct); }}},
+
+        { Cmd::SetAnalogOut_Select,     { "a DNP analog output select request",
+            [&] { return processAnalogOutputRequest(connection, *requestType.second, Act::Select); }}},
+
+        { Cmd::SetAnalogOut_Operate,    { "a DNP analog output operate request",
+            [&] { return processAnalogOutputRequest(connection, *requestType.second, Act::Operate); }}},
+
+        { Cmd::SetAnalogOut_Direct,     { "a DNP direct analog output request",
+            [&] { return processAnalogOutputRequest(connection, *requestType.second, Act::Direct); }}}
+        };
+
+    if( const auto &descFunc = mapFind(commandFunctions, requestType.first) )
     {
-        case DnpSlaveProtocol::Commands::LinkStatus:
-        {
-            if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
-            {
-                CTILOG_DEBUG(dout, logNow() <<" received DNP data link status request message"<<
-                        arrayToRange(reinterpret_cast<const unsigned char*>(data), size));
-            }
-            return processDataLinkConfirmationRequest(connection);
-        }
-        case DnpSlaveProtocol::Commands::ResetLink:
-        {
-            if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
-            {
-                CTILOG_DEBUG(dout, logNow() <<" received DNP data link reset message"<<
-                        arrayToRange(reinterpret_cast<const unsigned char*>(data), size));
-            }
-            return processDataLinkReset(connection);
-        }
-        case DnpSlaveProtocol::Commands::Class1230Read:
-        {
-            if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
-            {
-                CTILOG_DEBUG(dout, logNow() <<" received DNP scan request message"<<
-                        arrayToRange(reinterpret_cast<const unsigned char*>(data), size));
-            }
-            return processScanSlaveRequest(connection);
-        }
-        case DnpSlaveProtocol::Commands::SetDigitalOut_Direct:
-        {
-            if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
-            {
-                CTILOG_DEBUG(dout, logNow() <<" received DNP control request message"<<
-                        arrayToRange(reinterpret_cast<const unsigned char*>(data), size));
-            }
-            return processControlRequest(connection, *requestType.second);
-        }
-        case DnpSlaveProtocol::Commands::SetAnalogOut_Direct:
-        {
-            if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
-            {
-                CTILOG_DEBUG(dout, logNow() <<" received DNP analog output request message"<<
-                        arrayToRange(reinterpret_cast<const unsigned char*>(data), size));
-            }
-            return processAnalogOutputRequest(connection, *requestType.second);
-        }
+        const auto &description      = descFunc->first;
+        const auto &commandProcessor = descFunc->second;
+
+        logCommand(description, data, size);
+
+        return commandProcessor();
     }
+
+    logCommand("an unsupported DNP message, response not generated.", data, size);
 
     if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
     {
-        CTILOG_DEBUG(dout, logNow() << " received an unsupported DNP message, response not generated."<<
+        CTILOG_DEBUG(dout, logNow() << " received an "<<
                 arrayToRange(reinterpret_cast<const unsigned char*>(data), size));
     }
 
@@ -457,7 +469,7 @@ bool DnpSlave::isDnpDeviceId(const long deviceId) const
 }
 
 
-int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectBlock &ob)
+int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectBlock &ob, const Protocols::DnpSlave::ControlAction action)
 {
     if( ob.getGroup()     != BinaryOutputControl::Group ||
         ob.getVariation() != BinaryOutputControl::BOC_ControlRelayOutputBlock ||
@@ -466,7 +478,7 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
         return -1;
     }
 
-    auto &objectDescriptor = ob[0];
+    const auto &objectDescriptor = ob[0];
 
     const auto boc = dynamic_cast<const BinaryOutputControl *>(objectDescriptor.object);
 
@@ -486,6 +498,7 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
     control.on_time    = boc->getOnTime();
     control.off_time   = boc->getOffTime();
     control.status     = ControlStatus::NotSupported;  //  actually need to parse and preserve the passed status...  confirm it's Normal before sending control
+    control.action     = action;
     control.isLongIndexed =
         (ob.getIndexLength()    == 2 &&
          ob.getQuantityLength() == 2);
@@ -515,7 +528,7 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
             {
                 if( isDnpDeviceId(fdrPoint->getPaoID()) )
                 {
-                    control.status = tryPorterControl(control);
+                    control.status = tryPorterControl(control, fdrPoint->getPointID());
                 }
                 else if( tryDispatchControl(control, fdrPoint->getPointID()) )
                 {
@@ -566,10 +579,78 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
 }
 
 
-Protocols::DNP::ControlStatus DnpSlave::tryPorterControl(const Protocols::DnpSlave::control_request &control)
+ControlStatus DnpSlave::tryPorterControl(const Protocols::DnpSlave::control_request &control, const long pointId)
 {
-    //  validate that the control point's setup matches the control request, else fail with...  unsupported?
-    //
+    auto point = _attributeService->getLitePointById(pointId);
+
+    //point.getControlType();
+    bool match = false;
+/*
+    if( controlParameters->getControlType() == ControlType_Latch ||
+        controlParameters->getControlType() == ControlType_SBOLatch )
+    {
+        if( findStringIgnoreCase(parse.getCommandStr().c_str(), controlParameters->getStateZeroControl()) )
+        {
+            hist->setRawState(STATEZERO);
+        }
+        else if( findStringIgnoreCase(parse.getCommandStr().c_str(), controlParameters->getStateOneControl()) )
+        {
+            hist->setRawState(STATEONE);
+        }
+
+        if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
+        {
+            controltype = BinaryOutputControl::LatchOff;
+        }
+        else if( parse.getFlags() & CMD_FLAG_CTL_CLOSE )
+        {
+            controltype = BinaryOutputControl::LatchOn;
+        }
+
+        offset = controlParameters->getControlOffset();
+    }
+    else  //  assume pulsed
+    {
+        if( findStringIgnoreCase(parse.getCommandStr().c_str(), controlParameters->getStateZeroControl()) )      //  CMD_FLAG_CTL_OPEN
+        {
+            on_time = controlParameters->getCloseTime1();
+
+            hist->setRawState(STATEZERO);
+        }
+        else if( findStringIgnoreCase(parse.getCommandStr().c_str(), controlParameters->getStateOneControl()) )  //  CMD_FLAG_CTL_CLOSE
+        {
+            on_time = controlParameters->getCloseTime2();
+
+            hist->setRawState(STATEONE);
+        }
+
+        if( findStringIgnoreCase(parse.getCommandStr().c_str(), " direct") )
+        {
+            trip_close = BinaryOutputControl::NUL;
+        }
+        else
+        {
+            if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
+            {
+                trip_close = BinaryOutputControl::Trip;
+            }
+            else if( parse.getFlags() & CMD_FLAG_CTL_CLOSE )
+            {
+                trip_close = BinaryOutputControl::Close;
+            }
+        }
+
+        controltype = BinaryOutputControl::PulseOn;
+        offset      = controlParameters->getControlOffset();
+    }
+*/
+    if( ! match )
+    {
+        return ControlStatus::NotSupported;
+    }
+
+    //PorterConnection->WriteConnQue(request, 1000);
+
     //  DNP passthrough control via Porter...  but set timeouts, I guess?
 
     std::string responseString;
@@ -658,22 +739,22 @@ bool DnpSlave::tryDispatchControl(const Protocols::DnpSlave::control_request &co
 }
 
 
-int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const ObjectBlock &control)
+int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const ObjectBlock &ob, const Protocols::DnpSlave::ControlAction action)
 {
-    if( control.getGroup() != AnalogOutput::Group ||
-        control.empty() )
+    if( ob.getGroup() != AnalogOutput::Group ||
+        ob.empty() )
     {
         return -1;
     }
 
-    auto &ob = control[0];
+    const auto &objectDescriptor = ob[0];
 
-    if( ! ob.object )
+    if( ! objectDescriptor.object )
     {
         return -1;
     }
 
-    const auto aoc = dynamic_cast<const AnalogOutput *>(ob.object);
+    const auto aoc = dynamic_cast<const AnalogOutput *>(objectDescriptor.object);
 
     if( ! aoc )
     {
@@ -692,9 +773,13 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
     };
 
     //  create the point so we can echo it back in the DNP response
-    analog.offset = ob.index;
+    analog.offset = objectDescriptor.index;
     analog.value  = aoc->getValue();
     analog.type   = mapFindOrDefault(Variation, aoc->getVariation(), AnalogOutput::AO_32Bit);
+    analog.action = action;
+    analog.isLongIndexed =
+        (ob.getIndexLength()    == 2 &&
+         ob.getQuantityLength() == 2);
 
     analog.status = ControlStatus::NotSupported;
 
@@ -704,7 +789,7 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
         const DnpId &dnpId = kv.second;
         if( dnpId.SlaveId      == _dnpSlave.getSrcAddr()
             && dnpId.MasterId  == _dnpSlave.getDstAddr()
-            && dnpId.Offset    == ob.index
+            && dnpId.Offset    == analog.offset
             && dnpId.PointType == AnalogPointType )
         {
             const CtiFDRDestination &fdrdest = kv.first;
@@ -767,7 +852,7 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
 }
 
 
-auto DnpSlave::tryPorterAnalogOutput(const Protocols::DnpSlave::analog_output_request &analog) -> ControlStatus
+ControlStatus DnpSlave::tryPorterAnalogOutput(const Protocols::DnpSlave::analog_output_request &analog)
 {
     return ControlStatus::Success;
 }

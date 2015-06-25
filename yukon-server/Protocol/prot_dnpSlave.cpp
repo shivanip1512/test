@@ -11,6 +11,8 @@
 
 #include "logger.h"
 
+#include "std_helper.h"
+
 namespace Cti {
 namespace Protocols {
 
@@ -106,8 +108,10 @@ auto DnpSlaveProtocol::identifyRequest( const char* data, unsigned int size ) ->
 
     _application.setSequenceNumber(application_payload[0] & 0x0f);
 
+    const unsigned char applicationCommand = application_payload[1];
+
     //  ideally, this would be done with the actual application layer ingesting the payload and beginning the request
-    switch( application_payload[1] )
+    switch( applicationCommand )
     {
         default:
         {
@@ -155,6 +159,8 @@ auto DnpSlaveProtocol::identifyRequest( const char* data, unsigned int size ) ->
 
             return { Commands::Class1230Read, nullptr };
         }
+        case ApplicationLayer::RequestSelect:
+        case ApplicationLayer::RequestOperate:
         case ApplicationLayer::RequestDirectOp:
         {
             auto blocks =
@@ -164,14 +170,31 @@ auto DnpSlaveProtocol::identifyRequest( const char* data, unsigned int size ) ->
 
             if( ! blocks.empty() )
             {
+                boost::optional<Commands> command;
+
                 if( blocks[0]->getGroup()     == BinaryOutputControl::Group &&
                     blocks[0]->getVariation() == BinaryOutputControl::BOC_ControlRelayOutputBlock )
                 {
-                    return { Commands::SetDigitalOut_Direct, ObjectBlockPtr{ std::move(blocks[0]) } };
+                    static const std::map<unsigned char, Commands> digitalCommandTypes {
+                        { ApplicationLayer::RequestSelect,   Commands::SetDigitalOut_Select },
+                        { ApplicationLayer::RequestOperate,  Commands::SetDigitalOut_Operate },
+                        { ApplicationLayer::RequestDirectOp, Commands::SetDigitalOut_Direct }};
+
+                    command = mapFind(digitalCommandTypes, applicationCommand);
                 }
-                if( blocks[0]->getGroup() == AnalogOutput::Group )
+                else if( blocks[0]->getGroup() == AnalogOutput::Group )
                 {
-                    return { Commands::SetAnalogOut_Direct, ObjectBlockPtr{ std::move(blocks[0]) } };
+                    static const std::map<unsigned char, Commands> analogCommandTypes {
+                        { ApplicationLayer::RequestSelect,   Commands::SetAnalogOut_Select },
+                        { ApplicationLayer::RequestOperate,  Commands::SetAnalogOut_Operate },
+                        { ApplicationLayer::RequestDirectOp, Commands::SetAnalogOut_Direct }};
+
+                    command = mapFind(analogCommandTypes, applicationCommand);
+                }
+
+                if( command )
+                {
+                    return { *command, ObjectBlockPtr{ std::move(blocks[0]) } };
                 }
             }
         }
