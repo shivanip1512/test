@@ -1,4 +1,4 @@
-package com.cannontech.web.common.cc;
+package com.cannontech.web.common.curtailment;
 
 import java.util.HashMap;
 import java.util.List;

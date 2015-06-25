@@ -40,7 +40,14 @@ public class ProgramServiceImpl implements ProgramService {
     @Autowired private BaseEventDao baseEventDao;
     @Autowired private ProgramNotificationGroupDao programNotificationGroupDao;
     @Autowired private EnergyCompanyDao ecDao;
-
+    
+    private Comparator<AvailableProgramGroup> byGroupComparator = new Comparator<AvailableProgramGroup>() {
+        @Override
+        public int compare(AvailableProgramGroup o1, AvailableProgramGroup o2) {
+            return o1.getGroup().compareTo(o2.getGroup());
+        }
+    };
+    
     public ProgramServiceImpl() {
         super();
     }
@@ -159,8 +166,7 @@ public class ProgramServiceImpl implements ProgramService {
     public Program createNewProgram(LiteYukonUser user) {
         EnergyCompany energyCompany = ecDao.getEnergyCompany(user);
         Program newProgram = new Program();
-        List<ProgramType> programTypes =
-            programTypeDao.getAllProgramTypes(energyCompany.getId());
+        List<ProgramType> programTypes = programTypeDao.getAllProgramTypes(energyCompany.getId());
         // the new program must have some program type assigned
         // for now, default to the first one in the DB
         newProgram.setProgramType(programTypes.get(0));
@@ -207,12 +213,7 @@ public class ProgramServiceImpl implements ProgramService {
     @Override
     public List<AvailableProgramGroup> getAvailableProgramGroups(Program program) {
         List<AvailableProgramGroup> allForProgram = availableProgramGroupDao.getAllForProgram(program);
-        Collections.sort(allForProgram, new Comparator<AvailableProgramGroup>() {
-            @Override
-            public int compare(AvailableProgramGroup o1, AvailableProgramGroup o2) {
-                return o1.getGroup().compareTo(o2.getGroup());
-            }
-        });
+        Collections.sort(allForProgram, byGroupComparator);
         return allForProgram;
     }
 

@@ -182,16 +182,9 @@
     </property>
     <property name="requiredPointGroup" value="ISOC"/>
   </bean>
-  <bean id="programDao" class="com.cannontech.cc.daojdbc.ProgramDaoImpl">
-    <property name="programGroupDao" ref="availableProgramGroupDao"/>
-    <property name="programParameterDao" ref="programParameterDao"/>
-    <property name="programNotificationGroupDao" ref="programNotificationGroupDao"/>
-  </bean>
+  <bean id="programDao" class="com.cannontech.cc.daojdbc.ProgramDaoImpl"/>
   <bean id="programTypeDao" class="com.cannontech.cc.daojdbc.ProgramTypeDaoImpl"/>
-  <bean id="groupDao" class="com.cannontech.cc.daojdbc.GroupDaoImpl">
-    <property name="groupCustomerNotifDao" ref="groupCustomerNotifDao"/>
-    <property name="programGroupDao" ref="availableProgramGroupDao"/>
-  </bean>
+  <bean id="groupDao" class="com.cannontech.cc.daojdbc.GroupDaoImpl"/>
   <bean id="availableProgramGroupDao" class="com.cannontech.cc.daojdbc.AvailableProgramGroupDaoImpl"/>
   <bean id="groupCustomerNotifDao" class="com.cannontech.cc.daojdbc.GroupCustomerNotifDaoImpl"/>
   <bean id="customerStubDao" class="com.cannontech.cc.daojdbc.CustomerStubDaoImpl"/>

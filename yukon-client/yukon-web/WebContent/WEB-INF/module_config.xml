@@ -457,40 +457,48 @@
       <page name="probabilityForPeakLoad" type="BASIC"/>
       <page name="loadManagement" type="BASIC"/>
       <page name="cc.home" type="BASIC">
+        <link>/dr/cc/home</link>
         <pages>
             <page name="cc.init" type="BASIC">
                 <link>/dr/cc/init</link>
+                <labelArgument>${program.programType.name}</labelArgument>
+                <labelArgument>${program.name}</labelArgument>
             </page>
             <page name="cc.history" type="BASIC">
                 <link>/dr/cc/history</link>
                 <pages>
-                    <page name="cc.detail" type="BASIC"></page>
+                    <page name="cc.detail" type="BASIC">
+                        <labelArgument>${event.displayName}</labelArgument>
+                        <labelArgument>${programType}</labelArgument>
+                        <labelArgument>${programName}</labelArgument>
+                    </page>
                 </pages>
             </page>
             <page name="cc.programList" type="BASIC">
                 <link>/dr/cc/programList</link>
                 <pages>
-                    <page name="cc.programDetail" type="BASIC"></page>
-                    <page name="cc.programCreate" type="BASIC">
-                        <pages>
-                            <page name="cc.programDetail" type="BASIC"></page>
-                        </pages>
+                    <page name="cc.programDetail" type="BASIC">
+                        <labelArgument>${program.name}</labelArgument>
                     </page>
+                    <page name="cc.programCreate" type="BASIC"></page>
                 </pages>
                 
             </page>
             <page name="cc.groupList" type="BASIC">
                 <link>/dr/cc/groupList</link>
                 <pages>
-                    <page name="cc.groupDetail" type="BASIC"></page>
+                    <page name="cc.groupDetail" type="BASIC">
+                        <labelArgument>${group.name}</labelArgument>
+                    </page>
                 </pages>
             </page>
             <page name="cc.customerList" type="BASIC">
                 <link>/dr/cc/customerList</link>
                 <pages>
-                    <page name="cc.customerDetail" type="BASIC"></page>
+                    <page name="cc.customerDetail" type="BASIC">
+                      <labelArgument>${customer.companyName}</labelArgument>
+                    </page>
                 </pages>
-                
             </page>
         </pages>
       </page>

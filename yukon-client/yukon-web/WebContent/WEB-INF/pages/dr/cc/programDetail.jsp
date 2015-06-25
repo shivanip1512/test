@@ -60,7 +60,7 @@
                     <tr>
                         <td>
                             <cti:button renderMode="buttonImage" icon="icon-delete" data-group="${assignedProgramGroup.group.id}"/>
-                            <input type="hidden" name="${assignedProgramGroup.group.name}" value="${assignedProgramGroup.group.id}" />
+                            <input type="hidden" name="assignedGroup" value="${assignedProgramGroup.group.id}" />
                             ${fn:escapeXml(assignedProgramGroup.group.name)}
                         </td>
                     </tr>
@@ -84,8 +84,8 @@
                     <tr>
                         <td>
                             <cti:button renderMode="buttonImage" icon="icon-add" data-group="${unassignedGroup.id}"/>
-                            <input type="hidden" name="${unassignedProgramGroup.group.name}" value="${unassignedProgramGroup.group.id}" />
-                        ${fn:escapeXml(unassignedGroup.name)}
+                            <input type="hidden" name="unassignedGroup" value="${unassignedGroup.id}" />
+                            ${fn:escapeXml(unassignedGroup.name)}
                         </td>
                     </tr>
                 </c:forEach>
@@ -110,7 +110,7 @@
                     <tr>
                         <td>
                             <cti:button renderMode="buttonImage" icon="icon-delete" data-notif-group="${assignedNotifGroupEntry.notificationGroupID}"/>
-                            <input type="hidden" name="${assignedNotifGroupEntry.notificationGroupName}" value="${assignedNotifGroupEntry.notificationGroupID}" />
+                            <input type="hidden" name="assignedNotifGroup" value="${assignedNotifGroupEntry.notificationGroupID}" />
                             ${fn:escapeXml(assignedNotifGroupEntry.notificationGroupName)}
                         </td>
                     </tr>
@@ -134,7 +134,7 @@
                     <tr>
                         <td>
                             <cti:button renderMode="buttonImage" icon="icon-add" data-notif-group="${unassignedProgramGroup.notificationGroupID}"/>
-                            <input type="hidden" name="${unassignedProgramGroup.notificationGroupName}" value="${unassignedProgramGroup.notificationGroupID}" />
+                            <input type="hidden" name="unassignedNotifGroup" value="${unassignedProgramGroup.notificationGroupID}" />
                             ${fn:escapeXml(unassignedProgramGroup.notificationGroupName)}
                         </td>
                     </tr>

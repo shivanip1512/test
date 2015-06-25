@@ -85,43 +85,52 @@ yukon.curtailment = (function () {
         },
         
         _groupMove = function (opts) {
-            var programId = $('#program').data('programId'),
-                groupId = $(opts.target).data(opts.data),
-                rowToMove = $(opts.target).closest('tr'),
-                moveTarget = $(opts.moveTarget),
-                unassigning = opts.urlEndpoint.indexOf('/un') === 0 ? true : false;
-            $.ajax({
-                url: yukon.url(opts.baseUrl + programId + opts.urlEndpoint + groupId),
-                type: 'post'
-            }).done(function (jqXHR, textStatus, errorThrown) {
-                var icon = rowToMove.find('i');
-                debug.log('endpoint: ' + opts.urlEndpoint + ' for groupId ' + groupId + ' successfully processed');
-                rowToMove.appendTo(moveTarget);
-                icon.removeClass(unassigning ? 'icon-delete' : 'icon-add');
-                icon.addClass(unassigning ? 'icon-add' : 'icon-delete');
-            }).fail(function (jqXHR, textStatus, errorThrown) {
-                debug.log('endpoint: ' + opts.urlEndpoint + ' for groupId ' + groupId + ' failed: ' + textStatus);
-            });
-        },
-        
-        _customerMove = function (opts) {
-            var groupId = $('#group-name').data('groupId'),
-            customerId = $(opts.target).data(opts.data),
+        	var groupId = $(opts.target).data(opts.data),
             rowToMove = $(opts.target).closest('tr'),
             moveTarget = $(opts.moveTarget),
+            unassigning = opts.newClass.indexOf('un') === 0 ? true : false,
+            icon = rowToMove.find('i'),
+            input = rowToMove.find('input');
+            
+        	//move the row
+            rowToMove.appendTo(moveTarget);
+            //change icon
+        	icon.removeClass(unassigning ? 'icon-delete' : 'icon-add');
+            icon.addClass(unassigning ? 'icon-add' : 'icon-delete');
+            //change input name
+            input.attr('name', opts.newClass);
+            
+            debug.log('new class: ' + opts.newClass + ' for ' + opts.data + ' groupId ' + groupId + ' successfully processed');
+        },
+        
+        //TODO finish cleanup
+        //_customerMove({target: button, baseUrl: '/dr/cc/group/', urlEndpoint: '/unassignCustomer/', data: 'customerId', moveTarget: '#unassigned-customers tbody'});
+        //_customerMove({target: button, baseUrl: '/dr/cc/group/', urlEndpoint: '/assignCustomer/', data: 'customerId', moveTarget: '#assigned-customers tbody'});
+        _customerMove = function (opts) {
+            var customerId = $(opts.target).data(opts.data),
+            rowToMove = $(opts.target).closest('tr'),
+            moveTarget = $(opts.moveTarget),
+            emailTd = rowToMove.find('td.emails'),
+            voiceTd = rowToMove.find('td.voice'),
+            smsTd = rowToMove.find('td.sms'),
+            icon = rowToMove.find('i'),
             unassigning = opts.urlEndpoint.indexOf('/un') === 0 ? true : false;
-            $.ajax({
-                url: yukon.url(opts.baseUrl + groupId + opts.urlEndpoint + customerId),
-                type: 'post'
-            }).done(function (jqXHR, textStatus, errorThrown) {
-                var icon = rowToMove.find('i');
-                debug.log('endpoint: ' + opts.urlEndpoint + ' for customerId ' + customerId + ' successfully processed');
-                rowToMove.appendTo(moveTarget);
-                icon.removeClass(unassigning ? 'icon-delete' : 'icon-add');
-                icon.addClass(unassigning ? 'icon-add' : 'icon-delete');
-            }).fail(function (jqXHR, textStatus, errorThrown) {
-                debug.log('endpoint: ' + opts.urlEndpoint + ' for customerId ' + customerId + ' failed: ' + textStatus);
-            });
+            
+            debug.log('endpoint: ' + opts.urlEndpoint + ' for customerId ' + customerId + ' successfully processed');
+            
+            if(unassigning) {
+            	emailTd.hide();
+                voiceTd.hide();
+                smsTd.hide();
+            } else {
+	            emailTd.show();
+	            voiceTd.show();
+	            smsTd.show();
+            }
+            
+            rowToMove.appendTo(moveTarget);
+            icon.removeClass(unassigning ? 'icon-delete' : 'icon-add');
+            icon.addClass(unassigning ? 'icon-add' : 'icon-delete');
         };
 
     mod = {
@@ -171,29 +180,30 @@ yukon.curtailment = (function () {
                     newDoc.close();
                 });
             });
-            // TODO: _groupMove and _customerMove should be coalesced into the same function
+            
             $(function () {
                 $(document).on('click', '#assigned-groups', function (ev) {
                     var button = $(ev.target).closest('button');
                     debug.log('moving assigned group to unassigned');
-                    _groupMove({target: button, baseUrl: '/dr/cc/program/', urlEndpoint: '/unassignGroup/', data: 'group', moveTarget: '#unassigned-groups tbody'});
+                    _groupMove({target: button, newClass: 'unassignedGroup', data: 'group', moveTarget: '#unassigned-groups tbody'});
                 });
                 $(document).on('click', '#unassigned-groups', function (ev) {
                     var button = $(ev.target).closest('button');
                     debug.log('moving unassigned group to assigned');
-                    _groupMove({target: button, baseUrl: '/dr/cc/program/', urlEndpoint: '/assignGroup/', data: 'group', moveTarget: '#assigned-groups tbody'});
+                    _groupMove({target: button, newClass: 'assignedGroup', data: 'group', moveTarget: '#assigned-groups tbody'});
                 });
                 $(document).on('click', '#assigned-notification-groups', function (ev) {
                     var button = $(ev.target).closest('button');
                     debug.log('moving assigned notification group to unassigned');
-                    _groupMove({target: button, baseUrl: '/dr/cc/program/', urlEndpoint: '/unassignNotificationGroup/', data: 'notifGroup', moveTarget: '#unassigned-notification-groups tbody'});
+                    _groupMove({target: button, newClass: 'unassignedNotificationGroup', data: 'notifGroup', moveTarget: '#unassigned-notification-groups tbody'});
                 });
                 $(document).on('click', '#unassigned-notification-groups', function (ev) {
                     var button = $(ev.target).closest('button');
                     debug.log('moving unassigned notification group to assigned');
-                    _groupMove({target: button, baseUrl: '/dr/cc/program/', urlEndpoint: '/assignNotificationGroup/', data: 'notifGroup', moveTarget: '#assigned-notification-groups tbody'});
+                    _groupMove({target: button, newClass: 'assignedNotifGroup', data: 'notifGroup', moveTarget: '#assigned-notification-groups tbody'});
                 });
             });
+            
             $(function () {
                 $(document).on('click', '#assigned-customers', function (ev) {
                     var button = $(ev.target).closest('button');

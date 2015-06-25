@@ -6,10 +6,10 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <cti:standardPage module="dr" page="cc.groupDetail">
-<cti:msgScope paths=",yukon.web.modules.commercialcurtailment.ccurtSetup">
 <cti:includeScript link="/resources/js/pages/yukon.curtailment.js"/>
 
-<form id="group" name="group" data-group-id="${group.id}" method="POST" action="<cti:url value="/dr/cc/groupSave/${group.id}"/>">
+<cti:url var="submitUrl" value="/dr/cc/groupSave/${group.id}"/>
+<form id="group" name="group" data-group-id="${group.id}" method="POST" action="${submitUrl}">
 <cti:csrfToken/>
 
 <div class="column-12-12">
@@ -23,15 +23,15 @@
                 <c:forEach var="assignedCustomer" items="${assignedCustomers}">
                     <tr>
                         <td>${assignedCustomer.customer.companyName}&nbsp;</td>
-                        <td>
+                        <td class="emails">
                             <input type="checkbox" name="emails" <c:if test="${assignedCustomer.notifMap.sendEmails}">checked</c:if> />&nbsp;
                             <i:inline key=".emails"/>
                         </td>
-                        <td>
+                        <td class="voice">
                             <input type="checkbox" name="voice" <c:if test="${assignedCustomer.notifMap.sendOutboundCalls}">checked</c:if> />&nbsp;
                             <i:inline key=".voice"/>
                         </td>
-                        <td>
+                        <td class="sms">
                             <input type="checkbox" name="sms" <c:if test="${assignedCustomer.notifMap.sendSms}">checked</c:if> />&nbsp;
                             <i:inline key=".sms"/>
                         </td>
@@ -55,7 +55,21 @@
             <c:forEach var="availableCustomer" items="${availableCustomers}">
                 <tr>
                     <td>${availableCustomer.customer.companyName}&nbsp;</td>
-                    <td><cti:button renderMode="buttonImage" icon="icon-add" data-customer-id="${availableCustomer.customer.id}"/></td>
+                    <td class="emails dn">
+                        <input type="checkbox" name="emails" <c:if test="${availableCustomer.notifMap.sendEmails}">checked</c:if> />&nbsp;
+                        <i:inline key=".emails"/>
+                    </td>
+                    <td class="voice dn">
+                        <input type="checkbox" name="voice" <c:if test="${availableCustomer.notifMap.sendOutboundCalls}">checked</c:if> />&nbsp;
+                        <i:inline key=".voice"/>
+                    </td>
+                    <td class="sms dn">
+                        <input type="checkbox" name="sms" <c:if test="${availableCustomer.notifMap.sendSms}">checked</c:if> />&nbsp;
+                        <i:inline key=".sms"/>
+                    </td>
+                    <td>
+                        <cti:button renderMode="buttonImage" icon="icon-add" data-customer-id="${availableCustomer.customer.id}"/>
+                    </td>
                 </tr>
             </c:forEach>
             </tbody>
@@ -67,6 +81,5 @@
     <cti:button nameKey="cancel" href="${cancelUrl}"/>
  
 </div>
-</form>
-</cti:msgScope>
+</form:form>
 </cti:standardPage>
