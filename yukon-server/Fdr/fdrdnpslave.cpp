@@ -10,6 +10,7 @@
 #include "AttributeService.h"
 
 #include "resolvers.h"
+#include "desolvers.h"
 #include "slctdev.h"
 
 #include "std_helper.h"
@@ -588,74 +589,202 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
 }
 
 
+const char *log(Protocols::DnpSlave::ControlAction c)
+{
+    using ControlAction = Protocols::DnpSlave::ControlAction;
+
+    switch( c )
+    {
+        case ControlAction::Direct:   return "Direct";
+        case ControlAction::Operate:  return "Operate";
+        case ControlAction::Select:   return "Select";
+        default:                      return "Invalid";
+    }
+}
+
+
+std::string logPoints(const Protocols::DnpSlave::control_request &control, const LitePoint &point)
+{
+    FormattedList l;
+
+    l.add("DNP request");
+    l.add("Action")         << log(control.action);
+    l.add("Clear")          << control.clear;
+    l.add("Control")        << control.control;
+    l.add("Count")          << control.count;
+    l.add("Long index")     << control.isLongIndexed;
+    l.add("Off time (ms)")  << control.off_time;
+    l.add("Offset")         << control.offset;
+    l.add("On time (ms)")   << control.on_time;
+    l.add("Queue")          << control.queue;
+    l.add("Status")         << Protocols::DnpProtocol::getControlResultString(static_cast<unsigned char>(control.status));
+    l.add("Trip/close")     << control.trip_close;
+
+    l.add("Yukon point");
+    l.add("Close time 1")   << point.getCloseTime1();
+    l.add("Close time 2")   << point.getCloseTime2();
+    l.add("Control offset") << point.getControlOffset();
+    l.add("Control type")   << desolveControlType(point.getControlType());
+    l.add("Pao id")         << point.getPaoId();
+    l.add("Point id")       << point.getPointId();
+    l.add("Point name")     << point.getPointName();
+    l.add("Point offset")   << point.getPointOffset();
+    l.add("Point type")     << point.getPointType();
+    l.add("State one control")  << point.getStateOneControl();
+    l.add("State zero control") << point.getStateZeroControl();
+
+    return l.toString();
+}
+
+
 ControlStatus DnpSlave::tryPorterControl(const Protocols::DnpSlave::control_request &control, const long pointId)
 {
     auto point = _attributeService->getLitePointById(pointId);
 
-    //point.getControlType();
-    bool match = false;
-/*
-    if( controlParameters->getControlType() == ControlType_Latch ||
-        controlParameters->getControlType() == ControlType_SBOLatch )
+    if( point.getPointId() != pointId )
     {
-        if( findStringIgnoreCase(parse.getCommandStr().c_str(), controlParameters->getStateZeroControl()) )
-        {
-            hist->setRawState(STATEZERO);
-        }
-        else if( findStringIgnoreCase(parse.getCommandStr().c_str(), controlParameters->getStateOneControl()) )
-        {
-            hist->setRawState(STATEONE);
-        }
+        CTILOG_WARN(dout, logNow() <<" could not load DNP pointid "<< pointId);
 
-        if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
-        {
-            controltype = BinaryOutputControl::LatchOff;
-        }
-        else if( parse.getFlags() & CMD_FLAG_CTL_CLOSE )
-        {
-            controltype = BinaryOutputControl::LatchOn;
-        }
-
-        offset = controlParameters->getControlOffset();
-    }
-    else  //  assume pulsed
-    {
-        if( findStringIgnoreCase(parse.getCommandStr().c_str(), controlParameters->getStateZeroControl()) )      //  CMD_FLAG_CTL_OPEN
-        {
-            on_time = controlParameters->getCloseTime1();
-
-            hist->setRawState(STATEZERO);
-        }
-        else if( findStringIgnoreCase(parse.getCommandStr().c_str(), controlParameters->getStateOneControl()) )  //  CMD_FLAG_CTL_CLOSE
-        {
-            on_time = controlParameters->getCloseTime2();
-
-            hist->setRawState(STATEONE);
-        }
-
-        if( findStringIgnoreCase(parse.getCommandStr().c_str(), " direct") )
-        {
-            trip_close = BinaryOutputControl::NUL;
-        }
-        else
-        {
-            if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
-            {
-                trip_close = BinaryOutputControl::Trip;
-            }
-            else if( parse.getFlags() & CMD_FLAG_CTL_CLOSE )
-            {
-                trip_close = BinaryOutputControl::Close;
-            }
-        }
-
-        controltype = BinaryOutputControl::PulseOn;
-        offset      = controlParameters->getControlOffset();
-    }
-*/
-    if( ! match )
-    {
         return ControlStatus::NotSupported;
+    }
+
+    //  Confirm SBO vs direct
+    switch( control.action )
+    {
+        case Protocols::DnpSlave::ControlAction::Select:
+        case Protocols::DnpSlave::ControlAction::Operate:
+        {
+            switch( point.getControlType() )
+            {
+                case ControlType_SBOPulse:
+                case ControlType_SBOLatch:
+                    break;
+
+                default:
+                {
+                    CTILOG_WARN(dout, logNow() <<" control type/action mismatch" << logPoints(control, point));
+                    return ControlStatus::NotSupported;
+                }
+            }
+            break;
+        }
+        case Protocols::DnpSlave::ControlAction::Direct:
+        {
+            switch( point.getControlType() )
+            {
+                case ControlType_Normal:
+                case ControlType_Latch:
+                    break;
+
+                default:
+                {
+                    CTILOG_WARN(dout, logNow() <<" control type/action mismatch" << logPoints(control, point));
+                    return ControlStatus::NotSupported;
+                }
+            }
+            break;
+        }
+        default:
+        {
+            CTILOG_WARN(dout, logNow() <<" unsupported action" << logPoints(control, point));
+            return ControlStatus::NotSupported;
+        }
+    }
+
+    //  Confirm queue, clear, count all match the hardcoded values in dev_dnp
+    if( control.queue || control.clear || control.count != 1 )
+    {
+        CTILOG_WARN(dout, logNow() <<" unsupported queue/clear/count parameters" << logPoints(control, point));
+        return ControlStatus::NotSupported;
+    }
+
+    //  Confirm control offset matches
+    if( (control.offset + 1) != point.getControlOffset() )
+    {
+        CTILOG_WARN(dout, logNow() <<" control offset mismatch" << logPoints(control, point));
+        return ControlStatus::NotSupported;
+    }
+
+    std::string commandString;
+
+    switch( point.getControlType() )
+    {
+        case ControlType_Normal:
+        case ControlType_SBOPulse:
+        {
+            if( control.control != BinaryOutputControl::PulseOn )
+            {
+                CTILOG_WARN(dout, logNow() <<" Incorrect control type" << logPoints(control, point));
+                return ControlStatus::NotSupported;
+            }
+
+            switch( control.trip_close )
+            {
+                case BinaryOutputControl::Trip:
+                {
+                    if( ! icontainsString(point.getStateZeroControl(), " open") )
+                    {
+                        CTILOG_WARN(dout, logNow() <<" State zero control string is not an OPEN" << logPoints(control, point));
+                        return ControlStatus::NotSupported;
+                    }
+                    if( point.getCloseTime1() != control.on_time )
+                    {
+                        CTILOG_WARN(dout, logNow() <<" On time mismatch" << logPoints(control, point));
+                        return ControlStatus::NotSupported;
+                    }
+                    if( control.off_time )
+                    {
+                        CTILOG_WARN(dout, logNow() <<" Off time not supported" << logPoints(control, point));
+                        return ControlStatus::NotSupported;
+                    }
+                    break;
+                }
+                case BinaryOutputControl::Close:
+                {
+                    if( ! icontainsString(point.getStateOneControl(), " close") )
+                    {
+                        CTILOG_WARN(dout, logNow() <<" State one control string is not a CLOSE" << logPoints(control, point));
+                        return ControlStatus::NotSupported;
+                    }
+                    if( point.getCloseTime2() != control.on_time )
+                    {
+                        CTILOG_WARN(dout, logNow() <<" On time mismatch" << logPoints(control, point));
+                        return ControlStatus::NotSupported;
+                    }
+                    if( control.off_time )
+                    {
+                        CTILOG_WARN(dout, logNow() <<" Off time not supported" << logPoints(control, point));
+                        return ControlStatus::NotSupported;
+                    }
+                    break;
+                }
+                case BinaryOutputControl::NUL:
+                {
+                    if( ! icontainsString(point.getStateOneControl(), " direct") )
+                    {
+                        CTILOG_WARN(dout, logNow() <<" Direct control not specified for StateOne control" << logPoints(control, point));
+                        return ControlStatus::NotSupported;
+                    }
+                    break;
+                }
+            }
+            break;
+        }
+        case ControlType_Latch:
+        case ControlType_SBOLatch:
+        {
+            if( control.control != BinaryOutputControl::LatchOn )
+            {
+                CTILOG_WARN(dout, logNow() <<" Incorrect control type " << logPoints(control, point));
+                return ControlStatus::NotSupported;
+            }
+            break;
+        }
+        default:
+        {
+            CTILOG_WARN(dout, logNow() <<" unknown control type " << logPoints(control, point));
+            return ControlStatus::NotSupported;
+        }
     }
 
     //PorterConnection->WriteConnQue(request, 1000);

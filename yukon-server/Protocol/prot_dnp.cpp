@@ -945,7 +945,7 @@ const auto ControlResultStrings = std::map<unsigned char, const char *> {
         { static_cast<unsigned char>(ControlStatus::NonParticipating),  "Outstation shall not issue or perform the control operation."},
         { static_cast<unsigned char>(ControlStatus::Undefined),         "Request not accepted because of some other undefined reason."}};
 
-std::string DnpProtocol::getControlResultString( unsigned char result_status ) const
+std::string DnpProtocol::getControlResultString( unsigned char result_status )
 {
     const boost::optional<const char *> controlResultString = mapFind(ControlResultStrings, result_status);
 
