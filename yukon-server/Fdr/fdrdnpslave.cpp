@@ -266,34 +266,43 @@ int DnpSlave::processMessageFromForeignSystem (ServerConnection& connection,
     using Cmd = DnpSlaveProtocol::Commands;
     using Act = Protocols::DnpSlave::ControlAction;
 
-    static const std::map<Cmd, std::pair<std::string, std::function<int ()>>> commandFunctions {
-        { Cmd::LinkStatus,              { "a DNP data link status request",
-            [&] { return processDataLinkConfirmationRequest(connection); }}},
+    const std::map<Cmd, std::pair<std::string, std::function<int ()>>> commandFunctions
+    {
+        { Cmd::LinkStatus,
+            { "a DNP data link status request",
+                [&] { return processDataLinkConfirmationRequest(connection); }}},
 
-        { Cmd::ResetLink,               { "a DNP data link reset",
-            [&] { return processDataLinkReset(connection); }}},
+        { Cmd::ResetLink,
+            { "a DNP data link reset",
+                [&] { return processDataLinkReset(connection); }}},
 
-        { Cmd::Class1230Read,           { "a DNP scan request",
-            [&] { return processScanSlaveRequest(connection); }}},
+        { Cmd::Class1230Read,
+            { "a DNP scan request",
+                [&] { return processScanSlaveRequest(connection); }}},
 
-        { Cmd::SetDigitalOut_Select,    { "a DNP control select request",
-            [&] { return processControlRequest(connection, *requestType.second, Act::Select); }}},
+        { Cmd::SetDigitalOut_Select,
+            { "a DNP control select request",
+                [&] { return processControlRequest(connection, *requestType.second, Act::Select); }}},
 
-        { Cmd::SetDigitalOut_Operate,   { "a DNP control operate request",
-            [&] { return processControlRequest(connection, *requestType.second, Act::Operate); }}},
+        { Cmd::SetDigitalOut_Operate,
+            { "a DNP control operate request",
+                [&] { return processControlRequest(connection, *requestType.second, Act::Operate); }}},
 
-        { Cmd::SetDigitalOut_Direct,    { "a DNP direct control request",
-            [&] { return processControlRequest(connection, *requestType.second, Act::Direct); }}},
+        { Cmd::SetDigitalOut_Direct,
+            { "a DNP direct control request",
+                [&] { return processControlRequest(connection, *requestType.second, Act::Direct); }}},
 
-        { Cmd::SetAnalogOut_Select,     { "a DNP analog output select request",
-            [&] { return processAnalogOutputRequest(connection, *requestType.second, Act::Select); }}},
+        { Cmd::SetAnalogOut_Select,
+            { "a DNP analog output select request",
+                [&] { return processAnalogOutputRequest(connection, *requestType.second, Act::Select); }}},
 
-        { Cmd::SetAnalogOut_Operate,    { "a DNP analog output operate request",
-            [&] { return processAnalogOutputRequest(connection, *requestType.second, Act::Operate); }}},
+        { Cmd::SetAnalogOut_Operate,
+            { "a DNP analog output operate request",
+                [&] { return processAnalogOutputRequest(connection, *requestType.second, Act::Operate); }}},
 
-        { Cmd::SetAnalogOut_Direct,     { "a DNP direct analog output request",
-            [&] { return processAnalogOutputRequest(connection, *requestType.second, Act::Direct); }}}
-        };
+        { Cmd::SetAnalogOut_Direct,
+            { "a DNP direct analog output request",
+                [&] { return processAnalogOutputRequest(connection, *requestType.second, Act::Direct); }}}};
 
     if( const auto &descFunc = mapFind(commandFunctions, requestType.first) )
     {
