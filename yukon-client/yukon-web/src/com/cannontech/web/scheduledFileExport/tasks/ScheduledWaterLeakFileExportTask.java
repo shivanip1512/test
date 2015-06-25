@@ -3,13 +3,11 @@ package com.cannontech.web.scheduledFileExport.tasks;
 import java.io.File;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.service.DeviceCollectionService;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -57,6 +55,7 @@ public class ScheduledWaterLeakFileExportTask extends ScheduledFileExportTask {
         Duration timePrevious = Duration.standardHours(hoursPrevious);
         Instant now = new Instant();
         
+        //minutes/seconds are being trimmed because Water leak algorithm is dependent on whole hourly intervals.
         DateTime min = now.minus(timePrevious).toDateTime().withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0);
         DateTime max = now.toDateTime().withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0);
         
