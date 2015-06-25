@@ -4,23 +4,24 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="dev" page="js-api">
+<cti:standardPage module="dev" page="yukon-js-lib">
 <cti:includeScript link="/resources/js/lib/google-code-prettify/prettify.js"/>
 <cti:includeCss link="/resources/js/lib/google-code-prettify/prettify.css"/>
 <cti:includeCss link="/resources/css/lib/keys.css"/>
 
 <style>
-.description { line-height: 22px; }
+.description { line-height: 22px; font-size: 16px; }
+h2 { margin-top: 40px; }
 </style>
 
 <p class="description">
-    This section describes Yukon's javascript library; it's available api and it's built-in event handling and 
+    This section describes Yukon's JavaScript library; it's available api and it's built-in event handling and 
     behavior throught the application.
 </p>
 
 <h2>EcmaScript</h2>
 <p class="description">
-    Yukon uses ES5 support of IE10+, Chrome and Firefox. The following are functions are polyfilled if not supported
+    Yukon uses <strong>ES5</strong> support of IE10+, Chrome and Firefox. The following are functions are polyfilled if not supported
     natively:
     <ul>
         <li>Array.prototype.forEach</li>
@@ -33,7 +34,86 @@
     </ul>
 </p>
 
-<h2>Namespace</h2>
+<h2>Targeting Elements from JavaScript</h2>
+<p class="description">
+    When targetting an html element from JavaScript, use a class name with a <span class="label label-attr">js-</span> 
+    prefix.<br>
+    <span class="label label-info">Note:</span> these targetting class names should <strong>NEVER</strong> be 
+    referenced in a CSS file.
+</p>
+<pre class="code prettyprint">
+&lt;span class=&quot;js-targetting-example&quot;&gt;Find me from JavaScript.&lt;/span&gt;
+&lt;script&gt;
+$(&#39;.js-targetting-example&#39;).data(&#39;found&#39;, true);
+&lt;/script&gt;
+</pre>
+
+<h2>Storing and Retrieving Data</h2>
+<p class="description">
+    Data needed in JavaScript should be stored in the DOM with html5 data attributes or using 
+    <span class="label label-attr">&lt;cti:toJson/&gt;</span> (see <a href="#json-example">example</a> below).<br>
+    Jquery also has a handy <a href="http://api.jquery.com/data/">api</a> that extends data attributes, allowing you 
+    to store complex JavaScript objects as data.<br>
+    <span class="label label-info">Note:</span> Most of our tags support dynamic attributes.
+</p>
+<h4 class="subtle">Example:</h4>
+<div class="clearfix">
+    <div class="js-fav-num-box" data-my-favorite-number="${favoriteNumber}">
+        My favorite number is <span class="js-fav-num"></span>.
+    </div>
+    <script>
+    $('.js-fav-num').text($('.js-fav-num-box').data('myFavoriteNumber'));
+    </script>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;div class=&quot;js-fav-num-box&quot; data-my-favorite-number=&quot;&#36;{favoriteNumber}&quot;&gt;
+    My favorite number is &lt;span class=&quot;js-fav-num&quot;&gt;&lt;/span&gt;.
+&lt;/div&gt;
+&lt;script&gt;
+$(&#39;.js-fav-num&#39;).text($(&#39;.js-fav-num-box&#39;).data(&#39;myFavoriteNumber&#39;));
+&lt;/script&gt;
+</pre>
+
+<h2>Custom Events</h2>
+<p class="description">
+    Custom Yukon events should use colons and be of the pattern: 
+    <span class="label label-attr">yukon:module/section:page:what-happened</span>.<br>
+    <span class="label label-info">Note:</span> A <span class="label label-attr">.</span> in JavaScript 
+    event names has meaning, which is why we use colons.
+</p>
+<h4 class="subtle">Example:</h4>
+<div class="clearfix">
+    <cti:button classes="js-event-btn" label="Do A Thing"/>
+    <script>
+    (function () {
+        $('.js-event-btn').click(function () {
+            $(this).trigger('yukon:dev:js-api:they-did-a-thing');
+        });
+        
+        $(document).on('yukon:dev:js-api:they-did-a-thing', function () {
+            alert('Congradulations! You did a thing!');
+        });
+    })();
+    </script>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;cti:button classes=&quot;js-event-btn&quot; label=&quot;Do A Thing&quot;/&gt;
+&lt;script&gt;
+(function () {
+    $(&#39;.js-event-btn&#39;).click(function () {
+        $(this).trigger(&#39;yukon:dev:js-api:they-did-a-thing&#39;);
+    });
+    
+    $(document).on(&#39;yukon:dev:js-api:they-did-a-thing&#39;, function () {
+        alert(&#39;Congradulations! You did a thing!&#39;);
+    });
+})();
+&lt;/script&gt;
+</pre>
+
+<h2>The 'yukon' Namespace</h2>
 <p class="description">
     The Yukon js library is all housed under a single global variable <span class="label label-attr">yukon</span>.
     Yukon has a <span class="label label-attr">namespace</span> function that will instantiate the object chains.
@@ -47,8 +127,8 @@ yukon.my.nested.object = { foo: 'bar' };
 <h2>Modules</h2>
 <p class="description">
     Yukon uses the simplest module pattern described 
-    <a href="http://www.adequatelygood.com/JavaScript-Module-Pattern-In-Depth.html">here</a> and does not handle dependency
-    injection.  Modules that depend on other modules must be executed in the right order.
+    <a target="_blank" href="http://www.adequatelygood.com/JavaScript-Module-Pattern-In-Depth.html">here</a> and does 
+    not handle dependency injection.  Modules that depend on other modules must be executed in the right order.
 </p>
 <p class="description">
     Yukon uses the <span class="label label-attr">namespace</span> to instantiate the object chain needed for a 
@@ -56,14 +136,14 @@ yukon.my.nested.object = { foo: 'bar' };
 </p>
 <p class="description">
     Modules are always created with an 
-    <a href="https://en.wikipedia.org/wiki/Immediately-invoked_function_expression">IIFE</a> which provides a closure to 
-    house module data.
+    <a target="_blank" href="https://en.wikipedia.org/wiki/Immediately-invoked_function_expression">IIFE</a> which provides
+     a closure to house module data.
     Modules return an object usually named <span class="label label-attr">mod</span> which is the public api of that module. 
     Yukon modules usually have an public <span class="label label-attr">init</span> function to do any intitializing work 
     which is called after the function and wrapped in a jquery 'document ready' event handler.<br>
-    <span class="label label-info">Note:</span>  All properties of the <span class="label label-attr">mod</span> object are public.  All variables and 
-    functions declared outside of <span class="label label-attr">mod</span> are private and are prefixed with an '_'
-    underscore. 
+    <span class="label label-info">Note:</span>  All properties of the <span class="label label-attr">mod</span> object 
+    are public.  All variables and functions declared outside of <span class="label label-attr">mod</span> are private 
+    and are prefixed with an '_' underscore. 
 </p>
 <%-- BLANK MODULE EXAMPLE --%>
 <div class="column-4-20 clearfix style-guide-example">
@@ -116,7 +196,8 @@ $(function () { yukon.thing.init(); });
     <div class="column one"><h4 class="subtle">Example:</h4></div>
     <div class="column two nogutter">
         <p>
-            A module for cirles named <span class="label label-attr">yukon.circle</span> with JSDoc documentation and
+            A module for cirles named <span class="label label-attr">yukon.circle</span> with 
+            <a target="_blank" href="http://usejsdoc.org/">JSDoc</a> documentation and
             comments explaining what's going on.
         </p>
     </div>
@@ -140,8 +221,6 @@ yukon.circle = (function () {
     var
     _initialized = false,
     _pi = Math.PI, /** @constant {number} The value of pi. */
- 
-    // private methods
  
     /** 
      * Calculates the circumference of a circle for a given radius.
@@ -225,9 +304,10 @@ $(function () { yukon.circle.init(); });
 
 <h2>Module Usage</h2>
 <p class="description">
-    These modules should be used to house <strong>ALL</strong> javascript in Yukon.  They ensure that the global namespace
-    is not polluted and that the code itself is module and portable.  They should usually be in thier own js file.  Never
-    write javascript directly in a jsp or tag file. If you need data from the jsp or tag layer, use Yukon's JSON utils to
+    These modules should be used to house <strong>ALL</strong> JavaScript in Yukon.  They ensure that the global namespace
+    is not polluted and that the code itself is modular and portable.  They should usually be in thier own js file.  Never
+    write JavaScript directly in a jsp or tag file. If you need data from the jsp or tag layer, use 
+    <a href="#json-example">Yukon's JSON</a> utils to
     store it and load it from module's init function.
 </p>
 <p class="description">
@@ -245,6 +325,7 @@ $(function () { yukon.circle.init(); });
 <h2>Yukon Global Data</h2>
 <p class="description">
     Yukon has one other global object <span class="label label-attr">yg</span> which stores global data for the application.
+    It is built by the <span class="label label-attr">&lt;tags:jsGlobals/&gt;</span> tag.
     Below is the <span class="label label-attr">yg</span> object printed out in tree form.
 </p>
 <div class="yukon-props scroll-lg code js-yg-data ">
@@ -316,10 +397,14 @@ $(&#39;.js-url&#39;).text(yukon.url(&#39;/this-is/my/cool/url&#39;));
 &lt;/script&gt;
 </pre>
 
-<h3>Function: yukon.fromJson</h3>
+<h3 id="json-example">Function: yukon.fromJson</h3>
 <p class="description">
     Usually used with the <span class="label label-attr">&lt;cti:toJson/&gt;</span> tag, it will grab the inner text 
-    of the element specified, convert it to JSON and return it.
+    of the element specified, convert it to JSON and return it.<br>
+    <span class="label label-info">Note:</span> This is the the best way to get data into your JavaScript modules.
+    Intsead of mixing JavaScript and jsp code in jsp's or tag files, Drop it in the DOM with 
+    <span class="label label-attr">&lt;cti:toJson/&gt;</span> and pull it out with 
+    <span class="label label-attr">yukon.fromJson</span>.
 </p>
 <h4 class="subtle">Example:</h4>
 <div class="clearfix">
@@ -473,7 +558,10 @@ $(&#39;.js-url&#39;).text(yukon.url(&#39;/this-is/my/cool/url&#39;));
 
 <h3>Function: yukon.values</h3>
 <p class="description">
-    Returns the values of an Object.keys call.
+    Returns the values of an 
+    <a target="_blank" 
+        href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys">Object.keys</a> 
+    call.
 </p>
 <h4 class="subtle">Example:</h4>
 <div class="clearfix">
@@ -603,6 +691,45 @@ $(&#39;.js-url&#39;).text(yukon.url(&#39;/this-is/my/cool/url&#39;));
     $('.js-email-2').text(email2).addClass(email2 ? 'success' : 'error');
     </script>
 </div>
+
+
+<h3 id="yukon-cookie-ex">Function: yukon.cookie</h3>
+<p class="description">
+    <span class="label label-attr">yukon.cookie</span> is a small module to get and set
+    cookie values.  These values are actually stored in a single cookie named <em>yukon</em>.
+    It has simple <em>get</em> and <em>set</em> methods. Values are a combination of a scope and an id.
+    In the example below, 'dev', is the scope and 'foo' is the id.
+</p>
+<h4 class="subtle">Example:</h4>
+<div class="clearfix">
+    <div class="well js-cookie-ex">
+        The value of the 'dev.foo' in the yukon cookie is <span class="success js-cookie-ex-value"></span>.
+    </div>
+    <input type="text" class="js-cookie-ex-set"><cti:button label="Set 'dev.foo'" classes="js-set-cookie-btn"/>
+    <script>
+    yukon.cookie.set('dev', 'foo', 'bar');
+    $('.js-cookie-ex-value').text(yukon.cookie.get('dev', 'foo'));
+    $('.js-set-cookie-btn').click(function () {
+        yukon.cookie.set('dev', 'foo', $('.js-cookie-ex-set').val());
+        $('.js-cookie-ex-value').text(yukon.cookie.get('dev', 'foo'));
+    });
+    </script>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;div class=&quot;well js-cookie-ex&quot;&gt;
+    The value of the &#39;dev.foo&#39; in the yukon cookie is &lt;span class=&quot;success js-cookie-ex-value&quot;&gt;&lt;/span&gt;.
+&lt;/div&gt;
+&lt;input type=&quot;text&quot; class=&quot;js-cookie-ex-set&quot;&gt;&lt;cti:button label=&quot;Set &#39;dev.foo&#39;&quot; classes=&quot;js-set-cookie-btn&quot;/&gt;
+&lt;script&gt;
+yukon.cookie.set(&#39;dev&#39;, &#39;foo&#39;, &#39;bar&#39;);
+$(&#39;.js-cookie-ex-value&#39;).text(yukon.cookie.get(&#39;dev&#39;, &#39;foo&#39;));
+$(&#39;.js-set-cookie-btn&#39;).click(function () {
+    yukon.cookie.set(&#39;dev&#39;, &#39;foo&#39;, $(&#39;.js-cookie-ex-set&#39;).val());
+    $(&#39;.js-cookie-ex-value&#39;).text(yukon.cookie.get(&#39;dev&#39;, &#39;foo&#39;));
+});
+&lt;/script&gt;
+</pre>
 
 <h2>Module: Yukon UI</h2>
 <p class="description">
@@ -860,8 +987,8 @@ $(&#39;.js-block-page-btn&#39;).click(function () {
 <div class="stacked clearfix">
     <cti:url var="url" value="/dev/js-api#no-submit-example"/>
     <form class="js-no-submit-on-enter" action="${url}">
-        <input type="text" name="iSubmit" value="Don't Submit on Enter">
-        <input type="text" name="iWillNeverSubmit" value="Submit on Enter" class="js-submit-on-enter">
+        <input type="text" name="iWillNeverSubmit" value="Don't Submit on Enter">
+        <input type="text" name="iSubmit" value="Submit on Enter" class="js-submit-on-enter">
         <cti:button type="submit" label="Submit"/>
     </form>
 </div>
@@ -869,8 +996,8 @@ $(&#39;.js-block-page-btn&#39;).click(function () {
 <pre class="code prettyprint">
 &lt;cti:url var=&quot;url&quot; value=&quot;/dev/js-api#no-submit-example&quot;/&gt;
 &lt;form class=&quot;js-no-submit-on-enter&quot; action=&quot;&#36;{url}&quot;&gt;
-    &lt;input type=&quot;text&quot; name=&quot;iSubmit&quot; value=&quot;Don&#39;t Submit on Enter&quot;&gt;
-    &lt;input type=&quot;text&quot; name=&quot;iWillNeverSubmit&quot; value=&quot;Submit on Enter&quot; class=&quot;js-submit-on-enter&quot;&gt;
+    &lt;input type=&quot;text&quot; name=&quot;iWillNeverSubmit&quot; value=&quot;Don&#39;t Submit on Enter&quot;&gt;
+    &lt;input type=&quot;text&quot; name=&quot;iSubmit&quot; value=&quot;Submit on Enter&quot; class=&quot;js-submit-on-enter&quot;&gt;
     &lt;cti:button type=&quot;submit&quot; label=&quot;Submit&quot;/&gt;
 &lt;/form&gt;
 </pre>
@@ -949,7 +1076,13 @@ $(&#39;.js-block-page-btn&#39;).click(function () {
 </div>
 <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
-&lt;input type=&quot;text&quot; name=&quot;cell&quot; value=&quot;11231231234&quot; class=&quot;js-format-phone&quot;&gt;
+&lt;input type=&quot;text&quot; class=&quot;js-my-phone&quot; value=&quot;11231231234&quot;&gt;
+&lt;cti:button classes=&quot;js-format-phone-btn&quot; label=&quot;Format Phone #&quot;/&gt;
+&lt;script&gt;
+$(&#39;.js-format-phone-btn&#39;).click(function () {
+    yukon.ui.formatPhone(&#39;.js-my-phone&#39;);
+});
+&lt;/script&gt;
 </pre>
 
 <h3>Attribute: [data-toggle]</h3>
@@ -1510,16 +1643,16 @@ $(document).on(&#39;click&#39;, &#39;.js-adjust-movers-example .js-up, .js-adjus
 </p>
 <h4 class="subtle">Example:</h4>
 <div class="stacked clearfix">
-    <div class="js-wizard js-my-wizard dn" data-title="My Wizard">
+    <div class="js-wizard js-my-wizard dn" data-title="My Wizard" data-width="400">
         <div class="js-page">
-            <span>I'm page one, the coolest of all pages.</span>
+            <span>I'm page one.<br> I am the coolest of all pages.</span>
             <div class="action-area">
                 <cti:button label="Next" classes="action primary js-next"/>
                 <cti:button label="Cancel" classes="js-close"/>
             </div>
         </div>
         <div class="js-page dn">
-            <span>I'm page two, page one is thinks he's so cool.</span>
+            <span>I'm page two.<br> Page one is thinks he's so cool.</span>
             <div class="action-area">
                 <cti:button label="Next" classes="action primary js-next"/>
                 <cti:button label="Prev" classes="action primary js-prev"/>
@@ -1527,7 +1660,7 @@ $(document).on(&#39;click&#39;, &#39;.js-adjust-movers-example .js-up, .js-adjus
             </div>
         </div>
         <div class="js-page dn">
-            <span>I'm page three, the last page, which makes me cooler than the other two.</span>
+            <span>I'm page three.<br> The last page, which makes me cooler than the other two.</span>
                 <div class="action-area">
                 <cti:button label="Finish" classes="action primary js-next"/>
                 <cti:button label="Prev" classes="action primary js-prev"/>
@@ -1539,16 +1672,16 @@ $(document).on(&#39;click&#39;, &#39;.js-adjust-movers-example .js-up, .js-adjus
 </div>
 <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
-&lt;div class=&quot;js-wizard js-my-wizard dn&quot; data-title=&quot;My Wizard&quot;&gt;
+&lt;div class=&quot;js-wizard js-my-wizard dn&quot; data-title=&quot;My Wizard&quot; data-width=&quot;400&quot;&gt;
     &lt;div class=&quot;js-page&quot;&gt;
-        &lt;span&gt;I&#39;m page one, the coolest of all pages.&lt;/span&gt;
+        &lt;span&gt;I&#39;m page one.&lt;br&gt; I am the coolest of all pages.&lt;/span&gt;
         &lt;div class=&quot;action-area&quot;&gt;
             &lt;cti:button label=&quot;Next&quot; classes=&quot;action primary js-next&quot;/&gt;
             &lt;cti:button label=&quot;Cancel&quot; classes=&quot;js-close&quot;/&gt;
         &lt;/div&gt;
     &lt;/div&gt;
     &lt;div class=&quot;js-page dn&quot;&gt;
-        &lt;span&gt;I&#39;m page two, page one is thinks he&#39;s so cool.&lt;/span&gt;
+        &lt;span&gt;I&#39;m page two.&lt;br&gt; Page one is thinks he&#39;s so cool.&lt;/span&gt;
         &lt;div class=&quot;action-area&quot;&gt;
             &lt;cti:button label=&quot;Next&quot; classes=&quot;action primary js-next&quot;/&gt;
             &lt;cti:button label=&quot;Prev&quot; classes=&quot;action primary js-prev&quot;/&gt;
@@ -1556,7 +1689,7 @@ $(document).on(&#39;click&#39;, &#39;.js-adjust-movers-example .js-up, .js-adjus
         &lt;/div&gt;
     &lt;/div&gt;
     &lt;div class=&quot;js-page dn&quot;&gt;
-        &lt;span&gt;I&#39;m page three, the last page, which makes me cooler than the other two.&lt;/span&gt;
+        &lt;span&gt;I&#39;m page three.&lt;br&gt; The last page, which makes me cooler than the other two.&lt;/span&gt;
             &lt;div class=&quot;action-area&quot;&gt;
             &lt;cti:button label=&quot;Finish&quot; classes=&quot;action primary js-next&quot;/&gt;
             &lt;cti:button label=&quot;Prev&quot; classes=&quot;action primary js-prev&quot;/&gt;
@@ -1608,6 +1741,308 @@ $(document).on(&#39;click&#39;, &#39;.js-adjust-movers-example .js-up, .js-adjus
 </div>
 <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
+&lt;div class=&quot;column-12-12 clearfix&quot;&gt;
+    &lt;div class=&quot;column one&quot;&gt;
+        &lt;div class=&quot;js-my-todo-list&quot;&gt;
+            &lt;div class=&quot;form-control stacked&quot; data-removed-text=&quot;Done!&quot; data-undo-text=&quot;Undo&quot;&gt;
+                Write a unit test.
+                &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-tick&quot; classes=&quot;js-done fr&quot;/&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;form-control stacked&quot; data-removed-text=&quot;Done!&quot; data-undo-text=&quot;Undo&quot;&gt;
+                Make fun of Joe&#39;s clothes.
+                &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-tick&quot; classes=&quot;js-done fr&quot;/&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;form-control stacked&quot; data-removed-text=&quot;Done!&quot; data-undo-text=&quot;Undo&quot;&gt;
+                Tell Jess to hire someone.
+                &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-tick&quot; classes=&quot;js-done fr&quot;/&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;form-control stacked&quot; data-removed-text=&quot;Done!&quot; data-undo-text=&quot;Undo&quot;&gt;
+                Take nap in hammock.
+                &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-tick&quot; classes=&quot;js-done fr&quot;/&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;script&gt;
+(function () {
+    var daAThing = function () { console.log(&#39;Yay you did a thing!&#39;); };
+    var undoAThing = function () { console.log(&#39;You still need to do that thing.&#39;); };
+    $(&#39;.js-my-todo-list .js-done&#39;).click(function () {
+        yukon.ui.removeWithUndo($(this).closest(&#39;div&#39;), daAThing, undoAThing);
+    });
+})();
+&lt;/script&gt;
+</pre>
+
+
+<h2>Yukon Jquery Plugins</h2>
+<p class="description">
+    A set of jquery plugins we've built for Yukon. Not thirdparty ones, those are discussed elsewhere.
+</p>
+
+<h3>$.selectText</h3>
+<p class="description">
+    Will highlight all the text in an element. Useful for copy actions.
+</p>
+<h4 class="subtle">Example:</h4>
+<div class="clearfix">
+    <div class="well js-jq-select-ex">
+        The <span class="success">coolest</span> thing about<br>
+        $.selectText is that it will
+        <div class="user-message success">select the text reguardless of nested elements.</div>
+    </div>
+    <div class="page-action-area">
+        <cti:button classes="js-jq-select-btn" label="Highlight All The Things"/>
+    </div>
+    <script>
+    $('.js-jq-select-btn').click(function () {
+        $('.js-jq-select-ex').selectText();
+    });
+    </script>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;div class=&quot;well js-jq-select-ex&quot;&gt;
+    The &lt;span class=&quot;success&quot;&gt;coolest&lt;/span&gt; thing about&lt;br&gt;
+    $.selectText is that it will
+    &lt;div&gt;select the text reguardless of nested elements.&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;page-action-area&quot;&gt;
+    &lt;cti:button classes=&quot;js-jq-select-btn&quot; label=&quot;Highlight All The Things&quot;/&gt;
+&lt;/div&gt;
+&lt;script&gt;
+$(&#39;.js-jq-select-btn&#39;).click(function () {
+    $(&#39;.js-jq-select-ex&#39;).selectText();
+});
+&lt;/script&gt;
+</pre>
+
+<h3>$.toggleDisabled</h3>
+<p class="description">
+    Disable everything in the collection that is an html form input type.
+</p>
+<h4 class="subtle">Example:</h4>
+<div class="clearfix">
+    <div class="js-jq-disable-ex">
+        <input type="text" name="foo" value="bar">
+        <input type="checkbox" checked>
+        <select name="toppings">
+            <option value="p">Pepperoni</option>
+            <option value="s">Sausage</option>
+        </select>
+        <cti:button label="Some Button"/>
+    </div>
+    <div class="page-action-area">
+        <cti:button classes="js-jq-disable-btn-1" label="Enable/Disable Everything"/>
+        <cti:button classes="js-jq-disable-btn-2" label="Enable/Disable Text Fields"/>
+    </div>
+    <script>
+    $('.js-jq-disable-btn-1').click(function () {
+        $('.js-jq-disable-ex *').toggleDisabled();
+    });
+    $('.js-jq-disable-btn-2').click(function () {
+        $('.js-jq-disable-ex input[type=text]').toggleDisabled();
+    });
+    </script>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;div class=&quot;js-jq-disable-ex&quot;&gt;
+    &lt;input type=&quot;text&quot; name=&quot;foo&quot; value=&quot;bar&quot;&gt;
+    &lt;input type=&quot;checkbox&quot; checked&gt;
+    &lt;select name=&quot;toppings&quot;&gt;
+        &lt;option value=&quot;p&quot;&gt;Pepperoni&lt;/option&gt;
+        &lt;option value=&quot;s&quot;&gt;Sausage&lt;/option&gt;
+    &lt;/select&gt;
+    &lt;cti:button label=&quot;Some Button&quot;/&gt;
+&lt;/div&gt;
+&lt;div class=&quot;page-action-area&quot;&gt;
+    &lt;cti:button classes=&quot;js-jq-disable-btn-1&quot; label=&quot;Enable/Disable Everything&quot;/&gt;
+    &lt;cti:button classes=&quot;js-jq-disable-btn-2&quot; label=&quot;Enable/Disable Text Fields&quot;/&gt;
+&lt;/div&gt;
+&lt;script&gt;
+$(&#39;.js-jq-disable-btn-1&#39;).click(function () {
+    $(&#39;.js-jq-disable-ex *&#39;).toggleDisabled();
+});
+$(&#39;.js-jq-disable-btn-2&#39;).click(function () {
+    $(&#39;.js-jq-disable-ex input[type=text]&#39;).toggleDisabled();
+});
+&lt;/script&gt;
+</pre>
+
+<h3>$.flash</h3>
+<p class="description">
+    Flash an element's background with a color for a duration. It takes 3 an option 'options' argument with 
+    three possible options: color, duration, and a 'complete' callback.
+</p>
+<h4 class="subtle">Example:</h4>
+<div class="clearfix">
+    <div class="stacked">
+        <span class="js-flash-me">Look Mom, no hands!</span>
+        <div class="well buffered js-flash-me">I'm so good at Jquery!</div>
+        <div class="js-flash-speed" style="max-width: 400px;"></div>
+        Speed: <span class="js-flash-speed-val"></span>
+    </div>
+    <script>
+    (function () {
+        
+        $('.js-flash-speed').slider({
+            value:1800,
+            min: 300,
+            max: 3000,
+            step: 300,
+            slide: function (event, ui) {
+                var speed = ui.value === 300 ? 'ludicrous' :
+                        ui.value === 600 ? 'rave' : ui.value + 'ms';
+                $('.js-flash-speed-val').text(speed);
+            }
+        });
+        $('.js-flash-speed-val').text($('.js-flash-speed').slider('value') + 'ms');
+        var colors = ['#01B9BB', '#617DC6', '#F7D22B', '#F25E42', '#E26C7A'];
+        
+        var flasher = function () {
+            var c = yukon.randomInt(0, 5);
+            var d = $('.js-flash-speed').slider('value');
+            $('.js-flash-me').flash({ 
+                color: colors[c], 
+                duration: d, 
+                complete: function () {
+                    setTimeout(flasher, 0);
+                }
+            });
+        };
+        flasher();
+    })();
+    </script>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;div class=&quot;stacked&quot;&gt;
+    &lt;span class=&quot;js-flash-me&quot;&gt;Look Mom, no hands!&lt;/span&gt;
+    &lt;div class=&quot;well buffered js-flash-me&quot;&gt;I&#39;m so good at Jquery!&lt;/div&gt;
+    &lt;div class=&quot;js-flash-speed&quot; style=&quot;max-width: 400px;&quot;&gt;&lt;/div&gt;
+    Speed: &lt;span class=&quot;js-flash-speed-val&quot;&gt;&lt;/span&gt;
+&lt;/div&gt;
+&lt;script&gt;
+(function () {
+    
+    $(&#39;.js-flash-speed&#39;).slider({
+        value:1800,
+        min: 300,
+        max: 3000,
+        step: 300,
+        slide: function (event, ui) {
+            var speed = ui.value === 300 ? &#39;ludicrous&#39; :
+                    ui.value === 600 ? &#39;rave&#39; : ui.value + &#39;ms&#39;;
+            $(&#39;.js-flash-speed-val&#39;).text(speed);
+        }
+    });
+    $(&#39;.js-flash-speed-val&#39;).text($(&#39;.js-flash-speed&#39;).slider(&#39;value&#39;) + &#39;ms&#39;);
+    var colors = [&#39;#01B9BB&#39;, &#39;#617DC6&#39;, &#39;#F7D22B&#39;, &#39;#F25E42&#39;, &#39;#E26C7A&#39;];
+    
+    var flasher = function () {
+        var c = yukon.randomInt(0, 5);
+        var d = $(&#39;.js-flash-speed&#39;).slider(&#39;value&#39;);
+        $(&#39;.js-flash-me&#39;).flash({ 
+            color: colors[c], 
+            duration: d, 
+            complete: function () {
+                setTimeout(flasher, 0);
+            }
+        });
+    };
+    flasher();
+})();
+&lt;/script&gt;
+</pre>
+
+<h3>$.visible, $.invisible, $.visibilityToggle</h3>
+<p class="description">
+    Does the same as jquery's built in $.show, $.hide, and $.toggle except they change the CSS <em>visibility</em> property.
+</p>
+<h4 class="subtle">Example:</h4>
+<div class="clearfix">
+    <div class="well">
+        <span>Who ya gonna call? <cti:icon classes="js-ghost fn" icon="icon-status-offline"/> Ghost busters!</span>
+    </div>
+    <script>
+    (function () {
+        var runner = function () {
+            $('.js-ghost').visibilityToggle();
+            setTimeout(runner, 1000);
+        };
+        runner();
+    })();
+    </script>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;div class=&quot;well&quot;&gt;
+    &lt;span&gt;Who ya gonna call? &lt;cti:icon classes=&quot;js-ghost fn&quot; icon=&quot;icon-status-offline&quot;/&gt; Ghost busters!&lt;/span&gt;
+&lt;/div&gt;
+&lt;script&gt;
+(function () {
+    var runner = function () {
+        $(&#39;.js-ghost&#39;).visibilityToggle();
+        setTimeout(runner, 1000);
+    };
+    runner();
+})();
+&lt;/script&gt;
+</pre>
+
+<h3 id="add-msg-ex">$.addMessage, $.removeMessages</h3>
+<p class="description">
+    <span class="label label-attr">$.addMessage</span> adds an alert to a container element and 
+    <span class="label label-attr">$.addMessage</span> removes all alerts from a container element.
+</p>
+<h4 class="subtle">Example:</h4>
+<div class="clearfix">
+    <div class="well clearfix js-add-msg-ex">
+        <cti:button classes="js-add-msg" label="Add Success" data-label="Success" data-type="success"/>
+        <cti:button classes="js-add-msg" label="Add Info" data-label="Info" data-type="info"/>
+        <cti:button classes="js-add-msg" label="Add Warning" data-label="Warning" data-type="warning"/>
+        <cti:button classes="js-add-msg" label="Add Error" data-label="Error" data-type="error"/>
+        <cti:button classes="js-add-msg" label="Add Pending" data-label="Pending" data-type="pending"/>
+        <cti:button classes="js-remove-msgs" label="Remove Messages"/>
+    </div>
+    <script>
+    (function () {
+        $('.js-add-msg').click(function () { 
+            $('.js-add-msg-ex').addMessage({
+                message: $(this).data('label'),
+                messageClass: $(this).data('type')
+            }); 
+        });
+        $('.js-remove-msgs').click(function () { 
+            $('.js-add-msg-ex').removeMessages();
+        });
+    })();
+    </script>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;div class=&quot;well clearfix js-add-msg-ex&quot;&gt;
+    &lt;cti:button classes=&quot;js-add-msg&quot; label=&quot;Add Success&quot; data-label=&quot;Success&quot; data-type=&quot;success&quot;/&gt;
+    &lt;cti:button classes=&quot;js-add-msg&quot; label=&quot;Add Info&quot; data-label=&quot;Info&quot; data-type=&quot;info&quot;/&gt;
+    &lt;cti:button classes=&quot;js-add-msg&quot; label=&quot;Add Warning&quot; data-label=&quot;Warning&quot; data-type=&quot;warning&quot;/&gt;
+    &lt;cti:button classes=&quot;js-add-msg&quot; label=&quot;Add Error&quot; data-label=&quot;Error&quot; data-type=&quot;error&quot;/&gt;
+    &lt;cti:button classes=&quot;js-add-msg&quot; label=&quot;Add Pending&quot; data-label=&quot;Pending&quot; data-type=&quot;pending&quot;/&gt;
+    &lt;cti:button classes=&quot;js-remove-msgs&quot; label=&quot;Remove Messages&quot;/&gt;
+&lt;/div&gt;
+&lt;script&gt;
+(function () {
+    $(&#39;.js-add-msg&#39;).click(function () { 
+        $(&#39;.js-add-msg-ex&#39;).addMessage({
+            message: $(this).data(&#39;label&#39;),
+            messageClass: $(this).data(&#39;type&#39;)
+        }); 
+    });
+    $(&#39;.js-remove-msgs&#39;).click(function () { 
+        $(&#39;.js-add-msg-ex&#39;).removeMessages();
+    });
+})();
+&lt;/script&gt;
 </pre>
 
 <script>$(function () { prettyPrint(); });</script>

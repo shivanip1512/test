@@ -15,7 +15,7 @@ import com.google.common.collect.ImmutableList;
 
 @Controller
 @CheckCparm(MasterConfigBoolean.DEVELOPMENT_MODE)
-public class JsApiController {
+public class YukonJsLibraryController {
     
     public class Company {
         
@@ -32,6 +32,8 @@ public class JsApiController {
     
     @RequestMapping({"/js-api", "/js-api/"})
     public String root(ModelMap model) {
+        
+        model.addAttribute("favoriteNumber", 42);
         
         Company company = new Company();
         

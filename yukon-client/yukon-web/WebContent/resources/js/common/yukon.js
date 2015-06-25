@@ -1558,7 +1558,11 @@ yukon.ui = (function () {
     $.fn.flash = function (options) {
         return this.each(function () {
             
-            options = $.extend({ color: '#fff288', duration: 1500 }, options || {});
+            options = $.extend({ 
+                color: '#fff288', 
+                duration: 1500,
+                complete: yukon.nothing
+            }, options || {});
             
             var me = $(this),
                 prev = me.data('previousColor') ? me.data('previousColor') : me.css('background-color');
@@ -1566,7 +1570,7 @@ yukon.ui = (function () {
                 
             me.stop(true)
             .css({ backgroundColor: options.color })
-            .animate({ backgroundColor: prev }, options.duration);
+            .animate({ backgroundColor: prev }, options.duration, options.complete);
         });
     };
     

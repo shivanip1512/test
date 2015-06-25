@@ -499,6 +499,7 @@
                       <labelArgument>${customer.companyName}</labelArgument>
                     </page>
                 </pages>
+                
             </page>
         </pages>
       </page>
@@ -1503,7 +1504,7 @@
           <page name="i18nDemo" type="BASIC"/>
           <page name="i18nDemo.scopes" type="BASIC"/>
           <page name="jsTesting" type="BASIC"/>
-          <page name="js-api" type="BASIC"/>
+          <page name="yukon-js-lib" type="BASIC"/>
           <page name="styleguide" type="BASIC">
             <link>/dev/styleguide</link>
             <pages>

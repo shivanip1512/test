@@ -11,7 +11,8 @@
             <tags:sectionContainer title="User Interface Development">
                 <ul class="simple-list">
                     <li><a href="<cti:url value="/dev/styleguide"/>">Style Guide and Component Library</a></li>
-                    <li><a href="<cti:url value="/dev/js-api"/>">JavaScript API</a></li>
+                    <li><a href="<cti:url value="/dev/js-api"/>">Yukon JavaScript Library</a></li>
+                    <li><a href="<cti:url value="/dev/pages"/>">Yukon Pages</a></li>
                     <li><a href="<cti:url value="/dev/i18n"/>">Localization</a></li>
                     <li><a href="<cti:url value="/dev/i18n/scopes"/>">Localization Scoping</a></li>
                 </ul>
