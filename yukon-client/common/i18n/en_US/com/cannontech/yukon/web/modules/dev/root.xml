@@ -287,6 +287,7 @@
     
     <!-- Style Guide Pages -->
     <entry key="yukon.web.modules.dev.yukon-js-lib.pageName">Yukon JavaScript Library</entry>
+    <entry key="yukon.web.modules.dev.yukon-pages.pageName">Yukon Pages</entry>
     
     <!-- Style Guide Pages -->
     <entry key="yukon.web.modules.dev.jsTesting.pageName">JavaScript Testing</entry>
