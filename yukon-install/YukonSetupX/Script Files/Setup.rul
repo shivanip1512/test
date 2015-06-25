@@ -545,6 +545,7 @@ begin
     
     Dialog_Services:
 	if (AreYukonServicesRunning()) then
+        StopYukonServices();
 		MessageBox(SERVICE_WARNING, WARNING);	
 	endif;
     
@@ -728,6 +729,7 @@ Dlg_ObjDialogs:
 				StopYukonServices();
 				MessageBox(SERVICE_WARNING, WARNING);	
 			endif;
+            SaveServiceSettings();
             // Added in 11.0 - Set appropriate StatusEx static text.
             SetStatusExStaticText( SdLoadString( IDS_IFX_STATUSEX_STATICTEXT_MAINTUI_MODIFY ) );
     endswitch;
@@ -751,7 +753,9 @@ begin
     Disable(BACKBUTTON);
  	
  	//reapply old settings to newly updated services
-	LoadServiceSettings();
+    if( !REMOVEALLMODE ) then
+        LoadServiceSettings();
+    endif;
  	
  	if (FeatureIsItemSelected(MEDIA, "Yukon Server") && (!BATCH_INSTALL)) then
  		bOptYes = TRUE;

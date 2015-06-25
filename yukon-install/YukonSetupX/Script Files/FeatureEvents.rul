@@ -20,6 +20,9 @@
 #define DISPATCH_NAME	"Yukon Dispatch Service"
 #define CC_NAME			"Yukon Cap Control Service"
 #define CALC_NAME		"Yukon Calc-Logic Service"
+#define WEB_NAME        "YukonWebApplicationService"
+#define NOTIF_NAME      "YukonNotificationServer"
+#define SM_NAME         "YukonServiceMgr"
 
 //---------------------------------------------------------------------------
 // The Installed event is sent after the feature Notification Server
@@ -41,13 +44,9 @@ end;
 //--------------------------------------------------------------------------- 
 export prototype NotificationServer_UnInstalling();
 function NotificationServer_UnInstalling()
-string sProg , sCMD , svDir;
 begin   
-	//remove the Yukon Notification Server
-	sProg = "cmd.exe";
-	sCMD = "/c java -jar "+ TARGETDIR ^ "\\Client\\bin\\wrapper.jar" + " -r " + TARGETDIR ^ "\\Client\\bin\\notifserver.conf";
-	svDir = TARGETDIR + "\\Runtime\\bin";
-	LaunchApplication(sProg, sCMD, svDir, SW_HIDE, 0, LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
+    //remove the Yukon Notification Server
+    ServiceRemoveService(NOTIF_NAME);
 end;
 
 //----------------------------------------------------------------------------
@@ -113,11 +112,9 @@ end;
 //---------------------------------------------------------------------------- 
 export prototype Tomcat_UnInstalling();
 function Tomcat_UnInstalling()
-string sServPath;
 begin
-   	//remove the Tomcat service
-	sServPath = TARGETDIR + "\\Server\\web\\bin\\";
-	LaunchAppAndWait(sServPath + "yukonservice.bat", "remove", WAIT);
+    //remove the Tomcat service
+    ServiceRemoveService(WEB_NAME);
 end;
 
 //---------------------------------------------------------------------------
@@ -141,13 +138,9 @@ end;
 //--------------------------------------------------------------------------- 
 export prototype YukonServiceManager_UnInstalling();
 function YukonServiceManager_UnInstalling()
-string sProg, sCMD, svDir;
 begin
-	//remove the Yukon Service Manager
-	sProg = "cmd.exe";
-	sCMD = "/c java -jar " + TARGETDIR ^ "\\Client\\bin\\wrapper.jar" + " -r " + TARGETDIR ^ "\\Client\\bin\\appserver.conf";
-	svDir = TARGETDIR + "\\Runtime\\bin";
-	LaunchApplication(sProg, sCMD, svDir, SW_HIDE, 0, LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
+    //remove the Yukon Service Manager
+    ServiceRemoveService(SM_NAME);
 end;
 
 //---------------------------------------------------------------------------
