@@ -317,6 +317,7 @@ const Attribute Attribute::ReverseInductivekVArhperInterval                 = At
 const Attribute Attribute::ReverseCapacitivekVArhperInterval                = Attribute( "REVERSE_CAPACITIVE_KVARH_PER_INTERVAL" );
 
 const Attribute Attribute::DeliveredkWLoadProfile                           = Attribute( "DELIVERED_KW_LOAD_PROFILE" );
+const Attribute Attribute::DeliveredkVArLoadProfile                         = Attribute( "DELIVERED_KVAR_LOAD_PROFILE" );
 const Attribute Attribute::ReceivedkWLoadProfile                            = Attribute( "RECEIVED_KW_LOAD_PROFILE" );
 const Attribute Attribute::SumkWLoadProfile                                 = Attribute( "SUM_KW_LOAD_PROFILE" );
 const Attribute Attribute::NetkWLoadProfile                                 = Attribute( "NET_KW_LOAD_PROFILE" );
