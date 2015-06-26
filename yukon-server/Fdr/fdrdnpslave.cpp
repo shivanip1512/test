@@ -12,6 +12,10 @@
 #include "resolvers.h"
 #include "desolvers.h"
 #include "slctdev.h"
+#include "msg_pcrequest.h"
+#include "msg_pcreturn.h"
+
+#include "millisecond_timer.h"
 
 #include "std_helper.h"
 
@@ -63,9 +67,10 @@ using namespace Cti::Protocols::DNP;
 // Constructors, Destructor, and Operators
 DnpSlave::DnpSlave() :
     CtiFDRSocketServer("DNPSLAVE"),
-    _staleDataTimeOut(0),
-    _porterConnection(Cti::Messaging::ActiveMQ::Queue::porter),
-    _attributeService(std::make_unique<AttributeService>())
+    _staleDataTimeout(0),
+    _porterTimeout(30),
+    _porterPriority(14),
+    _porterConnection(Cti::Messaging::ActiveMQ::Queue::porter)
 {
     _porterConnection.setName("FDR DNP Slave to Porter");
 }
@@ -96,6 +101,8 @@ bool DnpSlave::readConfig()
     const char *KEY_FDR_DNPSLAVE_SERVER_NAMES   = "FDR_DNPSLAVE_SERVER_NAMES";
     const char *KEY_LINK_TIMEOUT                = "FDR_DNPSLAVE_LINK_TIMEOUT_SECONDS";
     const char *KEY_STALEDATA_TIMEOUT           = "FDR_DNPSLAVE_STALEDATA_TIMEOUT";
+    const char *KEY_PORTER_TIMEOUT              = "FDR_DNPSLAVE_PORTER_TIMEOUT";
+    const char *KEY_PORTER_PRIORITY             = "FDR_DNPSLAVE_PORTER_PRIORITY";
 
     const int DNPSLAVE_PORTNUMBER = 2085;
 
@@ -108,8 +115,14 @@ bool DnpSlave::readConfig()
     setLinkTimeout(
             gConfigParms.getValueAsInt(KEY_LINK_TIMEOUT, 60));
 
-    _staleDataTimeOut =
+    _staleDataTimeout =
             gConfigParms.getValueAsInt(KEY_STALEDATA_TIMEOUT, 3600);
+
+    _porterTimeout =
+            gConfigParms.getValueAsInt(KEY_PORTER_TIMEOUT, 30);
+
+    _porterPriority =
+            gConfigParms.getValueAsInt(KEY_PORTER_PRIORITY, 14);
 
     setInterfaceDebugMode(
             gConfigParms.getValueAsString(KEY_DEBUG_MODE).length() > 0);
@@ -639,7 +652,7 @@ std::string logPoints(const Protocols::DnpSlave::control_request &control, const
 
 ControlStatus DnpSlave::tryPorterControl(const Protocols::DnpSlave::control_request &control, const long pointId)
 {
-    auto point = _attributeService->getLitePointById(pointId);
+    auto point = lookupPointById(pointId);
 
     if( point.getPointId() != pointId )
     {
@@ -715,7 +728,7 @@ ControlStatus DnpSlave::tryPorterControl(const Protocols::DnpSlave::control_requ
             if( control.control != BinaryOutputControl::PulseOn )
             {
                 CTILOG_WARN(dout, logNow() <<" Incorrect control type" << logPoints(control, point));
-                return ControlStatus::NotSupported;
+                return ControlStatus::FormatError;
             }
 
             switch( control.trip_close )
@@ -725,18 +738,19 @@ ControlStatus DnpSlave::tryPorterControl(const Protocols::DnpSlave::control_requ
                     if( ! icontainsString(point.getStateZeroControl(), " open") )
                     {
                         CTILOG_WARN(dout, logNow() <<" State zero control string is not an OPEN" << logPoints(control, point));
-                        return ControlStatus::NotSupported;
+                        return ControlStatus::FormatError;
                     }
                     if( point.getCloseTime1() != control.on_time )
                     {
                         CTILOG_WARN(dout, logNow() <<" On time mismatch" << logPoints(control, point));
-                        return ControlStatus::NotSupported;
+                        return ControlStatus::FormatError;
                     }
                     if( control.off_time )
                     {
-                        CTILOG_WARN(dout, logNow() <<" Off time not supported" << logPoints(control, point));
-                        return ControlStatus::NotSupported;
+                        CTILOG_WARN(dout, logNow() <<" Off time not supported, must be zero" << logPoints(control, point));
+                        return ControlStatus::FormatError;
                     }
+                    commandString = "control open";
                     break;
                 }
                 case BinaryOutputControl::Close:
@@ -744,27 +758,34 @@ ControlStatus DnpSlave::tryPorterControl(const Protocols::DnpSlave::control_requ
                     if( ! icontainsString(point.getStateOneControl(), " close") )
                     {
                         CTILOG_WARN(dout, logNow() <<" State one control string is not a CLOSE" << logPoints(control, point));
-                        return ControlStatus::NotSupported;
+                        return ControlStatus::FormatError;
                     }
                     if( point.getCloseTime2() != control.on_time )
                     {
                         CTILOG_WARN(dout, logNow() <<" On time mismatch" << logPoints(control, point));
-                        return ControlStatus::NotSupported;
+                        return ControlStatus::FormatError;
                     }
                     if( control.off_time )
                     {
-                        CTILOG_WARN(dout, logNow() <<" Off time not supported" << logPoints(control, point));
-                        return ControlStatus::NotSupported;
+                        CTILOG_WARN(dout, logNow() <<" Off time not supported, must be zero" << logPoints(control, point));
+                        return ControlStatus::FormatError;
                     }
+                    commandString = "control close";
                     break;
                 }
                 case BinaryOutputControl::NUL:
                 {
+                    if( ! icontainsString(point.getStateOneControl(), " close") )
+                    {
+                        CTILOG_WARN(dout, logNow() <<" State one control string is not a CLOSE" << logPoints(control, point));
+                        return ControlStatus::FormatError;
+                    }
                     if( ! icontainsString(point.getStateOneControl(), " direct") )
                     {
-                        CTILOG_WARN(dout, logNow() <<" Direct control not specified for StateOne control" << logPoints(control, point));
-                        return ControlStatus::NotSupported;
+                        CTILOG_WARN(dout, logNow() <<" State one control string does not contain DIRECT" << logPoints(control, point));
+                        return ControlStatus::FormatError;
                     }
+                    commandString = "control close";  //  always send state one control
                     break;
                 }
             }
@@ -773,45 +794,61 @@ ControlStatus DnpSlave::tryPorterControl(const Protocols::DnpSlave::control_requ
         case ControlType_Latch:
         case ControlType_SBOLatch:
         {
-            if( control.control != BinaryOutputControl::LatchOn )
+            switch( control.control )
             {
-                CTILOG_WARN(dout, logNow() <<" Incorrect control type " << logPoints(control, point));
-                return ControlStatus::NotSupported;
+                case BinaryOutputControl::LatchOff:
+                {
+                    if( ! icontainsString(point.getStateZeroControl(), " open") )
+                    {
+                        CTILOG_WARN(dout, logNow() <<" State zero control string is not an OPEN" << logPoints(control, point));
+                        return ControlStatus::FormatError;
+                    }
+                    commandString = "control open";
+                    break;
+                }
+                case BinaryOutputControl::LatchOn:
+                {
+                    if( ! icontainsString(point.getStateOneControl(), " close") )
+                    {
+                        CTILOG_WARN(dout, logNow() <<" State one control string is not a CLOSE" << logPoints(control, point));
+                        return ControlStatus::FormatError;
+                    }
+                    commandString = "control close";
+                    break;
+                }
+                default:
+                {
+                    CTILOG_WARN(dout, logNow() <<" incorrect control type" << logPoints(control, point));
+                    return ControlStatus::FormatError;
+                }
             }
             break;
         }
         default:
         {
             CTILOG_WARN(dout, logNow() <<" unknown control type " << logPoints(control, point));
-            return ControlStatus::NotSupported;
+            return ControlStatus::FormatError;
         }
     }
 
-    //PorterConnection->WriteConnQue(request, 1000);
+    const long userMessageId = _porterUserMsgIdGenerator;
 
-    //  DNP passthrough control via Porter...  but set timeouts, I guess?
+    auto requestMsg =
+        std::make_unique<CtiRequestMsg>(
+                point.getPaoId(),
+                commandString,
+                userMessageId);
 
-    std::string responseString;
+    requestMsg->setMessagePriority(_porterPriority);
 
-    std::regex re { "Control result \\(([0-9]+)\\)" };
-
-    std::smatch results;
-
-    if( std::regex_search(responseString, results, re) )
+    if( const auto error = writePorterConnection(requestMsg.release(), Timing::Chrono::seconds(5)) )
     {
-        try
-        {
-            int error = std::stoi(results[0].str());
-        }
-        catch( std::invalid_argument & )
-        {
-        }
-        catch( std::out_of_range & )
-        {
-        }
+        CTILOG_ERROR(dout, logNow() << " failed to send control request to Porter" << logPoints(control, point));
+
+        return ControlStatus::Undefined;
     }
 
-    return Protocols::DNP::ControlStatus::NotSupported;
+    return waitForResponse(userMessageId);
 }
 
 
@@ -946,7 +983,7 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
             {
                 if( isDnpDeviceId(fdrPoint->getPaoID()) )
                 {
-                    analog.status = tryPorterAnalogOutput(analog);
+                    analog.status = tryPorterAnalogOutput(analog, fdrPoint->getPointID());
                 }
                 else if( tryDispatchAnalogOutput(analog, fdrPoint->getPointID()) )
                 {
@@ -990,9 +1027,80 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
 }
 
 
-ControlStatus DnpSlave::tryPorterAnalogOutput(const Protocols::DnpSlave::analog_output_request &analog)
+ControlStatus DnpSlave::tryPorterAnalogOutput(const Protocols::DnpSlave::analog_output_request &analog, long pointId)
 {
-    return ControlStatus::Success;
+    auto point = lookupPointById(pointId);
+
+    if( point.getPointId() != pointId )
+    {
+        CTILOG_WARN(dout, logNow() <<" could not load DNP pointid "<< pointId);
+
+        return ControlStatus::NotSupported;
+    }
+
+    //  Confirm control offset matches
+    if( (analog.offset + 1) != point.getControlOffset() )
+    {
+        FormattedList l;
+
+        l.add("DNP request");
+        l.add("Offset") << analog.offset;
+        l.add("Yukon point");
+        l.add("Control offset") << point.getControlOffset();
+        l.add("Point id")       << point.getPointId();
+        l.add("Pao id")         << point.getPaoId();
+
+        CTILOG_WARN(dout, logNow() <<" analog control offset mismatch" << l);
+
+        return ControlStatus::FormatError;
+    }
+
+    std::string commandString = "putvalue analog " + std::to_string(point.getControlOffset()) + " value ";
+
+    switch( analog.type )
+    {
+        case AnalogOutput::AO_16Bit:
+        case AnalogOutput::AO_32Bit:
+        {
+            commandString += std::to_string(static_cast<long>(analog.value));
+            break;
+        }
+
+        case AnalogOutput::AO_SingleFloat:
+        case AnalogOutput::AO_DoubleFloat:
+        {
+            commandString += std::to_string(analog.value);
+            break;
+        }
+    }
+
+    const long userMessageId = _porterUserMsgIdGenerator;
+
+    auto requestMsg =
+        std::make_unique<CtiRequestMsg>(
+                point.getPaoId(),
+                commandString,
+                userMessageId);
+
+    requestMsg->setMessagePriority(_porterPriority);
+
+    if( const auto error = writePorterConnection(requestMsg.release(), Timing::Chrono::seconds(5)) )
+    {
+        FormattedList l;
+
+        l.add("DNP request");
+        l.add("Offset") << analog.offset;
+        l.add("Yukon point");
+        l.add("Control offset") << point.getControlOffset();
+        l.add("Point id")       << point.getPointId();
+        l.add("Pao id")         << point.getPaoId();
+
+        CTILOG_ERROR(dout, logNow() << " failed to send analog output request to Porter" << l);
+
+        return ControlStatus::Undefined;
+    }
+
+    return waitForResponse(userMessageId);
 }
 
 
@@ -1003,6 +1111,83 @@ bool DnpSlave::tryDispatchAnalogOutput(const Protocols::DnpSlave::analog_output_
     CtiCommandMsg *aoMsg = createAnalogOutputMessage(pointid, translationName, analog.value);
 
     return sendMessageToDispatch(aoMsg);
+}
+
+
+YukonError_t DnpSlave::writePorterConnection(CtiRequestMsg *msg, const Timing::Chrono duration)
+{
+    return _porterConnection.WriteConnQue(msg, duration.milliseconds());
+}
+
+
+CtiReturnMsg *DnpSlave::readPorterConnection(const Timing::Chrono duration)
+{
+    return dynamic_cast<CtiReturnMsg *>(_porterConnection.ReadConnQue(duration.milliseconds()));
+}
+
+
+LitePoint DnpSlave::lookupPointById(long pointId)
+{
+    return _attributeService.getLitePointById(pointId);
+}
+
+
+ControlStatus DnpSlave::waitForResponse(const long userMessageId)
+{
+    static const std::map<unsigned char, ControlStatus> controlStatuses {
+        { static_cast<unsigned char>(ControlStatus::Success),           ControlStatus::Success           },
+        { static_cast<unsigned char>(ControlStatus::Timeout),           ControlStatus::Timeout           },
+        { static_cast<unsigned char>(ControlStatus::NoSelect),          ControlStatus::NoSelect          },
+        { static_cast<unsigned char>(ControlStatus::FormatError),       ControlStatus::FormatError       },
+        { static_cast<unsigned char>(ControlStatus::NotSupported),      ControlStatus::NotSupported      },
+        { static_cast<unsigned char>(ControlStatus::AlreadyActive),     ControlStatus::AlreadyActive     },
+        { static_cast<unsigned char>(ControlStatus::HardwareError),     ControlStatus::HardwareError     },
+        { static_cast<unsigned char>(ControlStatus::Local),             ControlStatus::Local             },
+        { static_cast<unsigned char>(ControlStatus::TooManyObjs),       ControlStatus::TooManyObjs       },
+        { static_cast<unsigned char>(ControlStatus::NotAuthorized),     ControlStatus::NotAuthorized     },
+        { static_cast<unsigned char>(ControlStatus::AutomationInhibit), ControlStatus::AutomationInhibit },
+        { static_cast<unsigned char>(ControlStatus::ProcessingLimited), ControlStatus::ProcessingLimited },
+        { static_cast<unsigned char>(ControlStatus::OutOfRange),        ControlStatus::OutOfRange        },
+        { static_cast<unsigned char>(ControlStatus::ReservedMin),       ControlStatus::ReservedMin       },
+        { static_cast<unsigned char>(ControlStatus::ReservedMax),       ControlStatus::ReservedMax       },
+        { static_cast<unsigned char>(ControlStatus::NonParticipating),  ControlStatus::NonParticipating  },
+        { static_cast<unsigned char>(ControlStatus::Undefined),         ControlStatus::Undefined         }};
+
+    Cti::Timing::MillisecondTimer t;
+
+    do
+    {
+        if( auto msg = readPorterConnection(Timing::Chrono::seconds(1)) )
+        {
+            if( msg->UserMessageId() == userMessageId && ! msg->ExpectMore() )
+            {
+                std::regex re { "Control result \\(([0-9]+)\\)" };
+
+                std::smatch results;
+
+                if( std::regex_search(msg->ResultString(), results, re) )
+                {
+                    try
+                    {
+                        int error = std::stoi(results[1].str());
+
+                        return mapFindOrDefault(controlStatuses, error, ControlStatus::Undefined);
+                    }
+                    catch( std::invalid_argument & )
+                    {
+                    }
+                    catch( std::out_of_range & )
+                    {
+                    }
+                }
+
+                return Protocols::DNP::ControlStatus::Undefined;
+            }
+        }
+
+    } while( t.elapsed() < (_porterTimeout * 1000) );
+
+    return ControlStatus::Undefined;
 }
 
 
@@ -1071,7 +1256,7 @@ bool DnpSlave::YukonToForeignQuality(const int aQuality, const CtiTime lastTimeS
         case ManualQuality:
         case NormalQuality:
         {
-            return lastTimeStamp >= (Now - _staleDataTimeOut);
+            return lastTimeStamp >= (Now - _staleDataTimeout);
         }
     }
 

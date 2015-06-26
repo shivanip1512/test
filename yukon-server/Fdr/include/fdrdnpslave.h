@@ -7,12 +7,16 @@
 #include "dnp_object_analoginput.h"
 #include "prot_dnpSlave.h"
 #include "string_util.h"
+#include "random_generator.h"
+#include "AttributeService.h"
 
 #include <boost/tuple/tuple_comparison.hpp>
 
 #include <map>
 
 class AttributeService;
+class CtiRequestMsg;
+class CtiReturnMsg;
 
 namespace Cti {
 namespace Fdr {
@@ -77,6 +81,11 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
 
         unsigned int getHeaderLength() override;
 
+        virtual YukonError_t  writePorterConnection(CtiRequestMsg *msg, const Timing::Chrono duration);
+        virtual CtiReturnMsg *readPorterConnection(const Timing::Chrono duration);
+
+        virtual LitePoint lookupPointById(long pointid);
+
     private:
         DnpId ForeignToYukonId(const CtiFDRDestination &pointDestination);
         bool  YukonToForeignQuality(const int aQuality, const CtiTime lastTimeStamp, const CtiTime Now);
@@ -89,8 +98,10 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
         auto tryPorterControl  (const Protocols::DnpSlave::control_request &control, const long pointId) -> Protocols::DNP::ControlStatus;
         bool tryDispatchControl(const Protocols::DnpSlave::control_request &control, const long pointId);
 
-        auto tryPorterAnalogOutput  (const Protocols::DnpSlave::analog_output_request &analog) -> Protocols::DNP::ControlStatus;
+        auto tryPorterAnalogOutput  (const Protocols::DnpSlave::analog_output_request &analog, const long pointId) -> Protocols::DNP::ControlStatus;
         bool tryDispatchAnalogOutput(const Protocols::DnpSlave::analog_output_request &analog, const long pointId);
+
+        auto waitForResponse(const long userMessageId) -> Protocols::DNP::ControlStatus;
 
         std::string dumpDNPMessage(const char* data, unsigned int size);
 
@@ -104,9 +115,12 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
         // maps ip address -> server name
         typedef std::map<std::string, std::string> ServerNameMap;
         ServerNameMap _serverNameLookup;
-        int _staleDataTimeOut;
+        int _staleDataTimeout;
+        unsigned _porterTimeout;
+        unsigned _porterPriority;
+        RandomGenerator<long> _porterUserMsgIdGenerator;
 
-        std::unique_ptr<AttributeService> _attributeService;
+        AttributeService _attributeService;
 };
 
 }

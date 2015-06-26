@@ -20,6 +20,11 @@ class RandomGenerator
 
 public:
 
+    RandomGenerator()
+        :   _distribution(0, std::numeric_limits<T>::max())
+    {
+    }
+
     RandomGenerator(T max)
         :   _distribution(0, max)
     {

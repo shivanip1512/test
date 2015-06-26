@@ -97,6 +97,7 @@ public:
     double getValue() const;
 
     void setControl(double value);
+    void setStatus(ControlStatus status);
 };
 
 }

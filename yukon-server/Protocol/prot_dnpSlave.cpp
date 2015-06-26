@@ -326,6 +326,7 @@ void DnpSlaveProtocol::setAnalogOutputCommand( const DnpSlave::analog_output_req
     auto aoc = std::make_unique<AnalogOutput>(analog.type);
 
     aoc->setControl(analog.value);
+    aoc->setStatus(analog.status);
 
     const auto BlockFactoryFunc =
             analog.isLongIndexed

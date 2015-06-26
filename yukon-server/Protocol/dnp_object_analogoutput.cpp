@@ -476,6 +476,12 @@ void AnalogOutput::setControl(double value)
     _longValue   = value;
 }
 
+
+void AnalogOutput::setStatus(ControlStatus status)
+{
+    _status = static_cast<unsigned char>(status);
+}
+
 }
 }
 }
