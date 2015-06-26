@@ -28,7 +28,7 @@ public class AdvancedWidgetControllerBaseTest {
     
     private void assertNoControllerAnnotation(Class<? extends AdvancedWidgetControllerBase> clazz) {
         Controller annotation = AnnotationUtils.findAnnotation(clazz, Controller.class);
-        Assert.assertNull("AdvancedWidgetControllers cannot have @Controller. Found annotation on " + clazz.getName(),
+        Assert.assertNotNull("AdvancedWidgetControllers should have @Controller. Found annotation on " + clazz.getName(),
                           annotation);
     }
     
