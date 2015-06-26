@@ -464,7 +464,7 @@ void CtiConnection::close()
  * @param timeout timeout in millisec, if the queue is full
  * @return NORMAL if the message is queued, QUEUE_WRITE if there was a timeout
  */
-int CtiConnection::WriteConnQue( CtiMessage *QEnt, unsigned timeoutMillis )
+YukonError_t CtiConnection::WriteConnQue( CtiMessage *QEnt, unsigned timeoutMillis )
 {
     // take ownership of the message
     std::unique_ptr<CtiMessage> msg( QEnt );

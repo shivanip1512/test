@@ -56,5 +56,5 @@ public:
    int getRequestId() const;
    void setRequestId(int rid);
 
-   int WriteConnQue( CtiMessage*, unsigned millitimeout = 0, int payload_status = 0, std::string payload_string = std::string() );
+   YukonError_t WriteConnQue( CtiMessage*, unsigned millitimeout = 0, int payload_status = 0, std::string payload_string = std::string() );
 };

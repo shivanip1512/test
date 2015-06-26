@@ -140,8 +140,8 @@ public:
 
     virtual bool operator== ( const CtiConnection& aRef ) const;
 
-    CtiMessage* ReadConnQue  ( UINT Timeout = UINT_MAX );
-    int         WriteConnQue ( CtiMessage* msg, unsigned timeoutMillis = 0 );
+    CtiMessage*  ReadConnQue  ( UINT Timeout = UINT_MAX );
+    YukonError_t WriteConnQue ( CtiMessage* msg, unsigned timeoutMillis = 0 );
 
     Que_t& getOutQueueHandle();
     Que_t& getInQueueHandle();
