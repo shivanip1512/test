@@ -18,7 +18,7 @@ struct Test_FdrDnpSlave : Cti::Fdr::DnpSlave
     using DnpSlave::translateSinglePoint;
     using DnpSlave::processMessageFromForeignSystem;
 
-    boost::ptr_vector<CtiMessage> dispatchMessages;
+    std::vector<std::unique_ptr<CtiMessage>> dispatchMessages;
 
     std::unique_ptr<CtiRequestMsg> lastRequestMsg;
 
@@ -58,7 +58,7 @@ struct Test_FdrDnpSlave : Cti::Fdr::DnpSlave
 
     bool sendMessageToDispatch (CtiMessage *aMessage) override
     {
-        dispatchMessages.push_back(aMessage);
+        dispatchMessages.emplace_back(aMessage);
 
         return true;
     };
@@ -568,9 +568,13 @@ BOOST_AUTO_TEST_CASE( test_control_close )
 
         BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
 
-        const CtiCommandMsg &msg = dynamic_cast<const CtiCommandMsg &>(dnpSlave.dispatchMessages.front());
+        const CtiCommandMsg *msg = dynamic_cast<const CtiCommandMsg *>(dnpSlave.dispatchMessages.front().get());
 
-        CtiCommandMsg::OpArgList opArgs = msg.getOpArgList();
+        BOOST_REQUIRE(msg);
+
+        BOOST_CHECK_EQUAL(msg->getOperation(),  CtiCommandMsg::ControlRequest);
+
+        CtiCommandMsg::OpArgList opArgs = msg->getOpArgList();
         BOOST_REQUIRE_EQUAL(opArgs.size(), 4);
         BOOST_CHECK_EQUAL(opArgs[0], -1);
         BOOST_CHECK_EQUAL(opArgs[1],  0);
@@ -601,9 +605,13 @@ BOOST_AUTO_TEST_CASE( test_control_close )
 
         BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
 
-        const CtiCommandMsg &msg = dynamic_cast<const CtiCommandMsg &>(dnpSlave.dispatchMessages.front());
+        const CtiCommandMsg *msg = dynamic_cast<const CtiCommandMsg *>(dnpSlave.dispatchMessages.front().get());
 
-        CtiCommandMsg::OpArgList opArgs = msg.getOpArgList();
+        BOOST_REQUIRE(msg);
+
+        BOOST_CHECK_EQUAL(msg->getOperation(),  CtiCommandMsg::ControlRequest);
+
+        CtiCommandMsg::OpArgList opArgs = msg->getOpArgList();
         BOOST_REQUIRE_EQUAL(opArgs.size(), 4);
         BOOST_CHECK_EQUAL(opArgs[0], -1);
         BOOST_CHECK_EQUAL(opArgs[1],  0);
@@ -634,9 +642,13 @@ BOOST_AUTO_TEST_CASE( test_control_close )
 
         BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
 
-        const CtiCommandMsg &msg = dynamic_cast<const CtiCommandMsg &>(dnpSlave.dispatchMessages.front());
+        const CtiCommandMsg *msg = dynamic_cast<const CtiCommandMsg *>(dnpSlave.dispatchMessages.front().get());
 
-        CtiCommandMsg::OpArgList opArgs = msg.getOpArgList();
+        BOOST_REQUIRE(msg);
+
+        BOOST_CHECK_EQUAL(msg->getOperation(),  CtiCommandMsg::ControlRequest);
+
+        CtiCommandMsg::OpArgList opArgs = msg->getOpArgList();
         BOOST_REQUIRE_EQUAL(opArgs.size(), 4);
         BOOST_CHECK_EQUAL(opArgs[0], -1);
         BOOST_CHECK_EQUAL(opArgs[1],  0);
@@ -667,9 +679,13 @@ BOOST_AUTO_TEST_CASE( test_control_close )
 
         BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
 
-        const CtiCommandMsg &msg = dynamic_cast<const CtiCommandMsg &>(dnpSlave.dispatchMessages.front());
+        const CtiCommandMsg *msg = dynamic_cast<const CtiCommandMsg *>(dnpSlave.dispatchMessages.front().get());
 
-        CtiCommandMsg::OpArgList opArgs = msg.getOpArgList();
+        BOOST_REQUIRE(msg);
+
+        BOOST_CHECK_EQUAL(msg->getOperation(),  CtiCommandMsg::ControlRequest);
+
+        CtiCommandMsg::OpArgList opArgs = msg->getOpArgList();
         BOOST_REQUIRE_EQUAL(opArgs.size(), 4);
         BOOST_CHECK_EQUAL(opArgs[0], -1);
         BOOST_CHECK_EQUAL(opArgs[1],  0);
@@ -700,9 +716,13 @@ BOOST_AUTO_TEST_CASE( test_control_close )
 
         BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
 
-        const CtiCommandMsg &msg = dynamic_cast<const CtiCommandMsg &>(dnpSlave.dispatchMessages.front());
+        const CtiCommandMsg *msg = dynamic_cast<const CtiCommandMsg *>(dnpSlave.dispatchMessages.front().get());
 
-        CtiCommandMsg::OpArgList opArgs = msg.getOpArgList();
+        BOOST_REQUIRE(msg);
+
+        BOOST_CHECK_EQUAL(msg->getOperation(),  CtiCommandMsg::ControlRequest);
+
+        CtiCommandMsg::OpArgList opArgs = msg->getOpArgList();
         BOOST_REQUIRE_EQUAL(opArgs.size(), 4);
         BOOST_CHECK_EQUAL(opArgs[0], -1);
         BOOST_CHECK_EQUAL(opArgs[1],  0);
@@ -772,9 +792,13 @@ BOOST_AUTO_TEST_CASE( test_control_open )
 
         BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
 
-        const CtiCommandMsg &msg = dynamic_cast<const CtiCommandMsg &>(dnpSlave.dispatchMessages.front());
+        const CtiCommandMsg *msg = dynamic_cast<const CtiCommandMsg *>(dnpSlave.dispatchMessages.front().get());
 
-        CtiCommandMsg::OpArgList opArgs = msg.getOpArgList();
+        BOOST_REQUIRE(msg);
+
+        BOOST_CHECK_EQUAL(msg->getOperation(),  CtiCommandMsg::ControlRequest);
+
+        CtiCommandMsg::OpArgList opArgs = msg->getOpArgList();
         BOOST_REQUIRE_EQUAL(opArgs.size(), 4);
         BOOST_CHECK_EQUAL(opArgs[0], -1);
         BOOST_CHECK_EQUAL(opArgs[1],  0);
@@ -805,9 +829,13 @@ BOOST_AUTO_TEST_CASE( test_control_open )
 
         BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
 
-        const CtiCommandMsg &msg = dynamic_cast<const CtiCommandMsg &>(dnpSlave.dispatchMessages.front());
+        const CtiCommandMsg *msg = dynamic_cast<const CtiCommandMsg *>(dnpSlave.dispatchMessages.front().get());
 
-        CtiCommandMsg::OpArgList opArgs = msg.getOpArgList();
+        BOOST_REQUIRE(msg);
+
+        BOOST_CHECK_EQUAL(msg->getOperation(),  CtiCommandMsg::ControlRequest);
+
+        CtiCommandMsg::OpArgList opArgs = msg->getOpArgList();
         BOOST_REQUIRE_EQUAL(opArgs.size(), 4);
         BOOST_CHECK_EQUAL(opArgs[0], -1);
         BOOST_CHECK_EQUAL(opArgs[1],  0);
@@ -838,9 +866,13 @@ BOOST_AUTO_TEST_CASE( test_control_open )
 
         BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
 
-        const CtiCommandMsg &msg = dynamic_cast<const CtiCommandMsg &>(dnpSlave.dispatchMessages.front());
+        const CtiCommandMsg *msg = dynamic_cast<const CtiCommandMsg *>(dnpSlave.dispatchMessages.front().get());
 
-        CtiCommandMsg::OpArgList opArgs = msg.getOpArgList();
+        BOOST_REQUIRE(msg);
+
+        BOOST_CHECK_EQUAL(msg->getOperation(),  CtiCommandMsg::ControlRequest);
+
+        CtiCommandMsg::OpArgList opArgs = msg->getOpArgList();
         BOOST_REQUIRE_EQUAL(opArgs.size(), 4);
         BOOST_CHECK_EQUAL(opArgs[0], -1);
         BOOST_CHECK_EQUAL(opArgs[1],  0);
@@ -871,9 +903,13 @@ BOOST_AUTO_TEST_CASE( test_control_open )
 
         BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
 
-        const CtiCommandMsg &msg = dynamic_cast<const CtiCommandMsg &>(dnpSlave.dispatchMessages.front());
+        const CtiCommandMsg *msg = dynamic_cast<const CtiCommandMsg *>(dnpSlave.dispatchMessages.front().get());
 
-        CtiCommandMsg::OpArgList opArgs = msg.getOpArgList();
+        BOOST_REQUIRE(msg);
+
+        BOOST_CHECK_EQUAL(msg->getOperation(),  CtiCommandMsg::ControlRequest);
+
+        CtiCommandMsg::OpArgList opArgs = msg->getOpArgList();
         BOOST_REQUIRE_EQUAL(opArgs.size(), 4);
         BOOST_CHECK_EQUAL(opArgs[0], -1);
         BOOST_CHECK_EQUAL(opArgs[1],  0);
@@ -1245,6 +1281,19 @@ BOOST_AUTO_TEST_CASE( test_analog_output_dispatch )
 
     BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
     BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+    BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
+
+    const CtiCommandMsg *msg = dynamic_cast<const CtiCommandMsg *>(dnpSlave.dispatchMessages.front().get());
+
+    BOOST_REQUIRE(msg);
+
+    BOOST_CHECK_EQUAL(msg->getOperation(),  CtiCommandMsg::AnalogOutput);
+
+    CtiCommandMsg::OpArgList opArgs = msg->getOpArgList();
+    BOOST_REQUIRE_EQUAL(opArgs.size(), 2);
+    BOOST_CHECK_EQUAL(opArgs[0], 43);        //  point id
+    BOOST_CHECK_EQUAL(opArgs[1], 67305985);  //  analog value
 }
 
 
@@ -1309,6 +1358,8 @@ BOOST_AUTO_TEST_CASE( test_analog_output_porter )
 
         BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
         BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog 1 value 67305985");  //  aka 0x04030201
     }
 
     //  Failure from device
@@ -1330,6 +1381,8 @@ BOOST_AUTO_TEST_CASE( test_analog_output_porter )
 
         BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
         BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog 1 value 67305985");  //  aka 0x04030201
     }
 }
 
