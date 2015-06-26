@@ -919,11 +919,7 @@ yukon.ui = (function () {
                 
                 return true;
             });
-            
-            /** Prevent select default behavior. */
-            $(document).on('mousedown', '.stepper .stepper-select', function (ev) {
-                ev.preventDefault();
-            });
+
             /** END STEPPER SELECT BEHAVIOR. */
             
             /** Focus the designated input element */

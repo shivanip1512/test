@@ -45,33 +45,27 @@
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".controlInterval" rowClass="js-not-time-of-day">
-                            <%-- How often the system should check to determine the need for control --%>
                             <tags:intervalStepper path="controlInterval" intervals="${analysisIntervals}" noneKey=".newDataOnly"/>
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".minResponseTime">
-                            <%-- How much time the system waits until the control is considered successful --%>
                             <tags:intervalStepper path="minResponseTime" intervals="${analysisIntervals}" />
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".minConfirmPercent">
-                            <%--This amount of change or higher is considered to be a successful control --%>
                             <tags:input path="minConfirmPercent" size="3"/>
                             <i:inline key="yukon.common.units.PERCENT"/>
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".failurePercent">
-                            <%-- This amount of change or lower is considered to be a failed control --%>
                             <tags:input path="failurePercent" size="3"/>
                             <i:inline key="yukon.common.units.PERCENT"/>
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".controlSendRetries" >
-                            <%-- How many times the control should be repeatedly sent out to the field --%>
                             <tags:input path="controlSendRetries" size="3"/>
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".controlDelayTime" rowClass="js-not-time-of-day">
-                            <%-- How much time we should wait before sending the control command into the field --%>
                             <tags:intervalStepper path="controlDelayTime" intervals="${analysisIntervals}" />
                         </tags:nameValue2>
                         
@@ -82,14 +76,13 @@
                                         toggleGroup="integrateControl" toggleAction="hide" color="${not viewMode}" />
                                 </c:if>
                                 <c:if test="${not viewMode or status.value}">
-                                    <tags:intervalStepper classes="vat"
-                                    path="integratePeriod" 
-                                    intervals="${integrateIntervals}" toggleGroup="integrateControl" />
+                                    <tags:intervalStepper path="integratePeriod"  classes="vat"
+                                        intervals="${integrateIntervals}" toggleGroup="integrateControl" />
                                 </c:if>
                             </spring:bind>
                         </tags:nameValue2>
                         
-                        <tags:nameValue2 nameKey=".likeDay">
+                        <tags:nameValue2 nameKey=".likeDay" rowClass="js-not-time-of-day">
                             <%-- Fall back to like-day history control --%>
                             <tags:switchButton path="likeDayFallBack" offClasses="M0" color="${not viewMode}"/>
                         </tags:nameValue2>
@@ -97,12 +90,10 @@
                         <tags:nameValue2 nameKey=".maxDailyOperation"  rowClass="js-not-time-of-day">
                             <spring:bind path="maxOperationEnabled">
                                 <c:if test="${not viewMode or not status.value}">
-                                    <%-- Disable automatic control on this device upon reaching the max number of operations --%>
                                     <tags:switchButton path="maxOperationEnabled" offClasses="M0"
                                     toggleGroup="maxOperation" toggleAction="hide" color="${not viewMode}" />
                                 </c:if>
                                 <c:if test="${not viewMode or status.value}">
-                                    <%-- The total number of controls allowed per day. 0=Unlimited --%>
                                     <tags:input path="maxDailyOperation" size="3" toggleGroup="maxOperation"/>
                                 </c:if>
                             </spring:bind>
@@ -188,12 +179,12 @@
                                 <td class="tar">
                                     <tags:input path="targetSettings[${targetSettingType}].peakValue" size="5" />
                                 </td>
-                                <td class="tal"><span class="js-time-of-day-only"><i:inline key="yukon.common.close"/>&nbsp;</span>${targetSettingType.units}</td>
+                                <td class="tal">${targetSettingType.units}<span class="js-time-of-day-only">&nbsp;<i:inline key="yukon.common.close"/></span></td>
                                 
                                 <td class="tar">
                                     <tags:input path="targetSettings[${targetSettingType}].offPeakValue" size="5" />
                                 </td>
-                                <td class="tal"><span class="js-time-of-day-only"><i:inline key="yukon.common.close"/>&nbsp;</span>${targetSettingType.units}</td>
+                                <td class="tal">${targetSettingType.units}<span class="js-time-of-day-only">&nbsp;<i:inline key="yukon.common.close"/></span></td>
                             </tr>
                         </c:forEach>
                     </tbody>
