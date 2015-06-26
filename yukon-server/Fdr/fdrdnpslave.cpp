@@ -735,7 +735,9 @@ ControlStatus DnpSlave::tryPorterControl(const Protocols::DnpSlave::control_requ
             {
                 case BinaryOutputControl::Trip:
                 {
-                    if( ! icontainsString(point.getStateZeroControl(), " open") )
+                    commandString = point.getStateZeroControl();
+
+                    if( ! icontainsString(commandString, " open") )
                     {
                         CTILOG_WARN(dout, logNow() <<" State zero control string is not an OPEN" << logPoints(control, point));
                         return ControlStatus::FormatError;
@@ -750,12 +752,13 @@ ControlStatus DnpSlave::tryPorterControl(const Protocols::DnpSlave::control_requ
                         CTILOG_WARN(dout, logNow() <<" Off time not supported, must be zero" << logPoints(control, point));
                         return ControlStatus::FormatError;
                     }
-                    commandString = "control open";
                     break;
                 }
                 case BinaryOutputControl::Close:
                 {
-                    if( ! icontainsString(point.getStateOneControl(), " close") )
+                    commandString = point.getStateOneControl();
+
+                    if( ! icontainsString(commandString, " close") )
                     {
                         CTILOG_WARN(dout, logNow() <<" State one control string is not a CLOSE" << logPoints(control, point));
                         return ControlStatus::FormatError;
@@ -770,22 +773,32 @@ ControlStatus DnpSlave::tryPorterControl(const Protocols::DnpSlave::control_requ
                         CTILOG_WARN(dout, logNow() <<" Off time not supported, must be zero" << logPoints(control, point));
                         return ControlStatus::FormatError;
                     }
-                    commandString = "control close";
                     break;
                 }
                 case BinaryOutputControl::NUL:
                 {
-                    if( ! icontainsString(point.getStateOneControl(), " close") )
+                    commandString = point.getStateOneControl();  //  always send state one control
+
+                    if( ! icontainsString(commandString, " close") )
                     {
                         CTILOG_WARN(dout, logNow() <<" State one control string is not a CLOSE" << logPoints(control, point));
                         return ControlStatus::FormatError;
                     }
-                    if( ! icontainsString(point.getStateOneControl(), " direct") )
+                    if( ! icontainsString(commandString, " direct") )
                     {
                         CTILOG_WARN(dout, logNow() <<" State one control string does not contain DIRECT" << logPoints(control, point));
                         return ControlStatus::FormatError;
                     }
-                    commandString = "control close";  //  always send state one control
+                    if( point.getCloseTime2() != control.on_time )
+                    {
+                        CTILOG_WARN(dout, logNow() <<" On time mismatch" << logPoints(control, point));
+                        return ControlStatus::FormatError;
+                    }
+                    if( control.off_time )
+                    {
+                        CTILOG_WARN(dout, logNow() <<" Off time not supported, must be zero" << logPoints(control, point));
+                        return ControlStatus::FormatError;
+                    }
                     break;
                 }
             }
@@ -798,22 +811,24 @@ ControlStatus DnpSlave::tryPorterControl(const Protocols::DnpSlave::control_requ
             {
                 case BinaryOutputControl::LatchOff:
                 {
-                    if( ! icontainsString(point.getStateZeroControl(), " open") )
+                    commandString = point.getStateZeroControl();
+
+                    if( ! icontainsString(commandString, " open") )
                     {
                         CTILOG_WARN(dout, logNow() <<" State zero control string is not an OPEN" << logPoints(control, point));
                         return ControlStatus::FormatError;
                     }
-                    commandString = "control open";
                     break;
                 }
                 case BinaryOutputControl::LatchOn:
                 {
-                    if( ! icontainsString(point.getStateOneControl(), " close") )
+                    commandString = point.getStateOneControl();
+
+                    if( ! icontainsString(commandString, " close") )
                     {
                         CTILOG_WARN(dout, logNow() <<" State one control string is not a CLOSE" << logPoints(control, point));
                         return ControlStatus::FormatError;
                     }
-                    commandString = "control close";
                     break;
                 }
                 default:
@@ -828,6 +843,22 @@ ControlStatus DnpSlave::tryPorterControl(const Protocols::DnpSlave::control_requ
         {
             CTILOG_WARN(dout, logNow() <<" unknown control type " << logPoints(control, point));
             return ControlStatus::FormatError;
+        }
+    }
+
+    commandString += " offset " + std::to_string(point.getControlOffset());
+
+    switch( control.action )
+    {
+        case Protocols::DnpSlave::ControlAction::Select:
+        {
+            commandString += " sbo_selectonly";
+            break;
+        }
+        case Protocols::DnpSlave::ControlAction::Operate:
+        {
+            commandString += " sbo_operate";
+            break;
         }
     }
 
