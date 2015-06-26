@@ -12,6 +12,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
@@ -37,7 +40,9 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.group.DeviceGroupTreeUtils;
 import com.cannontech.web.group.NodeAttributeSettingCallback;
 import com.cannontech.web.util.JsTreeNode;
+import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetControllerBase;
+import com.cannontech.web.widget.support.WidgetInput;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
@@ -47,6 +52,8 @@ import com.google.common.collect.Sets;
 /**
  * Widget used to display basic device information
  */
+@Controller
+@RequestMapping("/deviceGroupWidget/*")
 public class DeviceGroupWidget extends WidgetControllerBase {
 
     @Autowired private DeviceGroupService deviceGroupService;
@@ -58,11 +65,23 @@ public class DeviceGroupWidget extends WidgetControllerBase {
     @Autowired private RolePropertyDao rpDao;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     
+    @Autowired
+    public DeviceGroupWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput
+            simpleWidgetInput) {
+        
+        Set<WidgetInput> simpleWidgetInputSet = new HashSet<WidgetInput>();
+        simpleWidgetInputSet.add(simpleWidgetInput);
+        
+        this.setLazyLoad(true);
+        this.setInputs(simpleWidgetInputSet);
+    }
+    
     /**
      * This method renders the default deviceGroupWidget
      * @throws Exception
      */
     @Override
+    @RequestMapping("render")
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         ModelAndView mav = new ModelAndView("deviceGroupWidget/render.jsp");
@@ -190,6 +209,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
      * This method updates selected device groups.  
      * After doing so it renders the default device group widget action
      */
+    @RequestMapping("update")
     public ModelAndView update(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         YukonUserContext context = YukonUserContextUtils.getYukonUserContext(request);

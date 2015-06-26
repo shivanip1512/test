@@ -2,13 +2,17 @@ package com.cannontech.web.widget.meterInfo;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
@@ -33,6 +37,7 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -47,13 +52,28 @@ import com.cannontech.web.widget.meterInfo.model.MeterModel;
 import com.cannontech.web.widget.meterInfo.model.PlcMeterModel;
 import com.cannontech.web.widget.meterInfo.model.RfMeterModel;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
+import com.cannontech.web.widget.support.SimpleWidgetInput;
+import com.cannontech.web.widget.support.WidgetInput;
 
 /**
  * Widget used to display basic device information
  */
+@Controller
+@RequestMapping("/meterInformationWidget/*")
 public class MeterInformationWidget extends AdvancedWidgetControllerBase {
     
     private final static String baseKey = "yukon.web.widgets.meterInformationWidget.";
+    
+    @Autowired
+    public MeterInformationWidget(@Qualifier("widgetInput.deviceId")
+            SimpleWidgetInput simpleWidgetInput,
+            RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
+        Set<WidgetInput> simpleWidgetInputSet = new HashSet<WidgetInput>();
+        simpleWidgetInputSet.add(simpleWidgetInput);
+        this.setIdentityPath("common/deviceIdentity.jsp");
+        this.setInputs(simpleWidgetInputSet);
+        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("METERING"));
+    }
     
     private final Validator validator = new SimpleValidator<MeterModel>(MeterModel.class) {
         

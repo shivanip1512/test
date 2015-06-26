@@ -7,20 +7,31 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.meter.search.model.FilterBy;
 import com.cannontech.amr.meter.search.model.StandardFilterByGenerator;
+import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.web.amr.meter.service.MspMeterSearchService;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 
 /**
  * Widget used to display basic device information
  */
+@Controller
+@RequestMapping("/meterSearchWidget/*")
 public class MeterSearchWidget extends WidgetControllerBase {
-	
-	private MspMeterSearchService mspMeterSearchService;
+    
+    private MspMeterSearchService mspMeterSearchService;
+    
+    @Autowired
+    public MeterSearchWidget(RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
+        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("METERING"));
+    }
 
+    @RequestMapping("render")
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
     	
         ModelAndView mav = new ModelAndView("meterSearchWidget/render.jsp");

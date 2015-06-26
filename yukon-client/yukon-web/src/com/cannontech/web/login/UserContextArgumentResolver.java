@@ -5,22 +5,29 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebArgumentResolver;
+import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.method.support.ModelAndViewContainer;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 
-public class UserContextArgumentResolver {
+public class UserContextArgumentResolver implements HandlerMethodArgumentResolver {
 
-    protected boolean supportsParameter(MethodParameter parameter) {
+    public boolean supportsParameter(MethodParameter parameter) {
         Class<?> parameterType = parameter.getParameterType();
-        return parameterType.isAssignableFrom(YukonUserContext.class)
-            || parameterType.isAssignableFrom(LiteYukonUser.class);
+        return parameterType.isAssignableFrom(YukonUserContext.class) 
+                || parameterType.isAssignableFrom(LiteYukonUser.class);
     }
 
-    protected Object resolveArgument(MethodParameter methodParameter, NativeWebRequest webRequest) throws Exception {
+    @Override
+    public Object resolveArgument(MethodParameter methodParameter,
+            ModelAndViewContainer mavContainer, NativeWebRequest webRequest,
+            WebDataBinderFactory binderFactory) throws Exception {
+
         Class<?> parameterType = methodParameter.getParameterType();
         if (parameterType.isAssignableFrom(YukonUserContext.class)) {
             HttpServletRequest nativeRequest = (HttpServletRequest) webRequest.getNativeRequest();

@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoEnabledFilter;
@@ -35,15 +37,22 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 import com.google.common.base.Function;
 import com.google.common.collect.Ordering;
 
+@Controller
+@RequestMapping("/scheduledGroupRequestExecutionWidget")
 @CheckRole(YukonRole.SCHEDULER)
 public class ScheduledGroupRequestExecutionWidget extends WidgetControllerBase {
 
-	private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
-	private ScheduledGroupRequestExecutionJobWrapperFactory scheduledGroupRequestExecutionJobWrapperFactory;
+    @Autowired private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
+	@Autowired private ScheduledGroupRequestExecutionJobWrapperFactory scheduledGroupRequestExecutionJobWrapperFactory;
 	private JobManager jobManager;
-	private RolePropertyDao rolePropertyDao;
+	@Autowired private RolePropertyDao rolePropertyDao;
 	
-	@Override
+	public ScheduledGroupRequestExecutionWidget() {
+	    this.setIdentityPath("common/deviceIdentity.jsp");
+	}
+	
+    @Override
+    @RequestMapping("render")
 	public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
 		ModelAndView mav = new ModelAndView("scheduledGroupRequestExecution/render.jsp");
@@ -85,13 +94,15 @@ public class ScheduledGroupRequestExecutionWidget extends WidgetControllerBase {
 	}
 	
 	// TOGGLE JOB ENABLED
+    @RequestMapping("toggleEnabled")
     public ModelAndView toggleEnabled(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
-    	YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-		rolePropertyDao.verifyProperty(YukonRoleProperty.MANAGE_SCHEDULES, userContext.getYukonUser());
-		
-		int jobId = WidgetParameterHelper.getRequiredIntParameter(request, "jobId");
-		YukonJob job = jobManager.getJob(jobId);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        rolePropertyDao.verifyProperty(YukonRoleProperty.MANAGE_SCHEDULES,
+                                       userContext.getYukonUser());
+
+        int jobId = WidgetParameterHelper.getRequiredIntParameter(request, "jobId");
+        YukonJob job = jobManager.getJob(jobId);
         
         if (job.isDisabled()) {
             jobManager.enableJob(job);
@@ -121,30 +132,14 @@ public class ScheduledGroupRequestExecutionWidget extends WidgetControllerBase {
         } catch (ScheduleException e) {}
         return nextRun;
     }
-	
-	@Autowired
-	public void setScheduledGroupRequestExecutionDao(ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao) {
-		this.scheduledGroupRequestExecutionDao = scheduledGroupRequestExecutionDao;
-	}
-	
-	@Autowired
-	public void setScheduledGroupRequestExecutionJobWrapperFactory(
-			ScheduledGroupRequestExecutionJobWrapperFactory scheduledGroupRequestExecutionJobWrapperFactory) {
-		this.scheduledGroupRequestExecutionJobWrapperFactory = scheduledGroupRequestExecutionJobWrapperFactory;
-	}
-	
-	@Resource(name="jobManager")
-	public void setJobManager(JobManager jobManager) {
-		this.jobManager = jobManager;
-	}
-	
-	@Autowired
-	public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
-	
-	@Override
-	public String getTitleKey() {
-		return WidgetControllerBase.keyPrefix + "schedules";
-	}
+
+    @Resource(name = "jobManager")
+    public void setJobManager(JobManager jobManager) {
+        this.jobManager = jobManager;
+    }
+
+    @Override
+    public String getTitleKey() {
+        return WidgetControllerBase.keyPrefix + "schedules";
+    }
 }

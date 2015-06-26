@@ -1,11 +1,15 @@
 package com.cannontech.web.widget;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,12 +25,16 @@ import com.cannontech.common.device.config.service.DeviceConfigService;
 import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetControllerBase;
+import com.cannontech.web.widget.support.WidgetInput;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
+@Controller
 @RequestMapping("/configWidget/*")
 public class ConfigWidget extends WidgetControllerBase {
 
@@ -35,7 +43,19 @@ public class ConfigWidget extends WidgetControllerBase {
     @Autowired private DeviceConfigService deviceConfigService;
     @Autowired private DeviceConfigurationService deviceConfigurationService;
 
+    @Autowired
+    public ConfigWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput,
+            RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
+        
+        Set<WidgetInput> simpleWidgetInputSet = new HashSet<WidgetInput>();
+        simpleWidgetInputSet.add(simpleWidgetInput);
+        
+        this.setInputs(simpleWidgetInputSet);
+        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("METERING"));
+    }
+    
     @Override
+    @RequestMapping("render")
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException {
         ModelAndView mav = getConfigModelAndView(request);
         

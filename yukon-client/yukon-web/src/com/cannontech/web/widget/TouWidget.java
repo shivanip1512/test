@@ -1,9 +1,12 @@
 package com.cannontech.web.widget;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -15,14 +18,30 @@ import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeHelper;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
+import com.cannontech.web.widget.support.SimpleWidgetInput;
+import com.cannontech.web.widget.support.WidgetInput;
 
+@Controller
+@RequestMapping("/touWidget/*")
 public class TouWidget extends AdvancedWidgetControllerBase {
 
     @Autowired private AttributeService attributeService;
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
     @Autowired private MeterDao meterDao;
+    
+    @Autowired
+    public TouWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput,
+            RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
+        
+        Set<WidgetInput> simpleWidgetInputSet = new HashSet<WidgetInput>();
+        simpleWidgetInputSet.add(simpleWidgetInput);
+        
+        this.setInputs(simpleWidgetInputSet);
+        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("METERING"));
+    }
 
     @RequestMapping("render")
     public String render(ModelMap model, YukonUserContext userContext, Integer deviceId){

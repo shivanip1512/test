@@ -1,11 +1,15 @@
 package com.cannontech.web.widget;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -20,6 +24,7 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.service.PointService;
+import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.user.YukonUserContext;
@@ -27,11 +32,15 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.pao.service.LiteYukonPoint;
 import com.cannontech.web.common.pao.service.YukonPointHelper;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
+import com.cannontech.web.widget.support.SimpleWidgetInput;
+import com.cannontech.web.widget.support.WidgetInput;
 import com.google.common.collect.Sets;
 
 /**
  * Widget used to display basic device information
  */
+@Controller
+@RequestMapping("/meterReadingsWidget/*")
 public class MeterReadingsWidget extends AdvancedWidgetControllerBase {
 
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
@@ -44,6 +53,35 @@ public class MeterReadingsWidget extends AdvancedWidgetControllerBase {
     
     private List<? extends Attribute> attributesToShow;
     private Attribute previousReadingsAttributeToShow;
+    
+    public MeterReadingsWidget() {
+    }
+    
+    @Autowired
+    public MeterReadingsWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput,
+            RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
+        
+        SimpleWidgetInput simpleWidget = new SimpleWidgetInput();
+        simpleWidget.setName("startOffset");
+        simpleWidget.setDescription("the number of prior days of point history to display");
+        simpleWidget.setRequired(false);
+        
+        Set<WidgetInput> simpleWidgetInputSet = new HashSet<WidgetInput>();
+        simpleWidgetInputSet.add(simpleWidgetInput);
+        simpleWidgetInputSet.add(simpleWidget);
+
+        List<BuiltInAttribute> attibutes = new ArrayList<BuiltInAttribute>();
+        attibutes.add(BuiltInAttribute.USAGE);
+        attibutes.add(BuiltInAttribute.PEAK_DEMAND);
+        attibutes.add(BuiltInAttribute.DEMAND);
+        attibutes.add(BuiltInAttribute.VOLTAGE);
+        
+        this.setIdentityPath("common/deviceIdentity.jsp");
+        this.setInputs(simpleWidgetInputSet);
+        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("METERING"));
+        this.setAttributesToShow(attibutes);
+        this.setPreviousReadingsAttributeToShow(BuiltInAttribute.USAGE);
+    }
     
     public void setAttributesToShow(List<BuiltInAttribute> attributesToShow) {
         // this setter accepts the enum to make Spring happy

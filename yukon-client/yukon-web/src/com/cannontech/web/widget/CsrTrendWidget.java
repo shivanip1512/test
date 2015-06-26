@@ -1,10 +1,11 @@
 package com.cannontech.web.widget;
 
-import static com.cannontech.core.service.DateFormattingService.DateOnlyMode.*;
+import static com.cannontech.core.service.DateFormattingService.DateOnlyMode.START_OF_DAY;
 
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,13 +17,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.chart.model.AttributeGraphType;
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartPeriod;
+import com.cannontech.common.chart.model.ConverterType;
 import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -41,7 +45,9 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.user.service.UserPreferenceService;
+import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetControllerBase;
+import com.cannontech.web.widget.support.WidgetInput;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 import com.cannontech.web.widget.support.impl.CachingWidgetParameterGrabber;
 import com.google.common.collect.Sets;
@@ -49,7 +55,9 @@ import com.google.common.collect.Sets;
 /**
  * Widget used to display point data in a trend
  */
-public class TrendWidget extends WidgetControllerBase {
+@Controller
+@RequestMapping("/csrTrendWidget")
+public class CsrTrendWidget extends WidgetControllerBase {
 
     @Autowired private UserPreferenceService userPreferenceService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -58,10 +66,50 @@ public class TrendWidget extends WidgetControllerBase {
     @Autowired private DateFormattingService dateFormattingService;
 
     private Map<String, AttributeGraphType> supportedAttributeGraphMap = null;
-    private CachingWidgetParameterGrabber cachingWidgetParameterGrabber = null;
+    @Autowired @Qualifier("csrTrendWidgetCachingWidgetParameterGrabber")
+    private CachingWidgetParameterGrabber cachingWidgetParameterGrabber;
     private BuiltInAttribute defaultAttribute = null;
+    
+    public CsrTrendWidget() {
+    }
+    
+    @Autowired
+    public CsrTrendWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput) {
+        Set<WidgetInput> simpleWidgetInputSet = new HashSet<WidgetInput>();
+        simpleWidgetInputSet.add(simpleWidgetInput);
+
+        List<BuiltInAttribute> buildInAttributes = new ArrayList<BuiltInAttribute>();
+        buildInAttributes.add(BuiltInAttribute.SUM_KWH_PER_INTERVAL);
+        buildInAttributes.add(BuiltInAttribute.SUM_KW_LOAD_PROFILE);
+        buildInAttributes.add(BuiltInAttribute.DELIVERED_KWH_PER_INTERVAL);
+        buildInAttributes.add(BuiltInAttribute.DELIVERED_KW_LOAD_PROFILE);
+        buildInAttributes.add(BuiltInAttribute.LOAD_PROFILE);
+        buildInAttributes.add(BuiltInAttribute.VOLTAGE_PROFILE);
+        buildInAttributes.add(BuiltInAttribute.DEMAND);
+        buildInAttributes.add(BuiltInAttribute.USAGE);
+
+        List<AttributeGraphType> attributeGraphType = new ArrayList<AttributeGraphType>();
+
+        for (BuiltInAttribute attribute : buildInAttributes) {
+            AttributeGraphType attributeGraph = new AttributeGraphType();
+            attributeGraph.setAttribute(attribute);
+            attributeGraph.setGraphType((attribute == BuiltInAttribute.USAGE) ? GraphType.COLUMN
+                    : GraphType.LINE);
+            attributeGraph.setConverterType((attribute == BuiltInAttribute.USAGE)
+                    ? ConverterType.NORMALIZED_DELTA : ConverterType.RAW);
+
+            attributeGraphType.add(attributeGraph);
+        }
+        this.setDefaultAttribute(BuiltInAttribute.USAGE);
+        this.setSupportedAttributeGraphSet(attributeGraphType);
+        
+        this.setIdentityPath("common/deviceIdentity.jsp");
+        this.setInputs(simpleWidgetInputSet);
+        this.setSupportedAttributeGraphSet(attributeGraphType);
+    }
 
     @Override
+    @RequestMapping("render")
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
         ModelAndView mav = new ModelAndView("trendWidget/render.jsp");
         
@@ -211,7 +259,7 @@ public class TrendWidget extends WidgetControllerBase {
         return graphMapAttributes;
     }
     
-    @Required
+
     public void setSupportedAttributeGraphSet(List<AttributeGraphType> supportedAttributeGraphSet) {
         supportedAttributeGraphMap = new LinkedHashMap<>();
         for (AttributeGraphType agt : supportedAttributeGraphSet) {
@@ -219,13 +267,7 @@ public class TrendWidget extends WidgetControllerBase {
         }
     }
 
-    @Required
-    public void setCachingWidgetParameterGrabber(
-            CachingWidgetParameterGrabber cachingWidgetParameterGrabber) {
-        this.cachingWidgetParameterGrabber = cachingWidgetParameterGrabber;
-    }
-    
-    @Required
+
     public void setDefaultAttribute(BuiltInAttribute defaultAttribute) {
         this.defaultAttribute = defaultAttribute;
     }

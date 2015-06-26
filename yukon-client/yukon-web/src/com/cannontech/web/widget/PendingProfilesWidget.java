@@ -1,29 +1,53 @@
 package com.cannontech.web.widget;
 
 import java.text.DecimalFormat;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.LoadProfileService;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetControllerBase;
+import com.cannontech.web.widget.support.WidgetInput;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
+@Controller
+@RequestMapping("/pendingProfilesWidget/*")
 public class PendingProfilesWidget extends WidgetControllerBase {
     
-    private LoadProfileService loadProfileService;
-    private PaoDao paoDao;
+    @Autowired private LoadProfileService loadProfileService;
+    @Autowired private PaoDao paoDao;
     
+    @Autowired
+    public PendingProfilesWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput,
+            RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
+        
+        Set<WidgetInput> simpleWidgetInputSet = new HashSet<WidgetInput>();
+        simpleWidgetInputSet.add(simpleWidgetInput);
+        
+        this.setIdentityPath("common/deviceIdentity.jsp");
+        this.setInputs(simpleWidgetInputSet);
+        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("METERING"));
+    }
+    
+    @RequestMapping("render")
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         ModelAndView mav = new ModelAndView("pendingProfilesWidget/render.jsp");
@@ -39,6 +63,7 @@ public class PendingProfilesWidget extends WidgetControllerBase {
         return mav;
     }
     
+    @RequestMapping("refreshPending")
     public ModelAndView refreshPending(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         ModelAndView mav = new ModelAndView("pendingProfilesWidget/ongoingProfiles.jsp");
@@ -88,16 +113,6 @@ public class PendingProfilesWidget extends WidgetControllerBase {
         
         return pendingRequests;
         
-    }
-
-    @Required
-    public void setLoadProfileService(LoadProfileService loadProfileService) {
-        this.loadProfileService = loadProfileService;
-    }
-
-    @Required
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
     }
     
 }

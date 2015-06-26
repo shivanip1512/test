@@ -4,14 +4,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.core.dao.PaoDao;
@@ -19,15 +23,37 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetControllerBase;
+import com.cannontech.web.widget.support.WidgetInput;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
+@Controller
+@RequestMapping("/miniTdcWidget/*")
 public class MiniTdcWidget extends WidgetControllerBase {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private PointDao pointDao;
     @Autowired private PaoDao paoDao;
     
+    
+   
+    public MiniTdcWidget() {
+        
+        SimpleWidgetInput simpleWidget = new SimpleWidgetInput();
+        simpleWidget.setName("displayNumber");
+        simpleWidget.setDescription("the number of a TDC display");
+        simpleWidget.setRequired(true);
+        
+        Set<WidgetInput> simpleWidgetInputSet = new HashSet<WidgetInput>();
+        simpleWidgetInputSet.add(simpleWidget);
+        
+        this.setIdentityPath("miniTdcWidget/identity.jsp");
+        this.setInputs(simpleWidgetInputSet);
+        
+    }
+    
     @Override
+    @RequestMapping("identity")
     public ModelAndView identity(HttpServletRequest request, HttpServletResponse response) throws Exception {
         ModelAndView mav = new ModelAndView(getIdentityPath());
         
@@ -42,6 +68,7 @@ public class MiniTdcWidget extends WidgetControllerBase {
     }
 
     @Override
+    @RequestMapping("render")
     public ModelAndView render(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         ModelAndView mav = new ModelAndView();

@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,11 +16,15 @@ import javax.xml.bind.JAXBElement;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.model.Address;
+import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.msp.beans.v3.CoordType;
@@ -42,10 +48,14 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetControllerBase;
+import com.cannontech.web.widget.support.WidgetInput;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 import com.google.common.collect.Lists;
 
+@Controller
+@RequestMapping("/accountInformationWidget/*")
 @CheckRoleProperty(YukonRoleProperty.CIS_DETAIL_WIDGET_ENABLED)
 public class AccountInformationWidget extends WidgetControllerBase{
     
@@ -56,8 +66,23 @@ public class AccountInformationWidget extends WidgetControllerBase{
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private MultispeakCustomerInfoService multispeakCustomerInfoService;
     @Autowired private GlobalSettingDao globalSettingDao;
+    
+   @Autowired
+    public AccountInformationWidget(@Qualifier("widgetInput.deviceId") 
+            SimpleWidgetInput simpleWidgetInput,
+            RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
+        
+        Set<WidgetInput> simpleWidgetInputSet = new HashSet<WidgetInput>();
+        simpleWidgetInputSet.add(simpleWidgetInput);
+        
+        this.setIdentityPath("common/deviceIdentity.jsp");
+        this.setLazyLoad(true);
+        this.setInputs(simpleWidgetInputSet);
+        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("METERING"));
+    }
 
     @Override
+    @RequestMapping("render")
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         ModelAndView mav = new ModelAndView("accountInformationWidget/accountInfo.jsp");

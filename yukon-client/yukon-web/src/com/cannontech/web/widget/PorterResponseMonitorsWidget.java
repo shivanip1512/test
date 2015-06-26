@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -14,6 +15,7 @@ import com.cannontech.amr.porterResponseMonitor.dao.PorterResponseMonitorDao;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitor;
 import com.cannontech.amr.porterResponseMonitor.service.PorterResponseMonitorService;
 import com.cannontech.common.events.loggers.OutageEventLogService;
+import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.servlet.YukonUserContextUtils;
@@ -22,13 +24,23 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
+@Controller
+@RequestMapping("/porterResponseMonitorsWidget/*")
 @CheckRoleProperty(YukonRoleProperty.PORTER_RESPONSE_MONITORING)
 public class PorterResponseMonitorsWidget extends AdvancedWidgetControllerBase {
 
-	private PorterResponseMonitorDao porterResponseMonitorDao;
-	private PorterResponseMonitorService porterResponseMonitorService;
-	private OutageEventLogService outageEventLogService;
+    @Autowired private PorterResponseMonitorDao porterResponseMonitorDao;
+    @Autowired private PorterResponseMonitorService porterResponseMonitorService;
+    @Autowired private OutageEventLogService outageEventLogService;
 
+	@Autowired
+    public PorterResponseMonitorsWidget(RoleAndPropertyDescriptionService 
+            roleAndPropertyDescriptionService) {
+        this.setIdentityPath("common/deviceIdentity.jsp");
+        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService
+                                         .compile("PORTER_RESPONSE_MONITORING"));
+    }
+	
 	@RequestMapping("render")
 	public String render(ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		setupRenderModel(model, request);
@@ -62,20 +74,5 @@ public class PorterResponseMonitorsWidget extends AdvancedWidgetControllerBase {
 	private void setupRenderModel(ModelMap model, HttpServletRequest request) throws Exception {
 		List<PorterResponseMonitor> monitors = porterResponseMonitorDao.getAllMonitors();
 		model.addAttribute("monitors", monitors);
-	}
-
-	@Autowired
-	public void setPorterResponseMonitorDao(PorterResponseMonitorDao porterResponseMonitorDao) {
-		this.porterResponseMonitorDao = porterResponseMonitorDao;
-	}
-
-	@Autowired
-	public void setPorterResponseMonitorService(PorterResponseMonitorService porterResponseMonitorService) {
-		this.porterResponseMonitorService = porterResponseMonitorService;
-	}
-
-	@Autowired
-	public void setOutageEventLogService(OutageEventLogService outageEventLogService) {
-		this.outageEventLogService = outageEventLogService;
 	}
 }

@@ -2,6 +2,7 @@ package com.cannontech.web.widget;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,6 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
@@ -22,12 +26,17 @@ import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetControllerBase;
+import com.cannontech.web.widget.support.WidgetInput;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
+@Controller
+@RequestMapping("/simpleAttributesWidget/*")
 public class SimpleAttributesWidget extends WidgetControllerBase {
     
     @Autowired private AttributeService attributeService;
@@ -35,7 +44,21 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
     @Autowired private DeviceDao deviceDao;
     @Autowired private ObjectFormattingService objectFormattingService;
 
+    @Autowired
+    public SimpleAttributesWidget(@Qualifier("widgetInput.deviceId")
+            SimpleWidgetInput simpleWidgetInput,
+            RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
+        
+        Set<WidgetInput> simpleWidgetInputSet = new HashSet<WidgetInput>();
+        simpleWidgetInputSet.add(simpleWidgetInput);
+        
+        this.setIdentityPath("common/deviceIdentity.jsp");
+        this.setInputs(simpleWidgetInputSet);
+        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("METERING"));
+    }
+    
     @Override
+    @RequestMapping("render")
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
 
         ModelAndView mav = new ModelAndView("simpleAttributesWidget/render.jsp");
@@ -79,6 +102,7 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
         return mav;
     }
 
+    @RequestMapping("read")
     public ModelAndView read(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         // get attributes

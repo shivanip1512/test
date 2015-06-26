@@ -12,6 +12,8 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -25,23 +27,40 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.TimeUtil;
+import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ExpireLRUMap;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
+import com.cannontech.web.widget.support.SimpleWidgetInput;
+import com.cannontech.web.widget.support.WidgetInput;
 import com.google.common.collect.Sets;
 
 /**
  * Widget used to display basic device information
  * This is assumed to be for PLC meters. See RfnOutagesWidget for RFN meter types.
  */
+@Controller
+@RequestMapping("/meterOutagesWidget/*")
 public class MeterOutagesWidget extends AdvancedWidgetControllerBase {
 
 	@Autowired private MeterDao meterDao;
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
     @Autowired private AttributeService attributeService;
+    
+    @Autowired
+    public MeterOutagesWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput,
+            RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
+        
+        Set<WidgetInput> simpleWidgetInputSet = new HashSet<WidgetInput>();
+        simpleWidgetInputSet.add(simpleWidgetInput);
+        
+        this.setIdentityPath("common/deviceIdentity.jsp");
+        this.setInputs(simpleWidgetInputSet);
+        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("METERING"));
+    }
 
     //Contains <DeviceID>,<PerishableOutageData>
     private final ExpireLRUMap<Integer,PerishableOutageData> recentOutageLogs = 

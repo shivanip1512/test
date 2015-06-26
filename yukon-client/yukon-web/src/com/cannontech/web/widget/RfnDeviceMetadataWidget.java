@@ -3,11 +3,15 @@ package com.cannontech.web.widget;
 import java.text.Collator;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -21,9 +25,13 @@ import com.cannontech.common.util.Pair;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
+import com.cannontech.web.widget.support.SimpleWidgetInput;
+import com.cannontech.web.widget.support.WidgetInput;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
+@Controller
+@RequestMapping("/rfnDeviceMetadataWidget/*")
 public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
     
     @Autowired private RfnDeviceDao rfnDeviceDao;
@@ -39,6 +47,18 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
                                                                                RfnMetadata.NODE_SERIAL_NUMBER,
                                                                                RfnMetadata.PRIMARY_GATEWAY,
                                                                                RfnMetadata.PRIMARY_GATEWAY_HOP_COUNT);
+    
+    @Autowired
+    public RfnDeviceMetadataWidget(@Qualifier("widgetInput.deviceId")
+                SimpleWidgetInput simpleWidgetInput) {
+        
+        Set<WidgetInput> simpleWidgetInputSet = new HashSet<WidgetInput>();
+        simpleWidgetInputSet.add(simpleWidgetInput);
+        
+        this.setLazyLoad(true);
+        this.setInputs(simpleWidgetInputSet);
+        
+    }
 
     @RequestMapping("render")
     public String render(final ModelMap model, int deviceId, final YukonUserContext context) {

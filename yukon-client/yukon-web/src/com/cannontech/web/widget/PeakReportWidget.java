@@ -6,8 +6,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,7 +17,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.meter.dao.MeterDao;
@@ -29,26 +33,45 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
+import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetControllerBase;
+import com.cannontech.web.widget.support.WidgetInput;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 /**
  * Widget used to display point data in a trend
  */
+@Controller
+@RequestMapping("/peakReportWidget/*")
 public class PeakReportWidget extends WidgetControllerBase {
 
-    private PeakReportService peakReportService = null;
-    private MeterDao meterDao = null;
-    private DateFormattingService dateFormattingService = null;
-    private AttributeService attributeService = null;
-    private PaoCommandAuthorizationService commandAuthorizationService;
-    private YukonUserContextMessageSourceResolver messageSourceResolver = null;
+    @Autowired private PeakReportService peakReportService;
+    @Autowired private MeterDao meterDao;
+    @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private AttributeService attributeService;
+    @Autowired private PaoCommandAuthorizationService commandAuthorizationService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    
+    
+    @Autowired
+    public PeakReportWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput,
+            RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
+        
+        Set<WidgetInput> simpleWidgetInputSet = new HashSet<WidgetInput>();
+        simpleWidgetInputSet.add(simpleWidgetInput);
+        
+        this.setIdentityPath("common/deviceIdentity.jsp");
+        this.setInputs(simpleWidgetInputSet);
+        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("METERING"));
+    }
     
     @Override
+    @RequestMapping("render")
     public ModelAndView render(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
@@ -149,6 +172,7 @@ public class PeakReportWidget extends WidgetControllerBase {
         return mav;
     }
     
+    @RequestMapping("requestReport")
     public ModelAndView requestReport(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
@@ -236,6 +260,7 @@ public class PeakReportWidget extends WidgetControllerBase {
         return mav;
     }
 
+    @RequestMapping("setDefaultMavDateTime")
     private ModelAndView setDefaultMavDateTime(HttpServletRequest request, ModelAndView mav, YukonUserContext userContext){
         
         String startDateStr = WidgetParameterHelper.getStringParameter(request, "startDateStr", "");
@@ -274,37 +299,5 @@ public class PeakReportWidget extends WidgetControllerBase {
         }
             
         return mav;
-    }
-
-
-    @Required
-    public void setMeterDao(MeterDao meterDao) {
-        this.meterDao = meterDao;
-    }
-    
-    @Required
-    public void setDateFormattingService(DateFormattingService dateFormattingService) {
-        this.dateFormattingService = dateFormattingService;
-    }
-  
-    @Required
-    public void setPeakReportService(PeakReportService peakReportService) {
-        this.peakReportService = peakReportService;
-    }
-
-    @Required
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
-    
-    @Required
-    public void setCommandAuthorizationService(
-			PaoCommandAuthorizationService commandAuthorizationService) {
-		this.commandAuthorizationService = commandAuthorizationService;
-	}
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
     }
 }

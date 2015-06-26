@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,7 +21,10 @@ import org.joda.time.Instant;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.device.ProfileAttributeChannel;
@@ -38,6 +42,7 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.util.TemplateProcessorFactory;
 import com.cannontech.common.util.TimeUtil;
+import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
@@ -60,7 +65,9 @@ import com.cannontech.simplereport.SimpleReportService;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetControllerBase;
+import com.cannontech.web.widget.support.WidgetInput;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -68,6 +75,8 @@ import com.google.common.collect.Maps;
 /**
  * Widget used to display point data in a trend
  */
+@Controller
+@RequestMapping("/profileWidget/*")
 public class ProfileWidget extends WidgetControllerBase {
     @Autowired private LoadProfileService loadProfileService;
     @Autowired private EmailService emailService;
@@ -87,6 +96,19 @@ public class ProfileWidget extends WidgetControllerBase {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private ObjectFormattingService objectFormattingService;
 
+    
+    @Autowired
+    public ProfileWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput,
+            RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
+        
+        Set<WidgetInput> simpleWidgetInputSet = new HashSet<WidgetInput>();
+        simpleWidgetInputSet.add(simpleWidgetInput);
+        
+        this.setIdentityPath("common/deviceIdentity.jsp");
+        this.setInputs(simpleWidgetInputSet);
+        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("METERING"));
+    }
+    
     /*
      * Long load profile email message format NOTE: Outlook will sometimes strip
      * extra line breaks of its own accord. For some reason putting extra spaces
@@ -150,6 +172,7 @@ public class ProfileWidget extends WidgetControllerBase {
     }
 
     @Override
+    @RequestMapping("render")
     public ModelAndView render(HttpServletRequest request,
                                HttpServletResponse response) throws Exception {
 
@@ -217,7 +240,8 @@ public class ProfileWidget extends WidgetControllerBase {
 
         return mav;
     }
-
+    
+    @RequestMapping("initiateLoadProfile")
     public ModelAndView initiateLoadProfile(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
 
@@ -325,6 +349,7 @@ public class ProfileWidget extends WidgetControllerBase {
         return mav;
     }
 
+    @RequestMapping("toggleProfiling")
     public ModelAndView toggleProfiling(HttpServletRequest request,
                                         HttpServletResponse response) throws Exception {
 
@@ -481,6 +506,7 @@ public class ProfileWidget extends WidgetControllerBase {
         return mav;
     }
 
+    @RequestMapping("refreshChannelScanningInfo")
     public ModelAndView refreshChannelScanningInfo(HttpServletRequest request,
                                                    HttpServletResponse response) throws Exception {
 
@@ -497,6 +523,7 @@ public class ProfileWidget extends WidgetControllerBase {
         return mav;
     }
 
+    @RequestMapping("viewDailyUsageReport")
     public ModelAndView viewDailyUsageReport(HttpServletRequest request,
                                              HttpServletResponse response) throws Exception {
         ModelAndView mav = render(request, response);

@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
 import com.cannontech.amr.outageProcessing.OutageMonitor;
@@ -14,11 +16,15 @@ import com.cannontech.amr.tamperFlagProcessing.TamperFlagMonitor;
 import com.cannontech.common.userpage.dao.UserSubscriptionDao;
 import com.cannontech.common.userpage.model.UserSubscription;
 import com.cannontech.common.validation.model.ValidationMonitor;
+import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
 
+
+@Controller
+@RequestMapping("/subscribedMonitorsWidget/*")
 @CheckRoleProperty({YukonRoleProperty.DEVICE_DATA_MONITORING,
     YukonRoleProperty.OUTAGE_PROCESSING,
     YukonRoleProperty.TAMPER_FLAG_PROCESSING,
@@ -27,6 +33,15 @@ import com.google.common.collect.Lists;
     YukonRoleProperty.VALIDATION_ENGINE,
     })
 public class SubscribedMonitorsWidget extends AllMonitorsWidget {
+
+    public SubscribedMonitorsWidget() {
+    }
+    
+    @Autowired
+    public SubscribedMonitorsWidget(
+            RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
+        super(roleAndPropertyDescriptionService);
+    }
 
     @Autowired private UserSubscriptionDao userSubscriptionDao;
 

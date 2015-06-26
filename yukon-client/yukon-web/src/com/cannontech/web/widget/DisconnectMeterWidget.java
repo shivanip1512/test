@@ -6,7 +6,9 @@ import java.util.concurrent.CountDownLatch;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -34,6 +36,7 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -43,11 +46,15 @@ import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
+import com.cannontech.web.widget.support.SimpleWidgetInput;
+import com.cannontech.web.widget.support.WidgetInput;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import org.apache.log4j.Logger;
 
+@Controller
+@RequestMapping("/disconnectMeterWidget/*")
 public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
     
     @Autowired private RolePropertyDao rolePropertyDao;
@@ -62,6 +69,19 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
     @Autowired private RfnMeterDisconnectService rfnMeterDisconnectService;
     
     private final Set<BuiltInAttribute> disconnectAttribute = Sets.newHashSet(BuiltInAttribute.DISCONNECT_STATUS);
+    
+    @Autowired
+    public DisconnectMeterWidget(@Qualifier("widgetInput.deviceId")
+            SimpleWidgetInput simpleWidgetInput,
+            RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
+        
+        Set<WidgetInput> simpleWidgetInputSet = new HashSet<WidgetInput>();
+        simpleWidgetInputSet.add(simpleWidgetInput);
+        
+        this.setIdentityPath("common/deviceIdentity.jsp");
+        this.setInputs(simpleWidgetInputSet);
+        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("METERING"));
+    }
 
     @RequestMapping("render")
     public String render(ModelMap model, YukonUserContext userContext, Integer deviceId) {

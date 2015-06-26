@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -59,7 +60,7 @@ public class WidgetInterceptor extends HandlerInterceptorAdapter {
             target = handler;
         }
         
-        String className = target.getClass().getSimpleName();
+        String className = ((HandlerMethod)target).getBean().getClass().getSimpleName();
         String beanName = existingParams.get("shortName");
         ScopeHolder scope = MessageScopeHelper.MessageScope.createScope(beanName, "widgets." + beanName, "widgetClasses." + className);
         return scope;

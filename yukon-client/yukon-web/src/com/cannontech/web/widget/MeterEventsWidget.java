@@ -2,6 +2,7 @@ package com.cannontech.web.widget;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -11,6 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.joda.time.Instant;
 import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -20,17 +23,35 @@ import com.cannontech.amr.meter.service.impl.MeterEventLookupService;
 import com.cannontech.amr.paoPointValue.model.MeterPointValue;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.util.Range;
+import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.service.PaoPointValueService;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
+import com.cannontech.web.widget.support.SimpleWidgetInput;
+import com.cannontech.web.widget.support.WidgetInput;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
+@Controller
+@RequestMapping("/meterEventsWidget/*")
 public class MeterEventsWidget extends AdvancedWidgetControllerBase {
     
     @Autowired private MeterDao meterDao;
     @Autowired private MeterEventLookupService meterEventLookupService;
     @Autowired private PaoPointValueService paoPointValueService;
+    
+    @Autowired
+    public MeterEventsWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput,
+            RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
+        
+        Set<WidgetInput> simpleWidgetInputSet = new HashSet<WidgetInput>();
+        simpleWidgetInputSet.add(simpleWidgetInput);
+        
+        this.setIdentityPath("common/deviceIdentity.jsp");
+        this.setLazyLoad(true);
+        this.setInputs(simpleWidgetInputSet);
+        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("METERING"));
+    }
 
     private static Comparator<MeterPointValue> getDateComparator() {
         return MeterPointValue.getDateOrdering().compound(MeterPointValue.getPointNameOrdering().reverse());

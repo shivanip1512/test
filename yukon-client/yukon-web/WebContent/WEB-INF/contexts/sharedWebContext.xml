@@ -17,20 +17,20 @@
 
     <mvc:annotation-driven>
         <mvc:argument-resolvers>
-            <bean class="com.cannontech.web.bulk.model.DeviceCollectionHandlerMethodArgumentResolver"/>
-            <bean class="com.cannontech.web.common.collection.InventoryCollectionHandlerMethodArgumentResolver"/>
-            <bean class="com.cannontech.web.login.UserContextHandlerMethodArgumentResolver"/>
-            <bean class="com.cannontech.web.login.EnumHandlerMethodArgumentResolver"/>
+            <bean class="com.cannontech.web.bulk.model.DeviceCollectionArgumentResolver"/>
+            <bean class="com.cannontech.web.common.collection.InventoryCollectionArgumentResolver"/>
+            <bean class="com.cannontech.web.login.UserContextArgumentResolver"/>
+            <bean class="com.cannontech.web.login.EnumArgumentResolver"/>
             <bean class="com.cannontech.web.spring.PagingParametersHandlerMethodArgumentResolver"/>
             <bean class="com.cannontech.web.spring.SortingParametersResolver"/>
-            <bean class="com.cannontech.web.common.flashScope.FlashScopeHandlerMethodArgumentResolver"/>
-            <bean class="com.cannontech.web.stars.dr.operator.general.AccountInfoFragmentHandlerMethodArgumentResolver"/>
-            <bean class="com.cannontech.web.admin.energyCompany.general.EnergyCompanyInfoFragmentHandlerMethodArgumentResolver"/>
+            <bean class="com.cannontech.web.common.flashScope.FlashScopeArgumentResolver"/>
+            <bean class="com.cannontech.web.stars.dr.operator.general.AccountInfoFragmentArgumentResolver"/>
+            <bean class="com.cannontech.web.admin.energyCompany.general.EnergyCompanyInfoFragmentArgumentResolver"/>
         </mvc:argument-resolvers>
         <mvc:message-converters>
             <bean class="com.cannontech.spring.JacksonHttpMessageConverter"/>
         </mvc:message-converters>
     </mvc:annotation-driven>
-
+    
     <tx:annotation-driven transaction-manager="transactionManager"/>
 </beans>

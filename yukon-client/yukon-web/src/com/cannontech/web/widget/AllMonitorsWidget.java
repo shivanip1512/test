@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -28,6 +29,7 @@ import com.cannontech.common.validation.dao.ValidationMonitorDao;
 import com.cannontech.common.validation.dao.ValidationMonitorNotFoundException;
 import com.cannontech.common.validation.model.ValidationMonitor;
 import com.cannontech.common.validation.service.ValidationMonitorService;
+import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.OutageMonitorNotFoundException;
 import com.cannontech.core.dao.TamperFlagMonitorNotFoundException;
@@ -36,6 +38,9 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 
+
+@Controller
+@RequestMapping("/allMonitorsWidget/*")
 @CheckRoleProperty({YukonRoleProperty.DEVICE_DATA_MONITORING,
                     YukonRoleProperty.OUTAGE_PROCESSING,
                     YukonRoleProperty.TAMPER_FLAG_PROCESSING,
@@ -43,6 +48,7 @@ import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
                     YukonRoleProperty.PORTER_RESPONSE_MONITORING,
                     YukonRoleProperty.VALIDATION_ENGINE,
                     })
+
 public class AllMonitorsWidget extends AdvancedWidgetControllerBase {
 
     @Autowired protected DeviceDataMonitorDao deviceDataMonitorDao;
@@ -58,6 +64,18 @@ public class AllMonitorsWidget extends AdvancedWidgetControllerBase {
     @Autowired protected ValidationMonitorDao validationMonitorDao;
     @Autowired private ValidationMonitorService validationMonitorService;
     @Autowired private OutageEventLogService outageEventLogService;
+    
+    public AllMonitorsWidget() {
+    }
+    
+    @Autowired
+    public AllMonitorsWidget(RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
+        
+        this.setIdentityPath("common/deviceIdentity.jsp");
+        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(
+                "DEVICE_DATA_MONITORING OUTAGE_PROCESSING TAMPER_FLAG_PROCESSING "
+                + "STATUS_POINT_MONITORING PORTER_RESPONSE_MONITORING VALIDATION_ENGINE"));
+    }
     
     @RequestMapping("render")
     public String render(ModelMap model, YukonUserContext context) {

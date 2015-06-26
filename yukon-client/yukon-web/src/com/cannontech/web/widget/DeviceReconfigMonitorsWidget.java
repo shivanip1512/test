@@ -6,9 +6,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.events.loggers.InventoryConfigEventLogService;
+import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
@@ -20,14 +23,24 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
+@Controller
+@RequestMapping("/deviceReconfigMonitorsWidget/*")
 @CheckRoleProperty(YukonRoleProperty.DEVICE_RECONFIG)
 public class DeviceReconfigMonitorsWidget extends WidgetControllerBase {
     
     @Autowired private InventoryConfigTaskDao inventoryConfigTaskDao;
     @Autowired private InventoryConfigEventLogService inventoryConfigEventLogService;
     @Autowired private EnergyCompanyDao ecDao;
+    
+    @Autowired
+    public DeviceReconfigMonitorsWidget(RoleAndPropertyDescriptionService 
+            roleAndPropertyDescriptionService) {
+        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService
+                                         .compile("DEVICE_RECONFIG"));
+    }
 
     @Override
+    @RequestMapping("render")
     public ModelAndView render(HttpServletRequest request,HttpServletResponse response) throws Exception {
 
         ModelAndView mav = new ModelAndView("deviceReconfigMonitorsWidget/render.jsp");
@@ -41,6 +54,7 @@ public class DeviceReconfigMonitorsWidget extends WidgetControllerBase {
         return mav;
     }
 
+    @RequestMapping("delete")
     public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         int taskId = WidgetParameterHelper.getRequiredIntParameter(request, "taskId");
