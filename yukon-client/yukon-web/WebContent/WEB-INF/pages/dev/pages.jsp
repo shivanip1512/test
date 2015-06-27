@@ -3,6 +3,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 
 <cti:standardPage module="dev" page="yukon-pages">
 <cti:includeScript link="/resources/js/lib/google-code-prettify/prettify.js"/>
@@ -158,6 +159,39 @@ dt, dd { font-size: 16px; }
 ...
 
 &lt;/modules&gt;
+</pre>
+
+<h2>Page Parts: Title, Header, and Crumb</h2>
+<p class="description">
+    The page parts are derived from the combination of the page type and the module name, page name, page description.
+    It's pretty complicated, see standard.xml.  The easiest way to define exactly what you want is to use the following 
+    keys, where 'mypage' is your page name from module_config.xml.
+    <span class="label label-attr">yukon.web.modules.dev.mypage.pageTitle</span>,
+    <span class="label label-attr">yukon.web.modules.dev.mypage.pageHeading</span>, and
+    <span class="label label-attr">yukon.web.modules.dev.mypage.crumbTitle</span>.
+</p>
+
+<h2>Page Actions and Page Buttons</h2>
+<p class="description">
+    Page actions are dropdown menu options added to an a 'actions' dropdown automatically at the top-right of the page
+    when dropdown menu options are found inside an element with the id 'page-actions'.
+</p>
+<h4 class="subtle">Example: Page Actions</h4>
+<pre class="code prettyprint">
+&lt;div id=&quot;page-actions&quot; class=&quot;dn&quot;&gt;
+    &lt;cm:dropdownOption label=&quot;Do A Thing&quot;/&gt;
+    &lt;cm:dropdownOption label=&quot;Do A Another Thing&quot;/&gt;
+&lt;/div&gt;
+</pre>
+<p class="description">
+    Page buttons are buttons added at the top-right of the page when they are found inside an element with the id 
+    'page-buttons'.
+</p>
+<h4 class="subtle">Example: Page Buttons</h4>
+<pre class="code prettyprint">
+&lt;div id=&quot;page-buttons&quot; class=&quot;dn&quot;&gt;
+    &lt;cti:button icon=&quot;icon-brick&quot; label=&quot;Play Legos&quot;/&gt; 
+&lt;/div&gt;
 </pre>
 
 <script>$(function () { prettyPrint(); });</script>
