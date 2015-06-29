@@ -8,8 +8,8 @@ public enum TargetSettingType implements DatabaseRepresentationSource, Displayab
     
     UPPER_VOLT_LIMIT("Upper Volt Limit", 130, "Volts"),
     LOWER_VOLT_LIMIT("Lower Volt Limit", 110, "Volts"),
-    KVAR_LEADING("KVAR Leading", -600, "KVARs"),
-    KVAR_LAGGING("KVAR Lagging", 600, "KVARs"),
+    KVAR_LEADING("KVAR Leading", -600, "kVArs"),
+    KVAR_LAGGING("KVAR Lagging", 600, "kVArs"),
     TARGET_PF("Target PF", 100, "%"),
     MIN_BANK_OPEN("Min. of Bank Open", 80, "%"),
     MIN_BANK_CLOSE("Min. of Bank Close", 80.0, "%"),
@@ -43,18 +43,18 @@ public enum TargetSettingType implements DatabaseRepresentationSource, Displayab
     HOUR_TWENTYTWO("22:00", 0, "%"),
     HOUR_TWENTYTHREE("23:00", 0, "%");
     
-    private String displayName;
+    private String dbName;
     private double defaultValue;
     private String units;
     
-    private TargetSettingType(String displayName, double defaultValue, String units) {
-        this.displayName = displayName;
+    private TargetSettingType(String dbName, double defaultValue, String units) {
+        this.dbName = dbName;
         this.defaultValue = defaultValue;
         this.units = units;
     }
     
-    public String getDisplayName() {
-        return displayName;
+    public String getDbName() {
+        return dbName;
     }
     
     public double getDefaultValue() {
@@ -72,7 +72,7 @@ public enum TargetSettingType implements DatabaseRepresentationSource, Displayab
 
     @Override
     public Object getDatabaseRepresentation() {
-        return getDisplayName();
+        return getDbName();
     }
 
     @Override
