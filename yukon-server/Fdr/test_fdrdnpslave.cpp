@@ -955,6 +955,270 @@ BOOST_AUTO_TEST_CASE( test_control_close_porter )
 
 
 /**
+ * Verify behavior of various control close messages sent to a
+ * DNP device configured to do SBO controls. Correctly-formatted
+ * requests should generate a Porter request message with the
+ * correct command string containing "sbo_selectonly" or
+ * "sbo_operate", and handle a DNP control status in the
+ * response message.
+ */
+BOOST_AUTO_TEST_CASE( test_control_close_sbo_porter )
+{
+    Test_FdrDnpSlave dnpSlave;
+
+    CtiFDRManager *fdrManager = new CtiFDRManager("DNP slave, but this is just a test");
+
+    CtiFDRPointList fdrPointList;
+
+    fdrPointList.setPointList(fdrManager);
+
+    dnpSlave.setReceiveFromList(fdrPointList);
+
+    //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
+    fdrPointList.setPointList(0);
+
+    {
+        //Initialize the interface to have a point in a group.
+        CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
+
+        fdrPoint->setPointID(43);
+        fdrPoint->setPaoID(153);  //  >100, a DNP deviceid (see Test_FdrDnpSlave::isDnpDeviceId)
+        fdrPoint->setOffset(12);
+        fdrPoint->setPointType(StatusPointType);
+        fdrPoint->setValue(0);
+        fdrPoint->setControllable(true);
+
+        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:0", "Test Destination");
+
+        vector<CtiFDRDestination> destinationList;
+
+        destinationList.push_back(pointDestination);
+
+        fdrPoint->setDestinationList(destinationList);
+
+        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+
+        dnpSlave.translateSinglePoint(fdrPoint, false);
+    }
+
+    dnpSlave.point.setControlOffset(1);
+    dnpSlave.point.setPaoId(153);
+    dnpSlave.point.setPointId(43);
+    dnpSlave.point.setControlType(ControlType_SBOPulse);
+    dnpSlave.point.setStateZeroControl("control open");
+    dnpSlave.point.setStateOneControl("control close");
+    dnpSlave.point.setCloseTime1(1000);
+    dnpSlave.point.setCloseTime2(1000);
+
+    //  Close, pulse on (0x41), direct control
+    {
+        const byte_str request(
+                "05 64 18 c4 f6 01 e8 03 36 79 "
+                "c0 c1 05 0c 01 17 01 00 41 01 e8 03 00 00 00 00 2e 18 "
+                "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+                "05 64 1a 44 e8 03 f6 01 20 bb "
+                "c0 c1 81 00 00 0c 01 17 01 00 41 01 e8 03 00 00 c5 65 "
+                "00 00 00 00 04 87 26");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_CHECK(dnpSlave.dispatchMessages.empty());
+        BOOST_CHECK( ! dnpSlave.lastRequestMsg);
+    }
+
+    //  Close, pulse on (0x41), select
+    {
+        const byte_str request(
+                "05 64 18 c4 f6 01 e8 03 36 79 "
+                "c0 c1 03 0c 01 17 01 00 41 01 e8 03 00 00 00 00 0e 9e "
+                "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.returnString = "Jimmy / Control result (0): Request accepted, initiated, or queued.";
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+                "05 64 1a 44 e8 03 f6 01 20 bb "
+                "c0 c1 81 00 00 0c 01 17 01 00 41 01 e8 03 00 00 c5 65 "
+                "00 00 00 00 00 ff ff");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_CHECK(dnpSlave.dispatchMessages.empty());
+
+        BOOST_REQUIRE(dnpSlave.lastRequestMsg);
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control close offset 1 sbo_selectonly");
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
+    }
+
+    dnpSlave.lastRequestMsg.reset();
+
+    //  Close, pulse on (0x41), operate
+    {
+        const byte_str request(
+                "05 64 18 c4 f6 01 e8 03 36 79 "
+                "c0 c1 04 0c 01 17 01 00 41 01 e8 03 00 00 00 00 de 26 "
+                "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.returnString = "Jimmy / Control result (0): Request accepted, initiated, or queued.";
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+                "05 64 1a 44 e8 03 f6 01 20 bb "
+                "c0 c1 81 00 00 0c 01 17 01 00 41 01 e8 03 00 00 c5 65 "
+                "00 00 00 00 00 ff ff");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_CHECK(dnpSlave.dispatchMessages.empty());
+
+        BOOST_REQUIRE(dnpSlave.lastRequestMsg);
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control close offset 1 sbo_operate");
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
+    }
+
+    dnpSlave.lastRequestMsg.reset();
+
+    //  Latch on, no trip/close (0x03), direct operate, does not match point control type
+    {
+        const byte_str request(
+                "05 64 18 c4 f6 01 e8 03 36 79 "
+                "c0 c1 05 0c 01 17 01 00 03 01 00 00 00 00 00 00 c4 34 "
+                "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+                "05 64 1a 44 e8 03 f6 01 20 bb "
+                "c0 c1 81 00 00 0c 01 17 01 00 03 01 00 00 00 00 6d 3b "
+                "00 00 00 00 04 87 26");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_CHECK(dnpSlave.dispatchMessages.empty());
+        BOOST_CHECK( ! dnpSlave.lastRequestMsg);
+    }
+
+    //  Latch on, no trip/close (0x03), select, does not match point control type
+    {
+        const byte_str request(
+                "05 64 18 c4 f6 01 e8 03 36 79 "
+                "c0 c1 03 0c 01 17 01 00 03 01 00 00 00 00 00 00 e4 b2 "
+                "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+                "05 64 1a 44 e8 03 f6 01 20 bb "
+                "c0 c1 81 00 00 0c 01 17 01 00 03 01 00 00 00 00 6d 3b "
+                "00 00 00 00 03 1d a5");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_CHECK(dnpSlave.dispatchMessages.empty());
+        BOOST_CHECK( ! dnpSlave.lastRequestMsg);
+    }
+
+    dnpSlave.point.setControlType(ControlType_SBOLatch);
+
+    //  Latch on, no trip/close (0x03), direct operate, matches point control type
+    {
+        const byte_str request(
+                "05 64 18 c4 f6 01 e8 03 36 79 "
+                "c0 c1 05 0c 01 17 01 00 03 01 00 00 00 00 00 00 c4 34 "
+                "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+                "05 64 1a 44 e8 03 f6 01 20 bb "
+                "c0 c1 81 00 00 0c 01 17 01 00 03 01 00 00 00 00 6d 3b "
+                "00 00 00 00 04 87 26");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_CHECK(dnpSlave.dispatchMessages.empty());
+        BOOST_CHECK( ! dnpSlave.lastRequestMsg);
+    }
+
+    //  Latch on, no trip/close (0x03), select, matches point control type
+    {
+        const byte_str request(
+                "05 64 18 c4 f6 01 e8 03 36 79 "
+                "c0 c1 03 0c 01 17 01 00 03 01 00 00 00 00 00 00 e4 b2 "
+                "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+                "05 64 1a 44 e8 03 f6 01 20 bb "
+                "c0 c1 81 00 00 0c 01 17 01 00 03 01 00 00 00 00 6d 3b "
+                "00 00 00 00 00 ff ff");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_CHECK(dnpSlave.dispatchMessages.empty());
+
+        BOOST_REQUIRE(dnpSlave.lastRequestMsg);
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control close offset 1 sbo_selectonly");
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
+    }
+
+    //  Latch on, no trip/close (0x03), operate, matches point control type
+    {
+        const byte_str request(
+                "05 64 18 c4 f6 01 e8 03 36 79 "
+                "c0 c1 04 0c 01 17 01 00 03 01 00 00 00 00 00 00 34 0a "
+                "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+                "05 64 1a 44 e8 03 f6 01 20 bb "
+                "c0 c1 81 00 00 0c 01 17 01 00 03 01 00 00 00 00 6d 3b "
+                "00 00 00 00 00 ff ff");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_CHECK(dnpSlave.dispatchMessages.empty());
+
+        BOOST_REQUIRE(dnpSlave.lastRequestMsg);
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control close offset 1 sbo_operate");
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
+    }
+}
+
+
+/**
  * Verify behavior of various "control open" messages sent to a
  * non-DNP device.
  * Correctly-formatted requests should generate a Dispatch
@@ -1328,6 +1592,270 @@ BOOST_AUTO_TEST_CASE( test_control_open_porter )
 
         BOOST_REQUIRE(dnpSlave.lastRequestMsg);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control open offset 1");
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
+    }
+}
+
+
+/**
+ * Verify behavior of various control open/trip messages sent to
+ * a DNP device configured to do SBO controls.
+ * Correctly-formatted requests should generate a Porter request
+ * message with the correct command string containing
+ * "sbo_selectonly" or "sbo_operate", and handle a DNP control
+ * status in the response message.
+ */
+BOOST_AUTO_TEST_CASE( test_control_open_sbo_porter )
+{
+    Test_FdrDnpSlave dnpSlave;
+
+    CtiFDRManager *fdrManager = new CtiFDRManager("DNP slave, but this is just a test");
+
+    CtiFDRPointList fdrPointList;
+
+    fdrPointList.setPointList(fdrManager);
+
+    dnpSlave.setReceiveFromList(fdrPointList);
+
+    //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
+    fdrPointList.setPointList(0);
+
+    {
+        //Initialize the interface to have a point in a group.
+        CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
+
+        fdrPoint->setPointID(43);
+        fdrPoint->setPaoID(153);  //  >100, a DNP deviceid (see Test_FdrDnpSlave::isDnpDeviceId)
+        fdrPoint->setOffset(12);
+        fdrPoint->setPointType(StatusPointType);
+        fdrPoint->setValue(0);
+        fdrPoint->setControllable(true);
+
+        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:0", "Test Destination");
+
+        vector<CtiFDRDestination> destinationList;
+
+        destinationList.push_back(pointDestination);
+
+        fdrPoint->setDestinationList(destinationList);
+
+        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+
+        dnpSlave.translateSinglePoint(fdrPoint, false);
+    }
+
+    dnpSlave.point.setControlOffset(1);
+    dnpSlave.point.setPaoId(153);
+    dnpSlave.point.setPointId(43);
+    dnpSlave.point.setControlType(ControlType_SBOPulse);
+    dnpSlave.point.setStateZeroControl("control open");
+    dnpSlave.point.setStateOneControl("control close");
+    dnpSlave.point.setCloseTime1(1000);
+    dnpSlave.point.setCloseTime2(1000);
+
+    //  Trip, pulse on (0x81), direct control
+    {
+        const byte_str request(
+                "05 64 18 c4 f6 01 e8 03 36 79 "
+                "c0 c1 05 0c 01 17 01 00 81 01 e8 03 00 00 00 00 fb 86 "
+                "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+                "05 64 1a 44 e8 03 f6 01 20 bb "
+                "c0 c1 81 00 00 0c 01 17 01 00 81 01 e8 03 00 00 3b da "
+                "00 00 00 00 04 87 26");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_CHECK(dnpSlave.dispatchMessages.empty());
+        BOOST_CHECK( ! dnpSlave.lastRequestMsg);
+    }
+
+    //  Trip, pulse on (0x81), select
+    {
+        const byte_str request(
+                "05 64 18 c4 f6 01 e8 03 36 79 "
+                "c0 c1 03 0c 01 17 01 00 81 01 e8 03 00 00 00 00 db 00 "
+                "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.returnString = "Jimmy / Control result (0): Request accepted, initiated, or queued.";
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+                "05 64 1a 44 e8 03 f6 01 20 bb "
+                "c0 c1 81 00 00 0c 01 17 01 00 81 01 e8 03 00 00 3b da "
+                "00 00 00 00 00 ff ff");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_CHECK(dnpSlave.dispatchMessages.empty());
+
+        BOOST_REQUIRE(dnpSlave.lastRequestMsg);
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control open offset 1 sbo_selectonly");
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
+    }
+
+    dnpSlave.lastRequestMsg.reset();
+
+    //  Trip, pulse on (0x81), operate
+    {
+        const byte_str request(
+                "05 64 18 c4 f6 01 e8 03 36 79 "
+                "c0 c1 04 0c 01 17 01 00 81 01 e8 03 00 00 00 00 0b b8 "
+                "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.returnString = "Jimmy / Control result (0): Request accepted, initiated, or queued.";
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+                "05 64 1a 44 e8 03 f6 01 20 bb "
+                "c0 c1 81 00 00 0c 01 17 01 00 81 01 e8 03 00 00 3b da "
+                "00 00 00 00 00 ff ff");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_CHECK(dnpSlave.dispatchMessages.empty());
+
+        BOOST_REQUIRE(dnpSlave.lastRequestMsg);
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control open offset 1 sbo_operate");
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
+    }
+
+    dnpSlave.lastRequestMsg.reset();
+
+    //  Latch off, no trip/close (0x04), direct operate, does not match point control type
+    {
+        const byte_str request(
+                "05 64 18 c4 f6 01 e8 03 36 79 "
+                "c0 c1 05 0c 01 17 01 00 04 01 00 00 00 00 00 00 ba 56 "
+                "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+                "05 64 1a 44 e8 03 f6 01 20 bb "
+                "c0 c1 81 00 00 0c 01 17 01 00 04 01 00 00 00 00 53 e5 "
+                "00 00 00 00 04 87 26");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_CHECK(dnpSlave.dispatchMessages.empty());
+        BOOST_CHECK( ! dnpSlave.lastRequestMsg);
+    }
+
+    //  Latch off, no trip/close (0x04), select, does not match point control type
+    {
+        const byte_str request(
+                "05 64 18 c4 f6 01 e8 03 36 79 "
+                "c0 c1 03 0c 01 17 01 00 04 01 00 00 00 00 00 00 9a d0 "
+                "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+                "05 64 1a 44 e8 03 f6 01 20 bb "
+                "c0 c1 81 00 00 0c 01 17 01 00 04 01 00 00 00 00 53 e5 "
+                "00 00 00 00 03 1d a5");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_CHECK(dnpSlave.dispatchMessages.empty());
+        BOOST_CHECK( ! dnpSlave.lastRequestMsg);
+    }
+
+    dnpSlave.point.setControlType(ControlType_SBOLatch);
+
+    //  Latch off, no trip/close (0x04), direct operate, matches point control type
+    {
+        const byte_str request(
+                "05 64 18 c4 f6 01 e8 03 36 79 "
+                "c0 c1 05 0c 01 17 01 00 04 01 00 00 00 00 00 00 ba 56 "
+                "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+                "05 64 1a 44 e8 03 f6 01 20 bb "
+                "c0 c1 81 00 00 0c 01 17 01 00 04 01 00 00 00 00 53 e5 "
+                "00 00 00 00 04 87 26");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_CHECK(dnpSlave.dispatchMessages.empty());
+        BOOST_CHECK( ! dnpSlave.lastRequestMsg);
+    }
+
+    //  Latch off, no trip/close (0x04), select, matches point control type
+    {
+        const byte_str request(
+                "05 64 18 c4 f6 01 e8 03 36 79 "
+                "c0 c1 03 0c 01 17 01 00 04 01 00 00 00 00 00 00 9a d0 "
+                "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+                "05 64 1a 44 e8 03 f6 01 20 bb "
+                "c0 c1 81 00 00 0c 01 17 01 00 04 01 00 00 00 00 53 e5 "
+                "00 00 00 00 00 ff ff");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_CHECK(dnpSlave.dispatchMessages.empty());
+
+        BOOST_REQUIRE(dnpSlave.lastRequestMsg);
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control open offset 1 sbo_selectonly");
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
+    }
+
+    //  Latch off, no trip/close (0x04), operate, matches point control type
+    {
+        const byte_str request(
+                "05 64 18 c4 f6 01 e8 03 36 79 "
+                "c0 c1 04 0c 01 17 01 00 04 01 00 00 00 00 00 00 4a 68 "
+                "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+                "05 64 1a 44 e8 03 f6 01 20 bb "
+                "c0 c1 81 00 00 0c 01 17 01 00 04 01 00 00 00 00 53 e5 "
+                "00 00 00 00 00 ff ff");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_CHECK(dnpSlave.dispatchMessages.empty());
+
+        BOOST_REQUIRE(dnpSlave.lastRequestMsg);
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control open offset 1 sbo_operate");
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
     }
 }
