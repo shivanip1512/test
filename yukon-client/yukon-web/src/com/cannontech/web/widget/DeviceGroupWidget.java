@@ -42,7 +42,6 @@ import com.cannontech.web.group.NodeAttributeSettingCallback;
 import com.cannontech.web.util.JsTreeNode;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetControllerBase;
-import com.cannontech.web.widget.support.WidgetInput;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
@@ -69,11 +68,8 @@ public class DeviceGroupWidget extends WidgetControllerBase {
     public DeviceGroupWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput
             simpleWidgetInput) {
         
-        Set<WidgetInput> simpleWidgetInputSet = new HashSet<WidgetInput>();
-        simpleWidgetInputSet.add(simpleWidgetInput);
-        
+        addInput(simpleWidgetInput);
         this.setLazyLoad(true);
-        this.setInputs(simpleWidgetInputSet);
     }
     
     /**

@@ -2,7 +2,6 @@ package com.cannontech.web.widget;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -29,7 +28,6 @@ import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
-import com.cannontech.web.widget.support.WidgetInput;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 @Controller
@@ -44,12 +42,9 @@ public class MeterEventsWidget extends AdvancedWidgetControllerBase {
     public MeterEventsWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput,
             RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
         
-        Set<WidgetInput> simpleWidgetInputSet = new HashSet<WidgetInput>();
-        simpleWidgetInputSet.add(simpleWidgetInput);
-        
+        addInput(simpleWidgetInput);
         this.setIdentityPath("common/deviceIdentity.jsp");
         this.setLazyLoad(true);
-        this.setInputs(simpleWidgetInputSet);
         this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("METERING"));
     }
 

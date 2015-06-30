@@ -2,7 +2,6 @@ package com.cannontech.web.widget;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,7 +32,6 @@ import com.cannontech.web.common.pao.service.LiteYukonPoint;
 import com.cannontech.web.common.pao.service.YukonPointHelper;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
-import com.cannontech.web.widget.support.WidgetInput;
 import com.google.common.collect.Sets;
 
 /**
@@ -66,21 +64,19 @@ public class MeterReadingsWidget extends AdvancedWidgetControllerBase {
         simpleWidget.setDescription("the number of prior days of point history to display");
         simpleWidget.setRequired(false);
         
-        Set<WidgetInput> simpleWidgetInputSet = new HashSet<WidgetInput>();
-        simpleWidgetInputSet.add(simpleWidgetInput);
-        simpleWidgetInputSet.add(simpleWidget);
-
+        addInput(simpleWidgetInput);
+        addInput(simpleWidget);
+       
         List<BuiltInAttribute> attibutes = new ArrayList<BuiltInAttribute>();
         attibutes.add(BuiltInAttribute.USAGE);
         attibutes.add(BuiltInAttribute.PEAK_DEMAND);
         attibutes.add(BuiltInAttribute.DEMAND);
         attibutes.add(BuiltInAttribute.VOLTAGE);
         
-        this.setIdentityPath("common/deviceIdentity.jsp");
-        this.setInputs(simpleWidgetInputSet);
-        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("METERING"));
-        this.setAttributesToShow(attibutes);
-        this.setPreviousReadingsAttributeToShow(BuiltInAttribute.USAGE);
+        setIdentityPath("common/deviceIdentity.jsp");
+        setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("METERING"));
+        setAttributesToShow(attibutes);
+        setPreviousReadingsAttributeToShow(BuiltInAttribute.USAGE);
     }
     
     public void setAttributesToShow(List<BuiltInAttribute> attributesToShow) {

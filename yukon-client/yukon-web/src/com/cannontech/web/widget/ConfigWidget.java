@@ -1,8 +1,6 @@
 package com.cannontech.web.widget;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,7 +29,6 @@ import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetControllerBase;
-import com.cannontech.web.widget.support.WidgetInput;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 @Controller
@@ -47,10 +44,7 @@ public class ConfigWidget extends WidgetControllerBase {
     public ConfigWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput,
             RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
         
-        Set<WidgetInput> simpleWidgetInputSet = new HashSet<WidgetInput>();
-        simpleWidgetInputSet.add(simpleWidgetInput);
-        
-        this.setInputs(simpleWidgetInputSet);
+        addInput(simpleWidgetInput);
         this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("METERING"));
     }
     

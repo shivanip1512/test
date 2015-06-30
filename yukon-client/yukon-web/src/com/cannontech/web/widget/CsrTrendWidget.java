@@ -75,9 +75,7 @@ public class CsrTrendWidget extends WidgetControllerBase {
     
     @Autowired
     public CsrTrendWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput) {
-        Set<WidgetInput> simpleWidgetInputSet = new HashSet<WidgetInput>();
-        simpleWidgetInputSet.add(simpleWidgetInput);
-
+        
         List<BuiltInAttribute> buildInAttributes = new ArrayList<BuiltInAttribute>();
         buildInAttributes.add(BuiltInAttribute.SUM_KWH_PER_INTERVAL);
         buildInAttributes.add(BuiltInAttribute.SUM_KW_LOAD_PROFILE);
@@ -100,11 +98,11 @@ public class CsrTrendWidget extends WidgetControllerBase {
 
             attributeGraphType.add(attributeGraph);
         }
+        addInput(simpleWidgetInput);
         this.setDefaultAttribute(BuiltInAttribute.USAGE);
         this.setSupportedAttributeGraphSet(attributeGraphType);
         
         this.setIdentityPath("common/deviceIdentity.jsp");
-        this.setInputs(simpleWidgetInputSet);
         this.setSupportedAttributeGraphSet(attributeGraphType);
     }
 

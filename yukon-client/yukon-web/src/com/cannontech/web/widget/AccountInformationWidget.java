@@ -5,10 +5,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -50,7 +48,6 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetControllerBase;
-import com.cannontech.web.widget.support.WidgetInput;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 import com.google.common.collect.Lists;
 
@@ -72,12 +69,9 @@ public class AccountInformationWidget extends WidgetControllerBase{
             SimpleWidgetInput simpleWidgetInput,
             RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
         
-        Set<WidgetInput> simpleWidgetInputSet = new HashSet<WidgetInput>();
-        simpleWidgetInputSet.add(simpleWidgetInput);
-        
+        addInput(simpleWidgetInput);
         this.setIdentityPath("common/deviceIdentity.jsp");
         this.setLazyLoad(true);
-        this.setInputs(simpleWidgetInputSet);
         this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("METERING"));
     }
 

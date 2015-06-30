@@ -2,8 +2,6 @@ package com.cannontech.web.widget;
 
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -32,7 +30,6 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
-import com.cannontech.web.widget.support.WidgetInput;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
@@ -60,11 +57,8 @@ public class RfnOutagesWidget extends AdvancedWidgetControllerBase {
     public RfnOutagesWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput,
             RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
         
-        Set<WidgetInput> simpleWidgetInputSet = new HashSet<WidgetInput>();
-        simpleWidgetInputSet.add(simpleWidgetInput);
-        
+        addInput(simpleWidgetInput);
         this.setIdentityPath("common/deviceIdentity.jsp");
-        this.setInputs(simpleWidgetInputSet);
         this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("METERING"));
     }
     

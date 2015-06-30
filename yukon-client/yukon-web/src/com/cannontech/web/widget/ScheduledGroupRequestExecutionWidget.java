@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -44,7 +43,7 @@ public class ScheduledGroupRequestExecutionWidget extends WidgetControllerBase {
 
     @Autowired private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
 	@Autowired private ScheduledGroupRequestExecutionJobWrapperFactory scheduledGroupRequestExecutionJobWrapperFactory;
-	private JobManager jobManager;
+	@Autowired private JobManager jobManager;
 	@Autowired private RolePropertyDao rolePropertyDao;
 	
 	public ScheduledGroupRequestExecutionWidget() {
@@ -133,7 +132,6 @@ public class ScheduledGroupRequestExecutionWidget extends WidgetControllerBase {
         return nextRun;
     }
 
-    @Resource(name = "jobManager")
     public void setJobManager(JobManager jobManager) {
         this.jobManager = jobManager;
     }

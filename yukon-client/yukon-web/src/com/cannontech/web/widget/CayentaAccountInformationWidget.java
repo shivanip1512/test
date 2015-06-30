@@ -1,8 +1,5 @@
 package com.cannontech.web.widget;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -25,7 +22,6 @@ import com.cannontech.web.cayenta.util.CayentaMeterNotFoundException;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetControllerBase;
-import com.cannontech.web.widget.support.WidgetInput;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 @Controller
@@ -41,12 +37,9 @@ public class CayentaAccountInformationWidget extends WidgetControllerBase {
             SimpleWidgetInput simpleWidgetInput,
             RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
         
-        Set<WidgetInput> simpleWidgetInputSet = new HashSet<WidgetInput>();
-        simpleWidgetInputSet.add(simpleWidgetInput);
-        
+        addInput(simpleWidgetInput);
         this.setIdentityPath("common/deviceIdentity.jsp");
         this.setLazyLoad(true);
-        this.setInputs(simpleWidgetInputSet);
         this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService
                                          .compile("CIS_DETAIL_WIDGET_ENABLED"));
     }

@@ -1,8 +1,5 @@
 package com.cannontech.web.widget;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,7 +14,6 @@ import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionServi
 import com.cannontech.stars.dr.general.model.OperatorAccountSearchBy;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetControllerBase;
-import com.cannontech.web.widget.support.WidgetInput;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 @Controller
@@ -32,11 +28,8 @@ public class OperatorAccountSearchWidget extends WidgetControllerBase {
             SimpleWidgetInput simpleWidgetInputOperatorAccount,
             RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
 
-        Set<WidgetInput> simpleWidgetInputSet = new HashSet<WidgetInput>();
-        simpleWidgetInputSet.add(simpleWidgetInput);
-        simpleWidgetInputSet.add(simpleWidgetInputOperatorAccount);
-
-        this.setInputs(simpleWidgetInputSet);
+        addInput(simpleWidgetInput);
+        addInput(simpleWidgetInputOperatorAccount);
         this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("CONSUMER_INFO"));
     }
     

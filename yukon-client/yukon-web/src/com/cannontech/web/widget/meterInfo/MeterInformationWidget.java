@@ -2,10 +2,8 @@ package com.cannontech.web.widget.meterInfo;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -53,7 +51,6 @@ import com.cannontech.web.widget.meterInfo.model.PlcMeterModel;
 import com.cannontech.web.widget.meterInfo.model.RfMeterModel;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
-import com.cannontech.web.widget.support.WidgetInput;
 
 /**
  * Widget used to display basic device information
@@ -68,10 +65,9 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
     public MeterInformationWidget(@Qualifier("widgetInput.deviceId")
             SimpleWidgetInput simpleWidgetInput,
             RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
-        Set<WidgetInput> simpleWidgetInputSet = new HashSet<WidgetInput>();
-        simpleWidgetInputSet.add(simpleWidgetInput);
+        
+        addInput(simpleWidgetInput);
         this.setIdentityPath("common/deviceIdentity.jsp");
-        this.setInputs(simpleWidgetInputSet);
         this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("METERING"));
     }
     

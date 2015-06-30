@@ -1,5 +1,6 @@
 package com.cannontech.web.widget.support;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -73,6 +74,13 @@ public abstract class WidgetControllerBase implements WidgetDefinitionBean, Bean
     
     public Object getActionTarget() {
         return this;
+    }
+    
+    public void addInput(WidgetInput input) {
+        if (inputs == null) {
+            inputs = new HashSet<>();
+        }
+        inputs.add(input);
     }
     
 }

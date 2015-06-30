@@ -3,10 +3,8 @@ package com.cannontech.web.widget;
 import java.text.Collator;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,7 +24,6 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
-import com.cannontech.web.widget.support.WidgetInput;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
@@ -52,12 +49,8 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
     public RfnDeviceMetadataWidget(@Qualifier("widgetInput.deviceId")
                 SimpleWidgetInput simpleWidgetInput) {
         
-        Set<WidgetInput> simpleWidgetInputSet = new HashSet<WidgetInput>();
-        simpleWidgetInputSet.add(simpleWidgetInput);
-        
+        addInput(simpleWidgetInput);
         this.setLazyLoad(true);
-        this.setInputs(simpleWidgetInputSet);
-        
     }
 
     @RequestMapping("render")
