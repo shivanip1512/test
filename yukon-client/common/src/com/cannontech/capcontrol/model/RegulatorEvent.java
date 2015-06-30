@@ -22,19 +22,25 @@ public class RegulatorEvent {
     private final Instant timestamp;
     private final EventType type;
     private final Phase phase;
+    private final int tapPosition;
+    private final double setPointValue;
     private final String userName;
 
-    protected RegulatorEvent(int id, int regulatorId, Instant timestamp, EventType type, Phase phase, String userName) {
+    protected RegulatorEvent(int id, int regulatorId, Instant timestamp, EventType type, Phase phase, int tapPosition,
+            double setPointValue, String userName) {
         this.id = id;
         this.regulatorId = regulatorId;
         this.timestamp = timestamp;
         this.type = type;
         this.phase = phase;
+        this.setPointValue = setPointValue;
+        this.tapPosition = tapPosition;
         this.userName = userName;
     }
 
-    public static RegulatorEvent of(int id, int regulatorId, Instant timestamp, EventType type, Phase phase, String userName) {
-        return new RegulatorEvent(id, regulatorId, timestamp, type, phase, userName);
+    public static RegulatorEvent of(int id, int regulatorId, Instant timestamp, EventType type, Phase phase,
+            int tapPosition, double setPointValue, String userName) {
+        return new RegulatorEvent(id, regulatorId, timestamp, type, phase, tapPosition, setPointValue, userName);
     }
 
     public int getId() {
@@ -52,8 +58,13 @@ public class RegulatorEvent {
     public Phase getPhase() {
         return phase;
     }
+    public int getTapPosition() {
+        return tapPosition;
+    }
+    public double getSetPointValue() {
+        return setPointValue;
+    }
     public String getUserName() {
         return userName;
     }
-
 }

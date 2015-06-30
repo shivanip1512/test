@@ -1,21 +1,21 @@
 
 package com.cannontech.cbc.cyme.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.capcontrol.RegulatorPointMapping;
+import com.cannontech.capcontrol.dao.RegulatorEventsDao;
 import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.model.BankState;
 import com.cannontech.capcontrol.model.CymePaoPoint;
+import com.cannontech.capcontrol.model.RegulatorEvent;
 import com.cannontech.cbc.cyme.CymeDataListener;
 import com.cannontech.cbc.cyme.exception.CymeConfigurationException;
 import com.cannontech.cbc.cyme.exception.CymeMissingDataException;
@@ -23,6 +23,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.config.UnknownKeyException;
+import com.cannontech.common.model.Phase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -37,8 +38,8 @@ import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.point.stategroup.PointStateHelper;
-import com.cannontech.common.model.Phase;
-import com.cannontech.capcontrol.RegulatorPointMapping;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 
 public class CymeXMLBuilder {
@@ -50,11 +51,15 @@ public class CymeXMLBuilder {
     @Autowired private DynamicDataSource dynamicDataSource;
     @Autowired private ZoneDao zoneDao;
     @Autowired private PointDao pointDao;
+    @Autowired private RegulatorEventsDao regulatorEventsDao;
     
     private static final Logger log = YukonLogManager.getLogger(CymeXMLBuilder.class);
     
+    private final Cache<PaoIdentifier, RegulatorEvent> regulatorEvents = CacheBuilder.newBuilder().build();
+    
     public String generateStudy(final YukonPao substationBusPao) {
- 
+        log.debug("Genrate Study");
+        
         String reportName = null;
         //Get the name of the report to request from Cyme
         try {
@@ -183,41 +188,82 @@ public class CymeXMLBuilder {
      * Private method to refactor out the code repetition for each generating the TapPosition tag for each phase.
      * Expected result is <TapPosition'X'>int_value</TapPosition'X'>
      * 
-     * Returns null if there is no regulator. This is valid since there can be any combination of phases, not for sure all 3.
-     * 
-     * @param regName
-     * @param phase
-     * @return
      */
-    private String generateStringForTap(String regName, Phase phase) {
-        //Lookup the regulator for phase
-        YukonPao regulator = paoDao.findYukonPao(regName+"_"+phase.name(), PaoType.PHASE_OPERATED);
-        //If null, there is no regulator for the phase. Omission results in a 0 in CYME
-        if (regulator != null) {
-            //Find the tap position value for each regulator
-            PointValueQualityHolder pointValueQualityHolder = null;
-            try {
-                LitePoint tapPositionPoint = extraPaoPointAssignmentDao.getLitePoint(regulator, RegulatorPointMapping.TAP_POSITION);
-                pointValueQualityHolder = dynamicDataSource.getPointValue(tapPositionPoint.getLiteID());
-                
-                if (pointValueQualityHolder == null) {
-                    throw new CymeMissingDataException("No value returned from Dispatch for Tap Position for Regulator with name: " + regName);
-                } else {
-                    return "<TapPosition"+phase.name()+">"+ (int)pointValueQualityHolder.getValue() +"</TapPosition"+phase.name()+">";
+    private String appendXmlForTap(String regName) {
+        String xml ="";
+        // This is a hack, we are going to look up all related regulators on the assumption
+        // there is a regulator per phase using a PaoName of 'regName'_'Phase Letter'
+        for (Phase phase : Phase.getRealPhases()) {
+            // Lookup the regulator for phase
+            YukonPao regulator = paoDao.findYukonPao(regName + "_" + phase.name(), PaoType.PHASE_OPERATED);
+            // If null, there is no regulator for the phase. Omission results in a 0 in CYME
+            if (regulator != null) {
+                // Find the tap position value for each regulator
+                PointValueQualityHolder pointValueQualityHolder = null;
+                try {
+                    LitePoint tapPositionPoint = extraPaoPointAssignmentDao.getLitePoint(regulator, RegulatorPointMapping.TAP_POSITION);
+                    pointValueQualityHolder = dynamicDataSource.getPointValue(tapPositionPoint.getLiteID());
+
+                    if (pointValueQualityHolder == null) {
+                        throw new CymeMissingDataException(
+                            "No value returned from Dispatch for Tap Position for Regulator with name: " + regName);
+                    } else {
+                        xml +=
+                            "<TapPosition" + phase.name() + ">" + (int) pointValueQualityHolder.getValue()
+                                + "</TapPosition" + phase.name() + ">";
+                    }
+                } catch (DynamicDataAccessException e) {
+                    log.error("Exception requesting pointData from Dispatch. Dispatch is not connected.");
+                    throw e;
+                } catch (NotFoundException nfe) {
+                    // Point not attached to regulator
                 }
-            } catch (DynamicDataAccessException e) {
-                log.error("Exception requesting pointData from Dispatch. Dispatch is not connected.");
-                throw e;
-            } catch (NotFoundException nfe) {
-                // Point not attached to regulator
-                return null;
             }
         }
-        //No regulator.
-        //Not an error. this could be a single phase zone.
-        return null;
+        return xml;
     }
     
+    /**
+     * Result example:
+     *<Transactions>
+     * <Transaction>
+     *      <Data Type="Regulator" DeviceNumber="XG_BUS_REG" ModifType="Delta">
+     *          <ForwardSettings ModifType="Delta">
+     *              <SetVoltageA>122.25 </SetVoltageA>
+     *              <SetVoltageB>122.25 </SetVoltageB>
+     *              <SetVoltageC>122.25 </SetVoltageC>
+     *          </ForwardSettings>
+     *      </Data>
+     * </Transaction>
+     * </Transactions>
+     * 
+     */
+    private String appendXmlForSetPoint(String regName) {
+        // This is a hack, we are going to look up all related regulators on the assumption
+        // there is a regulator per phase using a PaoName of 'regName'_'Phase Letter'
+        List<String> setPointXml = new ArrayList<String>();
+        for (Phase phase : Phase.getRealPhases()) {
+            // Lookup the regulator for phase
+            YukonPao regulator = paoDao.findYukonPao(regName + "_" + phase.name(), PaoType.PHASE_OPERATED);
+            if (regulator != null && hasNewSetPointValue(regulator.getPaoIdentifier())) {
+                RegulatorEvent cachedEvent = regulatorEvents.getIfPresent(regulator.getPaoIdentifier());
+                double setPointValue = cachedEvent.getSetPointValue();
+                log.debug("Pao=" + regulator + " New setPointValue=" + setPointValue);
+                setPointXml.add("<SetVoltage" + phase.name() + ">" + setPointValue + "</SetVoltage" + phase.name()
+                    + ">");
+            }
+        }
+        String xml ="";
+        if (!setPointXml.isEmpty()) {
+            xml += "<ForwardSettings ModifType=\"Delta\">";
+            for (String xmlString : setPointXml) {
+                xml += xmlString;
+            }
+            xml += "</ForwardSettings>";
+        }
+        return xml;
+    }
+
     private int buildBanksModifs(Collection<CymePaoPoint> paoPoints, List<String> modifs, int indexOffset) {
         for (CymePaoPoint entry : paoPoints) {
             String bankName = entry.getPaoName();
@@ -259,6 +305,8 @@ public class CymeXMLBuilder {
             PaoType paoType = entry.getPaoIdentifier().getPaoType();
             
             if (paoType == PaoType.GANG_OPERATED) {
+                // for the purpose of CYMDIST integration it is necessary to support set point and bandwidth on single
+                // phase regulator and NOT on the gang operated regulator.
                 String regName = entry.getPaoName();
                 PointValueQualityHolder pointValueQualityHolder = null;
                 try {
@@ -289,45 +337,26 @@ public class CymeXMLBuilder {
                          "</Modif>";
                 modifs.add(xml);
             } else if (paoType == PaoType.PHASE_OPERATED) {
-
-                //This is a hack, we are going to look up all related regulators on the assumption
-                //  there is a regulator per phase using a PaoName of 'regName'_'Phase Letter'
-                List<String> tapStrings = Lists.newArrayList();
                 
                 //Strip of the phase from this regulator.
                 String regName = entry.getPaoName().substring(0, entry.getPaoName().lastIndexOf("_"));                
-                
-                String tapString = generateStringForTap(regName, Phase.A);
-                if (tapString != null) {
-                    tapStrings.add(tapString);
-                }
-                
-                tapString = generateStringForTap(regName, Phase.B);
-                if (tapString != null) {
-                    tapStrings.add(tapString);
-                }
-                
-                tapString = generateStringForTap(regName, Phase.C);
-                if (tapString != null) {
-                    tapStrings.add(tapString);
-                }
-                
+                             
                 String xml =    "<Modif>" +
                                 "<ModifID>"+(indexOffset) + "</ModifID>" +
                                 "<Index>"+(indexOffset++) + "</Index>" +
                                 "<Transactions>" +           
                                     "<Transaction>" +
-                                        "<Data Type=\"Regulator\" DeviceNumber=\"" +regName+ "\" ModifType=\"Delta\">";
-                                        for(String tapPositionStr : tapStrings) {
-                                            xml += tapPositionStr;
-                                        }
-                                 xml += "</Data>" +
+                                        "<Data Type=\"Regulator\" DeviceNumber=\"" +regName+ "\" ModifType=\"Delta\">"+
+                                           appendXmlForTap(regName) +
+                                           appendXmlForSetPoint(regName)+
+                                        "</Data>" +
                                     "</Transaction>" +
                                 "</Transactions>" +
                                 "</Modif>";
                                  
                 modifs.add(xml);
             } else if (paoType == PaoType.LOAD_TAP_CHANGER) {
+                log.debug(entry.getPaoIdentifier());
                 String regName = entry.getPaoName();
                 PointValueQualityHolder pointValueQualityHolder = null;
                 try {
@@ -341,6 +370,14 @@ public class CymeXMLBuilder {
                     throw e;
                 }
                 
+                boolean hasSetNewPoint = hasNewSetPointValue(entry.getPaoIdentifier());
+                double setPointValue = 0;
+                if (hasSetNewPoint) {
+                    RegulatorEvent cachedEvent = regulatorEvents.getIfPresent(entry.getPaoIdentifier());
+                    setPointValue = cachedEvent.getSetPointValue();
+                    log.debug("pao="+ entry.getPaoIdentifier()+" new setPointValue=" + setPointValue);
+                }
+                                                       
                 int tapPosition = (int)pointValueQualityHolder.getValue();
                 String xml =    "<Modif>" +
                                 "<ModifID>" +(indexOffset)+ "</ModifID>" +
@@ -349,8 +386,13 @@ public class CymeXMLBuilder {
                                     "<Transaction>" +
                                         "<Data Type=\"Transformer\" DeviceNumber=\"" +regName+ "\" ModifType=\"Delta\">" +
                                             "<LTCSettings ModifType=\"Delta\">" +
-                                                "<TapSetting>" +tapPosition+ "</TapSetting>" +
-                                            "</LTCSettings>" +
+                                                "<TapSetting>" +tapPosition+ "</TapSetting>";
+                                                if(hasSetNewPoint){
+                                          xml +="<ControlStatus>A</ControlStatus>" +
+                                                "<SetPoint>"+setPointValue+"</SetPoint>"+
+                                                "<SettingOption>LTCTerminal</SettingOption>";
+                                                }
+                                       xml +="</LTCSettings>"+
                                         "</Data>" +
                                     "</Transaction>" +
                                 "</Transactions>" +
@@ -360,6 +402,26 @@ public class CymeXMLBuilder {
         }
         
         return indexOffset;
+    }
+    
+    /**
+     * This method attempts to find the latest set point value.
+     * Caches the latest regulator event that contains the most recent set point value.
+     * 
+     * @return true if the new set point value is found and it is different from the cached value.
+     */
+    private boolean hasNewSetPointValue(PaoIdentifier pao){
+        RegulatorEvent event = regulatorEventsDao.getLatestSetPointForId(pao.getPaoId());
+        RegulatorEvent cachedEvent = regulatorEvents.getIfPresent(pao);
+        
+        boolean hasSetNewPoint = false;
+        if(event != null){
+            regulatorEvents.put(pao, event);
+            if(cachedEvent == null || event.getSetPointValue() != cachedEvent.getSetPointValue()){
+                hasSetNewPoint = true;
+            }
+        }
+        return hasSetNewPoint;
     }
     
     private String convertBankStatus(BankState state) {

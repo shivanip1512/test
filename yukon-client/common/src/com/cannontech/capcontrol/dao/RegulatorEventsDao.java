@@ -20,4 +20,6 @@ public interface RegulatorEventsDao {
     List<RegulatorEvent> getForId(int id, TimeRange range);
 
     List<RegulatorEvent> getForIds(Iterable<Integer> regulatorIds, TimeRange range);
+    
+    RegulatorEvent getLatestSetPointForId(int regulatorId);
 }

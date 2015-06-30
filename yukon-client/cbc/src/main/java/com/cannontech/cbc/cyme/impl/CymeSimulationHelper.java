@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 
+import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.cannontech.capcontrol.dao.FeederDao;
 import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
@@ -17,6 +18,7 @@ import com.cannontech.capcontrol.model.PointIdContainer;
 import com.cannontech.cbc.cyme.model.PhaseInformation;
 import com.cannontech.cbc.cyme.model.SerializableDictionaryData;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.model.Phase;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.ObjectMapper;
@@ -27,8 +29,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.common.model.Phase;
-import com.cannontech.capcontrol.RegulatorPointMapping;
 
 public class CymeSimulationHelper {
 
@@ -77,34 +77,46 @@ public class CymeSimulationHelper {
     }
     
     private void processRegulator(SerializableDictionaryData cymeObject, PaoType paoType, Instant simulationTime) {
-        //This is a hack. CYME has all data in 1 object. We need to do some Yukon sensing smarts to properly update.
-        
-        //We have a name, Determine what type of regulator this is.
-        //Check Gang_Operated first, thats the simplest.
+        // This is a hack. CYME has all data in 1 object. We need to do some Yukon sensing smarts to properly update.
+
+        // We have a name, Determine what type of regulator this is.
+        // Check Gang_Operated first, thats the simplest.
         String regulatorName = cymeObject.getEqNo();
-        updateRegulatorVoltagePoint(regulatorName,Phase.ALL,cymeObject.getPhaseA().getVoltage(),simulationTime);
-        
-        //Else it is some combinations of a phases, run em all.
-        updateRegulatorVoltagePoint(regulatorName+"_A",Phase.A,cymeObject.getPhaseA().getVoltage(),simulationTime);
-        updateRegulatorVoltagePoint(regulatorName+"_B",Phase.B,cymeObject.getPhaseB().getVoltage(),simulationTime);
-        updateRegulatorVoltagePoint(regulatorName+"_C",Phase.C,cymeObject.getPhaseC().getVoltage(),simulationTime);
+
+        updateRegulatorVoltagePoint(regulatorName, Phase.ALL, cymeObject.getPhaseA().getVoltage(), 0, 0, simulationTime);
+
+        // Else it is some combinations of a phases, run em all.
+        updateRegulatorVoltagePoint(regulatorName + "_A", Phase.A, cymeObject.getPhaseA().getVoltage(),
+            cymeObject.getPhaseA().getVoltageSetPoint(), cymeObject.getRegulatorBandwidth(), simulationTime);
+        updateRegulatorVoltagePoint(regulatorName + "_B", Phase.B, cymeObject.getPhaseB().getVoltage(),
+            cymeObject.getPhaseB().getVoltageSetPoint(), cymeObject.getRegulatorBandwidth(), simulationTime);
+        updateRegulatorVoltagePoint(regulatorName + "_C", Phase.C, cymeObject.getPhaseC().getVoltage(),
+            cymeObject.getPhaseC().getVoltageSetPoint(), cymeObject.getRegulatorBandwidth(), simulationTime);
     }
-    
-    private boolean updateRegulatorVoltagePoint(String regulatorName, Phase phase, float value, Instant timestamp) {
-        YukonPao regulator = paoDao.findYukonPao(regulatorName, (phase == Phase.ALL) ? PaoType.GANG_OPERATED:PaoType.PHASE_OPERATED);
+
+    private boolean updateRegulatorVoltagePoint(String regulatorName, Phase phase, float value, float voltageSetPoint,
+            float regulatorBandwidth, Instant timestamp) {
+
+        PaoType paoType = (phase == Phase.ALL) ? PaoType.GANG_OPERATED : PaoType.PHASE_OPERATED;
+        YukonPao regulator = paoDao.findYukonPao(regulatorName, paoType);
         if (regulator != null) {
-            //This is a gang operated!
             try {
+                log.debug("regulatorName="+regulatorName+" paoType="+paoType);
                 LitePoint litePoint = extraPaoPointAssignmentDao.getLitePoint(regulator, RegulatorPointMapping.VOLTAGE_Y);
                 simplePointAccessDao.setPointValue(litePoint.getLiteID(), timestamp, value);
+                // for the purpose of CYMDIST integration it is necessary to support set point and bandwidth on a single
+                // phase regulator and NOT on the gang operated regulator.
+                if (phase != Phase.ALL) {
+                    proccessSetPointValueAndBandwith(regulator, voltageSetPoint, regulatorBandwidth, timestamp);
+                }
                 return true;
             } catch (NotFoundException e) {
-                log.warn("CYME CONFIG: Missing Voltage_Y attribute on Regulator: " + regulatorName );
-            }         
+                log.warn("CYME CONFIG: Missing Voltage_Y attribute on Regulator: " + regulatorName);
+            }
         }
         return false;
     }
-    
+
     private void processLoadTapChanger(SerializableDictionaryData cymeObject, PaoType paoType, Instant simulationTime) {
         YukonPao pao = null;
         try {
@@ -113,13 +125,36 @@ public class CymeSimulationHelper {
             log.error("Pao not found with Name: " + cymeObject.getEqNo() + " and PaoType: " + paoType.getPaoTypeName() + ". Skipping.");
             return;
         }
-        
         try {
-            LitePoint litePoint = extraPaoPointAssignmentDao.getLitePoint(pao, RegulatorPointMapping.VOLTAGE_Y);
-            simplePointAccessDao.setPointValue(litePoint.getLiteID(), simulationTime, cymeObject.getPhaseA().getVoltage());
+            LitePoint voltagePoint = extraPaoPointAssignmentDao.getLitePoint(pao, RegulatorPointMapping.VOLTAGE_Y);
+            simplePointAccessDao.setPointValue(voltagePoint, simulationTime, cymeObject.getPhaseA().getVoltage());
         } catch (NotFoundException e) {
-            log.warn("CYME CONFIG: Missing Voltage_Y attribute on Regulator: " + cymeObject.getEqNo() );
-        }   
+            log.warn("CYME CONFIG: Missing Voltage_Y attribute on LTC: " + cymeObject.getPhaseA().getVoltage() );
+        }  
+        
+        proccessSetPointValueAndBandwith(pao, cymeObject.getLtcSetPoint(), cymeObject.getLtcBandwidth(),simulationTime) ;
+    }
+    
+    private void proccessSetPointValueAndBandwith(YukonPao pao, float setPointValue, float bandwidth,
+            Instant simulationTime) {
+        try {
+            LitePoint setPoint = extraPaoPointAssignmentDao.getLitePoint(pao, RegulatorPointMapping.FORWARD_SET_POINT);
+            simplePointAccessDao.setPointValue(setPoint, simulationTime, setPointValue);
+            log.debug("pao=" + pao + " FORWARD_SET_POINT----Point id=" + setPoint.getLiteID() + "----setPointValue="
+                + setPointValue);
+        } catch (NotFoundException e) {
+            log.warn("pao=" + pao + " CYME CONFIG: Missing " + RegulatorPointMapping.FORWARD_SET_POINT);
+        }
+        try {
+            LitePoint bandwidthPoint =
+                extraPaoPointAssignmentDao.getLitePoint(pao, RegulatorPointMapping.FORWARD_BANDWIDTH);
+            float value = (float) (1.2 * bandwidth * 2);
+            simplePointAccessDao.setPointValue(bandwidthPoint, simulationTime, value);
+            log.debug("pao=" + pao + " FORWARD_BANDWIDTH----Point id=" + bandwidthPoint.getLiteID() + "----bandwidth="
+                + value);
+        } catch (NotFoundException e) {
+            log.warn("pao=" + pao + " CYME CONFIG: Missing " + RegulatorPointMapping.FORWARD_BANDWIDTH);
+        }
     }
     
     private void processCapBank(SerializableDictionaryData cymeObject, PaoType paoType, Instant simulationTime) {
@@ -245,64 +280,13 @@ public class CymeSimulationHelper {
         public SerializableDictionaryData map(Node node) throws DOMException {
             SimpleXPathTemplate template = YukonXml.getXPathTemplateForNode(node);
             template.setNamespaces(CymeWebServiceImpl.cymeDcProperties);
-            
+        
             String eqNo = template.evaluateAsString("EqNo");
             String fdrNwId = template.evaluateAsString("NetworkId");
             
-            // We shouldn't have to do this!!!  FIx if we can get CYME to promise only legal numbers
-            String tempIStr = template.evaluateAsString("IA").split("#")[0];
-            String tempVBaseStr = template.evaluateAsString("VBaseA").split("#")[0];
-            String tempKVarStr = template.evaluateAsString("KVARA").split("#")[0];
-            String tempKWStr = template.evaluateAsString("KWA").split("#")[0];
-            String tempTapPosStr =  template.evaluateAsString("RegTapA").split("#")[0];
-            
-            float tempI = Float.parseFloat(tempIStr); 
-            float tempVBase = Float.parseFloat(tempVBaseStr);
-            float tempKVar = Float.parseFloat(tempKVarStr);
-            float tempKW = Float.parseFloat(tempKWStr);
-            
-            float tempTapPos = 0;
-            if (! tempTapPosStr.isEmpty()) {
-                tempTapPos = Float.parseFloat(tempTapPosStr);
-            }
-            
-            PhaseInformation phaseA = new PhaseInformation(tempI,tempVBase,tempKVar,tempKW,tempTapPos);
-            
-            // We shouldn't have to do this!!!  FIx if we can get CYME to promise only legal numbers
-            tempIStr = template.evaluateAsString("IB").split("#")[0];
-            tempVBaseStr = template.evaluateAsString("VBaseB").split("#")[0];
-            tempKVarStr = template.evaluateAsString("KVARB").split("#")[0];
-            tempKWStr = template.evaluateAsString("KWB").split("#")[0];
-            tempTapPosStr =  template.evaluateAsString("RegTapB").split("#")[0];
-            
-            tempI = Float.parseFloat(tempIStr); 
-            tempVBase = Float.parseFloat(tempVBaseStr);
-            tempKVar = Float.parseFloat(tempKVarStr);
-            tempKW = Float.parseFloat(tempKWStr);
-            tempTapPos = 0;
-            if (! tempTapPosStr.isEmpty()) {
-                tempTapPos = Float.parseFloat(tempTapPosStr);
-            }
-
-            PhaseInformation phaseB = new PhaseInformation(tempI,tempVBase,tempKVar,tempKW,tempTapPos);
-            
-            // We shouldn't have to do this!!!  FIx if we can get CYME to promise only legal numbers
-            tempIStr = template.evaluateAsString("IC").split("#")[0];
-            tempVBaseStr = template.evaluateAsString("VBaseC").split("#")[0];
-            tempKVarStr = template.evaluateAsString("KVARC").split("#")[0];
-            tempKWStr = template.evaluateAsString("KWC").split("#")[0];
-            tempTapPosStr =  template.evaluateAsString("RegTapB").split("#")[0];
-            
-            tempI = Float.parseFloat(tempIStr); 
-            tempVBase = Float.parseFloat(tempVBaseStr);
-            tempKVar = Float.parseFloat(tempKVarStr);
-            tempKW = Float.parseFloat(tempKWStr);
-            tempTapPos = 0;
-            if (! tempTapPosStr.isEmpty()) {
-                tempTapPos = Float.parseFloat(tempTapPosStr);
-            }
-
-            PhaseInformation phaseC = new PhaseInformation(tempI,tempVBase,tempKVar,tempKW,tempTapPos);
+            PhaseInformation phaseA = getPhaseInformation(Phase.A, template);
+            PhaseInformation phaseB = getPhaseInformation(Phase.B, template);
+            PhaseInformation phaseC = getPhaseInformation(Phase.C, template);
             
             String eqCode = template.evaluateAsString("EqCode");
             
@@ -312,8 +296,52 @@ public class CymeSimulationHelper {
                 ltcTapValue = (int)Float.parseFloat(ltcTapValueStr);
             }
             
-            return new SerializableDictionaryData(eqNo, fdrNwId, phaseA, phaseB, phaseC, ltcTapValue, eqCode);
+            float ltcBandwidth = 0;
+            try {
+                ltcBandwidth = Float.parseFloat(template.evaluateAsString("XfoBand"));
+            } catch (NumberFormatException nfe) {}
+
+            float ltcSetPoint = 0;
+            try {
+                ltcSetPoint = Float.parseFloat(template.evaluateAsString("XfoSetPoint"));
+            } catch (NumberFormatException nfe) {}
+
+            float regulatorBandwidth = 0;
+            try {
+                regulatorBandwidth = Float.parseFloat(template.evaluateAsString("RegBandw"));
+            } catch (NumberFormatException nfe) {}
+            
+            return new SerializableDictionaryData(eqNo, fdrNwId, phaseA, phaseB, phaseC, ltcTapValue, eqCode,
+                ltcBandwidth, ltcSetPoint, regulatorBandwidth);
         }
     };
+    
+    private static PhaseInformation getPhaseInformation(Phase phase, SimpleXPathTemplate template) {
+
+        // We shouldn't have to do this!!! FIx if we can get CYME to promise only legal numbers
+        String tempIStr = template.evaluateAsString("I" + phase).split("#")[0];
+        String tempVBaseStr = template.evaluateAsString("VBase" + phase).split("#")[0];
+        String tempKVarStr = template.evaluateAsString("KVAR" + phase).split("#")[0];
+        String tempKWStr = template.evaluateAsString("KW" + phase).split("#")[0];
+        String tempTapPosStr = template.evaluateAsString("RegTap" + phase).split("#")[0];
+        String tempVoltageSetPoint = template.evaluateAsString("RegVset" + phase).split("#")[0];
+
+        float tempI = Float.parseFloat(tempIStr);
+        float tempVBase = Float.parseFloat(tempVBaseStr);
+        float tempKVar = Float.parseFloat(tempKVarStr);
+        float tempKW = Float.parseFloat(tempKWStr);
+
+        float tempTapPos = 0;
+        if (!tempTapPosStr.isEmpty()) {
+            tempTapPos = Float.parseFloat(tempTapPosStr);
+        }
+        float tempVSetPoint = 0;
+        try {
+            tempVSetPoint = Float.parseFloat(tempVoltageSetPoint);
+        } catch (NumberFormatException e) {}
+        PhaseInformation phaseInfo =
+            new PhaseInformation(tempI, tempVBase, tempKVar, tempKW, tempTapPos, tempVSetPoint);
+        return phaseInfo;
+    }
 
 }

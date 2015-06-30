@@ -5,13 +5,16 @@ public class SerializableDictionaryData {
     private String fdrNwId;
     private PhaseInformation phaseA;
     private PhaseInformation phaseB;
-    private PhaseInformation phaseC;    
+    private PhaseInformation phaseC;
     private String eqCode;
     private int ltcTapPosition;
-    
-    public SerializableDictionaryData(String eqNo, String fdrNwId, 
-                                   PhaseInformation phaseA, PhaseInformation phaseB, PhaseInformation phaseC, int ltcTapPosition,
-                                   String eqCode) {
+    private float ltcBandwidth;
+    private float ltcSetPoint;
+    private float regulatorBandwidth;
+
+    public SerializableDictionaryData(String eqNo, String fdrNwId, PhaseInformation phaseA, PhaseInformation phaseB,
+            PhaseInformation phaseC, int ltcTapPosition, String eqCode, float ltcBandwidth, float ltcSetPoint,
+            float regulatorBandwidth) {
         this.eqNo = eqNo;
         this.fdrNwId = fdrNwId;
         this.phaseA = phaseA;
@@ -19,48 +22,48 @@ public class SerializableDictionaryData {
         this.phaseC = phaseC;
         this.ltcTapPosition = ltcTapPosition;
         this.eqCode = eqCode;
+        this.ltcBandwidth = ltcBandwidth;
+        this.ltcSetPoint = ltcSetPoint;
+        this.regulatorBandwidth = regulatorBandwidth;
     }
-    
+
     public String getEqNo() {
         return eqNo;
     }
-    public void setEqNo(String eqNum) {
-        eqNo = eqNum;
-    }
+
     public String getFdrNwId() {
         return fdrNwId;
     }
-    public void setFdrNwId(String fdrNwId) {
-        this.fdrNwId = fdrNwId;
-    }
-    public void setPhaseA(PhaseInformation phaseA) {
-        this.phaseA = phaseA;
-    }
+
     public PhaseInformation getPhaseA() {
         return phaseA;
     }
-    public void setPhaseB(PhaseInformation phaseB) {
-        this.phaseB = phaseB;
-    }
+
     public PhaseInformation getPhaseB() {
         return phaseB;
     }
-    public void setPhaseC(PhaseInformation phaseC) {
-        this.phaseC = phaseC;
-    }
+
     public PhaseInformation getPhaseC() {
         return phaseC;
     }
+
     public String getEqCode() {
         return eqCode;
     }
-    public void setEqCode(String eqCode) {
-        this.eqCode = eqCode;
-    }
+
     public int getLtcTapPosition() {
         return ltcTapPosition;
     }
-    public void setLtcTapPosition(int ltcTapPosition) {
-        this.ltcTapPosition = ltcTapPosition;
+
+    public float getLtcBandwidth() {
+        return ltcBandwidth;
+    }
+
+    public float getLtcSetPoint() {
+        return ltcSetPoint;
+    }
+
+    public float getRegulatorBandwidth() {
+        return regulatorBandwidth;
     }
 }
