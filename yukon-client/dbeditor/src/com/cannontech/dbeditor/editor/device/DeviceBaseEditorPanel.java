@@ -54,6 +54,7 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoPropertyDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.device.AddressBase;
 import com.cannontech.database.data.device.CCU721;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DNPBase;
@@ -61,6 +62,7 @@ import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.GridAdvisorBase;
 import com.cannontech.database.data.device.IDLCBase;
 import com.cannontech.database.data.device.IEDBase;
+import com.cannontech.database.data.device.IonBase;
 import com.cannontech.database.data.device.KV;
 import com.cannontech.database.data.device.MCT400SeriesBase;
 import com.cannontech.database.data.device.MCTBase;
@@ -1941,25 +1943,25 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 remoteBase.getDeviceDialupSettings().setPhoneNumber(null);
             }
 
-            if (val instanceof DNPBase) { // DeviceTypesFuncs.hasMasterAddress(devType)
-                                          // )
-                DNPBase dnpBase = (DNPBase) val;
+            if (val instanceof DNPBase || val instanceof IonBase) { // DeviceTypesFuncs.hasMasterAddress(devType)
+
+                AddressBase addressBase = (AddressBase) val;    //both DNPBase and IonBase extend AddressBase
                 try {
-                    dnpBase.getDeviceAddress().setMasterAddress(new Integer(getPhysicalAddressTextField().getText()));
+                    addressBase.getDeviceAddress().setMasterAddress(new Integer(getPhysicalAddressTextField().getText()));
                 } catch (NumberFormatException e) {
-                    dnpBase.getDeviceAddress().setMasterAddress(new Integer(0));
+                    addressBase.getDeviceAddress().setMasterAddress(new Integer(0));
                 }
 
                 try {
-                    dnpBase.getDeviceAddress().setSlaveAddress(new Integer(getSlaveAddressComboBox().getSelectedItem().toString()));
+                    addressBase.getDeviceAddress().setSlaveAddress(new Integer(getSlaveAddressComboBox().getSelectedItem().toString()));
                 } catch (NumberFormatException e) {
-                    dnpBase.getDeviceAddress().setSlaveAddress(new Integer(0));
+                    addressBase.getDeviceAddress().setSlaveAddress(new Integer(0));
                 }
 
                 try {
-                    dnpBase.getDeviceAddress().setPostCommWait(new Integer(getPostCommWaitSpinner().getValue().toString()));
+                    addressBase.getDeviceAddress().setPostCommWait(new Integer(getPostCommWaitSpinner().getValue().toString()));
                 } catch (NumberFormatException e) {
-                    dnpBase.getDeviceAddress().setPostCommWait(new Integer(0));
+                    addressBase.getDeviceAddress().setPostCommWait(new Integer(0));
                 }
 
             } else if (val instanceof Series5Base) {
@@ -2645,13 +2647,15 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 getSlaveAddressComboBox().setVisible(false);
             }
         }
-        else if (rBase instanceof DNPBase)
+        else if (rBase instanceof DNPBase || rBase instanceof IonBase)
         {
+            AddressBase addressBase = (AddressBase) rBase;    //both DNPBase and IonBase extend AddressBase
+                    
             getPhysicalAddressLabel().setVisible(true);
             getPhysicalAddressLabel().setText("Master Address:");
             getPhysicalAddressTextField().setDocument(new LongRangeDocument(0, 65535));
             getPhysicalAddressTextField().setVisible(true);
-            getPhysicalAddressTextField().setText(((DNPBase) rBase).getDeviceAddress().getMasterAddress().toString());
+            getPhysicalAddressTextField().setText(addressBase.getDeviceAddress().getMasterAddress().toString());
 
             getSlaveAddressLabel().setVisible(true);
             getSlaveAddressComboBox().setVisible(true);
@@ -2664,9 +2668,9 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             editor.addCaretListener(eventHandler); // be sure to fireInputUpdate() messages!
 
             getSlaveAddressComboBox().setEditor(editor);
-            getSlaveAddressComboBox().addItem(((DNPBase) rBase).getDeviceAddress().getSlaveAddress());
+            getSlaveAddressComboBox().addItem(addressBase.getDeviceAddress().getSlaveAddress());
 
-            getPostCommWaitSpinner().setValue(((DNPBase) rBase).getDeviceAddress().getPostCommWait());
+            getPostCommWaitSpinner().setValue(addressBase.getDeviceAddress().getPostCommWait());
 
             getPasswordLabel().setVisible(false);
             getPasswordTextField().setVisible(false);
