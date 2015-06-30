@@ -30,10 +30,10 @@ public class WaterCsrTrendWidget extends CsrTrendWidget {
     }
 
     @Autowired
-    public WaterCsrTrendWidget(@Qualifier("widgetInput.deviceId")
-        SimpleWidgetInput simpleWidgetInput) {
+    public WaterCsrTrendWidget(
+            @Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput) {
         super(simpleWidgetInput);
-        
+
         List<AttributeGraphType> attributeGraphType = new ArrayList<AttributeGraphType>();
         AttributeGraphType attributeGraph = new AttributeGraphType();
         attributeGraph.setAttribute(BuiltInAttribute.USAGE_WATER);
@@ -41,7 +41,7 @@ public class WaterCsrTrendWidget extends CsrTrendWidget {
         attributeGraph.setConverterType(ConverterType.DELTA_WATER);
 
         attributeGraphType.add(attributeGraph);
-        
+
         this.setDefaultAttribute(BuiltInAttribute.USAGE_WATER);
         this.setSupportedAttributeGraphSet(attributeGraphType);
     }
