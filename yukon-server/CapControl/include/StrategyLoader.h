@@ -2,7 +2,7 @@
 #pragma once
 
 #include "StrategyManager.h"
-
+#include "row_reader.h"
 
 class StrategyLoader
 {
@@ -31,6 +31,10 @@ public:
     ~StrategyDBLoader()   {  }
 
     virtual StrategyManager::StrategyMap load(const long ID);
+
+protected:
+
+    void parseCoreReader(Cti::RowReader & reader, StrategyManager::StrategyMap &strategies);
 
 private:
 

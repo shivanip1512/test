@@ -71,120 +71,125 @@ void StrategyDBLoader::loadCore(const long ID, StrategyManager::StrategyMap &str
 
     while ( rdr() )
     {
-        std::string controlUnits;
-        rdr["controlunits"]  >> controlUnits;
+        parseCoreReader(rdr, strategies);
+    }
+}
 
-        if ( rdr.isValid() )
+void StrategyDBLoader::parseCoreReader(Cti::RowReader & reader, StrategyManager::StrategyMap &strategies)
+{
+    if ( reader.isValid() )
+    {
+        std::string                 controlUnits;
+        StrategyManager::SharedPtr  strategy;
+
+        reader["controlunits"]  >> controlUnits;
+
+        if ( controlUnits == ControlStrategy::NoControlUnit )
         {
-            StrategyManager::SharedPtr strategy;
+            strategy.reset( new NoStrategy );
+        }
+        else if ( controlUnits == ControlStrategy::KVarControlUnit )
+        {
+            strategy.reset( new KVarStrategy );
+        }
+        else if ( controlUnits == ControlStrategy::VoltsControlUnit )
+        {
+            strategy.reset( new VoltStrategy );
+        }
+        else if ( controlUnits == ControlStrategy::MultiVoltControlUnit )
+        {
+            strategy.reset( new MultiVoltStrategy );
+        }
+        else if ( controlUnits == ControlStrategy::MultiVoltVarControlUnit )
+        {
+            strategy.reset( new MultiVoltVarStrategy );
+        }
+        else if ( controlUnits == ControlStrategy::PFactorKWKVarControlUnit )
+        {
+            strategy.reset( new PFactorKWKVarStrategy );
+        }
+        else if ( controlUnits == ControlStrategy::PFactorKWKQControlUnit )
+        {
+            strategy.reset( new PFactorKWKQStrategy );
+        }
+        else if ( controlUnits == ControlStrategy::TimeOfDayControlUnit )
+        {
+            strategy.reset( new TimeOfDayStrategy );
+        }
+        else if ( controlUnits == ControlStrategy::IntegratedVoltVarControlUnit )
+        {
+            strategy.reset( new IVVCStrategy(PointDataRequestFactoryPtr(new PointDataRequestFactory())) );
+        }
+        else
+        {
+            CTILOG_WARN(dout, "Unsupported Strategy Type: " << controlUnits);
+        }
 
-            if ( controlUnits == ControlStrategy::NoControlUnit )
+        if (strategy != 0)
+        {
+            long        dBLong;
+            std::string dBString;
+
+            reader["strategyid"] >> dBLong;
+            strategy->setStrategyId(dBLong);
+
+            reader["strategyname"] >> dBString;
+            strategy->setStrategyName(dBString);
+
+            reader["maxdailyoperation"] >> dBLong;
+            strategy->setMaxDailyOperation(dBLong);
+
+            reader["maxoperationdisableflag"] >> dBString;
+            CtiToLower(dBString);
+            strategy->setMaxOperationDisableFlag(dBString == "y");
+
+            reader["peakstarttime"] >> dBLong;
+            strategy->setPeakStartTime(dBLong);
+
+            reader["peakstoptime"] >> dBLong;
+            strategy->setPeakStopTime(dBLong);
+
+            reader["controlinterval"] >> dBLong;
+            strategy->setControlInterval(dBLong);
+
+            reader["minresponsetime"] >> dBLong;
+            strategy->setMaxConfirmTime(dBLong);
+
+            reader["minconfirmpercent"] >> dBLong;
+            strategy->setMinConfirmPercent(dBLong);
+
+            reader["failurepercent"] >> dBLong;
+            strategy->setFailurePercent(dBLong);
+
+            reader["daysofweek"] >> dBString;
+            strategy->setDaysOfWeek(dBString);
+
+            reader["controldelaytime"] >> dBLong;
+            strategy->setControlDelayTime(dBLong);
+
+            reader["controlsendretries"] >> dBLong;
+            strategy->setControlSendRetries(dBLong);
+
+            reader["integrateflag"] >> dBString;
+            CtiToLower(dBString);
+            strategy->setIntegrateFlag(dBString == "y");
+
+            reader["integrateperiod"] >> dBLong;
+            strategy->setIntegratePeriod(dBLong);
+
+            reader["likedayfallback"] >> dBString;
+            CtiToLower(dBString);
+            strategy->setLikeDayFallBack(dBString == "y");
+
+            reader["enddaysettings"] >> dBString;
+            strategy->setEndDaySettings(dBString);
+
+            reader["controlmethod"] >> dBString;
+            strategy->setControlMethod(dBString);
+
+            if ( reader.isValid() )        // reader is ~still~ valid
             {
-                strategy.reset( new NoStrategy );
-            }
-            else if ( controlUnits == ControlStrategy::KVarControlUnit )
-            {
-                strategy.reset( new KVarStrategy );
-            }
-            else if ( controlUnits == ControlStrategy::VoltsControlUnit )
-            {
-                strategy.reset( new VoltStrategy );
-            }
-            else if ( controlUnits == ControlStrategy::MultiVoltControlUnit )
-            {
-                strategy.reset( new MultiVoltStrategy );
-            }
-            else if ( controlUnits == ControlStrategy::MultiVoltVarControlUnit )
-            {
-                strategy.reset( new MultiVoltVarStrategy );
-            }
-            else if ( controlUnits == ControlStrategy::PFactorKWKVarControlUnit )
-            {
-                strategy.reset( new PFactorKWKVarStrategy );
-            }
-            else if ( controlUnits == ControlStrategy::PFactorKWKQControlUnit )
-            {
-                strategy.reset( new PFactorKWKQStrategy );
-            }
-            else if ( controlUnits == ControlStrategy::TimeOfDayControlUnit )
-            {
-                strategy.reset( new TimeOfDayStrategy );
-            }
-            else if ( controlUnits == ControlStrategy::IntegratedVoltVarControlUnit )
-            {
-                strategy.reset( new IVVCStrategy(PointDataRequestFactoryPtr(new PointDataRequestFactory())) );
-            }
-            else
-            {
-                CTILOG_WARN(dout, "Unsupported Strategy Type: " << controlUnits);
-            }
-
-            if (strategy != 0)
-            {
-                long        dBLong;
-                std::string dBString;
-
-                rdr["strategyid"] >> dBLong;
-                strategy->setStrategyId(dBLong);
-
-                rdr["strategyname"] >> dBString;
-                strategy->setStrategyName(dBString);
-
-                rdr["maxdailyoperation"] >> dBLong;
-                strategy->setMaxDailyOperation(dBLong);
-
-                rdr["maxoperationdisableflag"] >> dBString;
-                CtiToLower(dBString);
-                strategy->setMaxOperationDisableFlag(dBString == "y");
-
-                rdr["peakstarttime"] >> dBLong;
-                strategy->setPeakStartTime(dBLong);
-
-                rdr["peakstoptime"] >> dBLong;
-                strategy->setPeakStopTime(dBLong);
-
-                rdr["controlinterval"] >> dBLong;
-                strategy->setControlInterval(dBLong);
-
-                rdr["minresponsetime"] >> dBLong;
-                strategy->setMaxConfirmTime(dBLong);
-
-                rdr["minconfirmpercent"] >> dBLong;
-                strategy->setMinConfirmPercent(dBLong);
-
-                rdr["failurepercent"] >> dBLong;
-                strategy->setFailurePercent(dBLong);
-
-                rdr["daysofweek"] >> dBString;
-                strategy->setDaysOfWeek(dBString);
-
-                rdr["controldelaytime"] >> dBLong;
-                strategy->setControlDelayTime(dBLong);
-
-                rdr["controlsendretries"] >> dBLong;
-                strategy->setControlSendRetries(dBLong);
-
-                rdr["integrateflag"] >> dBString;
-                CtiToLower(dBString);
-                strategy->setIntegrateFlag(dBString == "y");
-
-                rdr["integrateperiod"] >> dBLong;
-                strategy->setIntegratePeriod(dBLong);
-
-                rdr["likedayfallback"] >> dBString;
-                CtiToLower(dBString);
-                strategy->setLikeDayFallBack(dBString == "y");
-
-                rdr["enddaysettings"] >> dBString;
-                strategy->setEndDaySettings(dBString);
-
-                rdr["controlmethod"] >> dBString;
-                strategy->setControlMethod(dBString);
-
-                if ( rdr.isValid() )        // reader is ~still~ valid
-                {
-                    strategies[ strategy->getStrategyId() ] = strategy;     // insert/update...
-                }
+                strategies[ strategy->getStrategyId() ] = strategy;     // insert/update...
             }
         }
     }
@@ -245,3 +250,4 @@ void StrategyDBLoader::loadParameters(const long ID, StrategyManager::StrategyMa
         }
     }
 }
+
