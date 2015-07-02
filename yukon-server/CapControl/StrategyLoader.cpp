@@ -28,6 +28,24 @@ using std::endl;
 extern unsigned long _CC_DEBUG;
 
 
+namespace
+{
+    bool deserializeFlag( const std::string & input )
+    {
+        if ( input.size() == 1 )
+        {
+            if ( input[ 0 ] == 'Y' ||
+                 input[ 0 ] == 'y' ||
+                 input[ 0 ] == '1'  )
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
+
 void parseCoreReader(Cti::RowReader & reader, StrategyManager::StrategyMap &strategies)
 {
     if ( reader.isValid() )
@@ -93,8 +111,7 @@ void parseCoreReader(Cti::RowReader & reader, StrategyManager::StrategyMap &stra
             strategy->setMaxDailyOperation(dBLong);
 
             reader["maxoperationdisableflag"] >> dBString;
-            CtiToLower(dBString);
-            strategy->setMaxOperationDisableFlag(dBString == "y");
+            strategy->setMaxOperationDisableFlag( deserializeFlag( dBString ) );
 
             reader["peakstarttime"] >> dBLong;
             strategy->setPeakStartTime(dBLong);
@@ -124,15 +141,13 @@ void parseCoreReader(Cti::RowReader & reader, StrategyManager::StrategyMap &stra
             strategy->setControlSendRetries(dBLong);
 
             reader["integrateflag"] >> dBString;
-            CtiToLower(dBString);
-            strategy->setIntegrateFlag(dBString == "y");
+            strategy->setIntegrateFlag( deserializeFlag( dBString ) );
 
             reader["integrateperiod"] >> dBLong;
             strategy->setIntegratePeriod(dBLong);
 
             reader["likedayfallback"] >> dBString;
-            CtiToLower(dBString);
-            strategy->setLikeDayFallBack(dBString == "y");
+            strategy->setLikeDayFallBack( deserializeFlag( dBString ) );
 
             reader["enddaysettings"] >> dBString;
             strategy->setEndDaySettings(dBString);

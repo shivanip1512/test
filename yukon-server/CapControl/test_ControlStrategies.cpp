@@ -254,7 +254,7 @@ BOOST_AUTO_TEST_CASE(test_Strategy_bool_flag_support)
 
         BOOST_CHECK_EQUAL( true, strategy->getMaxOperationDisableFlag() );
         BOOST_CHECK_EQUAL( true, strategy->getIntegrateFlag() );
-        BOOST_CHECK_EQUAL( false, strategy->getLikeDayFallBack() );
+        BOOST_CHECK_EQUAL( true, strategy->getLikeDayFallBack() );
     }
 }
 
