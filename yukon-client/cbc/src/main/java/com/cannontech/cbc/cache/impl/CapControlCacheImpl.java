@@ -188,20 +188,15 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     @Override
     public synchronized List<CapBankDevice> getCapBanksBySubStation(SubStation substation) {
         Validate.notNull(substation, "Substation cannot be null");
-        
+
         int[] subBusIds = substation.getSubBusIds();
         List<CapBankDevice> capBanks = new ArrayList<>();
-        
+
         for (final int id : subBusIds) {
-            try {
-                SubBus subBus = getSubBus(id);
-                for (final Feeder feeder : subBus.getCcFeeders()) {
-                    List<CapBankDevice> caps = feeder.getCcCapBanks();
-                    capBanks.addAll(caps);
-                }
-            } catch (NotFoundException ignore) {}
+            List<CapBankDevice> caps = getCapBanksBySubBus(id);
+            capBanks.addAll(caps);
         }
-        
+
         return capBanks;
     }
     
