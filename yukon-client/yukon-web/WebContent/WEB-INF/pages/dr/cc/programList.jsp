@@ -14,7 +14,8 @@
             <li>${entry.key}&nbsp;
                 <ul>
                     <c:forEach var="program" items="${entry.value}">
-                        <li><a href="programDetail/${program.id}">${program.name}</a></li>
+                        <cti:url var="programDetailUrl" value="/dr/cc/programDetail/${program.id}"/>
+                        <li><a href="${programDetailUrl}">${program.name}</a></li>
                     </c:forEach>
                 </ul>
             </li>

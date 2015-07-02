@@ -9,8 +9,8 @@
         <div>
             <ul>
             <c:forEach var="customer" items="${customerList}">
-                <cti:url var="url" value="customerDetail/${customer.id}"/>
-                <li><a href="${url}">${fn:escapeXml(customer.companyName)}</a></li>
+                <cti:url var="customerDetailUrl" value="/dr/cc/customerDetail/${customer.id}"/>
+                <li><a href="${customerDetailUrl}">${fn:escapeXml(customer.companyName)}</a></li>
             </c:forEach>
             </ul>
         </div>

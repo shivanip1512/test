@@ -55,7 +55,7 @@ public class ProgramDaoImpl implements ProgramDao {
 
     @Autowired private ApplianceAndProgramDao applianceAndProgramDao;
     @Autowired private ApplianceCategoryDao applianceCategoryDao;
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private PaoDao paoDao;
     @Autowired private EnergyCompanyDao ecDao;
@@ -64,7 +64,7 @@ public class ProgramDaoImpl implements ProgramDao {
 
     @PostConstruct
     public void init() {
-        chunkingSqlTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
+        chunkingSqlTemplate = new ChunkingSqlTemplate(jdbcTemplate);
     }
 
     private final String selectSQLHeader =
@@ -91,7 +91,7 @@ public class ProgramDaoImpl implements ProgramDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(selectSql);
         sql.append("AND pwp.ProgramID").eq(programId);
-        Program program = yukonJdbcTemplate.queryForObject(sql, new ProgramRowMapper(yukonJdbcTemplate));
+        Program program = jdbcTemplate.queryForObject(sql, new ProgramRowMapper(jdbcTemplate));
         return program;
     }
 
@@ -118,7 +118,7 @@ public class ProgramDaoImpl implements ProgramDao {
             idList.add(applianceCategoryId);
         }
 
-        final ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
+        final ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
         List<Program> programList = template.query(new SqlGenerator<Integer>() {
             @Override
             public String generate(List<Integer> subList) {
@@ -130,7 +130,7 @@ public class ProgramDaoImpl implements ProgramDao {
                 String sql = sqlBuilder.toString();
                 return sql;
             }
-        }, idList, new YukonRowMapperAdapter<Program>(new ProgramRowMapper(yukonJdbcTemplate)));
+        }, idList, new YukonRowMapperAdapter<Program>(new ProgramRowMapper(jdbcTemplate)));
 
         final Map<ApplianceCategory, List<Program>> resultMap =
             new HashMap<ApplianceCategory, List<Program>>(applianceCategories.size());
@@ -171,7 +171,7 @@ public class ProgramDaoImpl implements ProgramDao {
         sql.append(")");
         sql.append(" ORDER BY ProgramOrder");
 
-        List<Program> programList = yukonJdbcTemplate.query(sql, new ProgramRowMapper(yukonJdbcTemplate));
+        List<Program> programList = jdbcTemplate.query(sql, new ProgramRowMapper(jdbcTemplate));
         return programList;
     }
 
@@ -183,7 +183,7 @@ public class ProgramDaoImpl implements ProgramDao {
         sql.append(" AND PWP.DeviceId").in(programIdList);
         sql.append(" ORDER BY ProgramOrder");
 
-        List<Program> programList = yukonJdbcTemplate.query(sql, new ProgramRowMapper(yukonJdbcTemplate));
+        List<Program> programList = jdbcTemplate.query(sql, new ProgramRowMapper(jdbcTemplate));
         return programList;
     }
 
@@ -203,7 +203,7 @@ public class ProgramDaoImpl implements ProgramDao {
         programQuery.append("AND ECTGM.energyCompanyId").in(appCatEnergyCompanyIds);
 
         try {
-            return yukonJdbcTemplate.queryForObject(programQuery, new ProgramRowMapper(yukonJdbcTemplate));
+            return jdbcTemplate.queryForObject(programQuery, new ProgramRowMapper(jdbcTemplate));
         } catch(IncorrectResultSizeDataAccessException ex){
             throw new ProgramNotFoundException("The program name supplied returned too many results or none at all.");
         }
@@ -229,7 +229,7 @@ public class ProgramDaoImpl implements ProgramDao {
         programQuery.append("AND ECTGM.energyCompanyId").in(appCatEnergyCompanyIds);
 
         try {
-            return yukonJdbcTemplate.queryForObject(programQuery, new ProgramRowMapper(yukonJdbcTemplate));
+            return jdbcTemplate.queryForObject(programQuery, new ProgramRowMapper(jdbcTemplate));
         } catch(IncorrectResultSizeDataAccessException ex){
             throw new ProgramNotFoundException("The alternate program name supplied returned too many results or none at all.");
         }
@@ -263,7 +263,7 @@ public class ProgramDaoImpl implements ProgramDao {
         sql.append("                          FROM LMProgramWebPublishing LMPWP ");
         sql.append("                          WHERE LMPWP.ProgramId in (", programIds, ")) ");
 
-        List<Integer> list = yukonJdbcTemplate.query(sql.toString(), groupIdRowMapper);
+        List<Integer> list = jdbcTemplate.query(sql.toString(), groupIdRowMapper);
         return list;
     }
 
@@ -277,7 +277,7 @@ public class ProgramDaoImpl implements ProgramDao {
         sqlBuilder.append("AND lmwp.ProgramID = ?");
         String sql = sqlBuilder.toString();
 
-        List<Integer> groupIdList = yukonJdbcTemplate.query(sql, groupIdRowMapper, programId);
+        List<Integer> groupIdList = jdbcTemplate.query(sql, groupIdRowMapper, programId);
         return groupIdList;
     }
 
@@ -353,7 +353,7 @@ public class ProgramDaoImpl implements ProgramDao {
         sql.append("WHERE type").in(paoTypes);
         sql.append("AND paObjectId").eq(programId);
 
-        return yukonJdbcTemplate.queryForObject(sql, programRowMapper);
+        return jdbcTemplate.queryForObject(sql, programRowMapper);
     }
 
     @Override

@@ -62,7 +62,7 @@
     <entry key="yukon.web.modules.dr.cc.eventPricing.ack">ACK</entry>
     <entry key="yukon.web.modules.dr.cc.eventPricing.notif">NOTIF</entry>
     <entry key="yukon.web.modules.dr.cc.eventPricing.total">Total</entry>
-    <entry key="yukon.web.modules.dr.cc.eventPricing.kwh">kWH</entry>
+    <entry key="yukon.web.modules.dr.cc.eventPricing.kwh">kWh</entry>
     <entry key="yukon.web.modules.dr.cc.eventPricing.legend">Legend: D-Default Values, A-Customer Acknowledged Values</entry>
     
     <!-- groupList.jsp -->

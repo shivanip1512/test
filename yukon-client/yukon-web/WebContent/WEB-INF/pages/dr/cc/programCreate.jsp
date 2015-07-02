@@ -7,7 +7,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <cti:standardPage module="dr" page="cc.programCreate">
-<cti:includeScript link="/resources/js/pages/yukon.curtailment.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.dr.curtailment.js"/>
 
 <div class="column-24">
     <div class="column one">

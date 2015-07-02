@@ -3,7 +3,6 @@ package com.cannontech.web.dr.cc;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -23,6 +22,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -49,6 +49,7 @@ import com.cannontech.cc.model.EconomicEventParticipantSelectionWindow;
 import com.cannontech.cc.model.EconomicEventPricing;
 import com.cannontech.cc.model.EconomicEventPricingWindow;
 import com.cannontech.cc.model.Group;
+import com.cannontech.cc.model.GroupBean;
 import com.cannontech.cc.model.GroupCustomerNotif;
 import com.cannontech.cc.model.Program;
 import com.cannontech.cc.model.ProgramParameter;
@@ -246,52 +247,111 @@ public class CcHomeController {
     }
 
     @RequestMapping("/cc/groupDetail/{groupId}")
-    public String groupDetail(ModelMap model, @PathVariable int groupId) {
+    public String groupDetail(ModelMap model, @PathVariable int groupId, @ModelAttribute("group") GroupBean groupBean) {
         
         Group group = groupService.getGroup(groupId);
-        model.addAttribute("group", group);
-        
         List<GroupCustomerNotif> assignedGroupCustomerList = groupService.getAssignedCustomers(group);
-        model.addAttribute("assignedCustomers", assignedGroupCustomerList);
-        
         List<GroupCustomerNotif> unassignedGroupCustomerList = groupService.getUnassignedCustomers(group, false);
-        model.addAttribute("availableCustomers", unassignedGroupCustomerList);
+        
+        groupBean = getGroupBean(group, assignedGroupCustomerList, unassignedGroupCustomerList);
+        model.addAttribute("group", groupBean);
         
         return "dr/cc/groupDetail.jsp";
+    }
+    
+    private GroupBean getGroupBean(Group group, List<GroupCustomerNotif> assigned, List<GroupCustomerNotif> unassigned) {
+        GroupBean groupBean = new GroupBean();
+        groupBean.setId(group.getId());
+        groupBean.setName(group.getName());
+        
+        List<GroupBean.Customer> assignedCustomers = new ArrayList<>();
+        for (GroupCustomerNotif assignedNotif : assigned) {
+            GroupBean.Customer customer = new GroupBean.Customer();
+            customer.setId(assignedNotif.getCustomer().getId());
+            customer.setCompanyName(assignedNotif.getCustomer().getCompanyName());
+            customer.setEmails(assignedNotif.getNotifMap().isSendEmails());
+            customer.setVoice(assignedNotif.getNotifMap().isSendOutboundCalls());
+            customer.setSms(assignedNotif.getNotifMap().isSendSms());
+            assignedCustomers.add(customer);
+        }
+        groupBean.setAssignedCustomers(assignedCustomers);
+        
+        List<GroupBean.Customer> unassignedCustomers = new ArrayList<>();
+        for (GroupCustomerNotif unassignedNotif : unassigned) {
+            GroupBean.Customer customer = new GroupBean.Customer();
+            customer.setId(unassignedNotif.getCustomer().getId());
+            customer.setCompanyName(unassignedNotif.getCustomer().getCompanyName());
+            customer.setEmails(unassignedNotif.getNotifMap().isSendEmails());
+            customer.setVoice(unassignedNotif.getNotifMap().isSendOutboundCalls());
+            customer.setSms(unassignedNotif.getNotifMap().isSendSms());
+            unassignedCustomers.add(customer);
+        }
+        groupBean.setAvailableCustomers(unassignedCustomers);
+        
+        return groupBean;
     }
     
     @RequestMapping("/cc/groupCreate")
-    public String groupCreate(ModelMap model, LiteYukonUser user) {
+    public String groupCreate(ModelMap model, LiteYukonUser user, @ModelAttribute("group") GroupBean groupBean) {
         
-        Group currentGroup = groupService.createNewGroup(user);
-        model.addAttribute("group", currentGroup);
+        Group newGroup = groupService.createNewGroup(user);        
+        List<GroupCustomerNotif> assignedGroupCustomerList = new ArrayList<>();
+        List<GroupCustomerNotif> unassignedGroupCustomerList = groupService.getUnassignedCustomers(newGroup, true);
         
-        List<GroupCustomerNotif> assignedGroupCustomerList = new ArrayList<GroupCustomerNotif>();
-        model.addAttribute("assignedCustomers", assignedGroupCustomerList);
-        
-        List<GroupCustomerNotif> unassignedGroupCustomerList = groupService.getUnassignedCustomers(currentGroup, true);
-        Collections.sort(unassignedGroupCustomerList, customerListComparator);
-        model.addAttribute("availableCustomers", unassignedGroupCustomerList);
+        groupBean = getGroupBean(newGroup, assignedGroupCustomerList, unassignedGroupCustomerList);
+        model.addAttribute("group", groupBean);
         
         return "dr/cc/groupDetail.jsp";
     }
     
-    @RequestMapping("/cc/groupSave/{groupId}")
-    public String groupSave(ModelMap model,
-            YukonUserContext userContext,
-            @PathVariable int groupId,
-            String[] emails,
-            String[] voice,
-            String[] sms) {
+    //TODO: validation
+    @RequestMapping("/cc/groupSave")
+    public String groupSave(ModelMap model, @ModelAttribute("group") GroupBean groupBean, LiteYukonUser user) {
         
-        // TODO: implement saving of notification types (emails, voice, sms)
-        // See API for assignedGroupCustomerList.get(0).getNotifMap();
-        // the following actually works correctly
-        Group group = groupService.getGroup(groupId);
-        //groupService.saveGroup(group, assignedGroupCustomerList);
+        Group group;
+        Integer groupId = groupBean.getId();
+        if (groupId == null) {
+            group = groupService.createNewGroup(user);
+        } else {
+            group = groupService.getGroup(groupBean.getId());
+        }
+        group.setName(groupBean.getName());
+        
+        List<GroupCustomerNotif> assignedGroupCustomerNotifs = getCustomerNotificationSettings(group, groupBean);
+        
+        groupService.saveGroup(group, assignedGroupCustomerNotifs);
         return "redirect:/dr/cc/groupList";
     }
-
+    
+    private List<GroupCustomerNotif> getCustomerNotificationSettings(Group group, GroupBean groupBean) {
+        //Get list of all customers - available and unassigned
+        List<GroupCustomerNotif> allCustomers = groupService.getAssignedCustomers(group);
+        allCustomers.addAll(groupService.getUnassignedCustomers(group, false));
+        
+        //Build a list of assigned customer notifications, and update settings
+        List<GroupCustomerNotif> assignedGroupCustomerNotifs = new ArrayList<>();
+        
+        if (groupBean.getAssignedCustomers() != null) {
+            for (GroupBean.Customer customer : groupBean.getAssignedCustomers()) {
+                int customerId = customer.getId();
+                for (GroupCustomerNotif groupCustomerNotif : allCustomers) {
+                    if (groupCustomerNotif.getCustomer().getId() == customerId) {
+                        //update notif values
+                        boolean emails = customer.isEmails();
+                        boolean voice = customer.isVoice();
+                        boolean sms = customer.isSms();
+                        groupCustomerNotif.getNotifMap().setSendEmails(emails);
+                        groupCustomerNotif.getNotifMap().setSendOutboundCalls(voice);
+                        groupCustomerNotif.getNotifMap().setSendSms(sms);
+                        //add to list
+                        assignedGroupCustomerNotifs.add(groupCustomerNotif);
+                    }
+                }
+            }
+        }
+        return assignedGroupCustomerNotifs;
+    }
+    
     @RequestMapping("/cc/programList")
     public String programList(ModelMap model, LiteYukonUser user) {
         
@@ -339,19 +399,16 @@ public class CcHomeController {
     }
     
     @RequestMapping("/cc/programCreate")
-    public String programCreate (ModelMap model,
-            YukonUserContext userContext) {
+    public String programCreate (ModelMap model, LiteYukonUser user) {
         
-        List<ProgramType> programTypeList = programService.getProgramTypeList(userContext.getYukonUser());
+        List<ProgramType> programTypeList = programService.getProgramTypeList(user);
         model.addAttribute("programTypes", programTypeList);
         return "dr/cc/programCreate.jsp";
     }
 
     
     @RequestMapping("/cc/programDelete/{programId}")
-    public String programDelete (ModelMap model,
-            @PathVariable int programId,
-            YukonUserContext userContext) {
+    public String programDelete (ModelMap model, @PathVariable int programId) {
         
         Program program = programService.getProgram(programId);
         programService.deleteProgram(program);
@@ -359,10 +416,10 @@ public class CcHomeController {
     }
 
     @RequestMapping("/cc/programDetailCreate/{programTypeId}/{name}")
-    public String programDetailCreate (ModelMap model,
-            YukonUserContext userContext,
-            @PathVariable int programTypeId,
-            @PathVariable String name) {
+    public String programDetailCreate(ModelMap model, 
+                                      LiteYukonUser user, 
+                                      @PathVariable int programTypeId,
+                                      @PathVariable String name) {
         
         //TODO validation
         Program program = new Program();
@@ -374,7 +431,7 @@ public class CcHomeController {
         program.setLastIdentifier(0);
         
         ProgramType newProgramType = null;
-        List<ProgramType> programTypeList = programService.getProgramTypeList(userContext.getYukonUser());
+        List<ProgramType> programTypeList = programService.getProgramTypeList(user);
         for (ProgramType programType : programTypeList) {
             if (programType.getId() == programTypeId) {
                 newProgramType = programType;
@@ -389,21 +446,19 @@ public class CcHomeController {
     
     @RequestMapping("/cc/programSave/{programId}")
     public String programSave (ModelMap model,
-            YukonUserContext userContext,
-            @PathVariable int programId,
-            String programName,
-            String programIdentifierPrefix,
-            Integer programLastIdentifier,
-            Integer DEFAULT_EVENT_OFFSET_MINUTES,
-            Integer DEFAULT_NOTIFICATION_OFFSET_MINUTES,
-            Integer MINIMUM_NOTIFICATION_MINUTES,
-            Integer DEFAULT_EVENT_DURATION_MINUTES,
-            Integer MINIMUM_EVENT_DURATION_MINUTES,
-            Double DEFAULT_ENERGY_PRICE,
-            Integer CUSTOMER_ELECTION_CUTOFF_MINUTES,
-            @RequestParam("assignedGroup") List<Integer> assignedGroupIds,
-            @RequestParam("assignedNotifGroup") List<Integer> assignedNotifGroupIds
-            ) {
+                               @PathVariable int programId,
+                               String programName,
+                               String programIdentifierPrefix,
+                               Integer programLastIdentifier,
+                               Integer DEFAULT_EVENT_OFFSET_MINUTES,
+                               Integer DEFAULT_NOTIFICATION_OFFSET_MINUTES,
+                               Integer MINIMUM_NOTIFICATION_MINUTES,
+                               Integer DEFAULT_EVENT_DURATION_MINUTES,
+                               Integer MINIMUM_EVENT_DURATION_MINUTES,
+                               Double DEFAULT_ENERGY_PRICE,
+                               Integer CUSTOMER_ELECTION_CUTOFF_MINUTES,
+                               @RequestParam("assignedGroup") List<Integer> assignedGroupIds,
+                               @RequestParam("assignedNotifGroup") List<Integer> assignedNotifGroupIds) {
         
         Program program = programService.getProgram(programId);
         program.setName(programName);
@@ -455,22 +510,10 @@ public class CcHomeController {
         return "redirect:/dr/cc/programList";
     }
 
-    private void setParameter (ProgramParameter parameter, Number parameterInput) {
+    private void setParameter(ProgramParameter parameter, Number parameterInput) {
         if (parameterInput != null) {
             parameter.setParameterValue(parameterInput.toString());
         }
-    }
-    
-    private GroupCustomerNotif getCustomerNotifById(DataModel listModel, int customerId) {
-        GroupCustomerNotif customerNotif;
-        for (int i = 0; i < listModel.getRowCount(); i += 1) {
-            listModel.setRowIndex(i);
-            customerNotif = (GroupCustomerNotif) listModel.getRowData();
-            if (customerNotif.getCustomer().getId() == customerId) {
-                return customerNotif;
-            }
-        }
-        return null;
     }
     
     @RequestMapping("/cc/program/{programId}/event/{eventId}/revision/{revision}")
@@ -572,7 +615,6 @@ public class CcHomeController {
         EconomicStrategy strategy = (EconomicStrategy) strategyFactory.getStrategy(event.getProgram());
         getOtherRevisionsModel(event);
         Map<Integer, EconomicEventPricing> revisions = event.getRevisions();
-        getWindowModel(event);
         model.addAttribute("event", event);
 
         DateTimeFormatter dateTimeFormatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.TIME, userContext);
@@ -702,18 +744,6 @@ public class CcHomeController {
         model.addAttribute("pointTypeList", pointTypeList);
         return "dr/cc/customerDetail.jsp";
     }
-    
-    private Group getGroupById(DataModel groupModel, int groupId) {
-        Group group;
-        for (int i = 0; i < groupModel.getRowCount(); i += 1) {
-            groupModel.setRowIndex(i);
-            group = (Group) groupModel.getRowData();
-            if (group.getId() == groupId) {
-                return group;
-            }
-        }
-        return null;
-    }
 
     private EconomicEventPricing getRevisionAt(Map<Integer, EconomicEventPricing> revisions, int revisionKey) {
         Set<Entry<Integer, EconomicEventPricing>> revisionSet = revisions.entrySet();
@@ -725,18 +755,6 @@ public class CcHomeController {
         }
         return null;
     }
-
-    // TODO: determine if this will ever be needed
-//    private BaseEvent lookupEventById(Program program, int id) {
-//        CICurtailmentStrategy strategy = strategyFactory.getStrategy(program);
-//        List<? extends BaseEvent> eventList = strategy.getEventsForProgram(program);
-//        for (BaseEvent event : eventList) {
-//            if (event.getId() == id) {
-//                return event;
-//            }
-//        }
-//        return null;
-//    }
     
     private String composeEventHeading(String headingBase, YukonUserContext userContext, String specific) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
@@ -783,48 +801,8 @@ public class CcHomeController {
     }
     
     private boolean isConsideredActive(BaseEvent event) {
-        
         CICurtailmentStrategy strategy = strategyFactory.getStrategy(event.getProgram());
-        
         return strategy.isConsideredActive(event);
-    }
-    
-    private DataModel getWindowModel(EconomicEvent economicEvent) {
-        Collection<EconomicEventPricingWindow> values = economicEvent.getInitialRevision().getWindows().values();
-        List<EconomicEventPricingWindow> windows = new ArrayList<EconomicEventPricingWindow>(values);
-        Collections.sort(windows);
-        DataModel windowDataModel = new ListDataModel(windows);
-        return windowDataModel;
-    }
-
-    private BigDecimal getColumnPrice(EconomicEvent economicEvent) {
-        DataModel columnModel = getWindowModel(economicEvent);
-        if (columnModel.isRowAvailable()) { // read: isColumnAvailable()
-            EconomicEventPricingWindow pricingWindow = 
-                (EconomicEventPricingWindow) columnModel.getRowData(); // read: getColumnData()
-            EconomicEventPricingWindow window = 
-                economicService.getFallThroughWindow(economicEvent.getLatestRevision(), 
-                                                     pricingWindow.getOffset());
-            return window.getEnergyPrice();
-        }
-        return null;
-    }
-
-    private BigDecimal getColumnValue(DataModel rowModel, EconomicEvent event) {
-        if (rowModel.isRowAvailable()) {
-            EconomicEventParticipant row = 
-                (EconomicEventParticipant) rowModel.getRowData();
-            DataModel columnModel = getWindowModel(event);
-            if (columnModel.isRowAvailable()) { // read: isColumnAvailable()
-                EconomicEventPricingWindow pricingWindow = 
-                    (EconomicEventPricingWindow) columnModel.getRowData(); // read: getColumnData()
-                Integer column = pricingWindow.getOffset();
-                EconomicEventParticipantSelectionWindow selection = 
-                    economicService.getCustomerSelectionWindow(event.getLatestRevision(),row,column);
-                return selection.getEnergyToBuy();
-            }
-        }
-        return null;
     }
     
     private ListDataModel getOtherRevisionsModel(EconomicEvent economicEvent) {

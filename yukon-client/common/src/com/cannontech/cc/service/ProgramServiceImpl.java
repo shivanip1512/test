@@ -41,7 +41,7 @@ public class ProgramServiceImpl implements ProgramService {
     @Autowired private ProgramNotificationGroupDao programNotificationGroupDao;
     @Autowired private EnergyCompanyDao ecDao;
     
-    private Comparator<AvailableProgramGroup> byGroupComparator = new Comparator<AvailableProgramGroup>() {
+    private Comparator<AvailableProgramGroup> onGroup = new Comparator<AvailableProgramGroup>() {
         @Override
         public int compare(AvailableProgramGroup o1, AvailableProgramGroup o2) {
             return o1.getGroup().compareTo(o2.getGroup());
@@ -213,7 +213,7 @@ public class ProgramServiceImpl implements ProgramService {
     @Override
     public List<AvailableProgramGroup> getAvailableProgramGroups(Program program) {
         List<AvailableProgramGroup> allForProgram = availableProgramGroupDao.getAllForProgram(program);
-        Collections.sort(allForProgram, byGroupComparator);
+        Collections.sort(allForProgram, onGroup);
         return allForProgram;
     }
 

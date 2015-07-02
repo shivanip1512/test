@@ -23,15 +23,15 @@ import com.cannontech.database.incrementer.NextValueHelper;
 
 public class GroupDaoImpl implements GroupDao {
 
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private AvailableProgramGroupDao programGroupDao;
     @Autowired private GroupCustomerNotifDao groupCustomerNotifDao;
     private SimpleTableAccessTemplate<Group> template;
     
     @PostConstruct
-    public void postInit() throws Exception {
-        template = new SimpleTableAccessTemplate<Group>(yukonJdbcTemplate, nextValueHelper);
+    public void init() {
+        template = new SimpleTableAccessTemplate<Group>(jdbcTemplate, nextValueHelper);
         template.setTableName("CCurtGroup");
         template.setPrimaryKeyField("CCurtGroupID");
         template.setFieldMapper(groupFieldMapper); 
@@ -44,7 +44,7 @@ public class GroupDaoImpl implements GroupDao {
         sql.append("FROM CCurtGroup");
         sql.append("WHERE CCurtGroupId").in(ids);
         
-        List<Group> groups = yukonJdbcTemplate.query(sql, rowMapper);
+        List<Group> groups = jdbcTemplate.query(sql, rowMapper);
         return groups;
     }
     
@@ -55,7 +55,7 @@ public class GroupDaoImpl implements GroupDao {
         sql.append("FROM CCurtGroup");
         sql.append("WHERE CCurtGroupID").eq(id);
         
-        Group result = yukonJdbcTemplate.queryForObject(sql, rowMapper);
+        Group result = jdbcTemplate.queryForObject(sql, rowMapper);
         return result;
     }
 
@@ -66,7 +66,7 @@ public class GroupDaoImpl implements GroupDao {
         sql.append("FROM CCurtGroup");
         sql.append("WHERE EnergyCompanyID").eq(energyCompanyId);
         
-        List<Group> result = yukonJdbcTemplate.query(sql, rowMapper);
+        List<Group> result = jdbcTemplate.query(sql, rowMapper);
         return result;
     }
 
@@ -85,7 +85,7 @@ public class GroupDaoImpl implements GroupDao {
         sql.append("DELETE FROM CCurtGroup");
         sql.append("WHERE CCurtGroupID").eq(group.getId());
         
-        yukonJdbcTemplate.update(sql);
+        jdbcTemplate.update(sql);
     }
     
     private FieldMapper<Group> groupFieldMapper = new FieldMapper<Group>() {

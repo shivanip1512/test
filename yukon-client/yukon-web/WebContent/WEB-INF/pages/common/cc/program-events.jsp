@@ -5,7 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:includeScript link="/resources/js/pages/yukon.curtailment.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.dr.curtailment.js"/>
 
 <cti:standardPage module="commercialcurtailment_user" page="programEvents">
 
@@ -47,7 +47,7 @@
 <div
     id="details-popup"
     data-dialog
-    data-event="yukon.curtailment.details.display"
+    data-event="yukon:dr:curtailment:details:display"
     data-url="${detailUrl}"
     data-title="${detailsTitle}">
 </div>

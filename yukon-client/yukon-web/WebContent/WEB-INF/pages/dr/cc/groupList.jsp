@@ -9,7 +9,7 @@
         <div>
             <ul>
             <c:forEach var="group" items="${groups}">
-                <cti:url var="groupDetailUrl" value="groupDetail/${group.id}"/>
+                <cti:url var="groupDetailUrl" value="/dr/cc/groupDetail/${group.id}"/>
                 <li><a href="${groupDetailUrl}">${fn:escapeXml(group.name)}</a></li>
             </c:forEach>
             </ul>

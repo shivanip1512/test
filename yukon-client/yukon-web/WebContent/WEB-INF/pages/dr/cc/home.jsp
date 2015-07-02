@@ -4,7 +4,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:standardPage module="dr" page="cc.home">
-<cti:includeScript link="/resources/js/pages/yukon.curtailment.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.dr.curtailment.js"/>
     
     <div class="column-24">
         <div class="column one nogutter">
@@ -20,9 +20,9 @@
                             <tr data-program-id="${program.id}">
                                 <td>${program.programType.name}&nbsp;</td>
                                 <td>${fn:escapeXml(program.name)}</td>
-                                <cti:url var="startUrl" value="program/${program.id}/init"/>
+                                <cti:url var="startUrl" value="/dr/cc/program/${program.id}/init"/>
                                 <td><a href="${startUrl}"><i:inline key=".start"/></a></td>
-                                <cti:url var="historyUrl" value="program/${program.id}/history"/>
+                                <cti:url var="historyUrl" value="/dr/cc/program/${program.id}/history"/>
                                 <td><a href="${historyUrl}"><i:inline key=".history"/></a></td>
                             </tr>
                         </c:forEach>
@@ -48,7 +48,7 @@
                                             <tr>
 			                                    <td>${event.program.programType.name}</td>
 			                                    <td>${fn:escapeXml(event.program.name)}</td>
-			                                    <cti:url var="eventDetailUrl" value="program/${event.program.id}/event/${event.id}/detail"/>
+			                                    <cti:url var="eventDetailUrl" value="/dr/cc/program/${event.program.id}/event/${event.id}/detail"/>
 			                                    <td><a href="${eventDetailUrl}">${fn:escapeXml(event.displayName)}</a></td>
 			                                    <td>${event.stateDescription}</td>
 			                                    <td><cti:formatDate value="${event.startTime}" type="DATEHM"/></td>
@@ -73,15 +73,15 @@
                 <cti:tab title="${setupName}">
                     <table class="compact-results-table" id="programs">
 	                    <tr>
-	                        <cti:url var="programsUrl" value="programList"/>
+	                        <cti:url var="programsUrl" value="/dr/cc/programList"/>
 	                        <td><a href="${programsUrl}"><i:inline key=".programs"/></a></td>
 	                    </tr>
 	                    <tr>
-	                        <cti:url var="groupsUrl" value="groupList"/>
+	                        <cti:url var="groupsUrl" value="/dr/cc/groupList"/>
 	                        <td><a href="${groupsUrl}"><i:inline key=".groups"/></a></td>
 	                    </tr>
 	                    <tr>
-	                        <cti:url var="customersUrl" value="customerList"/>
+	                        <cti:url var="customersUrl" value="/dr/cc/customerList"/>
 	                        <td><a href="${customersUrl}"><i:inline key=".customers"/></a></td>
 	                    </tr>
                     </table>

@@ -26,7 +26,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 public class ProgramDaoImpl implements ProgramDao {
 
     @Autowired private ProgramTypeDaoImpl programTypeDao;
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private ProgramParameterDao programParameterDao;
     @Autowired private ProgramNotificationGroupDao programNotificationGroupDao;
@@ -34,8 +34,8 @@ public class ProgramDaoImpl implements ProgramDao {
     private SimpleTableAccessTemplate<Program> template;
     
     @PostConstruct
-    public void init() throws Exception {
-        template = new SimpleTableAccessTemplate<Program>(yukonJdbcTemplate, nextValueHelper);
+    public void init() {
+        template = new SimpleTableAccessTemplate<Program>(jdbcTemplate, nextValueHelper);
         template.setTableName("CCurtProgram");
         template.setPrimaryKeyField("CCurtProgramID");
         template.setFieldMapper(programFieldMapper); 
@@ -48,7 +48,7 @@ public class ProgramDaoImpl implements ProgramDao {
         sql.append("FROM CCurtProgram");
         sql.append("WHERE CCurtProgramID").eq(id);
         
-        Program result = yukonJdbcTemplate.queryForObject(sql, new ProgramRowMapper());
+        Program result = jdbcTemplate.queryForObject(sql, new ProgramRowMapper());
         return result;
     }
 
@@ -60,7 +60,7 @@ public class ProgramDaoImpl implements ProgramDao {
         sql.append(  "JOIN CCurtProgramType pt on pt.CCurtProgramTypeID = p.CCurtProgramTypeID");
         sql.append("WHERE pt.EnergyCompanyID").eq(energyCompanyId);
         
-        List<Program> result = yukonJdbcTemplate.query(sql, new ProgramRowMapper());
+        List<Program> result = jdbcTemplate.query(sql, new ProgramRowMapper());
         return result;
     }
 
@@ -71,7 +71,7 @@ public class ProgramDaoImpl implements ProgramDao {
         sql.append("FROM CCurtProgram");
         sql.append("WHERE CCurtProgramTypeID").eq(programType.getId());
         
-        List<Program> result = yukonJdbcTemplate.query(sql, new ProgramRowMapper(programType));
+        List<Program> result = jdbcTemplate.query(sql, new ProgramRowMapper(programType));
         return result;
     }
 
@@ -92,7 +92,7 @@ public class ProgramDaoImpl implements ProgramDao {
         sql.append("FROM CCurtProgram");
         sql.append("WHERE CCurtProgramID").eq(program.getId());
         
-        yukonJdbcTemplate.update(sql);
+        jdbcTemplate.update(sql);
     }
 
     @Override
