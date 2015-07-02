@@ -35,8 +35,9 @@ public class DeviceReconfigMonitorsWidget extends WidgetControllerBase {
     @Autowired
     public DeviceReconfigMonitorsWidget(RoleAndPropertyDescriptionService 
             roleAndPropertyDescriptionService) {
-        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService
-                                         .compile("DEVICE_RECONFIG"));
+        
+        String checkRole = YukonRoleProperty.DEVICE_RECONFIG.name();
+        setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(checkRole));
     }
 
     @Override

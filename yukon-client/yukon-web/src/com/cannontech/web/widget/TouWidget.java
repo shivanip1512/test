@@ -18,6 +18,7 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeHelper;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
@@ -33,9 +34,10 @@ public class TouWidget extends AdvancedWidgetControllerBase {
     @Autowired
     public TouWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput,
             RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
-        
+       
+        String checkRole = YukonRole.METERING.name();
         addInput(simpleWidgetInput);        
-        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("METERING"));
+        setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(checkRole));
     }
 
     @RequestMapping("render")

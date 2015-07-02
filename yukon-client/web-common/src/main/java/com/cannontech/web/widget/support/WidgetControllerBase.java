@@ -76,6 +76,11 @@ public abstract class WidgetControllerBase implements WidgetDefinitionBean, Bean
         return this;
     }
     
+    /**
+     * Adds the WidgetInput to the set (inputs)
+     * 
+     * @param input - the WidgetInput to add to the set.
+     */
     public void addInput(WidgetInput input) {
         if (inputs == null) {
             inputs = new HashSet<>();

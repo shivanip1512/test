@@ -42,7 +42,7 @@ public class MiniTdcWidget extends WidgetControllerBase {
         simpleWidget.setRequired(true);
         
         addInput(simpleWidget);
-        this.setIdentityPath("miniTdcWidget/identity.jsp");
+        setIdentityPath("miniTdcWidget/identity.jsp");
     }
     
     @Override

@@ -37,6 +37,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
+import com.google.common.base.Joiner;
 
 
 @Controller
@@ -71,10 +72,15 @@ public class AllMonitorsWidget extends AdvancedWidgetControllerBase {
     @Autowired
     public AllMonitorsWidget(RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
         
-        this.setIdentityPath("common/deviceIdentity.jsp");
-        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(
-                "DEVICE_DATA_MONITORING OUTAGE_PROCESSING TAMPER_FLAG_PROCESSING "
-                + "STATUS_POINT_MONITORING PORTER_RESPONSE_MONITORING VALIDATION_ENGINE"));
+        String checkRole = Joiner.on(" ").join(YukonRoleProperty.DEVICE_DATA_MONITORING.name(),
+                                               YukonRoleProperty.OUTAGE_PROCESSING.name(),
+                                               YukonRoleProperty.TAMPER_FLAG_PROCESSING.name(),
+                                               YukonRoleProperty.STATUS_POINT_MONITORING.name(),
+                                               YukonRoleProperty.PORTER_RESPONSE_MONITORING.name(),
+                                               YukonRoleProperty.VALIDATION_ENGINE.name());
+        
+        setIdentityPath("common/deviceIdentity.jsp");
+        setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(checkRole));
     }
     
     @RequestMapping("render")

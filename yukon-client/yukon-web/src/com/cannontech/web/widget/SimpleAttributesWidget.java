@@ -27,6 +27,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
@@ -47,9 +48,10 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
             SimpleWidgetInput simpleWidgetInput,
             RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
         
+        String checkRole = YukonRole.METERING.name();
         addInput(simpleWidgetInput);
-        this.setIdentityPath("common/deviceIdentity.jsp");
-        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("METERING"));
+        setIdentityPath("common/deviceIdentity.jsp");
+        setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(checkRole));
     }
     
     @Override

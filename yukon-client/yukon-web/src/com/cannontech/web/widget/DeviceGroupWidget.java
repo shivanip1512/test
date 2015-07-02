@@ -69,7 +69,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
             simpleWidgetInput) {
         
         addInput(simpleWidgetInput);
-        this.setLazyLoad(true);
+        setLazyLoad(true);
     }
     
     /**

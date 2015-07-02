@@ -24,6 +24,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.service.PointService;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.user.YukonUserContext;
@@ -73,8 +74,9 @@ public class MeterReadingsWidget extends AdvancedWidgetControllerBase {
         attibutes.add(BuiltInAttribute.DEMAND);
         attibutes.add(BuiltInAttribute.VOLTAGE);
         
+        String checkRole = YukonRole.METERING.name();
         setIdentityPath("common/deviceIdentity.jsp");
-        setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("METERING"));
+        setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(checkRole));
         setAttributesToShow(attibutes);
         setPreviousReadingsAttributeToShow(BuiltInAttribute.USAGE);
     }

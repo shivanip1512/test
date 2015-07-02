@@ -46,6 +46,7 @@ import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
@@ -99,9 +100,10 @@ public class ProfileWidget extends WidgetControllerBase {
     public ProfileWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput,
             RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
         
+        String checkRole = YukonRole.METERING.name();
         addInput(simpleWidgetInput);
-        this.setIdentityPath("common/deviceIdentity.jsp");
-        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("METERING"));
+        setIdentityPath("common/deviceIdentity.jsp");
+        setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(checkRole));
     }
     
     /*

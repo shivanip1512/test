@@ -38,10 +38,10 @@ public class CayentaAccountInformationWidget extends WidgetControllerBase {
             RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
         
         addInput(simpleWidgetInput);
-        this.setIdentityPath("common/deviceIdentity.jsp");
-        this.setLazyLoad(true);
-        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService
-                                         .compile("CIS_DETAIL_WIDGET_ENABLED"));
+        String checkRole = YukonRoleProperty.CIS_DETAIL_WIDGET_ENABLED.name();
+        setIdentityPath("common/deviceIdentity.jsp");
+        setLazyLoad(true);
+        setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(checkRole));
     }
     
     @Override

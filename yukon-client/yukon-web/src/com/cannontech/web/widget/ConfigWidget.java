@@ -25,6 +25,7 @@ import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
@@ -44,8 +45,9 @@ public class ConfigWidget extends WidgetControllerBase {
     public ConfigWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput,
             RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
         
+        String checkRole = YukonRole.METERING.name();
         addInput(simpleWidgetInput);
-        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("METERING"));
+        setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(checkRole));
     }
     
     @Override

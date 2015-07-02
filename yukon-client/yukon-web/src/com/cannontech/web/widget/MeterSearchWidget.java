@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.amr.meter.search.model.FilterBy;
 import com.cannontech.amr.meter.search.model.StandardFilterByGenerator;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.web.amr.meter.service.MspMeterSearchService;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 
@@ -28,7 +29,8 @@ public class MeterSearchWidget extends WidgetControllerBase {
     
     @Autowired
     public MeterSearchWidget(RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
-        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("METERING"));
+        String checkRole = YukonRole.METERING.name();
+        setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(checkRole));
     }
 
     @RequestMapping("render")

@@ -27,6 +27,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
@@ -57,9 +58,10 @@ public class RfnOutagesWidget extends AdvancedWidgetControllerBase {
     public RfnOutagesWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput,
             RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
         
+        String checkRole = YukonRole.METERING.name();
         addInput(simpleWidgetInput);
-        this.setIdentityPath("common/deviceIdentity.jsp");
-        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("METERING"));
+        setIdentityPath("common/deviceIdentity.jsp");
+        setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(checkRole));
     }
     
     @RequestMapping("render")

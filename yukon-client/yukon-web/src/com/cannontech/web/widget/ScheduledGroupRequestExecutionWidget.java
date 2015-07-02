@@ -47,7 +47,7 @@ public class ScheduledGroupRequestExecutionWidget extends WidgetControllerBase {
 	@Autowired private RolePropertyDao rolePropertyDao;
 	
 	public ScheduledGroupRequestExecutionWidget() {
-	    this.setIdentityPath("common/deviceIdentity.jsp");
+	    setIdentityPath("common/deviceIdentity.jsp");
 	}
 	
     @Override

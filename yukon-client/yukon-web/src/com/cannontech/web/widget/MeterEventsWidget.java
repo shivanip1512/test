@@ -23,6 +23,7 @@ import com.cannontech.amr.paoPointValue.model.MeterPointValue;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.PaoPointValueService;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
@@ -42,10 +43,11 @@ public class MeterEventsWidget extends AdvancedWidgetControllerBase {
     public MeterEventsWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput,
             RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
         
+        String checkRole = YukonRole.METERING.name();
         addInput(simpleWidgetInput);
-        this.setIdentityPath("common/deviceIdentity.jsp");
-        this.setLazyLoad(true);
-        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("METERING"));
+        setIdentityPath("common/deviceIdentity.jsp");
+        setLazyLoad(true);
+        setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(checkRole));
     }
 
     private static Comparator<MeterPointValue> getDateComparator() {

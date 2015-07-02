@@ -12,6 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.events.loggers.CommandScheduleEventLogService;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.hardware.dao.CommandScheduleDao;
@@ -32,8 +33,9 @@ public class CommandScheduleWidget extends WidgetControllerBase {
     @Autowired
     public CommandScheduleWidget(RoleAndPropertyDescriptionService 
             roleAndPropertyDescriptionService) {
-        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService
-                                         .compile("DEVICE_RECONFIG"));
+        
+        String checkRole = YukonRoleProperty.DEVICE_RECONFIG.name();
+        setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(checkRole));
     }
     
     @Override

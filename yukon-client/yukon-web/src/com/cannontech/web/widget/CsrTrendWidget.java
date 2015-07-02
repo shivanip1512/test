@@ -99,11 +99,11 @@ public class CsrTrendWidget extends WidgetControllerBase {
             attributeGraphType.add(attributeGraph);
         }
         addInput(simpleWidgetInput);
-        this.setDefaultAttribute(BuiltInAttribute.USAGE);
-        this.setSupportedAttributeGraphSet(attributeGraphType);
+        setDefaultAttribute(BuiltInAttribute.USAGE);
+        setSupportedAttributeGraphSet(attributeGraphType);
         
-        this.setIdentityPath("common/deviceIdentity.jsp");
-        this.setSupportedAttributeGraphSet(attributeGraphType);
+        setIdentityPath("common/deviceIdentity.jsp");
+        setSupportedAttributeGraphSet(attributeGraphType);
     }
 
     @Override

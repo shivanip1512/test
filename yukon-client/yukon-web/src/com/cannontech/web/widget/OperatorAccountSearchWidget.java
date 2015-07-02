@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.stars.dr.general.model.OperatorAccountSearchBy;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetControllerBase;
@@ -28,9 +29,10 @@ public class OperatorAccountSearchWidget extends WidgetControllerBase {
             SimpleWidgetInput simpleWidgetInputOperatorAccount,
             RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
 
+        String checkRole = YukonRole.CONSUMER_INFO.name();
         addInput(simpleWidgetInput);
         addInput(simpleWidgetInputOperatorAccount);
-        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("CONSUMER_INFO"));
+        setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(checkRole));
     }
     
 	@Override

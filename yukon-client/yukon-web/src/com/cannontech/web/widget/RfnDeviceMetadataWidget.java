@@ -50,7 +50,7 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
                 SimpleWidgetInput simpleWidgetInput) {
         
         addInput(simpleWidgetInput);
-        this.setLazyLoad(true);
+        setLazyLoad(true);
     }
 
     @RequestMapping("render")

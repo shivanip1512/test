@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.LoadProfileService;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.servlet.YukonUserContextUtils;
@@ -42,9 +42,10 @@ public class PendingProfilesWidget extends WidgetControllerBase {
         Set<WidgetInput> simpleWidgetInputSet = new HashSet<WidgetInput>();
         simpleWidgetInputSet.add(simpleWidgetInput);
         
-        this.setIdentityPath("common/deviceIdentity.jsp");
-        this.setInputs(simpleWidgetInputSet);
-        this.setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile("METERING"));
+        String checkRole = YukonRole.METERING.name();
+        setIdentityPath("common/deviceIdentity.jsp");
+        setInputs(simpleWidgetInputSet);
+        setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(checkRole));
     }
     
     @RequestMapping("render")
