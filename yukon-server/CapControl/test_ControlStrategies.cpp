@@ -3,6 +3,8 @@
 #include "ControlStrategy.h"
 #include "NoStrategy.h"
 #include "IVVCSTrategy.h"
+#include "StrategyLoader.h"
+#include "test_reader.h"
 
 using namespace std;
 
@@ -147,6 +149,113 @@ BOOST_AUTO_TEST_CASE(test_IVVCStrategy_control_method_and_unit)
 
     BOOST_CHECK_EQUAL( strategy.getControlMethod(), ControlStrategy::SubstationBusControlMethod );
     BOOST_CHECK_EQUAL( strategy.getMethodType(),    ControlStrategy::SubstationBus );
+}
+
+BOOST_AUTO_TEST_CASE(test_Strategy_bool_flag_support)
+{
+    typedef Cti::Test::StringRow<19>                CCStrategyRow;
+    typedef Cti::Test::TestReader<CCStrategyRow>    CCStrategyReader;
+
+    CCStrategyRow columnNames =
+    {
+        "strategyid",
+        "strategyname",
+        "controlmethod",
+        "maxdailyoperation",
+        "maxoperationdisableflag",
+        "peakstarttime",
+        "peakstoptime",
+        "controlinterval",
+        "minresponsetime",
+        "minconfirmpercent",
+        "failurepercent",
+        "daysofweek",
+        "controlunits",
+        "controldelaytime",
+        "controlsendretries",
+        "integrateflag",
+        "integrateperiod",
+        "likedayfallback",
+        "enddaysettings"
+    };
+
+    std::vector<CCStrategyRow> rowVec
+    {
+        {
+            "2",
+            "KVar Strategy",
+            "INDIVIDUAL_FEEDER",
+            "0",
+            "N",    // <----
+            "0",
+            "86400",
+            "900",
+            "900",
+            "75",
+            "25",
+            "NYYYYYNN",
+            "KVAR",
+            "0",
+            "0",
+            "n",    // <----
+            "0",
+            "0",    // <----
+            "(none)"
+        },
+        {
+            "32",
+            "IVVC Strategy",
+            "SUBSTATION_BUS",
+            "0",
+            "Y",    // <----
+            "0",
+            "86400",
+            "60",
+            "900",
+            "75",
+            "25",
+            "NYYYYYNN",
+            "INTEGRATED_VOLT_VAR",
+            "0",
+            "0",
+            "y",    // <----
+            "0",
+            "1",    // <----
+            "(none)"
+        }
+    };
+
+    StrategyManager::StrategyMap    strategies;
+
+    CCStrategyReader reader( columnNames, rowVec );
+
+    for ( const auto & row : rowVec )
+    {
+        reader();
+        parseCoreReader( reader, strategies );
+    }
+
+    BOOST_REQUIRE_EQUAL( 2, strategies.size() );
+
+    {
+        StrategyManager::SharedPtr  strategy = strategies[ 2 ];
+
+        BOOST_REQUIRE( strategy );
+
+        BOOST_CHECK_EQUAL( false, strategy->getMaxOperationDisableFlag() );
+        BOOST_CHECK_EQUAL( false, strategy->getIntegrateFlag() );
+        BOOST_CHECK_EQUAL( false, strategy->getLikeDayFallBack() );
+    }
+
+    {
+        StrategyManager::SharedPtr  strategy = strategies[ 32 ];
+
+        BOOST_REQUIRE( strategy );
+
+        BOOST_CHECK_EQUAL( true, strategy->getMaxOperationDisableFlag() );
+        BOOST_CHECK_EQUAL( true, strategy->getIntegrateFlag() );
+        BOOST_CHECK_EQUAL( false, strategy->getLikeDayFallBack() );
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

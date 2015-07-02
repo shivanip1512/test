@@ -28,54 +28,7 @@ using std::endl;
 extern unsigned long _CC_DEBUG;
 
 
-StrategyManager::StrategyMap StrategyDBLoader::load(const long ID)
-{
-    StrategyManager::StrategyMap    loaded;
-
-    loadCore(ID, loaded);
-    loadParameters(ID, loaded);
-
-    return loaded;
-}
-
-
-void StrategyDBLoader::loadCore(const long ID, StrategyManager::StrategyMap &strategies)
-{
-    static const string sqlNoID =  "SELECT CCS.strategyid, CCS.strategyname, CCS.controlmethod, CCS.maxdailyoperation, "
-                                       "CCS.maxoperationdisableflag, CCS.peakstarttime, CCS.peakstoptime, CCS.controlinterval, "
-                                       "CCS.minresponsetime, CCS.minconfirmpercent, CCS.failurepercent, CCS.daysofweek, "
-                                       "CCS.controlunits, CCS.controldelaytime, CCS.controlsendretries, CCS.integrateflag, "
-                                       "CCS.integrateperiod, CCS.likedayfallback, CCS.enddaysettings "
-                                   "FROM capcontrolstrategy CCS";
-
-    Cti::Database::DatabaseConnection connection;
-    Cti::Database::DatabaseReader rdr(connection);
-
-    if( ID >= 0 )
-    {
-        static const string sqlID = string(sqlNoID + " WHERE CCS.strategyid = ?");
-        rdr.setCommandText(sqlID);
-        rdr << ID;
-    }
-    else
-    {
-        rdr.setCommandText(sqlNoID);
-    }
-
-    rdr.execute();
-
-    if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-    {
-        CTILOG_INFO(dout, rdr.asString());
-    }
-
-    while ( rdr() )
-    {
-        parseCoreReader(rdr, strategies);
-    }
-}
-
-void StrategyDBLoader::parseCoreReader(Cti::RowReader & reader, StrategyManager::StrategyMap &strategies)
+void parseCoreReader(Cti::RowReader & reader, StrategyManager::StrategyMap &strategies)
 {
     if ( reader.isValid() )
     {
@@ -192,6 +145,54 @@ void StrategyDBLoader::parseCoreReader(Cti::RowReader & reader, StrategyManager:
                 strategies[ strategy->getStrategyId() ] = strategy;     // insert/update...
             }
         }
+    }
+}
+
+
+StrategyManager::StrategyMap StrategyDBLoader::load(const long ID)
+{
+    StrategyManager::StrategyMap    loaded;
+
+    loadCore(ID, loaded);
+    loadParameters(ID, loaded);
+
+    return loaded;
+}
+
+
+void StrategyDBLoader::loadCore(const long ID, StrategyManager::StrategyMap &strategies)
+{
+    static const string sqlNoID =  "SELECT CCS.strategyid, CCS.strategyname, CCS.controlmethod, CCS.maxdailyoperation, "
+                                       "CCS.maxoperationdisableflag, CCS.peakstarttime, CCS.peakstoptime, CCS.controlinterval, "
+                                       "CCS.minresponsetime, CCS.minconfirmpercent, CCS.failurepercent, CCS.daysofweek, "
+                                       "CCS.controlunits, CCS.controldelaytime, CCS.controlsendretries, CCS.integrateflag, "
+                                       "CCS.integrateperiod, CCS.likedayfallback, CCS.enddaysettings "
+                                   "FROM capcontrolstrategy CCS";
+
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader rdr(connection);
+
+    if( ID >= 0 )
+    {
+        static const string sqlID = string(sqlNoID + " WHERE CCS.strategyid = ?");
+        rdr.setCommandText(sqlID);
+        rdr << ID;
+    }
+    else
+    {
+        rdr.setCommandText(sqlNoID);
+    }
+
+    rdr.execute();
+
+    if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+    {
+        CTILOG_INFO(dout, rdr.asString());
+    }
+
+    while ( rdr() )
+    {
+        parseCoreReader(rdr, strategies);
     }
 }
 

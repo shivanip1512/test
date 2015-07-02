@@ -2,7 +2,15 @@
 #pragma once
 
 #include "StrategyManager.h"
-#include "row_reader.h"
+
+namespace Cti
+{
+class RowReader;
+}
+
+void parseCoreReader(Cti::RowReader & reader, StrategyManager::StrategyMap &strategies);
+
+
 
 class StrategyLoader
 {
@@ -14,9 +22,6 @@ public:
     ~StrategyLoader()   {  }
 
     virtual StrategyManager::StrategyMap load(const long ID) = 0;
-
-private:
-
 };
 
 
@@ -31,10 +36,6 @@ public:
     ~StrategyDBLoader()   {  }
 
     virtual StrategyManager::StrategyMap load(const long ID);
-
-protected:
-
-    void parseCoreReader(Cti::RowReader & reader, StrategyManager::StrategyMap &strategies);
 
 private:
 
