@@ -135,7 +135,7 @@ yukon.da.zone = (function () {
             $('#ivvc-events-range').on('change', function () {
                 yukon.cookie.set('ivvc-regualtor', 'last-event-range', $(this).val());
                 clearTimeout(_events_token);
-                _updateRecentEvents(true);
+                _updateRecentEvents();
             });
             
             $('.js-zone-editor').click(function () {
