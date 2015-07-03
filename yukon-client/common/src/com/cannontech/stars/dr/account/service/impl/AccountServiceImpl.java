@@ -869,10 +869,14 @@ public class AccountServiceImpl implements AccountService {
                     + accountDto.getSiteInfo().getSubstationName());
             }
         }
-        liteSiteInformation.setFeeder(accountDto.getSiteInfo().getFeeder());
-        liteSiteInformation.setPole(accountDto.getSiteInfo().getPole());
-        liteSiteInformation.setTransformerSize(accountDto.getSiteInfo().getTransformerSize());
-        liteSiteInformation.setServiceVoltage(accountDto.getSiteInfo().getServiceVoltage());
+        liteSiteInformation.setFeeder(accountDto.getSiteInfo().getFeeder()!=null ?
+                accountDto.getSiteInfo().getFeeder():"");
+        liteSiteInformation.setPole(accountDto.getSiteInfo().getPole()!=null ?
+                accountDto.getSiteInfo().getPole():"");
+        liteSiteInformation.setTransformerSize(accountDto.getSiteInfo().getTransformerSize()!=null ?
+                accountDto.getSiteInfo().getTransformerSize():"");
+        liteSiteInformation.setServiceVoltage(accountDto.getSiteInfo().getServiceVoltage()!=null ?
+                accountDto.getSiteInfo().getServiceVoltage():"");
         siteInformationDao.update(liteSiteInformation);
 
         // Update mapping
