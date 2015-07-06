@@ -232,7 +232,7 @@ BOOST_AUTO_TEST_CASE(test_Strategy_bool_flag_support)
     for ( const auto & row : rowVec )
     {
         reader();
-        parseCoreReader( reader, strategies );
+        StrategyLoader::parseCoreReader( reader, strategies );
     }
 
     BOOST_REQUIRE_EQUAL( 2, strategies.size() );

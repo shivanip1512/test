@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "StrategyManager.h"
@@ -7,8 +6,6 @@ namespace Cti
 {
 class RowReader;
 }
-
-void parseCoreReader(Cti::RowReader & reader, StrategyManager::StrategyMap &strategies);
 
 
 
@@ -22,6 +19,8 @@ public:
     ~StrategyLoader()   {  }
 
     virtual StrategyManager::StrategyMap load(const long ID) = 0;
+
+    static void parseCoreReader(Cti::RowReader & reader, StrategyManager::StrategyMap &strategies);
 };
 
 

@@ -1,4 +1,3 @@
-
 #include "precompiled.h"
 
 #include <cmath>
@@ -23,7 +22,6 @@
 #include "database_reader.h"
 
 using std::string;
-using std::endl;
 
 extern unsigned long _CC_DEBUG;
 
@@ -46,7 +44,7 @@ namespace
     }
 }
 
-void parseCoreReader(Cti::RowReader & reader, StrategyManager::StrategyMap &strategies)
+void StrategyLoader::parseCoreReader(Cti::RowReader & reader, StrategyManager::StrategyMap &strategies)
 {
     if ( reader.isValid() )
     {
