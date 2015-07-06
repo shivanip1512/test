@@ -54,7 +54,7 @@ public class RegulatorEventsDaoImpl implements RegulatorEventsDao {
             }
             if (phase == null) phase = Phase.ALL;
             
-            int tapPosition = rs.getInt("TapPosition");
+            Integer tapPosition = rs.getNullableInt("TapPosition");
             Double setPointValue = rs.getNullableDouble("SetPointValue");
             String userName = rs.getString("UserName");
             
