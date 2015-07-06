@@ -29,7 +29,7 @@ public class StaticLoadGroupMappingDaoImpl implements StaticLoadGroupMappingDao 
         sql.append("SELECT DISTINCT LoadGroupId, ApplianceCategoryId, ZipCode, ConsumptionTypeId, SwitchTypeId");
         sql.append("FROM StaticLoadGroupMapping");
         sql.append("WHERE ApplianceCategoryId").eq(criteria.getApplianceCategoryID());
-        sql.append("AND ZipCode LIKE").append(criteria.getZipCode() + "%");
+        sql.append("AND ZipCode").startsWith(criteria.getZipCode());
         sql.append("AND ConsumptionTypeId").eq(criteria.getConsumptionTypeID());
         sql.append("AND SwitchTypeId").eq(criteria.getSwitchTypeID());
         
@@ -81,6 +81,7 @@ public class StaticLoadGroupMappingDaoImpl implements StaticLoadGroupMappingDao 
     
     public static class StarsStaticLoadGroupRowMapper implements YukonRowMapper<StarsStaticLoadGroupMapping> {
         
+        @Override
         public StarsStaticLoadGroupMapping mapRow(YukonResultSet rs) throws SQLException {
             
             StarsStaticLoadGroupMapping staticLoadGroup = new StarsStaticLoadGroupMapping();
