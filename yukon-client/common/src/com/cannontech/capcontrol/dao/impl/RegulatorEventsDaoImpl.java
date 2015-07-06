@@ -27,6 +27,7 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
+import com.google.common.collect.ImmutableList;
 
 public class RegulatorEventsDaoImpl implements RegulatorEventsDao {
     
@@ -54,7 +55,7 @@ public class RegulatorEventsDaoImpl implements RegulatorEventsDao {
             if (phase == null) phase = Phase.ALL;
             
             int tapPosition = rs.getInt("TapPosition");
-            double setPointValue = rs.getDouble("SetPointValue");
+            Double setPointValue = rs.getNullableDouble("SetPointValue");
             String userName = rs.getString("UserName");
             
             return RegulatorEvent.of(id, regulatorId, timestamp, type, phase, tapPosition, setPointValue, userName);
@@ -65,7 +66,7 @@ public class RegulatorEventsDaoImpl implements RegulatorEventsDao {
     public List<RegulatorEvent> getForIdSinceTimestamp(int regulatorId, Instant start) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT *");
+        sql.append("SELECT RegulatorEventId, RegulatorId, Timestamp, EventType, Phase, SetPointValue, TapPosition, UserName");
         sql.append("FROM RegulatorEvents");
         sql.append("WHERE RegulatorId").eq(regulatorId);
         sql.append("AND TimeStamp").gte(start);
@@ -83,7 +84,7 @@ public class RegulatorEventsDaoImpl implements RegulatorEventsDao {
         Instant since = Instant.now().minus(hours);
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT *");
+        sql.append("SELECT RegulatorEventId, RegulatorId, Timestamp, EventType, Phase, SetPointValue, TapPosition, UserName");
         sql.append("FROM RegulatorEvents");
         sql.append("WHERE RegulatorId").eq(regulatorId);
         sql.append("AND TimeStamp").gte(since);
@@ -104,7 +105,7 @@ public class RegulatorEventsDaoImpl implements RegulatorEventsDao {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT *");
+                sql.append("SELECT RegulatorEventId, RegulatorId, Timestamp, EventType, Phase, SetPointValue, TapPosition, UserName");
                 sql.append("FROM RegulatorEvents");
                 sql.append("WHERE RegulatorId").in(regulatorIds);
                 sql.append("AND TimeStamp").gte(since);
@@ -143,7 +144,7 @@ public class RegulatorEventsDaoImpl implements RegulatorEventsDao {
         sql.append("AND TimeStamp IN");
         sql.append("    (SELECT MAX(TimeStamp)");
         sql.append("     FROM RegulatorEvents ");
-        sql.append("     WHERE EventType = 'DECREASE_SETPOINT' OR EventType = 'INCREASE_SETPOINT'");
+        sql.append("     WHERE EventType").in(ImmutableList.of(EventType.DECREASE_SETPOINT, EventType.INCREASE_SETPOINT));
         sql.append("     AND SetPointValue is not NULL)");
 
         RegulatorEvent event = null;
