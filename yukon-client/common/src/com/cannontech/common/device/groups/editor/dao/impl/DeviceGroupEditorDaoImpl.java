@@ -1,5 +1,7 @@
 package com.cannontech.common.device.groups.editor.dao.impl;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +43,7 @@ import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.MappingCollection;
 import com.cannontech.common.util.ReverseList;
 import com.cannontech.common.util.SqlBuilder;
@@ -57,6 +61,8 @@ import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
@@ -113,47 +119,51 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         return addDevices(group, yukonPaos.iterator());
     }
     
+
     @Override
     @Transactional
-    public int addDevices(StoredDeviceGroup group, Iterator<? extends YukonPao> yukonPaos) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append(deviceGroupMemberInsertSql);
+    public int addDevices(StoredDeviceGroup group, Iterator<? extends YukonPao> paos) {
+
+        Collection<YukonPao> validDevices = Collections2.filter(Lists.newArrayList(paos), new Predicate<YukonPao>() {
+            @Override
+            public boolean apply(YukonPao pao) {
+                PaoIdentifier paoId = pao.getPaoIdentifier();
+                if (paoId == null || paoId.getPaoId() == Device.SYSTEM_DEVICE_ID
+                    || paoId.getPaoType().getPaoCategory() != PaoCategory.DEVICE) {
+                    return false;
+                }
+                return true;
+            }
+        });
+
+        log.debug("Devices to add=" + validDevices.size());
+
         int rowsAffected = 0;
-        while (yukonPaos.hasNext()) {
-            YukonPao device = yukonPaos.next();
-            if (!isDeviceValid(device)) {
-                log.info("skipping invalid device, group=" + group + ", deviceId=" + device);
-                continue;
-            }
-            try {
-                rowsAffected += jdbcTemplate.update(sql.toString(), group.getId(), device.getPaoIdentifier().getPaoId());
-            } catch (DataIntegrityViolationException e) {
-                // ignore - tried to insert duplicate
-            }
+        List<List<YukonPao>> devices =
+            Lists.partition(Lists.newArrayList(validDevices), ChunkingSqlTemplate.DEFAULT_SIZE);
+        for (List<YukonPao> subList : devices) {
+            log.debug("Batch=" + subList.size());
+            rowsAffected += jdbcTemplate.batchUpdate(deviceGroupMemberInsertSql.toString(), new BatchPreparedStatementSetter() {
+                @Override
+                public void setValues(PreparedStatement ps, int i) throws SQLException {
+                    YukonPao device = subList.get(i);
+                    ps.setInt(1, group.getId());
+                    ps.setInt(2, device.getPaoIdentifier().getPaoId());
+                }
+                @Override
+                public int getBatchSize() {
+                    return subList.size();
+                }
+            }).length;
         }
+
         if (rowsAffected > 0) {
-            dbChangeManager.processDbChange(DbChangeType.ADD, 
-                                        DbChangeCategory.DEVICE_GROUP_MEMBER, 
-                                        group.getId());
+            dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.DEVICE_GROUP_MEMBER, group.getId());
         }
+        log.debug("rowsAffected=" + rowsAffected);
         return rowsAffected;
     }
-
-    private boolean isDeviceValid(YukonPao yukonPao) {
-        if (yukonPao == null) {
-            return false;
-        }
-
-        PaoIdentifier paoId = yukonPao.getPaoIdentifier();
-        if (paoId == null || 
-                paoId.getPaoId() == Device.SYSTEM_DEVICE_ID ||
-                paoId.getPaoType().getPaoCategory() != PaoCategory.DEVICE) {
-            return false;
-        }
-
-        return true;
-    }
-
+        
     @Override
     public List<SimpleDevice> getChildDevices(StoredDeviceGroup group) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
