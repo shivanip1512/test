@@ -160,7 +160,8 @@ public class RfnChannelDataConverter {
     private void setCalculationContributors() {
         Set<PaoType> types = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.RFN_POINT_CALCULATION);
         ImmutableSet<BuiltInAttribute> attributes = ImmutableSet.of(BuiltInAttribute.SUM_KWH, BuiltInAttribute.DELIVERED_KWH, BuiltInAttribute.RECEIVED_KWH,
-                                                                    BuiltInAttribute.NET_KWH, BuiltInAttribute.SUM_KVARH, BuiltInAttribute.SUM_KVAH, BuiltInAttribute.USAGE_WATER);
+                                                                    BuiltInAttribute.NET_KWH, BuiltInAttribute.SUM_KVARH, BuiltInAttribute.SUM_KVAH,
+                                                                    BuiltInAttribute.KVARH, BuiltInAttribute.USAGE_WATER);
         
         ImmutableSet.Builder<PaoTypePointIdentifier> b = ImmutableSet.builder();
         for (PaoType type : types) {

@@ -145,6 +145,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             data.setTimeStamp(new Instant().getMillis());
             RfnIdentifier meterIdentifier = new RfnIdentifier(Integer.toString(i), manufacturer, model);
             data.setRfnIdentifier(meterIdentifier);
+            data.setRecordInterval(300); // pick some default for testing, needs to be greater >= 300
             
             List<ChannelData> dataList = Lists.newArrayList();
             ChannelData channelData = new ChannelData();
@@ -193,6 +194,8 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             if (model.contains("water")) {
                 message.setReadingType(RfnMeterReadingType.INTERVAL);
                 modifiers.add("Kilo");
+            } else {
+                message.setReadingType(type);
             }
             channelData.setUnitOfMeasureModifiers(modifiers);
             
