@@ -113,9 +113,9 @@ public class BulkController {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         LiteYukonUser user = userContext.getYukonUser();
         
-        DeviceCollection colleciton = deviceCollectionFactory.createDeviceCollection(request);
         try {
         
+            DeviceCollection colleciton = deviceCollectionFactory.createDeviceCollection(request);
             if (isFileUpload) {
                 Map<String, String> collectionParameters = colleciton.getCollectionParameters();
                 model.addAllAttributes(collectionParameters);
@@ -131,7 +131,7 @@ public class BulkController {
             model.addAttribute("showGroupManagement", showGroupManagement);
             model.addAttribute("showEditing", showEditing);
             model.addAttribute("showAddRemovePoints", showAddRemovePoints);
-        } catch (ObjectMappingException e) {
+        } catch (ObjectMappingException | UnsupportedOperationException e) {
             view = "redirect:/bulk/deviceSelection";
             model.addAttribute("errorMsg", e.getMessage());
         }
@@ -250,6 +250,7 @@ public class BulkController {
             this.hasAddRemovePointsRP = hasAddRemovePointsRP;
         }
 
+        @Override
         public BulkOperationDisplayableResult map(BackgroundProcessResultHolder from) throws ObjectMappingException {
         	
         	List<BulkFieldColumnHeader> bulkFieldColumnHeaders = null;

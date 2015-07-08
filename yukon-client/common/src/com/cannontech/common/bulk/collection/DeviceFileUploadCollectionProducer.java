@@ -68,7 +68,7 @@ public class DeviceFileUploadCollectionProducer implements DeviceCollectionProdu
 
             MultipartFile dataFile = mRequest.getFile(getSupportedType().getParameterName("dataFile"));
             if (dataFile == null || StringUtils.isBlank(dataFile.getOriginalFilename())) {
-                throw new RuntimeException("dataFile is null");
+                throw new UnsupportedOperationException("Data file is not found.");
             }
 
             final String uploadTypeStr =
