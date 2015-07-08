@@ -1,7 +1,12 @@
 package com.cannontech.database.db.capcontrol;
 
+import java.util.List;
+
 import org.springframework.jdbc.core.JdbcOperations;
 
+import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
+import com.cannontech.capcontrol.dao.ZoneDao;
+import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
@@ -9,6 +14,7 @@ import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.point.Point;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This type was created in VisualAge.
@@ -76,6 +82,7 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
     public void delete() throws java.sql.SQLException {
     	handleAltSubIdOnDelete (getSubstationBusID());
     	handleSubStationAssignmentDelete(getSubstationBusID());
+    	handleZoneDelete(getSubstationBusID());
     	delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getSubstationBusID() );	
     }
     
@@ -316,6 +323,15 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
     
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
         yukonTemplate.update(query, subBusDeletedId);
+    }
+
+    private void handleZoneDelete(Integer subBusId) {
+        ZoneDao zoneDao = YukonSpringHook.getBean(ZoneDao.class);
+        CcMonitorBankListDao ccMonitorBankListDao = YukonSpringHook.getBean(CcMonitorBankListDao.class);
+        List<Zone> zonesBySubBusId = zoneDao.getZonesBySubBusId(subBusId);
+        for (Zone zone : zonesBySubBusId) {
+            ccMonitorBankListDao.removePointsByZone(zone.getId());
+        }
     }
 
     public Integer getPhaseB() {
