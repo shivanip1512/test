@@ -151,17 +151,17 @@
             <fileset dir="${basedir}/yukon-install/resources/client_common_dlls" />
             <fileset dir="${client.bag}" excludes="*.txt,*.xml,*.properties,*.debug,images/**,commands/**"/>
             <fileset file="${basedir}/yukon-client/billing/src/main/resources" includes="*.bat"/>
-            <fileset file="${basedir}/yukon-client/commander/src/main/resources/CommanderIcon.ico"/>
-            <fileset file="${basedir}/yukon-client/dbeditor/resource/dbEditorIcon.ico"/>
+            <fileset file="${basedir}/yukon-client/commander/src/main/resources/CommanderIcon2.ico"/>
+            <fileset file="${basedir}/yukon-client/dbeditor/resource/dbEditorIcon2.ico"/>
             <fileset file="${basedir}/yukon-client/esub-editor/resource/esubEditorIcon.ico"/>
             <fileset dir="${basedir}/yukon-client/export/conf" />
             <fileset file="${basedir}/yukon-client/monitor/src/main/resources/YukonNoAlarm.ico" />
-            <fileset file="${basedir}/yukon-client/monitor/src/main/resources/AlarmMonitor.ico" />
+            <fileset file="${basedir}/yukon-client/monitor/src/main/resources/AlarmMonitor2.ico" />
             <fileset file="${basedir}/yukon-client/monitor/systray4j.dll" />
             <fileset dir="${basedir}/yukon-client/notification/conf" />
             <fileset dir="${basedir}/yukon-client/tools/src/main/resources" includes="*.bat" />
-            <fileset file="${basedir}/yukon-client/trending/resource/GraphIcon.ico"/>
-            <fileset file="${basedir}/yukon-client/tdc/resource/tdcIcon.ico"/>
+            <fileset file="${basedir}/yukon-client/trending/resource/GraphIcon2.ico"/>
+            <fileset file="${basedir}/yukon-client/tdc/resource/tdcIcon2.ico"/>
             <fileset file="${basedir}/yukon-install/resources/shortcut_icons/YukonSetup.ico"/>
             <fileset file="${basedir}/yukon-install/resources/shortcut_icons/YukonLogin.ico"/>
             <fileset dir="${basedir}/yukon-client/services/conf"/>

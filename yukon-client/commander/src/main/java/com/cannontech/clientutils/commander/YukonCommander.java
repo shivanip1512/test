@@ -128,11 +128,11 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
     private static final String YC_TITLE = "Commander";
     public static final String HELP_FILE = "Yukon_Commander_Help.chm";
     
-    public static final URL COMMANDER_IMG_16 = YukonCommander.class.getResource("/Commander16.gif");
-    public static final URL COMMANDER_IMG_24 = YukonCommander.class.getResource("/Commander24.gif");
-    public static final URL COMMANDER_IMG_32 = YukonCommander.class.getResource("/Commander32.gif");
-    public static final URL COMMANDER_IMG_48 = YukonCommander.class.getResource("/Commander48.gif");
-    public static final URL COMMANDER_IMG_64 = YukonCommander.class.getResource("/Commander64.gif");
+    public static final URL COMMANDER_IMG_16 = YukonCommander.class.getResource("/Commander16.png");
+    public static final URL COMMANDER_IMG_24 = YukonCommander.class.getResource("/Commander24.png");
+    public static final URL COMMANDER_IMG_32 = YukonCommander.class.getResource("/Commander32.png");
+    public static final URL COMMANDER_IMG_48 = YukonCommander.class.getResource("/Commander48.png");
+    public static final URL COMMANDER_IMG_64 = YukonCommander.class.getResource("/Commander64.png");
     
     public static List<Image> getIconsImages() {
         

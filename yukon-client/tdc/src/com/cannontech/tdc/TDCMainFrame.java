@@ -145,11 +145,11 @@ public class TDCMainFrame extends javax.swing.JFrame implements com.cannontech.t
 	private SignalAlarmHandler alarmHandler = null;   
 	private javax.swing.JMenuItem jMenuItemResetCntrlHrs = null;
 
-    public static final URL TDC_IMG_16 = TDCMainFrame.class.getResource("/TDC16.gif");
-    public static final URL TDC_IMG_24 = TDCMainFrame.class.getResource("/TDC24.gif");
-    public static final URL TDC_IMG_32 = TDCMainFrame.class.getResource("/TDC32.gif");
-    public static final URL TDC_IMG_48 = TDCMainFrame.class.getResource("/TDC48.gif");
-    public static final URL TDC_IMG_64 = TDCMainFrame.class.getResource("/TDC64.gif");
+    public static final URL TDC_IMG_16 = TDCMainFrame.class.getResource("/TDC16.png");
+    public static final URL TDC_IMG_24 = TDCMainFrame.class.getResource("/TDC24.png");
+    public static final URL TDC_IMG_32 = TDCMainFrame.class.getResource("/TDC32.png");
+    public static final URL TDC_IMG_48 = TDCMainFrame.class.getResource("/TDC48.png");
+    public static final URL TDC_IMG_64 = TDCMainFrame.class.getResource("/TDC64.png");
     
     public static List<Image> getIconsImages() {
         

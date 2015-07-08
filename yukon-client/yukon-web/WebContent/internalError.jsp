@@ -84,7 +84,7 @@ pageContext.setAttribute("stackTrace", ServletUtil.printNiceHtmlStackTrace(throw
 
 <c:if test="${!loggedIn}">
     <c:set var="logoHtml">
-        <img class="logoImage" src="<cti:url value="/WebConfig/yukon/YukonBW.gif"/>">
+        <img class="logoImage" src="<cti:url value="/WebConfig/yukon/YukonBW3.gif"/>">
     </c:set>
     <c:set var="genericMainMessage" value="An error occurred while processing your request."/>
     <c:set var="genericErrorMessage" value="Try to execute your request again."/>

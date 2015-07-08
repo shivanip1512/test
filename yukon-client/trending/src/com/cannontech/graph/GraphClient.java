@@ -108,11 +108,11 @@ public class GraphClient extends JPanel implements DBChangeListener, GraphDefine
 
     private static final String applicationName = "Trending";
 
-    public static final URL GRAPH_IMG_16 = GraphClient.class.getResource("/GraphTrending16.gif");
-    public static final URL GRAPH_IMG_24 = GraphClient.class.getResource("/GraphTrending24.gif");
-    public static final URL GRAPH_IMG_32 = GraphClient.class.getResource("/GraphTrending32.gif");
-    public static final URL GRAPH_IMG_48 = GraphClient.class.getResource("/GraphTrending48.gif");
-    public static final URL GRAPH_IMG_64 = GraphClient.class.getResource("/GraphTrending64.gif");
+    public static final URL GRAPH_IMG_16 = GraphClient.class.getResource("/GraphTrending16.png");
+    public static final URL GRAPH_IMG_24 = GraphClient.class.getResource("/GraphTrending24.png");
+    public static final URL GRAPH_IMG_32 = GraphClient.class.getResource("/GraphTrending32.png");
+    public static final URL GRAPH_IMG_48 = GraphClient.class.getResource("/GraphTrending48.png");
+    public static final URL GRAPH_IMG_64 = GraphClient.class.getResource("/GraphTrending64.png");
 
     public static List<Image> getIconsImages() {
 

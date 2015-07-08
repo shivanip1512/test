@@ -176,11 +176,11 @@ public class DatabaseEditor implements PropertyPanelListener, WizardPanelListene
     // all editor frame sizes
     public static final Dimension EDITOR_FRAME_SIZE = new Dimension(435, 600);
 
-    public static final URL DBEDITOR_IMG_16 = DatabaseEditor.class.getResource("/DatabaseEditor16.gif");
-    public static final URL DBEDITOR_IMG_24 = DatabaseEditor.class.getResource("/DatabaseEditor24.gif");
-    public static final URL DBEDITOR_IMG_32 = DatabaseEditor.class.getResource("/DatabaseEditor32.gif");
-    public static final URL DBEDITOR_IMG_48 = DatabaseEditor.class.getResource("/DatabaseEditor48.gif");
-    public static final URL DBEDITOR_IMG_64 = DatabaseEditor.class.getResource("/DatabaseEditor64.gif");
+    public static final URL DBEDITOR_IMG_16 = DatabaseEditor.class.getResource("/DatabaseEditor16.png");
+    public static final URL DBEDITOR_IMG_24 = DatabaseEditor.class.getResource("/DatabaseEditor24.png");
+    public static final URL DBEDITOR_IMG_32 = DatabaseEditor.class.getResource("/DatabaseEditor32.png");
+    public static final URL DBEDITOR_IMG_48 = DatabaseEditor.class.getResource("/DatabaseEditor48.png");
+    public static final URL DBEDITOR_IMG_64 = DatabaseEditor.class.getResource("/DatabaseEditor64.png");
 
     // Do not make this static
     // Making this static causes this to initialize our logging before we get a chance to set the application name. Resulting in 'UnknownApplication'
