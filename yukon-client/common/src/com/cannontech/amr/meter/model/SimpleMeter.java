@@ -10,6 +10,10 @@ public class SimpleMeter implements YukonDevice {
     private PaoIdentifier paoIdentifier;
     private String meterNumber;
     
+    public SimpleMeter() {
+        super();
+    }
+
     public SimpleMeter(PaoIdentifier paoIdentifier, String meterNumber) {
         this.paoIdentifier = paoIdentifier;
         this.meterNumber = meterNumber;

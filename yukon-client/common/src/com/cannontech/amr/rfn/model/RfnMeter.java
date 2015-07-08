@@ -15,6 +15,10 @@ public class RfnMeter extends YukonMeter implements YukonRfn, Serializable {
 
     private RfnIdentifier meterIdentifier;
 
+    public RfnMeter() {
+        super();
+    }
+
     public RfnMeter(YukonPao pao, RfnIdentifier meterIdentifier, String meterNumber, String paoName, boolean disabled) {
         super(pao.getPaoIdentifier(), meterNumber, paoName, disabled);
         this.meterIdentifier = meterIdentifier;

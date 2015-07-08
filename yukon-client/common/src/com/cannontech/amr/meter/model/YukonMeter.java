@@ -9,6 +9,10 @@ public abstract class YukonMeter extends SimpleMeter implements DisplayablePao {
     private String name;
     private boolean disabled;
     
+    public YukonMeter() {
+        super();
+    }
+
     protected YukonMeter(PaoIdentifier paoIdentifier, String meterNumber, String name, boolean disabled) {
         super(paoIdentifier, meterNumber);
         this.name = name;
