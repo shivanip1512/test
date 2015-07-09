@@ -522,3 +522,13 @@ string getYukonBase()
 
     return yukon_base_default;
 }
+
+namespace boost
+{
+    void assertion_failed_msg(char const * expr, char const * msg, char const * function, char const * file, long line)
+    {
+        std::cerr << expr << ": " << msg << " at " << function << " (" << file << ":" << line << ")" << std::endl;
+        autopsy(file, line);
+    }
+}
+
