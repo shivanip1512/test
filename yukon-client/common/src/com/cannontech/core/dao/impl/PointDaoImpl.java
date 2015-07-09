@@ -331,7 +331,7 @@ public class PointDaoImpl implements PointDao {
 
                     LitePointUnit lpu = new LitePointUnit(pointID, uomID, decimalPlaces);
                     return lpu;
-                };
+                }
             });
             return lpu;
         } catch (IncorrectResultSizeDataAccessException e) {
@@ -811,5 +811,14 @@ public class PointDaoImpl implements PointDao {
         sqlb.append("ORDER BY numberedRows.rn");
 
         return builder;
+    }
+    
+    @Override 
+    public PointBase get(int id) {
+        
+        LitePoint litePoint = getLitePoint(id);
+        PointBase pointBase = (PointBase) LiteFactory.createDBPersistent(litePoint);
+        pointBase = (PointBase) dbPersistentDao.retrieveDBPersistent(pointBase);
+        return pointBase;
     }
 }

@@ -1,0 +1,197 @@
+package com.cannontech.web.capcontrol.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.stereotype.Service;
+
+import com.cannontech.clientutils.tags.IAlarmDefs;
+import com.cannontech.common.point.alarm.dao.PointPropertyValueDao;
+import com.cannontech.common.point.alarm.model.PointPropertyValue;
+import com.cannontech.core.dao.AlarmCatDao;
+import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.StateDao;
+import com.cannontech.database.TransactionType;
+import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.lite.LiteAlarmCategory;
+import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.db.point.PointAlarming;
+import com.cannontech.web.capcontrol.models.PointModel;
+import com.cannontech.web.capcontrol.service.PointEditorService;
+import com.cannontech.web.editor.point.AlarmTableEntry;
+import com.cannontech.web.editor.point.StaleData;
+
+@Service
+public class PointEditorServiceImpl implements PointEditorService {
+    
+    @Autowired AlarmCatDao alarmCatDao;
+    @Autowired DBPersistentDao dBPersistentDao;
+    @Autowired PointDao pointDao;
+    @Autowired PointPropertyValueDao pointPropertyValueDao;
+    @Autowired StateDao stateDao;
+    
+    @Override
+    public PointModel getModelForId(int id) {
+        
+        PointBase base = pointDao.get(id);
+        
+        StaleData staleData = getStaleData(id);
+        
+        List<AlarmTableEntry> alarmTableEntries = getAlarmTableEntries(base);
+        
+        PointModel model = new PointModel(base, staleData, alarmTableEntries);
+        
+        return model;
+    }
+    
+    private StaleData getStaleData(int id) {
+        
+        StaleData staleData = new StaleData();
+        
+        boolean staleEnabled = false;
+        
+        try {
+            PointPropertyValue timeProperty = pointPropertyValueDao.getByIdAndPropertyId(id, StaleData.TIME_PROPERTY);
+            PointPropertyValue updateProperty = pointPropertyValueDao.getByIdAndPropertyId(id, StaleData.UPDATE_PROPERTY);
+            staleEnabled = true;
+            staleData.setEnabled(staleEnabled);
+            staleData.setTime((int) timeProperty.getFloatValue());
+            staleData.setUpdateStyle((int) updateProperty.getFloatValue());
+            
+        }catch(DataAccessException e) {
+            
+            staleData.setEnabled(false);
+            staleData.setTime(5);
+            staleData.setUpdateStyle(1);
+        }
+        
+        return staleData;
+        
+    }
+    
+    private List<AlarmTableEntry> getAlarmTableEntries(PointBase pointBase) {
+        
+        int ptType = PointTypes.getType(pointBase.getPoint().getPointType());
+
+        ArrayList<AlarmTableEntry> notifEntries = new ArrayList<>();
+        List<LiteAlarmCategory> allAlarmStates = DefaultDatabaseCache.getInstance().getAllAlarmCategories();
+        
+        // be sure we have a 32 character string
+        String alarmStates = pointBase.getPointAlarming().getAlarmStates().length() != PointAlarming.ALARM_STATE_COUNT ?
+            PointAlarming.DEFAULT_ALARM_STATES : 
+            pointBase.getPointAlarming().getAlarmStates();
+
+        String excludeNotifyStates = pointBase.getPointAlarming().getExcludeNotifyStates();
+
+        // this drives what list of strings we will put into our table
+        String[] alarm_cats = IAlarmDefs.OTHER_ALARM_STATES;
+        if (ptType == PointTypes.STATUS_POINT || ptType == PointTypes.CALCULATED_STATUS_POINT) {
+            alarm_cats = IAlarmDefs.STATUS_ALARM_STATES;
+        }
+        LiteStateGroup stateGroup = stateDao.getLiteStateGroup(pointBase.getPoint().getStateGroupID());
+
+        String[] stateNames = new String[stateGroup.getStatesList().size()];
+        for (int j = 0; j < stateGroup.getStatesList().size(); j++) {
+            stateNames[j] = stateGroup.getStatesList().get(j).toString();
+        }
+        // insert all the predefined states into the table
+        int i = 0;
+        for (i = 0; i < alarm_cats.length; i++) {
+            AlarmTableEntry entry = new AlarmTableEntry();
+            setAlarmGenNotif(entry, alarmStates.charAt(i), allAlarmStates, excludeNotifyStates.toUpperCase().charAt(i));
+
+            entry.setCondition(alarm_cats[i]);
+            notifEntries.add(entry);
+        }
+
+        if (ptType == PointTypes.STATUS_POINT || ptType == PointTypes.CALCULATED_STATUS_POINT) {
+
+            for (int j = 0; j < stateNames.length; j++, i++) {
+                if (i >= alarmStates.length()) {
+                    throw new ArrayIndexOutOfBoundsException("Trying to get alarmStates[" + i + "] while alarmStates.length()==" + alarmStates.length() + 
+                        ", too many states for Status point "+ pointBase.getPoint().getPointName() + " defined.");
+                }
+                AlarmTableEntry entry = new AlarmTableEntry();
+                setAlarmGenNotif(entry, alarmStates.charAt(i), allAlarmStates, excludeNotifyStates.toUpperCase().charAt(i));
+
+                entry.setCondition(stateNames[j]);
+                notifEntries.add(entry);
+            }
+        }
+        return notifEntries;
+    }
+    
+    private static void setAlarmGenNotif(AlarmTableEntry entry, int alarmStateId, List<LiteAlarmCategory> allAlarmStates, char gen) {
+
+        if ((alarmStateId - 1) < allAlarmStates.size()) {
+            entry.setGenerate(allAlarmStates.get((alarmStateId - 1)).getCategoryName());
+        } else {
+            entry.setGenerate(allAlarmStates.get(0).getCategoryName());
+        }
+        entry.setExcludeNotify(PointAlarming.getExcludeNotifyString(gen));
+    }
+    
+    @Override
+    public int save(PointModel model) {
+        
+        PointBase base = model.getPointBase();
+        Integer pointId = base.getPoint().getPointID();
+        
+        TransactionType type = TransactionType.UPDATE;
+        if (pointId == null) {
+            type = TransactionType.INSERT;
+        }
+        
+        /* This one must be done BEFORE the base object */
+        attachAlarms(base, model.getAlarmTableEntries());
+        
+        
+        dBPersistentDao.performDBChange(base, type);
+        
+        pointId = base.getPoint().getPointID();
+        
+        /* This one must be done AFTER for create */
+        saveStaleData(pointId, model.getStaleData());
+        
+        return pointId;
+    }
+    
+    private void saveStaleData(int pointId, StaleData staleData) {
+        
+        PointPropertyValue timeProperty = new PointPropertyValue(pointId, StaleData.TIME_PROPERTY, staleData.getTime());
+        PointPropertyValue updateProperty = new PointPropertyValue(pointId, StaleData.UPDATE_PROPERTY, staleData.getUpdateStyle());
+        
+        pointPropertyValueDao.remove(timeProperty);
+        pointPropertyValueDao.remove(updateProperty);
+
+        if (staleData.isEnabled()) {
+            pointPropertyValueDao.add(timeProperty);
+            pointPropertyValueDao.add(updateProperty);
+        }
+    }
+    
+    private void attachAlarms(PointBase pointBase, List<AlarmTableEntry> alarmTableEntries) {
+        
+        String alarmStates = "";
+        String exclNotify = "";
+
+        for (AlarmTableEntry entry : alarmTableEntries) {
+            alarmStates += (char) alarmCatDao.getAlarmCategoryIdFromCache(entry.getGenerate());
+            exclNotify += PointAlarming.getExcludeNotifyChar(entry.getExcludeNotify());
+        }
+
+        int numberAlarms = alarmTableEntries.size();
+        // fill in the rest of the alarmStates and excludeNotifyState so we have 32 chars
+        alarmStates += PointAlarming.DEFAULT_ALARM_STATES.substring(numberAlarms);
+        exclNotify += PointAlarming.DEFAULT_EXCLUDE_NOTIFY.substring(numberAlarms);
+
+        pointBase.getPointAlarming().setAlarmStates(alarmStates);
+        pointBase.getPointAlarming().setExcludeNotifyStates(exclNotify);
+    }
+    
+}

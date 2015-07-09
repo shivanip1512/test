@@ -655,6 +655,16 @@
               </page>
             </pages>
           </page>
+          <page name="point.CREATE" type="BASIC" />
+          <page name="point.VIEW" type="BASIC">
+            <link>/capcontrol/poinst/${pointModel.pointBase.point.pointID}</link>
+            <labelArgument>${pointModel.pointBase.point.pointName}</labelArgument>
+            <pages>
+              <page name="point.EDIT" type="BASIC" hideFavorite="true">
+                <labelArgument>${pointModel.pointBase.point.pointName}</labelArgument>
+              </page>
+            </pages>
+          </page>
           <page name="movedCapBanks" type="BASIC">
             <link>/capcontrol/move/movedCapBanks</link>
           </page>

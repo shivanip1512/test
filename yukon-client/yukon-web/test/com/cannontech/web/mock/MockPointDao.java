@@ -108,7 +108,7 @@ public class MockPointDao implements PointDao {
     @Override
     public java.util.List<PointBase> getPointsForPao(int paoId) {
         return null;
-    };
+    }
 
     @Override
     public int getNextPointId() {
@@ -236,6 +236,11 @@ public class MockPointDao implements PointDao {
 
     @Override
     public List<LitePoint> findAllPointsWithName(String pointName) {
+        return null;
+    }
+
+    @Override
+    public PointBase get(int id) {
         return null;
     }
 }

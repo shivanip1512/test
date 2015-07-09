@@ -18,13 +18,13 @@ public class StaleData {
     private Integer time = 5;
     private boolean enabled = false;
     private PointBase point = null;
+    
+    public static final int TIME_PROPERTY = 1;
+    public static final int UPDATE_PROPERTY = 2;
 
-    public StaleData() {
-        super();
-    }
+    public StaleData() {}
     
     public StaleData(PointBase point) {
-        super();
         this.point = point;
         init();
     }
@@ -80,7 +80,7 @@ public class StaleData {
         }
     }
     
-    public void enableClick(ValueChangeEvent vce){
+    public void enableClick(@SuppressWarnings("unused") ValueChangeEvent vce){
         if(isEnabled()) {
             this.enabled = false;
         } else {

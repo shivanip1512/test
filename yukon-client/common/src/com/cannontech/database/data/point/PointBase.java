@@ -32,9 +32,6 @@ public class PointBase extends DBPersistent implements CTIDbChange, EditorPanel 
     private Vector<FDRTranslation> pointFDR = null;
     private PointAlarming pointAlarming = null;
 
-    /**
-     * PointBase constructor comment.
-     */
     public PointBase() {
         super();
     }
@@ -86,9 +83,6 @@ public class PointBase extends DBPersistent implements CTIDbChange, EditorPanel 
         getPoint().delete();
     }
 
-    public boolean equals(PointBase obj) {
-        return getPoint().getPointID().equals(obj.getPoint().getPointID());
-    }
 
     @Override
     public boolean equals(Object obj) {
@@ -97,6 +91,14 @@ public class PointBase extends DBPersistent implements CTIDbChange, EditorPanel 
         } else {
             return super.equals(obj);
         }
+    }
+    
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((point == null) ? 0 : point.getPointID().hashCode());
+        return result;
     }
 
     @Override
@@ -131,102 +133,102 @@ public class PointBase extends DBPersistent implements CTIDbChange, EditorPanel 
         return pointFDR;
     }
 
-    public final static boolean hasCapBank(Integer pointID) throws SQLException {
+    public final static boolean hasCapBank(Integer pointID) {
         return hasCapBank(pointID, CtiUtilities.getDatabaseAlias());
     }
 
-    public final static boolean hasCapBank(Integer pointID, String databaseAlias) throws SQLException {
+    public final static boolean hasCapBank(Integer pointID, String databaseAlias) {
         SqlStatement stmt = new SqlStatement("SELECT count(ControlPointID) FROM " + CapBank.TABLE_NAME + 
                                              " WHERE ControlPointID=" + pointID,
                                              databaseAlias);
 
         try {
             stmt.execute();
-            return new Integer(stmt.getRow(0)[0].toString()).intValue() > 0;
+            return new Integer(stmt.getRow(0)[0].toString()) > 0;
         } catch (Exception e) {
             return false;
         }
     }
 
-    public final static boolean hasCapControlSubstationBus(Integer pointID) throws SQLException {
+    public final static boolean hasCapControlSubstationBus(Integer pointID) {
         return hasCapControlSubstationBus(pointID, CtiUtilities.getDatabaseAlias());
     }
 
-    public final static boolean hasCapControlSubstationBus(Integer pointID, String databaseAlias) throws SQLException {
+    public final static boolean hasCapControlSubstationBus(Integer pointID, String databaseAlias) {
         SqlStatement stmt = new SqlStatement("SELECT count(CurrentWattLoadPointID) FROM " + CapControlSubstationBus.TABLE_NAME + 
                                              " WHERE CurrentWattLoadPointID=" + pointID + " or CurrentVarLoadPointID=" + pointID,
                                              databaseAlias);
 
         try {
             stmt.execute();
-            return new Integer(stmt.getRow(0)[0].toString()).intValue() > 0;
+            return new Integer(stmt.getRow(0)[0].toString()) > 0;
         } catch (Exception e) {
             return false;
         }
     }
 
-    public final static boolean hasLMGroup(Integer pointID) throws SQLException {
+    public final static boolean hasLMGroup(Integer pointID) {
         return hasLMGroup(pointID, CtiUtilities.getDatabaseAlias());
     }
 
-    public final static boolean hasLMGroup(Integer pointID, String databaseAlias) throws SQLException {
+    public final static boolean hasLMGroup(Integer pointID, String databaseAlias) {
         SqlStatement stmt = new SqlStatement("SELECT count(PointIDUsage) FROM " + LMGroupPoint.TABLE_NAME + 
                                              " WHERE PointIDUsage=" + pointID,
                                              databaseAlias);
 
         try {
             stmt.execute();
-            return new Integer(stmt.getRow(0)[0].toString()).intValue() > 0;
+            return new Integer(stmt.getRow(0)[0].toString()) > 0;
         } catch (Exception e) {
             return false;
         }
     }
 
-    public final static boolean hasLMTrigger(Integer pointID) throws SQLException {
+    public final static boolean hasLMTrigger(Integer pointID) {
         return hasLMTrigger(pointID, CtiUtilities.getDatabaseAlias());
     }
 
-    public final static boolean hasLMTrigger(Integer pointID, String databaseAlias) throws SQLException {
+    public final static boolean hasLMTrigger(Integer pointID, String databaseAlias) {
         SqlStatement stmt = new SqlStatement("SELECT count(PointID) FROM " + LMControlAreaTrigger.TABLE_NAME + 
                                              " WHERE PointID=" + pointID + " or PeakPointID=" + pointID,
                                              databaseAlias);
 
         try {
             stmt.execute();
-            return new Integer(stmt.getRow(0)[0].toString()).intValue() > 0;
+            return new Integer(stmt.getRow(0)[0].toString()) > 0;
         } catch (Exception e) {
             return false;
         }
     }
 
-    public final static boolean hasRawPointHistorys(Integer pointID) throws SQLException {
+    public final static boolean hasRawPointHistorys(Integer pointID) {
         return hasRawPointHistorys(pointID, CtiUtilities.getDatabaseAlias());
     }
 
-    public final static boolean hasRawPointHistorys(Integer pointID, String databaseAlias) throws SQLException {
+    public final static boolean hasRawPointHistorys(Integer pointID, String databaseAlias) {
         SqlStatement stmt = new SqlStatement("SELECT count(pointID) FROM " + RawPointHistory.TABLE_NAME + 
                                              " WHERE pointID=" + pointID,
                                              databaseAlias);
 
         try {
             stmt.execute();
-            return new Integer(stmt.getRow(0)[0].toString()).intValue() > 0;
+            return new Integer(stmt.getRow(0)[0].toString()) > 0;
         } catch (Exception e) {
             return false;
         }
     }
 
-    public static final boolean hasSystemLogEntry(Integer ptID) throws SQLException {
+    public static final boolean hasSystemLogEntry(Integer ptID) {
         return hasSystemLogEntry(ptID, CtiUtilities.getDatabaseAlias());
     }
 
-    public final static boolean hasSystemLogEntry(Integer ptID, String databaseAlias) throws SQLException {
+    public final static boolean hasSystemLogEntry(Integer ptID, String databaseAlias) {
         SqlStatement stmt = new SqlStatement("SELECT count(pointID) FROM " + SystemLog.TABLE_NAME + 
                                              " WHERE pointID=" + ptID, databaseAlias);
 
         try {
             stmt.execute();
-            return new Integer(stmt.getRow(0)[0].toString()).intValue() > 0;
+            return new Integer(stmt.getRow(0)[0].toString()) > 0;
         } catch (Exception e) {
             return false;
         }

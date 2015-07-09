@@ -123,7 +123,7 @@ public class MockPointDao implements PointDao {
             return getPointsForDevice2(pao);
         }
         return null;
-    };
+    }
     
     private List<PointBase> getPointsForDevice1(PaoIdentifier pao) {
         List<PointBase> points = new ArrayList<PointBase>();
@@ -285,6 +285,11 @@ public class MockPointDao implements PointDao {
 
     @Override
     public List<LitePoint> findAllPointsWithName(String pointName) {
+        return null;
+    }
+
+    @Override
+    public PointBase get(int id) {
         return null;
     }
 }

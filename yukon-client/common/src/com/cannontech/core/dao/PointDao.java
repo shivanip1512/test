@@ -261,4 +261,6 @@ public interface PointDao {
     /** Retrieves all points with the specified name. */
     List<LitePoint> findAllPointsWithName(String pointName);
 
+    PointBase get(int id);
+
 }
