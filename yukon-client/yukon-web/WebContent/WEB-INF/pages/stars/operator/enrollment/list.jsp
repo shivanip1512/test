@@ -66,14 +66,15 @@
                                     <td class="applianceCategory" rowspan="${rows}">
                                         ${fn:escapeXml(enrollmentProgram.applianceCategory.name)}
                                     </td>
-                                    <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyId="${energyCompanyId}">
-                                        <td class="loadGroup" rowspan="${rows}">
+                                   
+                                </c:if>
+                                 <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyId="${energyCompanyId}">
+                                        <td class="loadGroup">
                                             <c:if test="${enrollmentProgram.loadGroupId != 0}">
-                                                ${fn:escapeXml(loadGroupNames[enrollmentProgram.loadGroupId])}
+                                                ${fn:escapeXml(loadGroupNames[hardware.loadGroupId])}
                                             </c:if>
                                         </td>
                                     </cti:checkEnergyCompanySetting>
-                                </c:if>
                                 <td class="hardware">${fn:escapeXml(hardware.displayName)}</td>
                                 <td class="relay wsnw">
                                     <c:set var="relayStr" value="${hardware.relay}"/>
@@ -116,7 +117,7 @@
                 linkType="button" 
                 nameKey="add" 
                 icon="icon-add" 
-                excludeIds="${alreadyEnrolled}"/>
+               />
         </div>
     </cti:checkRolesAndProperties>
 </tags:sectionContainer2>

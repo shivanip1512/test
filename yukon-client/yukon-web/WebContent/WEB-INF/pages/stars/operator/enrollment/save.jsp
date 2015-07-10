@@ -18,6 +18,7 @@
         <form:hidden path="inventoryEnrollments[${status.index}].inventoryId"/>
         <form:hidden path="inventoryEnrollments[${status.index}].enrolled"/>
         <form:hidden path="inventoryEnrollments[${status.index}].relay"/>
+        <form:hidden path="inventoryEnrollments[${status.index}].loadGroupId"/>
     </c:forEach>
 
     <div>

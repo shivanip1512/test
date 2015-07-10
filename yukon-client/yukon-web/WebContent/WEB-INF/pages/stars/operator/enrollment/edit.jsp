@@ -17,20 +17,6 @@
     <input type="hidden" name="accountId" value="${accountId}"/>
     <input type="hidden" name="assignedProgramId" value="${param.assignedProgramId}"/>
 
-    <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyId="${energyCompanyId}">
-        <tags:nameValueContainer2 tableClass="stacked">
-            <tags:nameValue2 nameKey=".group">
-                <c:if test="${empty loadGroups}">
-                    <i:inline key=".groupNotApplicable"/>
-                </c:if>
-                <c:if test="${!empty loadGroups}">
-                    <c:set var="selectedLoadGroupId" value="${programEnrollment.loadGroupId}"/>
-                    <form:select path="loadGroupId" items="${loadGroups}" 
-                        itemLabel="name" itemValue="paoIdentifier.paoId"/>
-                </c:if>
-            </tags:nameValue2>
-        </tags:nameValueContainer2>
-    </cti:checkEnergyCompanySetting>
 
     <tags:sectionContainer2 nameKey="hardwareAssigned">
         <div class="scroll-md">
@@ -40,6 +26,7 @@
                         <th></th>
                         <th class="deviceLabel"><i:inline key=".deviceLabel"/></th>
                         <th class="relay"><i:inline key=".relay"/></th>
+                        <th class="group"><i:inline key=".group"/></th>
                     </tr>
                 </thead>
                 <tfoot></tfoot>
@@ -49,6 +36,7 @@
                         <c:set var="inventoryId" value="${item.inventoryId}"/>
                         <c:set var="inventory" value="${inventoryById[inventoryId]}"/>
                         <c:set var="enrolled" value="${item.enrolled}"/>
+                        <c:set var="loadGroupId" value="${item.loadGroupId}"/>
                         <tr data-inventory-id="${inventoryId}">
                             <td>
                                 <form:hidden path="inventoryEnrollments[${status.index}].inventoryId"/>
@@ -66,6 +54,20 @@
                                         <form:option value="${relayNumber}">${relayNumber}</form:option>
                                     </c:forEach>
                                 </form:select>
+                            </td>
+                            <td>
+                                <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyId="${energyCompanyId}">
+        							<tags:nameValueContainer2 tableClass="stacked">
+                							<c:if test="${empty loadGroups}">
+                    							<i:inline key=".groupNotApplicable"/>
+                							</c:if>
+                							<c:if test="${!empty loadGroups}">
+                    							<c:set var="selectedLoadGroupId" value="${programEnrollment.loadGroupId}"/>
+                    							<form:select class="js-enroll-relay" path="inventoryEnrollments[${status.index}].loadGroupId" items="${loadGroups}" 
+                        						itemLabel="name" itemValue="paoIdentifier.paoId" disabled="${!enrolled}"/>
+                							</c:if>
+       								 </tags:nameValueContainer2>
+   							 	</cti:checkEnergyCompanySetting>
                             </td>
                         </tr>
                     </c:forEach>

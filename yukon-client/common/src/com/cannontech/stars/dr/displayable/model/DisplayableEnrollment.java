@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.displayable.model;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -159,6 +160,27 @@ public final class DisplayableEnrollment {
             }
             // no enrolled hardware or virtual program
             return 0;
+        }
+        
+        /**
+         * Method to get Load Group ids that are enrolled in a program in this category
+         * 
+         * @return Set of loadGroup ids
+         */
+        public Set<Integer> getLoadGroupIds() {
+            Set<Integer> loadGroupIds = null;
+            if (inventory == null || inventory.size() == 0) {
+                return loadGroupIds;
+            }
+            loadGroupIds = new HashSet<Integer>();
+
+            for (DisplayableEnrollmentInventory inventoryItem : inventory) {
+                if (inventoryItem.enrolled) {
+                    loadGroupIds.add(inventoryItem.getLoadGroupId());
+                }
+            }
+
+            return loadGroupIds;
         }
         
         public List<DisplayableEnrollmentInventory> getInventory() {

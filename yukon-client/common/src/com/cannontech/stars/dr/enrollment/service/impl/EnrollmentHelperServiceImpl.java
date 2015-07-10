@@ -313,11 +313,6 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
                             isProgramEnrollmentEnrolled = true;
                         }
                     }
-                } else if (!useHardwareAddressing) {
-                    if(programEnrollment.getAssignedProgramId() == newProgramEnrollment.getAssignedProgramId()){
-                        programEnrollment.setLmGroupId(newProgramEnrollment.getLmGroupId());
-                        programEnrollment.setEnroll(true);
-                    }
                 }
             }
         }    

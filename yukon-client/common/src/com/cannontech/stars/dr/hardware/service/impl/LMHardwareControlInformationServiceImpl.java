@@ -39,11 +39,7 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
         int relay = enrollmentInfo.getRelayNumber();
         /*Shouldn't already be an entry, but this might be a repeat enrollment.  Check for existence*/
         try {
-            LMHardwareControlGroup existingEnrollment =
-                lmHardwareControlGroupDao
-                    .findCurrentEnrollmentByInventoryIdAndProgramIdAndAccountId(inventoryId, 
-                                                                                programId, 
-                                                                                accountId);
+            
             Instant now = new Instant();
 
             // Clear all the opt outs for the enrolled inventory
@@ -53,26 +49,12 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
             	optOutService.cancelOptOut(lastEventIdList, currentUser);
             }
             
-            /*If there is an existing enrollment that is using this same inventory and program
-             * we need to then stop enrollment for that before starting the existing.
-             * We need to allow this method to do stops as well as starts to help migrate from legacy STARS systems and to
-             * properly log repetitive enrollments.
-             */
-            if (existingEnrollment != null && 
-                (existingEnrollment.getLmGroupId() != loadGroupId || existingEnrollment.getRelay() != relay)) {
-                existingEnrollment.setGroupEnrollStop(now);
-                existingEnrollment.setUserIdSecondAction(currentUser.getUserID());
-                lmHardwareControlGroupDao.update(existingEnrollment);
-            }
 
             /*Do the start*/
             LMHardwareControlGroup controlInformation = new LMHardwareControlGroup(inventoryId, loadGroupId, accountId, LMHardwareControlGroup.ENROLLMENT_ENTRY, relay, programId, currentUser.getUserID());
             controlInformation.setGroupEnrollStart(now);
             lmHardwareControlGroupDao.add(controlInformation);
             
-            if (!useHardwardAddressing) {
-                adjustLoadGroupsForExistingEnrollments(inventoryId, loadGroupId, accountId, programId, currentUser);
-            }
 
             return true;
         } catch (Exception e) {

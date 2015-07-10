@@ -12,6 +12,16 @@ public class ProgramEnrollment {
         private int inventoryId;
         private boolean enrolled;
         private int relay;
+        private int loadGroupId;
+       
+
+        public int getLoadGroupId() {
+            return loadGroupId;
+        }
+
+        public void setLoadGroupId(int loadGroupId) {
+            this.loadGroupId = loadGroupId;
+        }
 
         public InventoryEnrollment() {
         }
@@ -21,6 +31,7 @@ public class ProgramEnrollment {
             inventoryId = displayable.getInventoryId();
             enrolled = displayable.isEnrolled();
             relay = displayable.getRelay();
+            loadGroupId = displayable.getLoadGroupId();
         }
         
         public int getInventoryId() {
@@ -46,6 +57,7 @@ public class ProgramEnrollment {
         public void setRelay(int relay) {
             this.relay = relay;
         }
+     
     }
 
     private int loadGroupId;
@@ -91,7 +103,7 @@ public class ProgramEnrollment {
                 new com.cannontech.stars.dr.program.service.ProgramEnrollment();
             pe.setApplianceCategoryId(applianceCategoryId);
             pe.setAssignedProgramId(assignedProgramId);
-            pe.setLmGroupId(loadGroupId);
+            pe.setLmGroupId(inventoryEnrollment.getLoadGroupId());
             pe.setRelay(inventoryEnrollment.getRelay());
             pe.setInventoryId(inventoryEnrollment.getInventoryId());
             pe.setEnroll(inventoryEnrollment.isEnrolled());

@@ -97,7 +97,7 @@ public class OperatorEnrollmentController {
         
         Set<Integer> loadGroupIds = Sets.newHashSet();
         for (DisplayableEnrollmentProgram enrollmentProgram : enrollmentPrograms) {
-            loadGroupIds.add(enrollmentProgram.getLoadGroupId());
+            loadGroupIds.addAll(enrollmentProgram.getLoadGroupIds());
         }
         Map<Integer, String> loadGroupNames = paoDao.getYukonPAONames(loadGroupIds);
         model.addAttribute("loadGroupNames", loadGroupNames);
