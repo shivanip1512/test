@@ -42,7 +42,7 @@ public class EnrollmentHelperServiceImplTest {
         Assert.assertEquals(4, programEnrollments.size());
         Assert.assertTrue(programEnrollments.contains(newProgramEnrollmentTest));
         Assert.assertEquals(47, programEnrollments.get(1).getLmGroupId());
-        Assert.assertEquals(47, programEnrollments.get(3).getLmGroupId());
+        Assert.assertEquals(41, programEnrollments.get(3).getLmGroupId());
     }
 
     @Test
