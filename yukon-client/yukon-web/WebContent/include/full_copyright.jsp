@@ -6,7 +6,7 @@
 		crYears = String.valueOf(crStartYear) + "-" + crYears;
 %>
   <font face="Arial, Helvetica, sans-serif" size="1">
-      Copyright &copy; <%= crYears %> Cooper Industries plc.  Yukon is a valuable trademark of Cooper 
-      Industries plc. in the U.S. and other countries. You are not permitted to use the Cooper Industries 
-      trademarks without prior written consent of Cooper Industries.
+      Copyright &copy; <%= crYears %> Eaton Corporation plc.  Yukon is a valuable trademark of Eaton 
+      Corporation plc. in the U.S. and other countries. You are not permitted to use Eaton 
+      trademarks without prior written consent of Eaton.
   </font>
