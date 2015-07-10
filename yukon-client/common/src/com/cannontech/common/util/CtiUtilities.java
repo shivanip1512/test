@@ -93,7 +93,7 @@ public final class CtiUtilities {
 
     // image names
     public static final URL GENERIC_APPLICATION_SPLASH = CtiUtilities.class
-        .getResource("/ApplicationLoading.gif");
+        .getResource("/ApplicationLoading.png");
 
     public static final URL DBEDITOR_SPLASH = CtiUtilities.class.getResource("/DBEditorSplash2.png");
     public static final URL COMMANDER_SPLASH = CtiUtilities.class
