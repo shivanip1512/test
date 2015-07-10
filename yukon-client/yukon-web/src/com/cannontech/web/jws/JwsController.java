@@ -126,7 +126,7 @@ public class JwsController {
         Element infoElem = new Element("information");
         jnlpElem.addContent(infoElem);
         infoElem.addContent(new Element("title").setText("Yukon\u00AE " + requestedJnlp.getTitle()));
-        infoElem.addContent(new Element("vendor").setText("Cooper Industries plc."));
+        infoElem.addContent(new Element("vendor").setText("Eaton Corporation plc."));
         infoElem.addContent(new Element("homepage").setAttribute("href", "http://www.cannontech.com/"));
         infoElem.addContent(new Element("description").setText(requestedJnlp.getDescription()));
 
@@ -183,13 +183,13 @@ public class JwsController {
         Element infoElem = new Element("information");
         jnlpElem.addContent(infoElem);
         infoElem.addContent(new Element("title").setText("Yukon\u00AE " + requestedJnlp.getTitle()));
-        infoElem.addContent(new Element("vendor").setText("Cooper Industries plc."));
+        infoElem.addContent(new Element("vendor").setText("Eaton Corporation plc."));
         infoElem.addContent(new Element("homepage").setAttribute("href", "http://www.cannontech.com/"));
         infoElem.addContent(new Element("description").setText(requestedJnlp.getDescription()));
         String safeIconUrl = ServletUtil.createSafeUrl(request, requestedJnlp.getAppIcon());
         infoElem.addContent(new Element("icon").setAttribute("href", safeIconUrl));
 
-        String safeSplashUrl = ServletUtil.createSafeUrl(request, "/WebConfig/yukon/ApplicationLoading.gif");
+        String safeSplashUrl = ServletUtil.createSafeUrl(request, "/WebConfig/yukon/ApplicationLoading.png");
         infoElem.addContent(new Element("icon").setAttribute("kind", "splash").setAttribute("href", safeSplashUrl));
 
         Element securityElem = new Element("security");
