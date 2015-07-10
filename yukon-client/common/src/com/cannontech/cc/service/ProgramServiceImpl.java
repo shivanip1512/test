@@ -85,13 +85,10 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
+    @Transactional
     public Set<Group> getUnassignedGroups(Program program) {
-        Set<Group> selectedGroups = new HashSet<Group>();
+        Set<Group> selectedGroups = getAssignedGroups(program);
         Set<Group> unassignedGroups = new HashSet<Group>();
-        List<AvailableProgramGroup> allForProgram = availableProgramGroupDao.getAllForProgram(program);
-        for (AvailableProgramGroup apg : allForProgram) {
-            selectedGroups.add(apg.getGroup());
-        }
         Integer energyCompanyId = program.getProgramType().getEnergyCompanyId();
         List<Group> groupsForEnergyCompany = groupDao.getGroupsForEnergyCompany(energyCompanyId);
         for (Group group : groupsForEnergyCompany) {
@@ -101,13 +98,23 @@ public class ProgramServiceImpl implements ProgramService {
         }
         return unassignedGroups;
     }
-
+    
+    @Override
+    public Set<Group> getAssignedGroups(Program program) {
+        Set<Group> selectedGroups = new HashSet<Group>();
+        List<AvailableProgramGroup> allForProgram = availableProgramGroupDao.getAllForProgram(program);
+        for (AvailableProgramGroup apg : allForProgram) {
+            selectedGroups.add(apg.getGroup());
+        }
+        return selectedGroups;
+    }
+    
     public Set<Group> getAllGroups(Integer energyCompanyId) {
         return new TreeSet<Group>(groupDao.getGroupsForEnergyCompany(energyCompanyId));
     }
 
     @Override
-    public Program getProgram(Integer programId) {
+    public Program getProgramById(Integer programId) {
         return programDao.getForId(programId);
     }
 
@@ -183,7 +190,6 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    @Transactional
     public void deleteProgram(Program program) {
         programDao.delete(program);
     }

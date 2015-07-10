@@ -36,7 +36,7 @@ public class EventInitBean {
         String programIdStr = 
             (String) externalContext.getRequestParameterMap().get("programId");
         int programId = Integer.parseInt(programIdStr);
-        Program selectedProgram = programService.getProgram(programId);
+        Program selectedProgram = programService.getProgramById(programId);
         CICurtailmentStrategy strategy = strategyFactory.getStrategy(selectedProgram);
         String methodKey = strategy.getMethodKey();
         EventCreationBase methodBean = methodBeanLookup.get(methodKey);

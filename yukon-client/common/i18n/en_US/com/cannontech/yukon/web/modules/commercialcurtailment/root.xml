@@ -70,15 +70,18 @@
     <entry key="yukon.web.modules.dr.cc.groupList.pageName">Groups</entry>
     
     <!-- groupDetail.jsp -->
-    <entry key="yukon.web.modules.dr.cc.groupDetail.pageTitle">Group: {0}</entry>
-    <entry key="yukon.web.modules.dr.cc.groupDetail.pageHeading">{0}</entry>
-    <entry key="yukon.web.modules.dr.cc.groupDetail.crumbTitle">{0}</entry>
-    <entry key="yukon.web.modules.dr.cc.groupDetail.groupName">Group Name:</entry>
+    <entry key="yukon.web.modules.dr.cc.groupDetail.pageTitle">Group {0}</entry>
+    <entry key="yukon.web.modules.dr.cc.groupDetail.pageHeading">Edit Group {0}</entry>
+    <entry key="yukon.web.modules.dr.cc.groupDetail.crumbTitle">Edit Group {0}</entry>
+    <entry key="yukon.web.modules.dr.cc.groupDetail.groupName">Group Name</entry>
     <entry key="yukon.web.modules.dr.cc.groupDetail.customers">Customers</entry>
     <entry key="yukon.web.modules.dr.cc.groupDetail.emails">Emails</entry>
     <entry key="yukon.web.modules.dr.cc.groupDetail.voice">Voice</entry>
     <entry key="yukon.web.modules.dr.cc.groupDetail.sms">SMS</entry>
     <entry key="yukon.web.modules.dr.cc.groupDetail.availableCustomers">Available Customers</entry>
+    <entry key="yukon.web.modules.dr.cc.groupDetail.updateSuccessful">Group updated successfully.</entry>
+    <entry key="yukon.web.modules.dr.cc.groupCreate.required.name">Name is required.</entry>
+    <entry key="yukon.web.modules.dr.cc.groupCreate.createSuccessful">Group created successfully.</entry>
     
     <!-- history.jsp -->
     <entry key="yukon.web.modules.dr.cc.history.pageTitle">Curtailment History</entry>
@@ -98,6 +101,8 @@
     <entry key="yukon.web.modules.dr.cc.programCreate.pageName">Create Program</entry>
     <entry key="yukon.web.modules.dr.cc.programCreate.programType">Program Type</entry>
     <entry key="yukon.web.modules.dr.cc.programCreate.programName">Program Name</entry>
+    <entry key="yukon.web.modules.dr.cc.programCreate.required.name">Name is required.</entry>
+    <entry key="yukon.web.modules.dr.cc.programCreate.createSuccessful">Program created successfully.</entry>
     
     <!-- programDetail.jsp -->
     <entry key="yukon.web.modules.dr.cc.programDetail.pageTitle">Program: {0}</entry>
@@ -113,6 +118,8 @@
     <entry key="yukon.web.modules.dr.cc.programDetail.availableGroups">Available Groups</entry>
     <entry key="yukon.web.modules.dr.cc.programDetail.assignedNotifGroups">Assigned Notification Groups</entry>
     <entry key="yukon.web.modules.dr.cc.programDetail.availableNotifGroups">Available Notification Groups</entry>
+    <entry key="yukon.web.modules.dr.cc.programDetail.updateSuccessful">Program updated successfully.</entry>
+    <entry key="yukon.web.modules.dr.cc.programDetail.deleteSuccessful">Program deleted.</entry>
     
     <!-- init.jsp -->
     <entry key="yukon.web.modules.dr.cc.init.pageTitle">Start Event</entry>

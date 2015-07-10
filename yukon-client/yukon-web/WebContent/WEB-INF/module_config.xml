@@ -465,7 +465,7 @@
                 <labelArgument>${program.name}</labelArgument>
             </page>
             <page name="cc.history" type="BASIC">
-                <link>/dr/cc/history</link>
+                <link>/dr/cc/program/${programId}/history</link>
                 <pages>
                     <page name="cc.detail" type="BASIC">
                         <labelArgument>${event.displayName}</labelArgument>

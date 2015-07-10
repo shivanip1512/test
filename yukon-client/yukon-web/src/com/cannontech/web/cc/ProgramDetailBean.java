@@ -61,7 +61,7 @@ public class ProgramDetailBean {
         String programIdStr = 
             (String) externalContext.getRequestParameterMap().get("programId");
         int programId = Integer.parseInt(programIdStr);
-        program = programService.getProgram(programId);
+        program = programService.getProgramById(programId);
         updateData();
         
         return "programDetail";

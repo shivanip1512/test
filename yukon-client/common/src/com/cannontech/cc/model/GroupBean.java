@@ -86,5 +86,15 @@ public class GroupBean {
         public void setCompanyName(String companyName) {
             this.companyName = companyName;
         }
+        
+        public static Customer of(GroupCustomerNotif groupCustomerNotif) {
+                GroupBean.Customer customer = new GroupBean.Customer();
+                customer.setId(groupCustomerNotif.getCustomer().getId());
+                customer.setCompanyName(groupCustomerNotif.getCustomer().getCompanyName());
+                customer.setEmails(groupCustomerNotif.getNotifMap().isSendEmails());
+                customer.setVoice(groupCustomerNotif.getNotifMap().isSendOutboundCalls());
+                customer.setSms(groupCustomerNotif.getNotifMap().isSendSms());
+                return customer;
+        }
     }
 }

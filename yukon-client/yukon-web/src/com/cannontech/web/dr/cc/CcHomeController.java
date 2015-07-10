@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,6 +21,9 @@ import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.DataBinder;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,7 +38,6 @@ import com.cannontech.cc.dao.EconomicEventParticipantDao;
 import com.cannontech.cc.dao.GroupDao;
 import com.cannontech.cc.model.AccountingEvent;
 import com.cannontech.cc.model.AccountingEventParticipant;
-import com.cannontech.cc.model.AvailableProgramGroup;
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.CurtailmentEvent;
@@ -67,14 +68,18 @@ import com.cannontech.cc.service.ProgramService;
 import com.cannontech.cc.service.StrategyFactory;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.predicate.Predicate;
+import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.dao.GraphDao;
 import com.cannontech.core.dao.NotificationGroupDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteComparators;
+import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.customer.CICustomerPointType;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
@@ -84,48 +89,45 @@ import com.cannontech.web.cc.EventListBean;
 import com.cannontech.web.cc.methods.DetailAccountingBean;
 import com.cannontech.web.cc.methods.DetailEconomicBean;
 import com.cannontech.web.cc.methods.DetailNotificationBean;
+import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.tools.trends.TrendUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 @Controller
 public class CcHomeController {
-
-    @Autowired private BaseEventDao baseEventDao;
-    @Autowired private EventService eventService;
-    @Autowired private EnergyCompanyDao ecDao;
-    @Autowired private StrategyFactory strategyFactory;
-    @Autowired private ProgramService programService;
-    @Autowired private DateFormattingService dateFormattingService;
-    @Autowired private EconomicEventDao economicEventDao;
-    @Autowired private EconomicEventParticipantDao economicEventParticipantDao;
-    @Autowired private EconomicService economicService;
     @Autowired private AccountingEventDao accountingEventDao;
-    @Autowired private EventListBean eventListBean;
-    @Autowired private EventDetailHelper eventDetailHelper;
+    @Autowired private BaseEventDao baseEventDao;
+    @Autowired private CurtailmentEventDao curtailmentEventDao;
+    @Autowired private CurtailmentEventNotifDao curtailmentNotifDao;
+    @Autowired private CustomerLMProgramService customerLMProgramService;
+    @Autowired private CustomerPointService customerPointService;
+    @Autowired private DateFormattingService dateFormattingService;
     @Autowired private DetailEconomicBean detailEconomicBean;
     @Autowired private DetailAccountingBean detailAccountingBean;
     @Autowired private DetailNotificationBean detailNotificationBean;
-    @Autowired private CurtailmentEventDao notificationEventDao;
-    @Autowired private CurtailmentEventNotifDao curtailmentNotifDao;
-    @Autowired private CustomerPointService customerPointService;
-    @Autowired private GroupService groupService;
-    @Autowired private CustomerLMProgramService customerLMProgramService;
-    @Autowired private NotificationGroupDao notificationGroupDao;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private EnergyCompanyDao ecDao;
+    @Autowired private EconomicEventDao economicEventDao;
+    @Autowired private EconomicEventParticipantDao economicEventParticipantDao;
+    @Autowired private EconomicService economicService;
+    @Autowired private EventDetailHelper eventDetailHelper;
+    @Autowired private EventListBean eventListBean;
+    @Autowired private EventService eventService;
+    @Autowired private GraphDao graphDao;
+    @Autowired private GroupBeanValidator groupBeanValidator;
     @Autowired private GroupDao groupDao;
+    @Autowired private GroupService groupService;
+    @Autowired private NotificationGroupDao notificationGroupDao;
+    @Autowired private ProgramService programService;
+    @Autowired private StrategyFactory strategyFactory;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     private String eventHeadingBase = "yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_heading_";
     private String companyHeadingBase = "yukon.web.modules.commercialcurtailment.ccurtSetup.";
-    
-    private final Comparator<GroupCustomerNotif> customerListComparator = new Comparator<GroupCustomerNotif>() {
-        @Override
-        public int compare(GroupCustomerNotif o1, GroupCustomerNotif o2) {
-            return o1.getCustomer().compareTo(o2.getCustomer());
-        }
-    };
 
     @RequestMapping("/cc/home")
-    public String home(ModelMap model, LiteYukonUser user) {
+    public String home(ModelMap model, YukonUserContext userContext, Integer trendId) throws JsonProcessingException {
         
-        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
+        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
         
         //Retrieve current, pending, recent events
         List<BaseEvent> currentEvents = baseEventDao.getAllForEnergyCompany(energyCompany, new CurrentEventPredicate());
@@ -143,7 +145,7 @@ public class CcHomeController {
         model.addAttribute("events", events);
         
         //Retrieve program types for user
-        List<ProgramType> programTypeList = programService.getProgramTypeList(user);
+        List<ProgramType> programTypeList = programService.getProgramTypeList(userContext.getYukonUser());
         
         //Retrieve programs by type
         List<Program> allPrograms = new ArrayList<>();
@@ -155,13 +157,29 @@ public class CcHomeController {
         }
         model.addAttribute("programs", allPrograms);
         
+        //Set up trends
+        List<LiteGraphDefinition> trends = graphDao.getGraphDefinitions();
+        model.addAttribute("trends", trends);
+        
+        if (trendId != null) {
+            LiteGraphDefinition trend = graphDao.getLiteGraphDefinition(trendId);
+            model.addAttribute("trendId", trendId);
+            model.addAttribute("trendName", trend.getName());
+            model.addAttribute("showTrends", true);
+        } else if (!trends.isEmpty()) {
+            model.addAttribute("trendId", trends.get(0).getGraphDefinitionID());
+            model.addAttribute("trendName", trends.get(0).getName());
+        }
+        
+        model.addAttribute("labels", TrendUtils.getLabels(userContext, messageSourceResolver));
+        
         return "dr/cc/home.jsp";
     }
     
     @RequestMapping("/cc/program/{id}/init")
     public String init(ModelMap model, YukonUserContext userContext, @PathVariable int id) {
         
-        Program program = lookupProgramById(id, userContext);
+        Program program = programService.getProgramById(id);
         //CICurtailmentStrategy strategy = strategyFactory.getStrategy(program);
         
         model.addAttribute("program", program);
@@ -173,9 +191,9 @@ public class CcHomeController {
     }
 
     @RequestMapping("/cc/program/{programId}/history")
-    public String history(ModelMap model, YukonUserContext userContext, @PathVariable int programId) {
+    public String history(ModelMap model, @PathVariable int programId) {
         
-        Program program = lookupProgramById(programId, userContext);
+        Program program = programService.getProgramById(programId);
         model.addAttribute("program", program);
         
         CICurtailmentStrategy strategy = strategyFactory.getStrategy(program);
@@ -184,19 +202,6 @@ public class CcHomeController {
         model.addAttribute("eventHistory", eventList);
         
         return "dr/cc/history.jsp";
-    }
-    
-    private Program lookupProgramById(int id, YukonUserContext userContext) {
-        List<ProgramType> programTypeList = programService.getProgramTypeList(userContext.getYukonUser());
-        for (ProgramType programType : programTypeList) {
-            List<Program> programs = programService.getProgramList(programType);
-            for (Program program : programs) {
-                if (program.getId() == id) {
-                    return program;
-                }
-            }
-        }
-        return null;
     }
     
     @RequestMapping("/cc/program/{programId}/event/{eventId}/companyInfo/{companyId}/companyDetail")
@@ -266,24 +271,14 @@ public class CcHomeController {
         
         List<GroupBean.Customer> assignedCustomers = new ArrayList<>();
         for (GroupCustomerNotif assignedNotif : assigned) {
-            GroupBean.Customer customer = new GroupBean.Customer();
-            customer.setId(assignedNotif.getCustomer().getId());
-            customer.setCompanyName(assignedNotif.getCustomer().getCompanyName());
-            customer.setEmails(assignedNotif.getNotifMap().isSendEmails());
-            customer.setVoice(assignedNotif.getNotifMap().isSendOutboundCalls());
-            customer.setSms(assignedNotif.getNotifMap().isSendSms());
+            GroupBean.Customer customer = GroupBean.Customer.of(assignedNotif);
             assignedCustomers.add(customer);
         }
         groupBean.setAssignedCustomers(assignedCustomers);
         
         List<GroupBean.Customer> unassignedCustomers = new ArrayList<>();
         for (GroupCustomerNotif unassignedNotif : unassigned) {
-            GroupBean.Customer customer = new GroupBean.Customer();
-            customer.setId(unassignedNotif.getCustomer().getId());
-            customer.setCompanyName(unassignedNotif.getCustomer().getCompanyName());
-            customer.setEmails(unassignedNotif.getNotifMap().isSendEmails());
-            customer.setVoice(unassignedNotif.getNotifMap().isSendOutboundCalls());
-            customer.setSms(unassignedNotif.getNotifMap().isSendSms());
+            GroupBean.Customer customer = GroupBean.Customer.of(unassignedNotif);
             unassignedCustomers.add(customer);
         }
         groupBean.setAvailableCustomers(unassignedCustomers);
@@ -304,16 +299,25 @@ public class CcHomeController {
         return "dr/cc/groupDetail.jsp";
     }
     
-    //TODO: validation
     @RequestMapping("/cc/groupSave")
-    public String groupSave(ModelMap model, @ModelAttribute("group") GroupBean groupBean, LiteYukonUser user) {
+    public String groupSave(ModelMap model, 
+                            YukonUserContext userContext,
+                            @ModelAttribute("group") GroupBean groupBean,
+                            BindingResult bindingResult,
+                            FlashScope flash) {
+        
+        groupBeanValidator.validate(groupBean, bindingResult);
+        if (bindingResult.hasErrors()) {
+            return "dr/cc/groupDetail.jsp";
+        }
         
         Group group;
-        Integer groupId = groupBean.getId();
-        if (groupId == null) {
-            group = groupService.createNewGroup(user);
+        if (groupBean.getId() == null) {
+            group = groupService.createNewGroup(userContext.getYukonUser());
+            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.groupCreate.createSuccessful"));
         } else {
             group = groupService.getGroup(groupBean.getId());
+            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.groupDetail.updateSuccessful"));
         }
         group.setName(groupBean.getName());
         
@@ -370,7 +374,7 @@ public class CcHomeController {
             YukonUserContext userContext,
             @PathVariable int programId) {
         
-        Program program = programService.getProgram(programId);
+        Program program = programService.getProgramById(programId);
         model.addAttribute("program", program);
         
         CICurtailmentStrategy strategy = strategyFactory.getStrategy(program);
@@ -390,7 +394,7 @@ public class CcHomeController {
         Collections.sort(unassignedNotificationGroups, LiteComparators.liteNameComparator);
         model.addAttribute("unassignedNotificationGroups", unassignedNotificationGroups);
         
-        List<AvailableProgramGroup> assignedProgramGroups = programService.getAvailableProgramGroups(program);
+        Set<Group> assignedProgramGroups = programService.getAssignedGroups(program);
         model.addAttribute("assignedProgramGroups", assignedProgramGroups);
         
         model.addAttribute("deletable", !programService.isEventsExistForProgram(program));
@@ -406,27 +410,15 @@ public class CcHomeController {
         return "dr/cc/programCreate.jsp";
     }
 
-    
-    @RequestMapping("/cc/programDelete/{programId}")
-    public String programDelete (ModelMap model, @PathVariable int programId) {
-        
-        Program program = programService.getProgram(programId);
-        programService.deleteProgram(program);
-        return "redirect:/dr/cc/programList";
-    }
-
     @RequestMapping("/cc/programDetailCreate/{programTypeId}/{name}")
     public String programDetailCreate(ModelMap model, 
                                       LiteYukonUser user, 
                                       @PathVariable int programTypeId,
-                                      @PathVariable String name) {
+                                      @PathVariable String name, 
+                                      FlashScope flash) {
         
-        //TODO validation
         Program program = new Program();
         program.setName(name);
-        List<ProgramParameter> programParameters = Collections.emptyList();
-        List<Group> assignedGroups = Collections.emptyList();
-        List<LiteNotificationGroup> assignedNotificationGroups = Collections.emptyList();
         program.setIdentifierPrefix("EVENT-");
         program.setLastIdentifier(0);
         
@@ -439,9 +431,27 @@ public class CcHomeController {
             }
         }
         program.setProgramType(newProgramType);
-        Set<LiteNotificationGroup> assignedNotifGroupsSet = new HashSet<>(assignedNotificationGroups);
+        
+        List<ProgramParameter> programParameters = new ArrayList<>();
+        List<Group> assignedGroups = new ArrayList<>();
+        Set<LiteNotificationGroup> assignedNotifGroupsSet = new HashSet<>();
+        
         programService.saveProgram(program, programParameters, assignedGroups, assignedNotifGroupsSet);
+        
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.programCreate.createSuccessful"));
+        
         return "redirect:/dr/cc/programDetail/" + program.getId();
+    }
+    
+    @RequestMapping("/cc/programDelete/{programId}")
+    public String programDelete (ModelMap model, @PathVariable int programId, FlashScope flash) {
+        
+        Program program = programService.getProgramById(programId);
+        programService.deleteProgram(program);
+        
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.programDetail.deleteSuccessful"));
+        
+        return "redirect:/dr/cc/programList";
     }
     
     @RequestMapping("/cc/programSave/{programId}")
@@ -457,10 +467,13 @@ public class CcHomeController {
                                Integer MINIMUM_EVENT_DURATION_MINUTES,
                                Double DEFAULT_ENERGY_PRICE,
                                Integer CUSTOMER_ELECTION_CUTOFF_MINUTES,
-                               @RequestParam("assignedGroup") List<Integer> assignedGroupIds,
-                               @RequestParam("assignedNotifGroup") List<Integer> assignedNotifGroupIds) {
-        
-        Program program = programService.getProgram(programId);
+                               @RequestParam(value="assignedGroup", required=false) List<Integer> assignedGroupIds,
+                               @RequestParam(value="assignedNotifGroup", required=false) List<Integer> assignedNotifGroupIds,
+                               @RequestParam(value="unassignedGroup", required=false) List<Integer> unassignedGroupIds,
+                               @RequestParam(value="unassignedNotifGroup", required=false) List<Integer> unassignedNotifGroupIds,
+                               FlashScope flash) {
+                
+        Program program = programService.getProgramById(programId);
         program.setName(programName);
         program.setIdentifierPrefix(programIdentifierPrefix);
         program.setLastIdentifier(programLastIdentifier);
@@ -496,20 +509,54 @@ public class CcHomeController {
             }
         }
         
-        Set<LiteNotificationGroup> assignedNotifGroups = new HashSet<>();
+        Set<LiteNotificationGroup> assignedNotificationGroups = new HashSet<>();
+        Set<LiteNotificationGroup> unassignedNotificationGroups = new HashSet<>();
         Set<LiteNotificationGroup> allNotificationGroups = notificationGroupDao.getAllNotificationGroups();
         for (LiteNotificationGroup notifGroup : allNotificationGroups) {
-            if (assignedNotifGroupIds.contains(notifGroup.getNotificationGroupID())) {
-                assignedNotifGroups.add(notifGroup);
+            if (assignedNotifGroupIds != null && assignedNotifGroupIds.contains(notifGroup.getNotificationGroupID())) {
+                assignedNotificationGroups.add(notifGroup);
+            } else {
+                unassignedNotificationGroups.add(notifGroup);
             }
         }
         
-        List<Group> assignedGroups = groupDao.getForIds(assignedGroupIds);
-
-        programService.saveProgram(program, programParameters, assignedGroups, assignedNotifGroups);
+        List<Group> assignedGroups;
+        if (assignedGroupIds != null) {
+            assignedGroups = groupDao.getForIds(assignedGroupIds);
+        } else {
+            assignedGroups = new ArrayList<>();
+        }
+        
+        //Validation
+        DataBinder binder = new DataBinder(new ProgramFields(programName, programIdentifierPrefix));
+        BindingResult bindingResult = binder.getBindingResult();
+        YukonValidationUtils.checkIsBlankOrExceedsMaxLength(bindingResult, "programName", programName, false, 255);
+        YukonValidationUtils.checkIsBlankOrExceedsMaxLength(bindingResult, "programIdentifierPrefix", programIdentifierPrefix, false, 32);
+        FieldError nameError = bindingResult.getFieldError("programName");
+        FieldError prefixError = bindingResult.getFieldError("programIdentifierPrefix");
+        
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("nameError", nameError == null ? null : nameError.getCode());
+            model.addAttribute("prefixError", prefixError == null ? null : prefixError.getCode());
+            model.addAttribute("program", program);
+            model.addAttribute("programParameters", programParameters);
+            model.addAttribute("assignedProgramGroups", assignedGroups);
+            Set<Group> unassignedGroups = programService.getUnassignedGroups(program);
+            model.addAttribute("unassignedProgramGroups", unassignedGroups);
+            model.addAttribute("assignedNotificationGroups", assignedNotificationGroups);
+            model.addAttribute("unassignedNotificationGroups", unassignedNotificationGroups);
+            model.addAttribute("deletable", !programService.isEventsExistForProgram(program));
+            
+            return "/dr/cc/programDetail.jsp";
+        }
+        
+        programService.saveProgram(program, programParameters, assignedGroups, assignedNotificationGroups);
+        
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.programDetail.updateSuccessful"));
+        
         return "redirect:/dr/cc/programList";
     }
-
+    
     private void setParameter(ProgramParameter parameter, Number parameterInput) {
         if (parameterInput != null) {
             parameter.setParameterValue(parameterInput.toString());
@@ -533,7 +580,7 @@ public class CcHomeController {
             @PathVariable int programId,
             @PathVariable int eventId) {
         
-        Integer programTypeId = programService.getProgram(programId).getProgramType().getId();
+        Integer programTypeId = programService.getProgramById(programId).getProgramType().getId();
         switch(programTypeId) {
         case 1:
         case 2:
@@ -576,30 +623,30 @@ public class CcHomeController {
                                   Integer programTypeId,
                                   int eventId) {
                               
-                              CurtailmentEvent curtailmentEvent = notificationEventDao.getForId(eventId);
-                              List<CurtailmentEventNotif> eventNotifications = curtailmentNotifDao.getForEvent(curtailmentEvent);
-                              
-                              model.addAttribute("event", curtailmentEvent);
-                              model.addAttribute("programTypeId", programTypeId);
-                              model.addAttribute("duration", curtailmentEvent.getDuration());
-                              model.addAttribute("modificationState", curtailmentEvent.getStateDescription());
-                              model.addAttribute("message", curtailmentEvent.getMessage());
-                              model.addAttribute("eventNotifications", eventNotifications);
-                              String[] headingSuffixes = new String[]{
-                                      "ccurtEvent_heading_accounting_company_heading",
-                                      "ccurtEvent_heading_reason",
-                                      "ccurtEvent_heading_notif_type",
-                                      "ccurtEvent_heading_time",
-                                      "programState"};
-                              
-                              List<String> notificationTableHead = assembleHeading(userContext, companyHeadingBase, headingSuffixes);;
-                              model.addAttribute("notificationTableHead", notificationTableHead);
-                              
-                              model.addAttribute("programType", curtailmentEvent.getProgram().getProgramType().getName());
-                              model.addAttribute("programName", curtailmentEvent.getProgram().getName());
-                              
-                              return "dr/cc/detail.jsp";
-                          }
+        CurtailmentEvent curtailmentEvent = curtailmentEventDao.getForId(eventId);
+        List<CurtailmentEventNotif> eventNotifications = curtailmentNotifDao.getForEvent(curtailmentEvent);
+        
+        model.addAttribute("event", curtailmentEvent);
+        model.addAttribute("programTypeId", programTypeId);
+        model.addAttribute("duration", curtailmentEvent.getDuration());
+        model.addAttribute("modificationState", curtailmentEvent.getStateDescription());
+        model.addAttribute("message", curtailmentEvent.getMessage());
+        model.addAttribute("eventNotifications", eventNotifications);
+        String[] headingSuffixes = new String[]{
+                "ccurtEvent_heading_accounting_company_heading",
+                "ccurtEvent_heading_reason",
+                "ccurtEvent_heading_notif_type",
+                "ccurtEvent_heading_time",
+                "programState"};
+        
+        List<String> notificationTableHead = assembleHeading(userContext, companyHeadingBase, headingSuffixes);;
+        model.addAttribute("notificationTableHead", notificationTableHead);
+        
+        model.addAttribute("programType", curtailmentEvent.getProgram().getProgramType().getName());
+        model.addAttribute("programName", curtailmentEvent.getProgram().getName());
+        
+        return "dr/cc/detail.jsp";
+    }
     
     public String economicDetail(ModelMap model,
             YukonUserContext userContext,
@@ -711,7 +758,7 @@ public class CcHomeController {
         
         model.addAttribute("economicDetail", "yes");
         model.addAttribute("legend", composeEventHeading(companyHeadingBase, userContext, "ccurtEvent_pricing_legend"));
-        Program program = programService.getProgram(programId);
+        Program program = programService.getProgramById(programId);
         model.addAttribute("program", program);
         return "dr/cc/detail.jsp";
     }
@@ -867,4 +914,25 @@ public class CcHomeController {
         }
     }
     
+    @SuppressWarnings("unused")
+    private class ProgramFields {
+        private String programName;
+        private String programIdentifierPrefix;
+        public ProgramFields(String programName, String identifierPrefix) {
+            this.programName = programName;
+            programIdentifierPrefix = identifierPrefix;
+        }
+        public String getProgramName() {
+            return programName;
+        }
+        public void setProgramName(String programName) {
+            this.programName = programName;
+        }
+        public String getProgramIdentifierPrefix() {
+            return programIdentifierPrefix;
+        }
+        public void setProgramIdentifierPrefix(String identifierPrefix) {
+            programIdentifierPrefix = identifierPrefix;
+        }
+    }
 }

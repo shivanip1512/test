@@ -4,6 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="s" uri="http://www.springframework.org/tags" %>
 
 <cti:standardPage module="dr" page="cc.groupDetail">
 <cti:includeScript link="/resources/js/pages/yukon.dr.curtailment.js"/>
@@ -13,11 +14,20 @@
 <cti:csrfToken/>
 
 <div class="column-12-12">
-    <h3>
-        <i:inline key=".groupName"/>
-        <form:input path="name"/>
-        <form:hidden path="id"/>
-    </h3>
+    <div class="stacked-lg">
+        <tags:nameValueContainer2>
+            <tags:nameValue2 nameKey=".groupName">
+		        <s:bind path="name">
+			        <c:if test="${status.error}">
+		                <c:set var="clazz" value="error"/>
+		            </c:if>
+			        <form:input path="name" cssClass="${clazz}" maxLength="255"/>
+			        <div><form:errors path="name" cssClass="error"/></div>
+			        <form:hidden path="id"/>
+			    </s:bind>
+		    </tags:nameValue2>
+	    </tags:nameValueContainer2>
+    </div>
     <div class="column one">
         <h3><i:inline key=".customers"/></h3>
         <div>

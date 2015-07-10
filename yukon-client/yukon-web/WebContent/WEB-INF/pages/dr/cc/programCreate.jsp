@@ -11,24 +11,26 @@
 
 <div class="column-24">
     <div class="column one">
-    <table class="name-value-table natural-width">
-        <tr>
-            <td class="name"><i:inline key=".programType"/></td>
-            <td class="value">
-                <select id="program-type">
-                    <c:forEach var="programType" items="${programTypes}">
-                        <option value="${programType.id}">${programType.name}</option>
-                    </c:forEach>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td class="name"><i:inline key=".programName"/></td>
-            <td class="value"><input id="program-name"></td>
-        </tr>
-    </table>
-    </div>
+    
+    <tags:nameValueContainer2>
+        <tags:nameValue2 nameKey=".programType">
+            <select id="program-type">
+                <c:forEach var="programType" items="${programTypes}">
+                    <option value="${programType.id}" <c:if test="${selectedTypeId == programType.id}">selected</c:if>>
+                        ${programType.name}
+                    </option>
+                </c:forEach>
+            </select>
+        </tags:nameValue2>
+        
+        <tags:nameValue2 nameKey=".programName">
+            <input type="text" id="program-name" value="${programName}">
+            <div id="program-errors" class="error dn"><i:inline key=".required.name"/></div>
+        </tags:nameValue2>
+    </tags:nameValueContainer2>
+    
     <cti:url value="/dr/cc/programDetailCreate" var="createUrl"/>
-    <div><cti:button nameKey="create" data-url="${createUrl}" id="create-program"/></div>
+    <cti:button nameKey="create" data-url="${createUrl}" id="create-program"/>
+    
 </div>
 </cti:standardPage>

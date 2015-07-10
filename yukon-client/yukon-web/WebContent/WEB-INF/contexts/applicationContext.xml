@@ -1229,6 +1229,8 @@
     
     <bean class="com.cannontech.web.stars.gateway.GatewayControllerHelper"/>
     
+    <bean class="com.cannontech.web.dr.cc.GroupBeanValidator"/>
+    
     <bean class="com.cannontech.web.cc.EventListBean"/>
     <bean id="detailNotificationBean" class="com.cannontech.web.cc.methods.DetailNotificationBean">
     </bean>

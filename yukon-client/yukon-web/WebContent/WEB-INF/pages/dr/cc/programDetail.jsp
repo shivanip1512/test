@@ -16,20 +16,48 @@
     <div class="column one">
         <table class="name-value-table natural-width">
             <tr>
-                <td class="name"><i:inline key=".programType"/></td>
-                <td class="value">${program.programType.name}</td>
+                <td class="name">
+                    <i:inline key=".programType"/>
+                </td>
+                <td class="value">
+                    ${program.programType.name}
+                </td>
             </tr>
             <tr>
-                <td class="name"><i:inline key=".programName"/></td>
-                <td class="value"><input id="program-name" type="text" name="programName" value="${program.name}"></td>
+                <td class="name">
+                    <i:inline key=".programName"/>
+                </td>
+                <td class="value">
+                    <c:if test="${not empty nameError}">
+                        <c:set var="clazz" value="error"/>
+                    </c:if>
+                    <input class="${clazz}" id="program-name" type="text" maxlength="255" name="programName" value="${program.name}">
+                    <c:if test="${not empty nameError}">
+                        <span class="error"><i:inline key="${nameError}"/></span>
+                    </c:if>
+                </td>
             </tr>
             <tr>
-                <td class="name"><i:inline key=".identifierPrefix"/></td>
-                <td class="value"><input id="program-identifier-prefix" type="text" name="programIdentifierPrefix" value="${program.identifierPrefix}"></td>
+                <td class="name">
+                    <i:inline key=".identifierPrefix"/>
+                </td>
+                <td class="value">
+                    <c:if test="${not empty prefixError}">
+                        <c:set var="clazz2" value="error"/>
+                    </c:if>
+                    <input class="${clazz2}" id="program-identifier-prefix" type="text" maxlength="32" name="programIdentifierPrefix" value="${program.identifierPrefix}">
+                    <c:if test="${not empty prefixError}">
+                        <span class="error"><i:inline key="${prefixError}"/></span>
+                    </c:if>
+                </td>
             </tr>
             <tr>
-                <td class="name"><i:inline key=".identifierPostfix"/></td>
-                <td class="value"><input id="program-last-identifier" type="text" name="programLastIdentifier" value="${program.lastIdentifier}"></td>
+                <td class="name">
+                    <i:inline key=".identifierPostfix"/>
+                </td>
+                <td class="value">
+                    <input id="program-last-identifier" type="text" name="programLastIdentifier" value="${program.lastIdentifier}">
+                </td>
             </tr>
         </table>
         <div>
@@ -50,15 +78,17 @@
         <div>
             <h3><i:inline key=".assignedGroups"/></h3>
             <table class="compact-results-table" id="assigned-groups">
+                <tbody>
                 <c:forEach var="assignedProgramGroup" items="${assignedProgramGroups}">
                     <tr>
                         <td>
-                            <cti:button renderMode="buttonImage" icon="icon-delete" data-group="${assignedProgramGroup.group.id}"/>
-                            <input type="hidden" name="assignedGroup" value="${assignedProgramGroup.group.id}">
-                            ${fn:escapeXml(assignedProgramGroup.group.name)}
+                            <cti:button renderMode="buttonImage" icon="icon-delete" data-group="${assignedProgramGroup.id}"/>
+                            <input type="hidden" name="assignedGroup" value="${assignedProgramGroup.id}">
+                            ${fn:escapeXml(assignedProgramGroup.name)}
                         </td>
                     </tr>
                 </c:forEach>
+                </tbody>
             </table>
         </div>
     </div>
@@ -66,6 +96,7 @@
         <div>
             <h3><i:inline key=".availableGroups"/></h3>
             <table class="compact-results-table" id="unassigned-groups">
+                <tbody>
                 <c:forEach var="unassignedGroup" items="${unassignedProgramGroups}">
                     <tr>
                         <td>
@@ -75,6 +106,7 @@
                         </td>
                     </tr>
                 </c:forEach>
+                </tbody>
             </table>
         </div>
     </div>
@@ -84,6 +116,7 @@
         <div>
         <h3><i:inline key=".assignedNotifGroups"/></h3>
             <table class="compact-results-table" id="assigned-notification-groups">
+                <tbody>
                 <c:forEach var="assignedNotifGroupEntry" items="${assignedNotificationGroups}">
                     <tr>
                         <td>
@@ -93,6 +126,7 @@
                         </td>
                     </tr>
                 </c:forEach>
+                </tbody>
             </table>
         </div>
     </div>
@@ -100,6 +134,7 @@
         <div>
         <h3><i:inline key=".availableNotifGroups"/></h3>
             <table class="compact-results-table" id="unassigned-notification-groups">
+                <tbody>
                 <c:forEach var="unassignedProgramGroup" items="${unassignedNotificationGroups}">
                     <tr>
                         <td>
@@ -109,6 +144,7 @@
                         </td>
                     </tr>
                 </c:forEach>
+                </tbody>
             </table>
         </div>
     </div>

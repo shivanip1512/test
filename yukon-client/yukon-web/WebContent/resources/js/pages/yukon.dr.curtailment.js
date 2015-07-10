@@ -10,7 +10,7 @@ yukon.namespace('yukon.dr.curtailment');
 yukon.dr.curtailment = (function () {
     var mod,
         _doCalcLoadReduction = function () {
-            var custTableCells = $('#customerTableDiv tbody > tr'),
+            var custTableCells = $('#customerTableDiv').find('tbody > tr'),
                 curLoadA,
                 fslA,
                 loadReductCellA,
@@ -21,7 +21,7 @@ yukon.dr.curtailment = (function () {
             custTableCells.each(function(index, item) {
             	curLoadA = $(item).find('.curLoad span');
             	fslA = $(item).find('.fsl span');
-            	loadReductCellA = $(item).find('.loadReduct');
+            	loadReductCellA = $(item).find('.js-load-reduct');
             	if (curLoadA.length > 0 && fslA.length > 0) {
             		curLoadAval = parseInt($(curLoadA[0]).html().replace(/,/g,""), 10);
                     fslAval = parseInt($(fslA[0]).html().replace(/,/g,""), 10);
@@ -36,52 +36,19 @@ yukon.dr.curtailment = (function () {
             	}
             });
         },
-
+        
         _doFormatLoadValues = function () {
-            var custTableCells = $('#customerTableDiv tbody > tr'),
-                loadReductCellA;
-            
-            custTableCells.each(function(index, item) {
-            	loadReductCellA = $(item).find('.loadReduct');
-            	$(loadReductCellA[0]).html(_commaFormat($(loadReductCellA[0]).html()));
-            });
+        	var custTableCells = $('#customerTableDiv').find('tbody > tr');
+        	custTableCells.each(function (index, item) {
+        		var loadReduct = $(item).find('.js-load-reduct').get(0);
+        		loadReduct.html(_commaFormat(loadReduct.html()));
+        	});
         },
 
         _commaFormat = function (amount) {
-            var delimiter = ",",
-                minus,
-                i,
-                n,
-                a,
-                nn;
-            
-            //check for NaN
-            if (amount != amount) {
-                // just return the string if it's not a number
-                return amount;
-            }
-        
-            i = parseInt(amount, 10);
-            minus = '';
-            if (i < 0) { 
-                //record the negative sign
-                minus = '-';
-            }
-        
-            i = parseInt(amount, 10);
-            i = Math.abs(i);    //remove negative sign
-            n = i.toString();
-            a = [];
-            while (n.length > 3) {
-                nn = n.substr(n.length-3);
-                a.unshift(nn);
-                n = n.substr(0,n.length-3);
-            }
-            if (n.length > 0) { a.unshift(n); }
-            n = a.join(delimiter);
-            amount = n;
-            amount = minus + amount;
-            return amount;
+            // Force to numeric with unary +
+        	amount = +amount;
+            return amount.toLocaleString();
         },
         
         _groupMove = function (opts) {
@@ -147,27 +114,24 @@ yukon.dr.curtailment = (function () {
     mod = {
         doCalcSelectedLoad: function () {
             _doCalcLoadReduction();
-            var custTableCells = $('#customerTableDiv tbody > tr'),
+            var custTableCells = $('#customerTableDiv').find('tbody > tr'),
                 loadReduct = 0,
-                i,
                 checkedCells,
-                loadReductA,
-                tableCellsLength = custTableCells.length,
                 summary,
                 loadReductSummaryA;
         
-            for (i = 0; i < tableCellsLength; i += 1) {
-                checkedCells = $(custTableCells[i]).find('input[type=checkbox]');
-                if ($(checkedCells[0]).is(':checked')) {
-                    loadReductA = custTableCells.find('.loadReduct');
-                    loadReduct += parseFloat($(loadReductA[0]).html());
+            custTableCells.each(function (index, custTableCell) {
+            	checkedCells = $(custTableCell).find('input[type=checkbox]');
+            	if ($(checkedCells[0]).is(':checked')) {
+                    var loadReductA = custTableCells.find('.js-load-reduct').get(0);
+                    loadReduct += parseFloat(loadReductA.html());
                 }
-            }
+            });
         
-            summary = $('#customerTableDiv tfoot > tr');
+            summary = $('#customerTableDiv').find('tfoot > tr');
             if (summary.length > 0) {
                 loadReductSummaryA = $(summary).find('.loadReductFoot');
-                $(loadReductSummaryA[0]).html(_commaFormat(loadReduct));
+                loadReductSummaryA.get(0).html(_commaFormat(loadReduct));
             }
             _doFormatLoadValues();
         },
@@ -179,17 +143,24 @@ yukon.dr.curtailment = (function () {
                     url;
                 programTypeId = $('#program-type :selected').val();
                 programName = $('#program-name').val();
-                url = $(this).data('url');
-                debug.log('programTypeId=' + programTypeId + ' programName=' + programName + ' url=' + url);
-                $.ajax({
-                    url: url + '/' + programTypeId + '/' + programName,
-                    type: 'post'
-                }).done(function (data, textStatus, jqXHR) {
-                    debug.log('textStatus=' + textStatus);
-                    var newDoc = document.open("text/html", "replace");
-                    newDoc.write(data);
-                    newDoc.close();
-                });
+                
+                //validate that name is not empty
+                if (!programName.trim()) {
+                	$('#program-name').addClass('error');
+                	$('#program-errors').show();
+                } else {
+	                url = $(this).data('url');
+	                debug.log('programTypeId=' + programTypeId + ' programName=' + programName + ' url=' + url);
+	                $.ajax({
+	                    url: url + '/' + programTypeId + '/' + programName,
+	                    type: 'post'
+	                }).done(function (data, textStatus, jqXHR) {
+	                    debug.log('textStatus=' + textStatus);
+	                    var newDoc = document.open("text/html", "replace");
+	                    newDoc.write(data);
+	                    newDoc.close();
+	                });
+                }
             });
             
             $(function () {
