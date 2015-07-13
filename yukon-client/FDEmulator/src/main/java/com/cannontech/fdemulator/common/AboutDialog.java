@@ -27,7 +27,7 @@ public class AboutDialog extends JDialog implements ActionListener
 	private JLabel copyrightjLabel = new JLabel();
 	private JLabel versionjLabel = new JLabel();
 	private JButton okButton = new JButton();
-	ImageIcon cannon = new ImageIcon("src/main/resources/cannonlogo_small.gif");
+	ImageIcon cannon = new ImageIcon("src/main/resources/eaton_logo.png");
 	private JLabel logo = new JLabel(cannon);
 
 	/** 

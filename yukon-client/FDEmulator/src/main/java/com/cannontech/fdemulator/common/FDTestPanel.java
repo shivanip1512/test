@@ -50,7 +50,7 @@ public class FDTestPanel extends JPanel implements Runnable, Observer, ActionLis
 	private JButton editButton = new JButton();
 	ImageIcon hearton = new ImageIcon("src/main/resources/hearton.png");
 	ImageIcon heartoff = new ImageIcon("src/main/resources/heartoff.png");
-	ImageIcon cannon = new ImageIcon("src/main/resources/cannonlogo_small.gif");
+	ImageIcon cannon = new ImageIcon("src/main/resources/eaton_logo.png");
 	private JCheckBox hbCheckBox = new JCheckBox(heartoff);
 	private JLabel logo = new JLabel(cannon);
 	private JLabel testLabel = new JLabel();

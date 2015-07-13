@@ -6,7 +6,6 @@
     <entry key="yukon.web.modules.login.login.pageTitle">Energy Services Operations Center</entry>
     <entry key="yukon.web.login.tagline">Optimizing Energy Delivery</entry>
     <entry key="yukon.web.login.formTopLogo"></entry>
-    <entry key="yukon.web.login.formBottomLogo">/WebConfig/yukon/CooperTransparent.gif</entry>
     <entry key="yukon.web.login.titleText"></entry>
     <entry key="yukon.web.login.invalidLogin">Invalid username/password</entry>
     <entry key="yukon.web.login.retry">Login disabled, please retry after {0} seconds</entry>

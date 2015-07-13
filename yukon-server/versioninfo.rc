@@ -23,7 +23,7 @@ BEGIN
             VALUE "FileVersion",      STR(D_FILE_VERSION_STR)
             VALUE "ProductName",      "Yukon\0"
 			VALUE "ProductVersion",   STR(D_PRODUCT_VERSION_STR)
-            VALUE "LegalCopyright",   "© 2002-2012 Eaton Corporation plc. All rights reserved.\0"
+            VALUE "LegalCopyright",   "© 2002-2015 Eaton. All rights reserved.\0"
         END
     END
 
