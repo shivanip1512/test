@@ -13,6 +13,7 @@ import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
+import com.cannontech.amr.meter.model.IedMeter;
 import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.rfn.model.RfnMeter;
@@ -145,14 +146,15 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
                 
                 RfnIdentifier rfnIdentifier = new RfnIdentifier(serialNumber, manufacturer, model);
                 yukonMeter = new RfnMeter(paoIdentifier, rfnIdentifier, meterNumber, paoName, disabled);
-            } else {    //assume PLC
+            } else if (paoIdentifier.getPaoType().isPlc()) {    //assume PLC
                 String address = rset.getString("address");
                 String routeName = rset.getString("routeName");
                 int routeId = rset.getInt("routeId");
                 yukonMeter = new PlcMeter(paoIdentifier, meterNumber, paoName, disabled, routeName, routeId, address);
+            } else { // if (paoIdentifier.getPaoType().isIed()) { assume Ied meter type, this is basically a generic meter anyways.
+                yukonMeter = new IedMeter(paoIdentifier, meterNumber, paoName, disabled);
             }
            
-            
 			Date ts = null;
 			if (getMeterReadType()== SUCCESS_METER_READ_TYPE)
 			{

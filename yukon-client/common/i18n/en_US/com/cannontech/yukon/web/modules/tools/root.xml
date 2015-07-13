@@ -41,7 +41,6 @@
     <entry key="yukon.web.modules.tools.commander.serialNumber">Serial Number</entry>
     <entry key="yukon.web.modules.tools.commander.route">Route</entry>
     <entry key="yukon.web.modules.tools.commander.onRoute">on route: </entry>
-    <entry key="yukon.web.modules.tools.commander.changeRoute">Change Route</entry>
     <entry key="yukon.web.modules.tools.commander.currentRoute">Current Route</entry>
     <entry key="yukon.web.modules.tools.commander.newRoute">New Route</entry>
     <entry key="yukon.web.modules.tools.commander.availableCommands">Common Commands</entry>

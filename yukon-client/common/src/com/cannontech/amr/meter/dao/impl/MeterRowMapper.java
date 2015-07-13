@@ -4,6 +4,7 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.SqlProvider;
 
+import com.cannontech.amr.meter.model.IedMeter;
 import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.rfn.model.RfnMeter;
@@ -41,11 +42,15 @@ public class MeterRowMapper implements YukonRowMapper<YukonMeter>, SqlProvider {
             
             RfnIdentifier rfnIdentifier = new RfnIdentifier(serialNumber, manufacturer, model);
             return new RfnMeter(paoIdentifier, rfnIdentifier, meterNumber, paoName, disabled);
-        } else {    //assume PLC
+        } else if (paoIdentifier.getPaoType().isPlc()) {
             String address = rs.getString("address");
             String routeName = rs.getString("route");
             int routeId = rs.getInt("routeId");
             return new PlcMeter(paoIdentifier, meterNumber, paoName, disabled, routeName, routeId, address);
+        } else if (paoIdentifier.getPaoType().isIed()) {
+            return new IedMeter(paoIdentifier, meterNumber, paoName, disabled);
+        } else {
+            return null;
         }
     }
 

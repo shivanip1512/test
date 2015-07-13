@@ -9,8 +9,11 @@
     <c:when test="${showCarrierSettings}">
         <cti:url var="action" value="/widget/meterInformationWidget/edit-plc"/>
     </c:when>
-    <c:otherwise>
+    <c:when test="${showRFMeshSettings}">
         <cti:url var="action" value="/widget/meterInformationWidget/edit-rf"/>
+    </c:when>
+    <c:otherwise>
+        <cti:url var="action" value="/widget/meterInformationWidget/edit-ied"/>
     </c:otherwise>
 </c:choose>
 

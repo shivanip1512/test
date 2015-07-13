@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.IedMeter;
 import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.rfn.model.RfnMeter;
@@ -204,6 +205,8 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
                 LiteYukonPAObject[] routes = paoDao.getRoutesByType(PaoType.ROUTE_CCU, PaoType.ROUTE_MACRO);
                 model.addAttribute("routes", routes);
             }
+        } else {
+            model.addAttribute("meter", MeterModel.of(meter));
         }
         
         return "meterInformationWidget/edit.jsp";
@@ -285,4 +288,30 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
         return null;
     }
     
+    @RequestMapping(value="edit-ied", method=RequestMethod.PUT)
+    public String editIed(HttpServletResponse resp, ModelMap model, FlashScope flash,
+            @ModelAttribute("meter") MeterModel meter, BindingResult result) throws IOException {
+        
+        validator.validate(meter, result);
+        
+        if (result.hasErrors()) {
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            return "meterInformationWidget/edit.jsp";
+        }
+        
+        LiteYukonPAObject pao = cache.getAllPaosMap().get(meter.getDeviceId());
+        IedMeter ied = new IedMeter(pao.getPaoIdentifier(), meter.getMeterNumber(), meter.getName(), meter.isDisabled());
+        
+        meterDao.update(ied);
+        
+        // Success
+        model.clear();
+        Map<String, Object> json = new HashMap<>();
+        json.put("success", true);
+        resp.setContentType("application/json");
+        JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "update.successful", meter.getName()));
+        
+        return null;
+    }
 }

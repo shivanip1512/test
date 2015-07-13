@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.DisplayableMeter;
+import com.cannontech.amr.meter.model.IedMeter;
 import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.amr.meter.model.YukonMeter;
@@ -119,6 +120,8 @@ public class MeterDaoImpl implements MeterDao {
             } catch (DataIntegrityViolationException e) {
                 throw new DuplicateException("Duplicate rfn address.", e);
             }
+        } else if (meter instanceof IedMeter) {
+            // do nothing special
         }
         
         sendDBChangeMessage(meter);

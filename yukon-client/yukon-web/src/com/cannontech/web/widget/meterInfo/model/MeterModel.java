@@ -1,5 +1,7 @@
 package com.cannontech.web.widget.meterInfo.model;
 
+import com.cannontech.amr.meter.model.YukonMeter;
+
 public class MeterModel {
     
     private int deviceId;
@@ -39,4 +41,14 @@ public class MeterModel {
         this.disabled = disabled;
     }
     
+    public static MeterModel of(YukonMeter meter) {
+        
+        MeterModel model = new MeterModel();
+        model.setDeviceId(meter.getDeviceId());
+        model.setDisabled(meter.isDisabled());
+        model.setMeterNumber(meter.getMeterNumber());
+        model.setName(meter.getName());
+        
+        return model;
+    }
 }
