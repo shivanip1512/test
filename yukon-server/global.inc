@@ -79,6 +79,7 @@ $(TCL)\$(CONFIGURATION)\lib\tcl86t.lib
 
 BOOST           = $(CPP_LIBRARIES)\boost\1.58.0-1
 BOOST_INCLUDE   = $(BOOST)\include
+BOOST_BIN       = $(BOOST)\bin
 !IFDEF DEBUG
 BOOST_VERSION = vc120-mt-gd-1_58
 !ELSE
@@ -102,6 +103,7 @@ BOOST_TEST_LIBS = \
 $(BOOST)\lib\boost_unit_test_framework-$(BOOST_VERSION).lib
 
 SQLAPI          = $(CPP_LIBRARIES)\sqlapi\4.1.5-1
+SQLAPI_BIN      = $(SQLAPI)\bin
 !IFDEF DEBUG
 SQLAPI_LIB      = $(SQLAPI)\lib\sqlapid.lib
 SQLAPI_DLL      = sqlapid.dll
@@ -166,6 +168,7 @@ MICROSOFT_SQL     = $(MICROSOFT)\sql-server-client-dll\2000.80.194.0
 MICROSOFT_SQL_DLL = ntwdblib.dll
 
 DBGHELP           = $(MICROSOFT)\dbghelp\6.12.2.633
+DBGHELP_BIN       = $(DBGHELP)\bin
 DBGHELP_DLL       = dbghelp.dll
 DBGHELP_LIBS =\
 $(DBGHELP)\lib\dbghelp.lib
