@@ -29,7 +29,7 @@
     <tags:sectionContainer id="commanderResultsContainer">
     
         <jsp:attribute name="title">
-            Executing '${fn:escapeXml(result.command)}' on <cti:msg key="${result.deviceCollection.description}"/>
+            Executing '${(result.command)}' on <cti:msg key="${result.deviceCollection.description}"/>
         </jsp:attribute>
         <jsp:body>
     

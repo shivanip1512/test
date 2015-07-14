@@ -32,7 +32,7 @@
                     </cti:url>
                 
                     <tr>
-                        <td>${fn:escapeXml(result.command)}</td>
+                        <td>${(result.command)}</td>
                         <td><cti:msg key="${result.deviceCollection.description}"/></td>
                         <td title="<cti:msg2 key=".tableTooltip"/>">
                             <span class="success"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/SUCCESS_COUNT"/></span> /

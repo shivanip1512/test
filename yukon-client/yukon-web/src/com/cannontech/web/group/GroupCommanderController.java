@@ -26,6 +26,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.util.HtmlUtils;
 
 import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
@@ -146,7 +147,8 @@ public class GroupCommanderController {
     public String executeGroupCommand(HttpServletRequest request, String groupName, String commandSelectValue, String commandString, String emailAddress, boolean sendEmail, YukonUserContext userContext, ModelMap map) throws ServletException {
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
         DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(group);
-        boolean success = doCollectionCommand(request, deviceCollection, commandSelectValue, commandString, emailAddress, sendEmail, groupName, userContext, map);
+        boolean success = doCollectionCommand(request, deviceCollection, HtmlUtils.htmlEscape(commandSelectValue), HtmlUtils.htmlEscape(commandString),
+                                              emailAddress, sendEmail, groupName, userContext, map);
         if (success) {
             return "redirect:resultDetail";
         } else {
