@@ -1,7 +1,6 @@
 #include "precompiled.h"
 
 #include "module_util.h"
-#include "utility.h"
 
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
