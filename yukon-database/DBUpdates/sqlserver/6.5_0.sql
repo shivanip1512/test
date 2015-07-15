@@ -14,14 +14,14 @@ ALTER TABLE PaoLocation
 ALTER COLUMN LastChangedDate DATETIME NOT NULL;
 
 ALTER TABLE PaoLocation
-ADD LocationType VARCHAR(64);
+ADD Origin VARCHAR(64);
 GO
 
 UPDATE PaoLocation
-SET LocationType = 'MANUAL';
+SET Origin = 'MANUAL';
 
 ALTER TABLE PaoLocation
-ALTER COLUMN LocationType VARCHAR(64) NOT NULL;
+ALTER COLUMN Origin VARCHAR(64) NOT NULL;
 /* End YUK-14460 */
 
 /**************************************************************/

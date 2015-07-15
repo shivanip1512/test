@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/14/2015 10:29:51 AM                        */
+/* Created on:     7/15/2015 4:22:02 PM                         */
 /*==============================================================*/
 
 
@@ -7225,7 +7225,7 @@ create table PaoLocation  (
    Latitude             NUMBER(9,6)                     not null,
    Longitude            NUMBER(9,6)                     not null,
    LastChangedDate      DATE                            not null,
-   LocationType         VARCHAR2(64)                    not null,
+   Origin               VARCHAR2(64)                    not null,
    constraint PK_PaoLocation primary key (PAObjectId)
 );
 

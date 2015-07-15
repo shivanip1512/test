@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/14/2015 10:33:17 AM                        */
+/* Created on:     7/15/2015 4:06:03 PM                         */
 /*==============================================================*/
 
 
@@ -7664,7 +7664,7 @@ create table PaoLocation (
    Latitude             numeric(9,6)         not null,
    Longitude            numeric(9,6)         not null,
    LastChangedDate      datetime             not null,
-   LocationType         varchar(64)          not null,
+   Origin               varchar(64)          not null,
    constraint PK_PaoLocation primary key (PAObjectId)
 )
 go
