@@ -202,13 +202,13 @@ public class TdcServiceImpl implements TdcService {
         
     @Override
     public List<DisplayData> getUnacknowledgedAlarms(int pointId) {
-        Set<Signal> signals = dynamicDataSource.getSignals(pointId);
+        Set<Signal> signals = dynamicDataSource.getCachedSignals(pointId);
         return getDisplayData(signals, false);
     }
 
     @Override
     public int getUnackAlarmCountForPoint(int pointId) {
-        Set<Signal> signals = dynamicDataSource.getSignals(pointId);
+        Set<Signal> signals = dynamicDataSource.getCachedSignals(pointId);
         List<Signal> unackAlarms = Lists.newArrayList(Iterables.filter(signals, new Predicate<Signal>() {
             @Override
             public boolean apply(Signal signal) {
@@ -221,7 +221,7 @@ public class TdcServiceImpl implements TdcService {
     
     @Override
     public int getUnackAlarmCountForPoint(int pointId, int condition) {
-        Set<Signal> signals = dynamicDataSource.getSignals(pointId);
+        Set<Signal> signals = dynamicDataSource.getCachedSignals(pointId);
         for(Signal signal: signals){
             if(signal.getCondition() == condition
                     && TagUtils.isAlarmUnacked(signal.getTags())
@@ -234,7 +234,7 @@ public class TdcServiceImpl implements TdcService {
          
     @Override
     public String getUnackOrActiveAlarmColor(int pointId, final int condition) {
-        Set<Signal> signals = dynamicDataSource.getSignals(pointId);
+        Set<Signal> signals = dynamicDataSource.getCachedSignals(pointId);
         for(Signal signal: signals){
             if(signal.getCondition() == condition){
                 return getColorClasses(signal);
@@ -245,7 +245,7 @@ public class TdcServiceImpl implements TdcService {
 
     @Override
     public String getUnackOrActiveAlarmColor(int pointId) {
-        List<Signal> signals = Lists.newArrayList(dynamicDataSource.getSignals(pointId));
+        List<Signal> signals = Lists.newArrayList(dynamicDataSource.getCachedSignals(pointId));
         List<Signal> alarms =
             Lists.newArrayList(Iterables.filter(signals, new Predicate<Signal>() {
                 @Override

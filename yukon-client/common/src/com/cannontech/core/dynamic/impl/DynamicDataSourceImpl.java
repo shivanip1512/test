@@ -92,6 +92,16 @@ public class DynamicDataSourceImpl implements DynamicDataSource {
         
         return new HashSet<Signal>(signals);
     }
+    
+    @Override
+    public Set<Signal> getCachedSignals(int pointId) {
+        
+        Set<Signal> signals = dynamicDataCache.getSignals(pointId);
+        if (signals != null) {
+           return signals;
+        }
+        return new HashSet<>();
+    }
 
     @Override
     public Map<Integer, Set<Signal>> getSignals(Set<Integer> pointIds) {

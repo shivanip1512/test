@@ -66,4 +66,9 @@ public interface DynamicDataSource {
      * If no signals exist empty set will be returned.
      */
     Set<Signal> getCachedSignalsByCategory(int alarmCategoryId);
+
+    /**
+     * If no signals exist empty set will be returned.
+     */
+    Set<Signal> getCachedSignals(int pointId);
 }

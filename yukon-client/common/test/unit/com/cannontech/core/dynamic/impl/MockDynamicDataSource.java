@@ -155,4 +155,9 @@ public class MockDynamicDataSource implements DynamicDataSource {
         throw new MethodNotImplementedException();
     }
 
+    @Override
+    public Set<Signal> getCachedSignals(int pointId) {
+        throw new MethodNotImplementedException();
+    }
+
 }
