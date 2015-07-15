@@ -522,4 +522,3 @@ string getYukonBase()
 
     return yukon_base_default;
 }
-
