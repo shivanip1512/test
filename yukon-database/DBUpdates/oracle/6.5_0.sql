@@ -2,6 +2,11 @@
 /****     Oracle DBupdates             ****/ 
 /******************************************/ 
 
+/* Start YUK-14427 */
+DELETE FROM ExtraPaoPointAssignment 
+WHERE Attribute = 'KEEP_ALIVE_TIMER';
+/* End YUK-14427 */
+
 /* Start YUK-14460 */
 ALTER TABLE PaoLocation
 ADD LastChangedDate DATE;
