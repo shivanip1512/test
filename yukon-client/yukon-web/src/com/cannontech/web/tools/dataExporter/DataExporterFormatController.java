@@ -343,12 +343,20 @@ public class DataExporterFormatController {
             if (isValue) {
                 if (!exportField.getReadingPattern().isCustom()) {
                     pattern = accessor.getMessage(exportField.getReadingPattern());
+                } else { // custom format, default if empty
+                    if (pattern.isEmpty()) {
+                        pattern = "#####.00";
+                    }
                 }
             } else if (isTimestamp) {
                 if (!exportField.getTimestampPattern().isCustom()) {
                     pattern = accessor.getMessage(exportField.getTimestampPattern());
+                } else { // custom format, default if empty
+                    if (pattern.isEmpty()) {
+                        pattern = "MM/dd/yyyy hh:mm:ss zZ";
+                    }
                 }
-            }
+            } 
             text.put("pattern", pattern);
         } else {
             text.put("pattern", "");
