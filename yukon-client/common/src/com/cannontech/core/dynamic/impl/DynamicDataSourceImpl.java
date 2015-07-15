@@ -134,6 +134,15 @@ public class DynamicDataSourceImpl implements DynamicDataSource {
         }
         return signals;
     }
+    
+    @Override
+    public Set<Signal> getCachedSignalsByCategory(int alarmCategoryId) {
+        Set<Signal> signals = dynamicDataCache.getSignalForCategory(alarmCategoryId);
+        if (signals != null) {
+            return signals;
+        }
+        return new HashSet<>();
+    }
 
     @Override
     public Integer getTags(int pointId) {

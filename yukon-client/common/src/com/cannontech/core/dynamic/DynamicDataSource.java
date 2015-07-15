@@ -61,4 +61,9 @@ public interface DynamicDataSource {
     public Integer getTags(int pointId) throws DynamicDataAccessException;
     
     public Set<Integer> getTags(Set<Integer> pointIds) throws DynamicDataAccessException;
+
+    /**
+     * If no signals exist empty set will be returned.
+     */
+    Set<Signal> getCachedSignalsByCategory(int alarmCategoryId);
 }

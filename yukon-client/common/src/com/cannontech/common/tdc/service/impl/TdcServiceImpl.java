@@ -1,6 +1,9 @@
 package com.cannontech.common.tdc.service.impl;
 
-import static com.cannontech.common.tdc.model.IDisplay.*;
+import static com.cannontech.common.tdc.model.IDisplay.EVENT_VIEWER_DISPLAY_NUMBER;
+import static com.cannontech.common.tdc.model.IDisplay.GLOBAL_ALARM_DISPLAY;
+import static com.cannontech.common.tdc.model.IDisplay.SOE_LOG_DISPLAY_NUMBER;
+import static com.cannontech.common.tdc.model.IDisplay.TAG_LOG_DISPLAY_NUMBER;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,7 +63,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 
-public class TdcServiceImpl implements TdcService{
+public class TdcServiceImpl implements TdcService {
     private final static Logger log = YukonLogManager.getLogger(TdcServiceImpl.class);
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
@@ -76,7 +79,7 @@ public class TdcServiceImpl implements TdcService{
 
     private Map<Integer, String> stateColorMap;
     private final String defaultAlertStr = "alert"; // yukon.css 
-
+    
     private Comparator<DisplayData> sortByDate = new Comparator<DisplayData>() {
         @Override
         public int compare(DisplayData d1, DisplayData d2) {
@@ -190,7 +193,7 @@ public class TdcServiceImpl implements TdcService{
         List<DisplayData> data = Lists.newArrayList();
         List<LiteAlarmCategory> alarmList = alarmCatDao.getAlarmCategories();
         for (LiteAlarmCategory alarmCat : alarmList) {
-            Set<Signal> signals = dynamicDataSource.getSignalsByCategory(alarmCat.getAlarmCategoryId());
+            Set<Signal> signals = dynamicDataSource.getCachedSignalsByCategory(alarmCat.getAlarmCategoryId());
             data.addAll(getDisplayData(signals, showActive));
         }
         Collections.sort(data, sortByDate);
@@ -339,11 +342,9 @@ public class TdcServiceImpl implements TdcService{
         int count = 0;
         List<LiteAlarmCategory> alarmList = alarmCatDao.getAlarmCategories();
         for (LiteAlarmCategory alarmCat : alarmList) {
-            Set<Signal> signals =
-                dynamicDataSource.getSignalsByCategory(alarmCat.getAlarmCategoryId());
+            Set<Signal> signals = dynamicDataSource.getCachedSignalsByCategory(alarmCat.getAlarmCategoryId());
             for (Signal signal : signals) {
-                if (TagUtils.isAlarmUnacked(signal.getTags())
-                    && signal.getCondition() != Signal.SIGNAL_COND) {
+                if (TagUtils.isAlarmUnacked(signal.getTags()) && signal.getCondition() != Signal.SIGNAL_COND) {
                     count++;
                 }
             }
@@ -352,6 +353,10 @@ public class TdcServiceImpl implements TdcService{
     }
 
     private List<DisplayData> getDisplayData(Set<Signal> signals, boolean showActive) {
+        List<DisplayData> data = new ArrayList<>();
+        if (signals.isEmpty()) {
+            return data;
+        }
         List<Integer> pointIds =
             Lists.transform(Lists.newArrayList(signals), new Function<Signal, Integer>() {
                 @Override
@@ -390,7 +395,6 @@ public class TdcServiceImpl implements TdcService{
         Map<PaoIdentifier, LiteYukonPAObject> paoIdentifiers =
             paoDao.getLiteYukonPaosById(Lists.transform(devices, SimpleDevice.TO_PAO_IDENTIFIER));
 
-        List<DisplayData> data = new ArrayList<>();
         for (Signal signal : signals) {
             if (signal.getCondition() != Signal.SIGNAL_COND) {
                 int tags = signal.getTags();
@@ -463,7 +467,7 @@ public class TdcServiceImpl implements TdcService{
        
     private List<DisplayData> getCustomDisplayDataByAlarmCategory(Display display) {
         int catId = alarmCatDao.getAlarmCategoryIdFromCache(display.getName());
-        Set<Signal> signals = dynamicDataSource.getSignalsByCategory(catId);
+        Set<Signal> signals = dynamicDataSource.getCachedSignalsByCategory(catId);
         return getDisplayData(signals, true);
     }
        

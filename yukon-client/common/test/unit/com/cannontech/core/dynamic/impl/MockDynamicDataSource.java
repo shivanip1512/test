@@ -150,4 +150,9 @@ public class MockDynamicDataSource implements DynamicDataSource {
         throw new MethodNotImplementedException();
     }
 
+    @Override
+    public Set<Signal> getCachedSignalsByCategory(int alarmCategoryId) {
+        throw new MethodNotImplementedException();
+    }
+
 }
