@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/15/2015 4:06:03 PM                         */
+/* Created on:     7/15/2015 5:13:42 PM                         */
 /*==============================================================*/
 
 
@@ -8332,14 +8332,8 @@ INSERT INTO State VALUES(-17, 10, 'Ia', 3, 6, 0);
 INSERT INTO State VALUES(-17, 11, 'Ib', 4, 6, 0);
 INSERT INTO State VALUES(-17, 12, 'Ic', 5, 6, 0);
 INSERT INTO State VALUES(-17, 13, 'Temp', 7, 6, 0);
-INSERT INTO State VALUES(-17, 14, 'N/A', 8, 6, 0);
+INSERT INTO State VALUES(-17, 14, 'Remote', 8, 6, 0);
 INSERT INTO State VALUES(-17, 15, 'Time', 1, 6, 0);
-INSERT INTO State VALUES(-17, 16, 'N/A', 2, 6, 0);
-INSERT INTO State VALUES(-17, 17, 'Bad Active Relay', 3, 6, 0);
-INSERT INTO State VALUES(-17, 18, 'NC Lockout', 4, 6, 0);
-INSERT INTO State VALUES(-17, 19, 'Control Accepted', 5, 6, 0);
-INSERT INTO State VALUES(-17, 20, 'Auto Mode', 7, 6, 0);
-INSERT INTO State VALUES(-17, 21, 'Reclose Block', 8, 6, 0);
 INSERT INTO State VALUES(-16, 0, 'Cleared', 0, 6, 0);
 INSERT INTO State VALUES(-16, 1, 'Active', 1, 6, 0);
 INSERT INTO State VALUES(-15, 0, 'No Signal', 0, 6, 0); 
