@@ -10,39 +10,33 @@ import com.cannontech.spring.YukonSpringHook;
 
 public class PointOffsetUtils {
 
-    public PointOffsetUtils() {
-        super();
-     
-    }
-
-    public static boolean isValidPointOffset(int offset, Integer paoId, int type){
+    public static boolean isValidPointOffset(int offset, Integer paoId, int type) {
         List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(paoId);
         for (LitePoint point : points) {
-		    if (point.getPointType() == type ) {
-		        if (offset == point.getPointOffset()) {
-		        	return false;
-		        }
-		    }
-		}
-		return true;
+            if (point.getPointType() == type) {
+                if (offset == point.getPointOffset()) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
-    
-    public static int getValidPointOffset(Integer paoId, int type) {
-        return getMaxPointOffsetForDevice (paoId, type) + 1;  
+
+    public static int getValidPointOffset(Integer paoId) {
+        return getMaxPointOffsetForDevice(paoId) + 1;
     }
-    
-    public static int getMaxPointOffsetForDevice(Integer paoId, int pointType) {        
+
+    public static int getMaxPointOffsetForDevice(Integer paoId) {
         List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(paoId);
-        if(points.isEmpty()) {
+        if (points.isEmpty()) {
             return 0;
-        }else {
+        } else {
             LitePoint maxPoint = Collections.max(points, new Comparator<LitePoint>() {
                 public int compare(LitePoint p1, LitePoint p2) {
                     return p1.getPointOffset() - p2.getPointOffset();
                 }
-            });        
+            });
             return maxPoint.getPointOffset();
         }
     }
 }
-

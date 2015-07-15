@@ -44,7 +44,7 @@ public class PointUtil {
 
         // Service flag of 'Y' means disabled, 'N' means enabled.
         char disabledChar = disabled ? CtiUtilities.trueChar : CtiUtilities.falseChar;
-        int validPointOffset = PointOffsetUtils.getValidPointOffset(paoId, type);
+        int validPointOffset = PointOffsetUtils.getValidPointOffset(paoId);
 
         switch (type) {
         case PointTypes.ANALOG_POINT:

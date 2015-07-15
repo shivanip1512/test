@@ -1,268 +1,216 @@
 package com.cannontech.web.editor.point;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 
 import com.cannontech.database.data.fdr.FDRInterface;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.db.point.Point;
 import com.cannontech.database.db.point.fdr.FDRTranslation;
 import com.cannontech.web.util.JSFParamUtil;
 
-/**
- * @author ryan
- *
- */
-public class PointFDREntry
-{
-	private PointBase pointBase = null;
-	
-	private FDRTranslationEntry fdrTranslationEntry = null;
+public class PointFDREntry {
+    
+    private PointBase pointBase = null;
+    private FDRTranslationEntry fdrTranslationEntry = null;
+    private List<SelectItem> fdrInterfaceSel = new ArrayList<>();
 
-	private SelectItem[] fdrInterfaceSel = null;
-	
-	//contains ( Key<String:InterfaceType>, Value<SelectItem[]:Directions> )
-	private HashMap fdrDirectionsMap = null;
+    // <InterfaceType, Directions>
+    private Map<String, List<SelectItem>> fdrDirectionsMap = new HashMap<>();
 
-	//contains ( Key<String:InterfaceType>, Value<data.FDRInterface> )
-	private HashMap fdrInterfacesMap = null;
+    // <InterfaceType, FDRInterface>
+    private Map<String, FDRInterface> fdrInterfacesMap = new HashMap<>();
 
-	private int selectedRowNum = -1;
-	private FDRInterface selectedInterface = null;
-	private String selectedTranslation = null;
+    private int selectedRowNum = -1;
+    private FDRInterface selectedInterface = null;
+    private String selectedTranslation = null;
 
-		
-	/**
-	 * 
-	 */
-	public PointFDREntry( PointBase pBase )
-	{
-		super();
-		
-		if( pBase == null )
-			throw new IllegalArgumentException("PointFDREntry can not be created with a NULL PointBase reference");
+    public PointFDREntry(PointBase pBase) {
 
-		loadInterfaceData();		
+        if (pBase == null)
+            throw new IllegalArgumentException("PointFDREntry can not be created with a NULL PointBase reference");
 
-		pointBase = pBase;
-	}
+        loadInterfaceData();
 
+        pointBase = pBase;
+    }
 
-	/**
-	 * The instance of the underlying base object
-	 */
-	private PointBase getPointBase() {
-		return pointBase;
-	}
+    private PointBase getPointBase() {
+        return pointBase;
+    }
 
-	/**
-	 * Shows the current editor for the given translation string 
-	 */
-	public String showTranslation() {
-		
-		int rowNum = new Integer(JSFParamUtil.getJSFReqParam("rowNumber")).intValue();
-		String interfaceName= JSFParamUtil.getJSFReqParam("fdrInterface");
+    /**
+     * Shows the current editor for the given translation string
+     */
+    public String showTranslation() {
 
-		//set our data structures up
-		setSelectedRowNum( rowNum );
-		setSelectedInterface(
-			(FDRInterface)getFdrInterfacesMap().get(interfaceName) );		
+        int rowNum = new Integer(JSFParamUtil.getJSFReqParam("rowNumber"));
+        String interfaceName = JSFParamUtil.getJSFReqParam("fdrInterface");
 
-		fdrTranslationEntry = new FDRTranslationEntry(
-				(FDRTranslation)getPointBase().getPointFDRList().get(getSelectedRowNum()),
-				getSelectedInterface() );
+        // set our data structures up
+        setSelectedRowNum(rowNum);
+        setSelectedInterface(getFdrInterfacesMap().get(interfaceName));
 
-		//keep us on our same page
-		return null;
-	}
+        fdrTranslationEntry = new FDRTranslationEntry(
+            getPointBase().getPointFDRList().get(rowNum), getSelectedInterface());
 
-	/**
-	 * Shows the current editor for the given translation string 
-	 */
-	public void interfaceChange( ValueChangeEvent ev ) {
+        // keep us on our same page
+        return null;
+    }
 
-		Integer rowNum =
-			(Integer)JSFParamUtil.getChildElemValue( ev.getComponent(), "rowNumber");
-		String interfaceName = (String)ev.getNewValue();
+    /**
+     * Shows the current editor for the given translation string
+     */
+    public void interfaceChange(ValueChangeEvent ev) {
 
-		//set up some values as to edit this translation
-		setSelectedRowNum( -1 );
-		setSelectedInterface( null );
-			//(FDRInterface)getFdrInterfacesMap().get(interfaceName) );		
+        Integer rowNum = (Integer) JSFParamUtil.getChildElemValue(ev.getComponent(), "rowNumber");
+        String interfaceName = (String) ev.getNewValue();
 
+        // set up some values as to edit this translation
+        setSelectedRowNum(-1);
+        setSelectedInterface(null);
+        // (FDRInterface)getFdrInterfacesMap().get(interfaceName) );
 
-		//update the db object with the change
-		if( rowNum.intValue() >= 0 && rowNum.intValue() <= getPointBase().getPointFDRList().size() ) {
+        // update the db object with the change
+        if (rowNum >= 0 && rowNum <= getPointBase().getPointFDRList().size()) {
+            
+            Point point = getPointBase().getPoint();
 
-			getPointBase().getPointFDRList().set( rowNum.intValue(),
-				FDRInterface.createDefaultTranslation(
-						(FDRInterface)getFdrInterfacesMap().get(interfaceName),
-						getPointBase().getPoint().getPointID(),
-						getPointBase().getPoint().getPointType() ) );
+            getPointBase().getPointFDRList().set(
+                rowNum.intValue(),
+                FDRInterface.createDefaultTranslation(getFdrInterfacesMap().get(interfaceName),
+                    point.getPointID(), point.getPointType()));
 
-//			//make the editor for this translation visible
-//			fdrTranslationEntry = new FDRTranslationEntry(
-//					(FDRTranslation)getPointBase().getPointFDRList().get(rowNum.intValue() ),
-//					getSelectedInterface() );
-		}
+        }
+    }
 
+    /**
+     * Remove the selected translation from our table
+     */
+    public String deleteTranslation() {
 
-//		fdrTranslationEntry = new FDRTranslationEntry(
-//				(FDRInterface)getFdrInterfacesMap().get(interfaceName),
-//				getPointBase().getPoint().getPointID(),
-//				getPointBase().getPoint().getPointType() );
+        int rowNum = new Integer(JSFParamUtil.getJSFReqParam("rowNumber"));
 
-	}
+        // be sure we have a valid row number
+        if (rowNum >= 0 && rowNum <= getPointBase().getPointFDRList().size()) {
+            getPointBase().getPointFDRList().remove(rowNum);
+        }
 
-	/**
-	 * Remove the selected translation from our table
-	 */
-	public String deleteTranslation() {
-		
-		int rowNum = new Integer(JSFParamUtil.getJSFReqParam("rowNumber")).intValue();
+        // we must clear out any editing action
+        setSelectedRowNum(-1);
+        setSelectedInterface(null);
 
-		//be sure we have a valid row number
-		if( rowNum >= 0 && rowNum <= getPointBase().getPointFDRList().size() )
-			getPointBase().getPointFDRList().remove( rowNum );
+        // keep us on our same page
+        return null;
+    }
 
-		//we must clear out any editing action
-		setSelectedRowNum( -1 );
-		setSelectedInterface( null );
+    /**
+     * Add a new default translation entry to our table
+     */
+    public String addTranslation() {
 
-		//keep us on our same page
-		return null;
-	}
+        FDRTranslation trans = FDRTranslation.createTranslation(getPointBase().getPoint().getPointID());
 
-	/**
-	 * Add a new default translation entry to our table
-	 */
-	public String addTranslation() {
-		
-		FDRTranslation trans = FDRTranslation.createTranslation(
-				getPointBase().getPoint().getPointID() );
+        getPointBase().getPointFDRList().add(trans);
 
-		getPointBase().getPointFDRList().add( trans );
+        // we must clear out any editing action
+        setSelectedRowNum(-1);
+        setSelectedInterface(null);
 
-		//we must clear out any editing action
-		setSelectedRowNum( -1 );
-		setSelectedInterface( null );
+        // keep us on our same page
+        return null;
+    }
 
-		//keep us on our same page
-		return null;
-	}
+    /**
+     * Loads all of our FDRInterface data structures into memory
+     */
+    private void loadInterfaceData() {
 
-	/**
-	 * Loads all of our FDRInterface data structures into memory
-	 */
-	private void loadInterfaceData() {
+        FDRInterface[] fdrInterfaces = FDRInterface.getALLFDRInterfaces();
 
-		FDRInterface[] fdrInterfaces =
-			com.cannontech.database.db.point.fdr.FDRInterface.getALLFDRInterfaces();
+        fdrDirectionsMap = new HashMap<>();
+        fdrInterfacesMap = new HashMap<>();
+        fdrInterfaceSel = new ArrayList<>();
 
-		fdrInterfaceSel = new SelectItem[ fdrInterfaces.length ];
-		fdrDirectionsMap = new HashMap(8);
-		fdrInterfacesMap = new HashMap(32);
+        for (FDRInterface fdrIface : fdrInterfaces) {
+            fdrInterfaceSel.add(new SelectItem(fdrIface.getFdrInterface().getInterfaceName(),
+                                               fdrIface.getFdrInterface().getInterfaceName()));
+            
+            // mapping used to map InterfaceName to the FDRInterface instance
+            getFdrInterfacesMap().put(fdrIface.getFdrInterface().getInterfaceName(), fdrIface);
+            
+            // build our directions mapping for this interface
+            String[] dirsStrs = fdrIface.getFdrInterface().getAllDirections();
+            
+            List<SelectItem> dirItems = new ArrayList<>();
+            
+            for (String dirString : dirsStrs) {
+                dirItems.add(new SelectItem(dirString, dirString));
+            }
+            
+            // map of InterfaceType to SelectItms[]
+            fdrDirectionsMap.put(fdrIface.getFdrInterface().getInterfaceName(), dirItems);
+        }
 
-		for( int i = 0; i < fdrInterfaces.length; i++ ) {
-			fdrInterfaceSel[i] = new SelectItem(
-				fdrInterfaces[i].getFdrInterface().getInterfaceName(),
-				fdrInterfaces[i].getFdrInterface().getInterfaceName() );
+    }
 
-			//mapping used to map InterfaceName to the FDRInterface instance 
-			getFdrInterfacesMap().put(
-				fdrInterfaces[i].getFdrInterface().getInterfaceName(),
-				fdrInterfaces[i] );
-				
-			//build our directions mapping for this interface
-			String[] dirsStrs = fdrInterfaces[i].getFdrInterface().getAllDirections();
-			SelectItem[] dirItems = new SelectItem[ dirsStrs.length ];
-			for( int j = 0; j < dirsStrs.length; j++ )	
-				dirItems[j] = new SelectItem( dirsStrs[j], dirsStrs[j] );
+    /**
+     * Returns the number of translations we have in our list
+     */
+    public int getFDRTransSize() {
+        return getPointBase().getPointFDRList().size();
+    }
 
-			//map of InterfaceType to SelectItms[]
-			getFDRDirectionsMap().put( fdrInterfaces[i].getFdrInterface().getInterfaceName(), dirItems );
-		}
+    /**
+     * Returns all FDR interfaces from the DB
+     */
+    public List<SelectItem> getFDRInterfaces() {
+        return fdrInterfaceSel;
+    }
 
-	}
-	
-	/**
-	 * Returns the number of translations we have in our list
-	 */
-	public int getFDRTransSize() {
-		return getPointBase().getPointFDRList().size();
-	}
+    /**
+     * Gets all the possible direction for a FDRInterface
+     */
+    public Map<String, List<SelectItem>> getFDRDirectionsMap() {
 
-	/**
-	 * Returns all FDR interfaces from the DB
-	 */
-	public SelectItem[] getFDRInterfaces() 
-	{
-		return fdrInterfaceSel;
-	}
+        return fdrDirectionsMap;
+    }
 
-	/**
-	 * Gets all the possible direction for a FDRInterface
-	 */
-	public HashMap getFDRDirectionsMap() {
-		
-		return fdrDirectionsMap;
-	}
+    public Map<String, FDRInterface> getFdrInterfacesMap() {
+        return fdrInterfacesMap;
+    }
 
-	/**
-	 * @return
-	 */
-	public HashMap getFdrInterfacesMap() {
-		return fdrInterfacesMap;
-	}
+    public int getSelectedRowNum() {
+        return selectedRowNum;
+    }
 
-	/**
-	 * @return
-	 */
-	public int getSelectedRowNum() {
-		return selectedRowNum;
-	}
+    public void setSelectedRowNum(int i) {
+        selectedRowNum = i;
+    }
 
-	/**
-	 * @param i
-	 */
-	public void setSelectedRowNum(int i) {
-		selectedRowNum = i;
-	}
+    private FDRInterface getSelectedInterface() {
+        return selectedInterface;
+    }
 
-	/**
-	 * @return
-	 */
-	private FDRInterface getSelectedInterface() {
-		return selectedInterface;
-	}
+    private void setSelectedInterface(FDRInterface interface1) {
+        selectedInterface = interface1;
+    }
 
-	/**
-	 * @param interface1
-	 */
-	private void setSelectedInterface(FDRInterface interface1) {
-		selectedInterface = interface1;
-	}
+    public FDRTranslationEntry getFdrTranslationEntry() {
+        return fdrTranslationEntry;
+    }
 
-	/**
-	 * @return
-	 */
-	public FDRTranslationEntry getFdrTranslationEntry() {		
-		return fdrTranslationEntry;
-	}
+    public String getSelectedTranslation() {
+        return selectedTranslation;
+    }
 
-	/**
-	 * @return
-	 */
-	public String getSelectedTranslation() {
-		return selectedTranslation;
-	}
-
-	/**
-	 * @param string
-	 */
-	public void setSelectedTranslation(String string) {
-		selectedTranslation = string;
-	}
+    public void setSelectedTranslation(String string) {
+        selectedTranslation = string;
+    }
 
 }

@@ -1,5 +1,6 @@
 package com.cannontech.database.data.point;
 
+import java.sql.SQLException;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -10,20 +11,19 @@ import com.cannontech.database.db.point.calculation.CalcPointBaseline;
 import com.google.common.collect.Lists;
 
 public class CalculatedPoint extends ScalarPoint {
+
     private CalcBase calcBase = null;
     private List<CalcComponent> calcComponents = null;
     private CalcPointBaseline calcBaselinePoint = null;
     private boolean baselineAssigned = false;
 
-    /**
-     * CalculatedPoint constructor comment.
-     */
     public CalculatedPoint() {
         super();
     }
 
     @Override
-    public void add() throws java.sql.SQLException {
+    public void add() throws SQLException {
+
         super.add();
 
         getCalcBase().add();
@@ -51,7 +51,7 @@ public class CalculatedPoint extends ScalarPoint {
     }
 
     @Override
-    public void addPartial() throws java.sql.SQLException {
+    public void addPartial() throws SQLException {
         getCalcBaseDefaults().add();
         for (CalcComponent calcComponent : getCalcComponents()) {
             calcComponent.add();
@@ -64,7 +64,7 @@ public class CalculatedPoint extends ScalarPoint {
     }
 
     @Override
-    public void delete() throws java.sql.SQLException {
+    public void delete() throws SQLException {
         CalcComponent.deleteCalcComponents(getPoint().getPointID(), getDbConnection());
         if (!baselineAssigned) {
             CalcPointBaseline.deleteCalcBaselinePoint(getPoint().getPointID(), getDbConnection());
@@ -74,7 +74,7 @@ public class CalculatedPoint extends ScalarPoint {
     }
 
     @Override
-    public void deletePartial() throws java.sql.SQLException {
+    public void deletePartial() throws SQLException {
         CalcComponent.deleteCalcComponents(getPoint().getPointID(), getDbConnection());
         if (!baselineAssigned) {
             CalcPointBaseline.deleteCalcBaselinePoint(getPoint().getPointID(), getDbConnection());
@@ -91,7 +91,7 @@ public class CalculatedPoint extends ScalarPoint {
     }
 
     public CalcBase getCalcBaseDefaults() {
-        getCalcBase().setPeriodicRate(new Integer(1));
+        getCalcBase().setPeriodicRate(1);
         getCalcBase().setUpdateType("On First Change");
         return getCalcBase();
     }
@@ -117,7 +117,7 @@ public class CalculatedPoint extends ScalarPoint {
     }
 
     @Override
-    public void retrieve() throws java.sql.SQLException {
+    public void retrieve() throws SQLException {
         super.retrieve();
         getCalcBase().retrieve();
 
@@ -164,7 +164,7 @@ public class CalculatedPoint extends ScalarPoint {
     }
 
     @Override
-    public void update() throws java.sql.SQLException {
+    public void update() throws SQLException {
         super.update();
         getCalcBase().update();
 
@@ -181,6 +181,6 @@ public class CalculatedPoint extends ScalarPoint {
     }
 
     public static boolean inUseByPoint(Integer baselineID, String databaseAlias) {
-        return com.cannontech.database.db.point.calculation.CalcPointBaseline.inUseByPoint(baselineID, databaseAlias);
+        return CalcPointBaseline.inUseByPoint(baselineID, databaseAlias);
     }
 }

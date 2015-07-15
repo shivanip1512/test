@@ -1,5 +1,7 @@
 package com.cannontech.database.data.point;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -15,15 +17,12 @@ public class ScalarPoint extends PointBase {
 
     private PointUnit pointUnit = null;
 
-    /**
-     * ScalarPoint constructor comment.
-     */
     public ScalarPoint() {
         super();
     }
 
     @Override
-    public void add() throws java.sql.SQLException {
+    public void add() throws SQLException {
         super.add();
         getPointUnit().add();
 
@@ -34,7 +33,7 @@ public class ScalarPoint extends PointBase {
     }
 
     @Override
-    public void addPartial() throws java.sql.SQLException {
+    public void addPartial() throws SQLException {
         Iterator<PointLimit> it = getPointLimitsMap().values().iterator();
         while (it.hasNext()) {
             it.next().add();
@@ -44,11 +43,8 @@ public class ScalarPoint extends PointBase {
         super.addPartial();
     }
 
-    /**
-     * This method was created in VisualAge.
-     */
     @Override
-    public void delete() throws java.sql.SQLException {
+    public void delete() throws SQLException {
         getPointUnit().delete();
         // delete all the associated PointLimits
         delete(PointLimit.TABLE_NAME, "POINTID", getPointUnit().getPointID());
@@ -56,7 +52,7 @@ public class ScalarPoint extends PointBase {
     }
 
     @Override
-    public void deletePartial() throws java.sql.SQLException {
+    public void deletePartial() throws SQLException {
         getPointUnit().delete();
         // delete all the associated PointLimits
         delete(PointLimit.TABLE_NAME, "POINTID", getPoint().getPointID());
@@ -74,9 +70,9 @@ public class ScalarPoint extends PointBase {
      * Convienence method to get the first limit. Returns null if no limit is set.
      */
     public PointLimit getLimitOne() {
-        PointLimit plOne = getPointLimitsMap().get(new Integer(1));
+        PointLimit plOne = getPointLimitsMap().get(1);
         if (plOne == null) {
-            return new PointLimit(getPoint().getPointID(), new Integer(1), new Double(0.0), new Double(0.0), new Integer(0));
+            return new PointLimit(getPoint().getPointID(), 1, 0.0, 0.0, 0);
         }
         return plOne;
     }
@@ -85,9 +81,9 @@ public class ScalarPoint extends PointBase {
      * Convienence method to get the second limit. Returns null if no limit is set.
      */
     public PointLimit getLimitTwo() {
-        PointLimit plTwo = getPointLimitsMap().get(new Integer(2));
+        PointLimit plTwo = getPointLimitsMap().get(2);
         if (plTwo == null) {
-            return new PointLimit(getPoint().getPointID(), new Integer(2), new Double(0.0), new Double(0.0), new Integer(0));
+            return new PointLimit(getPoint().getPointID(), 2, 0.0, 0.0, 0);
         }
         return plTwo;
     }
@@ -100,7 +96,7 @@ public class ScalarPoint extends PointBase {
     }
 
     @Override
-    public void retrieve() throws java.sql.SQLException {
+    public void retrieve() throws SQLException {
 
         super.retrieve();
         getPointUnit().retrieve();
@@ -112,7 +108,7 @@ public class ScalarPoint extends PointBase {
                 getPointLimitsMap().put(plArray[i].getLimitNumber(), plArray[i]);
             }
 
-        } catch (java.sql.SQLException e) { // not necessarily an error
+        } catch (SQLException e) { // not necessarily an error
         }
 
         Iterator<PointLimit> it = getPointLimitsMap().values().iterator();
@@ -125,7 +121,7 @@ public class ScalarPoint extends PointBase {
     }
 
     @Override
-    public void setDbConnection(java.sql.Connection conn) {
+    public void setDbConnection(Connection conn) {
         super.setDbConnection(conn);
 
         getPointUnit().setDbConnection(conn);
@@ -156,7 +152,7 @@ public class ScalarPoint extends PointBase {
     }
 
     @Override
-    public void update() throws java.sql.SQLException {
+    public void update() throws SQLException {
 
         super.update();
         getPointUnit().update();

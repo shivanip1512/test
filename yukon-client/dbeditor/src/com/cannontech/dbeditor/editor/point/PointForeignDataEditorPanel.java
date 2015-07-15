@@ -1137,7 +1137,8 @@ private void initConnections() throws java.lang.Exception {
  */
 private void initFDRInterfaces() 
 {
-	com.cannontech.database.data.fdr.FDRInterface[] interfaces = com.cannontech.database.db.point.fdr.FDRInterface.getALLFDRInterfaces();
+	com.cannontech.database.data.fdr.FDRInterface[] interfaces =
+	        com.cannontech.database.data.fdr.FDRInterface.getALLFDRInterfaces();
 
 	for( int i = 0; i < interfaces.length; i++ )
 	{			
