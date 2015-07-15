@@ -54,7 +54,7 @@ try {
 <c:if test="${not loggedIn}">
     <c:set var="genericMainMessage" value="An error occurred while processing your request."/>
     <c:set var="logoHtml">
-        <img class="logoImage" src="<cti:url value="/WebConfig/yukon/YukonBW3.gif"/>">
+        <img class="logoImage" src="<cti:url value="/WebConfig/yukon/YukonBW.gif"/>">
     </c:set>
     <c:choose>
         <c:when test="${code == '404'}">

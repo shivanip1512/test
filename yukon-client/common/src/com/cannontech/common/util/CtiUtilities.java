@@ -95,11 +95,11 @@ public final class CtiUtilities {
     public static final URL GENERIC_APPLICATION_SPLASH = CtiUtilities.class
         .getResource("/ApplicationLoading.png");
 
-    public static final URL DBEDITOR_SPLASH = CtiUtilities.class.getResource("/DBEditorSplash2.png");
+    public static final URL DBEDITOR_SPLASH = CtiUtilities.class.getResource("/DBEditorSplash.png");
     public static final URL COMMANDER_SPLASH = CtiUtilities.class
-        .getResource("/CommanderSplash2.png");
-    public static final URL TRENDING_SPLASH = CtiUtilities.class.getResource("/TrendingSplash2.png");
-    public static final URL TDC_SPLASH = CtiUtilities.class.getResource("/TDCSplash2.png");
+        .getResource("/CommanderSplash.png");
+    public static final URL TRENDING_SPLASH = CtiUtilities.class.getResource("/TrendingSplash.png");
+    public static final URL TDC_SPLASH = CtiUtilities.class.getResource("/TDCSplash.png");
 
     public static final URL ALARM_AU =
         CtiUtilities.class.getResource("/alarm.au");
