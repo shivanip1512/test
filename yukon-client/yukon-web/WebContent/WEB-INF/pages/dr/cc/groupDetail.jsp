@@ -90,6 +90,8 @@
     </div>
     <cti:url value="/dr/cc/groupSave" var="saveUrl"/>
     <cti:button nameKey="save" classes="action primary" type="submit" id="group-save" href="${saveUrl}"/>
+    <cti:url value="/dr/cc/groupDelete/${group.id}" var="deleteUrl"/>
+    <cti:button nameKey="delete" classes="delete" href="${deleteUrl}"/>
     <cti:url value="/dr/cc/groupList" var="cancelUrl"/>
     <cti:button nameKey="cancel" href="${cancelUrl}"/>
 </div>

@@ -2,6 +2,7 @@ package com.cannontech.core.dao.impl;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,7 +37,7 @@ public class LMDirectCustomerListDaoImpl implements LMDirectCustomerListDao {
     }
 
     @Override
-    public void setLMProgramPaosForCustomer(Integer customerId, Set<LiteYukonPAObject> lmProgramPaos) {
+    public void setLMProgramPaosForCustomer(Integer customerId, Collection<LiteYukonPAObject> lmProgramPaos) {
         HashSet<Integer> programIds = new HashSet<Integer>();
         for (LiteYukonPAObject pao : lmProgramPaos) {
             programIds.add(pao.getLiteID());
@@ -45,7 +46,7 @@ public class LMDirectCustomerListDaoImpl implements LMDirectCustomerListDao {
     }
     
     private void setLMProgramIdsForCustomer(final Integer customerId, final Set<Integer> lmProgramIds) {
-        transactionTemplate.execute(new TransactionCallback() {
+        transactionTemplate.execute(new TransactionCallback<Object>() {
             @Override
             public Object doInTransaction(TransactionStatus status) {
                 Set<Integer> currentDbSet = getLMProgramIdsForCustomer(customerId);

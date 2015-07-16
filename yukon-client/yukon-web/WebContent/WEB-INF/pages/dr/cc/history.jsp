@@ -23,14 +23,19 @@
             </thead>
             <tfoot></tfoot>
             <tbody>
-                <c:forEach var="event" varStatus="oneEvent" items="${eventHistory}">
+                <c:forEach var="event" items="${eventHistory}">
                 <tr>
                     <cti:url value="/dr/cc/program/${program.id}/event/${event.id}/detail" var="eventDetailUrl"/>
                     <td><a href="${eventDetailUrl}">${fn:escapeXml(event.displayName)}</a></td>
                     <td>${event.stateDescription}</td>
                     <td><cti:formatDate value="${event.startTime}" type="DATEHM"/></td>
                     <td>${event.duration}</td>
-                    <td>TODO Delete button</td>
+                    <td>
+                        <cti:url var="deleteUrl" value="/dr/cc/program/${program.id}/event/${event.id}"/>
+                        <form:form action="${deleteUrl}" method="DELETE">
+                            <cti:button type="submit" icon="icon-cross" renderMode="image" nameKey="eventDelete"/>
+                        </form:form>
+                    </td>
                 </tr>
                 </c:forEach>
             </tbody>

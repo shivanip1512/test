@@ -106,8 +106,4 @@ public class CustomerPointService {
     public void setPointTypeLookup(CustomerPointTypeLookup pointTypeLookup) {
         this.pointTypeLookup = pointTypeLookup;
     }
-
-
-
-
 }

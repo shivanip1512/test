@@ -70,6 +70,29 @@ yukon.dr.curtailment = (function () {
             debug.log('operation: ' + opts.operation + ' for ' + opts.data + ' groupId ' + groupId + ' successfully processed');
         },
         
+        _programMove = function (opts) {
+        	var programId = $(opts.target).data(opts.data);
+        	rowToMove = $(opts.target).closest('tr'),
+        	moveTarget = $(opts.moveTarget),
+        	icon = rowToMove.find('.icon'),
+            unassigning = opts.operation.indexOf('un') === 0;
+        	
+        	if(unassigning) {
+        		_swapNames(rowToMove, 'active', 'available');
+        	} else {
+        		_swapNames(rowToMove, 'available', 'active');
+        	}
+        	
+        	rowToMove.appendTo(moveTarget);
+        	icon.removeClass(unassigning ? 'icon-delete' : 'icon-add');
+        	icon.addClass(unassigning ? 'icon-add' : 'icon-delete');
+        	
+        	yukon.ui.reindexInputs($('table#active-programs'));
+            yukon.ui.reindexInputs($('table#available-programs'));
+            
+            debug.log('operation: ' + opts.operation + ' for programId ' + programId + ' successfully processed');
+        },
+        
         _customerMove = function (opts) {
             var customerId = $(opts.target).data(opts.data),
             rowToMove = $(opts.target).closest('tr'),
@@ -197,6 +220,19 @@ yukon.dr.curtailment = (function () {
                     debug.log('moving unassigned customer to assigned');
                     _customerMove({target: button, operation: 'assignCustomer', data: 'customerId', moveTarget: '#assigned-customers tbody'});
                 });
+            });
+            
+            $(function () {
+            	$(document).on('click', '#active-programs', function (ev) {
+            		var button = $(ev.target).closest('button');
+            		debug.log('moving active customer program to available');
+            		_programMove({target: button, operation: 'unassignProgram', data: 'programId', moveTarget: '#available-programs tbody'});
+            	});
+            	$(document).on('click', '#available-programs', function (ev) {
+            		var button = $(ev.target).closest('button');
+            		debug.log('moving available customer program to active');
+            		_programMove({target: button, operation: 'assignProgram', data: 'programId', moveTarget: '#active-programs tbody'});
+            	});
             });
         }
         

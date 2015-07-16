@@ -1,5 +1,6 @@
 package com.cannontech.cc.service;
 
+import java.util.Collection;
 import java.util.Set;
 
 import com.cannontech.cc.model.CICustomerStub;
@@ -31,7 +32,7 @@ public class CustomerLMProgramService {
         return allPrograms;
     }
 
-    public void saveProgramList(CICustomerStub customer, Set<LiteYukonPAObject> assignedProgramList) {
+    public void saveProgramList(CICustomerStub customer, Collection<LiteYukonPAObject> assignedProgramList) {
         lmDirectCustomerListDao.setLMProgramPaosForCustomer(customer.getId(), assignedProgramList);
     }
 

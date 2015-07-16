@@ -18,6 +18,7 @@ public abstract class BaseEvent implements Comparable<BaseEvent> {
     public abstract Integer getIdentifier();
     public abstract String getStateDescription();
     
+    @Override
     public int compareTo(BaseEvent o) {
         return getStartTime().compareTo(o.getStartTime());
     }
@@ -31,16 +32,21 @@ public abstract class BaseEvent implements Comparable<BaseEvent> {
         return (int) (diffMillis / (60 * 1000));
     }
     
+    /**
+     * Compares events by event id and program id
+     */
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof EconomicEvent == false) {
-            return false;
-        }
         if (this == obj) {
             return true;
+        } else if (obj instanceof BaseEvent) {
+            BaseEvent rhs = (BaseEvent) obj;
+            return new EqualsBuilder().append(getProgram().getId(), rhs.getProgram().getId())
+                                      .append(getIdentifier(), rhs.getIdentifier())
+                                      .isEquals();
+        } else {
+            return false;
         }
-        EconomicEvent rhs = (EconomicEvent) obj;
-        return new EqualsBuilder().append(getProgram().getId(), rhs.getProgram().getId()).append(getIdentifier(), rhs.getIdentifier()).isEquals();
     }
     
     @Override

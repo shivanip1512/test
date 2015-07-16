@@ -16,10 +16,12 @@ import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
@@ -27,6 +29,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.cc.dao.AccountingEventDao;
@@ -66,11 +69,13 @@ import com.cannontech.cc.service.GroupService;
 import com.cannontech.cc.service.NotificationStatus;
 import com.cannontech.cc.service.ProgramService;
 import com.cannontech.cc.service.StrategyFactory;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.GraphDao;
 import com.cannontech.core.dao.NotificationGroupDao;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteComparators;
@@ -90,11 +95,16 @@ import com.cannontech.web.cc.methods.DetailAccountingBean;
 import com.cannontech.web.cc.methods.DetailEconomicBean;
 import com.cannontech.web.cc.methods.DetailNotificationBean;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.dr.cc.CustomerModel.ProgramPaoModel;
 import com.cannontech.web.tools.trends.TrendUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 @Controller
 public class CcHomeController {
+    private static Logger log = YukonLogManager.getLogger(CcHomeController.class);
+    private static String eventHeadingBase = "yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_heading_";
+    private static String companyHeadingBase = "yukon.web.modules.commercialcurtailment.ccurtSetup.";
+    
     @Autowired private AccountingEventDao accountingEventDao;
     @Autowired private BaseEventDao baseEventDao;
     @Autowired private CurtailmentEventDao curtailmentEventDao;
@@ -117,13 +127,11 @@ public class CcHomeController {
     @Autowired private GroupDao groupDao;
     @Autowired private GroupService groupService;
     @Autowired private NotificationGroupDao notificationGroupDao;
+    @Autowired private PaoDao paoDao;
     @Autowired private ProgramService programService;
     @Autowired private StrategyFactory strategyFactory;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
-    private String eventHeadingBase = "yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_heading_";
-    private String companyHeadingBase = "yukon.web.modules.commercialcurtailment.ccurtSetup.";
-
     @RequestMapping("/cc/home")
     public String home(ModelMap model, YukonUserContext userContext, Integer trendId) throws JsonProcessingException {
         
@@ -199,6 +207,42 @@ public class CcHomeController {
         CICurtailmentStrategy strategy = strategyFactory.getStrategy(program);
         List<? extends BaseEvent> eventList = strategy.getEventsForProgram(program);
         Collections.reverse(eventList);
+        model.addAttribute("eventHistory", eventList);
+        
+        return "dr/cc/history.jsp";
+    }
+    
+    @RequestMapping(value="/cc/program/{programId}/event/{eventId}", method=RequestMethod.DELETE)
+    public String deleteEvent(ModelMap model,
+                              @PathVariable int programId,
+                              @PathVariable int eventId,
+                              FlashScope flashScope) {
+        
+        Program program = programService.getProgramById(programId);
+        model.addAttribute("program", program);
+        
+        CICurtailmentStrategy strategy = strategyFactory.getStrategy(program);
+        List<? extends BaseEvent> eventList = strategy.getEventsForProgram(program);
+        Collections.reverse(eventList);
+        
+        boolean success = false;
+        BaseEvent deletedEvent = null;
+        for (BaseEvent event : eventList) {
+            if (event.getId() == eventId) {
+                strategy.forceDelete(event);
+                deletedEvent = event;
+                success = true;
+                break;
+            }
+        }
+        
+        if (success) {
+            eventList.remove(deletedEvent);
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.history.eventDelete.success"));
+        } else {
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.history.eventDelete.failure"));
+        }
+        
         model.addAttribute("eventHistory", eventList);
         
         return "dr/cc/history.jsp";
@@ -297,6 +341,16 @@ public class CcHomeController {
         model.addAttribute("group", groupBean);
         
         return "dr/cc/groupDetail.jsp";
+    }
+    
+    @RequestMapping("/cc/groupDelete/{groupId}")
+    public String groupDelete(@PathVariable int groupId, FlashScope flash) {
+        
+        Group group = groupService.getGroup(groupId);
+        groupService.deleteGroup(group);
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.groupDelete.deleteSuccessful"));
+        
+        return "redirect:/dr/cc/groupList";
     }
     
     @RequestMapping("/cc/groupSave")
@@ -590,9 +644,8 @@ public class CcHomeController {
         case 4:
             return economicDetail(model, userContext, programTypeId, programId, eventId, -1, request);
         default:
-            break;
+            throw new IllegalArgumentException("Invalid program type id: " + programTypeId);
         }
-        return "we have a problem";
     }
     
     private String accountingDetail(ModelMap model,
@@ -648,7 +701,7 @@ public class CcHomeController {
         return "dr/cc/detail.jsp";
     }
     
-    public String economicDetail(ModelMap model,
+    private String economicDetail(ModelMap model,
             YukonUserContext userContext,
             Integer programTypeId,
             int programId,
@@ -773,25 +826,75 @@ public class CcHomeController {
     }
     
     @RequestMapping("/cc/customerDetail/{customerId}")
-    public String customerList (ModelMap model, YukonUserContext userContext,
-            @PathVariable int customerId) {
+    public String customerDetail(ModelMap model, 
+                                 @PathVariable int customerId, 
+                                 @ModelAttribute CustomerModel customerModel) {
         
         CICustomerStub customer = customerPointService.getCustomer(customerId);
         model.addAttribute("customer", customer);
-        Map<CICustomerPointType, BigDecimal> pointValueCache = customerPointService.getPointValueCache(customer);
-        model.addAttribute("pointValueCache", pointValueCache);
-        List<LiteYukonPAObject> activePrograms =
-            new ArrayList<LiteYukonPAObject>(customerLMProgramService.getProgramsForCustomer(customer));
-        List<LiteYukonPAObject> availablePrograms =
-            new ArrayList<LiteYukonPAObject>(customerLMProgramService.getAvailableProgramsForCustomer(customer));
-        model.addAttribute("activePrograms", activePrograms);
-        model.addAttribute("availablePrograms", availablePrograms);
         
-        List<CICustomerPointType> pointTypeList = customerPointService.getPointTypeList(customer);
-        model.addAttribute("pointTypeList", pointTypeList);
+        List<String> satisfiedPointGroups = customerPointService.getSatisfiedPointGroups(customer);
+        model.addAttribute("satisfiedPointGroups", satisfiedPointGroups);
+        
+        List<CICustomerPointType> pointTypes = customerPointService.getPointTypeList(customer);
+        Map<CICustomerPointType, BigDecimal> pointValues = customerPointService.getPointValueCache(customer);
+        List<LiteYukonPAObject> activePrograms =
+            new ArrayList<>(customerLMProgramService.getProgramsForCustomer(customer));
+        List<LiteYukonPAObject> availablePrograms =
+            new ArrayList<>(customerLMProgramService.getAvailableProgramsForCustomer(customer));
+        
+        customerModel.setPointTypes(pointTypes);
+        customerModel.setPointValues(pointValues);
+        customerModel.populateActivePrograms(activePrograms);
+        customerModel.populateAvailablePrograms(availablePrograms);
+        
         return "dr/cc/customerDetail.jsp";
     }
-
+    
+    @RequestMapping("/cc/customerSave/{customerId}")
+    @Transactional
+    public String customerSave(@PathVariable int customerId,
+                               @ModelAttribute CustomerModel customerModel, 
+                               BindingResult bindingResult,
+                               FlashScope flash) {
+        
+        CICustomerStub customer = customerPointService.getCustomer(customerId);
+        customerPointService.savePointValues(customer, customerModel.getPointValues());
+        
+        List<Integer> activeProgramIds = new ArrayList<>();
+        for(ProgramPaoModel model : customerModel.getActivePrograms()) {
+            activeProgramIds.add(model.getPaoId());
+        }
+        List<LiteYukonPAObject> activeProgramPaos = paoDao.getLiteYukonPaos(activeProgramIds);
+        
+        customerLMProgramService.saveProgramList(customer, activeProgramPaos);
+        
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.customerDetail.update.success", 
+                                                          customer.getCompanyName()));
+        return "redirect:/dr/cc/customerList";
+    }
+    
+    @RequestMapping("/cc/customerDetail/{customerId}/createPoint/{pointType}")
+    public String customerCreatePoint(ModelMap model,
+                                      @PathVariable int customerId, 
+                                      @PathVariable CICustomerPointType pointType,
+                                      FlashScope flash) {
+        
+        CICustomerStub customer = customerPointService.getCustomer(customerId);
+        
+        try {
+            customerPointService.createPoint(customer, pointType);
+            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.customerDetail.createPoint.success", 
+                                                          pointType.getLabel()));
+        } catch (Exception e) {
+            log.error("Error creating point \"" + pointType + "\" for curtailment customer " + customer.getCompanyName(), e);
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.customerDetail.createPoint.failure",
+                                                            pointType.getLabel()));
+        }
+        
+        return "redirect:/dr/cc/customerDetail/" + customerId;        
+    }
+    
     private EconomicEventPricing getRevisionAt(Map<Integer, EconomicEventPricing> revisions, int revisionKey) {
         Set<Entry<Integer, EconomicEventPricing>> revisionSet = revisions.entrySet();
         

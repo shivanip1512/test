@@ -173,6 +173,23 @@ public final class PaoDaoImpl implements PaoDao {
 
         return template.mappedQuery(sqlGenerator, paos, mappingRowMapper, transform);
     }
+    
+    @Override
+    public List<LiteYukonPAObject> getLiteYukonPaos(Iterable<Integer> paoIds) {
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append(litePaoSql);
+                sql.append("where y.PAObjectId").in(subList);
+                return sql;
+            }
+        };
+        
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
+        
+        return template.query(sqlGenerator, paoIds, litePaoRowMapper);
+    }
 
     @Override
     public LiteYukonPAObject findUnique(String paoName, PaoType paoType) {

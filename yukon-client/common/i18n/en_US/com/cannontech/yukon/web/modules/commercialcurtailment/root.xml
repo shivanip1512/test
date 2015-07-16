@@ -53,10 +53,13 @@
     <entry key="yukon.web.modules.dr.cc.customerDetail.satisfiedPointGroups">Satisfied Point Groups</entry>
     <entry key="yukon.web.modules.dr.cc.customerDetail.attachedPoints">Attached Points</entry>
     <entry key="yukon.web.modules.dr.cc.customerDetail.assignedPrograms">Assigned Programs</entry>
-    <entry key="yukon.web.modules.dr.cc.customerDetail.createPoint">Create Point</entry>
+    <entry key="yukon.web.modules.dr.cc.customerDetail.createPoint.label">Create Point</entry>
+    <entry key="yukon.web.modules.dr.cc.customerDetail.createPoint.success">{0} point successfully created.</entry>
+    <entry key="yukon.web.modules.dr.cc.customerDetail.createPoint.failure">Unable to create point {0}.</entry>
     <entry key="yukon.web.modules.dr.cc.customerDetail.availablePrograms">Available Programs</entry>
     <entry key="yukon.web.modules.dr.cc.customerDetail.noSatisfiedPointGroups">No satisfied point groups</entry>
-
+    <entry key="yukon.web.modules.dr.cc.customerDetail.update.success">"{0}" updated successfully.</entry>
+    
     <!-- economicDetail.jspf -->
     <entry key="yukon.web.modules.dr.cc.eventPricing.customer">Customer</entry>
     <entry key="yukon.web.modules.dr.cc.eventPricing.ack">ACK</entry>
@@ -82,6 +85,7 @@
     <entry key="yukon.web.modules.dr.cc.groupDetail.updateSuccessful">Group updated successfully.</entry>
     <entry key="yukon.web.modules.dr.cc.groupCreate.required.name">Name is required.</entry>
     <entry key="yukon.web.modules.dr.cc.groupCreate.createSuccessful">Group created successfully.</entry>
+    <entry key="yukon.web.modules.dr.cc.groupDelete.deleteSuccessful">Group deleted.</entry>
     
     <!-- history.jsp -->
     <entry key="yukon.web.modules.dr.cc.history.pageTitle">Curtailment History</entry>
@@ -91,6 +95,11 @@
     <entry key="yukon.web.modules.dr.cc.history.startTime">Start Time</entry>
     <entry key="yukon.web.modules.dr.cc.history.duration">Duration</entry>
     <entry key="yukon.web.modules.dr.cc.history.action">Action</entry>
+    <entry key="yukon.web.modules.dr.cc.history.eventDelete.success">Event history deleted.</entry>
+    <entry key="yukon.web.modules.dr.cc.history.eventDelete.failure">Unable to delete. The specified event could not be found.</entry>
+    <entry key="yukon.web.modules.dr.cc.history.eventDelete.hoverText">Delete this event from the history.</entry>
+    <entry key="yukon.web.modules.dr.cc.history.eventDelete.title">Delete Event History</entry>
+    <entry key="yukon.web.modules.dr.cc.history.eventDelete.message">Are you sure you want to delete this event history entry?</entry>
     
     <!-- programList.jsp -->
     <entry key="yukon.web.modules.dr.cc.programList.pageTitle">Curtailment Programs</entry>

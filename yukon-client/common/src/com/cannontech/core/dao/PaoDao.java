@@ -77,7 +77,12 @@ public interface PaoDao {
      * Get a map of LiteYukonPAObjects by their PaoIdentifier.
      */
     Map<PaoIdentifier, LiteYukonPAObject> getLiteYukonPaosById(Iterable<PaoIdentifier> paos);
-
+    
+    /**
+     * Get a list of LiteYukonPAObjects by their integer ids.
+     */
+    List<LiteYukonPAObject> getLiteYukonPaos(Iterable<Integer> paoIds);
+    
     /**
      * Helper method to return a paobject that exist for the paoName, category, paoClass.
      * These are the three fields that make up Unique Index Indx_PAO
