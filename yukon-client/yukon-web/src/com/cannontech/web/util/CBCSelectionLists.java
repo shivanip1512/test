@@ -22,7 +22,7 @@ import com.cannontech.database.data.point.AnalogControlType;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.StatusControlType;
-import com.cannontech.database.db.point.PointAlarming;
+import com.cannontech.database.db.point.PointAlarming.AlarmNotificationTypes;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
@@ -239,10 +239,10 @@ public class CBCSelectionLists {
     };
 
     private static final SelectItem[] ptAlarmNotification = {
-        new SelectItem(PointAlarming.NONE_VALUE_STRING, PointAlarming.NONE_VALUE_STRING),
-        new SelectItem(PointAlarming.EXCLUDE_NOTIFY_VALUE_STRING, PointAlarming.EXCLUDE_NOTIFY_VALUE_STRING),
-        new SelectItem(PointAlarming.AUTO_ACK_VALUE_STRING, PointAlarming.AUTO_ACK_VALUE_STRING),
-        new SelectItem(PointAlarming.BOTH_OPTIONS_VALUE_STRING, PointAlarming.BOTH_OPTIONS_VALUE_STRING)
+        new SelectItem(AlarmNotificationTypes.NONE.getDbString(), AlarmNotificationTypes.NONE.getDbString()),
+        new SelectItem(AlarmNotificationTypes.EXCLUDE_NOTIFY.getDbString(), AlarmNotificationTypes.EXCLUDE_NOTIFY.getDbString()),
+        new SelectItem(AlarmNotificationTypes.AUTO_ACK.getDbString(), AlarmNotificationTypes.AUTO_ACK.getDbString()),
+        new SelectItem(AlarmNotificationTypes.BOTH_OPTIONS.getDbString(), AlarmNotificationTypes.BOTH_OPTIONS.getDbString()),
     };
 
     private static final SelectItem[] ptStatusControlTypes = {

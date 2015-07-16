@@ -11,6 +11,7 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.db.point.PointAlarming;
+import com.cannontech.database.db.point.PointAlarming.AlarmNotificationTypes;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class PointAlarmOptionsEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
@@ -37,8 +38,8 @@ class IvjEventHandler implements java.awt.event.ActionListener {
 				connEtoC4(e);
 			if (e.getSource() == PointAlarmOptionsEditorPanel.this.getJCheckBoxNotifyOnClear()) 
 				connEtoC5(e);
-		};
-	};
+		}
+	}
 /**
  * Constructor
  */
@@ -63,18 +64,6 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
  * @param arg1 java.awt.event.ActionEvent
  */
 private void connEtoC1(java.awt.event.ActionEvent arg1) {
-	try {
-		this.fireInputUpdate();
-	} catch (java.lang.Throwable ivjExc) {
-		handleException(ivjExc);
-	}
-}
-
-/**
- * connEtoC3:  (JComboBox1.action.actionPerformed(java.awt.event.ActionEvent) --> PointAlarmOptionsEditorPanel.fireInputUpdate()V)
- * @param arg1 java.awt.event.ActionEvent
- */
-private void connEtoC3(java.awt.event.ActionEvent arg1) {
 	try {
 		this.fireInputUpdate();
 	} catch (java.lang.Throwable ivjExc) {
@@ -394,11 +383,11 @@ public Object getValue(Object val)
 
 			alarmStates += generate;
 			
-			if(notify.compareTo(PointAlarming.EXCLUDE_NOTIFY_VALUE_STRING) == 0)
+			if(notify.equals(AlarmNotificationTypes.EXCLUDE_NOTIFY.getDbString()))
 				excludeNotifyState += 'E';
-			else if(notify.compareTo(PointAlarming.AUTO_ACK_VALUE_STRING) == 0)
+			else if(notify.equals(AlarmNotificationTypes.AUTO_ACK.getDbString()))
 				excludeNotifyState += 'A';
-			else if(notify.compareTo(PointAlarming.BOTH_OPTIONS_VALUE_STRING) == 0)
+			else if(notify.equals(AlarmNotificationTypes.BOTH_OPTIONS.getDbString()))
 					excludeNotifyState += 'B';
 			else
 				excludeNotifyState += 'N';
@@ -443,7 +432,7 @@ private void handleException(Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
 	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );
 }
 /**
  * Initializes connections
@@ -527,13 +516,12 @@ private void initJTableCellComponents()
 	com.cannontech.common.gui.util.ComboBoxTableRenderer comboBxRender = new com.cannontech.common.gui.util.ComboBoxTableRenderer();
 	com.cannontech.common.gui.util.ComboBoxTableRenderer notifyComboBxRender = new com.cannontech.common.gui.util.ComboBoxTableRenderer();
 
-	// Exclude notify
-	notifyComboBxRender.addItem(PointAlarming.NONE_VALUE_STRING);
-	notifyComboBxRender.addItem(PointAlarming.EXCLUDE_NOTIFY_VALUE_STRING);
-	notifyComboBxRender.addItem(PointAlarming.AUTO_ACK_VALUE_STRING);
-	notifyComboBxRender.addItem(PointAlarming.BOTH_OPTIONS_VALUE_STRING);
-	notifyColumn.setCellRenderer(notifyComboBxRender);
-	
+    // Exclude notify
+    notifyComboBxRender.addItem(AlarmNotificationTypes.NONE.getDbString());
+    notifyComboBxRender.addItem(AlarmNotificationTypes.EXCLUDE_NOTIFY.getDbString());
+    notifyComboBxRender.addItem(AlarmNotificationTypes.AUTO_ACK.getDbString());
+    notifyComboBxRender.addItem(AlarmNotificationTypes.BOTH_OPTIONS.getDbString());
+    notifyColumn.setCellRenderer(notifyComboBxRender);
 
 	// Get the alarm data from the cache	
 	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
@@ -572,10 +560,10 @@ private void initJTableCellComponents()
 
 		generateColumn.setCellEditor( new javax.swing.DefaultCellEditor(combo) );
 		
-		notifyCombo.addItem(PointAlarming.NONE_VALUE_STRING);
-		notifyCombo.addItem(PointAlarming.EXCLUDE_NOTIFY_VALUE_STRING);
-		notifyCombo.addItem(PointAlarming.AUTO_ACK_VALUE_STRING);
-		notifyCombo.addItem(PointAlarming.BOTH_OPTIONS_VALUE_STRING);
+		notifyCombo.addItem(AlarmNotificationTypes.NONE.getDbString());
+		notifyCombo.addItem(AlarmNotificationTypes.EXCLUDE_NOTIFY.getDbString());
+		notifyCombo.addItem(AlarmNotificationTypes.AUTO_ACK.getDbString());
+		notifyCombo.addItem(AlarmNotificationTypes.BOTH_OPTIONS.getDbString());
 		notifyColumn.setCellEditor( new javax.swing.DefaultCellEditor(notifyCombo) );
 	}
 		
@@ -609,7 +597,7 @@ public static void main(java.lang.String[] args) {
 		frame.setVisible(true);
 	} catch (Throwable exception) {
 		System.err.println("Exception occurred in main() of com.cannontech.common.gui.util.DataInputPanel");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );
 	}
 }
 
@@ -629,10 +617,12 @@ public void setValue(Object val)
 	if( alarmInhibit != null )
 		SwingUtil.setCheckBoxState( getJCheckBoxDisableAllAlarms(), alarmInhibit );
 		
-   //be sure we have a 32 character string
+   point.getPointAlarming();
+    point.getPointAlarming();
+    //be sure we have a 32 character string
 	String alarmStates =
-      ( point.getPointAlarming().getAlarmStates().length() != point.getPointAlarming().ALARM_STATE_COUNT
-        ? point.getPointAlarming().DEFAULT_ALARM_STATES
+      ( point.getPointAlarming().getAlarmStates().length() != PointAlarming.ALARM_STATE_COUNT
+        ? PointAlarming.DEFAULT_ALARM_STATES
         : point.getPointAlarming().getAlarmStates() );
         
 	String excludeNotifyStates = point.getPointAlarming().getExcludeNotifyStates();
@@ -653,8 +643,7 @@ public void setValue(Object val)
 		{
 			String[] stateNames = null;
 
-			LiteStateGroup stateGroup = (LiteStateGroup)
-				cache.getAllStateGroups().get( point.getPoint().getStateGroupID() );
+			LiteStateGroup stateGroup = cache.getAllStateGroups().get( point.getPoint().getStateGroupID() );
 
 			stateNames = new String[stateGroup.getStatesList().size()];
 
@@ -665,21 +654,21 @@ public void setValue(Object val)
 			int i = 0;
 			for( i = 0; i < IAlarmDefs.STATUS_ALARM_STATES.length; i++ )
 			{
-				if( ((int)(alarmStates.charAt(i))-1) < allAlarmStates.size() )
-					generate = ((com.cannontech.database.data.lite.LiteAlarmCategory)allAlarmStates.get( (int)(alarmStates.charAt(i))-1 )).getCategoryName();
+				if( ((alarmStates.charAt(i))-1) < allAlarmStates.size() )
+					generate = ((com.cannontech.database.data.lite.LiteAlarmCategory)allAlarmStates.get( (alarmStates.charAt(i))-1 )).getCategoryName();
 				else
 					generate = ((com.cannontech.database.data.lite.LiteAlarmCategory)allAlarmStates.get(0)).getCategoryName();
 						
 				String notifyString = new String();
 				if ( Character.toUpperCase(excludeNotifyStates.charAt(i)) == 'E' ||
 						Character.toUpperCase(excludeNotifyStates.charAt(i)) == 'Y')
-					notifyString = PointAlarming.EXCLUDE_NOTIFY_VALUE_STRING;
+					notifyString = AlarmNotificationTypes.EXCLUDE_NOTIFY.getDbString();
 				else if ( Character.toUpperCase(excludeNotifyStates.charAt(i)) == 'A' )
-					notifyString = PointAlarming.AUTO_ACK_VALUE_STRING;
+				    notifyString = AlarmNotificationTypes.AUTO_ACK.getDbString();
 				else if ( Character.toUpperCase(excludeNotifyStates.charAt(i)) == 'B' )
-					notifyString = PointAlarming.BOTH_OPTIONS_VALUE_STRING;
+				notifyString = AlarmNotificationTypes.BOTH_OPTIONS.getDbString();
 				else
-					notifyString = PointAlarming.NONE_VALUE_STRING;
+				    notifyString = AlarmNotificationTypes.NONE.getDbString();
 				
 				getTableModel().addRowValue( IAlarmDefs.STATUS_ALARM_STATES[i], generate, notifyString );
 			}
@@ -689,21 +678,21 @@ public void setValue(Object val)
 				if( i >= alarmStates.length() )
 					throw new ArrayIndexOutOfBoundsException("Trying to get alarmStates["+i+"] while alarmStates.length()==" + alarmStates.length() + ", to many states for Status point " + point.getPoint().getPointName() + " defined.");
 						
-				if( ((int)(alarmStates.charAt(i))-1) < allAlarmStates.size() )
-					generate = ((com.cannontech.database.data.lite.LiteAlarmCategory)allAlarmStates.get( (int)(alarmStates.charAt(i))-1 )).getCategoryName();
+				if( ((alarmStates.charAt(i))-1) < allAlarmStates.size() )
+					generate = ((com.cannontech.database.data.lite.LiteAlarmCategory)allAlarmStates.get( (alarmStates.charAt(i))-1 )).getCategoryName();
 				else
 					generate = ((com.cannontech.database.data.lite.LiteAlarmCategory)allAlarmStates.get(0)).getCategoryName();
 						
 				String notifyString = new String();
 				if ( Character.toUpperCase(excludeNotifyStates.charAt(i)) == 'E' ||
 						Character.toUpperCase(excludeNotifyStates.charAt(i)) == 'Y')
-					notifyString = PointAlarming.EXCLUDE_NOTIFY_VALUE_STRING;
+				    notifyString = AlarmNotificationTypes.EXCLUDE_NOTIFY.getDbString();
 				else if ( Character.toUpperCase(excludeNotifyStates.charAt(i)) == 'A' )
-					notifyString = PointAlarming.AUTO_ACK_VALUE_STRING;
+				    notifyString = AlarmNotificationTypes.AUTO_ACK.getDbString();
 				else if ( Character.toUpperCase(excludeNotifyStates.charAt(i)) == 'B' )
-					notifyString = PointAlarming.BOTH_OPTIONS_VALUE_STRING;
+				    notifyString = AlarmNotificationTypes.BOTH_OPTIONS.getDbString();
 				else
-					notifyString = PointAlarming.NONE_VALUE_STRING;
+				    notifyString = AlarmNotificationTypes.NONE.getDbString();
 				
 				getTableModel().addRowValue( stateNames[j], generate, notifyString );
 			}		
@@ -715,21 +704,21 @@ public void setValue(Object val)
 			// insert all the predefined states into the JTable
 			for( int i = 0; i < IAlarmDefs.OTHER_ALARM_STATES.length; i++ )
 			{
-				if( ((int)(alarmStates.charAt(i))-1) < allAlarmStates.size() )
-					generate = ((com.cannontech.database.data.lite.LiteAlarmCategory)allAlarmStates.get( (int)(alarmStates.charAt(i))-1 )).getCategoryName();
+				if( ((alarmStates.charAt(i))-1) < allAlarmStates.size() )
+					generate = ((com.cannontech.database.data.lite.LiteAlarmCategory)allAlarmStates.get( (alarmStates.charAt(i))-1 )).getCategoryName();
 				else
 					generate = ((com.cannontech.database.data.lite.LiteAlarmCategory)allAlarmStates.get(0)).getCategoryName();
 						
 				String notifyString = new String();
 				if ( Character.toUpperCase(excludeNotifyStates.charAt(i)) == 'E' ||
 						Character.toUpperCase(excludeNotifyStates.charAt(i)) == 'Y')
-					notifyString = PointAlarming.EXCLUDE_NOTIFY_VALUE_STRING;
+					notifyString = AlarmNotificationTypes.EXCLUDE_NOTIFY.getDbString();
 				else if ( Character.toUpperCase(excludeNotifyStates.charAt(i)) == 'A' )
-					notifyString = PointAlarming.AUTO_ACK_VALUE_STRING;
+				    notifyString = AlarmNotificationTypes.AUTO_ACK.getDbString();
 				else if ( Character.toUpperCase(excludeNotifyStates.charAt(i)) == 'B' )
-					notifyString = PointAlarming.BOTH_OPTIONS_VALUE_STRING;
+				    notifyString = AlarmNotificationTypes.BOTH_OPTIONS.getDbString();
 				else
-					notifyString = PointAlarming.NONE_VALUE_STRING;
+				notifyString = AlarmNotificationTypes.NONE.getDbString();
 				
 				getTableModel().addRowValue( IAlarmDefs.OTHER_ALARM_STATES[i], generate, notifyString );
 			}		

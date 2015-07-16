@@ -1,5 +1,6 @@
 package com.cannontech.database.data.point;
 
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 
 /**
@@ -8,9 +9,11 @@ import com.cannontech.common.util.DatabaseRepresentationSource;
  * an entry in the PointControl table if it has an AnalogControlType of NORMAL,
  * and has no entry in that table otherwise.
  */
-public enum AnalogControlType implements DatabaseRepresentationSource {
+public enum AnalogControlType implements DisplayableEnum, DatabaseRepresentationSource {
     NONE("None"),
     NORMAL("Normal");
+    
+    private static final String baseKey = "yukon.common.point.analogControlType.";
     
     private final String controlName;
     
@@ -25,5 +28,10 @@ public enum AnalogControlType implements DatabaseRepresentationSource {
     @Override
     public Object getDatabaseRepresentation() {
         return getControlName();
+    }
+
+    @Override
+    public String getFormatKey() {
+        return baseKey + name();
     }
 }

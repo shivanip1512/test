@@ -2,15 +2,46 @@ package com.cannontech.database.db.point;
 
 import java.sql.SQLException;
 
+import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.db.DBPersistent;
 
 public class PointAlarming extends DBPersistent {
     
     public static final int NONE_NOTIFICATIONID = 1;
-    public static final String NONE_VALUE_STRING = "(none)";
-    public static final String EXCLUDE_NOTIFY_VALUE_STRING = "Exclude Notify";
-    public static final String AUTO_ACK_VALUE_STRING = "Auto Ack";
-    public static final String BOTH_OPTIONS_VALUE_STRING = "Exclude Notify & Auto Ack";
+    
+    public static enum AlarmNotificationTypes implements DisplayableEnum, DatabaseRepresentationSource{
+        NONE("(none)"),
+        EXCLUDE_NOTIFY("Exclude Notify"),
+        AUTO_ACK("Auto Ack"),
+        BOTH_OPTIONS("Exclude Notify & Auto Ack");
+
+        private static final String baseKey = "yukon.common.point.alarmNotificationType.";
+        
+        private String dbString;
+        
+        private AlarmNotificationTypes(String dbString) {
+            this.dbString = dbString;
+        }
+
+        @Override
+        public Object getDatabaseRepresentation() {
+            return dbString;
+        }
+
+        @Override
+        public String getFormatKey() {
+            if (this == NONE) {
+                return "yukon.common.none.choice";
+            }
+            return baseKey + name();
+        }
+
+        public String getDbString() {
+            return dbString;
+        }
+    }
+    
     public static final String DEFAULT_EXCLUDE_NOTIFY = "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN";
     public static final String DEFAULT_ALARM_STATES;
 
@@ -128,11 +159,11 @@ public class PointAlarming extends DBPersistent {
      * Returns the single char representation for the ExcludeNotify state.
      */
     public static char getExcludeNotifyChar(String notify) {
-        if (EXCLUDE_NOTIFY_VALUE_STRING.equals(notify))
+        if (AlarmNotificationTypes.EXCLUDE_NOTIFY.getDbString().equals(notify))
             return 'E';
-        else if (AUTO_ACK_VALUE_STRING.equals(notify))
+        else if (AlarmNotificationTypes.AUTO_ACK.getDbString().equals(notify))
             return 'A';
-        else if (BOTH_OPTIONS_VALUE_STRING.equals(notify))
+        else if (AlarmNotificationTypes.BOTH_OPTIONS.getDbString().equals(notify))
             return 'B';
         else
             return 'N';
@@ -143,13 +174,13 @@ public class PointAlarming extends DBPersistent {
      */
     public static String getExcludeNotifyString(char val) {
         if (val == 'E' || val == 'Y')
-            return EXCLUDE_NOTIFY_VALUE_STRING;
+            return AlarmNotificationTypes.EXCLUDE_NOTIFY.getDbString();
         else if (val == 'A')
-            return AUTO_ACK_VALUE_STRING;
+            return AlarmNotificationTypes.AUTO_ACK.getDbString();
         else if (val == 'B')
-            return BOTH_OPTIONS_VALUE_STRING;
+            return AlarmNotificationTypes.BOTH_OPTIONS.getDbString();
         else
-            return NONE_VALUE_STRING;
+            return AlarmNotificationTypes.NONE.getDbString();
     }
 
     public Integer getPointID() {

@@ -13,6 +13,29 @@
     <entry key="yukon.common.point.pointType.System">System</entry>
     <entry key="yukon.common.point.pointType.CalcStatus">Calc Status</entry>
 
+    <entry key="yukon.common.point.logicalGroup.DEFAULT">Default</entry>
+    <entry key="yukon.common.point.logicalGroup.SOE">SOE</entry>
+    
+    <entry key="yukon.common.point.archiveType.NONE">None</entry>
+    <entry key="yukon.common.point.archiveType.ON_CHANGE">On Change</entry>
+    <entry key="yukon.common.point.archiveType.ON_TIMER">On Timer</entry>
+    <entry key="yukon.common.point.archiveType.ON_UPDATE">On Update</entry>
+    <entry key="yukon.common.point.archiveType.ON_TIMER_OR_UPDATE">On Timer or Update</entry>
+    
+    <entry key="yukon.common.point.analogControlType.NONE">None</entry>
+    <entry key="yukon.common.point.analogControlType.NORMAL">Normal</entry>
+    
+    <entry key="yukon.common.point.statusControlType.NONE">None</entry>
+    <entry key="yukon.common.point.statusControlType.NORMAL">Normal</entry>
+    <entry key="yukon.common.point.statusControlType.LATCH">Latch</entry>
+    <entry key="yukon.common.point.statusControlType.PSEUDO">Pseudo</entry>
+    <entry key="yukon.common.point.statusControlType.SBOLATCH">SBO Latch</entry>
+    <entry key="yukon.common.point.statusControlType.SBOPULSE">SBO Pulse</entry>
+    
+    <entry key="yukon.common.point.alarmNotificationType.EXCLUDE_NOTIFY">Exclude Notify</entry>
+    <entry key="yukon.common.point.alarmNotificationType.AUTO_ACK">Auto Ack</entry>
+    <entry key="yukon.common.point.alarmNotificationType.BOTH_OPTIONS">Exclude Notify &amp; Auto Ack</entry>
+
 <!-- Please see JavaDocs for the following for help with the values in this file.
          com.cannontech.core.service.PointFormattingService
          com.cannontech.common.util.FormattingTemplateProcessor

@@ -273,9 +273,9 @@ private javax.swing.JComboBox getLogGroupComboBox()
 			ivjLogGroupComboBox.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjLogGroupComboBox.setEditable(false);
 
-
-			for( int i = 0; i < PointLogicalGroups.LGRP_STRS.length; i++ )
-				ivjLogGroupComboBox.addItem( PointLogicalGroups.getLogicalGrp(i) );
+            for (PointLogicalGroups group : PointLogicalGroups.values()) {
+                ivjLogGroupComboBox.addItem(group.getDbValue());
+            }
 
 		}
 		catch (java.lang.Throwable ivjExc) 
@@ -634,8 +634,7 @@ public void setValue(Object val)
 		getLogGroupComboBox().setSelectedItem( group );
 		//CtiUtilities.setSelectedInComboBox( getLogGroupComboBox(), group );
 	else
-		getLogGroupComboBox().setSelectedItem(
-				PointLogicalGroups.getLogicalGrp(PointLogicalGroups.LGRP_DEFAULT) );
+		getLogGroupComboBox().setSelectedItem(PointLogicalGroups.DEFAULT.getDbValue());
 
 
 

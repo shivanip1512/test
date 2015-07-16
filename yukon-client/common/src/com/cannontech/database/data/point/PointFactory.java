@@ -164,7 +164,7 @@ public final class PointFactory {
                                     PointTypes.getType(pointType),
                                     pointName,
                                     paoID,
-                                    PointLogicalGroups.getLogicalGrp(PointLogicalGroups.LGRP_DEFAULT),
+                                    PointLogicalGroups.DEFAULT.getDbValue(),
                                     0,
                                     CtiUtilities.getFalseCharacter(),
                                     CtiUtilities.getFalseCharacter(),

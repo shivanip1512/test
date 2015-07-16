@@ -74,7 +74,7 @@ public class PointForm extends DBEditorForm {
     private boolean isCalcRateEnabled = false;
     private List<AlarmTableEntry> alarmTableEntries = null;
         
-    private static SelectItem[] logicalGroups = null;
+    private static List<SelectItem> logicalGroups = new ArrayList<>();
     private static List<SelectItem> uofms = null;
 
     // sub editors used to divide up functionality into different classes
@@ -95,10 +95,10 @@ public class PointForm extends DBEditorForm {
 
     // init our static data with real values
     static {
-        logicalGroups = new SelectItem[PointLogicalGroups.LGRP_STRS.length];
+        logicalGroups = new ArrayList<>();
         
-        for( int i = 0; i < PointLogicalGroups.LGRP_STRS.length; i++ ) {
-            logicalGroups[i] = new SelectItem( PointLogicalGroups.LGRP_STRS[i], PointLogicalGroups.LGRP_STRS[i] );         
+        for (PointLogicalGroups group : PointLogicalGroups.values()) {
+            logicalGroups.add(new SelectItem(group.getDbValue(), group.getDbValue()));
         }
     }
 
@@ -134,7 +134,7 @@ public class PointForm extends DBEditorForm {
         return decimalDigits;
     }
 
-    public SelectItem[] getLogicalGroups() {
+    public List<SelectItem> getLogicalGroups() {
         return logicalGroups;
     }
 

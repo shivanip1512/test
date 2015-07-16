@@ -134,7 +134,7 @@ public class ViewCreator
 						  " from " + SystemLog.TABLE_NAME + " s, " + Point.TABLE_NAME + " p " +
 						  " where s.datetime >= ?" +
 						  " and s.datetime < ? " +
-						  " and p.LogicalGroup = '" + PointLogicalGroups.LGRP_STRS[PointLogicalGroups.LGRP_SOE] +"' " +
+						  " and p.LogicalGroup = '" + PointLogicalGroups.SOE.getDbValue() +"' " +
 						  " and s.pointid=p.pointid";
 
 		//only get the SOE points
@@ -142,7 +142,7 @@ public class ViewCreator
 				"select s.datetime, y.PAOName, p.pointname, s.description, s.action, " +
 				" s.millis, s.pointid " +
 				" from " + SystemLog.TABLE_NAME + " s, YukonPAObject y, point p " +
-				" where p.LogicalGroup = '" + PointLogicalGroups.LGRP_STRS[PointLogicalGroups.LGRP_SOE] +"' " +
+				" where p.LogicalGroup = '" + PointLogicalGroups.SOE.getDbValue() +"' " +
 				" and s.pointid=p.pointid and y.PAObjectID=p.PAObjectID " +
 				" and s.datetime >= ? " +
 				" and s.datetime < ? " +

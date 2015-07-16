@@ -6,12 +6,43 @@ import javax.faces.model.SelectItem;
 import org.springframework.dao.DataAccessException;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.point.alarm.dao.PointPropertyValueDao;
 import com.cannontech.common.point.alarm.model.PointPropertyValue;
+import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.spring.YukonSpringHook;
 
 public class StaleData {
+    
+    public static enum UpdateStyles implements DisplayableEnum, DatabaseRepresentationSource {
+        ALWAYS(0),
+        ON_CHANGE(1);
+        
+        private int updateType;
+        
+        UpdateStyles(int updateType) {
+            this.updateType = updateType;
+        }
+
+        @Override
+        public Object getDatabaseRepresentation() {
+            return updateType;
+        }
+
+        @Override
+        public String getFormatKey() {
+            
+            switch (this) {
+            case ALWAYS:
+                return "yukon.common.always";
+            case ON_CHANGE:
+                return "yukon.common.point.archiveType.ON_CHANGE";
+            default:
+                throw new IllegalArgumentException("UpdateStyle " + this.name() + " not internationalized" );
+            }
+        }
+    }
     
     private SelectItem[] updateStyles = null;
     private Integer updateStyle = 0;

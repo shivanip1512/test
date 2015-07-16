@@ -18,7 +18,7 @@ public class Point extends DBPersistent {
     private String pointType = null;
     private String pointName = null;
     private Integer paoID = null;
-    private String logicalGroup = PointLogicalGroups.getLogicalGrp(PointLogicalGroups.LGRP_DEFAULT);
+    private String logicalGroup = PointLogicalGroups.DEFAULT.getDbValue();
     private Integer stateGroupID = null;
     private Character serviceFlag = null;
     private Character alarmInhibit = null;

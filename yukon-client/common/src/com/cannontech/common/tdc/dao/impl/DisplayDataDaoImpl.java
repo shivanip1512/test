@@ -57,7 +57,7 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
     
     @Override
     public List<DisplayData> getEventViewerDisplayData(DateTimeZone timeZone, PagingParameters paging) {
-        DateTime from = new DateTime(timeZone).toDateMidnight().toDateTime();
+        DateTime from = new DateTime(timeZone).withTimeAtStartOfDay();
         DateTime to = from.plusDays(1);
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT Datetime, PAOName, PAObjectID, Pointname, Description, Action, Username, Pointid, Soe_tag");
@@ -77,7 +77,7 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
     
     @Override
     public int getEventViewerDisplayDataCount(DateTimeZone timeZone) {
-        DateTime from = new DateTime(timeZone).toDateMidnight().toDateTime();
+        DateTime from = new DateTime(timeZone).withTimeAtStartOfDay();
         DateTime to = from.plusDays(1);
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT count(*)");
@@ -163,7 +163,7 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
 
     @Override
     public List<DisplayData> getSoeLogDisplayData(DateTimeZone timeZone, PagingParameters paging) {
-        DateTime from = new DateTime(timeZone).toDateMidnight().toDateTime();
+        DateTime from = new DateTime(timeZone).withTimeAtStartOfDay();
         DateTime to = from.plusDays(1);
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT Datetime, PAOName, PAObjectID, PointName, PointId, Description, Action, PointId, Millis");
@@ -172,7 +172,7 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         sql.append("      FROM SystemLog s");
         sql.append("      JOIN Point p ON s.PointId = p.PointId");
         sql.append("      JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
-        sql.append("      WHERE p.LogicalGroup").eq(PointLogicalGroups.LGRP_STRS[PointLogicalGroups.LGRP_SOE]);
+        sql.append("      WHERE p.LogicalGroup").eq(PointLogicalGroups.SOE.getDbValue());
         sql.append("        AND s.Datetime").gte(from);
         sql.append("        AND s.Datetime").lt(to).append(") tbl");
         sql.append("WHERE tbl.counter BETWEEN").append(paging.getOneBasedStartIndex());
@@ -183,13 +183,13 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
     
     @Override
     public int getSoeLogDisplayDataCount(DateTimeZone timeZone) {
-        DateTime from = new DateTime(timeZone).toDateMidnight().toDateTime();
+        DateTime from = new DateTime(timeZone).withTimeAtStartOfDay();
         DateTime to = from.plusDays(1);
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT count(*)");
         sql.append("FROM SystemLog s JOIN Point p ON s.PointId = p.PointId");
         sql.append("JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
-        sql.append("WHERE p.LogicalGroup").eq(PointLogicalGroups.LGRP_STRS[PointLogicalGroups.LGRP_SOE]);
+        sql.append("WHERE p.LogicalGroup").eq(PointLogicalGroups.SOE.getDbValue());
         sql.append("  AND s.Datetime").gte(from);
         sql.append("  AND s.Datetime").lt(to);
         return yukonJdbcTemplate.queryForInt(sql);
@@ -197,7 +197,7 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
 
     @Override
     public List<DisplayData> getTagLogDisplayData(DateTimeZone timeZone, PagingParameters paging) {
-        DateTime from = new DateTime(timeZone).toDateMidnight().toDateTime();
+        DateTime from = new DateTime(timeZone).withTimeAtStartOfDay();
         DateTime to = from.plusDays(1);
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT Tagtime, PAOName, PAObjectID, PointName, PointId, Description, Action, Username, Tagname");
@@ -217,7 +217,7 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
     
     @Override
     public int getTagLogDisplayDataCount(DateTimeZone timeZone) {
-        DateTime from = new DateTime(timeZone).toDateMidnight().toDateTime();
+        DateTime from = new DateTime(timeZone).withTimeAtStartOfDay();
         DateTime to = from.plusDays(1);
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT count(*)");

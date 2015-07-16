@@ -5,6 +5,7 @@ import java.util.Set;
 import org.joda.time.Duration;
 
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
+import com.cannontech.database.db.point.Point;
 import com.google.common.collect.ImmutableSet;
 
 public enum TimeIntervals {
@@ -37,7 +38,7 @@ public enum TimeIntervals {
    HOURS_2(Duration.standardHours(2)),
    HOURS_6(Duration.standardHours(6)),
    HOURS_12(Duration.standardHours(12)),
-   DAY_1(Duration.standardDays(1)),
+   DAYS_1(Duration.standardDays(1)),
    ;
    
    private Duration duration;
@@ -85,7 +86,7 @@ public enum TimeIntervals {
        HOURS_2,
        HOURS_6,
        HOURS_12,
-       DAY_1
+       DAYS_1
    );
    
    /**
@@ -119,6 +120,33 @@ public enum TimeIntervals {
     */
    public static Set<TimeIntervals> getIntegrateIntervals() {
        return integrateIntervals;
+   }
+   
+   private static final Set<TimeIntervals> archiveIntervals = ImmutableSet.of(
+       MINUTES_1,
+       MINUTES_2,
+       MINUTES_3,
+       MINUTES_4,
+       MINUTES_5,
+       MINUTES_7,
+       MINUTES_10,
+       MINUTES_12,
+       MINUTES_15,
+       MINUTES_20,
+       MINUTES_25,
+       MINUTES_30,
+       HOURS_1,
+       HOURS_2,
+       HOURS_6,
+       HOURS_12,
+       DAYS_1
+   );
+   
+   /**
+    * Used for {@link Point#getArchiveInterval()}
+    */
+   public static Set<TimeIntervals> getArchiveIntervals() {
+       return archiveIntervals;
    }
 
 }

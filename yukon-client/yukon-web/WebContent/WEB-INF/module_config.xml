@@ -657,7 +657,7 @@
           </page>
           <page name="point.CREATE" type="BASIC" />
           <page name="point.VIEW" type="BASIC">
-            <link>/capcontrol/poinst/${pointModel.pointBase.point.pointID}</link>
+            <link>/capcontrol/points/${pointModel.pointBase.point.pointID}</link>
             <labelArgument>${pointModel.pointBase.point.pointName}</labelArgument>
             <pages>
               <page name="point.EDIT" type="BASIC" hideFavorite="true">
