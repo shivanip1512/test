@@ -31,19 +31,28 @@ Policy::Actions IncrementingKeepAlivePolicy::SendKeepAlive( const long keepAlive
 
     signal->setPointValue( _IVVC_REGULATOR_AUTO_MODE_MSG_DELAY );
 
-    if ( getOperatingMode() == RemoteMode )
+    try
     {
-        bool sendAutoBlock = needsAutoBlockEnable();
+        if ( getOperatingMode() == RemoteMode )
+        {
+            bool sendAutoBlock = needsAutoBlockEnable();
 
-        if ( sendAutoBlock )
-        {
-            actions.emplace_back( makeStandardDigitalControl( getPointByAttribute( PointAttribute::AutoBlockEnable ),
-                                                              "Auto Block Enable" ) );
+            if ( sendAutoBlock )
+            {
+                actions.emplace_back( makeStandardDigitalControl( getPointByAttribute( PointAttribute::AutoBlockEnable ),
+                                                                  "Auto Block Enable" ) );
+            }
+            else
+            {
+                signal->setPointValue( 0 );
+            }
         }
-        else
-        {
-            signal->setPointValue( 0 );
-        }
+    }
+    catch ( UninitializedPointValue & )
+    {
+        // getOperatingMode() threw because the device hasn't been scanned yet
+        //  
+        //  nothing to do here
     }
 
     return actions;

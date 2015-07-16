@@ -187,45 +187,6 @@ bool IVVCAlgorithm::checkZoneRegulatorsInProperConfig(IVVCStatePtr state, CtiCCS
 }
 
 
-#if 0
-void IVVCAlgorithm::tapOpZoneNormalization(const long parentID, const ZoneManager & zoneManager, IVVCState::TapOperationZoneMap &tapOp )
-{
-    Zone::IdSet allChildren = zoneManager.getAllChildrenOfZone(parentID);
-
-    for each ( const Zone::IdSet::value_type & ID in allChildren )
-    {
-        ZoneManager::SharedPtr  parentZone  = zoneManager.getZone(parentID);
-        ZoneManager::SharedPtr  zone        = zoneManager.getZone(ID);
-
-        for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
-        {
-            Zone::PhaseIdMap    parentMapping = parentZone->getRegulatorIds();
-
-            if ( parentZone->isGangOperated() )
-            {
-                tapOp[ mapping.second ] -= tapOp[ parentMapping[ Cti::CapControl::Phase_Poly ] ];
-            }
-            else
-            {
-                // normalize parent to child on the same phase
-
-                if ( parentMapping.find( mapping.first ) != parentMapping.end() )
-                {
-                    tapOp[ mapping.second ] -= tapOp[ parentMapping[ mapping.first ] ];
-                }
-            }
-        }
-    }
-
-    Zone::IdSet immediateChildren = zoneManager.getZone(parentID)->getChildIds();
-
-    for each ( const Zone::IdSet::value_type & ID in immediateChildren )
-    {
-        tapOpZoneNormalization( ID, zoneManager, tapOp );   // recursion!!!
-    }
-}
-#endif
-
 /**
  * Checks to see if the subbus or any of the parents of the
  * subbus are disabled.
