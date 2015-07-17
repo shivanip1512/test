@@ -30,12 +30,12 @@ import com.cannontech.common.pao.definition.model.PaoPointTemplate;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
-import com.cannontech.core.dao.StateGroupDao;
+import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
+import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.point.PointType;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.collect.Multimap;
@@ -61,7 +61,7 @@ public class PaoDefinitionDaoImplTest {
         URL schemaResource = classLoader.getResource("com/cannontech/common/pao/definition/dao/paoDefinition.xsd");
         dao.setSchemaFile(new UrlResource(schemaResource));
 
-        ReflectionTestUtils.setField(dao, "stateGroupDao", new MockStateGroupDao());
+        ReflectionTestUtils.setField(dao, "stateDao", new MockStateDao());
         ReflectionTestUtils.setField(dao, "unitMeasureDao", new MockUnitMeasureDao());
         dao.initialize();
 
@@ -445,7 +445,7 @@ public class PaoDefinitionDaoImplTest {
         URL schemaResource = classLoader.getResource("com/cannontech/common/pao/definition/dao/paoDefinition.xsd");
         dao.setSchemaFile(new UrlResource(schemaResource));
 
-        ReflectionTestUtils.setField(dao, "stateGroupDao", new MockStateGroupDao());
+        ReflectionTestUtils.setField(dao, "stateDao", new MockStateDao());
         ReflectionTestUtils.setField(dao, "unitMeasureDao", new MockUnitMeasureDao());
         final URL customFileUrl =
                 classLoader.getResource("com/cannontech/common/pao/definition/dao/testCustomPaoDefinition.xml");
@@ -640,15 +640,30 @@ public class PaoDefinitionDaoImplTest {
         
     }
     
-    private static class MockStateGroupDao implements StateGroupDao {
+    private static class MockStateDao implements StateDao {
         
         @Override
-        public List<LiteStateGroup> getAllStateGroups() {
-            return ImmutableList.of(new LiteStateGroup(0, "state0"));
+        public LiteState findLiteState(int stateGroupID, int rawState) {
+            return null;
         }
 
         @Override
-        public LiteStateGroup getStateGroup(int stateGroupId) {
+        public LiteStateGroup getLiteStateGroup(int stateGroupID) {
+            return new LiteStateGroup(0, "state0");
+        }
+
+        @Override
+        public LiteStateGroup getLiteStateGroup(String stateGroupName) {
+            return new LiteStateGroup(0, "state0");
+        }
+
+        @Override
+        public LiteState[] getLiteStates(int stateGroupID) {
+            return null;
+        }
+
+        @Override
+        public LiteStateGroup[] getAllStateGroups() {
             return null;
         }
         
