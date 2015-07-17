@@ -206,7 +206,7 @@ public class PointController {
         
         int id = pointEditorService.save(pointModel);
    
-        return "redirect:capcontrol/points/" + id;
+        return "redirect:/capcontrol/points/" + id;
     }
     
     private String bindAndForward(PointModel pointModel, BindingResult result, RedirectAttributes attrs) {

@@ -1155,7 +1155,10 @@ yukon.ui = (function () {
             
             checkbox = $(checkbox);
             var enable = checkbox.is('[data-toggle-inverse]') ? checkbox.not(':checked') : checkbox.is(':checked'),
-                inputs = $('[data-toggle-group="' + checkbox.data('toggle') + '"]');
+                toggleGroup = checkbox.data('toggle'),
+                inputs = $('[data-toggle-group="' + toggleGroup + '"]');
+            
+            if (toggleGroup === '') return;
                 
             var action = checkbox.data('toggleAction');
 
