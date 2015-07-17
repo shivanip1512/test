@@ -52,10 +52,6 @@ public class PointValidator extends SimpleValidator<PointModel> {
                 }
             }
         }
-        
-        
-        
-        
     }
     
     private void doScalarValidation(PointModel model, Errors errors) {

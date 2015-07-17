@@ -28,7 +28,9 @@ import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.CalcStatusPoint;
 import com.cannontech.database.data.point.CalculatedPoint;
 import com.cannontech.database.data.point.PointArchiveType;
+import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointLogicalGroups;
+import com.cannontech.database.data.point.ScalarPoint;
 import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.point.PointAlarming;
@@ -91,10 +93,20 @@ public class PointController {
         LiteYukonPAObject parent = dbCache.getAllPaosMap().get(pointModel.getPointBase().getPoint().getPaoID());
         model.addAttribute("parent", parent);
         
+        PointBase base = pointModel.getPointBase();
+        
+        model.addAttribute("isScalarType", base instanceof ScalarPoint);
+        model.addAttribute("isStatusType", base instanceof StatusPoint);
+        model.addAttribute("isCalcType", base instanceof StatusPoint ||
+                                         base instanceof CalculatedPoint);
+        model.addAttribute("isStatusPoint", base instanceof StatusPoint &&
+                                          !(base instanceof CalcStatusPoint));
+        model.addAttribute("isAnalogPoint", base instanceof AnalogPoint);
+        model.addAttribute("isAccumulatorPoint", base instanceof AccumulatorPoint);
+        
         model.addAttribute("logicalGroups", PointLogicalGroups.values());
         model.addAttribute("scalarArchiveTypes", PointArchiveType.values());
         model.addAttribute("archiveIntervals", TimeIntervals.getArchiveIntervals());
-        
         model.addAttribute("fdrInterfaceTypes", FdrInterfaceType.values());
         model.addAttribute("fdrDirections", FdrDirection.values());
         model.addAttribute("statusControlTypes", StatusControlType.values());

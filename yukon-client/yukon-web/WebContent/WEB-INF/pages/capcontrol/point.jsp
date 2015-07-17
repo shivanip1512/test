@@ -60,9 +60,7 @@
             
         </tags:nameValueContainer>
         
-        <c:if test="${pointModel.pointBase.point.pointType eq 'Analog' or 
-                      pointModel.pointBase.point.pointType eq 'PulseAccumulator' or
-                      pointModel.pointBase.point.pointType eq 'CalcAnalog'}">
+        <c:if test="${isScalarType}">
 
             <h3>Settings</h3>
             <tags:nameValueContainer tableClass="${nameValueClass}">
@@ -95,7 +93,7 @@
             </tags:nameValueContainer>
         </c:if>
         
-        <c:if test="${pointModel.pointBase.point.pointType eq 'Status'}">
+        <c:if test="${isStatusPoint}">
 
             <h3>Settings</h3>
             <tags:nameValueContainer tableClass="${nameValueClass}">
@@ -114,8 +112,7 @@
             </tags:nameValueContainer>
         </c:if>
         
-        <c:if test="${pointModel.pointBase.point.pointType eq 'Status' or
-                      pointModel.pointBase.point.pointType eq 'CalcStatus'}">
+        <c:if test="${isStatusType}">
                       
             <tags:nameValueContainer tableClass="${nameValueClass}">
                 
@@ -133,8 +130,7 @@
             </tags:nameValueContainer>
         </c:if>
         
-        <c:if test="${pointModel.pointBase.point.pointType eq 'CalcAnalog' or
-                      pointModel.pointBase.point.pointType eq 'CalcStatus'}">
+        <c:if test="${isCalcType}">
                       
             <tags:nameValueContainer tableClass="${nameValueClass}">
                 
@@ -152,7 +148,7 @@
             </tags:nameValueContainer>
         </c:if>
         
-        <c:if test="${pointModel.pointBase.point.pointType eq 'Analog'}">
+        <c:if test="${isAnalogPoint}">
         
             <h2>Physical Setup (Analog)</h2>
             <tags:nameValueContainer tableClass="${nameValueClass}">
@@ -211,8 +207,7 @@
             
         </c:if>
         
-        <c:if test="${pointModel.pointBase.point.pointType eq 'PulseAccumulator' or
-                      pointModel.pointBase.point.pointType eq 'DemandAccumulator'}">
+        <c:if test="${isAccumulatorPoint}">
                       
             <h2>Physical Setup (Accumulator)</h2>
             <tags:nameValueContainer tableClass="${nameValueClass}">
@@ -231,9 +226,7 @@
             </tags:nameValueContainer>
         </c:if>
         
-        <c:if test="${pointModel.pointBase.point.pointType eq 'Analog' or
-                      pointModel.pointBase.point.pointType eq 'PulseAccumulator' or
-                      pointModel.pointBase.point.pointType eq 'DemandAccumulator'}">
+        <c:if test="${isScalarType}">
                       
             
             <h3>Limits</h3>
@@ -310,7 +303,7 @@
             </tags:nameValueContainer>
         </c:if> 
         
-        <c:if test="${pointModel.pointBase.point.pointType eq 'Status'}">
+        <c:if test="${isStatusPoint}">
                       
             <h2>Physical Setup (Status)</h2>
             <tags:nameValueContainer tableClass="${nameValueClass}">

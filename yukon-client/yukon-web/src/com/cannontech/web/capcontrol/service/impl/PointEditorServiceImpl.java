@@ -43,7 +43,7 @@ public class PointEditorServiceImpl implements PointEditorService {
         StaleData staleData = getStaleData(id);
         
         List<AlarmTableEntry> alarmTableEntries = getAlarmTableEntries(base);
-        
+
         PointModel model = new PointModel(base, staleData, alarmTableEntries);
         
         return model;
@@ -53,17 +53,15 @@ public class PointEditorServiceImpl implements PointEditorService {
         
         StaleData staleData = new StaleData();
         
-        boolean staleEnabled = false;
-        
         try {
             PointPropertyValue timeProperty = pointPropertyValueDao.getByIdAndPropertyId(id, StaleData.TIME_PROPERTY);
             PointPropertyValue updateProperty = pointPropertyValueDao.getByIdAndPropertyId(id, StaleData.UPDATE_PROPERTY);
-            staleEnabled = true;
-            staleData.setEnabled(staleEnabled);
+
+            staleData.setEnabled(true);
             staleData.setTime((int) timeProperty.getFloatValue());
             staleData.setUpdateStyle((int) updateProperty.getFloatValue());
             
-        }catch(DataAccessException e) {
+        } catch (DataAccessException e) {
             
             staleData.setEnabled(false);
             staleData.setTime(5);
