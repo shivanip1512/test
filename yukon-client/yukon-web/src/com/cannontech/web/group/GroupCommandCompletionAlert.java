@@ -2,6 +2,8 @@ package com.cannontech.web.group;
 
 import java.util.Date;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import com.cannontech.common.alert.model.AlertType;
 import com.cannontech.common.alert.model.SimpleAlert;
 import com.cannontech.common.device.commands.GroupCommandResult;
@@ -41,7 +43,7 @@ public class GroupCommandCompletionAlert extends SimpleAlert {
             resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.commandCompletion");
         }
 
-        resolvableTemplate.addData("command", result.getCommand());
+        resolvableTemplate.addData("command", StringEscapeUtils.escapeHtml4(result.getCommand()));
         resolvableTemplate.addData("exceptionReason", result.getExceptionReason());
         resolvableTemplate.addData("notCompletedCount", notCompletedCount);
         resolvableTemplate.addData("percentSuccess", completedCount > 0 ? ((float) successCount * 100 / completedCount) : 0);
