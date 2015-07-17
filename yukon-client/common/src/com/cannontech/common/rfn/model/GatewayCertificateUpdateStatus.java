@@ -25,8 +25,9 @@ public enum GatewayCertificateUpdateStatus {
                 return COMPLETED;
             case ABORTED:
                 return ABORTED;
-            case FAILED:
             case JOB_ALREADY_EXISTS:
+                return ALREADY_IN_PROGRESS;
+            case FAILED:
             case JOB_SCHEDULE_FAILED:
             case JOB_EXECUTE_FAILED:
             default:

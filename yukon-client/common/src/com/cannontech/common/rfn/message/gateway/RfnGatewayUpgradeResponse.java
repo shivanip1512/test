@@ -6,7 +6,7 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 
 /**
- * JMS Queue name example: yukon.qr.obj.common.rfn.GatewayUpgradeResponse
+ * JMS Queue name example: yukon.qr.obj.common.rfn.GatewayData
  */
 public class RfnGatewayUpgradeResponse implements RfnIdentifyingMessage, Serializable {
     private static final long serialVersionUID = 1L;
@@ -84,40 +84,54 @@ public class RfnGatewayUpgradeResponse implements RfnIdentifyingMessage, Seriali
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         RfnGatewayUpgradeResponse other = (RfnGatewayUpgradeResponse) obj;
         if (fragmentId == null) {
-            if (other.fragmentId != null)
+            if (other.fragmentId != null) {
                 return false;
-        } else if (!fragmentId.equals(other.fragmentId))
+            }
+        } else if (!fragmentId.equals(other.fragmentId)) {
             return false;
+        }
         if (gatewayMessageStatus == null) {
-            if (other.gatewayMessageStatus != null)
+            if (other.gatewayMessageStatus != null) {
                 return false;
-        } else if (!gatewayMessageStatus.equals(other.gatewayMessageStatus))
+            }
+        } else if (!gatewayMessageStatus.equals(other.gatewayMessageStatus)) {
             return false;
+        }
         if (gatewayMessageType == null) {
-            if (other.gatewayMessageType != null)
+            if (other.gatewayMessageType != null) {
                 return false;
-        } else if (!gatewayMessageType.equals(other.gatewayMessageType))
+            }
+        } else if (!gatewayMessageType.equals(other.gatewayMessageType)) {
             return false;
-        if (responseType != other.responseType)
+        }
+        if (responseType != other.responseType) {
             return false;
+        }
         if (rfnIdentifier == null) {
-            if (other.rfnIdentifier != null)
+            if (other.rfnIdentifier != null) {
                 return false;
-        } else if (!rfnIdentifier.equals(other.rfnIdentifier))
+            }
+        } else if (!rfnIdentifier.equals(other.rfnIdentifier)) {
             return false;
+        }
         if (upgradeId == null) {
-            if (other.upgradeId != null)
+            if (other.upgradeId != null) {
                 return false;
-        } else if (!upgradeId.equals(other.upgradeId))
+            }
+        } else if (!upgradeId.equals(other.upgradeId)) {
             return false;
+        }
         return true;
     }
 
