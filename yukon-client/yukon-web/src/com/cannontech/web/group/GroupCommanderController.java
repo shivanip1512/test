@@ -147,8 +147,7 @@ public class GroupCommanderController {
     public String executeGroupCommand(HttpServletRequest request, String groupName, String commandSelectValue, String commandString, String emailAddress, boolean sendEmail, YukonUserContext userContext, ModelMap map) throws ServletException {
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
         DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(group);
-        boolean success = doCollectionCommand(request, deviceCollection, commandSelectValue , commandString,
-                                              emailAddress, sendEmail, groupName, userContext, map);
+        boolean success = doCollectionCommand(request, deviceCollection, commandSelectValue, commandString, emailAddress, sendEmail, groupName, userContext, map);
         if (success) {
             return "redirect:resultDetail";
         } else {
