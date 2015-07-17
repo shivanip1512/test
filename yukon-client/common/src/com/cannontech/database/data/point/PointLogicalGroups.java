@@ -14,7 +14,7 @@ public enum PointLogicalGroups implements DisplayableEnum, DatabaseRepresentatio
     
     private static final String baseKey = "yukon.common.point.logicalGroup.";
     
-    private String dbValue;
+    private final String dbValue;
     
     PointLogicalGroups(String dbValue) {
         this.dbValue = dbValue;
