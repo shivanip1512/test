@@ -76,7 +76,7 @@ import com.cannontech.common.pao.definition.model.jaxb.UpdateTypeType;
 import com.cannontech.common.util.SetUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dao.StateGroupDao;
+import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.database.data.lite.LiteState;
@@ -132,9 +132,10 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     private SetMultimap<PaoTypePointIdentifier, BuiltInAttribute> paoAndPointToAttribute;
     
     @Autowired private UnitMeasureDao unitMeasureDao;
-    @Autowired private StateGroupDao stateGroupDao;
+    @Autowired private StateDao stateDao;
     @Autowired private PointDao pointDao;
     @Autowired private DeviceDefinitionDao deviceDefinitionDao;
+
     
     /**
      * Enum used to filter when retrieving paos that support tags.
@@ -957,19 +958,13 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         
         if (stateGroupSet) {
             LiteStateGroup stateGroup = null;
-            List<LiteStateGroup> groups = stateGroupDao.getAllStateGroups();
-            for (LiteStateGroup group : groups) {
-                if (group.getStateGroupName().equals(stateGroupName)) {
-                    stateGroup = group;
-                    break;
-                }
-            }
-            if (stateGroup == null) {
-                throw new NotFoundException("State group does not exist: " + stateGroupName
-                    + ". Check the paoDefinition.xml file.");
+            try {
+                stateGroup = stateDao.getLiteStateGroup(stateGroupName);
+            } catch (NotFoundException e) {
+                throw new NotFoundException("State group does not exist: " + stateGroupName + ". Check the paoDefinition.xml file ");
             }
             stateGroupId = stateGroup.getStateGroupID();
-            
+
             if (initialStateStr != null) {
                 List<LiteState> states = stateGroup.getStatesList();
                 boolean notFound = true;

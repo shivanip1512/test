@@ -16,7 +16,7 @@
   <bean id="authDao" class="com.cannontech.core.dao.impl.AuthDaoImpl"/>
   <bean id="capControlDao" class="com.cannontech.core.dao.impl.CapControlDaoImpl"/>
   <bean class="com.cannontech.core.dao.impl.MACScheduleDaoImpl"/>
-  <bean class="com.cannontech.core.dao.impl.CommandDaoImpl"/>
+  <bean id="commandDao" class="com.cannontech.core.dao.impl.CommandDaoImpl"/>
   <bean id="contactDao" class="com.cannontech.core.dao.impl.ContactDaoImpl"/>
   <bean id="contactNotificationDao" class="com.cannontech.core.dao.impl.ContactNotificationDaoImpl"/>
   <bean id="customerDao" class="com.cannontech.core.dao.impl.CustomerDaoImpl"/>
@@ -45,7 +45,7 @@
   <bean id="simplePointAccessDao" class="com.cannontech.core.dao.impl.SimplePointAccessDaoImpl">
     <property name="dynamicDataSource" ref="dynamicDataSource"/>
   </bean>
-  <bean class="com.cannontech.core.dao.impl.StateGroupDaoImpl"/>
+  <bean id="stateGroupDao" class="com.cannontech.core.dao.impl.StateGroupDaoImpl"/>
   <bean id="stateDao" class="com.cannontech.core.dao.impl.StateDaoImpl"/>
   <bean id="tagDao" class="com.cannontech.core.dao.impl.TagDaoImpl"/>
   <bean id="unitMeasureDao" class="com.cannontech.core.dao.impl.UnitMeasureDaoCache">
