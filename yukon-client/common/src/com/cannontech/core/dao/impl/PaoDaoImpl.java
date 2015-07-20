@@ -56,11 +56,11 @@ import com.google.common.collect.Maps;
 
 public final class PaoDaoImpl implements PaoDao {
     
-    private final static String litePaoSql = "select y.PAObjectID, y.Category, y.PAOName, "
+    private final static String litePaoSql = "SELECT y.PAObjectID, y.Category, y.PAOName, "
         + "y.Type, y.PAOClass, y.Description, y.DisableFlag, d.PORTID, dcs.ADDRESS, dr.routeid "
-        + "from yukonpaobject y " + "left outer join devicedirectcommsettings d on y.paobjectid = d.deviceid "
-        + "left outer join devicecarriersettings DCS on Y.PAOBJECTID = DCS.DEVICEID "
-        + "left outer join deviceroutes dr on y.paobjectid = dr.deviceid ";
+        + "FROM yukonpaobject y " + "LEFT OUTER JOIN devicedirectcommsettings d ON y.paobjectid = d.deviceid "
+        + "LEFT OUTER JOIN devicecarriersettings DCS ON Y.PAOBJECTID = DCS.DEVICEID "
+        + "LEFT OUTER JOIN deviceroutes dr ON y.paobjectid = dr.deviceid ";
 
     private final ParameterizedRowMapper<LiteYukonPAObject> litePaoRowMapper = new LitePaoRowMapper();
 
@@ -75,9 +75,9 @@ public final class PaoDaoImpl implements PaoDao {
     public YukonPao getYukonPao(int paoId) {
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("select PAObjectID, Category, Type");
-            sql.append("from YukonPAObject");
-            sql.append("where PAObjectID").eq(paoId);
+            sql.append("SELECT PAObjectID, Category, Type");
+            sql.append("FROM YukonPAObject");
+            sql.append("WHERE PAObjectID").eq(paoId);
 
             YukonPao pao = jdbcTemplate.queryForObject(sql, RowMapper.PAO_IDENTIFIER);
 
@@ -117,11 +117,11 @@ public final class PaoDaoImpl implements PaoDao {
 
     private PaoIdentifier queryForPao(String paoName, PaoCategory paoCategory, PaoClass paoClass) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select PAObjectID, Type");
-        sql.append("from YukonPAObject");
-        sql.append("where PaoName").eq(paoName);
-        sql.append("and Category").eq(paoCategory);
-        sql.append("and PaoClass").eq(paoClass);
+        sql.append("SELECT PAObjectID, Type");
+        sql.append("FROM YukonPAObject");
+        sql.append("WHERE PaoName").eq(paoName);
+        sql.append("AND Category").eq(paoCategory);
+        sql.append("AND PaoClass").eq(paoClass);
 
         PaoIdentifier paoIdentifier = jdbcTemplate.queryForObject(sql, RowMapper.PAO_IDENTIFIER);
 
@@ -133,7 +133,7 @@ public final class PaoDaoImpl implements PaoDao {
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append(litePaoSql);
-            sql.append("where y.PAObjectId").eq(paoID);
+            sql.append("WHERE y.PAObjectId").eq(paoID);
             LiteYukonPAObject pao = jdbcTemplate.queryForObject(sql, litePaoRowMapper);
             return pao;
         } catch (IncorrectResultSizeDataAccessException e) {
@@ -150,7 +150,7 @@ public final class PaoDaoImpl implements PaoDao {
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append(litePaoSql);
-                sql.append("where y.PAObjectId").in(subList);
+                sql.append("WHERE y.PAObjectId").in(subList);
                 return sql;
             }
         };
@@ -181,7 +181,7 @@ public final class PaoDaoImpl implements PaoDao {
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append(litePaoSql);
-                sql.append("where y.PAObjectId").in(subList);
+                sql.append("WHERE y.PAObjectId").in(subList);
                 return sql;
             }
         };
@@ -195,9 +195,9 @@ public final class PaoDaoImpl implements PaoDao {
     public LiteYukonPAObject findUnique(String paoName, PaoType paoType) {
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder(litePaoSql);
-            sql.append("where UPPER(y.PAOName) = UPPER(").appendArgument(paoName).append(")");
-            sql.append("and y.Category").eq_k(paoType.getPaoCategory());
-            sql.append("and y.PAOClass").eq_k(paoType.getPaoClass());
+            sql.append("WHERE UPPER(y.PAOName) = UPPER(").appendArgument(paoName).append(")");
+            sql.append("AND y.Category").eq_k(paoType.getPaoCategory());
+            sql.append("AND y.PAOClass").eq_k(paoType.getPaoClass());
             LiteYukonPAObject pao = jdbcTemplate.queryForObject(sql, litePaoRowMapper);
             return pao;
         } catch (IncorrectResultSizeDataAccessException e) {
@@ -214,7 +214,7 @@ public final class PaoDaoImpl implements PaoDao {
     @Override
     public List<LiteYukonPAObject> getLiteYukonPAObjectByType(PaoType paoType) {
         SqlStatementBuilder sql = new SqlStatementBuilder(litePaoSql);
-        sql.append("where type").eq_k(paoType);
+        sql.append("WHERE type").eq_k(paoType);
 
         List<LiteYukonPAObject> paos = jdbcTemplate.query(sql, litePaoRowMapper);
         return paos;
@@ -246,9 +246,9 @@ public final class PaoDaoImpl implements PaoDao {
     public String getYukonPAOName(int paoId) {
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("select PAOName");
-            sql.append("from YukonPAObject");
-            sql.append("where PAObjectID").eq(paoId);
+            sql.append("SELECT PAOName");
+            sql.append("FROM YukonPAObject");
+            sql.append("WHERE PAObjectID").eq(paoId);
             String name = jdbcTemplate.queryForObject(sql, RowMapper.STRING);
             return name;
         } catch (IncorrectResultSizeDataAccessException e) {
@@ -266,9 +266,9 @@ public final class PaoDaoImpl implements PaoDao {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("select paobjectid, paoname");
-                sql.append("from yukonpaobject");
-                sql.append("where paobjectid").in(subList);
+                sql.append("SELECT paobjectid, paoname");
+                sql.append("FROM yukonpaobject");
+                sql.append("WHERE paobjectid").in(subList);
 
                 return sql;
             }
@@ -287,12 +287,12 @@ public final class PaoDaoImpl implements PaoDao {
     @Override
     public LiteYukonPAObject[] getAllLiteRoutes() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select y.PAObjectID, y.Category, y.PAOName, y.Type, y.PAOClass, y.Description, y.DisableFlag,");
+        sql.append("SELECT y.PAObjectID, y.Category, y.PAOName, y.Type, y.PAOClass, y.Description, y.DisableFlag,");
         sql.append("null as PortId, null as Address, null as RouteId"); // needed for the mapper, always null
                                                                         // for routes
-        sql.append("from  YukonPAObject y");
-        sql.append("where Category").eq(PaoCategory.ROUTE);
-        sql.append("order BY y.PAOName");
+        sql.append("FROM  YukonPAObject y");
+        sql.append("WHERE Category").eq(PaoCategory.ROUTE);
+        sql.append("ORDER BY y.PAOName");
 
         List<LiteYukonPAObject> routeList = jdbcTemplate.query(sql, new LitePaoRowMapper());
 
@@ -328,9 +328,9 @@ public final class PaoDaoImpl implements PaoDao {
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder(litePaoSql);
 
         if (partialMatch) {
-            sqlBuilder.append("where UPPER(y.PAOName) LIKE UPPER(?) ");
+            sqlBuilder.append("WHERE UPPER(y.PAOName) LIKE UPPER(?) ");
         } else {
-            sqlBuilder.append("where UPPER(y.PAOName) = UPPER(?) ");
+            sqlBuilder.append("WHERE UPPER(y.PAOName) = UPPER(?) ");
         }
         sqlBuilder.append(" order BY y.Category, y.PAOClass, y.PAOName ");
 
@@ -350,13 +350,13 @@ public final class PaoDaoImpl implements PaoDao {
         List<LiteYukonPAObject> liteYukonPaobects = new ArrayList<>();
         try {
             String sqlString =
-                "select pao.PAObjectID, pao.Category, pao.PAOName, "
+                "SELECT pao.PAObjectID, pao.Category, pao.PAOName, "
                     + " pao.Type, pao.PAOClass, pao.Description, pao.DisableFlag, d.PORTID, dcs.ADDRESS, dr.routeid "
-                    + " from " + YukonPAObject.TABLE_NAME + " pao " + " left outer join "
-                    + DeviceDirectCommSettings.TABLE_NAME + " d on pao.paobjectid = d.deviceid " + " left outer join "
-                    + DeviceCarrierSettings.TABLE_NAME + " DCS on pao.PAOBJECTID = DCS.DEVICEID " + " left outer join "
-                    + DeviceRoutes.TABLE_NAME + " dr on pao.paobjectid = dr.deviceid " + " where address = ? "
-                    + " order BY pao.Category, pao.PAOClass, pao.PAOName";
+                    + " FROM " + YukonPAObject.TABLE_NAME + " pao " + " left outer join "
+                    + DeviceDirectCommSettings.TABLE_NAME + " d ON pao.paobjectid = d.deviceid " + " LEFT OUTER JOIN "
+                    + DeviceCarrierSettings.TABLE_NAME + " DCS ON pao.PAOBJECTID = DCS.DEVICEID " + " LEFT OUTER JOIN "
+                    + DeviceRoutes.TABLE_NAME + " dr ON pao.paobjectid = dr.deviceid " + " WHERE address = ? "
+                    + " ORDER BY pao.Category, pao.PAOClass, pao.PAOName";
 
             liteYukonPaobects = jdbcTemplate.query(sqlString, new Object[] { new Integer(address) }, litePaoRowMapper);
         } catch (IncorrectResultSizeDataAccessException e) {
@@ -369,13 +369,13 @@ public final class PaoDaoImpl implements PaoDao {
     public List<PaoIdentifier> getPaosByAddressRange(int startAddress, int endAddress) {
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("select pao.PAObjectID, pao.Type");
-            sql.append("from YukonPAObject pao");
-            sql.append("join DeviceCarrierSettings DCS on pao.PAOBJECTID = DCS.DEVICEID");
-            sql.append("where address").gte(startAddress);
-            sql.append("and address").lte(endAddress);
-            sql.append("and pao.PAObjectID").neq(Device.SYSTEM_DEVICE_ID);
-            sql.append("order BY pao.Category, pao.PAOClass, pao.PAOName");
+            sql.append("SELECT pao.PAObjectID, pao.Type");
+            sql.append("FROM YukonPAObject pao");
+            sql.append("JOIN DeviceCarrierSettings DCS on pao.PAOBJECTID = DCS.DEVICEID");
+            sql.append("WHERE address").gte(startAddress);
+            sql.append("AND address").lte(endAddress);
+            sql.append("AND pao.PAObjectID").neq(Device.SYSTEM_DEVICE_ID);
+            sql.append("ORDER BY pao.Category, pao.PAOClass, pao.PAOName");
 
             List<PaoIdentifier> result = jdbcTemplate.query(sql, RowMapper.PAO_IDENTIFIER);
 
@@ -413,7 +413,9 @@ public final class PaoDaoImpl implements PaoDao {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("select ypo.PAObjectID, ypo.PAOName from YukonPAObject ypo where ypo.PAObjectID").in(subList);
+                sql.append("SELECT ypo.PAObjectID, ypo.PAOName");
+                sql.append("FROM YukonPAObject ypo");
+                sql.append("WHERE ypo.PAObjectID").in(subList);
                 return sql;
             }
         };
@@ -445,11 +447,9 @@ public final class PaoDaoImpl implements PaoDao {
             public SqlFragmentSource generate(List<Integer> subList) {
 
                 SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("select ypo.PAObjectID, ypo.Type");
-                sql.append("from YukonPAObject ypo");
-                sql.append("where ypo.PAObjectID IN (");
-                sql.appendArgumentList(subList);
-                sql.append(")");
+                sql.append("SELECT ypo.PAObjectID, ypo.Type");
+                sql.append("FROM YukonPAObject ypo");
+                sql.append("WHERE ypo.PAObjectID").in(subList);
                 return sql;
             }
         };
@@ -475,10 +475,10 @@ public final class PaoDaoImpl implements PaoDao {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("select YP.PaobjectId, YP.Type, CS.Address");
-                sql.append("from YukonPaobject YP");
-                sql.append("join DeviceCarrierSettings CS on YP.PaobjectId = CS.DeviceId");
-                sql.append("where CS.Address").in(subList);
+                sql.append("SELECT YP.PaobjectId, YP.Type, CS.Address");
+                sql.append("FROM YukonPaobject YP");
+                sql.append("JOIN DeviceCarrierSettings CS ON YP.PaobjectId = CS.DeviceId");
+                sql.append("WHERE CS.Address").in(subList);
                 return sql;
             }
         };
@@ -509,10 +509,10 @@ public final class PaoDaoImpl implements PaoDao {
             @Override
             public SqlFragmentSource generate(List<String> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("select YP.PaobjectId, YP.Type, MG.MeterNumber");
-                sql.append("from YukonPaobject YP");
-                sql.append("left join DeviceMeterGroup MG on YP.PaobjectId = MG.DeviceId");
-                sql.append("where MG.MeterNumber").in(subList);
+                sql.append("SELECT YP.PaobjectId, YP.Type, MG.MeterNumber");
+                sql.append("FROM YukonPaobject YP");
+                sql.append("LEFT JOIN DeviceMeterGroup MG ON YP.PaobjectId = MG.DeviceId");
+                sql.append("WHERE MG.MeterNumber").in(subList);
                 return sql;
             }
         };
@@ -542,9 +542,9 @@ public final class PaoDaoImpl implements PaoDao {
             @Override
             public SqlFragmentSource generate(List<String> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("select PaobjectId, Type, PaoName");
-                sql.append("from YukonPaobject");
-                sql.append("where PaoName").in(subList);
+                sql.append("SELECT PaobjectId, Type, PaoName");
+                sql.append("FROM YukonPaobject");
+                sql.append("WHERE PaoName").in(subList);
                 return sql;
             }
         };
@@ -571,10 +571,10 @@ public final class PaoDaoImpl implements PaoDao {
         Integer result = null;
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("select y.PAObjectID");
-            sql.append("from  YukonPAObject y");
-            sql.append("where Category").eq(PaoCategory.ROUTE);
-            sql.append("and upper(y.PAOName)").eq(routeName.toUpperCase());
+            sql.append("SELECT y.PAObjectID");
+            sql.append("FROM YukonPAObject y");
+            sql.append("WHERE Category").eq(PaoCategory.ROUTE);
+            sql.append("AND upper(y.PAOName)").eq(routeName.toUpperCase());
 
             result = jdbcTemplate.queryForInt(sql);
         } catch (EmptyResultDataAccessException e) {
@@ -587,11 +587,14 @@ public final class PaoDaoImpl implements PaoDao {
     @Override
     public int getDisabledDeviceCount(DeviceGroup group) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select count(PAObjectID) from YukonPAObject ypo");
-        sql.append("where ypo.DisableFlag").eq_k(YNBoolean.YES);
+        sql.append("SELECT count(PAObjectID)");
+        sql.append("FROM YukonPAObject ypo");
+        sql.append("WHERE ypo.DisableFlag").eq_k(YNBoolean.YES);
+        
         SqlFragmentSource groupSqlWhereClause =
             deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "YPO.paObjectId");
-        sql.append("and").appendFragment(groupSqlWhereClause);
+        sql.append("AND").appendFragment(groupSqlWhereClause);
+        
         return jdbcTemplate.queryForInt(sql);
     }
 
@@ -600,8 +603,9 @@ public final class PaoDaoImpl implements PaoDao {
         Set<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(paoTag, paoTags);
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select paObjectId, type from yukonPAObject");
-        sql.append("where type").in(paoTypes);
+        sql.append("SELECT paObjectId, type");
+        sql.append("FROM yukonPAObject");
+        sql.append("WHERE type").in(paoTypes);
 
         List<PaoIdentifier> paoIdentifiers = jdbcTemplate.query(sql, RowMapper.PAO_IDENTIFIER);
 
@@ -616,7 +620,10 @@ public final class PaoDaoImpl implements PaoDao {
     @Override
     public List<PaoType> getExistingPaoTypes() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISTINCT Type FROM YukonPaobject ORDER BY Type");
+        sql.append("SELECT DISTINCT Type");
+        sql.append("FROM YukonPaobject");
+        sql.append("ORDER BY Type");
+        
         return jdbcTemplate.query(sql, RowMapper.PAO_TYPE);
     }
 }
