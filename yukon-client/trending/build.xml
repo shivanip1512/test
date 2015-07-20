@@ -31,7 +31,8 @@
 	       </manifest>
 		    <fileset dir="resource">
 				<include name="**/*.gif"/>
-		 		<include name="**/*.ico"/>       	
+		 		<include name="**/*.ico"/>
+		 		<include name="**/*.png"/>
 			</fileset>
 			<fileset dir="src">
 			    <exclude name="**/*.java"/>

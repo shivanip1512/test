@@ -33,7 +33,8 @@
 		</fileset>   	
 	    <fileset dir="resource">
 			<include name="**/*.gif"/>
-	 		<include name="**/*.ico"/>       	
+	 		<include name="**/*.ico"/>
+	    	<include name="**/*.png"/>
 		</fileset>   	
 	</jar>
 		
