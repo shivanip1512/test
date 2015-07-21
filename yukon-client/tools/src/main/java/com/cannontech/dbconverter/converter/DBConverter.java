@@ -13,6 +13,7 @@ import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.device.MCTIEDBase;
 import com.cannontech.database.data.device.Repeater900;
+import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.port.PortFactory;
@@ -681,7 +682,7 @@ public boolean processAccumulatorPoints()
 		}
 	
 		//archiving settings
-		accumPoint.getPoint().setArchiveType(tokenizer.nextElement().toString());
+		accumPoint.getPoint().setArchiveType(PointArchiveType.getByDbString(tokenizer.nextElement().toString()));
 		accumPoint.getPoint().setArchiveInterval( new Integer( Integer.parseInt(tokenizer.nextElement().toString())) );
 			
 		multi.getDBPersistentVector().add( accumPoint );
@@ -880,7 +881,7 @@ public boolean processAnalogPoints()
 		}
 		
 		//archiving settings
-		analogPoint.getPoint().setArchiveType(tokenizer.nextElement().toString());
+		analogPoint.getPoint().setArchiveType(PointArchiveType.getByDbString(tokenizer.nextElement().toString()));
 		analogPoint.getPoint().setArchiveInterval( new Integer( Integer.parseInt(tokenizer.nextElement().toString())) );
 			
 		multi.getDBPersistentVector().add( analogPoint );
@@ -1880,7 +1881,7 @@ public boolean processStatusPoints()
 		}
 		
 		//archiving settings
-		statusPoint.getPoint().setArchiveType(tokenizer.nextElement().toString());
+		statusPoint.getPoint().setArchiveType(PointArchiveType.getByDbString(tokenizer.nextElement().toString()));
 		statusPoint.getPoint().setArchiveInterval( new Integer( Integer.parseInt(tokenizer.nextElement().toString())) );
 			
 		multi.getDBPersistentVector().add( statusPoint );

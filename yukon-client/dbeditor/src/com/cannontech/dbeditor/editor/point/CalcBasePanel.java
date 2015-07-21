@@ -404,11 +404,10 @@ public class CalcBasePanel extends DataInputPanel implements JCValueListener, Ac
         CalculatedPoint calcPoint = (CalculatedPoint) val;
 
         int uOfMeasureID = ((LiteUnitMeasure) getUnitOfMeasureComboBox().getSelectedItem()).getUomID();
-        if (getArchiveTypeComboBox().getSelectedItem().toString().compareTo(PointArchiveType.ON_TIMER_OR_UPDATE.getDisplayName()) == 0) {
-            calcPoint.getPoint().setArchiveType(PointArchiveType.ON_TIMER_OR_UPDATE.getPointArchiveTypeName());
-        } else {
-            calcPoint.getPoint().setArchiveType((String) getArchiveTypeComboBox().getSelectedItem());
-        }
+
+        String selectedArchiveType = getArchiveTypeComboBox().getSelectedItem().toString();
+        calcPoint.getPoint().setArchiveType(PointArchiveType.getByDisplayName(selectedArchiveType));
+
         calcPoint.getPoint().setArchiveInterval(SwingUtil.getIntervalComboBoxSecondsValue(getArchiveIntervalComboBox()));
         calcPoint.getCalcBase().setUpdateType((String) getUpdateTypeComboBox().getSelectedItem());
         calcPoint.getCalcBase().setPeriodicRate(SwingUtil.getIntervalComboBoxSecondsValue(getPeriodicRateComboBox()));
@@ -606,16 +605,14 @@ public class CalcBasePanel extends DataInputPanel implements JCValueListener, Ac
         // Assume that defaultObject is an CalculatedPoint
         CalculatedPoint calcPoint = (CalculatedPoint) val;
 
-        String archiveType = calcPoint.getPoint().getArchiveType();
-        if (archiveType.compareTo(PointArchiveType.ON_TIMER_OR_UPDATE.getPointArchiveTypeName()) == 0)
-            archiveType = PointArchiveType.ON_TIMER_OR_UPDATE.getDisplayName();
+        PointArchiveType archiveType = calcPoint.getPoint().getArchiveType();
         Integer archiveInteger = calcPoint.getPoint().getArchiveInterval();
         int uOfMeasureID = calcPoint.getPointUnit().getUomID().intValue();
         getArchiveIntervalLabel().setEnabled(false);
         getArchiveIntervalComboBox().setEnabled(false);
 
         for (int i = 0; i < getArchiveTypeComboBox().getModel().getSize(); i++) {
-            if (getArchiveTypeComboBox().getItemAt(i).equalsIgnoreCase(archiveType)) {
+            if (getArchiveTypeComboBox().getItemAt(i).equalsIgnoreCase(archiveType.getDisplayName())) {
                 getArchiveTypeComboBox().setSelectedIndex(i);
                 if (getArchiveIntervalComboBox().isEnabled()) {
                     SwingUtil.setIntervalComboBoxSelectedItem(getArchiveIntervalComboBox(), archiveInteger.intValue());

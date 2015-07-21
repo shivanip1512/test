@@ -139,7 +139,7 @@ public class CustomerPointTypeHelper {
                                                              0, 
                                                              UnitOfMeasure.UNDEF.getId(),
                                                              StateGroupUtils.STATEGROUP_ANALOG);
-            point.getPoint().setArchiveType(PointArchiveType.ON_TIMER_OR_UPDATE.getPointArchiveTypeName());
+            point.getPoint().setArchiveType(PointArchiveType.ON_TIMER_OR_UPDATE);
             point.getPoint().setArchiveInterval(7*24*60*60); // 1 week as seconds
             dbPersistentDao.performDBChange(point, TransactionType.INSERT);
         }

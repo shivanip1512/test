@@ -103,6 +103,20 @@ public class PointUnit extends DBPersistent {
     public void setLowReasonabilityLimit(Double newLowReasonabilityLimit) {
         lowReasonabilityLimit = newLowReasonabilityLimit;
     }
+    
+    public boolean isHighReasonabilityValid() {
+        return highReasonabilityLimit < CtiUtilities.INVALID_MAX_DOUBLE;
+    }
+    public void setHighReasonabilityValid(boolean valid) {
+        if (!valid) highReasonabilityLimit = CtiUtilities.INVALID_MAX_DOUBLE;
+    }
+    
+    public boolean isLowReasonabilityValid() {
+        return lowReasonabilityLimit > CtiUtilities.INVALID_MIN_DOUBLE;
+    }
+    public void setLowReasonabilityValid(boolean valid) {
+        if (!valid) lowReasonabilityLimit = CtiUtilities.INVALID_MIN_DOUBLE;
+    }
 
     public void setPointID(Integer newValue) {
         this.pointID = newValue;

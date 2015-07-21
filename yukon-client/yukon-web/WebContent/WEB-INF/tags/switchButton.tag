@@ -24,6 +24,7 @@
 <%@ attribute name="color" type="java.lang.Boolean" description="If 'true', buttons will have red and green text color.
                                                                  Default: 'true'." %>
 
+<%@ attribute name="inputClass" description="CSS class names applied to the input." %>
 <%@ attribute name="onClasses" description="CSS class names applied to the on button." %>
 <%@ attribute name="offClasses" description="CSS class names applied to the off button." %>
 <%@ attribute name="id" description="The html id attribute of the checkbox input." %>
@@ -46,14 +47,14 @@
     <label class="switch-btn ${clazz} ${pageScope.classes}">
         <c:choose>
             <c:when test="${not empty name}">
-                <input type="checkbox" name="${name}" id="${id}" class="switch-btn-checkbox" 
+                <input type="checkbox" name="${name}" id="${id}" class="switch-btn-checkbox ${pageScope.inputClass}" 
                     data-toggle="${pageScope.toggleGroup}" 
                     data-toggle-action="${pageScope.toggleAction}" 
                     <c:if test="${checked}">checked</c:if> 
                     <c:if test="${disabled}">disabled</c:if>>
             </c:when>
             <c:otherwise>
-                <form:checkbox path="${path}" id="${id}" cssClass="switch-btn-checkbox" 
+                <form:checkbox path="${path}" id="${id}" cssClass="switch-btn-checkbox ${pageScope.inputClass}" 
                     data-toggle="${pageScope.toggleGroup}" 
                     data-toggle-action="${pageScope.toggleAction}" 
                     disabled="${disabled}"/>

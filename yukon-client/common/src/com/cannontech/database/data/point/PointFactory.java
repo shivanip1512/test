@@ -117,7 +117,7 @@ public final class PointFactory {
         
         PointBase point = createNewPoint(pointID, PointTypes.ANALOG_POINT, pointName, paoID, pointOffset);
 
-        point.getPoint().setArchiveType(pointArchiveType.getPointArchiveTypeName());
+        point.getPoint().setArchiveType(pointArchiveType);
         point.getPoint().setArchiveInterval(pointArchiveInterval.getSeconds());
 
         point.getPoint().setStateGroupID(stateGroupId);
@@ -137,7 +137,7 @@ public final class PointFactory {
         
         PointBase point = createNewPoint(pointID, PointTypes.DEMAND_ACCUMULATOR_POINT, pointName, paoID, pointOffset);
 
-        point.getPoint().setArchiveType(pointArchiveType.getPointArchiveTypeName());
+        point.getPoint().setArchiveType(pointArchiveType);
         point.getPoint().setArchiveInterval(pointArchiveInterval.getSeconds());
 
         point.getPoint().setStateGroupID(stateGroupId);
@@ -169,7 +169,7 @@ public final class PointFactory {
                                     CtiUtilities.getFalseCharacter(),
                                     CtiUtilities.getFalseCharacter(),
                                     offset,
-                                    PointArchiveType.NONE.getPointArchiveTypeName(),
+                                    PointArchiveType.NONE,
                                     PointArchiveInterval.ZERO.getSeconds()));
 
         newPoint.setPointAlarming(new PointAlarming(pointID, 
@@ -190,7 +190,7 @@ public final class PointFactory {
         PointBase point =
             createNewPoint(pointID, PointTypes.PULSE_ACCUMULATOR_POINT, pointName, paoID, pointOffset);
 
-        point.getPoint().setArchiveType(pointArchiveType.getPointArchiveTypeName());
+        point.getPoint().setArchiveType(pointArchiveType);
         point.getPoint().setArchiveInterval(pointArchiveInterval.getSeconds());
 
         point.getPoint().setStateGroupID(stateGroupId);
@@ -214,7 +214,7 @@ public final class PointFactory {
         // Create new point
         PointBase newPoint = createNewPoint(pointID, PointTypes.STATUS_POINT, pointName, paoID, pointOffset);
 
-        newPoint.getPoint().setArchiveType(pointArchiveType.getPointArchiveTypeName());
+        newPoint.getPoint().setArchiveType(pointArchiveType);
         newPoint.getPoint().setArchiveInterval(pointArchiveInterval.getSeconds());
 
         newPoint.getPoint().setStateGroupID(stateGroupId);
@@ -280,7 +280,7 @@ public final class PointFactory {
         
         PointBase point = createNewPoint(null, PointTypes.CALCULATED_POINT, name, paoIdentifier.getPaoId(), 0);
 
-        point.getPoint().setArchiveType(pointArchiveType.getPointArchiveTypeName());
+        point.getPoint().setArchiveType(pointArchiveType);
         point.getPoint().setArchiveInterval(pointArchiveInterval.getSeconds());
         point.getPoint().setStateGroupID(stateGroupId);
         

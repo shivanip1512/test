@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.common.bulk.model.StatusPointUpdateType;
@@ -21,6 +22,7 @@ import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
+import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogControlType;
@@ -132,11 +134,17 @@ public class PointController {
 
         
         
-        model.addAttribute("initialStates", stateDao.getLiteStates(pointModel.getPointBase().getPoint().getStateGroupID()));
+        model.addAttribute("initialStates", statesForGroup(pointModel.getPointBase().getPoint().getStateGroupID()));
         
         return "point.jsp";
     }
     
+    @RequestMapping("state-group/{id}/states")
+    public @ResponseBody LiteState[] statesForGroup(@PathVariable("id") int id) {
+        return stateDao.getLiteStates(id);
+    
+    }
+
     /* These classes are here to prevent type erasure of generics */
     public static class AnalogPointModel extends PointModel<AnalogPoint> {}
     public static class AccumulatorPointModel extends PointModel<AccumulatorPoint> {}

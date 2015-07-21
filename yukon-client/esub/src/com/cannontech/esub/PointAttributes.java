@@ -108,7 +108,7 @@ public class PointAttributes {
 			
 			//return the first PointLimit object
 			//Vector limits = sp.getPointLimitsVector();
-			return (PointLimit)sp.getPointLimitsMap().get( new Integer(1) );
+			return sp.getPointLimitsMap().get( new Integer(1) );
 		}
 		
 		return null;

@@ -37,7 +37,16 @@ public enum PointArchiveType implements DatabaseRepresentationSource, Displayabl
 
     public static PointArchiveType getByDisplayName(String name) {
         for (PointArchiveType value : PointArchiveType.values()) {
-            if (value.getPointArchiveTypeName().equalsIgnoreCase(name)) {
+            if (value.getDisplayName().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return NONE;
+    }
+    
+    public static PointArchiveType getByDbString(String dbString) {
+        for (PointArchiveType value : PointArchiveType.values()) {
+            if (value.getPointArchiveTypeName().equalsIgnoreCase(dbString)) {
                 return value;
             }
         }

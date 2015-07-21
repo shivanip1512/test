@@ -13,7 +13,7 @@ import com.cannontech.database.db.point.PointUnit;
 public class ScalarPoint extends PointBase {
 
     // contains <Integer:limitNumber, PointLimit>
-    private Map<Integer, PointLimit> pointLimitsMap = null;
+    private Map<Integer, PointLimit> pointLimitsMap = new HashMap<Integer, PointLimit>();
 
     private PointUnit pointUnit = null;
 
@@ -26,7 +26,7 @@ public class ScalarPoint extends PointBase {
         super.add();
         getPointUnit().add();
 
-        Iterator<PointLimit> it = getPointLimitsMap().values().iterator();
+        Iterator<PointLimit> it = pointLimitsMap.values().iterator();
         while (it.hasNext()) {
             it.next().add();
         }
@@ -34,7 +34,7 @@ public class ScalarPoint extends PointBase {
 
     @Override
     public void addPartial() throws SQLException {
-        Iterator<PointLimit> it = getPointLimitsMap().values().iterator();
+        Iterator<PointLimit> it = pointLimitsMap.values().iterator();
         while (it.hasNext()) {
             it.next().add();
         }
@@ -66,27 +66,31 @@ public class ScalarPoint extends PointBase {
         return pointLimitsMap;
     }
 
-    /**
-     * Convienence method to get the first limit. Returns null if no limit is set.
-     */
     public PointLimit getLimitOne() {
-        PointLimit plOne = getPointLimitsMap().get(1);
+        PointLimit plOne = pointLimitsMap.get(1);
         if (plOne == null) {
             return new PointLimit(getPoint().getPointID(), 1, 0.0, 0.0, 0);
         }
         return plOne;
     }
+    
+    public boolean isLimitOneSpecified() {
+        return pointLimitsMap.containsKey(1);
+    }
+    
+    public boolean isLimitTwoSpecified() {
+        return pointLimitsMap.containsKey(2);
+    }
+       
 
-    /**
-     * Convienence method to get the second limit. Returns null if no limit is set.
-     */
     public PointLimit getLimitTwo() {
-        PointLimit plTwo = getPointLimitsMap().get(2);
+        PointLimit plTwo = pointLimitsMap.get(2);
         if (plTwo == null) {
             return new PointLimit(getPoint().getPointID(), 2, 0.0, 0.0, 0);
         }
         return plTwo;
     }
+    
 
     public PointUnit getPointUnit() {
         if (pointUnit == null) {
@@ -101,17 +105,13 @@ public class ScalarPoint extends PointBase {
         super.retrieve();
         getPointUnit().retrieve();
 
-        try {
-            PointLimit plArray[] = PointLimit.getPointLimits(getPoint().getPointID(), CtiUtilities.getDatabaseAlias());
+        PointLimit plArray[] = PointLimit.getPointLimits(getPoint().getPointID(), CtiUtilities.getDatabaseAlias());
 
-            for (int i = 0; i < plArray.length; i++) {
-                getPointLimitsMap().put(plArray[i].getLimitNumber(), plArray[i]);
-            }
-
-        } catch (SQLException e) { // not necessarily an error
+        for (int i = 0; i < plArray.length; i++) {
+            pointLimitsMap.put(plArray[i].getLimitNumber(), plArray[i]);
         }
 
-        Iterator<PointLimit> it = getPointLimitsMap().values().iterator();
+        Iterator<PointLimit> it = pointLimitsMap.values().iterator();
         while (it.hasNext()) {
             PointLimit o = it.next();
             o.setDbConnection(getDbConnection());
@@ -125,7 +125,7 @@ public class ScalarPoint extends PointBase {
         super.setDbConnection(conn);
 
         getPointUnit().setDbConnection(conn);
-        Iterator<PointLimit> it = getPointLimitsMap().values().iterator();
+        Iterator<PointLimit> it = pointLimitsMap.values().iterator();
         while (it.hasNext()) {
             it.next().setDbConnection(conn);
         }
@@ -137,7 +137,7 @@ public class ScalarPoint extends PointBase {
 
         getPointUnit().setPointID(pointID);
 
-        Iterator<PointLimit> it = getPointLimitsMap().values().iterator();
+        Iterator<PointLimit> it = pointLimitsMap.values().iterator();
         while (it.hasNext()) {
             it.next().setPointID(pointID);
         }
@@ -159,7 +159,7 @@ public class ScalarPoint extends PointBase {
 
         PointLimit.deletePointLimits(getPoint().getPointID(), getDbConnection());
 
-        Iterator<PointLimit> it = getPointLimitsMap().values().iterator();
+        Iterator<PointLimit> it = pointLimitsMap.values().iterator();
         while (it.hasNext()) {
             PointLimit pointLimit = it.next();
             pointLimit.setPointID(getPoint().getPointID());

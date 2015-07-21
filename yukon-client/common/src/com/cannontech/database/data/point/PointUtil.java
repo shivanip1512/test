@@ -251,7 +251,7 @@ public class PointUtil {
             pointTemplate.setStateGroupId(calcPoint.getPoint().getStateGroupID());
             pointTemplate.setUnitOfMeasure(calcPoint.getPointUnit().getUomID());
             pointTemplate.setDecimalPlaces(calcPoint.getPointUnit().getDecimalPlaces());
-            pointTemplate.setPointArchiveType(PointArchiveType.getByDisplayName(calcPoint.getPoint().getArchiveType()));
+            pointTemplate.setPointArchiveType(calcPoint.getPoint().getArchiveType());
             pointTemplate.setPointArchiveInterval(PointArchiveInterval.getIntervalBySeconds(calcPoint.getPoint().getArchiveInterval()));
 
             CalcPointInfo calcPointInfo = new CalcPointInfo(calcPoint.getCalcBase().getUpdateType(), calcPoint.getCalcBase().getPeriodicRate(), false);
@@ -328,7 +328,7 @@ public class PointUtil {
         calcPoint.getPoint().setStateGroupID(pointTemplate.getStateGroupId());
         calcPoint.getPointUnit().setUomID(pointTemplate.getUnitOfMeasure());
         calcPoint.getPointUnit().setDecimalPlaces(pointTemplate.getDecimalPlaces());
-        calcPoint.getPoint().setArchiveType(pointTemplate.getPointArchiveType().getPointArchiveTypeName());
+        calcPoint.getPoint().setArchiveType(pointTemplate.getPointArchiveType());
         calcPoint.getPoint().setArchiveInterval(pointTemplate.getPointArchiveInterval().getSeconds());
 
         CalcBase calcBase = new CalcBase();

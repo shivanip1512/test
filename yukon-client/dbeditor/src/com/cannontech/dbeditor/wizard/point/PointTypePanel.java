@@ -1,6 +1,7 @@
 package com.cannontech.dbeditor.wizard.point;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 
@@ -531,7 +532,7 @@ public Object getValue(Object val) {
 	
 	newPoint.getPoint().setAlarmInhibit( CtiUtilities.getFalseCharacter() );
 	newPoint.getPoint().setServiceFlag( CtiUtilities.getFalseCharacter() );
-	newPoint.getPoint().setArchiveType("None");
+	newPoint.getPoint().setArchiveType(PointArchiveType.NONE);
 	newPoint.getPoint().setArchiveInterval(new Integer(0));
 	
 	return newPoint;

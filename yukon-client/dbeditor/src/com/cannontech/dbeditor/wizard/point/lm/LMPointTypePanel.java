@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.wizard.point.lm;
 
+import com.cannontech.database.data.point.PointArchiveType;
+
 /**
  * This type was created in VisualAge.
  */
@@ -165,7 +167,7 @@ public Object getValue(Object val) {
 
 	newPoint.getPoint().setAlarmInhibit( com.cannontech.common.util.CtiUtilities.getFalseCharacter() );
 	newPoint.getPoint().setServiceFlag( com.cannontech.common.util.CtiUtilities.getFalseCharacter() );
-	newPoint.getPoint().setArchiveType("None");
+	newPoint.getPoint().setArchiveType(PointArchiveType.NONE);
 	newPoint.getPoint().setArchiveInterval(new Integer(0));
 
 	return newPoint;
@@ -241,12 +243,12 @@ public static void main(java.lang.String[] args) {
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
 			public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
-			};
+			}
 		});
 		frame.setVisible(true);
 	} catch (Throwable exception) {
 		System.err.println("Exception occurred in main() of com.ibm.uvm.abt.edit.DeletedClassView");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );
 	}
 }
 /**

@@ -293,11 +293,9 @@ public class AccumulatorBasePanel extends DataInputPanel implements JCValueListe
         point.getPointUnit().setDecimalPlaces(new Integer(((Number) getDecimalPlacesSpinner().getValue()).intValue()));
         point.getPointUnit().setMeterDials(new Integer(((Number) getMeterDialsSpinner().getValue()).intValue()));
 
-        if (getArchiveTypeComboBox().getSelectedItem().toString().compareTo(PointArchiveType.ON_TIMER_OR_UPDATE.getDisplayName()) == 0) {
-            point.getPoint().setArchiveType(PointArchiveType.ON_TIMER_OR_UPDATE.getPointArchiveTypeName());
-        } else {
-            point.getPoint().setArchiveType((String) getArchiveTypeComboBox().getSelectedItem());
-        }
+        String selectedArchiveType = getArchiveTypeComboBox().getSelectedItem().toString();
+        point.getPoint().setArchiveType(PointArchiveType.getByDisplayName(selectedArchiveType));
+
         point.getPoint().setArchiveInterval(SwingUtil.getIntervalComboBoxSecondsValue(getArchiveIntervalComboBox()));
         LiteStateGroup stateGroup = (LiteStateGroup) getStateGroupComboBox().getSelectedItem();
         point.getPoint().setStateGroupID(new Integer(stateGroup.getStateGroupID()));
@@ -313,7 +311,6 @@ public class AccumulatorBasePanel extends DataInputPanel implements JCValueListe
         /* Uncomment the following lines to print uncaught exceptions to stdout */
         com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
         com.cannontech.clientutils.CTILogger.error(exception.getMessage(), exception);
-        ;
     }
 
     /**
@@ -491,10 +488,7 @@ public class AccumulatorBasePanel extends DataInputPanel implements JCValueListe
         AccumulatorPoint point = (AccumulatorPoint) val;
 
         int uOfMeasureID = point.getPointUnit().getUomID().intValue();
-        String archiveType = point.getPoint().getArchiveType();
-        if (archiveType.compareTo(PointArchiveType.ON_TIMER_OR_UPDATE.getPointArchiveTypeName()) == 0) {
-            archiveType = PointArchiveType.ON_TIMER_OR_UPDATE.getDisplayName();
-        }
+        PointArchiveType archiveType = point.getPoint().getArchiveType();
         Integer archiveInteger = point.getPoint().getArchiveInterval();
 
         getDecimalPlacesSpinner().setValue(point.getPointUnit().getDecimalPlaces());
@@ -510,7 +504,7 @@ public class AccumulatorBasePanel extends DataInputPanel implements JCValueListe
         }
 
         for (int i = 0; i < getArchiveTypeComboBox().getModel().getSize(); i++) {
-            if (getArchiveTypeComboBox().getItemAt(i).equalsIgnoreCase(archiveType)) {
+            if (getArchiveTypeComboBox().getItemAt(i).equalsIgnoreCase(archiveType.getDisplayName())) {
                 getArchiveTypeComboBox().setSelectedIndex(i);
                 if (getArchiveIntervalComboBox().isEnabled()) {
                     SwingUtil.setIntervalComboBoxSelectedItem(getArchiveIntervalComboBox(), archiveInteger.intValue());

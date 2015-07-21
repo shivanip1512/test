@@ -22,6 +22,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.AnalogPoint;
+import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.UnitOfMeasure;
@@ -95,7 +96,7 @@ public class CapBank_OpCntPointCreate extends PointCreate
 			analogPoint.getPoint().setServiceFlag(new Character('N'));
 			analogPoint.getPoint().setAlarmInhibit(new Character('N'));
 			analogPoint.getPoint().setPointOffset(new Integer(1));	//DEFAULT FOR OP COUNT POINTS
-			analogPoint.getPoint().setArchiveType("None");	//default?
+			analogPoint.getPoint().setArchiveType(PointArchiveType.NONE);
 			analogPoint.getPoint().setArchiveInterval(new Integer(1));
 			
 			// set default settings for point POINTALARMING

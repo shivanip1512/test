@@ -24,8 +24,10 @@ public class Point extends DBPersistent {
     private Character alarmInhibit = null;
     // private Character pseudoFlag = null; This is a derived attribute
     private Integer pointOffset = null;
-    private String archiveType = null;
+    private PointArchiveType archiveType = null;
     private Integer archiveInterval = null;
+    
+    /* TODO Can be removed with PointForm.java */
     private boolean archiveStatusData = false;
 
     public static final String CONSTRAINT_COLUMNS[] = { "POINTID" };
@@ -49,8 +51,8 @@ public class Point extends DBPersistent {
     public Point() {}
 
     public Point(Integer pointID, String pointType, String pointName, Integer newPaoID, String logicalGroup,
-            Integer stateGroupID, Character serviceFlag, Character alarmInhibit, Integer pointOffset, String archiveType,
-            Integer archiveInterval) {
+            Integer stateGroupID, Character serviceFlag, Character alarmInhibit, Integer pointOffset, 
+            PointArchiveType archiveType, Integer archiveInterval) {
 
         initialize(pointID, pointType, pointName, newPaoID, logicalGroup, stateGroupID, serviceFlag, alarmInhibit,
             pointOffset, archiveType, archiveInterval);
@@ -77,7 +79,7 @@ public class Point extends DBPersistent {
         return archiveInterval;
     }
 
-    public String getArchiveType() {
+    public PointArchiveType getArchiveType() {
         return archiveType;
     }
 
@@ -137,8 +139,8 @@ public class Point extends DBPersistent {
     }
 
     public void initialize(Integer pointID, String pointType, String pointName, Integer newPaoID, String logicalGroup,
-            Integer stateGroupID, Character serviceFlag, Character alarmInhibit, Integer pointOffset, String archiveType,
-            Integer archiveInterval) {
+            Integer stateGroupID, Character serviceFlag, Character alarmInhibit, Integer pointOffset, 
+            PointArchiveType archiveType, Integer archiveInterval) {
         
         setPointID(pointID);
         setPointType(pointType);
@@ -180,7 +182,7 @@ public class Point extends DBPersistent {
             // setPseudoFlag(  temp.charAt(0) ) ;
 
             setPointOffset((Integer) results[8]);
-            setArchiveType((String) results[9]);
+            setArchiveType(PointArchiveType.getByDbString((String) results[9]));
             setArchiveInterval((Integer) results[10]);
         } else
             throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -195,14 +197,14 @@ public class Point extends DBPersistent {
         this.archiveInterval = newValue;
     }
 
-    public void setArchiveType(String newValue) {
-        if (newValue.equalsIgnoreCase(PointArchiveType.NONE.getPointArchiveTypeName())) {
+    public void setArchiveType(PointArchiveType archiveType) {
+        if (archiveType == PointArchiveType.NONE) {
             this.setArchiveStatusData(false);
         } else {
             this.setArchiveStatusData(true);
         }
 
-        this.archiveType = newValue;
+        this.archiveType = archiveType;
     }
 
     public void setLogicalGroup(String newValue) {
@@ -248,7 +250,7 @@ public class Point extends DBPersistent {
             getAlarmInhibit(),
             getPseudoFlag(),
             getPointOffset(),
-            getArchiveType(),
+            getArchiveType().getDatabaseRepresentation(),
             getArchiveInterval()
         };
 

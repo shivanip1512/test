@@ -578,9 +578,9 @@ public class PointForm extends DBEditorForm {
         Point point = getPointBase().getPoint();
         if (point.getPointType().equalsIgnoreCase(pointType)) {
             if (point.isArchiveStatusData())
-                point.setArchiveType(PointArchiveType.ON_CHANGE.getPointArchiveTypeName());
+                point.setArchiveType(PointArchiveType.ON_CHANGE);
             else
-                point.setArchiveType(PointArchiveType.NONE.getPointArchiveTypeName());
+                point.setArchiveType(PointArchiveType.NONE);
 
         }
     }

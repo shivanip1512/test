@@ -25,6 +25,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
+import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.PointLimit;
 import com.cannontech.database.db.point.calculation.CalcComponent;
@@ -406,7 +407,7 @@ public class PointImportUtility
 			{
 				tokenHolder2 = "None";
 			}
-			analogPoint.getPoint().setArchiveType(tokenHolder2);
+			analogPoint.getPoint().setArchiveType(PointArchiveType.getByDbString(tokenHolder2));
 			
 			tokenHolder2 = tokenizer.nextElement().toString();
 			tokenCounter++;
@@ -821,7 +822,7 @@ public class PointImportUtility
             {
                 tokenHolder2 = "None";
             }
-            accumulatorPoint.getPoint().setArchiveType(tokenHolder2);
+            accumulatorPoint.getPoint().setArchiveType(PointArchiveType.getByDbString(tokenHolder2));
             
             tokenHolder2 = tokenizer.nextElement().toString();
             tokenCounter++;
@@ -1238,7 +1239,7 @@ public class PointImportUtility
             {
                 tokenHolder2 = "None";
             }
-            calcPoint.getPoint().setArchiveType(tokenHolder2);
+            calcPoint.getPoint().setArchiveType(PointArchiveType.getByDbString(tokenHolder2));
             
             tokenHolder2 = tokenizer.nextElement().toString();
             tokenCounter++;
@@ -1540,9 +1541,9 @@ public class PointImportUtility
 			if(emptyField(yesNo))
 				yesNo = "N";
 			if( yesNo == "Y" )
-				statusPoint.getPoint().setArchiveType("On Change");
+				statusPoint.getPoint().setArchiveType(PointArchiveType.ON_CHANGE);
 			else
-				statusPoint.getPoint().setArchiveType("None");
+				statusPoint.getPoint().setArchiveType(PointArchiveType.NONE);
 			
 			statusPoint.getPoint().setArchiveInterval( new Integer( 0) );
 			

@@ -36,6 +36,13 @@
     <entry key="yukon.common.point.alarmNotificationType.AUTO_ACK">Auto Ack</entry>
     <entry key="yukon.common.point.alarmNotificationType.BOTH_OPTIONS">Exclude Notify &amp; Auto Ack</entry>
 
+    <entry key="yukon.common.point.updateType.ON_FIRST_CHANGE">On First Change</entry>
+    <entry key="yukon.common.point.updateType.ON_ALL_CHANGE">On All Change</entry>
+    <entry key="yukon.common.point.updateType.ON_TIMER">On Timer</entry>
+    <entry key="yukon.common.point.updateType.ON_TIMER_AND_CHANGE">On Timer &amp; Change</entry>
+    <entry key="yukon.common.point.updateType.CONSTANT">Constant</entry>
+    <entry key="yukon.common.point.updateType.HISTORICAL">Historical</entry>
+
 <!-- Please see JavaDocs for the following for help with the values in this file.
          com.cannontech.core.service.PointFormattingService
          com.cannontech.common.util.FormattingTemplateProcessor

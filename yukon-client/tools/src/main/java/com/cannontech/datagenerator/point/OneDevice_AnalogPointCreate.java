@@ -11,6 +11,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.AnalogPoint;
+import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.spring.YukonSpringHook;
@@ -60,7 +61,7 @@ public class OneDevice_AnalogPointCreate extends PointCreate
 			analogPoint.getPoint().setAlarmInhibit(new Character('N'));
 //			analogPoint.getPoint().setPseudoFlag(new Character('N'));	//derive attribute
 			analogPoint.getPoint().setPointOffset(new Integer( i ));	
-			analogPoint.getPoint().setArchiveType("None");	//default?
+			analogPoint.getPoint().setArchiveType(PointArchiveType.NONE);
 			analogPoint.getPoint().setArchiveInterval(new Integer(0));
 			
 			// set POINTALARMING defaults

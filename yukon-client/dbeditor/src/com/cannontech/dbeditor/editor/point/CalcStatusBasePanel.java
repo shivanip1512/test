@@ -16,6 +16,7 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.CalcStatusPoint;
+import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -221,9 +222,9 @@ public class CalcStatusBasePanel extends DataInputPanel implements ActionListene
         point.getPointStatus().setInitialState(initialState.getStateRawState());
 
         if (getArchiveCheckBox().isSelected()) {
-            point.getPoint().setArchiveType("On Change");
+            point.getPoint().setArchiveType(PointArchiveType.ON_CHANGE);
         } else {
-            point.getPoint().setArchiveType("None");
+            point.getPoint().setArchiveType(PointArchiveType.NONE);
         }
 
         point.getCalcBase().setUpdateType((String) getUpdateTypeComboBox().getSelectedItem());
@@ -441,7 +442,7 @@ public class CalcStatusBasePanel extends DataInputPanel implements ActionListene
             }
         }
 
-        getArchiveCheckBox().setSelected(calcPoint.getPoint().getArchiveType().equalsIgnoreCase("On Change"));
+        getArchiveCheckBox().setSelected(calcPoint.getPoint().getArchiveType() == PointArchiveType.ON_CHANGE);
 
         String updateType = calcPoint.getCalcBase().getUpdateType();
         Integer periodicRate = calcPoint.getCalcBase().getPeriodicRate();

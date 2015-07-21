@@ -1,11 +1,13 @@
 package com.cannontech.common.bulk.model;
 
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 
 /**
  * List of possible values for update type on analog points.
  */
-public enum AnalogPointUpdateType implements DatabaseRepresentationSource {
+public enum AnalogPointUpdateType implements DatabaseRepresentationSource, DisplayableEnum {
+
     ON_FIRST_CHANGE("On First Change", false),
     ON_ALL_CHANGE("On All Change", false),
     ON_TIMER("On Timer", true),
@@ -14,6 +16,8 @@ public enum AnalogPointUpdateType implements DatabaseRepresentationSource {
     HISTORICAL("Historical", false),
     ;
     
+    private static String baseKey = "yukon.common.point.updateType.";
+
     private boolean hasPeriodicRate;
     private String dbString;
     
@@ -28,5 +32,10 @@ public enum AnalogPointUpdateType implements DatabaseRepresentationSource {
     
     public String getDatabaseRepresentation() {
         return dbString;
+    }
+
+    @Override
+    public String getFormatKey() {
+        return baseKey + name();
     }
 }

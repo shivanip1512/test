@@ -3,6 +3,7 @@ package com.cannontech.dbeditor.editor.point;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -184,9 +185,9 @@ public Object getValue(Object val) {
 	point.getPointStatus().setInitialState( new Integer(initialState.getStateRawState()) );
 	
 	if( getArchiveCheckBox().isSelected() )
-		point.getPoint().setArchiveType("On Change");
+		point.getPoint().setArchiveType(PointArchiveType.ON_CHANGE);
 	else
-		point.getPoint().setArchiveType("None");
+		point.getPoint().setArchiveType(PointArchiveType.NONE);
 
 	return point;
 }
@@ -364,7 +365,7 @@ public void setValue(Object val)
 		}
 	}
 
-	getArchiveCheckBox().setSelected(point.getPoint().getArchiveType().equalsIgnoreCase("On Change"));	
+	getArchiveCheckBox().setSelected(point.getPoint().getArchiveType() == PointArchiveType.ON_CHANGE);
 }
 /**
  * Comment

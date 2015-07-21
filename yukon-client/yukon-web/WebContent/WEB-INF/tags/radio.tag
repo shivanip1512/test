@@ -22,6 +22,7 @@
         Note: the 'yukon.web.components.button' and 'yukon.common' scopes are added internally." %>
 <%@ attribute name="label" description="Text used for the button. Html escaped internally." %>
 
+<%@ attribute name="inputClass" description="CSS class names applied to the input." %>
 <%@ attribute name="classes" description="CSS class names applied to the button element." %>
 <%@ attribute name="id" description="The html id attribute of the radio input." %>
 
@@ -46,7 +47,7 @@
         </c:choose>
     </c:if>
     
-    <input type="hidden" name="${status.expression}" value="${option.value}"/>
+    <input type="hidden" name="${status.expression}" value="${option.value}" class="${pageScope.inputClass}"/>
     
 </cti:displayForPageEditModes>
 
@@ -57,13 +58,15 @@
             <c:when test="${not empty name}">
                 <input type="radio" name="${name}" value="${value}" 
                     data-toggle="${pageScope.toggleGroup}" 
+                    class="${pageScope.inputClass}"
                     <c:if test="${not empty pageScope.id}">id="${id}"</c:if> 
                     <c:if test="${checked}">checked</c:if> 
                     <c:if test="${disabled}">disabled</c:if>>
             </c:when>
             <c:otherwise>
                 <form:radiobutton path="${path}" id="${id}" value="${value}" 
-                    data-toggle="${pageScope.toggleGroup}" 
+                    data-toggle="${pageScope.toggleGroup}"
+                    cssClass="${pageScope.inputClass}"
                     disabled="${disabled}"/>
             </c:otherwise>
         </c:choose>
