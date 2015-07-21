@@ -15,13 +15,13 @@ import com.cannontech.spring.YukonSpringHook;
 
 public class StaleData {
     
-    public static enum UpdateStyles implements DisplayableEnum, DatabaseRepresentationSource {
+    public static enum UpdateStyle implements DisplayableEnum, DatabaseRepresentationSource {
         ALWAYS(0),
         ON_CHANGE(1);
         
         private int updateType;
         
-        UpdateStyles(int updateType) {
+        UpdateStyle(int updateType) {
             this.updateType = updateType;
         }
 

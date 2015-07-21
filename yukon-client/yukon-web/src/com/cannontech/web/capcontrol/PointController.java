@@ -116,7 +116,7 @@ public class PointController {
         model.addAttribute("statusArchiveTypes", ImmutableList.of(PointArchiveType.NONE, PointArchiveType.ON_CHANGE));
         model.addAttribute("pointUpdateTypes", StatusPointUpdateType.values());
         model.addAttribute("analogControlTypes", AnalogControlType.values());
-        model.addAttribute("staleDataUpdateStyles", StaleData.UpdateStyles.values());
+        model.addAttribute("staleDataUpdateStyles", StaleData.UpdateStyle.values());
         model.addAttribute("alarmNotificationTypes", AlarmNotificationTypes.values());
         
         List<LiteNotificationGroup> notificationGroups = new ArrayList<>();
