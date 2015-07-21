@@ -191,7 +191,8 @@
                         </tags:nameValue>
                         
                         <%-- Check this box to disable control for this point --%>
-                        <tags:nameValue name="Control Inhibit" nameClass="js-analog-control-input" >
+                        <tags:nameValue name="Control Inhibit" 
+                            nameClass="js-analog-control-input" valueClass="js-analog-control-input">
                             <tags:switchButton path="pointBase.pointAnalogControl.controlInhibited"  offClasses="M0"
                                 classes="js-analog-control-input"/>
                         </tags:nameValue>
@@ -372,7 +373,7 @@
                 <tags:nameValueContainer tableClass="${nameValueClass}">
                     <%-- Turn on/off stale data checking --%>
                     <tags:nameValue name="">
-                        <tags:switchButton path="staleData.enabled" offClasses="M0" inputClasses="js-stale-data-enabled"
+                        <tags:switchButton path="staleData.enabled" offClasses="M0" inputClass="js-stale-data-enabled"
                          offNameKey=".disabled" onNameKey=".enabled" />
                     </tags:nameValue>
                     <tags:nameValue name="Time" nameClass="js-stale-data-input" valueClass="js-stale-data-input">
