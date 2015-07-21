@@ -617,8 +617,6 @@ public void setValue(Object val)
 	if( alarmInhibit != null )
 		SwingUtil.setCheckBoxState( getJCheckBoxDisableAllAlarms(), alarmInhibit );
 		
-   point.getPointAlarming();
-    point.getPointAlarming();
     //be sure we have a 32 character string
 	String alarmStates =
       ( point.getPointAlarming().getAlarmStates().length() != PointAlarming.ALARM_STATE_COUNT
