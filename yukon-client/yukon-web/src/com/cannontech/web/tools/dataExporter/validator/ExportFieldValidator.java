@@ -32,12 +32,16 @@ public class ExportFieldValidator extends SimpleValidator<ExportField> {
         YukonValidationUtils.checkExceedsMaxLength(errors, "exportField.missingAttributeValue", field.getMissingAttributeValue(), 20);
         
         if (field.isTimestamp()) {
-            YukonValidationUtils.checkExceedsMaxLength(errors, "timestampPattern", field.getPattern(), 50);
-            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "timestampPattern", invalidPatternMsgKey);
-            try {
-                new SimpleDateFormat(field.getPattern());
-            } catch (Exception e) {
-                errors.rejectValue("timestampPattern", invalidPatternMsgKey);
+            if (!field.getPattern().isEmpty()) {
+                YukonValidationUtils.checkExceedsMaxLength(errors, "timestampPattern", field.getPattern(), 50);
+                YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "timestampPattern", invalidPatternMsgKey);
+                try {
+                    new SimpleDateFormat(field.getPattern());
+                } catch (Exception e) {
+                    errors.rejectValue("timestampPattern", invalidPatternMsgKey);
+                }
+            } else {
+                field.setPattern("MM/dd/yyyy hh:mm:ss zZ");
             }
         } else if (field.isValue()) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "readingPattern", field.getPattern(), 50);
