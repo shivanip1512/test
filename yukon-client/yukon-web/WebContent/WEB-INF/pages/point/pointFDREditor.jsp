@@ -62,7 +62,7 @@
                             disabled="#{!capControlForm.editingAuthorized}"
 							title="Edit this FDR translation entry"
 							action="#{ptEditorForm.pointFDREntry.showTranslation}" >
-	              	<x:graphicImage value="/WebConfig/yukon/Icons/pencil.png" height="15" width="15" border="0" />
+	              	<x:graphicImage styleClass="icon icon-pencil" height="15" width="15" border="0" />
 					<f:param name="fdrInterface" value="#{fdrTranslation.interfaceType}" />
 					<f:param name="rowNumber" value="#{rowNum}" />
 				</x:commandLink>

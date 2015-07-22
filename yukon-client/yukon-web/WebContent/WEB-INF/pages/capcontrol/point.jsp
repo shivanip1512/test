@@ -38,7 +38,7 @@
                     
                     <%-- Only an input for creation --%>
                     <tags:nameValue name="Type">
-                        <form:hidden path="pointBase.point.pointTypeEnum"/>
+                        <form:hidden path="pointBase.point.pointTypeEnum" cssClass="js-point-type"/>
                         <i:inline key="${pointModel.pointBase.point.pointTypeEnum}"/>
                     </tags:nameValue>
                     
@@ -443,24 +443,25 @@
                     </cti:list>
                     <c:forEach var="fdrIdx" items="${nums}">
                         <c:set var="fdrTranslation" value="${pointModel.pointBase.pointFDRList[fdrIdx]}" />
-                        <tags:nameValue name="Interface ${fdrIdx}">
+                        <tags:nameValue name="Interface ${fdrIdx}" data-fdr-translation="${fdrIdx}">
                             <tags:selectWithItems path="pointBase.pointFDRList[${fdrIdx}].interfaceType" 
-                                items="${fdrInterfaceTypes}" />
+                                items="${fdrInterfaceTypes}" inputClass="js-fdr-interface" />
                         </tags:nameValue>
-                        <tags:nameValue name="Direction ${fdrIdx}">
-                            <%-- TODO ajax in these options --%>
-                            <%-- FDRDirectionsMap[interfaceType] --%>
-                            <tags:selectWithItems items="${fdrDirections}" path="pointBase.pointFDRList[${fdrIdx}].directionType" itemValue="value"/>
+                        <tags:nameValue name="Direction ${fdrIdx}" data-fdr-translation="${fdrIdx}">
+                            <tags:selectWithItems  path="pointBase.pointFDRList[${fdrIdx}].directionType" 
+                                items="${fdrDirections}" itemValue="value" 
+                                inputClass="with-option-hiding js-fdr-direction"/>
                         </tags:nameValue>
-                        <tags:nameValue name="Translation">
+                        <tags:nameValue name="Translation" data-fdr-translation="${fdrIdx}">
                             
-                            ${pointModel.pointBase.pointFDRList[fdrIdx].translation}
-                            <form:hidden path="pointBase.pointFDRList[${fdrIdx}].translation" />
+                            <tags:input path="pointBase.pointFDRList[${fdrIdx}].translation"
+                                size="${fn:length(pointModel.pointBase.pointFDRList[fdrIdx].translation)}" 
+                                inputClass="js-fdr-translation"/>
                         </tags:nameValue>
                         <c:forEach var="option" items="${fdrTranslation.interfaceEnum.interfaceOptionsList}">
                         
                             <%-- TODO Combine these into the translation --%>
-                            <tags:nameValue name="${option.optionLabel}">
+                            <tags:nameValue name="Dummy Input ${option.optionLabel}">
                                 <c:if test="${not empty option.optionValues}">
                                     <%-- TODO make this a select --%>
                                     Options:

@@ -65,12 +65,40 @@ yukon.da.point = (function () {
         $('.js-status-control-input').toggle(inputsNeeded);
     };
     
-    var updateStaleData= function () {
+    var updateStaleData = function () {
         var enabled = $('.js-stale-data-enabled').is(':checked');
         
         $('.js-stale-data-input').toggle(enabled);
     };
     
+    var updateFdrDirections = function (translationNumber) {
+        
+        var allProperties = $('[data-fdr-translation="' + translationNumber +'"]');
+        var fdrInterface = allProperties.find('.js-fdr-interface').val();
+        
+        $.ajax(yukon.url('/capcontrol/fdr/' + fdrInterface + '/directions')).done(function (data) {
+            
+            var select = allProperties.find('.js-fdr-direction');
+            select.find('option').prop('disabled', true);
+            data.forEach(function (direction) {
+                select.find('option[value="' + direction + '"]').prop('disabled', false);
+            });
+            
+            if (select.find('option:selected').prop('disabled')) {
+                select.val(data[0]);
+            }
+            
+        });
+        var pointType = $('.js-point-type').val();
+        $.ajax(yukon.url('/capcontrol/fdr/' + fdrInterface + '/translation?point-type=' + pointType))
+        .done(function (data) {
+            
+            var input = allProperties.find('.js-fdr-translation');
+            input.val(data).attr('size', data.length);
+            
+        });
+        
+    };
     
     var mod = {
         
@@ -88,7 +116,13 @@ yukon.da.point = (function () {
             updateStatusControl();
             $('.js-status-control-type').on('change', updateStatusControl);
             updateStaleData();
-            $('.js-stale-data-enabled').on(updateStaleData);
+            $('.js-stale-data-enabled').on('change', updateStaleData);
+            
+            $('.js-fdr-interface').on('change', function (opt) {
+                var elem = $(this);
+                var number = elem.closest('[data-fdr-translation]').data('fdrTranslation');
+                updateFdrDirections(number);
+            });
             
         }
         

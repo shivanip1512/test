@@ -52,11 +52,11 @@ public class FDRTranslation extends DBPersistent {
 
     public FDRTranslation(Integer pointID, String directionType, String interfaceType, String destination, String translation) {
         super();
-        setPointID(pointID);
-        setDirectionType(directionType);
-        setInterfaceType(interfaceType);
-        setTranslation(translation);
-        setDestination(destination);
+        this.pointID = pointID;
+        this.directionType = directionType;
+        this.interfaceType = interfaceType;
+        this.translation = translation;
+        this.destination = destination;
 
     }
 

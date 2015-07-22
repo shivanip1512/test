@@ -38,6 +38,7 @@
 	            <x:panelGrid columns="2">
 					<x:outputLabel for="Archive_Type" value="Archive Data: "/>
 					<x:selectOneMenu id="Archive_Type" value="#{ptEditorForm.pointBase.point.archiveType}"
+                            converter="archiveTypeConverter"
                             disabled="#{!capControlForm.editingAuthorized}"
 							onchange="submit();" valueChangeListener="#{ptEditorForm.archiveTypeChanged}">
 						<f:selectItems value="#{selLists.ptArchiveType}"/>

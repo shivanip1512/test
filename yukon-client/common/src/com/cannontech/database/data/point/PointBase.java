@@ -2,6 +2,7 @@ package com.cannontech.database.data.point;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 
@@ -263,6 +264,10 @@ public class PointBase extends DBPersistent implements CTIDbChange, EditorPanel 
 
     public void setPointFDRVector(Vector<FDRTranslation> newValue) {
         this.pointFDR = newValue;
+    }
+
+    public void setPointFDRTranslations(Collection<FDRTranslation> newValue) {
+        this.pointFDR = new Vector<>(newValue);
     }
 
     public void setPointID(Integer newID) {

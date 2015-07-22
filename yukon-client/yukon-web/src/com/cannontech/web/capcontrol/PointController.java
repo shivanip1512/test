@@ -2,6 +2,8 @@ package com.cannontech.web.capcontrol;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,12 +13,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.common.bulk.model.StatusPointUpdateType;
 import com.cannontech.common.fdr.FdrDirection;
+import com.cannontech.common.fdr.FdrInterfaceOption;
 import com.cannontech.common.fdr.FdrInterfaceType;
+import com.cannontech.common.fdr.FdrOptionType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
@@ -145,6 +150,44 @@ public class PointController {
     
     }
 
+    @RequestMapping("fdr/{type}/directions")
+    public @ResponseBody List<String> fdrDirectionsForInterface(@PathVariable("type") FdrInterfaceType type) {
+        
+        List<String> values =  type.getSupportedDirectionsList().stream().map(new Function<FdrDirection, String> () {
+            
+            @Override
+            public String apply(FdrDirection t) {
+                return t.getValue();
+            }})
+            
+        .collect(Collectors.toList());
+        
+        return values;
+    }
+    
+    @RequestMapping("fdr/{type}/translation")
+    public @ResponseBody String getDefaultTranslation(
+            @PathVariable("type") FdrInterfaceType type, 
+            @RequestParam("point-type") String pointType) {
+        
+        List<FdrInterfaceOption> options = type.getInterfaceOptionsList();
+        
+        String result = "";
+        for (FdrInterfaceOption option : options) {
+            result += (option.getOptionLabel() + ":");
+            if (option.getOptionType() == FdrOptionType.COMBO) {
+                result += option.getOptionValues()[0];
+            } else {
+                result += "(none)";
+            }
+            result += ";";
+        }
+        
+        result += "POINTTYPE:" + pointType + ";";
+        
+        return result;
+    }
+    
     /* These classes are here to prevent type erasure of generics */
     public static class AnalogPointModel extends PointModel<AnalogPoint> {}
     public static class AccumulatorPointModel extends PointModel<AccumulatorPoint> {}

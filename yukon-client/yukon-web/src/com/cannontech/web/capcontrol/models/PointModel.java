@@ -64,9 +64,16 @@ public class PointModel<T extends PointBase> {
         int id = getId();
         PointBase base = getPointBase();
         
+        /* Remove unused translations and fill in the point id on used ones */
+        List<FDRTranslation> newFdrs = new ArrayList<>();
+        
         for (FDRTranslation fdrTranslation : base.getPointFDRList()) {
-            fdrTranslation.setPointID(id);
+            if (!fdrTranslation.getTranslation().trim().isEmpty()) {
+                fdrTranslation.setPointID(id);
+                newFdrs.add(fdrTranslation);
+            }
         }
+        base.setPointFDRTranslations(newFdrs);
         
         if (base instanceof AnalogPoint) {
             AnalogPoint analogPoint = (AnalogPoint) base;

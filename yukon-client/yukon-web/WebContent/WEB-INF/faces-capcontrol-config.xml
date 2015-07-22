@@ -141,4 +141,9 @@
         </navigation-case>
     </navigation-rule>
     
+    <converter>
+        <converter-id>archiveTypeConverter</converter-id>
+        <converter-class>com.cannontech.web.editor.point.ArchiveTypeConverter</converter-class>
+    </converter>
+
 </faces-config>
