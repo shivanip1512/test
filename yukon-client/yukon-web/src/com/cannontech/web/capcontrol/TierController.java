@@ -23,6 +23,8 @@ import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -31,6 +33,7 @@ import com.cannontech.message.capcontrol.model.CommandType;
 import com.cannontech.message.capcontrol.streamable.Area;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.message.capcontrol.streamable.SpecialArea;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.message.capcontrol.streamable.SubStation;
@@ -54,7 +57,8 @@ public class TierController {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private SubstationDao substationDao;
     @Autowired private CapControlWebUtilsService capControlWebUtilsService;
-
+    @Autowired private PaoDao paoDao;
+    
     private static final Logger log = YukonLogManager.getLogger(TierController.class);
 
     @RequestMapping("areas")
@@ -136,18 +140,26 @@ public class TierController {
         LiteYukonUser user = userContext.getYukonUser();
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
         SubStation cachedSubstation = cache.getSubstation(substationId);
+      
         Substation substation = substationDao.findSubstationById(substationId);
         model.addAttribute("substation", substation);
         
         boolean hideReports = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.HIDE_REPORTS, user);
         boolean hideGraphs = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.HIDE_GRAPHS, user);
         model.addAttribute("showAnalysis", !hideReports && !hideGraphs);
-
-        // Name of the area in the breadcrumb, will be the name of the special area if they came from the special areas page.
-        Area area = cache.getArea(cachedSubstation.getParentID());
+        PaoType paoType = paoDao.getYukonPao(cachedSubstation.getParentID()).getPaoIdentifier().getPaoType();
         
-        model.addAttribute("bc_areaName", area.getCcName());
-        model.addAttribute("bc_areaId", area.getCcId());
+        // Name of the area in the breadcrumb, will be the name of the special area if they came from the special areas page.
+        if (PaoType.CAP_CONTROL_SPECIAL_AREA.equals(paoType)) {
+            SpecialArea specialArea = cache.getSpecialArea(cachedSubstation.getParentID());
+            model.addAttribute("bc_areaName", specialArea.getCcName());
+            model.addAttribute("bc_areaId", specialArea.getCcId());
+        } else if (PaoType.CAP_CONTROL_AREA.equals(paoType)) {
+            Area area = cache.getArea(cachedSubstation.getParentID());
+            model.addAttribute("bc_areaName", area.getCcName());
+            model.addAttribute("bc_areaId", area.getCcId());
+        }
+        
         model.addAttribute("substationName", substation.getName());
         model.addAttribute("substationId", substationId);
         model.addAttribute("areaId", cachedSubstation.getParentID());
