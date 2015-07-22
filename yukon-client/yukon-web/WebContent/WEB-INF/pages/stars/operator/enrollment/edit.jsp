@@ -26,7 +26,9 @@
                         <th></th>
                         <th class="deviceLabel"><i:inline key=".deviceLabel"/></th>
                         <th class="relay"><i:inline key=".relay"/></th>
-                        <th class="group"><i:inline key=".group"/></th>
+                        <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyId="${energyCompanyId}">
+                        	<th class="group"><i:inline key=".group"/></th>
+                        </cti:checkEnergyCompanySetting>
                     </tr>
                 </thead>
                 <tfoot></tfoot>
@@ -55,8 +57,9 @@
                                     </c:forEach>
                                 </form:select>
                             </td>
-                            <td>
+                            
                                 <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyId="${energyCompanyId}">
+                                <td>
         							<tags:nameValueContainer2 tableClass="stacked">
                 							<c:if test="${empty loadGroups}">
                     							<i:inline key=".groupNotApplicable"/>
@@ -67,8 +70,9 @@
                         						itemLabel="name" itemValue="paoIdentifier.paoId" disabled="${!enrolled}"/>
                 							</c:if>
        								 </tags:nameValueContainer2>
+       								 </td>
    							 	</cti:checkEnergyCompanySetting>
-                            </td>
+                            
                         </tr>
                     </c:forEach>
                 </tbody>
