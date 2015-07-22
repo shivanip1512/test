@@ -39,7 +39,9 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
         int relay = enrollmentInfo.getRelayNumber();
         /*Shouldn't already be an entry, but this might be a repeat enrollment.  Check for existence*/
         try {
-            
+            LMHardwareControlGroup existingEnrollment =
+                lmHardwareControlGroupDao.findCurrentEnrollmentByInventoryIdAndRelayAndAccountId(inventoryId,
+                    accountId, relay);
             Instant now = new Instant();
 
             // Clear all the opt outs for the enrolled inventory
@@ -49,7 +51,11 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
             	optOutService.cancelOptOut(lastEventIdList, currentUser);
             }
             
-
+            if (existingEnrollment != null) {
+                existingEnrollment.setGroupEnrollStop(now);
+                existingEnrollment.setUserIdSecondAction(currentUser.getUserID());
+                lmHardwareControlGroupDao.update(existingEnrollment);
+            }
             /*Do the start*/
             LMHardwareControlGroup controlInformation = new LMHardwareControlGroup(inventoryId, loadGroupId, accountId, LMHardwareControlGroup.ENROLLMENT_ENTRY, relay, programId, currentUser.getUserID());
             controlInformation.setGroupEnrollStart(now);
@@ -216,38 +222,10 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
         return inventoryIds;
     }
     
-    
-    /** Checks to see if there are any other enrollments that use the same program that are not the same piece of hardware
-     * and updates the address group for those enrollment as well.
-     * @throws Exception 
-     */
-    private void adjustLoadGroupsForExistingEnrollments(int inventoryId, int loadGroupId, int accountId, int programId, LiteYukonUser currentUser) throws Exception {
-
-        List<LMHardwareControlGroup> controlInformationList = 
-            lmHardwareControlGroupDao.getCurrentEnrollmentByProgramIdAndAccountId(programId, accountId); 
-
-        for(LMHardwareControlGroup existingEnrollment : controlInformationList) {
-            if (inventoryId != existingEnrollment.getInventoryId() && existingEnrollment.getLmGroupId() != loadGroupId) {
-                LMHardwareControlGroup newEnrollment = existingEnrollment.clone();
-                endEnrollment(existingEnrollment, currentUser);
-                newEnrollment.setControlEntryId(null);
-                newEnrollment.setLmGroupId(loadGroupId);
-                startEnrollment(newEnrollment, currentUser);
-            }
-        }
-    }
-    
     private void endEnrollment(LMHardwareControlGroup existingEnrollment, LiteYukonUser currentUser){
         existingEnrollment.setGroupEnrollStop(new Instant());
 		existingEnrollment.setUserIdSecondAction(currentUser.getUserID());
 		lmHardwareControlGroupDao.update(existingEnrollment);
-    }
-    
-    private void startEnrollment(LMHardwareControlGroup newEnrollment, LiteYukonUser currentUser){
-        newEnrollment.setGroupEnrollStart(new Instant());
-    	newEnrollment.setUserIdFirstAction(currentUser.getUserID());
-		lmHardwareControlGroupDao.add(newEnrollment);
-		
     }
     
     public void setLmHardwareControlGroupDao(

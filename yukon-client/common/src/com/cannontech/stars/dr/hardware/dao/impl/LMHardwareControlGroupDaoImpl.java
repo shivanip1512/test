@@ -820,4 +820,23 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         List<LMHardwareControlGroup> enrollments = yukonJdbcTemplate.query(sql, createRowMapper());
         return enrollments;
     }
+    
+    @Override
+    public LMHardwareControlGroup findCurrentEnrollmentByInventoryIdAndRelayAndAccountId(int inventoryId,
+            int accountId, int relay) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.appendFragment(selectSql);
+        sql.append("WHERE InventoryId").eq(inventoryId);
+        sql.append("AND Relay").eq(relay);
+        sql.append("AND AccountId").eq(accountId);
+        sql.append("AND GroupEnrollStop IS NULL");
+        sql.append("AND NOT GroupEnrollStart IS NULL");
+
+        try {
+            return yukonJdbcTemplate.queryForObject(sql, rowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
 }

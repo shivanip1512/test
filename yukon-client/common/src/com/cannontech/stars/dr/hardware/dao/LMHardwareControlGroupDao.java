@@ -139,4 +139,10 @@ public interface LMHardwareControlGroupDao {
      * also includes active opt outs that would intersect with the intersection.
      */
     public List<LMHardwareControlGroup> getIntersectingOptOuts(int accountId, int inventoryId, int loadGroupId, OpenInterval optOutInterval);
+
+    /**
+     * This method retrieves a current enrollment for a given InventoryId AccountId and Relay
+     */
+    LMHardwareControlGroup findCurrentEnrollmentByInventoryIdAndRelayAndAccountId(int inventoryId, int relay,
+            int accountId);
 }
