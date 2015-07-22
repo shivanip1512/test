@@ -196,6 +196,8 @@
     <entry key="yukon.common.setting.MSP_PAONAME_EXTENSION.description">The extension name of the field appended to PaoName Alias. Leave this value blank to ignore the use of extensions.</entry>
     <entry key="yukon.common.setting.MSP_RFN_PING_FORCE_CHANNEL_READ">Force Read for OD Ping (RFN Only)</entry>
     <entry key="yukon.common.setting.MSP_RFN_PING_FORCE_CHANNEL_READ.description">Force an attribute read for RFN meter types, otherwise latest archived outage status will be used.</entry>
+    <entry key="yukon.common.setting.MSP_DISABLE_DISCONNECT_STATUS">Disabled Disconnect Status</entry>
+    <entry key="yukon.common.setting.MSP_DISABLE_DISCONNECT_STATUS.description">When true, disable the meters in initiateDisconnectStatus request or enable the meters in cancelDisconnectStatus request.</entry>
     <entry key="yukon.common.setting.DEFAULT_ROUNDING_MODE">Default Rounding Mode</entry>
     <entry key="yukon.common.setting.DEFAULT_ROUNDING_MODE.description">Rounding Mode used when formatting value data in billing formats. Available placeholders: HALF_EVEN, CEILING, FLOOR, UP, DOWN, HALF_DOWN, HALF_UP</entry>
     <entry key="yukon.common.setting.SCHEDULE_PARAMETERS_AVAILABLE_FILE_EXTENSIONS">Available File Extensions</entry>

@@ -72,7 +72,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     MSP_METER_LOOKUP_FIELD(GlobalSettingSubCategory.MULTISPEAK, InputTypeFactory.enumType(MultispeakMeterLookupFieldEnum.class), MultispeakMeterLookupFieldEnum.AUTO_METER_NUMBER_FIRST),
     MSP_EXCLUDE_DISABLED_METERS(GlobalSettingSubCategory.MULTISPEAK, booleanType(), false),
     MSP_RFN_PING_FORCE_CHANNEL_READ(GlobalSettingSubCategory.MULTISPEAK, booleanType(), false),      //YUK-13818
-
+    MSP_DISABLE_DISCONNECT_STATUS(GlobalSettingSubCategory.MULTISPEAK, booleanType(), false),
     // OpenADR
     OADR_REQUEST_INTERVAL(GlobalSettingSubCategory.OPEN_ADR, integerType(), 60000),
     OADR_VEN_ID(GlobalSettingSubCategory.OPEN_ADR, stringType(), "VEN"),
