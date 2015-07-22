@@ -100,7 +100,7 @@ public class GatewaySettingsController {
         }
         
         try {
-            RfnDevice gateway = rfnGatewayService.createGateway(settings);
+            RfnDevice gateway = rfnGatewayService.createGateway(settings, userContext.getYukonUser());
             log.info("Gateway Created: " + gateway);
             gatewayEventLogService.createdGateway(userContext.getYukonUser(), gateway.getName(), 
                                                   gateway.getRfnIdentifier().getSensorSerialNumber(), 
@@ -192,8 +192,8 @@ public class GatewaySettingsController {
             
             gateway.setName(settings.getName());
             if (settings.getLatitude() != null) {
-                gateway.setLocation(PaoLocation.of(gateway.getPaoIdentifier(), settings.getLatitude(), 
-                        settings.getLongitude()));
+                gateway.setLocation(new PaoLocation(gateway.getPaoIdentifier(), settings.getLatitude(),
+                    settings.getLongitude()));
             }
             
             RfnGatewayData.Builder builder = new RfnGatewayData.Builder();
@@ -206,7 +206,7 @@ public class GatewaySettingsController {
             
             gateway.setData(data);
             
-            GatewayUpdateResult updateResult = rfnGatewayService.updateGateway(gateway);
+            GatewayUpdateResult updateResult = rfnGatewayService.updateGateway(gateway, userContext.getYukonUser());
             
             if (updateResult == GatewayUpdateResult.SUCCESSFUL) {
                 log.info("Gateway updated: " + gateway);
@@ -319,9 +319,9 @@ public class GatewaySettingsController {
     
     /** Set location. */ 
     @RequestMapping("/gateways/{id}/location")
-    public String location(HttpServletResponse resp, ModelMap model, FlashScope flash,
-            @PathVariable int id, @ModelAttribute Location location, BindingResult result) 
-                    throws JsonGenerationException, JsonMappingException, IOException {
+    public String location(HttpServletResponse resp, ModelMap model, YukonUserContext userContext, FlashScope flash,
+            @PathVariable int id, @ModelAttribute Location location, BindingResult result)
+            throws JsonGenerationException, JsonMappingException, IOException {
         
         GatewaySettingsValidator.validateLocation(location.getLatitude(), location.getLongitude(), result);
         
@@ -330,7 +330,11 @@ public class GatewaySettingsController {
             return "gateways/location.jsp";
         }
         LiteYukonPAObject pao = cache.getAllPaosMap().get(id);
-        paoLocationDao.save(PaoLocation.of(pao.getPaoIdentifier(), location.getLatitude(), location.getLongitude()));
+        PaoLocation paoLocation = new PaoLocation(pao.getPaoIdentifier(), location.getLatitude(), location.getLongitude());
+        paoLocationDao.save(new PaoLocation(pao.getPaoIdentifier(), location.getLatitude(), location.getLongitude()));
+        gatewayEventLogService.locationUpdated(userContext.getYukonUser(), pao.getPaoName(), pao.getPaoIdentifier(),
+            String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()),
+            paoLocation.getOrigin().name());
         
         // Success
         model.clear();

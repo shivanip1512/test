@@ -35,6 +35,8 @@ import com.cannontech.amr.rfn.model.RfnInvalidValues;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
+import com.cannontech.common.rfn.message.location.LocationResponse;
+import com.cannontech.common.rfn.message.location.Origin;
 import com.cannontech.da.rfn.message.archive.RfDaArchiveRequest;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.service.RfnEventTestingService;
@@ -56,6 +58,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     private static final String rfDaArchiveRequestQueueName = "yukon.qr.obj.da.rfn.RfDaArchiveRequest";
     private static final String eventArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.EventArchiveRequest";
     private static final String alarmArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.AlarmArchiveRequest";
+    private static final String locationResponseQueueName = "yukon.qr.obj.amr.rfn.LocationResponse";
     
     private static final Logger log = YukonLogManager.getLogger(RfnEventTestingServiceImpl.class);
     
@@ -255,6 +258,22 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         
         // Put request on queue
         sendArchiveRequest(lcrReadingArchiveRequestQueueName, archiveRequest);
+    }
+    
+    @Override
+    public void sendLocationResponse(int serialFrom, int serialTo, String manufacturer, String model, double latitude, double longitude) {
+     
+        for (int i = serialFrom; i <= serialTo; i++) {
+            LocationResponse locationResponse = new LocationResponse();
+            RfnIdentifier rfnIdentifier = new RfnIdentifier(Integer.toString(i), manufacturer, model);
+            locationResponse.setRfnIdentifier(rfnIdentifier);
+            locationResponse.setLatitude(latitude);
+            locationResponse.setLongitude(longitude);
+            locationResponse.setLocationId(99 + i);
+            locationResponse.setOrigin(Origin.RF_NODE);
+            locationResponse.setLastChangedDate(new Instant());
+            sendArchiveRequest(locationResponseQueueName, locationResponse);
+        }
     }
     
     @Override

@@ -223,6 +223,11 @@ public class NmIntegrationController {
         return "rfn/viewMeterReadArchive.jsp";
     }
     
+    @RequestMapping("viewLocationArchiveRequest")
+    public String viewLocationArchiveRequest() {
+        return "rfn/viewLocationArchive.jsp";
+    }
+    
     @RequestMapping("viewEventArchiveRequest")
     public String viewEventArchiveRequest(ModelMap model) {
         return setupEventAlarmAttributes(model, new RfnTestEvent());
@@ -312,6 +317,12 @@ public class NmIntegrationController {
     public String sendLcrArchive(int serialFrom, int serialTo, String manufacturer, String model) {
         rfnEventTestingService.sendLcrArchiveRequest(serialFrom, serialTo, manufacturer, model);
         return "redirect:viewLcrArchiveRequest";
+    }
+    
+    @RequestMapping("sendLocationArchiveRequest")
+    public String sendLocationArchiveRequest(int serialFrom, int serialTo, String manufacturer, String model, String latitude, String longitude) { 
+        rfnEventTestingService.sendLocationResponse(serialFrom, serialTo, manufacturer, model, Double.parseDouble(latitude), Double.parseDouble(longitude));
+        return "redirect:viewLocationArchiveRequest";
     }
     
     @RequestMapping("sendEvent")

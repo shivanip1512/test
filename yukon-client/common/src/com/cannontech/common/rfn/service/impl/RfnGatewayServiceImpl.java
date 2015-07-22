@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.dao.PaoLocationDao;
@@ -54,6 +55,7 @@ import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Sets;
 
@@ -67,6 +69,8 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     private static final String gatewayUpdateRequestQueue = "yukon.qr.obj.common.rfn.GatewayUpdateRequest";
     private static final String gatewayActionRequestQueue = "yukon.qr.obj.common.rfn.GatewayActionRequest";
     
+    @Autowired private GatewayEventLogService gatewayEventLogService;
+    
     // Autowired in constructor
     private RfnDeviceDao rfnDeviceDao;
     private DeviceDao deviceDao;
@@ -76,7 +80,8 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     private ConfigurationSource configSource;
     private RfnDeviceCreationService creationService;
     private PaoLocationDao paoLocationDao;
-    
+
+       
     // Created in post-construct
     private RequestReplyTemplate<GatewayUpdateResponse> updateRequestTemplate;
     private RequestReplyTemplate<GatewayActionResponse> actionRequestTemplate;
@@ -90,7 +95,8 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
                                  PaoLocationDao paoLocationDao,
                                  RfnDeviceDao rfnDeviceDao,
                                  DeviceDao deviceDao,
-                                 IDatabaseCache serverDatabaseCache) {
+                                 IDatabaseCache serverDatabaseCache,
+                                 GatewayEventLogService gatewayEventLogService) {
         
         this.dataCache = dataCache;
         this.connectionFactory = connectionFactory;
@@ -100,6 +106,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         this.rfnDeviceDao = rfnDeviceDao;
         this.deviceDao = deviceDao;
         dbCache = serverDatabaseCache;
+        this.gatewayEventLogService = gatewayEventLogService;
     }
     
     @PostConstruct
@@ -205,7 +212,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     }
     
     @Override
-    public RfnDevice createGateway(GatewaySettings settings) throws NmCommunicationException, GatewayUpdateException {
+    public RfnDevice createGateway(GatewaySettings settings, LiteYukonUser user) throws NmCommunicationException, GatewayUpdateException {
         
         // Send the request
         GatewayCreateRequest request = buildGatewayCreateRequest(settings);
@@ -236,11 +243,11 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             Double latitude = settings.getLatitude();
             Double longitude = settings.getLongitude();
             if (latitude != null && longitude != null) {
-                PaoLocation location = new PaoLocation();
-                location.setPaoIdentifier(gatewayIdentifier);
-                location.setLatitude(latitude);
-                location.setLongitude(longitude);
+                PaoLocation location = new PaoLocation(gatewayIdentifier, latitude, longitude);
                 paoLocationDao.save(location);
+                gatewayEventLogService.locationUpdated(user, gateway.getName(), gateway.getPaoIdentifier(),
+                    String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()),
+                    location.getOrigin().name());
             }
             
             return gateway;
@@ -264,7 +271,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     }
     
     @Override
-    public GatewayUpdateResult updateGateway(RfnGateway gateway) throws NmCommunicationException {
+    public GatewayUpdateResult updateGateway(RfnGateway gateway, LiteYukonUser user) throws NmCommunicationException {
         
         // Determine if change is local Yukon DB change (i.e. name) or remote Network Manager change.
         PaoIdentifier paoIdentifier = gateway.getPaoIdentifier();
@@ -334,8 +341,12 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         }
         if (gateway.getLocation() != null && !gateway.getLocation().equals(existingGateway.getLocation())) {
             paoLocationDao.save(gateway.getLocation());
+            PaoLocation location = gateway.getLocation();
+            gatewayEventLogService.locationUpdated(user, gateway.getName(), gateway.getPaoIdentifier(),
+                String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()),
+                location.getOrigin().name());
         }
-        
+
         return result;
     }
     

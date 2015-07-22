@@ -205,6 +205,8 @@
     <entry key="yukon.common.events.system.rfn.createdNewDeviceAutomatically">New meter created from {2} for {1}; Id:{3}</entry>
     <entry key="yukon.common.events.system.rfn.createdNewDeviceAutomatically.2">Template Name</entry>
     
+    <entry key="yukon.common.events.system.rfn.locationUpdated">Location for device={2} identifier={1} id={3} updated with latitude={4}, longitude={5}, origin={6}.</entry>
+    
     <entry key="yukon.common.events.system.rfn.receivedDataForUnkownDeviceTemplate">Unable to create meter because template {1} does not exist.</entry>
     <entry key="yukon.common.events.system.rfn.receivedDataForUnkownDeviceTemplate.1">Template Name</entry>
     
@@ -230,6 +232,7 @@
     <entry key="yukon.common.events.system.rfn.gateway.sentCertificateUpdate.2">Package Name</entry>
     <entry key="yukon.common.events.system.rfn.gateway.sentCertificateUpdate.3">Certificate Identifier</entry>
     <entry key="yukon.common.events.system.rfn.gateway.sentCertificateUpdate.7">Gateways Affected</entry>
+    <entry key="yukon.common.events.system.rfn.gateway.locationUpdated">Location for {2} id={3} updated with latitude={4}, longitude={5}, origin={6} by {1}.</entry>
     
 	<!-- CommandSchedule -->
     <entry key="yukon.common.events.system.commandSchedule.scheduleCreated">ScheduleId {7} created by {1}.</entry>
@@ -274,6 +277,7 @@
     <entry key="yukon.common.events.hardware.hardwareDeletionAttempted">User {1} attempted to delete device {2}. Source: {3}</entry>
     <entry key="yukon.common.events.hardware.hardwareRemovalAttempted">User {1} attempted to remove device {2} from account {3}. Source: {4}.</entry>
     <entry key="yukon.common.events.hardware.hardwareUpdateAttempted">User {1} attempted to delete device {3} from account {2}. Source: {4}</entry>
+    <entry key="yukon.common.events.hardware.locationDeleted">User {1} deleted location for device {2} id={3}.</entry>
     
     <!-- Hardware Service Level -->
     <entry key="yukon.common.events.hardware.hardwareCreated">Device {2} created by {1}.</entry>
@@ -294,7 +298,11 @@
     <entry key="yukon.common.events.hardware.config.hardwareConfigUpdated">Configuration updated for device {2} on account {3} by {1}.</entry>
     <entry key="yukon.common.events.hardware.config.hardwareDisabled">Device {2} disabled on account {3} by {1}.</entry>
     <entry key="yukon.common.events.hardware.config.hardwareEnabled">Device {2} enabled on account {3} by {1}.</entry>
-
+          
+    <!-- Hardware import -->
+    <entry key="yukon.common.events.hardware.import.importIntitated">Bulk Import initiated for ImportType={2} by {1}.</entry>
+    <entry key="yukon.common.events.hardware.import.locationUpdated">Location for id={1} updated with latitude={2}, longitude={3}, origin={4}</entry>
+   
 <!-- Demand Response -->
     <!-- Scenario -->
     <entry key="yukon.common.events.dr.scenario.threeTierScenarioStarted">Scenario {2} started by {1}.</entry>

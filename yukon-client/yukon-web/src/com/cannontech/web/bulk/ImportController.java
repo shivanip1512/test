@@ -31,8 +31,10 @@ import com.cannontech.common.bulk.service.BulkImportMethod;
 import com.cannontech.common.bulk.service.BulkImportService;
 import com.cannontech.common.bulk.service.BulkImportType;
 import com.cannontech.common.bulk.service.ParsedBulkImportFileInfo;
+import com.cannontech.common.events.loggers.BulkImportEventLogService;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.util.BulkFileUpload;
 import com.cannontech.web.bulk.util.BulkFileUploadUtils;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -44,6 +46,7 @@ public class ImportController {
 
     @Autowired private BulkImportService bulkImportService;
     @Autowired private List<BulkImportMethod> importMethods;
+    @Autowired private BulkImportEventLogService bulkImportEventLogService;
     @Resource(name="recentResultsCache") private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
     
     private Map<String, BulkImportFileInfo> bulkImportFileInfoMap = new ConcurrentHashMap<>();
@@ -145,7 +148,7 @@ public class ImportController {
     
     // DO IMPORT
     @RequestMapping("parse")
-    public String parse(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException, IOException {
+    public String parse(ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletRequestBindingException, IOException {
         
         BulkImportType bulkImportType = BulkImportType.valueOf(ServletRequestUtils.getStringParameter(request, "bulkImportType"));
         
@@ -154,6 +157,7 @@ public class ImportController {
         BulkImportFileInfo bulkImportFileInfo = bulkImportFileInfoMap.get(fileInfoId);
         ParsedBulkImportFileInfo parsedResult = 
                 bulkImportService.createParsedBulkImportFileInfo(bulkImportFileInfo, bulkImportType);
+        bulkImportEventLogService.importIntitated(userContext.getYukonUser(), bulkImportType.name());
         String resultsId = bulkImportService.startBulkImport(parsedResult);
         
         model.addAttribute("resultsId", resultsId);

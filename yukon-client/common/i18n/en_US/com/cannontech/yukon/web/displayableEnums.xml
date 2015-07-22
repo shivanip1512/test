@@ -148,7 +148,7 @@
     <entry key="yukon.common.setting.subcategory.GRAPHING.description">Graph directory, interval settings</entry>
     <entry key="yukon.common.setting.subcategory.DR">Demand Response</entry>
     <entry key="yukon.common.setting.subcategory.DR.description">Opt outs, importing, switch command settings</entry>
-    <entry key="yukon.common.setting.subcategory.AMI">Metering</entry>
+    <entry key="yukon.common.setting.subcategory.AMI">Endpoint</entry>
     <entry key="yukon.common.setting.subcategory.AMI.description">Display templates, importer settings</entry>
     <entry key="yukon.common.setting.subcategory.YUKON_SERVICES">Yukon Services</entry>
     <entry key="yukon.common.setting.subcategory.YUKON_SERVICES.description">Yukon services ip address, ports</entry>
@@ -359,7 +359,9 @@
     <entry key="yukon.common.setting.ECOBEE_SERVER_URL.description">URL to connect to the ecobee service.</entry>
     <entry key="yukon.common.setting.SCHEDULED_REQUEST_MAX_RUN_HOURS">Scheduled Requests Timeout</entry>
     <entry key="yukon.common.setting.SCHEDULED_REQUEST_MAX_RUN_HOURS.description">The maximum number of hours a scheduled request may run before automatically being cancelled.</entry>
-
+    <entry key="yukon.common.setting.PRESERVE_ENDPOINT_LOCATION">Preserve Endpoint Location</entry>
+    <entry key="yukon.common.setting.PRESERVE_ENDPOINT_LOCATION.description">When true, location coordinates are retained following remove, disable, or return to warehouse action. Otherwise they are deleted</entry>
+    
     <entry key="yukon.common.energyCompanySetting.ADMIN_EMAIL_ADDRESS">Admin Email Address</entry>
     <entry key="yukon.common.energyCompanySetting.ADMIN_EMAIL_ADDRESS.description">Sender address of emails sent on behalf of energy company, e.g. control odds and opt out notification emails.</entry>
     <entry key="yukon.common.energyCompanySetting.ACCOUNT_NUMBER_LENGTH">Account Number Length</entry>

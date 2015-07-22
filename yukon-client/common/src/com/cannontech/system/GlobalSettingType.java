@@ -135,6 +135,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     DEVICE_DISPLAY_TEMPLATE(GlobalSettingSubCategory.AMI, InputTypeFactory.enumType(MeterDisplayFieldEnum.class), MeterDisplayFieldEnum.DEVICE_NAME),
     // This may eventually be a "Device" setting, just just "AMR", This is to disable "route lookup" during the OLD bulk importer process; reduces comms
     BULK_IMPORTER_COMMUNICATIONS_ENABLED(GlobalSettingSubCategory.AMI, booleanType(), true),
+    PRESERVE_ENDPOINT_LOCATION(GlobalSettingSubCategory.AMI, booleanType(), true),
 
     // Misc.
     SYSTEM_TIMEZONE(GlobalSettingSubCategory.MISC, stringType(), null),

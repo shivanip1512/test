@@ -21,9 +21,10 @@ public interface PaoLocationDao {
     /** Saves the location to the database. */
     void save(PaoLocation location);
     
-    /** Saves all locations to the database. */
-    void saveAll(Iterable<PaoLocation> locations);
-    
     List<PaoLocation> getAllLocations();
 
+    /**
+     * Deletes location
+     */
+    void delete(int paoId);
 }

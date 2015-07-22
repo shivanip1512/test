@@ -3,6 +3,7 @@ package com.cannontech.common.events.loggers;
 import com.cannontech.common.events.Arg;
 import com.cannontech.common.events.YukonEventLog;
 import com.cannontech.common.events.model.EventSource;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -70,6 +71,9 @@ public interface HardwareEventLogService {
                                                    @Arg(ArgEnum.accountNumber) String accountNumber,
                                                    @Arg(ArgEnum.serialNumber) String serialNumber,
                                                    @Arg(ArgEnum.eventSource) EventSource source);
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="hardware")
+    public void locationDeleted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+            @Arg(ArgEnum.deviceLabel) String deviceLabel, @Arg(ArgEnum.paoId) PaoIdentifier paoIdentifier);
 
     // Hardware Service Level
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="hardware")

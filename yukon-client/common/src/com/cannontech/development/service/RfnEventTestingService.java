@@ -25,4 +25,7 @@ public interface RfnEventTestingService {
     void sendLcrArchiveRequest(int serialFrom, int serialTo, String manufacturer, String model);
     public int sendLcrReadArchive(int serialFrom, int serialTo, int days, DRReport drReport) throws IOException;
     void calculationStressTest();
+
+    void sendLocationResponse(int serialFrom, int serialTo, String manufacturer, String model, double latitude,
+            double longitude);
 }

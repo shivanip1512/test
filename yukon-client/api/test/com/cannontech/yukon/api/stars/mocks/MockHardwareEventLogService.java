@@ -5,6 +5,7 @@ import com.cannontech.common.events.YukonEventLog;
 import com.cannontech.common.events.loggers.ArgEnum;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.events.model.EventSource;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -125,6 +126,13 @@ public class MockHardwareEventLogService implements HardwareEventLogService {
                                     @Arg(ArgEnum.serialNumber) String oldSerialNumber,
                                     @Arg(ArgEnum.serialNumber) String newSerialNumber) {
     }
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "hardware")
+    @Override
+    public void locationDeleted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+            @Arg(ArgEnum.deviceLabel) String deviceLabel,
+            @Arg(ArgEnum.paoId) PaoIdentifier paoIdentifier) {
+    }
 
     @Override
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "hardware.config")
@@ -170,5 +178,5 @@ public class MockHardwareEventLogService implements HardwareEventLogService {
                                 @Arg(ArgEnum.serialNumber) String serialNumber,
                                 @Arg(ArgEnum.accountNumber) String accountNumber) {
     }
-
+    
 }

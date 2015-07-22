@@ -12,6 +12,7 @@ import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
  * Handles most work relating to RFN gateways.
@@ -68,8 +69,8 @@ public interface RfnGatewayService {
      * @throws NmCommunicationException if there is a communication error between Yukon and Network Manager.
      * @throws GatewayUpdateException if gateway creation failed in Network Manager.
      */
-    RfnDevice createGateway(GatewaySettings settings) 
-            throws NmCommunicationException, GatewayUpdateException;
+    RfnDevice createGateway(GatewaySettings settings, LiteYukonUser user) throws NmCommunicationException,
+            GatewayUpdateException;
     
     /**
      * Update the gateway. If the name or location are updated, they will be stored in the Yukon
@@ -81,7 +82,7 @@ public interface RfnGatewayService {
      * @throws NmCommunicationException if there is a communication error between Yukon
      *             and Network Manager.
      */
-    GatewayUpdateResult updateGateway(RfnGateway gateway) throws NmCommunicationException;
+    GatewayUpdateResult updateGateway(RfnGateway gateway, LiteYukonUser user) throws NmCommunicationException;
     
     /**
      * Delete the gateway. This will attempt to delete the gateway in Network Manager as well as Yukon.
