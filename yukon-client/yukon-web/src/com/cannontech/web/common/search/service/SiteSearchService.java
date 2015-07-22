@@ -1,6 +1,7 @@
 package com.cannontech.web.common.search.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.user.YukonUserContext;
@@ -37,6 +38,6 @@ public interface SiteSearchService {
      * {@link #sanitizeQuery(String)} so it is not necessary to call it as with
      * {@link #search(String, int, int, YukonUserContext)}.
      */
-    List<String> autocomplete(String query, YukonUserContext userContext);
+    List<Map<String, Object>> autocomplete(String query, YukonUserContext userContext);
     
 }

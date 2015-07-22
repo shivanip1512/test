@@ -2,8 +2,10 @@ package com.cannontech.web.common.search.service.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
@@ -36,9 +38,11 @@ import com.cannontech.web.common.search.result.Page;
 import com.cannontech.web.common.search.service.SiteSearchService;
 import com.cannontech.web.search.lucene.TopDocsCallbackHandler;
 import com.cannontech.web.search.lucene.YukonObjectSearchAnalyzer;
+import com.cannontech.web.search.lucene.index.PageType;
 import com.cannontech.web.search.lucene.index.SearchTemplate;
 import com.cannontech.web.search.lucene.index.SiteSearchIndexManager;
 import com.cannontech.web.search.lucene.index.site.DocumentBuilder;
+import com.cannontech.web.support.SiteMapPage;
 
 @Component
 public class SiteSearchServiceImpl implements SiteSearchService {
@@ -48,7 +52,7 @@ public class SiteSearchServiceImpl implements SiteSearchService {
 
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private SiteSearchIndexManager siteSearchIndexManager;
-    @Autowired private RolePropertyDao rolePropertyDao;;
+    @Autowired private RolePropertyDao rolePropertyDao;
 
 
     @Override
@@ -223,7 +227,7 @@ public class SiteSearchServiceImpl implements SiteSearchService {
      * results into the intoResults parameter.
      */
     private boolean autocompleteOn(final String fieldName, String queryString,
-            final LinkedHashSet<String> intoResults, final int maxResults, YukonUserContext userContext) {
+            final LinkedHashSet<Map<String, Object>> intoResults, final int maxResults, YukonUserContext userContext) {
         
         if (log.isTraceEnabled()) {
             log.trace("autocompleteOn(" + fieldName + ", " + queryString + ", " + intoResults + ", "
@@ -256,7 +260,23 @@ public class SiteSearchServiceImpl implements SiteSearchService {
                     Document document = indexSearcher.doc(docId);
                     
                     if (siteSearchIndexManager.isAllowedToView(document, user)) {
-                        intoResults.add(document.get(fieldName));
+                        
+                        Map<String, Object> result = new HashMap<>();
+                        
+                        result.put("name", document.get(fieldName));
+                        switch (PageType.valueOf(document.get("pageType"))) {
+                        case LEGACY:
+                        case USER_PAGE:
+                            result.put("link", document.get("path"));
+                            break;
+                        case SITE_MAP:
+                            String[] pageKeyParts = document.get("pageKey").split(":");
+                            SiteMapPage page = SiteMapPage.valueOf(pageKeyParts[1]);
+                            result.put("link", page.getLink());
+                            break;
+                        }
+                        
+                        intoResults.add(result);
                         foundOne = true;
                     } else {
                         numResultsFiltered.incrementAndGet();
@@ -283,14 +303,14 @@ public class SiteSearchServiceImpl implements SiteSearchService {
     }
     
     @Override
-    public List<String> autocomplete(String query, YukonUserContext userContext) {
+    public List<Map<String, Object>> autocomplete(String query, YukonUserContext userContext) {
         
         query = sanitizeQuery(query);
         
         if (log.isDebugEnabled()) log.debug("autocompleting [" + query + "]");
         
         int maxResults = 10;
-        LinkedHashSet<String> results = new LinkedHashSet<>();
+        LinkedHashSet<Map<String, Object>> results = new LinkedHashSet<>();
         
         // TODO:  Consider combine all the autocompleteOn calls into a single Lucene query with weighting.
         for (int index = 0; index < DocumentBuilder.MAX_PAGE_ARGS && results.size() < maxResults; index++) {
@@ -304,7 +324,7 @@ public class SiteSearchServiceImpl implements SiteSearchService {
             log.debug("found " + results);
         }
         
-        return new ArrayList<String>(results);
+        return new ArrayList<Map<String, Object>>(results);
     }
     
 }

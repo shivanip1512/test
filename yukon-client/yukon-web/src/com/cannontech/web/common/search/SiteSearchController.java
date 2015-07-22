@@ -1,6 +1,7 @@
 package com.cannontech.web.common.search;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +32,9 @@ public class SiteSearchController {
     @Autowired private SiteSearchService siteSearchService;
 
     @RequestMapping(value="/search/autocomplete.json", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody List<String> autoComplete(@RequestParam(value="q") String query,
+    public @ResponseBody List<Map<String, Object>> autoComplete(@RequestParam(value="q") String query,
             YukonUserContext userContext) {
-        List<String> results = siteSearchService.autocomplete(query, userContext);
+        List<Map<String,Object>> results = siteSearchService.autocomplete(query, userContext);
         return results;
     }
 

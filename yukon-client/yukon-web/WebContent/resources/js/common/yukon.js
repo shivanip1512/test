@@ -277,15 +277,15 @@ yukon.ui = (function () {
                 }).done(function (data) {
                     response($.map(data, function (item) {
                         return {
-                            label: item,
-                            value: item
+                            label: item.name,
+                            value: item.name,
+                            link: item.link
                         };
                     }));
                 });
             },
             select: function (event, ui) {
-                field.val(ui.item.value);
-                field.parents('.yukon-search-form').submit();
+                window.location = yukon.url(ui.item.link);
             }
         });
     },
@@ -1165,7 +1165,7 @@ yukon.ui = (function () {
             if (action === 'hide') {
                 inputs.each(function (idx, input) { $(input).toggleClass('dn', !enable); });
             } else {
-            inputs.each(function (idx, input) { $(input).prop('disabled', !enable); });
+                inputs.each(function (idx, input) { $(input).prop('disabled', !enable); });
             }
                 
         },
