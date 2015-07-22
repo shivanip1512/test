@@ -2999,11 +2999,13 @@ struct single_error_validator : mctExecute_helper
 // These commands are errors and should only return a single error. See YUK-5059
 BOOST_FIXTURE_TEST_SUITE(test_single_error_executor, single_error_validator)
 //{  Brace matching for BOOST_FIXTURE_TEST_SUITE
+    /*
     BOOST_AUTO_TEST_CASE(test_dev_mct410_single_error_executor01)
     {
         CtiCommandParser parse("getvalue lp channel 1 02/02/2010 01/01/2010");
         mct410.beginExecuteRequest(&request, parse, vgList, retList, outList);
     }
+    */
     BOOST_AUTO_TEST_CASE(test_dev_mct410_single_error_executor02)
     {
         CtiCommandParser parse("control disconnect");
@@ -3945,14 +3947,14 @@ BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
     }
     BOOST_AUTO_TEST_CASE(test_getOperation_66)
     {
-        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_LongLoadProfile, BSt));
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_LongLoadProfileStorage, BSt));
         BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Write);
         BOOST_CHECK_EQUAL(BSt.Function, 0x04);
         BOOST_CHECK_EQUAL(BSt.Length,   5);
     }
     BOOST_AUTO_TEST_CASE(test_getOperation_67)
     {
-        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_LongLoadProfile, BSt));
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_LongLoadProfileStorage, BSt));
         BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
         BOOST_CHECK_EQUAL(BSt.Function, 0x9d);
         BOOST_CHECK_EQUAL(BSt.Length,   8);

@@ -482,8 +482,8 @@ Mct410Device::CommandSet Mct410Device::initCommandStore()
                                                                         EmetconProtocol::IO_Function_Read,  0,                              7));
 
     //******************************** Config Related starts here *************************
-    cs.insert(CommandStore(EmetconProtocol::PutConfig_LongLoadProfile,  EmetconProtocol::IO_Function_Write, FuncWrite_LLPStoragePos,        FuncWrite_LLPStorageLen));
-    cs.insert(CommandStore(EmetconProtocol::GetConfig_LongLoadProfile,  EmetconProtocol::IO_Function_Read,  FuncRead_LLPStatusPos,          FuncRead_LLPStatusLen));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_LongLoadProfileStorage,  EmetconProtocol::IO_Function_Write, FuncWrite_LLPStoragePos,        FuncWrite_LLPStorageLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_LongLoadProfileStorage,  EmetconProtocol::IO_Function_Read,  FuncRead_LLPStatusPos,          FuncRead_LLPStatusLen));
 
     cs.insert(CommandStore(EmetconProtocol::PutConfig_VThreshold,       EmetconProtocol::IO_Write,          Memory_OverVThresholdPos,       Memory_OverVThresholdLen +
                                                                                                                             Memory_UnderVThresholdLen));
@@ -839,7 +839,7 @@ Mct410Device::DecodeMapping Mct410Device::initDecodeLookup()
         (EP::GetConfig_Freeze,                  &Self::decodeGetConfigFreeze)
         (EP::GetConfig_Intervals,               &Self::decodeGetConfigIntervals)
         (EP::GetConfig_LoadProfileExistingPeak, &Self::decodeGetConfigLoadProfileExistingPeak)
-        (EP::GetConfig_LongLoadProfile,         &Self::decodeGetConfigLongLoadProfileStorageDays)
+        (EP::GetConfig_LongLoadProfileStorage,  &Self::decodeGetConfigLongLoadProfileStorageDays)
         (EP::GetConfig_MeterParameters,         &Self::decodeGetConfigMeterParameters)
         (EP::GetConfig_Model,                   &Self::decodeGetConfigModel)
         (EP::GetConfig_Multiplier,              &Self::decodeGetConfigMeterParameters)
@@ -855,7 +855,6 @@ Mct410Device::DecodeMapping Mct410Device::initDecodeLookup()
         // ---
         (EP::GetValue_DailyRead,                &Self::decodeGetValueDailyRead)
         (EP::GetValue_Demand,                   &Self::decodeGetValueDemand)
-        (EP::GetValue_FreezeCounter,            &Self::decodeGetValueFreezeCounter)
         (EP::GetValue_FrozenKWH,                &Self::decodeGetValueKWH)
         (EP::GetValue_FrozenPeakDemand,         &Self::decodeGetValuePeakDemand)
         (EP::GetValue_FrozenTOUkWh,             &Self::decodeGetValueTOUkWh)
@@ -1417,7 +1416,7 @@ YukonError_t Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
     }
     else if ( parse.isKeyValid("load_profile_allocation") )
     {
-        function = EmetconProtocol::PutConfig_LongLoadProfile;
+        function = EmetconProtocol::PutConfig_LongLoadProfileStorage;
         found    = getOperation(function, OutMessage->Buffer.BSt);
 
         // sanity check -- these should all be here
@@ -2534,7 +2533,7 @@ YukonError_t Mct410Device::executeGetConfig( CtiRequestMsg              *pReq,
     }
     else if( parse.isKeyValid("load_profile_allocation") )
     {
-        OutMessage->Sequence = EmetconProtocol::GetConfig_LongLoadProfile;
+        OutMessage->Sequence = EmetconProtocol::GetConfig_LongLoadProfileStorage;
 
         found = getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt);
     }
@@ -3042,25 +3041,6 @@ YukonError_t Mct410Device::decodeGetValueOutage( const INMESS &InMessage, const 
     {
         ReturnMsg->setResultString(getName() + " / Sspec not stored, could not reliably decode outages; try read again");
     }
-
-    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
-
-    return status;
-}
-
-
-YukonError_t Mct410Device::decodeGetValueFreezeCounter( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
-{
-    YukonError_t status = ClientErrors::None;
-
-    const unsigned char   *msgbuf = InMessage.Buffer.DSt.Message;
-    CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-
-    ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
-
-    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
-
-    ReturnMsg->setResultString(getName() + " / Freeze counter: " + CtiNumStr(msgbuf[0]));
 
     retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 

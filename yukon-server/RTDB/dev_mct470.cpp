@@ -140,8 +140,8 @@ Mct470Device::CommandSet Mct470Device::initCommandStore( )
     cs.insert(CommandStore(EmetconProtocol::GetValue_PhaseCurrent,      EmetconProtocol::IO_Function_Read,  FuncRead_PhaseCurrent,        FuncRead_PhaseCurrentLen));
 
     //******************************** Config Related starts here *************************
-    cs.insert(CommandStore(EmetconProtocol::PutConfig_LongLoadProfile,  EmetconProtocol::IO_Function_Write, FuncWrite_LLPStoragePos,     FuncWrite_LLPStorageLen));
-    cs.insert(CommandStore(EmetconProtocol::GetConfig_LongLoadProfile,  EmetconProtocol::IO_Function_Read,  FuncRead_LLPStatusPos,       FuncRead_LLPStatusLen));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_LongLoadProfileStorage,  EmetconProtocol::IO_Function_Write, FuncWrite_LLPStoragePos,     FuncWrite_LLPStorageLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_LongLoadProfileStorage,  EmetconProtocol::IO_Function_Read,  FuncRead_LLPStatusPos,       FuncRead_LLPStatusLen));
 
     //  used for both "putconfig install" and "putconfig holiday" commands
     cs.insert(CommandStore(EmetconProtocol::PutConfig_Holiday,          EmetconProtocol::IO_Write,          Memory_Holiday1Pos,          Memory_Holiday1Len

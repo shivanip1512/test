@@ -3100,14 +3100,14 @@ BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
     }
     BOOST_AUTO_TEST_CASE(test_getOperation_66)
     {
-        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_LongLoadProfile, BSt));
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::PutConfig_LongLoadProfileStorage, BSt));
         BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Write);
         BOOST_CHECK_EQUAL(BSt.Function, 0x04);
         BOOST_CHECK_EQUAL(BSt.Length,   5);
     }
     BOOST_AUTO_TEST_CASE(test_getOperation_67)
     {
-        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_LongLoadProfile, BSt));
+        BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_LongLoadProfileStorage, BSt));
         BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
         BOOST_CHECK_EQUAL(BSt.Function, 0x9d);
         BOOST_CHECK_EQUAL(BSt.Length,   8);

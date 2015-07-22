@@ -51,7 +51,6 @@ enum Commands
     GetValue_TOUPeak,
     GetValue_TOUkWh,
     GetValue_FrozenTOUkWh,
-    GetValue_FreezeCounter,
     GetValue_DailyRead,
     GetValue_IntervalLast,
     GetValue_Runtime,
@@ -76,13 +75,10 @@ enum Commands
     PutValue_TOUReset,
 
     // GetStatus Commands
-    GetStatus_Default,
-    GetStatus_General,
     GetStatus_Disconnect,
     GetStatus_IEDLink,
     GetStatus_IEDDNP,
     GetStatus_LoadProfile,
-    GetStatus_Powerfail,
     GetStatus_Internal,
     GetStatus_External,
     GetStatus_Freeze,
@@ -102,7 +98,6 @@ enum Commands
     PutStatus_ClearTOUHolidayRate,                          /* Clear TOU Holiday Rate and Resort to Normal Rate     */
 
     // GetConfig commands
-    GetConfig_Default,
     GetConfig_Model,
     GetConfig_Time,
     GetConfig_TSync,
@@ -111,7 +106,6 @@ enum Commands
     GetConfig_Multiplier3,
     GetConfig_Multiplier4,
     GetConfig_IEDScan,
-    GetConfig_IEDPassword,
     GetConfig_IEDTime,
     GetConfig_IEDDNP,
     GetConfig_IEDDNPAddress,
@@ -121,7 +115,7 @@ enum Commands
     GetConfig_Thresholds,
     GetConfig_ChannelSetup,
     GetConfig_LoadProfileInterval,
-    GetConfig_LongLoadProfile,
+    GetConfig_LongLoadProfileStorage,
     GetConfig_LoadProfileExistingPeak,
     GetConfig_DemandInterval,
     GetConfig_Options,
@@ -161,7 +155,7 @@ enum Commands
     PutConfig_ChannelSetup,
     PutConfig_LoadProfileInterest,
     PutConfig_LoadProfileReportPeriod,
-    PutConfig_LongLoadProfile,
+    PutConfig_LongLoadProfileStorage,
     PutConfig_DailyReadInterest,
     PutConfig_Multiplier,
     PutConfig_Multiplier2,
@@ -172,14 +166,12 @@ enum Commands
     PutConfig_Addressing,
     PutConfig_SPID,
     PutConfig_VThreshold,
-    PutConfig_DST,
     PutConfig_Holiday,
     PutConfig_Options,
     PutConfig_AutoReconnect,
     PutConfig_Outage,
     PutConfig_OutageThreshold,
     PutConfig_TimeAdjustTolerance,
-    PutConfig_ConfigurationByte,
     PutConfig_TimeZoneOffset,
     PutConfig_TOU,  //  this may need to be removed in light of the new config install commands
     PutConfig_TOUEnable,
@@ -197,7 +189,6 @@ enum Commands
 
     PutConfig_ARMC,
     PutConfig_ARML,
-    PutConfig_ARMS,
 
     // Control Commands
     Control_Shed,     //  for MCT Group Addressing
