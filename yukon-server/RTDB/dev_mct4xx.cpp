@@ -1859,32 +1859,6 @@ int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList &partsList,
     return ret;
 }
 
-Mct4xxDevice::PutConfigMapping Mct4xxDevice::initPutConfigLookup()
-{
-    return boost::assign::map_list_of
-        (PutConfigPart_addressing,              &Self::executePutConfigInstallAddressing)
-        (PutConfigPart_configbyte,              &Self::executePutConfigConfigurationByte)
-        (PutConfigPart_demand_lp,               &Self::executePutConfigDemandLP)
-        (PutConfigPart_disconnect,              &Self::executePutConfigInstallDisconnect)
-        (PutConfigPart_display,                 &Self::executePutConfigDisplay)
-        (PutConfigPart_dst,                     &Self::executePutConfigInstallDST)
-        (PutConfigPart_freeze_day,              &Self::executePutConfigInstallFreezeDay)
-        (PutConfigPart_lpchannel,               &Self::executePutConfigLoadProfileChannel)
-        (PutConfigPart_meter_parameters,        &Self::executePutConfigMeterParameters)
-        (PutConfigPart_phaseloss,               &Self::executePutConfigInstallPhaseLoss)
-        (PutConfigPart_precanned_table,         &Self::executePutConfigPrecannedTable)
-        (PutConfigPart_relays,                  &Self::executePutConfigRelays)
-        (PutConfidPart_spid,                    &Self::executePutConfigSpid)
-        (PutConfigPart_time_adjust_tolerance,   &Self::executePutConfigTimeAdjustTolerance)
-        (PutConfigPart_timezone,                &Self::executePutConfigTimezone)
-        (PutConfigPart_tou,                     &Self::executePutConfigTOU)
-            ;
-}
-
-
-const Mct4xxDevice::PutConfigMapping Mct4xxDevice::_putConfigMethods = Mct4xxDevice::initPutConfigLookup();
-
-
 int Mct4xxDevice::executePutConfigSingle(CtiRequestMsg *pReq,
                                          CtiCommandParser &parse,
                                          OUTMESS *&OutMessage,
@@ -1902,7 +1876,28 @@ int Mct4xxDevice::executePutConfigSingle(CtiRequestMsg *pReq,
 
     int nRet = ClientErrors::None;
 
-    if( const boost::optional<PutConfigMethod> putConfigMethod = mapFind(_putConfigMethods, installValue) )
+    using PutConfigMethod = YukonError_t (Self::*)(CtiRequestMsg *, CtiCommandParser &, OUTMESS *&, CtiMessageList &, CtiMessageList &, OutMessageList &, bool);
+
+    static const auto PutConfigMethods = std::map<std::string, PutConfigMethod>{
+        { PutConfigPart_addressing,              &Self::executePutConfigInstallAddressing},
+        { PutConfigPart_configbyte,              &Self::executePutConfigConfigurationByte},
+        { PutConfigPart_demand_lp,               &Self::executePutConfigDemandLP},
+        { PutConfigPart_disconnect,              &Self::executePutConfigInstallDisconnect},
+        { PutConfigPart_display,                 &Self::executePutConfigDisplay},
+        { PutConfigPart_dst,                     &Self::executePutConfigInstallDST},
+        { PutConfigPart_freeze_day,              &Self::executePutConfigInstallFreezeDay},
+        { PutConfigPart_lpchannel,               &Self::executePutConfigLoadProfileChannel},
+        { PutConfigPart_meter_parameters,        &Self::executePutConfigMeterParameters},
+        { PutConfigPart_phaseloss,               &Self::executePutConfigInstallPhaseLoss},
+        { PutConfigPart_precanned_table,         &Self::executePutConfigPrecannedTable},
+        { PutConfigPart_relays,                  &Self::executePutConfigRelays},
+        { PutConfidPart_spid,                    &Self::executePutConfigSpid},
+        { PutConfigPart_time_adjust_tolerance,   &Self::executePutConfigTimeAdjustTolerance},
+        { PutConfigPart_timezone,                &Self::executePutConfigTimezone},
+        { PutConfigPart_tou,                     &Self::executePutConfigTOU}
+    };
+
+    if( const auto putConfigMethod = mapFind(PutConfigMethods, installValue) )
     {
         nRet = (this->**putConfigMethod)(pReq, parse, OutMessage, vgList, retList, outList, readsOnly);
     }
@@ -3317,30 +3312,6 @@ YukonError_t Mct4xxDevice::decodeGetValuePeakDemand(const INMESS &InMessage, con
 }
 
 
-Mct4xxDevice::DecodeMapping Mct4xxDevice::initDecodeLookup()
-{
-    namespace EP = EmetconProtocol;
-
-    return boost::assign::map_list_of
-        (EP::GetConfig_Time,        &Self::decodeGetConfigTime)
-        (EP::GetConfig_TSync,       &Self::decodeGetConfigTime)
-        (EP::GetConfig_TOU,         &Self::decodeGetConfigTOU)
-        // ---
-        (EP::GetStatus_Freeze,      &Self::decodeGetStatusFreeze)
-        // ---
-        (EP::GetValue_TOUPeak,      &Self::decodeGetValuePeakDemand)
-        (EP::GetValue_LoadProfile,  &Self::decodeGetValueLoadProfile)
-        // ---
-        (EP::PutConfig_LoadProfileReportPeriod,
-        /* --- */                   &Self::decodePutConfig)
-        // ---
-        (EP::Scan_LoadProfile,      &Self::decodeScanLoadProfile);
-}
-
-
-const Mct4xxDevice::DecodeMapping Mct4xxDevice::_decodeMethods = Mct4xxDevice::initDecodeLookup();
-
-
 void Mct4xxDevice::handleCommandResult(const Mct4xxCommand &cmd)
 {
     cmd.invokeResultHandler(static_cast<Mct4xxCommand::ResultHandler &>(*this));
@@ -3349,13 +3320,21 @@ void Mct4xxDevice::handleCommandResult(const Mct4xxCommand &cmd)
 
 YukonError_t Mct4xxDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    DecodeMapping::const_iterator itr = _decodeMethods.find(InMessage.Sequence);
+    using DecodeMethod = YukonError_t (Mct4xxDevice::*)(const INMESS &, const CtiTime, CtiMessageList &, CtiMessageList &, OutMessageList &);
 
-    if( itr != _decodeMethods.end() )
+    static const std::map<int, DecodeMethod> DecodeMethods {
+        { EmetconProtocol::GetConfig_Time,        &Self::decodeGetConfigTime },
+        { EmetconProtocol::GetConfig_TSync,       &Self::decodeGetConfigTime },
+        { EmetconProtocol::GetConfig_TOU,         &Self::decodeGetConfigTOU  },
+        { EmetconProtocol::GetStatus_Freeze,      &Self::decodeGetStatusFreeze },
+        { EmetconProtocol::GetValue_TOUPeak,      &Self::decodeGetValuePeakDemand },
+        { EmetconProtocol::GetValue_LoadProfile,  &Self::decodeGetValueLoadProfile },
+        { EmetconProtocol::PutConfig_LoadProfileReportPeriod, &Self::decodePutConfig },
+        { EmetconProtocol::Scan_LoadProfile,      &Self::decodeScanLoadProfile }};
+
+    if( const auto method = mapFind(DecodeMethods, InMessage.Sequence) )
     {
-        const DecodeMethod decoder = itr->second;
-
-        return (this->*decoder)(InMessage, TimeNow, vgList, retList, outList);
+        return (this->*(*method))(InMessage, TimeNow, vgList, retList, outList);
     }
 
     return Parent::ModelDecode(InMessage, TimeNow, vgList, retList, outList);

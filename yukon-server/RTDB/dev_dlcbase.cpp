@@ -712,15 +712,13 @@ bool DlcBaseDevice::processAdditionalRoutes( const INMESS &InMessage, int nRet )
         return false;
     }
 
-    CtiRouteSPtr Route = getRoute(InMessage.Return.RouteID);    // This is "this's" route
-
-    if( ! Route )
+    if( CtiRouteSPtr Route = getRoute(InMessage.Return.RouteID) )
     {
-        // Presume the existence of MacroOffset != 0 indicates a GO status!
-        return true;
+        return Route->processAdditionalRoutes(InMessage);
     }
 
-    return Route->processAdditionalRoutes(InMessage);
+    // Presume the existence of MacroOffset != 0 indicates a GO status!
+    return true;
 }
 
 

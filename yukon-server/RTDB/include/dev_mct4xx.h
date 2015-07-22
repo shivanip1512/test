@@ -36,18 +36,6 @@ private:
     typedef MctDevice Parent;
     typedef Mct4xxDevice Self;
 
-    typedef YukonError_t (Self::*DecodeMethod)(const INMESS &, const CtiTime, CtiMessageList &, CtiMessageList &, OutMessageList &);
-    typedef std::map<int, DecodeMethod> DecodeMapping;
-
-    static const DecodeMapping _decodeMethods;
-    static       DecodeMapping initDecodeLookup();
-
-    typedef YukonError_t (Self::*PutConfigMethod)(CtiRequestMsg *, CtiCommandParser &, OUTMESS *&, CtiMessageList &, CtiMessageList &, OutMessageList &, bool);
-    typedef std::map<std::string, PutConfigMethod> PutConfigMapping;
-
-    static const PutConfigMapping _putConfigMethods;
-    static       PutConfigMapping initPutConfigLookup();
-
     static const CommandSet _commandStore;
     static       CommandSet initCommandStore();
 
