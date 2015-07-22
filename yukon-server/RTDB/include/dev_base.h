@@ -336,6 +336,7 @@ public:
 
 template<> IM_EX_DEVDB boost::optional<unsigned char> CtiDeviceBase::findDynamicInfo<unsigned char> (PaoInfoKeys k) const;
 template<> IM_EX_DEVDB boost::optional<bool>          CtiDeviceBase::findDynamicInfo<bool>          (PaoInfoKeys k) const;
+template<> IM_EX_DEVDB boost::optional<unsigned>      CtiDeviceBase::findDynamicInfo<unsigned>      (PaoInfoKeys k) const;
 
 // explicit instantiation
 template IM_EX_DEVDB boost::optional<std::vector<unsigned long>> CtiDeviceBase::findDynamicInfo<unsigned long> (PaoInfoKeysIndexed k) const;

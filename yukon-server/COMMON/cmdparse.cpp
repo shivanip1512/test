@@ -10,7 +10,8 @@
 
 #include "std_helper.h"
 
-#include "boost/regex.hpp"
+#include <boost/regex.hpp>
+#include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/trim.hpp>
@@ -37,6 +38,22 @@ static const std::string str_time("([0-9]+:[0-9]+(:[0-9]+)?)");
 static const std::string str_daterange(str_date + "( " + str_date + ")?");
 
 static const boost::regex   re_quoted_token (str_quoted_token);
+
+const map<string, string> TokenReplacements {
+    {"NUM",  str_num},
+    {"DATE", str_date},
+    {"TIME", str_time}};
+
+
+std::string replace_tokens(std::string with_tokens)
+{
+    for( const auto replacement : TokenReplacements )
+    {
+        boost::algorithm::replace_all(with_tokens, replacement.first, replacement.second);
+    }
+
+    return with_tokens;
+}
 
 static const boost::regex   re_signed_num   (str_signed_num);
 static const boost::regex   re_num      (str_num);
@@ -106,32 +123,6 @@ _wasExternallyModified(false)
     }
 
     doParse(_cmdString);
-}
-
-CtiCommandParser::CtiCommandParser(const CtiCommandParser& aRef)
-{
-    _cmd.clear();
-    _actionItems.clear();
-    *this = aRef;
-}
-
-CtiCommandParser::~CtiCommandParser()
-{
-    _actionItems.clear();
-}
-
-CtiCommandParser& CtiCommandParser::operator=(const CtiCommandParser& aRef)
-{
-    if(this != &aRef)
-    {
-        _cmdString = aRef._cmdString;
-        _actionItems = aRef._actionItems;
-        _cmd = aRef.getMap();
-        _flags = aRef.getFlags();
-        _command = aRef.getCommand();
-        _wasExternallyModified = aRef._wasExternallyModified;
-    }
-    return *this;
 }
 
 
@@ -401,14 +392,14 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     //  getvalue lp channel 2 12/13/2005             //  grabs the whole day
     //  getvalue lp channel 2 12/13/2005 12/15/2005  //  this wil do range of entire days
     //  getvalue lp channel 2 12/13/2005 12:00 12/15/2005  //  this grabs the second half of 13th, and all of the 14th and 15th
-    static const boost::regex  re_lp("lp channel " + str_num + " " + str_date + "( " + str_time + ")?( " + str_date + "( " + str_time + ")?)?");
+    static const boost::regex  re_lp(replace_tokens("lp channel NUM DATE( TIME)?( DATE( TIME)?)?"));
 
     //  getvalue lp peak daily channel 2 9/30/04 30
     //  getvalue lp peak hour channel 3 10-15-2003 15
-    static const boost::regex  re_lp_peak("lp peak (day|hour|interval) channel " + str_num + " " + str_date + " " + str_num);
+    static const boost::regex  re_lp_peak(replace_tokens("lp peak (day|hour|interval) channel NUM DATE NUM"));
 
     //  getvalue voltage profile 12/13/2005 12/15/2005
-    static const boost::regex  re_voltage_profile(("voltage profile ") + str_date + ("( ") + str_time + (")?( ") + str_date + ("( ") + str_time + (")?)?"));
+    static const boost::regex  re_voltage_profile(replace_tokens("voltage profile DATE( TIME)?( DATE( TIME)?)?"));
 
     //  getvalue daily read
     //  getvalue daily read 12/12/2007

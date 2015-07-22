@@ -346,7 +346,7 @@ struct ClientErrors
 
         NeedsChannelConfig,
 
-        InvalidStartDate,
+        InvalidDate,
 
         DnsLookupFailed,
 

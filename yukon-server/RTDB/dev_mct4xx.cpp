@@ -1633,7 +1633,7 @@ YukonError_t Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParse
 
             string temp = "Bad start time \"" + parse.getsValue("llp interest date") + " " + parse.getsValue("llp interest time") + "\"";
 
-            returnErrorMessage(ClientErrors::InvalidStartDate, OutMessage, retList, temp);
+            returnErrorMessage(ClientErrors::InvalidDate, OutMessage, retList, temp);
 
             nRet = ExecutionComplete;
         }

@@ -853,6 +853,19 @@ boost::optional<bool> CtiDeviceBase::findDynamicInfo<bool>(PaoInfoKeys k) const
     return static_cast<bool>(val);
 }
 
+template <>
+boost::optional<unsigned> CtiDeviceBase::findDynamicInfo<unsigned>(PaoInfoKeys k) const
+{
+    long val;
+
+    if( ! getDynamicInfo(k, val) || val < 0 )
+    {
+        return boost::none;
+    }
+
+    return static_cast<unsigned>(val);
+}
+
 
 void CtiDeviceBase::setDynamicInfo(PaoInfoKeysIndexed k, const std::vector<unsigned long> &values)
 {

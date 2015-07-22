@@ -63,6 +63,9 @@ enum Commands
     GetValue_Temperature,
     GetValue_XfmrHistoricalCT,
     GetValue_DutyCycle,
+    GetValue_InstantLineData,
+    GetValue_TOUkWhReverse,
+    GetValue_FrozenTOUkWhReverse,
 
     // PutValue Commands
     PutValue_IEDReset,
@@ -83,9 +86,6 @@ enum Commands
     GetStatus_Internal,
     GetStatus_External,
     GetStatus_Freeze,
-        GetValue_InstantLineData,
-        GetValue_TOUkWhReverse,
-        GetValue_FrozenTOUkWhReverse,
     GetStatus_EventLog,
 
     // PutStatus Commands
@@ -98,6 +98,8 @@ enum Commands
     PutStatus_ResetOverride,
     PutStatus_PeakOn,
     PutStatus_PeakOff,
+    PutStatus_SetTOUHolidayRate,                            /* Set TOU Holiday Rate Active                          */
+    PutStatus_ClearTOUHolidayRate,                          /* Clear TOU Holiday Rate and Resort to Normal Rate     */
 
     // GetConfig commands
     GetConfig_Default,
@@ -136,6 +138,9 @@ enum Commands
     GetConfig_Addressing,
     GetConfig_DailyReadInterest,
     GetConfig_WaterMeterReadInterval,
+    GetConfig_PhaseLossThreshold,
+    GetConfig_AlarmMask,
+    GetConfig_TimeAdjustTolerance,
 
     // PutConfig commands
     PutConfig_Install,
@@ -188,15 +193,11 @@ enum Commands
     PutConfig_IEDDNPAddress,
     PutConfig_WaterMeterReadInterval,
     PutConfig_Channel2NetMetering,      // GetConfig_Options was hijacked for the config byte/alarm mask in the 410....
-        PutStatus_SetTOUHolidayRate,                            /* Set TOU Holiday Rate Active                          */
-        PutStatus_ClearTOUHolidayRate,                          /* Clear TOU Holiday Rate and Resort to Normal Rate     */
+    PutConfig_PhaseLossThreshold,
 
     PutConfig_ARMC,
     PutConfig_ARML,
     PutConfig_ARMS,
-        GetConfig_PhaseLossThreshold,
-        GetConfig_AlarmMask,
-        GetConfig_TimeAdjustTolerance,
 
     // Control Commands
     Control_Shed,     //  for MCT Group Addressing
@@ -204,7 +205,6 @@ enum Commands
     Control_Connect,
     Control_Disconnect,
     Control_Latch,
-        PutConfig_PhaseLossThreshold,
 
     Command_Loop,
 

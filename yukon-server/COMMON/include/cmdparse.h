@@ -78,12 +78,6 @@ public:
 
    CtiCommandParser(const std::string str);
 
-   CtiCommandParser(const CtiCommandParser& aRef);
-
-   virtual ~CtiCommandParser();
-
-   CtiCommandParser& operator=(const CtiCommandParser& aRef);
-
    const std::string& getCommandStr() const;
 
    bool isEqual(const std::string &cmdStr) const;
