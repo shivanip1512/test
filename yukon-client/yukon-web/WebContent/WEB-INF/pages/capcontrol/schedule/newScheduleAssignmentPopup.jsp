@@ -13,7 +13,7 @@
             <tr>
                 <td>Schedules:</td>
                 <td>
-                    <select name="addSchedule" id="addSchedule">
+                    <select name="scheduleId" id="scheduleId">
                         <c:forEach var="schedule" items="${scheduleList}">
                                 <option value="${schedule.id}" <c:if test="${param.schedule == schedule.name}">selected="selected" </c:if> >${fn:escapeXml(schedule.name)}</option>
                         </c:forEach>
@@ -23,7 +23,7 @@
             <tr>
                 <td>Commands:</td>
                 <td>
-                    <select name="addCommand" id="addCommand">
+                    <select name="cmd" id="cmd">
                         <c:forEach var="aCommand" items="${commandList}">
                             <c:choose>
                                 <c:when test="${param.command == 'All'}">
