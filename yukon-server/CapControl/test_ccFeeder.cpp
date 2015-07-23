@@ -9,6 +9,7 @@
 #include "PFactorKWKVarStrategy.h"
 
 
+extern unsigned long _MAX_KVAR;
 extern bool _RETRY_FAILED_BANKS;
 
 using namespace std;
@@ -260,6 +261,8 @@ BOOST_AUTO_TEST_CASE(test_create_requests)
     {
         CtiMultiMsg_vec pointChanges, pilMessages;
         Cti::CapControl::EventLogEntries ccEvents;
+
+        _MAX_KVAR = 20000;
 
         CtiRequestMsg *pilRequest = feeder->createDecreaseVarRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0);
 
