@@ -88,7 +88,7 @@ public class MeterController {
     public String start() {
         return "start.jsp";
     }
-    
+        
     @CheckRole({ YukonRole.METERING })
     @RequestMapping("search")
     public String search(HttpServletRequest request, ModelMap model, YukonUserContext userContext,
@@ -178,7 +178,8 @@ public class MeterController {
         PaoType type = device.getDeviceType();
         
         // Redirecting water meters to WaterMeterController
-        if (type == PaoType.RFWMETER) return "redirect:/meter/water/home";
+        if (type == PaoType.RFWMETER)
+            return "redirect:" + paoDetailUrlHelper.getUrlForPaoDetailPage(device);
         
         // The set of attributes in this device's definition. See paoDefinition.xml
         Set<Attribute> deviceAttributes = attributeService.getAvailableAttributes(device);
