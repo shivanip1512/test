@@ -205,5 +205,3 @@ void Logger::poke()
 }
 } // namespace Cti::Logging
 
-Cti::Logging::LoggerPtr dout = doutManager.getLogger(); // Global log
-Cti::Logging::LoggerPtr slog = slogManager.getLogger(); // Global instance. Simulator log

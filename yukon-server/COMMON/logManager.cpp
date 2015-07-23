@@ -228,3 +228,6 @@ LoggerPtr LogManager::getLogger(const std::string &loggerName) const
 
 IM_EX_CTIBASE Cti::Logging::LogManager doutManager("dout");
 IM_EX_CTIBASE Cti::Logging::LogManager slogManager("slog");
+
+Cti::Logging::LoggerPtr dout = doutManager.getLogger(); // Global log
+Cti::Logging::LoggerPtr slog = slogManager.getLogger(); // Global instance. Simulator log
