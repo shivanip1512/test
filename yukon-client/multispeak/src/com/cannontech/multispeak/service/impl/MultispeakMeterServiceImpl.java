@@ -1258,26 +1258,24 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
     @Override
     public List<ErrorObject> initiateDisconnectedStatus(MultispeakVendor mspVendor, List<String> meterNos) {
-        boolean disableDisconnect = globalSettingDao.getBoolean(GlobalSettingType.MSP_DISABLE_DISCONNECT_STATUS);
-        return addToGroup(meterNos, SystemGroupEnum.DISCONNECTED_STATUS, "initiateDisconnectedStatus", mspVendor, disableDisconnect);
+        boolean disable = globalSettingDao.getBoolean(GlobalSettingType.MSP_DISABLE_DISCONNECT_STATUS);
+        return addToGroupAndDisable(meterNos, SystemGroupEnum.DISCONNECTED_STATUS, "initiateDisconnectedStatus", mspVendor, disable);
     }
 
     @Override
     public List<ErrorObject> initiateUsageMonitoring(MultispeakVendor mspVendor, List<String> meterNos) {
-
-        return addToGroup(meterNos, SystemGroupEnum.USAGE_MONITORING, "initiateUsageMonitoring", mspVendor, false);
+        return addToGroup(meterNos, SystemGroupEnum.USAGE_MONITORING, "initiateUsageMonitoring", mspVendor);
     }
 
     @Override
     public List<ErrorObject> cancelDisconnectedStatus(MultispeakVendor mspVendor, List<String> meterNos) {
-        boolean disableDisconnect = globalSettingDao.getBoolean(GlobalSettingType.MSP_DISABLE_DISCONNECT_STATUS);
-        return removeFromGroup(meterNos, SystemGroupEnum.DISCONNECTED_STATUS, "cancelDisconnectedStatus", mspVendor, disableDisconnect);
+        boolean disable = globalSettingDao.getBoolean(GlobalSettingType.MSP_DISABLE_DISCONNECT_STATUS);
+        return removeFromGroupAndEnable(meterNos, SystemGroupEnum.DISCONNECTED_STATUS, "cancelDisconnectedStatus", mspVendor, disable);
     }
 
     @Override
     public List<ErrorObject> cancelUsageMonitoring(MultispeakVendor mspVendor, List<String> meterNos) {
-
-        return removeFromGroup(meterNos, SystemGroupEnum.USAGE_MONITORING, "cancelUsageMonitoring", mspVendor, false);
+        return removeFromGroup(meterNos, SystemGroupEnum.USAGE_MONITORING, "cancelUsageMonitoring", mspVendor);
     }
 
     @Override
@@ -2230,14 +2228,24 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     /**
      * Helper method to add meterNos to systemGroup
      */
-    private List<ErrorObject> addToGroup(List<String> meterNos, SystemGroupEnum systemGroup, String mspMethod,
-            MultispeakVendor mspVendor, boolean disableDisconnect) {
+    private List<ErrorObject> addToGroup(List<String> meterNos, SystemGroupEnum systemGroup,
+            String mspMethod, MultispeakVendor mspVendor) {
+        return addToGroupAndDisable(meterNos, systemGroup, mspMethod, mspVendor, false);
+    }
+
+    /**
+     * Helper method to add meterNos to systemGroup
+     * @param disable - when true, the meter will be disabled. Else no change.
+     */
+    private List<ErrorObject> addToGroupAndDisable(List<String> meterNos, SystemGroupEnum systemGroup, String mspMethod,
+            MultispeakVendor mspVendor, boolean disable) {
+
         ArrayList<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
         
         for (String meterNumber : meterNos) {
             try {
                 YukonMeter meter = meterDao.getForMeterNumber(meterNumber);
-                if (disableDisconnect && !meter.isDisabled()) {
+                if (disable && !meter.isDisabled()) {
                     deviceDao.disableDevice(meter);
                 }
                 addToGroup(meter, systemGroup, mspMethod, mspVendor);
@@ -2254,19 +2262,27 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         }
         return errorObjects;
     }
-
     /**
      * Helper method to remove meterNos from systemGroup
      */
     private List<ErrorObject> removeFromGroup(List<String> meterNos, SystemGroupEnum systemGroup, String mspMethod,
-            MultispeakVendor mspVendor, boolean disableDisconnect) {
+            MultispeakVendor mspVendor) {
+        return removeFromGroupAndEnable(meterNos, systemGroup, mspMethod, mspVendor, false);
+    }
+
+    /**
+     * Helper method to remove meterNos from systemGroup
+     * @param disable - when true, the meter will be enabled. Else no change.
+     */
+    private List<ErrorObject> removeFromGroupAndEnable(List<String> meterNos, SystemGroupEnum systemGroup, String mspMethod,
+            MultispeakVendor mspVendor, boolean disable) {
 
         ArrayList<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
 
         for (String meterNumber : meterNos) {
             try {
                 YukonMeter meter = meterDao.getForMeterNumber(meterNumber);
-                if (disableDisconnect && meter.isDisabled()) {
+                if (disable && meter.isDisabled()) {
                     deviceDao.enableDevice(meter);
                 }
                 removeFromGroup(meter, systemGroup, mspMethod, mspVendor);
