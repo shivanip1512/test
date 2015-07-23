@@ -1269,6 +1269,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
     @Override
     public List<ErrorObject> cancelDisconnectedStatus(MultispeakVendor mspVendor, List<String> meterNos) {
+        // For the cancel method, the MSP_DISABLE_DISCONNECT_STATUS setting shall be reversed to "undo" the disable.
         boolean enable = globalSettingDao.getBoolean(GlobalSettingType.MSP_DISABLE_DISCONNECT_STATUS);
         return removeFromGroupAndEnable(meterNos, SystemGroupEnum.DISCONNECTED_STATUS, "cancelDisconnectedStatus", mspVendor, enable);
     }
