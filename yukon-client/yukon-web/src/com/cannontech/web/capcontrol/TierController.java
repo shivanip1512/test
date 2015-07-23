@@ -150,11 +150,11 @@ public class TierController {
         PaoType paoType = paoDao.getYukonPao(cachedSubstation.getParentID()).getPaoIdentifier().getPaoType();
         
         // Name of the area in the breadcrumb, will be the name of the special area if they came from the special areas page.
-        if (PaoType.CAP_CONTROL_SPECIAL_AREA.equals(paoType)) {
+        if (PaoType.CAP_CONTROL_SPECIAL_AREA == paoType) {
             SpecialArea specialArea = cache.getSpecialArea(cachedSubstation.getParentID());
             model.addAttribute("bc_areaName", specialArea.getCcName());
             model.addAttribute("bc_areaId", specialArea.getCcId());
-        } else if (PaoType.CAP_CONTROL_AREA.equals(paoType)) {
+        } else if (PaoType.CAP_CONTROL_AREA == paoType) {
             Area area = cache.getArea(cachedSubstation.getParentID());
             model.addAttribute("bc_areaName", area.getCcName());
             model.addAttribute("bc_areaId", area.getCcId());
