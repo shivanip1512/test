@@ -1269,8 +1269,8 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
     @Override
     public List<ErrorObject> cancelDisconnectedStatus(MultispeakVendor mspVendor, List<String> meterNos) {
-        boolean disable = globalSettingDao.getBoolean(GlobalSettingType.MSP_DISABLE_DISCONNECT_STATUS);
-        return removeFromGroupAndEnable(meterNos, SystemGroupEnum.DISCONNECTED_STATUS, "cancelDisconnectedStatus", mspVendor, disable);
+        boolean enable = globalSettingDao.getBoolean(GlobalSettingType.MSP_DISABLE_DISCONNECT_STATUS);
+        return removeFromGroupAndEnable(meterNos, SystemGroupEnum.DISCONNECTED_STATUS, "cancelDisconnectedStatus", mspVendor, enable);
     }
 
     @Override
@@ -2275,14 +2275,14 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      * @param disable - when true, the meter will be enabled. Else no change.
      */
     private List<ErrorObject> removeFromGroupAndEnable(List<String> meterNos, SystemGroupEnum systemGroup, String mspMethod,
-            MultispeakVendor mspVendor, boolean disable) {
+            MultispeakVendor mspVendor, boolean enable) {
 
         ArrayList<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
 
         for (String meterNumber : meterNos) {
             try {
                 YukonMeter meter = meterDao.getForMeterNumber(meterNumber);
-                if (disable && meter.isDisabled()) {
+                if (enable && meter.isDisabled()) {
                     deviceDao.enableDevice(meter);
                 }
                 removeFromGroup(meter, systemGroup, mspMethod, mspVendor);
