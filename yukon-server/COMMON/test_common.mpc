@@ -1,0 +1,233 @@
+project(test_common) {
+  exename=test_common
+
+  after += ctibase
+
+  macros += BOOST_ALL_DYN_LINK
+  macros += BOOST_ENABLE_ASSERT_HANDLER
+  macros += BUILD_VERSION=6.5\ (build\ 0)
+  macros += BUILD_VERSION_DETAILS=6.5.0
+  macros += NOMINMAX
+  macros += WIN32
+  macros += _CONSOLE
+  specific {
+    Debug::macros += _DEBUG
+  }
+  macros += _REENTRANT
+  macros += _WINDOWS
+  macros += _X86_=1
+  macros += __DLL__
+  includes += $(ACTIVEMQ)/include
+  includes += $(BOOST)/include
+  includes += $(OPENSSL)/include
+  includes += $(SQLAPI)/include
+  includes += .
+  includes += ../common/include
+  includes += ./include
+  lit_libs += ..\lib\ctibase
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_chrono-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_chrono-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_date_time-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_date_time-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_thread-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_thread-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_regex-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_regex-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_filesystem-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_filesystem-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_system-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_system-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_unit_test_framework-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_unit_test_framework-vc120-mt-1_58
+  }
+  lit_libs += $(OPENSSL)\$(CONFIGURATION)\lib\libeay32
+  lit_libs += $(OPENSSL)\$(CONFIGURATION)\lib\ssleay32
+  lit_libs += advapi32
+
+  Source_Files {
+    
+    test_main.cpp
+    test_CtiPCPtrQueue.cpp
+    test_PointAttribute.cpp
+    test_cmdparse.cpp
+    test_compiler_behaviors.cpp
+    test_ctidate.cpp
+    test_ctitime.cpp
+    test_date_utility.cpp
+    test_database_util.cpp
+    test_dbaccess.cpp
+    test_desolvers.cpp
+    test_encryption.cpp
+    test_error.cpp
+    test_logger.cpp
+    test_multiset.cpp
+    test_numstr.cpp
+    test_old_queues.cpp
+    test_queue.cpp
+    test_readers_writer_lock.cpp
+    test_resolvers.cpp
+    test_timeperiod.cpp
+    test_utility.cpp
+    test_words.cpp
+    test_std_helper.cpp
+    test_string_formatter.cpp
+    test_string_util.cpp
+  }
+
+
+  Header_Files {
+    common/include/AttributeService.h
+    common/include/BeatThePeakAlertLevel.h
+    common/include/boost_test_helpers.h
+    common/include/boost_time.h
+    common/include/boostutil.h
+    common/include/cmdparse.h
+    common/include/collectable.h
+    common/include/COLOR.H
+    common/include/ConfigKey.h
+    common/include/ConfigVal.h
+    common/include/constants.h
+    common/include/counter.h
+    common/include/CParms.h
+    common/include/critical_section.h
+    common/include/ctdpcptrq.h
+    common/include/CTI_ASMC.H
+    common/include/ctibase.h
+    common/include/CTICALLS.H
+    common/include/ctidate.h
+    common/include/ctidbgmem.h
+    common/include/ctipcptrqueue.h
+    common/include/ctiqueues.h
+    common/include/ctitime.h
+    common/include/ctitokenizer.h
+    common/include/database_connection.h
+    common/include/database_exceptions.h
+    common/include/database_reader.h
+    common/include/database_transaction.h
+    common/include/database_util.h
+    common/include/database_writer.h
+    common/include/date_utility.h
+    common/include/db_entry_defines.h
+    common/include/dbaccess.h
+    common/include/debug_timer.h
+    common/include/desolvers.h
+    common/include/DeviceAttributeLookup.h
+    common/include/DeviceConfigDescription.h
+    common/include/devicetypes.h
+    common/include/dllbase.h
+    common/include/dlldefs.h
+    common/include/dsm2.h
+    common/include/DSM2ERR.H
+    common/include/Elogger.h
+    common/include/encryption.h
+    common/include/exception_helper.h
+    common/include/Exceptions.h
+    common/include/fileint.h
+    common/include/guard.h
+    common/include/id_ctibase.h
+    common/include/immutable.h
+    common/include/json.h
+    common/include/LitePoint.h
+    common/include/logFileAppender.h
+    common/include/loggable.h
+    common/include/logger.h
+    common/include/logLayout.h
+    common/include/logManager.h
+    common/include/macro_offset.h
+    common/include/MASTER.H
+    common/include/MetricIdLookup.h
+    common/include/millisecond_timer.h
+    common/include/module_util.h
+    common/include/mutex.h
+    common/include/netports.h
+    common/include/numstr.h
+    common/include/observe.h
+    common/include/optional.h
+    common/include/OS2_2W32.H
+    common/include/parsevalue.h
+    common/include/PointAttribute.h
+    common/include/pointdefs.h
+    common/include/pointtypes.h
+    common/include/PORTER.H
+    common/include/precompiled.h
+    common/include/queue.h
+    common/include/QUEUES.H
+    common/include/random_generator.h
+    common/include/readers_writer_lock.h
+    common/include/regression.h
+    common/include/repeaterrole.h
+    common/include/resolvers.h
+    common/include/resource_helper.h
+    common/include/rfn_identifier.h
+    common/include/row_reader.h
+    common/include/row_writer.h
+    common/include/rtdb.h
+    common/include/sema.h
+    common/include/smartmap.h
+    common/include/socket_helper.h
+    common/include/sorted_vector.h
+    common/include/std_helper.h
+    common/include/stdexcepthdlr.h
+    common/include/streamBuffer.h
+    common/include/streamConnection.h
+    common/include/streamLocalConnection.h
+    common/include/streamSocketConnection.h
+    common/include/streamSocketListener.h
+    common/include/string_util.h
+    common/include/test_cmdparse_input.h
+    common/include/test_cmdparse_output.h
+    common/include/test_reader.h
+    common/include/thread.h
+    common/include/thread_listener.h
+    common/include/thread_monitor.h
+    common/include/thread_register_data.h
+    common/include/ThreadStatusKeeper.h
+    common/include/timeperiod.h
+    common/include/timing_util.h
+    common/include/truncatingConsoleAppender.h
+    common/include/types.h
+    common/include/utility.h
+    common/include/vcomdefs.h
+    common/include/verification_objects.h
+    common/include/win_helper.h
+    common/include/words.h
+    common/include/worker_thread.h
+    common/include/xfer.h
+    common/include/xml.h
+    common/include/yukon.h
+  }
+
+  Resource_Files {
+  }
+
+  specific {
+    postbuild= \ns {
+if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
+xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin
+    }
+  }
+
+  specific {
+    Release::lib_modifier =
+    Debug::lib_modifier =
+  }
+
+  specific {
+    ForcedIncludeFiles=precompiled.h
+  }
+
+}
+

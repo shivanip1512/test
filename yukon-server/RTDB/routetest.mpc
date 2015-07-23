@@ -1,0 +1,276 @@
+project(routetest) {
+  exename=routetest
+
+  after += ctibase
+  after += ctisvr
+  after += ctidbsrc
+  after += ctidevdb
+
+  macros += BOOST_ALL_DYN_LINK
+  macros += BOOST_ENABLE_ASSERT_HANDLER
+  macros += BUILD_VERSION=6.5\ (build\ 0)
+  macros += BUILD_VERSION_DETAILS=6.5.0
+  macros += NOMINMAX
+  macros += WIN32
+  macros += _CONSOLE
+  specific {
+    Debug::macros += _DEBUG
+  }
+  macros += _REENTRANT
+  macros += _WINDOWS
+  macros += _X86_=1
+  macros += __DLL__
+  macros += D_FILE_NAME=routetest
+  macros += D_FILE_VERSION=6,5,0,0
+  macros += D_FILE_VERSION_STR=6.5.0.0
+  macros += D_PRODUCT_VERSION=6,5,0,0
+  macros += D_PRODUCT_VERSION_STR=6.5
+  includes += $(BOOST)/include
+  includes += $(OPENSSL)/include
+  includes += $(SQLAPI)/include
+  includes += .
+  includes += ../common/include
+  includes += ../database/include
+  includes += ../deviceconfiguration/include
+  includes += ../message/include
+  includes += ../server/include
+  includes += ./include
+  includes += $(BOOST)\include
+  lit_libs += ..\lib\ctibase
+  lit_libs += ..\lib\ctisvr
+  lit_libs += ..\lib\ctidbsrc
+  lit_libs += ..\lib\ctidevdb
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_chrono-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_chrono-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_date_time-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_date_time-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_thread-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_thread-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_regex-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_regex-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_filesystem-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_filesystem-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_system-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_system-vc120-mt-1_58
+  }
+  pch_header = precompiled.h
+  pch_source = ../precompiled.cpp
+
+  Source_Files {
+    ../precompiled.cpp
+    
+    routetest.cpp
+  }
+
+
+  Header_Files {
+    rtdb/include/cmd_device.h
+    rtdb/include/cmd_dlc.h
+    rtdb/include/cmd_helper.h
+    rtdb/include/cmd_lcr3102.h
+    rtdb/include/cmd_lcr3102_DemandResponseSummary.h
+    rtdb/include/cmd_lcr3102_hourlyDataLog.h
+    rtdb/include/cmd_lcr3102_tamperRead.h
+    rtdb/include/cmd_lcr3102_ThreePart.h
+    rtdb/include/cmd_mct410.h
+    rtdb/include/cmd_mct410_disconnectConfiguration.h
+    rtdb/include/cmd_mct410_hourlyRead.h
+    rtdb/include/cmd_mct420.h
+    rtdb/include/cmd_mct420_hourlyRead.h
+    rtdb/include/cmd_mct420_LcdConfiguration.h
+    rtdb/include/cmd_mct420_MeterParameters.h
+    rtdb/include/cmd_mct420_MeterParametersDisplayDigits.h
+    rtdb/include/cmd_mct440_holidays.h
+    rtdb/include/cmd_mct4xx.h
+    rtdb/include/cmd_rf_da_dnpAddress.h
+    rtdb/include/cmd_rfn.h
+    rtdb/include/cmd_rfn_CentronLcdConfiguration.h
+    rtdb/include/cmd_rfn_ChannelConfiguration.h
+    rtdb/include/cmd_rfn_DemandFreeze.h
+    rtdb/include/cmd_rfn_FocusAlLcdConfiguration.h
+    rtdb/include/cmd_rfn_helper.h
+    rtdb/include/cmd_rfn_LoadProfile.h
+    rtdb/include/cmd_rfn_OvUvConfiguration.h
+    rtdb/include/cmd_rfn_RemoteDisconnect.h
+    rtdb/include/cmd_rfn_TemperatureAlarm.h
+    rtdb/include/cmd_rfn_TouConfiguration.h
+    rtdb/include/config_exceptions.h
+    rtdb/include/config_helpers.h
+    rtdb/include/dev_710.h
+    rtdb/include/dev_a1.h
+    rtdb/include/dev_alpha.h
+    rtdb/include/dev_ansi.h
+    rtdb/include/dev_aplus.h
+    rtdb/include/dev_base.h
+    rtdb/include/dev_base_lite.h
+    rtdb/include/dev_carrier.h
+    rtdb/include/dev_cbc.h
+    rtdb/include/dev_cbc6510.h
+    rtdb/include/dev_cbc7020.h
+    rtdb/include/dev_cbc8020.h
+    rtdb/include/dev_ccu.h
+    rtdb/include/dev_ccu721.h
+    rtdb/include/dev_ccu_queue_interface.h
+    rtdb/include/dev_davis.h
+    rtdb/include/dev_dct501.h
+    rtdb/include/dev_dlcbase.h
+    rtdb/include/dev_dnp.h
+    rtdb/include/dev_dr87.h
+    rtdb/include/dev_exclusion.h
+    rtdb/include/dev_focus.h
+    rtdb/include/dev_fulcrum.h
+    rtdb/include/dev_gridadvisor.h
+    rtdb/include/dev_grp.h
+    rtdb/include/dev_grp_emetcon.h
+    rtdb/include/dev_grp_expresscom.h
+    rtdb/include/dev_grp_golay.h
+    rtdb/include/dev_grp_mct.h
+    rtdb/include/dev_grp_point.h
+    rtdb/include/dev_grp_rfn_expresscom.h
+    rtdb/include/dev_grp_ripple.h
+    rtdb/include/dev_grp_sa105.h
+    rtdb/include/dev_grp_sa205.h
+    rtdb/include/dev_grp_sa305.h
+    rtdb/include/dev_grp_sadigital.h
+    rtdb/include/dev_grp_versacom.h
+    rtdb/include/dev_idlc.h
+    rtdb/include/dev_ied.h
+    rtdb/include/dev_ilex.h
+    rtdb/include/dev_ion.h
+    rtdb/include/dev_ipc410al.h
+    rtdb/include/dev_ipc420ad.h
+    rtdb/include/dev_kv2.h
+    rtdb/include/dev_lcr3102.h
+    rtdb/include/dev_lcr3102_commands.h
+    rtdb/include/dev_lcu.h
+    rtdb/include/dev_lgs4.h
+    rtdb/include/dev_lmi.h
+    rtdb/include/dev_macro.h
+    rtdb/include/dev_mark_v.h
+    rtdb/include/dev_mct.h
+    rtdb/include/dev_mct210.h
+    rtdb/include/dev_mct22X.h
+    rtdb/include/dev_mct24x.h
+    rtdb/include/dev_mct2XX.h
+    rtdb/include/dev_mct310.h
+    rtdb/include/dev_mct31X.h
+    rtdb/include/dev_mct410.h
+    rtdb/include/dev_mct410_commands.h
+    rtdb/include/dev_mct420.h
+    rtdb/include/dev_mct420_commands.h
+    rtdb/include/dev_mct440_2131b.h
+    rtdb/include/dev_mct440_2132b.h
+    rtdb/include/dev_mct440_2133b.h
+    rtdb/include/dev_mct440_213xb.h
+    rtdb/include/dev_mct470.h
+    rtdb/include/dev_mct4xx.h
+    rtdb/include/dev_mct_broadcast.h
+    rtdb/include/dev_mct_lmt2.h
+    rtdb/include/dev_meter.h
+    rtdb/include/dev_modbus.h
+    rtdb/include/dev_paging.h
+    rtdb/include/dev_pagingreceiver.h
+    rtdb/include/dev_quantum.h
+    rtdb/include/dev_rds.h
+    rtdb/include/dev_remote.h
+    rtdb/include/dev_repeater.h
+    rtdb/include/dev_repeater800.h
+    rtdb/include/dev_repeater850.h
+    rtdb/include/dev_rf_da.h
+    rtdb/include/dev_rfn.h
+    rtdb/include/dev_rfn420centron.h
+    rtdb/include/dev_rfn420focus_al.h
+    rtdb/include/dev_rfnCommercial.h
+    rtdb/include/dev_rfnMeter.h
+    rtdb/include/dev_rfnResidential.h
+    rtdb/include/dev_rtc.h
+    rtdb/include/dev_rtm.h
+    rtdb/include/dev_schlum.h
+    rtdb/include/dev_sentinel.h
+    rtdb/include/dev_seriesv.h
+    rtdb/include/dev_single.h
+    rtdb/include/dev_sixnet.h
+    rtdb/include/dev_snpp.h
+    rtdb/include/dev_system.h
+    rtdb/include/dev_tap.h
+    rtdb/include/dev_tcu.h
+    rtdb/include/dev_tnpp.h
+    rtdb/include/dev_vectron.h
+    rtdb/include/dev_wctp.h
+    rtdb/include/dev_welco.h
+    rtdb/include/device_queue_interface.h
+    rtdb/include/dlldev.h
+    rtdb/include/encryption_cbcrbt.h
+    rtdb/include/encryption_cmac.h
+    rtdb/include/encryption_oneway.h
+    rtdb/include/encryption_oneway_message.h
+    rtdb/include/eventlog_mct440_213xb.h
+    rtdb/include/id_devdll.h
+    rtdb/include/id_dynpaoinfo.h
+    rtdb/include/id_pntdll.h
+    rtdb/include/id_prtdll.h
+    rtdb/include/mgr_device.h
+    rtdb/include/mgr_dyn_paoinfo.h
+    rtdb/include/mgr_holiday.h
+    rtdb/include/mgr_point.h
+    rtdb/include/mgr_route.h
+    rtdb/include/mgr_season.h
+    rtdb/include/port_base.h
+    rtdb/include/port_dialable.h
+    rtdb/include/port_dialin.h
+    rtdb/include/port_dialout.h
+    rtdb/include/port_direct.h
+    rtdb/include/port_modem.h
+    rtdb/include/port_pool_out.h
+    rtdb/include/port_rf_da.h
+    rtdb/include/port_serial.h
+    rtdb/include/port_tcp.h
+    rtdb/include/port_tcpipdirect.h
+    rtdb/include/port_udp.h
+    rtdb/include/pt_accum.h
+    rtdb/include/pt_analog.h
+    rtdb/include/pt_base.h
+    rtdb/include/pt_dyn_dispatch.h
+    rtdb/include/pt_numeric.h
+    rtdb/include/pt_status.h
+    rtdb/include/rtdb_test_helpers.h
+    rtdb/include/rte_base.h
+    rtdb/include/rte_ccu.h
+    rtdb/include/rte_expresscom.h
+    rtdb/include/rte_macro.h
+    rtdb/include/rte_versacom.h
+    rtdb/include/rte_xcu.h
+    rtdb/include/slctdev.h
+    rtdb/include/trx_711.h
+    rtdb/include/trx_info.h
+  }
+
+  Resource_Files {
+    ../versioninfo.rc
+  }
+
+  specific {
+    postbuild= \ns {
+if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
+xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin
+    }
+  }
+
+  specific {
+    Release::lib_modifier =
+    Debug::lib_modifier =
+  }
+
+}
+

@@ -1,0 +1,153 @@
+project(mc_server_client_serialization_test) {
+  exename=mc_server_client_serialization_test
+
+  after += ctibase
+  after += service
+  after += ctimsg
+  after += ctibase
+  after += ctidbsrc
+  after += ctiholidaydb
+  after += ctithriftmsg
+
+  macros += BOOST_ALL_DYN_LINK
+  macros += BOOST_ENABLE_ASSERT_HANDLER
+  macros += BUILD_VERSION=6.5\ (build\ 0)
+  macros += BUILD_VERSION_DETAILS=6.5.0
+  macros += NOMINMAX
+  macros += WIN32
+  macros += WINDOWS
+  macros += _CONSOLE
+  specific {
+    Debug::macros += _DEBUG
+  }
+  macros += _REENTRANT
+  macros += _WINDOWS
+  macros += _X86_=1
+  macros += __DLL__
+  includes += $(BOOST)/include
+  includes += $(SQLAPI)/include
+  includes += $(TCL)/include
+  includes += $(THRIFT)/include
+  includes += .
+  includes += ../common/include
+  includes += ../database/include
+  includes += ../macs/include
+  includes += ../message/Serialization
+  includes += ../message/include
+  includes += ../rtdb/include
+  includes += ../service/include
+  includes += ./include
+  includes += $(BOOST)\include
+  lit_libs += ..\lib\ctibase
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_chrono-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_chrono-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_date_time-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_date_time-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_thread-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_thread-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_regex-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_regex-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_filesystem-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_filesystem-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_system-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_system-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_unit_test_framework-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_unit_test_framework-vc120-mt-1_58
+  }
+  lit_libs += advapi32
+  specific {
+    Debug::lit_libs   += $(TCL)\$(CONFIGURATION)\lib\tcl86tg
+    Release::lit_libs += $(TCL)\$(CONFIGURATION)\lib\tcl86t
+  }
+  lit_libs += ..\lib\service
+  lit_libs += ..\lib\ctimsg
+  lit_libs += ..\lib\ctibase
+  lit_libs += ..\lib\ctidbsrc
+  lit_libs += ..\lib\ctiholidaydb
+  lit_libs += ..\lib\ctithriftmsg
+  lit_libs += $(THRIFT)\$(CONFIGURATION)\lib\libthrift
+  pch_header = precompiled.h
+  pch_source = ../precompiled.cpp
+
+  Source_Files {
+    ../precompiled.cpp
+    mc_server_client_serialization_test.cpp
+    
+    clientconn.cpp
+    clistener.cpp
+    mc_dbthr.cpp
+    mc_fileint.cpp
+    mc_msg.cpp
+    mc_sched.cpp
+    mc_scheduler.cpp
+    mc_script.cpp
+    mgr_mcsched.cpp
+    tbl_mcsched.cpp
+    tbl_mcsimpsched.cpp
+    decodetextcmdfile.cpp
+    mccmd.cpp
+    interp.cpp
+    interp_pool.cpp
+    wpsc.cpp
+    xcel.cpp
+    mc_message_serialization.cpp
+  }
+
+
+  Header_Files {
+    macs/include/clientconn.h
+    macs/include/clistener.h
+    macs/include/ctiid.h
+    macs/include/decodetextcmdfile.h
+    macs/include/id_macs.h
+    macs/include/interp.h
+    macs/include/interp_pool.h
+    macs/include/mc.h
+    macs/include/mc_dbthr.h
+    macs/include/mc_fileint.h
+    macs/include/mc_message_serialization.h
+    macs/include/mc_msg.h
+    macs/include/mc_sched.h
+    macs/include/mc_scheduler.h
+    macs/include/mc_script.h
+    macs/include/mc_server.h
+    macs/include/mc_svc.h
+    macs/include/mccmd.h
+    macs/include/mgr_mcsched.h
+    macs/include/tbl_mcsched.h
+    macs/include/tbl_mcsimpsched.h
+    macs/include/test_mc_serialization.h
+    macs/include/wpsc.h
+    macs/include/xcel.h
+  }
+
+  Resource_Files {
+  }
+
+  specific {
+    postbuild= \ns {
+if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
+xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin
+    }
+  }
+
+  specific {
+    Release::lib_modifier =
+    Debug::lib_modifier =
+  }
+
+}
+

@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{B1F27843-FECA-1BAD-9037-A82200006032}</UniqueIdentifier>
+      <Extensions>cpp;cxx;cc;c;C</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{06319535-FECA-1BAD-9037-A82200006032}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hh</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="test_fdrDnpSlave.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test_fdrTelegyr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test_fdrTextImport.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test_fdrTristateSub.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test_fdrutility.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test_main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="fdr\include\Ars.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\Cvs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\CygNetDefs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\Dcl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdracs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdracsmulti.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrasciiimportbase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrbepc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrclientconnection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrclientserverconnection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrcygnet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrdebuglevel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrdestination.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrdnpslave.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrdsm2filein.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrdsm2import.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\FdrException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrftpinterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrinet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrinterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrlivedata.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrlodestarimport.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrlodestarimport_enh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrlodestarimport_std.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrlodestarinfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrpibase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrpinotify.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrpipoll.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrpoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrpointidmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrpointlist.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrrccs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrrdex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrscadahelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrscadaserver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrserverconnection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrservice.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrsimplebase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrsinglesocket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrsocketconnection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrsocketinterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrsocketlayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrsocketserver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrstec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrtelegyr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrtextexport.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrtextfilebase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrtextimport.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrtristate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrTristateSub.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrutility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrvalmet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrvalmetmulti.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrvalmetutil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrwabash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\fdrxa21lm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\id_fdr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\inet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\livedata_rtp_api.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\livedatatypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\mgr_fdrpoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\RTP.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\RTP_APIW.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\serverconnection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\telegyrcontrolcenter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\telegyrgroup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fdr\include\textfileinterfaceparts.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

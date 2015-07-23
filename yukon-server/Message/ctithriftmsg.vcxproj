@@ -1,0 +1,754 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>ctithriftmsg</ProjectName>
+    <ProjectGuid>{E4433E7C-FECA-1BAD-68B7-7E944B245715}</ProjectGuid>
+    <RootNamespace>ctithriftmsg</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>NotSet</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>NotSet</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>NotSet</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>NotSet</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\build.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\build.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\build.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\build.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\$(ProjectName)\I386\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Static_Debug\ctithriftmsg\I386\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ctithriftmsg</TargetName>
+    <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetPath)</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'"></LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)</LocalDebuggerWorkingDirectory>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\$(ProjectName)\I386\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Static_Release\ctithriftmsg\I386\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ctithriftmsg</TargetName>
+    <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(TargetPath)</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"></LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)</LocalDebuggerWorkingDirectory>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Configuration)\$(ProjectName)\I386\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Static_Debug\ctithriftmsg\AMD64\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ctithriftmsg</TargetName>
+    <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(TargetPath)</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"></LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)</LocalDebuggerWorkingDirectory>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Configuration)\$(ProjectName)\I386\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Static_Release\ctithriftmsg\AMD64\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ctithriftmsg</TargetName>
+    <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetPath)</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Release|x64'"></LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)</LocalDebuggerWorkingDirectory>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(BOOST)\include;$(THRIFT)\include;.;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <WarningLevel>Level1</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>1033</Culture>
+      <AdditionalIncludeDirectories>$(BOOST)\include;$(THRIFT)\include;.;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>$(Configuration)\$(ProjectName)\I386\ctithriftmsg.lib</OutputFile>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+    <PostBuildEvent>
+      <Command>xcopy /d/y $(OutDir)$(TargetFileName) $(SolutionDir)bin
+if exist $(OutDir)$(TargetName).lib xcopy /d/y $(OutDir)$(TargetName).lib $(SolutionDir)lib
+if exist $(OutDir)$(TargetName).lib xcopy /d/y $(OutDir)$(TargetName).lib $(SolutionDir)bin</Command>
+    </PostBuildEvent>
+<!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
+     Check if msbuild has any support for a custom post-cleaning step
+ -->
+<!-- No known equivalent for DeploymentTool in vc10:
+-->
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(BOOST)\include;$(THRIFT)\include;.;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <WarningLevel>Level1</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>1033</Culture>
+      <AdditionalIncludeDirectories>$(BOOST)\include;$(THRIFT)\include;.;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>$(Configuration)\$(ProjectName)\I386\ctithriftmsg.lib</OutputFile>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+    <PostBuildEvent>
+      <Command>xcopy /d/y $(OutDir)$(TargetFileName) $(SolutionDir)bin
+if exist $(OutDir)$(TargetName).lib xcopy /d/y $(OutDir)$(TargetName).lib $(SolutionDir)lib
+if exist $(OutDir)$(TargetName).lib xcopy /d/y $(OutDir)$(TargetName).lib $(SolutionDir)bin</Command>
+    </PostBuildEvent>
+<!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
+     Check if msbuild has any support for a custom post-cleaning step
+ -->
+<!-- No known equivalent for DeploymentTool in vc10:
+-->
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TargetEnvironment>x64</TargetEnvironment>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(BOOST)\include;$(THRIFT)\include;.;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;_AMD64_;_WIN64;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <WarningLevel>Level1</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;_DEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>1033</Culture>
+      <AdditionalIncludeDirectories>$(BOOST)\include;$(THRIFT)\include;.;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>$(Configuration)\$(ProjectName)\I386\ctithriftmsg.lib</OutputFile>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+<!--
+  Though we can set TargetMachine explicitly, VC++
+  can figure it out by project type. We don't need
+  to set it by ourselves.
+-->
+<!--      <TargetMachine>0</TargetMachine>-->
+    </Lib>
+    <PostBuildEvent>
+      <Command>xcopy /d/y $(OutDir)$(TargetFileName) $(SolutionDir)bin
+if exist $(OutDir)$(TargetName).lib xcopy /d/y $(OutDir)$(TargetName).lib $(SolutionDir)lib
+if exist $(OutDir)$(TargetName).lib xcopy /d/y $(OutDir)$(TargetName).lib $(SolutionDir)bin</Command>
+    </PostBuildEvent>
+<!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
+     Check if msbuild has any support for a custom post-cleaning step
+ -->
+<!-- No known equivalent for DeploymentTool in vc10:
+-->
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TargetEnvironment>x64</TargetEnvironment>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(BOOST)\include;$(THRIFT)\include;.;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;_AMD64_;_WIN64;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <WarningLevel>Level1</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>1033</Culture>
+      <AdditionalIncludeDirectories>$(BOOST)\include;$(THRIFT)\include;.;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>$(Configuration)\$(ProjectName)\I386\ctithriftmsg.lib</OutputFile>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+<!--
+  Though we can set TargetMachine explicitly, VC++
+  can figure it out by project type. We don't need
+  to set it by ourselves.
+-->
+<!--      <TargetMachine>0</TargetMachine>-->
+    </Lib>
+    <PostBuildEvent>
+      <Command>xcopy /d/y $(OutDir)$(TargetFileName) $(SolutionDir)bin
+if exist $(OutDir)$(TargetName).lib xcopy /d/y $(OutDir)$(TargetName).lib $(SolutionDir)lib
+if exist $(OutDir)$(TargetName).lib xcopy /d/y $(OutDir)$(TargetName).lib $(SolutionDir)bin</Command>
+    </PostBuildEvent>
+<!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
+     Check if msbuild has any support for a custom post-cleaning step
+ -->
+<!-- No known equivalent for DeploymentTool in vc10:
+-->
+  </ItemDefinitionGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Serialization\Thrift\CCCapBankMove_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCCapBankMove_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCCapBankStates_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCCapBankStates_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCChangeOpState_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCChangeOpState_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCCommand_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCCommand_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCDeleteItem_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCDeleteItem_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCDynamicCommand_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCDynamicCommand_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCGeoAreas_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCGeoAreas_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCItemCommand_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCItemCommand_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCMessage_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCMessage_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCObjectMove_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCObjectMove_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCServerResponse_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCServerResponse_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCShutdown_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCShutdown_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCSpecialAreas_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCSpecialAreas_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCSubstationBus_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCSubstationBus_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCSubstations_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCSubstations_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCSystemStatus_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCSystemStatus_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCVerifyBanks_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCVerifyBanks_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCVerifyInactiveBanks_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCVerifyInactiveBanks_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCVerifySelectedBank_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCVerifySelectedBank_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCVoltageRegulator_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\CCVoltageRegulator_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\Command_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\Command_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\DBChange_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\DBChange_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMCommand_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMCommand_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMControlAreas_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMControlAreas_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMControlHistory_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMControlHistory_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMCurtailmentAcknowledge_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMCurtailmentAcknowledge_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMDynamicControlAreaData_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMDynamicControlAreaData_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMDynamicGroupData_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMDynamicGroupData_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMDynamicProgramData_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMDynamicProgramData_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMDynamicTriggerData_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMDynamicTriggerData_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMEnergyExchangeAccept_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMEnergyExchangeAccept_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMEnergyExchangeControl_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMEnergyExchangeControl_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMManualControlRequest_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMManualControlRequest_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMManualControlResponse_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMManualControlResponse_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMMessage_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMMessage_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\MCAddSchedule_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\MCAddSchedule_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\MCDeleteSchedule_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\MCDeleteSchedule_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\MCInfo_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\MCInfo_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\MCOverrideRequest_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\MCOverrideRequest_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\MCRetrieveSchedule_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\MCRetrieveSchedule_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\MCRetrieveScript_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\MCRetrieveScript_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\MCSchedule_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\MCSchedule_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\MCScript_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\MCScript_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\MCUpdateSchedule_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\MCUpdateSchedule_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\Message_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\Message_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\Multi_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\Multi_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\NetworkManagerMessaging_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\NetworkManagerMessaging_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\NotifAlarm_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\NotifAlarm_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\NotifCurtailmentEvent_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\NotifCurtailmentEvent_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\NotifCurtailmentEventDelete_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\NotifCurtailmentEventDelete_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\NotifCustomerEmail_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\NotifCustomerEmail_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\NotifEconomicEvent_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\NotifEconomicEvent_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\NotifEconomicEventDelete_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\NotifEconomicEventDelete_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\NotifEmail_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\NotifEmail_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\NotifLMControl_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\NotifLMControl_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\NotifVoiceCompleted_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\NotifVoiceCompleted_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\NotifVoiceDataRequest_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\NotifVoiceDataRequest_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\NotifVoiceDataResponse_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\NotifVoiceDataResponse_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\PointData_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\PointData_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\PointRegistration_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\PointRegistration_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\QueueData_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\QueueData_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\Registration_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\Registration_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\Request_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\Request_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\RequestCancel_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\RequestCancel_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\Return_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\Return_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\RfnE2eData_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\RfnE2eData_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\RfnExpressComBroadcastReply_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\RfnExpressComBroadcastReply_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\ServerRequest_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\ServerRequest_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\ServerResponse_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\ServerResponse_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\Signal_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\Signal_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\Tag_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\Tag_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\Trace_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\Trace_types.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\Types_constants.cpp">
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\Types_types.cpp">
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Serialization\Thrift\CCCapBankMove_constants.h" />
+    <ClInclude Include="Serialization\Thrift\CCCapBankMove_types.h" />
+    <ClInclude Include="Serialization\Thrift\CCCapBankStates_constants.h" />
+    <ClInclude Include="Serialization\Thrift\CCCapBankStates_types.h" />
+    <ClInclude Include="Serialization\Thrift\CCChangeOpState_constants.h" />
+    <ClInclude Include="Serialization\Thrift\CCChangeOpState_types.h" />
+    <ClInclude Include="Serialization\Thrift\CCCommand_constants.h" />
+    <ClInclude Include="Serialization\Thrift\CCCommand_types.h" />
+    <ClInclude Include="Serialization\Thrift\CCDeleteItem_constants.h" />
+    <ClInclude Include="Serialization\Thrift\CCDeleteItem_types.h" />
+    <ClInclude Include="Serialization\Thrift\CCDynamicCommand_constants.h" />
+    <ClInclude Include="Serialization\Thrift\CCDynamicCommand_types.h" />
+    <ClInclude Include="Serialization\Thrift\CCGeoAreas_constants.h" />
+    <ClInclude Include="Serialization\Thrift\CCGeoAreas_types.h" />
+    <ClInclude Include="Serialization\Thrift\CCItemCommand_constants.h" />
+    <ClInclude Include="Serialization\Thrift\CCItemCommand_types.h" />
+    <ClInclude Include="Serialization\Thrift\CCMessage_constants.h" />
+    <ClInclude Include="Serialization\Thrift\CCMessage_types.h" />
+    <ClInclude Include="Serialization\Thrift\CCObjectMove_constants.h" />
+    <ClInclude Include="Serialization\Thrift\CCObjectMove_types.h" />
+    <ClInclude Include="Serialization\Thrift\CCServerResponse_constants.h" />
+    <ClInclude Include="Serialization\Thrift\CCServerResponse_types.h" />
+    <ClInclude Include="Serialization\Thrift\CCShutdown_constants.h" />
+    <ClInclude Include="Serialization\Thrift\CCShutdown_types.h" />
+    <ClInclude Include="Serialization\Thrift\CCSpecialAreas_constants.h" />
+    <ClInclude Include="Serialization\Thrift\CCSpecialAreas_types.h" />
+    <ClInclude Include="Serialization\Thrift\CCSubstationBus_constants.h" />
+    <ClInclude Include="Serialization\Thrift\CCSubstationBus_types.h" />
+    <ClInclude Include="Serialization\Thrift\CCSubstations_constants.h" />
+    <ClInclude Include="Serialization\Thrift\CCSubstations_types.h" />
+    <ClInclude Include="Serialization\Thrift\CCSystemStatus_constants.h" />
+    <ClInclude Include="Serialization\Thrift\CCSystemStatus_types.h" />
+    <ClInclude Include="Serialization\Thrift\CCVerifyBanks_constants.h" />
+    <ClInclude Include="Serialization\Thrift\CCVerifyBanks_types.h" />
+    <ClInclude Include="Serialization\Thrift\CCVerifyInactiveBanks_constants.h" />
+    <ClInclude Include="Serialization\Thrift\CCVerifyInactiveBanks_types.h" />
+    <ClInclude Include="Serialization\Thrift\CCVerifySelectedBank_constants.h" />
+    <ClInclude Include="Serialization\Thrift\CCVerifySelectedBank_types.h" />
+    <ClInclude Include="Serialization\Thrift\CCVoltageRegulator_constants.h" />
+    <ClInclude Include="Serialization\Thrift\CCVoltageRegulator_types.h" />
+    <ClInclude Include="Serialization\Thrift\Command_constants.h" />
+    <ClInclude Include="Serialization\Thrift\Command_types.h" />
+    <ClInclude Include="Serialization\Thrift\DBChange_constants.h" />
+    <ClInclude Include="Serialization\Thrift\DBChange_types.h" />
+    <ClInclude Include="Serialization\Thrift\LMCommand_constants.h" />
+    <ClInclude Include="Serialization\Thrift\LMCommand_types.h" />
+    <ClInclude Include="Serialization\Thrift\LMControlAreas_constants.h" />
+    <ClInclude Include="Serialization\Thrift\LMControlAreas_types.h" />
+    <ClInclude Include="Serialization\Thrift\LMControlHistory_constants.h" />
+    <ClInclude Include="Serialization\Thrift\LMControlHistory_types.h" />
+    <ClInclude Include="Serialization\Thrift\LMCurtailmentAcknowledge_constants.h" />
+    <ClInclude Include="Serialization\Thrift\LMCurtailmentAcknowledge_types.h" />
+    <ClInclude Include="Serialization\Thrift\LMDynamicControlAreaData_constants.h" />
+    <ClInclude Include="Serialization\Thrift\LMDynamicControlAreaData_types.h" />
+    <ClInclude Include="Serialization\Thrift\LMDynamicGroupData_constants.h" />
+    <ClInclude Include="Serialization\Thrift\LMDynamicGroupData_types.h" />
+    <ClInclude Include="Serialization\Thrift\LMDynamicProgramData_constants.h" />
+    <ClInclude Include="Serialization\Thrift\LMDynamicProgramData_types.h" />
+    <ClInclude Include="Serialization\Thrift\LMDynamicTriggerData_constants.h" />
+    <ClInclude Include="Serialization\Thrift\LMDynamicTriggerData_types.h" />
+    <ClInclude Include="Serialization\Thrift\LMEnergyExchangeAccept_constants.h" />
+    <ClInclude Include="Serialization\Thrift\LMEnergyExchangeAccept_types.h" />
+    <ClInclude Include="Serialization\Thrift\LMEnergyExchangeControl_constants.h" />
+    <ClInclude Include="Serialization\Thrift\LMEnergyExchangeControl_types.h" />
+    <ClInclude Include="Serialization\Thrift\LMManualControlRequest_constants.h" />
+    <ClInclude Include="Serialization\Thrift\LMManualControlRequest_types.h" />
+    <ClInclude Include="Serialization\Thrift\LMManualControlResponse_constants.h" />
+    <ClInclude Include="Serialization\Thrift\LMManualControlResponse_types.h" />
+    <ClInclude Include="Serialization\Thrift\LMMessage_constants.h" />
+    <ClInclude Include="Serialization\Thrift\LMMessage_types.h" />
+    <ClInclude Include="Serialization\Thrift\MCAddSchedule_constants.h" />
+    <ClInclude Include="Serialization\Thrift\MCAddSchedule_types.h" />
+    <ClInclude Include="Serialization\Thrift\MCDeleteSchedule_constants.h" />
+    <ClInclude Include="Serialization\Thrift\MCDeleteSchedule_types.h" />
+    <ClInclude Include="Serialization\Thrift\MCInfo_constants.h" />
+    <ClInclude Include="Serialization\Thrift\MCInfo_types.h" />
+    <ClInclude Include="Serialization\Thrift\MCOverrideRequest_constants.h" />
+    <ClInclude Include="Serialization\Thrift\MCOverrideRequest_types.h" />
+    <ClInclude Include="Serialization\Thrift\MCRetrieveSchedule_constants.h" />
+    <ClInclude Include="Serialization\Thrift\MCRetrieveSchedule_types.h" />
+    <ClInclude Include="Serialization\Thrift\MCRetrieveScript_constants.h" />
+    <ClInclude Include="Serialization\Thrift\MCRetrieveScript_types.h" />
+    <ClInclude Include="Serialization\Thrift\MCSchedule_constants.h" />
+    <ClInclude Include="Serialization\Thrift\MCSchedule_types.h" />
+    <ClInclude Include="Serialization\Thrift\MCScript_constants.h" />
+    <ClInclude Include="Serialization\Thrift\MCScript_types.h" />
+    <ClInclude Include="Serialization\Thrift\MCUpdateSchedule_constants.h" />
+    <ClInclude Include="Serialization\Thrift\MCUpdateSchedule_types.h" />
+    <ClInclude Include="Serialization\Thrift\Message_constants.h" />
+    <ClInclude Include="Serialization\Thrift\Message_types.h" />
+    <ClInclude Include="Serialization\Thrift\Multi_constants.h" />
+    <ClInclude Include="Serialization\Thrift\Multi_types.h" />
+    <ClInclude Include="Serialization\Thrift\NetworkManagerMessaging_constants.h" />
+    <ClInclude Include="Serialization\Thrift\NetworkManagerMessaging_types.h" />
+    <ClInclude Include="Serialization\Thrift\NotifAlarm_constants.h" />
+    <ClInclude Include="Serialization\Thrift\NotifAlarm_types.h" />
+    <ClInclude Include="Serialization\Thrift\NotifCurtailmentEvent_constants.h" />
+    <ClInclude Include="Serialization\Thrift\NotifCurtailmentEvent_types.h" />
+    <ClInclude Include="Serialization\Thrift\NotifCurtailmentEventDelete_constants.h" />
+    <ClInclude Include="Serialization\Thrift\NotifCurtailmentEventDelete_types.h" />
+    <ClInclude Include="Serialization\Thrift\NotifCustomerEmail_constants.h" />
+    <ClInclude Include="Serialization\Thrift\NotifCustomerEmail_types.h" />
+    <ClInclude Include="Serialization\Thrift\NotifEconomicEvent_constants.h" />
+    <ClInclude Include="Serialization\Thrift\NotifEconomicEvent_types.h" />
+    <ClInclude Include="Serialization\Thrift\NotifEconomicEventDelete_constants.h" />
+    <ClInclude Include="Serialization\Thrift\NotifEconomicEventDelete_types.h" />
+    <ClInclude Include="Serialization\Thrift\NotifEmail_constants.h" />
+    <ClInclude Include="Serialization\Thrift\NotifEmail_types.h" />
+    <ClInclude Include="Serialization\Thrift\NotifLMControl_constants.h" />
+    <ClInclude Include="Serialization\Thrift\NotifLMControl_types.h" />
+    <ClInclude Include="Serialization\Thrift\NotifVoiceCompleted_constants.h" />
+    <ClInclude Include="Serialization\Thrift\NotifVoiceCompleted_types.h" />
+    <ClInclude Include="Serialization\Thrift\NotifVoiceDataRequest_constants.h" />
+    <ClInclude Include="Serialization\Thrift\NotifVoiceDataRequest_types.h" />
+    <ClInclude Include="Serialization\Thrift\NotifVoiceDataResponse_constants.h" />
+    <ClInclude Include="Serialization\Thrift\NotifVoiceDataResponse_types.h" />
+    <ClInclude Include="Serialization\Thrift\PointData_constants.h" />
+    <ClInclude Include="Serialization\Thrift\PointData_types.h" />
+    <ClInclude Include="Serialization\Thrift\PointRegistration_constants.h" />
+    <ClInclude Include="Serialization\Thrift\PointRegistration_types.h" />
+    <ClInclude Include="Serialization\Thrift\QueueData_constants.h" />
+    <ClInclude Include="Serialization\Thrift\QueueData_types.h" />
+    <ClInclude Include="Serialization\Thrift\Registration_constants.h" />
+    <ClInclude Include="Serialization\Thrift\Registration_types.h" />
+    <ClInclude Include="Serialization\Thrift\Request_constants.h" />
+    <ClInclude Include="Serialization\Thrift\Request_types.h" />
+    <ClInclude Include="Serialization\Thrift\RequestCancel_constants.h" />
+    <ClInclude Include="Serialization\Thrift\RequestCancel_types.h" />
+    <ClInclude Include="Serialization\Thrift\Return_constants.h" />
+    <ClInclude Include="Serialization\Thrift\Return_types.h" />
+    <ClInclude Include="Serialization\Thrift\RfnE2eData_constants.h" />
+    <ClInclude Include="Serialization\Thrift\RfnE2eData_types.h" />
+    <ClInclude Include="Serialization\Thrift\RfnExpressComBroadcastReply_constants.h" />
+    <ClInclude Include="Serialization\Thrift\RfnExpressComBroadcastReply_types.h" />
+    <ClInclude Include="Serialization\Thrift\ServerRequest_constants.h" />
+    <ClInclude Include="Serialization\Thrift\ServerRequest_types.h" />
+    <ClInclude Include="Serialization\Thrift\ServerResponse_constants.h" />
+    <ClInclude Include="Serialization\Thrift\ServerResponse_types.h" />
+    <ClInclude Include="Serialization\Thrift\Signal_constants.h" />
+    <ClInclude Include="Serialization\Thrift\Signal_types.h" />
+    <ClInclude Include="Serialization\Thrift\Tag_constants.h" />
+    <ClInclude Include="Serialization\Thrift\Tag_types.h" />
+    <ClInclude Include="Serialization\Thrift\Trace_constants.h" />
+    <ClInclude Include="Serialization\Thrift\Trace_types.h" />
+    <ClInclude Include="Serialization\Thrift\Types_constants.h" />
+    <ClInclude Include="Serialization\Thrift\Types_types.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

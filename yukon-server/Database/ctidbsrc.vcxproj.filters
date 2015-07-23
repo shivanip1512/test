@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{B1F27843-FECA-1BAD-5447-C89126274653}</UniqueIdentifier>
+      <Extensions>cpp;cxx;cc;c;C</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{06319535-FECA-1BAD-5447-C89126274653}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hh</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{502A2050-FECA-1BAD-5447-C89126274653}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllyukon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InvalidReaderException.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_alm_ngroup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_base.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_carrier.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_ci_cust.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_contact_notification.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_devicereadjoblog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_devicereadrequestlog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_dialup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_direct.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_dv_address.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_dv_cbc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_dv_emetcon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_dv_expresscom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_dv_idlcremote.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_dv_ied.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_dv_lmg_ripple.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_dv_lmgmct.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_dv_lmvcserial.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_dv_mctiedport.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_dv_pagingreceiver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_dv_rtc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_dv_scandata.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_dv_seriesv.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_dv_tappaging.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_dv_tnpp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_dv_versacom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_dv_wnd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_dyn_lcrComms.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_dyn_paoinfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_dyn_ptalarming.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_dyn_pttag.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_lm_controlhist.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_lmg_point.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_lmg_sa205105.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_lmg_sa305.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_lmg_sasimple.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_lmprogramhistory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_loadprofile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_metergrp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_meterreadlog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_pao.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_pao_lite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_paoexclusion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_paoproperty.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_port_base.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_port_dialup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_port_serial.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_port_settings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_port_tcpip.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_port_timing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_pt_accum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_pt_accumhistory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_pt_alarm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_pt_analog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_pt_base.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_pt_control.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_pt_limit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_pt_property.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_pt_status.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_pt_status_control.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_pt_unit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_ptdispatch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_rfnidentifier.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_route.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_rtcarrier.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_rtcomm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_rtmacro.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_rtrepeater.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_rtversacom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_scanrate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_state.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_state_grp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_static_paoinfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_tag.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_taglog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_unitmeasure.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="database\include\da_load_profile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\dbmemobject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\dllyukon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\InvalidReaderException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_alm_ngroup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_base.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_carrier.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_ci_cust.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_contact_notification.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_devicereadjoblog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_devicereadrequestlog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_dialup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_direct.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_dv_address.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_dv_cbc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_dv_emetcon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_dv_expresscom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_dv_idlcremote.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_dv_ied.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_dv_lmg_ripple.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_dv_lmgmct.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_dv_lmvcserial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_dv_mctiedport.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_dv_pagingreceiver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_dv_rtc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_dv_scandata.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_dv_seriesv.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_dv_tappaging.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_dv_tnpp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_dv_versacom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_dv_wnd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_dyn_lcrComms.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_dyn_paoinfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_dyn_ptalarming.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_dyn_pttag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_lm_controlhist.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_lmg_point.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_lmg_sa205105.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_lmg_sa305.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_lmg_sasimple.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_lmprogramhistory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_loadprofile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_metergrp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_meterreadlog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_pao.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_pao_lite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_paoexclusion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_paoproperty.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_port_base.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_port_dialup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_port_serial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_port_settings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_port_tcpip.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_port_timing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_pt_accum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_pt_accumhistory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_pt_alarm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_pt_analog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_pt_base.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_pt_control.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_pt_limit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_pt_property.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_pt_status.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_pt_status_control.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_pt_unit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_ptdispatch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_rfnidentifier.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_route.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_rtcarrier.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_rtcomm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_rtmacro.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_rtrepeater.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_rtversacom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_scanrate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_state.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_state_grp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_static_paoinfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_tag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_taglog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="database\include\tbl_unitmeasure.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\versioninfo.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

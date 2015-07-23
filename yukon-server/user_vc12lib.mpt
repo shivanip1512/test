@@ -1,0 +1,12 @@
+warning_level = 1
+lib_modifier  =
+ExceptionHandling = Async
+debug_format = ProgramDatabase
+MultiProcessorCompilation = 1
+WholeProgramOptimization =
+Release {
+  WholeProgramOptimization =
+}
+ImageHasSafeExceptionHandlers = false
+libout=$(Configuration)\$(ProjectName)\I386
+BasicRuntimeChecks=Default

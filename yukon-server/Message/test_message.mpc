@@ -1,0 +1,161 @@
+project(test_message) {
+  exename=test_message
+
+  after += ctibase
+  after += ctimsg
+
+  macros += BOOST_ALL_DYN_LINK
+  macros += BOOST_ENABLE_ASSERT_HANDLER
+  macros += BUILD_VERSION=6.5\ (build\ 0)
+  macros += BUILD_VERSION_DETAILS=6.5.0
+  macros += NOMINMAX
+  macros += WIN32
+  macros += _CONSOLE
+  specific {
+    Debug::macros += _DEBUG
+  }
+  macros += _REENTRANT
+  macros += _WINDOWS
+  macros += _X86_=1
+  macros += __DLL__
+  includes += $(BOOST)/include
+  includes += $(SQLAPI)/include
+  includes += $(THRIFT)/include
+  includes += .
+  includes += ../common/include
+  includes += ../message/Serialization
+  includes += ../message/include
+  includes += ./include
+  includes += $(BOOST)\include
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_chrono-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_chrono-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_date_time-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_date_time-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_thread-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_thread-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_regex-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_regex-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_filesystem-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_filesystem-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_system-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_system-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_unit_test_framework-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_unit_test_framework-vc120-mt-1_58
+  }
+  lit_libs += kernel32
+  lit_libs += user32
+  lit_libs += advapi32
+  lit_libs += ..\lib\ctibase
+  lit_libs += ..\lib\ctimsg
+  lit_libs += $(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cpp
+  pch_header = precompiled.h
+  pch_source = ../precompiled.cpp
+
+  Source_Files {
+    ../precompiled.cpp
+    
+    test_main.cpp
+    test_PointDataRequest.cpp
+    test_message.cpp
+    test_multi_msg.cpp
+    test_serialization.cpp
+  }
+
+
+  Header_Files {
+    Message/include/amq_connection.h
+    Message/include/amq_constants.h
+    Message/include/amq_util.h
+    Message/include/CapControlOperationMessage.h
+    Message/include/connection.h
+    Message/include/connection_base.h
+    Message/include/connection_client.h
+    Message/include/connection_listener.h
+    Message/include/connection_server.h
+    Message/include/ControlHistoryAssociationResponse.h
+    Message/include/DispatchConnection.h
+    Message/include/DispatchPointDataRequest.h
+    Message/include/id_ctimsg.h
+    Message/include/id_rfn_e2e.h
+    Message/include/IVVCAnalysisMessage.h
+    Message/include/LMEcobeeMessages.h
+    Message/include/LMSepControlMessage.h
+    Message/include/LMSepRestoreMessage.h
+    Message/include/message.h
+    Message/include/MessageListener.h
+    Message/include/msg_cmd.h
+    Message/include/msg_dbchg.h
+    Message/include/msg_lmcontrolhistory.h
+    Message/include/msg_multi.h
+    Message/include/msg_multiwrap.h
+    Message/include/msg_notif_alarm.h
+    Message/include/msg_notif_email.h
+    Message/include/msg_notif_lmcontrol.h
+    Message/include/msg_pcrequest.h
+    Message/include/msg_pcreturn.h
+    Message/include/msg_pdata.h
+    Message/include/msg_ptreg.h
+    Message/include/msg_queuedata.h
+    Message/include/Msg_reg.h
+    Message/include/msg_requestcancel.h
+    Message/include/msg_server_req.h
+    Message/include/msg_server_resp.h
+    Message/include/msg_signal.h
+    Message/include/msg_tag.h
+    Message/include/msg_trace.h
+    Message/include/NetworkManagerMessaging.h
+    Message/include/NetworkManagerRequest.h
+    Message/include/PointDataHandler.h
+    Message/include/PointDataListener.h
+    Message/include/PointDataRequest.h
+    Message/include/PointDataRequestFactory.h
+    Message/include/PorterResponseMessage.h
+    Message/include/rfn_asid.h
+    Message/include/rfn_e2e_messenger.h
+    Message/include/RfnBroadcastMessage.h
+    Message/include/RfnBroadcastReplyMessage.h
+    Message/include/RfnE2eDataConfirmMsg.h
+    Message/include/RfnE2eDataIndicationMsg.h
+    Message/include/RfnE2eDataRequestMsg.h
+    Message/include/RfnE2eMsg.h
+    Message/include/StreamableMessage.h
+    Message/include/streamAmqConnection.h
+    Message/include/test_serialization.h
+    Message/include/test_serialization_helper.h
+    Message/include/UpdatablePao.h
+  }
+
+  Resource_Files {
+  }
+
+  specific {
+    postbuild= \ns {
+if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
+xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin
+    }
+  }
+
+  specific {
+    Release::lib_modifier =
+    Debug::lib_modifier =
+  }
+
+  specific {
+    ForcedIncludeFiles=precompiled.h
+  }
+
+}
+

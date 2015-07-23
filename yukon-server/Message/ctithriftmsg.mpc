@@ -1,0 +1,178 @@
+project(ctithriftmsg) {
+  staticname=ctithriftmsg
+  macros += BOOST_ENABLE_ASSERT_HANDLER
+  macros += BUILD_VERSION=6.5\ (build\ 0)
+  macros += BUILD_VERSION_DETAILS=6.5.0
+  specific {
+    Debug::macros += _DEBUG
+  }
+  includes += $(BOOST)/include
+  includes += $(THRIFT)/include
+  includes += .
+  includes += ./include
+  Source_Files {
+    Serialization\Thrift\CCCapBankMove_constants.cpp
+    Serialization\Thrift\CCCapBankMove_types.cpp
+    Serialization\Thrift\CCCapBankStates_constants.cpp
+    Serialization\Thrift\CCCapBankStates_types.cpp
+    Serialization\Thrift\CCChangeOpState_constants.cpp
+    Serialization\Thrift\CCChangeOpState_types.cpp
+    Serialization\Thrift\CCCommand_constants.cpp
+    Serialization\Thrift\CCCommand_types.cpp
+    Serialization\Thrift\CCDeleteItem_constants.cpp
+    Serialization\Thrift\CCDeleteItem_types.cpp
+    Serialization\Thrift\CCDynamicCommand_constants.cpp
+    Serialization\Thrift\CCDynamicCommand_types.cpp
+    Serialization\Thrift\CCGeoAreas_constants.cpp
+    Serialization\Thrift\CCGeoAreas_types.cpp
+    Serialization\Thrift\CCItemCommand_constants.cpp
+    Serialization\Thrift\CCItemCommand_types.cpp
+    Serialization\Thrift\CCMessage_constants.cpp
+    Serialization\Thrift\CCMessage_types.cpp
+    Serialization\Thrift\CCObjectMove_constants.cpp
+    Serialization\Thrift\CCObjectMove_types.cpp
+    Serialization\Thrift\CCServerResponse_constants.cpp
+    Serialization\Thrift\CCServerResponse_types.cpp
+    Serialization\Thrift\CCShutdown_constants.cpp
+    Serialization\Thrift\CCShutdown_types.cpp
+    Serialization\Thrift\CCSpecialAreas_constants.cpp
+    Serialization\Thrift\CCSpecialAreas_types.cpp
+    Serialization\Thrift\CCSubstationBus_constants.cpp
+    Serialization\Thrift\CCSubstationBus_types.cpp
+    Serialization\Thrift\CCSubstations_constants.cpp
+    Serialization\Thrift\CCSubstations_types.cpp
+    Serialization\Thrift\CCSystemStatus_constants.cpp
+    Serialization\Thrift\CCSystemStatus_types.cpp
+    Serialization\Thrift\CCVerifyBanks_constants.cpp
+    Serialization\Thrift\CCVerifyBanks_types.cpp
+    Serialization\Thrift\CCVerifyInactiveBanks_constants.cpp
+    Serialization\Thrift\CCVerifyInactiveBanks_types.cpp
+    Serialization\Thrift\CCVerifySelectedBank_constants.cpp
+    Serialization\Thrift\CCVerifySelectedBank_types.cpp
+    Serialization\Thrift\CCVoltageRegulator_constants.cpp
+    Serialization\Thrift\CCVoltageRegulator_types.cpp
+    Serialization\Thrift\Command_constants.cpp
+    Serialization\Thrift\Command_types.cpp
+    Serialization\Thrift\DBChange_constants.cpp
+    Serialization\Thrift\DBChange_types.cpp
+    Serialization\Thrift\LMCommand_constants.cpp
+    Serialization\Thrift\LMCommand_types.cpp
+    Serialization\Thrift\LMControlAreas_constants.cpp
+    Serialization\Thrift\LMControlAreas_types.cpp
+    Serialization\Thrift\LMControlHistory_constants.cpp
+    Serialization\Thrift\LMControlHistory_types.cpp
+    Serialization\Thrift\LMCurtailmentAcknowledge_constants.cpp
+    Serialization\Thrift\LMCurtailmentAcknowledge_types.cpp
+    Serialization\Thrift\LMDynamicControlAreaData_constants.cpp
+    Serialization\Thrift\LMDynamicControlAreaData_types.cpp
+    Serialization\Thrift\LMDynamicGroupData_constants.cpp
+    Serialization\Thrift\LMDynamicGroupData_types.cpp
+    Serialization\Thrift\LMDynamicProgramData_constants.cpp
+    Serialization\Thrift\LMDynamicProgramData_types.cpp
+    Serialization\Thrift\LMDynamicTriggerData_constants.cpp
+    Serialization\Thrift\LMDynamicTriggerData_types.cpp
+    Serialization\Thrift\LMEnergyExchangeAccept_constants.cpp
+    Serialization\Thrift\LMEnergyExchangeAccept_types.cpp
+    Serialization\Thrift\LMEnergyExchangeControl_constants.cpp
+    Serialization\Thrift\LMEnergyExchangeControl_types.cpp
+    Serialization\Thrift\LMManualControlRequest_constants.cpp
+    Serialization\Thrift\LMManualControlRequest_types.cpp
+    Serialization\Thrift\LMManualControlResponse_constants.cpp
+    Serialization\Thrift\LMManualControlResponse_types.cpp
+    Serialization\Thrift\LMMessage_constants.cpp
+    Serialization\Thrift\LMMessage_types.cpp
+    Serialization\Thrift\MCAddSchedule_constants.cpp
+    Serialization\Thrift\MCAddSchedule_types.cpp
+    Serialization\Thrift\MCDeleteSchedule_constants.cpp
+    Serialization\Thrift\MCDeleteSchedule_types.cpp
+    Serialization\Thrift\MCInfo_constants.cpp
+    Serialization\Thrift\MCInfo_types.cpp
+    Serialization\Thrift\MCOverrideRequest_constants.cpp
+    Serialization\Thrift\MCOverrideRequest_types.cpp
+    Serialization\Thrift\MCRetrieveSchedule_constants.cpp
+    Serialization\Thrift\MCRetrieveSchedule_types.cpp
+    Serialization\Thrift\MCRetrieveScript_constants.cpp
+    Serialization\Thrift\MCRetrieveScript_types.cpp
+    Serialization\Thrift\MCSchedule_constants.cpp
+    Serialization\Thrift\MCSchedule_types.cpp
+    Serialization\Thrift\MCScript_constants.cpp
+    Serialization\Thrift\MCScript_types.cpp
+    Serialization\Thrift\MCUpdateSchedule_constants.cpp
+    Serialization\Thrift\MCUpdateSchedule_types.cpp
+    Serialization\Thrift\Message_constants.cpp
+    Serialization\Thrift\Message_types.cpp
+    Serialization\Thrift\Multi_constants.cpp
+    Serialization\Thrift\Multi_types.cpp
+    Serialization\Thrift\NetworkManagerMessaging_constants.cpp
+    Serialization\Thrift\NetworkManagerMessaging_types.cpp
+    Serialization\Thrift\NotifAlarm_constants.cpp
+    Serialization\Thrift\NotifAlarm_types.cpp
+    Serialization\Thrift\NotifCurtailmentEventDelete_constants.cpp
+    Serialization\Thrift\NotifCurtailmentEventDelete_types.cpp
+    Serialization\Thrift\NotifCurtailmentEvent_constants.cpp
+    Serialization\Thrift\NotifCurtailmentEvent_types.cpp
+    Serialization\Thrift\NotifCustomerEmail_constants.cpp
+    Serialization\Thrift\NotifCustomerEmail_types.cpp
+    Serialization\Thrift\NotifEconomicEventDelete_constants.cpp
+    Serialization\Thrift\NotifEconomicEventDelete_types.cpp
+    Serialization\Thrift\NotifEconomicEvent_constants.cpp
+    Serialization\Thrift\NotifEconomicEvent_types.cpp
+    Serialization\Thrift\NotifEmail_constants.cpp
+    Serialization\Thrift\NotifEmail_types.cpp
+    Serialization\Thrift\NotifLMControl_constants.cpp
+    Serialization\Thrift\NotifLMControl_types.cpp
+    Serialization\Thrift\NotifVoiceCompleted_constants.cpp
+    Serialization\Thrift\NotifVoiceCompleted_types.cpp
+    Serialization\Thrift\NotifVoiceDataRequest_constants.cpp
+    Serialization\Thrift\NotifVoiceDataRequest_types.cpp
+    Serialization\Thrift\NotifVoiceDataResponse_constants.cpp
+    Serialization\Thrift\NotifVoiceDataResponse_types.cpp
+    Serialization\Thrift\PointData_constants.cpp
+    Serialization\Thrift\PointData_types.cpp
+    Serialization\Thrift\PointRegistration_constants.cpp
+    Serialization\Thrift\PointRegistration_types.cpp
+    Serialization\Thrift\QueueData_constants.cpp
+    Serialization\Thrift\QueueData_types.cpp
+    Serialization\Thrift\Registration_constants.cpp
+    Serialization\Thrift\Registration_types.cpp
+    Serialization\Thrift\RequestCancel_constants.cpp
+    Serialization\Thrift\RequestCancel_types.cpp
+    Serialization\Thrift\Request_constants.cpp
+    Serialization\Thrift\Request_types.cpp
+    Serialization\Thrift\Return_constants.cpp
+    Serialization\Thrift\Return_types.cpp
+    Serialization\Thrift\RfnE2eData_constants.cpp
+    Serialization\Thrift\RfnE2eData_types.cpp
+    Serialization\Thrift\RfnExpressComBroadcastReply_constants.cpp
+    Serialization\Thrift\RfnExpressComBroadcastReply_types.cpp
+    Serialization\Thrift\ServerRequest_constants.cpp
+    Serialization\Thrift\ServerRequest_types.cpp
+    Serialization\Thrift\ServerResponse_constants.cpp
+    Serialization\Thrift\ServerResponse_types.cpp
+    Serialization\Thrift\Signal_constants.cpp
+    Serialization\Thrift\Signal_types.cpp
+    Serialization\Thrift\Tag_constants.cpp
+    Serialization\Thrift\Tag_types.cpp
+    Serialization\Thrift\Trace_constants.cpp
+    Serialization\Thrift\Trace_types.cpp
+    Serialization\Thrift\Types_constants.cpp
+    Serialization\Thrift\Types_types.cpp
+  }
+
+  specific {
+    postbuild= \ns {
+xcopy /d/y $(OutDir)$(TargetFileName) $(SolutionDir)bin
+if exist $(OutDir)$(TargetName).lib xcopy /d/y $(OutDir)$(TargetName).lib $(SolutionDir)lib
+if exist $(OutDir)$(TargetName).lib xcopy /d/y $(OutDir)$(TargetName).lib $(SolutionDir)bin
+    }
+  }
+
+  specific {
+    Release::lib_modifier =
+    Debug::lib_modifier =
+    Release::runtime_library=MultiThreadedDLL
+    Debug::runtime_library=MultiThreadedDebugDLL
+  }
+
+}
+

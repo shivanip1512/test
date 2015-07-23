@@ -1,0 +1,160 @@
+project(test_simulator) {
+  exename=test_simulator
+
+  after += ctibase
+  after += ctidevdb
+  after += ctidbsrc
+
+  macros += BOOST_ALL_DYN_LINK
+  macros += BOOST_ENABLE_ASSERT_HANDLER
+  macros += BUILD_VERSION=6.5\ (build\ 0)
+  macros += BUILD_VERSION_DETAILS=6.5.0
+  macros += NOMINMAX
+  macros += WIN32
+  macros += _CONSOLE
+  specific {
+    Debug::macros += _DEBUG
+  }
+  macros += _REENTRANT
+  macros += _WINDOWS
+  macros += _X86_=1
+  macros += __DLL__
+  includes += $(BOOST)/include
+  includes += $(SQLAPI)/include
+  includes += .
+  includes += ../common/include
+  includes += ../database/include
+  includes += ../deviceconfiguration/include
+  includes += ../message/include
+  includes += ../protocol/include
+  includes += ../rtdb/include
+  includes += ../server/include
+  includes += ../service/include
+  includes += ./include
+  includes += $(BOOST)\include
+  lit_libs += ..\lib\ctibase
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_chrono-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_chrono-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_date_time-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_date_time-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_thread-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_thread-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_regex-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_regex-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_filesystem-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_filesystem-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_system-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_system-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_unit_test_framework-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_unit_test_framework-vc120-mt-1_58
+  }
+  lit_libs += kernel32
+  lit_libs += user32
+  lit_libs += advapi32
+  lit_libs += wsock32
+  lit_libs += ..\lib\ctidevdb
+  lit_libs += ..\lib\ctidbsrc
+  pch_header = precompiled.h
+  pch_source = ../precompiled.cpp
+
+  Source_Files {
+    ../precompiled.cpp
+    
+    test_main.cpp
+    test_ccusim.cpp
+    test_behavior_collection.cpp
+    test_delay_behavior.cpp
+    test_bch_behavior.cpp
+    test_nack_behavior.cpp
+    test_frozen_read_parity_behavior.cpp
+    test_frozen_peak_timestamp_behavior.cpp
+    test_random_consumption_behavior.cpp
+    test_invalid_usage_reading_behavior.cpp
+    test_mct410_sim.cpp
+    SimulatorUtils.cpp
+    Simulator.cpp
+    SimulatorLogger.cpp
+    Ccu710.cpp
+    PlcInfrastructure.cpp
+    PlcTransmitter.cpp
+    ScopedLogger.cpp
+    PortLogger.cpp
+    EmetconWords.cpp
+    DeviceMemoryManager.cpp
+    Mct410.cpp
+    DelayBehavior.cpp
+    BchBehavior.cpp
+    NackBehavior.cpp
+    FrozenPeakTimestampBehavior.cpp
+    FrozenReadParityBehavior.cpp
+    RandomConsumptionBehavior.cpp
+    InvalidUsageReadingBehavior.cpp
+  }
+
+
+  Header_Files {
+    simulator/include/BchBehavior.h
+    simulator/include/Behavior.h
+    simulator/include/BehaviorCollection.h
+    simulator/include/Ccu710.h
+    simulator/include/Ccu711.h
+    simulator/include/Ccu721.h
+    simulator/include/CcuIDLC.h
+    simulator/include/ccusimsvc.h
+    simulator/include/CommInterface.h
+    simulator/include/CommsBehavior.h
+    simulator/include/DelayBehavior.h
+    simulator/include/DeviceMemoryManager.h
+    simulator/include/EmetconWords.h
+    simulator/include/FrozenPeakTimestampBehavior.h
+    simulator/include/FrozenReadParityBehavior.h
+    simulator/include/InvalidUsageReadingBehavior.h
+    simulator/include/Mct410.h
+    simulator/include/MctBehavior.h
+    simulator/include/NackBehavior.h
+    simulator/include/PlcBehavior.h
+    simulator/include/PlcInfrastructure.h
+    simulator/include/PlcTransmitter.h
+    simulator/include/PortLogger.h
+    simulator/include/RandomConsumptionBehavior.h
+    simulator/include/ScopedLogger.h
+    simulator/include/Simulator.h
+    simulator/include/SimulatorLogger.h
+    simulator/include/SimulatorUtils.h
+    simulator/include/Types.h
+  }
+
+  Resource_Files {
+  }
+
+  specific {
+    postbuild= \ns {
+if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
+xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin
+    }
+  }
+
+  specific {
+    Release::lib_modifier =
+    Debug::lib_modifier =
+  }
+
+  specific {
+    ForcedIncludeFiles=precompiled.h
+  }
+
+}
+

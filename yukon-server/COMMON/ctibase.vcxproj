@@ -1,0 +1,642 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>ctibase</ProjectName>
+    <ProjectGuid>{749B109C-FECA-1BAD-4657-EE4C0659BB9E}</ProjectGuid>
+    <RootNamespace>ctibase</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>NotSet</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>NotSet</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>NotSet</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>NotSet</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\build.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\build.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\build.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\build.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\$(ProjectName)\I386\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\ctibase\I386\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ctibase</TargetName>
+    <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetPath)</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'"></LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)</LocalDebuggerWorkingDirectory>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\$(ProjectName)\I386\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\ctibase\I386\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ctibase</TargetName>
+    <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(TargetPath)</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"></LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)</LocalDebuggerWorkingDirectory>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Configuration)\$(ProjectName)\I386\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Debug\ctibase\AMD64\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ctibase</TargetName>
+    <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(TargetPath)</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"></LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)</LocalDebuggerWorkingDirectory>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Configuration)\$(ProjectName)\I386\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Release\ctibase\AMD64\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ctibase</TargetName>
+    <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetPath)</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Release|x64'"></LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)</LocalDebuggerWorkingDirectory>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(APR)\include;$(BOOST)\include;$(CAJUN)\include;$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>USING_PCH;_DEBUG;WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;CTIBASE;NOMINMAX;WIN32;_CONSOLE;_DEBUG;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctibase;D_FILE_VERSION=6,5,0,0;D_FILE_VERSION_STR=6.5.0.0;D_PRODUCT_VERSION=6,5,0,0;D_PRODUCT_VERSION_STR=6.5;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>precompiled.h</PrecompiledHeaderFile>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <ProgramDataBaseFileName>Debug\ctibase\I386\</ProgramDataBaseFileName>
+      <WarningLevel>Level1</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;CTIBASE;NOMINMAX;WIN32;_CONSOLE;_DEBUG;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctibase;D_FILE_VERSION=6,5,0,0;D_FILE_VERSION_STR=6.5.0.0;D_PRODUCT_VERSION=6,5,0,0;D_PRODUCT_VERSION_STR=6.5;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>1033</Culture>
+      <AdditionalIncludeDirectories>$(APR)\include;$(BOOST)\include;$(CAJUN)\include;$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>$(APR)\$(CONFIGURATION)\lib\libapr-1.lib;$(LOG4CXX)\$(CONFIGURATION)\lib\log4cxx.lib;$(DBGHELP)\lib\dbghelp.lib;$(BOOST)\lib\boost_system-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-gd-1_58.lib;$(OPENSSL)\$(CONFIGURATION)\lib\ssleay32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libeay32.lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3D.lib;kernel32.lib;user32.lib;advapi32.lib;wsock32.lib;winmm.lib;shlwapi.lib;Ws2_32.lib;psapi.lib;$(SQLAPI)\lib\sqlapid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)ctibase.dll</OutputFile>
+      <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>$(OutDir)\ctibase_dll.pdb</ProgramDatabaseFile>
+      <ImportLibrary>$(Configuration)\$(ProjectName)\I386\$(ProjectName).lib</ImportLibrary>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+    <PostBuildEvent>
+      <Command>if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
+xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin
+if not exist $(SolutionDir)lib mkdir $(SolutionDir)lib
+if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)lib
+if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)bin
+..\..\yukon-build\server-build\BUILD.EXE -f $(SolutionDir)\libraries.mak COMPILEBASE=$(SolutionDir) YUKONOUTPUT=$(SolutionDir)\bin all CONFIGURATION=$(Configuration)</Command>
+    </PostBuildEvent>
+<!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
+     Check if msbuild has any support for a custom post-cleaning step
+ -->
+<!-- No known equivalent for DeploymentTool in vc10:
+-->
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(APR)\include;$(BOOST)\include;$(CAJUN)\include;$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>USING_PCH;NDEBUG;WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;CTIBASE;NOMINMAX;WIN32;_CONSOLE;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctibase;D_FILE_VERSION=6,5,0,0;D_FILE_VERSION_STR=6.5.0.0;D_PRODUCT_VERSION=6,5,0,0;D_PRODUCT_VERSION_STR=6.5;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>precompiled.h</PrecompiledHeaderFile>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <WarningLevel>Level1</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;CTIBASE;NOMINMAX;WIN32;_CONSOLE;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctibase;D_FILE_VERSION=6,5,0,0;D_FILE_VERSION_STR=6.5.0.0;D_PRODUCT_VERSION=6,5,0,0;D_PRODUCT_VERSION_STR=6.5;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>1033</Culture>
+      <AdditionalIncludeDirectories>$(APR)\include;$(BOOST)\include;$(CAJUN)\include;$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>$(APR)\$(CONFIGURATION)\lib\libapr-1.lib;$(LOG4CXX)\$(CONFIGURATION)\lib\log4cxx.lib;$(DBGHELP)\lib\dbghelp.lib;$(BOOST)\lib\boost_system-vc120-mt-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-1_58.lib;$(OPENSSL)\$(CONFIGURATION)\lib\ssleay32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libeay32.lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3.lib;kernel32.lib;user32.lib;advapi32.lib;wsock32.lib;winmm.lib;shlwapi.lib;Ws2_32.lib;psapi.lib;$(SQLAPI)\lib\sqlapid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)ctibase.dll</OutputFile>
+      <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <ImportLibrary>$(Configuration)\$(ProjectName)\I386\$(ProjectName).lib</ImportLibrary>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+    <PostBuildEvent>
+      <Command>if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
+xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin
+if not exist $(SolutionDir)lib mkdir $(SolutionDir)lib
+if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)lib
+if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)bin
+..\..\yukon-build\server-build\BUILD.EXE -f $(SolutionDir)\libraries.mak COMPILEBASE=$(SolutionDir) YUKONOUTPUT=$(SolutionDir)\bin all CONFIGURATION=$(Configuration)</Command>
+    </PostBuildEvent>
+<!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
+     Check if msbuild has any support for a custom post-cleaning step
+ -->
+<!-- No known equivalent for DeploymentTool in vc10:
+-->
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TargetEnvironment>x64</TargetEnvironment>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(APR)\include;$(BOOST)\include;$(CAJUN)\include;$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>USING_PCH;_DEBUG;WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;_AMD64_;_WIN64;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;CTIBASE;NOMINMAX;WIN32;_CONSOLE;_DEBUG;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctibase;D_FILE_VERSION=6,5,0,0;D_FILE_VERSION_STR=6.5.0.0;D_PRODUCT_VERSION=6,5,0,0;D_PRODUCT_VERSION_STR=6.5;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>precompiled.h</PrecompiledHeaderFile>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <ProgramDataBaseFileName>Debug\ctibase\AMD64\</ProgramDataBaseFileName>
+      <WarningLevel>Level1</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;CTIBASE;NOMINMAX;WIN32;_CONSOLE;_DEBUG;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctibase;D_FILE_VERSION=6,5,0,0;D_FILE_VERSION_STR=6.5.0.0;D_PRODUCT_VERSION=6,5,0,0;D_PRODUCT_VERSION_STR=6.5;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>1033</Culture>
+      <AdditionalIncludeDirectories>$(APR)\include;$(BOOST)\include;$(CAJUN)\include;$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>$(APR)\$(CONFIGURATION)\lib\libapr-1.lib;$(LOG4CXX)\$(CONFIGURATION)\lib\log4cxx.lib;$(DBGHELP)\lib\dbghelp.lib;$(BOOST)\lib\boost_system-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-gd-1_58.lib;$(OPENSSL)\$(CONFIGURATION)\lib\ssleay32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libeay32.lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3D.lib;kernel32.lib;user32.lib;advapi32.lib;wsock32.lib;winmm.lib;shlwapi.lib;Ws2_32.lib;psapi.lib;$(SQLAPI)\lib\sqlapid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)ctibase.dll</OutputFile>
+      <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>$(OutDir)\ctibase_dll.pdb</ProgramDatabaseFile>
+      <ImportLibrary>$(Configuration)\$(ProjectName)\I386\$(ProjectName).lib</ImportLibrary>
+<!--
+  Though we can set TargetMachine explicitly, VC++
+  can figure it out by project type. We don't need
+  to set it by ourselves.
+-->
+<!--      <TargetMachine>0</TargetMachine>-->
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <AdditionalOptions>/machine:AMD64 %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+    <PostBuildEvent>
+      <Command>if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
+xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin
+if not exist $(SolutionDir)lib mkdir $(SolutionDir)lib
+if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)lib
+if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)bin
+..\..\yukon-build\server-build\BUILD.EXE -f $(SolutionDir)\libraries.mak COMPILEBASE=$(SolutionDir) YUKONOUTPUT=$(SolutionDir)\bin all CONFIGURATION=$(Configuration)</Command>
+    </PostBuildEvent>
+<!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
+     Check if msbuild has any support for a custom post-cleaning step
+ -->
+<!-- No known equivalent for DeploymentTool in vc10:
+-->
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TargetEnvironment>x64</TargetEnvironment>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(APR)\include;$(BOOST)\include;$(CAJUN)\include;$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>USING_PCH;NDEBUG;WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;_AMD64_;_WIN64;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;CTIBASE;NOMINMAX;WIN32;_CONSOLE;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctibase;D_FILE_VERSION=6,5,0,0;D_FILE_VERSION_STR=6.5.0.0;D_PRODUCT_VERSION=6,5,0,0;D_PRODUCT_VERSION_STR=6.5;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>precompiled.h</PrecompiledHeaderFile>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <WarningLevel>Level1</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;CTIBASE;NOMINMAX;WIN32;_CONSOLE;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctibase;D_FILE_VERSION=6,5,0,0;D_FILE_VERSION_STR=6.5.0.0;D_PRODUCT_VERSION=6,5,0,0;D_PRODUCT_VERSION_STR=6.5;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>1033</Culture>
+      <AdditionalIncludeDirectories>$(APR)\include;$(BOOST)\include;$(CAJUN)\include;$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>$(APR)\$(CONFIGURATION)\lib\libapr-1.lib;$(LOG4CXX)\$(CONFIGURATION)\lib\log4cxx.lib;$(DBGHELP)\lib\dbghelp.lib;$(BOOST)\lib\boost_system-vc120-mt-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-1_58.lib;$(OPENSSL)\$(CONFIGURATION)\lib\ssleay32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libeay32.lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3.lib;kernel32.lib;user32.lib;advapi32.lib;wsock32.lib;winmm.lib;shlwapi.lib;Ws2_32.lib;psapi.lib;$(SQLAPI)\lib\sqlapid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)ctibase.dll</OutputFile>
+      <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <ImportLibrary>$(Configuration)\$(ProjectName)\I386\$(ProjectName).lib</ImportLibrary>
+<!--
+  Though we can set TargetMachine explicitly, VC++
+  can figure it out by project type. We don't need
+  to set it by ourselves.
+-->
+<!--      <TargetMachine>0</TargetMachine>-->
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <AdditionalOptions>/machine:AMD64 %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+    <PostBuildEvent>
+      <Command>if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
+xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin
+if not exist $(SolutionDir)lib mkdir $(SolutionDir)lib
+if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)lib
+if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)bin
+..\..\yukon-build\server-build\BUILD.EXE -f $(SolutionDir)\libraries.mak COMPILEBASE=$(SolutionDir) YUKONOUTPUT=$(SolutionDir)\bin all CONFIGURATION=$(Configuration)</Command>
+    </PostBuildEvent>
+<!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
+     Check if msbuild has any support for a custom post-cleaning step
+ -->
+<!-- No known equivalent for DeploymentTool in vc10:
+-->
+  </ItemDefinitionGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\precompiled.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="AttributeService.cpp">
+    </ClCompile>
+    <ClCompile Include="BeatThePeakAlertLevel.cpp">
+    </ClCompile>
+    <ClCompile Include="cmdparse.cpp">
+    </ClCompile>
+    <ClCompile Include="configkey.cpp">
+    </ClCompile>
+    <ClCompile Include="configval.cpp">
+    </ClCompile>
+    <ClCompile Include="counter.cpp">
+    </ClCompile>
+    <ClCompile Include="cparms.cpp">
+    </ClCompile>
+    <ClCompile Include="critical_section.cpp">
+    </ClCompile>
+    <ClCompile Include="ctdpcptrq.cpp">
+    </ClCompile>
+    <ClCompile Include="cti_asmc.cpp">
+    </ClCompile>
+    <ClCompile Include="cticalls.cpp">
+    </ClCompile>
+    <ClCompile Include="ctidate.cpp">
+    </ClCompile>
+    <ClCompile Include="ctitime.cpp">
+    </ClCompile>
+    <ClCompile Include="ctitokenizer.cpp">
+    </ClCompile>
+    <ClCompile Include="database_connection.cpp">
+    </ClCompile>
+    <ClCompile Include="database_reader.cpp">
+    </ClCompile>
+    <ClCompile Include="database_transaction.cpp">
+    </ClCompile>
+    <ClCompile Include="database_util.cpp">
+    </ClCompile>
+    <ClCompile Include="database_writer.cpp">
+    </ClCompile>
+    <ClCompile Include="date_utility.cpp">
+    </ClCompile>
+    <ClCompile Include="dbaccess.cpp">
+    </ClCompile>
+    <ClCompile Include="debug_timer.cpp">
+    </ClCompile>
+    <ClCompile Include="desolvers.cpp">
+    </ClCompile>
+    <ClCompile Include="DeviceAttributeLookup.cpp">
+    </ClCompile>
+    <ClCompile Include="DeviceConfigDescription.cpp">
+    </ClCompile>
+    <ClCompile Include="dllbase.cpp">
+    </ClCompile>
+    <ClCompile Include="elog_cli.cpp">
+    </ClCompile>
+    <ClCompile Include="encryption.cpp">
+    </ClCompile>
+    <ClCompile Include="error.cpp">
+    </ClCompile>
+    <ClCompile Include="exception_helper.cpp">
+    </ClCompile>
+    <ClCompile Include="fileint.cpp">
+    </ClCompile>
+    <ClCompile Include="guard.cpp">
+    </ClCompile>
+    <ClCompile Include="id_ctibase.cpp">
+    </ClCompile>
+    <ClCompile Include="json.cpp">
+    </ClCompile>
+    <ClCompile Include="LitePoint.cpp">
+    </ClCompile>
+    <ClCompile Include="logFileAppender.cpp">
+    </ClCompile>
+    <ClCompile Include="logger.cpp">
+    </ClCompile>
+    <ClCompile Include="logLayout.cpp">
+    </ClCompile>
+    <ClCompile Include="logManager.cpp">
+    </ClCompile>
+    <ClCompile Include="macro_offset.cpp">
+    </ClCompile>
+    <ClCompile Include="master.cpp">
+    </ClCompile>
+    <ClCompile Include="MetricIdLookup.cpp">
+    </ClCompile>
+    <ClCompile Include="millisecond_timer.cpp">
+    </ClCompile>
+    <ClCompile Include="module_util.cpp">
+    </ClCompile>
+    <ClCompile Include="mutex.cpp">
+    </ClCompile>
+    <ClCompile Include="numstr.cpp">
+    </ClCompile>
+    <ClCompile Include="observe.cpp">
+    </ClCompile>
+    <ClCompile Include="PointAttribute.cpp">
+    </ClCompile>
+    <ClCompile Include="queue.cpp">
+    </ClCompile>
+    <ClCompile Include="queues.cpp">
+    </ClCompile>
+    <ClCompile Include="readers_writer_lock.cpp">
+    </ClCompile>
+    <ClCompile Include="regression.cpp">
+    </ClCompile>
+    <ClCompile Include="repeaterrole.cpp">
+    </ClCompile>
+    <ClCompile Include="resolvers.cpp">
+    </ClCompile>
+    <ClCompile Include="resource_helper.cpp">
+    </ClCompile>
+    <ClCompile Include="rtdb.cpp">
+    </ClCompile>
+    <ClCompile Include="sema.cpp">
+    </ClCompile>
+    <ClCompile Include="stdexcepthdlr.cpp">
+    </ClCompile>
+    <ClCompile Include="streamBuffer.cpp">
+    </ClCompile>
+    <ClCompile Include="streamLocalConnection.cpp">
+    </ClCompile>
+    <ClCompile Include="streamSocketConnection.cpp">
+    </ClCompile>
+    <ClCompile Include="streamSocketListener.cpp">
+    </ClCompile>
+    <ClCompile Include="string_util.cpp">
+    </ClCompile>
+    <ClCompile Include="thread.cpp">
+    </ClCompile>
+    <ClCompile Include="thread_monitor.cpp">
+    </ClCompile>
+    <ClCompile Include="thread_register_data.cpp">
+    </ClCompile>
+    <ClCompile Include="ThreadStatusKeeper.cpp">
+    </ClCompile>
+    <ClCompile Include="timeperiod.cpp">
+    </ClCompile>
+    <ClCompile Include="timing_util.cpp">
+    </ClCompile>
+    <ClCompile Include="truncatingConsoleAppender.cpp">
+    </ClCompile>
+    <ClCompile Include="ucttime.cpp">
+    </ClCompile>
+    <ClCompile Include="utility.cpp">
+    </ClCompile>
+    <ClCompile Include="verification_objects.cpp">
+    </ClCompile>
+    <ClCompile Include="win_helper.cpp">
+    </ClCompile>
+    <ClCompile Include="words.cpp">
+    </ClCompile>
+    <ClCompile Include="worker_thread.cpp">
+    </ClCompile>
+    <ClCompile Include="xfer.cpp">
+    </ClCompile>
+    <ClCompile Include="xml.cpp">
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="common\include\AttributeService.h" />
+    <ClInclude Include="common\include\BeatThePeakAlertLevel.h" />
+    <ClInclude Include="common\include\boost_test_helpers.h" />
+    <ClInclude Include="common\include\boost_time.h" />
+    <ClInclude Include="common\include\boostutil.h" />
+    <ClInclude Include="common\include\cmdparse.h" />
+    <ClInclude Include="common\include\collectable.h" />
+    <ClInclude Include="common\include\COLOR.H" />
+    <ClInclude Include="common\include\ConfigKey.h" />
+    <ClInclude Include="common\include\ConfigVal.h" />
+    <ClInclude Include="common\include\constants.h" />
+    <ClInclude Include="common\include\counter.h" />
+    <ClInclude Include="common\include\CParms.h" />
+    <ClInclude Include="common\include\critical_section.h" />
+    <ClInclude Include="common\include\ctdpcptrq.h" />
+    <ClInclude Include="common\include\CTI_ASMC.H" />
+    <ClInclude Include="common\include\ctibase.h" />
+    <ClInclude Include="common\include\CTICALLS.H" />
+    <ClInclude Include="common\include\ctidate.h" />
+    <ClInclude Include="common\include\ctidbgmem.h" />
+    <ClInclude Include="common\include\ctipcptrqueue.h" />
+    <ClInclude Include="common\include\ctiqueues.h" />
+    <ClInclude Include="common\include\ctitime.h" />
+    <ClInclude Include="common\include\ctitokenizer.h" />
+    <ClInclude Include="common\include\database_connection.h" />
+    <ClInclude Include="common\include\database_exceptions.h" />
+    <ClInclude Include="common\include\database_reader.h" />
+    <ClInclude Include="common\include\database_transaction.h" />
+    <ClInclude Include="common\include\database_util.h" />
+    <ClInclude Include="common\include\database_writer.h" />
+    <ClInclude Include="common\include\date_utility.h" />
+    <ClInclude Include="common\include\db_entry_defines.h" />
+    <ClInclude Include="common\include\dbaccess.h" />
+    <ClInclude Include="common\include\debug_timer.h" />
+    <ClInclude Include="common\include\desolvers.h" />
+    <ClInclude Include="common\include\DeviceAttributeLookup.h" />
+    <ClInclude Include="common\include\DeviceConfigDescription.h" />
+    <ClInclude Include="common\include\devicetypes.h" />
+    <ClInclude Include="common\include\dllbase.h" />
+    <ClInclude Include="common\include\dlldefs.h" />
+    <ClInclude Include="common\include\dsm2.h" />
+    <ClInclude Include="common\include\DSM2ERR.H" />
+    <ClInclude Include="common\include\Elogger.h" />
+    <ClInclude Include="common\include\encryption.h" />
+    <ClInclude Include="common\include\exception_helper.h" />
+    <ClInclude Include="common\include\Exceptions.h" />
+    <ClInclude Include="common\include\fileint.h" />
+    <ClInclude Include="common\include\guard.h" />
+    <ClInclude Include="common\include\id_ctibase.h" />
+    <ClInclude Include="common\include\immutable.h" />
+    <ClInclude Include="common\include\json.h" />
+    <ClInclude Include="common\include\LitePoint.h" />
+    <ClInclude Include="common\include\logFileAppender.h" />
+    <ClInclude Include="common\include\loggable.h" />
+    <ClInclude Include="common\include\logger.h" />
+    <ClInclude Include="common\include\logLayout.h" />
+    <ClInclude Include="common\include\logManager.h" />
+    <ClInclude Include="common\include\macro_offset.h" />
+    <ClInclude Include="common\include\MASTER.H" />
+    <ClInclude Include="common\include\MetricIdLookup.h" />
+    <ClInclude Include="common\include\millisecond_timer.h" />
+    <ClInclude Include="common\include\module_util.h" />
+    <ClInclude Include="common\include\mutex.h" />
+    <ClInclude Include="common\include\netports.h" />
+    <ClInclude Include="common\include\numstr.h" />
+    <ClInclude Include="common\include\observe.h" />
+    <ClInclude Include="common\include\optional.h" />
+    <ClInclude Include="common\include\OS2_2W32.H" />
+    <ClInclude Include="common\include\parsevalue.h" />
+    <ClInclude Include="common\include\PointAttribute.h" />
+    <ClInclude Include="common\include\pointdefs.h" />
+    <ClInclude Include="common\include\pointtypes.h" />
+    <ClInclude Include="common\include\PORTER.H" />
+    <ClInclude Include="common\include\precompiled.h" />
+    <ClInclude Include="common\include\queue.h" />
+    <ClInclude Include="common\include\QUEUES.H" />
+    <ClInclude Include="common\include\random_generator.h" />
+    <ClInclude Include="common\include\readers_writer_lock.h" />
+    <ClInclude Include="common\include\regression.h" />
+    <ClInclude Include="common\include\repeaterrole.h" />
+    <ClInclude Include="common\include\resolvers.h" />
+    <ClInclude Include="common\include\resource_helper.h" />
+    <ClInclude Include="common\include\rfn_identifier.h" />
+    <ClInclude Include="common\include\row_reader.h" />
+    <ClInclude Include="common\include\row_writer.h" />
+    <ClInclude Include="common\include\rtdb.h" />
+    <ClInclude Include="common\include\sema.h" />
+    <ClInclude Include="common\include\smartmap.h" />
+    <ClInclude Include="common\include\socket_helper.h" />
+    <ClInclude Include="common\include\sorted_vector.h" />
+    <ClInclude Include="common\include\std_helper.h" />
+    <ClInclude Include="common\include\stdexcepthdlr.h" />
+    <ClInclude Include="common\include\streamBuffer.h" />
+    <ClInclude Include="common\include\streamConnection.h" />
+    <ClInclude Include="common\include\streamLocalConnection.h" />
+    <ClInclude Include="common\include\streamSocketConnection.h" />
+    <ClInclude Include="common\include\streamSocketListener.h" />
+    <ClInclude Include="common\include\string_util.h" />
+    <ClInclude Include="common\include\test_cmdparse_input.h" />
+    <ClInclude Include="common\include\test_cmdparse_output.h" />
+    <ClInclude Include="common\include\test_reader.h" />
+    <ClInclude Include="common\include\thread.h" />
+    <ClInclude Include="common\include\thread_listener.h" />
+    <ClInclude Include="common\include\thread_monitor.h" />
+    <ClInclude Include="common\include\thread_register_data.h" />
+    <ClInclude Include="common\include\ThreadStatusKeeper.h" />
+    <ClInclude Include="common\include\timeperiod.h" />
+    <ClInclude Include="common\include\timing_util.h" />
+    <ClInclude Include="common\include\truncatingConsoleAppender.h" />
+    <ClInclude Include="common\include\types.h" />
+    <ClInclude Include="common\include\utility.h" />
+    <ClInclude Include="common\include\vcomdefs.h" />
+    <ClInclude Include="common\include\verification_objects.h" />
+    <ClInclude Include="common\include\win_helper.h" />
+    <ClInclude Include="common\include\words.h" />
+    <ClInclude Include="common\include\worker_thread.h" />
+    <ClInclude Include="common\include\xfer.h" />
+    <ClInclude Include="common\include\xml.h" />
+    <ClInclude Include="common\include\yukon.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\versioninfo.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

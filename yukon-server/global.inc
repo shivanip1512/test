@@ -20,11 +20,17 @@ BIN             = .\bin
 %ENDIF
 
 # Many directories are differentiated with Debug or Release
-!IFDEF DEBUG
+%IF !%Defined(CONFIGURATION)
+%IF %Defined(DEBUG)
 CONFIGURATION=Debug
-!ELSE
+%ELSE
 CONFIGURATION=Release
-!ENDIF
+%ENDIF
+%ELSE
+%IF( "$(CONFIGURATION)" == "Debug")
+DEBUG=1
+%ENDIF
+%ENDIF
 
 #
 # Working directories.
@@ -63,6 +69,7 @@ XERCES_DLL      = xerces-c_3_1D.dll
 XERCES_LIB      = $(XERCES)\$(CONFIGURATION)\lib\xerces-c_3.lib
 XERCES_DLL      = xerces-c_3_1.dll
 !ENDIF
+XERCES_INCLUDE      = $(XERCES)\include
 
 TCL             = $(CPP_LIBRARIES)\tcl\8.6.4-1
 TCL_INCLUDE     = $(TCL)\include
@@ -181,6 +188,7 @@ OPENSSL_DLL_2   = ssleay32.dll
 OPENSSL_LIBS = \
 $(OPENSSL_LIB)\libeay32.lib \
 $(OPENSSL_LIB)\ssleay32.lib
+OPENSSL_INCLUDE = $(OPENSSL)\include
 
 LIBCOAP         = $(CPP_LIBRARIES)\libcoap\4.0.1-1
 LIBCOAP_INCLUDE = $(LIBCOAP)\include
@@ -230,6 +238,7 @@ DLLFLAGS= /nologo /Zi /O2 /Oy- /EHa /LD /MD /Zm200 $(D_VERSION) $(D_VERSION_DETA
 PCHFLAGS = /Yu"precompiled.h" /Fp"$(COMPILEBASE)\precompiled.pch"
 PRECOMPILED_OBJ = $(PRECOMPILED)\precompiled.obj
 
+# /Fm Tells the linker to produce a mapfile containing a list of segments in the order in which they appear in the corresponding .exe file or DLL.
 !IFDEF YUKONPROFILE
 CFLAGS  = /Fm $(CFLAGS)
 DLLFLAGS= /Fm $(DLLFLAGS)

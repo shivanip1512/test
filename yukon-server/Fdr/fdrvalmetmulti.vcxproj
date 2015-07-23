@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>fdrvalmetmulti</ProjectName>
+    <ProjectGuid>{A49D3D9A-FECA-1BAD-6B51-3E4A00006032}</ProjectGuid>
+    <RootNamespace>fdrvalmetmulti</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>NotSet</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>NotSet</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>NotSet</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>NotSet</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\build.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\build.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\build.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\build.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\$(ProjectName)\I386\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\fdrvalmetmulti\I386\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">fdrvalmetmulti</TargetName>
+    <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetPath)</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'"></LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)</LocalDebuggerWorkingDirectory>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\$(ProjectName)\I386\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\fdrvalmetmulti\I386\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">fdrvalmetmulti</TargetName>
+    <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(TargetPath)</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"></LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)</LocalDebuggerWorkingDirectory>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Configuration)\$(ProjectName)\I386\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Debug\fdrvalmetmulti\AMD64\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fdrvalmetmulti</TargetName>
+    <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(TargetPath)</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"></LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)</LocalDebuggerWorkingDirectory>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Configuration)\$(ProjectName)\I386\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Release\fdrvalmetmulti\AMD64\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fdrvalmetmulti</TargetName>
+    <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetPath)</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Release|x64'"></LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)</LocalDebuggerWorkingDirectory>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(BOOST)\include;$(SQLAPI)\include;.;..\common\include;..\database\include;..\dbsignal\include;..\dispatch\include;..\fdr\LiveData;..\fdr\OSIPI\inc;..\fdr\Telegyr\inc;..\message\include;..\protocol\include;..\rtdb\include;..\server\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;NOMINMAX;WIN32;WINDOWS;_CONSOLE;_DEBUG;_DLL_FDRVALMETMULTI;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=fdrvalmetmulti;D_FILE_VERSION=6,5,0,0;D_FILE_VERSION_STR=6.5.0.0;D_PRODUCT_VERSION=6,5,0,0;D_PRODUCT_VERSION_STR=6.5;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <ProgramDataBaseFileName>Debug\fdrvalmetmulti\I386\</ProgramDataBaseFileName>
+      <WarningLevel>Level1</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;NOMINMAX;WIN32;WINDOWS;_CONSOLE;_DEBUG;_DLL_FDRVALMETMULTI;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=fdrvalmetmulti;D_FILE_VERSION=6,5,0,0;D_FILE_VERSION_STR=6.5.0.0;D_PRODUCT_VERSION=6,5,0,0;D_PRODUCT_VERSION_STR=6.5;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>1033</Culture>
+      <AdditionalIncludeDirectories>$(BOOST)\include;$(SQLAPI)\include;.;..\common\include;..\database\include;..\dbsignal\include;..\dispatch\include;..\fdr\LiveData;..\fdr\OSIPI\inc;..\fdr\Telegyr\inc;..\message\include;..\protocol\include;..\rtdb\include;..\server\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>..\lib\cti_fdr.lib;wininet.lib;..\lib\ctiprot.lib;..\lib\ctisvr.lib;..\lib\ctivg.lib;..\lib\ctimsg.lib;..\lib\ctibase.lib;$(BOOST)\lib\boost_system-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-gd-1_58.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)fdrvalmetmulti.dll</OutputFile>
+      <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>$(OutDir)\fdrvalmetmulti_dll.pdb</ProgramDatabaseFile>
+      <ImportLibrary>$(Configuration)\$(ProjectName)\I386\$(ProjectName).lib</ImportLibrary>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+    <PostBuildEvent>
+      <Command>if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
+xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin
+if not exist $(SolutionDir)lib mkdir $(SolutionDir)lib
+if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)lib
+if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)bin</Command>
+    </PostBuildEvent>
+<!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
+     Check if msbuild has any support for a custom post-cleaning step
+ -->
+<!-- No known equivalent for DeploymentTool in vc10:
+-->
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(BOOST)\include;$(SQLAPI)\include;.;..\common\include;..\database\include;..\dbsignal\include;..\dispatch\include;..\fdr\LiveData;..\fdr\OSIPI\inc;..\fdr\Telegyr\inc;..\message\include;..\protocol\include;..\rtdb\include;..\server\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;NOMINMAX;WIN32;WINDOWS;_CONSOLE;_DLL_FDRVALMETMULTI;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=fdrvalmetmulti;D_FILE_VERSION=6,5,0,0;D_FILE_VERSION_STR=6.5.0.0;D_PRODUCT_VERSION=6,5,0,0;D_PRODUCT_VERSION_STR=6.5;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <WarningLevel>Level1</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;NOMINMAX;WIN32;WINDOWS;_CONSOLE;_DLL_FDRVALMETMULTI;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=fdrvalmetmulti;D_FILE_VERSION=6,5,0,0;D_FILE_VERSION_STR=6.5.0.0;D_PRODUCT_VERSION=6,5,0,0;D_PRODUCT_VERSION_STR=6.5;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>1033</Culture>
+      <AdditionalIncludeDirectories>$(BOOST)\include;$(SQLAPI)\include;.;..\common\include;..\database\include;..\dbsignal\include;..\dispatch\include;..\fdr\LiveData;..\fdr\OSIPI\inc;..\fdr\Telegyr\inc;..\message\include;..\protocol\include;..\rtdb\include;..\server\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>..\lib\cti_fdr.lib;wininet.lib;..\lib\ctiprot.lib;..\lib\ctisvr.lib;..\lib\ctivg.lib;..\lib\ctimsg.lib;..\lib\ctibase.lib;$(BOOST)\lib\boost_system-vc120-mt-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-1_58.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)fdrvalmetmulti.dll</OutputFile>
+      <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <ImportLibrary>$(Configuration)\$(ProjectName)\I386\$(ProjectName).lib</ImportLibrary>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+    <PostBuildEvent>
+      <Command>if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
+xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin
+if not exist $(SolutionDir)lib mkdir $(SolutionDir)lib
+if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)lib
+if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)bin</Command>
+    </PostBuildEvent>
+<!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
+     Check if msbuild has any support for a custom post-cleaning step
+ -->
+<!-- No known equivalent for DeploymentTool in vc10:
+-->
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TargetEnvironment>x64</TargetEnvironment>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(BOOST)\include;$(SQLAPI)\include;.;..\common\include;..\database\include;..\dbsignal\include;..\dispatch\include;..\fdr\LiveData;..\fdr\OSIPI\inc;..\fdr\Telegyr\inc;..\message\include;..\protocol\include;..\rtdb\include;..\server\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;_AMD64_;_WIN64;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;NOMINMAX;WIN32;WINDOWS;_CONSOLE;_DEBUG;_DLL_FDRVALMETMULTI;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=fdrvalmetmulti;D_FILE_VERSION=6,5,0,0;D_FILE_VERSION_STR=6.5.0.0;D_PRODUCT_VERSION=6,5,0,0;D_PRODUCT_VERSION_STR=6.5;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <ProgramDataBaseFileName>Debug\fdrvalmetmulti\AMD64\</ProgramDataBaseFileName>
+      <WarningLevel>Level1</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;NOMINMAX;WIN32;WINDOWS;_CONSOLE;_DEBUG;_DLL_FDRVALMETMULTI;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=fdrvalmetmulti;D_FILE_VERSION=6,5,0,0;D_FILE_VERSION_STR=6.5.0.0;D_PRODUCT_VERSION=6,5,0,0;D_PRODUCT_VERSION_STR=6.5;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>1033</Culture>
+      <AdditionalIncludeDirectories>$(BOOST)\include;$(SQLAPI)\include;.;..\common\include;..\database\include;..\dbsignal\include;..\dispatch\include;..\fdr\LiveData;..\fdr\OSIPI\inc;..\fdr\Telegyr\inc;..\message\include;..\protocol\include;..\rtdb\include;..\server\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>..\lib\cti_fdr.lib;wininet.lib;..\lib\ctiprot.lib;..\lib\ctisvr.lib;..\lib\ctivg.lib;..\lib\ctimsg.lib;..\lib\ctibase.lib;$(BOOST)\lib\boost_system-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-gd-1_58.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)fdrvalmetmulti.dll</OutputFile>
+      <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>$(OutDir)\fdrvalmetmulti_dll.pdb</ProgramDatabaseFile>
+      <ImportLibrary>$(Configuration)\$(ProjectName)\I386\$(ProjectName).lib</ImportLibrary>
+<!--
+  Though we can set TargetMachine explicitly, VC++
+  can figure it out by project type. We don't need
+  to set it by ourselves.
+-->
+<!--      <TargetMachine>0</TargetMachine>-->
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <AdditionalOptions>/machine:AMD64 %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+    <PostBuildEvent>
+      <Command>if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
+xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin
+if not exist $(SolutionDir)lib mkdir $(SolutionDir)lib
+if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)lib
+if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)bin</Command>
+    </PostBuildEvent>
+<!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
+     Check if msbuild has any support for a custom post-cleaning step
+ -->
+<!-- No known equivalent for DeploymentTool in vc10:
+-->
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TargetEnvironment>x64</TargetEnvironment>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(BOOST)\include;$(SQLAPI)\include;.;..\common\include;..\database\include;..\dbsignal\include;..\dispatch\include;..\fdr\LiveData;..\fdr\OSIPI\inc;..\fdr\Telegyr\inc;..\message\include;..\protocol\include;..\rtdb\include;..\server\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;_AMD64_;_WIN64;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;NOMINMAX;WIN32;WINDOWS;_CONSOLE;_DLL_FDRVALMETMULTI;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=fdrvalmetmulti;D_FILE_VERSION=6,5,0,0;D_FILE_VERSION_STR=6.5.0.0;D_PRODUCT_VERSION=6,5,0,0;D_PRODUCT_VERSION_STR=6.5;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <WarningLevel>Level1</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;NOMINMAX;WIN32;WINDOWS;_CONSOLE;_DLL_FDRVALMETMULTI;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=fdrvalmetmulti;D_FILE_VERSION=6,5,0,0;D_FILE_VERSION_STR=6.5.0.0;D_PRODUCT_VERSION=6,5,0,0;D_PRODUCT_VERSION_STR=6.5;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>1033</Culture>
+      <AdditionalIncludeDirectories>$(BOOST)\include;$(SQLAPI)\include;.;..\common\include;..\database\include;..\dbsignal\include;..\dispatch\include;..\fdr\LiveData;..\fdr\OSIPI\inc;..\fdr\Telegyr\inc;..\message\include;..\protocol\include;..\rtdb\include;..\server\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>..\lib\cti_fdr.lib;wininet.lib;..\lib\ctiprot.lib;..\lib\ctisvr.lib;..\lib\ctivg.lib;..\lib\ctimsg.lib;..\lib\ctibase.lib;$(BOOST)\lib\boost_system-vc120-mt-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-1_58.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)fdrvalmetmulti.dll</OutputFile>
+      <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <ImportLibrary>$(Configuration)\$(ProjectName)\I386\$(ProjectName).lib</ImportLibrary>
+<!--
+  Though we can set TargetMachine explicitly, VC++
+  can figure it out by project type. We don't need
+  to set it by ourselves.
+-->
+<!--      <TargetMachine>0</TargetMachine>-->
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <AdditionalOptions>/machine:AMD64 %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+    <PostBuildEvent>
+      <Command>if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
+xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin
+if not exist $(SolutionDir)lib mkdir $(SolutionDir)lib
+if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)lib
+if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)bin</Command>
+    </PostBuildEvent>
+<!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
+     Check if msbuild has any support for a custom post-cleaning step
+ -->
+<!-- No known equivalent for DeploymentTool in vc10:
+-->
+  </ItemDefinitionGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="fdrvalmetmulti.cpp">
+    </ClCompile>
+    <ClCompile Include="fdrvalmetutil.cpp">
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="fdr\include\Ars.h" />
+    <ClInclude Include="fdr\include\Cvs.h" />
+    <ClInclude Include="fdr\include\CygNetDefs.h" />
+    <ClInclude Include="fdr\include\Dcl.h" />
+    <ClInclude Include="fdr\include\fdr.h" />
+    <ClInclude Include="fdr\include\fdracs.h" />
+    <ClInclude Include="fdr\include\fdracsmulti.h" />
+    <ClInclude Include="fdr\include\fdrasciiimportbase.h" />
+    <ClInclude Include="fdr\include\fdrbepc.h" />
+    <ClInclude Include="fdr\include\fdrclientconnection.h" />
+    <ClInclude Include="fdr\include\fdrclientserverconnection.h" />
+    <ClInclude Include="fdr\include\fdrcygnet.h" />
+    <ClInclude Include="fdr\include\fdrdebuglevel.h" />
+    <ClInclude Include="fdr\include\fdrdestination.h" />
+    <ClInclude Include="fdr\include\fdrdnpslave.h" />
+    <ClInclude Include="fdr\include\fdrdsm2filein.h" />
+    <ClInclude Include="fdr\include\fdrdsm2import.h" />
+    <ClInclude Include="fdr\include\FdrException.h" />
+    <ClInclude Include="fdr\include\fdrftpinterface.h" />
+    <ClInclude Include="fdr\include\fdrinet.h" />
+    <ClInclude Include="fdr\include\fdrinterface.h" />
+    <ClInclude Include="fdr\include\fdrlivedata.h" />
+    <ClInclude Include="fdr\include\fdrlodestarimport.h" />
+    <ClInclude Include="fdr\include\fdrlodestarimport_enh.h" />
+    <ClInclude Include="fdr\include\fdrlodestarimport_std.h" />
+    <ClInclude Include="fdr\include\fdrlodestarinfo.h" />
+    <ClInclude Include="fdr\include\fdrpibase.h" />
+    <ClInclude Include="fdr\include\fdrpinotify.h" />
+    <ClInclude Include="fdr\include\fdrpipoll.h" />
+    <ClInclude Include="fdr\include\fdrpoint.h" />
+    <ClInclude Include="fdr\include\fdrpointidmap.h" />
+    <ClInclude Include="fdr\include\fdrpointlist.h" />
+    <ClInclude Include="fdr\include\fdrrccs.h" />
+    <ClInclude Include="fdr\include\fdrrdex.h" />
+    <ClInclude Include="fdr\include\fdrscadahelper.h" />
+    <ClInclude Include="fdr\include\fdrscadaserver.h" />
+    <ClInclude Include="fdr\include\fdrserverconnection.h" />
+    <ClInclude Include="fdr\include\fdrservice.h" />
+    <ClInclude Include="fdr\include\fdrsimplebase.h" />
+    <ClInclude Include="fdr\include\fdrsinglesocket.h" />
+    <ClInclude Include="fdr\include\fdrsocketconnection.h" />
+    <ClInclude Include="fdr\include\fdrsocketinterface.h" />
+    <ClInclude Include="fdr\include\fdrsocketlayer.h" />
+    <ClInclude Include="fdr\include\fdrsocketserver.h" />
+    <ClInclude Include="fdr\include\fdrstec.h" />
+    <ClInclude Include="fdr\include\fdrtelegyr.h" />
+    <ClInclude Include="fdr\include\fdrtextexport.h" />
+    <ClInclude Include="fdr\include\fdrtextfilebase.h" />
+    <ClInclude Include="fdr\include\fdrtextimport.h" />
+    <ClInclude Include="fdr\include\fdrtristate.h" />
+    <ClInclude Include="fdr\include\fdrTristateSub.h" />
+    <ClInclude Include="fdr\include\fdrutility.h" />
+    <ClInclude Include="fdr\include\fdrvalmet.h" />
+    <ClInclude Include="fdr\include\fdrvalmetmulti.h" />
+    <ClInclude Include="fdr\include\fdrvalmetutil.h" />
+    <ClInclude Include="fdr\include\fdrwabash.h" />
+    <ClInclude Include="fdr\include\fdrxa21lm.h" />
+    <ClInclude Include="fdr\include\id_fdr.h" />
+    <ClInclude Include="fdr\include\inet.h" />
+    <ClInclude Include="fdr\include\livedata_rtp_api.h" />
+    <ClInclude Include="fdr\include\livedatatypes.h" />
+    <ClInclude Include="fdr\include\mgr_fdrpoint.h" />
+    <ClInclude Include="fdr\include\RTP.H" />
+    <ClInclude Include="fdr\include\RTP_APIW.H" />
+    <ClInclude Include="fdr\include\serverconnection.h" />
+    <ClInclude Include="fdr\include\telegyrcontrolcenter.h" />
+    <ClInclude Include="fdr\include\telegyrgroup.h" />
+    <ClInclude Include="fdr\include\textfileinterfaceparts.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\versioninfo.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

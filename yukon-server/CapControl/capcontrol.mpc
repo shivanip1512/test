@@ -1,0 +1,303 @@
+project(capcontrol) {
+  exename=capcontrol
+
+  after += service
+  after += ctimsg
+  after += ctibase
+  after += ctiholidaydb
+  after += ctidevdb
+  after += cticonfig
+  after += ctidbsrc
+  after += ctithriftmsg
+
+  macros += BOOST_ALL_DYN_LINK
+  macros += BOOST_ENABLE_ASSERT_HANDLER
+  macros += BUILD_VERSION=6.5\ (build\ 0)
+  macros += BUILD_VERSION_DETAILS=6.5.0
+  macros += NOMINMAX
+  macros += WIN32
+  macros += WINDOWS
+  macros += _CONSOLE
+  specific {
+    Debug::macros += _DEBUG
+  }
+  macros += _REENTRANT
+  macros += _WINDOWS
+  macros += _X86_=1
+  macros += __DLL__
+  macros += D_FILE_NAME=capcontrol
+  macros += D_FILE_VERSION=6,5,0,0
+  macros += D_FILE_VERSION_STR=6.5.0.0
+  macros += D_PRODUCT_VERSION=6,5,0,0
+  macros += D_PRODUCT_VERSION_STR=6.5
+  includes += $(BOOST)/include
+  includes += $(SQLAPI)/include
+  includes += $(THRIFT)/include
+  includes += .
+  includes += ../capcontrol/include
+  includes += ../common/include
+  includes += ../database/include
+  includes += ../deviceconfiguration/include
+  includes += ../message/Serialization
+  includes += ../message/include
+  includes += ../protocol/include
+  includes += ../rtdb/include
+  includes += ../server/include
+  includes += ../service/include
+  includes += ./include
+  includes += $(BOOST)\include
+  lit_libs += advapi32
+  lit_libs += ..\lib\service
+  lit_libs += ..\lib\ctimsg
+  lit_libs += ..\lib\ctibase
+  lit_libs += ..\lib\ctiholidaydb
+  lit_libs += ..\lib\ctidevdb
+  lit_libs += ..\lib\cticonfig
+  lit_libs += ..\lib\ctidbsrc
+  lit_libs += ..\lib\ctithriftmsg
+  lit_libs += $(THRIFT)\$(CONFIGURATION)\lib\libthrift
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_chrono-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_chrono-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_date_time-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_date_time-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_thread-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_thread-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_regex-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_regex-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_filesystem-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_filesystem-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_system-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_system-vc120-mt-1_58
+  }
+  pch_header = precompiled.h
+  pch_source = ../precompiled.cpp
+
+  Source_Files {
+    ../precompiled.cpp
+    
+    cc_message_serialization.cpp
+    capcontroller.cpp
+    cccapbank.cpp
+    ccclientconn.cpp
+    ccclientlistener.cpp
+    ccexecutor.cpp
+    ccfeeder.cpp
+    ccmain.cpp
+    ccservice.cpp
+    ccstate.cpp
+    ccsubstationbus.cpp
+    ccsubstationbusstore.cpp
+    pao_schedule.cpp
+    pao_event.cpp
+    mgr_paosched.cpp
+    ccmonitorpoint.cpp
+    cctwowaycbcpoints.cpp
+    PointValueHolder.cpp
+    ccareabase.cpp
+    ccarea.cpp
+    ccsparea.cpp
+    ccsubstation.cpp
+    ccoperationstats.cpp
+    ccconfirmationstats.cpp
+    ccstatsobject.cpp
+    ccoriginalparent.cpp
+    CapControlPao.cpp
+    ControlStrategy.cpp
+    Controllable.cpp
+    IVVCAlgorithm.cpp
+    IVVCState.cpp
+    IVVCStrategy.cpp
+    KVarStrategy.cpp
+    MultiVoltStrategy.cpp
+    MultiVoltVarStrategy.cpp
+    NoStrategy.cpp
+    PFactorKWKVarStrategy.cpp
+    PFactorKWKQStrategy.cpp
+    TimeOfDayStrategy.cpp
+    VoltStrategy.cpp
+    StrategyLoader.cpp
+    StrategyManager.cpp
+    Zone.cpp
+    ZoneLoader.cpp
+    ZoneManager.cpp
+    VoltageRegulator.cpp
+    VoltageRegulatorLoader.cpp
+    VoltageRegulatorManager.cpp
+    CapControlPointDatahandler.cpp
+    ccutil.cpp
+    CapControlDispatchConnection.cpp
+    CapControlCParms.cpp
+    PointResponseDatabaseDao.cpp
+    PointResponse.cpp
+    PointResponseManager.cpp
+    DynamicCommand.cpp
+    DynamicCommandExecutor.cpp
+    MsgCapControlCommand.cpp
+    MsgCapControlMessage.cpp
+    MsgItemCommand.cpp
+    MsgVerifyInactiveBanks.cpp
+    MsgVerifySelectedBank.cpp
+    MsgChangeOpState.cpp
+    MsgObjectMove.cpp
+    MsgBankMove.cpp
+    MsgSubstationBus.cpp
+    MsgCapBankStates.cpp
+    MsgAreas.cpp
+    MsgSpecialAreas.cpp
+    MsgSubstations.cpp
+    MsgVoltageRegulator.cpp
+    ExecChangeOpState.cpp
+    ExecVerification.cpp
+    MsgVerifyBanks.cpp
+    MsgDeleteItem.cpp
+    MsgSystemStatus.cpp
+    MsgCapControlServerResponse.cpp
+    MsgCapControlShutdown.cpp
+    ExecutorFactory.cpp
+    Policy.cpp
+    StandardControlPolicy.cpp
+    KeepAlivePolicy.cpp
+    NoKeepAlivePolicy.cpp
+    CountdownKeepAlivePolicy.cpp
+    IncrementingKeepAlivePolicy.cpp
+    ScanPolicy.cpp
+    LoadOnlyScanPolicy.cpp
+    StandardScanPolicy.cpp
+    RegulatorEvents.cpp
+    LastControlReason.cpp
+  }
+
+
+  Header_Files {
+    capcontrol/include/CapControlDispatchConnection.h
+    capcontrol/include/capcontroller.h
+    capcontrol/include/CapControlPao.h
+    capcontrol/include/CapControlPointDataHandler.h
+    capcontrol/include/cc_message_serialization.h
+    capcontrol/include/ccarea.h
+    capcontrol/include/ccAreaBase.h
+    capcontrol/include/cccapbank.h
+    capcontrol/include/ccclientconn.h
+    capcontrol/include/ccclientlistener.h
+    capcontrol/include/ccConfirmationStats.h
+    capcontrol/include/ccexecutor.h
+    capcontrol/include/ccfeeder.h
+    capcontrol/include/ccid.h
+    capcontrol/include/ccmessage.h
+    capcontrol/include/ccmonitorpoint.h
+    capcontrol/include/ccOperationStats.h
+    capcontrol/include/ccOriginalParent.h
+    capcontrol/include/ccservice.h
+    capcontrol/include/ccsparea.h
+    capcontrol/include/ccstate.h
+    capcontrol/include/CCStatsObject.h
+    capcontrol/include/ccsubstation.h
+    capcontrol/include/ccsubstationbus.h
+    capcontrol/include/ccsubstationbusstore.h
+    capcontrol/include/cctwowaycbcpoints.h
+    capcontrol/include/cctypes.h
+    capcontrol/include/ccUnitTestUtil.h
+    capcontrol/include/ccutil.h
+    capcontrol/include/Controllable.h
+    capcontrol/include/ControlPolicy.h
+    capcontrol/include/ControlStrategy.h
+    capcontrol/include/CountdownKeepAlivePolicy.h
+    capcontrol/include/DatabaseDaoFactory.h
+    capcontrol/include/DynamicCommand.h
+    capcontrol/include/DynamicCommandExecutor.h
+    capcontrol/include/EventLogEntry.h
+    capcontrol/include/EventTypes.h
+    capcontrol/include/ExecChangeOpState.h
+    capcontrol/include/ExecutorFactory.h
+    capcontrol/include/ExecVerification.h
+    capcontrol/include/GangOperatedVoltageRegulator.h
+    capcontrol/include/id_capcontrol.h
+    capcontrol/include/IncrementingKeepAlivePolicy.h
+    capcontrol/include/IVVCAlgorithm.h
+    capcontrol/include/IVVCState.h
+    capcontrol/include/IVVCStrategy.h
+    capcontrol/include/KeepAlivePolicy.h
+    capcontrol/include/KVarStrategy.h
+    capcontrol/include/LastControlReason.h
+    capcontrol/include/LoadOnlyScanPolicy.h
+    capcontrol/include/mgr_paosched.h
+    capcontrol/include/MsgAreas.h
+    capcontrol/include/MsgBankMove.h
+    capcontrol/include/MsgCapBankStates.h
+    capcontrol/include/MsgCapControlCommand.h
+    capcontrol/include/MsgCapControlMessage.h
+    capcontrol/include/MsgCapControlServerResponse.h
+    capcontrol/include/MsgCapControlShutdown.h
+    capcontrol/include/MsgChangeOpState.h
+    capcontrol/include/MsgDeleteItem.h
+    capcontrol/include/MsgItemCommand.h
+    capcontrol/include/MsgObjectMove.h
+    capcontrol/include/MsgSpecialAreas.h
+    capcontrol/include/MsgSubstationBus.h
+    capcontrol/include/MsgSubstations.h
+    capcontrol/include/MsgSystemStatus.h
+    capcontrol/include/MsgVerifyBanks.h
+    capcontrol/include/MsgVerifyInactiveBanks.h
+    capcontrol/include/MsgVerifySelectedBank.h
+    capcontrol/include/MsgVoltageRegulator.h
+    capcontrol/include/MultiVoltStrategy.h
+    capcontrol/include/MultiVoltVarStrategy.h
+    capcontrol/include/NoKeepAlivePolicy.h
+    capcontrol/include/NoStrategy.h
+    capcontrol/include/pao_event.h
+    capcontrol/include/pao_schedule.h
+    capcontrol/include/PFactorKWKQStrategy.h
+    capcontrol/include/PFactorKWKVarStrategy.h
+    capcontrol/include/PhaseOperatedVoltageRegulator.h
+    capcontrol/include/PointResponse.h
+    capcontrol/include/PointResponseDao.h
+    capcontrol/include/PointResponseDatabaseDao.h
+    capcontrol/include/PointResponseManager.h
+    capcontrol/include/PointValueHolder.h
+    capcontrol/include/Policy.h
+    capcontrol/include/RegulatorEvents.h
+    capcontrol/include/ScanPolicy.h
+    capcontrol/include/StandardControlPolicy.h
+    capcontrol/include/StandardScanPolicy.h
+    capcontrol/include/StrategyLoader.h
+    capcontrol/include/StrategyManager.h
+    capcontrol/include/test_cc_serialization.h
+    capcontrol/include/TimeOfDayStrategy.h
+    capcontrol/include/VoltageRegulator.h
+    capcontrol/include/VoltageRegulatorLoader.h
+    capcontrol/include/VoltageRegulatorManager.h
+    capcontrol/include/VoltStrategy.h
+    capcontrol/include/Zone.h
+    capcontrol/include/ZoneLoader.h
+    capcontrol/include/ZoneManager.h
+  }
+
+  Resource_Files {
+    ../versioninfo.rc
+  }
+
+  specific {
+    postbuild= \ns {
+if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
+xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin
+    }
+  }
+
+  specific {
+    Release::lib_modifier =
+    Debug::lib_modifier =
+  }
+
+}
+

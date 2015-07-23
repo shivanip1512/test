@@ -1,0 +1,310 @@
+project(ctibase) {
+  sharedname=ctibase
+
+
+  macros += BOOST_ALL_DYN_LINK
+  macros += BOOST_ENABLE_ASSERT_HANDLER
+  macros += BUILD_VERSION=6.5\ (build\ 0)
+  macros += BUILD_VERSION_DETAILS=6.5.0
+  macros += CTIBASE
+  macros += NOMINMAX
+  macros += WIN32
+  macros += _CONSOLE
+  specific {
+    Debug::macros += _DEBUG
+  }
+  macros += _REENTRANT
+  macros += _WINDOWS
+  macros += _X86_=1
+  macros += __DLL__
+  macros += D_FILE_NAME=ctibase
+  macros += D_FILE_VERSION=6,5,0,0
+  macros += D_FILE_VERSION_STR=6.5.0.0
+  macros += D_PRODUCT_VERSION=6,5,0,0
+  macros += D_PRODUCT_VERSION_STR=6.5
+  includes += $(APR)/include
+  includes += $(BOOST)/include
+  includes += $(CAJUN)/include
+  includes += $(DBGHELP)/include
+  includes += $(LOG4CXX)/include
+  includes += $(OPENSSL)/include
+  includes += $(SQLAPI)/include
+  includes += $(XERCES)/include
+  includes += .
+  includes += ../common/include
+  includes += ../resource/include
+  includes += ./include
+  includes += $(BOOST)\include
+  lit_libs += kernel32
+  lit_libs += user32
+  lit_libs += advapi32
+  lit_libs += wsock32
+  lit_libs += winmm
+  lit_libs += shlwapi
+  lit_libs += Ws2_32
+  lit_libs += psapi
+  lit_libs += $(SQLAPI)\lib\sqlapid
+  specific {
+    Debug::lit_libs   += $(XERCES)\$(CONFIGURATION)\lib\xerces-c_3D
+    Release::lit_libs += $(XERCES)\$(CONFIGURATION)\lib\xerces-c_3
+  }
+  lit_libs += $(OPENSSL)\$(CONFIGURATION)\lib\libeay32
+  lit_libs += $(OPENSSL)\$(CONFIGURATION)\lib\ssleay32
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_chrono-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_chrono-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_date_time-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_date_time-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_thread-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_thread-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_regex-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_regex-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_filesystem-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_filesystem-vc120-mt-1_58
+  }
+  specific {
+    Debug::lit_libs   += $(BOOST)\lib\boost_system-vc120-mt-gd-1_58
+    Release::lit_libs += $(BOOST)\lib\boost_system-vc120-mt-1_58
+  }
+  lit_libs += $(DBGHELP)\lib\dbghelp
+  lit_libs += $(LOG4CXX)\$(CONFIGURATION)\lib\log4cxx
+  lit_libs += $(APR)\$(CONFIGURATION)\lib\libapr-1
+  pch_header = precompiled.h
+  pch_source = ../precompiled.cpp
+
+  Source_Files {
+    ../precompiled.cpp
+    
+    ctidate.cpp
+    ctitime.cpp
+    ctitokenizer.cpp
+    resolvers.cpp
+    numstr.cpp
+    cmdparse.cpp
+    counter.cpp
+    critical_section.cpp
+    ctdpcptrq.cpp
+    cti_asmc.cpp
+    cticalls.cpp
+    streamLocalConnection.cpp
+    streamSocketConnection.cpp
+    streamSocketListener.cpp
+    database_writer.cpp
+    database_connection.cpp
+    database_transaction.cpp
+    database_reader.cpp
+    database_util.cpp
+    dbaccess.cpp
+    debug_timer.cpp
+    desolvers.cpp
+    dllbase.cpp
+    elog_cli.cpp
+    error.cpp
+    fileint.cpp
+    guard.cpp
+    macro_offset.cpp
+    master.cpp
+    millisecond_timer.cpp
+    mutex.cpp
+    observe.cpp
+    queue.cpp
+    queues.cpp
+    readers_writer_lock.cpp
+    regression.cpp
+    repeaterrole.cpp
+    rtdb.cpp
+    sema.cpp
+    stdexcepthdlr.cpp
+    thread.cpp
+    ucttime.cpp
+    date_utility.cpp
+    utility.cpp
+    words.cpp
+    xfer.cpp
+    verification_objects.cpp
+    thread_register_data.cpp
+    thread_monitor.cpp
+    ThreadStatusKeeper.cpp
+    timeperiod.cpp
+    LitePoint.cpp
+    AttributeService.cpp
+    PointAttribute.cpp
+    MetricIdLookup.cpp
+    configval.cpp
+    configkey.cpp
+    cparms.cpp
+    encryption.cpp
+    BeatThePeakAlertLevel.cpp
+    json.cpp
+    xml.cpp
+    DeviceAttributeLookup.cpp
+    DeviceConfigDescription.cpp
+    timing_util.cpp
+    worker_thread.cpp
+    resource_helper.cpp
+    module_util.cpp
+    streamBuffer.cpp
+    string_util.cpp
+    exception_helper.cpp
+    win_helper.cpp
+    logLayout.cpp
+    logFileAppender.cpp
+    truncatingConsoleAppender.cpp
+    logManager.cpp
+    logger.cpp
+    id_ctibase.cpp
+  }
+
+
+  Header_Files {
+    common/include/AttributeService.h
+    common/include/BeatThePeakAlertLevel.h
+    common/include/boost_test_helpers.h
+    common/include/boost_time.h
+    common/include/boostutil.h
+    common/include/cmdparse.h
+    common/include/collectable.h
+    common/include/COLOR.H
+    common/include/ConfigKey.h
+    common/include/ConfigVal.h
+    common/include/constants.h
+    common/include/counter.h
+    common/include/CParms.h
+    common/include/critical_section.h
+    common/include/ctdpcptrq.h
+    common/include/CTI_ASMC.H
+    common/include/ctibase.h
+    common/include/CTICALLS.H
+    common/include/ctidate.h
+    common/include/ctidbgmem.h
+    common/include/ctipcptrqueue.h
+    common/include/ctiqueues.h
+    common/include/ctitime.h
+    common/include/ctitokenizer.h
+    common/include/database_connection.h
+    common/include/database_exceptions.h
+    common/include/database_reader.h
+    common/include/database_transaction.h
+    common/include/database_util.h
+    common/include/database_writer.h
+    common/include/date_utility.h
+    common/include/db_entry_defines.h
+    common/include/dbaccess.h
+    common/include/debug_timer.h
+    common/include/desolvers.h
+    common/include/DeviceAttributeLookup.h
+    common/include/DeviceConfigDescription.h
+    common/include/devicetypes.h
+    common/include/dllbase.h
+    common/include/dlldefs.h
+    common/include/dsm2.h
+    common/include/DSM2ERR.H
+    common/include/Elogger.h
+    common/include/encryption.h
+    common/include/exception_helper.h
+    common/include/Exceptions.h
+    common/include/fileint.h
+    common/include/guard.h
+    common/include/id_ctibase.h
+    common/include/immutable.h
+    common/include/json.h
+    common/include/LitePoint.h
+    common/include/logFileAppender.h
+    common/include/loggable.h
+    common/include/logger.h
+    common/include/logLayout.h
+    common/include/logManager.h
+    common/include/macro_offset.h
+    common/include/MASTER.H
+    common/include/MetricIdLookup.h
+    common/include/millisecond_timer.h
+    common/include/module_util.h
+    common/include/mutex.h
+    common/include/netports.h
+    common/include/numstr.h
+    common/include/observe.h
+    common/include/optional.h
+    common/include/OS2_2W32.H
+    common/include/parsevalue.h
+    common/include/PointAttribute.h
+    common/include/pointdefs.h
+    common/include/pointtypes.h
+    common/include/PORTER.H
+    common/include/precompiled.h
+    common/include/queue.h
+    common/include/QUEUES.H
+    common/include/random_generator.h
+    common/include/readers_writer_lock.h
+    common/include/regression.h
+    common/include/repeaterrole.h
+    common/include/resolvers.h
+    common/include/resource_helper.h
+    common/include/rfn_identifier.h
+    common/include/row_reader.h
+    common/include/row_writer.h
+    common/include/rtdb.h
+    common/include/sema.h
+    common/include/smartmap.h
+    common/include/socket_helper.h
+    common/include/sorted_vector.h
+    common/include/std_helper.h
+    common/include/stdexcepthdlr.h
+    common/include/streamBuffer.h
+    common/include/streamConnection.h
+    common/include/streamLocalConnection.h
+    common/include/streamSocketConnection.h
+    common/include/streamSocketListener.h
+    common/include/string_util.h
+    common/include/test_cmdparse_input.h
+    common/include/test_cmdparse_output.h
+    common/include/test_reader.h
+    common/include/thread.h
+    common/include/thread_listener.h
+    common/include/thread_monitor.h
+    common/include/thread_register_data.h
+    common/include/ThreadStatusKeeper.h
+    common/include/timeperiod.h
+    common/include/timing_util.h
+    common/include/truncatingConsoleAppender.h
+    common/include/types.h
+    common/include/utility.h
+    common/include/vcomdefs.h
+    common/include/verification_objects.h
+    common/include/win_helper.h
+    common/include/words.h
+    common/include/worker_thread.h
+    common/include/xfer.h
+    common/include/xml.h
+    common/include/yukon.h
+  }
+
+  Resource_Files {
+    ../versioninfo.rc
+  }
+
+  specific {
+    postbuild= \ns {
+if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
+xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin
+if not exist $(SolutionDir)lib mkdir $(SolutionDir)lib
+if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)lib
+if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)bin
+..\..\yukon-build\server-build\BUILD.EXE -f $(SolutionDir)\libraries.mak COMPILEBASE=$(SolutionDir) YUKONOUTPUT=$(SolutionDir)\bin all CONFIGURATION=$(Configuration)
+    }
+  }
+
+  specific {
+    Release::lib_modifier =
+    Debug::lib_modifier =
+  }
+
+}
+
