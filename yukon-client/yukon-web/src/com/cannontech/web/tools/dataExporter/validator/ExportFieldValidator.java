@@ -40,8 +40,6 @@ public class ExportFieldValidator extends SimpleValidator<ExportField> {
                 } catch (Exception e) {
                     errors.rejectValue("timestampPattern", invalidPatternMsgKey);
                 }
-            } else {
-                field.setPattern("MM/dd/yyyy hh:mm:ss zZ");
             }
         } else if (field.isValue()) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "readingPattern", field.getPattern(), 50);
