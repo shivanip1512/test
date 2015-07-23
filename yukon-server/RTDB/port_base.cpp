@@ -750,11 +750,13 @@ void CtiPort::fileTraces(list< CtiMessage* > &traceList) const
     {
         Cti::StreamBuffer output;
 
+        const CtiMessage *lastMessage = traceList.back();
+
         for each( const CtiMessage *msg in traceList )
         {
             const CtiTraceMsg* trace = static_cast<const CtiTraceMsg*>(msg);
             output << trace->getTrace();
-            if(trace->isEnd())
+            if(trace->isEnd() && msg != lastMessage)
             {
                 output << endl;
             }
