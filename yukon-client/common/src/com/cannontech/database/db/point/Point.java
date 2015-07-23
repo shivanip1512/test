@@ -58,15 +58,17 @@ public class Point extends DBPersistent {
             pointOffset, archiveType, archiveInterval);
     }
 
+    @Override
     public void add() throws SQLException {
         Object addValues[] =
             { getPointID(), getPointType(), getPointName(), getPaoID(), getLogicalGroup(), getStateGroupID(),
-                getServiceFlag(), getAlarmInhibit(), getPseudoFlag(), getPointOffset(), getArchiveType(),
+                getServiceFlag(), getAlarmInhibit(), getPseudoFlag(), getPointOffset(), getArchiveType().getDatabaseRepresentation(),
                 getArchiveInterval() };
 
         add(TABLE_NAME, addValues);
     }
 
+    @Override
     public void delete() throws SQLException {
         delete(TABLE_NAME, CONSTRAINT_COLUMNS[0], getPointID());
     }
@@ -155,6 +157,7 @@ public class Point extends DBPersistent {
         setArchiveInterval(archiveInterval);
     }
 
+    @Override
     public void retrieve() throws SQLException {
         Object constraintValues[] = { getPointID() };
 
@@ -239,6 +242,7 @@ public class Point extends DBPersistent {
         this.stateGroupID = stateGroupID;
     }
 
+    @Override
     public void update() throws SQLException {
         Object setValues[] = {
             getPointType(),
