@@ -42,8 +42,6 @@ struct test_CtiRouteCCU : CtiRouteCCU
 
 struct test_Mct410Device : Cti::Devices::Mct410Device
 {
-    long demand_interval;
-
 protected:
     CtiRouteSPtr rte;
 
@@ -53,7 +51,6 @@ protected:
         setType(type);
         _name = name;
         _paObjectID = 123456;
-        demand_interval = 3600;
     }
 
 public:
@@ -83,10 +80,17 @@ public:
 
     using Mct410Device::isDailyReadVulnerableToAliasing;
 
-    virtual LONG getDemandInterval()
-    {
-        return demand_interval;
-    }
+    long test_demandInterval = 3600;
+    virtual LONG getDemandInterval() override
+        {  return test_demandInterval;  }
+
+    long test_loadProfileInterval = 300;
+    virtual LONG getLoadProfileInterval(unsigned channel) override
+        {  return test_loadProfileInterval;  }
+
+    bool test_hasChannelConfig = true;
+    virtual bool hasChannelConfig(const unsigned channel) const override
+        {  return test_hasChannelConfig;  }
 
     bool test_isSupported_Mct410Feature_HourlyKwh() const
             {  return isSupported(Feature_HourlyKwh);  }
@@ -2108,7 +2112,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         test_Mct410IconDevice mct410;
 
         mct410.setDisconnectAddress(314159);
-        mct410.demand_interval = 300;
+        mct410.test_demandInterval = 300;
 
         CtiCommandParser parse("putconfig emetcon disconnect");
 
@@ -2143,7 +2147,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         test_Mct410IconDevice mct410;
 
         mct410.setDisconnectAddress(314159);
-        mct410.demand_interval = 300;
+        mct410.test_demandInterval = 300;
 
         CtiCommandParser parse("putconfig emetcon disconnect load limit 1.234 4");
 
@@ -2178,7 +2182,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         test_Mct410IconDevice mct410;
 
         mct410.setDisconnectAddress(314159);
-        mct410.demand_interval = 300;
+        mct410.test_demandInterval = 300;
 
         //  load limit of 12345.678 kW is 1028.81 kWh/5 min interval - much higher than the 409.5 kWh allowed
         CtiCommandParser parse("putconfig emetcon disconnect load limit 12345.678 4");
@@ -2204,7 +2208,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         test_Mct410IconDevice mct410;
 
         mct410.setDisconnectAddress(314159);
-        mct410.demand_interval = 300;
+        mct410.test_demandInterval = 300;
 
         CtiCommandParser parse("putconfig emetcon disconnect load limit 1.234 11");  //  max is 10 mins
 
@@ -2229,7 +2233,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         test_Mct410IconDevice mct410;
 
         mct410.setDisconnectAddress(314159);
-        mct410.demand_interval = 300;
+        mct410.test_demandInterval = 300;
 
         CtiCommandParser parse("putconfig emetcon disconnect cycle 7 17");
 
@@ -2264,7 +2268,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         test_Mct410IconDevice mct410;
 
         mct410.setDisconnectAddress(314159);
-        mct410.demand_interval = 300;
+        mct410.test_demandInterval = 300;
 
         CtiCommandParser parse("putconfig emetcon disconnect cycle 4 17");  //  min is 5
 
@@ -2289,7 +2293,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         test_Mct410IconDevice mct410;
 
         mct410.setDisconnectAddress(314159);
-        mct410.demand_interval = 300;
+        mct410.test_demandInterval = 300;
 
         CtiCommandParser parse("putconfig emetcon disconnect cycle 64 17");  //  max is 60
 
@@ -2314,7 +2318,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         test_Mct410IconDevice mct410;
 
         mct410.setDisconnectAddress(314159);
-        mct410.demand_interval = 300;
+        mct410.test_demandInterval = 300;
 
         CtiCommandParser parse("putconfig emetcon disconnect cycle 7 4");  //  min is 5
 
@@ -2339,7 +2343,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         test_Mct410IconDevice mct410;
 
         mct410.setDisconnectAddress(314159);
-        mct410.demand_interval = 300;
+        mct410.test_demandInterval = 300;
 
         CtiCommandParser parse("putconfig emetcon disconnect cycle 7 77");  //  max is 60
 
@@ -2364,7 +2368,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         test_Mct410IconDevice mct410;
 
         mct410.setDisconnectAddress(314159);
-        mct410.demand_interval = 300;
+        mct410.test_demandInterval = 300;
 
         CtiCommandParser parse("putconfig emetcon disconnect load limit 1.234 4 cycle 7 17");
 
@@ -2934,12 +2938,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         BOOST_CHECK( outList.empty() );
         BOOST_REQUIRE_EQUAL( retList.size(), 1 );
 
-        CtiDeviceBase::CtiMessageList::const_iterator retList_itr = retList.begin();
+        auto retList_itr = retList.cbegin();
 
         {
-            const CtiMessage *msg = *retList_itr++;
-
-            const CtiRequestMsg *req = dynamic_cast<const CtiRequestMsg *>(msg);
+            auto req = dynamic_cast<const CtiRequestMsg *>(*retList_itr++);
 
             BOOST_REQUIRE(req);
 
@@ -2962,12 +2964,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         BOOST_CHECK( outList.empty() );
         BOOST_REQUIRE_EQUAL( retList.size(), 1 );
 
-        CtiDeviceBase::CtiMessageList::const_iterator retList_itr = retList.begin();
+        auto retList_itr = retList.cbegin();
 
         {
-            const CtiMessage *msg = *retList_itr++;
-
-            const CtiReturnMsg *ret = dynamic_cast<const CtiReturnMsg *>(msg);
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
 
             BOOST_REQUIRE(ret);
 
@@ -2980,6 +2980,331 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                                     "\nKey_MCT_LLPInterest_Channel"
                                     "\nKey_MCT_LLPInterest_RequestBegin"
                                     "\nKey_MCT_LLPInterest_RequestEnd" );
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_getvalue_lp_cancel)
+    {
+        test_Mct410IconDevice mct410;
+
+        CtiCommandParser parse("getvalue lp cancel");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( outList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+
+        auto retList_itr = retList.cbegin();
+
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 0 );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / No active load profile requests to cancel\n" );
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_getvalue_lp_invalid_channel)
+    {
+        test_Mct410IconDevice mct410;
+
+        CtiCommandParser parse("getvalue lp channel 5 3/17/2011");
+
+        BOOST_CHECK_EQUAL( ClientErrors::NoMethod, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( outList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
+
+        auto retList_itr = retList.cbegin();
+
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 202 );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "Bad channel specification - Acceptable values:  1-4" );
+        }
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 202 );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "NoMethod or invalid command." );
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_getvalue_lp_invalid_interval)
+    {
+        test_Mct410IconDevice mct410;
+
+        mct410.test_loadProfileInterval = -1;
+
+        CtiCommandParser parse("getvalue lp channel 5 3/17/2011");
+
+        BOOST_CHECK_EQUAL( ClientErrors::NoMethod, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( outList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
+
+        auto retList_itr = retList.cbegin();
+
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 202 );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "Bad channel specification - Acceptable values:  1-4" );
+        }
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 202 );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "NoMethod or invalid command." );
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_getvalue_lp_no_channel_config)
+    {
+        test_Mct410IconDevice mct410;
+
+        mct410.test_hasChannelConfig = false;
+
+        CtiCommandParser parse("getvalue lp channel 1 3/17/2011");
+
+        BOOST_CHECK_EQUAL( ClientErrors::NoMethod, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( outList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+
+        auto retList_itr = retList.cbegin();
+
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 202 );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "NoMethod or invalid command." );
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_getvalue_lp_invalid_date)
+    {
+        test_Mct410IconDevice mct410;
+
+        CtiCommandParser parse("getvalue lp channel 1 3/17/2101");
+
+        BOOST_CHECK_EQUAL( ClientErrors::NoMethod, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( outList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
+
+        auto retList_itr = retList.cbegin();
+
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 202 );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "Bad start date \"3/17/2101\"" );
+        }
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 202 );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "NoMethod or invalid command." );
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_getvalue_lp_invalid_optionsField)
+    {
+        test_Mct410IconDevice mct410;
+
+        CtiCommandParser parse("getvalue lp channel 1 3/17/2011");
+
+        request.setOptionsField(9999);  //  invalid request ID
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( outList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+
+        auto retList_itr = retList.cbegin();
+
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 1 );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "Long load profile request was cancelled" );
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_getvalue_lp_invalid_times)
+    {
+        test_Mct410IconDevice mct410;
+
+        CtiCommandParser parse("getvalue lp channel 1 8/8/2011 3/17/2011");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( outList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+
+        auto retList_itr = retList.cbegin();
+
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 26 );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Invalid date/time for LP request (8/8/2011 - 3/17/2011)" );
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_getvalue_lp_background)
+    {
+        test_Mct410IconDevice mct410;
+
+        CtiCommandParser parse("getvalue lp channel 1 3/17/2011 background");
+        request.setDeviceId(123456);
+        request.setCommandString(parse.getCommandStr());
+        request.setConnectionHandle(reinterpret_cast<void *>(999));
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( outList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 3 );
+
+        auto retList_itr = retList.cbegin();
+
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 0 );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Load profile request submitted for background processing - use \"getvalue lp status\" to check progress" );
+            BOOST_CHECK_EQUAL( ret->getConnectionHandle(), reinterpret_cast<void *>(999) );
+        }
+        {
+            auto req = dynamic_cast<const CtiRequestMsg *>(*retList_itr++);
+
+            BOOST_REQUIRE(req);
+
+            BOOST_CHECK_EQUAL( req->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( req->CommandString(), "putconfig emetcon llp interest channel 1 3/17/2011 background" );
+            BOOST_CHECK_EQUAL( req->getMessagePriority(), 0 );
+        }
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 0 );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Sending load profile period of interest" );
+            BOOST_CHECK_EQUAL( ret->getConnectionHandle(), reinterpret_cast<void *>(0) );
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_getvalue_lp_misaligned_read)
+    {
+        test_Mct410IconDevice mct410;
+
+        CtiCommandParser parse("getvalue lp channel 1 3/17/2011 read");
+        request.setCommandString(parse.getCommandStr());
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( outList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+
+        auto retList_itr = retList.cbegin();
+
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 267 );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Long load profile read setup error" );
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_getvalue_lp_aligned_read)
+    {
+        test_Mct410IconDevice mct410;
+
+        //  set the expected period of interest
+        CtiCommandParser interestParse("putconfig emetcon llp interest channel 1 3/17/2011");
+        request.setCommandString(interestParse.getCommandStr());
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, interestParse, vgList, retList, outList) );
+
+        {
+            BOOST_CHECK( vgList.empty() );
+            BOOST_CHECK( retList.empty() );
+            BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+            const OUTMESS *msg = outList.front();
+
+            BOOST_REQUIRE( msg );
+            BOOST_CHECK_EQUAL( msg->Buffer.BSt.Length, 6 );
+
+            const unsigned char *results_begin = msg->Buffer.BSt.Message;
+            const unsigned char *results_end   = msg->Buffer.BSt.Message + msg->Buffer.BSt.Length;
+
+            const std::vector<unsigned char> expected {
+                0xff, 0x01, 0x4d, 0x81, 0x94, 0x24
+            };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS( expected.begin(), expected.end(),
+                                           results_begin,    results_end );
+
+            delete_container(outList);
+            outList.clear();
+        }
+
+        CtiCommandParser parse("getvalue lp channel 1 3/17/2011");
+        request.setCommandString(parse.getCommandStr());
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+        BOOST_CHECK( retList.empty() );
+
+        {
+            const OUTMESS *om = outList.front();
+
+            BOOST_REQUIRE( om );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO, 3 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 64 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length, 13 );
         }
     }
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
