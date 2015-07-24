@@ -15,6 +15,8 @@
 
 #include <boost/optional.hpp>
 #include <boost/assign/list_of.hpp>
+#include <boost/range/adaptor/filtered.hpp>
+#include <boost/range/adaptor/reversed.hpp>
 
 using std::string;
 using std::endl;
@@ -682,14 +684,22 @@ YukonError_t DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg       *pReq,
 
     const bool outMessagesGenerated = getGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
 
-    for( CtiMessageList::iterator itr = retList.begin(); itr != retList.end(); )
-    {
-        CtiReturnMsg *retMsg = static_cast<CtiReturnMsg *>(*itr);
+    auto returnMsgs = retList | boost::adaptors::filtered([](const CtiMessage *m){ return m->isA() == MSG_PCRETURN; }) | boost::adaptors::reversed;
 
-        // Set expectMore on all CtiReturnMsgs but the last, unless there was a command sent, in which case set expectMore on all of them.
-        if( ++itr != retList.end() || outMessagesGenerated )
+    if( ! returnMsgs.empty() )
+    {
+        auto itr = returnMsgs.begin();
+
+        // Set expectMore on the CtiReturnMsgs, but don't touch the last one if there was no OM sent.
+        //   That probably means the command is done, but do NOT unset it in case it was manually set.
+        if( ! outMessagesGenerated )
         {
-            retMsg->setExpectMore(true);
+            ++itr;
+        }
+
+        while( itr != returnMsgs.end() )
+        {
+            static_cast<CtiReturnMsg *>(*itr++)->setExpectMore(true);
         }
     }
 
