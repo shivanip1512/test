@@ -3684,10 +3684,9 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(CtiTime currentTime, CtiM
                             }
                         }
 
-                        long estimated_control_time = shed_time;
-                        if( !getManualControlReceivedFlag() && !doesGroupHaveAmpleControlTime(lm_group, estimated_control_time) )
+                        if( !getManualControlReceivedFlag() )
                         {
-                            shed_time = calculateGroupControlTimeLeft(lm_group, estimated_control_time);
+                            shed_time = calculateGroupControlTimeLeft(lm_group, shed_time);
                         }
                     } //end countdownmethod
 
@@ -5100,15 +5099,19 @@ BOOL CtiLMProgramDirect::isPastMinRestartTime(CtiTime currentTime)
 /*-------------------------------------------------------------------------
     doesGroupHaveAmpleControlTime
 
-    .
+    Returns true if the group can control for at least estimatedControlTimeInSeconds.
+    Returns false if the group only has estimatedControlTimeInSeconds-1 seconds left.
+    Checks Max Activate Time, Max Hours Daily, Monthly, Seasonally, and Annually.
 --------------------------------------------------------------------------*/
-BOOL CtiLMProgramDirect::doesGroupHaveAmpleControlTime(CtiLMGroupPtr& currentLMGroup, LONG estimatedControlTimeInSeconds) const
+bool CtiLMProgramDirect::doesGroupHaveAmpleControlTime(CtiLMGroupPtr& currentLMGroup, LONG estimatedControlTimeInSeconds) const
 {
-    return !( (getMaxActivateTime() > 0 && (currentLMGroup->getCurrentControlDuration() + estimatedControlTimeInSeconds > getMaxActivateTime())) ||
-              (getMaxHoursDaily() > 0 && (currentLMGroup->getCurrentHoursDaily() + estimatedControlTimeInSeconds) > getMaxHoursDaily()) ||
-              (getMaxHoursMonthly() > 0 && (currentLMGroup->getCurrentHoursMonthly() + estimatedControlTimeInSeconds) > getMaxHoursMonthly()*3600) ||
-              (getMaxHoursSeasonal() > 0 && (currentLMGroup->getCurrentHoursSeasonal() + estimatedControlTimeInSeconds) > getMaxHoursSeasonal()*3600) ||
-              (getMaxHoursAnnually() > 0 && (currentLMGroup->getCurrentHoursAnnually() + estimatedControlTimeInSeconds) > getMaxHoursAnnually()*3600) );
+    // 0 is a special case that is passed in quite a bit. It really means: Do I have at least 1 second of control time remaining
+    // This is necessary for the call to calculateGroupControlTimeLeft to work.
+    if (estimatedControlTimeInSeconds == 0) { 
+        estimatedControlTimeInSeconds = 1;
+    }
+    
+    return calculateGroupControlTimeLeft(currentLMGroup, estimatedControlTimeInSeconds) == estimatedControlTimeInSeconds;
 }
 
 /*-----------------------------------------------------------------------------

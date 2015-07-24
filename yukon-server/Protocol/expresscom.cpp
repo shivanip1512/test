@@ -1256,7 +1256,18 @@ YukonError_t CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse)
     else if(CtlReq == CMD_FLAG_CTL_TERMINATE)
     {
         INT delay = parse.getiValue("delaytime_sec", 0) / 60;
-        cycleLoadControl(relaymask, 0, 1, 1, delay);
+        INT period = parse.getiValue("cycle_period", 0);
+
+        if(period == 0) 
+        {
+            cycleLoadControl(relaymask, 0, 1, 1, delay); 
+        }
+        else 
+        {
+            // New style expresscom terminate
+            // Equivalent to: control xcom cycle 0 count 1 period <period>
+            cycleLoadControl(relaymask, 0, period, 1);
+        }
     }
     else if(CtlReq == CMD_FLAG_CTL_OPEN)
     {

@@ -1160,6 +1160,16 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
         {
             flag |= CMD_FLAG_CTL_TERMINATE;
             _snprintf(tbuf, sizeof(tbuf), "TERMINATE");
+
+            // Currently for Expresscom only. This supports new style terminate while not changing old style terminate
+            if(!(token = matchRegex(CmdStr, " period " + str_num)).empty())
+            {
+                if(!(temp2 = matchRegex(token, re_num)).empty())
+                {
+                    INT _num = atoi(temp2.c_str());
+                    _cmd["cycle_period"] = CtiParseValue( _num );
+                }
+            }
         }
         else if(containsString(CmdStr, " shed"))       // Sourcing from CmdStr, which is the entire command string.
         {

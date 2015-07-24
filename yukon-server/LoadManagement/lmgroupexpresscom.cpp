@@ -577,7 +577,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTargetCycleRequestMsg(LONG percent, L
 CtiRequestMsg* CtiLMGroupExpresscom::createStopCycleMsg(LONG period, CtiTime &currentTime)
 {
     const int priority = 11;
-    string controlString("control xcom cycle 0 count 1 period ");
+    string controlString("control terminate period ");
     controlString += buildPeriodString(period);
 
     CTILOG_INFO(dout, "Sending terminate to LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority);

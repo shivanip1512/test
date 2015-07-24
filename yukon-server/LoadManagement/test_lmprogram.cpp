@@ -6,6 +6,7 @@
 #include "lmconstraint.h"
 #include "executor.h"
 #include "test_reader.h"
+#include "lmgroupexpresscom.h"
 
 #include "ConstraintViolation.h"
 
@@ -653,6 +654,187 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
                                                  controlArea.getCurrentDailyStopTime(tomorrow));
 
     BOOST_CHECK( cv == constraints.getViolations()[0] );
+}
+
+BOOST_AUTO_TEST_CASE(test_group_constraint_daily_control)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMGroupPtr lmGroup(new CtiLMGroupExpresscom());
+
+    //Cases:
+
+    //All constraints 0
+    //Group Time less than each of 5 constraints - Partial Success
+    //Group time More than each of 5 options - Fail
+
+    lmProgram.setMaxActivateTime(0);
+    lmProgram.setMaxHoursDaily(0);
+    lmProgram.setMaxHoursMonthly(0);
+    lmProgram.setMaxHoursSeasonal(0);
+    lmProgram.setMaxHoursAnnually(0);
+
+    /****************************************************************************/
+    // All Constraints 0
+    lmGroup->setGroupControlState(CtiLMGroupBase::InactiveState);
+    lmGroup->setCurrentHoursDaily(0);
+    lmGroup->setCurrentHoursMonthly(0);
+    lmGroup->setCurrentHoursSeasonal(0);
+    lmGroup->setCurrentHoursAnnually(0);
+
+    BOOST_CHECK_EQUAL(true, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 0));
+    BOOST_CHECK_EQUAL(true, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3599));
+    BOOST_CHECK_EQUAL(true, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3600));
+    BOOST_CHECK_EQUAL(true, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3601));
+
+    lmGroup->setGroupControlState(CtiLMGroupBase::ActiveState);
+    lmGroup->setControlStartTime(CtiTime::now()-3601); // All tests on this will be nondeterministic, use caution!
+    lmGroup->setCurrentHoursDaily(3600);
+    lmGroup->setCurrentHoursMonthly(3600);
+    lmGroup->setCurrentHoursSeasonal(3600);
+    lmGroup->setCurrentHoursAnnually(3600);
+
+    BOOST_CHECK_EQUAL(true, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 0));
+    BOOST_CHECK_EQUAL(true, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3599));
+    BOOST_CHECK_EQUAL(true, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3600));
+    BOOST_CHECK_EQUAL(true, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3601));
+
+    /****************************************************************************/
+    //Group Time less than each of 5 constraints - Partial Success
+
+    lmProgram.setMaxActivateTime(7200);
+    lmProgram.setMaxHoursDaily(7200);
+    lmProgram.setMaxHoursMonthly(7200);
+    lmProgram.setMaxHoursSeasonal(7200);
+    lmProgram.setMaxHoursAnnually(7200);
+
+    lmGroup->setGroupControlState(CtiLMGroupBase::InactiveState);
+    lmGroup->setCurrentHoursDaily(3600);
+    lmGroup->setCurrentHoursMonthly(0);
+    lmGroup->setCurrentHoursSeasonal(0);
+    lmGroup->setCurrentHoursAnnually(0);
+
+    BOOST_CHECK_EQUAL(true, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 0));
+    BOOST_CHECK_EQUAL(true, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3599));
+    BOOST_CHECK_EQUAL(true, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3600));
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3601));
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 9999999));
+
+    lmGroup->setGroupControlState(CtiLMGroupBase::InactiveState);
+    lmGroup->setCurrentHoursDaily(0);
+    lmGroup->setCurrentHoursMonthly(3600);
+    lmGroup->setCurrentHoursSeasonal(0);
+    lmGroup->setCurrentHoursAnnually(0);
+
+    BOOST_CHECK_EQUAL(true, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 0));
+    BOOST_CHECK_EQUAL(true, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3599));
+    BOOST_CHECK_EQUAL(true, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3600));
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3601));
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 9999999));
+
+    lmGroup->setGroupControlState(CtiLMGroupBase::InactiveState);
+    lmGroup->setCurrentHoursDaily(0);
+    lmGroup->setCurrentHoursMonthly(0);
+    lmGroup->setCurrentHoursSeasonal(3600);
+    lmGroup->setCurrentHoursAnnually(0);
+
+    BOOST_CHECK_EQUAL(true, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 0));
+    BOOST_CHECK_EQUAL(true, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3599));
+    BOOST_CHECK_EQUAL(true, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3600));
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3601));
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 9999999));
+
+    lmGroup->setGroupControlState(CtiLMGroupBase::InactiveState);
+    lmGroup->setCurrentHoursDaily(0);
+    lmGroup->setCurrentHoursMonthly(0);
+    lmGroup->setCurrentHoursSeasonal(0);
+    lmGroup->setCurrentHoursAnnually(3600);
+
+    BOOST_CHECK_EQUAL(true, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 0));
+    BOOST_CHECK_EQUAL(true, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3599));
+    BOOST_CHECK_EQUAL(true, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3600));
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3601));
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 9999999));
+
+    lmGroup->setGroupControlState(CtiLMGroupBase::ActiveState);
+    lmGroup->setControlStartTime(CtiTime::now()-3601); // All tests on this will be nondeterministic, use caution!
+    lmGroup->setCurrentHoursDaily(0);
+    lmGroup->setCurrentHoursMonthly(0);
+    lmGroup->setCurrentHoursSeasonal(0);
+    lmGroup->setCurrentHoursAnnually(0);
+
+    BOOST_CHECK_EQUAL(true, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 0));
+    BOOST_CHECK_EQUAL(true, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3500)); // Shifted back quite a few seconds to avoid timing errors
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3601));
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 9999999));
+
+    /****************************************************************************/
+    //Group time More than each of 5 options - Fail
+    lmProgram.setMaxActivateTime(3600);
+    lmProgram.setMaxHoursDaily(3600);
+    lmProgram.setMaxHoursMonthly(3600);
+    lmProgram.setMaxHoursSeasonal(3600);
+    lmProgram.setMaxHoursAnnually(3600);
+
+    lmGroup->setGroupControlState(CtiLMGroupBase::InactiveState);
+    lmGroup->setCurrentHoursDaily(3601);
+    lmGroup->setCurrentHoursMonthly(0);
+    lmGroup->setCurrentHoursSeasonal(0);
+    lmGroup->setCurrentHoursAnnually(0);
+
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 0));
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3599));
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3600));
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3601));
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 9999999));
+
+    lmGroup->setGroupControlState(CtiLMGroupBase::InactiveState);
+    lmGroup->setCurrentHoursDaily(0);
+    lmGroup->setCurrentHoursMonthly(3601);
+    lmGroup->setCurrentHoursSeasonal(0);
+    lmGroup->setCurrentHoursAnnually(0);
+
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 0));
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3599));
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3600));
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3601));
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 9999999));
+
+    lmGroup->setGroupControlState(CtiLMGroupBase::InactiveState);
+    lmGroup->setCurrentHoursDaily(0);
+    lmGroup->setCurrentHoursMonthly(0);
+    lmGroup->setCurrentHoursSeasonal(3601);
+    lmGroup->setCurrentHoursAnnually(0);
+
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 0));
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3599));
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3600));
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3601));
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 9999999));
+
+    lmGroup->setGroupControlState(CtiLMGroupBase::InactiveState);
+    lmGroup->setCurrentHoursDaily(0);
+    lmGroup->setCurrentHoursMonthly(0);
+    lmGroup->setCurrentHoursSeasonal(0);
+    lmGroup->setCurrentHoursAnnually(3601);
+
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 0));
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3599));
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3600));
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3601));
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 9999999));
+
+    lmGroup->setGroupControlState(CtiLMGroupBase::ActiveState);
+    lmGroup->setControlStartTime(CtiTime::now()-3601); // All tests on this will be nondeterministic, use caution!
+    lmGroup->setCurrentHoursDaily(0);
+    lmGroup->setCurrentHoursMonthly(0);
+    lmGroup->setCurrentHoursSeasonal(0);
+    lmGroup->setCurrentHoursAnnually(0);
+
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 0));
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3500)); // Shifted back quite a few seconds to avoid timing errors
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 3601));
+    BOOST_CHECK_EQUAL(false, lmProgram.doesGroupHaveAmpleControlTime(lmGroup, 9999999));
+  
 }
 
 
