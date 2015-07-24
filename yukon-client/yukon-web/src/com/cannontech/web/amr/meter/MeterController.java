@@ -176,11 +176,12 @@ public class MeterController {
         
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         PaoType type = device.getDeviceType();
-        
+
         // Redirecting water meters to WaterMeterController
-        if (type == PaoType.RFWMETER)
+        if (type == PaoType.RFWMETER) {
             return "redirect:" + paoDetailUrlHelper.getUrlForPaoDetailPage(device);
-        
+        }
+
         // The set of attributes in this device's definition. See paoDefinition.xml
         Set<Attribute> deviceAttributes = attributeService.getAvailableAttributes(device);
         
