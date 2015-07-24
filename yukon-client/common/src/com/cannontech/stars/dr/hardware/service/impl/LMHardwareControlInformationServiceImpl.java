@@ -39,9 +39,6 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
         int relay = enrollmentInfo.getRelayNumber();
         /*Shouldn't already be an entry, but this might be a repeat enrollment.  Check for existence*/
         try {
-            LMHardwareControlGroup existingEnrollment =
-                lmHardwareControlGroupDao.findCurrentEnrollmentByInventoryIdAndRelayAndAccountId(inventoryId,
-                    accountId, relay);
             Instant now = new Instant();
 
             // Clear all the opt outs for the enrolled inventory
@@ -51,11 +48,6 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
             	optOutService.cancelOptOut(lastEventIdList, currentUser);
             }
             
-            if (existingEnrollment != null) {
-                existingEnrollment.setGroupEnrollStop(now);
-                existingEnrollment.setUserIdSecondAction(currentUser.getUserID());
-                lmHardwareControlGroupDao.update(existingEnrollment);
-            }
             /*Do the start*/
             LMHardwareControlGroup controlInformation = new LMHardwareControlGroup(inventoryId, loadGroupId, accountId, LMHardwareControlGroup.ENROLLMENT_ENTRY, relay, programId, currentUser.getUserID());
             controlInformation.setGroupEnrollStart(now);
