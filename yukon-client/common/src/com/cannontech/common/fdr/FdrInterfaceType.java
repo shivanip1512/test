@@ -3,10 +3,11 @@ package com.cannontech.common.fdr;
 import java.util.Comparator;
 import java.util.List;
 
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.google.common.collect.Lists;
 
-public enum FdrInterfaceType implements DatabaseRepresentationSource {
+public enum FdrInterfaceType implements DatabaseRepresentationSource, DisplayableEnum {
     INET(1, new FdrInterfaceOption[] {
                 FdrInterfaceOption.INET_DEVICE,
                 FdrInterfaceOption.INET_POINT,
@@ -239,6 +240,8 @@ public enum FdrInterfaceType implements DatabaseRepresentationSource {
                 FdrDirection.RECEIVE_FOR_ANALOG_OUTPUT
             });
     
+    private static final String baseKey = "yukon.common.fdr.interface.";
+    
     private final int position;
     private final FdrInterfaceOption[] options;
     private final FdrDirection[] supportedDirections;
@@ -336,5 +339,10 @@ public enum FdrInterfaceType implements DatabaseRepresentationSource {
     @Override
     public Object getDatabaseRepresentation() {
         return toString();
+    }
+
+    @Override
+    public String getFormatKey() {
+        return baseKey + name();
     }
 }

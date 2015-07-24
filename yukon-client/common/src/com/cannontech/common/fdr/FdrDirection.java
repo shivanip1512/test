@@ -1,8 +1,9 @@
 package com.cannontech.common.fdr;
 
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 
-public enum FdrDirection implements DatabaseRepresentationSource {
+public enum FdrDirection implements DatabaseRepresentationSource, DisplayableEnum {
 
     RECEIVE("Receive"),
     RECEIVE_FOR_CONTROL("Receive for control"),
@@ -10,6 +11,8 @@ public enum FdrDirection implements DatabaseRepresentationSource {
     SEND("Send"),
     SEND_FOR_CONTROL("Send for control"),
     LINK_STATUS("Link Status");
+    
+    private static final String baseKey = "yukon.common.fdr.direction.";
 
     private final String dbName;
 
@@ -34,5 +37,10 @@ public enum FdrDirection implements DatabaseRepresentationSource {
             }
         }
         return ret;
+    }
+
+    @Override
+    public String getFormatKey() {
+        return baseKey + name();
     }
 }

@@ -29,7 +29,11 @@
 <spring:bind path="${path}">
 
 <%-- VIEW MODE --%>
-<cti:displayForPageEditModes modes="VIEW">${fn:escapeXml(status.value)}</cti:displayForPageEditModes>
+<cti:displayForPageEditModes modes="VIEW">
+    <span id="${pageScope.id}" class="${pageScope.inputClass}" data-toggle-group="${pageScope.toggleGroup}">
+        ${fn:escapeXml(status.value)}
+    </span>
+</cti:displayForPageEditModes>
 
 <%-- EDIT/CREATE MODE --%>
 <cti:displayForPageEditModes modes="EDIT,CREATE">

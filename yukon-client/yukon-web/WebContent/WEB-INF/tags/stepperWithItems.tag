@@ -24,7 +24,7 @@
 
 <%-- VIEW MODE --%>
 <cti:displayForPageEditModes modes="VIEW">
-    <form:hidden path="${path}" id="${id}"/>
+    <form:hidden path="${path}" id="${id}" cssClass="${pageScope.inputClass}"/>
     <spring:bind path="${path}">
         <c:choose>
             <c:when test="${not empty itemValue}">

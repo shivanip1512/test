@@ -2,7 +2,9 @@ package com.cannontech.web.capcontrol.models;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
+import com.cannontech.common.util.LazyList;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.CalcStatusPoint;
@@ -10,6 +12,7 @@ import com.cannontech.database.data.point.CalculatedPoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.ScalarPoint;
 import com.cannontech.database.data.point.StatusPoint;
+import com.cannontech.database.db.point.PointLimit;
 import com.cannontech.database.db.point.fdr.FDRTranslation;
 import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
@@ -18,7 +21,7 @@ public class PointModel<T extends PointBase> {
     
     private T pointBase;
     private StaleData staleData;
-    private List<AlarmTableEntry> alarmTableEntries;
+    private List<AlarmTableEntry> alarmTableEntries = LazyList.ofInstance(AlarmTableEntry.class);
     
     public PointModel() {
         this(null, null, new ArrayList<>());
@@ -61,7 +64,7 @@ public class PointModel<T extends PointBase> {
     
     public void finishSetup() {
         
-        int id = getId();
+        Integer id = getId();
         PointBase base = getPointBase();
         
         /* Remove unused translations and fill in the point id on used ones */
@@ -74,6 +77,7 @@ public class PointModel<T extends PointBase> {
             }
         }
         base.setPointFDRTranslations(newFdrs);
+        base.getPointAlarming().setPointID(getId());
         
         if (base instanceof AnalogPoint) {
             AnalogPoint analogPoint = (AnalogPoint) base;
@@ -99,10 +103,13 @@ public class PointModel<T extends PointBase> {
         if (base instanceof ScalarPoint) {
             ScalarPoint scalar = (ScalarPoint) base;
             
+            for (Entry<Integer, PointLimit> entry :scalar.getPointLimitsMap().entrySet()) {
+                PointLimit limit = entry.getValue();
+                limit.setPointID(id);
+                limit.setLimitNumber(entry.getKey());
+            }
+
             scalar.getPointUnit().setPointID(id);
-            scalar.getLimitOne().setPointID(id);
-            scalar.getLimitTwo().setPointID(id);
-            
         }
         
         if (base instanceof CalcStatusPoint) {

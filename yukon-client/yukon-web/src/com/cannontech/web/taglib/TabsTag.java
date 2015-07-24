@@ -11,20 +11,20 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.cannontech.web.taglib.TabTag.TabHeader;
+
 
 public class TabsTag extends BodyTagSupport {
     
     private String classes = "";
     private String id="";
     private int selectedTabIndex = 0;
-    private List<String> tabNames = new ArrayList<String>();
-    private List<String> tabIds = new ArrayList<String>();
+    private List<TabHeader> tabs = new ArrayList<>();
     
-    public void addTab(String name, String id, boolean selected) {
-        tabNames.add(name);
-        tabIds.add(id);
-        if (selected) {
-            selectedTabIndex = tabNames.size() - 1;
+    public void addTab(TabHeader newTab) {
+        tabs.add(newTab);
+        if (newTab.isSelected()) {
+            selectedTabIndex = tabs.size() - 1;
         }
     }
     
@@ -34,8 +34,7 @@ public class TabsTag extends BodyTagSupport {
     
     @Override
     public int doStartTag() throws JspException {
-        tabIds.clear();
-        tabNames.clear();
+        tabs.clear();
         return EVAL_BODY_BUFFERED;
     }
     
@@ -62,8 +61,11 @@ public class TabsTag extends BodyTagSupport {
             out.print(" data-selected-tab=\"" + selectedTabIndex + "\">");
             
             out.println("<ul>");
-            for (int i = 0; i < tabIds.size(); i++) {
-                out.println("<li><a href=\"#" + tabIds.get(i) + "\">" + tabNames.get(i) + "</a></li>");
+
+            for (TabHeader tab : tabs) {
+                out.println("<li class=\"" + tab.getClasses() + "\">" +
+                                "<a href=\"#" + tab.getId() + "\">" + tab.getTitle() + "</a>" +
+                            "</li>");
             }
             out.println("</ul>");
             
@@ -85,5 +87,5 @@ public class TabsTag extends BodyTagSupport {
     public void setId(String id) {
         this.id = id;
     }
-    
+
 }

@@ -2161,6 +2161,12 @@
         <description>CSS classes of the content div.</description>
     </attribute>
     <attribute>
+        <name>headerClasses</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>CSS classes for the tab header</description>
+    </attribute>
+    <attribute>
         <name>selected</name>
         <required>false</required>
         <rtexprvalue>true</rtexprvalue>

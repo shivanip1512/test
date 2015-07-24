@@ -45,9 +45,17 @@
             <c:when test="${not empty pageScope.label}">${fn:escapeXml(label)}</c:when>
             <c:otherwise><jsp:doBody/></c:otherwise>
         </c:choose>
+        <c:if test="${not empty path}">
+            <spring:bind path="${path}">
+                <form:radiobutton path="${path}" id="${id}" value="${value}" 
+                    data-toggle="${pageScope.toggleGroup}" cssClass="dn ${pageScope.inputClass}"/>
+            </spring:bind>
+        </c:if> 
+        <c:if test="${empty path}">
+            <input type="radio" name="${name}" value="${value}" class="dn ${pageScope.inputClass}" checked="checked"/>
+        </c:if> 
     </c:if>
     
-    <input type="hidden" name="${status.expression}" value="${option.value}" class="${pageScope.inputClass}"/>
     
 </cti:displayForPageEditModes>
 

@@ -69,7 +69,10 @@
         <spring:bind path="${path}">
             <c:set var="checked" value="${status.actualValue}" />
         </spring:bind>
+        <form:checkbox path="${path}" cssClass="dn ${pageScope.inputClass}" 
+            data-toggle="${pageScope.toggleGroup}" data-toggle-action="${pageScope.toggleAction}"/>
     </c:if>
+
     <c:if test="${inverse}">
         <c:set var="checked" value="${not checked}"/>
     </c:if>

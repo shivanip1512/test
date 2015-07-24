@@ -81,6 +81,14 @@ public class ScalarPoint extends PointBase {
     public boolean isLimitTwoSpecified() {
         return pointLimitsMap.containsKey(2);
     }
+    
+    public void setLimitOneSpecified(boolean specified) {
+        if (!specified) pointLimitsMap.remove(1);
+    }
+    
+    public void setLimitTwoSpecified(boolean specified) {
+        if (!specified) pointLimitsMap.remove(2);
+    }
        
 
     public PointLimit getLimitTwo() {

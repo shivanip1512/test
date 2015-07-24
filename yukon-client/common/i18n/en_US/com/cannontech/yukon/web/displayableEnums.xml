@@ -440,4 +440,40 @@
     <entry key="yukon.common.enabledStatus.ENABLED">Enabled</entry>
     <entry key="yukon.common.enabledStatus.DISABLED">Disabled</entry>
 
+    <entry key="yukon.common.fdr.interface.INET">INET</entry>
+    <entry key="yukon.common.fdr.interface.ACS">ACS</entry>
+    <entry key="yukon.common.fdr.interface.VALMET">VALMET</entry>
+    <entry key="yukon.common.fdr.interface.CYGNET">CYGNET</entry>
+    <entry key="yukon.common.fdr.interface.STEC">STEC</entry>
+    <entry key="yukon.common.fdr.interface.RCCS">RCCS</entry>
+    <entry key="yukon.common.fdr.interface.TRISTATE">TRISTATE</entry>
+    <entry key="yukon.common.fdr.interface.RDEX">RDEX</entry>
+    <entry key="yukon.common.fdr.interface.SYSTEM">SYSTEM</entry>
+    <entry key="yukon.common.fdr.interface.DSM2IMPORT">DSM2IMPORT</entry>
+    <entry key="yukon.common.fdr.interface.TELEGYR">TELEGYR</entry>
+    <entry key="yukon.common.fdr.interface.TEXTIMPORT">TEXTIMPORT</entry>
+    <entry key="yukon.common.fdr.interface.TEXTEXPORT">TEXTEXPORT</entry>
+    <entry key="yukon.common.fdr.interface.LODESTAR_STD">LODESTAR_STD</entry>
+    <entry key="yukon.common.fdr.interface.LODESTAR_ENH">LODESTAR_ENH</entry>
+    <entry key="yukon.common.fdr.interface.DSM2FILEIN">DSM2FILEIN</entry>
+    <entry key="yukon.common.fdr.interface.XA21LM">XA21LM</entry>
+    <entry key="yukon.common.fdr.interface.BEPC">BEPC</entry>
+    <entry key="yukon.common.fdr.interface.PI">PI</entry>
+    <entry key="yukon.common.fdr.interface.LIVEDATA">LIVEDATA</entry>
+    <entry key="yukon.common.fdr.interface.ACSMULTI">ACSMULTI</entry>
+    <entry key="yukon.common.fdr.interface.WABASH">WABASH</entry>
+    <entry key="yukon.common.fdr.interface.TRISTATESUB">TRISTATESUB</entry>
+    <entry key="yukon.common.fdr.interface.OPC">OPC</entry>
+    <entry key="yukon.common.fdr.interface.MULTISPEAK_LM">MULTISPEAK_LM</entry>
+    <entry key="yukon.common.fdr.interface.DNPSLAVE">DNPSLAVE</entry>
+    <entry key="yukon.common.fdr.interface.VALMETMULTI">VALMETMULTI</entry>
+    
+    <entry key="yukon.common.fdr.direction.RECEIVE">Receive</entry>
+    <entry key="yukon.common.fdr.direction.RECEIVE_FOR_CONTROL">Receive for control</entry>
+    <entry key="yukon.common.fdr.direction.RECEIVE_FOR_ANALOG_OUTPUT">Receive for Analog Output</entry>
+    <entry key="yukon.common.fdr.direction.SEND">Send</entry>
+    <entry key="yukon.common.fdr.direction.SEND_FOR_CONTROL">Send for control</entry>
+    <entry key="yukon.common.fdr.direction.LINK_STATUS">Link Status</entry>
+    
+
 </properties>

@@ -20,7 +20,7 @@
     <c:set var="nameValueClass" value="natural-width ${viewMode ? '' : 'with-form-controls' }" />
 
     <cti:url var="action" value="/capcontrol/points/${pointModel.pointBase.point.pointType}" />
-    <form:form id="point-from" commandName="pointModel" action="${action}" method="POST">
+    <form:form id="point-from" commandName="pointModel" action="${action}" method="POST" data-view-mode="${viewMode}">
     
         <cti:csrfToken />
         
@@ -69,15 +69,16 @@
                         <tags:nameValue name="Archive Data">
                             <tags:selectWithItems path="pointBase.point.archiveType" items="${scalarArchiveTypes}"
                                 inputClass="js-archive-type" />
-                            
                             <span class="js-archive-interval">
+                                <c:if test="${viewMode}">(</c:if>
                                 <tags:intervalStepper path="pointBase.point.archiveInterval" intervals="${archiveIntervals}" />
+                                <c:if test="${viewMode}">)</c:if>
                             </span>
                         </tags:nameValue>
                         
                         <tags:nameValue name="Units of Measure">
                             <tags:selectWithItems path="pointBase.pointUnit.uomID" items="${unitMeasures}" 
-                                itemValue="liteID" itemLabel="unitMeasureName" inputClass="js-init-chosen"/>
+                                itemValue="liteID" itemLabel="unitMeasureName" inputClass="${viewMode ? '' : 'js-init-chosen'}"/>
                         </tags:nameValue>
                         
                         <tags:nameValue name="Decimal Digits">
@@ -86,7 +87,7 @@
             
                         <tags:nameValue name="State Group">
                             <tags:selectWithItems path="pointBase.point.stateGroupID" items="${stateGroups}" 
-                                itemValue="liteID" itemLabel="stateGroupName" inputClass="js-init-chosen"/>
+                                itemValue="liteID" itemLabel="stateGroupName" inputClass="${viewMode ? '' : 'js-init-chosen'}"/>
                             
                         </tags:nameValue>
                     </tags:nameValueContainer>
@@ -116,7 +117,7 @@
                         
                         <tags:nameValue name="State Group">
                             <tags:selectWithItems path="pointBase.point.stateGroupID" items="${stateGroups}" 
-                                itemValue="liteID" itemLabel="stateGroupName" inputClass="js-init-chosen js-state-group"/>
+                                itemValue="liteID" itemLabel="stateGroupName" inputClass="${viewMode ? '' : 'js-init-chosen'} js-state-group"/>
                         </tags:nameValue>
                         
                         <tags:nameValue name="Initial State">
@@ -193,15 +194,14 @@
                         <%-- Check this box to disable control for this point --%>
                         <tags:nameValue name="Control Inhibit" 
                             nameClass="js-analog-control-input" valueClass="js-analog-control-input">
-                            <tags:switchButton path="pointBase.pointAnalogControl.controlInhibited"  offClasses="M0"
-                                classes="js-analog-control-input"/>
+                            <tags:switchButton path="pointBase.pointAnalogControl.controlInhibited"  offClasses="M0" />
                         </tags:nameValue>
                         
                         
                         <%-- Specifies the physical location used for wiring the relay point --%>
-                        <tags:nameValue name="Control Pt Offset" nameClass="js-analog-control-input">
-                            <tags:input path="pointBase.pointAnalogControl.controlOffset" size="6"
-                                inputClass="js-analog-control-input"/>
+                        <tags:nameValue name="Control Pt Offset" nameClass="js-analog-control-input"
+                            valueClass="js-analog-control-input">
+                            <tags:input path="pointBase.pointAnalogControl.controlOffset" size="6" />
                         </tags:nameValue>
                     </tags:nameValueContainer>
                     
@@ -302,19 +302,19 @@
                         
                         <%-- The upper value for this limit (used for an alarming condition) --%>
                         <tags:nameValue name="Upper Limit" >
-                            <tags:input path="pointBase.limitOne.highLimit" size="6" 
+                            <tags:input path="pointBase.pointLimitsMap[1].highLimit" size="6" 
                                 toggleGroup="limitOne"/>
                         </tags:nameValue>
                         
                         <%-- The lower value for this limit (used for an alarming condition) --%>
                         <tags:nameValue name="Lower Limit">
-                            <tags:input path="pointBase.limitOne.lowLimit" size="6"
+                            <tags:input path="pointBase.pointLimitsMap[1].lowLimit" size="6"
                                 toggleGroup="limitOne"/>
                         </tags:nameValue>
         
                         <%-- The number of seconds the limit must be violated before an alarm is generated --%>
                         <tags:nameValue name="Duration">
-                            <tags:input path="pointBase.limitOne.limitDuration" size="6"
+                            <tags:input path="pointBase.pointLimitsMap[1].limitDuration" size="6"
                                 toggleGroup="limitOne"/> secs
                         </tags:nameValue>
                         
@@ -327,19 +327,19 @@
                         
                         <%-- The upper value for this limit (used for an alarming condition) --%>
                         <tags:nameValue name="Upper Limit">
-                            <tags:input path="pointBase.limitTwo.highLimit" size="6"
+                            <tags:input path="pointBase.pointLimitsMap[2].highLimit" size="6"
                                 toggleGroup="limitTwo"/>
                         </tags:nameValue>
                         
                         <%-- The lower value for this limit (used for an alarming condition) --%>
                         <tags:nameValue name="Lower Limit">
-                            <tags:input path="pointBase.limitTwo.lowLimit" size="6"
+                            <tags:input path="pointBase.pointLimitsMap[2].lowLimit" size="6"
                                 toggleGroup="limitTwo"/>
                         </tags:nameValue>
         
                         <%-- The number of seconds the limit must be violated before an alarm is generated --%>
                         <tags:nameValue name="Duration">
-                            <tags:input path="pointBase.limitTwo.limitDuration" size="6"
+                            <tags:input path="pointBase.pointLimitsMap[2].limitDuration" size="6"
                                 toggleGroup="limitTwo"/> secs
                         </tags:nameValue>
                         
@@ -393,7 +393,7 @@
                 </tags:nameValueContainer>
             </cti:tab>
             <cti:tab title="Alarming">
-                <tags:nameValueContainer tableClass="${nameValueClass}">
+                <tags:nameValueContainer tableClass="${nameValueClass} stacked-lg">
                     <%-- Options: ptEditorForm.notifcationGrps --%>
                     <tags:nameValue name="Notification Group">
                         <tags:selectWithItems path="pointBase.pointAlarming.notificationGroupID" items="${notificationGroups}" 
@@ -413,24 +413,36 @@
                     <tags:nameValue name="Disable All Alarms">
                         <tags:switchButton path="pointBase.point.alarmsDisabled" offClasses="M0"/>
                     </tags:nameValue>
-                    
-                    <c:forEach var="alarmTableEntry" items="${pointModel.alarmTableEntries}" varStatus="status">
-                        
-                        <tags:nameValue name="${pointModel.alarmTableEntries[status.index].condition} Category">
-                            <%-- TODO this should take the liteID for the value rather than converting --%>
-                            <tags:selectWithItems path="alarmTableEntries[${status.index}].generate" items="${alarmCategories}" 
-                                itemValue="categoryName" itemLabel="categoryName" />
-                        </tags:nameValue>
-                        
-                        <tags:nameValue name="${pointModel.alarmTableEntries[status.index].condition} Notify">
-                            <%-- selLists.ptAlarmNotification --%>
-                            <tags:selectWithItems path="alarmTableEntries[${status.index}].excludeNotify" 
-                                items="${alarmNotificationTypes}" itemValue="dbString" />
-                        </tags:nameValue>
-                    </c:forEach>
-                    
                 </tags:nameValueContainer>
+                    
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Condition</th>
+                            <th>Category</th>
+                            <th>Notify</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="alarmTableEntry" items="${pointModel.alarmTableEntries}" varStatus="status">
+                        <tr>
+                            <td>${pointModel.alarmTableEntries[status.index].condition}</td>
+                            <td>
+                                <%-- TODO this should take the liteID for the value rather than converting --%>
+                                <tags:selectWithItems path="alarmTableEntries[${status.index}].generate" 
+                                    items="${alarmCategories}" itemValue="categoryName" itemLabel="categoryName" />
+                            </td>
+                            <td>
+                                <%-- TODO this should take the liteID for the value rather than converting --%>
+                                <tags:selectWithItems path="alarmTableEntries[${status.index}].excludeNotify" 
+                                    items="${alarmNotificationTypes}" itemValue="dbString" />
+                            </td>
+                        </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
             </cti:tab>
+            
             <cti:tab title="FDR Setup">
                 <tags:nameValueContainer tableClass="${nameValueClass}">
                     <%-- TODO Only show necessary members of this list --%>
@@ -461,7 +473,8 @@
                         <c:forEach var="option" items="${fdrTranslation.interfaceEnum.interfaceOptionsList}">
                         
                             <%-- TODO Combine these into the translation --%>
-                            <tags:nameValue name="Dummy Input ${option.optionLabel}">
+                            <tags:nameValue name="Dummy Input ${option.optionLabel}"
+                                nameClass="dn" valueClass="dn">
                                 <c:if test="${not empty option.optionValues}">
                                     <%-- TODO make this a select --%>
                                     Options:
