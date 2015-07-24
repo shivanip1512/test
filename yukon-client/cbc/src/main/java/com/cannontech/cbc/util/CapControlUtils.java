@@ -583,13 +583,19 @@ public final class CapControlUtils {
      * Discovers if the given Feeder is in any Pending state
      */
     public static String getFeederPendingState(Feeder feeder) {
+
         for (CapBankDevice capBank : feeder.getCcCapBanks()) {
 
-            if (capBank.getControlStatus() == CapControlConst.BANK_CLOSE_PENDING)
-                return CapControlUtils.getCBCStateNames()[CapControlConst.BANK_CLOSE_PENDING].getStateText();
-
-            if (capBank.getControlStatus() == CapControlConst.BANK_OPEN_PENDING)
-                return CapControlUtils.getCBCStateNames()[CapControlConst.BANK_OPEN_PENDING].getStateText();
+            if (capBank.getControlStatus() == CapControlConst.BANK_CLOSE_PENDING) {
+                LiteState state = stateDao.findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, 
+                                                         CapControlConst.BANK_CLOSE_PENDING);
+                return state.getStateText();
+            }
+            if (capBank.getControlStatus() == CapControlConst.BANK_OPEN_PENDING) {
+                LiteState state = stateDao.findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK,
+                                                         CapControlConst.BANK_OPEN_PENDING);
+                return state.getStateText();
+            }
         }
 
         // we are not pending
