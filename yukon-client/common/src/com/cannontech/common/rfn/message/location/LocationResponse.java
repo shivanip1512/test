@@ -2,8 +2,6 @@ package com.cannontech.common.rfn.message.location;
 
 import java.io.Serializable;
 
-import org.joda.time.Instant;
-
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 
@@ -18,7 +16,7 @@ public class LocationResponse implements RfnIdentifyingMessage, Serializable {
     private Origin origin;
     private double latitude;
     private double longitude;
-    private Instant lastChangedDate;
+    private long lastChangedDate;
     private long locationId;
 
     @Override
@@ -46,11 +44,11 @@ public class LocationResponse implements RfnIdentifyingMessage, Serializable {
         this.longitude = longitude;
     }
 
-    public Instant getLastChangedDate() {
+    public long getLastChangedDate() {
         return lastChangedDate;
     }
 
-    public void setLastChangedDate(Instant lastChangedDate) {
+    public void setLastChangedDate(long lastChangedDate) {
         this.lastChangedDate = lastChangedDate;
     }
 

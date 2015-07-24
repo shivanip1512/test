@@ -41,6 +41,7 @@ import com.cannontech.common.events.service.mappers.LiteYukonUserToNameMapper;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -161,7 +162,13 @@ public class EventLogServiceImpl implements EventLogService {
                 return from.getCombinedIdentifier();
             }
         }));
-        
+        builder.add(ArgumentMapper.create(PaoLocation.class, Types.VARCHAR, new ObjectMapper<PaoLocation, String>() {
+            @Override
+            public String map(PaoLocation from) throws ObjectMappingException {
+                return String.format("latitude=%s, longitude=%s, origin=%s", from.getLatitude(), from.getLongitude(),
+                    from.getOrigin());
+            }
+        }));
         argumentMappers = builder.build();
     }
 

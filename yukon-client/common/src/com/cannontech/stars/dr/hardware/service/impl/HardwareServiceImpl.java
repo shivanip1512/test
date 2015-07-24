@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
+import com.cannontech.common.events.loggers.EndpointEventLogService;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareType;
@@ -85,6 +86,7 @@ public class HardwareServiceImpl implements HardwareService {
     @Autowired private YukonListDao yukonListDao;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private PaoLocationDao paoLocationDao;
+    @Autowired private EndpointEventLogService endpointEventLogService;
 
     @Override
     @Transactional
@@ -122,9 +124,9 @@ public class HardwareServiceImpl implements HardwareService {
             }
         }
         
-        YukonPao pao = paoDao.getYukonPao(lib.getDeviceID());
         if (delete) {
             InventoryIdentifier id = inventoryDao.getYukonInventory(inventoryId);
+            YukonPao pao = paoDao.getYukonPao(lib.getDeviceID());
             if (pao.getPaoIdentifier().getPaoType().isRfn()) {
                 deletePao = true;
             }
@@ -148,7 +150,7 @@ public class HardwareServiceImpl implements HardwareService {
             boolean preserveLocation = globalSettingDao.getBoolean(GlobalSettingType.PRESERVE_ENDPOINT_LOCATION);
             if (!preserveLocation && paoLocationDao.getLocation(lib.getDeviceID()) != null) {
                 paoLocationDao.delete(lib.getDeviceID());
-                hardwareEventLogService.locationDeleted(user, lib.getDeviceLabel(), pao.getPaoIdentifier());
+                endpointEventLogService.locationDeleted(lib.getDeviceLabel(), user);
             }
         }
     }

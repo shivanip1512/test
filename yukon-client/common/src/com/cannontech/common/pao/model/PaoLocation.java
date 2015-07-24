@@ -124,6 +124,8 @@ public class PaoLocation implements YukonPao {
 
     @Override
     public String toString() {
-        return String.format("PaoLocation [paoIdentifier=%s, latitude=%s, longitude=%s]", paoIdentifier, latitude, longitude);
+        return String.format(
+            "PaoLocation [paoIdentifier=%s, latitude=%s, longitude=%s, origin=%s, lastChangedDate=%s]", paoIdentifier,
+            latitude, longitude, origin, lastChangedDate);
     }
 }

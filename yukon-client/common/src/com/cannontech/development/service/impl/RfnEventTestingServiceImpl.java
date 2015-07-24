@@ -271,7 +271,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             locationResponse.setLongitude(longitude);
             locationResponse.setLocationId(99 + i);
             locationResponse.setOrigin(Origin.RF_NODE);
-            locationResponse.setLastChangedDate(new Instant());
+            locationResponse.setLastChangedDate(new Instant().getMillis());
             sendArchiveRequest(locationResponseQueueName, locationResponse);
         }
     }

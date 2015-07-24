@@ -61,8 +61,8 @@
                 </tags:nameValue>
                 <tags:nameValue name="Model">
                     <select name="model">
-                        <option value="RFN-LCR6200">RFN-LCR6200</option>
-                        <option value="RFN-LCR6600">RFN-LCR6600</option>
+                        <option value="1077">LCR6200</option>
+                        <option value="1082">LCR6600</option>
                     </select>
                 </tags:nameValue>
                 <tags:nameValue name="Latitude"><input name="latitude" type="text" value="44.971387"></tags:nameValue>

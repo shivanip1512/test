@@ -18,10 +18,5 @@ public interface RfnDeviceEventLogService {
 
     @YukonEventLog(transactionality=ExecutorTransactionality.ASYNCHRONOUS, category="system.rfn")
     public void unableToCreateDeviceFromTemplate(String templateName, String sensorManufacturer,
-            String sensorModel, String sensorSerialNumber);
-    
-    @YukonEventLog(category = "system.rfn")
-    public void locationUpdated(@Arg(ArgEnum.rfnId) RfnIdentifier rfnIdentifier, @Arg(ArgEnum.paoName) String paoName,
-            @Arg(ArgEnum.paoId) PaoIdentifier paoIdentifier, String latitude, String longitude, String origin);
-    
+            String sensorModel, String sensorSerialNumber);    
 }

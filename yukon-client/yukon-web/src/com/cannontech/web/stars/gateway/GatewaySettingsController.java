@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.events.loggers.EndpointEventLogService;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.dao.PaoLocationDao;
@@ -66,6 +67,7 @@ public class GatewaySettingsController {
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private GatewayEventLogService gatewayEventLogService;
+    @Autowired private EndpointEventLogService endpointEventLogService;
     
     @RequestMapping("/gateways/create")
     public String createDialog(ModelMap model) {
@@ -332,9 +334,7 @@ public class GatewaySettingsController {
         LiteYukonPAObject pao = cache.getAllPaosMap().get(id);
         PaoLocation paoLocation = new PaoLocation(pao.getPaoIdentifier(), location.getLatitude(), location.getLongitude());
         paoLocationDao.save(new PaoLocation(pao.getPaoIdentifier(), location.getLatitude(), location.getLongitude()));
-        gatewayEventLogService.locationUpdated(userContext.getYukonUser(), pao.getPaoName(), pao.getPaoIdentifier(),
-            String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()),
-            paoLocation.getOrigin().name());
+        endpointEventLogService.locationUpdatedByUser(pao.getPaoIdentifier(), paoLocation, userContext.getYukonUser());
         
         // Success
         model.clear();

@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.events.loggers.GatewayEventLogService;
+import com.cannontech.common.events.loggers.EndpointEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.dao.PaoLocationDao;
@@ -69,7 +69,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     private static final String gatewayUpdateRequestQueue = "yukon.qr.obj.common.rfn.GatewayUpdateRequest";
     private static final String gatewayActionRequestQueue = "yukon.qr.obj.common.rfn.GatewayActionRequest";
     
-    @Autowired private GatewayEventLogService gatewayEventLogService;
+    @Autowired private EndpointEventLogService endpointEventLogService;
     
     // Autowired in constructor
     private RfnDeviceDao rfnDeviceDao;
@@ -96,7 +96,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
                                  RfnDeviceDao rfnDeviceDao,
                                  DeviceDao deviceDao,
                                  IDatabaseCache serverDatabaseCache,
-                                 GatewayEventLogService gatewayEventLogService) {
+                                 EndpointEventLogService endpointEventLogService) {
         
         this.dataCache = dataCache;
         this.connectionFactory = connectionFactory;
@@ -106,7 +106,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         this.rfnDeviceDao = rfnDeviceDao;
         this.deviceDao = deviceDao;
         dbCache = serverDatabaseCache;
-        this.gatewayEventLogService = gatewayEventLogService;
+        this.endpointEventLogService = endpointEventLogService;
     }
     
     @PostConstruct
@@ -245,9 +245,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             if (latitude != null && longitude != null) {
                 PaoLocation location = new PaoLocation(gatewayIdentifier, latitude, longitude);
                 paoLocationDao.save(location);
-                gatewayEventLogService.locationUpdated(user, gateway.getName(), gateway.getPaoIdentifier(),
-                    String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()),
-                    location.getOrigin().name());
+                endpointEventLogService.locationUpdatedByUser(gateway.getPaoIdentifier(), location, user);
             }
             
             return gateway;
@@ -342,9 +340,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         if (gateway.getLocation() != null && !gateway.getLocation().equals(existingGateway.getLocation())) {
             paoLocationDao.save(gateway.getLocation());
             PaoLocation location = gateway.getLocation();
-            gatewayEventLogService.locationUpdated(user, gateway.getName(), gateway.getPaoIdentifier(),
-                String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()),
-                location.getOrigin().name());
+            endpointEventLogService.locationUpdatedByUser(gateway.getPaoIdentifier(), location, user);
         }
 
         return result;

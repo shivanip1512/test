@@ -106,8 +106,8 @@
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.EstimatedLoadEventLogService"/>
     </bean>
     
-    <bean id="bulkImportEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
-        <property name="serviceInterface" value="com.cannontech.common.events.loggers.BulkImportEventLogService"/>
+    <bean id="endpointEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
+        <property name="serviceInterface" value="com.cannontech.common.events.loggers.EndpointEventLogService"/>
     </bean>
     
 </beans>

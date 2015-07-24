@@ -7,12 +7,13 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.events.loggers.RfnDeviceEventLogService;
+import com.cannontech.common.events.loggers.EndpointEventLogService;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.location.LocationResponse;
@@ -26,7 +27,7 @@ public class LocationArchiveResponseListener extends ArchiveRequestListenerBase<
     private static final String archiveResponseQueueName = "yukon.qr.obj.amr.rfn.LocationResponseAck";
 
     @Autowired private PaoLocationDao paoLocationDao;
-    @Autowired private RfnDeviceEventLogService rfnDeviceEventLogService;
+    @Autowired private EndpointEventLogService endpointEventLogService ;
 
     private List<Worker> workers;
     private AtomicInteger processedAlarmArchiveRequest = new AtomicInteger();
@@ -39,19 +40,19 @@ public class LocationArchiveResponseListener extends ArchiveRequestListenerBase<
         @Override
         protected void processData(RfnDevice device, LocationResponse location) {
             if (log.isDebugEnabled()) {
-               log.debug("Recieved location for " + device.getName() + " " + device.getRfnIdentifier() +" "+location);
+                log.debug("Recieved location for " + device.getName() + " " + device.getRfnIdentifier() + " "
+                    + location);
             }
-            sendAcknowledgement(location);
             PaoLocation paoLocation = paoLocationDao.getLocation(device.getPaoIdentifier().getPaoId());
-            if (paoLocation == null || location.getLastChangedDate().isAfter(paoLocation.getLastChangedDate())) {
+            Instant lastChangedDate = new Instant(location.getLastChangedDate());
+            if (paoLocation == null || lastChangedDate.isAfter(paoLocation.getLastChangedDate())) {
                 paoLocation =
                     new PaoLocation(device.getPaoIdentifier(), location.getLatitude(), location.getLongitude(),
-                        location.getOrigin(), location.getLastChangedDate());
+                        location.getOrigin(), lastChangedDate);
                 paoLocationDao.save(paoLocation);
-                rfnDeviceEventLogService.locationUpdated(device.getRfnIdentifier(), device.getName(),
-                    device.getPaoIdentifier(), String.valueOf(location.getLatitude()),
-                    String.valueOf(location.getLongitude()), location.getOrigin().name());
+                endpointEventLogService.locationUpdated(device.getPaoIdentifier(), paoLocation);
             }
+            sendAcknowledgement(location);
         }
     }
 

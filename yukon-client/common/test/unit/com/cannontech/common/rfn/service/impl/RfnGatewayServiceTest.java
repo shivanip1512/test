@@ -15,7 +15,7 @@ import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
-import com.cannontech.common.events.loggers.GatewayEventLogService;
+import com.cannontech.common.events.loggers.EndpointEventLogService;
 import com.cannontech.common.mock.FakeRequestReplyTemplate;
 import com.cannontech.common.mock.FakeRequestReplyTemplate.Mode;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -355,7 +355,7 @@ public class RfnGatewayServiceTest {
         
         // ConnectionFactory and configurationSource can be null - they are only used by the RequestReplyTemplate,
         // which is replaced by the FakeUpdateRequestReplyTemplate in this test
-        GatewayEventLogService eventLog = EasyMock.createNiceMock(GatewayEventLogService.class);
+        EndpointEventLogService eventLog = EasyMock.createNiceMock(EndpointEventLogService.class);
         service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, rfnDeviceCreationService, paoLocationDao, 
                                             null, null, null, eventLog);
         
@@ -392,7 +392,7 @@ public class RfnGatewayServiceTest {
         
         // ConnectionFactory and configurationSource can be null - they are only used by the RequestReplyTemplate,
         // which is replaced by the FakeUpdateRequestReplyTemplate in this test
-        GatewayEventLogService eventLog = EasyMock.createNiceMock(GatewayEventLogService.class);
+        EndpointEventLogService eventLog = EasyMock.createNiceMock(EndpointEventLogService.class);
         service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, rfnDeviceCreationService, paoLocationDao, 
                                             null, null, null, eventLog);
         
@@ -450,7 +450,7 @@ public class RfnGatewayServiceTest {
         rfnGateway.setLocation(location);
         
         // Do the service call
-        GatewayEventLogService eventLog = EasyMock.createNiceMock(GatewayEventLogService.class);
+        EndpointEventLogService eventLog = EasyMock.createNiceMock(EndpointEventLogService.class);
         service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao, rfnDeviceDao, deviceDao, cache, eventLog);
         GatewayUpdateResult result = service.updateGateway(rfnGateway, null);
         Assert.assertEquals("Failed to update gateway", GatewayUpdateResult.SUCCESSFUL, result);
@@ -500,7 +500,7 @@ public class RfnGatewayServiceTest {
         rfnGateway.setLocation(location);
         
         // Do the service call 
-        GatewayEventLogService eventLog = EasyMock.createNiceMock(GatewayEventLogService.class);
+        EndpointEventLogService eventLog = EasyMock.createNiceMock(EndpointEventLogService.class);
         service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao, rfnDeviceDao, deviceDao, cache, eventLog);
         GatewayUpdateResult result = service.updateGateway(rfnGateway, null);
         Assert.assertEquals("Failed to update gateway", GatewayUpdateResult.SUCCESSFUL, result);
@@ -553,7 +553,7 @@ public class RfnGatewayServiceTest {
         EasyMock.replay(deviceDao);
         
         // Inject all the mocks into the service
-        GatewayEventLogService eventLog = EasyMock.createNiceMock(GatewayEventLogService.class);
+        EndpointEventLogService eventLog = EasyMock.createNiceMock(EndpointEventLogService.class);
         service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao, rfnDeviceDao, deviceDao, cache, eventLog);
         
         // Set up the template to reply with a "success" result.
@@ -622,7 +622,7 @@ public class RfnGatewayServiceTest {
         EasyMock.replay(deviceDao);
         
         // Inject all the mocks into the service
-        GatewayEventLogService eventLog = EasyMock.createNiceMock(GatewayEventLogService.class);
+        EndpointEventLogService eventLog = EasyMock.createNiceMock(EndpointEventLogService.class);
         service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao, rfnDeviceDao, deviceDao, cache, eventLog);
         
         // Set up the template to reply with a "success" result.
