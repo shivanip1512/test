@@ -7890,18 +7890,18 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_EVNTBSE_ACTNTRY</i__foreignKeyName>
+            <i__foreignKeyName>FK_EVNTBSE_SYSCATNTRY</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>ACTIONID</i__columnName>
+            <i__columnName>SYSTEMCATEGORYID</i__columnName>
             <i__foreignColumnName>ENTRYID</i__foreignColumnName>
             <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_EVNTBSE_SYSCATNTRY</i__foreignKeyName>
+            <i__foreignKeyName>FK_EVNTBSE_ACTNTRY</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>SYSTEMCATEGORYID</i__columnName>
+            <i__columnName>ACTIONID</i__columnName>
             <i__foreignColumnName>ENTRYID</i__foreignColumnName>
             <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -7917,9 +7917,9 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_APPHTPM_YKLST1</i__foreignKeyName>
+            <i__foreignKeyName>FK_APPHTPM_YKLST3</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>STANDBYSOURCEID</i__columnName>
+            <i__columnName>PUMPSIZEID</i__columnName>
             <i__foreignColumnName>ENTRYID</i__foreignColumnName>
             <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -7935,9 +7935,9 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_APPHTPM_YKLST3</i__foreignKeyName>
+            <i__foreignKeyName>FK_APPHTPM_YKLST1</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>PUMPSIZEID</i__columnName>
+            <i__columnName>STANDBYSOURCEID</i__columnName>
             <i__foreignColumnName>ENTRYID</i__foreignColumnName>
             <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -15932,6 +15932,38 @@
             <i__nullableDiffers>false</i__nullableDiffers>
             <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
             <i__ordinalPosition>3</i__ordinalPosition>
+            <i__ordinalPositionDiffers>false</i__ordinalPositionDiffers>
+          </com.cariboulake.db.schemacompare.business.domain.db.Column>
+          <com.cariboulake.db.schemacompare.business.domain.db.Column>
+            <i__table reference="../../.."/>
+            <i__columnName>LASTCHANGEDDATE</i__columnName>
+            <i__columnNameDiffers>false</i__columnNameDiffers>
+            <i__typeName>DATE</i__typeName>
+            <i__typeNameDiffers>false</i__typeNameDiffers>
+            <i__columnSize>7</i__columnSize>
+            <i__columnSizeDiffers>false</i__columnSizeDiffers>
+            <i__decimalDigits>0</i__decimalDigits>
+            <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
+            <i__nullable>0</i__nullable>
+            <i__nullableDiffers>false</i__nullableDiffers>
+            <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
+            <i__ordinalPosition>4</i__ordinalPosition>
+            <i__ordinalPositionDiffers>false</i__ordinalPositionDiffers>
+          </com.cariboulake.db.schemacompare.business.domain.db.Column>
+          <com.cariboulake.db.schemacompare.business.domain.db.Column>
+            <i__table reference="../../.."/>
+            <i__columnName>ORIGIN</i__columnName>
+            <i__columnNameDiffers>false</i__columnNameDiffers>
+            <i__typeName>VARCHAR2</i__typeName>
+            <i__typeNameDiffers>false</i__typeNameDiffers>
+            <i__columnSize>64</i__columnSize>
+            <i__columnSizeDiffers>false</i__columnSizeDiffers>
+            <i__decimalDigits>0</i__decimalDigits>
+            <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
+            <i__nullable>0</i__nullable>
+            <i__nullableDiffers>false</i__nullableDiffers>
+            <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
+            <i__ordinalPosition>5</i__ordinalPosition>
             <i__ordinalPositionDiffers>false</i__ordinalPositionDiffers>
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
         </columnList>
