@@ -241,9 +241,9 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
             String baseName = fileName.substring(0, fileName.lastIndexOf("."));
             String fileExt = fileName.substring(fileName.lastIndexOf("."));
             File exportFile = new File(exportPath, fileName);
-            for (int i = 1; exportFile.exists(); i++) {
-                // if an identically named file exists, add incrementing numbers to the end.
-                exportFile = new File(exportPath, baseName + "(" + i + ")" + fileExt);
+            if (exportFile.exists()) {
+                // An identically named file already exists
+                log.debug("File " + baseName + fileExt + " is being overwritten.");
             }
             try {
                 Files.copy(archiveFile, exportFile);
