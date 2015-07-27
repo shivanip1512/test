@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletException;
@@ -48,6 +49,7 @@ import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.pao.PaoPopupHelper;
 import com.cannontech.web.util.WebFileUtils;
+import com.google.common.collect.Lists;
 
 /**
  * Handles request directly off the /bulk/* url.
@@ -332,5 +334,20 @@ public class BulkController {
             return detailViewable;
         }
     }
+    
+    private void buildCsv(Set<String> errors, String header, HttpServletResponse response)
+            throws IOException {
+ 
+        String[] headerRow = null;
+        if(header != null){
+            headerRow = new String[] { header };
+        }
+        List<String[]> dataRows = Lists.newArrayList();
 
+        for (String error : errors) {
+            dataRows.add(new String[] { error });
+        }
+        // write out the file
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "Test.csv");
+    }
 }

@@ -75,9 +75,8 @@ public class DeviceFileUploadCollectionProducer implements DeviceCollectionProdu
                 ServletRequestUtils.getStringParameter(request, getSupportedType().getParameterName("uploadType"));
             FileMapperEnum uploadType = FileMapperEnum.valueOf(uploadTypeStr);
 
-            Set<String> data = readDataFile(dataFile, uploadType);
-            DeviceResult result = findDevices(data, uploadType);
-
+            DeviceResult result = findDevices(dataFile, uploadType);
+;
             DeviceCollection groupCollection =
                 deviceGroupCollectionProducer.createDeviceGroupCollection(result.getDevices().iterator(),
                     dataFile.getOriginalFilename());
@@ -103,29 +102,49 @@ public class DeviceFileUploadCollectionProducer implements DeviceCollectionProdu
     }
     
     
-    class DeviceResult{
+    class DeviceResult {
         private Set<SimpleDevice> devices;
         private Set<String> errorDevices;
-        
-        public DeviceResult(Set<SimpleDevice> devices, Set<String> errorDevices) {
-           this.devices = devices;
-           this.errorDevices = errorDevices;
+        private String header;
+
+        public String getHeader() {
+            return header;
+        }
+
+        public void setHeader(String header) {
+            this.header = header;
+        }
+
+        public Set<String> getErrorDevices() {
+            return errorDevices;
+        }
+
+        public void setErrorDevices(Set<String> errorDevices) {
+            this.errorDevices = errorDevices;
         }
 
         public Set<SimpleDevice> getDevices() {
             return devices;
         }
 
-        public Set<String> getErrorDevices() {
-            return errorDevices;
+        public void setDevices(Set<SimpleDevice> devices) {
+            this.devices = devices;
         }
     }
-    
+
+
     /**
      * Creates an iterator for iterating through a device collection file line by line.
-     * @throws IOException 
+     * Finds devices by looking at cache.
+     * 
+     * @return DeviceResult - contains devices found, errors and header
+     *  
+     * @throws IOException
      */
-    private Set<String> readDataFile(MultipartFile dataFile, final FileMapperEnum uploadType) throws IOException{
+    private DeviceResult findDevices(MultipartFile dataFile, final FileMapperEnum uploadType) throws IOException {
+        
+        DeviceResult result = new DeviceResult();
+        
         InputStream inputStream = dataFile.getInputStream();
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
         CSVReader csvReader = new CSVReader(inputStreamReader);
@@ -133,7 +152,7 @@ public class DeviceFileUploadCollectionProducer implements DeviceCollectionProdu
         Set<String> data = new HashSet<>();
         try {
             if (uploadType.isHasHeader()) {
-                iterator.next();
+                result.setHeader(iterator.next());
             }
 
             while (iterator.hasNext()) {
@@ -142,18 +161,9 @@ public class DeviceFileUploadCollectionProducer implements DeviceCollectionProdu
         } finally {
             CtiUtilities.close(iterator);
         }
-        return data;
-    }
-
-    /**
-     * Finds devices by looking at cache.
-     * 
-     * @return DeviceResult - contains devices found and errors
-     * @throws IOException
-     */
-    private DeviceResult findDevices(Set<String> data, FileMapperEnum uploadType) throws IOException {
+        
         log.debug("Getting device by " + uploadType);
-        log.debug("Data " + data.size()+ " rows");
+        log.debug("Data " + data.size() + " rows");
         Set<String> errors = new HashSet<>(data);
         Set<SimpleDevice> devices = new HashSet<>();
         switch (uploadType) {
@@ -209,7 +219,11 @@ public class DeviceFileUploadCollectionProducer implements DeviceCollectionProdu
         }
         log.debug("Found  " + devices.size() + " devices");
         log.debug("Found  " + errors.size() + " errors");
-        return new DeviceResult(devices, errors);
+        
+        result.setDevices(devices);
+        result.setErrorDevices(errors);
+        
+        return result;
     }
 
     private boolean isDeviceValid(YukonPao yukonPao) {
