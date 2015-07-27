@@ -160,6 +160,7 @@
 <entry key="yukon.common.moreInfoSuffix">…</entry>
 <entry key="yukon.common.na">N/A</entry>
 <entry key="yukon.common.name">Name</entry>
+<entry key="yukon.common.job.error.restart.required">Severe failure, restart required.</entry>
 <entry key="yukon.common.networkManager">Network Manager</entry>
 <entry key="yukon.common.no">No</entry>
 <entry key="yukon.common.noDevices">(no devices selected)</entry>

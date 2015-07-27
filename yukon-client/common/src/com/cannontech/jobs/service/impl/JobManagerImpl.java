@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -410,20 +411,24 @@ public class JobManagerImpl implements JobManager {
     public Date getNextRuntime(ScheduledRepeatingJob job, Date from) throws ScheduleException {
         try {
             CronExpression cronExpression = new CronExpression(job.getCronString());
+            Date nextValidTimeAfter = null;
             // is this the right thing to do?
             TimeZone timeZone = job.getUserContext().getTimeZone();
             cronExpression.setTimeZone(timeZone);
             
-            //If the next run time has already passed, check for the one after that,
-            //and so on, until we catch back up to the present.
-            Date nextValidTimeAfter = cronExpression.getNextValidTimeAfter(from);
-            while(nextValidTimeAfter != null && nextValidTimeAfter.before(new Date())) {
-                from = nextValidTimeAfter;
-                nextValidTimeAfter = cronExpression.getNextValidTimeAfter(from);
-            }
+			if (!hasJobFailed(job.getId())) {
+				// If the next run time has already passed, check for the one after that,
+				// and so on, until we catch back up to the present.
+				nextValidTimeAfter = cronExpression.getNextValidTimeAfter(from);
+				while (nextValidTimeAfter != null
+						&& nextValidTimeAfter.before(new Date())) {
+					from = nextValidTimeAfter;
+					nextValidTimeAfter = cronExpression
+							.getNextValidTimeAfter(from);
+				}
+			}
             
             return nextValidTimeAfter;
-
         } catch (ParseException e) {
             throw new ScheduleException("Could not calculate next runtime for " + job.getBeanName() + " with "
                 + job.getCronString(), e);
@@ -433,7 +438,21 @@ public class JobManagerImpl implements JobManager {
         }
     }
 
-    private void executeJob(final JobStatus<?> status) throws TransactionException {
+    private boolean hasJobFailed(Integer jobId) {
+    	boolean hasJobFailed = false;
+    	Iterator<JobException> it = jobExceptions.iterator();
+    	// Check if the given jobId is in the list of jobs that have failed for more than twice and hence not scheduled
+        while(it.hasNext()){
+        	JobException je = it.next();
+        	if(jobId == je.jobId){
+        		hasJobFailed = true;
+        		break;
+        	}
+        }
+        return hasJobFailed;
+	}
+
+	private void executeJob(final JobStatus<?> status) throws TransactionException {
         // assume the best
         JobException jobException;
         status.setJobState(JobState.COMPLETED);
@@ -447,7 +466,10 @@ public class JobManagerImpl implements JobManager {
                 throw new IllegalStateException("a task for " + status.getJob() + " is already running: "
                     + existingTask);
             }
+           
             task.start(); // this should block until task is complete
+            throw new IllegalStateException("testing " + status.getJob() + " failure "
+                   + existingTask);
         } catch (Throwable e) {
             log.error("YukonTask failed", e);
             status.setJobState(JobState.FAILED);
