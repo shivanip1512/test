@@ -6,7 +6,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # this file will be lost the next time it is generated.
 #
 # MPC Command:
-# C:\Users\C9915437\Dev\YUK-14462\yukon-build\MPC\mwc.pl -type vc12 yukon-server.mwc
+# C:\Users\C9915437\Dev\trunk\yukon-build\MPC\mwc.pl -type vc12 yukon-server.mwc
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ctimsg", "Message\ctimsg.vcxproj", "{16F6AC9E-FECA-1BAD-FA55-8C214B245715}"
 	ProjectSection(ProjectDependencies) = postProject
 		{749B109C-FECA-1BAD-4657-EE4C0659BB9E} = {749B109C-FECA-1BAD-4657-EE4C0659BB9E}

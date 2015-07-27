@@ -201,7 +201,7 @@ if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(So
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(SQLAPI)\lib\sqlapid.lib;..\lib\ctiprot.lib;..\lib\ctimsg.lib;..\lib\ctibase.lib;$(BOOST)\lib\boost_system-vc120-mt-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-1_58.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SQLAPI)\lib\sqlapi.lib;..\lib\ctiprot.lib;..\lib\ctimsg.lib;..\lib\ctibase.lib;$(BOOST)\lib\boost_system-vc120-mt-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-1_58.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)ctidbsrc.dll</OutputFile>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
@@ -314,7 +314,7 @@ if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(So
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(SQLAPI)\lib\sqlapid.lib;..\lib\ctiprot.lib;..\lib\ctimsg.lib;..\lib\ctibase.lib;$(BOOST)\lib\boost_system-vc120-mt-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-1_58.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SQLAPI)\lib\sqlapi.lib;..\lib\ctiprot.lib;..\lib\ctimsg.lib;..\lib\ctibase.lib;$(BOOST)\lib\boost_system-vc120-mt-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-1_58.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)ctidbsrc.dll</OutputFile>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>

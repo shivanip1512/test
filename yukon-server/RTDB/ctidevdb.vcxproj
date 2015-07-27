@@ -149,7 +149,7 @@
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(BOOST)\lib\boost_system-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-gd-1_58.lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3D.lib;..\lib\ctibase.lib;..\lib\ctimsg.lib;..\lib\ctiprot.lib;..\lib\ctidbsrc.lib;..\lib\ctipntdb.lib;..\lib\cticonfig.lib;..\lib\dynpaoinfo.lib;$(SQLAPI)\lib\sqlapid.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libeay32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\ssleay32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BOOST)\lib\boost_system-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-gd-1_58.lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3D.lib;$(OPENSSL)\$(CONFIGURATION)\lib\ssleay32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libeay32.lib;$(SQLAPI)\lib\sqlapid.lib;..\lib\ctibase.lib;..\lib\ctimsg.lib;..\lib\ctiprot.lib;..\lib\ctidbsrc.lib;..\lib\ctipntdb.lib;..\lib\cticonfig.lib;..\lib\dynpaoinfo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)ctidevdb.dll</OutputFile>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(OutDir)\ctidevdb_dll.pdb</ProgramDatabaseFile>
@@ -201,7 +201,7 @@ if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(So
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(BOOST)\lib\boost_system-vc120-mt-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-1_58.lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3.lib;..\lib\ctibase.lib;..\lib\ctimsg.lib;..\lib\ctiprot.lib;..\lib\ctidbsrc.lib;..\lib\ctipntdb.lib;..\lib\cticonfig.lib;..\lib\dynpaoinfo.lib;$(SQLAPI)\lib\sqlapid.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libeay32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\ssleay32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BOOST)\lib\boost_system-vc120-mt-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-1_58.lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3.lib;$(OPENSSL)\$(CONFIGURATION)\lib\ssleay32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libeay32.lib;$(SQLAPI)\lib\sqlapi.lib;..\lib\ctibase.lib;..\lib\ctimsg.lib;..\lib\ctiprot.lib;..\lib\ctidbsrc.lib;..\lib\ctipntdb.lib;..\lib\cticonfig.lib;..\lib\dynpaoinfo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)ctidevdb.dll</OutputFile>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
@@ -255,7 +255,7 @@ if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(So
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(BOOST)\lib\boost_system-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-gd-1_58.lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3D.lib;..\lib\ctibase.lib;..\lib\ctimsg.lib;..\lib\ctiprot.lib;..\lib\ctidbsrc.lib;..\lib\ctipntdb.lib;..\lib\cticonfig.lib;..\lib\dynpaoinfo.lib;$(SQLAPI)\lib\sqlapid.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libeay32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\ssleay32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BOOST)\lib\boost_system-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-gd-1_58.lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3D.lib;$(OPENSSL)\$(CONFIGURATION)\lib\ssleay32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libeay32.lib;$(SQLAPI)\lib\sqlapid.lib;..\lib\ctibase.lib;..\lib\ctimsg.lib;..\lib\ctiprot.lib;..\lib\ctidbsrc.lib;..\lib\ctipntdb.lib;..\lib\cticonfig.lib;..\lib\dynpaoinfo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)ctidevdb.dll</OutputFile>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(OutDir)\ctidevdb_dll.pdb</ProgramDatabaseFile>
@@ -314,7 +314,7 @@ if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(So
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(BOOST)\lib\boost_system-vc120-mt-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-1_58.lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3.lib;..\lib\ctibase.lib;..\lib\ctimsg.lib;..\lib\ctiprot.lib;..\lib\ctidbsrc.lib;..\lib\ctipntdb.lib;..\lib\cticonfig.lib;..\lib\dynpaoinfo.lib;$(SQLAPI)\lib\sqlapid.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libeay32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\ssleay32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BOOST)\lib\boost_system-vc120-mt-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-1_58.lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3.lib;$(OPENSSL)\$(CONFIGURATION)\lib\ssleay32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libeay32.lib;$(SQLAPI)\lib\sqlapi.lib;..\lib\ctibase.lib;..\lib\ctimsg.lib;..\lib\ctiprot.lib;..\lib\ctidbsrc.lib;..\lib\ctipntdb.lib;..\lib\cticonfig.lib;..\lib\dynpaoinfo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)ctidevdb.dll</OutputFile>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>

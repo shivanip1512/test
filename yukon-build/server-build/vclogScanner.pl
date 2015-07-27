@@ -652,6 +652,7 @@ sub doLink($)
     foreach my $lib (@libs)
     {
       $lib =~ s/\.lib$//;
+        print("got $lib\n");
       # Some libraries use a different lib name, translate those here.
       if ($lib =~ /xerces-c_3/)
       {
@@ -682,6 +683,14 @@ sub doLink($)
         print(MPC "  specific {\n");
         print(MPC "    Debug::lit_libs   += $lib\n");
         $lib =~ s/tcl86tg/tcl86t/;
+        print(MPC "    Release::lit_libs += $lib\n");
+        print(MPC "  }\n");
+      }
+      elsif ($lib =~ /sqlapid/)
+      {
+        print(MPC "  specific {\n");
+        print(MPC "    Debug::lit_libs   += $lib\n");
+        $lib =~ s/sqlapid/sqlapi/;
         print(MPC "    Release::lit_libs += $lib\n");
         print(MPC "  }\n");
       }

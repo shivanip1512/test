@@ -43,7 +43,10 @@ project(ctibase) {
   lit_libs += shlwapi
   lit_libs += Ws2_32
   lit_libs += psapi
-  lit_libs += $(SQLAPI)\lib\sqlapid
+  specific {
+    Debug::lit_libs   += $(SQLAPI)\lib\sqlapid
+    Release::lit_libs += $(SQLAPI)\lib\sqlapi
+  }
   specific {
     Debug::lit_libs   += $(XERCES)\$(CONFIGURATION)\lib\xerces-c_3D
     Release::lit_libs += $(XERCES)\$(CONFIGURATION)\lib\xerces-c_3

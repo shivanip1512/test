@@ -50,7 +50,10 @@ project(ctidevdb) {
   lit_libs += ..\lib\ctipntdb
   lit_libs += ..\lib\cticonfig
   lit_libs += ..\lib\dynpaoinfo
-  lit_libs += $(SQLAPI)\lib\sqlapid
+  specific {
+    Debug::lit_libs   += $(SQLAPI)\lib\sqlapid
+    Release::lit_libs += $(SQLAPI)\lib\sqlapi
+  }
   lit_libs += $(OPENSSL)\$(CONFIGURATION)\lib\libeay32
   lit_libs += $(OPENSSL)\$(CONFIGURATION)\lib\ssleay32
   specific {

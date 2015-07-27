@@ -62,7 +62,10 @@ project(ctidbsrc) {
   lit_libs += ..\lib\ctibase
   lit_libs += ..\lib\ctimsg
   lit_libs += ..\lib\ctiprot
-  lit_libs += $(SQLAPI)\lib\sqlapid
+  specific {
+    Debug::lit_libs   += $(SQLAPI)\lib\sqlapid
+    Release::lit_libs += $(SQLAPI)\lib\sqlapi
+  }
   pch_header = precompiled.h
   pch_source = ../precompiled.cpp
 
