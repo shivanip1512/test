@@ -468,8 +468,6 @@ public class JobManagerImpl implements JobManager {
             }
            
             task.start(); // this should block until task is complete
-            throw new IllegalStateException("testing " + status.getJob() + " failure "
-                   + existingTask);
         } catch (Throwable e) {
             log.error("YukonTask failed", e);
             status.setJobState(JobState.FAILED);
