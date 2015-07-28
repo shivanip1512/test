@@ -11,13 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
-import com.cannontech.common.events.loggers.EndpointEventLogService;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.dao.PaoLocationDao;
+import com.cannontech.common.pao.service.LocationService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -58,8 +57,6 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
-import com.cannontech.system.GlobalSettingType;
-import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
@@ -84,9 +81,7 @@ public class HardwareServiceImpl implements HardwareService {
     @Autowired private SelectionListService selectionListService;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonListDao yukonListDao;
-    @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private PaoLocationDao paoLocationDao;
-    @Autowired private EndpointEventLogService endpointEventLogService;
+    @Autowired private LocationService locationService;
 
     @Override
     @Transactional
@@ -147,11 +142,7 @@ public class HardwareServiceImpl implements HardwareService {
             removeFromAccount(user, lib, accountNumber);
             dbChangeManager.processDbChange(lib.getInventoryID(), DBChangeMsg.CHANGE_INVENTORY_DB,
                 DBChangeMsg.CAT_INVENTORY_DB, DbChangeType.UPDATE);
-            boolean preserveLocation = globalSettingDao.getBoolean(GlobalSettingType.PRESERVE_ENDPOINT_LOCATION);
-            if (!preserveLocation && paoLocationDao.getLocation(lib.getDeviceID()) != null) {
-                paoLocationDao.delete(lib.getDeviceID());
-                endpointEventLogService.locationDeleted(lib.getDeviceLabel(), user);
-            }
+            locationService.deleteLocation(lib.getDeviceID(), user);
         }
     }
     

@@ -11,6 +11,7 @@ import com.cannontech.common.events.loggers.EndpointEventLogService;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.location.Origin;
+import com.cannontech.user.YukonUserContext;
 
 public class LatitudeLongitudeBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
 
@@ -30,7 +31,8 @@ public class LatitudeLongitudeBulkFieldProcessor extends BulkYukonDeviceFieldPro
                 new PaoLocation(device.getPaoIdentifier(), value.getLatitude(), value.getLongitude(),
                     Origin.BULK_IMPORT, new Instant());
             paoLocationDao.save(location);
-            endpointEventLogService.locationUpdated(device.getPaoIdentifier(), location);
+            endpointEventLogService.locationUpdated(device.getPaoIdentifier(), location,
+                YukonUserContext.system.getYukonUser());
         } catch (DataAccessException e) {
             throw new ProcessingException("Could not set location of device with paoId " + device.getPaoIdentifier()
                 + ": " + e.getMessage(), e);

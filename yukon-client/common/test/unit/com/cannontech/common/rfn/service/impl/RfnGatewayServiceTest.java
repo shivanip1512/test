@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.junit.Before;
@@ -352,6 +353,10 @@ public class RfnGatewayServiceTest {
         
         // Expect a call to save location data for the gateway
         PaoLocationDao paoLocationDao = EasyMock.createStrictMock(PaoLocationDao.class);
+        Capture<PaoLocation> paoLocationArg = new Capture<>();
+        paoLocationDao.save(EasyMock.capture(paoLocationArg));
+        EasyMock.expectLastCall().once();
+        EasyMock.replay(paoLocationDao);
         
         // ConnectionFactory and configurationSource can be null - they are only used by the RequestReplyTemplate,
         // which is replaced by the FakeUpdateRequestReplyTemplate in this test
@@ -366,6 +371,11 @@ public class RfnGatewayServiceTest {
         
         // Do the service call
         service.createGateway(settings, null);
+        
+        Assert.assertEquals("Incorrect paoId saved.", gatewayPaoId, paoLocationArg.getValue().getPaoIdentifier());
+        Assert.assertEquals("Incorrect latitude saved.", latitude, new Double(paoLocationArg.getValue().getLatitude()));
+        Assert.assertEquals("Incorrect longitude saved.", longitude, new Double(
+            paoLocationArg.getValue().getLongitude()));
     }
     
     @Test
@@ -382,11 +392,11 @@ public class RfnGatewayServiceTest {
         EasyMock.expect(gatewayDataCache.get(gateway2PaoId))
                 .andReturn(null); //return value not used in this case
         EasyMock.replay(gatewayDataCache);
-        
+                
         // Expect a call to save location data for the gateway
         PaoLocationDao paoLocationDao = EasyMock.createStrictMock(PaoLocationDao.class);
-        PaoLocation location = new PaoLocation(gateway2PaoId, latitude2, longitude2);
-        paoLocationDao.save(location);
+        Capture<PaoLocation> paoLocationArg = new Capture<>();
+        paoLocationDao.save(EasyMock.capture(paoLocationArg));
         EasyMock.expectLastCall().once();
         EasyMock.replay(paoLocationDao);
         
@@ -404,6 +414,11 @@ public class RfnGatewayServiceTest {
         
         // Do the service call
         service.createGateway(settings2, null);
+      
+        Assert.assertEquals("Incorrect paoId saved.", gateway2PaoId, paoLocationArg.getValue().getPaoIdentifier());
+        Assert.assertEquals("Incorrect latitude saved.", latitude2, new Double(paoLocationArg.getValue().getLatitude()));
+        Assert.assertEquals("Incorrect longitude saved.", longitude2, new Double(
+            paoLocationArg.getValue().getLongitude()));
     }
     
     @Test

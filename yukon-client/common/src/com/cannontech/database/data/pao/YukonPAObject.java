@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Vector;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.service.LocationService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.core.dao.PointDao;
@@ -23,6 +24,7 @@ import com.cannontech.database.db.pao.PAOScheduleAssign;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.user.YukonUserContext;
 
 public abstract class YukonPAObject extends DBPersistent implements CTIDbChange {
     private com.cannontech.database.db.pao.YukonPAObject yukonPAObject = null;
@@ -232,7 +234,10 @@ public abstract class YukonPAObject extends DBPersistent implements CTIDbChange 
     @Override
     public void update() throws SQLException {
         getYukonPAObject().update();
-
+        if (getYukonPAObject().getDisableFlag().equals('Y')) {
+            LocationService locationService = YukonSpringHook.getBean(LocationService.class);
+            locationService.deleteLocation(getYukonPAObject().getPaObjectID(), YukonUserContext.system.getYukonUser());
+        }
         // grab all the previous PAOExclusion entries for this object
         Vector<PAOExclusion> oldPAOExclusion = PAOExclusion.getAllPAOExclusions(getPAObjectID(), getDbConnection());
 

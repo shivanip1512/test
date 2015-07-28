@@ -12,12 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.events.loggers.EndpointEventLogService;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.inventory.HardwareClass;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.dao.PaoLocationDao;
+import com.cannontech.common.pao.service.LocationService;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.version.VersionTools;
@@ -58,8 +57,6 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
-import com.cannontech.system.GlobalSettingType;
-import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 
 public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService {
@@ -82,9 +79,8 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     @Autowired private StarsSearchDao starsSearchDao;
     @Autowired private StarsTwoWayLcrYukonDeviceAssignmentService starsTwoWayLcrYukonDeviceAssignmentService;
     @Autowired private YukonListDao yukonListDao;
-    @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private PaoLocationDao paoLocationDao;
-    @Autowired private EndpointEventLogService endpointEventLogService;
+    @Autowired private LocationService locationService;
+
 
     // ADD DEVICE TO ACCOUNT
     @Override
@@ -378,12 +374,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
             gatewayDeviceDao.unassignDeviceFromGateway(lib.getDeviceID());
         }
         
-        boolean preserveLocation = globalSettingDao.getBoolean(GlobalSettingType.PRESERVE_ENDPOINT_LOCATION);
-        if (!preserveLocation && paoLocationDao.getLocation(lib.getDeviceID()) != null) {
-            paoLocationDao.delete(lib.getDeviceID());
-            endpointEventLogService.locationDeleted(lib.getDeviceLabel(), user);
-        }
-        
+        locationService.deleteLocation(lib.getDeviceID(), user);
         // log removal
         CustomerAccount account = customerAccountDao.getById(accountId);
         hardwareEventLogService.hardwareRemoved(user, lib.getDeviceLabel(), account.getAccountNumber());

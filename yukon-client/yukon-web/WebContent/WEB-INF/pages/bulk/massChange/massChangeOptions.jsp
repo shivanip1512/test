@@ -10,7 +10,8 @@
             <div class="fwb success stacked">${statusMsg}</div>
         </c:if>
         
-        <form id="massChangeOptionsForm" method="post" action="/bulk/massChangeOptions">
+        <cti:url var="massChangeAction" value="/bulk/massChangeOptions"/>
+        <form id="massChangeOptionsForm" method="post" action="${massChangeAction}">
             <cti:csrfToken/>
                 <spring:nestedPath path="massChangeOptions">
                     <%-- DEVICE COLLECTION --%>

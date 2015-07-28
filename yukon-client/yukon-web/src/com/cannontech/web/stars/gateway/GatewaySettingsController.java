@@ -334,7 +334,7 @@ public class GatewaySettingsController {
         LiteYukonPAObject pao = cache.getAllPaosMap().get(id);
         PaoLocation paoLocation = new PaoLocation(pao.getPaoIdentifier(), location.getLatitude(), location.getLongitude());
         paoLocationDao.save(new PaoLocation(pao.getPaoIdentifier(), location.getLatitude(), location.getLongitude()));
-        endpointEventLogService.locationUpdatedByUser(pao.getPaoIdentifier(), paoLocation, userContext.getYukonUser());
+        endpointEventLogService.locationUpdated(pao.getPaoIdentifier(), paoLocation, userContext.getYukonUser());
         
         // Success
         model.clear();

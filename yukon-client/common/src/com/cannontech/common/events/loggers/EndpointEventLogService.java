@@ -9,13 +9,10 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public interface EndpointEventLogService {
 
     @YukonEventLog(category = "endpoint.location")
-    public void locationUpdated(@Arg(ArgEnum.paoId) PaoIdentifier paoIdentifier, PaoLocation location);
-
-    @YukonEventLog(category = "endpoint.location")
-    public void locationUpdatedByUser(@Arg(ArgEnum.paoId) PaoIdentifier paoIdentifier, PaoLocation location,
+    public void locationUpdated(@Arg(ArgEnum.paoId) PaoIdentifier paoIdentifier, PaoLocation location,
             LiteYukonUser user);
 
     @YukonEventLog(category = "endpoint.location")
-    public void locationDeleted(@Arg(ArgEnum.deviceLabel) String deviceLabel,
+    public void locationRemoved(@Arg(ArgEnum.deviceLabel) String deviceLabel,
             @Arg(ArgEnum.username) LiteYukonUser yukonUser);
 }

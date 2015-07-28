@@ -19,6 +19,7 @@ import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.location.LocationResponse;
 import com.cannontech.common.rfn.message.location.LocationResponseAck;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ImmutableList;
 
 @ManagedResource
@@ -50,7 +51,8 @@ public class LocationArchiveResponseListener extends ArchiveRequestListenerBase<
                     new PaoLocation(device.getPaoIdentifier(), location.getLatitude(), location.getLongitude(),
                         location.getOrigin(), lastChangedDate);
                 paoLocationDao.save(paoLocation);
-                endpointEventLogService.locationUpdated(device.getPaoIdentifier(), paoLocation);
+                endpointEventLogService.locationUpdated(device.getPaoIdentifier(), paoLocation,
+                    YukonUserContext.system.getYukonUser());
             }
             sendAcknowledgement(location);
         }

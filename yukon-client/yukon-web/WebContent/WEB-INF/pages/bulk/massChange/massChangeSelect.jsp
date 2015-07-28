@@ -14,7 +14,8 @@ function submitForm(selectMassChangeField) {
 
   <tags:bulkActionContainer key="yukon.common.device.bulk.massChangeSelect" deviceCollection="${deviceCollection}">
 
-    <form id="massChangeSelectForm" method="get" action="/bulk/massChangeOptions">
+    <cti:url var="massChange" value="/bulk/massChangeOptions" />
+    <form id="massChangeSelectForm" method="get" action="${massChange}">
 
       <%-- DEVICE COLLECTION --%>
       <cti:deviceCollection deviceCollection="${deviceCollection}" />

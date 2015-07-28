@@ -14,6 +14,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.events.loggers.EndpointEventLogService;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.inventory.Hardware;
@@ -25,6 +26,8 @@ import com.cannontech.common.inventory.SwitchAssignment;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.dao.PaoLocationDao;
+import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -65,6 +68,8 @@ import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
@@ -90,6 +95,9 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     @Autowired private StarsInventoryBaseService starsInventoryBaseService;
     @Autowired private WarehouseDao warehouseDao;
     @Autowired private YukonListDao listDao;
+    @Autowired private PaoLocationDao paoLocationDao;
+    @Autowired private EndpointEventLogService endpointEventLogService;
+    @Autowired private GlobalSettingDao globalSettingDao;
 
     @Override
     public Hardware getHardware(int inventoryId) {
@@ -618,6 +626,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         EnergyCompany ec = ecDao.getEnergyCompanyByOperator(user);
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ec);
         LiteInventoryBase oldInventory = inventoryBaseDao.getByInventoryId(oldInventoryId);
+        PaoLocation location = paoLocationDao.getLocation(oldInventory.getDeviceID());
         
         /* If this is a meter change out, the newInventoryId will be a pao id */
         if (isMeter) {
@@ -631,6 +640,17 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             LiteInventoryBase inventoryBase =
                     starsInventoryBaseService.addDeviceToAccount(newInventory, energyCompany, user, false);
             inventoryId = inventoryBase.getInventoryID();
+        }
+        
+        boolean preserveLocation = globalSettingDao.getBoolean(GlobalSettingType.PRESERVE_ENDPOINT_LOCATION);
+        if (location != null && !preserveLocation) {
+            LiteInventoryBase newInventory = inventoryBaseDao.getByInventoryId(newInventoryId);
+            YukonPao pao = paoDao.getYukonPao(newInventory.getDeviceID());
+            DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(pao);
+            PaoLocation newLocation =
+                new PaoLocation(displayablePao.getPaoIdentifier(), location.getLatitude(), location.getLongitude());
+            paoLocationDao.save(newLocation);
+            endpointEventLogService.locationUpdated(displayablePao.getPaoIdentifier(), newLocation, user);
         }
         return inventoryId;
     }
