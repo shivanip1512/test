@@ -5172,7 +5172,7 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg &pData, CtiMultiW
             {
                 INT duration = limit.getLimitDuration();
 
-                if(exceeds == LIMIT_EXCEEDS_LO )
+                if(exceeds == LIMIT_EXCEEDS_LO)
                 {
                     char tstr[120];
                     if( alarm >= CtiTablePointAlarming::limitLow0 && alarm <= CtiTablePointAlarming::limitHigh1 )
@@ -5213,12 +5213,6 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg &pData, CtiMultiW
                     CTILOG_ERROR(dout, "Unknown cause for limit violation");
                 }
 
-
-                if(gDispatchDebugLevel & DISPATCH_DEBUG_ALARMS)
-                {
-                    CTILOG_DEBUG(dout, "LIMIT Violation, Point: " << pointNumeric.getName() << " " << text);
-                }
-
                 const CtiTablePointAlarming &alarming = PointMgr.getAlarming(pointNumeric);
 
                 pSig = new CtiSignalMsg(pointNumeric.getID(), pData.getSOE(), text, getAlarmStateName( alarming.getAlarmCategory(alarm) ), GeneralLogType, alarming.getAlarmCategory(alarm), pData.getUser());
@@ -5241,7 +5235,7 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg &pData, CtiMultiW
 
                     addToPendingSet(pendingPointLimit);
 
-                    CTILOG_ERROR(dout, "LIMIT Violation, Point: "<< pointNumeric.getName() <<" delayed (" << duration << ") violation. Limit " << limitnumber << " pending alarm.");
+                    CTILOG_INFO(dout, "LIMIT Violation, " << text << ": " << pData.getString());
                 }
                 else
                 {
