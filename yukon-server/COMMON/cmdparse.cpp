@@ -1237,7 +1237,7 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
             }
 
             _cmd["cycle"] = CtiParseValue( (iValue) );
-            _snprintf(tbuf, sizeof(tbuf), "CYCLE %d%%", iValue);
+            _snprintf(tbuf, sizeof(tbuf), "CYCLE %u%%", iValue);
         }
         else if( containsString(CmdStr, " latch") )
         {
@@ -3120,7 +3120,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
 
                 int channel1, channel2, channel3, channel4;
 
-                sscanf(token.c_str(), "allocation 1:%d 2:%d 3:%d 4:%d", &channel1, &channel2, &channel3, &channel4);
+                (void)sscanf(token.c_str(), "allocation 1:%d 2:%d 3:%d 4:%d", &channel1, &channel2, &channel3, &channel4);
 
                 _cmd["load_profile_allocation_channel_1"] = CtiParseValue(channel1);
                 _cmd["load_profile_allocation_channel_2"] = CtiParseValue(channel2);
@@ -3981,10 +3981,10 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
         // cbc-8000 local control enable and disable
         if ( ! (token = matchRegex(CmdStr, "(var|temp|time) (en|dis)able")).empty() )
         {
-            CtiTokenizer tok( token );
+            CtiTokenizer localTok( token );
 
-            _cmd[ "local_control_type" ]  = tok();      // (var|temp|time)
-            _cmd[ "local_control_state" ] = tok();      // (en|dis)able
+            _cmd[ "local_control_type" ]  = localTok();      // (var|temp|time)
+            _cmd[ "local_control_state" ] = localTok();      // (en|dis)able
 
             _actionItems.push_back( boost::algorithm::to_upper_copy( token ) );
         }
@@ -4024,13 +4024,13 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
 
         if(!(token = matchRegex(CmdStr, " channel 2 (netmetering|ui1203 water meter|ui1204 water meter|none)")).empty())
         {
-            CtiTokenizer tok( token );
+            CtiTokenizer fillerTok( token );
 
-            tok();      // == "channel"
-            tok();      // == "2"
+            fillerTok();      // == "channel"
+            fillerTok();      // == "2"
 
             _cmd["channel_2_configuration"] = true;
-            _cmd["channel_2_configuration_setting"] = CtiParseValue( tok() );
+            _cmd["channel_2_configuration_setting"] = CtiParseValue( fillerTok() );
         }
     }
     else

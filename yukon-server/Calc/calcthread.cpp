@@ -234,7 +234,7 @@ void CtiCalculateThread::periodicThread( void )
                     newPointValue = oldPointValue;
                 }
 
-                sprintf( pointDescription, "calc point %l update", pointId );
+                sprintf( pointDescription, "calc point %ld update", pointId );
 
                 CtiPointDataMsg *pointData = CTIDBG_new CtiPointDataMsg(pointId, newPointValue, calcQuality, InvalidPointType, pointDescription);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
                 pointData->setTime(calcTime);
@@ -409,7 +409,7 @@ void CtiCalculateThread::onUpdateThread( void )
                     if( pData != NULL )
                     {
                         pointsInMulti = TRUE;
-                        sprintf( pointDescription, "calc point %l update", recalcPointID );
+                        sprintf( pointDescription, "calc point %ld update", recalcPointID );
                         pData->setString(pointDescription);
                         pChg->getData( ).push_back( pData );
                     }
@@ -588,7 +588,7 @@ void CtiCalculateThread::historicalThread( void )
                         }
 
 
-                        sprintf( pointDescription, "calc point %l update", pointID );
+                        sprintf( pointDescription, "calc point %ld update", pointID );
 
                         CtiPointDataMsg *pointData = CTIDBG_new CtiPointDataMsg(pointID, newPointValue, NormalQuality, InvalidPointType, pointDescription);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
                         pointData->setTime(iter->first);//The time these points were entered in the historical log
@@ -914,7 +914,7 @@ void CtiCalculateThread::baselineThread( void )
                             }
                             pointValue = pointValue/baselineDataPtr->usedDays;
 
-                            sprintf( pointDescription, "calc point %1 update", pointID );
+                            sprintf( pointDescription, "calc point %ld update", pointID );
                             CtiPointDataMsg *pointData = CTIDBG_new CtiPointDataMsg(pointID, pointValue, NormalQuality, InvalidPointType, pointDescription, TAG_POINT_MUST_ARCHIVE);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
                             pointData->setTime(pointTime.addMinutes(60));//The time these points will appear in historical
 
@@ -1570,7 +1570,7 @@ void CtiCalculateThread::sendConstants()
                 pointValue = oldPointValue;
             }
 
-            sprintf( pointDescription, "calc point %l update", pointId );
+            sprintf( pointDescription, "calc point %ld update", pointId );
 
             CtiPointDataMsg *pointData = CTIDBG_new CtiPointDataMsg(pointId, pointValue, ConstantQuality, InvalidPointType, pointDescription);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
 
