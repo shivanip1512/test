@@ -255,7 +255,7 @@ bool CtiConfigParameters::isTrue(const string &key, bool defaultval)
     {
         retVal = ciStringEqual( getValueAsString(key, truestr), truestr );
     }
-    else if( defaultval == false )
+    else
     {
         retVal = ciStringEqual( getValueAsString(key, falsestr), truestr );
     }
