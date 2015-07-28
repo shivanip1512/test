@@ -3003,7 +3003,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
             BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
             BOOST_CHECK_EQUAL( ret->Status(), 0 );
-            BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / No active load profile requests to cancel\n" );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / No active load profile requests to cancel" );
         }
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_invalid_channel)
@@ -3012,11 +3012,11 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         CtiCommandParser parse("getvalue lp channel 5 3/17/2011");
 
-        BOOST_CHECK_EQUAL( ClientErrors::NoMethod, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( outList.empty() );
-        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
 
         auto retList_itr = retList.cbegin();
 
@@ -3027,16 +3027,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
             BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
             BOOST_CHECK_EQUAL( ret->Status(), 202 );
-            BOOST_CHECK_EQUAL( ret->ResultString(), "Bad channel specification - Acceptable values:  1-4" );
-        }
-        {
-            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
-
-            BOOST_REQUIRE(ret);
-
-            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
-            BOOST_CHECK_EQUAL( ret->Status(), 202 );
-            BOOST_CHECK_EQUAL( ret->ResultString(), "NoMethod or invalid command." );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Bad channel specification - Acceptable values:  1-4" );
         }
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_invalid_interval)
@@ -3047,11 +3038,11 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         CtiCommandParser parse("getvalue lp channel 5 3/17/2011");
 
-        BOOST_CHECK_EQUAL( ClientErrors::NoMethod, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( outList.empty() );
-        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
 
         auto retList_itr = retList.cbegin();
 
@@ -3062,16 +3053,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
             BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
             BOOST_CHECK_EQUAL( ret->Status(), 202 );
-            BOOST_CHECK_EQUAL( ret->ResultString(), "Bad channel specification - Acceptable values:  1-4" );
-        }
-        {
-            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
-
-            BOOST_REQUIRE(ret);
-
-            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
-            BOOST_CHECK_EQUAL( ret->Status(), 202 );
-            BOOST_CHECK_EQUAL( ret->ResultString(), "NoMethod or invalid command." );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Bad channel specification - Acceptable values:  1-4" );
         }
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_no_channel_config)
@@ -3106,11 +3088,11 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         CtiCommandParser parse("getvalue lp channel 1 3/17/2101");
 
-        BOOST_CHECK_EQUAL( ClientErrors::NoMethod, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( outList.empty() );
-        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
 
         auto retList_itr = retList.cbegin();
 
@@ -3121,16 +3103,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
             BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
             BOOST_CHECK_EQUAL( ret->Status(), 202 );
-            BOOST_CHECK_EQUAL( ret->ResultString(), "Bad start date \"3/17/2101\"" );
-        }
-        {
-            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
-
-            BOOST_REQUIRE(ret);
-
-            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
-            BOOST_CHECK_EQUAL( ret->Status(), 202 );
-            BOOST_CHECK_EQUAL( ret->ResultString(), "NoMethod or invalid command." );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Bad start date \"3/17/2101\"" );
         }
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_invalid_optionsField)
@@ -3156,7 +3129,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
             BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
             BOOST_CHECK_EQUAL( ret->Status(), 1 );
-            BOOST_CHECK_EQUAL( ret->ResultString(), "Long load profile request was cancelled" );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Long load profile request was cancelled" );
         }
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_invalid_times)
@@ -3328,7 +3301,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_REQUIRE(ret);
 
             BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
-            BOOST_CHECK_EQUAL( ret->Status(), 26 );
+            BOOST_CHECK_EQUAL( ret->Status(), 279 );
             BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Invalid date for peak request: cannot be after today (03/18/2014)" );
         }
     }
@@ -3338,7 +3311,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         test_Mct410IconDevice mct410;
 
-        CtiCommandParser parse("getvalue lp peak day channel 1 3/18/2014 1000");
+        CtiCommandParser parse("getvalue lp peak day channel 1 3/17/2014 1000");
         request.setCommandString(parse.getCommandStr());
 
         BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
@@ -3354,7 +3327,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
             BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
             BOOST_CHECK_EQUAL( ret->Status(), 26 );
-            BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Invalid date for peak request: cannot be after today (03/18/2014)" );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Invalid range for peak request: must be 1-999 (1000)" );
         }
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_peak_missing_sspec)
@@ -3472,7 +3445,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
             BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
             BOOST_CHECK_EQUAL( ret->Status(), 274 );
-            BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Load profile peak request already in progress\n" );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Load profile peak request already in progress" );
         }
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_peak)

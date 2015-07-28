@@ -393,6 +393,97 @@ Mct4xxDevice::frozen_point_info Mct4xxDevice::getDataError( unsigned error_code,
     return pi;
 }
 
+class OutMessPtrDeleter
+{
+    OUTMESS **_ref;
+
+public:
+
+    OutMessPtrDeleter( OUTMESS *&om_ptr ) : _ref(&om_ptr)  {}
+
+    void release()  {  _ref = 0;  }
+
+    ~OutMessPtrDeleter()
+    {
+        if( _ref )
+        {
+            delete *_ref;
+            *_ref = 0;
+        }
+    }
+};
+
+
+std::unique_ptr<CtiReturnMsg> Mct4xxDevice::makeReturnMsg(const std::string &message, const YukonError_t code, const PIL_ECHO &request) const
+{
+    return makeReturnMsg(message, code, request, ExpectMore::False);
+}
+
+std::unique_ptr<CtiReturnMsg> Mct4xxDevice::makeReturnMsg(const std::string &message, const YukonError_t code, const PIL_ECHO &request, const ExpectMore e) const
+{
+    auto retMsg =
+            std::make_unique<CtiReturnMsg>(
+                    getID(),
+                    request,
+                    getName() + " / " + message,
+                    code);
+
+    retMsg->setConnectionHandle(request.Connection);
+
+    if( e == ExpectMore::True )
+    {
+        retMsg->setExpectMore(true);
+    }
+
+    return std::move(retMsg);
+}
+
+
+std::unique_ptr<CtiMessage> Mct4xxDevice::makeLpResumeRequest(const OUTMESS &OutMessage)
+{
+    bool hasRequiredInfo = true;
+
+    hasRequiredInfo &= hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Channel);
+    hasRequiredInfo &= hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestBegin);
+    hasRequiredInfo &= hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestEnd);
+
+    if( ! hasRequiredInfo )
+    {
+        return makeReturnMsg(
+                    "Missing one of the following:"
+                        "\nKey_MCT_LLPInterest_Channel"
+                        "\nKey_MCT_LLPInterest_RequestBegin"
+                        "\nKey_MCT_LLPInterest_RequestEnd",
+                    ClientErrors::MissingParameter,
+                    OutMessage.Request);
+    }
+
+    const int channel = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Channel);
+
+    const CtiTime time_begin(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestBegin)),
+                  time_end  (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestEnd));
+
+    auto lpRequest =
+            std::make_unique<CtiRequestMsg>(
+                    getID(),
+                    "getvalue lp channel " + boost::lexical_cast<std::string>(channel)
+                        + " " + time_begin.asString()
+                        + " " + time_end.asString());
+
+    lpRequest->setMessagePriority(ScanPriority_LoadProfile);
+
+    return std::move(lpRequest);
+}
+
+
+YukonError_t appendMsgTo(CtiDeviceSingle::CtiMessageList &msgList, std::unique_ptr<CtiMessage> &&msg)
+{
+    msgList.push_back(msg.release());
+
+    return ClientErrors::None;
+}
+
+
 YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     YukonError_t nRet = ClientErrors::NoMethod;
@@ -402,50 +493,31 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
     static const string str_lp_command = "lp_command";
     if( parse.isKeyValid(str_lp_command) )  //  load profile
     {
-        CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
-                                                       OutMessage->Request.CommandStr,
-                                                       string(),
-                                                       nRet,
-                                                       OutMessage->Request.RouteID,
-                                                       OutMessage->Request.RetryMacroOffset,
-                                                       OutMessage->Request.Attempt,
-                                                       OutMessage->Request.GrpMsgID,
-                                                       OutMessage->Request.UserID,
-                                                       OutMessage->Request.SOE,
-                                                       CtiMultiMsg_vec( ));
-
         int year, month, day, hour, minute;
 
         string cmd = parse.getsValue(str_lp_command);
 
         if( cmd == "status" )
         {
-            CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
-
-            ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-
-            string lp_status_string;
-            lp_status_string += getName() + " / Load profile request status:\n";
+            string lp_status_string = "Load profile request status:";
 
             if( _llpRequest.request_id )
             {
-                lp_status_string += "Requested channel: " + CtiNumStr(_llpRequest.channel + 1) + "\n";
-                lp_status_string += "Current interval: " + printTimestamp(_llpRequest.begin) + "\n";
-                lp_status_string += "Ending interval:  " + printTimestamp(_llpRequest.end) + "\n";
+                lp_status_string += "\nRequested channel: " + CtiNumStr(_llpRequest.channel + 1);
+                lp_status_string += "\nCurrent interval: " + printTimestamp(_llpRequest.begin);
+                lp_status_string += "\nEnding interval:  " + printTimestamp(_llpRequest.end);
             }
             else
             {
-                lp_status_string += "No active load profile requests for this device\n";
+                lp_status_string += "\nNo active load profile requests for this device";
             }
 
-            ReturnMsg->setResultString(lp_status_string.c_str());
+            OutMessPtrDeleter d(OutMessage);
 
-            retMsgHandler( OutMessage->Request.CommandStr, ClientErrors::None, ReturnMsg, vgList, retList );
-
-            delete OutMessage;
-            OutMessage = 0;
-            found = false;
-            nRet  = ClientErrors::None;
+            return appendMsgTo(retList, makeReturnMsg(
+                        lp_status_string,
+                        ClientErrors::None,
+                        OutMessage->Request));
         }
         else if( cmd == "cancel" )
         {
@@ -457,68 +529,20 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
             purgeDynamicPaoInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestBegin);
             purgeDynamicPaoInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestEnd);
 
-            CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
+            OutMessPtrDeleter d(OutMessage);
 
-            ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-
-            if( cancelled )
-            {
-                ReturnMsg->setResultString(getName() + " / Load profile request cancelled\n");
-            }
-            else
-            {
-                ReturnMsg->setResultString(getName() + " / No active load profile requests to cancel\n");
-            }
-
-            retMsgHandler( OutMessage->Request.CommandStr, ClientErrors::None, ReturnMsg, vgList, retList );
-
-            delete OutMessage;
-            OutMessage = 0;
-            found = false;
-            nRet  = ClientErrors::None;
+            return appendMsgTo(retList, makeReturnMsg(
+                        cancelled
+                            ? "Load profile request cancelled"
+                            : "No active load profile requests to cancel",
+                        ClientErrors::None,
+                        OutMessage->Request));
         }
         else if( cmd == "resume" )
         {
-            bool hasRequiredInfo = true;
+            OutMessPtrDeleter d(OutMessage);
 
-            hasRequiredInfo &= hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Channel);
-            hasRequiredInfo &= hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestBegin);
-            hasRequiredInfo &= hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestEnd);
-
-            if( ! hasRequiredInfo )
-            {
-                returnErrorMessage(ClientErrors::MissingParameter, OutMessage, retList,
-                                   "Missing one of the following:"
-                                   "\nKey_MCT_LLPInterest_Channel"
-                                   "\nKey_MCT_LLPInterest_RequestBegin"
-                                   "\nKey_MCT_LLPInterest_RequestEnd");
-
-                delete OutMessage;
-                OutMessage = 0;
-
-                return ExecutionComplete;
-            }
-
-            const int channel = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Channel);
-
-            const CtiTime time_begin(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestBegin)),
-                          time_end  (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestEnd));
-
-            std::auto_ptr<CtiRequestMsg> newReq(
-                    new CtiRequestMsg(
-                            getID(),
-                            "getvalue lp channel " + boost::lexical_cast<std::string>(channel)
-                                + " " + time_begin.asString()
-                                + " " + time_end.asString()));
-
-            newReq->setMessagePriority(ScanPriority_LoadProfile);
-
-            retList.push_back(newReq.release());
-
-            delete OutMessage;
-            OutMessage = 0;
-
-            return ExecutionComplete;
+            return appendMsgTo(retList, makeLpResumeRequest(*OutMessage));
         }
         else
         {
@@ -529,34 +553,23 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
             if( request_channel <  0 ||
                 request_channel >= LPChannels )
             {
-                if( errRet )
-                {
-                    std::string temp = "Bad channel specification - Acceptable values:  1-4";
-                    errRet->setResultString( temp );
-                    errRet->setStatus(ClientErrors::NoMethod);
-                    retList.push_back(errRet);
-                    errRet = NULL;
-                }
+                OutMessPtrDeleter d(OutMessage);
+
+                return appendMsgTo(retList, makeReturnMsg(
+                            "Bad channel specification - Acceptable values:  1-4",
+                            ClientErrors::NoMethod,
+                            OutMessage->Request));
             }
             else if( ! hasChannelConfig(request_channel) )
             {
                 if( found = requestChannelConfig(request_channel, *OutMessage, outList) )
                 {
-                    CtiReturnMsg *ReturnMsg =
-                        new CtiReturnMsg(
-                                getID(),
-                                OutMessage->Request,
-                                getName() + " / Command requires channel configuration, but it has not been stored.  Attempting to retrieve it automatically, please retry command.");
+                    OutMessPtrDeleter d(OutMessage);
 
-                    ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-                    ReturnMsg->setConnectionHandle(OutMessage->Request.Connection);
-
-                    retMsgHandler(OutMessage->Request.CommandStr, ClientErrors::NeedsChannelConfig, ReturnMsg, vgList, retList);
-
-                    delete OutMessage;
-                    OutMessage = 0;
-                    found = false;
-                    nRet  = ClientErrors::None;
+                    return appendMsgTo(retList, makeReturnMsg(
+                                "Command requires channel configuration, but it has not been stored.  Attempting to retrieve it automatically, please retry command.",
+                                ClientErrors::NeedsChannelConfig,
+                                OutMessage->Request));
                 }
             }
             else
@@ -566,20 +579,15 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
                 if( interval_len <= 0 )
                 {
                     // The interval length is invalid. We cannot execute.
-                    CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
-                    ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
 
-                    ReturnMsg->setResultString(
-                        getName() + " / Load profile request status:\n"
-                        "Channel " + CtiNumStr(request_channel + 1) + " LP Interval returned " + CtiNumStr(interval_len) + ".\n"
-                        "Retrieve the correct LP Interval and attempt the request again.\n");
+                    OutMessPtrDeleter d(OutMessage);
 
-                    retMsgHandler( OutMessage->Request.CommandStr, ClientErrors::MissingConfig, ReturnMsg, vgList, retList );
-
-                    delete OutMessage;
-                    OutMessage = 0;
-                    found = false;
-                    nRet  = ExecutionComplete;
+                    return appendMsgTo(retList, makeReturnMsg(
+                                "Load profile request status:"
+                                    "\nChannel " + CtiNumStr(request_channel + 1) + " LP Interval returned " + CtiNumStr(interval_len) + "."
+                                    "\nRetrieve the correct LP Interval and attempt the request again.",
+                                ClientErrors::MissingConfig,
+                                OutMessage->Request));
                 }
                 else
                 {
@@ -596,14 +604,12 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
 
                     if( year > 2099 || year < 2000 )
                     {
-                        if( errRet )
-                        {
-                            std::string temp = "Bad start date \"" + parse.getsValue("lp_date_start") + "\"";
-                            errRet->setResultString( temp );
-                            errRet->setStatus(ClientErrors::NoMethod);
-                            retList.push_back( errRet );
-                            errRet = NULL;
-                        }
+                        OutMessPtrDeleter d(OutMessage);
+
+                        return appendMsgTo(retList, makeReturnMsg(
+                                    "Bad start date \"" + parse.getsValue("lp_date_start") + "\"",
+                                    ClientErrors::NoMethod,
+                                    OutMessage->Request));
                     }
                     else if( !cmd.compare("lp") )
                     {
@@ -619,35 +625,17 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
                         //  _llpRequest.request_id will be 0 if there is no command in progress, and OptionsField will be 0 if it is the first message
                         if( ! _llpRequest.request_id.compare_exchange_strong(existing_id, candidate_id) )
                         {
-                            if( existing_id )
-                            {
-                                std::string temp = "Long load profile request already in progress - use \"getvalue lp cancel\" to cancel\n";
-                                temp += "Requested channel: " + CtiNumStr(_llpRequest.channel + 1) + "\n";
-                                temp += "Current interval: " + printTimestamp(_llpRequest.begin) + "\n";
-                                temp += "Ending interval:  " + printTimestamp(_llpRequest.end) + "\n";
-                                errRet->setResultString(temp);
-                                errRet->setStatus(ClientErrors::Abnormal);
-                                retList.push_back(errRet);
-                                errRet = NULL;
-                            }
-                            else
-                            {
-                                //  This command was cancelled
-                                delete OutMessage;
-                                OutMessage = NULL;
+                            OutMessPtrDeleter d(OutMessage);
 
-                                found = false;
-                                nRet  = ExecutionComplete;
-
-                                if( errRet )
-                                {
-                                    std::string temp = "Long load profile request was cancelled";
-                                    errRet->setResultString(temp);
-                                    errRet->setStatus(ClientErrors::Abnormal);
-                                    retList.push_back(errRet);
-                                    errRet = NULL;
-                                }
-                            }
+                            return appendMsgTo(retList, makeReturnMsg(
+                                        existing_id == 0
+                                            ? "Long load profile request was cancelled"
+                                            : "Long load profile request already in progress - use \"getvalue lp cancel\" to cancel"
+                                                  "\nRequested channel: " + CtiNumStr(_llpRequest.channel + 1) +
+                                                  "\nCurrent interval: " + printTimestamp(_llpRequest.begin) +
+                                                  "\nEnding interval:  " + printTimestamp(_llpRequest.end),
+                                        ClientErrors::Abnormal,
+                                        OutMessage->Request));
                         }
                         else
                         {
@@ -723,11 +711,7 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
 
                             if( !time_start.isValid() || !time_end.isValid() || (time_start >= time_end) )
                             {
-                                CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
-
-                                ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-
-                                std::string time_error_string = getName() + " / Invalid date/time for LP request (" + parse.getsValue("lp_date_start");
+                                std::string time_error_string = "Invalid date/time for LP request (" + parse.getsValue("lp_date_start");
 
                                 if( parse.isKeyValid("lp_time_start") )
                                 {
@@ -748,17 +732,15 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
 
                                 time_error_string += ")";
 
-                                ReturnMsg->setResultString(time_error_string);
-
-                                retMsgHandler( OutMessage->Request.CommandStr, ClientErrors::BadParameter, ReturnMsg, vgList, retList );
-
-                                delete OutMessage;
-                                OutMessage = 0;
-                                found = false;
-                                nRet  = ExecutionComplete;
-
                                 //  reset, we're not executing any more
                                 _llpRequest.request_id.compare_exchange_strong(candidate_id, 0);
+
+                                OutMessPtrDeleter d(OutMessage);
+
+                                return appendMsgTo(retList, makeReturnMsg(
+                                            time_error_string,
+                                            ClientErrors::BadParameter,
+                                            OutMessage->Request));
                             }
                             else
                             {
@@ -782,15 +764,12 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
 
                                 if( OutMessage->Request.Connection && strstr(OutMessage->Request.CommandStr, " background") )
                                 {
-                                    CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
-
-                                    ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-                                    ReturnMsg->setConnectionHandle(OutMessage->Request.Connection);
-                                    ReturnMsg->setResultString(getName() + " / Load profile request submitted for background processing - use \"getvalue lp status\" to check progress");
+                                    appendMsgTo(retList, makeReturnMsg(
+                                            "Load profile request submitted for background processing - use \"getvalue lp status\" to check progress",
+                                            ClientErrors::None,
+                                            OutMessage->Request));
 
                                     pReq->setConnectionHandle(0);
-
-                                    retMsgHandler( OutMessage->Request.CommandStr, ClientErrors::None, ReturnMsg, vgList, retList );
 
                                     OutMessage->Priority = 8;
                                     //  make sure the OM doesn't report back to Commander
@@ -825,32 +804,17 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
 
                                     retList.push_back(interestReq);
 
-                                    delete OutMessage;
-                                    OutMessage = 0;
+                                    OutMessPtrDeleter d(OutMessage);
 
-                                    found = false;  //  don't try to touch the OutMessage
-                                    nRet = ClientErrors::None;
-
-                                    //  trying to read, but we're not aligned - something must've gone wrong
-                                    CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), pReq->CommandString());
-
-                                    ReturnMsg->setUserMessageId(pReq->UserMessageId());
-                                    ReturnMsg->setConnectionHandle(pReq->getConnectionHandle());
-                                    ReturnMsg->setResultString(getName() + " / Sending load profile period of interest");
-
-                                    retMsgHandler(pReq->CommandString(), ClientErrors::None, ReturnMsg, vgList, retList, true);
+                                    return appendMsgTo(retList, makeReturnMsg(
+                                                "Sending load profile period of interest",
+                                                ClientErrors::None,
+                                                OutMessage->Request,
+                                                ExpectMore::True));
                                 }
                                 else
                                 {
                                     //  trying to read, but we're not aligned - something must've gone wrong
-                                    CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
-
-                                    ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-                                    ReturnMsg->setConnectionHandle(OutMessage->Request.Connection);
-                                    ReturnMsg->setResultString(getName() + " / Long load profile read setup error");
-
-                                    retMsgHandler( OutMessage->Request.CommandStr, ClientErrors::InvalidTimestamp, ReturnMsg, vgList, retList );
-
                                     _llpInterest.time    = 0;
                                     _llpInterest.channel = 0;
 
@@ -862,10 +826,12 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
                                     //  reset, we're not executing any more
                                     _llpRequest.request_id.compare_exchange_strong(candidate_id, 0);
 
-                                    nRet = ExecutionComplete;
-                                    found = false;
-                                    delete OutMessage;
-                                    OutMessage = 0;
+                                    OutMessPtrDeleter d(OutMessage);
+
+                                    return appendMsgTo(retList, makeReturnMsg(
+                                                "Long load profile read setup error",
+                                                ClientErrors::InvalidTimestamp,
+                                                OutMessage->Request));
                                 }
 
                                 setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Time,         _llpInterest.time);
@@ -892,24 +858,22 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
 
                         if( request_date > today )  //  must begin on or before today
                         {
-                            errRet->setResultString(getName() + " / Invalid date for peak request: cannot be after today (" + request_date.asStringUSFormat() + ")" );
-                            retMsgHandler( OutMessage->Request.CommandStr, ClientErrors::BadParameter, errRet, vgList, retList );
+                            OutMessPtrDeleter d(OutMessage);
 
-                            delete OutMessage;
-                            OutMessage = 0;
-
-                            return ExecutionComplete;
+                            return appendMsgTo(retList, makeReturnMsg(
+                                        "Invalid date for peak request: cannot be after today (" + request_date.asStringUSFormat() + ")",
+                                        ClientErrors::InvalidDate,
+                                        OutMessage->Request));
                         }
                         else if( request_range <= 0 ||
                                  request_range >= 1000 )
                         {
-                            errRet->setResultString(getName() + " / Invalid range for peak request: must be 1-999 (" + CtiNumStr(request_range) + ")" );
-                            retMsgHandler( OutMessage->Request.CommandStr, ClientErrors::BadParameter, errRet, vgList, retList );
+                            OutMessPtrDeleter d(OutMessage);
 
-                            delete OutMessage;
-                            OutMessage = 0;
-
-                            return ExecutionComplete;
+                            return appendMsgTo(retList, makeReturnMsg(
+                                        "Invalid range for peak request: must be 1-999 (" + CtiNumStr(request_range) + ")",
+                                        ClientErrors::BadParameter,
+                                        OutMessage->Request));
                         }
                         else if( ! hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) ||
                                  ! hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
@@ -917,30 +881,25 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
                             //  we need to read the SSPEC out of the meter
                             executeBackgroundRequest("getconfig model", *OutMessage, outList);
 
-                            errRet->setResultString(getName() + " / SSPEC revision not retrieved yet, attempting to read it automatically; please retry command in a few minutes");
+                            OutMessPtrDeleter d(OutMessage);
 
-                            retMsgHandler( OutMessage->Request.CommandStr, ClientErrors::VerifySSPEC, errRet, vgList, retList );
-
-                            delete OutMessage;
-                            OutMessage = 0;
-
-                            return ExecutionComplete;
+                            return appendMsgTo(retList, makeReturnMsg(
+                                        "SSPEC revision not retrieved yet, attempting to read it automatically; please retry command in a few minutes",
+                                        ClientErrors::VerifySSPEC,
+                                        OutMessage->Request));
                         }
                         else if( !isSupported(Feature_LoadProfilePeakReport) )
                         {
-                            errRet->setResultString(getName() + " / Load profile reporting not supported for this device's SSPEC revision");
+                            OutMessPtrDeleter d(OutMessage);
 
-                            retMsgHandler( OutMessage->Request.CommandStr, ClientErrors::InvalidSSPEC, errRet, vgList, retList );
-
-                            delete OutMessage;
-                            OutMessage = 0;
-
-                            return ExecutionComplete;
+                            return appendMsgTo(retList, makeReturnMsg(
+                                        "Load profile reporting not supported for this device's SSPEC revision",
+                                        ClientErrors::InvalidSSPEC,
+                                        OutMessage->Request));
                         }
                         else if( peakType == peakLookup.end() )
                         {
-                            delete OutMessage;
-                            OutMessage = 0;
+                            OutMessPtrDeleter d(OutMessage);
 
                             return ClientErrors::NoMethod;
                         }
@@ -959,13 +918,12 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
 
                             if( ! locked )
                             {
-                                errRet->setResultString(getName() + " / Load profile peak request already in progress\n");
-                                retMsgHandler( OutMessage->Request.CommandStr, ClientErrors::CommandAlreadyInProgress, errRet, vgList, retList );
+                                OutMessPtrDeleter d(OutMessage);
 
-                                delete OutMessage;
-                                OutMessage = 0;
-
-                                return ExecutionComplete;
+                                return appendMsgTo(retList, makeReturnMsg(
+                                            "Load profile peak request already in progress",
+                                            ClientErrors::CommandAlreadyInProgress,
+                                            OutMessage->Request));
                             }
 
                             const unsigned char request_peaktype = peakType->second;

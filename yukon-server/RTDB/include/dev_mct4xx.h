@@ -256,6 +256,17 @@ protected:
 
     virtual ConfigPartsList getPartsList() = 0;
 
+    enum class ExpectMore
+    {
+        True,
+        False
+    };
+
+    std::unique_ptr<CtiReturnMsg> makeReturnMsg(const std::string &message, const YukonError_t code, const PIL_ECHO &request) const;
+    std::unique_ptr<CtiReturnMsg> makeReturnMsg(const std::string &message, const YukonError_t code, const PIL_ECHO &request, const ExpectMore e) const;
+
+    std::unique_ptr<CtiMessage> makeLpResumeRequest(const OUTMESS &OutMessage);
+
     YukonError_t executePutConfig   (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly);
     YukonError_t executeInstallReads(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
@@ -283,8 +294,6 @@ protected:
     virtual YukonError_t executePutConfigMeterParameters    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly = false);
     virtual YukonError_t executePutConfigInstallDisconnect  (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly = false);
     virtual YukonError_t executePutConfigInstallFreezeDay   (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly = false);
-
-    //virtual int executePutConfigDNP               (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, MessageList &vgList, MessageList &retList, OutMessageList &outList);
 
     YukonError_t ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
     YukonError_t ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList) override;
