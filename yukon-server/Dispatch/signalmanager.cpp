@@ -47,7 +47,7 @@ CtiSignalManager::~CtiSignalManager()
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -77,7 +77,7 @@ CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig, bool mark
             CtiLockGuard< CtiMutex > tlg(_mux, 5000);
             while(!tlg.isAcquired())
             {
-                CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+                CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
                 tlg.tryAcquire(5000);
             }
 
@@ -200,7 +200,7 @@ CtiSignalMsg*  CtiSignalManager::setAlarmActive(long pointid, int alarm_conditio
         CtiLockGuard< CtiMutex > tlg(_mux, 5000);
         while(!tlg.isAcquired())
         {
-            CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+            CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
             tlg.tryAcquire(5000);
         }
 
@@ -273,7 +273,7 @@ CtiSignalMsg*  CtiSignalManager::setAlarmAcknowledged(long pointid, int alarm_co
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -339,7 +339,7 @@ bool CtiSignalManager::isAlarmed(long pointid, int alarm_condition) const       
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -351,7 +351,7 @@ bool CtiSignalManager::isAlarmActive(long pointid, int alarm_condition) const   
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -363,7 +363,7 @@ bool CtiSignalManager::isAlarmUnacknowledged(long pointid, int alarm_condition) 
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -377,7 +377,7 @@ UINT CtiSignalManager::getConditionTags(long pointid, int alarm_condition) const
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -410,7 +410,7 @@ UINT CtiSignalManager::getTagMask(long pointid) const // Returns the bitwise OR 
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -448,7 +448,7 @@ CtiSignalMsg* CtiSignalManager::getAlarm(long pointid, int alarm_condition) cons
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -482,7 +482,7 @@ CtiMultiMsg* CtiSignalManager::getPointSignals(long pointid) const
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -526,7 +526,7 @@ CtiMultiMsg* CtiSignalManager::getAllAlarmSignals() const
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -568,7 +568,7 @@ size_t CtiSignalManager::entries() const
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -580,7 +580,7 @@ size_t CtiSignalManager::pointMapEntries() const
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -592,7 +592,7 @@ bool CtiSignalManager::empty() const
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -604,7 +604,7 @@ bool CtiSignalManager::dirty() const
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -618,7 +618,7 @@ void CtiSignalManager::setDirty(bool flag, long paoID)
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -640,7 +640,7 @@ UINT CtiSignalManager::writeDynamicSignalsToDB()
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -730,7 +730,7 @@ CtiMultiMsg* CtiSignalManager::getCategorySignals(unsigned category) const
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 

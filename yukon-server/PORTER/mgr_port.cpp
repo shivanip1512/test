@@ -407,7 +407,7 @@ bool CtiPortManager::mayPortExecuteExclusionFree(ptr_type anxiousPort, CtiTableP
 
         while(!guard.isAcquired())
         {
-            CTILOG_ERROR(dout, "Unable to lock port mutex. Will retry. (Last Acquired By TID: "<< static_cast<string>(getLock()) <<")");
+            CTILOG_WARN(dout, "Unable to lock port mutex. Will retry. (Last Acquired By TID: " << static_cast<string>(getLock()) << ")");
 
             guard.tryAcquire(30000);
         }
@@ -515,7 +515,7 @@ bool CtiPortManager::refreshExclusions(LONG id)
 
     while(!guard.isAcquired())
     {
-        CTILOG_ERROR(dout, "Unable to lock port mutex. Will retry. (Last Acquired By TID: "<< static_cast<string>(getLock()) <<")");
+        CTILOG_WARN(dout, "Unable to lock port mutex. Will retry. (Last Acquired By TID: " << static_cast<string>(getLock()) << ")");
 
         guard.tryAcquire(30000);
     }

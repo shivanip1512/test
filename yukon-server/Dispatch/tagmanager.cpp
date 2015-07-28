@@ -28,7 +28,7 @@ CtiTagManager::~CtiTagManager()
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -62,7 +62,7 @@ CtiTagManager::Actions CtiTagManager::processTagMsg(CtiTagMsg &tag)
         CtiLockGuard< CtiMutex > tlg(_mux, 5000);
         while(!tlg.isAcquired())
         {
-            CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+            CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
             tlg.tryAcquire(5000);
         }
 
@@ -124,7 +124,7 @@ CtiTagMsg* CtiTagManager::getTagMsg(long instanceid) const
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -159,7 +159,7 @@ size_t CtiTagManager::entries() const
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -171,7 +171,7 @@ bool CtiTagManager::empty() const
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -183,7 +183,7 @@ bool CtiTagManager::dirty() const
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -195,7 +195,7 @@ void CtiTagManager::setDirty(bool flag)
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -568,7 +568,7 @@ CtiMultiMsg* CtiTagManager::getPointTags(long pointid) const
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -609,7 +609,7 @@ CtiMultiMsg* CtiTagManager::getAllPointTags() const
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -735,7 +735,7 @@ bool CtiTagManager::verifyTagMsg(CtiTagMsg &pTag)
         CtiLockGuard< CtiMutex > tlg(_mux, 5000);
         while(!tlg.isAcquired())
         {
-            CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+            CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
             tlg.tryAcquire(5000);
         }
 
@@ -768,7 +768,7 @@ bool CtiTagManager::isPointControlInhibited(LONG pid)
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
+        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
