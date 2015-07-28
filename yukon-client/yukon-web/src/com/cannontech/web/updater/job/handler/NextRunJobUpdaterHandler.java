@@ -43,13 +43,13 @@ public class NextRunJobUpdaterHandler implements JobUpdaterHandler {
 			nextRun = null;
 		}
 		
-		if (nextRun != null) {
-			dateStr = dateFormattingService.format(nextRun,
-					DateFormatEnum.DATEHM, userContext);
-		} else if (nextRun == null && !job.isDisabled()) {
-			dateStr = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(
-						"yukon.common.job.error.restart.required");
-		}
+        if (nextRun != null) {
+            dateStr = dateFormattingService.format(nextRun, DateFormatEnum.DATEHM, userContext);
+        } else if (nextRun == null && !job.isDisabled()) {
+            dateStr =
+                messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(
+                    "yukon.common.job.error.restart.required");
+        }
 		return dateStr;
 	}
 	
