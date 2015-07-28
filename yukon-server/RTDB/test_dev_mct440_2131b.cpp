@@ -180,5 +180,6 @@ BOOST_AUTO_TEST_CASE(test_mct440_2131b_decodeGetValueInstantLineData)
 //        //BOOST_CHECK_EQUAL( pdata->getTime(), t);
 //    }
 
+	delete_container(retList);
 }
 

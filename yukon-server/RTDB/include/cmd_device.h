@@ -18,6 +18,8 @@ public:
     typedef std::vector<unsigned char> Bytes;
     typedef YukonErrorException CommandException;
 
+    virtual ~DeviceCommand() = default;
+
     virtual bool isComplete()
     {
         return true;

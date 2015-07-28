@@ -14,6 +14,7 @@
 #include "boost_test_helpers.h"
 
 #include <boost/assign/list_of.hpp>
+#include <boost/range/algorithm/transform.hpp>
 
 using namespace Cti::Protocols;
 using namespace Cti::Config;
@@ -3213,6 +3214,8 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
         BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.executePutConfigTOU(&request, parse, outMessage, vgList, retList, outList, false));
 
+        delete outMessage;
+
         BOOST_CHECK_EQUAL(outList.size(), 4);
 
         {
@@ -4180,29 +4183,29 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
     {
         test_Mct440_213xB test_dev;
 
-        {
-            CtiCommandParser parse("putconfig emetcon phaseloss threshold 65 duration 10:30:45");
+        CtiCommandParser parse("putconfig emetcon phaseloss threshold 65 duration 10:30:45");
 
-            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
+        CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
 
-            BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
 
-            BOOST_CHECK_EQUAL(outmsg->Sequence, Cti::Protocols::EmetconProtocol::PutConfig_PhaseLossThreshold);
+        BOOST_CHECK_EQUAL(outmsg->Sequence, Cti::Protocols::EmetconProtocol::PutConfig_PhaseLossThreshold);
 
-            std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x41)(0x93)(0xd5);
+        std::vector<unsigned char> expected = boost::assign::list_of
+                (0x41)(0x93)(0xd5);
 
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x01E           );
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size() );
+        BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x01E           );
+        BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size() );
 
-            const unsigned char *results_begin = outmsg->Buffer.BSt.Message;
-            const unsigned char *results_end   = outmsg->Buffer.BSt.Message +
-                                                 outmsg->Buffer.BSt.Length;
+        const unsigned char *results_begin = outmsg->Buffer.BSt.Message;
+        const unsigned char *results_end   = outmsg->Buffer.BSt.Message +
+                                             outmsg->Buffer.BSt.Length;
 
-            BOOST_CHECK_EQUAL_COLLECTIONS(
-                    expected.begin(), expected.end(),
-                    results_begin, results_end);
-        }
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(), expected.end(),
+                results_begin, results_end);
+
+        delete outmsg;
     }
 
     BOOST_AUTO_TEST_CASE(test_executeControlTouHolidayRateUpdate)
@@ -4218,6 +4221,8 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
         BOOST_CHECK_EQUAL(outmsg->Sequence, Cti::Protocols::EmetconProtocol::PutStatus_SetTOUHolidayRate);
         BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0A4  );
         BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 0      );
+
+        delete outmsg;
     }
 
     BOOST_AUTO_TEST_CASE(test_executeControlTouHolidayRateReset)
@@ -4233,6 +4238,8 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
         BOOST_CHECK_EQUAL(outmsg->Sequence, Cti::Protocols::EmetconProtocol::PutStatus_ClearTOUHolidayRate);
         BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0A5  );
         BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 0      );
+
+        delete outmsg;
     }
 
     BOOST_AUTO_TEST_CASE(test_putconfig_install_all)
@@ -4256,12 +4263,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
             BOOST_CHECK_EQUAL( retList.size(), 6 );
 
             std::vector<bool> expectMoreRcv;
-            while( ! retList.empty() )
-            {
-                const CtiReturnMsg *retMsg = static_cast<const CtiReturnMsg *>(retList.front());
-                expectMoreRcv.push_back( retMsg->ExpectMore() );
-                retList.pop_front();
-            }
+            boost::range::transform(retList, std::back_inserter(expectMoreRcv), [](const CtiMessage *msg) { return static_cast<const CtiReturnMsg *>(msg)->ExpectMore(); });
 
             const std::vector<bool> expectMoreExp = boost::assign::list_of
                     (true)(true)(true)(true)(true)(false); // 6 error messages
@@ -4326,12 +4328,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
             BOOST_CHECK_EQUAL( retList.size(), 9 );
 
             std::vector<bool> expectMoreRcv;
-            while( ! retList.empty() )
-            {
-                const CtiReturnMsg *retMsg = static_cast<const CtiReturnMsg *>(retList.front());
-                expectMoreRcv.push_back( retMsg->ExpectMore() );
-                retList.pop_front();
-            }
+            boost::range::transform(retList, std::back_inserter(expectMoreRcv), [](const CtiMessage *msg) { return static_cast<const CtiReturnMsg *>(msg)->ExpectMore(); });
 
             const std::vector<bool> expectMoreExp = boost::assign::list_of
                     (true)(true)(true)(true)(true)(true)(true)(true)(true); // 5 error messages + 4 message sent on route
@@ -4359,12 +4356,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
             BOOST_CHECK_EQUAL( retList.size(), 9 );
 
             std::vector<bool> expectMoreRcv;
-            while( ! retList.empty() )
-            {
-                const CtiReturnMsg *retMsg = static_cast<const CtiReturnMsg *>(retList.front());
-                expectMoreRcv.push_back( retMsg->ExpectMore() );
-                retList.pop_front();
-            }
+            boost::range::transform(retList, std::back_inserter(expectMoreRcv), [](const CtiMessage *msg) { return static_cast<const CtiReturnMsg *>(msg)->ExpectMore(); });
 
             const std::vector<bool> expectMoreExp = boost::assign::list_of
                     (true)(true)(true)(true)(true)(true)(true)(true)(true); // 4 error messages + 5 message sent on route
@@ -4392,12 +4384,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
             BOOST_CHECK_EQUAL( retList.size(), 9 );
 
             std::vector<bool> expectMoreRcv;
-            while( ! retList.empty() )
-            {
-                const CtiReturnMsg *retMsg = static_cast<const CtiReturnMsg *>(retList.front());
-                expectMoreRcv.push_back( retMsg->ExpectMore() );
-                retList.pop_front();
-            }
+            boost::range::transform(retList, std::back_inserter(expectMoreRcv), [](const CtiMessage *msg) { return static_cast<const CtiReturnMsg *>(msg)->ExpectMore(); });
 
             const std::vector<bool> expectMoreExp = boost::assign::list_of
                     (true)(true)(true)(true)(true)(true)(true)(true)(true); // 3 error messages + 6 message sent on route
@@ -4425,12 +4412,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
             BOOST_CHECK_EQUAL( retList.size(), 9 );
 
             std::vector<bool> expectMoreRcv;
-            while( ! retList.empty() )
-            {
-                const CtiReturnMsg *retMsg = static_cast<const CtiReturnMsg *>(retList.front());
-                expectMoreRcv.push_back( retMsg->ExpectMore() );
-                retList.pop_front();
-            }
+            boost::range::transform(retList, std::back_inserter(expectMoreRcv), [](const CtiMessage *msg) { return static_cast<const CtiReturnMsg *>(msg)->ExpectMore(); });
 
             const std::vector<bool> expectMoreExp = boost::assign::list_of
                     (true)(true)(true)(true)(true)(true)(true)(true)(true); // 2 error messages + 7 messages sent on route
@@ -4461,12 +4443,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
             BOOST_CHECK_EQUAL( retList.size(), 9 );
 
             std::vector<bool> expectMoreRcv;
-            while( ! retList.empty() )
-            {
-                const CtiReturnMsg *retMsg = static_cast<const CtiReturnMsg *>(retList.front());
-                expectMoreRcv.push_back( retMsg->ExpectMore() );
-                retList.pop_front();
-            }
+            boost::range::transform(retList, std::back_inserter(expectMoreRcv), [](const CtiMessage *msg) { return static_cast<const CtiReturnMsg *>(msg)->ExpectMore(); });
 
             const std::vector<bool> expectMoreExp = boost::assign::list_of
                     (true)(true)(true)(true)(true)(true)(true)(true)(true); // 1 error messages + 8 message sent on route
@@ -4495,12 +4472,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
             BOOST_CHECK_EQUAL( retList.size(), 9 );
 
             std::vector<bool> expectMoreRcv;
-            while( ! retList.empty() )
-            {
-                const CtiReturnMsg *retMsg = static_cast<const CtiReturnMsg *>(retList.front());
-                expectMoreRcv.push_back( retMsg->ExpectMore() );
-                retList.pop_front();
-            }
+            boost::range::transform(retList, std::back_inserter(expectMoreRcv), [](const CtiMessage *msg) { return static_cast<const CtiReturnMsg *>(msg)->ExpectMore(); });
 
             const std::vector<bool> expectMoreExp = boost::assign::list_of
                     (true)(true)(true)(true)(true)(true)(true)(true)(true); // 9 message sent on route
@@ -4529,19 +4501,16 @@ BOOST_AUTO_TEST_CASE(test_executeGetStatusEventLog)
 
     BOOST_CHECK_EQUAL(outList.size(), 10);
 
-    for(int offset=0 ; offset < outList.size(); offset++ )
+    size_t offset = 0;
+    for( const auto outmsg : outList )
     {
-        OUTMESS* outmsg = outList.front();
-
         BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Read);
         BOOST_CHECK_EQUAL(outmsg->Sequence,            Cti::Protocols::EmetconProtocol::GetStatus_EventLog);
-        BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x50 + offset);
+        BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x50 + offset++);
         BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length,   10);
-
-        delete outmsg;
-
-        outList.pop_front();
     }
+
+    delete_container(outList);
 }
 
 

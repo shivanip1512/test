@@ -228,6 +228,10 @@ BOOST_AUTO_TEST_CASE(test_decode_get_interval_last)
     pi = test_device_2.test_getPointResults(PointOffest_intervals_relay_1);
     BOOST_CHECK_EQUAL(pi.quality, NormalQuality);
     BOOST_CHECK_CLOSE(pi.value, (double)relay_1_watts*1/100, 0.00000001);
+
+	delete_container(vgList);
+	delete_container(retList);
+	delete_container(outList);
 }
 
 BOOST_AUTO_TEST_CASE(test_decode_get_propcount)
@@ -279,6 +283,9 @@ BOOST_AUTO_TEST_CASE(test_decode_get_propcount)
     BOOST_CHECK_EQUAL(pi.quality, NormalQuality);
     BOOST_CHECK_CLOSE(pi.value, (double)propcount, 0.0000001);
 
+	delete_container(vgList);
+	delete_container(retList);
+	delete_container(outList);
 }
 
 BOOST_AUTO_TEST_CASE(test_decode_control_time)
@@ -338,6 +345,10 @@ BOOST_AUTO_TEST_CASE(test_decode_control_time)
         BOOST_CHECK_EQUAL(pi.quality, NormalQuality);
         BOOST_CHECK_EQUAL(pi.description, "Control Time Remaining Relay 2"); // Relay + 1 should be reported here!
     }
+
+	delete_container(vgList);
+	delete_container(retList);
+	delete_container(outList);
 }
 
 BOOST_AUTO_TEST_CASE(test_data_read_address)

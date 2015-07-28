@@ -21,7 +21,7 @@ class IM_EX_DEVDB TapPagingTerminal : public DevicePaging, protected OneWayMsgEn
    bool     _pacingReport;
    bool     _allowPrefix;
 
-   std::queue< CtiVerificationBase * >  _verification_objects;
+   std::queue< std::unique_ptr<CtiVerificationBase> >  _verification_objects;
    UINT      _pageCount;    // Used to count the number of pages sent out (0-n)
    CHAR      _pagePrefix;   // Used to fake the TAPTERM into thining it is a new message (a-d)
    UINT      _pageLength;

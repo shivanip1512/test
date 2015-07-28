@@ -32,6 +32,8 @@ public:
     typedef CtiTableDynamicPaoInfoIndexed::PaoInfoKeysIndexed PaoInfoKeysIndexed;
     typedef std::set<long> PaoIds;
 
+    virtual ~DynamicPaoInfoManager() = default;
+
     static void setOwner(const Applications owner);
 
     static void purgeInfo(const long paoId);

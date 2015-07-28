@@ -1112,8 +1112,8 @@ YukonError_t TapPagingTerminal::decodeResponse(CtiXfer  &xfer, YukonError_t comm
                         {
                             _outMessage->VerificationSequence = VerificationSequenceGen();
                         }
-                        CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SNPP, *_outMessage, _outMessage->Request.CommandStr, reinterpret_cast<char *>(_outMessage->Buffer.OutMessage), seconds(700));//11.6 minutes
-                        _verification_objects.push(work);
+                        auto work = std::make_unique<CtiVerificationWork>(CtiVerificationBase::Protocol_SNPP, *_outMessage, _outMessage->Request.CommandStr, reinterpret_cast<char *>(_outMessage->Buffer.OutMessage), seconds(700));//11.6 minutes
+                        _verification_objects.push(std::move(work));
                     }
                 }
                 else
@@ -1597,7 +1597,7 @@ void TapPagingTerminal::getVerificationObjects(queue< CtiVerificationBase * > &w
 {
     while( !_verification_objects.empty() )
     {
-        work_queue.push(_verification_objects.front());
+        work_queue.push(_verification_objects.front().release());
 
         _verification_objects.pop();
     }

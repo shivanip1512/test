@@ -3538,16 +3538,15 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_decodeGetValueIED)
     {
         dev.ResultDecode(im, CtiTime(), vg_list, ret_list, om_list);
 
-        BOOST_CHECK_EQUAL(1, ret_list.size());
+        BOOST_REQUIRE_EQUAL(1, ret_list.size());
 
-        BOOST_CHECK(ret_list.front());
+        BOOST_REQUIRE(ret_list.front());
 
-        if( ret_list.front() )
-        {
-            CtiReturnMsg &rm = *(static_cast<CtiReturnMsg *>(ret_list.front()));
+        CtiReturnMsg &rm = *(static_cast<CtiReturnMsg *>(ret_list.front()));
 
-            BOOST_CHECK_EQUAL(0, rm.PointData().size());
-        }
+        BOOST_CHECK_EQUAL(0, rm.PointData().size());
+
+		delete ret_list.front();
     }
 
     //  set up the meter with dynamic pao info for the Alpha Power Plus

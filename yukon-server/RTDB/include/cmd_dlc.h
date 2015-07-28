@@ -33,6 +33,8 @@ struct IM_EX_DEVDB DlcCommand : public DeviceCommand
             _function(function)
         { }
 
+        virtual ~request_t() = default;
+
         unsigned char function() const  {  return _function & 0xff;  }
 
         //  I would like to typedef away this long name, but it's worth the scads of characters

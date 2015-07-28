@@ -1414,7 +1414,8 @@ YukonError_t Lcr3102Device::executeGetValueHistorical( CtiRequestMsg *pReq, CtiC
                 }
             }
 
-            OutMessage = NULL;
+			delete OutMessage;
+			OutMessage = NULL;
 
             nRet = ClientErrors::None;
         }
