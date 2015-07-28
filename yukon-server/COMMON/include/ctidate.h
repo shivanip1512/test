@@ -66,3 +66,11 @@ public:
     const static boost::gregorian::date EndOfTime;
 };
 
+namespace Cti {
+namespace Date {
+
+    extern IM_EX_CTIBASE std::function<CtiDate()> MakeNowDate;
+
+}
+}
+

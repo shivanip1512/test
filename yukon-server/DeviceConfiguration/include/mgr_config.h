@@ -60,6 +60,8 @@ public:
     static void initialize();
 
     static Config::DeviceConfigSPtr getConfigForIdAndType( const long deviceID, const DeviceTypes deviceType );
+
+    virtual ~ConfigManager() = default;  //  for unit test override
 };
 
 extern IM_EX_CONFIG std::auto_ptr<ConfigManager> gConfigManager;

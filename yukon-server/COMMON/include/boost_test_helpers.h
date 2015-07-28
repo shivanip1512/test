@@ -1,5 +1,6 @@
 #include "millisecond_timer.h"
 #include "ctitime.h"
+#include "ctidate.h"
 
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
@@ -133,6 +134,32 @@ void unset_timezone()
     _putenv_s("TZ", "");
     _tzset();
 }
+
+class Override_CtiDate_Now
+{
+    std::function<CtiDate()> _oldMakeNow;
+
+    CtiDate _newNow;
+
+    CtiDate MakeNow()
+    {
+        return _newNow;
+    }
+
+public:
+    Override_CtiDate_Now(CtiDate newEpoch) :
+        _newNow(newEpoch)
+    {
+        _oldMakeNow = boost::bind(&Override_CtiDate_Now::MakeNow, this);
+
+        std::swap(_oldMakeNow, Cti::Date::MakeNowDate);
+    }
+
+    ~Override_CtiDate_Now()
+    {
+        std::swap(_oldMakeNow, Cti::Date::MakeNowDate);
+    }
+};
 
 }
 }

@@ -13,7 +13,7 @@ const boost::gregorian::date CtiDate::StartOfTime = date(1970, 1, 1);
 const boost::gregorian::date CtiDate::EndOfTime = date(2036, 1, 1);
 
 CtiDate::CtiDate() :
-  bdate(day_clock::local_day())
+  bdate(CtiDate::now().bdate)
 {}
 
 
@@ -226,9 +226,29 @@ unsigned int CtiDate::daysInMonthYear(unsigned mm, unsigned yy)
     return days_in_month;
 }
 
+CtiDate makeNowDate()
+{
+    //  Copy of boost::date_time::day_clock()
+    const time_t currentTime = time(nullptr);
+
+    tm timeStruct;
+
+    localtime_s(&timeStruct, &currentTime);
+
+    return CtiDate(timeStruct.tm_mday, timeStruct.tm_mon + 1, timeStruct.tm_year + 1900);
+}
+
+namespace Cti {
+namespace Date {
+
+    IM_EX_CTIBASE std::function<CtiDate()> MakeNowDate = makeNowDate;
+
+}
+}
+
 CtiDate CtiDate::now()
 {
-    return CtiDate();
+    return Cti::Date::MakeNowDate();
 }
 
 CtiDate& CtiDate::operator++()

@@ -3307,6 +3307,201 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length, 13 );
         }
     }
+    BOOST_AUTO_TEST_CASE(test_getvalue_lp_peak_after_today)
+    {
+        Cti::Test::Override_CtiDate_Now overrideDate(CtiDate(17, 3, 2014));
+
+        test_Mct410IconDevice mct410;
+
+        CtiCommandParser parse("getvalue lp peak day channel 1 3/18/2014 17");
+        request.setCommandString(parse.getCommandStr());
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( outList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 26 );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Invalid date for peak request: cannot be after today (03/18/2014)" );
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_getvalue_lp_peak_invalid_range)
+    {
+        Cti::Test::Override_CtiDate_Now overrideDate(CtiDate(17, 3, 2014));
+
+        test_Mct410IconDevice mct410;
+
+        CtiCommandParser parse("getvalue lp peak day channel 1 3/18/2014 1000");
+        request.setCommandString(parse.getCommandStr());
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( outList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 26 );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Invalid date for peak request: cannot be after today (03/18/2014)" );
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_getvalue_lp_peak_missing_sspec)
+    {
+        Cti::Test::Override_CtiDate_Now overrideDate(CtiDate(17, 3, 2014));
+
+        test_Mct410IconDevice mct410;
+
+        CtiCommandParser parse("getvalue lp peak day channel 1 3/14/2014 17");
+        request.setCommandString(parse.getCommandStr());
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 270 );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / SSPEC revision not retrieved yet, attempting to read it automatically; please retry command in a few minutes" );
+        }
+        {
+            const OUTMESS *om = outList.front();
+
+            BOOST_REQUIRE( om );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO, 1 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length, 8 );
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_getvalue_lp_peak_not_supported)
+    {
+        Cti::Test::Override_CtiDate_Now overrideDate(CtiDate(17, 3, 2014));
+
+        test_Mct410IconDevice mct410;
+
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec, 1029);
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 8);
+
+        CtiCommandParser parse("getvalue lp peak day channel 1 3/17/2014 17");
+        request.setCommandString(parse.getCommandStr());
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( outList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 269 );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Load profile reporting not supported for this device's SSPEC revision" );
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_getvalue_lp_peak_invalid_peaktype)
+    {
+        Cti::Test::Override_CtiDate_Now overrideDate(CtiDate(17, 3, 2014));
+
+        test_Mct410IconDevice mct410;
+
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec, 1029);
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 10);
+
+        CtiCommandParser parse("getvalue lp peak week channel 1 3/17/2014 17");
+        request.setCommandString(parse.getCommandStr());
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+        BOOST_CHECK( retList.empty() );
+
+        //  Since the "lp peak" regex wasn't matched, it's interpreted as "getvalue peak", which is confusing and somewhat terrible
+        {
+            const OUTMESS *om = outList.front();
+
+            BOOST_REQUIRE( om );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO, 3 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 147 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length, 9 );
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_getvalue_lp_peak_invalid_requestId)
+    {
+        Cti::Test::Override_CtiDate_Now overrideDate(CtiDate(17, 3, 2014));
+
+        test_Mct410IconDevice mct410;
+
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec, 1029);
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 10);
+
+        CtiCommandParser parse("getvalue lp peak day channel 1 3/17/2014 17");
+        request.setCommandString(parse.getCommandStr());
+        request.setOptionsField(9999);  //  invalid request ID
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( outList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 274 );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Load profile peak request already in progress\n" );
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_getvalue_lp_peak)
+    {
+        Cti::Test::Override_CtiDate_Now overrideDate(CtiDate(17, 3, 2014));
+
+        test_Mct410IconDevice mct410;
+
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec, 1029);
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 10);
+
+        CtiCommandParser parse("getvalue lp peak day channel 1 3/17/2014 17");
+        request.setCommandString(parse.getCommandStr());
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+        BOOST_CHECK( retList.empty() );
+
+        {
+            const OUTMESS *om = outList.front();
+
+            BOOST_REQUIRE( om );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO, 3 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 160 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length, 7 );
+        }
+    }
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()
 

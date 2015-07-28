@@ -3,6 +3,8 @@
 #include "ctidate.h"
 #include "ctitime.h"
 
+#include "boost_test_helpers.h"
+
 using std::string;
 using boost::unit_test_framework::test_suite;
 
@@ -180,5 +182,13 @@ BOOST_AUTO_TEST_CASE(test_ctidate_daysfrom1970)
     BOOST_CHECK_EQUAL( endDayBeforeTest.daysFrom1970() + 1, endDayOfTest.daysFrom1970() );
     BOOST_CHECK_EQUAL( endDayBeforeTest.daysFrom1970() + 2, endDayAfterTest.daysFrom1970() );
 }
+
+BOOST_AUTO_TEST_CASE(test_ctidate_now)
+{
+    Cti::Test::Override_CtiDate_Now override(CtiDate(14, 7, 2014));
+
+    BOOST_CHECK_EQUAL(CtiDate::now(), CtiDate(14, 7, 2014));
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()
