@@ -440,11 +440,8 @@ public class JobManagerImpl implements JobManager {
 
     private boolean hasJobFailed(Integer jobId) {
         boolean hasJobFailed = false;
-        Iterator<JobException> it = jobExceptions.iterator();
-        // Check if the given jobId is in the list of jobs that have failed for more than twice and hence not
-        // scheduled
-        while (it.hasNext()) {
-            JobException je = it.next();
+        // Check if the given jobId is in the list of jobs that have failed for more than twice and hence not scheduled
+        for (JobException je : jobExceptions) {
             if (jobId == je.jobId) {
                 hasJobFailed = true;
                 break;
