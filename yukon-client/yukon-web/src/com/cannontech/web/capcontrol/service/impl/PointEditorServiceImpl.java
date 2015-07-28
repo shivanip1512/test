@@ -1,13 +1,20 @@
 package com.cannontech.web.capcontrol.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.tags.IAlarmDefs;
+import com.cannontech.common.fdr.FdrDirection;
+import com.cannontech.common.fdr.FdrInterfaceOption;
+import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.point.alarm.dao.PointPropertyValueDao;
 import com.cannontech.common.point.alarm.model.PointPropertyValue;
 import com.cannontech.core.dao.AlarmCatDao;
@@ -25,6 +32,7 @@ import com.cannontech.web.capcontrol.models.PointModel;
 import com.cannontech.web.capcontrol.service.PointEditorService;
 import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
+import com.google.common.collect.ImmutableList;
 
 @Service
 public class PointEditorServiceImpl implements PointEditorService {
@@ -190,6 +198,99 @@ public class PointEditorServiceImpl implements PointEditorService {
 
         pointBase.getPointAlarming().setAlarmStates(alarmStates);
         pointBase.getPointAlarming().setExcludeNotifyStates(exclNotify);
+    }
+    
+    
+    @Override
+    public List<String> getDirectionsFor(FdrInterfaceType interfaceType) {
+        List<String> directions =  interfaceType.getSupportedDirectionsList().stream().map(new Function<FdrDirection, String> () {
+            @Override
+            public String apply(FdrDirection t) {
+                return t.getValue();
+            }})
+            
+        .collect(Collectors.toList());
+        
+        return directions;
+        
+    }
+    
+    @Override
+    public List<Map<String,Object>> getTranslationFieldsFor(FdrInterfaceType interfaceType, String pointType) {
+        
+        List<Map<String, Object>> result = new ArrayList<>();
+        
+        for  (FdrInterfaceOption field : interfaceType.getInterfaceOptionsList()) {
+            
+            Map<String, Object> optionInfo = new HashMap<>();
+            
+            optionInfo.put("name", field.getOptionLabel());
+            
+            switch (field.getOptionType()) {
+            case COMBO:
+                optionInfo.put("options", field.getOptionValues());
+                optionInfo.put("value", field.getOptionValues()[0]);
+                break;
+            case TEXT:
+                String[] value = field.getOptionValues();
+                optionInfo.put("value", value == null ? "(none)" : value[0]);
+                break;
+            }
+            result.add(optionInfo);
+        }
+        
+        Map<String, Object> pointTypeOptionInfo = new HashMap<>();
+        pointTypeOptionInfo.put("name", "POINTTYPE");
+        pointTypeOptionInfo.put("hidden", true);
+        pointTypeOptionInfo.put("options", ImmutableList.of(pointType));
+        pointTypeOptionInfo.put("value", pointType);
+        
+        result.add(pointTypeOptionInfo);
+        
+        return result;
+    }
+
+    @Override
+    public List<Map<String,Object>> breakIntoTranslationFields(String originalString, FdrInterfaceType interfaceType) {
+        
+        
+        String[] kvPairs = originalString.split(";");
+        
+        Map<String, String> originalValues = new HashMap<>();
+        for (String kvPair : kvPairs) {
+            //Split on the first colon. Some property values have file paths.
+            String[] kv = kvPair.split(":", 2);
+            originalValues.put(kv[0], kv[1]);
+        }
+        
+        List<Map<String, Object>> result = new ArrayList<>();
+        
+        for  (FdrInterfaceOption field : interfaceType.getInterfaceOptionsList()) {
+            
+            Map<String, Object> optionInfo = new HashMap<>();
+            
+            optionInfo.put("name", field.getOptionLabel());
+            optionInfo.put("value", originalValues.get(field.getOptionLabel()));
+            
+            switch (field.getOptionType()) {
+            case COMBO:
+                optionInfo.put("options", field.getOptionValues());
+                break;
+            case TEXT:
+                break;
+            }
+            result.add(optionInfo);
+        }
+        
+        Map<String, Object> pointTypeOptionInfo = new HashMap<>();
+        pointTypeOptionInfo.put("hidden", true);
+        pointTypeOptionInfo.put("name", "POINTTYPE");
+        pointTypeOptionInfo.put("options", ImmutableList.of(originalValues.get("POINTTYPE")));
+        pointTypeOptionInfo.put("value", originalValues.get("POINTTYPE"));
+        
+        result.add(pointTypeOptionInfo);
+        
+        return result;
     }
     
 }

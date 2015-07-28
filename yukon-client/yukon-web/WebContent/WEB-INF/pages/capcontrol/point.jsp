@@ -349,7 +349,7 @@
                     <tags:nameValueContainer tableClass="${nameValueClass}">
                         <tags:nameValue name="High Reasonability">
                             <tags:switchButton path="pointBase.pointUnit.highReasonabilityValid" offClasses="M0"
-                                toggleGroup="highReasonability" toggleAction="hide"/>
+                                toggleGroup="highReasonability" toggleAction="hide" inputClass="js-reasonability"/>
                             
                             <%-- All readings exceeding this value are ignored --%>
                             <tags:input path="pointBase.pointUnit.highReasonabilityLimit" size="6"
@@ -358,7 +358,7 @@
                         
                         <tags:nameValue name="Low Reasonability">
                             <tags:switchButton path="pointBase.pointUnit.lowReasonabilityValid" offClasses="M0"
-                                toggleGroup="lowReasonability" toggleAction="hide"/>
+                                toggleGroup="lowReasonability" toggleAction="hide" inputClass="js-reasonability"/>
                                 
                             <%-- All readings less than this value are ignored --%>
                             <tags:input path="pointBase.pointUnit.lowReasonabilityLimit" size="6"
@@ -444,49 +444,74 @@
             </cti:tab>
             
             <cti:tab title="FDR Setup">
-                <tags:nameValueContainer tableClass="${nameValueClass}">
-                    <%-- TODO Only show necessary members of this list --%>
-                    <cti:list var="nums">
-                        <cti:item value="${0}" />
-                        <cti:item value="${1}" />
-                        <cti:item value="${2}" />
-                        <cti:item value="${3}" />
-                        <cti:item value="${4}" />
-                    </cti:list>
+                <%-- TODO Only show necessary members of this list --%>
+                <cti:list var="nums">
+                    <cti:item value="${0}" />
+                    <cti:item value="${1}" />
+                    <cti:item value="${2}" />
+                    <cti:item value="${3}" />
+                    <cti:item value="${4}" />
+                </cti:list>
+                <style type="text/css">
+                    .translation-options label {padding-right: 1em;}
+                </style>
+                <div class="separated-sections">
                     <c:forEach var="fdrIdx" items="${nums}">
                         <c:set var="fdrTranslation" value="${pointModel.pointBase.pointFDRList[fdrIdx]}" />
-                        <tags:nameValue name="Interface ${fdrIdx}" data-fdr-translation="${fdrIdx}">
-                            <tags:selectWithItems path="pointBase.pointFDRList[${fdrIdx}].interfaceType" 
-                                items="${fdrInterfaceTypes}" inputClass="js-fdr-interface" />
-                        </tags:nameValue>
-                        <tags:nameValue name="Direction ${fdrIdx}" data-fdr-translation="${fdrIdx}">
-                            <tags:selectWithItems  path="pointBase.pointFDRList[${fdrIdx}].directionType" 
-                                items="${fdrDirections}" itemValue="value" 
-                                inputClass="with-option-hiding js-fdr-direction"/>
-                        </tags:nameValue>
-                        <tags:nameValue name="Translation" data-fdr-translation="${fdrIdx}">
-                            
-                            <tags:input path="pointBase.pointFDRList[${fdrIdx}].translation"
-                                size="${fn:length(pointModel.pointBase.pointFDRList[fdrIdx].translation)}" 
-                                inputClass="js-fdr-translation"/>
-                        </tags:nameValue>
-                        <c:forEach var="option" items="${fdrTranslation.interfaceEnum.interfaceOptionsList}">
-                        
-                            <%-- TODO Combine these into the translation --%>
-                            <tags:nameValue name="Dummy Input ${option.optionLabel}"
-                                nameClass="dn" valueClass="dn">
-                                <c:if test="${not empty option.optionValues}">
-                                    <%-- TODO make this a select --%>
-                                    Options:
-                                    <c:forEach var="optionValue" items="${option.optionValues}">
-                                        ${optionValue},
+                        <div class="section" data-fdr-translation="${fdrIdx}">
+                            <ul class="property-list clearfix stacked">
+                                <li>
+                                    <span class="name">Interface:</span>
+                                    <span class="value">
+                                        <tags:selectWithItems path="pointBase.pointFDRList[${fdrIdx}].interfaceType" 
+                                            items="${fdrInterfaceTypes}" inputClass="js-fdr-interface" />
+                                    </span>
+                                </li>
+                                <li>
+                                    <span class="name">Direction:</span>
+                                    <span class="value">
+                                        <tags:selectWithItems  path="pointBase.pointFDRList[${fdrIdx}].directionType" 
+                                            items="${fdrDirections}" itemValue="value" 
+                                            inputClass="with-option-hiding js-fdr-direction"/>
+                                    </span>
+                                </li>
+                            </ul>
+                            <cti:displayForPageEditModes modes="VIEW">
+                                <span class="name">Translation:</span>
+                                <span class="value">${pointModel.pointBase.pointFDRList[fdrIdx].translation}</span>
+                            </cti:displayForPageEditModes>
+                                    
+                            <cti:displayForPageEditModes modes="EDIT,CREATE">
+                                <tags:input path="pointBase.pointFDRList[${fdrIdx}].translation"
+                                    inputClass="dn js-fdr-translation" readonly="true"/>
+                                <ul class="property-list clearfix js-translation-fields">
+                                    <c:forEach var="field" items="${fdrProperties[fdrIdx]}">
+                                        <c:set var="labelClasses" value="${field.hidden ? 'dn' : ''}" />
+                                        <li class="${labelClasses}">
+                                            <span class="name">${fn:escapeXml(field.name)}:</span>
+                                            <span class="value">
+                                                <c:choose>
+                                                    <c:when test="${not empty field.options}">
+                                                        <select name="${field.name}">
+                                                            <c:forEach var="option" items="${field.options}">
+                                                                <option value="${option}" <c:if test="${field.value == option}"> selected="selected"</c:if>>
+                                                                    ${option}
+                                                                </option>
+                                                            </c:forEach>
+                                                        </select>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <input name="${field.name}" value="${field.value}" size="${fn:length(field.value)}">
+                                                    </c:otherwise>
+                                                </c:choose>;
+                                            </span>
+                                        </li>
                                     </c:forEach>
-                                </c:if>
-                            </tags:nameValue>
-                        </c:forEach>
+                                </ul>
+                            </cti:displayForPageEditModes>
+                        </div>
                     </c:forEach>
-                </tags:nameValueContainer>
-            
+                </div>
             </cti:tab>
         </cti:tabs>
         

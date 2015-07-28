@@ -71,33 +71,97 @@ yukon.da.point = (function () {
         $('.js-stale-data-input').toggle(enabled);
     };
     
-    var updateFdrDirections = function (translationNumber) {
+    var updateReasonability = function (event) {
+        
+        var checkbox = $(event.currentTarget);
+        
+        var toggleGroup = checkbox.data('toggle');
+        var input = $('[data-toggle-group="' + toggleGroup + '"]');
+        
+        if (checkbox.is(':checked')) {
+            if (Math.abs(input.val()) > 1e29) {
+                input.val(0);
+            }
+        }
+    };
+    
+    var updateFdrInterface = function (translationNumber) {
         
         var allProperties = $('[data-fdr-translation="' + translationNumber +'"]');
         var fdrInterface = allProperties.find('.js-fdr-interface').val();
         
-        $.ajax(yukon.url('/capcontrol/fdr/' + fdrInterface + '/directions')).done(function (data) {
-            
-            var select = allProperties.find('.js-fdr-direction');
-            select.find('option').prop('disabled', true);
-            data.forEach(function (direction) {
-                select.find('option[value="' + direction + '"]').prop('disabled', false);
-            });
-            
-            if (select.find('option:selected').prop('disabled')) {
-                select.val(data[0]);
-            }
-            
-        });
         var pointType = $('.js-point-type').val();
-        $.ajax(yukon.url('/capcontrol/fdr/' + fdrInterface + '/translation?point-type=' + pointType))
+        $.ajax(yukon.url('/capcontrol/fdr/' + fdrInterface + '?point-type=' + pointType))
         .done(function (data) {
             
-            var input = allProperties.find('.js-fdr-translation');
-            input.val(data).attr('size', data.length);
+            var directionSelect = allProperties.find('.js-fdr-direction');
+            directionSelect.find('option').prop('disabled', true);
+            
+            data.directions.forEach(function (direction) {
+                directionSelect.find('option[value="' + direction + '"]').prop('disabled', false);
+            });
+            
+            if (directionSelect.find('option:selected').prop('disabled')) {
+                directionSelect.val(data.directions[0]);
+            }
+            
+            var translationFields = allProperties.find('.js-translation-fields');
+            translationOptions.empty();
+            
+            data.translations.forEach(function (field) {
+
+                var optionInput = $('<input>').attr('size', 5);
+                if (field.options !== undefined) {
+                    optionInput = $('<select>');
+                    field.options.forEach(function (option) {
+                        var thing = $('<option>').val(option).text(option);
+                        optionInput.append(thing);
+                    });
+                }
+                optionInput.attr('name', field.name);
+                optionInput.val(field.value);
+                
+                var li = $('<li>');
+                
+                $('<span class="name">').text(field.name)
+                    .append(':')
+                    .appendTo(li);
+                
+                li.append('&nbsp;');
+
+                $('<span class="value">').append(optionInput)
+                    .append(';')
+                    .appendTo(li);
+
+                if (field.hidden) li.addClass('dn');
+                
+                translationField.append(li);
+            });
+            
+            makeTranslation(translationNumber);
             
         });
+    };
+    
+    var makeTranslation = function(translationNumber) {
         
+        var allProperties = $('[data-fdr-translation="' + translationNumber +'"]');
+        
+        var finalInput = allProperties.find('.js-fdr-translation');
+        var optionsHolder = allProperties.find('.js-translation-options');
+        
+        var translationString = '';
+        
+        optionsHolder.find(':input').each(function (idx, input) {
+           input = $(input);
+           
+           translationString += input.attr('name');
+           translationString += ':';
+           translationString += input.val();
+           translationString += ';';
+        });
+        
+        finalInput.val(translationString);
     };
     
     var mod = {
@@ -118,10 +182,18 @@ yukon.da.point = (function () {
             updateStaleData();
             $('.js-stale-data-enabled').on('change', updateStaleData);
             
-            $('.js-fdr-interface').on('change', function (opt) {
+            $('.js-reasonability').on('change', updateReasonability);
+            
+            $('.js-fdr-interface').on('change', function () {
                 var elem = $(this);
                 var number = elem.closest('[data-fdr-translation]').data('fdrTranslation');
-                updateFdrDirections(number);
+                updateFdrInterface(number);
+            });
+            
+            $(document).on('input', '.js-translation-options :input', function () {
+                var elem = $(this);
+                var number = elem.closest('[data-fdr-translation]').data('fdrTranslation');
+                makeTranslation(number);
             });
             
             var tabContainer = $('.tabbed-container');

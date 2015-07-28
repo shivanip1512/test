@@ -1,9 +1,9 @@
 package com.cannontech.web.capcontrol;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,9 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.common.bulk.model.StatusPointUpdateType;
 import com.cannontech.common.fdr.FdrDirection;
-import com.cannontech.common.fdr.FdrInterfaceOption;
 import com.cannontech.common.fdr.FdrInterfaceType;
-import com.cannontech.common.fdr.FdrOptionType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
@@ -42,6 +40,7 @@ import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.PointAlarming.AlarmNotificationTypes;
+import com.cannontech.database.db.point.fdr.FDRTranslation;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -90,7 +89,7 @@ public class PointController {
 
         String noneChoice = messageAccessor.getMessage("yukon.common.none.choice");
         
-        Object modelPointBase= model.get("pointModel");
+        Object modelPointBase = model.get("pointModel");
         if (modelPointBase instanceof PointModel) {
             pointModel = (PointModel) modelPointBase;
         }
@@ -137,7 +136,14 @@ public class PointController {
         
         model.addAttribute("alarmCategories", dbCache.getAllAlarmCategories());
 
-        
+        List<List<Map<String, Object>>> fdrProperties = new ArrayList<>();
+        for (FDRTranslation fdr : base.getPointFDRList()) {
+            
+            List<Map<String, Object>> inputs = pointEditorService.breakIntoTranslationFields(fdr.getTranslation(), fdr.getInterfaceEnum());
+            fdrProperties.add(inputs);
+        }
+
+        model.addAttribute("fdrProperties", fdrProperties);
         
         model.addAttribute("initialStates", statesForGroup(pointModel.getPointBase().getPoint().getStateGroupID()));
         
@@ -150,40 +156,17 @@ public class PointController {
     
     }
 
-    @RequestMapping("fdr/{type}/directions")
-    public @ResponseBody List<String> fdrDirectionsForInterface(@PathVariable("type") FdrInterfaceType type) {
+    @RequestMapping("fdr/{type}")
+    public @ResponseBody Map<String, Object> fdrInterfaceInfo(@PathVariable("type") FdrInterfaceType interfaceType,
+                                                              @RequestParam("point-type") String pointType) {
         
-        List<String> values =  type.getSupportedDirectionsList().stream().map(new Function<FdrDirection, String> () {
-            
-            @Override
-            public String apply(FdrDirection t) {
-                return t.getValue();
-            }})
-            
-        .collect(Collectors.toList());
+        Map<String, Object> result = new HashMap<>();
         
-        return values;
-    }
-    
-    @RequestMapping("fdr/{type}/translation")
-    public @ResponseBody String getDefaultTranslation(
-            @PathVariable("type") FdrInterfaceType type, 
-            @RequestParam("point-type") String pointType) {
+        List<String> directions = pointEditorService.getDirectionsFor(interfaceType);
+        result.put("directions", directions);
         
-        List<FdrInterfaceOption> options = type.getInterfaceOptionsList();
-        
-        String result = "";
-        for (FdrInterfaceOption option : options) {
-            result += (option.getOptionLabel() + ":");
-            if (option.getOptionType() == FdrOptionType.COMBO) {
-                result += option.getOptionValues()[0];
-            } else {
-                result += "(none)";
-            }
-            result += ";";
-        }
-        
-        result += "POINTTYPE:" + pointType + ";";
+        List<Map<String, Object>> translationFields = pointEditorService.getTranslationFieldsFor(interfaceType, pointType);
+        result.put("translations", translationFields);
         
         return result;
     }
