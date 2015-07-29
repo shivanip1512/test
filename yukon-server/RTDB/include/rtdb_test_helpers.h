@@ -104,7 +104,7 @@ struct Test_CtiPointAnalog : public CtiPointAnalog
     double computeValueForUOM( double value ) const  {  return value;  }
 };
 
-CtiPointAccumulator *makeAccumulatorPoint(long deviceid, long pointid, int offset)
+CtiPointAccumulator *makePulseAccumulatorPoint(long deviceid, long pointid, int offset)
 {
     typedef Cti::Test::StringRow<20> AccumRow;
     typedef Cti::Test::TestReader<AccumRow> AccumReader;
@@ -119,7 +119,40 @@ CtiPointAccumulator *makeAccumulatorPoint(long deviceid, long pointid, int offse
         "calctype",     "multiplier",   "dataoffset"};
     AccumRow values = {
         CtiNumStr(pointid), desolvePointType(PulseAccumulatorPointType) + CtiNumStr(offset), desolvePointType(PulseAccumulatorPointType), CtiNumStr(deviceid), "0", CtiNumStr(offset), "N",
-        "N", "N", "R", "None", "0", "0", "3",
+        "N", "N", "R", "None", "0", "3", "0",
+        "0", "0", "0.1", "0"};
+
+    std::vector<AccumRow> rows;
+    rows.push_back( values );
+
+    AccumReader reader(keys, rows);
+
+    CtiPointAccumulator *accum = new Test_CtiPointAccumulator;
+
+    if( reader() )
+    {
+        accum->DecodeDatabaseReader(reader);
+    }
+
+    return accum;
+}
+
+CtiPointAccumulator *makeDemandAccumulatorPoint(long deviceid, long pointid, int offset)
+{
+    typedef Cti::Test::StringRow<20> AccumRow;
+    typedef Cti::Test::TestReader<AccumRow> AccumReader;
+
+    //  Sample rows
+    //"107462", "kWh", "PulseAccumulator", "13555", "0", "1", "N", "N", "R", "None", "0", "1", "1", "0", "0", "0.1", "0"
+    //"107480", "kW", "DemandAccumulator", "13556", "0", "1", "N", "N", "R", "None", "0", "0", "3", "0", "0", "0.1", "0"
+
+    AccumRow keys = {
+        "pointid",      "pointname",    "pointtype",    "paobjectid",       "stategroupid", "pointoffset",  "serviceflag",
+        "alarminhibit", "pseudoflag",   "archivetype",  "archiveinterval",  "uomid",        "decimalplaces", "decimaldigits",
+        "calctype",     "multiplier",   "dataoffset"};
+    AccumRow values = {
+        CtiNumStr(pointid), desolvePointType(DemandAccumulatorPointType) + CtiNumStr(offset), desolvePointType(DemandAccumulatorPointType), CtiNumStr(deviceid), "0", CtiNumStr(offset), "N",
+        "N", "N", "R", "None", "0", "3", "0",
         "0", "0", "0.1", "0"};
 
     std::vector<AccumRow> rows;
@@ -300,9 +333,14 @@ struct DevicePointHelper
             break;
 
             case PulseAccumulatorPointType:
+            {
+                point.reset(makePulseAccumulatorPoint(deviceId, pointId, offset));
+            }
+            break;
+
             case DemandAccumulatorPointType:
             {
-                point.reset(makeAccumulatorPoint(deviceId, pointId, offset));
+                point.reset(makeDemandAccumulatorPoint(deviceId, pointId, offset));
             }
             break;
 
