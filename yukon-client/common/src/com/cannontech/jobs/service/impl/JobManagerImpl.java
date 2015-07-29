@@ -440,9 +440,9 @@ public class JobManagerImpl implements JobManager {
 
     private boolean hasJobFailed(Integer jobId) {
         boolean hasJobFailed = false;
-        // Check if the given jobId is in the list of jobs that have failed for more than twice and hence not scheduled
+        // Check if the given jobId is in list of jobs that have failed for more than twice and hence not scheduled
         for (JobException je : jobExceptions) {
-            if (jobId == je.jobId) {
+            if (jobId == je.jobId && !je.isExeptionRecieved()) {
                 hasJobFailed = true;
                 break;
             }
