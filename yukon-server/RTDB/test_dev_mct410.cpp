@@ -61,6 +61,8 @@ public:
     using MctDevice::value_locator;
     using MctDevice::getDescriptorForRead;
     using MctDevice::ResultDecode;
+    using MctDevice::SubmitRetry;
+    using MctDevice::ErrorDecode;
 
     using Mct4xxDevice::getUsageReportDelay;
 
@@ -4072,6 +4074,536 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / DemandAccumulator101 = 0.024 @ 03/17/2011 23:00:00" );
             }
         }
+    }
+    BOOST_AUTO_TEST_CASE(test_getvalue_lp_single_retry)
+    {
+        test_Mct410IconDevice mct410;
+        const CtiTime timeBegin(CtiDate(18, 3, 2011), 12, 34, 56);
+
+        //  Initial request
+        {
+            CtiCommandParser parse("getvalue lp channel 1 3/17/2011 14:00");
+            request.setCommandString(parse.getCommandStr());
+            request.setDeviceId(123456);
+            request.setMessagePriority(14);
+
+            BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        }
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
+        BOOST_CHECK( outList.empty() );
+
+        {
+            auto retList_itr = retList.cbegin();
+
+            {
+                auto req = dynamic_cast<const CtiRequestMsg *>(*retList_itr++);
+
+                BOOST_REQUIRE(req);
+
+                BOOST_CHECK_EQUAL( req->DeviceId(), 123456 );
+                BOOST_CHECK_EQUAL( req->CommandString(), "putconfig emetcon llp interest channel 1 3/17/2011 14:00" );
+                BOOST_CHECK_EQUAL( req->getMessagePriority(), 14 );
+            }
+            {
+                auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+
+                BOOST_REQUIRE(ret);
+
+                BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+                BOOST_CHECK_EQUAL( ret->Status(), 0 );
+                BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Sending load profile period of interest" );
+            }
+
+            //  Submit period of interest request
+            {
+                auto continuationRequest = dynamic_cast<CtiRequestMsg *>(retList.front());
+
+                BOOST_REQUIRE(continuationRequest);
+
+                CtiCommandParser parse(continuationRequest->CommandString());
+
+                BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(continuationRequest, parse, vgList, retList, outList) );
+            }
+        }
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK_EQUAL( retList.size(), 2 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        {
+            INMESS im;
+
+            {
+                const OUTMESS *om = outList.front();
+
+                BOOST_REQUIRE( om );
+                BOOST_CHECK_EQUAL( om->Request.OptionsField, 1 );
+                BOOST_CHECK_EQUAL( om->Buffer.BSt.IO, 2 );
+                BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 5 );
+                BOOST_CHECK_EQUAL( om->Buffer.BSt.Length, 6 );
+
+                const unsigned char *results_begin = om->Buffer.BSt.Message;
+                const unsigned char *results_end   = om->Buffer.BSt.Message + om->Buffer.BSt.Length;
+
+                const std::vector<unsigned char> expected {
+                    0xff, 0x01, 0x4d, 0x82, 0x59, 0x04
+                };
+
+                BOOST_CHECK_EQUAL_COLLECTIONS( expected.begin(), expected.end(),
+                                               results_begin,    results_end );
+
+                OutEchoToIN(*om, im);
+
+                im.Buffer.DSt.Length = 0;
+            }
+
+            delete_container(retList);  retList.clear();
+            delete_container(outList);  outList.clear();
+
+            BOOST_CHECK_EQUAL( ClientErrors::None, mct410.ResultDecode(im, timeBegin, vgList, retList, outList) );
+        }
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+        BOOST_CHECK( outList.empty() );
+
+        {
+            auto req = dynamic_cast<CtiRequestMsg *>(retList.front());
+
+            BOOST_REQUIRE(req);
+
+            BOOST_CHECK_EQUAL( req->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( req->CommandString(), "getvalue lp channel 1 3/17/2011 14:00 read" );
+            BOOST_CHECK_EQUAL( req->getMessagePriority(), 14 );
+
+            //  Submit actual read
+            CtiCommandParser parse(req->CommandString());
+
+            BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(req, parse, vgList, retList, outList) );
+        }
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK_EQUAL( retList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        {
+            INMESS im;
+
+            {
+                const OUTMESS *om = outList.front();
+
+                BOOST_REQUIRE( om );
+                BOOST_CHECK_EQUAL( om->Request.OptionsField, 2 );
+                BOOST_CHECK_EQUAL( om->Buffer.BSt.IO, 3 );
+                BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 64 );
+                BOOST_CHECK_EQUAL( om->Buffer.BSt.Length, 13 );
+
+                const unsigned char *results_begin = om->Buffer.BSt.Message;
+                const unsigned char *results_end   = om->Buffer.BSt.Message + om->Buffer.BSt.Length;
+
+                OutEchoToIN(*om, im);
+
+                im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+            }
+
+            delete_container(retList);  retList.clear();
+            delete_container(outList);  outList.clear();
+
+            BOOST_CHECK_EQUAL( ClientErrors::None, mct410.SubmitRetry(im, timeBegin, vgList, retList, outList) );
+        }
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 0 );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "Load profile retry submitted" );
+        }
+
+        {
+            INMESS im;
+
+            {
+                const OUTMESS *om = outList.front();
+
+                BOOST_REQUIRE( om );
+                BOOST_CHECK_EQUAL( om->Request.OptionsField, 3 );
+                BOOST_CHECK_EQUAL( om->Buffer.BSt.IO, 3 );
+                BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 64 );
+                BOOST_CHECK_EQUAL( om->Buffer.BSt.Length, 13 );
+
+                const unsigned char *results_begin = om->Buffer.BSt.Message;
+                const unsigned char *results_end   = om->Buffer.BSt.Message + om->Buffer.BSt.Length;
+
+                OutEchoToIN(*om, im);
+
+                unsigned char buf[13] = { 0x6c, 0x30, 0x01, 0x20, 0x01, 0x10, 0x01, 0x00, 0x01, 0x30, 0x02, 0x30, 0x03 };
+
+                std::copy(buf,  buf + 13, im.Buffer.DSt.Message );
+
+                im.Buffer.DSt.Length = 13;
+                im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+            }
+
+            delete_container(retList);  retList.clear();
+            delete_container(outList);  outList.clear();
+
+            BOOST_CHECK_EQUAL( ClientErrors::None, mct410.ResultDecode(im, timeBegin, vgList, retList, outList) );
+        }
+
+        BOOST_REQUIRE_EQUAL( vgList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+        BOOST_CHECK( outList.empty() );
+
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 0 );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "Load profile request complete\n" );
+            BOOST_REQUIRE_EQUAL( ret->getCount(), 6 );
+        }
+
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(vgList.front());
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 0 );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "Load profile request complete\n" );
+            BOOST_REQUIRE_EQUAL( ret->getCount(), 6 );
+
+            auto pd_itr = ret->PointData().cbegin();
+
+            const auto Tolerance = 0.0001;
+
+            {
+                auto pd = dynamic_cast<CtiPointDataMsg *>(*pd_itr++);
+                BOOST_REQUIRE(pd);
+                BOOST_CHECK_EQUAL( pd->getId(), 1 );
+                BOOST_CHECK_CLOSE( pd->getValue(), 0.012, Tolerance );
+                BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(17, 3, 2011), 14, 00, 00) );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / DemandAccumulator101 = 0.012 @ 03/17/2011 14:00:00" );
+            }
+            {
+                auto pd = dynamic_cast<CtiPointDataMsg *>(*pd_itr++);
+                BOOST_REQUIRE(pd);
+                BOOST_CHECK_EQUAL( pd->getId(), 1 );
+                BOOST_CHECK_CLOSE( pd->getValue(), 0.12, Tolerance );
+                BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(17, 3, 2011), 14, 05, 00) );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / DemandAccumulator101 = 0.120 @ 03/17/2011 14:05:00" );
+            }
+            {
+                auto pd = dynamic_cast<CtiPointDataMsg *>(*pd_itr++);
+                BOOST_REQUIRE(pd);
+                BOOST_CHECK_EQUAL( pd->getId(), 1 );
+                BOOST_CHECK_CLOSE( pd->getValue(), 1.2, Tolerance );
+                BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(17, 3, 2011), 14, 10, 00) );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / DemandAccumulator101 = 1.200 @ 03/17/2011 14:10:00" );
+            }
+            {
+                auto pd = dynamic_cast<CtiPointDataMsg *>(*pd_itr++);
+                BOOST_REQUIRE(pd);
+                BOOST_CHECK_EQUAL( pd->getId(), 1 );
+                BOOST_CHECK_CLOSE( pd->getValue(), 12.0, Tolerance );
+                BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(17, 3, 2011), 14, 15, 00) );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / DemandAccumulator101 = 12.000 @ 03/17/2011 14:15:00" );
+            }
+            {
+                auto pd = dynamic_cast<CtiPointDataMsg *>(*pd_itr++);
+                BOOST_REQUIRE(pd);
+                BOOST_CHECK_EQUAL( pd->getId(), 1 );
+                BOOST_CHECK_CLOSE( pd->getValue(), 0.024, Tolerance );
+                BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(17, 3, 2011), 14, 20, 00) );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / DemandAccumulator101 = 0.024 @ 03/17/2011 14:20:00" );
+            }
+            {
+                auto pd = dynamic_cast<CtiPointDataMsg *>(*pd_itr++);
+                BOOST_REQUIRE(pd);
+                BOOST_CHECK_EQUAL( pd->getId(), 1 );
+                BOOST_CHECK_CLOSE( pd->getValue(), 0.036, Tolerance );
+                BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(17, 3, 2011), 14, 25, 00) );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / DemandAccumulator101 = 0.036 @ 03/17/2011 14:25:00" );
+            }
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_getvalue_lp_failure)
+    {
+        test_Mct410IconDevice mct410;
+        const CtiTime timeBegin(CtiDate(18, 3, 2011), 12, 34, 56);
+
+        //  Initial request
+        {
+            CtiCommandParser parse("getvalue lp channel 1 3/17/2011 14:00");
+            request.setCommandString(parse.getCommandStr());
+            request.setDeviceId(123456);
+            request.setMessagePriority(14);
+
+            BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        }
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
+        BOOST_CHECK( outList.empty() );
+
+        {
+            auto retList_itr = retList.cbegin();
+
+            {
+                auto req = dynamic_cast<const CtiRequestMsg *>(*retList_itr++);
+
+                BOOST_REQUIRE(req);
+
+                BOOST_CHECK_EQUAL( req->DeviceId(), 123456 );
+                BOOST_CHECK_EQUAL( req->CommandString(), "putconfig emetcon llp interest channel 1 3/17/2011 14:00" );
+                BOOST_CHECK_EQUAL( req->getMessagePriority(), 14 );
+            }
+            {
+                auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+
+                BOOST_REQUIRE(ret);
+
+                BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+                BOOST_CHECK_EQUAL( ret->Status(), 0 );
+                BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Sending load profile period of interest" );
+            }
+
+            //  Submit period of interest request
+            {
+                auto continuationRequest = dynamic_cast<CtiRequestMsg *>(retList.front());
+
+                BOOST_REQUIRE(continuationRequest);
+
+                CtiCommandParser parse(continuationRequest->CommandString());
+
+                BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(continuationRequest, parse, vgList, retList, outList) );
+            }
+        }
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK_EQUAL( retList.size(), 2 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        {
+            INMESS im;
+
+            {
+                const OUTMESS *om = outList.front();
+
+                BOOST_REQUIRE( om );
+                BOOST_CHECK_EQUAL( om->Request.OptionsField, 1 );
+                BOOST_CHECK_EQUAL( om->Buffer.BSt.IO, 2 );
+                BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 5 );
+                BOOST_CHECK_EQUAL( om->Buffer.BSt.Length, 6 );
+
+                const unsigned char *results_begin = om->Buffer.BSt.Message;
+                const unsigned char *results_end   = om->Buffer.BSt.Message + om->Buffer.BSt.Length;
+
+                const std::vector<unsigned char> expected {
+                    0xff, 0x01, 0x4d, 0x82, 0x59, 0x04
+                };
+
+                BOOST_CHECK_EQUAL_COLLECTIONS( expected.begin(), expected.end(),
+                                               results_begin,    results_end );
+
+                OutEchoToIN(*om, im);
+
+                im.Buffer.DSt.Length = 0;
+            }
+
+            delete_container(retList);  retList.clear();
+            delete_container(outList);  outList.clear();
+
+            BOOST_CHECK_EQUAL( ClientErrors::None, mct410.ResultDecode(im, timeBegin, vgList, retList, outList) );
+        }
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+        BOOST_CHECK( outList.empty() );
+
+        {
+            auto req = dynamic_cast<CtiRequestMsg *>(retList.front());
+
+            BOOST_REQUIRE(req);
+
+            BOOST_CHECK_EQUAL( req->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( req->CommandString(), "getvalue lp channel 1 3/17/2011 14:00 read" );
+            BOOST_CHECK_EQUAL( req->getMessagePriority(), 14 );
+
+            //  Submit actual read
+            CtiCommandParser parse(req->CommandString());
+
+            BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(req, parse, vgList, retList, outList) );
+        }
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK_EQUAL( retList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        {
+            INMESS im;
+
+            {
+                const OUTMESS *om = outList.front();
+
+                BOOST_REQUIRE( om );
+                BOOST_CHECK_EQUAL( om->Request.OptionsField, 2 );
+                BOOST_CHECK_EQUAL( om->Buffer.BSt.IO, 3 );
+                BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 64 );
+                BOOST_CHECK_EQUAL( om->Buffer.BSt.Length, 13 );
+
+                const unsigned char *results_begin = om->Buffer.BSt.Message;
+                const unsigned char *results_end   = om->Buffer.BSt.Message + om->Buffer.BSt.Length;
+
+                OutEchoToIN(*om, im);
+
+                im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+            }
+
+            delete_container(retList);  retList.clear();
+            delete_container(outList);  outList.clear();
+
+            BOOST_CHECK_EQUAL( ClientErrors::None, mct410.SubmitRetry(im, timeBegin, vgList, retList, outList) );
+        }
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 0 );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "Load profile retry submitted" );
+        }
+
+        {
+            INMESS im;
+
+            {
+                const OUTMESS *om = outList.front();
+
+                BOOST_REQUIRE( om );
+                BOOST_CHECK_EQUAL( om->Request.OptionsField, 3 );
+                BOOST_CHECK_EQUAL( om->Buffer.BSt.IO, 3 );
+                BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 64 );
+                BOOST_CHECK_EQUAL( om->Buffer.BSt.Length, 13 );
+
+                const unsigned char *results_begin = om->Buffer.BSt.Message;
+                const unsigned char *results_end   = om->Buffer.BSt.Message + om->Buffer.BSt.Length;
+
+                OutEchoToIN(*om, im);
+
+                im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+            }
+
+            delete_container(retList);  retList.clear();
+            delete_container(outList);  outList.clear();
+
+            BOOST_CHECK_EQUAL( ClientErrors::None, mct410.SubmitRetry(im, timeBegin, vgList, retList, outList) );
+        }
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 0 );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "Load profile retry submitted" );
+        }
+
+        {
+            INMESS im;
+
+            {
+                const OUTMESS *om = outList.front();
+
+                BOOST_REQUIRE( om );
+                BOOST_CHECK_EQUAL( om->Request.OptionsField, 4 );
+                BOOST_CHECK_EQUAL( om->Buffer.BSt.IO, 3 );
+                BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 64 );
+                BOOST_CHECK_EQUAL( om->Buffer.BSt.Length, 13 );
+
+                const unsigned char *results_begin = om->Buffer.BSt.Message;
+                const unsigned char *results_end   = om->Buffer.BSt.Message + om->Buffer.BSt.Length;
+
+                OutEchoToIN(*om, im);
+
+                im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+            }
+
+            delete_container(retList);  retList.clear();
+            delete_container(outList);  outList.clear();
+
+            BOOST_CHECK_EQUAL( ClientErrors::None, mct410.SubmitRetry(im, timeBegin, vgList, retList, outList) );
+        }
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 0 );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "Load profile retry submitted" );
+        }
+
+        {
+            INMESS im;
+
+            {
+                const OUTMESS *om = outList.front();
+
+                BOOST_REQUIRE( om );
+                BOOST_CHECK_EQUAL( om->Request.OptionsField, 5 );
+                BOOST_CHECK_EQUAL( om->Buffer.BSt.IO, 3 );
+                BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 64 );
+                BOOST_CHECK_EQUAL( om->Buffer.BSt.Length, 13 );
+
+                const unsigned char *results_begin = om->Buffer.BSt.Message;
+                const unsigned char *results_end   = om->Buffer.BSt.Message + om->Buffer.BSt.Length;
+
+                OutEchoToIN(*om, im);
+
+                im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+            }
+
+            delete_container(retList);  retList.clear();
+            delete_container(outList);  outList.clear();
+
+            BOOST_CHECK_EQUAL( ClientErrors::None, mct410.SubmitRetry(im, timeBegin, vgList, retList, outList) );
+
+            BOOST_CHECK( vgList.empty() );
+            BOOST_CHECK( retList.empty() );
+            BOOST_CHECK( outList.empty() );
+
+            BOOST_CHECK_EQUAL( ClientErrors::None, mct410.ErrorDecode(im, timeBegin, retList) );
+        }
+
+        BOOST_CHECK( retList.empty() );
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_peak_after_today)
     {
