@@ -97,7 +97,7 @@
 
                     <tags:nameValueContainer tableClass="${nameValueClass}">
                         
-                        <tags:nameValue name="Archive">
+                        <tags:nameValue name="Archive Data">
                             
                             <div class="button-group">
                                 <c:forEach var="archiveType" items="${statusArchiveTypes}">
@@ -525,7 +525,7 @@
                         </div>
                     </c:forEach>
                     
-                    <c:set var="emptyClass" value="${enabledFdrs == 0 ? '' : 'dn'}"></c:set>
+                    <c:set var="emptyClass" value="${enabledFdrs == 0 ? '' : 'dn'}" />
                     <div class="${emptyClass} js-fdr-empty">
                         <span class="empty-list">No FDR Translations</span>
                     </div>

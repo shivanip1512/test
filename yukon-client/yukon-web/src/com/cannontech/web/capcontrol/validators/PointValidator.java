@@ -1,11 +1,14 @@
 package com.cannontech.web.capcontrol.validators;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
+import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PointDao;
@@ -17,6 +20,7 @@ import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.ScalarPoint;
 import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.point.PointLimit;
+import com.cannontech.database.db.point.fdr.FDRTranslation;
 import com.cannontech.web.capcontrol.models.PointModel;
 import com.google.common.collect.ImmutableList;
 
@@ -29,6 +33,45 @@ public class PointValidator extends SimpleValidator<PointModel> {
 
     public PointValidator() {
         super(PointModel.class);
+    }
+
+    private static class FdrUniquenessKey {
+
+        private final FdrInterfaceType fdrInterfaceType;
+        private final String direction;
+        
+        public FdrUniquenessKey(FdrInterfaceType fdrInterfaceType, String direction) {
+            this.fdrInterfaceType = fdrInterfaceType;
+            this.direction = direction;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((direction == null) ? 0 : direction.hashCode());
+            result = prime * result + ((fdrInterfaceType == null) ? 0 : fdrInterfaceType.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            FdrUniquenessKey other = (FdrUniquenessKey) obj;
+            if (direction == null) {
+                if (other.direction != null)
+                    return false;
+            } else if (!direction.equals(other.direction))
+                return false;
+            if (fdrInterfaceType != other.fdrInterfaceType)
+                return false;
+            return true;
+        }
     }
 
     @Override
@@ -44,7 +87,10 @@ public class PointValidator extends SimpleValidator<PointModel> {
         int parentId = base.getPoint().getPaoID();
         List<LitePoint> pointsOnPao = pointDao.getLitePointsByPaObjectId(parentId);
         for (LitePoint pointOnPao : pointsOnPao) {
-            if (pointOnPao.getPointOffset() == base.getPoint().getPointOffset()) {
+
+            if (pointOnPao.getPointOffset() == base.getPoint().getPointOffset() &&
+                pointOnPao.getPointTypeEnum() == base.getPoint().getPointTypeEnum()) {
+
                 if (pointOnPao.getPointID() != base.getPoint().getPointID()) {
                     List<Object> arguments = ImmutableList.of(pointOnPao.getPointName());
                     errors.rejectValue("pointBase.point.pointOffset", baseKey + ".pointOffset", arguments.toArray(), 
@@ -52,6 +98,24 @@ public class PointValidator extends SimpleValidator<PointModel> {
                 }
             }
         }
+
+        Set<FdrUniquenessKey> usedTypes = new HashSet<>();
+
+        int index = 0;
+        for (FDRTranslation translation : base.getPointFDRList()) {
+
+            FdrUniquenessKey key = new FdrUniquenessKey(
+                translation.getInterfaceEnum(), translation.getDirectionType());
+
+            if (usedTypes.contains(key)) {
+                errors.rejectValue("pointBase.pointFDRList[" +index + "].interfaceType", baseKey + ".fdr.unique");
+                errors.rejectValue("pointBase.pointFDRList[" +index + "].directionType", "yukon.common.blank");
+            }
+
+            usedTypes.add(key);
+            index++;
+        }
+
     }
     
     private void doScalarValidation(PointModel model, Errors errors) {
@@ -65,34 +129,34 @@ public class PointValidator extends SimpleValidator<PointModel> {
         PointLimit limitOne = scalar.getLimitOne();
         if (limitOne != null) {
             if (limitOne.getHighLimit() < limitOne.getLowLimit()) {
-                errors.rejectValue("pointBase.limitOne.lowLimit", baseKey + ".limits");
-                errors.reject("pointBase.limitOne.highLimit");
+                errors.rejectValue("pointBase.pointLimitsMap[1].lowLimit", baseKey + ".limits");
+                errors.rejectValue("pointBase.pointLimitsMap[1].highLimit", "yukon.common.blank");
             }
             
-            YukonValidationUtils.checkRange(errors, "pointBase.limitOne.highLimit", 
+            YukonValidationUtils.checkRange(errors, "pointBase.pointLimitsMap[1].highLimit", 
                 limitOne.getHighLimit(), -99999999.0, 99999999.0, true);
             
-            YukonValidationUtils.checkRange(errors, "pointBase.limitOne.lowLimit", 
+            YukonValidationUtils.checkRange(errors, "pointBase.pointLimitsMap[1].lowLimit", 
                 limitOne.getLowLimit(), -99999999.0, 99999999.0, true);
             
-            YukonValidationUtils.checkRange(errors, "pointBase.limitOne.limitDuration", 
+            YukonValidationUtils.checkRange(errors, "pointBase.pointLimitsMap[1].limitDuration", 
                 limitOne.getLimitDuration(), 0, 99999999, true);
         }
         
         PointLimit limitTwo = scalar.getLimitTwo();
         if (limitTwo != null) {
             if (limitTwo.getHighLimit() < limitTwo.getLowLimit()) {
-                errors.rejectValue("pointBase.limitTwo.lowLimit", baseKey + ".limits");
-                errors.reject("pointBase.limitTwo.highLimit");
+                errors.rejectValue("pointBase.pointLimitsMap[2].lowLimit", baseKey + ".limits");
+                errors.rejectValue("pointBase.pointLimitsMap[2].highLimit", "yukon.common.blank");
             }
             
-            YukonValidationUtils.checkRange(errors, "pointBase.limitTwo.highLimit", 
+            YukonValidationUtils.checkRange(errors, "pointBase.pointLimitsMap[2].highLimit", 
                 limitTwo.getHighLimit(), -99999999.0, 99999999.0, true);
             
-            YukonValidationUtils.checkRange(errors, "pointBase.limitTwo.lowLimit", 
+            YukonValidationUtils.checkRange(errors, "pointBase.pointLimitsMap[2].lowLimit", 
                 limitTwo.getLowLimit(), -99999999.0, 99999999.0, true);
             
-            YukonValidationUtils.checkRange(errors, "pointBase.limitTwo.limitDuration", 
+            YukonValidationUtils.checkRange(errors, "pointBase.pointLimitsMap[2].limitDuration", 
                 limitTwo.getLimitDuration(), 0, 99999999, true);
         }
         

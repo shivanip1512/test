@@ -91,6 +91,7 @@ public class PointModel<T extends PointBase> {
             
             statusPoint.getPointStatus().setPointID(id);
             statusPoint.getPointStatusControl().setPointID(id);
+            statusPoint.getPoint().setArchiveInterval(0);
         }
         
         

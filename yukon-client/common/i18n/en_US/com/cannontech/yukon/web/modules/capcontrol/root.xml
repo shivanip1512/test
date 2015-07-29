@@ -539,6 +539,7 @@
     <entry key="yukon.web.modules.capcontrol.point.CREATE.pageHeading">Create Point</entry>
     <entry key="yukon.web.modules.capcontrol.point.CREATE.crumbTitle">Create</entry>
     
+    <entry key="yukon.web.modules.capcontrol.point.error.fdr.unique">Cannot duplicate Interface/Direction pairs.</entry>
     <entry key="yukon.web.modules.capcontrol.point.error.limits">Low limit must be less than High limit</entry>
     <entry key="yukon.web.modules.capcontrol.point.error.pointOffset">Point offset taken by {0}.</entry>
     
