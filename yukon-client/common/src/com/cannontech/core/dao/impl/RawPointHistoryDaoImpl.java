@@ -14,6 +14,9 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.Instant;
 import org.joda.time.LocalTime;
+import org.joda.time.Period;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -70,7 +73,14 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     @Autowired private AttributeService attributeService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
-
+    
+    private final static PeriodFormatter timingFormatter;
+    
+    static {
+        timingFormatter = new PeriodFormatterBuilder().appendMinutes().appendSuffix(" minute", " minutes")
+                .appendSeparator(" and ").appendSecondsWithMillis().appendSuffix(" second", " seconds").toFormatter();
+    }
+    
     YukonRowMapper<Map.Entry<Integer, PointValueQualityHolder>> rphYukonRowMapper =
         new YukonRowMapper<Map.Entry<Integer, PointValueQualityHolder>>() {
             final LiteRPHQualityRowMapper liteRPHQualityRowMapper = new LiteRPHQualityRowMapper();
@@ -783,6 +793,9 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         // maps from the point identifier to the pao, it is possible, although
         // unlikely, that two paos would have the same point
         // for an attribute, thus this is a SetMultimap instead of a Map
+        
+        Instant start = new Instant();
+        
         SetMultimap<PaoPointIdentifier, PaoIdentifier> paoIdentifierLookup =
             HashMultimap.create(IterableUtils.guessSize(paos), 1);
 
@@ -826,6 +839,13 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
 
             // end of per-PointIdentifier loop
         }
+
+        if (log.isTraceEnabled()) {
+            Instant stop = new Instant();
+            Period period = new Period(start, stop);
+            log.trace("loadValuesForGeneratorFactory() completed in " + timingFormatter.print(period.normalizedStandard()));
+        }
+        
         return result;
     }
 
