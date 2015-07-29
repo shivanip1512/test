@@ -372,7 +372,7 @@
                 <h3>Stale Data</h3>
                 <tags:nameValueContainer tableClass="${nameValueClass}">
                     <%-- Turn on/off stale data checking --%>
-                    <tags:nameValue name="">
+                    <tags:nameValue name="Stale Data">
                         <tags:switchButton path="staleData.enabled" offClasses="M0" inputClass="js-stale-data-enabled"
                          offNameKey=".disabled" onNameKey=".enabled" />
                     </tags:nameValue>
@@ -452,13 +452,18 @@
                     <cti:item value="${3}" />
                     <cti:item value="${4}" />
                 </cti:list>
-                <style type="text/css">
-                    .translation-options label {padding-right: 1em;}
-                </style>
                 <div class="separated-sections">
+                    <c:set var="enabledFdrs" value="0" />
+                    
                     <c:forEach var="fdrIdx" items="${nums}">
                         <c:set var="fdrTranslation" value="${pointModel.pointBase.pointFDRList[fdrIdx]}" />
-                        <div class="section" data-fdr-translation="${fdrIdx}">
+                        
+                        <c:if test="${not empty fdrTranslation.translation}">
+                            <c:set var="enabledFdrs" value="${enabledFdrs + 1}" />
+                        </c:if>
+                        
+                        <div class="section ${empty fdrTranslation.translation ? 'dn' : ''}" 
+                            data-fdr-translation="${fdrIdx}">
                             <ul class="property-list clearfix stacked">
                                 <li>
                                     <span class="name">Interface:</span>
@@ -475,15 +480,22 @@
                                             inputClass="with-option-hiding js-fdr-direction"/>
                                     </span>
                                 </li>
+                                <cti:displayForPageEditModes modes="EDIT,CREATE">
+                                <li>
+                                    <cti:button renderMode="buttonImage" icon="icon-cross" classes="js-remove-fdr"/>
+                                </li>
+                                </cti:displayForPageEditModes>
                             </ul>
                             <cti:displayForPageEditModes modes="VIEW">
                                 <span class="name">Translation:</span>
-                                <span class="value">${pointModel.pointBase.pointFDRList[fdrIdx].translation}</span>
+                                <span class="value">${fdrTranslation.translation}</span>
                             </cti:displayForPageEditModes>
                                     
                             <cti:displayForPageEditModes modes="EDIT,CREATE">
+                            
                                 <tags:input path="pointBase.pointFDRList[${fdrIdx}].translation"
                                     inputClass="dn js-fdr-translation" readonly="true"/>
+                                    
                                 <ul class="property-list clearfix js-translation-fields">
                                     <c:forEach var="field" items="${fdrProperties[fdrIdx]}">
                                         <c:set var="labelClasses" value="${field.hidden ? 'dn' : ''}" />
@@ -503,7 +515,8 @@
                                                     <c:otherwise>
                                                         <input name="${field.name}" value="${field.value}" size="${fn:length(field.value)}">
                                                     </c:otherwise>
-                                                </c:choose>;
+                                                </c:choose>
+                                                ;
                                             </span>
                                         </li>
                                     </c:forEach>
@@ -511,7 +524,19 @@
                             </cti:displayForPageEditModes>
                         </div>
                     </c:forEach>
+                    
+                    <c:set var="emptyClass" value="${enabledFdrs == 0 ? '' : 'dn'}"></c:set>
+                    <div class="${emptyClass} js-fdr-empty">
+                        <span class="empty-list">No FDR Translations</span>
+                    </div>
+                    
                 </div>
+                <cti:displayForPageEditModes modes="EDIT,CREATE">
+                <c:set var="fdrAddClass" value="${fn:length(nums) == enabledFdrs ? 'dn' : ''}" />
+                <div class="page-action-area">
+                </div>
+                    <cti:button icon="icon-add" nameKey="add" classes="js-add-fdr ${fdrAddClass}"/>
+                </cti:displayForPageEditModes>
             </cti:tab>
         </cti:tabs>
         
