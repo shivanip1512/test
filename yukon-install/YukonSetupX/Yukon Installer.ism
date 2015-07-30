@@ -762,7 +762,7 @@
 		<col def="S255">DotNetBuildConfiguration</col>
 		<col def="S255">MsiCommandLine</col>
 		<col def="I4">ISSetupPrerequisiteLocation</col>
-		<row><td>Release 1</td><td>Media</td><td/><td>PackageName</td><td>0</td><td>1033</td><td>2</td><td>1</td><td>Intel</td><td/><td>1033</td><td>3</td><td>650</td><td>0</td><td>2048</td><td/><td>0</td><td/><td>MediaLocation</td><td/><td>http://www.cooperpowereas.com</td><td/><td>&lt;BUILD_ROOT_DIR&gt;\yukon-install\InstallshieldResources\com.cannontech.pfx</td><td/><td/><td>14</td><td/><td/><td/><td/></row>
+		<row><td>Release 1</td><td>Media</td><td/><td>PackageName</td><td>0</td><td>1033</td><td>2</td><td>1</td><td>Intel</td><td/><td>1033</td><td>3</td><td>650</td><td>0</td><td>2048</td><td/><td>0</td><td/><td>MediaLocation</td><td/><td>http://www.eaton.com/cooperpowerseries</td><td/><td>&lt;BUILD_ROOT_DIR&gt;\yukon-install\InstallshieldResources\com.cannontech.pfx</td><td/><td/><td>14</td><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="ISReleasePro">
@@ -1215,10 +1215,10 @@
 		<row><td>ID_STRING61</td><td>1033</td><td>Trending</td><td>0</td><td/><td>-1113748114</td></row>
 		<row><td>ID_STRING62</td><td>1033</td><td>Esubstation Editor</td><td>0</td><td/><td>-1113747698</td></row>
 		<row><td>ID_STRING63</td><td>1033</td><td>Alarm Monitor</td><td>0</td><td/><td>-1113753778</td></row>
-		<row><td>ID_STRING64</td><td>1033</td><td>http://www.CooperPowerEAS.com/Support/Support.cfm</td><td>0</td><td/><td>-1113738864</td></row>
+		<row><td>ID_STRING64</td><td>1033</td><td>http://www.eaton.com/cooperpowerseries</td><td>0</td><td/><td>-207405782</td></row>
 		<row><td>ID_STRING65</td><td>1033</td><td>1.800.815.2258</td><td>0</td><td/><td>-1113775696</td></row>
-		<row><td>ID_STRING66</td><td>1033</td><td>http://www.CooperPowerEAS.com/News/News.cfm</td><td>0</td><td/><td>-1113749072</td></row>
-		<row><td>ID_STRING67</td><td>1033</td><td>Cooper Power EAS Support</td><td>0</td><td/><td>236786253</td></row>
+		<row><td>ID_STRING66</td><td>1033</td><td>http://www.eaton.com/cooperpowerseries</td><td>0</td><td/><td>-207397590</td></row>
+		<row><td>ID_STRING67</td><td>1033</td><td>Eaton EAS Support</td><td>0</td><td/><td>-207368918</td></row>
 		<row><td>ID_STRING68</td><td>1033</td><td>Yukon Server</td><td>0</td><td/><td>1176323209</td></row>
 		<row><td>ID_STRING69</td><td>1033</td><td>Yukon Client</td><td>0</td><td/><td>1176319177</td></row>
 		<row><td>ID_STRING7</td><td>1033</td><td>Runs scheduled meter data collection and basic control operation.</td><td>0</td><td/><td>-1516413110</td></row>
@@ -1230,6 +1230,7 @@
 		<row><td>ID_STRING75</td><td>1033</td><td>Install all Yukon features.</td><td>0</td><td/><td>421435952</td></row>
 		<row><td>ID_STRING76</td><td>1033</td><td>Select which Yukon features to install.</td><td>0</td><td/><td>421427760</td></row>
 		<row><td>ID_STRING77</td><td>1033</td><td>Configuration</td><td>0</td><td/><td>-912357523</td></row>
+		<row><td>ID_STRING78</td><td>1033</td><td>http://www.eaton.com/cooperpowerseries</td><td>0</td><td/><td>-207413974</td></row>
 		<row><td>ID_STRING8</td><td>1033</td><td>Runs distributed automation operations based on data gathered by the system.</td><td>0</td><td/><td>-1516388534</td></row>
 		<row><td>ID_STRING9</td><td>1033</td><td>Transmits and receives real-time data to and from other systems outside of Yukon.</td><td>0</td><td/><td>-1516413078</td></row>
 		<row><td>NEW_STRING1</td><td>1033</td><td>Checkbox</td><td>0</td><td/><td>-979530865</td></row>
@@ -1333,7 +1334,7 @@
 		<col def="V0">Data</col>
 		<col def="S255">ISBuildSourcePath</col>
 		<col def="I2">ISIconIndex</col>
-		<row><td>ARPPRODUCTICON.exe</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\YukonSetup.ico</td><td>0</td></row>
+		<row><td>ARPPRODUCTICON.exe</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\YukonLogin.ico</td><td>0</td></row>
 		<row><td>NewShortcut10_B1E111EE316C4C219712E07FB2F5F627.exe</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\CommanderIcon.ico</td><td>0</td></row>
 		<row><td>NewShortcut11_65FE671901E44013AF5D2059B51753E1.exe</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\tdcIcon.ico</td><td>0</td></row>
 		<row><td>NewShortcut12_3F0AA56CEC2E49DAAB58E5A4C5CCB9C0</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\GraphIcon.ico</td><td>0</td></row>
@@ -1433,7 +1434,7 @@ UgBlAGwAZQBhAHMAZQAgADEAAQBNAGUAZABpAGEA
 		<row><td>ARPHELPLINK</td><td>##ID_STRING64##</td><td/></row>
 		<row><td>ARPHELPTELEPHONE</td><td>##ID_STRING65##</td><td/></row>
 		<row><td>ARPPRODUCTICON</td><td>ARPPRODUCTICON.exe</td><td/></row>
-		<row><td>ARPURLINFOABOUT</td><td>http://www.CooperPowerEAS.com</td><td/></row>
+		<row><td>ARPURLINFOABOUT</td><td>##ID_STRING78##</td><td/></row>
 		<row><td>ARPURLUPDATEINFO</td><td>##ID_STRING66##</td><td/></row>
 		<row><td>DWUSINTERVAL</td><td>30</td><td/></row>
 		<row><td>DWUSLINK</td><td/><td/></row>
@@ -1446,7 +1447,7 @@ UgBlAGwAZQBhAHMAZQAgADEAAQBNAGUAZABpAGEA
 		<row><td>IS_SQLSERVER_PASSWORD</td><td/><td/></row>
 		<row><td>IS_SQLSERVER_SERVER</td><td/><td/></row>
 		<row><td>IS_SQLSERVER_USERNAME</td><td>sa</td><td/></row>
-		<row><td>Manufacturer</td><td>Cooper Power Systems - Energy Automation Solutions</td><td/></row>
+		<row><td>Manufacturer</td><td>Eaton</td><td/></row>
 		<row><td>NewProperty1</td><td>0</td><td/></row>
 		<row><td>NewProperty10</td><td>0</td><td/></row>
 		<row><td>NewProperty11</td><td>0</td><td/></row>
