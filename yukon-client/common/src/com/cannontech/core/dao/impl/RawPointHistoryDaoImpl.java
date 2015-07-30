@@ -272,6 +272,8 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             final OrderBy orderBy,
             final Set<PointQuality> excludeQualities) {
 
+        Instant start = new Instant();
+
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
             @Override
             public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
@@ -309,8 +311,17 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                 };
             }
         };
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> values = loadValuesForGeneratorFactory(factory,
+                displayableDevices, attribute, maxRows, excludeDisabledPaos);
 
-        return loadValuesForGeneratorFactory(factory, displayableDevices, attribute, maxRows, excludeDisabledPaos);
+        Instant stop = new Instant();
+        Period period = new Period(start, stop);
+        if (log.isTraceEnabled()) {
+            log.trace("getLimitedAttributeData() completed in: " + timingFormatter.print(period.normalizedStandard()));
+        }
+        
+        
+        return values; 
     }
 
     @Override
