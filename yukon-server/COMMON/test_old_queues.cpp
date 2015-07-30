@@ -71,6 +71,8 @@ BOOST_AUTO_TEST_CASE(test_write_queue)
     WriteQueue(QueueHandle, outmessages[6].Request.GrpMsgID, sizeof(CtiOutMessage), &outmessages[6], outmessages[6].Priority, &elementCount);
 
     BOOST_CHECK_EQUAL(elementCount, 7);
+
+    CloseQueue(QueueHandle);
 }
 
 
@@ -157,6 +159,8 @@ BOOST_AUTO_TEST_CASE(test_read_queue_front)
     BOOST_CHECK_EQUAL(priority, outmessages[2].Priority);
     BOOST_CHECK_EQUAL(item, &outmessages[2]);
     BOOST_CHECK_EQUAL(item_length, sizeof(CtiOutMessage));
+
+    CloseQueue(QueueHandle);
 }
 
 BOOST_AUTO_TEST_CASE(test_read_queue_by_id)
@@ -250,6 +254,8 @@ BOOST_AUTO_TEST_CASE(test_read_queue_by_id)
     BOOST_CHECK_EQUAL(item, &outmessages[6]);
     BOOST_CHECK_EQUAL(elementCount, 0);
     BOOST_CHECK_EQUAL(item_length, sizeof(CtiOutMessage));
+
+    CloseQueue(QueueHandle);
 }
 
 BOOST_AUTO_TEST_CASE(test_search_queue)
@@ -287,6 +293,8 @@ BOOST_AUTO_TEST_CASE(test_search_queue)
     BOOST_CHECK_EQUAL(SearchQueue(QueueHandle, (void *)217, findRequestIdBOOL), 1);  //     first/topmost element with this request ID
     BOOST_CHECK_EQUAL(SearchQueue(QueueHandle, (void *)219, findRequestIdBOOL), 5);
     BOOST_CHECK_EQUAL(SearchQueue(QueueHandle, (void *)220, findRequestIdBOOL), 6);
+
+    CloseQueue(QueueHandle);
 }
 
 
@@ -345,6 +353,8 @@ BOOST_AUTO_TEST_CASE(test_clean_queue)
     BOOST_CHECK_EQUAL(SearchQueue(QueueHandle, (void *)217, findRequestIdBOOL), 0);
     BOOST_CHECK_EQUAL(SearchQueue(QueueHandle, (void *)218, findRequestIdBOOL), 0);
     BOOST_CHECK_EQUAL(SearchQueue(QueueHandle, (void *)220, findRequestIdBOOL), 0);
+
+    CloseQueue(QueueHandle);
 }
 
 
@@ -386,6 +396,8 @@ BOOST_AUTO_TEST_CASE(test_apply_queue)
     BOOST_CHECK_EQUAL(112358, outmessages[4].DeviceID);
     BOOST_CHECK_EQUAL(112358, outmessages[5].DeviceID);
     BOOST_CHECK_EQUAL(112358, outmessages[6].DeviceID);
+
+    CloseQueue(QueueHandle);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

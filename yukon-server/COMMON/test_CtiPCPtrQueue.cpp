@@ -15,7 +15,8 @@ boost::mutex mutex;
 
 BOOST_AUTO_TEST_CASE(test_writeread)
 {
-    CtiPCPtrQueue<int> *q = new CtiPCPtrQueue<int>();
+    auto q = std::make_unique<CtiPCPtrQueue<int>>();
+
     int *itemOne, *itemTwo, *temp1, *temp2, *garbage;
     itemOne = new int(1);
     itemTwo = new int(2);
@@ -85,7 +86,8 @@ BOOST_AUTO_TEST_CASE(test_writeread)
 
 BOOST_AUTO_TEST_CASE(test_tryRead)
 {
-    CtiPCPtrQueue<int> *q = new CtiPCPtrQueue<int>();
+    auto q = std::make_unique<CtiPCPtrQueue<int>>();
+
     int *itemOne, *itemTwo, *temp1, *temp2, *gar;
     itemOne = new int(1);
     itemTwo = new int(2);

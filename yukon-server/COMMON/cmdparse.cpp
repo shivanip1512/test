@@ -4631,13 +4631,9 @@ void CtiCommandParser::doParseGetValueExpresscom(const string &_CmdStr)
     std::string CmdStr(_CmdStr);
 
     std::string   temp;
-    std::string   token;
 
     static const boost::regex   re_tamper_info("xcom tamper info");
     static const boost::regex   re_dr_summary ("xcom dr summary");
-
-    CtiTokenizer   tok(CmdStr);
-    token = tok(); // Get the first one into the hopper....
 
     if(!(temp = matchRegex(CmdStr, re_tamper_info)).empty())
     {

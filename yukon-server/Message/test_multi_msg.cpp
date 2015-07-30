@@ -20,6 +20,8 @@ BOOST_AUTO_TEST_CASE(test_msg_set_data)
     BOOST_CHECK_EQUAL(((CtiPointDataMsg*)pointChangeMsg->getData()[0])->getId(), 123);
     BOOST_CHECK_EQUAL(((CtiPointDataMsg*)pointChangeMsg->getData()[1])->getId(), 124);
     BOOST_CHECK_EQUAL(((CtiPointDataMsg*)pointChangeMsg->getData()[2])->getId(), 125);
+
+    delete pointChangeMsg;
 }
 
 BOOST_AUTO_TEST_SUITE_END()

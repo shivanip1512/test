@@ -253,6 +253,11 @@ void StreamLocalConnection<OUTMESS, INMESS>::purgeRequest(int request)
     }
 }
 
+void StreamLocalConnection<INMESS, OUTMESS>::purgeRequest(int request)
+{
+    //  no-op
+}
+
 } // namespace Cti
 
 template class IM_EX_CTIBASE Cti::StreamLocalConnection<CtiOutMessage, INMESS>;
