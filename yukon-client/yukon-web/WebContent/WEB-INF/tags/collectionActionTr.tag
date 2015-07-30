@@ -13,6 +13,7 @@
  <tr>
     <td style="vertical-align: top;padding-right: 10px;padding-bottom: 10px;">
         <form method="get" action="${action}" id="${thisId}">
+        	<input type="hidden" name="errorDevices" value="${deviceCollection.errorDevices}" />
             <input type="hidden" name="${pageScope.inputName}" value="${pageScope.inputValue}" />
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
             <a href="javascript:$('#${thisId}').submit();" class="wsnw">${fn:escapeXml(buttonValue)}</a>

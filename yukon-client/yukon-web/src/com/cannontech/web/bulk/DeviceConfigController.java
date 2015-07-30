@@ -17,6 +17,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.BulkProcessor;
@@ -68,7 +69,8 @@ public class DeviceConfigController {
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     
     @RequestMapping("assignConfig")
-    public String assignConfig(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
+    public String assignConfig(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext,
+            @RequestParam(value = "errorDevices", required = false) Set<String> errors) throws ServletException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
         // pass along deviceCollection
         model.addAttribute("deviceCollection", deviceCollection);
@@ -78,7 +80,9 @@ public class DeviceConfigController {
         
         List<LightDeviceConfiguration> existingConfigs = deviceConfigurationDao.getAllLightDeviceConfigurations();
         model.addAttribute("existingConfigs", existingConfigs);
-        
+        model.addAttribute("deviceErrors", errors);
+        if (null != errors)
+            model.addAttribute("deviceErrorCount", errors.size());
         return "config/assignConfig.jsp";
     }
     
@@ -123,7 +127,8 @@ public class DeviceConfigController {
     }
     
     @RequestMapping("unassignConfig")
-    public String unassignConfig(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
+    public String unassignConfig(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext,
+            @RequestParam(value = "errorDevices", required = false) Set<String> errors) throws ServletException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
         
         // pass along deviceCollection
@@ -131,7 +136,9 @@ public class DeviceConfigController {
         
         long deviceCount = deviceCollection.getDeviceCount();
         model.addAttribute("deviceCount", deviceCount);
-        
+        model.addAttribute("deviceErrors", errors);
+        if (null != errors)
+            model.addAttribute("deviceErrorCount", errors.size());
         return "config/unassignConfig.jsp";
     }
     
@@ -200,12 +207,15 @@ public class DeviceConfigController {
      * @throws ServletException
      */
     @RequestMapping("sendConfig")
-    public String sendConfig(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
+    public String sendConfig(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext,
+            @RequestParam(value = "errorDevices", required = false) Set<String> errors) throws ServletException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.SEND_READ_CONFIG, userContext.getYukonUser());
         model.addAttribute("deviceCollection", deviceCollection);
         long deviceCount = deviceCollection.getDeviceCount();
         model.addAttribute("deviceCount", deviceCount);
-        
+        model.addAttribute("deviceErrors", errors);
+        if (null != errors)
+            model.addAttribute("deviceErrorCount", errors.size());
         return "config/sendConfig.jsp";
     }
     
@@ -217,11 +227,14 @@ public class DeviceConfigController {
      * @throws ServletException
      */
     @RequestMapping("verifyConfig")
-    public String verifyConfig(DeviceCollection deviceCollection, ModelMap model) throws ServletException {
+    public String verifyConfig(DeviceCollection deviceCollection, ModelMap model,
+            @RequestParam(value = "errorDevices", required = false) Set<String> errors) throws ServletException {
         model.addAttribute("deviceCollection", deviceCollection);
         long deviceCount = deviceCollection.getDeviceCount();
         model.addAttribute("deviceCount", deviceCount);
-        
+        model.addAttribute("deviceErrors", errors);
+        if (null != errors)
+            model.addAttribute("deviceErrorCount", errors.size());
         return "config/verifyConfig.jsp";
     }
     
@@ -233,12 +246,15 @@ public class DeviceConfigController {
      * @throws ServletException
      */
     @RequestMapping("readConfig")
-    public String readConfig(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
+    public String readConfig(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext,
+            @RequestParam(value = "errorDevices", required = false) Set<String> errors) throws ServletException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.SEND_READ_CONFIG, userContext.getYukonUser());
         model.addAttribute("deviceCollection", deviceCollection);
         long deviceCount = deviceCollection.getDeviceCount();
         model.addAttribute("deviceCount", deviceCount);
-        
+        model.addAttribute("deviceErrors", errors);
+        if (null != errors)
+            model.addAttribute("deviceErrorCount", errors.size());
         return "config/readConfig.jsp";
     }
     

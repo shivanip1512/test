@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.bulk.BulkProcessor;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
@@ -59,7 +60,8 @@ public class ChangeDeviceTypeController {
      * CHOOSE DEVICE TYPE TO CHANGE TO
      */
     @RequestMapping("chooseDeviceType")
-    public String chooseDeviceType(ModelMap model, HttpServletRequest request) throws ServletException {
+    public String chooseDeviceType(ModelMap model, HttpServletRequest request,
+            @RequestParam(value = "errorDevices", required = false) Set<String> errors) throws ServletException {
 
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
         model.addAttribute("deviceCollection", deviceCollection);
@@ -93,7 +95,9 @@ public class ChangeDeviceTypeController {
             }
         }
         model.addAttribute("deviceTypes", deviceTypes);
-
+        model.addAttribute("deviceErrors", errors);
+        if (null != errors)
+            model.addAttribute("deviceErrorCount", errors.size());
         return "changeDeviceType/chooseDeviceType.jsp";
     }
     

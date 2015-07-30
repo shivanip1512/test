@@ -129,7 +129,8 @@ public class BulkController {
             boolean hasMassDelete = rolePropertyDao.checkProperty(YukonRoleProperty.MASS_DELETE, user);
             boolean hasMassChange = rolePropertyDao.checkProperty(YukonRoleProperty.MASS_CHANGE, user);
             boolean showEditing = hasMassChange || hasMassDelete;
-            
+            model.addAttribute("deviceErrors", colleciton.getErrorDevices());
+            model.addAttribute("deviceErrorCount", colleciton.getDeviceErrorCount());
             model.addAttribute("showGroupManagement", showGroupManagement);
             model.addAttribute("showEditing", showEditing);
             model.addAttribute("showAddRemovePoints", showAddRemovePoints);
@@ -335,7 +336,20 @@ public class BulkController {
         }
     }
     
-    private void buildCsv(Set<String> errors, String header, HttpServletResponse response)
+    // REPORT
+    @RequestMapping("downloadResult")
+    public String downloadResult(ModelMap model, HttpServletRequest request,
+            @RequestParam(value = "deviceErrors", required = false) Set<String> errors,
+            @RequestParam(value = "uploadFileName", required = false) String errorFileName,
+            @RequestParam(value = "header", required = false) String header, HttpServletResponse response)
+            throws ServletRequestBindingException, IOException {
+        errorFileName += "_errors.csv";
+        buildCsv(errors, header, errorFileName, response);
+
+        return null;
+    }
+
+    private void buildCsv(Set<String> errors, String header, String errorFileName, HttpServletResponse response)
             throws IOException {
  
         String[] headerRow = null;
@@ -348,6 +362,6 @@ public class BulkController {
             dataRows.add(new String[] { error });
         }
         // write out the file
-        WebFileUtils.writeToCSV(response, headerRow, dataRows, "Test12345.csv");
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, errorFileName);
     }
 }

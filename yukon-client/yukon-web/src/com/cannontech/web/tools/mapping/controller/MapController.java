@@ -13,6 +13,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
@@ -79,7 +80,8 @@ public class MapController {
     }
 
     @RequestMapping(value="/map")
-    public String map(ModelMap model, DeviceCollection deviceCollection, YukonUserContext userContext) {
+    public String map(ModelMap model, DeviceCollection deviceCollection, YukonUserContext userContext,
+            @RequestParam(value = "errorDevices", required = false) Set<String> errors) {
         
         model.addAttribute("deviceCollection", deviceCollection);
         model.addAttribute("description", deviceCollection.getDescription());
@@ -89,7 +91,9 @@ public class MapController {
         
         Filter filter = new Filter();
         model.addAttribute("filter", filter);
-        
+        model.addAttribute("deviceErrors", errors);
+        if (null != errors)
+            model.addAttribute("deviceErrorCount", errors.size());
         return "map/map.jsp";
     }
     

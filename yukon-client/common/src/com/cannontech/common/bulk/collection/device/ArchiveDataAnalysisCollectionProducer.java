@@ -78,6 +78,26 @@ public class ArchiveDataAnalysisCollectionProducer implements DeviceCollectionPr
             public MessageSourceResolvable getDescription() {
                 return new YukonMessageSourceResolvable(key);
             }
+
+            @Override
+            public Set<String> getErrorDevices() {
+                return null;
+            }
+
+            @Override
+            public int getDeviceErrorCount() {
+                return 0;
+            }
+
+            @Override
+            public String getUploadFileName() {
+                return null;
+            }
+
+            @Override
+            public String getHeader() {
+                return null;
+            }
         };
     }
     

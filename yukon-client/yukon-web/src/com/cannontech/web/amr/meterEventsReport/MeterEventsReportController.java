@@ -530,7 +530,8 @@ public class MeterEventsReportController {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         String message = accessor.getMessage(baseKey + ".report.results.deviceCollectionDescription");
 
-        DeviceCollection collection = collectionHelper.createDeviceGroupCollection(meters.iterator(), message);
+        DeviceCollection collection =
+            collectionHelper.createDeviceGroupCollection(meters.iterator(), message, null, null);
         
         return collection;
     }

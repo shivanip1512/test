@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.View;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -53,7 +55,8 @@ public class RouteLocateController {
     
     // HOME
     @RequestMapping("home")
-    public String home(ModelMap model, HttpServletRequest request) throws ServletException {
+    public String home(ModelMap model, HttpServletRequest request,
+            @RequestParam(value = "errorDevices", required = false) Set<String> errors) throws ServletException {
         
         // DEVICE COLLECTION
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
@@ -80,7 +83,9 @@ public class RouteLocateController {
         routeLocateResultsList.addAll(new ReverseList<RouteLocateResult>(routeLocateExecutor.getPending()));
         routeLocateResultsList.addAll(new ReverseList<RouteLocateResult>(routeLocateExecutor.getCompleted()));
         model.addAttribute("routeLocateResultsList", routeLocateResultsList);
-        
+        model.addAttribute("deviceErrors", errors);
+        if(null!=errors)
+        model.addAttribute("deviceErrorCount",errors.size());
         return "routeLocate/routeLocateHome.jsp";
     }
     

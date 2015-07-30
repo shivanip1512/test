@@ -193,6 +193,9 @@
                 <tags:nameValue2 nameKey=".devices" nameClass="js-upload-results dn" valueClass="js-upload-results dn">
                     <span class="device-count"></span>
                 </tags:nameValue2>
+                 <tags:nameValue2 nameKey=".errorCount" nameClass="js-upload-results dn" valueClass="js-upload-results dn">
+                    <span class="error-count"></span>
+                </tags:nameValue2>
             </tags:nameValueContainer2>
         </div>
         <div class="js-upload-results dn">

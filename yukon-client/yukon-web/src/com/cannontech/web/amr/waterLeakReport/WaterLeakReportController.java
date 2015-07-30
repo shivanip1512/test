@@ -563,7 +563,8 @@ public class WaterLeakReportController {
 
         List<PaoIdentifier> paos = paoDao.getPaoIdentifiersForPaoIds(Lists.newArrayList(paoIds));
         Set<YukonMeter> meters = Sets.newHashSet(meterDao.getMetersForYukonPaos(paos));
-        DeviceCollection collection = collectionHelper.createDeviceGroupCollection(meters.iterator(), message);
+        DeviceCollection collection =
+            collectionHelper.createDeviceGroupCollection(meters.iterator(), message, null, null);
         filter.setDeviceCollection(collection);
     }
 
@@ -588,7 +589,8 @@ public class WaterLeakReportController {
         }
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         String message = accessor.getMessage(baseKey + ".results.deviceCollectionDescription");
-        DeviceCollection collection = collectionHelper.createDeviceGroupCollection(meters.iterator(), message);
+        DeviceCollection collection =
+            collectionHelper.createDeviceGroupCollection(meters.iterator(), message, null, null);
         model.addAttribute("collectionFromReportResults", collection);
 
         SearchResults<WaterMeterLeak> filtered = SearchResults.pageBasedForWholeList(paging, leaks);

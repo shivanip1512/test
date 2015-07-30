@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -120,6 +121,26 @@ public class DeviceIdListCollectionProducer implements DeviceCollectionProducer 
             @Override
             public MessageSourceResolvable getDescription() {
                 return new YukonMessageSourceResolvable("yukon.common.device.bulk.bulkAction.collection.idList");
+            }
+
+            @Override
+            public Set<String> getErrorDevices() {
+                return null;
+            }
+
+            @Override
+            public int getDeviceErrorCount() {
+                return 0;
+            }
+
+            @Override
+            public String getUploadFileName() {
+                return null;
+            }
+
+            @Override
+            public String getHeader() {
+                return null;
             }
         };
     }

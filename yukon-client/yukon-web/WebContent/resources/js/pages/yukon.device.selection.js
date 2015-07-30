@@ -85,6 +85,7 @@ yukon.device.selection = (function () {
                     if (!result.error) {
                         errorContainer.hide();
                         successContainer.find('.device-count').text(result.deviceCount);
+                        successContainer.find('.error-count').text(result.deviceErrorCount);
                         successContainer.find(':input[name="group.name"]').val(result['group.name']);
                         successContainer.show();
                     } else {

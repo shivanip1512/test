@@ -22,6 +22,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.bulk.callbackResult.ArchiveDataAnalysisCallbackResult;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
@@ -76,7 +77,9 @@ public class ArchiveDataAnalysisController {
     }
     
     @RequestMapping("setup")
-    public String setup(ModelMap model, HttpServletRequest request, @ModelAttribute("backingBean") ArchiveDataAnalysisBackingBean backingBean) throws ServletException {
+    public String setup(ModelMap model, HttpServletRequest request,
+            @ModelAttribute("backingBean") ArchiveDataAnalysisBackingBean backingBean,
+            @RequestParam(value = "errorDevices", required = false) Set<String> errors) throws ServletException {
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
         model.addAllAttributes(deviceCollection.getCollectionParameters());
         model.addAttribute("deviceCollection", deviceCollection);
@@ -87,6 +90,9 @@ public class ArchiveDataAnalysisController {
         
         model.addAttribute("startDateInitialValue", startDateInitialValue);
         model.addAttribute("stopDateInitialValue", stopDateInitialValue);
+        model.addAttribute("deviceErrors", errors);
+        if (null != errors)
+            model.addAttribute("deviceErrorCount", errors.size());
         return "archiveDataAnalysis/home.jsp";
     }
     

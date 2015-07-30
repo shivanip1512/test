@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
@@ -83,7 +84,8 @@ public class GroupMeterReadController {
 	}
 	
 	@RequestMapping("homeCollection")
-	public ModelAndView homeCollection(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    public ModelAndView homeCollection(HttpServletRequest request, HttpServletResponse response,
+            @RequestParam(value = "errorDevices", required = false) Set<String> errors) throws ServletException {
 		
 	    YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 		ModelAndView mav = new ModelAndView("groupMeterRead/groupMeterReadHomeCollection.jsp");
@@ -102,7 +104,9 @@ public class GroupMeterReadController {
 		Map<AttributeGroup, List<BuiltInAttribute>> allGroupedReadableAttributes = attributeService.
                 getGroupedAttributeMapFromCollection(allReadableAttributes, userContext);
 		mav.addObject("allGroupedReadableAttributes", allGroupedReadableAttributes);
-		
+		mav.addObject("deviceErrors", errors);
+        if(null!=errors)
+            mav.addObject("deviceErrorCount",errors.size());
 		return mav;
 	}
 	

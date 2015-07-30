@@ -1,5 +1,6 @@
 package com.cannontech.web.bulk;
 
+import java.util.Set;
 import java.util.UUID;
 
 import javax.annotation.Resource;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.bulk.BulkProcessor;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
@@ -53,7 +55,8 @@ public class MassDeleteController {
      * CONFIRM MASS DELETE
      */
     @RequestMapping("massDelete")
-    public String massDelete(ModelMap model, HttpServletRequest request) throws ServletException {
+    public String massDelete(ModelMap model, HttpServletRequest request,
+            @RequestParam(value = "errorDevices", required = false) Set<String> errors) throws ServletException {
 
         // pass along deviceCollection
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
@@ -61,7 +64,9 @@ public class MassDeleteController {
         
         long deviceCount = deviceCollection.getDeviceCount();
         model.addAttribute("deviceCount", deviceCount);
-        
+        model.addAttribute("deviceErrors", errors);
+        if (null != errors)
+            model.addAttribute("deviceErrorCount", errors.size());
         return "massDelete/massDeleteConfirm.jsp";
     }
     

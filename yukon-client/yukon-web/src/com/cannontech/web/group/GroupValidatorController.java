@@ -46,6 +46,7 @@ public class GroupValidatorController {
             DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
             collectionAttributes.putAll(deviceCollection.getCollectionParameters());
             collectionAttributes.put("deviceCount", Long.toString(deviceCollection.getDeviceCount(), 10));
+            collectionAttributes.put("deviceErrorCount", Integer.toString(deviceCollection.getDeviceErrorCount()));
         } catch (DeviceCollectionCreationException e) {
             collectionAttributes.put("error", e.getMessage());
         } catch (IllegalArgumentException e) {

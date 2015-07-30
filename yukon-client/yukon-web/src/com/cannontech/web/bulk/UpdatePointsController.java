@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
@@ -38,7 +39,9 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
 
     // HOME
     @RequestMapping("home")
-    public String home(ModelMap model, HttpServletRequest request) throws Exception, ServletException {
+    public String home(ModelMap model, HttpServletRequest request,
+            @RequestParam(value = "errorDevices", required = false) Set<String> errors) throws Exception,
+            ServletException {
         
         // device collection
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
@@ -75,7 +78,9 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
         PaoTypeMasks sharedPaoTypeMasks = new PaoTypeMasks();
         sharedPaoTypeMasks.setPointTemplateMaskMap(sharedPointTemplateMaskMap);
         model.addAttribute("sharedPaoTypeMasks", sharedPaoTypeMasks);
-        
+        model.addAttribute("deviceErrors", errors);
+        if (null != errors)
+            model.addAttribute("deviceErrorCount", errors.size());
         return "updatePoints/updatePointsHome.jsp";
     }
     
