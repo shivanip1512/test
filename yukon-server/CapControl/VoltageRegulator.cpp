@@ -470,9 +470,9 @@ double VoltageRegulator::requestVoltageChange( const double changeAmount,
                             ? std::ceil( std::abs( changeAmount ) / voltageChangePerTap )
                             : 1 ;
 
-        return tapCount * ( changeAmount > 0 )
+        return tapCount * ( ( changeAmount > 0 )
                     ?  voltageChangePerTap
-                    : -voltageChangePerTap;
+                    : -voltageChangePerTap );
     }
     else    // set point calculations...
     {
@@ -493,14 +493,12 @@ double VoltageRegulator::requestVoltageChange( const double changeAmount,
                 const int Ntaps = std::abs( 1 +
                     ( ( currentHalfBandwidth + voltageWindow ) / voltageChangePerTap ) );
 
-                const int caTaps = changeAmount / voltageChangePerTap;  // taps for 'all' requested change
-
-                return ( Ntaps <= caTaps ? Ntaps : 1 ) * voltageChangePerTap;
+                return Ntaps * voltageChangePerTap;
             }
             else
             {
                 const int Ntaps = std::abs( 1 +
-                    ( ( currentHalfBandwidth + voltageWindow ) / voltageChangePerTap ) );
+                    ( ( currentHalfBandwidth - voltageWindow ) / voltageChangePerTap ) );
 
                 return -Ntaps * voltageChangePerTap;
             }
