@@ -14,8 +14,9 @@ public enum ScheduleCommand {
 	VerifyQuestionable("Verify Questionable CapBanks", CommandType.VERIFY_Q_BANKS.getCommandId()),
 	VerifyNotOperatedIn("Verify CapBanks that have not operated in", CommandType.VERIFY_INACTIVE_BANKS.getCommandId()),
     ConfirmSub("Confirm Sub", CommandType.CONFIRM_SUBSTATION_BUS.getCommandId()),
-    SendTimeSyncs("Send Time Syncs", CommandType.SEND_TIME_SYNC.getCommandId());
-	
+    SendTimeSyncs("Send Time Syncs", CommandType.SEND_TIME_SYNC.getCommandId()),
+    SendSyncCBCCapbankStates("Sync CapBank States", CommandType.SEND_SYNC_CBC_CAPBANK_STATE.getCommandId());
+
 	private static List<ScheduleCommand> verifyList = null;
 	
 	static {
