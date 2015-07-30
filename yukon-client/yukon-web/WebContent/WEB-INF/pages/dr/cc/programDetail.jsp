@@ -149,16 +149,16 @@
         </div>
     </div>
 </div>
-    <div class="page-action-area">
-        <cti:url value="/dr/cc/programSave/${program.id}" var="saveUrl"/>
-        <cti:button nameKey="save" classes="action primary" type="submit" id="program-save" href="${saveUrl}"/>
-        <c:if test="${deletable}">
-            <cti:url value="/dr/cc/programDelete/${program.id}" var="deleteUrl"/>
-            <cti:button nameKey="delete" classes="delete" href="${deleteUrl}" id="delete-program"/>
-        </c:if>
-        <cti:url value="/dr/cc/programList" var="cancelUrl"/>
-        <cti:button nameKey="cancel" href="${cancelUrl}"/>
-    </div>
+<div class="page-action-area">
+    <cti:url value="/dr/cc/programSave/${program.id}" var="saveUrl"/>
+    <cti:button nameKey="save" classes="action primary" type="submit" id="program-save" href="${saveUrl}"/>
+    <c:if test="${deletable}">
+        <cti:url value="/dr/cc/programDelete/${program.id}" var="deleteUrl"/>
+        <cti:button nameKey="delete" classes="delete" href="${deleteUrl}" id="delete-program"/>
+    </c:if>
+    <cti:url value="/dr/cc/programList" var="cancelUrl"/>
+    <cti:button nameKey="cancel" href="${cancelUrl}"/>
+</div>
 
 </form>
 </cti:standardPage>

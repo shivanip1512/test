@@ -25,7 +25,15 @@ public class LMDirectCustomerListDaoImpl implements LMDirectCustomerListDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private TransactionTemplate transactionTemplate;
     @Autowired private PaoDao paoDao;
-
+    
+    @Override
+    public Set<Integer> getLMProgramIdsForCustomer(Integer customerId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select ProgramID from LMDirectCustomerList where CustomerID").eq(customerId);
+        Set<Integer> result = Sets.newHashSet(jdbcTemplate.query(sql, RowMapper.INTEGER));
+        return result;
+    }
+    
     @Override
     public Set<LiteYukonPAObject> getLMProgramPaosForCustomer(Integer customerId) {
         Set<LiteYukonPAObject> resultSet = new HashSet<LiteYukonPAObject>();
@@ -80,12 +88,5 @@ public class LMDirectCustomerListDaoImpl implements LMDirectCustomerListDao {
                 return null;
             }
         });
-    }
-       
-    private Set<Integer> getLMProgramIdsForCustomer(Integer customerId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select ProgramID from LMDirectCustomerList where CustomerID").eq(customerId);
-        Set<Integer> result = Sets.newHashSet(jdbcTemplate.query(sql, RowMapper.INTEGER));
-        return result;
     }
 }

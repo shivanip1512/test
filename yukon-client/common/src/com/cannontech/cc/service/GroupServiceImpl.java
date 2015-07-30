@@ -49,7 +49,12 @@ public class GroupServiceImpl implements GroupService {
         newGroup.setEnergyCompanyId(energyCompany.getId());
         return newGroup;
     }
-
+    
+    @Override
+    public List<Group> getGroupsById(Iterable<Integer> groupIds) {
+        return groupDao.getForIds(groupIds);
+    }
+    
     @Override
     @Transactional
     public Group getGroup(Integer groupId) {

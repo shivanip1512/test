@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,6 +18,8 @@ import javax.faces.model.ListDataModel;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +29,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,9 +43,11 @@ import com.cannontech.cc.dao.CurtailmentEventDao;
 import com.cannontech.cc.dao.CurtailmentEventNotifDao;
 import com.cannontech.cc.dao.EconomicEventDao;
 import com.cannontech.cc.dao.EconomicEventParticipantDao;
+import com.cannontech.cc.dao.GroupCustomerNotifDao;
 import com.cannontech.cc.dao.GroupDao;
 import com.cannontech.cc.model.AccountingEvent;
 import com.cannontech.cc.model.AccountingEventParticipant;
+import com.cannontech.cc.model.AvailableProgramGroup;
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.CurtailmentEvent;
@@ -78,6 +85,7 @@ import com.cannontech.core.dao.NotificationGroupDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
@@ -88,6 +96,8 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
+import com.cannontech.support.CustomerPointTypeHelper;
+import com.cannontech.support.NoPointException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.cc.EventDetailHelper;
 import com.cannontech.web.cc.EventListBean;
@@ -95,8 +105,18 @@ import com.cannontech.web.cc.methods.DetailAccountingBean;
 import com.cannontech.web.cc.methods.DetailEconomicBean;
 import com.cannontech.web.cc.methods.DetailNotificationBean;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.dr.cc.CustomerModel.ProgramPaoModel;
+import com.cannontech.web.dr.cc.model.CiEventStatus;
+import com.cannontech.web.dr.cc.model.CiEventType;
+import com.cannontech.web.dr.cc.model.CiInitEventModel;
+import com.cannontech.web.dr.cc.model.CustomerModel;
+import com.cannontech.web.dr.cc.model.CustomerModel.ProgramPaoModel;
+import com.cannontech.web.dr.cc.model.Exclusion;
+import com.cannontech.web.dr.cc.service.CiCustomerVerificationService;
+import com.cannontech.web.dr.cc.service.CiEventCreationService;
+import com.cannontech.web.input.DatePropertyEditorFactory;
+import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.tools.trends.TrendUtils;
+import com.cannontech.web.updater.point.PointDataRegistrationService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 @Controller
@@ -107,11 +127,15 @@ public class CcHomeController {
     
     @Autowired private AccountingEventDao accountingEventDao;
     @Autowired private BaseEventDao baseEventDao;
+    @Autowired private CiEventCreationService ciEventCreationService;
+    @Autowired private CiCustomerVerificationService customerVerificationService;
     @Autowired private CurtailmentEventDao curtailmentEventDao;
     @Autowired private CurtailmentEventNotifDao curtailmentNotifDao;
     @Autowired private CustomerLMProgramService customerLMProgramService;
     @Autowired private CustomerPointService customerPointService;
+    @Autowired private CustomerPointTypeHelper customerPointTypeHelper;
     @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private DetailEconomicBean detailEconomicBean;
     @Autowired private DetailAccountingBean detailAccountingBean;
     @Autowired private DetailNotificationBean detailNotificationBean;
@@ -124,13 +148,20 @@ public class CcHomeController {
     @Autowired private EventService eventService;
     @Autowired private GraphDao graphDao;
     @Autowired private GroupBeanValidator groupBeanValidator;
+    @Autowired private GroupCustomerNotifDao groupCustomerNotifDao;
     @Autowired private GroupDao groupDao;
     @Autowired private GroupService groupService;
     @Autowired private NotificationGroupDao notificationGroupDao;
     @Autowired private PaoDao paoDao;
+    @Autowired private PointDataRegistrationService pointDataRegistrationService;
     @Autowired private ProgramService programService;
     @Autowired private StrategyFactory strategyFactory;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    
+    @InitBinder
+    public void initBinder(WebDataBinder binder, final YukonUserContext userContext) {
+        datePropertyEditorFactory.setupDateTimePropertyEditor(binder, userContext, BlankMode.CURRENT);
+    }
     
     @RequestMapping("/cc/home")
     public String home(ModelMap model, YukonUserContext userContext, Integer trendId) throws JsonProcessingException {
@@ -146,10 +177,10 @@ public class CcHomeController {
         Collections.reverse(recentEvents);
         
         //Map events by type
-        Map<EventType, List<BaseEvent>> events = new HashMap<>();
-        events.put(EventType.CURRENT, currentEvents);
-        events.put(EventType.PENDING, pendingEvents);
-        events.put(EventType.RECENT, recentEvents);
+        Map<CiEventStatus, List<BaseEvent>> events = new HashMap<>();
+        events.put(CiEventStatus.CURRENT, currentEvents);
+        events.put(CiEventStatus.PENDING, pendingEvents);
+        events.put(CiEventStatus.RECENT, recentEvents);
         model.addAttribute("events", events);
         
         //Retrieve program types for user
@@ -184,20 +215,166 @@ public class CcHomeController {
         return "dr/cc/home.jsp";
     }
     
-    @RequestMapping("/cc/program/{id}/init")
-    public String init(ModelMap model, YukonUserContext userContext, @PathVariable int id) {
+    @RequestMapping("/cc/program/{programId}/init")
+    public String init(ModelMap model,
+                       YukonUserContext userContext,
+                       @ModelAttribute("event") CiInitEventModel event, 
+                       @PathVariable int programId) {
         
-        Program program = programService.getProgramById(id);
-        //CICurtailmentStrategy strategy = strategyFactory.getStrategy(program);
-        
+        Program program = programService.getProgramById(programId);
         model.addAttribute("program", program);
-        // TODO: this is the initialization of the wizard invoked by the "Start" link.
-        // See how the legacy app looks and works.
-        //List<? extends BaseEvent> eventList = strategy.getEventsForProgram(program);
+        event.setProgramId(program.getId());
+        
+        String strategyString = program.getProgramType().getStrategy();
+        CiEventType eventType = CiEventType.of(strategyString);
+        event.setEventType(eventType);
+        
+        if (event.getEventType().isNotification() || event.getEventType().isEconomic()) {
+            DateTime notificationTime = new DateTime(userContext.getJodaTimeZone());
+            
+            event.setNotificationTime(notificationTime);
+        }
+        DateTime startTime = new DateTime(userContext.getJodaTimeZone()).plus(Duration.standardHours(1));
+        event.setStartTime(startTime);
         
         return "dr/cc/init.jsp";
     }
+    
+    @RequestMapping("/cc/program/{programId}/groupSelection")
+    public String groupSelection(ModelMap model,
+                                 @ModelAttribute("event") CiInitEventModel event,
+                                 BindingResult bindingResult,
+                                 @PathVariable int programId) {
+        
+        //(accounting?)verify:
+        //start time before notification time
+        //duration greater than minimum
+        //programParameterDao.getParameterValueInt(program, ProgramParameterKey.MINIMUM_EVENT_DURATION_MINUTES);
+        //notification is early enough before start time
+        //programParameterDao.getParameterValueInt(program, ProgramParameterKey.MINIMUM_NOTIFICATION_MINUTES);
+        
+        Program program = programService.getProgramById(programId);
+        model.addAttribute("program", program);
+        
+        List<AvailableProgramGroup> availableGroups = programService.getAvailableProgramGroups(program);
+        model.addAttribute("availableGroups", availableGroups);
+        
+        return "dr/cc/groupSelection.jsp";
+    }
+    
+    @RequestMapping("/cc/program/{programId}/customerVerification")
+    public String customerVerification(ModelMap model,
+                                       @ModelAttribute("event") CiInitEventModel event,
+                                       BindingResult bindingResult,
+                                       @PathVariable int programId,
+                                       YukonUserContext userContext) {
+        
+        Program program = programService.getProgramById(programId);
+        
+        model.addAttribute("program", program);
+        
+        //Determine which customers to display (and exclusions which prevent customers from being selected)
+        Map<Integer, List<Exclusion>> exclusions = new HashMap<>();
+        List<Group> selectedGroups = groupService.getGroupsById(event.getSelectedGroupIds());
+        List<GroupCustomerNotif> customerNotifs = customerVerificationService.getVerifiedCustomerList(event, selectedGroups, exclusions);
+        Collections.sort(customerNotifs, new Comparator<GroupCustomerNotif>() {
+            @Override
+            public int compare(GroupCustomerNotif thing1, GroupCustomerNotif thing2) {
+                String name1 = thing1.getCustomer().getCompanyName();
+                String name2 = thing2.getCustomer().getCompanyName();
+                return name1.compareTo(name2);
+            }
+        });
+        model.addAttribute("customerNotifs", customerNotifs);
+        model.addAttribute("exclusions", exclusions);
+        
+        //Determine which customers should be checked
+        List<Integer> selectedCustomerIds = new ArrayList<>();
+        for (GroupCustomerNotif customerNotif : customerNotifs) {
+            List<Exclusion> customerExclusions = exclusions.get(customerNotif.getId());
+            if (customerExclusions.isEmpty()) {
+                selectedCustomerIds.add(customerNotif.getId());
+            }
+        }
+        event.setSelectedCustomerIds(selectedCustomerIds);
+        
+        //Get constraint status strings
+        Map<Integer, String> customerConstraintStatuses = new HashMap<>();
+        for (GroupCustomerNotif customerNotif : customerNotifs) {
+            String status = customerVerificationService.getConstraintStatus(event, customerNotif.getCustomer(), userContext);
+            customerConstraintStatuses.put(customerNotif.getId(), status);
+        }
+        model.addAttribute("customerConstraintStatuses", customerConstraintStatuses);
+        
+        //Set up "current load" point updaters
+        Map<Integer, String> currentLoadUpdaters = new HashMap<>();
+        for (GroupCustomerNotif customerNotif : customerNotifs) {
+            String updaterString = getUpdaterString(customerNotif, CICustomerPointType.CurrentLoad, userContext);
+            currentLoadUpdaters.put(customerNotif.getId(), updaterString);
+        }
+        model.addAttribute("currentLoadUpdaters", currentLoadUpdaters);
+        
+        //Set up contract firm demand updaters
+        Map<Integer, String> cfdUpdaters = new HashMap<>();
+        for (GroupCustomerNotif customerNotif : customerNotifs) {
+            String updaterString = getUpdaterString(customerNotif, CICustomerPointType.ContractFrmDmd, userContext);
+            cfdUpdaters.put(customerNotif.getId(), updaterString);
+        }
+        model.addAttribute("cfdUpdaters", cfdUpdaters);
+        
+        return "dr/cc/customerVerification.jsp";
+    }
+    
+    @RequestMapping("/cc/program/{programId}/confirmation")
+    public String confirmation(ModelMap model,
+                               @ModelAttribute("event") CiInitEventModel event,
+                               @PathVariable int programId) {
+        
+        Program program = programService.getProgramById(programId);
+        model.addAttribute("program", program);
+        
+        List<GroupCustomerNotif> customerNotifs = groupCustomerNotifDao.getByIds(event.getSelectedCustomerIds());
+        model.addAttribute("customerNotifs", customerNotifs);
+        
+        return "dr/cc/confirmation.jsp";
+    }
+    
+    @RequestMapping("/cc/program/{programId}/createEvent")
+    public String createEvent(ModelMap model,
+                              @ModelAttribute("event") CiInitEventModel event,
+                              @PathVariable int programId) {
+        
+        int eventId = ciEventCreationService.createEvent(event);
 
+        return "redirect:/dr/cc/program/" + programId + "/event/" + eventId + "/detail";
+    }
+    
+    //TODO: clean up
+    private String getUpdaterString(GroupCustomerNotif customerNotif, 
+                                    CICustomerPointType pointType, 
+                                    YukonUserContext userContext) {
+        
+        CICustomerStub customer = customerNotif.getCustomer();
+        try {
+            int pointId = customerPointTypeHelper.getPoint(customer, pointType).getPointID();
+            String format = Format.VALUE.toString();
+            return pointDataRegistrationService.getRawPointDataUpdaterSpan(pointId, format, userContext);
+        } catch (NoPointException e) {
+            return "n/a";
+        }
+    }
+    
+    @RequestMapping("/cc/program/{programId}/pricing")
+    public String pricing(ModelMap model, 
+                          @ModelAttribute("event") CiInitEventModel event, 
+                          @PathVariable int programId) {
+        
+        Program program = programService.getProgramById(programId);
+        model.addAttribute("program", program);
+        
+        return "dr/cc/pricing.jsp";
+    }
+    
     @RequestMapping("/cc/program/{programId}/history")
     public String history(ModelMap model, @PathVariable int programId) {
         

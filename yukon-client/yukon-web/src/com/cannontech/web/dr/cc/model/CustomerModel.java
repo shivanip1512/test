@@ -1,4 +1,4 @@
-package com.cannontech.web.dr.cc;
+package com.cannontech.web.dr.cc.model;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

@@ -13,7 +13,9 @@ public interface GroupService {
     public List<Group> getAllGroups(LiteYukonUser user);
 
     public Group createNewGroup(LiteYukonUser yukonUser);
-
+    
+    public List<Group> getGroupsById(Iterable<Integer> groupIds);
+    
     @Transactional
     public Group getGroup(Integer groupId);
 

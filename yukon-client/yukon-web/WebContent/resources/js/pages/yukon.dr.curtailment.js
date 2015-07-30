@@ -10,38 +10,41 @@ yukon.namespace('yukon.dr.curtailment');
 yukon.dr.curtailment = (function () {
     var mod,
         _doCalcLoadReduction = function () {
-            var custTableCells = $('#customerTableDiv').find('tbody > tr'),
-                curLoadA,
-                fslA,
-                loadReductCellA,
-                curLoadAval,
-                fslAval,
+            var custTableRows = $('#customerTableDiv').find('tbody > tr'),
+                currentLoadSpan,
+                cfdSpan,
+                loadReductSpan,
+                currentLoadValue,
+                cfdValue,
                 loadReduction;
             
-            custTableCells.each(function(index, item) {
-            	curLoadA = $(item).find('.curLoad span');
-            	fslA = $(item).find('.fsl span');
-            	loadReductCellA = $(item).find('.js-load-reduct');
-            	if (curLoadA.length > 0 && fslA.length > 0) {
-            		curLoadAval = parseInt($(curLoadA[0]).html().replace(/,/g,""), 10);
-                    fslAval = parseInt($(fslA[0]).html().replace(/,/g,""), 10);
-                    loadReduction = curLoadAval - fslAval;
-                    if (loadReduction !== loadReduction) {
-                        // meaning loadReduction is NaN, which happens when either curLoadA[0] or fslA[0] are set to ellipses
+            custTableRows.each(function(index, item) {
+            	// locate the spans we need in this row
+            	currentLoadSpan = $(item).find('.js-current-load span');
+            	cfdSpan = $(item).find('.js-cfd span');
+            	loadReductSpan = $(item).find('.js-load-reduct');
+            	
+            	if (currentLoadSpan.length > 0 && cfdSpan.length > 0) {
+            		// parse the current load and CFD values into comma-free numbers
+            		currentLoadValue = parseInt($(currentLoadSpan[0]).html().replace(/,/g,""), 10);
+            		cfdValue = parseInt($(cfdSpan[0]).html().replace(/,/g,""), 10);
+                    // calculate the load reduction for this customer
+            		loadReduction = currentLoadValue - cfdValue;
+                    if (isNaN(loadReduction)) {
+                        // happens when either currentLoadSpan[0] or cfdSpan[0] are set to ellipses
                         loadReduction = 'n/a';
                     }
-                    $(loadReductCellA[0]).html(loadReduction);
-            	} else {
-            		$(loadReductCellA[0]).html(loadReduction);
             	}
+            	// write the load reduction value to its cell
+            	$(loadReductSpan[0]).html(loadReduction);
             });
         },
         
         _doFormatLoadValues = function () {
-        	var custTableCells = $('#customerTableDiv').find('tbody > tr');
-        	custTableCells.each(function (index, item) {
+        	var custTableRows = $('#customerTableDiv').find('tbody > tr');
+        	custTableRows.each(function (index, item) {
         		var loadReduct = $(item).find('.js-load-reduct').get(0);
-        		loadReduct.html(_commaFormat(loadReduct.html()));
+        		$(loadReduct).html(_commaFormat($(loadReduct).html()));
         	});
         },
 
@@ -136,26 +139,35 @@ yukon.dr.curtailment = (function () {
 
     mod = {
         doCalcSelectedLoad: function () {
-            _doCalcLoadReduction();
-            var custTableCells = $('#customerTableDiv').find('tbody > tr'),
-                loadReduct = 0,
-                checkedCells,
-                summary,
-                loadReductSummaryA;
-        
-            custTableCells.each(function (index, custTableCell) {
-            	checkedCells = $(custTableCell).find('input[type=checkbox]');
-            	if ($(checkedCells[0]).is(':checked')) {
-                    var loadReductA = custTableCells.find('.js-load-reduct').get(0);
-                    loadReduct += parseFloat(loadReductA.html());
+            // first, calculate the load reduction for each row
+        	_doCalcLoadReduction();
+            
+            var custTableRows = $('#customerTableDiv').find('tbody > tr'),
+                loadReductTotal = 0,
+                checkbox,
+                customerLoadReductSpan,
+                customerLoadReduct;
+            
+            // for each checked customer, add their load reduction to the total
+            custTableRows.each(function (index, row) {
+            	checkbox = $(row).find('input[type=checkbox]');
+            	if ($(checkbox[0]).is(':checked')) {
+                    customerLoadReductSpan = $(row).find('.js-load-reduct').get(0);
+                    customerLoadReduct = parseFloat($(customerLoadReductSpan).html());
+                    //ignore the value if it parses to NaN
+                    if (!isNaN(customerLoadReduct)) {
+                    	loadReductTotal += customerLoadReduct;
+                    }
                 }
             });
-        
-            summary = $('#customerTableDiv').find('tfoot > tr');
-            if (summary.length > 0) {
-                loadReductSummaryA = $(summary).find('.loadReductFoot');
-                loadReductSummaryA.get(0).html(_commaFormat(loadReduct));
+            
+            // update the load reduction total
+            if (custTableRows.length > 0) {
+                $('.js-load-reduct-total').html(_commaFormat(loadReductTotal))
+                						  .flash(3.5);
+                
             }
+            
             _doFormatLoadValues();
         },
         
@@ -164,8 +176,8 @@ yukon.dr.curtailment = (function () {
                 var programTypeId,
                     programName,
                     url;
-                programTypeId = $('#program-type :selected').val();
-                programName = $('#program-name').val();
+                	programTypeId = $('#program-type :selected').val();
+                	programName = $('#program-name').val();
                 
                 //validate that name is not empty
                 if (!programName.trim()) {

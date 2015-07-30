@@ -464,6 +464,26 @@
                 <labelArgument>${program.programType.name}</labelArgument>
                 <labelArgument>${program.name}</labelArgument>
             </page>
+            <page name="cc.init.groupSelection" type="BASIC" hideFavorite="true">
+                <link>/dr/cc/init</link>
+                <labelArgument>${program.programType.name}</labelArgument>
+                <labelArgument>${program.name}</labelArgument>
+            </page>
+            <page name="cc.init.customerVerification" type="BASIC" hideFavorite="true">
+                <link>/dr/cc/init</link>
+                <labelArgument>${program.programType.name}</labelArgument>
+                <labelArgument>${program.name}</labelArgument>
+            </page>
+            <page name="cc.init.confirmation" type="BASIC" hideFavorite="true">
+                <link>/dr/cc/init</link>
+                <labelArgument>${program.programType.name}</labelArgument>
+                <labelArgument>${program.name}</labelArgument>
+            </page>
+            <page name="cc.init.pricing" type="BASIC" hideFavorite="true">
+                <link>/dr/cc/init</link>
+                <labelArgument>${program.programType.name}</labelArgument>
+                <labelArgument>${program.name}</labelArgument>
+            </page>
             <page name="cc.history" type="BASIC">
                 <link>/dr/cc/program/${programId}/history</link>
                 <pages>

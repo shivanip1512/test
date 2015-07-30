@@ -1,8 +1,8 @@
-package com.cannontech.web.dr.cc;
+package com.cannontech.web.dr.cc.model;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 
-enum EventType implements DisplayableEnum {
+public enum CiEventStatus implements DisplayableEnum {
     CURRENT,
     PENDING,
     RECENT,

@@ -36,7 +36,7 @@
                     <h3><i:inline key="${eventEntry.key}"/></h3>
                     <c:choose>
                         <c:when test="${not empty eventEntry.value}">
-                            <table class="compact-results-table">
+                            <table class="compact-results-table stacked-md">
                                 <thead>
                                     <tr>
                                   <th><i:inline key=".programType"/></th>
@@ -64,7 +64,7 @@
                             </table>
                         </c:when>
                         <c:otherwise>
-                            <div class="empty-list">
+                            <div class="empty-list stacked-md">
                                 <i:inline key=".noEvents"/>
                             </div>
                         </c:otherwise>

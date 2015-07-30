@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
@@ -32,6 +33,7 @@ public class DatePropertyEditorFactory {
             this.userContext = userContext;
         }
 
+        @Override
         public void setAsText(String dateStr) throws IllegalArgumentException {
             try {
                 setValue(dateFormattingService.flexibleDateParser(dateStr,
@@ -42,6 +44,7 @@ public class DatePropertyEditorFactory {
             }
         }
 
+        @Override
         public String getAsText() {
             Date date = (Date) getValue();
             DateFormatEnum dateFormat = dateOnlyMode == DateOnlyMode.START_OF_DAY
@@ -61,6 +64,7 @@ public class DatePropertyEditorFactory {
             this.userContext = userContext;
         }
 
+        @Override
         public void setAsText(String dateStr) throws IllegalArgumentException {
             try {
                 setValue(dateFormattingService.flexibleDateParser(dateStr,
@@ -70,6 +74,7 @@ public class DatePropertyEditorFactory {
             }
         }
 
+        @Override
         public String getAsText() {
             Date date = (Date) getValue();
             return date == null
@@ -77,6 +82,58 @@ public class DatePropertyEditorFactory {
         }
     }
     
+    private class DateTimePropertyEditor extends PropertyEditorSupport {
+        private DateOnlyMode dateOnlyMode;
+        private DateFormatEnum dateFormat;
+        private YukonUserContext userContext;
+        private BlankMode blankMode;
+
+        private DateTimePropertyEditor(DateFormatEnum dateFormat, YukonUserContext userContext,
+                                      BlankMode blankMode) {
+            this(dateFormat, userContext, blankMode, DateOnlyMode.START_OF_DAY);
+        }
+        
+        private DateTimePropertyEditor(DateFormatEnum dateFormat, YukonUserContext userContext,
+                                      BlankMode blankMode, DateOnlyMode dateOnlyMode) {
+            this.dateOnlyMode = dateOnlyMode;
+            this.dateFormat = dateFormat;
+            this.userContext = userContext;
+            this.blankMode = blankMode;
+        }
+
+        @Override
+        public void setAsText(String dateStr) throws IllegalArgumentException {
+            if (StringUtils.isBlank(dateStr)) {
+                switch (blankMode) {
+                case CURRENT:
+                    setValue(new DateTime());
+                    break;
+                case ERROR:
+                    throw new IllegalArgumentException("Could not parse blank time");
+                case NULL:
+                    setValue(null);
+                    break;
+                }
+                return;
+            }
+
+            try {
+                Date date = dateFormattingService.flexibleDateParser(dateStr,
+                                                                     dateOnlyMode,
+                                                                     userContext);
+                setValue(new DateTime(date));
+            } catch (ParseException exception) {
+                throw new IllegalArgumentException("Could not parse date", exception);
+            }
+        }
+
+        @Override
+        public String getAsText() {
+            DateTime dateTime = (DateTime) getValue();
+            return dateTime == null
+                ? "" : dateFormattingService.format(dateTime, dateFormat, userContext);
+        }
+    }
     
     private class InstantPropertyEditor extends PropertyEditorSupport {
         private DateOnlyMode dateOnlyMode;
@@ -97,6 +154,7 @@ public class DatePropertyEditorFactory {
             this.blankMode = blankMode;
         }
 
+        @Override
         public void setAsText(String dateStr) throws IllegalArgumentException {
             if (StringUtils.isBlank(dateStr)) {
                 switch (blankMode) {
@@ -122,13 +180,16 @@ public class DatePropertyEditorFactory {
             }
         }
 
+        @Override
         public String getAsText() {
             Instant instant = (Instant) getValue();
             return instant == null
                 ? "" : dateFormattingService.format(instant, dateFormat, userContext);
         }
     }
-
+    
+    
+    
     private class LocalTimePropertyEditor extends PropertyEditorSupport {
         private DateFormatEnum timeFormat;
         private YukonUserContext userContext;
@@ -274,9 +335,14 @@ public class DatePropertyEditorFactory {
      */
     public PropertyEditor getInstantPropertyEditor(DateFormatEnum dateFormat, YukonUserContext userContext,
                                                    BlankMode blankMode) {
-      return new InstantPropertyEditor(dateFormat, userContext, blankMode);
-   }
-
+        return new InstantPropertyEditor(dateFormat, userContext, blankMode);
+    }
+    
+    public PropertyEditor getDateTimePropertyEditor(DateFormatEnum dateFormat, YukonUserContext userContext,
+                                                    BlankMode blankMode) {
+        return new DateTimePropertyEditor(dateFormat, userContext, blankMode);
+    }
+    
     public PropertyEditor getInstantPropertyEditor(DateFormatEnum dateFormat, YukonUserContext userContext,
                                                    BlankMode blankMode, DateOnlyMode dateOnlyMode) {
         return new InstantPropertyEditor(dateFormat, userContext, blankMode, dateOnlyMode);
@@ -298,6 +364,11 @@ public class DatePropertyEditorFactory {
                                            BlankMode blankMode) {
         PropertyEditor propertyEditor = getInstantPropertyEditor(DateFormatEnum.DATEHM, userContext, blankMode);
         dataBinder.registerCustomEditor(Instant.class, propertyEditor);
+    }
+    
+    public void setupDateTimePropertyEditor(DataBinder dataBinder, YukonUserContext userContext, BlankMode blankMode) {
+        PropertyEditor propertyEditor = getDateTimePropertyEditor(DateFormatEnum.DATEHM, userContext, blankMode);
+        dataBinder.registerCustomEditor(DateTime.class, propertyEditor);
     }
 
     @Autowired

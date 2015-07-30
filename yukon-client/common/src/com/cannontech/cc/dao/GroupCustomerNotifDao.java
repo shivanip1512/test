@@ -6,10 +6,16 @@ import com.cannontech.cc.model.Group;
 import com.cannontech.cc.model.GroupCustomerNotif;
 
 public interface GroupCustomerNotifDao {
-    public List<GroupCustomerNotif> getAllForGroup(Group group);
+    
+    List<GroupCustomerNotif> getAllForGroup(Group group);
 
-    public void saveNotifsForGroup(Group group, List<GroupCustomerNotif> required);
-    public void deleteFor(Group object);
-    public void save(GroupCustomerNotif object);
-    public void delete(GroupCustomerNotif object);
+    void saveNotifsForGroup(Group group, List<GroupCustomerNotif> required);
+    
+    void deleteFor(Group object);
+    
+    void save(GroupCustomerNotif object);
+    
+    void delete(GroupCustomerNotif object);
+
+    List<GroupCustomerNotif> getByIds(Iterable<Integer> ids);
 }

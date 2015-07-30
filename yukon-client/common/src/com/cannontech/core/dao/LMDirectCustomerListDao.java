@@ -6,7 +6,9 @@ import java.util.Set;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 public interface LMDirectCustomerListDao {
-   
+    
+    Set<Integer> getLMProgramIdsForCustomer(Integer customerId);
+    
     Set<LiteYukonPAObject> getLMProgramPaosForCustomer(Integer customerId);
     
     void setLMProgramPaosForCustomer(Integer customerId, Collection<LiteYukonPAObject> lmProgramPaos);

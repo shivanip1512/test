@@ -6,7 +6,7 @@
 <cti:standardPage title="Group List" module="commercialcurtailment">
 <cti:standardMenu />
 
-<cti:includeScript link="/resources/js/pages/yukon.curtailment.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.dr.curtailment.js"/>
 
 <h2>Create <t:outputText value="#{sCustomerSelectionBean.eventBean.program.programType.name} #{sCustomerSelectionBean.eventBean.program.name}"/> Event</h2>
 <h3>Verify Customers</h3>
@@ -25,7 +25,7 @@
     <f:facet name="header">
       <t:outputText value="Customer"/>
     </f:facet>
-    <t:selectBooleanCheckbox onclick="yukon.curtailment.doCalcSelectedLoad();" value="#{thisCustomer.selected}" disabled="#{!thisCustomer.allowOverride}"/>
+    <t:selectBooleanCheckbox onclick="yukon.dr.curtailment.doCalcSelectedLoad();" value="#{thisCustomer.selected}" disabled="#{!thisCustomer.allowOverride}"/>
     <t:outputText value="#{thisCustomer.customer.companyName}"/>
     <f:facet name="footer">
       <t:outputText value="Load Reduction Selected:"/>
@@ -35,14 +35,14 @@
     <f:facet name="header">
       <t:outputText value="Current Load"/>
     </f:facet>
-    <t:outputText escape="false" value="#{sCustomerSelectionBean.loadPointUpdaterStr}" styleClass="curLoad">
+    <t:outputText escape="false" value="#{sCustomerSelectionBean.loadPointUpdaterStr}" styleClass="js-current-load">
     </t:outputText>
   </t:column>
   <t:column>
     <f:facet name="header">
       <t:outputText value="CFD"/>
     </f:facet>
-    <t:outputText escape="false" value="#{sCustomerSelectionBean.contractFirmDemandUpdaterStr}" styleClass="fsl">
+    <t:outputText escape="false" value="#{sCustomerSelectionBean.contractFirmDemandUpdaterStr}" styleClass="js-cfd">
           <f:convertNumber groupingUsed="true" minFractionDigits="3"/>
     </t:outputText>
   </t:column>
@@ -50,9 +50,9 @@
     <f:facet name="header">
       <t:outputText value="Load Reduction"/>
     </f:facet>
-    <t:outputText value="---" styleClass="loadReduct"/>
+    <t:outputText value="---" styleClass="js-load-reduct"/>
     <f:facet name="footer">
-      <t:outputText value="---" styleClass="loadReductFoot"/>
+      <t:outputText value="---" styleClass="js-load-reduct-total"/>
     </f:facet>
   </t:column>
   <t:column>
@@ -65,7 +65,7 @@
   <t:column>
     <t:outputText value="#{thisCustomer.reasonForExclusion}" 
                   rendered="#{thisCustomer.exclude}" 
-                  styleClass="exclusionReason"/>
+                  styleClass="js-exclusion-reason"/>
   </t:column>
 </t:dataTable>
 </div>
@@ -75,7 +75,7 @@
 </div>
 </h:form>
   <cti:dataUpdaterCallback
-    function="yukon.curtailment.doCalcSelectedLoad"
+    function="yukon.dr.curtailment.doCalcSelectedLoad"
     initialize="true"/>
 </cti:standardPage>
 </f:view>
