@@ -1665,9 +1665,9 @@ YukonError_t Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
                                                                 /* --------------------- HOLIDAYS --------------------- */
     else if( parse.isKeyValid("holiday") )
     {
-        DlcCommandAutoPtr holidayRead(new ::Cti::Devices::Commands::Mct440HolidaysCommand);
+        auto holidayRead = std::make_unique<Commands::Mct440HolidaysCommand>();
 
-        if( tryExecuteCommand(*OutMessage, holidayRead) )
+        if( tryExecuteCommand(*OutMessage, std::move(holidayRead)) )
         {
             nRet = ClientErrors::None;
         }
@@ -2055,11 +2055,11 @@ YukonError_t Mct440_213xBDevice::executePutConfigHoliday(CtiRequestMsg     *pReq
         holidays.insert(holiday_date);
     }
 
-    DlcCommandAutoPtr holidayWrite(new ::Cti::Devices::Commands::Mct440HolidaysCommand(CtiTime::now(), holidays));
+    auto holidayWrite = std::make_unique<Commands::Mct440HolidaysCommand>(CtiTime::now(), holidays);
 
     //  this call might be able to move out to ExecuteRequest() at some point - maybe we just return
     //    a DlcCommand object that it can execute out there
-    if( ! tryExecuteCommand(*OutMessage, holidayWrite) )
+    if( ! tryExecuteCommand(*OutMessage, std::move(holidayWrite)) )
     {
         return ClientErrors::NoMethod;
     }

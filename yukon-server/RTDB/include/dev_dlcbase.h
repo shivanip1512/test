@@ -21,7 +21,7 @@ class IM_EX_DEVDB DlcBaseDevice :
 {
 public:
 
-    typedef std::auto_ptr<Commands::DlcCommand> DlcCommandAutoPtr;
+    using DlcCommandPtr = std::unique_ptr<Commands::DlcCommand>;
     static bool dlcAddressMismatch(const DSTRUCT Dst, const CtiDeviceBase & temDevice);
 
 private:
@@ -45,13 +45,13 @@ private:
         DefaultLPRetryMaximum    = 10800    //  maximum is 3 hours
     };
 
-    typedef boost::ptr_map<long, Commands::DlcCommand> active_command_map;
+    using active_command_map = std::map<long, DlcCommandPtr>;
 
     active_command_map _activeCommands;
 
     long _activeIndex;
 
-    long trackCommand(DlcCommandAutoPtr command);
+    long trackCommand(DlcCommandPtr &&command);
 
 protected:
 
@@ -81,7 +81,7 @@ protected:
     virtual YukonError_t executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) {  return ClientErrors::NoMethod;  };
     virtual YukonError_t executePutStatus( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) {  return ClientErrors::NoMethod;  };
 
-    bool tryExecuteCommand(OUTMESS &OutMessage, DlcCommandAutoPtr command);
+    bool tryExecuteCommand(OUTMESS &OutMessage, DlcCommandPtr &&command);
 
     virtual void handleCommandResult(const Commands::DlcCommand &command);
 

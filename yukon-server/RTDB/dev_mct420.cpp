@@ -297,13 +297,13 @@ YukonError_t Mct420Device::executePutConfig( CtiRequestMsg     *pReq,
                 return ExecutionComplete;
             }
 
-            DlcCommandAutoPtr meterParameterConfiguration(
-                new Mct420MeterParametersCommand(
-                    cycleTime,
-                    disconnectDisplayDisabled,
-                    transformerRatio));
+            auto meterParameterConfiguration =
+                    std::make_unique<Mct420MeterParametersCommand>(
+                            cycleTime,
+                            disconnectDisplayDisabled,
+                            transformerRatio);
 
-            return tryExecuteCommand(*OutMessage, meterParameterConfiguration)
+            return tryExecuteCommand(*OutMessage, std::move(meterParameterConfiguration))
                        ? ClientErrors::None
                        : ClientErrors::NoMethod;
         }
@@ -319,15 +319,15 @@ YukonError_t Mct420Device::executePutConfig( CtiRequestMsg     *pReq,
                 paoInfoValue = 0x70 & getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DisplayParameters);
             }
 
-            DlcCommandAutoPtr meterParameterConfiguration(
-                new Mct420MeterParametersDisplayDigitsCommand(
-                    cycleTime,
-                    disconnectDisplayDisabled,
-                    transformerRatio,
-                    displayDigitsStr,
-                    paoInfoValue));
+            auto meterParameterConfiguration =
+                    std::make_unique<Mct420MeterParametersDisplayDigitsCommand>(
+                            cycleTime,
+                            disconnectDisplayDisabled,
+                            transformerRatio,
+                            displayDigitsStr,
+                            paoInfoValue);
 
-            return tryExecuteCommand(*OutMessage, meterParameterConfiguration)
+            return tryExecuteCommand(*OutMessage, std::move(meterParameterConfiguration))
                        ? ClientErrors::None
                        : ClientErrors::NoMethod;
         }
@@ -445,11 +445,11 @@ YukonError_t Mct420Device::executePutConfigDisplay(CtiRequestMsg *pReq,CtiComman
         }
     }
 
-    DlcCommandAutoPtr lcdConfiguration(new Mct420LcdConfigurationCommand(display_metrics, readsOnly));
+    auto lcdConfiguration = std::make_unique<Mct420LcdConfigurationCommand>(display_metrics, readsOnly);
 
-    std::auto_ptr<OUTMESS> om(new OUTMESS(*OutMessage));
+    auto om = std::make_unique<OUTMESS>(*OutMessage);
 
-    if( ! tryExecuteCommand(*om, lcdConfiguration) )
+    if( ! tryExecuteCommand(*om, std::move(lcdConfiguration)) )
     {
         return ClientErrors::NoMethod;
     }
@@ -467,7 +467,7 @@ YukonError_t Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq, 
         return ClientErrors::NoConfigData;
     }
 
-    DlcCommandAutoPtr meterParameterCommand;
+    DlcCommandPtr meterParameterCommand;
 
     if( ! readsOnly )
     {
@@ -576,24 +576,24 @@ YukonError_t Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq, 
             }
         }
 
-        meterParameterCommand.reset(
-            new Mct420MeterParametersDisplayDigitsCommand(
-                *cycleTime,
-                *disconnectDisplayDisabled,
-                transformerRatio,
-                boost::none,
-                display_digits));
+        meterParameterCommand =
+                std::make_unique<Mct420MeterParametersDisplayDigitsCommand>(
+                        *cycleTime,
+                        *disconnectDisplayDisabled,
+                        transformerRatio,
+                        boost::none,
+                        display_digits);
     }
     else
     {
         // Read command.
-        meterParameterCommand.reset(
-            new Mct420MeterParametersDisplayDigitsCommand());
+        meterParameterCommand =
+                std::make_unique<Mct420MeterParametersDisplayDigitsCommand>();
     }
 
-    std::auto_ptr<OUTMESS> om(new OUTMESS(*OutMessage));
+    auto om = std::make_unique<OUTMESS>(*OutMessage);
 
-    if( ! tryExecuteCommand(*om, meterParameterCommand) )
+    if( ! tryExecuteCommand(*om, std::move(meterParameterCommand)) )
     {
         return ClientErrors::NoMethod;
     }
@@ -642,9 +642,9 @@ YukonError_t Mct420Device::executeGetConfig( CtiRequestMsg     *pReq,
 }
 
 
-DlcBaseDevice::DlcCommandAutoPtr Mct420Device::makeHourlyReadCommand(const CtiDate date_begin, const CtiDate date_end, const unsigned channel) const
+DlcBaseDevice::DlcCommandPtr Mct420Device::makeHourlyReadCommand(const CtiDate date_begin, const CtiDate date_end, const unsigned channel) const
 {
-    return DlcCommandAutoPtr(new Mct420HourlyReadCommand(date_begin, date_end, channel));
+    return std::make_unique<Mct420HourlyReadCommand>(date_begin, date_end, channel);
 }
 
 

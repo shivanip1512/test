@@ -206,11 +206,11 @@ DlcCommand::request_ptr Mct410HourlyReadCommand::makeRequest(const CtiTime now)
     {
         _midday_reading.reset();
 
-        return request_ptr(new read_request_t(requestDayEnd(_request.date, _channel, make_yesterday(now))));
+        return std::make_unique<read_request_t>(requestDayEnd(_request.date, _channel, make_yesterday(now)));
     }
     else
     {
-        read_request_t *request = new read_request_t(requestDayBegin(_request.date, _channel, make_yesterday(now)));
+        auto request = std::make_unique<read_request_t>(requestDayBegin(_request.date, _channel, make_yesterday(now)));
 
         if( ! _midday_reading )
         {
@@ -218,7 +218,7 @@ DlcCommand::request_ptr Mct410HourlyReadCommand::makeRequest(const CtiTime now)
             request->read_length = 2;
         }
 
-        return request_ptr(request);
+        return std::move(request);
     }
 }
 

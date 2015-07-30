@@ -211,14 +211,14 @@ DlcCommand::request_ptr Mct410DisconnectConfigurationCommand::write()
 {
     _executionState = &Mct410DisconnectConfigurationCommand::read;
 
-    return request_ptr(new write_request_t(Write_Disconnect, assemblePayload()));
+    return std::make_unique<write_request_t>(Write_Disconnect, assemblePayload());
 }
 
 DlcCommand::request_ptr Mct410DisconnectConfigurationCommand::read()
 {
     _executionState = &Mct410DisconnectConfigurationCommand::done;
 
-    return request_ptr(new read_request_t(Read_Disconnect, 13));
+    return std::make_unique<read_request_t>(Read_Disconnect, 13);
 }
 
 DlcCommand::request_ptr Mct410DisconnectConfigurationCommand::done()

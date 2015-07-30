@@ -24,11 +24,11 @@ DlcCommand::request_ptr Lcr3102ThreePartCommand::makeRequest(const CtiTime now)
 {
     if( _state == State_ExpresscomWrite )
     {
-        return request_ptr(new read_request_t(Read_ExpresscomMsgSend, 0));
+        return std::make_unique<read_request_t>(Read_ExpresscomMsgSend, 0);
     }
     else
     {
-        return request_ptr(new read_request_t(Read_ActOnStoredMessage, _length));
+        return std::make_unique<read_request_t>(Read_ActOnStoredMessage, _length);
     }
 }
 

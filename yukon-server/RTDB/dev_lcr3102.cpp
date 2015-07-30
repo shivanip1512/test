@@ -1058,9 +1058,9 @@ YukonError_t Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandPar
         parse = CtiCommandParser(xcomRequest);
         parse.setValue("xc_serial", getSerial());
 
-        DlcCommandAutoPtr tamperRead(new Lcr3102TamperReadCommand());
+        auto tamperRead = std::make_unique<Lcr3102TamperReadCommand>();
 
-        found = tryExecuteCommand(*OutMessage, tamperRead);
+        found = !! tryExecuteCommand(*OutMessage, std::move(tamperRead));
 
         function = OutMessage->Sequence;
     }
@@ -1071,9 +1071,9 @@ YukonError_t Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandPar
         parse = CtiCommandParser(xcomRequest);
         parse.setValue("xc_serial", getSerial());
 
-        DlcCommandAutoPtr tamperRead(new Lcr3102DemandResponseSummaryCommand());
+        auto tamperRead = std::make_unique<Lcr3102DemandResponseSummaryCommand>();
 
-        found = tryExecuteCommand(*OutMessage, tamperRead);
+        found = !! tryExecuteCommand(*OutMessage, std::move(tamperRead));
 
         function = OutMessage->Sequence;
     }
@@ -1088,9 +1088,9 @@ YukonError_t Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandPar
         {
             CtiTime executeTime = CtiTime(date, timeParts->hour, timeParts->minute, timeParts->second);
 
-            DlcCommandAutoPtr hourlyLogRead(new Lcr3102HourlyDataLogCommand(executeTime.seconds()));
+            auto hourlyLogRead = std::make_unique<Lcr3102HourlyDataLogCommand>(executeTime.seconds());
 
-            found = tryExecuteCommand(*OutMessage, hourlyLogRead);
+            found = !! tryExecuteCommand(*OutMessage, std::move(hourlyLogRead));
 
             function = OutMessage->Sequence;
         }
@@ -1414,8 +1414,8 @@ YukonError_t Lcr3102Device::executeGetValueHistorical( CtiRequestMsg *pReq, CtiC
                 }
             }
 
-			delete OutMessage;
-			OutMessage = NULL;
+            delete OutMessage;
+            OutMessage = NULL;
 
             nRet = ClientErrors::None;
         }

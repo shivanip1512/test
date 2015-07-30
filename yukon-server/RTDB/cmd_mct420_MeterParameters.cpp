@@ -79,14 +79,14 @@ DlcCommand::request_ptr Mct420MeterParametersCommand::write()
 
     _executionState = &Mct420MeterParametersCommand::read;
 
-    return request_ptr(new write_request_t(Write_MeterParameters, payload));
+    return std::make_unique<write_request_t>(Write_MeterParameters, payload);
 }
 
 DlcCommand::request_ptr Mct420MeterParametersCommand::read()
 {
     _executionState = &Mct420MeterParametersCommand::done;
 
-    return request_ptr(new read_request_t(Read_MeterParameters, 2));
+    return std::make_unique<read_request_t>(Read_MeterParameters, 2);
 }
 
 DlcCommand::request_ptr Mct420MeterParametersCommand::done()

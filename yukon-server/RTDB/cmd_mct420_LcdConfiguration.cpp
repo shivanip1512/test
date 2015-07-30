@@ -137,28 +137,28 @@ DlcCommand::request_ptr Mct420LcdConfigurationCommand::write1()
         _executionState = &Mct420LcdConfigurationCommand::write2;
     }
 
-    return request_ptr(new write_request_t(Write_LcdConfiguration1, metrics));
+    return std::make_unique<write_request_t>(Write_LcdConfiguration1, metrics);
 }
 
 DlcCommand::request_ptr Mct420LcdConfigurationCommand::write2()
 {
     _executionState = &Mct420LcdConfigurationCommand::read1;
 
-    return request_ptr(new write_request_t(Write_LcdConfiguration2, _display_metrics));
+    return std::make_unique<write_request_t>(Write_LcdConfiguration2, _display_metrics);
 }
 
 DlcCommand::request_ptr Mct420LcdConfigurationCommand::read1()
 {
     _executionState = &Mct420LcdConfigurationCommand::read2;
 
-    return request_ptr(new read_request_t(Read_LcdConfiguration1, DisplayMetricSlotsPerRead));
+    return std::make_unique<read_request_t>(Read_LcdConfiguration1, DisplayMetricSlotsPerRead);
 }
 
 DlcCommand::request_ptr Mct420LcdConfigurationCommand::read2()
 {
     _executionState = &Mct420LcdConfigurationCommand::done;
 
-    return request_ptr(new read_request_t(Read_LcdConfiguration2, DisplayMetricSlotsPerRead));
+    return std::make_unique<read_request_t>(Read_LcdConfiguration2, DisplayMetricSlotsPerRead);
 }
 
 DlcCommand::request_ptr Mct420LcdConfigurationCommand::done()

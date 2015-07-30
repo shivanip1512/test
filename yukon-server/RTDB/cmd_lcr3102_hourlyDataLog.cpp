@@ -35,15 +35,15 @@ DlcCommand::request_ptr Lcr3102HourlyDataLogCommand::makeRequest(const CtiTime n
         payload.push_back(_utcSeconds >> 8);
         payload.push_back(_utcSeconds);
 
-        return request_ptr(new write_request_t(_function, payload));
+        return std::make_unique<write_request_t>(_function, payload);
     }
     else if(_state == State_ConfirmStartTime)
     {
-        return request_ptr(new read_request_t(_function, ReadLength_StartTimeConfirm));
+        return std::make_unique<read_request_t>(_function, ReadLength_StartTimeConfirm);
     }
     else
     {
-        return request_ptr(new read_request_t(_function, ReadLength_HourlyDataLog));
+        return std::make_unique<read_request_t>(_function, ReadLength_HourlyDataLog);
     }
 }
 

@@ -324,7 +324,7 @@ void DlcBaseDevice::findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNo
     //  We need to protect _activeCommands/trackCommand()
     CtiLockGuard<CtiMutex> lock(getMux());
 
-    active_command_map::iterator command_itr = _activeCommands.find(InMessage.Sequence);
+    auto command_itr = _activeCommands.find(InMessage.Sequence);
 
     if( command_itr == _activeCommands.end() )
     {
@@ -443,7 +443,7 @@ void DlcBaseDevice::findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNo
 }
 
 
-long DlcBaseDevice::trackCommand(DlcCommandAutoPtr command)
+long DlcBaseDevice::trackCommand(DlcCommandPtr &&command)
 {
     if( _activeIndex < EmetconProtocol::DLCCmd_LAST )
     {
@@ -455,7 +455,7 @@ long DlcBaseDevice::trackCommand(DlcCommandAutoPtr command)
         _activeIndex++;
     }
 
-    _activeCommands.insert(_activeIndex, command);
+    _activeCommands.emplace(_activeIndex, std::move(command));
 
     return _activeIndex++;
 }
@@ -493,7 +493,7 @@ void DlcBaseDevice::populateDlcOutMessage(OUTMESS &OutMessage)
 }
 
 
-bool DlcBaseDevice::tryExecuteCommand(OUTMESS &OutMessage, DlcCommandAutoPtr command)
+bool DlcBaseDevice::tryExecuteCommand(OUTMESS &OutMessage, DlcCommandPtr &&command)
 {
     DlcCommand::request_ptr request = command->executeCommand(CtiTime());
 
@@ -502,7 +502,7 @@ bool DlcBaseDevice::tryExecuteCommand(OUTMESS &OutMessage, DlcCommandAutoPtr com
         fillOutMessage(OutMessage, *request);
 
         //  ExecuteRequest already has the CtiDeviceBase::_classMutex at this point, so it's safe to call trackCommand()
-        OutMessage.Sequence = trackCommand(command);
+        OutMessage.Sequence = trackCommand(std::move(command));
     }
 
     return request.get();

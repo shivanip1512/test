@@ -1541,7 +1541,7 @@ YukonError_t Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq
         return ClientErrors::NoConfigData;
     }
 
-    DlcCommandAutoPtr disconnectCommand;
+    DlcCommandPtr disconnectCommand;
 
     if( ! readsOnly )
     {
@@ -1642,20 +1642,20 @@ YukonError_t Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq
                         ? Mct410DisconnectConfigurationCommand::ButtonRequired
                         : Mct410DisconnectConfigurationCommand::ButtonNotRequired;
 
-            disconnectCommand.reset(
-               new Mct410DisconnectConfigurationCommand(
-                       disconnectMode,
-                       _disconnectAddress,
-                       disconnectDemandThreshold,
-                       static_cast<unsigned>(disconnectLoadLimitDelay),
-                       static_cast<unsigned>(disconnectMinutes),
-                       static_cast<unsigned>(connectMinutes),
-                       buttonRequired,
-                       getDemandInterval()));
+            disconnectCommand =
+                    std::make_unique<Mct410DisconnectConfigurationCommand>(
+                            disconnectMode,
+                            _disconnectAddress,
+                            disconnectDemandThreshold,
+                            static_cast<unsigned>(disconnectLoadLimitDelay),
+                            static_cast<unsigned>(disconnectMinutes),
+                            static_cast<unsigned>(connectMinutes),
+                            buttonRequired,
+                            getDemandInterval());
 
-            std::auto_ptr<OUTMESS> om(new OUTMESS(*OutMessage));
+            auto om = std::make_unique<OUTMESS>(*OutMessage);
 
-            if( ! tryExecuteCommand(*om, disconnectCommand) )
+            if( ! tryExecuteCommand(*om, std::move(disconnectCommand)) )
             {
                 return ClientErrors::NoMethod;
             }
@@ -1677,12 +1677,12 @@ YukonError_t Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq
     }
 
     // This is a read
-    disconnectCommand.reset(new Mct410DisconnectConfigurationCommand());
+    disconnectCommand = std::make_unique<Mct410DisconnectConfigurationCommand>();
 
-    std::auto_ptr<OUTMESS> om(new OUTMESS(*OutMessage));
+    auto om = std::make_unique<OUTMESS>(*OutMessage);
     om->Priority -= 1;      //decrease for read. Only want read after a successful write.
 
-    if( ! tryExecuteCommand(*om, disconnectCommand) )
+    if( ! tryExecuteCommand(*om, std::move(disconnectCommand)) )
     {
         return ClientErrors::NoMethod;
     }
@@ -2060,11 +2060,11 @@ YukonError_t Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
         const CtiDate date_end   = parseDateString(parse.getsValue("hourly_read_date_end"));
         const unsigned channel   = parse.getiValue("channel", 1);
 
-        DlcCommandAutoPtr hourlyRead = makeHourlyReadCommand(date_begin, date_end, channel);
+        auto hourlyRead = makeHourlyReadCommand(date_begin, date_end, channel);
 
         //  this call might be able to move out to ExecuteRequest() at some point - maybe we just return
         //    a DlcCommand object that it can execute out there
-        found = tryExecuteCommand(*OutMessage, hourlyRead);
+        found = !! tryExecuteCommand(*OutMessage, std::move(hourlyRead));
 
         function = OutMessage->Sequence;
     }
@@ -2420,9 +2420,9 @@ YukonError_t Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
 }
 
 
-DlcBaseDevice::DlcCommandAutoPtr Mct410Device::makeHourlyReadCommand(const CtiDate date_begin, const CtiDate date_end, const unsigned channel) const
+DlcBaseDevice::DlcCommandPtr Mct410Device::makeHourlyReadCommand(const CtiDate date_begin, const CtiDate date_end, const unsigned channel) const
 {
-    return DlcCommandAutoPtr(new Mct410HourlyReadCommand(date_begin, date_end, channel));
+    return std::make_unique<Mct410HourlyReadCommand>(date_begin, date_end, channel);
 }
 
 

@@ -175,28 +175,28 @@ DlcCommand::request_ptr Mct440HolidaysCommand::write()
 
     _executionState = &Mct440HolidaysCommand::read1;
 
-    return request_ptr(new write_request_t(0xd0, payload));
+    return std::make_unique<write_request_t>(0xd0, payload);
 }
 
 DlcCommand::request_ptr Mct440HolidaysCommand::read1()
 {
     _executionState = &Mct440HolidaysCommand::read2;
 
-    return request_ptr(new read_request_t(Holiday_Read1_Function, 12));
+    return std::make_unique<read_request_t>(Holiday_Read1_Function, 12);
 }
 
 DlcCommand::request_ptr Mct440HolidaysCommand::read2()
 {
     _executionState = &Mct440HolidaysCommand::read3;
 
-    return request_ptr(new read_request_t(Holiday_Read2_Function, 12));
+    return std::make_unique<read_request_t>(Holiday_Read2_Function, 12);
 }
 
 DlcCommand::request_ptr Mct440HolidaysCommand::read3()
 {
     _executionState = &Mct440HolidaysCommand::done;
 
-    return request_ptr(new read_request_t(Holiday_Read3_Function, 6));
+    return std::make_unique<read_request_t>(Holiday_Read3_Function, 6);
 }
 
 DlcCommand::request_ptr Mct440HolidaysCommand::done()
