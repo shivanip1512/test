@@ -416,17 +416,15 @@ public class JobManagerImpl implements JobManager {
             TimeZone timeZone = job.getUserContext().getTimeZone();
             cronExpression.setTimeZone(timeZone);
             
-			if (!hasJobFailed(job.getId())) {
-				// If the next run time has already passed, check for the one after that,
-				// and so on, until we catch back up to the present.
-				nextValidTimeAfter = cronExpression.getNextValidTimeAfter(from);
-				while (nextValidTimeAfter != null
-						&& nextValidTimeAfter.before(new Date())) {
-					from = nextValidTimeAfter;
-					nextValidTimeAfter = cronExpression
-							.getNextValidTimeAfter(from);
-				}
-			}
+            if (!hasJobFailed(job.getId())) {
+                // If the next run time has already passed, check for the one after that,
+                // and so on, until we catch back up to the present.
+                nextValidTimeAfter = cronExpression.getNextValidTimeAfter(from);
+                while (nextValidTimeAfter != null && nextValidTimeAfter.before(new Date())) {
+                    from = nextValidTimeAfter;
+                    nextValidTimeAfter = cronExpression.getNextValidTimeAfter(from);
+                }
+            }
             
             return nextValidTimeAfter;
         } catch (ParseException e) {
