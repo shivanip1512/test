@@ -626,7 +626,7 @@
     <entry key="yukon.common.events.estimatedLoad.unknownError">An unknown error occurred calculating estimated load for program {1}.</entry>
     
     <!-- Endpoint -->
-    <entry key="yukon.common.events.endpoint.location.locationUpdated">Location for id={1} updated with {2} by {3}.</entry>
+    <entry key="yukon.common.events.endpoint.location.locationUpdated">Location for id {1} updated with {2} by {3}.</entry>
     <entry key="yukon.common.events.endpoint.location.locationRemoved">Location for device {1} deleted by {2}.</entry>
     
 </properties>
