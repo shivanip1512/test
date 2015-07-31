@@ -16,7 +16,6 @@ for %%x in (%*) do (
   if "%%x" == "detail" set verbose=/v:d
   if "%%x" == "diag" set verbose=/v:diag
 )
-echo on
 
 set SolutionDir=..\
 for %%P in (*.vcxproj) do msbuild %%P %conf% %mp% %verbose% %clean% 2>&1 | tee %%~nP.log
