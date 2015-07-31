@@ -5,8 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -150,7 +152,18 @@ public class TrendDataController {
             }
             
             for (PointValueHolder pvh : data) {
-                Object[] value = new Object[] {pvh.getPointDataTimeStamp().getTime(), pvh.getValue()};
+                Object[] value;
+                if(serie.getType() == GDSTypes.YESTERDAY_TYPE || 
+                   serie.getType() == GDSTypes.YESTERDAY_GRAPH_TYPE)
+                {
+                    DateTime timestamp = new DateTime(pvh.getPointDataTimeStamp().getTime());
+                    timestamp = timestamp.minusDays(1);
+                    value  = new Object[] {timestamp.getMillis() , pvh.getValue()};    
+                }
+                else{
+                    value = new Object[] {pvh.getPointDataTimeStamp().getTime(), pvh.getValue()};    
+                }
+                
                 values.add(value);
             }
             
