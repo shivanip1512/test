@@ -27,6 +27,7 @@ import com.cannontech.core.service.DurationFormattingService;
 import com.cannontech.core.service.durationFormatter.DurationFormat;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.database.db.graph.GDSTypes;
 import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -36,6 +37,7 @@ import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableBiMap.Builder;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.cannontech.common.gui.util.Colors;
 
 @Controller // @RestController when we get spring 4
 @CheckRole(YukonRole.TRENDING)
@@ -107,14 +109,24 @@ public class TrendDataController {
         List<Map<String, Object>> seriesData = new ArrayList<>();
         
         Duration dbTime = new Duration(0);
-        
+        List<Map<String, Object>> plotLines  = new ArrayList<>();
+        Map<String, Object> yAxisProperties = new HashMap<>();
         for (GraphDataSeries serie : series) {
             
             Map<String, Object> valueMap = new HashMap<>();
             valueMap.put("name", serie.getLabel());
             List<Object[]> values = new ArrayList<>();
-            
+            if (serie.getType() == GDSTypes.MARKER_TYPE ) {
+                valueMap.put("threshold-value", serie.getMultiplier());
+                Map<String, Object> plotLineProperties = new HashMap<>();
+                plotLineProperties.put("color",colorPaletteToWeb(serie.getColor()));
+                plotLineProperties.put("width", 2);
+                plotLineProperties.put("value", serie.getMultiplier());
+                plotLines.add(plotLineProperties);
+                yAxisProperties.put("plotLines",plotLines);
+            }
             Instant end = Instant.now();
+            
             Instant start = end.minus(Duration.standardDays(365 * 2));
             Range<Instant> instantRange = new Range<>(start, true, end, true);
             
@@ -143,10 +155,13 @@ public class TrendDataController {
             }
             
             valueMap.put("data", values);
+            
+            
             if (serie.isRight()) {
                 valueMap.put("yAxis", 1);
                 showRightAxis = true;
             } else {
+               
                 valueMap.put("yAxis", 0);
             }
             LegacySeriesType type = LegacySeriesType.getForId(serie.getRenderer());
@@ -167,10 +182,11 @@ public class TrendDataController {
         json.put("series", seriesData);
         
         List<Map<String, Object>> yAxis = new ArrayList<>();
-        Map<String, Object> primaryAxis = new HashMap<>();
+        //Map<String, Object> primaryAxis = new HashMap<>();
         ImmutableMap<String, ImmutableMap<String, String>> labels = ImmutableMap.of("style", ImmutableMap.of("color", "#555"));
-        primaryAxis.put("labels", labels);
-        yAxis.add(primaryAxis);
+        //primaryAxis.put("labels", labels);
+        yAxisProperties.put("labels", labels);
+        yAxis.add(yAxisProperties);
         
         if (showRightAxis) {
             addRightAxis(userContext, seriesData, yAxis, labels);
@@ -179,7 +195,41 @@ public class TrendDataController {
         
         return json;
     }
-    
+    private String colorPaletteToWeb(int color){
+        String retval = "#FFFFFF";
+        switch(color)
+        {
+        case Colors.BLACK_ID:
+            retval = "#000000";
+        break;
+        case Colors.BLUE_ID:
+            retval = "#0008FF";
+        break;
+        case Colors.CYAN_ID:
+            retval = "#00D5FF";
+        break;
+        case Colors.GRAY_ID:
+            retval = "#808080";
+        break;
+        case Colors.GREEN_ID:
+            retval = "#15FF00";
+        break;
+        case Colors.MAGENTA_ID:
+            retval = "#FF00AE";
+        break;
+        case Colors.ORANGE_ID:
+            retval = "#FF9500";
+        break;
+        case Colors.PINK_ID:
+            retval = "#FFB5E8";
+        break;
+        case Colors.RED_ID:
+            retval = "#FF0000";
+        break;
+       }
+        return retval;
+        
+    }
     /** Add a secondary Y axis to the right side of the graph */
     private void addRightAxis(YukonUserContext userContext, List<Map<String, Object>> seriesData, 
             List<Map<String, Object>> yAxis, 
