@@ -32,19 +32,19 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pil\include\exe_pcreq.h">
+    <ClInclude Include="include\exe_pcreq.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="pil\include\mgr_rfn_request.h">
+    <ClInclude Include="include\mgr_rfn_request.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="pil\include\pil_exefct.h">
+    <ClInclude Include="include\pil_exefct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="pil\include\pilserver.h">
+    <ClInclude Include="include\pilserver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="pil\include\rfn_statistics.h">
+    <ClInclude Include="include\rfn_statistics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

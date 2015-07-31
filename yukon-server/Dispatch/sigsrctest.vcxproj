@@ -343,23 +343,23 @@ xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="dispatch\include\con_mgr_vg.h" />
-    <ClInclude Include="dispatch\include\control_history_association.h" />
-    <ClInclude Include="dispatch\include\ctivangogh.h" />
-    <ClInclude Include="dispatch\include\dispsvc.h" />
-    <ClInclude Include="dispatch\include\dllvg.h" />
-    <ClInclude Include="dispatch\include\exe_ptchg.h" />
-    <ClInclude Include="dispatch\include\exe_signal.h" />
-    <ClInclude Include="dispatch\include\id_vg.h" />
-    <ClInclude Include="dispatch\include\id_vgdll.h" />
-    <ClInclude Include="dispatch\include\mgr_ptclients.h" />
-    <ClInclude Include="dispatch\include\pendable.h" />
-    <ClInclude Include="dispatch\include\pending_info.h" />
-    <ClInclude Include="dispatch\include\pendingOpThread.h" />
-    <ClInclude Include="dispatch\include\ptconnect.h" />
-    <ClInclude Include="dispatch\include\signalmanager.h" />
-    <ClInclude Include="dispatch\include\tagmanager.h" />
-    <ClInclude Include="dispatch\include\vgexe_factory.h" />
+    <ClInclude Include="include\con_mgr_vg.h" />
+    <ClInclude Include="include\control_history_association.h" />
+    <ClInclude Include="include\ctivangogh.h" />
+    <ClInclude Include="include\dispsvc.h" />
+    <ClInclude Include="include\dllvg.h" />
+    <ClInclude Include="include\exe_ptchg.h" />
+    <ClInclude Include="include\exe_signal.h" />
+    <ClInclude Include="include\id_vg.h" />
+    <ClInclude Include="include\id_vgdll.h" />
+    <ClInclude Include="include\mgr_ptclients.h" />
+    <ClInclude Include="include\pendable.h" />
+    <ClInclude Include="include\pending_info.h" />
+    <ClInclude Include="include\pendingOpThread.h" />
+    <ClInclude Include="include\ptconnect.h" />
+    <ClInclude Include="include\signalmanager.h" />
+    <ClInclude Include="include\tagmanager.h" />
+    <ClInclude Include="include\vgexe_factory.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\versioninfo.rc" />

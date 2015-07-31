@@ -363,11 +363,11 @@ if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(So
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pil\include\exe_pcreq.h" />
-    <ClInclude Include="pil\include\mgr_rfn_request.h" />
-    <ClInclude Include="pil\include\pil_exefct.h" />
-    <ClInclude Include="pil\include\pilserver.h" />
-    <ClInclude Include="pil\include\rfn_statistics.h" />
+    <ClInclude Include="include\exe_pcreq.h" />
+    <ClInclude Include="include\mgr_rfn_request.h" />
+    <ClInclude Include="include\pil_exefct.h" />
+    <ClInclude Include="include\pilserver.h" />
+    <ClInclude Include="include\rfn_statistics.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\versioninfo.rc" />

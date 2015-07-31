@@ -34,82 +34,82 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="porter\include\c_port_interface.h">
+    <ClInclude Include="include\c_port_interface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="porter\include\EncodingFilter.h">
+    <ClInclude Include="include\EncodingFilter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="porter\include\EncodingFilterFactory.h">
+    <ClInclude Include="include\EncodingFilterFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="porter\include\encryption_lantronix.h">
+    <ClInclude Include="include\encryption_lantronix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="porter\include\encryption_noOp.h">
+    <ClInclude Include="include\encryption_noOp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="porter\include\id_pgdll.h">
+    <ClInclude Include="include\id_pgdll.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="porter\include\id_porter.h">
+    <ClInclude Include="include\id_porter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="porter\include\mgr_port.h">
+    <ClInclude Include="include\mgr_port.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="porter\include\PaoStatistics.h">
+    <ClInclude Include="include\PaoStatistics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="porter\include\PaoStatisticsRecord.h">
+    <ClInclude Include="include\PaoStatisticsRecord.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="porter\include\port_shr.h">
+    <ClInclude Include="include\port_shr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="porter\include\port_shr_ip.h">
+    <ClInclude Include="include\port_shr_ip.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="porter\include\port_thread_rf_da.h">
+    <ClInclude Include="include\port_thread_rf_da.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="porter\include\port_thread_tcp.h">
+    <ClInclude Include="include\port_thread_tcp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="porter\include\port_thread_udp.h">
+    <ClInclude Include="include\port_thread_udp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="porter\include\portdecl.h">
+    <ClInclude Include="include\portdecl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="porter\include\portfield.h">
+    <ClInclude Include="include\portfield.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="porter\include\PORTGLOB.H">
+    <ClInclude Include="include\PORTGLOB.H">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="porter\include\portsvc.h">
+    <ClInclude Include="include\portsvc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="porter\include\portverify.h">
+    <ClInclude Include="include\portverify.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="porter\include\StatisticsManager.h">
+    <ClInclude Include="include\StatisticsManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="porter\include\StatisticsThread.h">
+    <ClInclude Include="include\StatisticsThread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="porter\include\systemmsgthread.h">
+    <ClInclude Include="include\systemmsgthread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="porter\include\tcp_connection.h">
+    <ClInclude Include="include\tcp_connection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="porter\include\tcp_connection_manager.h">
+    <ClInclude Include="include\tcp_connection_manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="porter\include\unsolicited_handler.h">
+    <ClInclude Include="include\unsolicited_handler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

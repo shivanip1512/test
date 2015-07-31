@@ -355,7 +355,7 @@ if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(So
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="logic\include\logic.h" />
+    <ClInclude Include="include\logic.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\versioninfo.rc" />

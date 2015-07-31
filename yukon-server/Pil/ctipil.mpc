@@ -95,11 +95,11 @@ project(ctipil) {
 
 
   Header_Files {
-    pil/include/exe_pcreq.h
-    pil/include/mgr_rfn_request.h
-    pil/include/pil_exefct.h
-    pil/include/pilserver.h
-    pil/include/rfn_statistics.h
+    include/exe_pcreq.h
+    include/mgr_rfn_request.h
+    include/pil_exefct.h
+    include/pilserver.h
+    include/rfn_statistics.h
   }
 
   Resource_Files {

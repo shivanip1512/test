@@ -23,10 +23,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="dbsignal\include\tbl_rawpthistory.h">
+    <ClInclude Include="include\tbl_rawpthistory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dbsignal\include\tbl_signal.h">
+    <ClInclude Include="include\tbl_signal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

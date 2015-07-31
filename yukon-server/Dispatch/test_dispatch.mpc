@@ -90,23 +90,23 @@ project(test_dispatch) {
 
 
   Header_Files {
-    dispatch/include/con_mgr_vg.h
-    dispatch/include/control_history_association.h
-    dispatch/include/ctivangogh.h
-    dispatch/include/dispsvc.h
-    dispatch/include/dllvg.h
-    dispatch/include/exe_ptchg.h
-    dispatch/include/exe_signal.h
-    dispatch/include/id_vg.h
-    dispatch/include/id_vgdll.h
-    dispatch/include/mgr_ptclients.h
-    dispatch/include/pendable.h
-    dispatch/include/pending_info.h
-    dispatch/include/pendingOpThread.h
-    dispatch/include/ptconnect.h
-    dispatch/include/signalmanager.h
-    dispatch/include/tagmanager.h
-    dispatch/include/vgexe_factory.h
+    include/con_mgr_vg.h
+    include/control_history_association.h
+    include/ctivangogh.h
+    include/dispsvc.h
+    include/dllvg.h
+    include/exe_ptchg.h
+    include/exe_signal.h
+    include/id_vg.h
+    include/id_vgdll.h
+    include/mgr_ptclients.h
+    include/pendable.h
+    include/pending_info.h
+    include/pendingOpThread.h
+    include/ptconnect.h
+    include/signalmanager.h
+    include/tagmanager.h
+    include/vgexe_factory.h
   }
 
   Resource_Files {

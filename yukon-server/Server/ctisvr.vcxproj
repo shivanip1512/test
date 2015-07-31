@@ -365,13 +365,13 @@ if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(So
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="server\include\con_mgr.h" />
-    <ClInclude Include="server\include\exe_cmd.h" />
-    <ClInclude Include="server\include\exe_reg.h" />
-    <ClInclude Include="server\include\executor.h" />
-    <ClInclude Include="server\include\executorfactory.h" />
-    <ClInclude Include="server\include\id_svr.h" />
-    <ClInclude Include="server\include\server_b.h" />
+    <ClInclude Include="include\con_mgr.h" />
+    <ClInclude Include="include\exe_cmd.h" />
+    <ClInclude Include="include\exe_reg.h" />
+    <ClInclude Include="include\executor.h" />
+    <ClInclude Include="include\executorfactory.h" />
+    <ClInclude Include="include\id_svr.h" />
+    <ClInclude Include="include\server_b.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\versioninfo.rc" />

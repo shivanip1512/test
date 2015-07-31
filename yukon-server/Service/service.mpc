@@ -44,11 +44,11 @@ project(service) {
 
 
   Header_Files {
-    service/include/cservice.h
-    service/include/CServiceConfig.h
-    service/include/EventLog.h
-    service/include/Monitor.h
-    service/include/precomp.h
+    include/cservice.h
+    include/CServiceConfig.h
+    include/EventLog.h
+    include/Monitor.h
+    include/precomp.h
   }
 
   Resource_Files {

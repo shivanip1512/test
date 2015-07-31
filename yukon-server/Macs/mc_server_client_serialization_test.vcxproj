@@ -379,30 +379,30 @@ xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="macs\include\clientconn.h" />
-    <ClInclude Include="macs\include\clistener.h" />
-    <ClInclude Include="macs\include\ctiid.h" />
-    <ClInclude Include="macs\include\decodetextcmdfile.h" />
-    <ClInclude Include="macs\include\id_macs.h" />
-    <ClInclude Include="macs\include\interp.h" />
-    <ClInclude Include="macs\include\interp_pool.h" />
-    <ClInclude Include="macs\include\mc.h" />
-    <ClInclude Include="macs\include\mc_dbthr.h" />
-    <ClInclude Include="macs\include\mc_fileint.h" />
-    <ClInclude Include="macs\include\mc_message_serialization.h" />
-    <ClInclude Include="macs\include\mc_msg.h" />
-    <ClInclude Include="macs\include\mc_sched.h" />
-    <ClInclude Include="macs\include\mc_scheduler.h" />
-    <ClInclude Include="macs\include\mc_script.h" />
-    <ClInclude Include="macs\include\mc_server.h" />
-    <ClInclude Include="macs\include\mc_svc.h" />
-    <ClInclude Include="macs\include\mccmd.h" />
-    <ClInclude Include="macs\include\mgr_mcsched.h" />
-    <ClInclude Include="macs\include\tbl_mcsched.h" />
-    <ClInclude Include="macs\include\tbl_mcsimpsched.h" />
-    <ClInclude Include="macs\include\test_mc_serialization.h" />
-    <ClInclude Include="macs\include\wpsc.h" />
-    <ClInclude Include="macs\include\xcel.h" />
+    <ClInclude Include="include\clientconn.h" />
+    <ClInclude Include="include\clistener.h" />
+    <ClInclude Include="include\ctiid.h" />
+    <ClInclude Include="include\decodetextcmdfile.h" />
+    <ClInclude Include="include\id_macs.h" />
+    <ClInclude Include="include\interp.h" />
+    <ClInclude Include="include\interp_pool.h" />
+    <ClInclude Include="include\mc.h" />
+    <ClInclude Include="include\mc_dbthr.h" />
+    <ClInclude Include="include\mc_fileint.h" />
+    <ClInclude Include="include\mc_message_serialization.h" />
+    <ClInclude Include="include\mc_msg.h" />
+    <ClInclude Include="include\mc_sched.h" />
+    <ClInclude Include="include\mc_scheduler.h" />
+    <ClInclude Include="include\mc_script.h" />
+    <ClInclude Include="include\mc_server.h" />
+    <ClInclude Include="include\mc_svc.h" />
+    <ClInclude Include="include\mccmd.h" />
+    <ClInclude Include="include\mgr_mcsched.h" />
+    <ClInclude Include="include\tbl_mcsched.h" />
+    <ClInclude Include="include\tbl_mcsimpsched.h" />
+    <ClInclude Include="include\test_mc_serialization.h" />
+    <ClInclude Include="include\wpsc.h" />
+    <ClInclude Include="include\xcel.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

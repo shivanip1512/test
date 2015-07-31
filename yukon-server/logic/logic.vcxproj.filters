@@ -20,7 +20,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="logic\include\logic.h">
+    <ClInclude Include="include\logic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

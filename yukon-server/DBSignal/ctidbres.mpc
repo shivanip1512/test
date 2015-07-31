@@ -67,8 +67,8 @@ project(ctidbres) {
 
 
   Header_Files {
-    dbsignal/include/tbl_rawpthistory.h
-    dbsignal/include/tbl_signal.h
+    include/tbl_rawpthistory.h
+    include/tbl_signal.h
   }
 
   Resource_Files {

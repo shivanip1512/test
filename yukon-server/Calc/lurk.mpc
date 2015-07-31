@@ -80,13 +80,13 @@ project(lurk) {
 
 
   Header_Files {
-    calc/include/calc.h
-    calc/include/calccomponent.h
-    calc/include/calclogicsvc.h
-    calc/include/calcthread.h
-    calc/include/CalcWorkerThread.h
-    calc/include/id_calc.h
-    calc/include/pointstore.h
+    include/calc.h
+    include/calccomponent.h
+    include/calclogicsvc.h
+    include/calcthread.h
+    include/CalcWorkerThread.h
+    include/id_calc.h
+    include/pointstore.h
   }
 
   Resource_Files {

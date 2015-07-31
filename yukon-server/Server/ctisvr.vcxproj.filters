@@ -35,25 +35,25 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="server\include\con_mgr.h">
+    <ClInclude Include="include\con_mgr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="server\include\exe_cmd.h">
+    <ClInclude Include="include\exe_cmd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="server\include\exe_reg.h">
+    <ClInclude Include="include\exe_reg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="server\include\executor.h">
+    <ClInclude Include="include\executor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="server\include\executorfactory.h">
+    <ClInclude Include="include\executorfactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="server\include\id_svr.h">
+    <ClInclude Include="include\id_svr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="server\include\server_b.h">
+    <ClInclude Include="include\server_b.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -175,175 +175,175 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="loadmanagement\include\BeatThePeakControlInterface.h">
+    <ClInclude Include="include\BeatThePeakControlInterface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\clistener.h">
+    <ClInclude Include="include\clistener.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\ConstraintViolation.h">
+    <ClInclude Include="include\ConstraintViolation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\ecobeeControlInterface.h">
+    <ClInclude Include="include\ecobeeControlInterface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\ecobeeCycleGear.h">
+    <ClInclude Include="include\ecobeeCycleGear.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\executor.h">
+    <ClInclude Include="include\executor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\GroupControlInterface.h">
+    <ClInclude Include="include\GroupControlInterface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\id_loadmanagement.h">
+    <ClInclude Include="include\id_loadmanagement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lm_group_serialization.h">
+    <ClInclude Include="include\lm_group_serialization.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lm_message_serialization.h">
+    <ClInclude Include="include\lm_message_serialization.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lm_program_serialization.h">
+    <ClInclude Include="include\lm_program_serialization.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmcicustomerbase.h">
+    <ClInclude Include="include\lmcicustomerbase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmconstraint.h">
+    <ClInclude Include="include\lmconstraint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmcontrolarea.h">
+    <ClInclude Include="include\lmcontrolarea.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmcontrolareastore.h">
+    <ClInclude Include="include\lmcontrolareastore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmcontrolareatrigger.h">
+    <ClInclude Include="include\lmcontrolareatrigger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmcurtailcustomer.h">
+    <ClInclude Include="include\lmcurtailcustomer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmenergyexchangecustomer.h">
+    <ClInclude Include="include\lmenergyexchangecustomer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmenergyexchangecustomerreply.h">
+    <ClInclude Include="include\lmenergyexchangecustomerreply.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmenergyexchangehourlycustomer.h">
+    <ClInclude Include="include\lmenergyexchangehourlycustomer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmenergyexchangehourlyoffer.h">
+    <ClInclude Include="include\lmenergyexchangehourlyoffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmenergyexchangeoffer.h">
+    <ClInclude Include="include\lmenergyexchangeoffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmenergyexchangeofferrevision.h">
+    <ClInclude Include="include\lmenergyexchangeofferrevision.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmfactory.h">
+    <ClInclude Include="include\lmfactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmgroupbase.h">
+    <ClInclude Include="include\lmgroupbase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmgroupdigisep.h">
+    <ClInclude Include="include\lmgroupdigisep.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmgroupecobee.h">
+    <ClInclude Include="include\lmgroupecobee.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmgroupemetcon.h">
+    <ClInclude Include="include\lmgroupemetcon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmgroupexpresscom.h">
+    <ClInclude Include="include\lmgroupexpresscom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmgroupgolay.h">
+    <ClInclude Include="include\lmgroupgolay.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmgroupmacro.h">
+    <ClInclude Include="include\lmgroupmacro.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmgroupmct.h">
+    <ClInclude Include="include\lmgroupmct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmgrouppoint.h">
+    <ClInclude Include="include\lmgrouppoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmgroupripple.h">
+    <ClInclude Include="include\lmgroupripple.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmgroupsa105.h">
+    <ClInclude Include="include\lmgroupsa105.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmgroupsa205.h">
+    <ClInclude Include="include\lmgroupsa205.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmgroupsa305.h">
+    <ClInclude Include="include\lmgroupsa305.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmgroupsadigital.h">
+    <ClInclude Include="include\lmgroupsadigital.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmgroupversacom.h">
+    <ClInclude Include="include\lmgroupversacom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmid.h">
+    <ClInclude Include="include\lmid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmmessage.h">
+    <ClInclude Include="include\lmmessage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmprogrambase.h">
+    <ClInclude Include="include\lmprogrambase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmprogrambeatthepeakgear.h">
+    <ClInclude Include="include\lmprogrambeatthepeakgear.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmprogramcontrolwindow.h">
+    <ClInclude Include="include\lmprogramcontrolwindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmprogramcurtailment.h">
+    <ClInclude Include="include\lmprogramcurtailment.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmprogramdirect.h">
+    <ClInclude Include="include\lmprogramdirect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmprogramdirectgear.h">
+    <ClInclude Include="include\lmprogramdirectgear.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmprogramenergyexchange.h">
+    <ClInclude Include="include\lmprogramenergyexchange.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmprogramthermostatgear.h">
+    <ClInclude Include="include\lmprogramthermostatgear.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmservice.h">
+    <ClInclude Include="include\lmservice.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\lmutility.h">
+    <ClInclude Include="include\lmutility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\loadmanager.h">
+    <ClInclude Include="include\loadmanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\SEPControlInterface.h">
+    <ClInclude Include="include\SEPControlInterface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\sepcyclegear.h">
+    <ClInclude Include="include\sepcyclegear.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\septempoffsetgear.h">
+    <ClInclude Include="include\septempoffsetgear.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\smartgearbase.h">
+    <ClInclude Include="include\smartgearbase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loadmanagement\include\test_lm_serialization.h">
+    <ClInclude Include="include\test_lm_serialization.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

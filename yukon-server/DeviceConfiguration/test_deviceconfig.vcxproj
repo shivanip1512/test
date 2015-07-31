@@ -349,14 +349,14 @@ xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="deviceconfiguration\include\config_data_dnp.h" />
-    <ClInclude Include="deviceconfiguration\include\config_data_mct.h" />
-    <ClInclude Include="deviceconfiguration\include\config_data_regulator.h" />
-    <ClInclude Include="deviceconfiguration\include\config_data_rfn.h" />
-    <ClInclude Include="deviceconfiguration\include\config_device.h" />
-    <ClInclude Include="deviceconfiguration\include\da_lp_deviceconfig.h" />
-    <ClInclude Include="deviceconfiguration\include\id_dcdll.h" />
-    <ClInclude Include="deviceconfiguration\include\mgr_config.h" />
+    <ClInclude Include="include\config_data_dnp.h" />
+    <ClInclude Include="include\config_data_mct.h" />
+    <ClInclude Include="include\config_data_regulator.h" />
+    <ClInclude Include="include\config_data_rfn.h" />
+    <ClInclude Include="include\config_device.h" />
+    <ClInclude Include="include\da_lp_deviceconfig.h" />
+    <ClInclude Include="include\id_dcdll.h" />
+    <ClInclude Include="include\mgr_config.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

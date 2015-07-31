@@ -72,12 +72,12 @@ project(scansup) {
 
 
   Header_Files {
-    scanner/include/id_scanner.h
-    scanner/include/id_sgdll.h
-    scanner/include/mgr_device_scannable.h
-    scanner/include/SCANGLOB.H
-    scanner/include/scanner.h
-    scanner/include/scansvc.h
+    include/id_scanner.h
+    include/id_sgdll.h
+    include/mgr_device_scannable.h
+    include/SCANGLOB.H
+    include/scanner.h
+    include/scansvc.h
   }
 
   Resource_Files {

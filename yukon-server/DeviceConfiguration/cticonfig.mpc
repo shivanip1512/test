@@ -74,14 +74,14 @@ project(cticonfig) {
 
 
   Header_Files {
-    deviceconfiguration/include/config_data_dnp.h
-    deviceconfiguration/include/config_data_mct.h
-    deviceconfiguration/include/config_data_regulator.h
-    deviceconfiguration/include/config_data_rfn.h
-    deviceconfiguration/include/config_device.h
-    deviceconfiguration/include/da_lp_deviceconfig.h
-    deviceconfiguration/include/id_dcdll.h
-    deviceconfiguration/include/mgr_config.h
+    include/config_data_dnp.h
+    include/config_data_mct.h
+    include/config_data_regulator.h
+    include/config_data_rfn.h
+    include/config_device.h
+    include/da_lp_deviceconfig.h
+    include/id_dcdll.h
+    include/mgr_config.h
   }
 
   Resource_Files {

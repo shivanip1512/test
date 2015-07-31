@@ -32,22 +32,22 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="scanner\include\id_scanner.h">
+    <ClInclude Include="include\id_scanner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="scanner\include\id_sgdll.h">
+    <ClInclude Include="include\id_sgdll.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="scanner\include\mgr_device_scannable.h">
+    <ClInclude Include="include\mgr_device_scannable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="scanner\include\SCANGLOB.H">
+    <ClInclude Include="include\SCANGLOB.H">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="scanner\include\scanner.h">
+    <ClInclude Include="include\scanner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="scanner\include\scansvc.h">
+    <ClInclude Include="include\scansvc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

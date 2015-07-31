@@ -76,13 +76,13 @@ project(ctisvr) {
 
 
   Header_Files {
-    server/include/con_mgr.h
-    server/include/exe_cmd.h
-    server/include/exe_reg.h
-    server/include/executor.h
-    server/include/executorfactory.h
-    server/include/id_svr.h
-    server/include/server_b.h
+    include/con_mgr.h
+    include/exe_cmd.h
+    include/exe_reg.h
+    include/executor.h
+    include/executorfactory.h
+    include/id_svr.h
+    include/server_b.h
   }
 
   Resource_Files {

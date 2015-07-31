@@ -41,541 +41,541 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="rtdb\include\cmd_device.h">
+    <ClInclude Include="include\cmd_device.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\cmd_dlc.h">
+    <ClInclude Include="include\cmd_dlc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\cmd_helper.h">
+    <ClInclude Include="include\cmd_helper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\cmd_lcr3102.h">
+    <ClInclude Include="include\cmd_lcr3102.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\cmd_lcr3102_DemandResponseSummary.h">
+    <ClInclude Include="include\cmd_lcr3102_DemandResponseSummary.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\cmd_lcr3102_hourlyDataLog.h">
+    <ClInclude Include="include\cmd_lcr3102_hourlyDataLog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\cmd_lcr3102_tamperRead.h">
+    <ClInclude Include="include\cmd_lcr3102_tamperRead.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\cmd_lcr3102_ThreePart.h">
+    <ClInclude Include="include\cmd_lcr3102_ThreePart.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\cmd_mct410.h">
+    <ClInclude Include="include\cmd_mct410.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\cmd_mct410_disconnectConfiguration.h">
+    <ClInclude Include="include\cmd_mct410_disconnectConfiguration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\cmd_mct410_hourlyRead.h">
+    <ClInclude Include="include\cmd_mct410_hourlyRead.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\cmd_mct420.h">
+    <ClInclude Include="include\cmd_mct420.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\cmd_mct420_hourlyRead.h">
+    <ClInclude Include="include\cmd_mct420_hourlyRead.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\cmd_mct420_LcdConfiguration.h">
+    <ClInclude Include="include\cmd_mct420_LcdConfiguration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\cmd_mct420_MeterParameters.h">
+    <ClInclude Include="include\cmd_mct420_MeterParameters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\cmd_mct420_MeterParametersDisplayDigits.h">
+    <ClInclude Include="include\cmd_mct420_MeterParametersDisplayDigits.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\cmd_mct440_holidays.h">
+    <ClInclude Include="include\cmd_mct440_holidays.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\cmd_mct4xx.h">
+    <ClInclude Include="include\cmd_mct4xx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\cmd_rf_da_dnpAddress.h">
+    <ClInclude Include="include\cmd_rf_da_dnpAddress.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\cmd_rfn.h">
+    <ClInclude Include="include\cmd_rfn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\cmd_rfn_CentronLcdConfiguration.h">
+    <ClInclude Include="include\cmd_rfn_CentronLcdConfiguration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\cmd_rfn_ChannelConfiguration.h">
+    <ClInclude Include="include\cmd_rfn_ChannelConfiguration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\cmd_rfn_DemandFreeze.h">
+    <ClInclude Include="include\cmd_rfn_DemandFreeze.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\cmd_rfn_FocusAlLcdConfiguration.h">
+    <ClInclude Include="include\cmd_rfn_FocusAlLcdConfiguration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\cmd_rfn_helper.h">
+    <ClInclude Include="include\cmd_rfn_helper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\cmd_rfn_LoadProfile.h">
+    <ClInclude Include="include\cmd_rfn_LoadProfile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\cmd_rfn_OvUvConfiguration.h">
+    <ClInclude Include="include\cmd_rfn_OvUvConfiguration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\cmd_rfn_RemoteDisconnect.h">
+    <ClInclude Include="include\cmd_rfn_RemoteDisconnect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\cmd_rfn_TemperatureAlarm.h">
+    <ClInclude Include="include\cmd_rfn_TemperatureAlarm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\cmd_rfn_TouConfiguration.h">
+    <ClInclude Include="include\cmd_rfn_TouConfiguration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\config_exceptions.h">
+    <ClInclude Include="include\config_exceptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\config_helpers.h">
+    <ClInclude Include="include\config_helpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_710.h">
+    <ClInclude Include="include\dev_710.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_a1.h">
+    <ClInclude Include="include\dev_a1.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_alpha.h">
+    <ClInclude Include="include\dev_alpha.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_ansi.h">
+    <ClInclude Include="include\dev_ansi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_aplus.h">
+    <ClInclude Include="include\dev_aplus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_base.h">
+    <ClInclude Include="include\dev_base.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_base_lite.h">
+    <ClInclude Include="include\dev_base_lite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_carrier.h">
+    <ClInclude Include="include\dev_carrier.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_cbc.h">
+    <ClInclude Include="include\dev_cbc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_cbc6510.h">
+    <ClInclude Include="include\dev_cbc6510.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_cbc7020.h">
+    <ClInclude Include="include\dev_cbc7020.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_cbc8020.h">
+    <ClInclude Include="include\dev_cbc8020.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_ccu.h">
+    <ClInclude Include="include\dev_ccu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_ccu721.h">
+    <ClInclude Include="include\dev_ccu721.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_ccu_queue_interface.h">
+    <ClInclude Include="include\dev_ccu_queue_interface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_davis.h">
+    <ClInclude Include="include\dev_davis.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_dct501.h">
+    <ClInclude Include="include\dev_dct501.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_dlcbase.h">
+    <ClInclude Include="include\dev_dlcbase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_dnp.h">
+    <ClInclude Include="include\dev_dnp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_dr87.h">
+    <ClInclude Include="include\dev_dr87.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_exclusion.h">
+    <ClInclude Include="include\dev_exclusion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_focus.h">
+    <ClInclude Include="include\dev_focus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_fulcrum.h">
+    <ClInclude Include="include\dev_fulcrum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_gridadvisor.h">
+    <ClInclude Include="include\dev_gridadvisor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_grp.h">
+    <ClInclude Include="include\dev_grp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_grp_emetcon.h">
+    <ClInclude Include="include\dev_grp_emetcon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_grp_expresscom.h">
+    <ClInclude Include="include\dev_grp_expresscom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_grp_golay.h">
+    <ClInclude Include="include\dev_grp_golay.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_grp_mct.h">
+    <ClInclude Include="include\dev_grp_mct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_grp_point.h">
+    <ClInclude Include="include\dev_grp_point.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_grp_rfn_expresscom.h">
+    <ClInclude Include="include\dev_grp_rfn_expresscom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_grp_ripple.h">
+    <ClInclude Include="include\dev_grp_ripple.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_grp_sa105.h">
+    <ClInclude Include="include\dev_grp_sa105.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_grp_sa205.h">
+    <ClInclude Include="include\dev_grp_sa205.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_grp_sa305.h">
+    <ClInclude Include="include\dev_grp_sa305.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_grp_sadigital.h">
+    <ClInclude Include="include\dev_grp_sadigital.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_grp_versacom.h">
+    <ClInclude Include="include\dev_grp_versacom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_idlc.h">
+    <ClInclude Include="include\dev_idlc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_ied.h">
+    <ClInclude Include="include\dev_ied.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_ilex.h">
+    <ClInclude Include="include\dev_ilex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_ion.h">
+    <ClInclude Include="include\dev_ion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_ipc410al.h">
+    <ClInclude Include="include\dev_ipc410al.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_ipc420ad.h">
+    <ClInclude Include="include\dev_ipc420ad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_kv2.h">
+    <ClInclude Include="include\dev_kv2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_lcr3102.h">
+    <ClInclude Include="include\dev_lcr3102.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_lcr3102_commands.h">
+    <ClInclude Include="include\dev_lcr3102_commands.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_lcu.h">
+    <ClInclude Include="include\dev_lcu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_lgs4.h">
+    <ClInclude Include="include\dev_lgs4.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_lmi.h">
+    <ClInclude Include="include\dev_lmi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_macro.h">
+    <ClInclude Include="include\dev_macro.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_mark_v.h">
+    <ClInclude Include="include\dev_mark_v.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_mct.h">
+    <ClInclude Include="include\dev_mct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_mct210.h">
+    <ClInclude Include="include\dev_mct210.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_mct22X.h">
+    <ClInclude Include="include\dev_mct22X.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_mct24x.h">
+    <ClInclude Include="include\dev_mct24x.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_mct2XX.h">
+    <ClInclude Include="include\dev_mct2XX.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_mct310.h">
+    <ClInclude Include="include\dev_mct310.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_mct31X.h">
+    <ClInclude Include="include\dev_mct31X.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_mct410.h">
+    <ClInclude Include="include\dev_mct410.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_mct410_commands.h">
+    <ClInclude Include="include\dev_mct410_commands.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_mct420.h">
+    <ClInclude Include="include\dev_mct420.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_mct420_commands.h">
+    <ClInclude Include="include\dev_mct420_commands.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_mct440_2131b.h">
+    <ClInclude Include="include\dev_mct440_2131b.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_mct440_2132b.h">
+    <ClInclude Include="include\dev_mct440_2132b.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_mct440_2133b.h">
+    <ClInclude Include="include\dev_mct440_2133b.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_mct440_213xb.h">
+    <ClInclude Include="include\dev_mct440_213xb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_mct470.h">
+    <ClInclude Include="include\dev_mct470.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_mct4xx.h">
+    <ClInclude Include="include\dev_mct4xx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_mct_broadcast.h">
+    <ClInclude Include="include\dev_mct_broadcast.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_mct_lmt2.h">
+    <ClInclude Include="include\dev_mct_lmt2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_meter.h">
+    <ClInclude Include="include\dev_meter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_modbus.h">
+    <ClInclude Include="include\dev_modbus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_paging.h">
+    <ClInclude Include="include\dev_paging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_pagingreceiver.h">
+    <ClInclude Include="include\dev_pagingreceiver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_quantum.h">
+    <ClInclude Include="include\dev_quantum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_rds.h">
+    <ClInclude Include="include\dev_rds.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_remote.h">
+    <ClInclude Include="include\dev_remote.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_repeater.h">
+    <ClInclude Include="include\dev_repeater.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_repeater800.h">
+    <ClInclude Include="include\dev_repeater800.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_repeater850.h">
+    <ClInclude Include="include\dev_repeater850.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_rf_da.h">
+    <ClInclude Include="include\dev_rf_da.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_rfn.h">
+    <ClInclude Include="include\dev_rfn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_rfn420centron.h">
+    <ClInclude Include="include\dev_rfn420centron.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_rfn420focus_al.h">
+    <ClInclude Include="include\dev_rfn420focus_al.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_rfnCommercial.h">
+    <ClInclude Include="include\dev_rfnCommercial.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_rfnMeter.h">
+    <ClInclude Include="include\dev_rfnMeter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_rfnResidential.h">
+    <ClInclude Include="include\dev_rfnResidential.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_rtc.h">
+    <ClInclude Include="include\dev_rtc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_rtm.h">
+    <ClInclude Include="include\dev_rtm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_schlum.h">
+    <ClInclude Include="include\dev_schlum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_sentinel.h">
+    <ClInclude Include="include\dev_sentinel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_seriesv.h">
+    <ClInclude Include="include\dev_seriesv.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_single.h">
+    <ClInclude Include="include\dev_single.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_sixnet.h">
+    <ClInclude Include="include\dev_sixnet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_snpp.h">
+    <ClInclude Include="include\dev_snpp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_system.h">
+    <ClInclude Include="include\dev_system.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_tap.h">
+    <ClInclude Include="include\dev_tap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_tcu.h">
+    <ClInclude Include="include\dev_tcu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_tnpp.h">
+    <ClInclude Include="include\dev_tnpp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_vectron.h">
+    <ClInclude Include="include\dev_vectron.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_wctp.h">
+    <ClInclude Include="include\dev_wctp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dev_welco.h">
+    <ClInclude Include="include\dev_welco.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\device_queue_interface.h">
+    <ClInclude Include="include\device_queue_interface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\dlldev.h">
+    <ClInclude Include="include\dlldev.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\encryption_cbcrbt.h">
+    <ClInclude Include="include\encryption_cbcrbt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\encryption_cmac.h">
+    <ClInclude Include="include\encryption_cmac.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\encryption_oneway.h">
+    <ClInclude Include="include\encryption_oneway.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\encryption_oneway_message.h">
+    <ClInclude Include="include\encryption_oneway_message.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\eventlog_mct440_213xb.h">
+    <ClInclude Include="include\eventlog_mct440_213xb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\id_devdll.h">
+    <ClInclude Include="include\id_devdll.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\id_dynpaoinfo.h">
+    <ClInclude Include="include\id_dynpaoinfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\id_pntdll.h">
+    <ClInclude Include="include\id_pntdll.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\id_prtdll.h">
+    <ClInclude Include="include\id_prtdll.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\mgr_device.h">
+    <ClInclude Include="include\mgr_device.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\mgr_dyn_paoinfo.h">
+    <ClInclude Include="include\mgr_dyn_paoinfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\mgr_holiday.h">
+    <ClInclude Include="include\mgr_holiday.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\mgr_point.h">
+    <ClInclude Include="include\mgr_point.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\mgr_route.h">
+    <ClInclude Include="include\mgr_route.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\mgr_season.h">
+    <ClInclude Include="include\mgr_season.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\port_base.h">
+    <ClInclude Include="include\port_base.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\port_dialable.h">
+    <ClInclude Include="include\port_dialable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\port_dialin.h">
+    <ClInclude Include="include\port_dialin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\port_dialout.h">
+    <ClInclude Include="include\port_dialout.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\port_direct.h">
+    <ClInclude Include="include\port_direct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\port_modem.h">
+    <ClInclude Include="include\port_modem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\port_pool_out.h">
+    <ClInclude Include="include\port_pool_out.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\port_rf_da.h">
+    <ClInclude Include="include\port_rf_da.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\port_serial.h">
+    <ClInclude Include="include\port_serial.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\port_tcp.h">
+    <ClInclude Include="include\port_tcp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\port_tcpipdirect.h">
+    <ClInclude Include="include\port_tcpipdirect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\port_udp.h">
+    <ClInclude Include="include\port_udp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\pt_accum.h">
+    <ClInclude Include="include\pt_accum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\pt_analog.h">
+    <ClInclude Include="include\pt_analog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\pt_base.h">
+    <ClInclude Include="include\pt_base.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\pt_dyn_dispatch.h">
+    <ClInclude Include="include\pt_dyn_dispatch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\pt_numeric.h">
+    <ClInclude Include="include\pt_numeric.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\pt_status.h">
+    <ClInclude Include="include\pt_status.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\rtdb_test_helpers.h">
+    <ClInclude Include="include\rtdb_test_helpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\rte_base.h">
+    <ClInclude Include="include\rte_base.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\rte_ccu.h">
+    <ClInclude Include="include\rte_ccu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\rte_expresscom.h">
+    <ClInclude Include="include\rte_expresscom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\rte_macro.h">
+    <ClInclude Include="include\rte_macro.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\rte_versacom.h">
+    <ClInclude Include="include\rte_versacom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\rte_xcu.h">
+    <ClInclude Include="include\rte_xcu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\slctdev.h">
+    <ClInclude Include="include\slctdev.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\trx_711.h">
+    <ClInclude Include="include\trx_711.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtdb\include\trx_info.h">
+    <ClInclude Include="include\trx_info.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

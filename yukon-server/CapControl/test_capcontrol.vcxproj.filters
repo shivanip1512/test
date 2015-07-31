@@ -334,307 +334,307 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="capcontrol\include\CapControlDispatchConnection.h">
+    <ClInclude Include="include\CapControlDispatchConnection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\capcontroller.h">
+    <ClInclude Include="include\capcontroller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\CapControlPao.h">
+    <ClInclude Include="include\CapControlPao.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\CapControlPointDataHandler.h">
+    <ClInclude Include="include\CapControlPointDataHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\cc_message_serialization.h">
+    <ClInclude Include="include\cc_message_serialization.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\ccarea.h">
+    <ClInclude Include="include\ccarea.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\ccAreaBase.h">
+    <ClInclude Include="include\ccAreaBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\cccapbank.h">
+    <ClInclude Include="include\cccapbank.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\ccclientconn.h">
+    <ClInclude Include="include\ccclientconn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\ccclientlistener.h">
+    <ClInclude Include="include\ccclientlistener.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\ccConfirmationStats.h">
+    <ClInclude Include="include\ccConfirmationStats.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\ccexecutor.h">
+    <ClInclude Include="include\ccexecutor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\ccfeeder.h">
+    <ClInclude Include="include\ccfeeder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\ccid.h">
+    <ClInclude Include="include\ccid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\ccmessage.h">
+    <ClInclude Include="include\ccmessage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\ccmonitorpoint.h">
+    <ClInclude Include="include\ccmonitorpoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\ccOperationStats.h">
+    <ClInclude Include="include\ccOperationStats.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\ccOriginalParent.h">
+    <ClInclude Include="include\ccOriginalParent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\ccservice.h">
+    <ClInclude Include="include\ccservice.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\ccsparea.h">
+    <ClInclude Include="include\ccsparea.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\ccstate.h">
+    <ClInclude Include="include\ccstate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\CCStatsObject.h">
+    <ClInclude Include="include\CCStatsObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\ccsubstation.h">
+    <ClInclude Include="include\ccsubstation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\ccsubstationbus.h">
+    <ClInclude Include="include\ccsubstationbus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\ccsubstationbusstore.h">
+    <ClInclude Include="include\ccsubstationbusstore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\cctwowaycbcpoints.h">
+    <ClInclude Include="include\cctwowaycbcpoints.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\cctypes.h">
+    <ClInclude Include="include\cctypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\ccUnitTestUtil.h">
+    <ClInclude Include="include\ccUnitTestUtil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\ccutil.h">
+    <ClInclude Include="include\ccutil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\Controllable.h">
+    <ClInclude Include="include\Controllable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\ControlPolicy.h">
+    <ClInclude Include="include\ControlPolicy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\ControlStrategy.h">
+    <ClInclude Include="include\ControlStrategy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\CountdownKeepAlivePolicy.h">
+    <ClInclude Include="include\CountdownKeepAlivePolicy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\DatabaseDaoFactory.h">
+    <ClInclude Include="include\DatabaseDaoFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\DynamicCommand.h">
+    <ClInclude Include="include\DynamicCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\DynamicCommandExecutor.h">
+    <ClInclude Include="include\DynamicCommandExecutor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\EventLogEntry.h">
+    <ClInclude Include="include\EventLogEntry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\EventTypes.h">
+    <ClInclude Include="include\EventTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\ExecChangeOpState.h">
+    <ClInclude Include="include\ExecChangeOpState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\ExecutorFactory.h">
+    <ClInclude Include="include\ExecutorFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\ExecVerification.h">
+    <ClInclude Include="include\ExecVerification.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\GangOperatedVoltageRegulator.h">
+    <ClInclude Include="include\GangOperatedVoltageRegulator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\id_capcontrol.h">
+    <ClInclude Include="include\id_capcontrol.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\IncrementingKeepAlivePolicy.h">
+    <ClInclude Include="include\IncrementingKeepAlivePolicy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\IVVCAlgorithm.h">
+    <ClInclude Include="include\IVVCAlgorithm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\IVVCState.h">
+    <ClInclude Include="include\IVVCState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\IVVCStrategy.h">
+    <ClInclude Include="include\IVVCStrategy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\KeepAlivePolicy.h">
+    <ClInclude Include="include\KeepAlivePolicy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\KVarStrategy.h">
+    <ClInclude Include="include\KVarStrategy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\LastControlReason.h">
+    <ClInclude Include="include\LastControlReason.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\LoadOnlyScanPolicy.h">
+    <ClInclude Include="include\LoadOnlyScanPolicy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\mgr_paosched.h">
+    <ClInclude Include="include\mgr_paosched.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\MsgAreas.h">
+    <ClInclude Include="include\MsgAreas.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\MsgBankMove.h">
+    <ClInclude Include="include\MsgBankMove.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\MsgCapBankStates.h">
+    <ClInclude Include="include\MsgCapBankStates.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\MsgCapControlCommand.h">
+    <ClInclude Include="include\MsgCapControlCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\MsgCapControlMessage.h">
+    <ClInclude Include="include\MsgCapControlMessage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\MsgCapControlServerResponse.h">
+    <ClInclude Include="include\MsgCapControlServerResponse.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\MsgCapControlShutdown.h">
+    <ClInclude Include="include\MsgCapControlShutdown.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\MsgChangeOpState.h">
+    <ClInclude Include="include\MsgChangeOpState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\MsgDeleteItem.h">
+    <ClInclude Include="include\MsgDeleteItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\MsgItemCommand.h">
+    <ClInclude Include="include\MsgItemCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\MsgObjectMove.h">
+    <ClInclude Include="include\MsgObjectMove.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\MsgSpecialAreas.h">
+    <ClInclude Include="include\MsgSpecialAreas.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\MsgSubstationBus.h">
+    <ClInclude Include="include\MsgSubstationBus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\MsgSubstations.h">
+    <ClInclude Include="include\MsgSubstations.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\MsgSystemStatus.h">
+    <ClInclude Include="include\MsgSystemStatus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\MsgVerifyBanks.h">
+    <ClInclude Include="include\MsgVerifyBanks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\MsgVerifyInactiveBanks.h">
+    <ClInclude Include="include\MsgVerifyInactiveBanks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\MsgVerifySelectedBank.h">
+    <ClInclude Include="include\MsgVerifySelectedBank.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\MsgVoltageRegulator.h">
+    <ClInclude Include="include\MsgVoltageRegulator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\MultiVoltStrategy.h">
+    <ClInclude Include="include\MultiVoltStrategy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\MultiVoltVarStrategy.h">
+    <ClInclude Include="include\MultiVoltVarStrategy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\NoKeepAlivePolicy.h">
+    <ClInclude Include="include\NoKeepAlivePolicy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\NoStrategy.h">
+    <ClInclude Include="include\NoStrategy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\pao_event.h">
+    <ClInclude Include="include\pao_event.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\pao_schedule.h">
+    <ClInclude Include="include\pao_schedule.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\PFactorKWKQStrategy.h">
+    <ClInclude Include="include\PFactorKWKQStrategy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\PFactorKWKVarStrategy.h">
+    <ClInclude Include="include\PFactorKWKVarStrategy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\PhaseOperatedVoltageRegulator.h">
+    <ClInclude Include="include\PhaseOperatedVoltageRegulator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\PointResponse.h">
+    <ClInclude Include="include\PointResponse.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\PointResponseDao.h">
+    <ClInclude Include="include\PointResponseDao.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\PointResponseDatabaseDao.h">
+    <ClInclude Include="include\PointResponseDatabaseDao.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\PointResponseManager.h">
+    <ClInclude Include="include\PointResponseManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\PointValueHolder.h">
+    <ClInclude Include="include\PointValueHolder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\Policy.h">
+    <ClInclude Include="include\Policy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\RegulatorEvents.h">
+    <ClInclude Include="include\RegulatorEvents.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\ScanPolicy.h">
+    <ClInclude Include="include\ScanPolicy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\StandardControlPolicy.h">
+    <ClInclude Include="include\StandardControlPolicy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\StandardScanPolicy.h">
+    <ClInclude Include="include\StandardScanPolicy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\StrategyLoader.h">
+    <ClInclude Include="include\StrategyLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\StrategyManager.h">
+    <ClInclude Include="include\StrategyManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\test_cc_serialization.h">
+    <ClInclude Include="include\test_cc_serialization.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\TimeOfDayStrategy.h">
+    <ClInclude Include="include\TimeOfDayStrategy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\VoltageRegulator.h">
+    <ClInclude Include="include\VoltageRegulator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\VoltageRegulatorLoader.h">
+    <ClInclude Include="include\VoltageRegulatorLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\VoltageRegulatorManager.h">
+    <ClInclude Include="include\VoltageRegulatorManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\VoltStrategy.h">
+    <ClInclude Include="include\VoltStrategy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\Zone.h">
+    <ClInclude Include="include\Zone.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\ZoneLoader.h">
+    <ClInclude Include="include\ZoneLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="capcontrol\include\ZoneManager.h">
+    <ClInclude Include="include\ZoneManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

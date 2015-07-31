@@ -26,19 +26,19 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="service\include\cservice.h">
+    <ClInclude Include="include\cservice.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="service\include\CServiceConfig.h">
+    <ClInclude Include="include\CServiceConfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="service\include\EventLog.h">
+    <ClInclude Include="include\EventLog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="service\include\Monitor.h">
+    <ClInclude Include="include\Monitor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="service\include\precomp.h">
+    <ClInclude Include="include\precomp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

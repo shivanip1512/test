@@ -391,35 +391,35 @@ xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="simulator\include\BchBehavior.h" />
-    <ClInclude Include="simulator\include\Behavior.h" />
-    <ClInclude Include="simulator\include\BehaviorCollection.h" />
-    <ClInclude Include="simulator\include\Ccu710.h" />
-    <ClInclude Include="simulator\include\Ccu711.h" />
-    <ClInclude Include="simulator\include\Ccu721.h" />
-    <ClInclude Include="simulator\include\CcuIDLC.h" />
-    <ClInclude Include="simulator\include\ccusimsvc.h" />
-    <ClInclude Include="simulator\include\CommInterface.h" />
-    <ClInclude Include="simulator\include\CommsBehavior.h" />
-    <ClInclude Include="simulator\include\DelayBehavior.h" />
-    <ClInclude Include="simulator\include\DeviceMemoryManager.h" />
-    <ClInclude Include="simulator\include\EmetconWords.h" />
-    <ClInclude Include="simulator\include\FrozenPeakTimestampBehavior.h" />
-    <ClInclude Include="simulator\include\FrozenReadParityBehavior.h" />
-    <ClInclude Include="simulator\include\InvalidUsageReadingBehavior.h" />
-    <ClInclude Include="simulator\include\Mct410.h" />
-    <ClInclude Include="simulator\include\MctBehavior.h" />
-    <ClInclude Include="simulator\include\NackBehavior.h" />
-    <ClInclude Include="simulator\include\PlcBehavior.h" />
-    <ClInclude Include="simulator\include\PlcInfrastructure.h" />
-    <ClInclude Include="simulator\include\PlcTransmitter.h" />
-    <ClInclude Include="simulator\include\PortLogger.h" />
-    <ClInclude Include="simulator\include\RandomConsumptionBehavior.h" />
-    <ClInclude Include="simulator\include\ScopedLogger.h" />
-    <ClInclude Include="simulator\include\Simulator.h" />
-    <ClInclude Include="simulator\include\SimulatorLogger.h" />
-    <ClInclude Include="simulator\include\SimulatorUtils.h" />
-    <ClInclude Include="simulator\include\Types.h" />
+    <ClInclude Include="include\BchBehavior.h" />
+    <ClInclude Include="include\Behavior.h" />
+    <ClInclude Include="include\BehaviorCollection.h" />
+    <ClInclude Include="include\Ccu710.h" />
+    <ClInclude Include="include\Ccu711.h" />
+    <ClInclude Include="include\Ccu721.h" />
+    <ClInclude Include="include\CcuIDLC.h" />
+    <ClInclude Include="include\ccusimsvc.h" />
+    <ClInclude Include="include\CommInterface.h" />
+    <ClInclude Include="include\CommsBehavior.h" />
+    <ClInclude Include="include\DelayBehavior.h" />
+    <ClInclude Include="include\DeviceMemoryManager.h" />
+    <ClInclude Include="include\EmetconWords.h" />
+    <ClInclude Include="include\FrozenPeakTimestampBehavior.h" />
+    <ClInclude Include="include\FrozenReadParityBehavior.h" />
+    <ClInclude Include="include\InvalidUsageReadingBehavior.h" />
+    <ClInclude Include="include\Mct410.h" />
+    <ClInclude Include="include\MctBehavior.h" />
+    <ClInclude Include="include\NackBehavior.h" />
+    <ClInclude Include="include\PlcBehavior.h" />
+    <ClInclude Include="include\PlcInfrastructure.h" />
+    <ClInclude Include="include\PlcTransmitter.h" />
+    <ClInclude Include="include\PortLogger.h" />
+    <ClInclude Include="include\RandomConsumptionBehavior.h" />
+    <ClInclude Include="include\ScopedLogger.h" />
+    <ClInclude Include="include\Simulator.h" />
+    <ClInclude Include="include\SimulatorLogger.h" />
+    <ClInclude Include="include\SimulatorUtils.h" />
+    <ClInclude Include="include\Types.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\versioninfo.rc" />

@@ -76,7 +76,7 @@ project(logic) {
 
 
   Header_Files {
-    logic/include/logic.h
+    include/logic.h
   }
 
   Resource_Files {

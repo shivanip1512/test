@@ -91,361 +91,361 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="common\include\AttributeService.h">
+    <ClInclude Include="include\AttributeService.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\BeatThePeakAlertLevel.h">
+    <ClInclude Include="include\BeatThePeakAlertLevel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\boost_test_helpers.h">
+    <ClInclude Include="include\boost_test_helpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\boost_time.h">
+    <ClInclude Include="include\boost_time.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\boostutil.h">
+    <ClInclude Include="include\boostutil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\cmdparse.h">
+    <ClInclude Include="include\cmdparse.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\collectable.h">
+    <ClInclude Include="include\collectable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\COLOR.H">
+    <ClInclude Include="include\COLOR.H">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\ConfigKey.h">
+    <ClInclude Include="include\ConfigKey.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\ConfigVal.h">
+    <ClInclude Include="include\ConfigVal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\constants.h">
+    <ClInclude Include="include\constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\counter.h">
+    <ClInclude Include="include\counter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\CParms.h">
+    <ClInclude Include="include\CParms.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\critical_section.h">
+    <ClInclude Include="include\critical_section.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\ctdpcptrq.h">
+    <ClInclude Include="include\ctdpcptrq.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\CTI_ASMC.H">
+    <ClInclude Include="include\CTI_ASMC.H">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\ctibase.h">
+    <ClInclude Include="include\ctibase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\CTICALLS.H">
+    <ClInclude Include="include\CTICALLS.H">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\ctidate.h">
+    <ClInclude Include="include\ctidate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\ctidbgmem.h">
+    <ClInclude Include="include\ctidbgmem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\ctipcptrqueue.h">
+    <ClInclude Include="include\ctipcptrqueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\ctiqueues.h">
+    <ClInclude Include="include\ctiqueues.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\ctitime.h">
+    <ClInclude Include="include\ctitime.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\ctitokenizer.h">
+    <ClInclude Include="include\ctitokenizer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\database_connection.h">
+    <ClInclude Include="include\database_connection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\database_exceptions.h">
+    <ClInclude Include="include\database_exceptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\database_reader.h">
+    <ClInclude Include="include\database_reader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\database_transaction.h">
+    <ClInclude Include="include\database_transaction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\database_util.h">
+    <ClInclude Include="include\database_util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\database_writer.h">
+    <ClInclude Include="include\database_writer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\date_utility.h">
+    <ClInclude Include="include\date_utility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\db_entry_defines.h">
+    <ClInclude Include="include\db_entry_defines.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\dbaccess.h">
+    <ClInclude Include="include\dbaccess.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\debug_timer.h">
+    <ClInclude Include="include\debug_timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\desolvers.h">
+    <ClInclude Include="include\desolvers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\DeviceAttributeLookup.h">
+    <ClInclude Include="include\DeviceAttributeLookup.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\DeviceConfigDescription.h">
+    <ClInclude Include="include\DeviceConfigDescription.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\devicetypes.h">
+    <ClInclude Include="include\devicetypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\dllbase.h">
+    <ClInclude Include="include\dllbase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\dlldefs.h">
+    <ClInclude Include="include\dlldefs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\dsm2.h">
+    <ClInclude Include="include\dsm2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\DSM2ERR.H">
+    <ClInclude Include="include\DSM2ERR.H">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\Elogger.h">
+    <ClInclude Include="include\Elogger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\encryption.h">
+    <ClInclude Include="include\encryption.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\exception_helper.h">
+    <ClInclude Include="include\exception_helper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\Exceptions.h">
+    <ClInclude Include="include\Exceptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\fileint.h">
+    <ClInclude Include="include\fileint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\guard.h">
+    <ClInclude Include="include\guard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\id_ctibase.h">
+    <ClInclude Include="include\id_ctibase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\immutable.h">
+    <ClInclude Include="include\immutable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\json.h">
+    <ClInclude Include="include\json.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\LitePoint.h">
+    <ClInclude Include="include\LitePoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\logFileAppender.h">
+    <ClInclude Include="include\logFileAppender.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\loggable.h">
+    <ClInclude Include="include\loggable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\logger.h">
+    <ClInclude Include="include\logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\logLayout.h">
+    <ClInclude Include="include\logLayout.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\logManager.h">
+    <ClInclude Include="include\logManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\macro_offset.h">
+    <ClInclude Include="include\macro_offset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\MASTER.H">
+    <ClInclude Include="include\MASTER.H">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\MetricIdLookup.h">
+    <ClInclude Include="include\MetricIdLookup.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\millisecond_timer.h">
+    <ClInclude Include="include\millisecond_timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\module_util.h">
+    <ClInclude Include="include\module_util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\mutex.h">
+    <ClInclude Include="include\mutex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\netports.h">
+    <ClInclude Include="include\netports.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\numstr.h">
+    <ClInclude Include="include\numstr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\observe.h">
+    <ClInclude Include="include\observe.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\optional.h">
+    <ClInclude Include="include\optional.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\OS2_2W32.H">
+    <ClInclude Include="include\OS2_2W32.H">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\parsevalue.h">
+    <ClInclude Include="include\parsevalue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\PointAttribute.h">
+    <ClInclude Include="include\PointAttribute.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\pointdefs.h">
+    <ClInclude Include="include\pointdefs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\pointtypes.h">
+    <ClInclude Include="include\pointtypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\PORTER.H">
+    <ClInclude Include="include\PORTER.H">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\precompiled.h">
+    <ClInclude Include="include\precompiled.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\queue.h">
+    <ClInclude Include="include\queue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\QUEUES.H">
+    <ClInclude Include="include\QUEUES.H">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\random_generator.h">
+    <ClInclude Include="include\random_generator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\readers_writer_lock.h">
+    <ClInclude Include="include\readers_writer_lock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\regression.h">
+    <ClInclude Include="include\regression.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\repeaterrole.h">
+    <ClInclude Include="include\repeaterrole.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\resolvers.h">
+    <ClInclude Include="include\resolvers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\resource_helper.h">
+    <ClInclude Include="include\resource_helper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\rfn_identifier.h">
+    <ClInclude Include="include\rfn_identifier.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\row_reader.h">
+    <ClInclude Include="include\row_reader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\row_writer.h">
+    <ClInclude Include="include\row_writer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\rtdb.h">
+    <ClInclude Include="include\rtdb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\sema.h">
+    <ClInclude Include="include\sema.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\smartmap.h">
+    <ClInclude Include="include\smartmap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\socket_helper.h">
+    <ClInclude Include="include\socket_helper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\sorted_vector.h">
+    <ClInclude Include="include\sorted_vector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\std_helper.h">
+    <ClInclude Include="include\std_helper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\stdexcepthdlr.h">
+    <ClInclude Include="include\stdexcepthdlr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\streamBuffer.h">
+    <ClInclude Include="include\streamBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\streamConnection.h">
+    <ClInclude Include="include\streamConnection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\streamLocalConnection.h">
+    <ClInclude Include="include\streamLocalConnection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\streamSocketConnection.h">
+    <ClInclude Include="include\streamSocketConnection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\streamSocketListener.h">
+    <ClInclude Include="include\streamSocketListener.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\string_util.h">
+    <ClInclude Include="include\string_util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\test_cmdparse_input.h">
+    <ClInclude Include="include\test_cmdparse_input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\test_cmdparse_output.h">
+    <ClInclude Include="include\test_cmdparse_output.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\test_reader.h">
+    <ClInclude Include="include\test_reader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\thread.h">
+    <ClInclude Include="include\thread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\thread_listener.h">
+    <ClInclude Include="include\thread_listener.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\thread_monitor.h">
+    <ClInclude Include="include\thread_monitor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\thread_register_data.h">
+    <ClInclude Include="include\thread_register_data.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\ThreadStatusKeeper.h">
+    <ClInclude Include="include\ThreadStatusKeeper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\timeperiod.h">
+    <ClInclude Include="include\timeperiod.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\timing_util.h">
+    <ClInclude Include="include\timing_util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\truncatingConsoleAppender.h">
+    <ClInclude Include="include\truncatingConsoleAppender.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\types.h">
+    <ClInclude Include="include\types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\utility.h">
+    <ClInclude Include="include\utility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\vcomdefs.h">
+    <ClInclude Include="include\vcomdefs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\verification_objects.h">
+    <ClInclude Include="include\verification_objects.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\win_helper.h">
+    <ClInclude Include="include\win_helper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\words.h">
+    <ClInclude Include="include\words.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\worker_thread.h">
+    <ClInclude Include="include\worker_thread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\xfer.h">
+    <ClInclude Include="include\xfer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\xml.h">
+    <ClInclude Include="include\xml.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\include\yukon.h">
+    <ClInclude Include="include\yukon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -109,30 +109,30 @@ project(macs) {
 
 
   Header_Files {
-    macs/include/clientconn.h
-    macs/include/clistener.h
-    macs/include/ctiid.h
-    macs/include/decodetextcmdfile.h
-    macs/include/id_macs.h
-    macs/include/interp.h
-    macs/include/interp_pool.h
-    macs/include/mc.h
-    macs/include/mc_dbthr.h
-    macs/include/mc_fileint.h
-    macs/include/mc_message_serialization.h
-    macs/include/mc_msg.h
-    macs/include/mc_sched.h
-    macs/include/mc_scheduler.h
-    macs/include/mc_script.h
-    macs/include/mc_server.h
-    macs/include/mc_svc.h
-    macs/include/mccmd.h
-    macs/include/mgr_mcsched.h
-    macs/include/tbl_mcsched.h
-    macs/include/tbl_mcsimpsched.h
-    macs/include/test_mc_serialization.h
-    macs/include/wpsc.h
-    macs/include/xcel.h
+    include/clientconn.h
+    include/clistener.h
+    include/ctiid.h
+    include/decodetextcmdfile.h
+    include/id_macs.h
+    include/interp.h
+    include/interp_pool.h
+    include/mc.h
+    include/mc_dbthr.h
+    include/mc_fileint.h
+    include/mc_message_serialization.h
+    include/mc_msg.h
+    include/mc_sched.h
+    include/mc_scheduler.h
+    include/mc_script.h
+    include/mc_server.h
+    include/mc_svc.h
+    include/mccmd.h
+    include/mgr_mcsched.h
+    include/tbl_mcsched.h
+    include/tbl_mcsimpsched.h
+    include/test_mc_serialization.h
+    include/wpsc.h
+    include/xcel.h
   }
 
   Resource_Files {

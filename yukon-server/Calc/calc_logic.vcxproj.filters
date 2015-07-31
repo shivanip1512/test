@@ -38,25 +38,25 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="calc\include\calc.h">
+    <ClInclude Include="include\calc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="calc\include\calccomponent.h">
+    <ClInclude Include="include\calccomponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="calc\include\calclogicsvc.h">
+    <ClInclude Include="include\calclogicsvc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="calc\include\calcthread.h">
+    <ClInclude Include="include\calcthread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="calc\include\CalcWorkerThread.h">
+    <ClInclude Include="include\CalcWorkerThread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="calc\include\id_calc.h">
+    <ClInclude Include="include\id_calc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="calc\include\pointstore.h">
+    <ClInclude Include="include\pointstore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

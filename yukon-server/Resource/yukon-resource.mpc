@@ -31,7 +31,7 @@ project(yukon-resource) {
 
 
   Header_Files {
-    resource/include/resource_ids.h
+    include/resource_ids.h
   }
 
   Resource_Files {

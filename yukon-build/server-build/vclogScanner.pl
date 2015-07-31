@@ -723,6 +723,7 @@ sub doLink($)
       my @headerFiles = glob("$dir/include/*.h");
       foreach my $headerFile (@headerFiles)
       {
+        $headerFile =~ s/$dir\///;
         print(MPC "    $headerFile\n");
       }
       print(MPC "  }\n\n");

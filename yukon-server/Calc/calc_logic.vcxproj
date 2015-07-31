@@ -355,13 +355,13 @@ xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="calc\include\calc.h" />
-    <ClInclude Include="calc\include\calccomponent.h" />
-    <ClInclude Include="calc\include\calclogicsvc.h" />
-    <ClInclude Include="calc\include\calcthread.h" />
-    <ClInclude Include="calc\include\CalcWorkerThread.h" />
-    <ClInclude Include="calc\include\id_calc.h" />
-    <ClInclude Include="calc\include\pointstore.h" />
+    <ClInclude Include="include\calc.h" />
+    <ClInclude Include="include\calccomponent.h" />
+    <ClInclude Include="include\calclogicsvc.h" />
+    <ClInclude Include="include\calcthread.h" />
+    <ClInclude Include="include\CalcWorkerThread.h" />
+    <ClInclude Include="include\id_calc.h" />
+    <ClInclude Include="include\pointstore.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\versioninfo.rc" />

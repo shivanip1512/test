@@ -359,11 +359,11 @@ if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(So
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="service\include\cservice.h" />
-    <ClInclude Include="service\include\CServiceConfig.h" />
-    <ClInclude Include="service\include\EventLog.h" />
-    <ClInclude Include="service\include\Monitor.h" />
-    <ClInclude Include="service\include\precomp.h" />
+    <ClInclude Include="include\cservice.h" />
+    <ClInclude Include="include\CServiceConfig.h" />
+    <ClInclude Include="include\EventLog.h" />
+    <ClInclude Include="include\Monitor.h" />
+    <ClInclude Include="include\precomp.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\versioninfo.rc" />

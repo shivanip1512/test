@@ -343,8 +343,8 @@ xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="dbsignal\include\tbl_rawpthistory.h" />
-    <ClInclude Include="dbsignal\include\tbl_signal.h" />
+    <ClInclude Include="include\tbl_rawpthistory.h" />
+    <ClInclude Include="include\tbl_signal.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\versioninfo.rc" />

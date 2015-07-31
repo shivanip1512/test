@@ -341,7 +341,7 @@ if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(So
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="resource\include\resource_ids.h" />
+    <ClInclude Include="include\resource_ids.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\versioninfo.rc" />
