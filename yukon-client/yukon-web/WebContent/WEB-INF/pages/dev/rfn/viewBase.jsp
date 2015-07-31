@@ -101,7 +101,6 @@ $(function () { yukon.dev.rfn.init(); });
             <li><a href="viewLcrDataSimulator"><i:inline key=".lcrDataSimulator.label"/></a></li>
             <li><a href="viewRfDaArchiveRequest"><i:inline key=".rfDaArchiveRequest.label"/></a></li>
             <li><a href="viewLocationArchiveRequest"><i:inline key=".rfLocationArchiveRequest.label"/></a></li>
-        	<li><a href="viewGatewayDataSimulator"><i:inline key=".gatewayDataSimulator.label"/></a></li>
         </ul>
         <div class="page-action-area stacked">
             <cti:button id="calc-stress-test" label="Calc Stress Test, DO NOT CLICK" classes="action red"/>
