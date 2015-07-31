@@ -41,6 +41,7 @@ import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.PointAlarming.AlarmNotificationTypes;
 import com.cannontech.database.db.point.fdr.FDRTranslation;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -48,6 +49,8 @@ import com.cannontech.web.capcontrol.models.PointModel;
 import com.cannontech.web.capcontrol.models.TimeIntervals;
 import com.cannontech.web.capcontrol.service.PointEditorService;
 import com.cannontech.web.capcontrol.validators.PointValidator;
+import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
 import com.cannontech.web.editor.point.StaleData;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.yukon.IDatabaseCache;
@@ -58,12 +61,12 @@ import com.google.common.collect.ImmutableList;
 public class PointController {
     
     @Autowired private IDatabaseCache dbCache;
+    @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
     @Autowired private PointEditorService pointEditorService;
     @Autowired private PointValidator pointValidator;
     @Autowired private StateDao stateDao;
     @Autowired private UnitMeasureDao unitMeasureDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    
     
     @RequestMapping(value="points/{id}", method=RequestMethod.GET)
     public String view(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
@@ -98,6 +101,7 @@ public class PointController {
         
         LiteYukonPAObject parent = dbCache.getAllPaosMap().get(pointModel.getPointBase().getPoint().getPaoID());
         model.addAttribute("parent", parent);
+        model.addAttribute("parentLink", paoDetailUrlHelper.getUrlForPaoDetailPage(parent));
         
         PointBase base = pointModel.getPointBase();
         
@@ -119,6 +123,7 @@ public class PointController {
         model.addAttribute("unitMeasures", unitMeasureDao.getLiteUnitMeasures());
         model.addAttribute("decimalDigits", ImmutableList.of(0, 1, 2, 3, 4, 5, 6, 7, 8));
         model.addAttribute("stateGroups", stateDao.getAllStateGroups());
+        model.addAttribute("initialStates", statesForGroup(pointModel.getPointBase().getPoint().getStateGroupID()));
         model.addAttribute("statusArchiveTypes", ImmutableList.of(PointArchiveType.NONE, PointArchiveType.ON_CHANGE));
         model.addAttribute("pointUpdateTypes", StatusPointUpdateType.values());
         model.addAttribute("analogControlTypes", AnalogControlType.values());
@@ -144,8 +149,7 @@ public class PointController {
         }
 
         model.addAttribute("fdrProperties", fdrProperties);
-        
-        model.addAttribute("initialStates", statesForGroup(pointModel.getPointBase().getPoint().getStateGroupID()));
+        model.addAttribute("attachment", pointEditorService.getAttachmentStatus(base.getPoint().getPointID()));
         
         return "point.jsp";
     }
@@ -251,6 +255,25 @@ public class PointController {
         if (pointModel.getId() == null) {
             return "redirect:capcontrol/points/create";
         }
+        
+        return "redirect:/capcontrol/points/" + pointModel.getId() + "/edit";
+    }
+    
+    @RequestMapping(value="points/{id}", method=RequestMethod.DELETE)
+    public String delete(@PathVariable int id, FlashScope flashScope) {
+        
+        PointModel pointModel = pointEditorService.getModelForId(id);
+        int paoId = pointModel.getPointBase().getPoint().getPaoID();
+        
+        if (pointEditorService.delete(id)) {
+            
+            LiteYukonPAObject pao = dbCache.getAllPaosMap().get(paoId);
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.point.deleteSuccess", pointModel.getPointBase().getPoint().getPointName()));
+            
+            return "redirect:" + paoDetailUrlHelper.getUrlForPaoDetailPage(pao);
+        }
+        
+        flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.point.deleteFailed"));
         
         return "redirect:/capcontrol/points/" + pointModel.getId() + "/edit";
     }

@@ -17,6 +17,7 @@ public class PaoDetailUrlHelper {
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     
     private static Map<PaoTag, Function<YukonPao, String>> supportDeviceUrlPatterns;
+    private static Map<PaoType, Function<YukonPao, String>> capControlUrlPatterns;
     private static Map<PaoTag, String> supportDevicePageNames;
     
     static {
@@ -83,6 +84,71 @@ public class PaoDetailUrlHelper {
 
         supportDeviceUrlPatterns = urlBuilder.build();
         supportDevicePageNames = pageNameBuilder.build();
+
+        Builder<PaoType, Function<YukonPao, String>> capControlUrlBuilder = ImmutableMap.builder();
+
+        Function<YukonPao, String> cbcLink = new Function<YukonPao, String>() {
+            @Override
+            public String apply(YukonPao pao) {
+                return "/vv/cbc/" + pao.getPaoIdentifier().getPaoId();
+            }
+        };
+        Function<YukonPao, String> regulatorLink = new Function<YukonPao, String>() {
+            @Override
+            public String apply(YukonPao pao) {
+                return "/capcontrol/regulators/" + pao.getPaoIdentifier().getPaoId();
+            }
+        };
+        for (PaoType type : PaoType.getCbcTypes()) {
+            capControlUrlBuilder.put(type, cbcLink);
+        }
+        for (PaoType type : PaoType.getRegulatorTypes()) {
+            capControlUrlBuilder.put(type, regulatorLink);
+        }
+        
+        capControlUrlBuilder.put(PaoType.CAPBANK, new Function<YukonPao, String>() {
+            @Override
+            public String apply(YukonPao pao) {
+                return "/vv/bank/" + pao.getPaoIdentifier().getPaoId();
+            }
+        });
+        
+        capControlUrlBuilder.put(PaoType.CAP_CONTROL_FEEDER, new Function<YukonPao, String>() {
+            @Override
+            public String apply(YukonPao pao) {
+                return "/vv/feeder/" + pao.getPaoIdentifier().getPaoId();
+            }
+        });
+        
+        capControlUrlBuilder.put(PaoType.CAP_CONTROL_SUBBUS, new Function<YukonPao, String>() {
+            @Override
+            public String apply(YukonPao pao) {
+                return "/vv/bus/" + pao.getPaoIdentifier().getPaoId();
+            }
+        });
+        
+        capControlUrlBuilder.put(PaoType.CAP_CONTROL_SUBSTATION, new Function<YukonPao, String>() {
+            @Override
+            public String apply(YukonPao pao) {
+                return "/vv/substation/" + pao.getPaoIdentifier().getPaoId();
+            }
+        });
+        
+        capControlUrlBuilder.put(PaoType.CAP_CONTROL_AREA, new Function<YukonPao, String>() {
+            @Override
+            public String apply(YukonPao pao) {
+                return "/capcontrol/areas/" + pao.getPaoIdentifier().getPaoId();
+            }
+        });
+        
+        capControlUrlBuilder.put(PaoType.CAP_CONTROL_SPECIAL_AREA, new Function<YukonPao, String>() {
+            @Override
+            public String apply(YukonPao pao) {
+                return "/capcontrol/areas/" + pao.getPaoIdentifier().getPaoId();
+            }
+        });
+        
+        capControlUrlPatterns = capControlUrlBuilder.build();
     }
     
     /**
@@ -99,6 +165,9 @@ public class PaoDetailUrlHelper {
         
         if (PaoType.getRfGatewayTypes().contains(type)) {
             return "/stars/gateways/" + pao.getPaoIdentifier().getPaoId();
+        }
+        if (type.isCapControl()) {
+            return capControlUrlPatterns.get(type).apply(pao);
         }
         
         // Check device url pattern map

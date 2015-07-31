@@ -20,7 +20,7 @@
     <c:set var="nameValueClass" value="natural-width ${viewMode ? '' : 'with-form-controls' }" />
 
     <cti:url var="action" value="/capcontrol/points/${pointModel.pointBase.point.pointType}" />
-    <form:form id="point-from" commandName="pointModel" action="${action}" method="POST" data-view-mode="${viewMode}">
+    <form:form id="point-form" commandName="pointModel" action="${action}" method="POST" data-view-mode="${viewMode}">
     
         <cti:csrfToken />
         
@@ -31,7 +31,6 @@
                         <form:hidden path="pointBase.point.pointID"/>
                         ${pointModel.pointBase.point.pointID}
                     </tags:nameValue>
-                    
                     <tags:nameValue name="Name">
                         <tags:input path="pointBase.point.pointName"/>
                     </tags:nameValue>
@@ -44,7 +43,8 @@
                     
                     <tags:nameValue name="Parent">
                         <form:hidden path="pointBase.point.paoID"/>
-                        ${fn:escapeXml(parent.paoName)}
+                        <cti:url var="parentLink" value="${parentLink}" />
+                        <a href="${parentLink}">${fn:escapeXml(parent.paoName)}</a>
                     </tags:nameValue>
                     
                     <tags:nameValue name="Timing Group">
@@ -533,9 +533,9 @@
                 </div>
                 <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <c:set var="fdrAddClass" value="${fn:length(nums) == enabledFdrs ? 'dn' : ''}" />
-                <div class="page-action-area">
+                <div class="page-action-area stacked-md">
+                    <cti:button icon="icon-add" nameKey="fdr.add" classes="js-add-fdr ${fdrAddClass}"/>
                 </div>
-                    <cti:button icon="icon-add" nameKey="add" classes="js-add-fdr ${fdrAddClass}"/>
                 </cti:displayForPageEditModes>
             </cti:tab>
         </cti:tabs>
@@ -552,9 +552,10 @@
             </cti:displayForPageEditModes>
             
             <cti:displayForPageEditModes modes="EDIT">
-                
-                <cti:button nameKey="delete" classes="delete js-delete" data-ok-event="yukon:da:point:delete"/>
-                <d:confirm on=".js-delete" nameKey="confirmDelete" argument="${strategy.name}"/>
+                <cti:msg2 var="attachmentMsg" key="${attachment}"/>
+                <cti:button nameKey="delete" classes="delete js-delete" data-ok-event="yukon:da:point:delete" disabled="${!attachment.deletable}"
+                 title="${attachmentMsg}"/>
+                <d:confirm on=".js-delete" nameKey="confirmDelete" argument="${pointModel.pointBase.point.pointName}"/>
                 
                 <cti:url var="viewUrl" value="/capcontrol/points/${pointModel.id}" />
                 <cti:button nameKey="cancel" href="${viewUrl}"/>
@@ -567,6 +568,9 @@
         </div>
             
     </form:form>
+    
+    <cti:url var="deleteUrl" value="/capcontrol/points/${pointModel.id}" />
+    <form:form id="delete-point" action="${deleteUrl}" method="DELETE"></form:form>
     
     <cti:includeScript link="/resources/js/pages/yukon.da.point.js"/>
     

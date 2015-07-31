@@ -28,6 +28,9 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.PointAlarming;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.web.capcontrol.models.PointModel;
 import com.cannontech.web.capcontrol.service.PointEditorService;
 import com.cannontech.web.editor.point.AlarmTableEntry;
@@ -38,6 +41,7 @@ import com.google.common.collect.ImmutableList;
 public class PointEditorServiceImpl implements PointEditorService {
     
     @Autowired AlarmCatDao alarmCatDao;
+    @Autowired DbChangeManager dbChangeManager;
     @Autowired DBPersistentDao dBPersistentDao;
     @Autowired PointDao pointDao;
     @Autowired PointPropertyValueDao pointPropertyValueDao;
@@ -52,7 +56,7 @@ public class PointEditorServiceImpl implements PointEditorService {
         
         List<AlarmTableEntry> alarmTableEntries = getAlarmTableEntries(base);
 
-        PointModel model = new PointModel(base, staleData, alarmTableEntries);
+        PointModel model = new PointModel<PointBase>(base, staleData, alarmTableEntries);
         
         return model;
     }
@@ -161,6 +165,15 @@ public class PointEditorServiceImpl implements PointEditorService {
         
         pointId = base.getPoint().getPointID();
         
+        DBChangeMsg dbChange = new DBChangeMsg(
+            pointId,
+            DBChangeMsg.CHANGE_POINT_DB,
+            DBChangeMsg.CAT_POINT,
+            base.getPoint().getPointType(),
+            type == TransactionType.UPDATE ? DbChangeType.UPDATE : DbChangeType.ADD);
+
+        dbChangeManager.processDbChange(dbChange);
+
         /* This one must be done AFTER for create */
         saveStaleData(pointId, model.getStaleData());
         
@@ -292,5 +305,38 @@ public class PointEditorServiceImpl implements PointEditorService {
         
         return result;
     }
-    
+
+    @Override
+    public AttachmentStatus getAttachmentStatus(int id) {
+
+        if (PointBase.hasCapControlSubstationBus(id)) return AttachmentStatus.SUBSTATION_BUS;
+        if (PointBase.hasCapBank(id)) return AttachmentStatus.CAP_BANK;
+        if (PointBase.hasLMTrigger(id)) return AttachmentStatus.LM_TRIGGER;
+        if (PointBase.hasLMGroup(id)) return AttachmentStatus.LM_GROUP;
+        if (PointBase.hasRawPointHistorys(id)) return AttachmentStatus.RAW_POINT_HISTORY;
+        if (PointBase.hasSystemLogEntry(id)) return AttachmentStatus.SYSTEM_LOG;
+
+        return AttachmentStatus.NO_CONFLICT;
+    }
+
+    @Override
+    public boolean delete(int id) {
+        AttachmentStatus attachmentStatus = getAttachmentStatus(id);
+        if (!attachmentStatus.isDeletable()) return false;
+        
+        PointBase point = pointDao.get(id);
+        dBPersistentDao.performDBChange(point, TransactionType.DELETE);
+        
+        DBChangeMsg dbChange = new DBChangeMsg(
+            id,
+            DBChangeMsg.CHANGE_POINT_DB,
+            DBChangeMsg.CAT_POINT,
+            point.getPoint().getPointType(),
+            DbChangeType.DELETE);
+        
+        dbChangeManager.processDbChange(dbChange);
+        
+        return true;
+    }
+
 }

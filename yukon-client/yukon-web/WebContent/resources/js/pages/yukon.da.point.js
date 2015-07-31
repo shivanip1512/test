@@ -305,6 +305,10 @@ yukon.da.point = (function () {
                     }
                 }
             });
+
+            $(document).on('yukon:da:point:delete', function () {
+                $('#delete-point').submit();
+            });
         }
     };
 

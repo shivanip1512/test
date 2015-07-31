@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cannontech.common.fdr.FdrInterfaceType;
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.web.capcontrol.models.PointModel;
 
 public interface PointEditorService {
@@ -54,4 +55,38 @@ public interface PointEditorService {
      */
     List<Map<String, Object>> breakIntoTranslationFields(String originalString, FdrInterfaceType interfaceType);
 
+    public static enum AttachmentStatus implements DisplayableEnum {
+
+        SUBSTATION_BUS(false),
+        CAP_BANK(false),
+        LM_TRIGGER(false),
+        LM_GROUP(false),
+        RAW_POINT_HISTORY(true),
+        SYSTEM_LOG(true),
+        NO_CONFLICT(true);
+        
+        private static final String baseKey = "yukon.web.modules.capcontrol.point.attachment.";
+
+        private final boolean deletable;
+
+        AttachmentStatus(boolean deletable) {
+            this.deletable = deletable;
+        }
+
+
+        public boolean isDeletable() {
+            return deletable;
+        }
+
+        @Override
+        public String getFormatKey() {
+            return baseKey + name();
+        }
+    }
+
+    AttachmentStatus getAttachmentStatus(int id);
+
+    boolean delete(int id);
+    
+    
 }
