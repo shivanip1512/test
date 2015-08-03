@@ -1,6 +1,8 @@
 @setlocal
 @echo off
 
+PATH ..\yukon-build\server-build;%PATH%
+
 :: defaults
 set conf=/p:Configuration=Release
 set mp=/m:8
