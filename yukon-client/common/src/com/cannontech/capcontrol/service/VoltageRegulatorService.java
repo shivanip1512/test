@@ -18,6 +18,7 @@ import com.cannontech.capcontrol.model.Regulator;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
+import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -35,6 +36,7 @@ public class VoltageRegulatorService {
 
     @Autowired private CcMonitorBankListDao ccMonitorBankListDao;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
+    @Autowired private DeviceConfigurationService deviceConfigurationService;
     @Autowired private ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private ObjectFormattingService objectFormattingService;
@@ -104,7 +106,7 @@ public class VoltageRegulatorService {
         SimpleDevice device = new SimpleDevice(completeRegulator);
         LightDeviceConfiguration config = new LightDeviceConfiguration(regulator.getConfigId(), null, null);
 
-        deviceConfigurationDao.assignConfigToDevice(config, device);
+        deviceConfigurationService.assignConfigToDevice(config, device);
 
         //Point Mappings
 
