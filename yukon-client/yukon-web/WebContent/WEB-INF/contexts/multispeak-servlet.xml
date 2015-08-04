@@ -12,8 +12,6 @@
       
     <context:component-scan base-package="com.cannontech.web.multispeak, com.cannontech.multispeak"/>
             
-    <bean class="com.cannontech.multispeak.util.YukonMethodEndpointAdapter"/>
-    
     <bean class="com.cannontech.multispeak.annotations.YukonPayloadRootAnnotationMethodEndpointMapping"/>
     
     <bean id="messageFactory" class="com.cannontech.multispeak.util.GenericSoapMessageFactory"/>

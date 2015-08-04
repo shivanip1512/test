@@ -11,6 +11,12 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
+import javax.xml.soap.MimeHeaders;
+import javax.xml.soap.SOAPBody;
+import javax.xml.soap.SOAPEnvelope;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.SOAPPart;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +29,7 @@ import org.springframework.ws.soap.SoapEnvelope;
 import org.springframework.ws.soap.SoapHeader;
 import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.saaj.SaajSoapMessage;
+import org.w3c.dom.Node;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
@@ -95,31 +102,50 @@ public class MultispeakFuncs {
 
     /** A method that loads the response header. */
     public void loadResponseHeader() throws MultispeakWebServiceException {
-        SoapEnvelope env = getResponseMessageSOAPEnvelope();
+        SoapEnvelope env;
         try {
             MultispeakVendor mspVendor = multispeakDao.getMultispeakVendorFromCache(MultispeakDefines.MSP_COMPANY_YUKON,
                 MultispeakDefines.MSP_APPNAME_YUKON);
+            env = getResponseMessageSOAPEnvelope();
             SoapHeader header = env.getHeader();
             mspVendor.getHeader(header);
-        } catch (NotFoundException e) {
+        } catch (NotFoundException | SOAPException e) {
             throw new MultispeakWebServiceException(e.getMessage());
         }
     }
 
-    public SoapHeaderElement getResponseHeaderElement() {
-        SoapEnvelope env = getResponseMessageSOAPEnvelope();
+    public SoapHeaderElement getResponseHeaderElement() throws MultispeakWebServiceException {
+        SoapEnvelope env;
+        try {
+             env = getResponseMessageSOAPEnvelope();
+        } catch (SOAPException e) {
+            throw new MultispeakWebServiceException(e.getMessage());
+        }
         SoapHeader header = env.getHeader();
-        Iterator<SoapHeaderElement> it = header.examineHeaderElements(new QName("http://www.multispeak.org/Version_3.0",
-                                                                                "MultiSpeakMsgHeader"));
+        Iterator<SoapHeaderElement> it = header.examineHeaderElements(new QName("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader"));
         return it.next();
     }
 
-    private SoapEnvelope getResponseMessageSOAPEnvelope() {
+    private SoapEnvelope getResponseMessageSOAPEnvelope() throws SOAPException {
+        
         MessageContext ctx = MessageContextHolder.getMessageContext();
         WebServiceMessage responseMessage = ctx.getResponse();
         AbstractSoapMessage abstractSoapMessage = (AbstractSoapMessage) responseMessage;
         SaajSoapMessage saajSoapMessage = (SaajSoapMessage) abstractSoapMessage;
+        SOAPMessage soapMessage = saajSoapMessage.getSaajMessage();
         SoapEnvelope soapEnvelop = saajSoapMessage.getEnvelope();
+        MimeHeaders mimeHeaders = soapMessage.getMimeHeaders();
+
+        WebServiceMessage webServiceRequestMessage = ctx.getRequest();
+        SaajSoapMessage saajSoapRequestMessage = (SaajSoapMessage) webServiceRequestMessage;
+        SOAPMessage soapMessage2 = saajSoapRequestMessage.getSaajMessage();
+        SOAPPart soapPart = soapMessage2.getSOAPPart();
+        SOAPEnvelope soapEnvelope = soapPart.getEnvelope();
+        SOAPBody soapBody = soapEnvelope.getBody();
+        Node node = soapBody.getFirstChild();
+        Node nxtNode = node.getNextSibling();
+        String soapAction = nxtNode.getNamespaceURI() + "/" + nxtNode.getLocalName();
+        mimeHeaders.setHeader("SOAPAction", soapAction);
         return soapEnvelop;
     }
 
@@ -451,8 +477,9 @@ public class MultispeakFuncs {
      * @param returnResultsSize
      * @param vendor
      * @return
+     * @throws MultispeakWebServiceException 
      */
-    public void updateResponseHeader(MspReturnList returnList) {
+    public void updateResponseHeader(MspReturnList returnList) throws MultispeakWebServiceException {
         getResponseHeaderElement().addAttribute(new QName("ObjectsRemaining"), String.valueOf(returnList.getObjectsRemaining()));
         log.debug("Updated MspMessageHeader.ObjectsRemaining " + returnList.getObjectsRemaining());
 
