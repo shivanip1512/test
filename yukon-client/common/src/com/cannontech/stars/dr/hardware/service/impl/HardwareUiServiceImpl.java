@@ -644,7 +644,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         
         boolean preserveLocation = globalSettingDao.getBoolean(GlobalSettingType.PRESERVE_ENDPOINT_LOCATION);
         if (location != null && !preserveLocation) {
-            LiteInventoryBase newInventory = inventoryBaseDao.getByInventoryId(newInventoryId);
+            LiteInventoryBase newInventory = inventoryBaseDao.getByInventoryId(inventoryId);
             YukonPao pao = paoDao.getYukonPao(newInventory.getDeviceID());
             DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(pao);
             PaoLocation newLocation =
