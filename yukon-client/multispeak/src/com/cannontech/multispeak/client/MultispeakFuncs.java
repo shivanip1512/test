@@ -138,8 +138,8 @@ public class MultispeakFuncs {
 
         WebServiceMessage webServiceRequestMessage = ctx.getRequest();
         SaajSoapMessage saajSoapRequestMessage = (SaajSoapMessage) webServiceRequestMessage;
-        SOAPMessage soapMessage2 = saajSoapRequestMessage.getSaajMessage();
-        SOAPPart soapPart = soapMessage2.getSOAPPart();
+        SOAPMessage soapRequestMessage = saajSoapRequestMessage.getSaajMessage();
+        SOAPPart soapPart = soapRequestMessage.getSOAPPart();
         SOAPEnvelope soapEnvelope = soapPart.getEnvelope();
         SOAPBody soapBody = soapEnvelope.getBody();
         Node node = soapBody.getFirstChild();
