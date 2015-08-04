@@ -359,7 +359,7 @@ public class BulkController {
         List<String[]> dataRows = Lists.newArrayList();
 
         for (String error : errors) {
-            dataRows.add(new String[] { error });
+            dataRows.add(new String[] { error.replaceAll("[\\[\\]\"]", "") });
         }
         // write out the file
         WebFileUtils.writeToCSV(response, headerRow, dataRows, errorFileName);

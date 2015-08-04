@@ -18,16 +18,19 @@
     <span class="badge js-count">${count}</span>&nbsp;
     <cti:msg2 key="${deviceCollection.description}"/>
     <c:if test="${count > 0}"><tags:selectedDevicesPopup deviceCollection="${deviceCollection}"/></c:if>
-    <span class="badge badge-error">${deviceErrorCount}</span>
-    <strong><cti:msg2 key="yukon.common.device.bulk.selectedDevicesPopup.errorCount"/></strong>
-            <input type="hidden" name=uploadFileName value="${deviceCollection.uploadFileName}" />
-             <c:if test="${not empty deviceCollection.header}">
-            <input type="hidden" name=header value="${deviceCollection.header}" />
+    <c:if test="${deviceErrorCount > 0}">
+    	<span class="badge badge-error">${deviceErrorCount}</span>
+    	<strong>
+    		<cti:msg2 key="yukon.common.device.bulk.selectedDevicesPopup.errorCount"/>
+    	</strong>
+        <input type="hidden" name=uploadFileName value="${deviceCollection.uploadFileName}" />
+            <c:if test="${not empty deviceCollection.header}">
+            	<input type="hidden" name=header value="${deviceCollection.header}" />
             </c:if>
             <input type="hidden" name="deviceErrors" value="${deviceErrors}" />
             <input type="hidden" name="collectionType" value="fileUpload" />
             <a href="javascript:$('#${thisId}').submit();" class="wsnw">
             <cti:icon icon="icon-page-excel" classes="cp fn pull-icon-down"/></a>
-       
+    </c:if>
 </div>
  </form>
