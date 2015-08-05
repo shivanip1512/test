@@ -13,6 +13,16 @@
     <entry key="yukon.common.point.pointType.System">System</entry>
     <entry key="yukon.common.point.pointType.CalcStatus">Calc Status</entry>
 
+    <entry key="yukon.common.point.pointType.Status.long">Status Point</entry>
+    <entry key="yukon.common.point.pointType.Analog.long">Analog Point</entry>
+    <entry key="yukon.common.point.pointType.PulseAccumulator.long">Pulse Accumulator Point</entry>
+    <entry key="yukon.common.point.pointType.DemandAccumulator.long">Demand Accumulator Point</entry>
+    <entry key="yukon.common.point.pointType.CalcAnalog.long">Calc Analog Point</entry>
+    <entry key="yukon.common.point.pointType.StatusOutput.long">Status Output Point</entry>
+    <entry key="yukon.common.point.pointType.AnalogOutput.long">Analog Output Point</entry>
+    <entry key="yukon.common.point.pointType.System.long">System Point</entry>
+    <entry key="yukon.common.point.pointType.CalcStatus.long">Calc Status Point</entry>
+
     <entry key="yukon.common.point.logicalGroup.DEFAULT">Default</entry>
     <entry key="yukon.common.point.logicalGroup.SOE">SOE</entry>
     
@@ -42,6 +52,10 @@
     <entry key="yukon.common.point.updateType.ON_TIMER_AND_CHANGE">On Timer &amp; Change</entry>
     <entry key="yukon.common.point.updateType.CONSTANT">Constant</entry>
     <entry key="yukon.common.point.updateType.HISTORICAL">Historical</entry>
+
+    <entry key="yukon.common.point.add">Create Point</entry>
+    <entry key="yukon.common.point.new">New Point</entry>
+    <entry key="yukon.common.point.new.duplicate">New Point ({0})</entry>
 
 <!-- Please see JavaDocs for the following for help with the values in this file.
          com.cannontech.core.service.PointFormattingService

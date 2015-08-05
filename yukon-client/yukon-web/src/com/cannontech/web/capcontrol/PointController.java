@@ -35,6 +35,7 @@ import com.cannontech.database.data.point.CalculatedPoint;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointLogicalGroups;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.ScalarPoint;
 import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.data.point.StatusPoint;
@@ -86,6 +87,17 @@ public class PointController {
         return setUpModel(model, pointModel, userContext);
     }
     
+    @RequestMapping("points/{type}/create")
+    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
+    public String create(@PathVariable String type, @RequestParam int parentId, YukonUserContext userContext) {
+
+        int pointType = PointTypes.getType(type);
+
+        int newId = pointEditorService.create(pointType, parentId, userContext);
+
+        return "redirect:/capcontrol/points/" + newId + "/edit";
+    }
+
     private String setUpModel(ModelMap model, PointModel pointModel, YukonUserContext userContext) {
         
         MessageSourceAccessor messageAccessor = messageResolver.getMessageSourceAccessor(userContext);

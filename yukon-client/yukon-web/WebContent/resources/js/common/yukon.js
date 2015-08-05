@@ -617,7 +617,15 @@ yukon.ui = (function () {
             /** Initialize any tabbed containers on page load. */
             $('.js-init-tabs').each(function (idx, elem) {
                 elem = $(elem);
-                elem.tabs({'active': elem.data('selectedTab')}).show().removeClass('js-init-tabs');
+                elem.tabs({'active': elem.data('selectedTab')}).show().removeClass('js-init-tabs')
+
+                if (elem.is('[data-container-name]')) {
+                    var containerName = elem.data('containerName');
+                    elem.tabs('option', 'active', window.localStorage.getItem(containerName));
+                    elem.tabs('option','activate', function (ev, ui){
+                        window.localStorage.setItem(containerName, ui.newTab.index());
+                    });
+                }
             });
                 
             /** Add placeholder functionality if needed. */

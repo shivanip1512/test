@@ -16,6 +16,7 @@ import com.cannontech.web.taglib.TabTag.TabHeader;
 
 public class TabsTag extends BodyTagSupport {
     
+    private String containerName = "";
     private String classes = "";
     private String id="";
     private int selectedTabIndex = 0;
@@ -28,6 +29,10 @@ public class TabsTag extends BodyTagSupport {
         }
     }
     
+    public void setContainerName(String containerName) {
+        this.containerName = containerName;
+    }
+
     public void setClasses(String classes) {
         this.classes = classes;
     }
@@ -57,6 +62,9 @@ public class TabsTag extends BodyTagSupport {
             out.print("<div class=\"dn tabbed-container js-init-tabs " + classes + "\"");
             if (!StringUtils.isEmpty(id)) {
                 out.print(" id=\"" + id + "\"");
+            }
+            if (!StringUtils.isEmpty(containerName)) {
+                out.print(" data-container-name=\"" + containerName + "\"");
             }
             out.print(" data-selected-tab=\"" + selectedTabIndex + "\">");
             

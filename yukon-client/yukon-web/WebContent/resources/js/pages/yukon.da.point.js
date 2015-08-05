@@ -285,12 +285,6 @@ yukon.da.point = (function () {
             /* Save tab selection */
             var tabContainer = $('.tabbed-container');
 
-            tabContainer.tabs('option','activate', function (ev, ui){
-                window.sessionStorage.setItem('yukon:da:points:tab', ui.newTab.index());
-            });
-
-            tabContainer.tabs('option', 'active', window.sessionStorage.getItem('yukon:da:points:tab'));
-
             /* If there was an error in a a field, go to the first tab with an error */
             var errorEncountered = false;
             $('.ui-tabs-panel').each(function (idx, elem) {

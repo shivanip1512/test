@@ -84,17 +84,19 @@ public class PointValidator extends SimpleValidator<PointModel> {
         doAccumulatorValidation(base, errors);
         doStatusValidation(pointModel, errors);
 
-        int parentId = base.getPoint().getPaoID();
-        List<LitePoint> pointsOnPao = pointDao.getLitePointsByPaObjectId(parentId);
-        for (LitePoint pointOnPao : pointsOnPao) {
+        if (base.getPoint().getPointOffset() != null) {
+            int parentId = base.getPoint().getPaoID();
+            List<LitePoint> pointsOnPao = pointDao.getLitePointsByPaObjectId(parentId);
+            for (LitePoint pointOnPao : pointsOnPao) {
 
-            if (pointOnPao.getPointOffset() == base.getPoint().getPointOffset() &&
-                pointOnPao.getPointTypeEnum() == base.getPoint().getPointTypeEnum()) {
+                if (pointOnPao.getPointOffset() == base.getPoint().getPointOffset() &&
+                    pointOnPao.getPointTypeEnum() == base.getPoint().getPointTypeEnum()) {
 
-                if (pointOnPao.getPointID() != base.getPoint().getPointID()) {
-                    List<Object> arguments = ImmutableList.of(pointOnPao.getPointName());
-                    errors.rejectValue("pointBase.point.pointOffset", baseKey + ".pointOffset", arguments.toArray(), 
-                        "Invalid point offset");
+                    if (pointOnPao.getPointID() != base.getPoint().getPointID()) {
+                        List<Object> arguments = ImmutableList.of(pointOnPao.getPointName());
+                        errors.rejectValue("pointBase.point.pointOffset", baseKey + ".pointOffset", arguments.toArray(), 
+                            "Invalid point offset");
+                    }
                 }
             }
         }

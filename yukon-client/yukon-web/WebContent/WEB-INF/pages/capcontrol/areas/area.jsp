@@ -41,7 +41,7 @@
 
 <div class="column-12-12 clearfix">
     <div class="column one">
-        <cti:tabs>
+        <cti:tabs containerName="yukon:da:area:info-v-strategy:tab">
             <cti:msg2 var="infoTitle" key=".infoContainer.title"/>
             <cti:tab title="${infoTitle}" selected="true" tabId="info-tab">
                 <tags:nameValueContainer2>
@@ -140,7 +140,7 @@
     </div>
     
     <div class="column two nogutter">
-        <cti:tabs>
+        <cti:tabs containerName="yukon:da:area:stats-v-points:tab">
             <cti:msg2 var="statsTitle" key=".statsContainer.title"/>
             <cti:tab title="${statsTitle}" tabId="stats-tab" classes="scroll-lg">
                 <div class="column-12-12">
@@ -191,7 +191,10 @@
                             <tbody>
                             <c:forEach var="point" items="${points}">
                                  <tr>
-                                     <td>${fn:escapeXml(point.pointName)}</td>
+                                     <td>
+                                        <cti:url var="pointUrl" value="/capcontrol/points/${point.pointId}"/>
+                                        <a href="${pointUrl}">${fn:escapeXml(point.pointName)}</a>
+                                     </td>
                                      <td class="state-indicator">
                                         <c:if test="${point.paoPointIdentifier.pointIdentifier.pointType.status}">
                                             <cti:pointStatus pointId="${point.pointId}"/>
@@ -205,6 +208,9 @@
                         </table>
                     </c:otherwise>
                 </c:choose>
+                <div class="action-area">
+                    <tags:pointCreation paoId="${areaId}"/>
+                </div>
             </cti:tab>
         </cti:tabs>
     </div>

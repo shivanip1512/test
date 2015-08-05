@@ -24,7 +24,7 @@
     
         <cti:csrfToken />
         
-        <cti:tabs>
+        <cti:tabs containerName="yukon:da:point:fields:tab">
             <cti:tab title="General">
                 <tags:nameValueContainer tableClass="${nameValueClass}">
                     <tags:nameValue name="Id">

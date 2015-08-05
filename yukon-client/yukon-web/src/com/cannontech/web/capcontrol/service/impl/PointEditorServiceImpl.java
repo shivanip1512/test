@@ -15,6 +15,7 @@ import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceOption;
 import com.cannontech.common.fdr.FdrInterfaceType;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.point.alarm.dao.PointPropertyValueDao;
 import com.cannontech.common.point.alarm.model.PointPropertyValue;
 import com.cannontech.core.dao.AlarmCatDao;
@@ -27,10 +28,13 @@ import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.point.PointAlarming;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.models.PointModel;
 import com.cannontech.web.capcontrol.service.PointEditorService;
 import com.cannontech.web.editor.point.AlarmTableEntry;
@@ -40,12 +44,13 @@ import com.google.common.collect.ImmutableList;
 @Service
 public class PointEditorServiceImpl implements PointEditorService {
     
-    @Autowired AlarmCatDao alarmCatDao;
-    @Autowired DbChangeManager dbChangeManager;
-    @Autowired DBPersistentDao dBPersistentDao;
-    @Autowired PointDao pointDao;
-    @Autowired PointPropertyValueDao pointPropertyValueDao;
-    @Autowired StateDao stateDao;
+    @Autowired private AlarmCatDao alarmCatDao;
+    @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private DBPersistentDao dBPersistentDao;
+    @Autowired private PointDao pointDao;
+    @Autowired private PointPropertyValueDao pointPropertyValueDao;
+    @Autowired private StateDao stateDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
     @Override
     public PointModel getModelForId(int id) {
@@ -60,7 +65,37 @@ public class PointEditorServiceImpl implements PointEditorService {
         
         return model;
     }
-    
+
+    @Override
+    public int create(int pointType, int paoId, YukonUserContext userContext) {
+
+        MessageSourceAccessor messageAccessor = messageResolver.getMessageSourceAccessor(userContext);
+        List<PointBase> pointsOnDevice = pointDao.getPointsForPao(paoId);
+
+        List<String> existingPointNames = pointsOnDevice.stream().map(new Function<PointBase, String>() {
+
+            @Override
+            public String apply(PointBase pointBase) {
+                return pointBase.getPoint().getPointName();
+            }
+        }).collect(Collectors.toList());
+        
+        
+        String pointName = messageAccessor.getMessage("yukon.common.point.new");
+
+        int i = 1;
+        while (existingPointNames.contains(pointName)) {
+            i++;
+            pointName = messageAccessor.getMessage("yukon.common.point.new.duplicate", i);
+        }
+
+        PointBase point = PointUtil.createPoint(pointType, pointName, paoId, false);
+
+        int id = point.getPoint().getPointID();
+
+        return id;
+    }
+
     private StaleData getStaleData(int id) {
         
         StaleData staleData = new StaleData();

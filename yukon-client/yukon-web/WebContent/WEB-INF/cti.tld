@@ -2139,9 +2139,18 @@
         <rtexprvalue>true</rtexprvalue>
         <description>The id to use for the top-level HTML element.</description>
     </attribute>
-       <description>
-            Contains a collection of "cti:tab"
+    <attribute>
+        <name>containerName</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>
+            When specified, this container will remember what tab was last selected.
+            This will override the otherwise initially selected tab.
         </description>
+    </attribute>
+    <description>
+        Contains a collection of "cti:tab"
+    </description>
   </tag>
   
   <tag>

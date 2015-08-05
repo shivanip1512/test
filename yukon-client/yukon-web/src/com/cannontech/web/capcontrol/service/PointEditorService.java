@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.models.PointModel;
 
 public interface PointEditorService {
@@ -87,6 +88,7 @@ public interface PointEditorService {
     AttachmentStatus getAttachmentStatus(int id);
 
     boolean delete(int id);
-    
-    
+
+    int create(int pointType, int paoId, YukonUserContext userContext);
+
 }
