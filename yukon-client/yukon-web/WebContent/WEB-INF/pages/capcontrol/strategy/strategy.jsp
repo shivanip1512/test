@@ -191,7 +191,7 @@
                 </table>
             
                 <tags:sectionContainer2 nameKey="powerFactorSettings" styleClass="stacked-lg js-bus-ivvc-only">
-                    <tags:nameValueContainer2 tableClass="natural-width ${viewMode ? 'joe' : 'with-form-controls'}">
+                    <tags:nameValueContainer2 tableClass="natural-width ${tableClass}">
                         
                         <tags:nameValue2 nameKey=".bandwidth" valueClass="tar">
                             <tags:input path="powerFactorCorrectionSetting.bandwidth" size="5"/>

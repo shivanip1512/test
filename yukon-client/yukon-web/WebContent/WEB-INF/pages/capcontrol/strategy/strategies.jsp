@@ -75,4 +75,8 @@
             </table>
         </c:otherwise>
     </c:choose>
+    <div class="action-area">
+        <cti:url var="createStrategy"  value="/capcontrol/strategies/create"/>
+        <cti:button nameKey="create" icon="icon-plus-green" href="${createStrategy}"/>
+    </div>
 </cti:standardPage>

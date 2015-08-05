@@ -81,32 +81,32 @@ public class StrategyValidator extends SimpleValidator<CapControlStrategy> {
         VoltageViolationSetting lowSetting = targetSettings.get(VoltViolationType.LOW_VOLTAGE_VIOLATION);
         
         if (lowSetting.getCost() > 0) {
-            errors.reject("voltageViolationSettings[" + VoltViolationType.LOW_VOLTAGE_VIOLATION.name() + "].cost",
+            errors.rejectValue("voltageViolationSettings[" + VoltViolationType.LOW_VOLTAGE_VIOLATION.name() + "].cost",
                          basekey +  ".voltageViolation.low.cost");
         }
         if (lowSetting.getEmergencyCost() > lowSetting.getCost()) {
-            errors.reject("voltageViolationSettings[" + VoltViolationType.LOW_VOLTAGE_VIOLATION.name() + "].emergencyCost",
+            errors.rejectValue("voltageViolationSettings[" + VoltViolationType.LOW_VOLTAGE_VIOLATION.name() + "].emergencyCost",
                 basekey +  ".voltageViolation.low.emergencyCost");
         }
         
         
         if (lowSetting.getBandwidth() <= 0) {
-            errors.reject("voltageViolationSettings[" + VoltViolationType.LOW_VOLTAGE_VIOLATION.name() + "].bandwidth",
+            errors.rejectValue("voltageViolationSettings[" + VoltViolationType.LOW_VOLTAGE_VIOLATION.name() + "].bandwidth",
                 basekey +  ".voltageViolation.bandwidth");
         }
         
-        VoltageViolationSetting highSetting = targetSettings.get(VoltViolationType.LOW_VOLTAGE_VIOLATION);
+        VoltageViolationSetting highSetting = targetSettings.get(VoltViolationType.HIGH_VOLTAGE_VIOLATION);
         
         if (highSetting.getCost() < 0) {
-            errors.reject("voltageViolationSettings[" + VoltViolationType.HIGH_VOLTAGE_VIOLATION.name() + "].cost",
+            errors.rejectValue("voltageViolationSettings[" + VoltViolationType.HIGH_VOLTAGE_VIOLATION.name() + "].cost",
                 basekey +  ".voltageViolation.high.cost");
         }
         if (highSetting.getEmergencyCost() < highSetting.getCost()) {
-            errors.reject("voltageViolationSettings[" + VoltViolationType.HIGH_VOLTAGE_VIOLATION.name() + "].emergencyCost",
+            errors.rejectValue("voltageViolationSettings[" + VoltViolationType.HIGH_VOLTAGE_VIOLATION.name() + "].emergencyCost",
                 basekey +  ".voltageViolation.high.emergencyCost");
         }
         if (highSetting.getBandwidth() <= 0) {
-            errors.reject("voltageViolationSettings[" + VoltViolationType.HIGH_VOLTAGE_VIOLATION.name() + "].bandwidth",
+            errors.rejectValue("voltageViolationSettings[" + VoltViolationType.HIGH_VOLTAGE_VIOLATION.name() + "].bandwidth",
                 basekey +  ".voltageViolation.bandwidth");
         }
     }
