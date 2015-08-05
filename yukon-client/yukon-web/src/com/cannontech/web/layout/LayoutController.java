@@ -49,7 +49,6 @@ import com.cannontech.web.menu.LayoutSkinEnum;
 import com.cannontech.web.menu.Module;
 import com.cannontech.web.menu.PageInfo;
 import com.cannontech.web.menu.renderer.LeftSideMenuRenderer;
-import com.cannontech.web.menu.renderer.SearchRenderer;
 import com.cannontech.web.menu.renderer.StandardMenuRenderer;
 import com.cannontech.web.taglib.StandardPageInfo;
 import com.cannontech.web.taglib.StandardPageTag;
@@ -68,7 +67,6 @@ public class LayoutController {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private PageDetailProducer pageDetailProducer;
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private SearchRenderer searchRenderer;
     @Autowired private StandardMenuRenderer stdMenuRender;
     @Autowired private UserPreferenceService prefService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -290,13 +288,6 @@ public class LayoutController {
                 }
             });
 
-            model.addAttribute("searchRenderer", new Writable() {
-                @Override
-                public void write(Writer out) throws IOException {
-                    searchRenderer.render(moduleBase, request, out);
-                }
-            });
-            
             model.addAttribute("bcRenderer", new Writable() {
                 @Override
                 public void write(Writer out) throws IOException {

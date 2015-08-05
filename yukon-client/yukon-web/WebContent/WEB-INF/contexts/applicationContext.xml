@@ -72,24 +72,11 @@
                 <property name="serviceLocatorInterface" value="com.cannontech.web.menu.option.producer.MenuOptionProducerFactory"/>
             </bean>
         </property>
-        <property name="searchProducerFactory">
-            <bean class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean">
-                <property name="serviceLocatorInterface" value="com.cannontech.web.menu.option.producer.SearchProducerFactory"/>
-            </bean>
-        </property>
     </bean>
 
     <bean id="standardMenuRenderer" class="com.cannontech.web.menu.renderer.StandardMenuRenderer">
         <constructor-arg value="/WEB-INF/menu_config.xml"/>
     </bean>
-
-    <bean class="com.cannontech.web.menu.renderer.SearchRenderer"/>
-
-    <!-- Search Producers -->
-    <bean id="operatorAccountSearchProducer" class="com.cannontech.web.menu.option.producer.OperatorAccountSearchProducer"/>
-    <bean id="amrSearchProducer" class="com.cannontech.web.menu.option.producer.MeteringSearchProducer"/>
-    <bean id="drSearchProducer" class="com.cannontech.web.menu.option.producer.DrSearchProducer"/>
-    <bean id="capControlSearchProducer" class="com.cannontech.web.menu.option.producer.CapControlSearchProducer"/>
 
     <bean id="widgetInput.deviceId" class="com.cannontech.web.widget.support.SimpleWidgetInput">
         <qualifier value="widgetInput.deviceId"/>

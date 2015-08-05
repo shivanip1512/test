@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.cannontech.web.menu.option.producer.SearchProducer;
 import com.google.common.collect.Maps;
 
 /**
@@ -14,7 +13,6 @@ import com.google.common.collect.Maps;
  */
 public class Module {
     private String moduleName;
-    private SearchProducer searchProducer;
     private MenuBase portalLinks;
     private Map<String, PageInfo> pageInfos = Maps.newHashMap();
     private List<String> cssFiles = new ArrayList<String>(2);
@@ -34,10 +32,6 @@ public class Module {
         this.moduleName = moduleName;
     }
 
-    public SearchProducer getSearchProducer() {
-		return searchProducer;
-	}
-    
     public void setPortalLinks(MenuBase portalLinks) {
         this.portalLinks = portalLinks;
     }
@@ -61,10 +55,6 @@ public class Module {
     public void setSkin(LayoutSkinEnum skin) {
         this.skin = skin;
     }
-
-    public void setSearchProducer(SearchProducer searchProducer) {
-		this.searchProducer = searchProducer;
-	}
 
     public PageInfo getPageInfo(String pageName) {
         return pageInfos.get(pageName);

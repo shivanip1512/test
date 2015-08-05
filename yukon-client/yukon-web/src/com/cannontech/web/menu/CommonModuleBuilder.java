@@ -33,8 +33,6 @@ import com.cannontech.web.menu.option.SubMenuOption;
 import com.cannontech.web.menu.option.producer.DynamicMenuOptionProducer;
 import com.cannontech.web.menu.option.producer.MenuOptionProducer;
 import com.cannontech.web.menu.option.producer.MenuOptionProducerFactory;
-import com.cannontech.web.menu.option.producer.SearchProducer;
-import com.cannontech.web.menu.option.producer.SearchProducerFactory;
 import com.cannontech.web.menu.option.producer.StaticMenuOptionProducer;
 import com.google.common.collect.Lists;
 
@@ -52,7 +50,6 @@ public class CommonModuleBuilder implements ModuleBuilder {
 
     private final Map<String, Module> moduleMap = new TreeMap<String, Module>();
     private MenuOptionProducerFactory menuOptionProducerFactory;
-    private SearchProducerFactory searchProducerFactory;
     private final Resource moduleConfigFile;
     private final String menuKeyModPrefix = "yukon.web.menu.config.";
     private final static Namespace ns = Namespace.getNamespace("http://yukon.cannontech.com/modules");
@@ -96,13 +93,6 @@ public class CommonModuleBuilder implements ModuleBuilder {
         }
         MenuBase menuBase = new MenuBase(topLevelOptions);
         module.setMenuBase(menuBase);
-        
-        Element searchElement = moduleElement.getChild("search", ns);
-        if (searchElement != null) {
-        	String beanName = searchElement.getAttributeValue("bean");
-        	SearchProducer searchProducer = searchProducerFactory.getSearchProducer(beanName);
-        	module.setSearchProducer(searchProducer);
-        }
         
         Element skinElement = moduleElement.getChild("skin", ns);
         if (skinElement != null) {
@@ -344,8 +334,4 @@ public class CommonModuleBuilder implements ModuleBuilder {
     public void setMenuOptionProducerFactory(MenuOptionProducerFactory menuOptionProducerFactory) {
         this.menuOptionProducerFactory = menuOptionProducerFactory;
     }
-    
-    public void setSearchProducerFactory(SearchProducerFactory searchProducerFactory) {
-		this.searchProducerFactory = searchProducerFactory;
-	}
 }

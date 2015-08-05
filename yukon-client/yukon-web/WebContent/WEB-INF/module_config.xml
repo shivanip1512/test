@@ -19,7 +19,6 @@
 
   <module name="amr">
     <skin name="STANDARD"/>
-    <search bean="amrSearchProducer"/>
     <pages>
       <page name="cre.list" type="BASIC">
         <link>/common/commandRequestExecutionResults/list</link>
@@ -452,7 +451,6 @@
 
   <module name="dr">
     <skin name="STANDARD" />
-    <search bean="drSearchProducer" />
     <pages>
       <page name="probabilityForPeakLoad" type="BASIC"/>
       <page name="loadManagement" type="BASIC"/>
@@ -615,7 +613,6 @@
 
   <module name="capcontrol">
     <skin name="STANDARD" />
-    <search bean="capControlSearchProducer" />
     <pages>
       <page name="areas" type="BASIC">
         <link>/capcontrol/tier/areas</link>
@@ -1113,7 +1110,6 @@
     
     <module name="operator">
         <skin name="STANDARD" />
-        <search bean="operatorAccountSearchProducer" />
         <pages>
             <page name="gateways.list" type="BASIC" hideSearch="true">
                 <link>/stars/gateways</link>
