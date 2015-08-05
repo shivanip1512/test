@@ -99,17 +99,6 @@ public class ScheduleController {
         model.addAttribute("scheduleList", schedules);
     }
     
-    @RequestMapping("scheduleAssignmentsTable")
-    public String scheduleAssignmentsTable(
-            ModelMap model,
-            @RequestParam(defaultValue="All")String command, 
-            @RequestParam(defaultValue="All")String schedule, 
-            LiteYukonUser user) {
-        
-        setUpModel(command, schedule, user, model);
-        return "schedule/scheduleassignmentTable.jsp";
-    }
-
     @RequestMapping("assignments")
     public String scheduleAssignments(
             ModelMap model,
