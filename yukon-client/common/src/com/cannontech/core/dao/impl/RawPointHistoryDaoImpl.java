@@ -14,7 +14,6 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.Instant;
 import org.joda.time.LocalTime;
-import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +57,7 @@ import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 import com.google.common.base.Function;
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMultimap;
@@ -271,9 +271,12 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             final Order order,
             final OrderBy orderBy,
             final Set<PointQuality> excludeQualities) {
-
-        Instant start = new Instant();
-
+        
+        Stopwatch stopwatch = null;
+        if (log.isInfoEnabled()) {
+            stopwatch = new Stopwatch().start();
+        }
+        
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
             @Override
             public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
@@ -314,12 +317,11 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         ListMultimap<PaoIdentifier, PointValueQualityHolder> values = loadValuesForGeneratorFactory(factory,
                 displayableDevices, attribute, maxRows, excludeDisabledPaos);
 
-        Instant stop = new Instant();
-        Period period = new Period(start, stop);
-        if (log.isTraceEnabled()) {
-            log.trace("getLimitedAttributeData() completed in: " + timingFormatter.print(period.normalizedStandard()));
+        if (log.isInfoEnabled()){
+            stopwatch.stop();
+            int numPaos = Iterables.size(displayableDevices);
+            log.info("getLimitedAttributeData() - " + numPaos + " paos. Attribute: " + attribute.getKey() + ". Date range: " + dateRange.getMin().toString() + " to " + dateRange.getMax().toString() + ".  Elapsed time: " + stopwatch.toString());
         }
-        
         
         return values; 
     }
@@ -805,7 +807,10 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         // unlikely, that two paos would have the same point
         // for an attribute, thus this is a SetMultimap instead of a Map
         
-        Instant start = new Instant();
+        Stopwatch stopwatch = null;
+        if (log.isDebugEnabled()) {
+            stopwatch = new Stopwatch().start();
+        }
         
         SetMultimap<PaoPointIdentifier, PaoIdentifier> paoIdentifierLookup =
             HashMultimap.create(IterableUtils.guessSize(paos), 1);
@@ -851,10 +856,12 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             // end of per-PointIdentifier loop
         }
 
-        if (log.isTraceEnabled()) {
-            Instant stop = new Instant();
-            Period period = new Period(start, stop);
-            log.trace("loadValuesForGeneratorFactory() completed in " + timingFormatter.print(period.normalizedStandard()));
+        if (log.isDebugEnabled()) {
+            stopwatch.stop();
+            int numPaos = Iterables.size(paos);
+            int numPointIdentifiers = paoPointIdentifiersMap.keySet().size();
+            log.debug("loadValuesForGeneratorFactory() # paos : " + numPaos + ".  # point identifiers: " + numPointIdentifiers
+                    + ".  # values resturned: " + result.size() + ".  elapsed time: " + stopwatch.toString());
         }
         
         return result;
