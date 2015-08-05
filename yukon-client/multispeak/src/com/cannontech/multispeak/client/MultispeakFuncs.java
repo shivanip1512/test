@@ -12,11 +12,8 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 import javax.xml.soap.MimeHeaders;
-import javax.xml.soap.SOAPBody;
-import javax.xml.soap.SOAPEnvelope;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
-import javax.xml.soap.SOAPPart;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -126,6 +123,12 @@ public class MultispeakFuncs {
         return it.next();
     }
 
+    /**
+     * Returns the Soap Envelope updated with the SOAPAction.
+     * 
+     * @return SoapEnvelope
+     * @throws javax.xml.soap.SOAPExceptionn
+     */
     private SoapEnvelope getResponseMessageSOAPEnvelope() throws SOAPException {
         
         MessageContext ctx = MessageContextHolder.getMessageContext();
@@ -138,12 +141,8 @@ public class MultispeakFuncs {
 
         WebServiceMessage webServiceRequestMessage = ctx.getRequest();
         SaajSoapMessage saajSoapRequestMessage = (SaajSoapMessage) webServiceRequestMessage;
-        SOAPMessage soapRequestMessage = saajSoapRequestMessage.getSaajMessage();
-        SOAPPart soapPart = soapRequestMessage.getSOAPPart();
-        SOAPEnvelope soapEnvelope = soapPart.getEnvelope();
-        SOAPBody soapBody = soapEnvelope.getBody();
-        Node node = soapBody.getFirstChild();
-        Node nxtNode = node.getNextSibling();
+        Node nxtNode =
+            saajSoapRequestMessage.getSaajMessage().getSOAPPart().getEnvelope().getBody().getFirstChild().getNextSibling();
         String soapAction = nxtNode.getNamespaceURI() + "/" + nxtNode.getLocalName();
         mimeHeaders.setHeader("SOAPAction", soapAction);
         return soapEnvelop;
