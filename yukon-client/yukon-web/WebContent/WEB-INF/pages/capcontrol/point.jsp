@@ -133,18 +133,20 @@
                     <tags:nameValueContainer tableClass="${nameValueClass}">
                         
                         <tags:nameValue name="Update Type">
-                            <tags:selectWithItems path="pointBase.point.calcBase.updateType" items="${pointUpdateTypes}" 
+                            <tags:selectWithItems path="pointBase.calcBase.updateType" items="${pointUpdateTypes}" 
                                 itemValue="databaseRepresentation" inputClass="js-calc-update-type"/>
-                            
-                            Rate:    
-                            <tags:intervalStepper path="pointBase.point.calcBase.periodicRate" intervals="${archiveIntervals}" 
-                                classes="js-calc-period"/>
+                            <span class="js-calc-period">
+                                Rate:
+                                <tags:intervalStepper path="pointBase.calcBase.periodicRate" 
+                                    intervals="${archiveIntervals}"/>
+                            </span>
                         </tags:nameValue>
                         
                     </tags:nameValueContainer>
                 </c:if>
             </cti:tab>
-            
+
+            <c:if test="${not isCalcType}">
             <cti:tab title="Physical Setup">
             
                 <c:if test="${isAnalogPoint}">
@@ -288,6 +290,7 @@
                 </c:if>
             
             </cti:tab>
+            </c:if>
             
             <cti:tab title="Limits">
                 <c:if test="${isScalarType}">

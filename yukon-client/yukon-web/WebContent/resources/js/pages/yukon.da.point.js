@@ -49,7 +49,7 @@ yukon.da.point = (function () {
         var updateType = $('.js-calc-update-type').val();
         
         /* TODO these enum names should come from the controller */
-        var periodNeeded = updateType === 'ON_TIMER' || updateType === 'ON_TIMER_AND_CHANGE';
+        var periodNeeded = updateType === 'On Timer' || updateType === 'On Timer+Change';
         
         $('.js-calc-period').toggle(periodNeeded);
         

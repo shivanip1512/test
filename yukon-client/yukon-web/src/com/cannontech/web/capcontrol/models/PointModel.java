@@ -79,6 +79,10 @@ public class PointModel<T extends PointBase> {
         base.setPointFDRTranslations(newFdrs);
         base.getPointAlarming().setPointID(getId());
         
+        if (base.getPoint().getArchiveInterval() == null) {
+            base.getPoint().setArchiveInterval(0);
+        }
+
         if (base instanceof AnalogPoint) {
             AnalogPoint analogPoint = (AnalogPoint) base;
             
@@ -91,7 +95,6 @@ public class PointModel<T extends PointBase> {
             
             statusPoint.getPointStatus().setPointID(id);
             statusPoint.getPointStatusControl().setPointID(id);
-            statusPoint.getPoint().setArchiveInterval(0);
         }
         
         
@@ -114,13 +117,19 @@ public class PointModel<T extends PointBase> {
         }
         
         if (base instanceof CalcStatusPoint) {
+
             CalcStatusPoint calcStatus = (CalcStatusPoint) base;
+
             calcStatus.getCalcBase().setPointID(id);
+            calcStatus.getPoint().setPointOffset(0);
         }
-        
+
         if (base instanceof CalculatedPoint) {
+
             CalculatedPoint calcPoint = (CalculatedPoint) base;
+
             calcPoint.getCalcBase().setPointID(id);
+            calcPoint.getPoint().setPointOffset(0);
         }
     }
     
