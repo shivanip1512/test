@@ -181,7 +181,7 @@ public class YC extends Observable implements MessageListener {
     private List<LiteDeviceTypeCommand> liteDeviceTypeCommands = new ArrayList<>();
     
     // The device Type for the currently selected object in the tree model. Values found in DeviceTypes class.
-    protected String deviceType;
+    protected String deviceType = "";
     
     // Default YC properties
     private YCDefaults ycDefaults;
@@ -411,11 +411,11 @@ public class YC extends Observable implements MessageListener {
             
             if (getAllRoutes() != null && getAllRoutes()[sendMore] instanceof LiteYukonPAObject) {
                 
-                LiteYukonPAObject route = (LiteYukonPAObject) getAllRoutes()[sendMore];
+                LiteYukonPAObject route = getAllRoutes()[sendMore];
                 
                 while (route.getPaoType() == PaoType.ROUTE_MACRO && sendMore > 0) {
                     sendMore--;
-                    route = (LiteYukonPAObject) getAllRoutes()[sendMore];
+                    route = getAllRoutes()[sendMore];
                 }
     
                 if (route.getPaoType() == PaoType.ROUTE_MACRO) {
@@ -814,7 +814,7 @@ public class YC extends Observable implements MessageListener {
                 // OR
                 // Try to match the entered command string alias to the actual command in the database, return the actual command.
                 for (int i = 0; i < getLiteDeviceTypeCommands().size(); i++) {
-                    LiteDeviceTypeCommand ldtc = (LiteDeviceTypeCommand) getLiteDeviceTypeCommands().get(i);
+                    LiteDeviceTypeCommand ldtc = getLiteDeviceTypeCommands().get(i);
                     if (ldtc.isVisible()) {
                         LiteCommand liteCommand = commandDao.getCommand(ldtc.getCommandId());
                         if (liteCommand.getLabel().trim().equalsIgnoreCase(friendlyCommand) ||
@@ -1026,10 +1026,10 @@ public class YC extends Observable implements MessageListener {
                             
                             if (getLoopType() == YC.LOOPLOCATE) {
                                 if (getAllRoutes()[sendMore] instanceof LiteYukonPAObject) {
-                                    LiteYukonPAObject route = (LiteYukonPAObject) getAllRoutes()[sendMore];
+                                    LiteYukonPAObject route = getAllRoutes()[sendMore];
                                     while(route.getPaoType() == PaoType.ROUTE_MACRO && sendMore > 0) {
                                         sendMore--;
-                                        route = (LiteYukonPAObject) getAllRoutes()[sendMore];
+                                        route = getAllRoutes()[sendMore];
                                     }
                                     // Have to check again because last one may be route_ macro.
                                     if (route.getPaoType() == PaoType.ROUTE_MACRO) {
