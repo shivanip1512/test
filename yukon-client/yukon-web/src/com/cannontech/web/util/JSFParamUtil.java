@@ -99,13 +99,14 @@ public class JSFParamUtil {
 		return null;
 	}
 
-	public static void goToPointEditor(Integer parentID, final FacesMessage fm) {
-		try {
-			//make sure the point form will have the pao id
-			//of the cbc
-			String red = "pointBase.jsf?parentId=" + parentID.toString() + "&itemid=";
-			String val = getJSFReqParam("ptID");
-			String location = red + val;
+    public static void goToPointEditor(final FacesMessage fm) {
+        try {
+            String contextPath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
+            String red = "/capcontrol/points/";
+            String pointId = getJSFReqParam("ptID");
+
+            String location = contextPath + red + pointId;
+
 			//bookmark the current page
 			HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
 			CBCNavigationUtil.bookmarkLocationAndRedirect(location, session);

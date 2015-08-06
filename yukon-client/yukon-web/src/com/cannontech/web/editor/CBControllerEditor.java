@@ -362,11 +362,12 @@ public class CBControllerEditor implements ICBControllerModel {
         //save the state of the point tree before changing the page
         saveState(getPointTree());
         try {
-            //make sure the point form will have the pao id
-            //of the cbc 
-            String red = "pointBase.jsf?parentId=" + getPaoCBC().getPAObjectID().toString() + "&itemid=";
-            String val = JSFParamUtil.getJSFReqParam("ptID");
-            String location = red + val;            
+            String contextPath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
+            String path = "/capcontrol/points/";
+            String pointId = JSFParamUtil.getJSFReqParam("ptID");
+
+            String location = contextPath + path + pointId;
+
             //bookmark the current page
             HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
             CBCNavigationUtil.bookmarkLocationAndRedirect(location, session);

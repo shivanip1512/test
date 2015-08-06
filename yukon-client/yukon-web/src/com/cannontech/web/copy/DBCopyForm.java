@@ -1,7 +1,5 @@
 package com.cannontech.web.copy;
 
-import java.io.IOException;
-
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 
@@ -65,10 +63,7 @@ public class DBCopyForm extends DBEditorForm {
                     message.setSeverity(FacesMessage.SEVERITY_ERROR);
                 } else {
                     copyObject = CBCCopyUtils.copy(origObject);
-                    if (CBCCopyUtils.isPoint(copyObject)) {
-                        ((PointBase) copyObject).getPoint().setPointName(paoName);
-                        addDBObject(copyObject, message);
-                    } else if (origObject instanceof YukonPAObject) {
+                    if (origObject instanceof YukonPAObject) {
                         YukonPAObject paObject = (YukonPAObject)origObject;
                         PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
                         if (paoDao.isNameAvailable(paoName, paObject.getPaoType())) {
@@ -95,38 +90,30 @@ public class DBCopyForm extends DBEditorForm {
                     if (copyPoints)
                         CBCCopyUtils.copyAllPointsForPAO(((CapBankController) origObject).getPAObjectID(),
                                                          ((CapBankController) copyObject).getPAObjectID());
-                    routeToEditor(((CapBankController) copyObject).getPAObjectID()
-                                                                  .intValue());
+                    routeToEditor(((CapBankController) copyObject).getPAObjectID());
                 }
                 if (copyObject instanceof CapBankController702x) {
                     if (copyPoints)
                         CBCCopyUtils.copyAllPointsForPAO(((CapBankController702x) origObject).getPAObjectID(),
                                                          ((CapBankController702x) copyObject).getPAObjectID());
-                    routeToEditor(((CapBankController702x) copyObject).getPAObjectID()
-                                                                      .intValue());
+                    routeToEditor(((CapBankController702x) copyObject).getPAObjectID());
                 }
                 if (copyObject instanceof CapBankControllerDNP) {
                     if (copyPoints)
                         CBCCopyUtils.copyAllPointsForPAO(((CapBankControllerDNP) origObject).getPAObjectID(),
                                                          ((CapBankControllerDNP) copyObject).getPAObjectID());
-                    routeToEditor(((CapBankControllerDNP) copyObject).getPAObjectID()
-                                                                      .intValue());
+                    routeToEditor(((CapBankControllerDNP) copyObject).getPAObjectID());
                 }
                 if (copyObject instanceof PointBase) {
-                    routeToEditor(((PointBase) copyObject).getPoint()
-                                                          .getPointID()
-                                                          .intValue());
+                    routeToEditor(((PointBase) copyObject).getPoint().getPointID());
                 }
             }
         } else {
             if (origObject != null) {
                 if (origObject instanceof YukonPAObject)
-                    routeToEditor(((YukonPAObject) origObject).getPAObjectID()
-                                                              .intValue());
+                    routeToEditor(((YukonPAObject) origObject).getPAObjectID());
                 else
-                    routeToEditor(((PointBase) origObject).getPoint()
-                                                          .getPointID()
-                                                          .intValue());
+                    routeToEditor(((PointBase) origObject).getPoint().getPointID());
             } else {
                 message.setDetail(NULL_COPY_OBJECT);
                 FacesContext.getCurrentInstance().addMessage("copy_object",
@@ -141,17 +128,9 @@ public class DBCopyForm extends DBEditorForm {
         FacesMessage facesMessage = new FacesMessage();
 
         if (copyObject != null) {
-            if (CBCCopyUtils.isPoint(copyObject)) {
-                routeToPointEditor(copyPaobjectID);
-            } else {
-                routeToCBCEditor(copyPaobjectID);
-            }
+            routeToCBCEditor(copyPaobjectID);
         } else if (origObject != null) {
-            if (CBCCopyUtils.isPoint(origObject)) {
-                routeToPointEditor(copyPaobjectID);
-            } else {
-                routeToCBCEditor(copyPaobjectID);
-            }
+            routeToCBCEditor(copyPaobjectID);
         } else {
             FacesMessage message = facesMessage;
             message.setDetail("Could not route - object is null");
@@ -171,21 +150,6 @@ public class DBCopyForm extends DBEditorForm {
             currentContext.getExternalContext().redirect(red);
             currentContext.responseComplete();
         } catch (Exception e) {
-            CTILogger.error("DBCopyForm.routeToEditor. ERROR - " + e.getMessage());
-        }
-    }
-
-    /**
-     * @param copyPaobjectID
-     */
-    private void routeToPointEditor(int copyPaobjectID) {
-        String red = "pointBase.jsf?itemid=" + copyPaobjectID;
-        try {
-            FacesContext.getCurrentInstance()
-                        .getExternalContext()
-                        .redirect(red);
-            FacesContext.getCurrentInstance().responseComplete();
-        } catch (IOException e) {
             CTILogger.error("DBCopyForm.routeToEditor. ERROR - " + e.getMessage());
         }
     }

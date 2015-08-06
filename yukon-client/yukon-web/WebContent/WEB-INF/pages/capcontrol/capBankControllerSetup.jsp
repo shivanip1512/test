@@ -3,6 +3,8 @@
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
 <%/*TODO This probably isn't necessary!  */
     CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
     String itemid = JSFParamUtil.getJSFReqParam("itemid");
@@ -261,21 +263,15 @@
 							</f:facet>
 						</x:tree2>
 					</x:div>
+
+                    <f:verbatim>
+                        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                            <tags:pointCreation paoId="${capControlForm.itemId}"/>
+                        </cti:checkRolesAndProperties>
+                    </f:verbatim>
+
 				</x:htmlTag>
 			</x:panelGroup>
-			<x:htmlTag value="br"/>
-			<h:outputText styleClass="tableHeader" value="Point Editor" rendered="#{capControlForm.editingAuthorized}"/>
-			<x:commandLink id="addPtLnk" value="Add Point"
-                rendered="#{capControlForm.editingAuthorized}"
-				actionListener="#{capControlForm.CBControllerEditor.addPointClick}">
-				<f:param name="parentId"
-					value="#{capControlForm.CBControllerEditor.paoCBC.PAObjectID}" />
-			</x:commandLink>
-			<x:outputText value=" | " rendered="#{capControlForm.editingAuthorized}"/>
-			<x:commandLink id="deletePtLnk" value="Delete Point"
-                rendered="#{capControlForm.editingAuthorized}"
-				actionListener="#{capControlForm.CBControllerEditor.deletePointClick}">
-			</x:commandLink>
             <x:htmlTag value="br"/>
             <x:htmlTag value="br"/>
             <x:panelGroup rendered="#{capControlForm.CBControllerEditor.twoWay}">

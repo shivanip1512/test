@@ -85,10 +85,8 @@ public class ResultsController {
         model.addAttribute("lastSubKey", CCSessionInfo.STR_SUBID);
         
         String label = srchCriteria;
-        boolean orphan = true;
         
-        List<LiteWrapper> items = Lists.newArrayList();
-        List<LiteCapControlObject> ccObjects = null;
+        List<LiteCapControlObject> ccObjects = new ArrayList<>();
         SearchType searchType = null;
 
         if( CBCWebUtils.TYPE_ORPH_SUBSTATIONS.equals(srchCriteria) ) {
@@ -131,56 +129,29 @@ public class ResultsController {
         model.addAttribute("label", label);
         
         List<ResultRow> results = new ArrayList<ResultRow>();
-        if (ccObjects == null) {
-            for (LiteWrapper item : items) {
-                ResultRow row = new ResultRow();
-                row.setName(item.toString());
-                row.setItemId(item.getItemID());
-                row.setIsPaobject(item.getLiteType() == LiteTypes.YUKON_PAOBJECT);
-                
-                boolean isController = CapControlUtils.isController(item.getItemID());
-                row.setIsController(isController);
-                
-                boolean isPoint = item.getParentID() != CtiUtilities.NONE_ZERO_ID;
-                String parentString = (!isPoint) ? capcontrolUrlService.printPAO(request, item.getItemID()) :  capcontrolUrlService.printPoint(item.getItemID());
-                row.setParentString(parentString);
-                row.setParentId(item.getParentID());
-                row.setItemDescription(item.getDescription());
-                
-                String displayableType = getDisplayableType(searchType, item.getItemType());
-                row.setItemType(displayableType);
-                
-                results.add(row);
-            }
-        } else {
-            for (LiteCapControlObject item : ccObjects) {
-                ResultRow row = new ResultRow();
-                row.setName(item.getName());
-                row.setItemId(item.getId());
-                row.setIsPaobject(true);
-                
-                //If this is not a device, it is not a controller. Next call will catch it.
-                PaoType paoType = PaoType.getForDbString(item.getType());
-                boolean isController = CapControlUtils.checkControllerByType(paoType);
-                row.setIsController(isController);
-                
-                String parentString = CapControlUrlService.ORPH_STRING;
-                if (!orphan) {
-                    parentString = capcontrolUrlService.printPAO(request, item.getId());
-                }
-                row.setParentString(parentString);
-                row.setParentId(item.getParentId());
-                row.setItemDescription(item.getDescription());
-                
-                String displayableType = getDisplayableType(searchType, item.getType());
-                row.setItemType(displayableType);
-                
-                results.add(row);
-            }
+        for (LiteCapControlObject item : ccObjects) {
+            ResultRow row = new ResultRow();
+            row.setName(item.getName());
+            row.setItemId(item.getId());
+            row.setIsPaobject(true);
+            
+            //If this is not a device, it is not a controller. Next call will catch it.
+            PaoType paoType = PaoType.getForDbString(item.getType());
+            boolean isController = CapControlUtils.checkControllerByType(paoType);
+            row.setIsController(isController);
+            
+            String parentString = CapControlUrlService.ORPH_STRING;
+            row.setParentString(parentString);
+            row.setParentId(item.getParentId());
+            row.setItemDescription(item.getDescription());
+            
+            String displayableType = getDisplayableType(searchType, item.getType());
+            row.setItemType(displayableType);
+            
+            results.add(row);
         }
         
         model.addAttribute("results", results);
-        model.addAttribute("resultsFound", results.size());
         
         String urlParams = request.getQueryString();
         String requestURI = request.getRequestURI() + ((urlParams != null) ? "?" + urlParams : "");

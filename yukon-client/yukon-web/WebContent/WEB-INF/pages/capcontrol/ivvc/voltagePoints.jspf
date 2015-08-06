@@ -51,10 +51,7 @@
                     </div>
                     <div>
                         <strong><i:inline key="yukon.common.point"/></strong>&nbsp;
-                        <cti:url value="/editor/pointBase.jsf" var="pointLink">
-                            <cti:param name="parentId" value="${voltagePoint.parentPaoIdentifier.paoId}"/>
-                            <cti:param name="itemid" value="${voltagePoint.pointId}"/>
-                        </cti:url>
+                        <cti:url var="pointLink" value="/capcontrol/points/${voltagePoint.pointId}" />
                         <a href="${pointLink}">${fn:escapeXml(voltagePoint.pointName)}</a>
                     </div>
 				</td>

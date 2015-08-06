@@ -37,7 +37,7 @@ public class EditorDataModelImpl implements EditorDataModel {
      * @param ae
      */
     public  void goToPointEditor (ActionEvent ae) {
-        JSFParamUtil.goToPointEditor(((YukonPAObject)dbObj).getPAObjectID(), fm);
+        JSFParamUtil.goToPointEditor(fm);
     }
     
     public List <LitePoint> getPaoPoints () {

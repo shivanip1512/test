@@ -49,7 +49,7 @@
     
     <cti:list var="arguments">
         <cti:item value="${label}"/>
-        <cti:item value="${resultsFound}"/>
+        <cti:item value="${fn:length(results)}"/>
     </cti:list>
     <tags:sectionContainer2 nameKey="searchContainer" arguments="${arguments}">
         <c:choose>
@@ -66,7 +66,6 @@
                             <th><i:inline key=".name"/></th>
                             <th><i:inline key=".itemType"/></th>
                             <th><i:inline key=".description"/></th>
-                            <th><i:inline key=".parent"/></th>
                         </tr>
                     </thead>
                     <tfoot></tfoot>
@@ -75,43 +74,25 @@
                             <tr>
                                 <td>
                                     <c:choose>
-                                        <c:when test="${row.paobject}">
-                                            <c:choose>
-                                                <c:when test="${row.itemType == 'PO_REGULATOR' ||
-                                                                row.itemType == 'GO_REGULATOR' ||
-                                                                row.itemType == 'LTC'}">
-                                                    <cti:url var="viewUrl" value="/capcontrol/regulators/${row.itemId}" />
-                                                    <a href="${viewUrl}">${fn:escapeXml(row.name)}</a>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                                                        <cti:url var="resultUrl" value="/editor/cbcBase.jsf">
-                                                            <cti:param name="type" value="2"/>
-                                                            <cti:param name="itemid" value="${row.itemId}"/>
-                                                        </cti:url>
-                                                        <a href="${resultUrl}" class="tierIconLink">
-                                                            ${fn:escapeXml(row.name)}
-                                                        </a>
-                                                    </cti:checkRolesAndProperties>
-                                                </c:otherwise>
-                                            </c:choose>
+                                        <c:when test="${row.itemType == 'PO_REGULATOR' ||
+                                                        row.itemType == 'GO_REGULATOR' ||
+                                                        row.itemType == 'LTC'}">
+                                            <cti:url var="viewUrl" value="/capcontrol/regulators/${row.itemId}" />
+                                            <a href="${viewUrl}">${fn:escapeXml(row.name)}</a>
                                         </c:when>
                                         <c:otherwise>
                                             <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                                                <cti:url var="resultUrl" value="/editor/pointBase.jsf">
-                                                    <cti:param name="parentId" value="${row.parentId}"/>
-                                                    <cti:param name="itemid=" value=""/>
+                                                <cti:url var="resultUrl" value="/editor/cbcBase.jsf">
+                                                    <cti:param name="type" value="2"/>
+                                                    <cti:param name="itemid" value="${row.itemId}"/>
                                                 </cti:url>
-                                                <a href="${resultUrl}" class="tierIconLink">
-                                                    ${fn:escapeXml(row.name)}
-                                                </a>
+                                                <a href="${resultUrl}">${fn:escapeXml(row.name)}</a>
                                             </cti:checkRolesAndProperties>
                                         </c:otherwise>
                                     </c:choose>
                                 </td>
                                 <td>${row.itemType}</td>
                                 <td>${fn:escapeXml(row.itemDescription)}</td>
-                                <td>${row.parentString}</td>
                             </tr>
                         </c:forEach>
                     </tbody>

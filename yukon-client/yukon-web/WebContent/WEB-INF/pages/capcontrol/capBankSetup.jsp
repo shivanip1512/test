@@ -2,8 +2,9 @@
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
 <%@ page import="com.cannontech.web.util.*" %>
 <%@ page import="com.cannontech.web.editor.CapControlForm" %>
 <%@ page import="com.cannontech.web.editor.CapBankEditorForm" %>
@@ -236,24 +237,15 @@
                             </f:facet>
                         </x:tree2>
                     </x:div>
+
+                    <f:verbatim>
+                        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                            <tags:pointCreation paoId="${capControlForm.itemId}"/>
+                        </cti:checkRolesAndProperties>
+                    </f:verbatim>
+
                 </x:htmlTag>
             </x:panelGroup>
-
-            <x:htmlTag value="br" />
-
-            <h:outputText styleClass="tableHeader" value="Point Editor: " rendered="#{capControlForm.editingAuthorized}"/>
-
-            <x:commandLink id="addPtLnk" value="Add Point" actionListener="#{capControlForm.pointTreeForm.addPointClick}" rendered="#{capControlForm.editingAuthorized}">
-                <f:param name="parentId" value="#{capControlForm.pointTreeForm.pao.PAObjectID}" />
-                <f:param name="tabId" value="9"/>
-            </x:commandLink>
-
-            <x:outputText value=" | " rendered="#{capControlForm.editingAuthorized}"/>
-
-            <x:commandLink id="deletePtLnk" value="Delete Point" actionListener="#{capControlForm.pointTreeForm.deletePointClick}" rendered="#{capControlForm.editingAuthorized}">
-                <f:param name="tabId" value="9"/>
-            </x:commandLink>
-
         </x:column>
         <x:column>
 

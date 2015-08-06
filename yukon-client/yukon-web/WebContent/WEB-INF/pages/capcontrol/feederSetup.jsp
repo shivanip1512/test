@@ -3,6 +3,7 @@
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <f:verbatim>
 
@@ -139,24 +140,15 @@
                                 </f:facet>
                             </x:tree2>
                         </x:div>
+
+                        <f:verbatim>
+                            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                                <tags:pointCreation paoId="${capControlForm.itemId}"/>
+                            </cti:checkRolesAndProperties>
+                        </f:verbatim>
+
                     </x:htmlTag>
                 </x:panelGroup>
-
-                <x:htmlTag value="br"/>
-
-                <h:outputText styleClass="tableHeader" value="Point Editor: " rendered="#{capControlForm.editingAuthorized}"/>
-
-                <x:commandLink id="addPtLnk" value="Add Point" actionListener="#{capControlForm.pointTreeForm.addPointClick}" rendered="#{capControlForm.editingAuthorized}">
-                    <f:param name="parentId" value="#{capControlForm.pointTreeForm.pao.PAObjectID}" />
-                    <f:param name="tabId" value="6"/>
-                </x:commandLink>
-
-                <x:outputText value=" | " rendered="#{capControlForm.editingAuthorized}"/>
-
-                <x:commandLink id="deletePtLnk" value="Delete Point" actionListener="#{capControlForm.pointTreeForm.deletePointClick}" rendered="#{capControlForm.editingAuthorized}">
-                    <f:param name="tabId" value="6"/>
-                </x:commandLink>
-
             </h:column>
 
             <h:column>

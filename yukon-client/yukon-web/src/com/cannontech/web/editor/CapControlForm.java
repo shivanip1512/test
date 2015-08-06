@@ -1536,32 +1536,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
         return temp.toArray(new LitePoint [temp.size()]);
     }
     
-    public void capBankPointClick (ActionEvent ae){
-        FacesMessage fm = new FacesMessage();
-        try {
-            //make sure the point form will have the pao id
-            //of the cbc 
-            String red = "pointBase.jsf?parentId=" + ((YukonPAObject)getDbPersistent()).getPAObjectID().toString() + "&itemid=";
-            String val = JSFParamUtil.getJSFReqParam("ptID");
-            String location = red + val;
-            //bookmark the current page
-            HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
-            CBCNavigationUtil.bookmarkLocationAndRedirect(location, session);
-            FacesContext.getCurrentInstance().getExternalContext().redirect(location);
-            FacesContext.getCurrentInstance().responseComplete();
-        } 
-        catch (IOException e) {
-            fm.setDetail("ERROR - Couldn't redirect. CBControllerEditor:pointClick. " + e.getMessage());
-        } catch (Exception e) {
-            //add some code to handle null session exception
-        }
-        finally{
-            if(fm.getDetail() != null) {
-                FacesContext.getCurrentInstance().addMessage("point_click", fm);
-            }
-        }
-    }
-
     @Override
     public Map<Integer, String> getPointNameMap () {
 

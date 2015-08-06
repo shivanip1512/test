@@ -98,7 +98,6 @@ public class PointTreeForm {
         pointList = null;
     }
 
-    @SuppressWarnings("unchecked")
     public TreeNode getPointList() {
         if (pointList == null) {
             pointList = new TreeNodeBase("root", "Points", false);
@@ -165,11 +164,13 @@ public class PointTreeForm {
         //save the state of the point tree before changing the page
         saveState(getPointTree());
         try {
-            //make sure the point form will have the pao id
-            //of the cbc 
-            String red = "pointBase.jsf?parentId=" + getPao().getPAObjectID().toString() + "&itemid=";
-            String val = JSFParamUtil.getJSFReqParam("ptID");
-            String location = red + val;            
+
+            String contextPath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
+            String path = "/capcontrol/points/";
+            String pointId = JSFParamUtil.getJSFReqParam("ptID");
+
+            String location = contextPath + path + pointId;
+
             //bookmark the current page
             HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
             CapControlForm form = (CapControlForm) session.getAttribute("capControlForm");

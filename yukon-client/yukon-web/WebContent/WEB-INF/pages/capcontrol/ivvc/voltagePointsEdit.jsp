@@ -48,10 +48,7 @@
                                 <form:hidden path="points[${status.index}].pointName"/>
                                 <spring:escapeBody htmlEscape="true">${voltagePoint.paoName}</spring:escapeBody></td>
                             <td>
-                                <cti:url value="/editor/pointBase.jsf" var="pointLink">
-                                   <cti:param name="parentId" value="${voltagePoint.parentPaoIdentifier.paoId}"/>
-                                   <cti:param name="itemid" value="${voltagePoint.pointId}"/>
-                                </cti:url>
+                                <cti:url var="pointLink" value="/capcontrol/points/${voltagePoint.pointId}" />
                                 <a href="${pointLink}">
                                    <spring:escapeBody htmlEscape="true">${voltagePoint.pointName}</spring:escapeBody>
                                 </a>
