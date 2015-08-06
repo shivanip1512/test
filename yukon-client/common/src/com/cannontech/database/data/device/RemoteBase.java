@@ -56,9 +56,10 @@ public abstract class RemoteBase extends TwoWayDevice {
 
     @Override
     public void delete() throws java.sql.SQLException {
-        int deviceId = getPAObjectID();
+        // paoProperty will be deleted by FK constraint on YukonPaobjects
+        /*int deviceId = getPAObjectID();
         PaoPropertyDao propertyDao = YukonSpringHook.getBean("paoPropertyDao", PaoPropertyDao.class);
-        propertyDao.removeAll(deviceId);
+        propertyDao.removeAll(deviceId);*/
 
         getDeviceDialupSettings().delete();
         getDeviceDirectCommSettings().delete();
