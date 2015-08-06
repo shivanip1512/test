@@ -3,14 +3,18 @@ package com.cannontech.web.tools.trends;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.Date;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
+import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -104,110 +108,271 @@ public class TrendDataController {
     
     @RequestMapping("/trends/{id}/data")
     public @ResponseBody Map<String, Object> trend(YukonUserContext userContext, @PathVariable int id) {
-        
-        boolean showRightAxis = false;
+
         LiteGraphDefinition trend = graphDao.getLiteGraphDefinition(id);
-        List<GraphDataSeries> series = graphDao.getGraphDataSeries(trend.getGraphDefinitionID());
-        List<Map<String, Object>> seriesData = new ArrayList<>();
+        
+        List<GraphDataSeries> graphDataSeriesList = graphDao.getGraphDataSeries(trend.getGraphDefinitionID());
+        
+        List<Map<String, Object>> seriesList = new ArrayList<>();
         
         Duration dbTime = new Duration(0);
-        List<Map<String, Object>> plotLines  = new ArrayList<>();
-        Map<String, Object> yAxisProperties = new HashMap<>();
-        for (GraphDataSeries serie : series) {
-            
-            Map<String, Object> valueMap = new HashMap<>();
-            valueMap.put("name", serie.getLabel());
-            List<Object[]> values = new ArrayList<>();
-            if (serie.getType() == GDSTypes.MARKER_TYPE ) {
-                valueMap.put("threshold-value", serie.getMultiplier());
-                Map<String, Object> plotLineProperties = new HashMap<>();
-                plotLineProperties.put("color",colorPaletteToWeb(serie.getColor()));
-                plotLineProperties.put("width", 2);
-                plotLineProperties.put("value", serie.getMultiplier());
-                plotLines.add(plotLineProperties);
-                yAxisProperties.put("plotLines",plotLines);
-            }
-            Instant end = Instant.now();
-            
-            Instant start = end.minus(Duration.standardDays(365 * 2));
-            Range<Instant> instantRange = new Range<>(start, true, end, true);
-            
-            Instant before = Instant.now();
-            
-            List<PointValueHolder> data = rphDao.getPointData(serie.getPointID(), instantRange, Order.FORWARD);
-            
-            Instant after = Instant.now();
-            Duration dbHit = new Duration(before, after);
-            
-            log.debug("RPH retrieval for point: " + serie.getPointID() + " took " + 
-                    durationFormatting.formatDuration(dbHit, DurationFormat.DHMS_SHORT_REDUCED, userContext));
-            dbTime = dbTime.plus(dbHit);
-            
-            /** If this is a status point we need to turn data grouping off. */
-            if (!data.isEmpty()) {
-                PointType pointType = PointType.getForId(data.get(0).getType());
-                if (pointType.isStatus()) {
-                    valueMap.put("dataGrouping", ImmutableMap.of("enabled", false));
-                }
-            }
-            
-            for (PointValueHolder pvh : data) {
-                Object[] value;
-                if(serie.getType() == GDSTypes.YESTERDAY_TYPE || 
-                   serie.getType() == GDSTypes.YESTERDAY_GRAPH_TYPE)
-                {
-                    DateTime timestamp = new DateTime(pvh.getPointDataTimeStamp().getTime());
-                    timestamp = timestamp.minusDays(1);
-                    value  = new Object[] {timestamp.getMillis() , pvh.getValue()};    
-                }
-                else{
-                    value = new Object[] {pvh.getPointDataTimeStamp().getTime(), pvh.getValue()};    
-                }
-                
-                values.add(value);
-            }
-            
-            valueMap.put("data", values);
-            
-            
-            if (serie.isRight()) {
-                valueMap.put("yAxis", 1);
-                showRightAxis = true;
-            } else {
-               
-                valueMap.put("yAxis", 0);
-            }
-            LegacySeriesType type = LegacySeriesType.getForId(serie.getRenderer());
-            if (type.isBar()) {
-                valueMap.put("type", "column");
-            } else if (type.isStep()) {
-                valueMap.put("step", true);
-            }
-            
-            seriesData.add(valueMap);
-        }
         
-        log.debug("RPH retrieval for trend: " + trend + " took " + 
-                durationFormatting.formatDuration(dbTime, DurationFormat.DHMS_SHORT_REDUCED, userContext));
+        List<Map<String, Object>> plotLines  = new ArrayList<>();
+        
+        Map<String, Object> yAxisProperties = new HashMap<>();
         
         Map<String, Object> json = new HashMap<>();
+        
+        ListIterator<GraphDataSeries> graphDataSeriesItr = graphDataSeriesList.listIterator();
+        
+        boolean showRightAxis = false;
+        
+        while (graphDataSeriesItr.hasNext()) {
+            
+            /*create locals*/
+            GraphDataSeries seriesItem  = graphDataSeriesItr.next();
+            
+            Map<String, Object> seriesProperties = new HashMap<>();
+            Map<String, Object> markerValues = new HashMap<>();
+            /*retrieve data for this series*/
+            Instant end = Instant.now(); 
+            Instant start = end.minus(Duration.standardDays(365 * 2));
+            
+            Range<Instant> instantRange = new Range<>(start, true, end, true);
+            List<PointValueHolder> seriesItemResult = rphDao.getPointData(seriesItem.getPointID(), instantRange, Order.FORWARD);
+            
+            /*log transaction*/
+            dbTime = logRPHPoint(seriesItem.getPointID(), dbTime, durationFormatting, userContext);  
+            
+            seriesProperties.put("name", seriesItem.getLabel() + graphTypeLabel(seriesItem.getType()));
+            seriesProperties.put("color", colorPaletteToWeb(seriesItem.getColor()));
+           
+            /*block for trend data type to data conversion and provider handler*/
+            
+            List<Object[]> data = new ArrayList<>();
+            
+            switch (seriesItem.getType())
+            {
+            case GDSTypes.USAGE_GRAPH_TYPE:
+                data = graphDataProvider(seriesItemResult);
+            break;
+            case GDSTypes.YESTERDAY_GRAPH_TYPE:
+            case GDSTypes.YESTERDAY_TYPE:
+                data = yesterdayGraphDataProvider(seriesItemResult);
+            break;
+            case GDSTypes.DATE_GRAPH_TYPE:
+            case GDSTypes.DATE_TYPE:
+                data = dateGraphDataProvider(seriesItemResult, seriesItem.getSpecificDate());
+            break;
+            case GDSTypes.PEAK_GRAPH_TYPE:
+            /*case GDSTypes.PEAK_TYPE:
+                values =  graphDataProvider(data);
+                seriesProperties.put("lineWidth", 0);
+                markerValues.put("enabled", true);
+                markerValues.put("radius", 2);
+                seriesProperties.put("marker", markerValues);
+                if(!json.containsKey("rangeSelector"))
+                {
+                    Map<String, Object> rangeSelectorValues = new HashMap<>();
+                    rangeSelectorValues.put("selected", 2);
+                    json.put("rangeSelector", rangeSelectorValues);
+                }
+            break;*/
+            case GDSTypes.GRAPH_TYPE:
+                data = graphDataProvider(seriesItemResult);
+            break;
+            case GDSTypes.MARKER_TYPE:
+                seriesProperties.put("threshold-value", seriesItem.getMultiplier());
+                Map<String, Object> plotLineProperties = new HashMap<>();
+                plotLineProperties.put("color",colorPaletteToWeb(seriesItem.getColor()));
+                plotLineProperties.put("width", 2);
+                plotLineProperties.put("value", seriesItem.getMultiplier());
+                plotLines.add(plotLineProperties);
+                yAxisProperties.put("plotLines",plotLines);
+            break;
+            }
+            
+            seriesProperties.put("data", data);
+            
+            if (seriesItem.isRight()) {
+                seriesProperties.put("yAxis", 1);
+                showRightAxis = true;
+            }
+            else{
+                seriesProperties.put("yAxis",0);
+            }
+            LegacySeriesType type = LegacySeriesType.getForId(seriesItem.getRenderer());
+            if (type.isBar()) {
+                seriesProperties.put("type", "column");
+            } else if (type.isStep()) {
+                seriesProperties.put("step", true);
+            }
+            /** If this is a status point we need to turn data grouping off.
+             * edge case!!
+             * */
+            if (!seriesItemResult.isEmpty()) {
+                if (PointType.getForId(seriesItemResult.get(0).getType()).isStatus()) {
+                    seriesProperties.put("dataGrouping", ImmutableMap.of("enabled", false));
+                }
+            }
+            seriesList.add(seriesProperties);
+        }
+        
+        /*log transaction*/
+        dbTime  = logRPHTrend(trend, dbTime, durationFormatting, userContext);
+        
         json.put("name", trend.getName());
-        json.put("series", seriesData);
+        json.put("series", seriesList);
         
         List<Map<String, Object>> yAxis = new ArrayList<>();
-        //Map<String, Object> primaryAxis = new HashMap<>();
         ImmutableMap<String, ImmutableMap<String, String>> labels = ImmutableMap.of("style", ImmutableMap.of("color", "#555"));
-        //primaryAxis.put("labels", labels);
         yAxisProperties.put("labels", labels);
         yAxis.add(yAxisProperties);
         
         if (showRightAxis) {
-            addRightAxis(userContext, seriesData, yAxis, labels);
+            addRightAxis(userContext, seriesList, yAxis, labels);
         }
         json.put("yAxis", yAxis);
         
         return json;
     }
+    
+    private static Duration logRPHPoint(int pointId, Duration duration ,DurationFormattingService durationFormatting, YukonUserContext userContext)
+    {
+        Instant before = Instant.now();
+        Instant after = Instant.now();
+        Duration dbHit = new Duration(before, after);
+        log.debug("RPH retrieval for point: " + pointId + " took " + 
+                durationFormatting.formatDuration(dbHit, DurationFormat.DHMS_SHORT_REDUCED, userContext));
+        return duration.plus(dbHit);
+    }
+    
+    private static Duration logRPHTrend(LiteGraphDefinition trend, Duration duration ,DurationFormattingService durationFormatting, YukonUserContext userContext)
+    {
+        Instant before = Instant.now();
+        Instant after = Instant.now();
+        Duration dbHit = new Duration(before, after);
+        log.debug("RPH retrieval for trend: " + trend + " took " + 
+                durationFormatting.formatDuration(dbHit, DurationFormat.DHMS_SHORT_REDUCED, userContext));
+        return duration.plus(dbHit);
+    }
+    
+    private List<Object[]> yesterdayGraphDataProvider(List<PointValueHolder> data){
+        log.debug("YesterdayDataProvider Called"); 
+        List<Object[]> values = new ArrayList<>();
+        for (PointValueHolder pvh : data) {
+            Object[] value;
+            DateTime timestamp = new DateTime(pvh.getPointDataTimeStamp().getTime());
+            timestamp = timestamp.minusDays(1);
+            value  = new Object[] {timestamp.getMillis() , pvh.getValue()};
+            values.add(value);
+        }
+        return values;
+    }
+    private List<Object[]> peakGraphDataProvider(List<PointValueHolder> data)
+    {
+        log.debug("peakGraphDataProvider Called");
+        List<Object[]> values = new ArrayList<>();
+        ListIterator<PointValueHolder> litr = data.listIterator();
+        Double previous = - 99999999.1;
+        Double previousSlope = 0.0;
+        while(litr.hasNext())
+        {
+            PointValueHolder p = litr.next();
+            
+            if ( previous == - 99999999.1) { previous = p.getValue(); continue; }
+            double slope = p.getValue() - previous;
+            if (slope * previousSlope < 0) { //look for sign changes
+                DateTime item_ts = new DateTime(p.getPointDataTimeStamp().getTime());
+                double item_point = p.getValue();
+                Object[] value = new Object[]{item_ts.getMillis(), item_point};
+                values.add(value);
+            }
+                previousSlope = slope;
+                previous = p.getValue();
+            }
+        return values;
+    }
+    
+    private List<Object[]> dateGraphDataProvider(List<PointValueHolder> data, Date date){
+       log.debug("dateGraphDataProvider Called");
+       List<Object[]> values = new ArrayList<>();
+       DateTime dateTime = new DateTime(date);
+       DateTime dateLimit = new DateTime(data.get(data.size() -1).getPointDataTimeStamp()); 
+       long timestamp_start = dateTime.getMillis();
+       long timestamp_end = dateTime.plusDays(1).getMillis();
+       log.debug("dateGraphDataProvider:timestamp_start:"+ dateTime.toString());
+       log.debug("dateGraphDataProvider:timestamp_end:"+ dateLimit.toString());
+       int days = Days.daysBetween(dateTime, dateLimit).getDays();
+       log.debug("dateGraphDataProvider:number of days:"+ days);
+       
+       List<PointValueHolder> rangeList = new ArrayList<>();
+       ListIterator<PointValueHolder> litr = data.listIterator();
+       while(litr.hasNext())
+       {
+           PointValueHolder pvh = litr.next();
+           DateTime item_ts = new DateTime(pvh.getPointDataTimeStamp().getTime());
+           long compare_ts = item_ts.getMillis(); 
+           if(compare_ts >= timestamp_start && compare_ts <= timestamp_end)
+           {
+                rangeList.add(pvh);
+           }
+           
+       }
+       log.debug("dateGraphDataProvider:rangeList Amount:"+ rangeList.size());
+       int daysCtr = 0;
+       while(daysCtr <= days)
+       {
+           litr = rangeList.listIterator();
+           while(litr.hasNext())
+           {
+               PointValueHolder pvh = litr.next();
+               DateTime item_ts = new DateTime(pvh.getPointDataTimeStamp().getTime());
+               item_ts = item_ts.plusDays(daysCtr);
+               double item_point = pvh.getValue();
+               Object[] value = new Object[]{item_ts.getMillis(), item_point};
+               values.add(value);
+           }
+           daysCtr++;
+       }
+
+        return values;
+    }
+    
+    private List<Object[]> graphDataProvider(List<PointValueHolder> data){
+        List<Object[]> values = new ArrayList<>();
+        for (PointValueHolder pvh : data) {
+            Object[] value;
+            value = new Object[] {pvh.getPointDataTimeStamp().getTime(), pvh.getValue()};    
+            values.add(value);
+        }
+        return values;
+    }
+    
+    private String graphTypeLabel(int graphType)
+    {
+        String retval = ":" + GDSTypes.BASIC_GRAPH_TYPE_STRING;
+        switch(graphType){
+        case GDSTypes.DATE_GRAPH_TYPE:
+            retval = ":" + GDSTypes.DATE_GRAPH_TYPE_STRING;
+        break;
+        
+        case GDSTypes.PEAK_GRAPH_TYPE:
+            retval = ":" + GDSTypes.PEAK_GRAPH_TYPE_STRING;
+        break;
+        
+        case GDSTypes.USAGE_GRAPH_TYPE:
+            retval = ":" + GDSTypes.USAGE_GRAPH_TYPE_STRING;
+        break;
+        
+        case GDSTypes.YESTERDAY_GRAPH_TYPE:
+            retval = ":" + GDSTypes.YESTERDAY_GRAPH_TYPE_STRING;
+        break;
+        
+        }
+        return retval;
+    }
+    
     private String colorPaletteToWeb(int color){
         String retval = "#FFFFFF";
         switch(color)
@@ -244,7 +409,7 @@ public class TrendDataController {
         
     }
     /** Add a secondary Y axis to the right side of the graph */
-    private void addRightAxis(YukonUserContext userContext, List<Map<String, Object>> seriesData, 
+    private void addRightAxis(YukonUserContext userContext, List<Map<String, Object>> seriesList, 
             List<Map<String, Object>> yAxis, 
             ImmutableMap<String, ImmutableMap<String, String>> labels) {
         
@@ -257,7 +422,7 @@ public class TrendDataController {
         secondaryAxis.put("opposite", true);
         yAxis.add(secondaryAxis);
         
-        for (Map<String, Object> serieData : seriesData) {
+        for (Map<String, Object> serieData : seriesList) {
             boolean isRight = (Integer)serieData.get("yAxis") == 1;
             serieData.put("name", serieData.get("name") + " - " + (isRight ? right : left));
         }

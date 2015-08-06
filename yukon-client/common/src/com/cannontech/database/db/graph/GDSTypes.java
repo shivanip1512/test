@@ -29,6 +29,7 @@ public interface GDSTypes
 	public static final String BASIC_GRAPH_TYPE_STRING = "Graph";
 	public static final String USAGE_GRAPH_TYPE_STRING = "Usage Graph";
 	public static final String PEAK_GRAPH_TYPE_STRING = "Peak Graph";
+	public static final String DATE_GRAPH_TYPE_STRING = "Date Graph";
 	public static final String YESTERDAY_GRAPH_TYPE_STRING = "Yesterday";
 	
 	
