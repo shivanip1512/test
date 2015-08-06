@@ -99,10 +99,14 @@ public class AssetAvailabilityPingServiceImpl implements AssetAvailabilityPingSe
     @Override
     public AssetAvailabilityReadResult getReadResult(int paoId) {
         String resultId = paoIdToResultIdMap.get(paoId);
-        if(resultId == null) {
+        if (resultId == null) {
+            return null;
+        } else if (recentResultsCache.getCompletedKeys().contains(resultId) || recentResultsCache.getPendingKeys()
+                                                                                                 .contains(resultId)) {
+            return recentResultsCache.getResult(resultId);
+        } else {
             return null;
         }
-        return recentResultsCache.getResult(resultId);
     }
     
     private SpecificDeviceErrorDescription getBadRelayError(int relay) {
