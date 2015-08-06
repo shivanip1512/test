@@ -70,8 +70,6 @@ public enum SiteMapPage implements DisplayableEnum {
             MatchStyle.all, YukonRoleProperty.CAP_CONTROL_ACCESS, YukonRoleProperty.CAP_CONTROL_IMPORTER),
     IVVC_REPORTS(SiteMapCategory.VV, "yukon.web.menu.config.reporting.reports.capcontrol", "/analysis/Reports.jsp?groupType=CAP_CONTROL",
             MatchStyle.all, YukonRoleProperty.CAP_CONTROL_REPORTS_GROUP),
-    ESUB(SiteMapCategory.VV, "yukon.web.esubstation", "/esub/home",
-            MatchStyle.all, YukonRoleProperty.OPERATOR_ESUBSTATION_DRAWINGS_VIEW),
     CREATE_ACCOUNT(SiteMapCategory.ASSETS, "yukon.web.modules.operator.account.CREATE.pageName", "/stars/operator/account/accountCreate",
             MatchStyle.all, OtherPermission.EC_OPERATOR, YukonRoleProperty.OPERATOR_NEW_ACCOUNT_WIZARD),
     ACCOUNTS_AND_INVENTORY(SiteMapCategory.ASSETS, "yukon.web.modules.operator.inventory.home.pageName", "/stars/operator/inventory/home",

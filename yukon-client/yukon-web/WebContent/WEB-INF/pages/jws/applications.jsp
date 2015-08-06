@@ -33,21 +33,13 @@
         </a>
     </div>
 </cti:checkRolesAndProperties>
+</div>
 
+<div style="display:inline-block; float:left; width:50%;">
 <cti:checkRolesAndProperties value="TRENDING">
     <div class="stacked js-close clearfix">
         <a href="<cti:url value="/jws/trending.jnlp"/>">
             <i class="icon icon-32 icon-32-trending"></i>Trending
-        </a>
-    </div>
-</cti:checkRolesAndProperties>
-</div>
-
-<div style="display:inline-block; float:left; width:50%;">
-<cti:checkRolesAndProperties value="APPLICATION_ESUBSTATION_EDITOR">
-    <div class="stacked js-close clearfix">
-        <a href="<cti:url value="/jws/esub.jnlp"/>">
-            <i class="icon icon-32 icon-32-esub"></i>eSubstation Editor
         </a>
     </div>
 </cti:checkRolesAndProperties>
@@ -60,4 +52,3 @@
     </div>
 </cti:checkRolesAndProperties>
 </div>
-
