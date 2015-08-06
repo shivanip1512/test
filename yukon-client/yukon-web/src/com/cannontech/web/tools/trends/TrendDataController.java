@@ -113,6 +113,8 @@ public class TrendDataController {
         
         List<GraphDataSeries> graphDataSeriesList = graphDao.getGraphDataSeries(trend.getGraphDefinitionID());
         
+        List<GraphDataSeries> dateGraphDataSeriesList = new ArrayList<>();
+        
         List<Map<String, Object>> seriesList = new ArrayList<>();
         
         Duration dbTime = new Duration(0);
@@ -128,44 +130,37 @@ public class TrendDataController {
         boolean showRightAxis = false;
         
         while (graphDataSeriesItr.hasNext()) {
-            
             /*create locals*/
             GraphDataSeries seriesItem  = graphDataSeriesItr.next();
+            if(seriesItem.getType().equals(GDSTypes.DATE_GRAPH_TYPE) || seriesItem.getType().equals(GDSTypes.DATE_TYPE))
+            {
+                dateGraphDataSeriesList.add(seriesItem);
+                continue;
+            }
             
             Map<String, Object> seriesProperties = new HashMap<>();
-            Map<String, Object> markerValues = new HashMap<>();
-            /*retrieve data for this series*/
-            Instant end = Instant.now(); 
-            Instant start = end.minus(Duration.standardDays(365 * 2));
+
+            List<PointValueHolder> seriesItemResult = new ArrayList<>();  
             
-            Range<Instant> instantRange = new Range<>(start, true, end, true);
-            List<PointValueHolder> seriesItemResult = rphDao.getPointData(seriesItem.getPointID(), instantRange, Order.FORWARD);
-            
-            /*log transaction*/
-            dbTime = logRPHPoint(seriesItem.getPointID(), dbTime, durationFormatting, userContext);  
-            
-            seriesProperties.put("name", seriesItem.getLabel() + graphTypeLabel(seriesItem.getType()));
-            seriesProperties.put("color", colorPaletteToWeb(seriesItem.getColor()));
-           
-            /*block for trend data type to data conversion and provider handler*/
-            
-            List<Object[]> data = new ArrayList<>();
+            List<Object[]> data = new ArrayList<>(); 
             
             switch (seriesItem.getType())
             {
             case GDSTypes.USAGE_GRAPH_TYPE:
+                seriesItemResult = rawPointHistoryDataProvider(seriesItem.getPointID());
+                dbTime = logRPHPoint(seriesItem.getPointID(), dbTime, durationFormatting, userContext);
                 data = graphDataProvider(seriesItemResult);
             break;
             case GDSTypes.YESTERDAY_GRAPH_TYPE:
             case GDSTypes.YESTERDAY_TYPE:
+                seriesItemResult = rawPointHistoryDataProvider(seriesItem.getPointID());
+                dbTime = logRPHPoint(seriesItem.getPointID(), dbTime, durationFormatting, userContext);
                 data = yesterdayGraphDataProvider(seriesItemResult);
             break;
-            case GDSTypes.DATE_GRAPH_TYPE:
-            case GDSTypes.DATE_TYPE:
-                data = dateGraphDataProvider(seriesItemResult, seriesItem.getSpecificDate());
-            break;
+            
             case GDSTypes.PEAK_GRAPH_TYPE:
             /*case GDSTypes.PEAK_TYPE:
+             * Map<String, Object> markerValues = new HashMap<>();
                 values =  graphDataProvider(data);
                 seriesProperties.put("lineWidth", 0);
                 markerValues.put("enabled", true);
@@ -179,6 +174,8 @@ public class TrendDataController {
                 }
             break;*/
             case GDSTypes.GRAPH_TYPE:
+                seriesItemResult = rawPointHistoryDataProvider(seriesItem.getPointID());
+                dbTime = logRPHPoint(seriesItem.getPointID(), dbTime, durationFormatting, userContext);
                 data = graphDataProvider(seriesItemResult);
             break;
             case GDSTypes.MARKER_TYPE:
@@ -215,9 +212,42 @@ public class TrendDataController {
                     seriesProperties.put("dataGrouping", ImmutableMap.of("enabled", false));
                 }
             }
+            seriesProperties.put("name", seriesItem.getLabel() + graphTypeLabel(seriesItem.getType()));
+            seriesProperties.put("color", colorPaletteToWeb(seriesItem.getColor()));
             seriesList.add(seriesProperties);
         }
-        
+
+        graphDataSeriesItr = dateGraphDataSeriesList.listIterator();
+        while (graphDataSeriesItr.hasNext()) {
+            GraphDataSeries seriesItem  = graphDataSeriesItr.next();
+            
+            Map<String, Object> seriesProperties = new HashMap<>();
+            
+            List<PointValueHolder> seriesItemResult = new ArrayList<>();
+            
+            List<Object[]> data = new ArrayList<>();
+            
+            seriesItemResult = rawPointHistoryDataProvider(seriesItem.getPointID());
+            dbTime = logRPHPoint(seriesItem.getPointID(), dbTime, durationFormatting, userContext);
+            data = dateGraphDataProvider(seriesItemResult, seriesItem.getSpecificDate());
+            seriesProperties.put("data", data);
+            
+            if (seriesItem.isRight()) {
+                seriesProperties.put("yAxis", 1);
+                showRightAxis = true;
+            }
+            else{
+                seriesProperties.put("yAxis",0);
+            }
+            if (!seriesItemResult.isEmpty()) {
+                if (PointType.getForId(seriesItemResult.get(0).getType()).isStatus()) {
+                    seriesProperties.put("dataGrouping", ImmutableMap.of("enabled", false));
+                }
+            }
+            seriesProperties.put("name", seriesItem.getLabel() + graphTypeLabel(seriesItem.getType()));
+            seriesProperties.put("color", colorPaletteToWeb(seriesItem.getColor()));
+            seriesList.add(seriesProperties);
+        }
         /*log transaction*/
         dbTime  = logRPHTrend(trend, dbTime, durationFormatting, userContext);
         
@@ -237,6 +267,14 @@ public class TrendDataController {
         return json;
     }
     
+    private  List<PointValueHolder> rawPointHistoryDataProvider(int pointId)
+    {
+        Instant end = Instant.now(); 
+        Instant start = end.minus(Duration.standardDays(365 * 2));
+        Range<Instant> instantRange = new Range<>(start, true, end, true);
+        return rphDao.getPointData( pointId, instantRange, Order.FORWARD);
+    } 
+   
     private static Duration logRPHPoint(int pointId, Duration duration ,DurationFormattingService durationFormatting, YukonUserContext userContext)
     {
         Instant before = Instant.now();
