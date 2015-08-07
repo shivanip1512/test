@@ -29,7 +29,7 @@ public class GroupValidatorController {
 
     @RequestMapping(value="device-group", method=RequestMethod.POST)
     public void deviceGroup(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Map<String, Object> collectionAttributes = new HashMap<>();
+        Map<String,String> collectionAttributes = new HashMap<>();
         
         try {
             if (!ServletFileUpload.isMultipartContent(request)) {
@@ -46,7 +46,6 @@ public class GroupValidatorController {
             DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
             collectionAttributes.putAll(deviceCollection.getCollectionParameters());
             collectionAttributes.put("deviceCount", Long.toString(deviceCollection.getDeviceCount(), 10));
-            collectionAttributes.put("deviceErrorCount", deviceCollection.getDeviceErrorCount());
         } catch (DeviceCollectionCreationException e) {
             collectionAttributes.put("error", e.getMessage());
         } catch (IllegalArgumentException e) {

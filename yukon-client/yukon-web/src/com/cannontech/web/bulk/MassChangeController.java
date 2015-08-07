@@ -1,7 +1,6 @@
 package com.cannontech.web.bulk;
 
 import java.util.List;
-import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -12,7 +11,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.callbackResult.MassChangeCallbackResult;
@@ -40,16 +38,12 @@ public class MassChangeController {
      * @throws ServletRequestBindingException 
      */
     @RequestMapping("massChangeSelect")
-    public String massChangeSelect(ModelMap model, HttpServletRequest request,
-            @RequestParam(value = "errorDevices", required = false) Set<String> errors)
-            throws ServletRequestBindingException, DeviceCollectionCreationException {
+    public String massChangeSelect(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException, DeviceCollectionCreationException {
         
         // pass along deviceCollection
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         model.addAttribute("deviceCollection", deviceCollection);
-        model.addAttribute("deviceErrors", errors);
-        if (null != errors)
-            model.addAttribute("deviceErrorCount", errors.size());
+        
         // available mass change operations
         List<BulkField<?, ?>> massChangableBulkFields = bulkFieldService.getMassChangableBulkFields();
         model.addAttribute("massChangableBulkFields", massChangableBulkFields);
@@ -62,16 +56,12 @@ public class MassChangeController {
     
     // VIEW RESULTS
     @RequestMapping("massChangeResults")
-    public String massChangeResults(ModelMap model, HttpServletRequest request,
-            @RequestParam(value = "errorDevices", required = false) Set<String> errors)
-            throws ServletRequestBindingException {
+    public String massChangeResults(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException  {
 
         // result info
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
         MassChangeCallbackResult callbackResult = (MassChangeCallbackResult)recentResultsCache.getResult(resultsId);
-        model.addAttribute("deviceErrors", errors);
-        if(null!=errors)
-        model.addAttribute("deviceErrorCount",errors.size());
+        
         // results
         model.addAttribute("deviceCollection", callbackResult.getDeviceCollection());
         model.addAttribute("massChangeBulkFieldName", callbackResult.getMassChangeBulkFieldColumnHeader().getFieldName());

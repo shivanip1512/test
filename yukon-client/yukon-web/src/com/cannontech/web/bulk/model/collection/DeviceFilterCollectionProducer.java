@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -128,26 +127,6 @@ public class DeviceFilterCollectionProducer implements DeviceCollectionProducer,
                 List<YukonMeter> resultList = searchResult.getResultList();
                 List<SimpleDevice> result = PaoUtils.asSimpleDeviceListFromPaos(resultList);
                 return result;
-            }
-
-            @Override
-            public Set<String> getErrorDevices() {
-                return null;
-            }
-
-            @Override
-            public int getDeviceErrorCount() {
-                return 0;
-            }
-
-            @Override
-            public String getUploadFileName() {
-                return null;
-            }
-
-            @Override
-            public String getHeader() {
-                return null;
             }
             
         };

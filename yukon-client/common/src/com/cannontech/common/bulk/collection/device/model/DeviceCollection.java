@@ -3,7 +3,6 @@ package com.cannontech.common.bulk.collection.device.model;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.context.MessageSourceResolvable;
 
@@ -61,29 +60,4 @@ public interface DeviceCollection extends Iterable<SimpleDevice> {
      * Get the DeviceCollectionType of this collection.
      */
     public DeviceCollectionType getCollectionType();
-    
-    /**
-     * Method to get the complete list of devices in this collection - for large
-     * collections this method may take a while to return the list
-     * @return List of yukon devices in this collection
-     */
-    public Set<String> getErrorDevices();
-    
-    /**
-     * Method to get just the count of number of devices that are in error are in the collection.
-     * @return Count of how many devices are in the collection
-     */
-    public int getDeviceErrorCount();
-    
-    /**
-     * Method to get upload file name.
-     * @return Name of the file to be uploaded
-     */
-    public String getUploadFileName();
-    
-    /**
-     * Method to get header.
-     * @return Header 
-     */
-    public String getHeader();
 }

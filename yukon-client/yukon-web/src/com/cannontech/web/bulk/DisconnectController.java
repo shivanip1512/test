@@ -3,7 +3,6 @@ package com.cannontech.web.bulk;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
@@ -50,15 +48,12 @@ public class DisconnectController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     @RequestMapping("home")
-    public String home(ModelMap model, DeviceCollection deviceCollection,
-            @RequestParam(value = "errorDevices", required = false) Set<String> errors) throws ServletException {
+    public String home(ModelMap model, DeviceCollection deviceCollection) throws ServletException {
         model.addAttribute("deviceCollection", deviceCollection);
         if (disconnectService.supportsArm(deviceCollection)) {
             model.addAttribute("displayArmLink", "true");
         }
-        model.addAttribute("deviceErrors", errors);
-        if(null!=errors)
-        model.addAttribute("deviceErrorCount",errors.size());
+       
         return "disconnect/home.jsp";
     }
 

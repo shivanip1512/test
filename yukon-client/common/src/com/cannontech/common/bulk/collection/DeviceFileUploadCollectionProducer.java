@@ -76,10 +76,10 @@ public class DeviceFileUploadCollectionProducer implements DeviceCollectionProdu
             FileMapperEnum uploadType = FileMapperEnum.valueOf(uploadTypeStr);
 
             DeviceResult result = findDevices(dataFile, uploadType);
-
+;
             DeviceCollection groupCollection =
                 deviceGroupCollectionProducer.createDeviceGroupCollection(result.getDevices().iterator(),
-                    dataFile.getOriginalFilename(), result.getErrorDevices(), result.getHeader());
+                    dataFile.getOriginalFilename());
 
             return groupCollection;
 

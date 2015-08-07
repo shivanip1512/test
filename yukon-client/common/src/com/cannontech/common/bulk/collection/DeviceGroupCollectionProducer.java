@@ -42,7 +42,7 @@ public class DeviceGroupCollectionProducer implements DeviceCollectionProducer {
         final String description = ServletRequestUtils.getStringParameter(request, descriptionParameterName);
         final DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
         
-        return deviceGroupCollectionHelper.buildDeviceCollection(group, description, null, null);
+        return deviceGroupCollectionHelper.buildDeviceCollection(group, description);
     }
     
     @Override
@@ -79,7 +79,7 @@ public class DeviceGroupCollectionProducer implements DeviceCollectionProducer {
         }
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
         
-        return deviceGroupCollectionHelper.buildDeviceCollection(group, description, null, null);
+        return deviceGroupCollectionHelper.buildDeviceCollection(group, description);
     }
     
 }

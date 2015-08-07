@@ -149,26 +149,6 @@ public class DeviceMemoryCollectionProducer implements DeviceCollectionProducer 
             public MessageSourceResolvable getDescription() {
                 return new YukonMessageSourceResolvable(keyBase + ".temporary");
             }
-
-            @Override
-            public Set<String> getErrorDevices() {
-                return null;
-            }
-
-            @Override
-            public int getDeviceErrorCount() {
-                return 0;
-            }
-
-            @Override
-            public String getUploadFileName() {
-                return null;
-            }
-
-            @Override
-            public String getHeader() {
-                return null;
-            }
             
         };
         cache.put(key, collection);
@@ -228,26 +208,6 @@ public class DeviceMemoryCollectionProducer implements DeviceCollectionProducer 
             @Override
             public MessageSourceResolvable getDescription() {
                 return new YukonMessageSourceResolvable(keyBase + ".multi");
-            }
-
-            @Override
-            public Set<String> getErrorDevices() {
-                return null;
-            }
-
-            @Override
-            public int getDeviceErrorCount() {
-                return 0;
-            }
-
-            @Override
-            public String getUploadFileName() {
-                return null;
-            }
-
-            @Override
-            public String getHeader() {
-                return null;
             }
             
         };

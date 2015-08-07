@@ -18,8 +18,7 @@ public interface DeviceGroupCollectionHelper {
      * DeviceCollection based on that group.
      * @param descriptionHint If not blank, this is used as the "description" parameter for the DeviceCollection.
      */
-    DeviceCollection createDeviceGroupCollection(Iterator<? extends YukonDevice> deviceIds, String descriptionHint,
-            Set<String> errorDevices, String header);
+    DeviceCollection createDeviceGroupCollection(Iterator<? extends YukonDevice> deviceIds, String descriptionHint);
 
     /**
      * Creates a DeviceCollectionBase from the specified device-group-based DeviceCollection.
@@ -34,8 +33,7 @@ public interface DeviceGroupCollectionHelper {
     /**
      * Creates and returns a DeviceCollection based on the specified DeviceGroup, with the specified description.
      */
-    DeviceCollection buildDeviceCollection(final DeviceGroup group, String descriptionHint, Set<String> errorDevices,
-            String header);
+    DeviceCollection buildDeviceCollection(final DeviceGroup group, String descriptionHint);
     
     /**
      * Creates and returns a DeviceCollection based on a set of DeviceGroups.

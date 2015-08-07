@@ -48,7 +48,7 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
     
     @Override
     public DeviceCollection buildDeviceCollection(final DeviceGroup group) {
-        return buildDeviceCollection(group, null, null, null);
+        return buildDeviceCollection(group, null);
     }
     
     @Override
@@ -73,9 +73,8 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
     }
     
     @Override
-    public DeviceCollection buildDeviceCollection(final DeviceGroup group, final String descriptionHint,
-            Set<String> errorDevices, String header) {
-    
+    public DeviceCollection buildDeviceCollection(final DeviceGroup group, final String descriptionHint) {
+        
         return new ListBasedDeviceCollection() {
             
             @Override
@@ -139,37 +138,12 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
                 return new YukonMessageSourceResolvable(key, group.getFullName());
             }
             
-            @Override
-            public Set<String> getErrorDevices() {
-                return errorDevices;
-            }
-
-            @Override
-            public int getDeviceErrorCount() {
-                if (errorDevices != null) {
-                    return errorDevices.size();
-                }
-                return 0;
-            }
-
-            @Override
-            public String getUploadFileName() {
-
-                return descriptionHint;
-            }
-
-            @Override
-            public String getHeader() {
-                return header;
-            }
-
         };
     }
     
     @Override
     @Transactional
-    public DeviceCollection createDeviceGroupCollection(Iterator<? extends YukonDevice> devices,
-            String descriptionHint, Set<String> errorDevices, String header) {
+    public DeviceCollection createDeviceGroupCollection(Iterator<? extends YukonDevice> devices, String descriptionHint) {
         // step 1, create a new group with random name (will delete itself in 24 hours)
         final StoredDeviceGroup group = temporaryDeviceGroupService.createTempGroup();
         
@@ -177,7 +151,7 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
         deviceGroupMemberEditorDao.addDevices(group, devices);
         
         // step 3, build DeviceCollection
-        DeviceCollection deviceCollection = buildDeviceCollection(group, descriptionHint, errorDevices, header);
+        DeviceCollection deviceCollection = buildDeviceCollection(group, descriptionHint);
         
         return deviceCollection;
     }

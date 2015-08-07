@@ -9,7 +9,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -26,8 +25,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.util.HtmlUtils;
 
 import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
@@ -122,8 +121,7 @@ public class GroupCommanderController {
     }
 
     @RequestMapping("collectionProcessing")
-    public void collectionProcessing(DeviceCollection deviceCollection, YukonUserContext userContext, ModelMap model,
-            @RequestParam(value = "errorDevices", required = false) Set<String> errors)
+    public void collectionProcessing(DeviceCollection deviceCollection, YukonUserContext userContext, ModelMap model)
             throws ServletException {
 
         List<LiteCommand> commands = commandDao.filterCommandsForUser(meterCommands, userContext.getYukonUser());
@@ -132,9 +130,7 @@ public class GroupCommanderController {
         model.addAttribute("email", contactDao.getUserEmail(userContext.getYukonUser()));
         boolean isSmtpConfigured = StringUtils.isBlank(globalSettingDao.getString(GlobalSettingType.SMTP_HOST));
         model.addAttribute("isSmtpConfigured", isSmtpConfigured);
-        model.addAttribute("deviceErrors", errors);
-        if (null != errors)
-            model.addAttribute("deviceErrorCount", errors.size());
+
     }
 
     @RequestMapping("groupProcessing")

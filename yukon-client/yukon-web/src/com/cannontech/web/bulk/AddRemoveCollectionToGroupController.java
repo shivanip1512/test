@@ -1,7 +1,6 @@
 package com.cannontech.web.bulk;
 
 import java.util.Date;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -11,7 +10,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
@@ -28,19 +26,15 @@ public class AddRemoveCollectionToGroupController {
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     
     @RequestMapping("selectGroup")
-    public String selectGroup(ModelMap model, HttpServletRequest request,
-            @RequestParam(value = "errorDevices", required = false) Set<String> errors)
-            throws ServletRequestBindingException {
-
+    public String selectGroup(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
+        
         // pass through device collection
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         model.addAttribute("deviceCollection", deviceCollection);
-        model.addAttribute("deviceErrors", errors);
-        if(null!=errors)
-        model.addAttribute("deviceErrorCount",errors.size());
+        
         String addRemove = ServletRequestUtils.getRequiredStringParameter(request, "addRemove");
         model.addAttribute("addRemove", addRemove);
-
+        
         return "group/selectGroup.jsp";
     }
     

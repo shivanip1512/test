@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.BulkProcessor;
@@ -81,9 +80,7 @@ public abstract class AddRemovePointsControllerBase {
     private Logger log = YukonLogManager.getLogger(AddRemovePointsControllerBase.class);
     
     // ABSTRACT
-    public abstract String home(ModelMap model, HttpServletRequest request,
-            @RequestParam(value = "errorDevices", required = false) Set<String> errors) throws Exception,
-            ServletException;
+    public abstract String home(ModelMap model, HttpServletRequest request) throws Exception, ServletException;
     public abstract String execute(ModelMap model, HttpServletRequest request) throws ServletException, Exception;
     
     protected String redirectWithError(ModelMap model, String errorMsg, DeviceCollection deviceCollection) {
