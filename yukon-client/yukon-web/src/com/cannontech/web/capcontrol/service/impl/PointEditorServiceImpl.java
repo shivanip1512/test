@@ -83,10 +83,10 @@ public class PointEditorServiceImpl implements PointEditorService {
         
         String pointName = messageAccessor.getMessage("yukon.common.point.new");
 
-        int i = 1;
+        int duplicateNumber = 1;
         while (existingPointNames.contains(pointName)) {
-            i++;
-            pointName = messageAccessor.getMessage("yukon.common.point.new.duplicate", i);
+            duplicateNumber++;
+            pointName = messageAccessor.getMessage("yukon.common.point.new.duplicate", duplicateNumber);
         }
 
         PointBase point = PointUtil.createPoint(pointType, pointName, paoId, false);
