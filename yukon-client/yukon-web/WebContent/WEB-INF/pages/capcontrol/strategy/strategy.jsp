@@ -289,8 +289,10 @@
         <div class="page-action-area">
             
             <cti:displayForPageEditModes modes="VIEW">
+            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
                 <cti:url var="editUrl" value="/capcontrol/strategies/${strategy.id}/edit" />
                 <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
+            </cti:checkRolesAndProperties>
             </cti:displayForPageEditModes>
             
             <cti:displayForPageEditModes modes="EDIT,CREATE">

@@ -81,13 +81,11 @@
                                             <a href="${viewUrl}">${fn:escapeXml(row.name)}</a>
                                         </c:when>
                                         <c:otherwise>
-                                            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                                                <cti:url var="resultUrl" value="/editor/cbcBase.jsf">
-                                                    <cti:param name="type" value="2"/>
-                                                    <cti:param name="itemid" value="${row.itemId}"/>
-                                                </cti:url>
-                                                <a href="${resultUrl}">${fn:escapeXml(row.name)}</a>
-                                            </cti:checkRolesAndProperties>
+                                            <cti:url var="resultUrl" value="/editor/cbcBase.jsf">
+                                                <cti:param name="type" value="2"/>
+                                                <cti:param name="itemid" value="${row.itemId}"/>
+                                            </cti:url>
+                                            <a href="${resultUrl}">${fn:escapeXml(row.name)}</a>
                                         </c:otherwise>
                                     </c:choose>
                                 </td>

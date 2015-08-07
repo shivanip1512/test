@@ -208,9 +208,11 @@
                         </table>
                     </c:otherwise>
                 </c:choose>
-                <div class="action-area">
-                    <tags:pointCreation paoId="${areaId}"/>
-                </div>
+                <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                    <div class="action-area">
+                        <tags:pointCreation paoId="${areaId}"/>
+                    </div>
+                </cti:checkRolesAndProperties>
             </cti:tab>
         </cti:tabs>
     </div>

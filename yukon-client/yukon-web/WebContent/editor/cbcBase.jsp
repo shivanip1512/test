@@ -74,6 +74,7 @@
                         title="Writes this item to the database"  rendered = "#{capControlForm.visibleTabs['CBCCapBank'] && capControlForm.editingAuthorized}"/>
                     
                     <f:verbatim>
+                        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
                         <cti:msgScope paths="capcontrol.cbcBase">
                             <%-- Delete Buttons --%>
 
@@ -91,6 +92,7 @@
                                 <cti:button nameKey="copy" href="${copyUrl}"/>
                             </c:if>
                         </cti:msgScope>
+                        </cti:checkRolesAndProperties>
                     </f:verbatim>
 
                     <x:commandButton id="hdr_return_button" value="Return" action="none" styleClass="stdButton" immediate="true" 
@@ -186,6 +188,7 @@
                                 title="Writes this item to the database" rendered = "#{capControlForm.visibleTabs['CBCCapBank'] && capControlForm.editingAuthorized}"/>
                             
                             <f:verbatim>
+                                <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
                                 <cti:msgScope paths="capcontrol.cbcBase">
 
                                     <%-- Delete Buttons --%>
@@ -203,6 +206,7 @@
                                         <cti:button nameKey="copy" href="${copyUrl}"/>
                                     </c:if>
                                 </cti:msgScope>
+                                </cti:checkRolesAndProperties>
                             </f:verbatim>
 
                             <x:commandButton id="return_button" value="Return" action="none" styleClass="stdButton" immediate="true" 

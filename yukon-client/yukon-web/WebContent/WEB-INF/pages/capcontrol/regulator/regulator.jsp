@@ -54,7 +54,9 @@
 <cti:url var="editUrl" value="/capcontrol/regulators/${regulator.id}/edit"/>
 <%-- Page Actions --%>
 <div id="page-actions" class="dn">
-    <cm:dropdownOption icon="icon-pencil" key="yukon.common.edit" href="${editUrl}"/>
+    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+        <cm:dropdownOption icon="icon-pencil" key="yukon.common.edit" href="${editUrl}"/>
+    </cti:checkRolesAndProperties>
     <li class="divider"></li>
     <cti:url var="url" value="/capcontrol/regulators/${regulator.id}/build-mapping-file"/>
     <cm:dropdownOption href="${url}" icon="icon-page-white-excel" key=".attribute.map.file"/>
@@ -159,7 +161,9 @@
     <div class="page-action-area">
         
         <cti:displayForPageEditModes modes="VIEW">
+        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
             <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
+        </cti:checkRolesAndProperties>
         </cti:displayForPageEditModes>
         
         <cti:displayForPageEditModes modes="EDIT,CREATE">
