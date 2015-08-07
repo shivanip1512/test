@@ -31,6 +31,7 @@ void  CtiServer::shutdown()
 void  CtiServer::clientConnect(CtiServer::ptr_type CM)
 {
     CtiServerExclusion server_guard(_server_exclusion);
+    CTILOG_INFO(dout, "Client Connect on handle " << (unsigned long)CM.get() << " for " << CM->getClientName() << " / " << CM->getClientAppId() << " / " << CM->getPeer() << " / " << CM->who());
     mConnectionTable.insert((long)CM.get(), CM);
 }
 
@@ -42,9 +43,9 @@ void CtiServer::clientShutdown(CtiServer::ptr_type CM)
 
         // Must have propagated the shutdown message to the OutThread before this gets called.
         // This call will block until the threads have exited
-        CTILOG_INFO(dout, "Client Shutdown "<< CM->getClientName() <<" / "<< CM->getClientAppId() <<" / "<< CM->getPeer());
+        CTILOG_INFO(dout, "Client Shutdown on handle " << (unsigned long)CM.get() << " for " << CM->getClientName() << " / " << CM->getClientAppId() << " / " << CM->getPeer() << " / " << CM->who());
 
-        mConnectionTable.remove((long)CM.get());  // Get it out of the list, if it is in there.
+        mConnectionTable.remove((unsigned long)CM.get());  // Get it out of the list, if it is in there.
 
         // This connection manager is abandoned now...
         // delete CM;       // Smart Pointer is no longer held here.  It will destruct on last release.
@@ -349,6 +350,9 @@ int  CtiServer::clientConfrontEveryone(PULONG pClientCount)
         if( (Now.seconds() - Mgr->getLastReceiptTime().seconds()) > Mgr->getClientExpirationDelay() )
         {
             Mgr->setClientQuestionable(TRUE);
+            CTILOG_DEBUG(dout, "Sending AreYouThere to " << (unsigned long)Mgr.get() << " for " 
+                << Mgr->getClientName() << " / " << Mgr->getClientAppId() 
+                << " / " << Mgr->getPeer() << " / " << Mgr->who());
 
             CtiCommandMsg *Cmd = CTIDBG_new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15);
 

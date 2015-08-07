@@ -1072,7 +1072,9 @@ void CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                 }
                 else
                 {
-                    CTILOG_ERROR(dout, "Could not find connection for connection handle "<< (long)Cmd->getConnectionHandle());
+                    CTILOG_ERROR(dout, "Could not find connection for connection handle "
+                        << (long)Cmd->getConnectionHandle() 
+                        << " for message " << Cmd->toString());
                 }
             }
             catch(...)
@@ -3557,7 +3559,8 @@ int CtiVanGogh::clientPurgeQuestionables(PULONG pDeadClients)
         {
             if(pDeadClients != NULL) (*pDeadClients)++;
 
-            CTILOG_WARN(dout, "Client did not respond to AreYouThere message. Client "<< Mgr->getClientName() <<" on "<< Mgr->getPeer());
+            CTILOG_WARN(dout, "Client did not respond to AreYouThere message. Client "
+                << Mgr->getClientName() <<" on "<< Mgr->getPeer() << " handle " << (unsigned long)Mgr.get());
 
             clientShutdown(Mgr);
         }
