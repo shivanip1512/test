@@ -118,6 +118,7 @@ template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::op
 template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (int val)              { appendDigit(val); return static_cast<StreamBufferT&>(*this); }
 template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (unsigned int val)     { appendDigit(val); return static_cast<StreamBufferT&>(*this); }
 template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (long val)             { appendDigit(val); return static_cast<StreamBufferT&>(*this); }
+template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (unsigned long long val){ appendDigit(val); return static_cast<StreamBufferT&>(*this); }
 template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (unsigned long val)    { appendDigit(val); return static_cast<StreamBufferT&>(*this); }
 template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (float val)            { appendDigit(val); return static_cast<StreamBufferT&>(*this); }
 template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (double val)           { appendDigit(val); return static_cast<StreamBufferT&>(*this); }

@@ -58,12 +58,13 @@ public:
     StreamBufferT& operator<< (int val);
     StreamBufferT& operator<< (unsigned int val);
     StreamBufferT& operator<< (long val);
+    StreamBufferT& operator<< (unsigned long long val);
     StreamBufferT& operator<< (unsigned long val);
     StreamBufferT& operator<< (float val);
     StreamBufferT& operator<< (double val);
     StreamBufferT& operator<< (long double val);
     StreamBufferT& operator<< (void* ptr);
-    StreamBufferT& operator<< (time_t val);
+    StreamBufferT& operator<< (time_t val); // Same as long long
 
     StreamBufferT& operator<< (std::ostream&  (*pf)(std::ostream&));
     StreamBufferT& operator<< (std::ios&      (*pf)(std::ios&));

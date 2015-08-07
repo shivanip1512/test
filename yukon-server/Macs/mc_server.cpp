@@ -105,6 +105,8 @@ void CtiMCServer::run()
                 if( Cti::isTimeToReportMemory(CtiTime::now()) )
                 {
                     CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
+                    CTILOG_INFO(dout, Cti::reportProcessTimes(CompileInfo));
+                    CTILOG_INFO(dout, Cti::reportProcessorTimes());
                 }
 
                 // Do thread monitor stuff

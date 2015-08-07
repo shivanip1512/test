@@ -109,4 +109,45 @@ std::string reportPrivateBytes(const compileinfo_t &info)
     return buf.extractToString();
 }
 
+std::string reportProcessTimes(const compileinfo_t &info)
+{
+    Cti::processTimes_t times;
+    Cti::StreamBuffer buf;
+    ULARGE_INTEGER creationTime, kernelTime, userTime, currentTime;
+
+    Cti::getProcessTimes(times);
+
+    creationTime.LowPart = times.creationTime.dwLowDateTime;
+    creationTime.HighPart = times.creationTime.dwHighDateTime;
+
+    kernelTime.LowPart = times.kernelTime.dwLowDateTime;
+    kernelTime.HighPart = times.kernelTime.dwHighDateTime;
+
+    userTime.LowPart = times.userTime.dwLowDateTime;
+    userTime.HighPart = times.userTime.dwHighDateTime;
+
+    currentTime.LowPart = times.currentTime.dwLowDateTime;
+    currentTime.HighPart = times.currentTime.dwHighDateTime;
+
+    unsigned long long elapsed = currentTime.QuadPart - creationTime.QuadPart;
+
+    buf << info.project << " process times: "
+        << CtiNumStr((double)elapsed / 10000000, 3) << "(e) "
+        << CtiNumStr((double)kernelTime.QuadPart / 10000000, 3) << "(k) "
+        << CtiNumStr((double)userTime.QuadPart / 10000000, 3) << "(u) ";
+
+    return buf.extractToString();
+}
+
+std::string reportProcessorTimes()
+{
+    double cpuTotal=Cti::pdhGetCpuTotal();
+    Cti::StreamBuffer buf;
+
+    buf << "Total processor time: " << CtiNumStr(cpuTotal, 3) << "%";
+
+    return buf.extractToString();
+}
+
+
 } // namespace Cti

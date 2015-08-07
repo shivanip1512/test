@@ -43,6 +43,7 @@ project(ctibase) {
   lit_libs += shlwapi
   lit_libs += Ws2_32
   lit_libs += psapi
+  lit_libs += pdh
   specific {
     Debug::lit_libs   += $(SQLAPI)\lib\sqlapid
     Release::lit_libs += $(SQLAPI)\lib\sqlapi

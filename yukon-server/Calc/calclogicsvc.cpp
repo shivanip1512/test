@@ -391,6 +391,8 @@ void CtiCalcLogicService::Run( )
                     if( Cti::isTimeToReportMemory(Now) )
                     {
                         CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
+                        CTILOG_INFO(dout, Cti::reportProcessTimes(CompileInfo));
+                        CTILOG_INFO(dout, Cti::reportProcessorTimes());
                     }
 
                     if(pointID!= 0)

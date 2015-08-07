@@ -251,6 +251,8 @@ void CtiLoadManager::controlLoop()
                 if( Cti::isTimeToReportMemory(currentDateTime) )
                 {
                     CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
+                    CTILOG_INFO(dout, Cti::reportProcessTimes(CompileInfo));
+                    CTILOG_INFO(dout, Cti::reportProcessorTimes());
                 }
 
                 if( _LM_DEBUG & LM_DEBUG_STANDARD )

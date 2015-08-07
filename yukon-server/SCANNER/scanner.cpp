@@ -501,6 +501,8 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
         if( Cti::isTimeToReportMemory(TimeNow) )
         {
             CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
+            CTILOG_INFO(dout, Cti::reportProcessTimes(CompileInfo));
+            CTILOG_INFO(dout, Cti::reportProcessorTimes());
         }
 
         if(pointID!=0)
