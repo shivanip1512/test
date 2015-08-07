@@ -113,7 +113,7 @@ CTIPROGS=\
 ctibase.dll
 
 
-WINLIBS=kernel32.lib user32.lib advapi32.lib wsock32.lib winmm.lib shlwapi.lib Ws2_32.lib psapi.lib
+WINLIBS=kernel32.lib user32.lib advapi32.lib wsock32.lib winmm.lib shlwapi.lib Ws2_32.lib psapi.lib pch.lib
 
 COMMON_FULLBUILD = $[Filename,$(OBJ),CommonFullBuild,target]
 
