@@ -97,7 +97,6 @@
 <entry key="yukon.common.device.selection.file">File</entry>
 <entry key="yukon.common.device.selection.file.selected">file: {0}</entry>
 <entry key="yukon.common.devices">device(s)</entry>
-<entry key="yukon.common.errorCount">Error Encountered</entry>
 <entry key="yukon.common.Devices">Devices</entry>
 <entry key="yukon.common.deviceName">Device Name</entry>
 <entry key="yukon.common.deviceType">Device Type</entry>

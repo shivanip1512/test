@@ -15,10 +15,19 @@ public interface DeviceGroupCollectionHelper {
     
     /**
      * Creates a new, temporary DeviceGroup containing the specified devices. Then creates and returns a 
-     * DeviceCollection based on that group.
+     * DeviceCollection based on that group. errorDevices and header are used to generate a csv file with errors.
      * @param descriptionHint If not blank, this is used as the "description" parameter for the DeviceCollection.
      */
     DeviceCollection createDeviceGroupCollection(Iterator<? extends YukonDevice> deviceIds, String descriptionHint);
+    
+    /**
+     * Creates a new, temporary DeviceGroup containing the specified devices. Then creates and returns a 
+     * DeviceCollection based on that group.
+     * @param descriptionHint If not blank, this is used as the "description" parameter for the DeviceCollection.
+     * 
+     */
+    DeviceCollection createDeviceGroupCollection(Iterator<? extends YukonDevice> devices, String descriptionHint,
+            Set<String> errorDevices, String header);
 
     /**
      * Creates a DeviceCollectionBase from the specified device-group-based DeviceCollection.
@@ -39,5 +48,12 @@ public interface DeviceGroupCollectionHelper {
      * Creates and returns a DeviceCollection based on a set of DeviceGroups.
      */
     DeviceCollection buildDeviceCollection(Set<DeviceGroup> groups);
+
+    /**
+     * Creates and returns a DeviceCollection based on the specified DeviceGroup, with the specified description.
+     * errorDevices and header are used to generate a csv file with errors.
+     */
+    DeviceCollection buildDeviceCollection(DeviceGroup group, String descriptionHint, Set<String> errorDevices,
+            String header);
     
 }

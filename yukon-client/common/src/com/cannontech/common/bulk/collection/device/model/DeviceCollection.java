@@ -1,8 +1,10 @@
 package com.cannontech.common.bulk.collection.device.model;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.context.MessageSourceResolvable;
 
@@ -60,4 +62,38 @@ public interface DeviceCollection extends Iterable<SimpleDevice> {
      * Get the DeviceCollectionType of this collection.
      */
     public DeviceCollectionType getCollectionType();
+    
+    /**
+     * Gets devices errors.
+     * 
+     * @return set of error devices
+     */
+    
+    public default Set<String> getErrorDevices() {
+        return Collections.emptySet();
+    }
+
+    
+    /**
+     * Gets error count.
+     * @return Count of how many errors are in the collection
+     */
+    public default int getDeviceErrorCount(){
+        return 0;
+    }
+    
+    /**
+     * Method to get upload file name.
+     * @return Name of the file to be uploaded
+     */
+    public default String getUploadFileName(){
+        return null;
+    }
+    /**
+     * Method to get header.
+     * @return Header 
+     */
+    public default String getHeader(){
+        return null;
+    }
 }

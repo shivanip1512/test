@@ -79,7 +79,7 @@ public class DeviceFileUploadCollectionProducer implements DeviceCollectionProdu
 ;
             DeviceCollection groupCollection =
                 deviceGroupCollectionProducer.createDeviceGroupCollection(result.getDevices().iterator(),
-                    dataFile.getOriginalFilename());
+                    dataFile.getOriginalFilename(), result.getErrorDevices(), result.getHeader());
 
             return groupCollection;
 

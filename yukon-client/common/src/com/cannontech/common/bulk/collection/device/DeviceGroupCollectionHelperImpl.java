@@ -48,9 +48,9 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
     
     @Override
     public DeviceCollection buildDeviceCollection(final DeviceGroup group) {
-        return buildDeviceCollection(group, null);
+        return new ListDeviceCollection(group);
     }
-    
+
     @Override
     public DeviceCollectionByField buildDeviceCollectionBase(DeviceCollection collection) {
         
@@ -73,77 +73,126 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
     }
     
     @Override
+    public DeviceCollection buildDeviceCollection(final DeviceGroup group, final String descriptionHint,
+            Set<String> errorDevices, String header) {
+        return new ListDeviceCollection(group, descriptionHint, errorDevices, header);
+    }
+
+    @Override
     public DeviceCollection buildDeviceCollection(final DeviceGroup group, final String descriptionHint) {
-        
-        return new ListBasedDeviceCollection() {
-            
-            @Override
-            public DeviceCollectionType getCollectionType() {
-                return DeviceCollectionType.group;
-            }
-            
-            @Override
-            public Map<String, String> getCollectionParameters() {
-                
-                Map<String, String> params = new HashMap<String, String>();
-                
-                params.put("collectionType", getSupportedType());
-                params.put(getParameterName(NAME_PARAM_NAME), group.getFullName());
-                if (StringUtils.isNotBlank(descriptionHint)) {
-                    params.put(getParameterName(DESCRIPTION_PARAM_NAME), descriptionHint);
-                }
-                
-                return params;
-            }
-            
-            @Override
-            public List<SimpleDevice> getDeviceList() {
-                
-                List<SimpleDevice> deviceList = new ArrayList<SimpleDevice>();
-                
-                Set<SimpleDevice> devices = deviceGroupService.getDevices(Collections.singletonList(group));
-                deviceList.addAll(devices);
-                
-                return deviceList;
-            }
-            
-            @Override
-            public List<SimpleDevice> getDevices(int start, int size) {
-                
-                // more than we need so we can skip past start devices and retrieve size devices
-                int retrieveCount = start + size;
-                
-                Set<SimpleDevice> deviceSet = deviceGroupService.getDevices(Collections.singletonList(group), retrieveCount);
-                
-                List<SimpleDevice> deviceList = new ArrayList<SimpleDevice>(deviceSet);
-                 
-                return deviceList.subList(start, Math.min(retrieveCount, deviceList.size()));
-            }
-            
-            @Override
-            public int getDeviceCount() {
-                return deviceGroupService.getDeviceCount(Collections.singletonList(group));
-            }
-            
-            @Override
-            public MessageSourceResolvable getDescription() {
-                
-                if (group.isHidden()) {
-                    if (descriptionHint != null) {
-                        return new YukonMessageSourceResolvable(key + ".temporaryWithHint", descriptionHint);
-                    }
-                    return new YukonMessageSourceResolvable(key + ".temporary");
-                }
-                
-                return new YukonMessageSourceResolvable(key, group.getFullName());
-            }
-            
-        };
+        return new ListDeviceCollection(group, descriptionHint);
     }
     
+    private class ListDeviceCollection extends ListBasedDeviceCollection {
+
+        private DeviceGroup group;
+        private String descriptionHint;
+        private Set<String> errorDevices = new HashSet<>();
+        private String header;
+
+        public ListDeviceCollection(DeviceGroup group, String descriptionHint, Set<String> errorDevices, String header) {
+            this(group, descriptionHint);
+            if (errorDevices != null) {
+                this.errorDevices = errorDevices;
+            }
+            this.header = header;
+        }
+
+        public ListDeviceCollection(DeviceGroup group, String descriptionHint) {
+            this(group);
+            this.descriptionHint = descriptionHint;
+        }
+        
+        public ListDeviceCollection(DeviceGroup group) {
+            this.group = group;
+        }
+
+        @Override
+        public DeviceCollectionType getCollectionType() {
+            return DeviceCollectionType.group;
+        }
+        
+        @Override
+        public Map<String, String> getCollectionParameters() {
+            
+            Map<String, String> params = new HashMap<String, String>();
+            
+            params.put("collectionType", getSupportedType());
+            params.put(getParameterName(NAME_PARAM_NAME), group.getFullName());
+            if (StringUtils.isNotBlank(descriptionHint)) {
+                params.put(getParameterName(DESCRIPTION_PARAM_NAME), descriptionHint);
+            }
+            
+            return params;
+        }
+        
+        @Override
+        public List<SimpleDevice> getDeviceList() {
+            
+            List<SimpleDevice> deviceList = new ArrayList<SimpleDevice>();
+            
+            Set<SimpleDevice> devices = deviceGroupService.getDevices(Collections.singletonList(group));
+            deviceList.addAll(devices);
+            
+            return deviceList;
+        }
+        
+        @Override
+        public List<SimpleDevice> getDevices(int start, int size) {
+            
+            // more than we need so we can skip past start devices and retrieve size devices
+            int retrieveCount = start + size;
+            
+            Set<SimpleDevice> deviceSet = deviceGroupService.getDevices(Collections.singletonList(group), retrieveCount);
+            
+            List<SimpleDevice> deviceList = new ArrayList<SimpleDevice>(deviceSet);
+             
+            return deviceList.subList(start, Math.min(retrieveCount, deviceList.size()));
+        }
+        
+        @Override
+        public int getDeviceCount() {
+            return deviceGroupService.getDeviceCount(Collections.singletonList(group));
+        }
+        
+        @Override
+        public MessageSourceResolvable getDescription() {
+            
+            if (group.isHidden()) {
+                if (descriptionHint != null) {
+                    return new YukonMessageSourceResolvable(key + ".temporaryWithHint", descriptionHint);
+                }
+                return new YukonMessageSourceResolvable(key + ".temporary");
+            }
+            
+            return new YukonMessageSourceResolvable(key, group.getFullName());
+        }
+        
+        @Override
+        public Set<String> getErrorDevices() {
+            return errorDevices;
+        }
+
+        @Override
+        public int getDeviceErrorCount() {
+            return errorDevices.size();
+        }
+
+        @Override
+        public String getUploadFileName() {
+            return descriptionHint;
+        }
+
+        @Override
+        public String getHeader() {
+            return header;
+        }
+    };
+        
     @Override
     @Transactional
-    public DeviceCollection createDeviceGroupCollection(Iterator<? extends YukonDevice> devices, String descriptionHint) {
+    public DeviceCollection createDeviceGroupCollection(Iterator<? extends YukonDevice> devices,
+            String descriptionHint, Set<String> errorDevices, String header) {
         // step 1, create a new group with random name (will delete itself in 24 hours)
         final StoredDeviceGroup group = temporaryDeviceGroupService.createTempGroup();
         
@@ -151,9 +200,15 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
         deviceGroupMemberEditorDao.addDevices(group, devices);
         
         // step 3, build DeviceCollection
-        DeviceCollection deviceCollection = buildDeviceCollection(group, descriptionHint);
+        DeviceCollection deviceCollection = buildDeviceCollection(group, descriptionHint, errorDevices, header);
         
         return deviceCollection;
+    }
+    
+    @Override
+    @Transactional
+    public DeviceCollection createDeviceGroupCollection(Iterator<? extends YukonDevice> devices, String descriptionHint) {
+        return createDeviceGroupCollection(devices, descriptionHint, null, null);
     }
 
     @Override
