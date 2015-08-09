@@ -113,7 +113,7 @@ public:
         return pointHelper.getCachedPoint(offset, type);
     }
 
-    virtual CtiRouteSPtr getRoute() const
+    CtiRouteSPtr getRoute(long routeId) const override
     {
         return rte;
     }
@@ -428,7 +428,9 @@ BOOST_FIXTURE_TEST_SUITE(requests, executeRequest_helper)
 
         BOOST_CHECK_EQUAL( ClientErrors::None , mct410.beginExecuteRequest(&req, parse, vgList, retList, outList) );
 
-        BOOST_REQUIRE_EQUAL(  1, outList.size() );
+        BOOST_REQUIRE_EQUAL(1, vgList.size());
+        BOOST_CHECK(retList.empty());
+        BOOST_REQUIRE_EQUAL(1, outList.size());
 
         OUTMESS *om = outList.front();
 
@@ -436,6 +438,17 @@ BOOST_FIXTURE_TEST_SUITE(requests, executeRequest_helper)
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 76 );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       0 );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   0 );
+
+        auto ret = dynamic_cast<const CtiSignalMsg *>(vgList.front());
+
+        BOOST_REQUIRE(ret);
+        BOOST_CHECK_EQUAL(ret->getId(), 0);
+        BOOST_CHECK_EQUAL(ret->getSOE(), 0);
+        BOOST_CHECK_EQUAL(ret->getText(), "Test MCT-410iL");
+        BOOST_CHECK_EQUAL(ret->getAdditionalInfo(), "CONNECT");
+        BOOST_CHECK_EQUAL(ret->getLogType(), 3);
+        BOOST_CHECK_EQUAL(ret->getSignalCategory(), 1);
+        BOOST_CHECK_EQUAL(ret->getUser(), "(yukon system)");
     }
 
     BOOST_AUTO_TEST_CASE(test_dev_mct_control_connect_decode)
@@ -482,7 +495,7 @@ BOOST_FIXTURE_TEST_SUITE(requests, executeRequest_helper)
 
         BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&req, parse, vgList, retList, outList) );
 
-        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( 1, vgList.size() );
         BOOST_CHECK( retList.empty() );
         BOOST_REQUIRE_EQUAL( 1, outList.size() );
 
@@ -492,6 +505,17 @@ BOOST_FIXTURE_TEST_SUITE(requests, executeRequest_helper)
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 77 );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       0 );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   0 );
+
+        auto ret = dynamic_cast<const CtiSignalMsg *>(vgList.front());
+
+        BOOST_REQUIRE(ret);
+        BOOST_CHECK_EQUAL(ret->getId(), 0);
+        BOOST_CHECK_EQUAL(ret->getSOE(), 0);
+        BOOST_CHECK_EQUAL(ret->getText(), "Test MCT-410iL");
+        BOOST_CHECK_EQUAL(ret->getAdditionalInfo(), "DISCONNECT");
+        BOOST_CHECK_EQUAL(ret->getLogType(), 3);
+        BOOST_CHECK_EQUAL(ret->getSignalCategory(), 1);
+        BOOST_CHECK_EQUAL(ret->getUser(), "(yukon system)");
     }
     BOOST_AUTO_TEST_CASE(test_dev_mct_control_disconnect_decode)
     {
@@ -3426,7 +3450,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ClientErrors::None, mct410.ResultDecode(im, timeBegin, vgList, retList, outList) );
         }
 
-        BOOST_REQUIRE_EQUAL( vgList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( vgList.size(), 2 );
         BOOST_REQUIRE_EQUAL( retList.size(), 1 );
         BOOST_CHECK( outList.empty() );
 
@@ -3441,8 +3465,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_REQUIRE_EQUAL( ret->getCount(), 6 );
         }
 
+        auto vg_itr = vgList.cbegin();
+
         {
-            auto ret = dynamic_cast<const CtiReturnMsg *>(vgList.front());
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*vg_itr++);
 
             BOOST_REQUIRE(ret);
 
@@ -3502,6 +3528,37 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 BOOST_CHECK_CLOSE( pd->getValue(), 0.036, Tolerance );
                 BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(17, 3, 2011), 14, 25, 00) );
                 BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / DemandAccumulator101 = 0.036 @ 03/17/2011 14:25:00" );
+            }
+        }
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*vg_itr++);
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 0 );
+            BOOST_CHECK( ret->ResultString().empty() );
+            BOOST_REQUIRE_EQUAL( ret->getCount(), 2 );
+
+            auto pd_itr = ret->PointData().cbegin();
+
+            const auto Tolerance = 0.0001;
+
+            {
+                auto pd = dynamic_cast<CtiPointDataMsg *>(*pd_itr++);
+                BOOST_REQUIRE(pd);
+                BOOST_CHECK_EQUAL( pd->getId(), 2 );
+                BOOST_CHECK_CLOSE( pd->getValue(), 0, Tolerance );
+                BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(18, 3, 2011), 12, 34, 56) );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status10: False" );
+            }
+            {
+                auto pd = dynamic_cast<CtiPointDataMsg *>(*pd_itr++);
+                BOOST_REQUIRE(pd);
+                BOOST_CHECK_EQUAL( pd->getId(), 3 );
+                BOOST_CHECK_CLOSE( pd->getValue(), 0, Tolerance );
+                BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(18, 3, 2011), 12, 34, 56) );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status9: False" );
             }
         }
     }
@@ -3654,7 +3711,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ClientErrors::None, mct410.ResultDecode(im, timeBegin, vgList, retList, outList) );
         }
 
-        BOOST_REQUIRE_EQUAL( vgList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( vgList.size(), 2 );
         BOOST_REQUIRE_EQUAL( retList.size(), 1 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -3670,8 +3727,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK( ret->ExpectMore() );
         }
 
+        auto vg_itr = vgList.cbegin();
+
         {
-            auto ret = dynamic_cast<const CtiReturnMsg *>(vgList.front());
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*vg_itr++);
 
             BOOST_REQUIRE(ret);
 
@@ -3733,6 +3792,37 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / DemandAccumulator101 = 0.006 @ 03/17/2011 05:00:00" );
             }
         }
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*vg_itr++);
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 0 );
+            BOOST_CHECK( ret->ResultString().empty() );
+            BOOST_REQUIRE_EQUAL( ret->getCount(), 2 );
+
+            auto pd_itr = ret->PointData().cbegin();
+
+            const auto Tolerance = 0.0001;
+
+            {
+                auto pd = dynamic_cast<CtiPointDataMsg *>(*pd_itr++);
+                BOOST_REQUIRE(pd);
+                BOOST_CHECK_EQUAL( pd->getId(), 2 );
+                BOOST_CHECK_CLOSE( pd->getValue(), 0, Tolerance );
+                BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(18, 3, 2011), 12, 34, 56) );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status10: False" );
+            }
+            {
+                auto pd = dynamic_cast<CtiPointDataMsg *>(*pd_itr++);
+                BOOST_REQUIRE(pd);
+                BOOST_CHECK_EQUAL( pd->getId(), 3 );
+                BOOST_CHECK_CLOSE( pd->getValue(), 0, Tolerance );
+                BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(18, 3, 2011), 12, 34, 56) );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status9: False" );
+            }
+        }
 
         //  Read second block
 
@@ -3768,7 +3858,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ClientErrors::None, mct410.ResultDecode(im, timeBegin, vgList, retList, outList) );
         }
 
-        BOOST_REQUIRE_EQUAL( vgList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( vgList.size(), 2 );
         BOOST_REQUIRE_EQUAL( retList.size(), 1 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -3784,8 +3874,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK( ret->ExpectMore() );
         }
 
+        vg_itr = vgList.cbegin();
+
         {
-            auto ret = dynamic_cast<const CtiReturnMsg *>(vgList.front());
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*vg_itr++);
 
             BOOST_REQUIRE(ret);
 
@@ -3847,6 +3939,38 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / DemandAccumulator101 = 0.012 @ 03/17/2011 11:00:00" );
             }
         }
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*vg_itr++);
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 0 );
+            BOOST_CHECK( ret->ResultString().empty() );
+            BOOST_REQUIRE_EQUAL( ret->getCount(), 2 );
+
+            auto pd_itr = ret->PointData().cbegin();
+
+            const auto Tolerance = 0.0001;
+
+            {
+                auto pd = dynamic_cast<CtiPointDataMsg *>(*pd_itr++);
+                BOOST_REQUIRE(pd);
+                BOOST_CHECK_EQUAL( pd->getId(), 2 );
+                BOOST_CHECK_CLOSE( pd->getValue(), 0, Tolerance );
+                BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(18, 3, 2011), 12, 34, 56) );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status10: False" );
+            }
+            {
+                auto pd = dynamic_cast<CtiPointDataMsg *>(*pd_itr++);
+                BOOST_REQUIRE(pd);
+                BOOST_CHECK_EQUAL( pd->getId(), 3 );
+                BOOST_CHECK_CLOSE( pd->getValue(), 0, Tolerance );
+                BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(18, 3, 2011), 12, 34, 56) );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status9: False" );
+            }
+        }
+
         //  Read third block
 
         {
@@ -3881,7 +4005,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ClientErrors::None, mct410.ResultDecode(im, timeBegin, vgList, retList, outList) );
         }
 
-        BOOST_REQUIRE_EQUAL( vgList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( vgList.size(), 2 );
         BOOST_REQUIRE_EQUAL( retList.size(), 1 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -3897,8 +4021,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK( ret->ExpectMore() );
         }
 
+        vg_itr = vgList.cbegin();
+
         {
-            auto ret = dynamic_cast<const CtiReturnMsg *>(vgList.front());
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*vg_itr++);
 
             BOOST_REQUIRE(ret);
 
@@ -3960,6 +4086,37 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / DemandAccumulator101 = 0.018 @ 03/17/2011 17:00:00" );
             }
         }
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*vg_itr++);
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 0 );
+            BOOST_CHECK( ret->ResultString().empty() );
+            BOOST_REQUIRE_EQUAL( ret->getCount(), 2 );
+
+            auto pd_itr = ret->PointData().cbegin();
+
+            const auto Tolerance = 0.0001;
+
+            {
+                auto pd = dynamic_cast<CtiPointDataMsg *>(*pd_itr++);
+                BOOST_REQUIRE(pd);
+                BOOST_CHECK_EQUAL( pd->getId(), 2 );
+                BOOST_CHECK_CLOSE( pd->getValue(), 0, Tolerance );
+                BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(18, 3, 2011), 12, 34, 56) );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status10: False" );
+            }
+            {
+                auto pd = dynamic_cast<CtiPointDataMsg *>(*pd_itr++);
+                BOOST_REQUIRE(pd);
+                BOOST_CHECK_EQUAL( pd->getId(), 3 );
+                BOOST_CHECK_CLOSE( pd->getValue(), 0, Tolerance );
+                BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(18, 3, 2011), 12, 34, 56) );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status9: False" );
+            }
+        }
 
         //  Read fourth block (final)
 
@@ -3995,7 +4152,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ClientErrors::None, mct410.ResultDecode(im, timeBegin, vgList, retList, outList) );
         }
 
-        BOOST_REQUIRE_EQUAL( vgList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( vgList.size(), 2 );
         BOOST_REQUIRE_EQUAL( retList.size(), 1 );
         BOOST_CHECK( outList.empty() );
 
@@ -4011,8 +4168,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK( ! ret->ExpectMore() );
         }
 
+        vg_itr = vgList.cbegin();
+
         {
-            auto ret = dynamic_cast<const CtiReturnMsg *>(vgList.front());
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*vg_itr++);
 
             BOOST_REQUIRE(ret);
 
@@ -4072,6 +4231,37 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 BOOST_CHECK_CLOSE( pd->getValue(), 0.024, Tolerance );
                 BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(17, 3, 2011), 23) );
                 BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / DemandAccumulator101 = 0.024 @ 03/17/2011 23:00:00" );
+            }
+        }
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*vg_itr++);
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 0 );
+            BOOST_CHECK( ret->ResultString().empty() );
+            BOOST_REQUIRE_EQUAL( ret->getCount(), 2 );
+
+            auto pd_itr = ret->PointData().cbegin();
+
+            const auto Tolerance = 0.0001;
+
+            {
+                auto pd = dynamic_cast<CtiPointDataMsg *>(*pd_itr++);
+                BOOST_REQUIRE(pd);
+                BOOST_CHECK_EQUAL( pd->getId(), 2 );
+                BOOST_CHECK_CLOSE( pd->getValue(), 0, Tolerance );
+                BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(18, 3, 2011), 12, 34, 56) );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status10: False" );
+            }
+            {
+                auto pd = dynamic_cast<CtiPointDataMsg *>(*pd_itr++);
+                BOOST_REQUIRE(pd);
+                BOOST_CHECK_EQUAL( pd->getId(), 3 );
+                BOOST_CHECK_CLOSE( pd->getValue(), 0, Tolerance );
+                BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(18, 3, 2011), 12, 34, 56) );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status9: False" );
             }
         }
     }
@@ -4259,7 +4449,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ClientErrors::None, mct410.ResultDecode(im, timeBegin, vgList, retList, outList) );
         }
 
-        BOOST_REQUIRE_EQUAL( vgList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( vgList.size(), 2 );
         BOOST_REQUIRE_EQUAL( retList.size(), 1 );
         BOOST_CHECK( outList.empty() );
 
@@ -4274,8 +4464,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_REQUIRE_EQUAL( ret->getCount(), 6 );
         }
 
+        auto vg_itr = vgList.cbegin();
+
         {
-            auto ret = dynamic_cast<const CtiReturnMsg *>(vgList.front());
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*vg_itr++);
 
             BOOST_REQUIRE(ret);
 
@@ -4335,6 +4527,37 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 BOOST_CHECK_CLOSE( pd->getValue(), 0.036, Tolerance );
                 BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(17, 3, 2011), 14, 25, 00) );
                 BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / DemandAccumulator101 = 0.036 @ 03/17/2011 14:25:00" );
+            }
+        }
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*vg_itr++);
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 0 );
+            BOOST_CHECK( ret->ResultString().empty() );
+            BOOST_REQUIRE_EQUAL( ret->getCount(), 2 );
+
+            auto pd_itr = ret->PointData().cbegin();
+
+            const auto Tolerance = 0.0001;
+
+            {
+                auto pd = dynamic_cast<CtiPointDataMsg *>(*pd_itr++);
+                BOOST_REQUIRE(pd);
+                BOOST_CHECK_EQUAL( pd->getId(), 2 );
+                BOOST_CHECK_CLOSE( pd->getValue(), 0, Tolerance );
+                BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(18, 3, 2011), 12, 34, 56) );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status10: False" );
+            }
+            {
+                auto pd = dynamic_cast<CtiPointDataMsg *>(*pd_itr++);
+                BOOST_REQUIRE(pd);
+                BOOST_CHECK_EQUAL( pd->getId(), 3 );
+                BOOST_CHECK_CLOSE( pd->getValue(), 0, Tolerance );
+                BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(18, 3, 2011), 12, 34, 56) );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status9: False" );
             }
         }
     }
