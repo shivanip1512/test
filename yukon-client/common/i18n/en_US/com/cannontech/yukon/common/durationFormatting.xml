@@ -22,6 +22,15 @@
     <entry key="yukon.common.durationFormatting.pattern.MS_ABBR">%M_ABBR% %S_ABBR%</entry>
     
     <!-- singular and plural suffixes for each of the period tokens. -->
+	<entry key="yukon.common.durationFormatting.symbol.MS.suffix.singular"></entry>
+	<entry key="yukon.common.durationFormatting.symbol.MS.suffix.plural"></entry>
+	<entry key="yukon.common.durationFormatting.symbol.MS_FULL.suffix.singular">milli</entry>
+	<entry key="yukon.common.durationFormatting.symbol.MS_FULL.suffix.plural">millis</entry>
+	<entry key="yukon.common.durationFormatting.symbol.MS_SHORT.suffix.singular">ms</entry>
+	<entry key="yukon.common.durationFormatting.symbol.MS_SHORT.suffix.plural">ms</entry>
+	<entry key="yukon.common.durationFormatting.symbol.MS_ABBR.suffix.singular">ms</entry>
+	<entry key="yukon.common.durationFormatting.symbol.MS_ABBR.suffix.plural">ms</entry>
+
 	<entry key="yukon.common.durationFormatting.symbol.S.suffix.singular"></entry>
 	<entry key="yukon.common.durationFormatting.symbol.S.suffix.plural"></entry>
 	<entry key="yukon.common.durationFormatting.symbol.S_FULL.suffix.singular">second</entry>

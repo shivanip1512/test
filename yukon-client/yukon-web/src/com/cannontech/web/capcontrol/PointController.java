@@ -129,6 +129,7 @@ public class PointController {
         model.addAttribute("logicalGroups", PointLogicalGroups.values());
         model.addAttribute("scalarArchiveTypes", PointArchiveType.values());
         model.addAttribute("archiveIntervals", TimeIntervals.getArchiveIntervals());
+        model.addAttribute("fdrTranslationNumbers", ImmutableList.of(0,1,2,3,4));
         model.addAttribute("fdrInterfaceTypes", FdrInterfaceType.values());
         model.addAttribute("fdrDirections", FdrDirection.values());
         model.addAttribute("statusControlTypes", StatusControlType.values());

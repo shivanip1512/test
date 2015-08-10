@@ -71,7 +71,12 @@ public class PointModel<T extends PointBase> {
         List<FDRTranslation> newFdrs = new ArrayList<>();
         
         for (FDRTranslation fdrTranslation : base.getPointFDRList()) {
-            if (!fdrTranslation.getTranslation().trim().isEmpty()) {
+            String translation = fdrTranslation.getTranslation();
+            if (translation == null) continue;
+            translation = translation.trim();
+
+            if (!translation.isEmpty()) {
+                fdrTranslation.setTranslation(translation);
                 fdrTranslation.setPointID(id);
                 newFdrs.add(fdrTranslation);
             }
