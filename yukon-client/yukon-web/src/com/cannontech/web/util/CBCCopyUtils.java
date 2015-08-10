@@ -3,6 +3,9 @@ package com.cannontech.web.util;
 import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.model.DNPConfiguration;
+import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
@@ -12,6 +15,7 @@ import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.capcontrol.CapBankControllerDNP;
 import com.cannontech.database.data.capcontrol.ICapBankController;
+import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LitePoint;
@@ -84,7 +88,7 @@ public class CBCCopyUtils {
 		return null;
 	}
 
-	private static DBPersistent handleCBC(CapBankController controller) {
+	private static CapBankController handleCBC(CapBankController controller) {
 		CapBankController cbc = null;
 		PaoType paoType = controller.getPaoType();
 		cbc = (CapBankController) DeviceFactory.createDevice(paoType);
@@ -96,7 +100,7 @@ public class CBCCopyUtils {
 		return cbc;
 	}
 
-	private static DBPersistent handleCBC702x(CapBankController702x controller) {
+	private static CapBankController702x handleCBC702x(CapBankController702x controller) {
 		CapBankController702x cbc702 = null;
 		PaoType paoType = controller.getPaoType();
 		cbc702 = (CapBankController702x) DeviceFactory.createDevice(paoType);
@@ -107,10 +111,25 @@ public class CBCCopyUtils {
 		cbc702.setPAOName(controller.getPAOName());
 		cbc702.setDnpConfiguration(controller.getDnpConfiguration());
 		cbc702.setDeviceScanRateMap(controller.getDeviceScanRateMap());
+
+		if (cbc702.getDnpConfiguration() == null) {
+		    cbc702.setDnpConfiguration(getDefaultDnpConfig());
+		}
+
 		return cbc702;
 	}
-	
-    private static DBPersistent handleCBCDNP(CapBankControllerDNP controller) {
+
+    private static DNPConfiguration getDefaultDnpConfig() {
+
+        DeviceConfigurationDao deviceConfigDao = YukonSpringHook.getBean(DeviceConfigurationDao.class);
+
+        DeviceConfiguration defaultConfig = deviceConfigDao.getDefaultDNPConfiguration();
+        DNPConfiguration dnpConfig = deviceConfigDao.getDnpConfiguration(defaultConfig);
+
+        return dnpConfig;
+    }
+
+    private static CapBankControllerDNP handleCBCDNP(CapBankControllerDNP controller) {
         CapBankControllerDNP cbcDNP = null;
         PaoType paoType = controller.getPaoType();
         cbcDNP = (CapBankControllerDNP) DeviceFactory.createDevice(paoType);
@@ -120,6 +139,11 @@ public class CBCCopyUtils {
         cbcDNP.setDisabled(controller.isDisabled());
         cbcDNP.setPAOName(controller.getPAOName());
         cbcDNP.setDnpConfiguration(controller.getDnpConfiguration());
+
+        if (cbcDNP.getDnpConfiguration() == null) {
+            cbcDNP.setDnpConfiguration(getDefaultDnpConfig());
+        }
+
         return cbcDNP;
     }
 	public static boolean isPoint(DBPersistent origObject) {
