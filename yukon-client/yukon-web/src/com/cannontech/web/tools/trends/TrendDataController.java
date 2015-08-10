@@ -160,20 +160,20 @@ public class TrendDataController {
             {
             case GDSTypes.USAGE_GRAPH_TYPE:
                 //TODO:Figure out where to place the TS benchmark for the process of trend
-                //seriesItemResult = rawPointHistoryDataProvider(seriesItem.getPointID());
+                seriesItemResult = rawPointHistoryDataProvider(seriesItem.getPointID());
                 //dbTime = logRPHPoint(seriesItem.getPointID(), dbTime, durationFormatting, userContext);
                 data = usageGraphDataProvider(seriesItemResult);
             break;
             case GDSTypes.YESTERDAY_GRAPH_TYPE:
             case GDSTypes.YESTERDAY_TYPE:
-                //seriesItemResult = rawPointHistoryDataProvider(seriesItem.getPointID());
+                seriesItemResult = rawPointHistoryDataProvider(seriesItem.getPointID());
                 //dbTime = logRPHPoint(seriesItem.getPointID(), dbTime, durationFormatting, userContext);
                 data = yesterdayGraphDataProvider(seriesItemResult);
             break;
             
             case GDSTypes.PEAK_GRAPH_TYPE:
                 Map<String, Object> markerValues = new HashMap<>();
-                //seriesItemResult = rawPointHistoryDataProvider(seriesItem.getPointID());
+                seriesItemResult = rawPointHistoryDataProvider(seriesItem.getPointID());
                 //dbTime = logRPHPoint(seriesItem.getPointID(), dbTime, durationFormatting, userContext);
                 data =  graphDataProvider(seriesItemResult);
                 seriesProperties.put("lineWidth", 0);
@@ -189,7 +189,7 @@ public class TrendDataController {
             break;
             case GDSTypes.GRAPH_TYPE:
             case GDSTypes.BASIC_GRAPH_TYPE:
-                //seriesItemResult = rawPointHistoryDataProvider(seriesItem.getPointID());
+                seriesItemResult = rawPointHistoryDataProvider(seriesItem.getPointID());
                 //dbTime = logRPHPoint(seriesItem.getPointID(), dbTime, durationFormatting, userContext);
                 data = graphDataProvider(seriesItemResult);
             break;
