@@ -1,6 +1,5 @@
 package com.cannontech.common.bulk.collection.device.model;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -69,31 +68,23 @@ public interface DeviceCollection extends Iterable<SimpleDevice> {
      * @return set of error devices
      */
     
-    public default Set<String> getErrorDevices() {
-        return Collections.emptySet();
-    }
+    public Set<String> getErrorDevices();
 
     
     /**
      * Gets error count.
      * @return Count of how many errors are in the collection
      */
-    public default int getDeviceErrorCount(){
-        return 0;
-    }
+    public int getDeviceErrorCount();
     
     /**
      * Method to get upload file name.
      * @return Name of the file to be uploaded
      */
-    public default String getUploadFileName(){
-        return null;
-    }
+    public String getUploadFileName();
     /**
      * Method to get header.
      * @return Header 
      */
-    public default String getHeader(){
-        return null;
-    }
+    public String getHeader();
 }
