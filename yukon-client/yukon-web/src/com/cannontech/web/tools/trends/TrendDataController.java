@@ -108,10 +108,14 @@ public class TrendDataController {
             return idMap.get(id);
         }
     }
-    
+    /*
+     * trend provides the headless (JSON) data transform to display chart data
+     * */
     @RequestMapping("/trends/{id}/data")
     public @ResponseBody Map<String, Object> trend(YukonUserContext userContext, @PathVariable int id) {
-
+        /*Local Variables
+         * 
+         * */
         LiteGraphDefinition trend = graphDao.getLiteGraphDefinition(id);
         
         List<GraphDataSeries> graphDataSeriesList = graphDao.getGraphDataSeries(trend.getGraphDefinitionID());
@@ -136,8 +140,9 @@ public class TrendDataController {
         
         boolean showRightAxis = false;
         
+        /*Series loop*/
         for  (GraphDataSeries seriesItem : graphDataSeriesList) {
-            /*create locals*/
+            
             log.debug("Graph Type:" + seriesItem.getType() + ":" + graphTypeLabel(seriesItem.getType()) );
             if(seriesItem.getType().equals(GDSTypes.DATE_GRAPH_TYPE) || seriesItem.getType().equals(GDSTypes.DATE_TYPE))
             {
@@ -154,21 +159,23 @@ public class TrendDataController {
             switch (seriesItem.getType())
             {
             case GDSTypes.USAGE_GRAPH_TYPE:
-                seriesItemResult = rawPointHistoryDataProvider(seriesItem.getPointID());
-                dbTime = logRPHPoint(seriesItem.getPointID(), dbTime, durationFormatting, userContext);
-                data = graphDataProvider(seriesItemResult);
+                //TODO:Figure out where to place the TS benchmark for the process of trend
+                //seriesItemResult = rawPointHistoryDataProvider(seriesItem.getPointID());
+                //dbTime = logRPHPoint(seriesItem.getPointID(), dbTime, durationFormatting, userContext);
+                data = usageGraphDataProvider(seriesItemResult);
             break;
             case GDSTypes.YESTERDAY_GRAPH_TYPE:
             case GDSTypes.YESTERDAY_TYPE:
-                seriesItemResult = rawPointHistoryDataProvider(seriesItem.getPointID());
-                dbTime = logRPHPoint(seriesItem.getPointID(), dbTime, durationFormatting, userContext);
+                //seriesItemResult = rawPointHistoryDataProvider(seriesItem.getPointID());
+                //dbTime = logRPHPoint(seriesItem.getPointID(), dbTime, durationFormatting, userContext);
                 data = yesterdayGraphDataProvider(seriesItemResult);
             break;
             
             case GDSTypes.PEAK_GRAPH_TYPE:
-            /*case GDSTypes.PEAK_TYPE:
-             * Map<String, Object> markerValues = new HashMap<>();
-                values =  graphDataProvider(data);
+                Map<String, Object> markerValues = new HashMap<>();
+                //seriesItemResult = rawPointHistoryDataProvider(seriesItem.getPointID());
+                //dbTime = logRPHPoint(seriesItem.getPointID(), dbTime, durationFormatting, userContext);
+                data =  graphDataProvider(seriesItemResult);
                 seriesProperties.put("lineWidth", 0);
                 markerValues.put("enabled", true);
                 markerValues.put("radius", 2);
@@ -179,11 +186,11 @@ public class TrendDataController {
                     rangeSelectorValues.put("selected", 2);
                     json.put("rangeSelector", rangeSelectorValues);
                 }
-            break;*/
+            break;
             case GDSTypes.GRAPH_TYPE:
             case GDSTypes.BASIC_GRAPH_TYPE:
-                seriesItemResult = rawPointHistoryDataProvider(seriesItem.getPointID());
-                dbTime = logRPHPoint(seriesItem.getPointID(), dbTime, durationFormatting, userContext);
+                //seriesItemResult = rawPointHistoryDataProvider(seriesItem.getPointID());
+                //dbTime = logRPHPoint(seriesItem.getPointID(), dbTime, durationFormatting, userContext);
                 data = graphDataProvider(seriesItemResult);
             break;
             case GDSTypes.MARKER_TYPE:
@@ -196,7 +203,7 @@ public class TrendDataController {
                 yAxisProperties.put("plotLines",plotLines);
             break;
             }
-            seriesProperties.put("data", data);
+                seriesProperties.put("data", data);
 
             if (seriesItem.isRight()) {
                 seriesProperties.put("yAxis", 1);
@@ -219,6 +226,12 @@ public class TrendDataController {
                     seriesProperties.put("dataGrouping", ImmutableMap.of("enabled", false));
                 }
             }
+            
+            /*Chart timestamp comparison block
+             * Originally used for the bounderies of the Date Graph it provides the upper and lower 
+             * bounderies of the timestamp to make sure it takes the largest and smalles bounds. 
+             * */
+            
             Date compareDTPrime = seriesItemResult.get(0).getPointDataTimeStamp();
             Date compareDTLimit = seriesItemResult.get(data.size() -1).getPointDataTimeStamp();
             if (hasCurrent) {
@@ -242,8 +255,12 @@ public class TrendDataController {
             seriesProperties.put("color", colorPaletteToWeb(seriesItem.getColor()));
             seriesList.add(seriesProperties);
         }
-
-        for  (GraphDataSeries seriesItem : dateGraphDataSeriesList) {
+        
+        /* We don't process any date graphs series until dead last. 
+         * This ensures the chart display won't be busted or distorted.
+         * 
+         * */
+        for (GraphDataSeries seriesItem : dateGraphDataSeriesList) {
                         
             Map<String, Object> seriesProperties = new HashMap<>();
             
@@ -252,7 +269,7 @@ public class TrendDataController {
             List<Object[]> data = new ArrayList<>();
             
             seriesItemResult = rawPointHistoryDataProvider(seriesItem.getPointID());
-            dbTime = logRPHPoint(seriesItem.getPointID(), dbTime, durationFormatting, userContext);
+            //dbTime = logRPHPoint(seriesItem.getPointID(), dbTime, durationFormatting, userContext);
             data = dateGraphDataProvider(seriesItemResult, seriesItem.getSpecificDate(),  chartYPrime, chartYLimit);
             seriesProperties.put("data", data);
             
@@ -273,7 +290,7 @@ public class TrendDataController {
             seriesList.add(seriesProperties);
         }
         /*log transaction*/
-        dbTime  = logRPHTrend(trend, dbTime, durationFormatting, userContext);
+        //dbTime  = logRPHTrend(trend, dbTime, durationFormatting, userContext);
         
         json.put("name", trend.getName());
         json.put("series", seriesList);
@@ -282,12 +299,10 @@ public class TrendDataController {
         ImmutableMap<String, ImmutableMap<String, String>> labels = ImmutableMap.of("style", ImmutableMap.of("color", "#555"));
         yAxisProperties.put("labels", labels);
         yAxis.add(yAxisProperties);
-        
         if (showRightAxis) {
             addRightAxis(userContext, seriesList, yAxis, labels);
         }
         json.put("yAxis", yAxis);
-        
         return json;
     }
     
@@ -328,24 +343,44 @@ public class TrendDataController {
         }
         return values;
     }
+    
+    private List<Object[]> usageGraphDataProvider(List<PointValueHolder> data){
+        log.debug("UsagegraphDataProvider Called");
+        
+        List<Object[]> values = new ArrayList<>();
+        /*datePrime is 2 years prior to now*/
+        DateTime dateNow = new DateTime();
+        DateTime datePrime = dateNow.minusYears(2);
+        double currentPoint = 0;
+        double previousPoint = 0;
+        
+        for(PointValueHolder pvh : data)
+        {
+            DateTime item_ts = new DateTime(pvh.getPointDataTimeStamp().getTime());
+            int flagStart = datePrime.compareTo(item_ts);
+            int flagNow = dateNow.compareTo(item_ts);
+            if(flagStart <= 0 && flagNow >= 0) {
+                currentPoint = pvh.getValue();
+                double mPoint = currentPoint - previousPoint;
+                previousPoint = currentPoint;
+                Object[] value;
+                value = new Object[] {item_ts.getMillis(), mPoint};    
+                values.add(value);
+            }
+            else {
+                continue;
+            }
+            
+        }
+        log.debug("dateGraphDataProvider:Amount Returned:" + values.size());
+        return values;
+    }
+    
+    
+    /*TODO: Determine actual functionality*/
     private List<Object[]> peakGraphDataProvider(List<PointValueHolder> data) {
         log.debug("peakGraphDataProvider Called");
         List<Object[]> values = new ArrayList<>();
-        ListIterator<PointValueHolder> litr = data.listIterator();
-        Double previous = - 99999999.1;
-        Double previousSlope = 0.0;
-        for (PointValueHolder p : data) {
-            if ( previous == - 99999999.1) { previous = p.getValue(); continue; }
-            double slope = p.getValue() - previous;
-            if (slope * previousSlope < 0) { //look for sign changes
-                DateTime item_ts = new DateTime(p.getPointDataTimeStamp().getTime());
-                double item_point = p.getValue();
-                Object[] value = new Object[]{item_ts.getMillis(), item_point};
-                values.add(value);
-            }
-                previousSlope = slope;
-                previous = p.getValue();
-            }
         return values;
     }
     
