@@ -1,5 +1,7 @@
 package com.cannontech.web.tools.trends;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +42,7 @@ import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.tools.trends.data.GraphType;
 import com.cannontech.web.tools.trends.data.PointValueHolderImpl;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
@@ -143,7 +146,7 @@ public class TrendDataController {
         /*Series loop*/
         for  (GraphDataSeries seriesItem : graphDataSeriesList) {
             
-            log.debug("Graph Type:" + seriesItem.getType() + ":" + graphTypeLabel(seriesItem.getType()) );
+            log.debug("Graph Type:" + seriesItem.getType() + ":" + graphTypeLabel(seriesItem.getType(),userContext));
             if(seriesItem.getType().equals(GDSTypes.DATE_GRAPH_TYPE) || seriesItem.getType().equals(GDSTypes.DATE_TYPE))
             {
                 dateGraphDataSeriesList.add(seriesItem);
@@ -251,7 +254,7 @@ public class TrendDataController {
                 chartYLimit = compareDTLimit;
                 hasCurrent = true;
             }
-            seriesProperties.put("name", seriesItem.getLabel() + graphTypeLabel(seriesItem.getType()));
+            seriesProperties.put("name", seriesItem.getLabel() + graphTypeLabel(seriesItem.getType(), userContext));
             seriesProperties.put("color", colorPaletteToWeb(seriesItem.getColor()));
             seriesList.add(seriesProperties);
         }
@@ -285,7 +288,9 @@ public class TrendDataController {
                     seriesProperties.put("dataGrouping", ImmutableMap.of("enabled", false));
                 }
             }
-            seriesProperties.put("name", seriesItem.getLabel() + graphTypeLabel(seriesItem.getType()));
+            DateFormat df = new SimpleDateFormat(" [MM/dd/yyyy] ");
+            String reportDate = df.format(seriesItem.getSpecificDate());
+            seriesProperties.put("name", seriesItem.getLabel() + graphTypeLabel(seriesItem.getType(), userContext) + reportDate);
             seriesProperties.put("color", colorPaletteToWeb(seriesItem.getColor()));
             seriesList.add(seriesProperties);
         }
@@ -450,30 +455,15 @@ public class TrendDataController {
         log.debug("dateGraphDataProvider:Amount Returned:" + values.size());
         return values;
     }
-    
-    private String graphTypeLabel(int graphType) {
-        String retval = ":" + GDSTypes.BASIC_GRAPH_TYPE_STRING;
-        switch(graphType){
-        case GDSTypes.DATE_GRAPH_TYPE:
-            retval = ":" + GDSTypes.DATE_GRAPH_TYPE_STRING;
-        break;
+    private String graphTypeLabel(int graphType, YukonUserContext userContext) {
         
-        case GDSTypes.PEAK_GRAPH_TYPE:
-            retval = ":" + GDSTypes.PEAK_GRAPH_TYPE_STRING;
-        break;
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+
+        GraphType graph = GraphType.getByType(graphType);
         
-        case GDSTypes.USAGE_GRAPH_TYPE:
-            retval = ":" + GDSTypes.USAGE_GRAPH_TYPE_STRING;
-        break;
-        
-        case GDSTypes.YESTERDAY_GRAPH_TYPE:
-            retval = ":" + GDSTypes.YESTERDAY_GRAPH_TYPE_STRING;
-        break;
-        
-        }
-        return retval;
+        return accessor.getMessage(graph);
     }
-    
+
     private String colorPaletteToWeb(int color){
         String retval = "#FFFFFF";
         switch(color)
