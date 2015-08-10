@@ -713,39 +713,20 @@ YukonError_t MctDevice::ResultDecode(const INMESS &InMessage, const CtiTime Time
     if( InMessage.Return.ProtocolInfo.Emetcon.IO == EmetconProtocol::IO_Read ||
         InMessage.Return.ProtocolInfo.Emetcon.IO == EmetconProtocol::IO_Function_Read )
     {
-        CtiPointStatusSPtr point_powerfail    = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual(PointOffset_Status_Powerfail,    StatusPointType));
-        CtiPointStatusSPtr point_generalalarm = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual(PointOffset_Status_GeneralAlarm, StatusPointType));
+        std::auto_ptr<CtiReturnMsg> retMsg(new CtiReturnMsg(getID()));
 
-        if( point_powerfail || point_generalalarm )
+        point_info pi;
+
+        pi.value   = InMessage.Buffer.DSt.Power;
+        pi.quality = NormalQuality;
+        insertPointDataReport(StatusPointType, PointOffset_Status_Powerfail, retMsg.get(), pi, "", TimeNow);
+
+        pi.value   = InMessage.Buffer.DSt.Alarm;
+        pi.quality = NormalQuality;
+        insertPointDataReport(StatusPointType, PointOffset_Status_GeneralAlarm, retMsg.get(), pi, "", TimeNow);
+
+        if( ! retMsg->PointData().empty() )
         {
-            std::auto_ptr<CtiReturnMsg> retMsg(new CtiReturnMsg(getID()));
-
-            string pointResult;
-
-            if( point_powerfail )
-            {
-                pointResult = getName() + " / " + point_powerfail->getName() + ": " + ResolveStateName(point_powerfail->getStateGroupID(), InMessage.Buffer.DSt.Power);
-
-                std::auto_ptr<CtiPointDataMsg> pData(
-                   new CtiPointDataMsg(point_powerfail->getPointID(), InMessage.Buffer.DSt.Power, NormalQuality, StatusPointType, pointResult));
-
-                pData->setTime(TimeNow);
-
-                retMsg->PointData().push_back(pData.release());
-            }
-
-            if( point_generalalarm )
-            {
-                pointResult = getName() + " / " + point_generalalarm->getName() + ": " + ResolveStateName(point_generalalarm->getStateGroupID(), InMessage.Buffer.DSt.Alarm);
-
-                std::auto_ptr<CtiPointDataMsg> pData(
-                   new CtiPointDataMsg(point_generalalarm->getPointID(), InMessage.Buffer.DSt.Alarm, NormalQuality, StatusPointType, pointResult));
-
-                pData->setTime(TimeNow);
-
-                retMsg->PointData().push_back(pData.release());
-            }
-
             vgList.push_back(retMsg.release());
         }
     }

@@ -3564,7 +3564,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 BOOST_CHECK_EQUAL( pd->getId(), 2 );
                 BOOST_CHECK_CLOSE( pd->getValue(), 0, Tolerance );
                 BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(18, 3, 2011), 12, 34, 56) );
-                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status10: False" );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status10 = False @ 03/18/2011 12:34:56" );
             }
             {
                 auto pd = dynamic_cast<CtiPointDataMsg *>(*pd_itr++);
@@ -3572,7 +3572,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 BOOST_CHECK_EQUAL( pd->getId(), 3 );
                 BOOST_CHECK_CLOSE( pd->getValue(), 0, Tolerance );
                 BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(18, 3, 2011), 12, 34, 56) );
-                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status9: False" );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status9 = False @ 03/18/2011 12:34:56" );
             }
         }
     }
@@ -3826,7 +3826,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 BOOST_CHECK_EQUAL( pd->getId(), 2 );
                 BOOST_CHECK_CLOSE( pd->getValue(), 0, Tolerance );
                 BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(18, 3, 2011), 12, 34, 56) );
-                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status10: False" );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status10 = False @ 03/18/2011 12:34:56" );
             }
             {
                 auto pd = dynamic_cast<CtiPointDataMsg *>(*pd_itr++);
@@ -3834,7 +3834,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 BOOST_CHECK_EQUAL( pd->getId(), 3 );
                 BOOST_CHECK_CLOSE( pd->getValue(), 0, Tolerance );
                 BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(18, 3, 2011), 12, 34, 56) );
-                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status9: False" );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status9 = False @ 03/18/2011 12:34:56" );
             }
         }
 
@@ -3973,7 +3973,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 BOOST_CHECK_EQUAL( pd->getId(), 2 );
                 BOOST_CHECK_CLOSE( pd->getValue(), 0, Tolerance );
                 BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(18, 3, 2011), 12, 34, 56) );
-                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status10: False" );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status10 = False @ 03/18/2011 12:34:56" );
             }
             {
                 auto pd = dynamic_cast<CtiPointDataMsg *>(*pd_itr++);
@@ -3981,7 +3981,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 BOOST_CHECK_EQUAL( pd->getId(), 3 );
                 BOOST_CHECK_CLOSE( pd->getValue(), 0, Tolerance );
                 BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(18, 3, 2011), 12, 34, 56) );
-                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status9: False" );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status9 = False @ 03/18/2011 12:34:56" );
             }
         }
 
@@ -4120,7 +4120,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 BOOST_CHECK_EQUAL( pd->getId(), 2 );
                 BOOST_CHECK_CLOSE( pd->getValue(), 0, Tolerance );
                 BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(18, 3, 2011), 12, 34, 56) );
-                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status10: False" );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status10 = False @ 03/18/2011 12:34:56" );
             }
             {
                 auto pd = dynamic_cast<CtiPointDataMsg *>(*pd_itr++);
@@ -4128,7 +4128,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 BOOST_CHECK_EQUAL( pd->getId(), 3 );
                 BOOST_CHECK_CLOSE( pd->getValue(), 0, Tolerance );
                 BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(18, 3, 2011), 12, 34, 56) );
-                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status9: False" );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status9 = False @ 03/18/2011 12:34:56" );
             }
         }
 
@@ -4267,7 +4267,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 BOOST_CHECK_EQUAL( pd->getId(), 2 );
                 BOOST_CHECK_CLOSE( pd->getValue(), 0, Tolerance );
                 BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(18, 3, 2011), 12, 34, 56) );
-                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status10: False" );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status10 = False @ 03/18/2011 12:34:56" );
             }
             {
                 auto pd = dynamic_cast<CtiPointDataMsg *>(*pd_itr++);
@@ -4275,7 +4275,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 BOOST_CHECK_EQUAL( pd->getId(), 3 );
                 BOOST_CHECK_CLOSE( pd->getValue(), 0, Tolerance );
                 BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(18, 3, 2011), 12, 34, 56) );
-                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status9: False" );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status9 = False @ 03/18/2011 12:34:56" );
             }
         }
     }
@@ -4563,7 +4563,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 BOOST_CHECK_EQUAL( pd->getId(), 2 );
                 BOOST_CHECK_CLOSE( pd->getValue(), 0, Tolerance );
                 BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(18, 3, 2011), 12, 34, 56) );
-                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status10: False" );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status10 = False @ 03/18/2011 12:34:56" );
             }
             {
                 auto pd = dynamic_cast<CtiPointDataMsg *>(*pd_itr++);
@@ -4571,7 +4571,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 BOOST_CHECK_EQUAL( pd->getId(), 3 );
                 BOOST_CHECK_CLOSE( pd->getValue(), 0, Tolerance );
                 BOOST_CHECK_EQUAL( pd->getTime(), CtiTime(CtiDate(18, 3, 2011), 12, 34, 56) );
-                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status9: False" );
+                BOOST_CHECK_EQUAL( pd->getString(), "Test MCT-410iL / Status9 = False @ 03/18/2011 12:34:56" );
             }
         }
     }
