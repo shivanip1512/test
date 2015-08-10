@@ -102,6 +102,7 @@ protected:
     std::string valueReport(const CtiPointSPtr p,         const point_info &pi, const CtiTime &t = YUKONEOT) const;
     std::string valueReport(const std::string &pointname, const point_info &pi, const CtiTime &t) const;
 
+    virtual std::string resolveStateName(long groupId, long rawValue) const;
     virtual void insertPointDataReport(CtiPointType_t type, int offset, CtiReturnMsg *rm, point_info pi, const std::string &default_pointname="", const CtiTime &timestamp=CtiTime(), double default_multiplier=1.0, int tags=0);
 
     virtual YukonError_t SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);

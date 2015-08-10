@@ -117,6 +117,20 @@ public:
     {
         return rte;
     }
+
+    std::string resolveStateName(long groupId, long rawValue) const override
+    {
+        static const std::array<const char *, 10> stateNames {
+            "False", "True", "State Two", "State Three", "State Four", "State Five", "State Six", "State Seven", "State Eight", "State Nine"
+        };
+
+        if( rawValue >= 0 && rawValue < stateNames.size() )
+        {
+            return stateNames[rawValue];
+        }
+
+        return "State " + std::to_string(rawValue);
+    }
 };
 
 struct test_Mct410IconDevice : test_Mct410Device

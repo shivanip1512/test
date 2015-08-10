@@ -2039,6 +2039,12 @@ void CtiDeviceSingle::insertPointDataReport(CtiPointType_t type, int offset, Cti
 }
 
 
+string CtiDeviceSingle::resolveStateName(long groupId, long rawValue) const
+{
+    return ResolveStateName(groupId, rawValue);
+}
+
+
 string CtiDeviceSingle::valueReport(const CtiPointSPtr p, const point_info &pi, const CtiTime &t) const
 {
     string report;
@@ -2053,7 +2059,7 @@ string CtiDeviceSingle::valueReport(const CtiPointSPtr p, const point_info &pi, 
         }
         else if( p->isStatus() )
         {
-            std::string state_name = ResolveStateName(boost::static_pointer_cast<CtiPointStatus>(p)->getStateGroupID(), pi.value);
+            std::string state_name = resolveStateName(boost::static_pointer_cast<CtiPointStatus>(p)->getStateGroupID(), pi.value);
 
             if( state_name != "" )
             {
