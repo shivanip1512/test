@@ -188,11 +188,11 @@ public class TrendDataController {
             case GDSTypes.MARKER_TYPE:
                 seriesProperties.put("threshold-value", seriesItem.getMultiplier());
                 Map<String, Object> plotLineProperties = new HashMap<>();
-                plotLineProperties.put("color",colorPaletteToWeb(seriesItem.getColor()));
+                plotLineProperties.put("color", colorPaletteToWeb(seriesItem.getColor()));
                 plotLineProperties.put("width", 2);
                 plotLineProperties.put("value", seriesItem.getMultiplier());
                 plotLines.add(plotLineProperties);
-                yAxisProperties.put("plotLines",plotLines);
+                yAxisProperties.put("plotLines", plotLines);
             break;
             }
                 if(data.size()<=1) {
@@ -204,8 +204,8 @@ public class TrendDataController {
                 seriesProperties.put("yAxis", 1);
                 showRightAxis = true;
             }
-            else{
-                seriesProperties.put("yAxis",0);
+            else {
+                seriesProperties.put("yAxis", 0);
             }
             LegacySeriesType type = LegacySeriesType.getForId(seriesItem.getRenderer());
             if (type.isBar()) {
@@ -267,17 +267,17 @@ public class TrendDataController {
             seriesItemResult = rawPointHistoryDataProvider(seriesItem.getPointID());
             //dbTime = logRPHPoint(seriesItem.getPointID(), dbTime, durationFormatting, userContext);
            
-            if(seriesItem.getType().equals(GDSTypes.PEAK_GRAPH_TYPE) || seriesItem.getType().equals(GDSTypes.PEAK_GRAPH_TYPE)) {
+            if (seriesItem.getType().equals(GDSTypes.PEAK_GRAPH_TYPE) || seriesItem.getType().equals(GDSTypes.PEAK_GRAPH_TYPE)) {
                 long ts = Long.valueOf(seriesItem.getMoreData()).longValue();
                 specificDate = new Date(ts);
                 data = dateGraphDataProvider(seriesItemResult, specificDate,  chartDatePrime, chartDateLimit);
             }
-            else{
+            else {
                 specificDate = seriesItem.getSpecificDate();
                 data = dateGraphDataProvider(seriesItemResult, specificDate,  chartDatePrime, chartDateLimit);    
             }
-                if(data.size()< 1) {
-                    seriesProperties.put("error", graphDataStateMessage(GraphDataState.NO_TREND_DATA_AVAILABLE,userContext));
+                if (data.size()< 1) {
+                    seriesProperties.put("error", graphDataStateMessage(GraphDataState.NO_TREND_DATA_AVAILABLE, userContext));
                 }
                 seriesProperties.put("data", data);
                 
@@ -285,8 +285,8 @@ public class TrendDataController {
                     seriesProperties.put("yAxis", 1);
                     showRightAxis = true;
                 }
-                else{
-                    seriesProperties.put("yAxis",0);
+                else {
+                    seriesProperties.put("yAxis", 0);
                 }
                 if (!seriesItemResult.isEmpty()) {
                     if (PointType.getForId(seriesItemResult.get(0).getType()).isStatus()) {
@@ -348,7 +348,7 @@ public class TrendDataController {
             Object[] value;
             DateTime timestamp = new DateTime(pvh.getPointDataTimeStamp().getTime());
             timestamp = timestamp.minusDays(1);
-            value  = new Object[] {timestamp.getMillis() , pvh.getValue()};
+            value  = new Object[] {timestamp.getMillis(), pvh.getValue()};
             values.add(value);
         }
         return values;
@@ -367,12 +367,12 @@ public class TrendDataController {
         
         double previousPoint = 0;
         
-        for(PointValueHolder pvh : data)
+        for (PointValueHolder pvh : data)
         {
             DateTime item_ts = new DateTime(pvh.getPointDataTimeStamp().getTime());
             int flagStart = datePrime.compareTo(item_ts);
             int flagNow = dateNow.compareTo(item_ts);
-            if(flagStart <= 0 && flagNow >= 0) {
+            if (flagStart <= 0 && flagNow >= 0) {
                 currentPoint = pvh.getValue();
                 double mPoint = currentPoint - previousPoint;
                 previousPoint = currentPoint;
@@ -411,7 +411,7 @@ public class TrendDataController {
            
            for (PointValueHolder pvh : data) {
                DateTime item_ts = new DateTime(pvh.getPointDataTimeStamp().getTime());
-               if(dateTime.compareTo(item_ts) <= 0 && dateTime.plusDays(1).compareTo(item_ts) >= 0) {
+               if (dateTime.compareTo(item_ts) <= 0 && dateTime.plusDays(1).compareTo(item_ts) >= 0) {
                    int year = datePrime.getYear();
                    int monthOfYear =datePrime.getMonthOfYear();
                    int dayOfMonth = datePrime.getDayOfMonth();
@@ -423,7 +423,7 @@ public class TrendDataController {
            }
            int daysCtr = 0;
            while (daysCtr <= days) {
-               for(PointValueHolder pvh:rangeList) {
+               for (PointValueHolder pvh:rangeList) {
                    DateTime item_ts = new DateTime(pvh.getPointDataTimeStamp().getTime());
                    item_ts = item_ts.plusDays(daysCtr);
                    double item_point = pvh.getValue();
