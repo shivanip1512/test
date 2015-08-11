@@ -1,5 +1,7 @@
 package com.cannontech.common.gui.util;
 
+import com.google.common.collect.ImmutableMap;
+
 /**
  * Enumerates colors by integer and by string.
  * Provides static methods to obtain the java.awt.Color that the given
@@ -37,7 +39,23 @@ public class Colors {
 	public static final String MAGENTA_STR_ID 	= "Magenta";
 	public static final String GRAY_STR_ID 		= "Gray";
 	public static final String PINK_STR_ID 		= "Pink";
-	
+	/*Map builder for conversion to web color*/
+	private static ImmutableMap<Integer, String> colorPaletteToWeb = ImmutableMap.<Integer, String>builder()
+	        .put(Colors.BLACK_ID, "#000000")
+	        .put(Colors.BLUE_ID, "#0008FF")
+	        .put(Colors.CYAN_ID, "#00D5FF")
+	        .put(Colors.GRAY_ID, "#808080")
+	        .put(Colors.GREEN_ID, "#15FF00")
+	        .put(Colors.MAGENTA_ID, "#FF00AE")
+	        .put(Colors.ORANGE_ID, "#FF9500")
+	        .put(Colors.PINK_ID, "#FFB5E8")
+	        .put(Colors.RED_ID, "#FF0000")
+	        .build();
+	    
+	public static String colorPaletteToWeb(int color) {
+	    String retval = colorPaletteToWeb.get(color);
+	    return retval == null ? "#FFFFFF" : retval;
+	}
 	// Mapping from integer enumerations into java.awt.Color
 	private static final java.awt.Color[] IDToColorMapping =
 	{

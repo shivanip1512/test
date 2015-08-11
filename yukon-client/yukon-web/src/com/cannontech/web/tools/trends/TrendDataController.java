@@ -226,7 +226,7 @@ public class TrendDataController {
              * Originally used for the bounderies of the Date Graph it provides the upper and lower 
              * bounderies of the timestamp to make sure it takes the largest and smalles bounds. 
              * */
-            if(seriesItemResult.size() > 1) {
+            if (seriesItemResult.size() >= 1) {
                 Date compareDTPrime = seriesItemResult.get(0).getPointDataTimeStamp();
                 Date compareDTLimit = seriesItemResult.get(data.size() -1).getPointDataTimeStamp();
                 if (hasCurrentDateBoundery) {
@@ -234,9 +234,9 @@ public class TrendDataController {
                     DateTime valueDeltaPrimeDT = new DateTime(compareDTPrime);
                     DateTime valueDeltaLimitDT = new DateTime(compareDTLimit);
                     
-                    chartDatePrime = (chartDatePrime.compareTo(valueDeltaLimitDT) > 0 ) 
+                    chartDatePrime = (chartDatePrime.isAfter(valueDeltaLimitDT)) 
                     ? valueDeltaPrimeDT : chartDatePrime;
-                    chartDateLimit = (chartDateLimit.compareTo(valueDeltaLimitDT) < 0 ) 
+                    chartDateLimit = (chartDateLimit.isBefore(valueDeltaLimitDT)) 
                     ? valueDeltaLimitDT : chartDateLimit; 
                     
                 }
@@ -460,38 +460,7 @@ public class TrendDataController {
     }
 
     private String colorPaletteToWeb(int color){
-        String retval = "#FFFFFF";
-        switch(color) {
-        case Colors.BLACK_ID:
-            retval = "#000000";
-        break;
-        case Colors.BLUE_ID:
-            retval = "#0008FF";
-        break;
-        case Colors.CYAN_ID:
-            retval = "#00D5FF";
-        break;
-        case Colors.GRAY_ID:
-            retval = "#808080";
-        break;
-        case Colors.GREEN_ID:
-            retval = "#15FF00";
-        break;
-        case Colors.MAGENTA_ID:
-            retval = "#FF00AE";
-        break;
-        case Colors.ORANGE_ID:
-            retval = "#FF9500";
-        break;
-        case Colors.PINK_ID:
-            retval = "#FFB5E8";
-        break;
-        case Colors.RED_ID:
-            retval = "#FF0000";
-        break;
-       }
-        return retval;
-        
+        return Colors.colorPaletteToWeb(color);
     }
     /** Add a secondary Y axis to the right side of the graph */
     private void addRightAxis(YukonUserContext userContext, List<Map<String, Object>> seriesList, 
