@@ -42,6 +42,7 @@ import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.tools.trends.data.GraphDataState;
 import com.cannontech.web.tools.trends.data.GraphType;
 import com.cannontech.web.tools.trends.data.PointValueHolderImpl;
 import com.google.common.collect.BiMap;
@@ -76,10 +77,15 @@ public class TrendDataController {
         BAR_3D(9); // 3D Bar
         
         private final static Set<LegacySeriesType> lines = ImmutableSet.of(LINE, LINE_AREA, LINE_AREA_SHAPES, LINE_SHAPES);
+        
         private final static Set<LegacySeriesType> steps = ImmutableSet.of(STEP, STEP_AREA, STEP_AREA_SHAPES, STEP_SHAPES);
+        
         private final static Set<LegacySeriesType> bars = ImmutableSet.of(BAR, BAR_3D);
+        
         private final static BiMap<Integer, LegacySeriesType> idMap;
+        
         private final static Builder<Integer, LegacySeriesType> b = new ImmutableBiMap.Builder<>();
+        
         static {
             for (LegacySeriesType type : values()) b.put(type.id, type);
             idMap = b.build();
@@ -146,8 +152,8 @@ public class TrendDataController {
         /*Series loop*/
         for  (GraphDataSeries seriesItem : graphDataSeriesList) {
             
-            log.debug("Graph Type:" + seriesItem.getType() + ":" + graphTypeLabel(seriesItem.getType(),userContext));
-            if(seriesItem.getType().equals(GDSTypes.DATE_GRAPH_TYPE) || seriesItem.getType().equals(GDSTypes.DATE_TYPE))
+            log.debug("Graph Type:" + seriesItem.getType() + ":" + graphTypeLabel(seriesItem.getType(), userContext));
+            if(seriesItem.getType().equals(GDSTypes.DATE_GRAPH_TYPE) || seriesItem.getType().equals(GDSTypes.DATE_TYPE) || seriesItem.getType().equals(GDSTypes.PEAK_GRAPH_TYPE) || seriesItem.getType().equals(GDSTypes.PEAK_TYPE))
             {
                 dateGraphDataSeriesList.add(seriesItem);
                 continue;
@@ -159,8 +165,8 @@ public class TrendDataController {
             
             List<Object[]> data = new ArrayList<>(); 
             
-            switch (seriesItem.getType())
-            {
+            switch (seriesItem.getType()){
+            
             case GDSTypes.USAGE_GRAPH_TYPE:
                 //TODO:Figure out where to place the TS benchmark for the process of trend
                 seriesItemResult = rawPointHistoryDataProvider(seriesItem.getPointID());
@@ -172,23 +178,6 @@ public class TrendDataController {
                 seriesItemResult = rawPointHistoryDataProvider(seriesItem.getPointID());
                 //dbTime = logRPHPoint(seriesItem.getPointID(), dbTime, durationFormatting, userContext);
                 data = yesterdayGraphDataProvider(seriesItemResult);
-            break;
-            
-            case GDSTypes.PEAK_GRAPH_TYPE:
-                Map<String, Object> markerValues = new HashMap<>();
-                seriesItemResult = rawPointHistoryDataProvider(seriesItem.getPointID());
-                //dbTime = logRPHPoint(seriesItem.getPointID(), dbTime, durationFormatting, userContext);
-                data =  graphDataProvider(seriesItemResult);
-                seriesProperties.put("lineWidth", 0);
-                markerValues.put("enabled", true);
-                markerValues.put("radius", 2);
-                seriesProperties.put("marker", markerValues);
-                if(!json.containsKey("rangeSelector"))
-                {
-                    Map<String, Object> rangeSelectorValues = new HashMap<>();
-                    rangeSelectorValues.put("selected", 2);
-                    json.put("rangeSelector", rangeSelectorValues);
-                }
             break;
             case GDSTypes.GRAPH_TYPE:
             case GDSTypes.BASIC_GRAPH_TYPE:
@@ -206,6 +195,9 @@ public class TrendDataController {
                 yAxisProperties.put("plotLines",plotLines);
             break;
             }
+                if(data.size()<=1) {
+                    seriesProperties.put("error", graphDataStateMessage(GraphDataState.NO_TREND_DATA_AVAILABLE, userContext));    
+                }
                 seriesProperties.put("data", data);
 
             if (seriesItem.isRight()) {
@@ -270,29 +262,41 @@ public class TrendDataController {
             List<PointValueHolder> seriesItemResult = new ArrayList<>();
             
             List<Object[]> data = new ArrayList<>();
-            
+            Date specificDate;
             seriesItemResult = rawPointHistoryDataProvider(seriesItem.getPointID());
             //dbTime = logRPHPoint(seriesItem.getPointID(), dbTime, durationFormatting, userContext);
-            data = dateGraphDataProvider(seriesItemResult, seriesItem.getSpecificDate(),  chartYPrime, chartYLimit);
-            seriesProperties.put("data", data);
-            
-            if (seriesItem.isRight()) {
-                seriesProperties.put("yAxis", 1);
-                showRightAxis = true;
+           
+            if(seriesItem.getType().equals(GDSTypes.PEAK_GRAPH_TYPE) || seriesItem.getType().equals(GDSTypes.PEAK_GRAPH_TYPE)) {
+                long ts = Long.valueOf(seriesItem.getMoreData()).longValue();
+                specificDate = new Date(ts);
+                data = dateGraphDataProvider(seriesItemResult, specificDate,  chartYPrime, chartYLimit);
             }
             else{
-                seriesProperties.put("yAxis",0);
+                specificDate = seriesItem.getSpecificDate();
+                data = dateGraphDataProvider(seriesItemResult, specificDate,  chartYPrime, chartYLimit);    
             }
-            if (!seriesItemResult.isEmpty()) {
-                if (PointType.getForId(seriesItemResult.get(0).getType()).isStatus()) {
-                    seriesProperties.put("dataGrouping", ImmutableMap.of("enabled", false));
+                if(data.size()< 1) {
+                    seriesProperties.put("error", graphDataStateMessage(GraphDataState.NO_TREND_DATA_AVAILABLE,userContext));
                 }
-            }
-            DateFormat df = new SimpleDateFormat(" [MM/dd/yyyy] ");
-            String reportDate = df.format(seriesItem.getSpecificDate());
-            seriesProperties.put("name", seriesItem.getLabel() + graphTypeLabel(seriesItem.getType(), userContext) + reportDate);
-            seriesProperties.put("color", colorPaletteToWeb(seriesItem.getColor()));
-            seriesList.add(seriesProperties);
+                seriesProperties.put("data", data);
+                
+                if (seriesItem.isRight()) {
+                    seriesProperties.put("yAxis", 1);
+                    showRightAxis = true;
+                }
+                else{
+                    seriesProperties.put("yAxis",0);
+                }
+                if (!seriesItemResult.isEmpty()) {
+                    if (PointType.getForId(seriesItemResult.get(0).getType()).isStatus()) {
+                        seriesProperties.put("dataGrouping", ImmutableMap.of("enabled", false));
+                    }
+                }
+                DateFormat df = new SimpleDateFormat(" [MM/dd/yyyy] ");
+                String reportDate = df.format(specificDate);
+                seriesProperties.put("name", seriesItem.getLabel() + graphTypeLabel(seriesItem.getType(), userContext) + reportDate);
+                seriesProperties.put("color", colorPaletteToWeb(seriesItem.getColor()));
+                seriesList.add(seriesProperties);    
         }
         /*log transaction*/
         //dbTime  = logRPHTrend(trend, dbTime, durationFormatting, userContext);
@@ -336,7 +340,7 @@ public class TrendDataController {
         return duration.plus(dbHit);
     }
     
-    private List<Object[]> yesterdayGraphDataProvider(List<PointValueHolder> data){
+    private List<Object[]> yesterdayGraphDataProvider(List<PointValueHolder> data) {
         log.debug("YesterdayDataProvider Called"); 
         List<Object[]> values = new ArrayList<>();
         for (PointValueHolder pvh : data) {
@@ -349,14 +353,17 @@ public class TrendDataController {
         return values;
     }
     
-    private List<Object[]> usageGraphDataProvider(List<PointValueHolder> data){
+    private List<Object[]> usageGraphDataProvider(List<PointValueHolder> data) {
         log.debug("UsagegraphDataProvider Called");
-        
-        List<Object[]> values = new ArrayList<>();
         /*datePrime is 2 years prior to now*/
+        List<Object[]> values = new ArrayList<>();
+        
         DateTime dateNow = new DateTime();
+        
         DateTime datePrime = dateNow.minusYears(2);
+        
         double currentPoint = 0;
+        
         double previousPoint = 0;
         
         for(PointValueHolder pvh : data)
@@ -381,43 +388,33 @@ public class TrendDataController {
         return values;
     }
     
-    
     /*TODO: Determine actual functionality*/
-    private List<Object[]> peakGraphDataProvider(List<PointValueHolder> data) {
-        log.debug("peakGraphDataProvider Called");
-        List<Object[]> values = new ArrayList<>();
-        return values;
-    }
     
     private List<Object[]> dateGraphDataProvider(List<PointValueHolder> data, Date date, Date chartYPrime, Date chartYLimit) {
        log.debug("dateGraphDataProvider Called");
        List<Object[]> values = new ArrayList<>();
+       
        DateTime dateTime = new DateTime(date);
        
        DateTime datePrime = new DateTime(data.get(0).getPointDataTimeStamp());
+       
        DateTime dateLimit = new DateTime(data.get(data.size() -1).getPointDataTimeStamp());
        
        DateTime compareDatePrime = new DateTime(chartYPrime);
+       
        DateTime compareDateLimit = new DateTime(chartYLimit);
        
        datePrime = (datePrime.compareTo(compareDatePrime) > 0 ) 
                ? compareDatePrime : datePrime;
        dateLimit = (dateLimit.compareTo(compareDateLimit) < 0) 
                        ? compareDateLimit : dateLimit; 
-                       
-       long timestamp_start = dateTime.getMillis();
-       long timestamp_end = dateTime.plusDays(1).getMillis();
-       log.debug("dateGraphDataProvider:timestamp_start:"+ dateTime.toString());
-       log.debug("dateGraphDataProvider:timestamp_end:"+ dateLimit.toString());
        int days = Days.daysBetween(datePrime, dateLimit).getDays();
-       log.debug("dateGraphDataProvider:number of days:"+ days);
        
        List<PointValueHolder> rangeList = new ArrayList<>();
        
        for (PointValueHolder pvh : data) {
            DateTime item_ts = new DateTime(pvh.getPointDataTimeStamp().getTime());
-           long compare_ts = item_ts.getMillis(); 
-           if(compare_ts >= timestamp_start && compare_ts <= timestamp_end) {
+           if(dateTime.compareTo(item_ts) <= 0 && dateTime.plusDays(1).compareTo(item_ts) >= 0) {
                PointValueHolderImpl update_pvh = new PointValueHolderImpl();
                int year = datePrime.getYear();
                int monthOfYear =datePrime.getMonthOfYear();
@@ -429,7 +426,6 @@ public class TrendDataController {
                rangeList.add(set);
            }
        }
-       log.debug("dateGraphDataProvider:rangeList Amount:"+ rangeList.size());
        int daysCtr = 0;
        while (daysCtr <= days) {
            for(PointValueHolder pvh:rangeList) {
@@ -452,22 +448,23 @@ public class TrendDataController {
             value = new Object[] {pvh.getPointDataTimeStamp().getTime(), pvh.getValue()};    
             values.add(value);
         }
-        log.debug("dateGraphDataProvider:Amount Returned:" + values.size());
         return values;
     }
-    private String graphTypeLabel(int graphType, YukonUserContext userContext) {
-        
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
 
+    private String graphDataStateMessage(GraphDataState state, YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        return accessor.getMessage(state);
+    }
+
+    private String graphTypeLabel(int graphType, YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         GraphType graph = GraphType.getByType(graphType);
-        
         return accessor.getMessage(graph);
     }
 
     private String colorPaletteToWeb(int color){
         String retval = "#FFFFFF";
-        switch(color)
-        {
+        switch(color) {
         case Colors.BLACK_ID:
             retval = "#000000";
         break;

@@ -39,7 +39,7 @@ public enum GraphType implements DisplayableEnum{
     @Override
     public String getFormatKey() {
         // TODO Auto-generated method stub
-        return "yukon.web.modules.tools.trend.graphType." + name();
+        return "yukon.web.modules.tools.trend.GraphType." + name();
     }
    
 }
