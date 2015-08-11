@@ -55,4 +55,6 @@ public interface UserPageDao {
      * @return List of all recent DR items (Areas, Programs, Groups, Scenarios) for use on the DR dashboard 
      */
     List<DisplayablePao> getDrRecentViewed(LiteYukonUser user);
+
+    void deletePagesForPoint(int pointId);
 }

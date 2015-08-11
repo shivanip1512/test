@@ -3,11 +3,13 @@ package com.cannontech.database.db.point;
 import java.sql.SQLException;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.userpage.dao.UserPageDao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointLogicalGroups;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.spring.YukonSpringHook;
 
 public class Point extends DBPersistent {
     public static final Character PSEUDOFLAG_PSEUDO = 'P';
@@ -71,6 +73,9 @@ public class Point extends DBPersistent {
     @Override
     public void delete() throws SQLException {
         delete(TABLE_NAME, CONSTRAINT_COLUMNS[0], getPointID());
+
+        UserPageDao userPageDao = YukonSpringHook.getBean(UserPageDao.class);
+        userPageDao.deletePagesForPoint(getPointID());
     }
 
     public Character getAlarmInhibit() {

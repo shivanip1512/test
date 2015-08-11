@@ -38,6 +38,7 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ListMultimap;
 
 /**
@@ -348,13 +349,15 @@ public class UserPageDaoImpl implements UserPageDao {
 
         paoUrls.addAll(meterUrls);
     }
+    
+    private static Pattern pointUrl = Pattern.compile("/common/points/(\\d+).*");
 
     @Override
     public void deletePagesForPao(YukonPao pao) {
         List<UserPage> pages = getPages(null, null);
 
         for (UserPage page : pages) {
-            Integer pagePaoId = paoIdInPath(page.getPath(), paoUrls);
+            Integer pagePaoId = idInPath(page.getPath(), paoUrls);
             if (pagePaoId != null && pagePaoId == pao.getPaoIdentifier().getPaoId()) {
                 delete(page.getKey());
             }
@@ -366,7 +369,7 @@ public class UserPageDaoImpl implements UserPageDao {
         List<UserPage> pages = getPages(null, null);
 
         for (UserPage page : pages) {
-            Integer pagePaoId = paoIdInPath(page.getPath(), paoUrls);
+            Integer pagePaoId = idInPath(page.getPath(), paoUrls);
             if (pagePaoId != null && pagePaoId == pao.getPaoIdentifier().getPaoId()) {
                 List<String> args = Arrays.asList(paoName);
                 page = new UserPage(page.getId(), page.getKey(), page.getModule(), page.getName(), args,
@@ -376,7 +379,7 @@ public class UserPageDaoImpl implements UserPageDao {
         }
     }
 
-    private Integer paoIdInPath(String path, List<Pattern> possibleUrls) {
+    private Integer idInPath(String path, List<Pattern> possibleUrls) {
         for (Pattern url : possibleUrls) {
             Matcher m = url.matcher(path);
             if (m.find()) {
@@ -385,6 +388,18 @@ public class UserPageDaoImpl implements UserPageDao {
         }
         return null;
     }
+    
+    @Override
+    public void deletePagesForPoint(int pointId) {
+        List<UserPage> pages = getPages(null, null);
+
+        for (UserPage page : pages) {
+            Integer pagePointId = idInPath(page.getPath(), ImmutableList.of(pointUrl));
+            if (pagePointId != null && pagePointId == pointId) {
+                delete(page.getKey());
+            }
+        }
+    }
 
     @Override
     public List<DisplayablePao> getDrFavorites(LiteYukonUser user) {
@@ -392,7 +407,7 @@ public class UserPageDaoImpl implements UserPageDao {
         List<Integer> paoIds = new ArrayList<>();
         for (UserPage page : pages) {
             if (page.isFavorite()){
-                Integer paoId = paoIdInPath(page.getPath(), drFavoritesUrls);
+                Integer paoId = idInPath(page.getPath(), drFavoritesUrls);
                 if (paoId != null) {
                     paoIds.add(paoId);
                 }
@@ -411,7 +426,7 @@ public class UserPageDaoImpl implements UserPageDao {
         List<Integer> recentPaoIds = new ArrayList<>();
 
         for (UserPage page : pages) {
-                Integer paoId = paoIdInPath(page.getPath(), drFavoritesUrls);
+                Integer paoId = idInPath(page.getPath(), drFavoritesUrls);
                 if (paoId != null) {
                     recentPaoIds.add(paoId);
                 }
