@@ -230,6 +230,7 @@
                 <value>classpath:com/cannontech/yukon/web/modules/commercialcurtailment_user/root</value>
                 <value>classpath:com/cannontech/yukon/web/modules/capcontrol/root</value>
                 <value>classpath:com/cannontech/yukon/web/modules/capcontrol/ivvc</value>
+                <value>classpath:com/cannontech/yukon/web/modules/common/root</value>
                 <value>classpath:com/cannontech/yukon/web/modules/stars/survey</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/root</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/general</value>

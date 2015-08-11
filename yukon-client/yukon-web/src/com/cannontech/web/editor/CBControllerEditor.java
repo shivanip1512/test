@@ -363,7 +363,7 @@ public class CBControllerEditor implements ICBControllerModel {
         saveState(getPointTree());
         try {
             String contextPath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
-            String path = "/capcontrol/points/";
+            String path = "/common/points/";
             String pointId = JSFParamUtil.getJSFReqParam("ptID");
 
             String location = contextPath + path + pointId;

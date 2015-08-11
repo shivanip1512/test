@@ -6,10 +6,9 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="capcontrol" page="point.${mode}">
+<cti:standardPage module="common" page="point.${mode}">
 
     <tags:setFormEditMode mode="${mode}" />
     <c:set var="viewMode" value="${false}" />
@@ -19,7 +18,7 @@
 
     <c:set var="nameValueClass" value="natural-width ${viewMode ? '' : 'with-form-controls' }" />
 
-    <cti:url var="action" value="/capcontrol/points/${pointModel.pointBase.point.pointType}" />
+    <cti:url var="action" value="/common/points/${pointModel.pointBase.point.pointType}" />
     <form:form id="point-form" commandName="pointModel" action="${action}" method="POST" data-view-mode="${viewMode}">
 
         <cti:csrfToken />
@@ -37,7 +36,7 @@
 
                     <tags:nameValue2 excludeColon="${true}">
                         <tags:switchButton path="pointBase.point.outOfService"  offClasses="M0"
-                            offNameKey=".disabled" onNameKey=".enabled" inverse="${true}" />
+                            offNameKey=".disabled.label" onNameKey=".enabled.label" inverse="${true}" />
                     </tags:nameValue2>
 
                     <tags:nameValue2 nameKey="yukon.common.type">
@@ -48,7 +47,7 @@
                     <tags:nameValue2 nameKey=".parent">
                         <form:hidden path="pointBase.point.paoID"/>
                         <cti:url var="parentLink" value="${parentLink}" />
-                        <a href="${parentLink}">${fn:escapeXml(parent.paoName)}</a>
+                        <a href="${parentLink}">${parentName}</a>
                     </tags:nameValue2>
 
                     <tags:nameValue2 nameKey=".timingGroup">
@@ -372,7 +371,7 @@
                     <%-- Turn on/off stale data checking --%>
                     <tags:nameValue2 nameKey=".stale.data">
                         <tags:switchButton path="staleData.enabled" offClasses="M0" inputClass="js-stale-data-enabled"
-                         offNameKey=".disabled" onNameKey=".enabled" />
+                         offNameKey=".disabled.label" onNameKey=".enabled.label" />
                     </tags:nameValue2>
 
                     <tags:nameValue2 nameKey=".stale.time" rowClass="js-stale-data-input">
@@ -541,7 +540,7 @@
 
             <cti:displayForPageEditModes modes="VIEW">
             <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                <cti:url var="editUrl" value="/capcontrol/points/${pointModel.id}/edit" />
+                <cti:url var="editUrl" value="/common/points/${pointModel.id}/edit" />
                 <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
             </cti:checkRolesAndProperties>
             </cti:displayForPageEditModes>
@@ -556,7 +555,7 @@
                     disabled="${!attachment.deletable}" title="${attachmentMsg}"/>
                 <d:confirm on=".js-delete" nameKey="confirmDelete" argument="${pointModel.pointBase.point.pointName}"/>
 
-                <cti:url var="viewUrl" value="/capcontrol/points/${pointModel.id}" />
+                <cti:url var="viewUrl" value="/common/points/${pointModel.id}" />
                 <cti:button nameKey="cancel" href="${viewUrl}"/>
 
             </cti:displayForPageEditModes>
@@ -568,7 +567,7 @@
 
     </form:form>
 
-    <cti:url var="deleteUrl" value="/capcontrol/points/${pointModel.id}" />
+    <cti:url var="deleteUrl" value="/common/points/${pointModel.id}" />
     <form:form id="delete-point" action="${deleteUrl}" method="DELETE"></form:form>
 
     <cti:includeScript link="/resources/js/pages/yukon.da.point.js"/>

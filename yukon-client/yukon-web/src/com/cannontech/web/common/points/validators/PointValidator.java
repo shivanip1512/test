@@ -1,4 +1,4 @@
-package com.cannontech.web.capcontrol.validators;
+package com.cannontech.web.common.points.validators;
 
 import java.util.HashSet;
 import java.util.List;
@@ -79,14 +79,23 @@ public class PointValidator extends SimpleValidator<PointModel> {
         
         PointBase base = pointModel.getPointBase();
         
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "pointBase.point.pointName", "yukon.web.error.isBlank");
+        
         doScalarValidation(pointModel, errors);
         doAnalogValidation(base, errors);
         doAccumulatorValidation(base, errors);
         doStatusValidation(pointModel, errors);
 
+        int parentId = base.getPoint().getPaoID();
+        List<LitePoint> pointsOnPao = pointDao.getLitePointsByPaObjectId(parentId);
+        
+        for (LitePoint pointOnPao : pointsOnPao) {
+            if (pointOnPao.getPointName().equals(base.getPoint().getPointName())) {
+                errors.rejectValue("pointBase.point.pointName", "yukon.web.error.nameConflict");
+            }
+        }
+
         if (base.getPoint().getPointOffset() != null) {
-            int parentId = base.getPoint().getPaoID();
-            List<LitePoint> pointsOnPao = pointDao.getLitePointsByPaObjectId(parentId);
             for (LitePoint pointOnPao : pointsOnPao) {
 
                 if (pointOnPao.getPointOffset() == base.getPoint().getPointOffset() &&

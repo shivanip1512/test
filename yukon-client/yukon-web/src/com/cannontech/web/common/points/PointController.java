@@ -1,10 +1,11 @@
-package com.cannontech.web.capcontrol;
+package com.cannontech.web.common.points;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -48,17 +49,16 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.capcontrol.models.PointModel;
 import com.cannontech.web.capcontrol.models.TimeIntervals;
-import com.cannontech.web.capcontrol.service.PointEditorService;
-import com.cannontech.web.capcontrol.validators.PointValidator;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
+import com.cannontech.web.common.points.service.PointEditorService;
+import com.cannontech.web.common.points.validators.PointValidator;
 import com.cannontech.web.editor.point.StaleData;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableList;
 
 @Controller
-@CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class PointController {
     
     @Autowired private IDatabaseCache dbCache;
@@ -69,7 +69,7 @@ public class PointController {
     @Autowired private UnitMeasureDao unitMeasureDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
-    @RequestMapping(value="points/{id}", method=RequestMethod.GET)
+    @RequestMapping(value="/points/{id}", method=RequestMethod.GET)
     public String view(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
         
         model.addAttribute("mode", PageEditMode.VIEW);
@@ -78,7 +78,7 @@ public class PointController {
         return setUpModel(model, pointModel, userContext);
     }
     
-    @RequestMapping(value="points/{id}/edit", method=RequestMethod.GET)
+    @RequestMapping(value="/points/{id}/edit", method=RequestMethod.GET)
     public String edit(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
         
         model.addAttribute("mode", PageEditMode.EDIT);
@@ -87,7 +87,7 @@ public class PointController {
         return setUpModel(model, pointModel, userContext);
     }
     
-    @RequestMapping("points/{type}/create")
+    @RequestMapping("/points/{type}/create")
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String create(@PathVariable String type, @RequestParam int parentId, YukonUserContext userContext) {
 
@@ -95,7 +95,7 @@ public class PointController {
 
         int newId = pointEditorService.create(pointType, parentId, userContext);
 
-        return "redirect:/capcontrol/points/" + newId + "/edit";
+        return "redirect:/common/points/" + newId + "/edit";
     }
 
     private String setUpModel(ModelMap model, PointModel pointModel, YukonUserContext userContext) {
@@ -112,7 +112,7 @@ public class PointController {
         model.addAttribute("pointModel", pointModel);
         
         LiteYukonPAObject parent = dbCache.getAllPaosMap().get(pointModel.getPointBase().getPoint().getPaoID());
-        model.addAttribute("parent", parent);
+        model.addAttribute("parentName", StringEscapeUtils.escapeXml10(parent.getPaoName()));
         model.addAttribute("parentLink", paoDetailUrlHelper.getUrlForPaoDetailPage(parent));
         
         PointBase base = pointModel.getPointBase();
@@ -167,13 +167,15 @@ public class PointController {
         return "point.jsp";
     }
     
-    @RequestMapping("state-group/{id}/states")
+    /* TODO */
+    @RequestMapping("/state-group/{id}/states")
     public @ResponseBody LiteState[] statesForGroup(@PathVariable("id") int id) {
         return stateDao.getLiteStates(id);
     
     }
 
-    @RequestMapping("fdr/{type}")
+    /* TODO */
+    @RequestMapping("/fdr/{type}")
     public @ResponseBody Map<String, Object> fdrInterfaceInfo(@PathVariable("type") FdrInterfaceType interfaceType,
                                                               @RequestParam("point-type") String pointType) {
         
@@ -195,7 +197,7 @@ public class PointController {
     public static class StatusPointModel extends PointModel<StatusPoint> {}
     public static class CalcStatusPointModel extends PointModel<CalcStatusPoint> {}
     
-    @RequestMapping(value={"points/Analog"}, method=RequestMethod.POST)
+    @RequestMapping(value="/points/Analog", method=RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String saveAnalog(
             @ModelAttribute("pointModel") AnalogPointModel pointModel,
@@ -205,17 +207,17 @@ public class PointController {
         return save(pointModel, result, redirectAttributes);
     }
     
-    @RequestMapping(value={"points/PulseAccumulator"}, method=RequestMethod.POST)
+    @RequestMapping(value="/points/PulseAccumulator", method=RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String saveAccumulator(
-            @ModelAttribute("pointModel") AccumulatorPointModel pointModel,
+            PointModel<AccumulatorPoint> pointModel,
             BindingResult result,
             RedirectAttributes redirectAttributes) {
         
         return save(pointModel, result, redirectAttributes);
     }
     
-    @RequestMapping(value={"points/CalcAnalog"}, method=RequestMethod.POST)
+    @RequestMapping(value="/points/CalcAnalog", method=RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String saveCalcAnalog(
             @ModelAttribute("pointModel") CalculatedPointModel pointModel,
@@ -225,7 +227,7 @@ public class PointController {
         return save(pointModel, result, redirectAttributes);
     }
     
-    @RequestMapping(value={"points/Status"}, method=RequestMethod.POST)
+    @RequestMapping(value="/points/Status", method=RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String saveStatusAnalog(
             @ModelAttribute("pointModel") StatusPointModel pointModel,
@@ -235,7 +237,7 @@ public class PointController {
         return save(pointModel, result, redirectAttributes);
     }
     
-    @RequestMapping(value={"points/CalcStatus"}, method=RequestMethod.POST)
+    @RequestMapping(value="/points/CalcStatus", method=RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String saveCalcStatusAnalog(
             @ModelAttribute("pointModel") CalcStatusPointModel pointModel,
@@ -257,7 +259,7 @@ public class PointController {
         
         int id = pointEditorService.save(pointModel);
    
-        return "redirect:/capcontrol/points/" + id;
+        return "redirect:/common/points/" + id;
     }
     
     private String bindAndForward(PointModel pointModel, BindingResult result, RedirectAttributes attrs) {
@@ -265,14 +267,10 @@ public class PointController {
         attrs.addFlashAttribute("pointModel", pointModel);
         attrs.addFlashAttribute("org.springframework.validation.BindingResult.pointModel", result);
         
-        if (pointModel.getId() == null) {
-            return "redirect:capcontrol/points/create";
-        }
-        
-        return "redirect:/capcontrol/points/" + pointModel.getId() + "/edit";
+        return "redirect:/common/points/" + pointModel.getId() + "/edit";
     }
     
-    @RequestMapping(value="points/{id}", method=RequestMethod.DELETE)
+    @RequestMapping(value="/points/{id}", method=RequestMethod.DELETE)
     public String delete(@PathVariable int id, FlashScope flashScope) {
         
         PointModel pointModel = pointEditorService.getModelForId(id);
@@ -288,6 +286,6 @@ public class PointController {
         
         flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.point.deleteFailed"));
         
-        return "redirect:/capcontrol/points/" + pointModel.getId() + "/edit";
+        return "redirect:/capcontrol/common/points/" + pointModel.getId() + "/edit";
     }
 }

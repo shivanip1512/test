@@ -51,7 +51,7 @@
                     </div>
                     <div>
                         <strong><i:inline key="yukon.common.point"/></strong>&nbsp;
-                        <cti:url var="pointLink" value="/capcontrol/points/${voltagePoint.pointId}" />
+                        <cti:url var="pointLink" value="/common/points/${voltagePoint.pointId}" />
                         <a href="${pointLink}">${fn:escapeXml(voltagePoint.pointName)}</a>
                     </div>
 				</td>

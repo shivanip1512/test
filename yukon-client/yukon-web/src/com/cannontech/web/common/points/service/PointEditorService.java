@@ -1,4 +1,4 @@
-package com.cannontech.web.capcontrol.service;
+package com.cannontech.web.common.points.service;
 
 import java.util.List;
 import java.util.Map;
@@ -66,7 +66,7 @@ public interface PointEditorService {
         SYSTEM_LOG(true),
         NO_CONFLICT(true);
         
-        private static final String baseKey = "yukon.web.modules.capcontrol.point.attachment.";
+        private static final String baseKey = "yukon.web.modules.common.point.attachment.";
 
         private final boolean deletable;
 

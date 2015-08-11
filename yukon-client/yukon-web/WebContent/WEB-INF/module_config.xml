@@ -672,16 +672,6 @@
               </page>
             </pages>
           </page>
-          <page name="point.CREATE" type="BASIC" />
-          <page name="point.VIEW" type="BASIC">
-            <link>/capcontrol/points/${pointModel.pointBase.point.pointID}</link>
-            <labelArgument>${pointModel.pointBase.point.pointName}</labelArgument>
-            <pages>
-              <page name="point.EDIT" type="BASIC" hideFavorite="true">
-                <labelArgument>${pointModel.pointBase.point.pointName}</labelArgument>
-              </page>
-            </pages>
-          </page>
           <page name="movedCapBanks" type="BASIC">
             <link>/capcontrol/move/movedCapBanks</link>
           </page>
@@ -727,6 +717,28 @@
     <css file="/cc/base.css" />
     <pages>
       <page name="programEvents" type="BASIC"/>
+    </pages>
+  </module>
+
+  <module name="common">
+    <skin name="STANDARD" />
+    <pages>
+      <page name="pao" type="BASIC">
+        <link>${parentLink}</link>
+        <labelArgument>${parentName}</labelArgument>
+        <pages>
+          <page name="point.VIEW" type="BASIC">
+            <link>/common/points/${pointModel.pointBase.point.pointID}</link>
+            <labelArgument>${pointModel.pointBase.point.pointName}</labelArgument>
+            <pages>
+              <page name="point.EDIT" type="BASIC" hideFavorite="true">
+                <labelArgument>${pointModel.pointBase.point.pointName}</labelArgument>
+              </page>
+            </pages>
+          </page>
+        </pages>
+      </page>
+
     </pages>
   </module>
 
