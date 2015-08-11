@@ -226,25 +226,27 @@ public class TrendDataController {
              * Originally used for the bounderies of the Date Graph it provides the upper and lower 
              * bounderies of the timestamp to make sure it takes the largest and smalles bounds. 
              * */
+            if(seriesItemResult.size() > 1) {
+                Date compareDTPrime = seriesItemResult.get(0).getPointDataTimeStamp();
+                Date compareDTLimit = seriesItemResult.get(data.size() -1).getPointDataTimeStamp();
+                if (hasCurrentDateBoundery) {
+                    
+                    DateTime valueDeltaPrimeDT = new DateTime(compareDTPrime);
+                    DateTime valueDeltaLimitDT = new DateTime(compareDTLimit);
+                    
+                    chartDatePrime = (chartDatePrime.compareTo(valueDeltaLimitDT) > 0 ) 
+                    ? valueDeltaPrimeDT : chartDatePrime;
+                    chartDateLimit = (chartDateLimit.compareTo(valueDeltaLimitDT) < 0 ) 
+                    ? valueDeltaLimitDT : chartDateLimit; 
+                    
+                }
+                else {
+                    chartDatePrime = new DateTime(compareDTPrime);
+                    chartDateLimit = new DateTime(compareDTLimit);
+                    hasCurrentDateBoundery = true;
+                }    
+            }
             
-            Date compareDTPrime = seriesItemResult.get(0).getPointDataTimeStamp();
-            Date compareDTLimit = seriesItemResult.get(data.size() -1).getPointDataTimeStamp();
-            if (hasCurrentDateBoundery) {
-                
-                DateTime valueDeltaPrimeDT = new DateTime(compareDTPrime);
-                DateTime valueDeltaLimitDT = new DateTime(compareDTLimit);
-                
-                chartDatePrime = (chartDatePrime.compareTo(valueDeltaLimitDT) > 0 ) 
-                ? valueDeltaPrimeDT : chartDatePrime;
-                chartDateLimit = (chartDateLimit.compareTo(valueDeltaLimitDT) < 0 ) 
-                ? valueDeltaLimitDT : chartDateLimit; 
-                
-            }
-            else {
-                chartDatePrime = new DateTime(compareDTPrime);
-                chartDateLimit = new DateTime(compareDTLimit);
-                hasCurrentDateBoundery = true;
-            }
             seriesProperties.put("name", seriesItem.getLabel() + graphTypeLabel(seriesItem.getType(), userContext));
             seriesProperties.put("color", colorPaletteToWeb(seriesItem.getColor()));
             seriesList.add(seriesProperties);
@@ -392,45 +394,47 @@ public class TrendDataController {
     private List<Object[]> dateGraphDataProvider(List<PointValueHolder> data, Date date, DateTime compareDatePrime, DateTime compareDateLimit) {
        log.debug("dateGraphDataProvider Called");
        List<Object[]> values = new ArrayList<>();
-       
-       DateTime dateTime = new DateTime(date);
-       
-       DateTime datePrime = new DateTime(data.get(0).getPointDataTimeStamp());
-       
-       DateTime dateLimit = new DateTime(data.get(data.size() -1).getPointDataTimeStamp());
+       if(data.size()> 1) {
+           DateTime dateTime = new DateTime(date);
+           
+           DateTime datePrime = new DateTime(data.get(0).getPointDataTimeStamp());
+           
+           DateTime dateLimit = new DateTime(data.get(data.size() -1).getPointDataTimeStamp());
 
-       datePrime = (datePrime.isAfter(compareDatePrime)) 
-               ? compareDatePrime : datePrime;
-       dateLimit = (dateLimit.isBefore(compareDateLimit)) 
-                       ? compareDateLimit : dateLimit; 
-       int days = Days.daysBetween(datePrime, dateLimit).getDays();
-       
-       List<PointValueHolder> rangeList = new ArrayList<>();
-       
-       for (PointValueHolder pvh : data) {
-           DateTime item_ts = new DateTime(pvh.getPointDataTimeStamp().getTime());
-           if(dateTime.compareTo(item_ts) <= 0 && dateTime.plusDays(1).compareTo(item_ts) >= 0) {
-               int year = datePrime.getYear();
-               int monthOfYear =datePrime.getMonthOfYear();
-               int dayOfMonth = datePrime.getDayOfMonth();
-               item_ts = item_ts.withDate(year, monthOfYear, dayOfMonth);
-               SimplePointValue update_pvh = new SimplePointValue( pvh.getId(), item_ts.toDate(), pvh.getType(), pvh.getValue());
-               PointValueHolder set = update_pvh;
-               rangeList.add(set);
-           }
-       }
-       int daysCtr = 0;
-       while (daysCtr <= days) {
-           for(PointValueHolder pvh:rangeList) {
+           datePrime = (datePrime.isAfter(compareDatePrime)) 
+                   ? compareDatePrime : datePrime;
+           dateLimit = (dateLimit.isBefore(compareDateLimit)) 
+                           ? compareDateLimit : dateLimit; 
+           int days = Days.daysBetween(datePrime, dateLimit).getDays();
+           
+           List<PointValueHolder> rangeList = new ArrayList<>();
+           
+           for (PointValueHolder pvh : data) {
                DateTime item_ts = new DateTime(pvh.getPointDataTimeStamp().getTime());
-               item_ts = item_ts.plusDays(daysCtr);
-               double item_point = pvh.getValue();
-               Object[] value = new Object[]{item_ts.getMillis(), item_point};
-               values.add(value);
+               if(dateTime.compareTo(item_ts) <= 0 && dateTime.plusDays(1).compareTo(item_ts) >= 0) {
+                   int year = datePrime.getYear();
+                   int monthOfYear =datePrime.getMonthOfYear();
+                   int dayOfMonth = datePrime.getDayOfMonth();
+                   item_ts = item_ts.withDate(year, monthOfYear, dayOfMonth);
+                   SimplePointValue update_pvh = new SimplePointValue( pvh.getId(), item_ts.toDate(), pvh.getType(), pvh.getValue());
+                   PointValueHolder set = update_pvh;
+                   rangeList.add(set);
+               }
            }
-           daysCtr++;
+           int daysCtr = 0;
+           while (daysCtr <= days) {
+               for(PointValueHolder pvh:rangeList) {
+                   DateTime item_ts = new DateTime(pvh.getPointDataTimeStamp().getTime());
+                   item_ts = item_ts.plusDays(daysCtr);
+                   double item_point = pvh.getValue();
+                   Object[] value = new Object[]{item_ts.getMillis(), item_point};
+                   values.add(value);
+               }
+               daysCtr++;
+           }
+
        }
-       return values;
+              return values;
     }
     
     private List<Object[]> graphDataProvider(List<PointValueHolder> data){
