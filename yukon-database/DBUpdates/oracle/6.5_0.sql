@@ -66,7 +66,7 @@ MODIFY SendOutOfService CHAR(1) NOT NULL;
 UPDATE GlobalSetting 
 SET Value = 'eaton_logo.png'
 WHERE Name = 'WEB_LOGO_URL'
-AND Value = 'CannonLogo.gif'
+AND Value = 'CannonLogo.gif';
 /* End YUK-14474 */
 
 /**************************************************************/
