@@ -51,6 +51,17 @@ WHERE RoleId IN (-107, -206);
 DROP TABLE EsubDisplayIndex;
 /* End YUK-14530 */
 
+/* Start YUK-14537 */
+ALTER TABLE InventoryConfigTask
+ADD SendOutOfService CHAR(1);
+
+UPDATE InventoryConfigTask
+SET SendOutOfService = 'N';
+
+ALTER TABLE InventoryConfigTask
+MODIFY SendOutOfService CHAR(1) NOT NULL;
+/* End YUK-14537 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

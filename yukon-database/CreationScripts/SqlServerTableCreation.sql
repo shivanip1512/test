@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/12/2015 9:51:18 AM                         */
+/* Created on:     8/12/2015 12:34:37 PM                        */
 /*==============================================================*/
 
 
@@ -5812,6 +5812,7 @@ create table InventoryConfigTask (
    NumberOfItemsProcessed numeric              not null,
    EnergyCompanyId      numeric              not null,
    UserId               numeric              not null,
+   SendOutOfService     char(1)              not null,
    constraint PK_InvConfTask primary key (InventoryConfigTaskId)
 )
 go

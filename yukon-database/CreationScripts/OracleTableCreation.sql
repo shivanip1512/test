@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/12/2015 10:21:55 AM                        */
+/* Created on:     8/12/2015 12:32:35 PM                        */
 /*==============================================================*/
 
 
@@ -5518,6 +5518,7 @@ create table InventoryConfigTask  (
    NumberOfItemsProcessed NUMBER                          not null,
    EnergyCompanyId      NUMBER                          not null,
    UserId               NUMBER                          not null,
+   SendOutOfService     CHAR(1)                         not null,
    constraint PK_InvConfTask primary key (InventoryConfigTaskId)
 );
 
