@@ -4,7 +4,6 @@ import java.text.ParseException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -91,7 +90,7 @@ public class JobManagerImpl implements JobManager {
                 final RunnableRetryJob runnable = new RunnableRetryJob(status) {
                     @Override
                     protected void afterRun() {
-                        if (stopRescheduleForJob(status.getJob().getId())) {
+                        if (stopRescheduleForJob(status.getJob().getId()) && status.getJob().isDisabled()) {
                             doScheduleScheduledJob(status.getJob(), null);
                         }
                     }
@@ -283,7 +282,7 @@ public class JobManagerImpl implements JobManager {
             Runnable runnable = new BaseRunnableJob(job) {
                 @Override
                 protected void afterRun() {
-                    if (stopRescheduleForJob(job.getId())) {
+                    if (stopRescheduleForJob(job.getId()) && job.isDisabled()) {
                         doScheduleScheduledJob(job, nextRuntime);
                     }
                 }
