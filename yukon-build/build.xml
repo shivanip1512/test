@@ -153,7 +153,6 @@
             <fileset file="${basedir}/yukon-client/billing/src/main/resources" includes="*.bat"/>
             <fileset file="${basedir}/yukon-client/commander/src/main/resources/CommanderIcon.ico"/>
             <fileset file="${basedir}/yukon-client/dbeditor/resource/dbEditorIcon.ico"/>
-            <fileset file="${basedir}/yukon-client/esub-editor/resource/esubEditorIcon.ico"/>
             <fileset dir="${basedir}/yukon-client/export/conf" />
             <fileset file="${basedir}/yukon-client/monitor/src/main/resources/YukonNoAlarm.ico" />
             <fileset file="${basedir}/yukon-client/monitor/src/main/resources/AlarmMonitor.ico" />
@@ -339,9 +338,6 @@
         <mkdir dir="${temp.dir}" />
         <copy todir="${temp.dir}/YukonInstall">
             <fileset dir="${basedir}/yukon-install/YukonSetupX/Media/Release 1/Package" />
-        </copy>
-        <copy todir="${temp.dir}/YukonMisc/YukonImages">
-            <fileset dir="${basedir}/yukon-client/esub/images" />
         </copy>
         <copy todir="${temp.dir}/YukonMisc/YukonDatabase/DatabaseValidation">
             <fileset dir="${basedir}/yukon-client/common/src/com/cannontech/database/snapshot" />

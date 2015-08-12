@@ -746,11 +746,6 @@
     <skin name="STANDARD" />
   </module>
 
-  <module name="esub">
-    <skin name="STANDARD" />
-    <css file="esub.css" />
-  </module>
-
   <module name="stars">
     <skin name="PURPLE" />
   </module>

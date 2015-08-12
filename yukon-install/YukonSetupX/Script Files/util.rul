@@ -433,21 +433,3 @@ begin
 		MessageBox("Error deleting files of type \"" + sSearchString + "\" in directory \"" + sDirectory + ". Old files may still be present.", WARNING);
 	endif;
 end;
-
-//---------------------------------------------------------------
-//Helper function that updates esub pages that require obsolete role ids
-//---------------------------------------------------------------
-export prototype UpdateEsubRoleId();
-function UpdateEsubRoleId()
-string sProg;
-begin
-     SdShowMsg("Checking for any Esubstation files that contain obsolete role ids", TRUE);
-     sProg = TARGETDIR ^ "\\Client\\bin\\UpdateEsubRoleId.bat";
-     LAAW_PARAMETERS.nTimeOut = INFINITE;
-     LAAW_STARTUPINFO.wShowWindow = SW_HIDE;
-     LaunchAppAndWait(sProg, "", LAAW_OPTION_WAIT);
-     // Reset global variables.
-     LAAW_PARAMETERS.nTimeOut = 0;
-     LAAW_STARTUPINFO.wShowWindow = SW_NORMAL;
-     SdShowMsg("", FALSE);
-end;

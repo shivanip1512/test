@@ -100,13 +100,11 @@
         <ant dir="${yukonappserver}" target="${dotarget}" />
 
         <ant dir="${export}" target="${dotarget}" />
-        <ant dir="${esub}" target="${dotarget}" />
         <ant dir="${tdc}" target="${dotarget}" />
         <ant dir="${dbeditor}" target="${dotarget}" />
         <ant dir="${commander}" target="${dotarget}" />
         <ant dir="${resource}" target="${dotarget}" />
 
-        <ant dir="${esub-editor}" target="${dotarget}" />
         <ant dir="${cbc}" target="${dotarget}" />
         <ant dir="${macs}" target="${dotarget}" />
 

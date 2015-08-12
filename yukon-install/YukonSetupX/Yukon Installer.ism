@@ -114,8 +114,6 @@
 		<row><td>Database Editor</td><td>{528B8373-B380-49C1-93B9-8C351077D0D9}</td><td>CLIENT</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Default Master Config</td><td>{606F1473-06BA-44D4-AD19-A28CD59CE18A}</td><td>SERVER</td><td>16</td><td/><td/><td>10769</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Dispatch</td><td>{5174E651-225D-41C3-A7BC-752EB116A9CC}</td><td>BIN1</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>ESubstation Editor</td><td>{B35D5561-321C-4776-AAEB-62A90576A69B}</td><td>CLIENT</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Esub Sublist Files</td><td>{8D52C986-9F4C-4D28-9DA6-1B78B258D43D}</td><td>ESUB</td><td>16</td><td/><td/><td>10769</td><td>These files must be linked in their own component so that we can set them to not be overwritten in an upgrade.</td><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ExportArchive</td><td>{529B3DD1-6EC7-489B-A37B-8C3A4F5ABD8C}</td><td>EXPORTARCHIVE</td><td>0</td><td/><td/><td>51729</td><td>Used to create the empty ExportArchive directory.</td><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Foreign Data Router</td><td>{1C0CB6C2-0516-4948-8D46-EAC8D3A315E8}</td><td>BIN1</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Java Runtime</td><td>{2CC1FA0A-82AB-4F8D-8F4E-36D42D067EC6}</td><td>RUNTIME</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
@@ -247,7 +245,6 @@
 		<row><td>DesktopFolder</td><td/><td>Desktop</td><td/><td>3</td><td/></row>
 		<row><td>ENTERPRISE_INTEGRATION_MODULE</td><td>EXTRAS</td><td>Enterprise Integration Module</td><td/><td>0</td><td/></row>
 		<row><td>ENTERPRISE_INTEGRATION_MODULE1</td><td>EXTRAS1</td><td>Enterprise Integration Module</td><td/><td>0</td><td/></row>
-		<row><td>ESUB</td><td>ROOT</td><td>esub</td><td/><td>0</td><td/></row>
 		<row><td>EXPORTARCHIVE</td><td>TARGETDIR</td><td>ExportArchive</td><td/><td>0</td><td/></row>
 		<row><td>EXTRAS</td><td>TARGETDIR</td><td>Extras</td><td/><td>0</td><td/></row>
 		<row><td>EXTRAS1</td><td>SERVER</td><td>Extras</td><td/><td>0</td><td/></row>
@@ -312,7 +309,6 @@
 		<row><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td/><td>##IDS_FEATURE_DISPLAY_NAME5##</td><td>##ID_STRING15##</td><td>5</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Yukon Client</td></row>
 		<row><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>##IDS_FEATURE_DISPLAY_NAME21##</td><td>##ID_STRING13##</td><td>31</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Notification</td></row>
 		<row><td>{E6E81A5E-ACA3-4C5B-8FD1-6A1881FCE8C6}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>##IDS_FEATURE_DISPLAY_NAME11##</td><td>##ID_STRING21##</td><td>23</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Alarm Monitor</td></row>
-		<row><td>{FB0E9936-56A9-4E00-B8C9-E3E82682657B}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>##IDS_FEATURE_DISPLAY_NAME10##</td><td>##ID_STRING20##</td><td>21</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>ESubstation Editor</td></row>
 		<row><td>{FB279D35-43A8-441C-8B56-F98EC5504F2F}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>##IDS_FEATURE_DISPLAY_NAME8##</td><td>##ID_STRING18##</td><td>17</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Tabular Data Console</td></row>
 	</table>
 
@@ -334,7 +330,6 @@
 		<row><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Server Base</td></row>
 		<row><td>{4ACFFB62-6E17-49AE-B063-E56B4FC5D9A5}</td><td>MACS</td></row>
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Client Base</td></row>
-		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Esub Sublist Files</td></row>
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Log Config Files</td></row>
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Tomcat</td></row>
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Tomcat XML Config</td></row>
@@ -357,7 +352,6 @@
 		<row><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td><td>Java Service Wrapper</td></row>
 		<row><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td><td>Notification Server</td></row>
 		<row><td>{E6E81A5E-ACA3-4C5B-8FD1-6A1881FCE8C6}</td><td>Alarm Monitor</td></row>
-		<row><td>{FB0E9936-56A9-4E00-B8C9-E3E82682657B}</td><td>ESubstation Editor</td></row>
 		<row><td>{FB279D35-43A8-441C-8B56-F98EC5504F2F}</td><td>TDC</td></row>
 	</table>
 
@@ -416,8 +410,6 @@
 		<row><td>Database Editor</td><td/><td/><td>_84B4A157_04B2_4828_BF19_3EE0E886C98F_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Default Master Config</td><td/><td/><td>_0CD0DB3D_6212_45EE_8C7E_5A5AC3865483_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Dispatch</td><td/><td/><td>_D03D8F94_6642_440E_BA33_CD83D90D8849_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>ESubstation Editor</td><td/><td/><td>_9BCA8A2E_BC79_4C53_B6EF_B316B4C9D418_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>Esub Sublist Files</td><td/><td/><td>_66646CE6_A312_47A4_AD1C_288CE8FCAEC4_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ExportArchive</td><td/><td/><td>_EB731F1C_0F1B_4627_AD75_B4B58D9E7937_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Foreign Data Router</td><td/><td/><td>_D12922D3_B0BD_4B17_9C36_4F10A3EE6042_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Java Runtime</td><td/><td/><td>_BFAB495E_5188_439C_B4F0_BBE1AFB3D87F_FILTER</td><td/><td/><td/><td/></row>
@@ -495,7 +487,6 @@
 		<row><td>Client Base</td><td>&lt;PATH_TO_CLIENT_BASE&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>Default Master Config</td><td>&lt;PATH_TO_MASTER_CFG_DEFAULT&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>Dispatch</td><td>&lt;PATH_TO_SERVER_BIN_FILES&gt;</td><td>1</td><td>dispatch.exe</td><td/><td>0</td></row>
-		<row><td>Esub Sublist Files</td><td>&lt;PATH_TO_WEB_DEP_FILES&gt;\ROOT\esub</td><td>1</td><td>sublist.html; sublist.jlx</td><td/><td>0</td></row>
 		<row><td>Foreign Data Router</td><td>&lt;PATH_TO_SERVER_BIN_FILES&gt;</td><td>1</td><td>fdr.exe</td><td/><td>0</td></row>
 		<row><td>Java Runtime</td><td>&lt;PATH_TO_JRE_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>Java Service Wrapper</td><td>&lt;PATH_TO_WRAPPER_FILES&gt;\Client\bin</td><td>1</td><td>*.*</td><td>notifserver.conf;appserver.conf</td><td>0</td></row>
@@ -550,7 +541,6 @@
 		<row><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING69##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td><td/><td>NotificationServer_Installed</td><td>NotificationServer_UnInstalling</td><td/><td/><td/><td/><td>##ID_STRING35##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{E6E81A5E-ACA3-4C5B-8FD1-6A1881FCE8C6}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING42##</td><td>36</td><td/><td/><td/></row>
-		<row><td>{FB0E9936-56A9-4E00-B8C9-E3E82682657B}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING41##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{FB279D35-43A8-441C-8B56-F98EC5504F2F}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING39##</td><td>36</td><td/><td/><td/></row>
 	</table>
 
@@ -852,7 +842,6 @@
 		<row><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td></row>
 		<row><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td></row>
 		<row><td>{E6E81A5E-ACA3-4C5B-8FD1-6A1881FCE8C6}</td><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td></row>
-		<row><td>{FB0E9936-56A9-4E00-B8C9-E3E82682657B}</td><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td></row>
 		<row><td>{FB279D35-43A8-441C-8B56-F98EC5504F2F}</td><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td></row>
 	</table>
 
@@ -1030,7 +1019,6 @@
 		<row><td>Complete</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td></row>
 		<row><td>Complete</td><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td></row>
 		<row><td>Complete</td><td>{E6E81A5E-ACA3-4C5B-8FD1-6A1881FCE8C6}</td></row>
-		<row><td>Complete</td><td>{FB0E9936-56A9-4E00-B8C9-E3E82682657B}</td></row>
 		<row><td>Complete</td><td>{FB279D35-43A8-441C-8B56-F98EC5504F2F}</td></row>
 		<row><td>Custom</td><td>{0BD2D28A-4ECB-44C1-9DA4-A23A6FFEBE72}</td></row>
 		<row><td>Custom</td><td>{1BC2DA10-49B8-4B3F-A5F6-FEEE6749D422}</td></row>
@@ -1053,7 +1041,6 @@
 		<row><td>Custom</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td></row>
 		<row><td>Custom</td><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td></row>
 		<row><td>Custom</td><td>{E6E81A5E-ACA3-4C5B-8FD1-6A1881FCE8C6}</td></row>
-		<row><td>Custom</td><td>{FB0E9936-56A9-4E00-B8C9-E3E82682657B}</td></row>
 		<row><td>Custom</td><td>{FB279D35-43A8-441C-8B56-F98EC5504F2F}</td></row>
 	</table>
 
@@ -1064,7 +1051,6 @@
 		<row><td>NewShortcut10</td><td>Commander</td></row>
 		<row><td>NewShortcut11</td><td>TDC</td></row>
 		<row><td>NewShortcut12</td><td>Trending</td></row>
-		<row><td>NewShortcut13</td><td>ESubstation Editor</td></row>
 		<row><td>NewShortcut14</td><td>Alarm Monitor</td></row>
 		<row><td>NewShortcut16</td><td>Tomcat</td></row>
 		<row><td>NewShortcut17</td><td>API Extras</td></row>
@@ -1095,7 +1081,6 @@
 		<row><td>IDPROP_SETUPTYPE_CUSTOM</td><td>1033</td><td>Custom</td><td>0</td><td/><td>1394439054</td></row>
 		<row><td>IDPROP_SETUPTYPE_CUSTOM_DESC_PRO</td><td>1033</td><td>Custom</td><td>0</td><td/><td>1394439054</td></row>
 		<row><td>IDS_FEATURE_DISPLAY_NAME1</td><td>1033</td><td>New Feature</td><td>0</td><td/><td>-1784822544</td></row>
-		<row><td>IDS_FEATURE_DISPLAY_NAME10</td><td>1033</td><td>ESubstation Editor</td><td>0</td><td/><td>-1784828592</td></row>
 		<row><td>IDS_FEATURE_DISPLAY_NAME11</td><td>1033</td><td>Alarm Monitor</td><td>0</td><td/><td>-1784816304</td></row>
 		<row><td>IDS_FEATURE_DISPLAY_NAME12</td><td>1033</td><td>Port Control</td><td>0</td><td/><td>-1516382486</td></row>
 		<row><td>IDS_FEATURE_DISPLAY_NAME13</td><td>1033</td><td>Dispatch</td><td>0</td><td/><td>-1784818191</td></row>
@@ -1167,7 +1152,6 @@
 		<row><td>ID_STRING18</td><td>1033</td><td>Interface for demand response, MAC schedules, alarms and custom data views.</td><td>0</td><td/><td>-1516433109</td></row>
 		<row><td>ID_STRING19</td><td>1033</td><td>Create and view graphical representations of stored data from the Yukon database.</td><td>0</td><td/><td>-1516392149</td></row>
 		<row><td>ID_STRING2</td><td>1033</td><td>The Yukon services process and communicate data between the Yukon clients, database, and field devices.</td><td>0</td><td/><td>-1516390742</td></row>
-		<row><td>ID_STRING20</td><td>1033</td><td>Create interactive one-line drawings for the ESubstation platform.</td><td>0</td><td/><td>-1516412597</td></row>
 		<row><td>ID_STRING21</td><td>1033</td><td>Lightweight alarm monitoring notifier that runs in the windows system tray.</td><td>0</td><td/><td>-1516433013</td></row>
 		<row><td>ID_STRING22</td><td>1033</td><td>Additional modules for specialized needs.</td><td>0</td><td/><td>-1516377717</td></row>
 		<row><td>ID_STRING23</td><td>1033</td><td>Files related to the Yukon EIM application programming interface.</td><td>0</td><td/><td>-1516408373</td></row>
@@ -1190,7 +1174,6 @@
 		<row><td>ID_STRING39</td><td>1033</td><td>Tabular Data Console</td><td>0</td><td/><td>1176313065</td></row>
 		<row><td>ID_STRING4</td><td>1033</td><td>Controls communication channel and field hardware communications.</td><td>0</td><td/><td>-1516421366</td></row>
 		<row><td>ID_STRING40</td><td>1033</td><td>Trending</td><td>0</td><td/><td>1176319209</td></row>
-		<row><td>ID_STRING41</td><td>1033</td><td>ESubstation Editor</td><td>0</td><td/><td>1176325353</td></row>
 		<row><td>ID_STRING42</td><td>1033</td><td>Alarm Monitor</td><td>0</td><td/><td>1176329449</td></row>
 		<row><td>ID_STRING43</td><td>1033</td><td>Enterprise Integration Module</td><td>0</td><td/><td>1176343785</td></row>
 		<row><td>ID_STRING44</td><td>1033</td><td>Prophecy IVR Examples</td><td>0</td><td/><td>1176349929</td></row>
@@ -1213,7 +1196,6 @@
 		<row><td>ID_STRING6</td><td>1033</td><td>Collects real-time and interval data from a list of devices.</td><td>0</td><td/><td>-1516390614</td></row>
 		<row><td>ID_STRING60</td><td>1033</td><td>Tabular Data Console</td><td>0</td><td/><td>-1113739986</td></row>
 		<row><td>ID_STRING61</td><td>1033</td><td>Trending</td><td>0</td><td/><td>-1113748114</td></row>
-		<row><td>ID_STRING62</td><td>1033</td><td>Esubstation Editor</td><td>0</td><td/><td>-1113747698</td></row>
 		<row><td>ID_STRING63</td><td>1033</td><td>Alarm Monitor</td><td>0</td><td/><td>-1113753778</td></row>
 		<row><td>ID_STRING64</td><td>1033</td><td>http://www.eaton.com/cooperpowerseries</td><td>0</td><td/><td>-207405782</td></row>
 		<row><td>ID_STRING65</td><td>1033</td><td>1.800.815.2258</td><td>0</td><td/><td>-1113775696</td></row>
@@ -1338,7 +1320,6 @@
 		<row><td>NewShortcut10_B1E111EE316C4C219712E07FB2F5F627.exe</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\CommanderIcon.ico</td><td>0</td></row>
 		<row><td>NewShortcut11_65FE671901E44013AF5D2059B51753E1.exe</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\tdcIcon.ico</td><td>0</td></row>
 		<row><td>NewShortcut12_3F0AA56CEC2E49DAAB58E5A4C5CCB9C0</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\GraphIcon.ico</td><td>0</td></row>
-		<row><td>NewShortcut13_3CF0B2CCC18A478CBEC25C6A7A54745F</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\esubEditorIcon.ico</td><td>0</td></row>
 		<row><td>NewShortcut14_476158FB29004649B0DF05910FC5DF19</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\AlarmMonitor.ico</td><td>0</td></row>
 		<row><td>NewShortcut16_8779B65EF9F047C7A0909797F114A473.com</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\YukonLogin.ico</td><td>0</td></row>
 		<row><td>NewShortcut9_201FF432E86F49528A97E812667856DD.exe</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\dbEditorIcon.ico</td><td>0</td></row>
@@ -1560,7 +1541,6 @@ UgBlAGwAZQBhAHMAZQAgADEAAQBNAGUAZABpAGEA
 		<row><td>NewShortcut10</td><td>newfolder2</td><td>##ID_STRING59##</td><td/><td>&lt;TARGETDIR&gt;\Runtime\bin\javaw.exe</td><td>-Xmx256M -Dsun.java2d.noddraw=true -Dyukon.base=%YUKON_BASE% -jar "&lt;TARGETDIR&gt;\client\bin\yc.jar"</td><td/><td/><td>NewShortcut10_B1E111EE316C4C219712E07FB2F5F627.exe</td><td>0</td><td>1</td><td>BIN</td><td/><td/><td/><td/><td/><td>Commander Shortcut</td><td>18</td></row>
 		<row><td>NewShortcut11</td><td>newfolder2</td><td>##ID_STRING60##</td><td/><td>&lt;TARGETDIR&gt;\Runtime\bin\javaw.exe</td><td>-Xmx256M -Dsun.java2d.noddraw=true -Dyukon.base=%YUKON_BASE% -jar "&lt;TARGETDIR&gt;\client\bin\tdc.jar"</td><td/><td/><td>NewShortcut11_65FE671901E44013AF5D2059B51753E1.exe</td><td>0</td><td>1</td><td>BIN</td><td/><td/><td/><td/><td/><td>TDC Shortcut</td><td>18</td></row>
 		<row><td>NewShortcut12</td><td>newfolder2</td><td>##ID_STRING61##</td><td/><td>&lt;TARGETDIR&gt;\Runtime\bin\javaw.exe</td><td>-Xmx256M -Dsun.java2d.noddraw=true -Dyukon.base=%YUKON_BASE% -jar "&lt;TARGETDIR&gt;\client\bin\graph.jar"</td><td/><td/><td>NewShortcut12_3F0AA56CEC2E49DAAB58E5A4C5CCB9C0</td><td>0</td><td>1</td><td>BIN</td><td/><td/><td/><td/><td/><td>Trending Shortcut</td><td>18</td></row>
-		<row><td>NewShortcut13</td><td>newfolder2</td><td>##ID_STRING62##</td><td/><td>&lt;TARGETDIR&gt;\Runtime\bin\javaw.exe</td><td>-Xmx256M -Dsun.java2d.noddraw=true -Dyukon.base=%YUKON_BASE% -jar "&lt;TARGETDIR&gt;\client\bin\esub-editor.jar"</td><td/><td/><td>NewShortcut13_3CF0B2CCC18A478CBEC25C6A7A54745F</td><td>0</td><td>1</td><td>BIN</td><td/><td/><td/><td/><td/><td>Esubstation Editor Shortcut</td><td>18</td></row>
 		<row><td>NewShortcut14</td><td>newfolder2</td><td>##ID_STRING63##</td><td/><td>&lt;TARGETDIR&gt;\Runtime\bin\javaw.exe</td><td>-Dsun.java2d.noddraw=true -Dyukon.base=%YUKON_BASE% -jar "&lt;TARGETDIR&gt;\client\bin\monitor.jar"</td><td/><td/><td>NewShortcut14_476158FB29004649B0DF05910FC5DF19</td><td>0</td><td>1</td><td>BIN</td><td/><td/><td/><td/><td/><td>Alarm Monitor Shortcut</td><td>18</td></row>
 		<row><td>NewShortcut16</td><td>DesktopFolder</td><td>##ID_STRING72##</td><td/><td>http://127.0.0.1:8080/login.jsp</td><td/><td/><td/><td>NewShortcut16_8779B65EF9F047C7A0909797F114A473.com</td><td>0</td><td>1</td><td/><td/><td/><td/><td/><td/><td>Yukon Login Link</td><td>19</td></row>
 		<row><td>NewShortcut17</td><td>newfolder1</td><td>##ID_STRING77##</td><td/><td>C:\WINDOWS\system32\notepad.exe</td><td>"&lt;TARGETDIR&gt;\Server\Config\master.cfg"</td><td/><td/><td/><td/><td>1</td><td/><td/><td/><td/><td/><td/><td>NewShortcut17</td><td>18</td></row>
@@ -2140,7 +2120,7 @@ UgBlAGwAZQBhAHMAZQAgADEAAQBNAGUAZABpAGEA
 		<row><td>Shortcut</td><td>DisplayResourceId</td><td>Y</td><td>0</td><td>32767</td><td/><td/><td/><td/><td>The display name index for the shortcut.</td></row>
 		<row><td>Shortcut</td><td>Hotkey</td><td>Y</td><td>0</td><td>32767</td><td/><td/><td/><td/><td>The hotkey for the shortcut. It has the virtual-key code for the key in the low-order byte, and the modifier flags in the high-order byte.</td></row>
 		<row><td>Shortcut</td><td>ISAttributes</td><td>Y</td><td/><td/><td/><td/><td/><td/><td>This is used to store Installshield custom properties of a shortcut.  Mainly used in pro project types.</td></row>
-		<row><td>Shortcut</td><td>ISComments</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>Authorâ€™s comments on this Shortcut.</td></row>
+		<row><td>Shortcut</td><td>ISComments</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>Author’s comments on this Shortcut.</td></row>
 		<row><td>Shortcut</td><td>ISShortcutName</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>A non-unique name for the shortcut.  Mainly used by pro pro project types.</td></row>
 		<row><td>Shortcut</td><td>IconIndex</td><td>Y</td><td>-32767</td><td>32767</td><td/><td/><td/><td/><td>The icon index for the shortcut.</td></row>
 		<row><td>Shortcut</td><td>Icon_</td><td>Y</td><td/><td/><td>Icon</td><td>1</td><td>Identifier</td><td/><td>Foreign key into the File table denoting the external icon file for the shortcut.</td></row>

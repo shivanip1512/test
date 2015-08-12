@@ -76,36 +76,6 @@
         <filter-class>com.cannontech.web.filter.GeneralSecurityFilter</filter-class>
     </filter>
 
-    <filter>
-        <filter-name>esubJsFilter</filter-name>
-        <filter-class>com.cannontech.esub.web.filter.JSFilter</filter-class>
-    </filter>
-
-    <filter>
-        <filter-name>esubImageFilter</filter-name>
-        <filter-class>com.cannontech.esub.web.filter.ImageFilter</filter-class>
-    </filter>
-
-    <filter>
-        <filter-name>esubHtmlFilter</filter-name>
-        <filter-class>com.cannontech.esub.web.filter.HTMLFilter</filter-class>
-    </filter>
-
-    <filter>
-        <filter-name>esubCssFilter</filter-name>
-        <filter-class>com.cannontech.esub.web.filter.CSSFilter</filter-class>
-    </filter>
-
-    <filter>
-        <filter-name>esubAudioFilter</filter-name>
-        <filter-class>com.cannontech.esub.web.filter.AudioFilter</filter-class>
-    </filter>
-
-    <filter>
-        <filter-name>esubSvgFilter</filter-name>
-        <filter-class>com.cannontech.esub.web.filter.SVGFilter</filter-class>
-    </filter>
-
     <!-- Provides support for Request Methods (PUT, DELETE, PATCH) -->
     <filter>
         <filter-name>hiddenHttpMethodFilter</filter-name>
@@ -170,34 +140,6 @@
     <filter-mapping>
         <filter-name>generalSecurityFilter</filter-name>
         <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-        <filter-name>esubJsFilter</filter-name>
-        <url-pattern>/esub/*</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-        <filter-name>esubImageFilter</filter-name>
-        <url-pattern>/esub/*</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-        <filter-name>esubHtmlFilter</filter-name>
-        <url-pattern>/esub/*</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-        <filter-name>esubCssFilter</filter-name>
-        <url-pattern>/esub/*</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>esubAudioFilter</filter-name>
-        <url-pattern>/esub/*</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>esubSvgFilter</filter-name>
-        <url-pattern>/esub/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>
@@ -536,74 +478,12 @@
         <servlet-class>com.cannontech.servlet.PWordRequest</servlet-class>
     </servlet>
 
-    <!-- esub specific servlets -->
-    <servlet>
-        <servlet-name>EmbedSVGJSServlet</servlet-name>
-        <servlet-class>com.cannontech.esub.web.servlet.EmbedSVGJSServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>svgGenerator</servlet-name>
-        <servlet-class>com.cannontech.esub.web.servlet.SVGGenerator</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>DynamicTextServlet</servlet-name>
-        <servlet-class>com.cannontech.esub.web.servlet.DynamicTextServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>StateImageServlet</servlet-name>
-        <servlet-class>com.cannontech.esub.web.servlet.StateImageServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>UpdateAttribute</servlet-name>
-        <servlet-class>com.cannontech.esub.web.servlet.UpdateAttribute</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ClearAlarm</servlet-name>
-        <servlet-class>com.cannontech.esub.web.servlet.ClearAlarm</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>AlarmsTableGenerator</servlet-name>
-        <servlet-class>com.cannontech.esub.web.servlet.AlarmsTableGenerator</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>AlarmTextStyleServlet</servlet-name>
-        <servlet-class>com.cannontech.esub.web.servlet.AlarmTextStyleServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ControlServlet</servlet-name>
-        <servlet-class>com.cannontech.esub.web.servlet.ControlServlet</servlet-class>
-        <load-on-startup>4</load-on-startup>
-    </servlet>
-    <servlet>
-        <servlet-name>AlarmAudioServlet</servlet-name>
-        <servlet-class>com.cannontech.esub.web.servlet.AlarmAudioServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>DisplaySearchServlet</servlet-name>
-        <servlet-class>com.cannontech.esub.web.servlet.DisplaySearchServlet</servlet-class>
-    </servlet>
-    <!-- end esub specific servlets -->
     <servlet>
         <servlet-name>CallbackServlet</servlet-name>
         <servlet-class>com.cannontech.servlet.HttpCallback</servlet-class>
     </servlet>
 
     <!-- [INSERT GENERATED WEB.XML FRAGMENT HERE] -->
-
-    <servlet-mapping>
-        <servlet-name>EmbedSVGJSServlet</servlet-name>
-        <url-pattern>/esub/js/embedSVGControl.js</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>EmbedSVGJSServlet</servlet-name>
-        <url-pattern>/JavaScript/embedSVGControl.js</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>svgGenerator</servlet-name>
-        <url-pattern>/esub/svgGenerator/*</url-pattern>
-    </servlet-mapping>
 
     <!-- Faces extension mapping -->
     <servlet-mapping>
@@ -654,7 +534,6 @@
         <url-pattern>/home</url-pattern>
         <url-pattern>/login/*</url-pattern>
         <url-pattern>/integrationLogin</url-pattern>
-        <url-pattern>/esub/home</url-pattern>
         <url-pattern>/servlet/LoginController</url-pattern>
         <url-pattern>/index.jsp</url-pattern>
         <url-pattern>/operator/Operations.jsp</url-pattern>

@@ -162,7 +162,7 @@ public class JwsController {
         out.output(doc, responseOutStream);
     }
 
-    @RequestMapping("/{requestedJnlp:(?:dbeditor|tdc|trending|esub|commander)\\.jnlp}")
+    @RequestMapping("/{requestedJnlp:(?:dbeditor|tdc|trending|commander)\\.jnlp}")
     public void getApplicationJnlp(HttpServletRequest request, HttpServletResponse response,
             @PathVariable JwsJnlp requestedJnlp, LiteYukonUser user) throws IOException {
         jarDownloadTokens.put(request.getRemoteHost(), requestedJnlp.getTitle());

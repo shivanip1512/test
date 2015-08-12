@@ -28,9 +28,6 @@
         <dependent-module archiveName="report.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/report/report">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="esub.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/esub/esub">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <dependent-module archiveName="tdc.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/tdc/tdc">
             <dependency-type>uses</dependency-type>
         </dependent-module>

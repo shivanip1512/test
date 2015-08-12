@@ -14,7 +14,6 @@
     <entry key="yukon.common.role.APPLICATION_BILLING">Billing</entry>
     <entry key="yukon.common.role.COMMANDER">Commander</entry>
     <entry key="yukon.common.role.DATABASE_EDITOR">Database Editor</entry>
-    <entry key="yukon.common.role.APPLICATION_ESUBSTATION_EDITOR">Esubstation Editor</entry>
     <entry key="yukon.common.role.PASSWORD_POLICY">Password Policy</entry>
     <entry key="yukon.common.role.REPORTING">Reporting</entry>
     <entry key="yukon.common.role.TABULAR_DISPLAY_CONSOLE">Tabular Data Console</entry>
@@ -42,7 +41,6 @@
     <entry key="yukon.common.role.CONSUMER_INFO">Consumer Info</entry>
     <entry key="yukon.common.role.DEVICE_ACTIONS">Device Actions</entry>
     <entry key="yukon.common.role.ENERGY_COMPANY">Energy Company</entry>
-    <entry key="yukon.common.role.OPERATOR_ESUBSTATION_DRAWINGS">Esubstation Drawings</entry>
     <entry key="yukon.common.role.INVENTORY">Inventory</entry>
     <entry key="yukon.common.role.METERING">Metering</entry>
     <entry key="yukon.common.role.ODDS_FOR_CONTROL">Odds For Control</entry>

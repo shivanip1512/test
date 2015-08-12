@@ -14,8 +14,6 @@
 		<project>common</project>
 		<project>custom</project>
 		<project>dbeditor</project>
-		<project>esub</project>
-		<project>esub-editor</project>
 		<project>export</project>
 		<project>loadcontrol</project>
 		<project>macs</project>

@@ -22,7 +22,6 @@ public enum YukonRole implements DisplayableEnum, DatabaseRepresentationSource {
     APPLICATION_BILLING(Application, Application.baseRoleId - 6, Application.basePropertyId - 600),
     COMMANDER(Application, Application.baseRoleId - 3, Application.basePropertyId - 300),
     DATABASE_EDITOR(Application, Application.baseRoleId, Application.basePropertyId),
-    APPLICATION_ESUBSTATION_EDITOR(Application, Application.baseRoleId - 7, Application.basePropertyId - 700),
     PASSWORD_POLICY(Application, Application.baseRoleId - 10, Application.basePropertyId - 1000),
     REPORTING(Application, Application.baseRoleId - 9, Application.basePropertyId - 900),
     TABULAR_DISPLAY_CONSOLE(Application, Application.baseRoleId - 1, Application.basePropertyId - 100),
@@ -49,7 +48,6 @@ public enum YukonRole implements DisplayableEnum, DatabaseRepresentationSource {
      */
     CONSUMER_INFO(Operator, Operator.baseRoleId - 1, Operator.basePropertyId - 100, Operator.basePropertyId - 800),
     METERING(Operator, Operator.baseRoleId - 2, Operator.basePropertyId - 200),
-    OPERATOR_ESUBSTATION_DRAWINGS(Operator, Operator.baseRoleId - 6, Operator.basePropertyId - 600),
     ODDS_FOR_CONTROL(Operator, Operator.baseRoleId - 7, Operator.basePropertyId - 700),
     INVENTORY(Operator, Operator.baseRoleId - 9, Operator.basePropertyId - 900),
     WORK_ORDER(Operator, Operator.baseRoleId - 10, Operator.basePropertyId - 1000),

@@ -124,13 +124,7 @@ public class DevRolePropUpdaterServiceImpl extends DevObjectCreationBase impleme
                     log.info("Failed due to role conflict for group " + group.getGroupName() + " with YukonRole " + YukonRole.TRENDING);
                 }
 
-                if (canAddRole(group, YukonRole.APPLICATION_ESUBSTATION_EDITOR)) {
-                    setRoleProperty(group, YukonRoleProperty.ESUB_EDITOR_ROLE_EXITS,true);
-                    results.put(YukonRole.APPLICATION_ESUBSTATION_EDITOR, true);
-                } else {
-                    results.put(YukonRole.APPLICATION_ESUBSTATION_EDITOR, false);
-                    log.info("Failed due to role conflict for group " + group.getGroupName() + " with YukonRole " + YukonRole.APPLICATION_ESUBSTATION_EDITOR);
-                }
+               
 
                 if (canAddRole(group, YukonRole.CBC_ONELINE_CAP_SETTINGS)) {
                     setRoleProperty(group, YukonRoleProperty.CAP_BANK_FIXED_TEXT, "Fixed");
@@ -254,15 +248,7 @@ public class DevRolePropUpdaterServiceImpl extends DevObjectCreationBase impleme
                     log.info("Failed due to role conflict for group " + group.getGroupName() + " with YukonRole " + YukonRole.DEVICE_ACTIONS);
                 }
 
-                if (canAddRole(group, YukonRole.OPERATOR_ESUBSTATION_DRAWINGS)) {
-                    setRoleProperty(group, YukonRoleProperty.OPERATOR_ESUBSTATION_DRAWINGS_VIEW,true);
-                    setRoleProperty(group, YukonRoleProperty.OPERATOR_ESUBSTATION_DRAWINGS_EDIT,true);
-                    setRoleProperty(group, YukonRoleProperty.OPERATOR_ESUBSTATION_DRAWINGS_CONTROL,true);
-                    results.put(YukonRole.OPERATOR_ESUBSTATION_DRAWINGS, true);
-                } else {
-                    results.put(YukonRole.OPERATOR_ESUBSTATION_DRAWINGS, false);
-                    log.info("Failed due to role conflict for group " + group.getGroupName() + " with YukonRole " + YukonRole.OPERATOR_ESUBSTATION_DRAWINGS);
-                }
+               
 
                 if (canAddRole(group, YukonRole.INVENTORY)) {
                     setRoleProperty(group, YukonRoleProperty.SN_ADD_RANGE,true);
