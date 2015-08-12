@@ -2,6 +2,7 @@
 #define WIN32_LEAN_AND_MEAN
 #endif /* Prevents winsock.h from being included in windows.h */
 #include <windows.h> /* Needed for a few definitions, can be excluded if you use values instead. */
+#include "version.h"
 
 #define STR_EXPAND(x) #x
 #define STR(x) STR_EXPAND(x)

@@ -1,6 +1,7 @@
 project(test_porter) {
   exename=test_porter
 
+  after += yukon-prebuild
   after += ctibase
   after += service
   after += ctimsg
@@ -11,8 +12,6 @@ project(test_porter) {
 
   macros += BOOST_ALL_DYN_LINK
   macros += BOOST_ENABLE_ASSERT_HANDLER
-  macros += BUILD_VERSION=6.5\ (build\ 0)
-  macros += BUILD_VERSION_DETAILS=6.5.0
   macros += NOMINMAX
   macros += WIN32
   macros += WINDOWS

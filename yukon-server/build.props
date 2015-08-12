@@ -2,8 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <BUILD_VERSION>6.5 (build 3)</BUILD_VERSION>
-    <BUILD_VERSION_DETAILS>"6.4.3"</BUILD_VERSION_DETAILS>
     <CPP_LIBRARIES>$(DEV_ENVIRONMENT)\libraries</CPP_LIBRARIES>
     <XERCES>$(CPP_LIBRARIES)\apache\xerces-c\3.1.2-1</XERCES>
     <TCL>$(CPP_LIBRARIES)\tcl\8.6.4-1</TCL>
@@ -25,12 +23,6 @@
   <PropertyGroup />
   <ItemDefinitionGroup />
   <ItemGroup>
-    <BuildMacro Include="BUILD_VERSION">
-      <Value>$(BUILD_VERSION)</Value>
-    </BuildMacro>
-    <BuildMacro Include="BUILD_VERSION_DETAILS">
-      <Value>$(BUILD_VERSION_DETAILS)</Value>
-    </BuildMacro>
     <BuildMacro Include="CPP_LIBRARIES">
       <Value>$(CPP_LIBRARIES)</Value>
     </BuildMacro>

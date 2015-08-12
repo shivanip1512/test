@@ -59,7 +59,7 @@
 <%foreach(configurations)%>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='<%configuration%>|<%platform%>'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\build.props" />
+    <Import Project="$(SolutionDir)build.props" />
   </ImportGroup>
 <%endfor%>
 <%endfor%>

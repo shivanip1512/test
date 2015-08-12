@@ -1,6 +1,7 @@
 project(test_fdr) {
   exename=test_fdr
 
+  after += yukon-prebuild
   after += ctibase
   after += fdrbepc
   after += fdrtextexport
@@ -33,8 +34,6 @@ project(test_fdr) {
 
   macros += BOOST_ALL_DYN_LINK
   macros += BOOST_ENABLE_ASSERT_HANDLER
-  macros += BUILD_VERSION=6.5\ (build\ 0)
-  macros += BUILD_VERSION_DETAILS=6.5.0
   macros += NOMINMAX
   macros += WIN32
   macros += _CONSOLE

@@ -2,6 +2,7 @@
 
 #include "dlldefs.h"
 #include "ctitime.h"
+#include "version.h"
 
 #include <windows.h>
 
@@ -50,4 +51,3 @@ extern Cti::compileinfo_t CompileInfo;
 #define SETCOMPILEINFO( x, y, z ) Cti::compileinfo_t CompileInfo = { x, STRINGIZE(y), STRINGIZE(z), __TIMESTAMP__ }
 
 #define PROJECT_ID( x ) SETCOMPILEINFO( x, BUILD_VERSION, BUILD_VERSION_DETAILS )
-

@@ -1,14 +1,13 @@
 project(rfn-e2e) {
   sharedname=rfn-e2e
 
+  after += yukon-prebuild
   after += ctibase
   after += ctimsg
   after += ctithriftmsg
 
   macros += BOOST_ALL_DYN_LINK
   macros += BOOST_ENABLE_ASSERT_HANDLER
-  macros += BUILD_VERSION=6.5\ (build\ 0)
-  macros += BUILD_VERSION_DETAILS=6.5.0
   macros += NOMINMAX
   macros += WIN32
   macros += _CONSOLE
@@ -21,10 +20,6 @@ project(rfn-e2e) {
   macros += _X86_=1
   macros += __DLL__
   macros += D_FILE_NAME=rfn-e2e
-  macros += D_FILE_VERSION=6,5,0,0
-  macros += D_FILE_VERSION_STR=6.5.0.0
-  macros += D_PRODUCT_VERSION=6,5,0,0
-  macros += D_PRODUCT_VERSION_STR=6.5
   includes += $(ACTIVEMQ)/include
   includes += $(APR)/include
   includes += $(BOOST)/include

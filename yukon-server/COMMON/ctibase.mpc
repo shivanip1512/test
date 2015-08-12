@@ -1,11 +1,10 @@
 project(ctibase) {
   sharedname=ctibase
 
+  after += yukon-prebuild
 
   macros += BOOST_ALL_DYN_LINK
   macros += BOOST_ENABLE_ASSERT_HANDLER
-  macros += BUILD_VERSION=6.5\ (build\ 0)
-  macros += BUILD_VERSION_DETAILS=6.5.0
   macros += CTIBASE
   macros += NOMINMAX
   macros += WIN32
@@ -18,10 +17,6 @@ project(ctibase) {
   macros += _X86_=1
   macros += __DLL__
   macros += D_FILE_NAME=ctibase
-  macros += D_FILE_VERSION=6,5,0,0
-  macros += D_FILE_VERSION_STR=6.5.0.0
-  macros += D_PRODUCT_VERSION=6,5,0,0
-  macros += D_PRODUCT_VERSION_STR=6.5
   includes += $(APR)/include
   includes += $(BOOST)/include
   includes += $(CAJUN)/include
@@ -282,6 +277,7 @@ project(ctibase) {
     include/utility.h
     include/vcomdefs.h
     include/verification_objects.h
+    include/version.h
     include/win_helper.h
     include/words.h
     include/worker_thread.h

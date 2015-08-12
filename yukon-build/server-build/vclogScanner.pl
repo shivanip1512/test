@@ -24,6 +24,8 @@ if ($generateMPC)
 {
   open(MWC, ">", "$generateMPC.mwc") or die ("Unable to open $generateMPC.mwc file: $!");
   print(MWC "workspace($generateMPC) {\n");
+  # Add a special project to generate version information et. al.
+  print(MWC "    yukon-prebuild.mpc\n");
 }
 
 # scan through stdin
@@ -344,10 +346,13 @@ sub doLib($)
     print(MPC "project($basename) {\n");
     print(MPC "  staticname=$basename\n");
 
+    print(MPC "  after += yukon-prebuild\n");
+
     foreach my $define (sort keys %objDefines)
     {
       $define =~ s/ /\\ /g;
       $define =~ s/"//g;
+
       # Make sure that DEBUG is only in the Debug configurarion
       if ($define =~ /^_DEBUG$/)
       {
@@ -608,6 +613,7 @@ sub doLink($)
     print(MPC "\n");
 
     # specify prerequisites
+    print(MPC "  after += yukon-prebuild\n");
     foreach my $after (@afters)
     {
       print(MPC "  after += $after\n");
@@ -619,6 +625,11 @@ sub doLink($)
     {
       $define =~ s/ /\\ /g;
       $define =~ s/"//g;
+
+      # skip these
+      next if ($define =~ /^BUILD_VERSION=.*/);
+      next if ($define =~ /^BUILD_VERSION_DETAILS=.*/);
+
       # Make sure that DEBUG is only in the Debug configurarion
       if ($define =~ /^_DEBUG$/)
       {
@@ -635,6 +646,13 @@ sub doLink($)
     {
       $define =~ s/ /\\ /g;
       $define =~ s/"//g;
+
+      # skip these macros.  We'll do the version another way.
+      next if ($define =~ /^D_FILE_VERSION=/);
+      next if ($define =~ /^D_FILE_VERSION_STR=/);
+      next if ($define =~ /^D_PRODUCT_VERSION=/);
+      next if ($define =~ /^D_PRODUCT_VERSION_STR=/);
+
       print(MPC "  macros += $define\n");
     }
 

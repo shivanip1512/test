@@ -166,10 +166,31 @@ if not defined build_version (
         if "%%p" == "version.external" (
             set build_version=%%q
         )
+rem batch scripts don't like to handle parameters with () in them.  Use this instead.
+        if "%%p" == "version.external.filenameSafe" (
+        set my_version=%%q
+        )
         if "%%p" == "version.internal" (
             set build_version_details=%%q
         )
     )
+)
+
+rem parse the version into nodes.
+for /f "tokens=1,2,3 delims=." %%p in ("%build_version_details%") do (
+        set my_version_maj=%%p
+        set my_version_min=%%q
+        set my_version_rev=%%r
+)
+
+rem parse the build number out of the external version
+for /f "tokens=4 delims=_" %%p in ("%my_version%") do (
+        set my_version_build=%%p
+)
+
+rem Get the SVN global revison number
+FOR /F "tokens=* USEBACKQ" %%F IN (`svnversion %~dp0`) DO (
+SET my_version_svn=%%F
 )
 
 echo +---------------------------------------
@@ -188,6 +209,38 @@ echo ^| Building in %build_directory%.
 echo ^|
 echo +---------------------------------------
 echo.
+
+rem Use this file for communicating revision stuff to the .cpp and .rc build
+set versionFileName=%cd%\common\include\version.h
+
+rem Only update if we need to.
+set updateVersion=0
+
+rem version.h exist?
+if not exist %versionFileName% set updateVersion=1
+
+setlocal enabledelayedexpansion
+rem if it exists, check if it needs updating
+if "%updateVersion%" == "0" (
+  for /f "tokens=2* delims== " %%p in (%versionFileName%) do (
+      if "%%p" == "D_FILE_VERSION_STR" (
+          call :trim %%q rev
+          if not "!rev!" == "%my_version_maj%.%my_version_min%.%my_version_rev%.%my_version_svn%" set updateVersion=1
+      )
+  )
+)
+
+if "%updateVersion%" == "1" (
+  echo Updating %versionFileName%
+  echo #define D_FILE_VERSION %my_version_maj%,%my_version_min%,%my_version_rev%,%my_version_svn% >%versionFileName%
+  echo #define D_FILE_VERSION_STR %my_version_maj%.%my_version_min%.%my_version_rev%.%my_version_svn% >>%versionFileName%
+  echo #define D_PRODUCT_VERSION %my_version_maj%,%my_version_min%,%my_version_rev%,%my_version_svn% >>%versionFileName%
+  echo #define D_PRODUCT_VERSION_STR %my_version_maj%.%my_version_min%.%my_version_rev%.%my_version_svn% >>%versionFileName%
+  echo.>>%versionFileName%
+
+  echo #define BUILD_VERSION %my_version_maj%.%my_version_min% ^(build %my_version_build%^) >>%versionFileName%
+  echo #define BUILD_VERSION_DETAILS %build_version_details% >>%versionFileName%
+)
 
 build  %_build_args%
 

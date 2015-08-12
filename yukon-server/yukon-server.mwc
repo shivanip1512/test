@@ -1,4 +1,5 @@
 workspace(yukon-server) {
+    yukon-prebuild.mpc
     resource/yukon-resource.mpc
     common/ctibase.mpc
     common/test_common.mpc

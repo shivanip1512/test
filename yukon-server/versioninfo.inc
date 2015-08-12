@@ -73,6 +73,6 @@ D_FILE_VERSION_STR="$(FILE_VERSION_DOT)"
 
 $(RES_FILES): $(COMPILEBASE)\versioninfo.rc
                 @echo Creating $@
-                rc -R -DD_FILE_VERSION_STR=$(D_FILE_VERSION_STR) -DD_PRODUCT_VERSION_STR=$(D_PRODUCT_VERSION_STR) -DD_FILE_VERSION=$(D_FILE_VERSION) -DD_PRODUCT_VERSION=$(D_PRODUCT_VERSION) -DD_FILE_NAME="$[StrReplace,"$(OBJ)\\","",$[StrReplace,".res","",$@]]" -FO$@ $<
+                rc -R -I..\COMMON\include -DD_FILE_NAME="$[StrReplace,"$(OBJ)\\","",$[StrReplace,".res","",$@]]" -FO$@ $<
 
 FORCE:

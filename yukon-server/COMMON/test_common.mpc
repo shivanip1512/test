@@ -1,12 +1,11 @@
 project(test_common) {
   exename=test_common
 
+  after += yukon-prebuild
   after += ctibase
 
   macros += BOOST_ALL_DYN_LINK
   macros += BOOST_ENABLE_ASSERT_HANDLER
-  macros += BUILD_VERSION=6.5\ (build\ 0)
-  macros += BUILD_VERSION_DETAILS=6.5.0
   macros += NOMINMAX
   macros += WIN32
   macros += _CONSOLE
@@ -202,6 +201,7 @@ project(test_common) {
     include/utility.h
     include/vcomdefs.h
     include/verification_objects.h
+    include/version.h
     include/win_helper.h
     include/words.h
     include/worker_thread.h

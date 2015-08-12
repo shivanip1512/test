@@ -1,6 +1,7 @@
 project(dispatch) {
   exename=dispatch
 
+  after += yukon-prebuild
   after += ctibase
   after += ctimsg
   after += ctivg
@@ -9,8 +10,6 @@ project(dispatch) {
 
   macros += BOOST_ALL_DYN_LINK
   macros += BOOST_ENABLE_ASSERT_HANDLER
-  macros += BUILD_VERSION=6.5\ (build\ 0)
-  macros += BUILD_VERSION_DETAILS=6.5.0
   macros += CTIVANGOGH
   macros += IMPORT
   macros += NOMINMAX
@@ -25,10 +24,6 @@ project(dispatch) {
   macros += _X86_=1
   macros += __DLL__
   macros += D_FILE_NAME=dispatch
-  macros += D_FILE_VERSION=6,5,0,0
-  macros += D_FILE_VERSION_STR=6.5.0.0
-  macros += D_PRODUCT_VERSION=6,5,0,0
-  macros += D_PRODUCT_VERSION_STR=6.5
   includes += $(BOOST)/include
   includes += $(DBGHELP)/include
   includes += $(SQLAPI)/include

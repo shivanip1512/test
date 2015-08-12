@@ -1,6 +1,7 @@
 project(newvalrng) {
   exename=newvalrng
 
+  after += yukon-prebuild
   after += ctibase
   after += ctimsg
   after += ctivg
@@ -9,8 +10,6 @@ project(newvalrng) {
 
   macros += BOOST_ALL_DYN_LINK
   macros += BOOST_ENABLE_ASSERT_HANDLER
-  macros += BUILD_VERSION=6.5\ (build\ 0)
-  macros += BUILD_VERSION_DETAILS=6.5.0
   macros += IMPORT
   macros += NOMINMAX
   macros += WIN32
@@ -23,10 +22,6 @@ project(newvalrng) {
   macros += _X86_=1
   macros += __DLL__
   macros += D_FILE_NAME=newvalrng
-  macros += D_FILE_VERSION=6,5,0,0
-  macros += D_FILE_VERSION_STR=6.5.0.0
-  macros += D_PRODUCT_VERSION=6,5,0,0
-  macros += D_PRODUCT_VERSION_STR=6.5
   includes += $(BOOST)/include
   includes += $(SQLAPI)/include
   includes += .
