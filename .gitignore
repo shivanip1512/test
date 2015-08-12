@@ -28,8 +28,6 @@ yukon-client/dbeditor/bin
 yukon-client/dbeditor/build
 yukon-client/esub-editor/bin
 yukon-client/esub-editor/build
-yukon-client/esub/bin
-yukon-client/esub/build
 yukon-client/export/.cvsignore
 yukon-client/export/bin
 yukon-client/export/build
