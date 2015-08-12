@@ -40,6 +40,19 @@ WHERE StateGroupId = -17
   AND RawState = 14;
 /* End YUK-14377 */
 
+/* Start YUK-14530 */
+DELETE FROM YukonGroupRole 
+WHERE RoleID IN (-107, -206);
+
+DELETE FROM YukonRoleProperty 
+WHERE RoleID IN (-107, -206);
+
+DELETE FROM YukonRole 
+WHERE RoleId IN (-107, -206);
+
+DROP TABLE EsubDisplayIndex;
+/* End YUK-14530 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

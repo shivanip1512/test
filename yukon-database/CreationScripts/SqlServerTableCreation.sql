@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/15/2015 5:13:42 PM                         */
+/* Created on:     8/12/2015 9:51:18 AM                         */
 /*==============================================================*/
 
 
@@ -5287,16 +5287,6 @@ create table EstimatedLoadTableEntry (
 go
 
 /*==============================================================*/
-/* Table: EsubDisplayIndex                                      */
-/*==============================================================*/
-create table EsubDisplayIndex (
-   SearchKey            varchar(500)         not null,
-   DisplayUrl           varchar(500)         not null,
-   constraint PK_ESUBDISPLAYINDEX primary key (SearchKey)
-)
-go
-
-/*==============================================================*/
 /* Table: EventAccount                                          */
 /*==============================================================*/
 create table EventAccount (
@@ -9200,12 +9190,6 @@ insert into YukonGroupRole values(-1075,-2,-103,-10305,' ');
 /* Billing */
 insert into YukonGroupRole values(-1390,-2,-106,-10600,' ');
 
-/* Esubstation Editor */
-INSERT INTO YukonGroupRole VALUES(-1080,-2,-107,-10700,' ');
-INSERT INTO YukonGroupRole VALUES(-1081,-2,-206,-20600,' ');
-INSERT INTO YukonGroupRole VALUES(-1082,-2,-206,-20601,' ');
-INSERT INTO YukonGroupRole VALUES(-1083,-2,-206,-20602,' ');
-
 /* Web Client Customers Web Client role */
 insert into YukonGroupRole values (-1090,-2, -108, -10800, '/dashboard');
 insert into YukonGroupRole values (-1091,-2, -108, -10802, ' ');
@@ -9802,7 +9786,6 @@ INSERT INTO YukonRole VALUES(-101,'Tabular Data Console','Application','Access t
 INSERT INTO YukonRole VALUES(-102,'Trending','Application','Access to the Yukon Trending application');
 INSERT INTO YukonRole VALUES(-103,'Commander','Application','Access to the Yukon Commander application');
 INSERT INTO YukonRole VALUES(-106,'Billing','Application','Billing. Edit this role from the Yukon SetUp page.');
-INSERT INTO YukonRole VALUES(-107,'Esubstation Editor','Application','Access to the Esubstation Drawing Editor application');
 INSERT INTO YukonRole VALUES(-108,'Web Client','Application','Access to the Yukon web application');
 INSERT INTO YukonRole VALUES(-109,'Reporting','Application','Access to reports generation.');
 INSERT INTO YukonRole VALUES(-110,'Password Policy','Application','Handles the password rules and restrictions for a given group.');
@@ -9813,7 +9796,6 @@ INSERT INTO YukonRole VALUES(-201,'Consumer Info','Operator','Operator access to
 INSERT INTO YukonRole VALUES(-202,'Metering','Operator','Operator access to metering');
 
 /* Operator roles */
-INSERT INTO YukonRole VALUES(-206,'Esubstation Drawings','Operator','Operator access to esubstation drawings');
 INSERT INTO YukonRole VALUES(-207,'Odds For Control','Operator','Operator access to odds for control');
 
 /* Inventory Role */
@@ -9918,9 +9900,6 @@ INSERT INTO YukonRoleProperty VALUES(-10319,-103,'Enable Client Commander', 'tru
 
 /* Dynamic Billing File Setup */
 INSERT INTO YukonRoleProperty VALUES(-10600,-106,'Dynamic Billing File Setup','true','Controls access to create, edit, and delete dynamic billing files.'); 
-
-/* Esubstation Editor Role Properties */
-INSERT INTO YukonRoleProperty VALUES(-10700,-107,'default','false','The default esub editor property');
 
 /* Web Client Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-10800,-108,'home_url','/dashboard','The url to take the user immediately after logging into the Yukon web application');
@@ -10028,12 +10007,6 @@ INSERT INTO YukonRoleProperty VALUES(-20218,-202,'Porter Response Monitor','fals
 INSERT INTO YukonRoleProperty VALUES(-20219,-202,'Meter Events','false','Controls access to Meter Events.');
 INSERT INTO YukonRoleProperty VALUES(-20220,-202,'Allow Disconnect Control','true','Controls access to Disconnect, Connect, and Arm operations.');
 INSERT INTO YukonRoleProperty VALUES(-20221,-202,'Device Data Monitor','false','Controls access to the Device Data Monitor.');
-
-/* Operator Esubstation Drawings Role Properties */
-INSERT INTO YukonRoleProperty VALUES(-20600,-206,'View Drawings','true','Controls viewing of Esubstations drawings');
-INSERT INTO YukonRoleProperty VALUES(-20601,-206,'Edit Limits','false','Controls editing of point limits');
-INSERT INTO YukonRoleProperty VALUES(-20602,-206,'Control','false','Controls control from Esubstation drawings');
-INSERT INTO YukonRoleProperty VALUES(-20603,-206,'Esub Home URL','/esub/sublist.html','The url of the starting page for esubstation. Usually the sublist page.');
 
 /* Odds For Control Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-20700,-207,'Odds For Control Exists','true','The default odds for control property.');
