@@ -451,7 +451,7 @@
         <labelArgument>${parentName}</labelArgument>
         <pages>
           <page name="point.VIEW" type="BASIC">
-            <link>/common/points/${pointModel.pointBase.point.pointID}</link>
+            <link>/tools/points/${pointModel.pointBase.point.pointID}</link>
             <labelArgument>${pointModel.pointBase.point.pointName}</labelArgument>
             <pages>
               <page name="point.EDIT" type="BASIC" hideFavorite="true">
