@@ -36,4 +36,5 @@
     <entry key="yukon.web.error.paoName.containsIllegalChars">Cannot be blank nor include any of the following characters: / \ , ' " |</entry>
     <entry key="yukon.web.error.deviceGroupName.containsIllegalChars">Cannot be blank nor include any of the following characters: / \</entry>
     <entry key="yukon.web.error.themes.isNotValidColor">Must be a valid color (HEX or RGB).</entry>
+    <entry key="yukon.common.device.selection.errorCount">Error Encountered.</entry>
 </properties>
