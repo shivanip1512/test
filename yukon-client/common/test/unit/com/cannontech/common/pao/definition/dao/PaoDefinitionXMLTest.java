@@ -13,8 +13,10 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import junit.framework.TestCase;
+import org.apache.log4j.Logger;
+import org.junit.Test;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.definition.model.jaxb.AttributesType;
 import com.cannontech.common.pao.definition.model.jaxb.AttributesType.Attribute;
 import com.cannontech.common.pao.definition.model.jaxb.CommandsType.Command;
@@ -29,13 +31,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 /**
  * Test class to test validity of deviceDefinition.xml file
  */
-public class PaoDefinitionXMLTest extends TestCase {
+public class PaoDefinitionXMLTest {
+    private static final Logger log = YukonLogManager.getLogger(PaoDefinitionXMLTest.class);
 
     /**
      * Test which opens and parses the xml file to make sure the xml is
      * compatible with the code
      * @throws Exception - If xml parsing fails
      */
+    @Test
     public void testParseXMLFile() throws Exception {
         readPaoDefinitionXMLFile();
     }
@@ -45,6 +49,7 @@ public class PaoDefinitionXMLTest extends TestCase {
      * command identified for that
      * @throws Exception
      */
+    @Test
     public void testValidateCommandExistsForEveryReadableAttribute() throws Exception {
         Map<String, List<Attribute>> paoAttributeResultMap = new HashMap<String, List<Attribute>>();
         Set<String> pointNameSet = new HashSet<String>();
@@ -113,7 +118,8 @@ public class PaoDefinitionXMLTest extends TestCase {
             }
         }
         try {
-            String jsonResult = JsonUtils.toJson(paoAttributeResultMap);
+            String paoAttributeResultJson = JsonUtils.toJson(paoAttributeResultMap);
+            log.warn("paos and attributes that do not have associated command for them : " + paoAttributeResultJson);
         } catch (JsonProcessingException e) {
             throw new Exception("Error while converting paoAttributeMap to Json", e);
         }
