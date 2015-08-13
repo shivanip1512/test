@@ -757,45 +757,6 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>DynamicTextServlet</servlet-name>
-        <url-pattern>/servlet/DynamicTextServlet</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>StateImageServlet</servlet-name>
-        <url-pattern>/servlet/StateImageServlet</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UpdateAttribute</servlet-name>
-        <url-pattern>/servlet/UpdateAttribute</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ClearAlarm</servlet-name>
-        <url-pattern>/servlet/ClearAlarm</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>AlarmsTableGenerator</servlet-name>
-        <url-pattern>/servlet/AlarmsTableGenerator</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>AlarmTextStyleServlet</servlet-name>
-        <url-pattern>/servlet/AlarmTextStyleServlet</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ControlServlet</servlet-name>
-        <url-pattern>/servlet/ControlServlet</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>AlarmAudioServlet</servlet-name>
-        <url-pattern>/servlet/AlarmAudioServlet</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>DisplaySearchServlet</servlet-name>
-        <url-pattern>/servlet/DisplaySearchServlet</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
         <servlet-name>CallbackServlet</servlet-name>
         <url-pattern>/servlet/CallbackServlet</url-pattern>
     </servlet-mapping>
