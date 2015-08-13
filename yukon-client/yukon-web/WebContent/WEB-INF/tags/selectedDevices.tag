@@ -27,7 +27,9 @@
             <c:if test="${not empty deviceCollection.header}">
             	<input type="hidden" name=header value="${deviceCollection.header}" />
             </c:if>
-            <input type="hidden" name="deviceErrors" value="${deviceErrors}" />
+            <c:forEach var="deviceError" items="${deviceErrors}">
+                <input type="hidden" name="deviceErrors" value="${deviceError}" />
+            </c:forEach>
             <input type="hidden" name="collectionType" value="fileUpload" />
             <a href="javascript:$('#${thisId}').submit();" class="wsnw">
             <cti:icon icon="icon-page-excel" classes="cp fn pull-icon-down"/></a>
