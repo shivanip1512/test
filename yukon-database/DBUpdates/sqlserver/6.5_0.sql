@@ -82,6 +82,7 @@ IF 0 < (SELECT COUNT(*)
 BEGIN
     RAISERROR('Yukon Calc Historical Service is enabled. This service must be uninstalled and Yukon Calc-Logic Service used instead.', 16, 1);
 END;
+/
 DELETE FROM YukonServices WHERE ServiceId = 3 OR ServiceId = -3;
 /* @end-block */
 /* End YUK-14537 */
