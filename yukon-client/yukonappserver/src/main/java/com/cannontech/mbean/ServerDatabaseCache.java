@@ -765,8 +765,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         case UPDATE:
             for (LiteAlarmCategory liteAlarmCategory : allAlarmCategories) {
                 if (liteAlarmCategory.getAlarmCategoryId() == id) {
-                    liteAlarmCategory = alarmCatDao.getAlarmCategory(id);
-                    lBase = liteAlarmCategory;
+                    allAlarmCategories.remove(liteAlarmCategory);
+                    lBase = alarmCatDao.getAlarmCategory(id);
+                    allAlarmCategories.add((LiteAlarmCategory)lBase);
                     break;
                 }
             }
@@ -774,6 +775,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         case DELETE:
             for (LiteAlarmCategory liteAlarmCategory : allAlarmCategories) {
                 if (liteAlarmCategory.getAlarmCategoryId() == id) {
+                    allAlarmCategories.remove(liteAlarmCategory);
                     lBase = liteAlarmCategory;
                     break;
                 }
@@ -1026,8 +1028,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         case UPDATE:
             for (LiteGraphDefinition liteGraphDefinition : allGraphDefinitions) {
                 if (liteGraphDefinition.getGraphDefinitionID() == id) {
-                    liteGraphDefinition = graphDao.retrieveLiteGraphDefinition(id);
-                    lBase = liteGraphDefinition;
+                    allGraphDefinitions.remove(liteGraphDefinition);
+                    lBase = graphDao.retrieveLiteGraphDefinition(id);
+                    allGraphDefinitions.add((LiteGraphDefinition)lBase);
                     break;
                 }
             }
@@ -1075,8 +1078,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         case UPDATE:
             for (LiteHolidaySchedule liteHolidaySchedule : allHolidaySchedules) {
                 if (liteHolidaySchedule.getHolidayScheduleID() == id) {
-                    liteHolidaySchedule = HolidayScheduleLoader.getForId(id);
-                    lBase = liteHolidaySchedule;
+                    allHolidaySchedules.remove(liteHolidaySchedule);
+                    lBase = HolidayScheduleLoader.getForId(id);
+                    allHolidaySchedules.add((LiteHolidaySchedule)lBase);
                     break;
                 }
             }
@@ -1154,8 +1158,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         case UPDATE:
             for (LiteBaseline liteBaseline : allBaselines) {
                 if (liteBaseline.getBaselineID() == id) {
-                    liteBaseline = BaselineLoader.getForId(id);
-                    lBase = liteBaseline;
+                    allBaselines.remove(liteBaseline);
+                    lBase = BaselineLoader.getForId(id);
+                    allBaselines.add((LiteBaseline)lBase);
                     break;
                 }
             }
@@ -1203,8 +1208,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         case UPDATE:
             for (LiteSeasonSchedule liteSeasonSchedule : allSeasonSchedules) {
                 if (liteSeasonSchedule.getScheduleID() == id) {
-                    liteSeasonSchedule = SeasonScheduleLoader.getForId(id);
-                    lBase = liteSeasonSchedule;
+                    allSeasonSchedules.remove(liteSeasonSchedule);
+                    lBase = SeasonScheduleLoader.getForId(id);
+                    allSeasonSchedules.add((LiteSeasonSchedule)lBase);
                     break;
                 }
             }
@@ -1252,8 +1258,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         case UPDATE:
             for (LiteTOUSchedule liteTOUSchedule : allTouSchedules) {
                 if (liteTOUSchedule.getScheduleID() == id) {
-                    liteTOUSchedule = TOUScheduleLoader.getForId(id);
-                    lBase = liteTOUSchedule;
+                    allTouSchedules.remove(liteTOUSchedule);
+                    lBase = TOUScheduleLoader.getForId(id);
+                    allTouSchedules.add((LiteTOUSchedule)lBase);
                     break;
                 }
             }
@@ -1318,8 +1325,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         case UPDATE:
             for (LiteConfig liteConfig : allConfigs) {
                 if (liteConfig.getConfigID() == id) {
-                    liteConfig = ConfigLoader.getForId(id);
-                    lBase = liteConfig;
+                    allConfigs.remove(liteConfig);
+                    lBase = ConfigLoader.getForId(id);
+                    allConfigs.add((LiteConfig)lBase);
                     break;
                 }
             }
@@ -1367,8 +1375,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         case UPDATE:
             for (LiteLMConstraint liteLMConstraint : allLMProgramConstraints) {
                 if (liteLMConstraint.getConstraintID() == id) {
-                    liteLMConstraint = LMConstraintLoader.getForId(id);
-                    lBase = liteLMConstraint;
+                    allLMProgramConstraints.remove(liteLMConstraint);
+                    lBase = LMConstraintLoader.getForId(id);
+                    allLMProgramConstraints.add((LiteLMConstraint)lBase);
                     break;
                 }
             }
@@ -1416,8 +1425,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         case UPDATE:
             for (LiteNotificationGroup lg : allNotificationGroups) {
                 if (lg.getNotificationGroupID() == id) {
-                    lg = ContactNotificationGroupLoader.getForId(id);
-                    lBase = lg;
+                    allNotificationGroups.remove(lg);
+                    lBase = ContactNotificationGroupLoader.getForId(id);
+                    allNotificationGroups.add((LiteNotificationGroup)lBase);
                     break;
                 }
             }
@@ -1540,8 +1550,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             case UPDATE:
                 for (LiteYukonGroup liteYukonGroup : allYukonGroups) {
                     if (liteYukonGroup.getGroupID() == id) {
-                        liteYukonGroup = yukonGroupDao.getLiteYukonGroup(id);
-                        lBase = liteYukonGroup;
+                        allYukonGroups.remove(liteYukonGroup);
+                        lBase = yukonGroupDao.getLiteYukonGroup(id);
+                        allYukonGroups.add((LiteYukonGroup)lBase);
                         break;
                     }
                 }
