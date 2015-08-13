@@ -350,7 +350,7 @@ public class UserPageDaoImpl implements UserPageDao {
         paoUrls.addAll(meterUrls);
     }
     
-    private static Pattern pointUrl = Pattern.compile("/common/points/(\\d+).*");
+    private static Pattern pointUrl = Pattern.compile("/tools/points/(\\d+).*");
 
     @Override
     public void deletePagesForPao(YukonPao pao) {

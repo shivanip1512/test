@@ -1,4 +1,4 @@
-package com.cannontech.web.common.points;
+package com.cannontech.web.tools.points;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,10 +51,10 @@ import com.cannontech.web.capcontrol.models.PointModel;
 import com.cannontech.web.capcontrol.models.TimeIntervals;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
-import com.cannontech.web.common.points.service.PointEditorService;
-import com.cannontech.web.common.points.validators.PointValidator;
 import com.cannontech.web.editor.point.StaleData;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.tools.points.service.PointEditorService;
+import com.cannontech.web.tools.points.validators.PointValidator;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableList;
 
@@ -95,7 +95,7 @@ public class PointController {
 
         int newId = pointEditorService.create(pointType, parentId, userContext);
 
-        return "redirect:/common/points/" + newId + "/edit";
+        return "redirect:/tools/points/" + newId + "/edit";
     }
 
     private String setUpModel(ModelMap model, PointModel pointModel, YukonUserContext userContext) {
@@ -164,7 +164,7 @@ public class PointController {
         model.addAttribute("fdrProperties", fdrProperties);
         model.addAttribute("attachment", pointEditorService.getAttachmentStatus(base.getPoint().getPointID()));
         
-        return "point.jsp";
+        return "point/point.jsp";
     }
     
     /* TODO */
@@ -259,7 +259,7 @@ public class PointController {
         
         int id = pointEditorService.save(pointModel);
    
-        return "redirect:/common/points/" + id;
+        return "redirect:/tools/points/" + id;
     }
     
     private String bindAndForward(PointModel pointModel, BindingResult result, RedirectAttributes attrs) {
@@ -267,7 +267,7 @@ public class PointController {
         attrs.addFlashAttribute("pointModel", pointModel);
         attrs.addFlashAttribute("org.springframework.validation.BindingResult.pointModel", result);
         
-        return "redirect:/common/points/" + pointModel.getId() + "/edit";
+        return "redirect:/tools/points/" + pointModel.getId() + "/edit";
     }
     
     @RequestMapping(value="/points/{id}", method=RequestMethod.DELETE)
@@ -286,6 +286,6 @@ public class PointController {
         
         flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.point.deleteFailed"));
         
-        return "redirect:/capcontrol/common/points/" + pointModel.getId() + "/edit";
+        return "redirect:/capcontrol/tools/points/" + pointModel.getId() + "/edit";
     }
 }

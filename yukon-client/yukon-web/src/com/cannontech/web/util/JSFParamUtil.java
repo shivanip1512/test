@@ -102,7 +102,7 @@ public class JSFParamUtil {
     public static void goToPointEditor(final FacesMessage fm) {
         try {
             String contextPath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
-            String red = "/common/points/";
+            String red = "/tools/points/";
             String pointId = getJSFReqParam("ptID");
 
             String location = contextPath + red + pointId;

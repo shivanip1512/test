@@ -1,4 +1,4 @@
-package com.cannontech.web.common.points.service.impl;
+package com.cannontech.web.tools.points.service.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,9 +36,10 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.models.PointModel;
-import com.cannontech.web.common.points.service.PointEditorService;
 import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
+import com.cannontech.web.tools.points.service.PointEditorService;
+import com.cannontech.web.tools.points.service.PointEditorService.AttachmentStatus;
 import com.google.common.collect.ImmutableList;
 
 @Service

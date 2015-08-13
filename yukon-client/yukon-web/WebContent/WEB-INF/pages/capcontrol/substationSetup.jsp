@@ -89,9 +89,6 @@
     
                                 <f:facet name="points">
                                     <x:panelGroup>
-                                        <f:verbatim>
-                                            A${node.identifier}
-                                        </f:verbatim>
                                         <x:commandLink id="ptLink" value="#{node.description}" actionListener="#{capControlForm.pointTreeForm.pointClick}">
                                             <f:param name="ptID" value="#{node.identifier}" />
                                             <f:param name="tabId" value="2"/>

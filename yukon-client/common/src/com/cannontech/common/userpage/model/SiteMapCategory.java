@@ -16,7 +16,6 @@ public enum SiteMapCategory implements DisplayableEnum {
     ASSETS,
     TOOLS,
     ADMIN,
-    COMMON,
     SUPPORT,
     DEVELOPMENT,
     CCURT,

@@ -48,7 +48,7 @@
                                 <form:hidden path="points[${status.index}].pointName"/>
                                 <spring:escapeBody htmlEscape="true">${voltagePoint.paoName}</spring:escapeBody></td>
                             <td>
-                                <cti:url var="pointLink" value="/common/points/${voltagePoint.pointId}" />
+                                <cti:url var="pointLink" value="/tools/points/${voltagePoint.pointId}" />
                                 <a href="${pointLink}">
                                    <spring:escapeBody htmlEscape="true">${voltagePoint.pointName}</spring:escapeBody>
                                 </a>

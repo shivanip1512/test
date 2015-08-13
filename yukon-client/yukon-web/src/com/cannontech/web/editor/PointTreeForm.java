@@ -166,7 +166,7 @@ public class PointTreeForm {
         try {
 
             String contextPath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
-            String path = "/common/points/";
+            String path = "/tools/points/";
             String pointId = JSFParamUtil.getJSFReqParam("ptID");
 
             String location = contextPath + path + pointId;

@@ -1,4 +1,4 @@
-package com.cannontech.web.common.points.validators;
+package com.cannontech.web.tools.points.validators;
 
 import java.util.HashSet;
 import java.util.List;

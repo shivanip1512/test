@@ -8,7 +8,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="common" page="point.${mode}">
+<cti:standardPage module="tools" page="point.${mode}">
 
     <tags:setFormEditMode mode="${mode}" />
     <c:set var="viewMode" value="${false}" />
@@ -18,7 +18,7 @@
 
     <c:set var="nameValueClass" value="natural-width ${viewMode ? '' : 'with-form-controls' }" />
 
-    <cti:url var="action" value="/common/points/${pointModel.pointBase.point.pointType}" />
+    <cti:url var="action" value="/tools/points/${pointModel.pointBase.point.pointType}" />
     <form:form id="point-form" commandName="pointModel" action="${action}" method="POST" data-view-mode="${viewMode}">
 
         <cti:csrfToken />
@@ -540,7 +540,7 @@
 
             <cti:displayForPageEditModes modes="VIEW">
             <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                <cti:url var="editUrl" value="/common/points/${pointModel.id}/edit" />
+                <cti:url var="editUrl" value="/tools/points/${pointModel.id}/edit" />
                 <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
             </cti:checkRolesAndProperties>
             </cti:displayForPageEditModes>
@@ -555,7 +555,7 @@
                     disabled="${!attachment.deletable}" title="${attachmentMsg}"/>
                 <d:confirm on=".js-delete" nameKey="confirmDelete" argument="${pointModel.pointBase.point.pointName}"/>
 
-                <cti:url var="viewUrl" value="/common/points/${pointModel.id}" />
+                <cti:url var="viewUrl" value="/tools/points/${pointModel.id}" />
                 <cti:button nameKey="cancel" href="${viewUrl}"/>
 
             </cti:displayForPageEditModes>
@@ -567,7 +567,7 @@
 
     </form:form>
 
-    <cti:url var="deleteUrl" value="/common/points/${pointModel.id}" />
+    <cti:url var="deleteUrl" value="/tools/points/${pointModel.id}" />
     <form:form id="delete-point" action="${deleteUrl}" method="DELETE"></form:form>
 
     <cti:includeScript link="/resources/js/pages/yukon.da.point.js"/>

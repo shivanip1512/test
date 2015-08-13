@@ -12,27 +12,27 @@
 <cm:dropdown key="components.button.create.label" icon="icon-plus-green" type="button"
     triggerClasses="${buttonClasses}" menuClasses="no-icons">
 
-    <cti:url var="createAnalog" value="/common/points/Analog/create">
+    <cti:url var="createAnalog" value="/tools/points/Analog/create">
         <cti:param name="parentId" value="${paoId}"></cti:param>
     </cti:url>
     <cm:dropdownOption key="yukon.common.point.pointType.Analog.long" href="${createAnalog}" />
 
-    <cti:url var="createPulseAccumulator" value="/common/points/PulseAccumulator/create">
+    <cti:url var="createPulseAccumulator" value="/tools/points/PulseAccumulator/create">
         <cti:param name="parentId" value="${paoId}"></cti:param>
     </cti:url>
     <cm:dropdownOption key="yukon.common.point.pointType.PulseAccumulator.long" href="${createPulseAccumulator}" />
 
-    <cti:url var="createCalcAnalog" value="/common/points/CalcAnalog/create">
+    <cti:url var="createCalcAnalog" value="/tools/points/CalcAnalog/create">
         <cti:param name="parentId" value="${paoId}"></cti:param>
     </cti:url>
     <cm:dropdownOption key="yukon.common.point.pointType.CalcAnalog.long" href="${createCalcAnalog}" />
 
-    <cti:url var="createStatus" value="/common/points/Status/create">
+    <cti:url var="createStatus" value="/tools/points/Status/create">
         <cti:param name="parentId" value="${paoId}"></cti:param>
     </cti:url>
     <cm:dropdownOption key="yukon.common.point.pointType.Status.long" href="${createStatus}" />
 
-    <cti:url var="createCalcStatus" value="/common/points/CalcStatus/create">
+    <cti:url var="createCalcStatus" value="/tools/points/CalcStatus/create">
         <cti:param name="parentId" value="${paoId}"></cti:param>
     </cti:url>
     <cm:dropdownOption key="yukon.common.point.pointType.CalcStatus.long" href="${createCalcStatus}" />

@@ -192,7 +192,7 @@
                             <c:forEach var="point" items="${points}">
                                  <tr>
                                      <td>
-                                        <cti:url var="pointUrl" value="/common/points/${point.pointId}"/>
+                                        <cti:url var="pointUrl" value="/tools/points/${point.pointId}"/>
                                         <a href="${pointUrl}">${fn:escapeXml(point.pointName)}</a>
                                      </td>
                                      <td class="state-indicator">
