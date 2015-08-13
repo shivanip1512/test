@@ -69,6 +69,26 @@ WHERE Name = 'WEB_LOGO_URL'
 AND Value = 'CannonLogo.gif';
 /* End YUK-14474 */
 
+/* Start YUK-14537 */
+/* @error warn-once */
+/* @start-block */
+DECLARE
+    errorFlagCount INT;
+BEGIN
+    SELECT COUNT(*) INTO errorFlagCount
+    FROM YukonServices YS
+    WHERE YS.ServiceID = 3;
+    
+    IF 0 < errorFlagCount
+    THEN 
+        RAISE_APPLICATION_ERROR(-20001, 'Yukon Calc Historical Service is enabled. This service must be uninstalled and Yukon Calc-Logic Service used instead.');
+    END IF;
+END;
+/
+DELETE FROM YukonServices WHERE ServiceId = 3 OR ServiceId = -3;
+/* @end-block */
+/* End YUK-14537 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
