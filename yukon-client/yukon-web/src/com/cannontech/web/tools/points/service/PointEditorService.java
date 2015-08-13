@@ -6,7 +6,7 @@ import java.util.Map;
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.capcontrol.models.PointModel;
+import com.cannontech.web.tools.points.model.PointModel;
 
 public interface PointEditorService {
 
@@ -84,10 +84,24 @@ public interface PointEditorService {
             return baseKey + name();
         }
     }
+    
+    public static class AttachedException extends Exception {
+        
+        private final AttachmentStatus status;
+        
+        public AttachedException(AttachmentStatus status) {
+            this.status = status;
+        }
+
+        public AttachmentStatus getStatus() {
+            return status;
+        }
+    }
+    
 
     AttachmentStatus getAttachmentStatus(int id);
 
-    boolean delete(int id);
+    boolean delete(int id) throws AttachedException;
 
     int create(int pointType, int paoId, YukonUserContext userContext);
 

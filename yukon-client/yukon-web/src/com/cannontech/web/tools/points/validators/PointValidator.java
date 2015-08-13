@@ -21,7 +21,7 @@ import com.cannontech.database.data.point.ScalarPoint;
 import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.point.PointLimit;
 import com.cannontech.database.db.point.fdr.FDRTranslation;
-import com.cannontech.web.capcontrol.models.PointModel;
+import com.cannontech.web.tools.points.model.PointModel;
 import com.google.common.collect.ImmutableList;
 
 @Service
@@ -29,7 +29,7 @@ public class PointValidator extends SimpleValidator<PointModel> {
 
     @Autowired PointDao pointDao;
     
-    private static final String baseKey = "yukon.web.modules.capcontrol.point.error";
+    private static final String baseKey = "yukon.web.modules.tools.point.error";
 
     public PointValidator() {
         super(PointModel.class);
@@ -91,7 +91,9 @@ public class PointValidator extends SimpleValidator<PointModel> {
         
         for (LitePoint pointOnPao : pointsOnPao) {
             if (pointOnPao.getPointName().equals(base.getPoint().getPointName())) {
-                errors.rejectValue("pointBase.point.pointName", "yukon.web.error.nameConflict");
+                if (pointOnPao.getPointID() != base.getPoint().getPointID()) {
+                    errors.rejectValue("pointBase.point.pointName", "yukon.web.error.nameConflict");
+                }
             }
         }
 
@@ -192,7 +194,7 @@ public class PointValidator extends SimpleValidator<PointModel> {
         YukonValidationUtils.checkRange(errors, "pointBase.pointAnalog.dataOffset", 
             point.getPointAnalog().getDataOffset(), -99999999.0, 99999999.0, true);
         
-        YukonValidationUtils.checkRange(errors, "pointBase.pointAnalogControl.controlOffset", 
+        YukonValidationUtils.checkRange(errors, "pointBase.pointAnalogontrol.controlOffset", 
             point.getPointAnalogControl().getControlOffset(), -99999999, 99999999, true);
     }
     

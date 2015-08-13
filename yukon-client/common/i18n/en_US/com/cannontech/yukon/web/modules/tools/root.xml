@@ -189,7 +189,7 @@
     <entry key="yukon.web.modules.tools.point.fdr.add.label">Add Translation</entry>
 
     <entry key="yukon.web.modules.tools.point.deleteSuccess">Point {0} deleted.</entry>
-    <entry key="yukon.web.modules.tools.point.deleteFailed">Unable to delete point.</entry>
+    <entry key="yukon.web.modules.tools.point.deleteFailed">Unable to delete point: {0}</entry>
 
     <entry key="yukon.web.modules.tools.point.error.fdr.unique">Cannot duplicate Interface/Direction pairs.</entry>
     <entry key="yukon.web.modules.tools.point.error.limits">Low limit must be less than High limit</entry>

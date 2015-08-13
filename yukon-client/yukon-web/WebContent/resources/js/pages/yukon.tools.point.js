@@ -1,12 +1,12 @@
-yukon.namespace('yukon.da.point');
+yukon.namespace('yukon.tools.point');
 
 /**
- * Module for the volt/var point editor page
- * @module yukon.da.point
+ * Module for the point editor page
+ * @module yukon.tools.point
  * @requires JQUERY
  * @requires yukon
  */
-yukon.da.point = (function () {
+yukon.tools.point = (function () {
     
     'use strict';
 
@@ -16,7 +16,7 @@ yukon.da.point = (function () {
     var updateStateGroup = function () {
         var stateGroup = $('.js-state-group').val();
         
-        $.ajax(yukon.url('/capcontrol/state-group/' + stateGroup + '/states')).done(function (data) {
+        $.ajax(yukon.url('/tools/state-group/' + stateGroup + '/states')).done(function (data) {
             
             var select = $('.js-initial-state');
             select.empty();
@@ -116,7 +116,7 @@ yukon.da.point = (function () {
         var fdrInterface = row.find('.js-fdr-interface').val();
         var pointType = $('.js-point-type').val();
         
-        $.ajax(yukon.url('/capcontrol/fdr/' + fdrInterface + '?point-type=' + pointType))
+        $.ajax(yukon.url('/tools/fdr/' + fdrInterface + '?point-type=' + pointType))
         .done(function (data) {
 
             /* Enable only the valid directions */
@@ -309,4 +309,4 @@ yukon.da.point = (function () {
     return mod;
 }());
 
-$(function () { yukon.da.point.init(); });
+$(function () { yukon.tools.point.init(); });

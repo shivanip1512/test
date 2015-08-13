@@ -35,11 +35,10 @@ import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.capcontrol.models.PointModel;
 import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
+import com.cannontech.web.tools.points.model.PointModel;
 import com.cannontech.web.tools.points.service.PointEditorService;
-import com.cannontech.web.tools.points.service.PointEditorService.AttachmentStatus;
 import com.google.common.collect.ImmutableList;
 
 @Service
@@ -356,9 +355,11 @@ public class PointEditorServiceImpl implements PointEditorService {
     }
 
     @Override
-    public boolean delete(int id) {
+    public boolean delete(int id) throws AttachedException {
         AttachmentStatus attachmentStatus = getAttachmentStatus(id);
-        if (!attachmentStatus.isDeletable()) return false;
+        if (!attachmentStatus.isDeletable()) {
+            throw new AttachedException(attachmentStatus);
+        }
         
         PointBase point = pointDao.get(id);
         dBPersistentDao.performDBChange(point, TransactionType.DELETE);

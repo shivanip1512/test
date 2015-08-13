@@ -570,6 +570,6 @@
     <cti:url var="deleteUrl" value="/tools/points/${pointModel.id}" />
     <form:form id="delete-point" action="${deleteUrl}" method="DELETE"></form:form>
 
-    <cti:includeScript link="/resources/js/pages/yukon.da.point.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.tools.point.js"/>
 
 </cti:standardPage>

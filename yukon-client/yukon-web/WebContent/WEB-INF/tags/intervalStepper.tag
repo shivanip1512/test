@@ -11,7 +11,7 @@
 <%@ attribute name="noneKey" description="i18n key for an option with 0 duration" %>
 <%@ attribute name="toggleGroup" description="Used to setup a toggle group driven by a checkbox." %>
 <%@ attribute name="format" description="DurationFormat to use for display. 
-    Options: YMODHMS, DHMS, DHMS_REDUCED, DHMS_SHORT_REDUCED, DH, DH_ABBR, HMS, HM, H, M, S, S_ABBR, S_HSORT, HM_ABBR,
+    Options: YMODHMS, DHMS, DHMS_REDUCED, DHMS_SHORT_REDUCED, DH, DH_ABBR, HMS, HM, H, M, S, S_ABBR, S_SHORT, HM_ABBR,
         HM_SHORT, MS_ABBR
     Default: DHMS_REDUCED" %>
 

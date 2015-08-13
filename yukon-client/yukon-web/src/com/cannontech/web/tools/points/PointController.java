@@ -47,20 +47,21 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
-import com.cannontech.web.capcontrol.models.PointModel;
-import com.cannontech.web.capcontrol.models.TimeIntervals;
+import com.cannontech.web.common.TimeIntervals;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
 import com.cannontech.web.editor.point.StaleData;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.tools.points.model.PointModel;
 import com.cannontech.web.tools.points.service.PointEditorService;
+import com.cannontech.web.tools.points.service.PointEditorService.AttachedException;
 import com.cannontech.web.tools.points.validators.PointValidator;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableList;
 
 @Controller
 public class PointController {
-    
+
     @Autowired private IDatabaseCache dbCache;
     @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
     @Autowired private PointEditorService pointEditorService;
@@ -68,25 +69,27 @@ public class PointController {
     @Autowired private StateDao stateDao;
     @Autowired private UnitMeasureDao unitMeasureDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    
-    @RequestMapping(value="/points/{id}", method=RequestMethod.GET)
+
+    private static final String baseKey = "yukon.web.modules.tools.point";
+
+    @RequestMapping(value = "/points/{id}", method = RequestMethod.GET)
     public String view(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
-        
+
         model.addAttribute("mode", PageEditMode.VIEW);
         PointModel pointModel = pointEditorService.getModelForId(id);
-        
+
         return setUpModel(model, pointModel, userContext);
     }
-    
-    @RequestMapping(value="/points/{id}/edit", method=RequestMethod.GET)
+
+    @RequestMapping(value = "/points/{id}/edit", method = RequestMethod.GET)
     public String edit(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
-        
+
         model.addAttribute("mode", PageEditMode.EDIT);
         PointModel pointModel = pointEditorService.getModelForId(id);
-        
+
         return setUpModel(model, pointModel, userContext);
     }
-    
+
     @RequestMapping("/points/{type}/create")
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String create(@PathVariable String type, @RequestParam int parentId, YukonUserContext userContext) {
@@ -99,37 +102,35 @@ public class PointController {
     }
 
     private String setUpModel(ModelMap model, PointModel pointModel, YukonUserContext userContext) {
-        
+
         MessageSourceAccessor messageAccessor = messageResolver.getMessageSourceAccessor(userContext);
 
         String noneChoice = messageAccessor.getMessage("yukon.common.none.choice");
-        
+
         Object modelPointBase = model.get("pointModel");
         if (modelPointBase instanceof PointModel) {
             pointModel = (PointModel) modelPointBase;
         }
-        
+
         model.addAttribute("pointModel", pointModel);
-        
+
         LiteYukonPAObject parent = dbCache.getAllPaosMap().get(pointModel.getPointBase().getPoint().getPaoID());
         model.addAttribute("parentName", StringEscapeUtils.escapeXml10(parent.getPaoName()));
         model.addAttribute("parentLink", paoDetailUrlHelper.getUrlForPaoDetailPage(parent));
-        
+
         PointBase base = pointModel.getPointBase();
-        
+
         model.addAttribute("isScalarType", base instanceof ScalarPoint);
         model.addAttribute("isStatusType", base instanceof StatusPoint);
-        model.addAttribute("isCalcType", base instanceof CalcStatusPoint ||
-                                         base instanceof CalculatedPoint);
-        model.addAttribute("isStatusPoint", base instanceof StatusPoint &&
-                                          !(base instanceof CalcStatusPoint));
+        model.addAttribute("isCalcType", base instanceof CalcStatusPoint || base instanceof CalculatedPoint);
+        model.addAttribute("isStatusPoint", base instanceof StatusPoint && !(base instanceof CalcStatusPoint));
         model.addAttribute("isAnalogPoint", base instanceof AnalogPoint);
         model.addAttribute("isAccumulatorPoint", base instanceof AccumulatorPoint);
-        
+
         model.addAttribute("logicalGroups", PointLogicalGroups.values());
         model.addAttribute("scalarArchiveTypes", PointArchiveType.values());
         model.addAttribute("archiveIntervals", TimeIntervals.getArchiveIntervals());
-        model.addAttribute("fdrTranslationNumbers", ImmutableList.of(0,1,2,3,4));
+        model.addAttribute("fdrTranslationNumbers", ImmutableList.of(0, 1, 2, 3, 4));
         model.addAttribute("fdrInterfaceTypes", FdrInterfaceType.values());
         model.addAttribute("fdrDirections", FdrDirection.values());
         model.addAttribute("statusControlTypes", StatusControlType.values());
@@ -142,150 +143,157 @@ public class PointController {
         model.addAttribute("analogControlTypes", AnalogControlType.values());
         model.addAttribute("staleDataUpdateStyles", StaleData.UpdateStyle.values());
         model.addAttribute("alarmNotificationTypes", AlarmNotificationTypes.values());
-        
+
         List<LiteNotificationGroup> notificationGroups = new ArrayList<>();
-        
+
         LiteNotificationGroup noneGroup = new LiteNotificationGroup(PointAlarming.NONE_NOTIFICATIONID, noneChoice);
-        
+
         notificationGroups.add(noneGroup);
         notificationGroups.addAll(dbCache.getAllContactNotificationGroups());
-        
+
         model.addAttribute("notificationGroups", notificationGroups);
-        
+
         model.addAttribute("alarmCategories", dbCache.getAllAlarmCategories());
 
         List<List<Map<String, Object>>> fdrProperties = new ArrayList<>();
         for (FDRTranslation fdr : base.getPointFDRList()) {
-            
-            List<Map<String, Object>> inputs = pointEditorService.breakIntoTranslationFields(fdr.getTranslation(), fdr.getInterfaceEnum());
+
+            List<Map<String, Object>> inputs =
+                pointEditorService.breakIntoTranslationFields(fdr.getTranslation(), fdr.getInterfaceEnum());
             fdrProperties.add(inputs);
         }
 
         model.addAttribute("fdrProperties", fdrProperties);
         model.addAttribute("attachment", pointEditorService.getAttachmentStatus(base.getPoint().getPointID()));
-        
+
         return "point/point.jsp";
     }
-    
-    /* TODO */
+
     @RequestMapping("/state-group/{id}/states")
     public @ResponseBody LiteState[] statesForGroup(@PathVariable("id") int id) {
         return stateDao.getLiteStates(id);
-    
+
     }
 
-    /* TODO */
     @RequestMapping("/fdr/{type}")
     public @ResponseBody Map<String, Object> fdrInterfaceInfo(@PathVariable("type") FdrInterfaceType interfaceType,
-                                                              @RequestParam("point-type") String pointType) {
-        
+            @RequestParam("point-type") String pointType) {
+
         Map<String, Object> result = new HashMap<>();
-        
+
         List<String> directions = pointEditorService.getDirectionsFor(interfaceType);
         result.put("directions", directions);
-        
+
         List<Map<String, Object>> translationFields = pointEditorService.getTranslationFieldsFor(interfaceType, pointType);
         result.put("translations", translationFields);
-        
+
         return result;
     }
-    
+
     /* These classes are here to prevent type erasure of generics */
-    public static class AnalogPointModel extends PointModel<AnalogPoint> {}
-    public static class AccumulatorPointModel extends PointModel<AccumulatorPoint> {}
-    public static class CalculatedPointModel extends PointModel<CalculatedPoint> {}
-    public static class StatusPointModel extends PointModel<StatusPoint> {}
-    public static class CalcStatusPointModel extends PointModel<CalcStatusPoint> {}
-    
-    @RequestMapping(value="/points/Analog", method=RequestMethod.POST)
+    public static class AnalogPointModel extends PointModel<AnalogPoint> {
+    }
+
+    public static class AccumulatorPointModel extends PointModel<AccumulatorPoint> {
+    }
+
+    public static class CalculatedPointModel extends PointModel<CalculatedPoint> {
+    }
+
+    public static class StatusPointModel extends PointModel<StatusPoint> {
+    }
+
+    public static class CalcStatusPointModel extends PointModel<CalcStatusPoint> {
+    }
+
+    @RequestMapping(value = "/points/Analog", method = RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
-    public String saveAnalog(
-            @ModelAttribute("pointModel") AnalogPointModel pointModel,
-            BindingResult result,
+    public String saveAnalog(@ModelAttribute("pointModel") AnalogPointModel pointModel, BindingResult result,
             RedirectAttributes redirectAttributes) {
-        
+
         return save(pointModel, result, redirectAttributes);
     }
-    
-    @RequestMapping(value="/points/PulseAccumulator", method=RequestMethod.POST)
+
+    @RequestMapping(value = "/points/PulseAccumulator", method = RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
-    public String saveAccumulator(
-            PointModel<AccumulatorPoint> pointModel,
-            BindingResult result,
+    public String saveAccumulator(PointModel<AccumulatorPoint> pointModel, BindingResult result,
             RedirectAttributes redirectAttributes) {
-        
+
         return save(pointModel, result, redirectAttributes);
     }
-    
-    @RequestMapping(value="/points/CalcAnalog", method=RequestMethod.POST)
+
+    @RequestMapping(value = "/points/CalcAnalog", method = RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
-    public String saveCalcAnalog(
-            @ModelAttribute("pointModel") CalculatedPointModel pointModel,
-            BindingResult result,
+    public String saveCalcAnalog(@ModelAttribute("pointModel") CalculatedPointModel pointModel, BindingResult result,
             RedirectAttributes redirectAttributes) {
-        
+
         return save(pointModel, result, redirectAttributes);
     }
-    
-    @RequestMapping(value="/points/Status", method=RequestMethod.POST)
+
+    @RequestMapping(value = "/points/Status", method = RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
-    public String saveStatusAnalog(
-            @ModelAttribute("pointModel") StatusPointModel pointModel,
-            BindingResult result,
+    public String saveStatusAnalog(@ModelAttribute("pointModel") StatusPointModel pointModel, BindingResult result,
             RedirectAttributes redirectAttributes) {
-        
+
         return save(pointModel, result, redirectAttributes);
     }
-    
-    @RequestMapping(value="/points/CalcStatus", method=RequestMethod.POST)
+
+    @RequestMapping(value = "/points/CalcStatus", method = RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
-    public String saveCalcStatusAnalog(
-            @ModelAttribute("pointModel") CalcStatusPointModel pointModel,
-            BindingResult result,
+    public String saveCalcStatusAnalog(@ModelAttribute("pointModel") CalcStatusPointModel pointModel, BindingResult result,
             RedirectAttributes redirectAttributes) {
-        
+
         return save(pointModel, result, redirectAttributes);
     }
-    
+
     private String save(PointModel pointModel, BindingResult result, RedirectAttributes redirectAttributes) {
-        
+
         pointModel.finishSetup();
-        
+
         pointValidator.validate(pointModel, result);
-        
+
         if (result.hasErrors()) {
             return bindAndForward(pointModel, result, redirectAttributes);
         }
-        
+
         int id = pointEditorService.save(pointModel);
-   
+
         return "redirect:/tools/points/" + id;
     }
-    
+
     private String bindAndForward(PointModel pointModel, BindingResult result, RedirectAttributes attrs) {
-        
+
         attrs.addFlashAttribute("pointModel", pointModel);
         attrs.addFlashAttribute("org.springframework.validation.BindingResult.pointModel", result);
-        
+
         return "redirect:/tools/points/" + pointModel.getId() + "/edit";
     }
-    
-    @RequestMapping(value="/points/{id}", method=RequestMethod.DELETE)
-    public String delete(@PathVariable int id, FlashScope flashScope) {
-        
+
+    @RequestMapping(value = "/points/{id}", method = RequestMethod.DELETE)
+    public String delete(@PathVariable int id, FlashScope flashScope, YukonUserContext userContext) {
+
         PointModel pointModel = pointEditorService.getModelForId(id);
         int paoId = pointModel.getPointBase().getPoint().getPaoID();
-        
-        if (pointEditorService.delete(id)) {
-            
-            LiteYukonPAObject pao = dbCache.getAllPaosMap().get(paoId);
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.point.deleteSuccess", pointModel.getPointBase().getPoint().getPointName()));
-            
-            return "redirect:" + paoDetailUrlHelper.getUrlForPaoDetailPage(pao);
+
+        try {
+            pointEditorService.delete(id);
+
+        } catch (AttachedException e) {
+
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+
+            String reason = accessor.getMessage(e.getStatus());
+
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".deleteFailed", reason));
+
+            return "redirect:/tools/points/" + pointModel.getId() + "/edit";
         }
-        
-        flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.point.deleteFailed"));
-        
-        return "redirect:/capcontrol/tools/points/" + pointModel.getId() + "/edit";
+
+        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(paoId);
+        String pointName = pointModel.getPointBase().getPoint().getPointName();
+
+        flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".deleteSuccess", pointName));
+
+        return "redirect:" + paoDetailUrlHelper.getUrlForPaoDetailPage(pao);
     }
 }

@@ -1,4 +1,4 @@
-package com.cannontech.web.capcontrol.models;
+package com.cannontech.web.tools.points.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +18,11 @@ import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
 
 public class PointModel<T extends PointBase> {
-    
+
     private T pointBase;
     private StaleData staleData;
     private List<AlarmTableEntry> alarmTableEntries = LazyList.ofInstance(AlarmTableEntry.class);
-    
+
     public PointModel() {
         this(null, null, new ArrayList<>());
     }
@@ -56,20 +56,19 @@ public class PointModel<T extends PointBase> {
     public void setAlarmTableEntries(List<AlarmTableEntry> alarmTableEntries) {
         this.alarmTableEntries = alarmTableEntries;
     }
-    
-    
+
     public Integer getId() {
         return pointBase.getPoint().getPointID();
     }
-    
+
     public void finishSetup() {
-        
+
         Integer id = getId();
         PointBase base = getPointBase();
-        
+
         /* Remove unused translations and fill in the point id on used ones */
         List<FDRTranslation> newFdrs = new ArrayList<>();
-        
+
         for (FDRTranslation fdrTranslation : base.getPointFDRList()) {
             String translation = fdrTranslation.getTranslation();
             if (translation == null) continue;
@@ -81,37 +80,37 @@ public class PointModel<T extends PointBase> {
                 newFdrs.add(fdrTranslation);
             }
         }
+
         base.setPointFDRTranslations(newFdrs);
         base.getPointAlarming().setPointID(getId());
-        
+
         if (base.getPoint().getArchiveInterval() == null) {
             base.getPoint().setArchiveInterval(0);
         }
 
         if (base instanceof AnalogPoint) {
             AnalogPoint analogPoint = (AnalogPoint) base;
-            
+
             analogPoint.getPointAnalog().setPointID(id);
             analogPoint.getPointAnalogControl().setPointID(id);
         }
-        
+
         if (base instanceof StatusPoint) {
             StatusPoint statusPoint = (StatusPoint) base;
-            
+
             statusPoint.getPointStatus().setPointID(id);
             statusPoint.getPointStatusControl().setPointID(id);
         }
-        
-        
+
         if (base instanceof AccumulatorPoint) {
             AccumulatorPoint accumulatorPoint = (AccumulatorPoint) base;
-            
+
             accumulatorPoint.getPointAccumulator().setPointID(id);
         }
-        
+
         if (base instanceof ScalarPoint) {
             ScalarPoint scalar = (ScalarPoint) base;
-            
+
             for (Entry<Integer, PointLimit> entry :scalar.getPointLimitsMap().entrySet()) {
                 PointLimit limit = entry.getValue();
                 limit.setPointID(id);
@@ -120,7 +119,7 @@ public class PointModel<T extends PointBase> {
 
             scalar.getPointUnit().setPointID(id);
         }
-        
+
         if (base instanceof CalcStatusPoint) {
 
             CalcStatusPoint calcStatus = (CalcStatusPoint) base;
@@ -137,5 +136,5 @@ public class PointModel<T extends PointBase> {
             calcPoint.getPoint().setPointOffset(0);
         }
     }
-    
+
 }
