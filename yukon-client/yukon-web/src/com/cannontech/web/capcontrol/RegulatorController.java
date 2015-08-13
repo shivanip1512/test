@@ -226,7 +226,7 @@ public class RegulatorController {
         
         regulatorService.delete(id);
         
-        return "redirect:/capcontrol/tier/areas";
+        return "redirect:/capcontrol/search/searchResults?cbc_lastSearch=__cti_oRegulators__";
     }
     
     @RequestMapping(value="{id}/build-mapping-file", method = RequestMethod.GET)
