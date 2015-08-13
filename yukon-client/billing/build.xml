@@ -32,6 +32,12 @@
            </manifest>
            <fileset dir="src/main/resources"/>
        </jar>
+    	
+       <copy todir="${yukon.lib}">
+            <fileset dir="src/main/resources">
+                 <include name="*.bat"/>
+            </fileset>
+       </copy>
    </target>
 
    <target name="clean">
