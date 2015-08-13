@@ -37,28 +37,7 @@ public class PaoDefinitionXMLTest extends TestCase {
      * @throws Exception - If xml parsing fails
      */
     public void testParseXMLFile() throws Exception {
-        InputStreamReader reader = null;
-        try {
-            reader = new InputStreamReader(this.getClass()
-                                               .getClassLoader()
-                                               .getResourceAsStream("com/cannontech/common/pao/definition/dao/paoDefinition.xml"));
-
-            // Use jaxb to parse the xml file
-            JAXBContext jaxbContext = JAXBContext.newInstance(PaoDefinitions.class);
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            unmarshaller.unmarshal(reader);
-
-        } catch (Exception e) {
-            throw new Exception("Exception while parsing deviceDefinition.xml. ", e);
-        } finally {
-            try {
-                if (reader != null) {
-                    reader.close();
-                }
-            } catch (IOException e) {
-                // Do nothing - tried to close
-            }
-        }
+        readPaoDefinitionXMLFile();
     }
 
     /**
@@ -67,32 +46,11 @@ public class PaoDefinitionXMLTest extends TestCase {
      * @throws Exception
      */
     public void testValidateCommandExistsForEveryReadableAttribute() throws Exception {
-        InputStreamReader reader = null;
         Map<String, List<Attribute>> paoAttributeResultMap = new HashMap<String, List<Attribute>>();
         Set<String> pointNameSet = new HashSet<String>();
         List<Command> paoCommandList = null;
         List<Attribute> paoAttributeList = null;
-        PaoDefinitions paoDefinitions = null;
-        try {
-            reader = new InputStreamReader(this.getClass()
-                                               .getClassLoader()
-                                               .getResourceAsStream("com/cannontech/common/pao/definition/dao/paoDefinition.xml"));
-
-            // Use jaxb to parse the xml file
-            JAXBContext jaxbContext = JAXBContext.newInstance(PaoDefinitions.class);
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            paoDefinitions = (PaoDefinitions) unmarshaller.unmarshal(reader);
-        } catch (JAXBException e) {
-            throw new Exception("Exception while parsing deviceDefinition.xml. ", e);
-        } finally {
-            try {
-                if (reader != null) {
-                    reader.close();
-                }
-            } catch (IOException e) {
-                throw new Exception("Exception while closing the file.", e);
-            }
-        }
+        PaoDefinitions paoDefinitions = readPaoDefinitionXMLFile();
         List<Pao> paoList = paoDefinitions.getPao();
 
         // Scan through all pao in paoDefinition.xml file to retrieve all
@@ -160,5 +118,36 @@ public class PaoDefinitionXMLTest extends TestCase {
             throw new Exception("Error while converting paoAttributeMap to Json", e);
         }
 
+    }
+
+    /**
+     * This method opens and parses the paoDefinition.xml file
+     * @return
+     * @throws Exception
+     */
+    private PaoDefinitions readPaoDefinitionXMLFile() throws Exception {
+        InputStreamReader reader = null;
+        PaoDefinitions paoDefinitions = null;
+        try {
+            reader = new InputStreamReader(this.getClass()
+                                               .getClassLoader()
+                                               .getResourceAsStream("com/cannontech/common/pao/definition/dao/paoDefinition.xml"));
+
+            // Use jaxb to parse the xml file
+            JAXBContext jaxbContext = JAXBContext.newInstance(PaoDefinitions.class);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            paoDefinitions = (PaoDefinitions) unmarshaller.unmarshal(reader);
+        } catch (JAXBException e) {
+            throw new Exception("Exception while parsing paoDefinition.xml. ", e);
+        } finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+            } catch (IOException e) {
+                throw new Exception("Exception while closing the file.", e);
+            }
+        }
+        return paoDefinitions;
     }
 }
