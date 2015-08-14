@@ -19,6 +19,7 @@ import org.junit.Test;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.definition.model.jaxb.AttributesType;
 import com.cannontech.common.pao.definition.model.jaxb.AttributesType.Attribute;
+import com.cannontech.common.pao.definition.model.jaxb.CommandsType;
 import com.cannontech.common.pao.definition.model.jaxb.CommandsType.Command;
 import com.cannontech.common.pao.definition.model.jaxb.CommandsType.Command.PointRef;
 import com.cannontech.common.pao.definition.model.jaxb.Pao;
@@ -62,7 +63,7 @@ public class PaoDefinitionXMLTest {
         // attributes that does not possess any command
         for (Pao pao : paoList) {
             Map<String, List<Attribute>> pointAttributeMap = new HashMap<String, List<AttributesType.Attribute>>();
-            Map<String, Command> pointCommandsMap = new HashMap<String, Command>();
+            Map<String, List<Command>> pointCommandsMap = new HashMap<String, List<Command>>();
             PointsType pointType = pao.getPoints();
 
             // pointNameSet contains all unique points for a pao
@@ -90,14 +91,21 @@ public class PaoDefinitionXMLTest {
                 }
             }
 
-            // pointCommandsMap contains point as key and Command for that point
-            // as the value
+            // pointCommandsMap contains point as key and Command list for that
+            // point as the value
             if (pao.getCommands() != null) {
                 paoCommandList = pao.getCommands().getCommand();
                 for (Command command : paoCommandList) {
+                    List<Command> commandList = null;
                     List<PointRef> pointRefList = command.getPointRef();
                     for (PointRef pointRef : pointRefList) {
-                        pointCommandsMap.put(pointRef.getName(), command);
+                        if (pointCommandsMap.get(pointRef.getName()) == null) {
+                            commandList = new ArrayList<CommandsType.Command>();
+                        } else {
+                            commandList = pointCommandsMap.get(pointRef.getName());
+                        }
+                        commandList.add(command);
+                        pointCommandsMap.put(pointRef.getName(), commandList);
                     }
                 }
             }
@@ -108,11 +116,20 @@ public class PaoDefinitionXMLTest {
             for (String pointName : pointNameSet) {
                 List<Attribute> attributeList = pointAttributeMap.get(pointName);
                 if (attributeList != null) {
-                    Command command = pointCommandsMap.get(pointName);
-                    if (command == null || !command.isEnabled()) {
+                    List<Command> commandList = pointCommandsMap.get(pointName);
+
+                    boolean validCommandExist = false;
+                    if (commandList != null) {
+                        for (Command cmd : commandList) {
+                            if (cmd != null && cmd.isEnabled()) {
+                                validCommandExist = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (!validCommandExist) {
                         paoAttributeResultMap.put(pao.getId(), attributeList);
                     }
-
                 }
 
             }
