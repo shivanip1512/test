@@ -3020,6 +3020,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                                     "\nKey_MCT_LLPInterest_Channel"
                                     "\nKey_MCT_LLPInterest_RequestBegin"
                                     "\nKey_MCT_LLPInterest_RequestEnd" );
+            BOOST_CHECK( ! ret->ExpectMore() );
         }
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_cancel)
@@ -3044,6 +3045,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
             BOOST_CHECK_EQUAL( ret->Status(), 0 );
             BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / No active load profile requests to cancel" );
+            BOOST_CHECK( ! ret->ExpectMore() );
         }
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_invalid_channel)
@@ -3068,6 +3070,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
             BOOST_CHECK_EQUAL( ret->Status(), 202 );
             BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Bad channel specification - Acceptable values:  1-4" );
+            BOOST_CHECK( ! ret->ExpectMore() );
         }
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_invalid_interval)
@@ -3094,6 +3097,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
             BOOST_CHECK_EQUAL( ret->Status(), 202 );
             BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Bad channel specification - Acceptable values:  1-4" );
+            BOOST_CHECK( ! ret->ExpectMore() );
         }
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_no_channel_config)
@@ -3120,6 +3124,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
             BOOST_CHECK_EQUAL( ret->Status(), 202 );
             BOOST_CHECK_EQUAL( ret->ResultString(), "NoMethod or invalid command." );
+            BOOST_CHECK( ! ret->ExpectMore() );
         }
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_invalid_date)
@@ -3144,6 +3149,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
             BOOST_CHECK_EQUAL( ret->Status(), 202 );
             BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Bad start date \"3/17/2101\"" );
+            BOOST_CHECK( ! ret->ExpectMore() );
         }
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_invalid_optionsField)
@@ -3170,6 +3176,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
             BOOST_CHECK_EQUAL( ret->Status(), 1 );
             BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Long load profile request was cancelled" );
+            BOOST_CHECK( ! ret->ExpectMore() );
         }
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_invalid_times)
@@ -3194,6 +3201,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
             BOOST_CHECK_EQUAL( ret->Status(), 26 );
             BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Invalid date/time for LP request (8/8/2011 - 3/17/2011)" );
+            BOOST_CHECK( ! ret->ExpectMore() );
         }
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_background)
@@ -3222,6 +3230,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ret->Status(), 0 );
             BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Load profile request submitted for background processing - use \"getvalue lp status\" to check progress" );
             BOOST_CHECK_EQUAL( ret->getConnectionHandle(), reinterpret_cast<void *>(999) );
+            BOOST_CHECK( ret->ExpectMore() );  //  Bug!  Shouldn't have expectMore set
         }
         {
             auto req = dynamic_cast<const CtiRequestMsg *>(*retList_itr++);
@@ -3241,6 +3250,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ret->Status(), 0 );
             BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Sending load profile period of interest" );
             BOOST_CHECK_EQUAL( ret->getConnectionHandle(), reinterpret_cast<void *>(0) );
+            BOOST_CHECK( ret->ExpectMore() );
         }
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_misaligned_read)
@@ -3266,6 +3276,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
             BOOST_CHECK_EQUAL( ret->Status(), 267 );
             BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Long load profile read setup error" );
+            BOOST_CHECK( ! ret->ExpectMore() );
         }
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_aligned_read)
@@ -3359,6 +3370,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
                 BOOST_CHECK_EQUAL( ret->Status(), 0 );
                 BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Sending load profile period of interest" );
+                BOOST_CHECK( ret->ExpectMore() );
             }
 
             //  Submit period of interest request
@@ -3476,6 +3488,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
             BOOST_CHECK_EQUAL( ret->Status(), 0 );
             BOOST_CHECK_EQUAL( ret->ResultString(), "Load profile request complete\n" );
+            BOOST_CHECK( ! ret->ExpectMore() );
             BOOST_REQUIRE_EQUAL( ret->getCount(), 6 );
         }
 
@@ -4318,6 +4331,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
                 BOOST_CHECK_EQUAL( ret->Status(), 0 );
                 BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Sending load profile period of interest" );
+                BOOST_CHECK( ret->ExpectMore() );
             }
 
             //  Submit period of interest request
@@ -4430,6 +4444,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
             BOOST_CHECK_EQUAL( ret->Status(), 0 );
             BOOST_CHECK_EQUAL( ret->ResultString(), "Load profile retry submitted" );
+            BOOST_CHECK( ret->ExpectMore() );
         }
 
         {
@@ -4476,6 +4491,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ret->Status(), 0 );
             BOOST_CHECK_EQUAL( ret->ResultString(), "Load profile request complete\n" );
             BOOST_REQUIRE_EQUAL( ret->getCount(), 6 );
+            BOOST_CHECK( ! ret->ExpectMore() );
         }
 
         auto vg_itr = vgList.cbegin();
@@ -4614,6 +4630,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
                 BOOST_CHECK_EQUAL( ret->Status(), 0 );
                 BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Sending load profile period of interest" );
+                BOOST_CHECK( ret->ExpectMore() );
             }
 
             //  Submit period of interest request
@@ -4726,6 +4743,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
             BOOST_CHECK_EQUAL( ret->Status(), 0 );
             BOOST_CHECK_EQUAL( ret->ResultString(), "Load profile retry submitted" );
+            BOOST_CHECK( ret->ExpectMore() );
         }
 
         {
@@ -4766,6 +4784,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
             BOOST_CHECK_EQUAL( ret->Status(), 0 );
             BOOST_CHECK_EQUAL( ret->ResultString(), "Load profile retry submitted" );
+            BOOST_CHECK( ret->ExpectMore() );
         }
 
         {
@@ -4806,6 +4825,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
             BOOST_CHECK_EQUAL( ret->Status(), 0 );
             BOOST_CHECK_EQUAL( ret->ResultString(), "Load profile retry submitted" );
+            BOOST_CHECK( ret->ExpectMore() );
         }
 
         {
@@ -4865,6 +4885,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
             BOOST_CHECK_EQUAL( ret->Status(), 279 );
             BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Invalid date for peak request: cannot be after today (03/18/2014)" );
+            BOOST_CHECK( ! ret->ExpectMore() );
         }
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_peak_invalid_range)
@@ -4890,6 +4911,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
             BOOST_CHECK_EQUAL( ret->Status(), 26 );
             BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Invalid range for peak request: must be 1-999 (1000)" );
+            BOOST_CHECK( ! ret->ExpectMore() );
         }
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_peak_missing_sspec)
@@ -4915,6 +4937,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
             BOOST_CHECK_EQUAL( ret->Status(), 270 );
             BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / SSPEC revision not retrieved yet, attempting to read it automatically; please retry command in a few minutes" );
+            BOOST_CHECK( ! ret->ExpectMore() );
         }
         {
             const OUTMESS *om = outList.front();
@@ -4951,6 +4974,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
             BOOST_CHECK_EQUAL( ret->Status(), 269 );
             BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Load profile reporting not supported for this device's SSPEC revision" );
+            BOOST_CHECK( ! ret->ExpectMore() );
         }
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_peak_invalid_peaktype)
@@ -5008,6 +5032,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
             BOOST_CHECK_EQUAL( ret->Status(), 274 );
             BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Load profile peak request already in progress" );
+            BOOST_CHECK( ! ret->ExpectMore() );
         }
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_peak)
