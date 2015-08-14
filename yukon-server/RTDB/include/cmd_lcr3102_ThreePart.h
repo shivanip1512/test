@@ -23,7 +23,7 @@ protected:
 
     virtual request_ptr decodeReading(const CtiTime now, const unsigned function, const Bytes &payload, std::string &description, std::vector<point_data> &points) = 0;
 
-    virtual request_ptr makeRequest(const CtiTime now);
+    virtual emetcon_request_ptr makeRequest(const CtiTime now);
 
 private:
 
@@ -32,9 +32,9 @@ private:
 
 public:
 
-    virtual request_ptr executeCommand(const CtiTime now);
-    virtual request_ptr decodeCommand (const CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, std::string &description, std::vector<point_data> &points);
-    virtual request_ptr error         (const CtiTime now, const YukonError_t error_code, std::string &description);
+    emetcon_request_ptr executeCommand(const CtiTime now) override;
+    request_ptr decodeCommand (const CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, std::string &description, std::vector<point_data> &points) override;
+    request_ptr error         (const CtiTime now, const YukonError_t error_code, std::string &description) override;
 
 };
 

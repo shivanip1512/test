@@ -65,7 +65,7 @@ private:
         Write_HourlyDataLogStartTime = 0x186
     };
 
-    request_ptr makeRequest(const CtiTime now);
+    emetcon_request_ptr makeRequest(const CtiTime now);
 
     void getDescription(std::vector<unsigned> data, std::string &description);
 
@@ -73,7 +73,7 @@ public:
 
     Lcr3102HourlyDataLogCommand(int utcStartSeconds);
 
-    virtual request_ptr executeCommand(const CtiTime now);
+    virtual emetcon_request_ptr executeCommand(const CtiTime now);
     virtual request_ptr decodeCommand (const CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, std::string &description, std::vector<point_data> &points);
     virtual request_ptr error         (const CtiTime now, const YukonError_t error_code, std::string &description);
 

@@ -152,9 +152,15 @@ YukonError_t DlcBaseDevice::ExecuteRequest( CtiRequestMsg     *pReq,
         retList.push_back(
                 new CtiReturnMsg(
                         getID( ),
-                        OutMessage->Request,
+                        pReq->CommandString(),
                         "NoMethod or invalid command.",
-                        nRet));
+                        nRet,
+                        pReq->RouteId(),
+                        pReq->MacroOffset(),
+                        pReq->AttemptNum(),
+                        pReq->GroupMessageId(),
+                        pReq->UserMessageId(),
+                        pReq->getSOE()));
     }
     else
     {
@@ -173,19 +179,7 @@ YukonError_t DlcBaseDevice::ExecuteRequest( CtiRequestMsg     *pReq,
 
 YukonError_t DlcBaseDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    try
-    {
-        findAndDecodeCommand(InMessage, TimeNow, vgList, retList, outList);
-    }
-    catch( DlcCommand::CommandException &e )
-    {
-        retList.push_back(
-            new CtiReturnMsg(
-                getID(),
-                InMessage.Return,
-                getName() + " / " + e.error_description,
-                e.error_code));
-    }
+    findAndDecodeCommand(InMessage, TimeNow, vgList, retList, outList);
 
     return ExecutionComplete;
 }
@@ -193,21 +187,9 @@ YukonError_t DlcBaseDevice::ResultDecode(const INMESS &InMessage, const CtiTime 
 
 YukonError_t DlcBaseDevice::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    try
-    {
-        findAndDecodeCommand(InMessage, TimeNow, vgList, retList, outList);
-    }
-    catch( DlcCommand::CommandException &e )
-    {
-        retList.push_back(
-            new CtiReturnMsg(
-                getID(),
-                InMessage.Return,
-                getName() + " / " + e.error_description,
-                e.error_code));
-    }
+    findAndDecodeCommand(InMessage, TimeNow, vgList, retList, outList);
 
-    return ClientErrors::None;
+    return ExecutionComplete;
 }
 
 
@@ -319,11 +301,50 @@ void DlcBaseDevice::handleCommandResult(const Commands::DlcCommand &command)
 }
 
 
+void DlcBaseDevice::handleRequest(const Commands::DlcCommand::delay_request_t &request, const INMESS &im, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+{
+    //  no-op as yet
+}
+
+void DlcBaseDevice::handleRequest(const Commands::DlcCommand::emetcon_request_t &request, const INMESS &im, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+{
+    auto OutMessage = std::make_unique<OUTMESS>();
+
+    InEchoToOut(im, *OutMessage);
+
+    //  If there were no errors, start the command on the first macro route
+    if( ! im.ErrorCode )
+    {
+        OutMessage->Request.RetryMacroOffset = selectInitialMacroRouteOffset(OutMessage->Request.RouteID);
+    }
+
+    fillOutMessage(*OutMessage, request);
+
+    CtiRequestMsg newReq(getID(),
+                         im.Return.CommandStr,
+                         im.Return.UserID,
+                         im.Return.GrpMsgID,
+                         im.Return.RouteID,
+                         selectInitialMacroRouteOffset(im.Return.RouteID),
+                         im.Return.Attempt,
+                         0,
+                         im.Priority);
+
+    newReq.setConnectionHandle((void *)im.Return.Connection);
+
+    executeOnDLCRoute(&newReq,
+                      CtiCommandParser(newReq.CommandString()),
+                      list<OUTMESS *>(1, OutMessage.release()),
+                      vgList, retList, outList, false);
+}
+
+
 void DlcBaseDevice::findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     //  We need to protect _activeCommands/trackCommand()
     CtiLockGuard<CtiMutex> lock(getMux());
 
+    //  keep command_itr so we can delete later
     auto command_itr = _activeCommands.find(InMessage.Sequence);
 
     if( command_itr == _activeCommands.end() )
@@ -390,38 +411,11 @@ void DlcBaseDevice::findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNo
             ReturnMsg->setResultString(getName() + " / " + description);
         }
 
-        retMsgHandler(InMessage.Return.CommandStr, ClientErrors::None, ReturnMsg, vgList, retList);
+        retMsgHandler(InMessage.Return.CommandStr, InMessage.ErrorCode, ReturnMsg, vgList, retList);
 
         if( ptr.get() )
         {
-            OUTMESS *OutMessage = new OUTMESS;
-
-            InEchoToOut(InMessage, *OutMessage);
-
-            //  If there were no errors, start the command on the first macro route
-            if( ! InMessage.ErrorCode )
-            {
-                OutMessage->Request.RetryMacroOffset = selectInitialMacroRouteOffset(OutMessage->Request.RouteID);
-            }
-
-            fillOutMessage(*OutMessage, *ptr);
-
-            CtiRequestMsg newReq(getID(),
-                                 InMessage.Return.CommandStr,
-                                 InMessage.Return.UserID,
-                                 InMessage.Return.GrpMsgID,
-                                 InMessage.Return.RouteID,
-                                 selectInitialMacroRouteOffset(InMessage.Return.RouteID),
-                                 InMessage.Return.Attempt,
-                                 0,
-                                 InMessage.Priority);
-
-            newReq.setConnectionHandle((void *)InMessage.Return.Connection);
-
-            executeOnDLCRoute(&newReq,
-                              CtiCommandParser(newReq.CommandString()),
-                              OutMessageList(1, OutMessage),
-                              vgList, retList, outList, false);
+            ptr->invokeRequestHandler(*this, InMessage, vgList, retList, outList);
         }
         else
         {
@@ -461,7 +455,7 @@ long DlcBaseDevice::trackCommand(DlcCommandPtr &&command)
 }
 
 
-void DlcBaseDevice::fillOutMessage(OUTMESS &OutMessage, DlcCommand::request_t &request)
+void DlcBaseDevice::fillOutMessage(OUTMESS &OutMessage, const DlcCommand::emetcon_request_t &request)
 {
     populateDlcOutMessage(OutMessage);
 
@@ -493,19 +487,39 @@ void DlcBaseDevice::populateDlcOutMessage(OUTMESS &OutMessage)
 }
 
 
-bool DlcBaseDevice::tryExecuteCommand(OUTMESS &OutMessage, DlcCommandPtr &&command)
+/**
+ * Executes the command.  If successful, tracks it and returns
+ * the tracking ID.  If unsuccessful, returns boost::none.
+ */
+boost::optional<long> DlcBaseDevice::tryExecuteCommand(OUTMESS &OutMessage, DlcCommandPtr &&command)
 {
-    DlcCommand::request_ptr request = command->executeCommand(CtiTime());
+    DlcCommand::emetcon_request_ptr request = command->executeCommand(CtiTime());
 
     if( request.get() )
     {
         fillOutMessage(OutMessage, *request);
 
-        //  ExecuteRequest already has the CtiDeviceBase::_classMutex at this point, so it's safe to call trackCommand()
-        OutMessage.Sequence = trackCommand(std::move(command));
+        //  beginExecuteRequestFromTemplate already has the CtiDeviceBase::_classMutex at this point, so it's safe to call trackCommand()
+        return (OutMessage.Sequence = trackCommand(std::move(command)));
     }
 
-    return request.get();
+    return boost::none;
+}
+
+
+Commands::DlcCommand *DlcBaseDevice::findExecutingCommand(const long executionId)
+{
+    //  We need to protect _activeCommands
+    CtiLockGuard<CtiMutex> lock(getMux());
+
+    auto itr = _activeCommands.find(executionId);
+
+    if( itr == _activeCommands.end() )
+    {
+        return nullptr;
+    }
+
+    return itr->second.get();
 }
 
 

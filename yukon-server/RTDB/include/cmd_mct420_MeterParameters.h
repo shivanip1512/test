@@ -16,15 +16,15 @@ class IM_EX_DEVDB Mct420MeterParametersCommand : public Mct420Command
 
 protected:
 
-    typedef boost::function<request_ptr (Mct420MeterParametersCommand *)> state_t;
+    typedef boost::function<emetcon_request_ptr (Mct420MeterParametersCommand *)> state_t;
 
     state_t _executionState;
 
-    request_ptr read();
-    request_ptr write();
-    request_ptr done();
+    emetcon_request_ptr read();
+    emetcon_request_ptr write();
+    emetcon_request_ptr done();
 
-    request_ptr doCommand();
+    emetcon_request_ptr doCommand();
 
     virtual unsigned char getDisplayParametersByte();
 
@@ -44,8 +44,8 @@ public:
         Write_MeterParameters = 0x1f3,
     };
 
-    virtual request_ptr executeCommand(const CtiTime now);
-    virtual request_ptr decodeCommand (const CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, std::string &description, std::vector<point_data> &points);
+    emetcon_request_ptr executeCommand(const CtiTime now) override;
+    request_ptr decodeCommand (const CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, std::string &description, std::vector<point_data> &points) override;
 };
 
 }

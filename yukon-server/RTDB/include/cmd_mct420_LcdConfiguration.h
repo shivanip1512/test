@@ -10,7 +10,7 @@ class IM_EX_DEVDB Mct420LcdConfigurationCommand : public Mct420Command
 {
     typedef std::vector<unsigned char> metric_vector_t;
 
-    typedef boost::function<request_ptr (Mct420LcdConfigurationCommand *)> state_t;
+    typedef boost::function<emetcon_request_ptr (Mct420LcdConfigurationCommand *)> state_t;
 
     enum
     {
@@ -26,13 +26,13 @@ class IM_EX_DEVDB Mct420LcdConfigurationCommand : public Mct420Command
     //  const parameters that define this request
     metric_vector_t _display_metrics;
 
-    request_ptr doCommand();
+    emetcon_request_ptr doCommand();
 
-    request_ptr read1();
-    request_ptr read2();
-    request_ptr write1();
-    request_ptr write2();
-    request_ptr done();
+    emetcon_request_ptr read1();
+    emetcon_request_ptr read2();
+    emetcon_request_ptr write1();
+    emetcon_request_ptr write2();
+    emetcon_request_ptr done();
 
 public:
 
@@ -48,9 +48,9 @@ public:
         Write_LcdConfiguration2 = 0x1f7,
     };
 
-    virtual request_ptr executeCommand(const CtiTime now);
-    virtual request_ptr decodeCommand (const CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, std::string &description, std::vector<point_data> &points);
-    virtual request_ptr error         (const CtiTime now, const YukonError_t error_code, std::string &description);
+    emetcon_request_ptr executeCommand(const CtiTime now) override;
+    request_ptr decodeCommand (const CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, std::string &description, std::vector<point_data> &points) override;
+    request_ptr error         (const CtiTime now, const YukonError_t error_code, std::string &description) override;
 };
 
 }

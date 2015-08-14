@@ -15,17 +15,17 @@ class IM_EX_DEVDB Mct440HolidaysCommand : public DlcCommand
 
 protected:
 
-    typedef boost::function<request_ptr (Mct440HolidaysCommand *)> state_t;
+    typedef boost::function<emetcon_request_ptr (Mct440HolidaysCommand *)> state_t;
 
     state_t _executionState;
 
-    request_ptr read1();
-    request_ptr read2();
-    request_ptr read3();
-    request_ptr write();
-    request_ptr done();
+    emetcon_request_ptr read1();
+    emetcon_request_ptr read2();
+    emetcon_request_ptr read3();
+    emetcon_request_ptr write();
+    emetcon_request_ptr done();
 
-    request_ptr doCommand();
+    emetcon_request_ptr doCommand();
 
 public:
 
@@ -35,9 +35,9 @@ public:
     // Read constructor
     Mct440HolidaysCommand();
 
-    virtual request_ptr executeCommand(const CtiTime now);
-    virtual request_ptr decodeCommand (const CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, std::string &description, std::vector<point_data> &points);
-    virtual request_ptr error         (const CtiTime now, const YukonError_t error_code, std::string &description);
+    emetcon_request_ptr executeCommand(const CtiTime now) override;
+    request_ptr decodeCommand (const CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, std::string &description, std::vector<point_data> &points) override;
+    request_ptr error         (const CtiTime now, const YukonError_t error_code, std::string &description) override;
 };
 
 }

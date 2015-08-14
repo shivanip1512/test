@@ -56,7 +56,7 @@ class IM_EX_DEVDB Mct410HourlyReadCommand : public Mct410Command
 
     boost::optional<unsigned> _midday_reading;
 
-    request_ptr makeRequest(const CtiTime now);
+    emetcon_request_ptr makeRequest(const CtiTime now);
 
     CtiDeviceSingle::point_info        extractMidnightKwh(const Bytes &payload) const;
     static point_data                  extractBlinkCount (const Bytes &payload);
@@ -84,7 +84,7 @@ public:
 
     Mct410HourlyReadCommand(CtiDate date_begin, CtiDate date_end, const unsigned channel);
 
-    virtual request_ptr executeCommand(const CtiTime now);
+    virtual emetcon_request_ptr executeCommand(const CtiTime now);
     virtual request_ptr decodeCommand (const CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, std::string &description, std::vector<point_data> &points);
     virtual request_ptr error         (const CtiTime now, const YukonError_t error_code, std::string &description);
 };

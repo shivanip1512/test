@@ -17,7 +17,8 @@ namespace Devices {
 
 class IM_EX_DEVDB DlcBaseDevice :
     public CtiDeviceSingle,
-    protected Commands::DlcCommand::ResultHandler
+    protected Commands::DlcCommand::ResultHandler,
+    protected Commands::DlcCommand::request_t::RequestHandler
 {
 public:
 
@@ -81,13 +82,16 @@ protected:
     virtual YukonError_t executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) {  return ClientErrors::NoMethod;  };
     virtual YukonError_t executePutStatus( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) {  return ClientErrors::NoMethod;  };
 
-    bool tryExecuteCommand(OUTMESS &OutMessage, DlcCommandPtr &&command);
+    boost::optional<long> tryExecuteCommand(OUTMESS &OutMessage, DlcCommandPtr &&command);
+    Commands::DlcCommand *findExecutingCommand(const long executionId);
 
-    virtual void handleCommandResult(const Commands::DlcCommand &command);
+    void handleRequest(const Commands::DlcCommand::delay_request_t   &request, const INMESS &im, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
+    void handleRequest(const Commands::DlcCommand::emetcon_request_t &request, const INMESS &im, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
+    void handleCommandResult(const Commands::DlcCommand &command) override;
 
     void findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
-    void fillOutMessage(OUTMESS &OutMessage, Devices::Commands::DlcCommand::request_t &request);
+    void fillOutMessage(OUTMESS &OutMessage, const Devices::Commands::DlcCommand::emetcon_request_t &request);
 
     void populateDlcOutMessage(OUTMESS &OutMessage);
 

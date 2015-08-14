@@ -22,7 +22,7 @@ Mct410HourlyReadCommand::Mct410HourlyReadCommand(CtiDate date_begin, CtiDate dat
 
 
 //  throws CommandException
-DlcCommand::request_ptr Mct410HourlyReadCommand::executeCommand(CtiTime now)
+DlcCommand::emetcon_request_ptr Mct410HourlyReadCommand::executeCommand(CtiTime now)
 {
     const CtiDate Yesterday(make_yesterday(now));
 
@@ -200,7 +200,7 @@ vector<DlcCommand::point_data> Mct410HourlyReadCommand::processDeltas(point_data
 
 
 //  throws CommandException
-DlcCommand::request_ptr Mct410HourlyReadCommand::makeRequest(const CtiTime now)
+DlcCommand::emetcon_request_ptr Mct410HourlyReadCommand::makeRequest(const CtiTime now)
 {
     if( _request.reading_day_end )
     {

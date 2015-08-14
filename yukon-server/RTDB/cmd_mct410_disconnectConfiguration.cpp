@@ -76,7 +76,7 @@ Mct410DisconnectConfigurationCommand::Mct410DisconnectConfigurationCommand() :
 {
 }
 
-DlcCommand::request_ptr Mct410DisconnectConfigurationCommand::executeCommand(const CtiTime now)
+DlcCommand::emetcon_request_ptr Mct410DisconnectConfigurationCommand::executeCommand(const CtiTime now)
 {
     return doCommand();
 }
@@ -156,7 +156,7 @@ DlcCommand::request_ptr Mct410DisconnectConfigurationCommand::error(const CtiTim
     throw CommandException(error_code, GetErrorString(error_code));
 }
 
-DlcCommand::request_ptr Mct410DisconnectConfigurationCommand::doCommand()
+DlcCommand::emetcon_request_ptr Mct410DisconnectConfigurationCommand::doCommand()
 {
     //  call the current state's member function
     return _executionState(this);
@@ -207,23 +207,23 @@ std::vector<unsigned char> Mct410DisconnectConfigurationCommand::assemblePayload
     return payload;
 }
 
-DlcCommand::request_ptr Mct410DisconnectConfigurationCommand::write()
+DlcCommand::emetcon_request_ptr Mct410DisconnectConfigurationCommand::write()
 {
     _executionState = &Mct410DisconnectConfigurationCommand::read;
 
     return std::make_unique<write_request_t>(Write_Disconnect, assemblePayload());
 }
 
-DlcCommand::request_ptr Mct410DisconnectConfigurationCommand::read()
+DlcCommand::emetcon_request_ptr Mct410DisconnectConfigurationCommand::read()
 {
     _executionState = &Mct410DisconnectConfigurationCommand::done;
 
     return std::make_unique<read_request_t>(Read_Disconnect, 13);
 }
 
-DlcCommand::request_ptr Mct410DisconnectConfigurationCommand::done()
+DlcCommand::emetcon_request_ptr Mct410DisconnectConfigurationCommand::done()
 {
-    return request_ptr();
+    return nullptr;
 }
 
 }

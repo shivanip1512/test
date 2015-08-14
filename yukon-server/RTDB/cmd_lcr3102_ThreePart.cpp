@@ -15,12 +15,12 @@ Lcr3102ThreePartCommand::Lcr3102ThreePartCommand(unsigned length, unsigned retri
 {
 }
 
-DlcCommand::request_ptr Lcr3102ThreePartCommand::executeCommand(const CtiTime now)
+DlcCommand::emetcon_request_ptr Lcr3102ThreePartCommand::executeCommand(const CtiTime now)
 {
     return makeRequest(now);
 }
 
-DlcCommand::request_ptr Lcr3102ThreePartCommand::makeRequest(const CtiTime now)
+DlcCommand::emetcon_request_ptr Lcr3102ThreePartCommand::makeRequest(const CtiTime now)
 {
     if( _state == State_ExpresscomWrite )
     {

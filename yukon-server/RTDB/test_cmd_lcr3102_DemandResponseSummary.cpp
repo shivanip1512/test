@@ -19,7 +19,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_controlled_only )
     Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
 
     {
-        DlcCommand::request_ptr ptr = drSummaryRead.executeCommand(executeTime);
+        auto ptr = drSummaryRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -40,15 +40,19 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_controlled_only )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
+        auto ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function(), 0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),   7);
-        BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
+        auto emetcon_ptr = dynamic_cast<DlcCommand::emetcon_request_t *>(ptr.get());
+
+        BOOST_REQUIRE(emetcon_ptr);
+
+        BOOST_CHECK_EQUAL(emetcon_ptr->function(), 0x00);
+        BOOST_CHECK_EQUAL(emetcon_ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(emetcon_ptr->length(),   7);
+        BOOST_CHECK_EQUAL(emetcon_ptr->payload().size(), 0);
 
         BOOST_CHECK_EQUAL(points.size(), 0);
     }
@@ -69,7 +73,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_controlled_only )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
+        auto ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  This is the last step in the command process. We should have a null pointer!
         BOOST_CHECK(!ptr.get());
@@ -92,7 +96,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_cold_load_pickup )
     Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
 
     {
-        DlcCommand::request_ptr ptr = drSummaryRead.executeCommand(executeTime);
+        auto ptr = drSummaryRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -113,15 +117,19 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_cold_load_pickup )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
+        auto ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function(), 0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),   7);
-        BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
+        auto emetcon_ptr = dynamic_cast<DlcCommand::emetcon_request_t *>(ptr.get());
+
+        BOOST_REQUIRE(emetcon_ptr);
+
+        BOOST_CHECK_EQUAL(emetcon_ptr->function(), 0x00);
+        BOOST_CHECK_EQUAL(emetcon_ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(emetcon_ptr->length(),   7);
+        BOOST_CHECK_EQUAL(emetcon_ptr->payload().size(), 0);
 
         BOOST_CHECK_EQUAL(points.size(), 0);
     }
@@ -142,7 +150,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_cold_load_pickup )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
+        auto ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  This is the last step in the command process. We should have a null pointer!
         BOOST_CHECK(!ptr.get());
@@ -164,7 +172,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_not_controlling )
     Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
 
     {
-        DlcCommand::request_ptr ptr = drSummaryRead.executeCommand(executeTime);
+        auto ptr = drSummaryRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -185,15 +193,19 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_not_controlling )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
+        auto ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function(), 0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),   7);
-        BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
+        auto emetcon_ptr = dynamic_cast<DlcCommand::emetcon_request_t *>(ptr.get());
+
+        BOOST_REQUIRE(emetcon_ptr);
+
+        BOOST_CHECK_EQUAL(emetcon_ptr->function(), 0x00);
+        BOOST_CHECK_EQUAL(emetcon_ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(emetcon_ptr->length(),   7);
+        BOOST_CHECK_EQUAL(emetcon_ptr->payload().size(), 0);
 
         BOOST_CHECK_EQUAL(points.size(), 0);
     }
@@ -214,7 +226,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_not_controlling )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
+        auto ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  This is the last step in the command process. We should have a null pointer!
         BOOST_CHECK(!ptr.get());
@@ -237,7 +249,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_controlling )
     Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
 
     {
-        DlcCommand::request_ptr ptr = drSummaryRead.executeCommand(executeTime);
+        auto ptr = drSummaryRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -258,15 +270,19 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_controlling )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
+        auto ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function(), 0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),   7);
-        BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
+        auto emetcon_ptr = dynamic_cast<DlcCommand::emetcon_request_t *>(ptr.get());
+
+        BOOST_REQUIRE(emetcon_ptr);
+
+        BOOST_CHECK_EQUAL(emetcon_ptr->function(), 0x00);
+        BOOST_CHECK_EQUAL(emetcon_ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(emetcon_ptr->length(),   7);
+        BOOST_CHECK_EQUAL(emetcon_ptr->payload().size(), 0);
 
         BOOST_CHECK_EQUAL(points.size(), 0);
     }
@@ -287,7 +303,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_controlling )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
+        auto ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  This is the last step in the command process. We should have a null pointer!
         BOOST_CHECK(!ptr.get());
@@ -310,7 +326,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_under_voltage_event )
     Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
 
     {
-        DlcCommand::request_ptr ptr = drSummaryRead.executeCommand(executeTime);
+        auto ptr = drSummaryRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -331,15 +347,19 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_under_voltage_event )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
+        auto ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function(), 0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),   7);
-        BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
+        auto emetcon_ptr = dynamic_cast<DlcCommand::emetcon_request_t *>(ptr.get());
+
+        BOOST_REQUIRE(emetcon_ptr);
+
+        BOOST_CHECK_EQUAL(emetcon_ptr->function(), 0x00);
+        BOOST_CHECK_EQUAL(emetcon_ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(emetcon_ptr->length(),   7);
+        BOOST_CHECK_EQUAL(emetcon_ptr->payload().size(), 0);
 
         BOOST_CHECK_EQUAL(points.size(), 0);
     }
@@ -360,7 +380,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_under_voltage_event )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
+        auto ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  This is the last step in the command process. We should have a null pointer!
         BOOST_CHECK(!ptr.get());
@@ -382,7 +402,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_under_frequency_event )
     Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
 
     {
-        DlcCommand::request_ptr ptr = drSummaryRead.executeCommand(executeTime);
+        auto ptr = drSummaryRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -403,15 +423,19 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_under_frequency_event )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
+        auto ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function(), 0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),   7);
-        BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
+        auto emetcon_ptr = dynamic_cast<DlcCommand::emetcon_request_t *>(ptr.get());
+
+        BOOST_REQUIRE(emetcon_ptr);
+
+        BOOST_CHECK_EQUAL(emetcon_ptr->function(), 0x00);
+        BOOST_CHECK_EQUAL(emetcon_ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(emetcon_ptr->length(),   7);
+        BOOST_CHECK_EQUAL(emetcon_ptr->payload().size(), 0);
 
         BOOST_CHECK_EQUAL(points.size(), 0);
     }
@@ -432,7 +456,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_under_frequency_event )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
+        auto ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  This is the last step in the command process. We should have a null pointer!
         BOOST_CHECK(!ptr.get());
@@ -454,7 +478,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_out_of_service )
     Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
 
     {
-        DlcCommand::request_ptr ptr = drSummaryRead.executeCommand(executeTime);
+        auto ptr = drSummaryRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -475,15 +499,19 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_out_of_service )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
+        auto ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function(), 0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),   7);
-        BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
+        auto emetcon_ptr = dynamic_cast<DlcCommand::emetcon_request_t *>(ptr.get());
+
+        BOOST_REQUIRE(emetcon_ptr);
+
+        BOOST_CHECK_EQUAL(emetcon_ptr->function(), 0x00);
+        BOOST_CHECK_EQUAL(emetcon_ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(emetcon_ptr->length(),   7);
+        BOOST_CHECK_EQUAL(emetcon_ptr->payload().size(), 0);
 
         BOOST_CHECK_EQUAL(points.size(), 0);
     }
@@ -504,7 +532,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_out_of_service )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
+        auto ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  This is the last step in the command process. We should have a null pointer!
         BOOST_CHECK(!ptr.get());
@@ -526,7 +554,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_not_controlling_conflict )
     Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
 
     {
-        DlcCommand::request_ptr ptr = drSummaryRead.executeCommand(executeTime);
+        auto ptr = drSummaryRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -547,15 +575,19 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_not_controlling_conflict )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
+        auto ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function(), 0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),   7);
-        BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
+        auto req = dynamic_cast<DlcCommand::emetcon_request_t *>(ptr.get());
+
+        BOOST_REQUIRE(req);
+
+        BOOST_CHECK_EQUAL(req->function(), 0x00);
+        BOOST_CHECK_EQUAL(req->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(req->length(),   7);
+        BOOST_CHECK_EQUAL(req->payload().size(), 0);
 
         BOOST_CHECK_EQUAL(points.size(), 0);
     }
@@ -578,7 +610,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_not_controlling_conflict )
 
         try
         {
-            DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
+            auto ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
             BOOST_FAIL("Lcr3102DemandResponseSummaryCommand::decodeCommand() did not throw");
         }
@@ -598,7 +630,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_controlling_conflict )
     Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
 
     {
-        DlcCommand::request_ptr ptr = drSummaryRead.executeCommand(executeTime);
+        auto ptr = drSummaryRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -619,15 +651,19 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_controlling_conflict )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
+        auto ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function(), 0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),   7);
-        BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
+        auto req = dynamic_cast<DlcCommand::emetcon_request_t *>(ptr.get());
+
+        BOOST_REQUIRE(req);
+
+        BOOST_CHECK_EQUAL(req->function(), 0x00);
+        BOOST_CHECK_EQUAL(req->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(req->length(),   7);
+        BOOST_CHECK_EQUAL(req->payload().size(), 0);
 
         BOOST_CHECK_EQUAL(points.size(), 0);
     }
@@ -650,7 +686,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_controlling_conflict )
 
         try
         {
-            DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
+            auto ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
             BOOST_FAIL("Lcr3102DemandResponseSummaryCommand::decodeCommand() did not throw");
         }
@@ -670,7 +706,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_both_activated_enabled_conflict )
     Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
 
     {
-        DlcCommand::request_ptr ptr = drSummaryRead.executeCommand(executeTime);
+        auto ptr = drSummaryRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -691,15 +727,19 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_both_activated_enabled_conflict )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
+        auto ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function(), 0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),   7);
-        BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
+        auto req = dynamic_cast<DlcCommand::emetcon_request_t *>(ptr.get());
+
+        BOOST_REQUIRE(req);
+
+        BOOST_CHECK_EQUAL(req->function(), 0x00);
+        BOOST_CHECK_EQUAL(req->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(req->length(),   7);
+        BOOST_CHECK_EQUAL(req->payload().size(), 0);
 
         BOOST_CHECK_EQUAL(points.size(), 0);
     }
@@ -722,7 +762,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_both_activated_enabled_conflict )
 
         try
         {
-            DlcCommand::request_ptr ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
+            auto ptr = drSummaryRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
             BOOST_FAIL("Lcr3102DemandResponseSummaryCommand::decodeCommand() did not throw");
         }

@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_active)
     Mct410HourlyReadCommand hourlyRead(start, CtiDate::neg_infin, 1);
 
     {
-        DlcCommand::request_ptr r = hourlyRead.executeCommand(execute_time);
+        auto r = hourlyRead.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -90,15 +90,19 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_active)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = hourlyRead.decodeCommand(execute_time, 0xCB, payload, description, points);
+        auto r = hourlyRead.decodeCommand(execute_time, 0xCB, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xCA);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xCA);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
 
         expected_pointdata expected[] =
         {
@@ -140,7 +144,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_active)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = hourlyRead.decodeCommand(execute_time, 0xCA, payload, description, points);
+        auto r = hourlyRead.decodeCommand(execute_time, 0xCA, payload, description, points);
 
         //  make sure it's null, we're done with today
         BOOST_CHECK( ! r.get());
@@ -178,7 +182,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_inactive)
     Mct410HourlyReadCommand hourlyRead(start, CtiDate::neg_infin, 1);
 
     {
-        DlcCommand::request_ptr r = hourlyRead.executeCommand(execute_time);
+        auto r = hourlyRead.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -210,15 +214,19 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_inactive)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = hourlyRead.decodeCommand(execute_time, 0xCB, payload, description, points);
+        auto r = hourlyRead.decodeCommand(execute_time, 0xCB, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xCA);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xCA);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
 
         expected_pointdata expected[] =
         {
@@ -261,7 +269,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_inactive)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = hourlyRead.decodeCommand(execute_time, 0xCA, payload, description, points);
+        auto r = hourlyRead.decodeCommand(execute_time, 0xCA, payload, description, points);
 
         //  make sure it's null, we're done with today
         BOOST_CHECK( ! r.get());
@@ -298,7 +306,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_fall_2010)
     Mct410HourlyReadCommand hourlyRead(start, CtiDate::neg_infin, 1);
 
     {
-        DlcCommand::request_ptr r = hourlyRead.executeCommand(execute_time);
+        auto r = hourlyRead.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -330,15 +338,19 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_fall_2010)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = hourlyRead.decodeCommand(execute_time, 0xC1, payload, description, points);
+        auto r = hourlyRead.decodeCommand(execute_time, 0xC1, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xC0);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xC0);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
 
         expected_pointdata expected[] =
         {
@@ -381,7 +393,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_fall_2010)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = hourlyRead.decodeCommand(execute_time, 0xC0, payload, description, points);
+        auto r = hourlyRead.decodeCommand(execute_time, 0xC0, payload, description, points);
 
         //  make sure it's null, we're done with today
         BOOST_CHECK( ! r.get());
@@ -420,7 +432,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_spring_2011)
     Mct410HourlyReadCommand hourlyRead(start, CtiDate::neg_infin, 1);
 
     {
-        DlcCommand::request_ptr r = hourlyRead.executeCommand(execute_time);
+        auto r = hourlyRead.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -452,15 +464,19 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_spring_2011)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = hourlyRead.decodeCommand(execute_time, 0xC1, payload, description, points);
+        auto r = hourlyRead.decodeCommand(execute_time, 0xC1, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xC0);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xC0);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
 
         expected_pointdata expected[] =
         {
@@ -502,7 +518,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_spring_2011)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = hourlyRead.decodeCommand(execute_time, 0xC0, payload, description, points);
+        auto r = hourlyRead.decodeCommand(execute_time, 0xC0, payload, description, points);
 
         //  make sure it's null, we're done with today
         BOOST_CHECK( ! r.get());
@@ -541,7 +557,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_channel_2)
     Mct410HourlyReadCommand hourlyRead(start, CtiDate::neg_infin, 2);
 
     {
-        DlcCommand::request_ptr r = hourlyRead.executeCommand(execute_time);
+        auto r = hourlyRead.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -573,15 +589,19 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_channel_2)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = hourlyRead.decodeCommand(execute_time, 0xDB, payload, description, points);
+        auto r = hourlyRead.decodeCommand(execute_time, 0xDB, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xDA);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xDA);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
 
         expected_pointdata expected[] =
         {
@@ -623,7 +643,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_channel_2)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = hourlyRead.decodeCommand(execute_time, 0xDA, payload, description, points);
+        auto r = hourlyRead.decodeCommand(execute_time, 0xDA, payload, description, points);
 
         //  make sure it's null, we're done with today
         BOOST_CHECK( ! r.get());
@@ -660,7 +680,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_yesterday)
     Mct410HourlyReadCommand hourlyRead(CtiDate::neg_infin, CtiDate::neg_infin, 1);
 
     {
-        DlcCommand::request_ptr r = hourlyRead.executeCommand(execute_time);
+        auto r = hourlyRead.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -692,15 +712,19 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_yesterday)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = hourlyRead.decodeCommand(execute_time, 0xC1, payload, description, points);
+        auto r = hourlyRead.decodeCommand(execute_time, 0xC1, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xC0);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xC0);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
 
         expected_pointdata expected[] =
         {
@@ -742,7 +766,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_yesterday)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = hourlyRead.decodeCommand(execute_time, 0xC0, payload, description, points);
+        auto r = hourlyRead.decodeCommand(execute_time, 0xC0, payload, description, points);
 
         //  make sure it's null, we're done with today
         BOOST_CHECK( ! r.get());
@@ -781,7 +805,7 @@ BOOST_AUTO_TEST_CASE(test_command_multi_day_read_dst_active)
     Mct410HourlyReadCommand hourlyRead(start, end, 1);
 
     {
-        DlcCommand::request_ptr r = hourlyRead.executeCommand(execute_time);
+        auto r = hourlyRead.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -813,15 +837,19 @@ BOOST_AUTO_TEST_CASE(test_command_multi_day_read_dst_active)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = hourlyRead.decodeCommand(execute_time, 0xC7, payload, description, points);
+        auto r = hourlyRead.decodeCommand(execute_time, 0xC7, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xC4);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xC4);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
 
         expected_pointdata expected[] =
         {
@@ -863,15 +891,19 @@ BOOST_AUTO_TEST_CASE(test_command_multi_day_read_dst_active)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = hourlyRead.decodeCommand(execute_time, 0xC4, payload, description, points);
+        auto r = hourlyRead.decodeCommand(execute_time, 0xC4, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xC3);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xC3);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
 
         expected_pointdata expected[] =
         {
@@ -918,15 +950,19 @@ BOOST_AUTO_TEST_CASE(test_command_multi_day_read_dst_active)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = hourlyRead.decodeCommand(execute_time, 0xC3, payload, description, points);
+        auto r = hourlyRead.decodeCommand(execute_time, 0xC3, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xC2);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xC2);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
 
         expected_pointdata expected[] =
         {
@@ -968,7 +1004,7 @@ BOOST_AUTO_TEST_CASE(test_command_multi_day_read_dst_active)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = hourlyRead.decodeCommand(execute_time, 0xC2, payload, description, points);
+        auto r = hourlyRead.decodeCommand(execute_time, 0xC2, payload, description, points);
 
         //  make sure it's null, we're done with the multi-day read
         BOOST_CHECK( ! r.get());
@@ -1158,7 +1194,7 @@ BOOST_AUTO_TEST_CASE(test_decode_invalid_midnight_kwh_reading)
     Mct410HourlyReadCommand hourlyRead(start, start, 1);
 
     {
-        DlcCommand::request_ptr r = hourlyRead.executeCommand(execute_time);
+        auto r = hourlyRead.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -1190,15 +1226,19 @@ BOOST_AUTO_TEST_CASE(test_decode_invalid_midnight_kwh_reading)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = hourlyRead.decodeCommand(execute_time, 0xCB, payload, description, points);
+        auto r = hourlyRead.decodeCommand(execute_time, 0xCB, payload, description, points);
 
         //  make sure it's not null, we're going to try for the blink count
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xCA);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   2);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xCA);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   2);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
 
         expected_pointdata expected[] =
         {
@@ -1220,7 +1260,7 @@ BOOST_AUTO_TEST_CASE(test_decode_invalid_midnight_kwh_reading)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = hourlyRead.decodeCommand(execute_time, 0xCA, payload, description, points);
+        auto r = hourlyRead.decodeCommand(execute_time, 0xCA, payload, description, points);
 
         //  make sure it's null, we're done with today
         BOOST_CHECK( ! r.get());
@@ -1245,7 +1285,7 @@ BOOST_AUTO_TEST_CASE(test_decode_one_bad_delta_on_first_read)
     Mct410HourlyReadCommand hourlyRead(start, start, 1);
 
     {
-        DlcCommand::request_ptr r = hourlyRead.executeCommand(execute_time);
+        auto r = hourlyRead.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -1277,15 +1317,19 @@ BOOST_AUTO_TEST_CASE(test_decode_one_bad_delta_on_first_read)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = hourlyRead.decodeCommand(execute_time, 0xCB, payload, description, points);
+        auto r = hourlyRead.decodeCommand(execute_time, 0xCB, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xCA);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   2);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xCA);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   2);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
 
         expected_pointdata expected[] =
         {
@@ -1318,7 +1362,7 @@ BOOST_AUTO_TEST_CASE(test_decode_one_bad_delta_on_first_read)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = hourlyRead.decodeCommand(execute_time, 0xCA, payload, description, points);
+        auto r = hourlyRead.decodeCommand(execute_time, 0xCA, payload, description, points);
 
         //  make sure it's null, we're done with today
         BOOST_CHECK( ! r.get());
@@ -1343,7 +1387,7 @@ BOOST_AUTO_TEST_CASE(test_decode_all_bad_deltas_on_first_read)
     Mct410HourlyReadCommand hourlyRead(start, start, 1);
 
     {
-        DlcCommand::request_ptr r = hourlyRead.executeCommand(execute_time);
+        auto r = hourlyRead.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -1375,15 +1419,19 @@ BOOST_AUTO_TEST_CASE(test_decode_all_bad_deltas_on_first_read)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = hourlyRead.decodeCommand(execute_time, 0xCB, payload, description, points);
+        auto r = hourlyRead.decodeCommand(execute_time, 0xCB, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xCA);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   2);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xCA);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   2);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
 
         expected_pointdata expected[] =
         {
@@ -1404,7 +1452,7 @@ BOOST_AUTO_TEST_CASE(test_decode_payload_too_small_once)
     Mct410HourlyReadCommand hourlyRead(start, start, 1);
 
     {
-        DlcCommand::request_ptr r = hourlyRead.executeCommand(execute_time);
+        auto r = hourlyRead.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -1436,15 +1484,19 @@ BOOST_AUTO_TEST_CASE(test_decode_payload_too_small_once)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = hourlyRead.decodeCommand(execute_time, 0xCB, payload, description, points);
+        auto r = hourlyRead.decodeCommand(execute_time, 0xCB, payload, description, points);
 
         //  make sure it's not null, we're retrying
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xCB);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xCB);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
 
         BOOST_CHECK(points.empty());
         BOOST_CHECK_EQUAL(description, "Payload too small\nRetrying (1 remaining)");
@@ -1471,15 +1523,19 @@ BOOST_AUTO_TEST_CASE(test_decode_payload_too_small_once)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = hourlyRead.decodeCommand(execute_time, 0xCB, payload, description, points);
+        auto r = hourlyRead.decodeCommand(execute_time, 0xCB, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xCA);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xCA);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
 
         expected_pointdata expected[] =
         {
@@ -1510,15 +1566,19 @@ BOOST_AUTO_TEST_CASE(test_decode_bad_weekday)
     Mct410HourlyReadCommand hourlyRead(start, start, 1);
 
     {
-        DlcCommand::request_ptr r = hourlyRead.executeCommand(execute_time);
+        auto r = hourlyRead.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xCB);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xCB);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
     }
 
     {
@@ -1544,36 +1604,44 @@ BOOST_AUTO_TEST_CASE(test_decode_bad_weekday)
 
         //  first retry
         {
-            DlcCommand::request_ptr r = hourlyRead.decodeCommand(execute_time, 0xCB, payload, description, points);
+            auto r = hourlyRead.decodeCommand(execute_time, 0xCB, payload, description, points);
 
             //  verify retry
             BOOST_CHECK_EQUAL(description, "Day of week does not match (2 != 3)\nRetrying (1 remaining)");
             BOOST_CHECK_EQUAL(points.size(), 0);
 
-            BOOST_CHECK_EQUAL(r->function(), 0xCB);
-            BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-            BOOST_CHECK_EQUAL(r->length(),   13);
-            BOOST_CHECK_EQUAL(r->payload().size(), 0);
+            auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+            BOOST_REQUIRE(er);
+
+            BOOST_CHECK_EQUAL(er->function(), 0xCB);
+            BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL(er->length(),   13);
+            BOOST_CHECK_EQUAL(er->payload().size(), 0);
         }
 
         //  second retry
         {
-            DlcCommand::request_ptr r = hourlyRead.decodeCommand(execute_time, 0xCB, payload, description, points);
+            auto r = hourlyRead.decodeCommand(execute_time, 0xCB, payload, description, points);
 
             //  verify retry
             BOOST_CHECK_EQUAL(description, "Day of week does not match (2 != 3)\nRetrying (0 remaining)");
             BOOST_CHECK_EQUAL(points.size(), 0);
 
-            BOOST_CHECK_EQUAL(r->function(), 0xCB);
-            BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-            BOOST_CHECK_EQUAL(r->length(),   13);
-            BOOST_CHECK_EQUAL(r->payload().size(), 0);
+            auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+            BOOST_REQUIRE(er);
+
+            BOOST_CHECK_EQUAL(er->function(), 0xCB);
+            BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL(er->length(),   13);
+            BOOST_CHECK_EQUAL(er->payload().size(), 0);
         }
 
         //  failure
         try
         {
-            DlcCommand::request_ptr r = hourlyRead.decodeCommand(execute_time, 0xCB, payload, description, points);
+            auto r = hourlyRead.decodeCommand(execute_time, 0xCB, payload, description, points);
 
             BOOST_FAIL("Mct410HourlyReadCommand::decodeCommand() did not throw");
         }
@@ -1594,15 +1662,19 @@ BOOST_AUTO_TEST_CASE(test_decode_wrong_read)
     Mct410HourlyReadCommand hourlyRead(start, start, 1);
 
     {
-        DlcCommand::request_ptr r = hourlyRead.executeCommand(execute_time);
+        auto r = hourlyRead.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xCB);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xCB);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
     }
 
     {
@@ -1625,7 +1697,7 @@ BOOST_AUTO_TEST_CASE(test_decode_wrong_read)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = hourlyRead.decodeCommand(execute_time, 0xCA, payload, description, points);
+        auto r = hourlyRead.decodeCommand(execute_time, 0xCA, payload, description, points);
 
         BOOST_CHECK(points.empty());
         BOOST_CHECK_EQUAL(description, "Wrong read performed (0xca)\nRetrying (1 remaining)");
@@ -1633,10 +1705,14 @@ BOOST_AUTO_TEST_CASE(test_decode_wrong_read)
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xCB);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xCB);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
     }
 }
 
@@ -1649,15 +1725,19 @@ BOOST_AUTO_TEST_CASE(test_decode_expired)
     Mct410HourlyReadCommand hourlyRead(start, start, 1);
 
     {
-        DlcCommand::request_ptr r = hourlyRead.executeCommand(execute_time);
+        auto r = hourlyRead.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xCB);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xCB);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
     }
 
     {
@@ -1684,7 +1764,7 @@ BOOST_AUTO_TEST_CASE(test_decode_expired)
 
         try
         {
-            DlcCommand::request_ptr r = hourlyRead.decodeCommand(decode_time, 0xCA, payload, description, points);
+            auto r = hourlyRead.decodeCommand(decode_time, 0xCA, payload, description, points);
 
             BOOST_FAIL("Mct410HourlyReadCommand::decodeCommand() did not throw");
         }
@@ -1705,7 +1785,7 @@ BOOST_AUTO_TEST_CASE(test_decode_read_timeout)
     Mct410HourlyReadCommand hourlyRead(start, start, 1);
 
     {
-        DlcCommand::request_ptr r = hourlyRead.executeCommand(execute_time);
+        auto r = hourlyRead.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -1719,17 +1799,21 @@ BOOST_AUTO_TEST_CASE(test_decode_read_timeout)
     {
         string description;
 
-        DlcCommand::request_ptr r = hourlyRead.error(execute_time, ClientErrors::ReadTimeout, description);
+        auto r = hourlyRead.error(execute_time, ClientErrors::ReadTimeout, description);
 
         BOOST_CHECK_EQUAL(description, "Timeout Reading from Port\nRetrying (1 remaining)");
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xCB);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xCB);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
     }
 }
 

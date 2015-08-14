@@ -61,7 +61,7 @@ Mct420LcdConfigurationCommand::Mct420LcdConfigurationCommand(const metric_vector
 
 
 //  throws CommandException
-DlcCommand::request_ptr Mct420LcdConfigurationCommand::executeCommand(CtiTime now)
+DlcCommand::emetcon_request_ptr Mct420LcdConfigurationCommand::executeCommand(CtiTime now)
 {
     //  now that ExecuteRequest() is wrapped in a try/catch, we could move this check to the constructor
     if( _display_metrics.size() > TotalDisplayMetricSlots )
@@ -114,13 +114,13 @@ DlcCommand::request_ptr Mct420LcdConfigurationCommand::error(const CtiTime now, 
     throw CommandException(error_code, GetErrorString(error_code));
 }
 
-DlcCommand::request_ptr Mct420LcdConfigurationCommand::doCommand()
+DlcCommand::emetcon_request_ptr Mct420LcdConfigurationCommand::doCommand()
 {
     //  call the current state's member function
     return _executionState(this);
 }
 
-DlcCommand::request_ptr Mct420LcdConfigurationCommand::write1()
+DlcCommand::emetcon_request_ptr Mct420LcdConfigurationCommand::write1()
 {
     const metric_vector_t::iterator dm_end = _display_metrics.begin() + std::min<unsigned>(_display_metrics.size(), DisplayMetricSlotsPerWrite);
 
@@ -140,30 +140,30 @@ DlcCommand::request_ptr Mct420LcdConfigurationCommand::write1()
     return std::make_unique<write_request_t>(Write_LcdConfiguration1, metrics);
 }
 
-DlcCommand::request_ptr Mct420LcdConfigurationCommand::write2()
+DlcCommand::emetcon_request_ptr Mct420LcdConfigurationCommand::write2()
 {
     _executionState = &Mct420LcdConfigurationCommand::read1;
 
     return std::make_unique<write_request_t>(Write_LcdConfiguration2, _display_metrics);
 }
 
-DlcCommand::request_ptr Mct420LcdConfigurationCommand::read1()
+DlcCommand::emetcon_request_ptr Mct420LcdConfigurationCommand::read1()
 {
     _executionState = &Mct420LcdConfigurationCommand::read2;
 
     return std::make_unique<read_request_t>(Read_LcdConfiguration1, DisplayMetricSlotsPerRead);
 }
 
-DlcCommand::request_ptr Mct420LcdConfigurationCommand::read2()
+DlcCommand::emetcon_request_ptr Mct420LcdConfigurationCommand::read2()
 {
     _executionState = &Mct420LcdConfigurationCommand::done;
 
     return std::make_unique<read_request_t>(Read_LcdConfiguration2, DisplayMetricSlotsPerRead);
 }
 
-DlcCommand::request_ptr Mct420LcdConfigurationCommand::done()
+DlcCommand::emetcon_request_ptr Mct420LcdConfigurationCommand::done()
 {
-    return request_ptr();
+    return nullptr;
 }
 
 }

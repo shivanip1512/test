@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_rcircuit_tamper )
     Lcr3102TamperReadCommand tamperRead = Lcr3102TamperReadCommand();
 
     {
-        DlcCommand::request_ptr ptr = tamperRead.executeCommand(executeTime);
+        auto ptr = tamperRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -49,15 +49,19 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_rcircuit_tamper )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = tamperRead.decodeCommand(executeTime, 0x0, payload, description, points);
+        auto ptr = tamperRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function(), 0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),   7);
-        BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
+        auto req = dynamic_cast<DlcCommand::emetcon_request_t *>(ptr.get());
+
+        BOOST_REQUIRE(req);
+
+        BOOST_CHECK_EQUAL(req->function(), 0x00);
+        BOOST_CHECK_EQUAL(req->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(req->length(),   7);
+        BOOST_CHECK_EQUAL(req->payload().size(), 0);
 
         BOOST_CHECK_EQUAL(points.size(), 0);
     }
@@ -78,7 +82,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_rcircuit_tamper )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = tamperRead.decodeCommand(executeTime, 0x0, payload, description, points);
+        auto ptr = tamperRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  This is the last step in the command process. We should have a null pointer!
         BOOST_CHECK(!ptr.get());
@@ -115,7 +119,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_runtime_tamper )
     Lcr3102TamperReadCommand tamperRead = Lcr3102TamperReadCommand();
 
     {
-        DlcCommand::request_ptr ptr = tamperRead.executeCommand(executeTime);
+        auto ptr = tamperRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -136,15 +140,19 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_runtime_tamper )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = tamperRead.decodeCommand(executeTime, 0x0, payload, description, points);
+        auto ptr = tamperRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function(), 0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),   7);
-        BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
+        auto req = dynamic_cast<DlcCommand::emetcon_request_t *>(ptr.get());
+
+        BOOST_REQUIRE(req);
+
+        BOOST_CHECK_EQUAL(req->function(), 0x00);
+        BOOST_CHECK_EQUAL(req->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(req->length(),   7);
+        BOOST_CHECK_EQUAL(req->payload().size(), 0);
 
         BOOST_CHECK_EQUAL(points.size(), 0);
     }
@@ -165,7 +173,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_runtime_tamper )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = tamperRead.decodeCommand(executeTime, 0x0, payload, description, points);
+        auto ptr = tamperRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  This is the last step in the command process. We should have a null pointer!
         BOOST_CHECK(!ptr.get());
@@ -202,7 +210,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_both_tamper )
     Lcr3102TamperReadCommand tamperRead = Lcr3102TamperReadCommand();
 
     {
-        DlcCommand::request_ptr ptr = tamperRead.executeCommand(executeTime);
+        auto ptr = tamperRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -223,15 +231,19 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_both_tamper )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = tamperRead.decodeCommand(executeTime, 0x0, payload, description, points);
+        auto ptr = tamperRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function(), 0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),   7);
-        BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
+        auto req = dynamic_cast<DlcCommand::emetcon_request_t *>(ptr.get());
+
+        BOOST_REQUIRE(req);
+
+        BOOST_CHECK_EQUAL(req->function(), 0x00);
+        BOOST_CHECK_EQUAL(req->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(req->length(),   7);
+        BOOST_CHECK_EQUAL(req->payload().size(), 0);
     }
 
     {
@@ -250,7 +262,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_both_tamper )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = tamperRead.decodeCommand(executeTime, 0x0, payload, description, points);
+        auto ptr = tamperRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  This is the last step in the command process. We should have a null pointer!
         BOOST_CHECK(!ptr.get());
@@ -287,7 +299,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_neither_tamper )
     Lcr3102TamperReadCommand tamperRead = Lcr3102TamperReadCommand();
 
     {
-        DlcCommand::request_ptr ptr = tamperRead.executeCommand(executeTime);
+        auto ptr = tamperRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -308,15 +320,19 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_neither_tamper )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = tamperRead.decodeCommand(executeTime, 0x0, payload, description, points);
+        auto ptr = tamperRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function(), 0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),   7);
-        BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
+        auto req = dynamic_cast<DlcCommand::emetcon_request_t *>(ptr.get());
+
+        BOOST_REQUIRE(req);
+
+        BOOST_CHECK_EQUAL(req->function(), 0x00);
+        BOOST_CHECK_EQUAL(req->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(req->length(),   7);
+        BOOST_CHECK_EQUAL(req->payload().size(), 0);
     }
 
     {
@@ -335,7 +351,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_neither_tamper )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = tamperRead.decodeCommand(executeTime, 0x0, payload, description, points);
+        auto ptr = tamperRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  This is the last step in the command process. We should have a null pointer!
         BOOST_CHECK(!ptr.get());
@@ -372,7 +388,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_tamper_value_error )
     Lcr3102TamperReadCommand tamperRead = Lcr3102TamperReadCommand();
 
     {
-        DlcCommand::request_ptr ptr = tamperRead.executeCommand(executeTime);
+        auto ptr = tamperRead.executeCommand(executeTime);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
@@ -393,15 +409,19 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_tamper_value_error )
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr ptr = tamperRead.decodeCommand(executeTime, 0x0, payload, description, points);
+        auto ptr = tamperRead.decodeCommand(executeTime, 0x0, payload, description, points);
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function(), 0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),   7);
-        BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
+        auto req = dynamic_cast<DlcCommand::emetcon_request_t *>(ptr.get());
+
+        BOOST_REQUIRE(req);
+
+        BOOST_CHECK_EQUAL(req->function(), 0x00);
+        BOOST_CHECK_EQUAL(req->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(req->length(),   7);
+        BOOST_CHECK_EQUAL(req->payload().size(), 0);
     }
 
     {

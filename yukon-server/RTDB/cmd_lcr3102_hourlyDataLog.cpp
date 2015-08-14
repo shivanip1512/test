@@ -19,12 +19,12 @@ Lcr3102HourlyDataLogCommand::Lcr3102HourlyDataLogCommand(int utcStartSeconds) :
 {
 }
 
-DlcCommand::request_ptr Lcr3102HourlyDataLogCommand::executeCommand(const CtiTime now)
+DlcCommand::emetcon_request_ptr Lcr3102HourlyDataLogCommand::executeCommand(const CtiTime now)
 {
     return makeRequest(now);
 }
 
-DlcCommand::request_ptr Lcr3102HourlyDataLogCommand::makeRequest(const CtiTime now)
+DlcCommand::emetcon_request_ptr Lcr3102HourlyDataLogCommand::makeRequest(const CtiTime now)
 {
     if(_state == State_WriteStartTime)
     {
@@ -90,7 +90,7 @@ DlcCommand::request_ptr Lcr3102HourlyDataLogCommand::decodeCommand(CtiTime now, 
         else
         {
             description += "\nHourly data log read complete.";
-            return request_ptr();
+            return nullptr;
         }
     }
 }

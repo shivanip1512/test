@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE(test_empty_write)
     Cti::Devices::Commands::Mct420LcdConfigurationCommand lcdConfiguration(metrics, false);
 
     {
-        DlcCommand::request_ptr r = lcdConfiguration.executeCommand(execute_time);
+        auto r = lcdConfiguration.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -35,15 +35,19 @@ BOOST_AUTO_TEST_CASE(test_empty_write)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
+        auto r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xF6);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xF6);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
     }
 
     {
@@ -52,15 +56,19 @@ BOOST_AUTO_TEST_CASE(test_empty_write)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
+        auto r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xF7);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xF7);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
     }
 
     {
@@ -69,7 +77,7 @@ BOOST_AUTO_TEST_CASE(test_empty_write)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
+        auto r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
 
         //  make sure it's null
         BOOST_CHECK( ! r.get());
@@ -86,16 +94,20 @@ BOOST_AUTO_TEST_CASE(test_one_metric)
         Cti::Devices::Commands::Mct420LcdConfigurationCommand lcdConfiguration(metrics, false);
 
         {
-            DlcCommand::request_ptr r = lcdConfiguration.executeCommand(execute_time);
+            auto r = lcdConfiguration.executeCommand(execute_time);
 
             //  make sure it's not null
             BOOST_CHECK(r.get());
 
-            BOOST_CHECK_EQUAL(r->function(), 0xF6);
-            BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Write);
-            BOOST_CHECK_EQUAL(r->length(),   1);
-            BOOST_CHECK_EQUAL(r->payload().size(), 1);
-            BOOST_CHECK_EQUAL(r->payload()[0], 17);
+            auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+            BOOST_REQUIRE(er);
+
+            BOOST_CHECK_EQUAL(er->function(), 0xF6);
+            BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Write);
+            BOOST_CHECK_EQUAL(er->length(),   1);
+            BOOST_CHECK_EQUAL(er->payload().size(), 1);
+            BOOST_CHECK_EQUAL(er->payload()[0], 17);
         }
 
         {
@@ -104,15 +116,19 @@ BOOST_AUTO_TEST_CASE(test_one_metric)
             string description;
             std::vector<DlcCommand::point_data> points;
 
-            DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
+            auto r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
             //  make sure it's not null
             BOOST_CHECK(r.get());
 
-            BOOST_CHECK_EQUAL(r->function(), 0xF6);
-            BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-            BOOST_CHECK_EQUAL(r->length(),   13);
-            BOOST_CHECK_EQUAL(r->payload().size(), 0);
+            auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+            BOOST_REQUIRE(er);
+
+            BOOST_CHECK_EQUAL(er->function(), 0xF6);
+            BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL(er->length(),   13);
+            BOOST_CHECK_EQUAL(er->payload().size(), 0);
         }
 
         {
@@ -121,15 +137,19 @@ BOOST_AUTO_TEST_CASE(test_one_metric)
             string description;
             std::vector<DlcCommand::point_data> points;
 
-            DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
+            auto r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
             //  make sure it's not null
             BOOST_CHECK(r.get());
 
-            BOOST_CHECK_EQUAL(r->function(), 0xF7);
-            BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-            BOOST_CHECK_EQUAL(r->length(),   13);
-            BOOST_CHECK_EQUAL(r->payload().size(), 0);
+            auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+            BOOST_REQUIRE(er);
+
+            BOOST_CHECK_EQUAL(er->function(), 0xF7);
+            BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL(er->length(),   13);
+            BOOST_CHECK_EQUAL(er->payload().size(), 0);
         }
 
         {
@@ -138,7 +158,7 @@ BOOST_AUTO_TEST_CASE(test_one_metric)
             string description;
             std::vector<DlcCommand::point_data> points;
 
-            DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
+            auto r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
 
             //  make sure it's not null
             BOOST_CHECK( ! r.get());
@@ -151,7 +171,7 @@ BOOST_AUTO_TEST_CASE(test_one_metric)
         Cti::Devices::Commands::Mct420LcdConfigurationCommand lcdConfiguration(metrics, false);
 
         {
-            DlcCommand::request_ptr r = lcdConfiguration.executeCommand(execute_time);
+            auto r = lcdConfiguration.executeCommand(execute_time);
 
             //  make sure it's not null
             BOOST_CHECK(r.get());
@@ -169,15 +189,19 @@ BOOST_AUTO_TEST_CASE(test_one_metric)
             string description;
             std::vector<DlcCommand::point_data> points;
 
-            DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
+            auto r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
             //  make sure it's not null
             BOOST_CHECK(r.get());
 
-            BOOST_CHECK_EQUAL(r->function(), 0xF6);
-            BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-            BOOST_CHECK_EQUAL(r->length(),   13);
-            BOOST_CHECK_EQUAL(r->payload().size(), 0);
+            auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+            BOOST_REQUIRE(er);
+
+            BOOST_CHECK_EQUAL(er->function(), 0xF6);
+            BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL(er->length(),   13);
+            BOOST_CHECK_EQUAL(er->payload().size(), 0);
         }
 
         {
@@ -186,15 +210,19 @@ BOOST_AUTO_TEST_CASE(test_one_metric)
             string description;
             std::vector<DlcCommand::point_data> points;
 
-            DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
+            auto r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
             //  make sure it's not null
             BOOST_CHECK(r.get());
 
-            BOOST_CHECK_EQUAL(r->function(), 0xF7);
-            BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-            BOOST_CHECK_EQUAL(r->length(),   13);
-            BOOST_CHECK_EQUAL(r->payload().size(), 0);
+            auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+            BOOST_REQUIRE(er);
+
+            BOOST_CHECK_EQUAL(er->function(), 0xF7);
+            BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL(er->length(),   13);
+            BOOST_CHECK_EQUAL(er->payload().size(), 0);
         }
 
         {
@@ -203,7 +231,7 @@ BOOST_AUTO_TEST_CASE(test_one_metric)
             string description;
             std::vector<DlcCommand::point_data> points;
 
-            DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
+            auto r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
 
             //  make sure it's null
             BOOST_CHECK( ! r.get());
@@ -223,7 +251,7 @@ BOOST_AUTO_TEST_CASE(test_two_metrics)
     Cti::Devices::Commands::Mct420LcdConfigurationCommand lcdConfiguration(metrics, false);
 
     {
-        DlcCommand::request_ptr r = lcdConfiguration.executeCommand(execute_time);
+        auto r = lcdConfiguration.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -242,15 +270,19 @@ BOOST_AUTO_TEST_CASE(test_two_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
+        auto r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xF6);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xF6);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
     }
 
     {
@@ -259,15 +291,19 @@ BOOST_AUTO_TEST_CASE(test_two_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
+        auto r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xF7);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xF7);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
     }
 
     {
@@ -276,7 +312,7 @@ BOOST_AUTO_TEST_CASE(test_two_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
+        auto r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
 
         //  make sure it's null
         BOOST_CHECK( ! r.get());
@@ -303,7 +339,7 @@ BOOST_AUTO_TEST_CASE(test_twelve_metrics)
     Cti::Devices::Commands::Mct420LcdConfigurationCommand lcdConfiguration(metrics, false);
 
     {
-        DlcCommand::request_ptr r = lcdConfiguration.executeCommand(execute_time);
+        auto r = lcdConfiguration.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -332,15 +368,19 @@ BOOST_AUTO_TEST_CASE(test_twelve_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
+        auto r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xF6);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xF6);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
     }
 
     {
@@ -349,15 +389,19 @@ BOOST_AUTO_TEST_CASE(test_twelve_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
+        auto r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xF7);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xF7);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
     }
 
     {
@@ -366,7 +410,7 @@ BOOST_AUTO_TEST_CASE(test_twelve_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
+        auto r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
 
         //  make sure it's null
         BOOST_CHECK( ! r.get());
@@ -394,7 +438,7 @@ BOOST_AUTO_TEST_CASE(test_thirteen_metrics)
     Cti::Devices::Commands::Mct420LcdConfigurationCommand lcdConfiguration(metrics, false);
 
     {
-        DlcCommand::request_ptr r = lcdConfiguration.executeCommand(execute_time);
+        auto r = lcdConfiguration.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -424,15 +468,19 @@ BOOST_AUTO_TEST_CASE(test_thirteen_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
+        auto r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xF7);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Write);
-        BOOST_CHECK_EQUAL(r->length(),   0);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xF7);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(er->length(),   0);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
     }
 
     {
@@ -441,15 +489,19 @@ BOOST_AUTO_TEST_CASE(test_thirteen_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
+        auto r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xF6);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xF6);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
     }
 
     {
@@ -458,15 +510,19 @@ BOOST_AUTO_TEST_CASE(test_thirteen_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
+        auto r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xF7);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xF7);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
     }
 
     {
@@ -475,7 +531,7 @@ BOOST_AUTO_TEST_CASE(test_thirteen_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
+        auto r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
 
         //  make sure it's null
         BOOST_CHECK( ! r.get());
@@ -504,7 +560,7 @@ BOOST_AUTO_TEST_CASE(test_fourteen_metrics)
     Cti::Devices::Commands::Mct420LcdConfigurationCommand lcdConfiguration(metrics, false);
 
     {
-        DlcCommand::request_ptr r = lcdConfiguration.executeCommand(execute_time);
+        auto r = lcdConfiguration.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -534,16 +590,20 @@ BOOST_AUTO_TEST_CASE(test_fourteen_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
+        auto r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xF7);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Write);
-        BOOST_CHECK_EQUAL(r->length(),   1);
-        BOOST_CHECK_EQUAL(r->payload().size(), 1);
-        BOOST_CHECK_EQUAL(r->payload() [0], 212);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xF7);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(er->length(),   1);
+        BOOST_CHECK_EQUAL(er->payload().size(), 1);
+        BOOST_CHECK_EQUAL(er->payload() [0], 212);
     }
 
     {
@@ -552,15 +612,19 @@ BOOST_AUTO_TEST_CASE(test_fourteen_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
+        auto r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xF6);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xF6);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
     }
 
     {
@@ -569,15 +633,19 @@ BOOST_AUTO_TEST_CASE(test_fourteen_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
+        auto r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xF7);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xF7);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
     }
 
     {
@@ -586,7 +654,7 @@ BOOST_AUTO_TEST_CASE(test_fourteen_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
+        auto r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
 
         //  make sure it's null
         BOOST_CHECK( ! r.get());
@@ -627,7 +695,7 @@ BOOST_AUTO_TEST_CASE(test_twenty_six_metrics)
     Cti::Devices::Commands::Mct420LcdConfigurationCommand lcdConfiguration(metrics, false);
 
     {
-        DlcCommand::request_ptr r = lcdConfiguration.executeCommand(execute_time);
+        auto r = lcdConfiguration.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
@@ -657,28 +725,32 @@ BOOST_AUTO_TEST_CASE(test_twenty_six_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
+        auto r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xF7);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Write);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 13);
-        BOOST_CHECK_EQUAL(r->payload() [0], 232);
-        BOOST_CHECK_EQUAL(r->payload() [1], 231);
-        BOOST_CHECK_EQUAL(r->payload() [2], 230);
-        BOOST_CHECK_EQUAL(r->payload() [3], 229);
-        BOOST_CHECK_EQUAL(r->payload() [4], 228);
-        BOOST_CHECK_EQUAL(r->payload() [5], 227);
-        BOOST_CHECK_EQUAL(r->payload() [6], 226);
-        BOOST_CHECK_EQUAL(r->payload() [7], 225);
-        BOOST_CHECK_EQUAL(r->payload() [8], 224);
-        BOOST_CHECK_EQUAL(r->payload() [9], 223);
-        BOOST_CHECK_EQUAL(r->payload()[10], 222);
-        BOOST_CHECK_EQUAL(r->payload()[11], 221);
-        BOOST_CHECK_EQUAL(r->payload()[12], 220);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xF7);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 13);
+        BOOST_CHECK_EQUAL(er->payload() [0], 232);
+        BOOST_CHECK_EQUAL(er->payload() [1], 231);
+        BOOST_CHECK_EQUAL(er->payload() [2], 230);
+        BOOST_CHECK_EQUAL(er->payload() [3], 229);
+        BOOST_CHECK_EQUAL(er->payload() [4], 228);
+        BOOST_CHECK_EQUAL(er->payload() [5], 227);
+        BOOST_CHECK_EQUAL(er->payload() [6], 226);
+        BOOST_CHECK_EQUAL(er->payload() [7], 225);
+        BOOST_CHECK_EQUAL(er->payload() [8], 224);
+        BOOST_CHECK_EQUAL(er->payload() [9], 223);
+        BOOST_CHECK_EQUAL(er->payload()[10], 222);
+        BOOST_CHECK_EQUAL(er->payload()[11], 221);
+        BOOST_CHECK_EQUAL(er->payload()[12], 220);
     }
 
     {
@@ -687,15 +759,19 @@ BOOST_AUTO_TEST_CASE(test_twenty_six_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
+        auto r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xF6);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xF6);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
     }
 
     {
@@ -704,15 +780,19 @@ BOOST_AUTO_TEST_CASE(test_twenty_six_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
+        auto r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xF7);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xF7);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
     }
 
     {
@@ -721,7 +801,7 @@ BOOST_AUTO_TEST_CASE(test_twenty_six_metrics)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
+        auto r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
 
         //  make sure it's null
         BOOST_CHECK( ! r.get());
@@ -758,15 +838,19 @@ BOOST_AUTO_TEST_CASE(test_reads_only)
     Cti::Devices::Commands::Mct420LcdConfigurationCommand lcdConfiguration(metrics, true);
 
     {
-        DlcCommand::request_ptr r = lcdConfiguration.executeCommand(execute_time);
+        auto r = lcdConfiguration.executeCommand(execute_time);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xF6);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xF6);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
     }
 
     {
@@ -775,15 +859,19 @@ BOOST_AUTO_TEST_CASE(test_reads_only)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
+        auto r = lcdConfiguration.decodeCommand(execute_time, 0xf6, payload, description, points);
 
         //  make sure it's not null
         BOOST_CHECK(r.get());
 
-        BOOST_CHECK_EQUAL(r->function(), 0xF7);
-        BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(r->length(),   13);
-        BOOST_CHECK_EQUAL(r->payload().size(), 0);
+        auto er = dynamic_cast<DlcCommand::emetcon_request_t *>(r.get());
+
+        BOOST_REQUIRE(er);
+
+        BOOST_CHECK_EQUAL(er->function(), 0xF7);
+        BOOST_CHECK_EQUAL(er->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(er->length(),   13);
+        BOOST_CHECK_EQUAL(er->payload().size(), 0);
     }
 
     {
@@ -792,7 +880,7 @@ BOOST_AUTO_TEST_CASE(test_reads_only)
         string description;
         std::vector<DlcCommand::point_data> points;
 
-        DlcCommand::request_ptr r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
+        auto r = lcdConfiguration.decodeCommand(execute_time, 0xf7, payload, description, points);
 
         //  make sure it's null
         BOOST_CHECK( ! r.get());

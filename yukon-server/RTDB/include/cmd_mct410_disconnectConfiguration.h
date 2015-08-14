@@ -39,9 +39,9 @@ public:
         Write_Disconnect = 0x1fe,
     };
 
-    virtual request_ptr executeCommand(const CtiTime now);
-    virtual request_ptr decodeCommand (const CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, std::string &description, std::vector<point_data> &points);
-    virtual request_ptr error         (const CtiTime now, const YukonError_t error_code, std::string &description);
+    emetcon_request_ptr executeCommand(const CtiTime now) override;
+    request_ptr decodeCommand (const CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, std::string &description, std::vector<point_data> &points) override;
+    request_ptr error         (const CtiTime now, const YukonError_t error_code, std::string &description) override;
 
     boost::optional<float> getDisconnectDemandThreshold() const;
     boost::optional<DisconnectMode> getDisconnectMode() const;
@@ -66,15 +66,15 @@ protected:
 
     std::vector<unsigned char> assemblePayload();
 
-    typedef boost::function<request_ptr (Mct410DisconnectConfigurationCommand *)> state_t;
+    typedef boost::function<emetcon_request_ptr (Mct410DisconnectConfigurationCommand *)> state_t;
 
     state_t _executionState;
 
-    request_ptr read();
-    request_ptr write();
-    request_ptr done();
+    emetcon_request_ptr read();
+    emetcon_request_ptr write();
+    emetcon_request_ptr done();
 
-    request_ptr doCommand();
+    emetcon_request_ptr doCommand();
 };
 
 }

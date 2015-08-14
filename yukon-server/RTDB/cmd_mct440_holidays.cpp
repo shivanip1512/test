@@ -58,7 +58,7 @@ Mct440HolidaysCommand::Mct440HolidaysCommand() :
 {
 }
 
-DlcCommand::request_ptr Mct440HolidaysCommand::executeCommand(const CtiTime now)
+DlcCommand::emetcon_request_ptr Mct440HolidaysCommand::executeCommand(const CtiTime now)
 {
     return doCommand();
 }
@@ -128,13 +128,13 @@ DlcCommand::request_ptr Mct440HolidaysCommand::error(const CtiTime now, const Yu
     throw CommandException(error_code, GetErrorString(error_code));
 }
 
-DlcCommand::request_ptr Mct440HolidaysCommand::doCommand()
+DlcCommand::emetcon_request_ptr Mct440HolidaysCommand::doCommand()
 {
     //  call the current state's member function
     return _executionState(this);
 }
 
-DlcCommand::request_ptr Mct440HolidaysCommand::write()
+DlcCommand::emetcon_request_ptr Mct440HolidaysCommand::write()
 {
     std::vector<unsigned char> payload;
 
@@ -178,30 +178,30 @@ DlcCommand::request_ptr Mct440HolidaysCommand::write()
     return std::make_unique<write_request_t>(0xd0, payload);
 }
 
-DlcCommand::request_ptr Mct440HolidaysCommand::read1()
+DlcCommand::emetcon_request_ptr Mct440HolidaysCommand::read1()
 {
     _executionState = &Mct440HolidaysCommand::read2;
 
     return std::make_unique<read_request_t>(Holiday_Read1_Function, 12);
 }
 
-DlcCommand::request_ptr Mct440HolidaysCommand::read2()
+DlcCommand::emetcon_request_ptr Mct440HolidaysCommand::read2()
 {
     _executionState = &Mct440HolidaysCommand::read3;
 
     return std::make_unique<read_request_t>(Holiday_Read2_Function, 12);
 }
 
-DlcCommand::request_ptr Mct440HolidaysCommand::read3()
+DlcCommand::emetcon_request_ptr Mct440HolidaysCommand::read3()
 {
     _executionState = &Mct440HolidaysCommand::done;
 
     return std::make_unique<read_request_t>(Holiday_Read3_Function, 6);
 }
 
-DlcCommand::request_ptr Mct440HolidaysCommand::done()
+DlcCommand::emetcon_request_ptr Mct440HolidaysCommand::done()
 {
-    return request_ptr();
+    return nullptr;
 }
 
 }

@@ -32,7 +32,7 @@ Mct420MeterParametersCommand::Mct420MeterParametersCommand() :
 {
 }
 
-DlcCommand::request_ptr Mct420MeterParametersCommand::executeCommand(const CtiTime now)
+DlcCommand::emetcon_request_ptr Mct420MeterParametersCommand::executeCommand(const CtiTime now)
 {
     return doCommand();
 }
@@ -43,7 +43,7 @@ DlcCommand::request_ptr Mct420MeterParametersCommand::decodeCommand(const CtiTim
     return doCommand();
 }
 
-DlcCommand::request_ptr Mct420MeterParametersCommand::doCommand()
+DlcCommand::emetcon_request_ptr Mct420MeterParametersCommand::doCommand()
 {
     //  call the current state's member function
     return _executionState(this);
@@ -62,7 +62,7 @@ unsigned char Mct420MeterParametersCommand::getDisplayParametersByte()
     return displayParameters;
 }
 
-DlcCommand::request_ptr Mct420MeterParametersCommand::write()
+DlcCommand::emetcon_request_ptr Mct420MeterParametersCommand::write()
 {
     std::vector<unsigned char> payload;
 
@@ -82,16 +82,16 @@ DlcCommand::request_ptr Mct420MeterParametersCommand::write()
     return std::make_unique<write_request_t>(Write_MeterParameters, payload);
 }
 
-DlcCommand::request_ptr Mct420MeterParametersCommand::read()
+DlcCommand::emetcon_request_ptr Mct420MeterParametersCommand::read()
 {
     _executionState = &Mct420MeterParametersCommand::done;
 
     return std::make_unique<read_request_t>(Read_MeterParameters, 2);
 }
 
-DlcCommand::request_ptr Mct420MeterParametersCommand::done()
+DlcCommand::emetcon_request_ptr Mct420MeterParametersCommand::done()
 {
-    return request_ptr();
+    return nullptr;
 }
 
 }
