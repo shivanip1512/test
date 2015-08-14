@@ -153,8 +153,8 @@ public class PaoDefinitionXMLTest {
         PaoDefinitions paoDefinitions = null;
         try {
             reader = new InputStreamReader(this.getClass()
-                                               .getClassLoader()
-                                               .getResourceAsStream("com/cannontech/common/pao/definition/dao/paoDefinition.xml"));
+                                   .getClassLoader()
+                                   .getResourceAsStream("com/cannontech/common/pao/definition/dao/paoDefinition.xml"));
 
             // Use jaxb to parse the xml file
             JAXBContext jaxbContext = JAXBContext.newInstance(PaoDefinitions.class);
