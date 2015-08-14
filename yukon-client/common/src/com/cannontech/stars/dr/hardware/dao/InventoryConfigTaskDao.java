@@ -7,29 +7,30 @@ import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTask;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTaskItem;
-import com.cannontech.stars.dr.hardware.model.InventoryConfigTaskItem.Status;
+import com.cannontech.stars.dr.hardware.service.HardwareConfigService.Status;
 
 public interface InventoryConfigTaskDao {
-    public InventoryConfigTask getById(int inventoryConfigTaskId);
 
-    public InventoryConfigTask findTask(String name, int energyCompanyId);
+    InventoryConfigTask getById(int inventoryConfigTaskId);
 
-    public List<InventoryConfigTask> getAll(int energyCompanyId);
+    InventoryConfigTask findTask(String name, int energyCompanyId);
 
-    public List<InventoryConfigTask> getUnfinished(int energyCompanyId);
+    List<InventoryConfigTask> getAll(int energyCompanyId);
 
-    public InventoryConfigTask create(String taskName, boolean sendInService,
-            InventoryCollection yukonCollection, int energyCompanyId, LiteYukonUser user);
+    List<InventoryConfigTask> getUnfinished(int energyCompanyId);
 
-    public void update(InventoryConfigTask task);
+    void update(InventoryConfigTask task);
 
-    public int delete(int taskId);
+    int delete(int taskId);
 
-    public Iterable<InventoryConfigTaskItem> getItems(int maxItems, int energyCompanyId);
+    Iterable<InventoryConfigTaskItem> getItems(int maxItems, int energyCompanyId);
 
-    public void markComplete(InventoryConfigTaskItem taskItem, InventoryConfigTaskItem.Status status);
+    void markComplete(InventoryConfigTaskItem taskItem, Status status);
 
-    public List<InventoryIdentifier> getSuccessFailList(int taskId, Status status);
+    List<InventoryIdentifier> getSuccessFailList(int taskId, Status status);
 
     int getTaskItemCount(int taskId, Status status);
+
+    InventoryConfigTask create(String taskName, boolean sendInService, boolean sendOutOfService,
+            InventoryCollection inventoryCollection, int energyCompanyId, LiteYukonUser user);
 }

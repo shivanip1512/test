@@ -289,6 +289,7 @@
     <entry key="yukon.common.events.hardware.config.hardwareConfigAttempted">User {1} attempted to configure device {2} on account {3}. Source: {4}</entry>
     <entry key="yukon.common.events.hardware.config.hardwareDisableAttempted">User {1} attempted to disable device {2} on account {3}. Source: {4}</entry>
     <entry key="yukon.common.events.hardware.config.hardwareEnableAttempted">User {1} attempted to enable device {2} on account {3}. Source: {4}</entry>
+    <entry key="yukon.common.events.hardware.config.hardwareConfigUnsupported">Config command is not supported by serial number {2} by {1}.</entry>
     
     <!-- Hardware Configuration Service Level -->
     <entry key="yukon.common.events.hardware.config.hardwareConfigUpdated">Configuration updated for device {2} on account {3} by {1}.</entry>
@@ -378,6 +379,7 @@
     <entry key="yukon.common.events.dr.inventoryConfig.itemConfigSucceeded">Config command sent to serial number {2} by {1}.</entry>
     <entry key="yukon.common.events.dr.inventoryConfig.itemConfigFailed">Config command failed to serial number {2} by {1}. Error received was {3}.</entry>
     <entry key="yukon.common.events.dr.inventoryConfig.itemConfigUnsupported">Config command is not supported by serial number {2} by {1}.</entry>
+    <entry key="yukon.common.events.dr.inventoryConfig.itemOutOfServiceSucceeded">'Out of Service' command sent to serial number {2} by {1}.</entry>
     
     <!-- Season Control History -->
     <entry key="yukon.common.events.dr.seasonalControlHistoryReset">Seasonal control history hours reset to 0 by {1}.</entry>

@@ -31,7 +31,7 @@ import com.cannontech.stars.dr.hardware.dao.CommandScheduleDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryConfigTaskDao;
 import com.cannontech.stars.dr.hardware.model.CommandSchedule;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTask;
-import com.cannontech.stars.dr.hardware.model.InventoryConfigTaskItem.Status;
+import com.cannontech.stars.dr.hardware.service.HardwareConfigService.Status;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.collection.InventoryCollectionFactoryImpl;
@@ -107,8 +107,8 @@ public class DeviceReconfigController {
         }
         
         try {
-            configTaskDao.create(options.getName(), options.isSendInService(), 
-                    collectionFactory.createCollection(req), energyCompanyId, user);
+            configTaskDao.create(options.getName(), options.isSendInService(), options.isSendOutOfService(),
+                collectionFactory.createCollection(req), energyCompanyId, user);
         } catch (DataIntegrityViolationException e) {
             
             result.rejectValue("name", key + "error.unavailable.name");

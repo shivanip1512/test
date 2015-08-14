@@ -23,6 +23,9 @@
                         <tags:nameValue2 excludeColon="true">
                             <tags:checkbox path="sendInService" descriptionNameKey=".sendInService"/>
                         </tags:nameValue2>
+                        <tags:nameValue2 excludeColon="true">
+                            <tags:checkbox path="sendOutOfService" descriptionNameKey=".sendOutOfService"/>
+                        </tags:nameValue2>
                     </tags:nameValueContainer2>
                     
                     <div class="page-action-area">

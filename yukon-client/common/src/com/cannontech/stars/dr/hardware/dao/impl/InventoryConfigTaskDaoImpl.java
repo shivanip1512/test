@@ -30,7 +30,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.hardware.dao.InventoryConfigTaskDao;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTask;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTaskItem;
-import com.cannontech.stars.dr.hardware.model.InventoryConfigTaskItem.Status;
+import com.cannontech.stars.dr.hardware.service.HardwareConfigService.Status;
 import com.google.common.collect.Lists;
 
 public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
@@ -57,6 +57,7 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
                 InventoryConfigTask task) {
             parameterHolder.addValue("taskName", task.getTaskName());
             parameterHolder.addValue("sendInService", YNBoolean.valueOf(task.isSendInService()));
+            parameterHolder.addValue("sendOutOfService", YNBoolean.valueOf(task.isSendOutOfService()));
             parameterHolder.addValue("numberOfItems", task.getNumberOfItems());
             parameterHolder.addValue("numberOfItemsProcessed", task.getNumberOfItemsProcessed());
             parameterHolder.addValue("energyCompanyId", task.getEnergyCompanyId());
@@ -70,7 +71,8 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
             InventoryConfigTask retVal = new InventoryConfigTask();
             retVal.setInventoryConfigTaskId(rs.getInt("InventoryConfigTaskId"));
             retVal.setTaskName(rs.getString("taskName"));
-            retVal.setSendInService(rs.getBooleanYN("sendInService"));
+            retVal.setSendInService(rs.getBoolean("sendInService"));
+            retVal.setSendOutOfService(rs.getBoolean("sendOutOfService"));
             retVal.setNumberOfItems(rs.getInt("numberOfItems"));
             retVal.setNumberOfItemsProcessed(rs.getInt("numberOfItemsProcessed"));
             retVal.setEnergyCompanyId(rs.getInt("energyCompanyId"));
@@ -94,7 +96,7 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
     @Transactional(propagation=Propagation.SUPPORTS)
     public InventoryConfigTask getById(int inventoryConfigTaskId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT inventoryConfigTaskId, taskName, sendInService, numberOfItems,");
+        sql.append("SELECT inventoryConfigTaskId, taskName, sendInService, sendOutOfService, numberOfItems,");
         sql.append(  "numberOfItemsProcessed, energyCompanyId, userId");
         sql.append("FROM inventoryConfigTask");
         sql.append("WHERE inventoryConfigTaskId").eq(inventoryConfigTaskId);
@@ -105,7 +107,7 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
     @Transactional(propagation=Propagation.SUPPORTS)
     public InventoryConfigTask findTask(String taskName, int energyCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT inventoryConfigTaskId, taskName, sendInService, numberOfItems,");
+        sql.append("SELECT inventoryConfigTaskId, taskName, sendInService, sendOutOfService, numberOfItems,");
         sql.append(  "numberOfItemsProcessed, energyCompanyId, userId");
         sql.append("FROM inventoryConfigTask");
         sql.append("WHERE TaskName").eq(taskName);
@@ -121,7 +123,7 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
     @Transactional(propagation=Propagation.SUPPORTS)
     public List<InventoryConfigTask> getAll(int energyCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT inventoryConfigTaskId, taskName, sendInService, numberOfItems,");
+        sql.append("SELECT inventoryConfigTaskId, taskName, sendInService, sendOutOfService, numberOfItems,");
         sql.append(  "numberOfItemsProcessed, energyCompanyId, userId");
         sql.append("FROM inventoryConfigTask");
         sql.append("WHERE energyCompanyId").eq(energyCompanyId);
@@ -132,7 +134,7 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
     @Transactional(propagation=Propagation.SUPPORTS)
     public List<InventoryConfigTask> getUnfinished(int energyCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT inventoryConfigTaskId, taskName, sendInService, numberOfItems,");
+        sql.append("SELECT inventoryConfigTaskId, taskName, sendInService, sendOutOfService, numberOfItems,");
         sql.append(  "numberOfItemsProcessed, energyCompanyId, userId");
         sql.append("FROM inventoryConfigTask");
         sql.append("WHERE numberOfItems > numberOfItemsProcessed");
@@ -142,11 +144,12 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
 
     @Override
     @Transactional
-    public InventoryConfigTask create(String taskName, boolean sendInService,
+    public InventoryConfigTask create(String taskName, boolean sendInService, boolean sendOutOfService, 
             InventoryCollection inventoryCollection, int energyCompanyId, LiteYukonUser user) {
         InventoryConfigTask task = new InventoryConfigTask();
         task.setTaskName(taskName);
         task.setSendInService(sendInService);
+        task.setSendOutOfService(sendOutOfService);
         task.setNumberOfItems(inventoryCollection.getCount());
         task.setNumberOfItemsProcessed(0);
         task.setEnergyCompanyId(energyCompanyId);
@@ -204,7 +207,7 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
         sql.append("SELECT *");
         sql.append("FROM (");
         sql.append(  "SELECT ti.inventoryConfigTaskId, inventoryId, status, taskName,");
-        sql.append(    "sendInService, numberOfItems, numberOfItemsProcessed, energyCompanyId,");
+        sql.append(    "sendInService, sendOutOfService, numberOfItems, numberOfItemsProcessed, energyCompanyId,");
         sql.append(    "userId, ROW_NUMBER() OVER (ORDER BY inventoryId) AS rowNumber");
         sql.append(  "FROM inventoryConfigTaskItem ti");
         sql.append(    "JOIN inventoryConfigTask t ON ti.inventoryConfigTaskId = t.inventoryConfigTaskId");

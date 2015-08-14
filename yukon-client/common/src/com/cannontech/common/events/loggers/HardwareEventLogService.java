@@ -136,4 +136,8 @@ public interface HardwareEventLogService {
     public void hardwareEnabled(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
                                 @Arg(ArgEnum.serialNumber) String serialNumber, 
                                 @Arg(ArgEnum.accountNumber) String accountNumber);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="hardware.config")
+    public void hardwareConfigUnsupported(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+            @Arg(ArgEnum.serialNumber) String serialNumber);
 }

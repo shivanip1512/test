@@ -207,6 +207,7 @@
     <!-- /inventory/resendConfig.jsp -->
     <entry key="yukon.web.modules.operator.inventory.config.send.pageName">Resend Configuration</entry>
     <entry key="yukon.web.modules.operator.inventory.config.send.inService">Send In Service Command</entry>
+    <entry key="yukon.web.modules.operator.inventory.config.send.outOfService">Send Out Of Service Command</entry>
     <entry key="yukon.web.modules.operator.inventory.config.send.note">This task sends load management configuration messages to all devices in the collection.</entry>
     <entry key="yukon.web.modules.operator.inventory.config.send.progress.title">Resend Configuration Task Status</entry>
     <entry key="yukon.web.modules.operator.inventory.config.send.progress">Progress</entry>
@@ -233,6 +234,8 @@
     <entry key="yukon.web.modules.operator.inventory.config.schedule.taskName">Task Name</entry>
     <entry key="yukon.web.modules.operator.inventory.config.schedule.sendInService">Send In-Service Command</entry>
     <entry key="yukon.web.modules.operator.inventory.config.schedule.sendInServiceLabel">In-Service Command</entry>
+    <entry key="yukon.web.modules.operator.inventory.config.schedule.sendOutOfService">Send Out Of Service Command</entry>
+    <entry key="yukon.web.modules.operator.inventory.config.schedule.sendOutOfServiceLabel">Out Of Service Command</entry>
     <entry key="yukon.web.modules.operator.inventory.config.schedule.error.required.name">Name of the asset configuration task cannot be empty.</entry>
     <entry key="yukon.web.modules.operator.inventory.config.schedule.error.unavailable.name">Name already in use.</entry>
     <entry key="yukon.web.modules.operator.inventory.config.schedule.error.tooLong.name">Name must be 250 characters or less.</entry>

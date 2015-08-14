@@ -57,10 +57,10 @@ public class ResendLmConfigController {
     }
     
     @RequestMapping(value="do", params="start")
-    public String startTask(HttpServletRequest req, YukonUserContext userContext, ModelMap model, boolean inService) {
+    public String startTask(HttpServletRequest req, YukonUserContext userContext, ModelMap model, boolean inService, boolean outOfService) {
         
         InventoryCollection collection = collectionFactory.createCollection(req);
-        ResendLmConfigTask task = helper.new ResendLmConfigTask(collection, userContext, inService);
+        ResendLmConfigTask task = helper.new ResendLmConfigTask(collection, userContext, inService, outOfService);
         String taskId = helper.startTask(task);
         
         return "redirect:" + taskId + "/status";

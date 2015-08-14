@@ -1,9 +1,9 @@
 package com.cannontech.stars.dr.hardware.model;
 
+import com.cannontech.stars.dr.hardware.service.HardwareConfigService.Status;
+
+
 public class InventoryConfigTaskItem {
-    public static enum Status {
-        UNPROCESSED, SUCCESS, FAIL, UNSUPPORTED
-    }
 
     private InventoryConfigTask inventoryConfigTask;
     private int inventoryId;

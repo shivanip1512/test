@@ -18,7 +18,8 @@
         
         <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
         
-        <label><input type="checkbox" name="inService"><i:inline key=".inService"/></label>
+        <label><input type="checkbox" name="inService"><i:inline key=".inService"/></label><br>
+        <label><input type="checkbox" name="outOfService"><i:inline key=".outOfService"/></label>
         
         <div class="page-action-area">
             <cti:button nameKey="start" type="submit" name="start" classes="action primary"/>

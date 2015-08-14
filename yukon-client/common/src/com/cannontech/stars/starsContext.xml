@@ -105,7 +105,6 @@
 
     <bean id="enrollmentService" class="com.cannontech.stars.dr.enrollment.service.impl.EnrollmentHelperServiceImpl"/>
     <bean class="com.cannontech.stars.dr.enrollment.service.impl.AlternateEnrollmentServiceImpl"/>
-    <bean class="com.cannontech.stars.dr.hardwareConfig.HardwareConfigServiceImpl"/>
 
 	<bean id="lmHardwareControlInformationService" class="com.cannontech.stars.dr.hardware.service.impl.LMHardwareControlInformationServiceImpl">
 		<property name="lmHardwareControlGroupDao" ref="lmHardwareControlGroupDao"/>
@@ -114,6 +113,8 @@
 	<bean id="lmHardwareControlGroupDao" class="com.cannontech.stars.dr.hardware.dao.impl.LMHardwareControlGroupDaoImpl">
         <property name="nextValueHelper" ref="nextValueHelper" />
     </bean>
+    
+    <bean class="com.cannontech.stars.dr.hardware.service.impl.HardwareConfigServiceImpl"/>
 	
     <bean id="customerAccountDao" class="com.cannontech.stars.dr.account.dao.impl.CustomerAccountDaoImpl"/>
 
@@ -288,4 +289,5 @@
 
     <bean class="com.cannontech.common.tdc.service.impl.TdcServiceImpl"/>
     <bean class="com.cannontech.common.tag.service.impl.TagServiceImpl"/>   
+    
 </beans>

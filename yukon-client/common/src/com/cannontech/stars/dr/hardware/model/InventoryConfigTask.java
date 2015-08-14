@@ -9,6 +9,7 @@ public class InventoryConfigTask {
     private int inventoryConfigTaskId;
     private String taskName;
     private boolean sendInService;
+    private boolean sendOutOfService;
     private int numberOfItems;
     private int numberOfItemsProcessed;
     private int energyCompanyId;
@@ -74,13 +75,19 @@ public class InventoryConfigTask {
         return StringUtils.abbreviate(taskName, 35);
     }
     
-    @Override
-    public String toString() {
-        return "InventoryConfigTask [inventoryConfigTaskId=" + inventoryConfigTaskId +
-            ", numberOfItems=" + numberOfItems +
-            ", numberOfItemsProcessed=" + numberOfItemsProcessed + ", taskName=" + taskName +
-            ", sendInService=" + sendInService + ", energyCompanyId=" + energyCompanyId +
-            ", userId=" + user.getUserID() + "]";
+    public boolean isSendOutOfService() {
+        return sendOutOfService;
+    }
+
+    public void setSendOutOfService(boolean sendOutOfService) {
+        this.sendOutOfService = sendOutOfService;
     }
     
+    @Override
+    public String toString() {
+        return "InventoryConfigTask [inventoryConfigTaskId=" + inventoryConfigTaskId + ", numberOfItems="
+            + numberOfItems + ", numberOfItemsProcessed=" + numberOfItemsProcessed + ", taskName=" + taskName
+            + ", sendInService=" + sendInService + ", sendOutOfService=" + sendOutOfService + ",energyCompanyId="
+            + energyCompanyId + ", userId=" + user.getUserID() + "]";
+    }   
 }

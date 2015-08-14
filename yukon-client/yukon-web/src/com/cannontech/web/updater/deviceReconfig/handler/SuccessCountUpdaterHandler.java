@@ -3,7 +3,7 @@ package com.cannontech.web.updater.deviceReconfig.handler;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.stars.dr.hardware.dao.InventoryConfigTaskDao;
-import com.cannontech.stars.dr.hardware.model.InventoryConfigTaskItem.Status;
+import com.cannontech.stars.dr.hardware.service.HardwareConfigService.Status;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.deviceReconfig.DeviceReconfigMonitorUpdaterType;
 
