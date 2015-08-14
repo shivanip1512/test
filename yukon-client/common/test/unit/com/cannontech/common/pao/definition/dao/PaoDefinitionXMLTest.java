@@ -69,8 +69,8 @@ public class PaoDefinitionXMLTest {
             // pointNameSet contains all unique points for a pao
             if (pointType != null) {
                 List<Point> pointsList = pointType.getPoint();
-                for (Point pt : pointsList) {
-                    pointNameSet.add(pt.getName());
+                for (Point point : pointsList) {
+                    pointNameSet.add(point.getName());
                 }
             }
 
