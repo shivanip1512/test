@@ -571,6 +571,7 @@ BOOST_AUTO_TEST_SUITE_END()
 
 struct mctExecute_helper : executeRequest_helper
 {
+    void *testConnHandle = reinterpret_cast<void *>(999);
     CtiRequestMsg request;
     OUTMESS *om;
 
@@ -582,6 +583,7 @@ struct mctExecute_helper : executeRequest_helper
         overrideConfigManager(fixtureConfig)
     {
         om = new OUTMESS;
+        request.setConnectionHandle(testConnHandle);
     }
     ~mctExecute_helper()
     {
@@ -591,6 +593,7 @@ struct mctExecute_helper : executeRequest_helper
 
 struct mctExecute_noConfig_helper : executeRequest_helper
 {
+    void *testConnHandle = reinterpret_cast<void *>(999);
     CtiRequestMsg request;
     OUTMESS *om;
 
@@ -600,12 +603,23 @@ struct mctExecute_noConfig_helper : executeRequest_helper
         overrideConfigManager(Cti::Config::DeviceConfigSPtr())
     {
         om = new OUTMESS;
+        request.setConnectionHandle(testConnHandle);
     }
     ~mctExecute_noConfig_helper()
     {
         delete om;
     }
 };
+
+bool isSentOnRouteMsg(const CtiMessage *msg)
+{
+    if( auto ret = dynamic_cast<const CtiReturnMsg *>(msg) )
+    {
+        return ret->ResultString() == "Emetcon DLC command sent on route ";
+    }
+
+    return false;
+}
 
 BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 //{  Brace matching for BOOST_FIXTURE_TEST_SUITE
@@ -1984,9 +1998,11 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
             BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
-            BOOST_CHECK( retList.empty() );
+            BOOST_REQUIRE_EQUAL( retList.size(), 1 );
             BOOST_CHECK( vgList.empty() );
             BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+            BOOST_CHECK( isSentOnRouteMsg(retList.front()) );
 
             CtiOutMessage *outmsg = outList.front();
 
@@ -2018,12 +2034,17 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
             BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.ResultDecode(InMessage, t, vgList, retList, outList));
 
-            BOOST_REQUIRE_EQUAL(retList.size(), 1);
+            BOOST_REQUIRE_EQUAL(retList.size(), 2);
             BOOST_CHECK(outList.empty());
             BOOST_REQUIRE_EQUAL(vgList.size(), 2);
 
+            auto retList_itr = retList.begin();
+
             {
-                const CtiReturnMsg *retMsg = dynamic_cast<const CtiReturnMsg *>(retList.front());
+                BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
+            }
+            {
+                auto *retMsg = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
 
                 BOOST_REQUIRE(retMsg);
 
@@ -2120,9 +2141,11 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
-        BOOST_CHECK( retList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
         BOOST_CHECK( vgList.empty() );
         BOOST_REQUIRE_EQUAL( outList.size(), 2 );
+
+        BOOST_CHECK( isSentOnRouteMsg(retList.front()) );
 
         test_Mct410Device::OutMessageList::const_iterator outList_itr = outList.begin();
 
@@ -2158,9 +2181,11 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         BOOST_CHECK_EQUAL(ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
-        BOOST_CHECK( retList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
         BOOST_CHECK( vgList.empty() );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        BOOST_CHECK( isSentOnRouteMsg(retList.front()) );
 
         CtiOutMessage *outmsg = outList.front();
 
@@ -2193,9 +2218,11 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         BOOST_CHECK_EQUAL(ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
-        BOOST_CHECK( retList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
         BOOST_CHECK( vgList.empty() );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        BOOST_CHECK( isSentOnRouteMsg(retList.front()) );
 
         CtiOutMessage *outmsg = outList.front();
 
@@ -2279,9 +2306,11 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         BOOST_CHECK_EQUAL(ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
-        BOOST_CHECK( retList.empty() );
+        BOOST_CHECK_EQUAL( retList.size(), 1 );
         BOOST_CHECK( vgList.empty() );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        BOOST_CHECK( isSentOnRouteMsg(retList.front()) );
 
         CtiOutMessage *outmsg = outList.front();
 
@@ -2414,9 +2443,11 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         BOOST_CHECK_EQUAL(ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
-        BOOST_CHECK( retList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
         BOOST_CHECK( vgList.empty() );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        BOOST_CHECK( isSentOnRouteMsg(retList.front()) );
 
         CtiOutMessage *outmsg = outList.front();
 
@@ -2483,9 +2514,14 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK( retList.empty() );
-
+        BOOST_REQUIRE_EQUAL( retList.size(), 4 );
         BOOST_REQUIRE_EQUAL( outList.size(), 4 );
+
+        auto retList_itr = retList.begin();
+        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
+        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
+        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
+        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
 
         CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
 
@@ -2590,9 +2626,14 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK( retList.empty() );
-
+        BOOST_REQUIRE_EQUAL( retList.size(), 4 );
         BOOST_REQUIRE_EQUAL( outList.size(), 4 );
+
+        auto retList_itr = retList.begin();
+        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
+        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
+        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
+        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
 
         CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
 
@@ -2696,9 +2737,12 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK( retList.empty() );
-
+        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
         BOOST_REQUIRE_EQUAL( outList.size(), 2 );
+
+        auto retList_itr = retList.begin();
+        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
+        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
 
         CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
 
@@ -2791,9 +2835,12 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK( retList.empty() );
-
+        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
         BOOST_REQUIRE_EQUAL( outList.size(), 2 );
+
+        auto retList_itr = retList.begin();
+        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
+        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
 
         CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
 
@@ -2886,9 +2933,12 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK( retList.empty() );
-
+        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
         BOOST_REQUIRE_EQUAL( outList.size(), 2 );
+
+        auto retList_itr = retList.begin();
+        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
+        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
 
         CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
 
@@ -3291,8 +3341,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         {
             BOOST_CHECK( vgList.empty() );
-            BOOST_CHECK( retList.empty() );
+            BOOST_REQUIRE_EQUAL( retList.size(), 1 );
             BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+            BOOST_CHECK( isSentOnRouteMsg(retList.front()) );
 
             const OUTMESS *msg = outList.front();
 
@@ -3309,8 +3361,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL_COLLECTIONS( expected.begin(), expected.end(),
                                            results_begin,    results_end );
 
-            delete_container(outList);
-            outList.clear();
+            delete_container(outList); outList.clear();
+            delete_container(retList); retList.clear();
         }
 
         CtiCommandParser parse("getvalue lp channel 1 3/17/2011");
@@ -3319,8 +3371,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
-        BOOST_CHECK( retList.empty() );
+
+        BOOST_CHECK( isSentOnRouteMsg(retList.front()) );
 
         {
             const OUTMESS *om = outList.front();
@@ -3386,8 +3440,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         }
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK_EQUAL( retList.size(), 2 );
+        BOOST_CHECK_EQUAL( retList.size(), 3 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        BOOST_CHECK( isSentOnRouteMsg(retList.back()) );
 
         {
             INMESS im;
@@ -3442,8 +3498,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         }
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK_EQUAL( retList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        BOOST_CHECK( isSentOnRouteMsg(retList.back()) );
 
         {
             INMESS im;
@@ -3646,8 +3704,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         }
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK_EQUAL( retList.size(), 2 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 3 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        BOOST_CHECK( isSentOnRouteMsg(retList.back()) );
 
         {
             INMESS im;
@@ -3704,8 +3764,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         //  Read first block
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK_EQUAL( retList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        BOOST_CHECK( isSentOnRouteMsg(retList.back()) );
 
         {
             INMESS im;
@@ -3739,11 +3801,16 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         }
 
         BOOST_REQUIRE_EQUAL( vgList.size(), 2 );
-        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
+        auto retList_itr = retList.cbegin();
+
         {
-            auto ret = dynamic_cast<const CtiReturnMsg *>(retList.front());
+            BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
+        }
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
 
             BOOST_REQUIRE(ret);
 
@@ -3886,11 +3953,16 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         }
 
         BOOST_REQUIRE_EQUAL( vgList.size(), 2 );
-        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
+        retList_itr = retList.cbegin();
+
         {
-            auto ret = dynamic_cast<const CtiReturnMsg *>(retList.front());
+            BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
+        }
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
 
             BOOST_REQUIRE(ret);
 
@@ -4033,11 +4105,16 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         }
 
         BOOST_REQUIRE_EQUAL( vgList.size(), 2 );
-        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
+        retList_itr = retList.cbegin();
+
         {
-            auto ret = dynamic_cast<const CtiReturnMsg *>(retList.front());
+            BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
+        }
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
 
             BOOST_REQUIRE(ret);
 
@@ -4347,8 +4424,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         }
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK_EQUAL( retList.size(), 2 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 3 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        BOOST_CHECK( isSentOnRouteMsg(retList.back()) );
 
         {
             INMESS im;
@@ -4403,8 +4482,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         }
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK_EQUAL( retList.size(), 1 );
+        BOOST_CHECK_EQUAL( retList.size(), 2 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        BOOST_CHECK( isSentOnRouteMsg(retList.back()) );
 
         {
             INMESS im;
@@ -4433,11 +4514,16 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         }
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
+        auto retList_itr = retList.cbegin();
+
         {
-            auto ret = dynamic_cast<const CtiReturnMsg *>(retList.front());
+            BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
+        }
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
 
             BOOST_REQUIRE(ret);
 
@@ -4646,8 +4732,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         }
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK_EQUAL( retList.size(), 2 );
+        BOOST_CHECK_EQUAL( retList.size(), 3 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        BOOST_CHECK( isSentOnRouteMsg(retList.back()) );
 
         {
             INMESS im;
@@ -4702,8 +4790,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         }
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK_EQUAL( retList.size(), 1 );
+        BOOST_CHECK_EQUAL( retList.size(), 2 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        BOOST_CHECK( isSentOnRouteMsg(retList.back()) );
 
         {
             INMESS im;
@@ -4732,11 +4822,16 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         }
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
+        auto retList_itr = retList.cbegin();
+
         {
-            auto ret = dynamic_cast<const CtiReturnMsg *>(retList.front());
+            BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
+        }
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
 
             BOOST_REQUIRE(ret);
 
@@ -4773,11 +4868,16 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         }
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
+        retList_itr = retList.cbegin();
+
         {
-            auto ret = dynamic_cast<const CtiReturnMsg *>(retList.front());
+            BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
+        }
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
 
             BOOST_REQUIRE(ret);
 
@@ -4814,11 +4914,16 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         }
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
+        retList_itr = retList.cbegin();
+
         {
-            auto ret = dynamic_cast<const CtiReturnMsg *>(retList.front());
+            BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
+        }
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
 
             BOOST_REQUIRE(ret);
 
@@ -4993,7 +5098,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         BOOST_CHECK( vgList.empty() );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
-        BOOST_CHECK( retList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+
+        BOOST_CHECK( isSentOnRouteMsg(retList.front()) );
 
         //  Since the "lp peak" regex wasn't matched, it's interpreted as "getvalue peak", which is confusing and somewhat terrible
         {
@@ -5051,7 +5158,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         BOOST_CHECK( vgList.empty() );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
-        BOOST_CHECK( retList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+
+        BOOST_CHECK( isSentOnRouteMsg(retList.front()) );
 
         {
             const OUTMESS *om = outList.front();
