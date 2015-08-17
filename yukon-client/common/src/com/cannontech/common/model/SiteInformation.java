@@ -1,5 +1,7 @@
 package com.cannontech.common.model;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class SiteInformation {
     
     private String feeder;
@@ -8,7 +10,11 @@ public class SiteInformation {
     private String serviceVoltage;
     private String substationName;
     
+    // Null check is to make sure null is never set in feeder, pole, transfomerSize, serviceVoltage for YUK-14417
     public String getFeeder() {
+        if (StringUtils.isBlank(feeder)) {
+            return "";
+        }
         return feeder;
     }
     
@@ -17,6 +23,9 @@ public class SiteInformation {
     }
     
     public String getPole() {
+        if (StringUtils.isBlank(pole)) {
+            return "";
+        }
         return pole;
     }
     
@@ -25,6 +34,9 @@ public class SiteInformation {
     }
     
     public String getTransformerSize() {
+        if (StringUtils.isBlank(transformerSize)) {
+            return "";
+        }
         return transformerSize;
     }
     
@@ -33,6 +45,9 @@ public class SiteInformation {
     }
     
     public String getServiceVoltage() {
+        if (StringUtils.isBlank(serviceVoltage)) {
+            return "";
+        }
         return serviceVoltage;
     }
     

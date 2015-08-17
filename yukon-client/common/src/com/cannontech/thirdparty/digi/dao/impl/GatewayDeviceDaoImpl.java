@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -345,6 +346,10 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
         SqlParameterSink params = sql.update("ZBGateway");
+        // This check is to make sure null is never set in firmwareVersion for YUK-14417
+        if (StringUtils.isBlank(firmwareVersion)) {
+            firmwareVersion ="";
+        }
         params.addValue("FirmwareVersion", firmwareVersion);
         
         sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
