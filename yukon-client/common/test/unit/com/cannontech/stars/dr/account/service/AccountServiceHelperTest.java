@@ -38,7 +38,7 @@ public class AccountServiceHelperTest {
         Assert.assertEquals("Street Address: City was not copied properly.", "Slack Jawed Yokel Township", to.getStreetAddress().getCityName());
         Assert.assertEquals("Street Address: County was not copied properly.", "Cletus County", to.getStreetAddress().getCounty());
         Assert.assertEquals("SiteInformation: Substation name was not copied properly.", "Flux Capacitor", to.getSiteInfo().getSubstationName());
-        Assert.assertEquals("SiteInformation: Service Voltage was not copied properly.", "1.21 Gigawatts", to.getSiteInfo().getServiceVoltage());
+        
         
     }
 
