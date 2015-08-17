@@ -30,7 +30,7 @@ import com.cannontech.common.util.JsonUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
- * Test class to test validity of deviceDefinition.xml file
+ * Test class to test validity of paoDefinition.xml file
  */
 public class PaoDefinitionXMLTest {
     private static final Logger log = YukonLogManager.getLogger(PaoDefinitionXMLTest.class);
