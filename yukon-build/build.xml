@@ -365,29 +365,9 @@
         <delete dir="${dist.dir}" />
     </target>
 
-    <target name="clean" depends="clean-server">
+    <target name="clean">
        <delete dir="${dist.dir}" />
         <delete dir="${log.dir}" />
-    </target>
-
-    <available file="${basedir}\yukon-server" type="dir"
-      property="yukon-server.present"/>
-
-    <target name="clean-server" if="yukon-server.present">
-        <exec failonerror="true" 
-              dir="${basedir}/yukon-server/"
-              resultproperty="serverbuilderrorcode"
-              executable="cmd.exe" >
-            <arg value="/c" />
-            <arg value="${basedir}\yukon-server\b.cmd" />
-            <arg value="clean" />
-            <arg value="--exit" />
-            <arg value="--basedir" />
-            <arg value="${basedir}" />
-            <arg value="--labels" />
-            <arg value="${yukon.build.label}" />
-            <arg value="${yukon.build.details}" />
-        </exec>
     </target>
 
     <target name="runUnitTests">
