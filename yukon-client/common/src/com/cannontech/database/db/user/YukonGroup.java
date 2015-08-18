@@ -21,8 +21,6 @@ public class YukonGroup extends DBPersistent {
 	// Default group ids
 	public static final int SYSTEM_ADMINISTRATOR_GROUP_ID = -2;
 	public static final int OPERATORS_GROUP_ID = -100;
-	public static final int ESUB_USERS_GROUP_ID = -200;
-	public static final int ESUB_OPERATORS_GROUP_ID = -201;
 	public static final int RESIDENTIAL_CUSTOMER_GROUP_ID = -300;
 	public static final int WEB_CLIENT_OPERATORS_GROUP_ID = -301;
 	public static final int WEB_CLIENT_CUSTOMERS_GROUP_ID = -302;
