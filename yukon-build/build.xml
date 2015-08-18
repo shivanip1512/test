@@ -365,7 +365,15 @@
         <delete dir="${dist.dir}" />
     </target>
 
-    <target name="clean">
+    <target name="clean" depends="clean-server">
+       <delete dir="${dist.dir}" />
+        <delete dir="${log.dir}" />
+    </target>
+
+    <available file="${basedir}\yukon-server" type="dir"
+      property="yukon-server.present"/>
+
+    <target name="clean-server" if="yukon-server.present">
         <exec failonerror="true" 
               dir="${basedir}/yukon-server/"
               resultproperty="serverbuilderrorcode"
@@ -380,9 +388,6 @@
             <arg value="${yukon.build.label}" />
             <arg value="${yukon.build.details}" />
         </exec>
-
-       <delete dir="${dist.dir}" />
-        <delete dir="${log.dir}" />
     </target>
 
     <target name="runUnitTests">
