@@ -73,7 +73,7 @@ WHERE Name = 'WEB_LOGO_URL'
 AND Value = 'CannonLogo.gif';
 /* End YUK-14474 */
 
-/* Start YUK-14537 */
+/* Start YUK-14433 */
 /* @error warn-once */
 /* @start-block */
 IF 0 < (SELECT COUNT(*)
@@ -82,10 +82,9 @@ IF 0 < (SELECT COUNT(*)
 BEGIN
     RAISERROR('Yukon Calc Historical Service is enabled. This service must be uninstalled and Yukon Calc-Logic Service used instead.', 16, 1);
 END;
-/
-DELETE FROM YukonServices WHERE ServiceId = 3 OR ServiceId = -3;
 /* @end-block */
-/* End YUK-14537 */
+DELETE FROM YukonServices WHERE ServiceId = 3 OR ServiceId = -3;
+/* End YUK-14433 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
