@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.account.service;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,11 +68,17 @@ public class AccountServiceHelper {
             "siteInfo.serviceVoltage",
             "siteInfo.substationName");
         
-        for(String property : accountPropertyList) {
-            
+        for (String property : accountPropertyList) {
+
             Object propertyValue = fromDtoAccessor.getPropertyValue(property);
-            if(propertyValue != null) {
-                toDtoAccessor.setPropertyValue(property, propertyValue);
+            if (property.contains("siteInfo")) {
+                if (!StringUtils.isBlank(propertyValue.toString())) {
+                    toDtoAccessor.setPropertyValue(property, propertyValue);
+                }
+            } else {
+                if (propertyValue != null) {
+                    toDtoAccessor.setPropertyValue(property, propertyValue);
+                }
             }
         }
         from.setAccountDto(to);
