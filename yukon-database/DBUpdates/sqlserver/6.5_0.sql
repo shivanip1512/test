@@ -54,6 +54,7 @@ DROP TABLE EsubDisplayIndex;
 /* End YUK-14530 */
 
 /* Start YUK-14537 */
+/* @error ignore-begin */
 ALTER TABLE InventoryConfigTask
 ADD SendOutOfService CHAR(1);
 GO
@@ -64,6 +65,7 @@ SET SendOutOfService = 'N';
 ALTER TABLE InventoryConfigTask
 ALTER COLUMN SendOutOfService CHAR(1) NOT NULL;
 GO
+/* @error ignore-end */
 /* End YUK-14537 */
 
 /* Start YUK-14474 */
