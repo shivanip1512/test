@@ -52,8 +52,10 @@ clean:
         @%set build_command = clean
         %do all
 
+        -mkdir $(COMPILEBASE)\lib
         %cd $(COMPILEBASE)\lib
         -del *.obj *.dll *.ilk *.pdb *.lib *.exp
+        -mkdir $(COMPILEBASE)\bin
         %cd $(COMPILEBASE)\bin
         -del *.dll *.lib *.exe *.xml *.tcl
         -del $(COMPILEBASE)\bin\unittests\*.xml
