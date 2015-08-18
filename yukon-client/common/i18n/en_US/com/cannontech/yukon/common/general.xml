@@ -88,6 +88,7 @@
 <entry key="yukon.common.device.selection.add.title">Add By:</entry>
 <entry key="yukon.common.device.selection.select.title">Select By:</entry>
 <entry key="yukon.common.device.selection.device">Device</entry>
+<entry key="yukon.common.device.selection.errorCount">Error Encountered</entry>
 <entry key="yukon.common.device.selection.device.selected">device(s) selected</entry>
 <entry key="yukon.common.device.selection.group">Group</entry>
 <entry key="yukon.common.device.selection.group.selected">group: {0}</entry>
