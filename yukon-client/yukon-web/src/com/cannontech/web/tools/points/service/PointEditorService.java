@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.tools.points.model.PointModel;
 
@@ -99,10 +100,25 @@ public interface PointEditorService {
     }
     
 
-    AttachmentStatus getAttachmentStatus(int id);
+    /**
+     * @return an {@link AttachmentStatus} to indicate what types of attachments the point has that may prevent it from
+     * being deleted.
+     */
+    AttachmentStatus getAttachmentStatus(int pointId);
 
-    boolean delete(int id) throws AttachedException;
+    /**
+     * Attempts to delete the point with the given id.
+     * 
+     * @throws AttachedException if the point has attachments that prevent it from being deleted
+     */
+    void delete(int id) throws AttachedException;
 
+    /**
+     * Creates a new point with the specified parent id
+     *
+     * @param pointType - must pass {@link PointTypes#isValidPointType(pointType)}
+     * @param paoId - parent of the point
+     * @return the id of the new point
+     */
     int create(int pointType, int paoId, YukonUserContext userContext);
-
 }

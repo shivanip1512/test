@@ -191,20 +191,11 @@ public class PointController {
     }
 
     /* These classes are here to prevent type erasure of generics */
-    public static class AnalogPointModel extends PointModel<AnalogPoint> {
-    }
-
-    public static class AccumulatorPointModel extends PointModel<AccumulatorPoint> {
-    }
-
-    public static class CalculatedPointModel extends PointModel<CalculatedPoint> {
-    }
-
-    public static class StatusPointModel extends PointModel<StatusPoint> {
-    }
-
-    public static class CalcStatusPointModel extends PointModel<CalcStatusPoint> {
-    }
+    public static class AnalogPointModel extends PointModel<AnalogPoint> {}
+    public static class AccumulatorPointModel extends PointModel<AccumulatorPoint> {}
+    public static class CalculatedPointModel extends PointModel<CalculatedPoint> {}
+    public static class StatusPointModel extends PointModel<StatusPoint> {}
+    public static class CalcStatusPointModel extends PointModel<CalcStatusPoint> {}
 
     @RequestMapping(value = "/points/Analog", method = RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)

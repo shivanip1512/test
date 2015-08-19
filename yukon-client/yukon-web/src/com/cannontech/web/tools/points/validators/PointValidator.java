@@ -194,7 +194,7 @@ public class PointValidator extends SimpleValidator<PointModel> {
         YukonValidationUtils.checkRange(errors, "pointBase.pointAnalog.dataOffset", 
             point.getPointAnalog().getDataOffset(), -99999999.0, 99999999.0, true);
         
-        YukonValidationUtils.checkRange(errors, "pointBase.pointAnalogontrol.controlOffset", 
+        YukonValidationUtils.checkRange(errors, "pointBase.pointAnalogControl.controlOffset", 
             point.getPointAnalogControl().getControlOffset(), -99999999, 99999999, true);
     }
     

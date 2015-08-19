@@ -7,10 +7,12 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceOption;
@@ -35,6 +37,7 @@ import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.dev.database.service.impl.DevObjectCreationBase;
 import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
 import com.cannontech.web.tools.points.model.PointModel;
@@ -51,7 +54,9 @@ public class PointEditorServiceImpl implements PointEditorService {
     @Autowired private PointPropertyValueDao pointPropertyValueDao;
     @Autowired private StateDao stateDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    
+
+    protected static final Logger log = YukonLogManager.getLogger(DevObjectCreationBase.class);
+
     @Override
     public PointModel getModelForId(int id) {
         
@@ -96,6 +101,9 @@ public class PointEditorServiceImpl implements PointEditorService {
         return id;
     }
 
+    /**
+     * Retrieves the StaleData part of the model for a given point id from the database
+     */
     private StaleData getStaleData(int id) {
         
         StaleData staleData = new StaleData();
@@ -119,6 +127,9 @@ public class PointEditorServiceImpl implements PointEditorService {
         
     }
     
+    /**
+     * Retrieves the AlarmTableEntries part of the model from the pointBase
+     */
     private List<AlarmTableEntry> getAlarmTableEntries(PointBase pointBase) {
         
         int ptType = PointTypes.getType(pointBase.getPoint().getPointType());
@@ -148,7 +159,7 @@ public class PointEditorServiceImpl implements PointEditorService {
         int i = 0;
         for (i = 0; i < alarm_cats.length; i++) {
             AlarmTableEntry entry = new AlarmTableEntry();
-            setAlarmGenNotif(entry, alarmStates.charAt(i), allAlarmStates, excludeNotifyStates.toUpperCase().charAt(i));
+            setupAlarmTableEntry(entry, alarmStates.charAt(i), allAlarmStates, excludeNotifyStates.toUpperCase().charAt(i));
 
             entry.setCondition(alarm_cats[i]);
             notifEntries.add(entry);
@@ -162,7 +173,7 @@ public class PointEditorServiceImpl implements PointEditorService {
                         ", too many states for Status point "+ pointBase.getPoint().getPointName() + " defined.");
                 }
                 AlarmTableEntry entry = new AlarmTableEntry();
-                setAlarmGenNotif(entry, alarmStates.charAt(i), allAlarmStates, excludeNotifyStates.toUpperCase().charAt(i));
+                setupAlarmTableEntry(entry, alarmStates.charAt(i), allAlarmStates, excludeNotifyStates.toUpperCase().charAt(i));
 
                 entry.setCondition(stateNames[j]);
                 notifEntries.add(entry);
@@ -171,7 +182,10 @@ public class PointEditorServiceImpl implements PointEditorService {
         return notifEntries;
     }
     
-    private static void setAlarmGenNotif(AlarmTableEntry entry, int alarmStateId, List<LiteAlarmCategory> allAlarmStates, char gen) {
+    /**
+     * Helper method for use within getAlarmTableEntries
+     */
+    private static void setupAlarmTableEntry(AlarmTableEntry entry, int alarmStateId, List<LiteAlarmCategory> allAlarmStates, char gen) {
 
         if ((alarmStateId - 1) < allAlarmStates.size()) {
             entry.setGenerate(allAlarmStates.get((alarmStateId - 1)).getCategoryName());
@@ -215,6 +229,9 @@ public class PointEditorServiceImpl implements PointEditorService {
         return pointId;
     }
     
+    /**
+     * Save the StaleData from the model object to the database
+     */
     private void saveStaleData(int pointId, StaleData staleData) {
         
         PointPropertyValue timeProperty = new PointPropertyValue(pointId, StaleData.TIME_PROPERTY, staleData.getTime());
@@ -229,6 +246,9 @@ public class PointEditorServiceImpl implements PointEditorService {
         }
     }
     
+    /**
+     * Attach the alarms to the pointBase before saving the pointbase
+     */
     private void attachAlarms(PointBase pointBase, List<AlarmTableEntry> alarmTableEntries) {
         
         String alarmStates = "";
@@ -247,7 +267,6 @@ public class PointEditorServiceImpl implements PointEditorService {
         pointBase.getPointAlarming().setAlarmStates(alarmStates);
         pointBase.getPointAlarming().setExcludeNotifyStates(exclNotify);
     }
-    
     
     @Override
     public List<String> getDirectionsFor(FdrInterfaceType interfaceType) {
@@ -300,26 +319,29 @@ public class PointEditorServiceImpl implements PointEditorService {
 
     @Override
     public List<Map<String,Object>> breakIntoTranslationFields(String originalString, FdrInterfaceType interfaceType) {
-        
-        
+
         String[] kvPairs = originalString.split(";");
-        
+
         Map<String, String> originalValues = new HashMap<>();
         for (String kvPair : kvPairs) {
             //Split on the first colon. Some property values have file paths.
             String[] kv = kvPair.split(":", 2);
+            if (kv.length != 2) {
+                log.warn("Unable to parse translation part: '" + kvPair + "' of translation " + originalString + "'");
+                continue;
+            }
             originalValues.put(kv[0], kv[1]);
         }
-        
+
         List<Map<String, Object>> result = new ArrayList<>();
-        
+
         for  (FdrInterfaceOption field : interfaceType.getInterfaceOptionsList()) {
-            
+
             Map<String, Object> optionInfo = new HashMap<>();
-            
+
             optionInfo.put("name", field.getOptionLabel());
             optionInfo.put("value", originalValues.get(field.getOptionLabel()));
-            
+
             switch (field.getOptionType()) {
             case COMBO:
                 optionInfo.put("options", field.getOptionValues());
@@ -329,15 +351,15 @@ public class PointEditorServiceImpl implements PointEditorService {
             }
             result.add(optionInfo);
         }
-        
+
         Map<String, Object> pointTypeOptionInfo = new HashMap<>();
         pointTypeOptionInfo.put("hidden", true);
         pointTypeOptionInfo.put("name", "POINTTYPE");
         pointTypeOptionInfo.put("options", ImmutableList.of(originalValues.get("POINTTYPE")));
         pointTypeOptionInfo.put("value", originalValues.get("POINTTYPE"));
-        
+
         result.add(pointTypeOptionInfo);
-        
+
         return result;
     }
 
@@ -355,7 +377,7 @@ public class PointEditorServiceImpl implements PointEditorService {
     }
 
     @Override
-    public boolean delete(int id) throws AttachedException {
+    public void delete(int id) throws AttachedException {
         AttachmentStatus attachmentStatus = getAttachmentStatus(id);
         if (!attachmentStatus.isDeletable()) {
             throw new AttachedException(attachmentStatus);
@@ -372,8 +394,6 @@ public class PointEditorServiceImpl implements PointEditorService {
             DbChangeType.DELETE);
         
         dbChangeManager.processDbChange(dbChange);
-        
-        return true;
     }
 
 }

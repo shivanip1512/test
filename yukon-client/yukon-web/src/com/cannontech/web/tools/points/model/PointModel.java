@@ -9,6 +9,7 @@ import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.CalcStatusPoint;
 import com.cannontech.database.data.point.CalculatedPoint;
+import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.ScalarPoint;
 import com.cannontech.database.data.point.StatusPoint;
@@ -86,6 +87,10 @@ public class PointModel<T extends PointBase> {
 
         if (base.getPoint().getArchiveInterval() == null) {
             base.getPoint().setArchiveInterval(0);
+        }
+
+        if (base.getPoint().getArchiveType() == null) {
+            base.getPoint().setArchiveType(PointArchiveType.NONE);
         }
 
         if (base instanceof AnalogPoint) {
