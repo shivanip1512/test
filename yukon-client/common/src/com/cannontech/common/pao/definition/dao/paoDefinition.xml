@@ -6161,6 +6161,7 @@
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="261">
+                <init>true</init>
                 <name>Delivered kVAr Load Profile</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVar"/>
