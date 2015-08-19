@@ -90,7 +90,7 @@ public class JobManagerImpl implements JobManager {
                 final RunnableRetryJob runnable = new RunnableRetryJob(status) {
                     @Override
                     protected void afterRun() {
-                        if (stopRescheduleForJob(status.getJob().getId())) {
+                        if (stopRescheduleForJob(status.getJob().getId()) && (JobDisabledStatus.N == getJobDisabledStatus(status.getJob().getId()))) {
                             doScheduleScheduledJob(status.getJob(), null);
                         }
                     }
@@ -282,7 +282,7 @@ public class JobManagerImpl implements JobManager {
             Runnable runnable = new BaseRunnableJob(job) {
                 @Override
                 protected void afterRun() {
-                    if (stopRescheduleForJob(job.getId()) && !(JobDisabledStatus.D == getJobDisabledStatus(job.getId()))) {
+                    if (stopRescheduleForJob(job.getId()) && (JobDisabledStatus.N == getJobDisabledStatus(job.getId()))) {
                         doScheduleScheduledJob(job, nextRuntime);
                     }
                 }
