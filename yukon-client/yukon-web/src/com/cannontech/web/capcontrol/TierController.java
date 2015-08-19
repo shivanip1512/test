@@ -146,7 +146,7 @@ public class TierController {
         model.addAttribute("substationId", substationId);
 
         int areaId = cachedSubstation.getParentID();
-        String areaName = cache.getArea(areaId).getCcName();
+        String areaName = cache.getObject(areaId).getCcName();
 
         model.addAttribute("areaId", areaId);
         model.addAttribute("areaName", areaName);
