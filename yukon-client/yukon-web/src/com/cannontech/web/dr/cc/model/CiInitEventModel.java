@@ -1,5 +1,6 @@
 package com.cannontech.web.dr.cc.model;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -13,11 +14,13 @@ public class CiInitEventModel {
     private CiEventType eventType;
     private DateTime notificationTime;
     private DateTime startTime;
-    private int duration = 240;
+    /** Event duration, in minutes */
+    private int duration;
     private String message;
-    private int numberOfWindows = 4;
+    private int numberOfWindows;
     private List<Integer> selectedGroupIds;
     private List<Integer> selectedCustomerIds;
+    private List<BigDecimal> windowPrices;
     
     public int getProgramId() {
         return programId;
@@ -54,11 +57,17 @@ public class CiInitEventModel {
     public void setStartTime(DateTime startTime) {
         this.startTime = startTime;
     }
-
+    
+    /**
+     * @return The event duration, in minutes.
+     */
     public int getDuration() {
         return duration;
     }
-
+    
+    /**
+     * @param duration The event duration, in minutes.
+     */
     public void setDuration(int duration) {
         this.duration = duration;
     }
@@ -93,5 +102,13 @@ public class CiInitEventModel {
 
     public void setSelectedCustomerIds(List<Integer> selectedCustomerIds) {
         this.selectedCustomerIds = selectedCustomerIds;
+    }
+
+    public List<BigDecimal> getWindowPrices() {
+        return windowPrices;
+    }
+
+    public void setWindowPrices(List<BigDecimal> windowPrices) {
+        this.windowPrices = windowPrices;
     }
 }

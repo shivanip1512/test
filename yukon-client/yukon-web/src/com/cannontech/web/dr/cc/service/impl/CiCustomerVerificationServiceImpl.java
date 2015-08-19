@@ -1,5 +1,7 @@
 package com.cannontech.web.dr.cc.service.impl;
 
+import static com.cannontech.web.dr.cc.model.ExclusionType.*;
+
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -13,9 +15,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 
 import org.apache.commons.collections4.iterators.ReverseListIterator;
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -69,7 +71,7 @@ public class CiCustomerVerificationServiceImpl implements CiCustomerVerification
                                                                                       EconomicEventState.SUPPRESSED);
     private static final Set<CurtailmentEventState> excludedCurtailmentStates = ImmutableSet.of(CurtailmentEventState.CANCELLED);
     
-    private static final String keyBase = "yukon.web.modules.dr.cc.init.customerVerification.";
+    private static final String keyBase = "yukon.web.modules.dr.cc.init.error.";
     
     @Override
     public String getConstraintStatus(CiInitEventModel event, CICustomerStub customer, YukonUserContext userContext) {
@@ -113,9 +115,7 @@ public class CiCustomerVerificationServiceImpl implements CiCustomerVerification
                     }
                 } else {
                     List<Exclusion> exclusionList = verifyCustomer(event, customerNotif);
-                    if (exclusionList != null) {
-                        exclusions.put(customerNotif.getId(), exclusionList);
-                    }
+                    exclusions.put(customerNotif.getId(), exclusionList);
                     seenCustomers.put(customerNotif.getCustomer(), customerNotif);
                     result.add(customerNotif);
                 }
@@ -163,7 +163,7 @@ public class CiCustomerVerificationServiceImpl implements CiCustomerVerification
     private void verifyDirectProgram(CICustomerStub customer, List<Exclusion> exclusions) {
         Set<LiteYukonPAObject> programsForCustomer = customerLMProgramService.getProgramsForCustomer(customer);
         if (programsForCustomer.isEmpty()) {
-            Exclusion exclusion = new Exclusion("noDirectProgram", Exclusion.Status.EXCLUDE);
+            Exclusion exclusion = new Exclusion(NO_DIRECT_PROGRAM, Exclusion.Status.EXCLUDE);
             appendExclusion(exclusions, exclusion);
         }
     }
@@ -171,7 +171,7 @@ public class CiCustomerVerificationServiceImpl implements CiCustomerVerification
     private void verifyPointGroupSatisfaction(CICustomerStub customer, List<Exclusion> exclusions) {
         boolean satisfied = customerPointTypeHelper.isPointGroupSatisfied(customer, "ISOC");
         if (!satisfied) {
-            Exclusion exclusion = new Exclusion("isocPoints", Exclusion.Status.EXCLUDE);
+            Exclusion exclusion = new Exclusion(ISOC_POINTS, Exclusion.Status.EXCLUDE);
             appendExclusion(exclusions, exclusion);
         }
     }
@@ -195,7 +195,7 @@ public class CiCustomerVerificationServiceImpl implements CiCustomerVerification
             Date otherStart = otherEvent.getStartTime();
             Date thisStop = event.getStopTime().toDate();
             if (doesEventContributeToAllowedHours(otherEvent) && otherStart.before(thisStop)) {
-                Exclusion exclusion = new Exclusion("eventCollision",  Exclusion.Status.EXCLUDE, otherEvent.getDisplayName());
+                Exclusion exclusion = new Exclusion(EVENT_COLLISION,  Exclusion.Status.EXCLUDE, otherEvent.getDisplayName());
                 appendExclusion(exclusions, exclusion);
             }
         }
@@ -206,14 +206,14 @@ public class CiCustomerVerificationServiceImpl implements CiCustomerVerification
         try {
             allowedHours = customerPointTypeHelper.getPointValue(customer, CICustomerPointType.InterruptHours);
         } catch (PointException e) {
-            Exclusion exclusion = new Exclusion("pointError", Exclusion.Status.EXCLUDE, e.getMessage());
+            Exclusion exclusion = new Exclusion(POINT_ERROR, Exclusion.Status.EXCLUDE, e.getMessage());
             appendExclusion(exclusions, exclusion);
             return;
         }
         
         double actualHours = getTotalEventHours(customer);
         if (((actualHours * 60) + event.getDuration()) > (allowedHours * 60)) {
-            Exclusion exclusion = new Exclusion("exceedsAllowedHours", Exclusion.Status.EXCLUDE);
+            Exclusion exclusion = new Exclusion(EXCEEDS_ALLOWED_HOURS, Exclusion.Status.EXCLUDE);
             appendExclusion(exclusions, exclusion);
         }
     }
@@ -223,12 +223,12 @@ public class CiCustomerVerificationServiceImpl implements CiCustomerVerification
         try {
             allowedPeriodHours = customerPointTypeHelper.getPointValue(customer, CICustomerPointType.InterruptHrs24Hr);
         } catch (PointException e) {
-            Exclusion exclusion = new Exclusion("pointError", Exclusion.Status.EXCLUDE, e.getMessage());
+            Exclusion exclusion = new Exclusion(POINT_ERROR, Exclusion.Status.EXCLUDE, e.getMessage());
             appendExclusion(exclusions, exclusion);
             return;
         }
         
-        if (allowedPeriodHours == 0 || allowedPeriodHours == 1440) {
+        if (allowedPeriodHours == 0 || allowedPeriodHours == 24) {
             //don't check
         } else {
             Date beginPeriodDate = event.getStopTime().minus(Duration.standardHours(24)).toDate();
@@ -236,7 +236,7 @@ public class CiCustomerVerificationServiceImpl implements CiCustomerVerification
                                                           beginPeriodDate, 
                                                           event.getStopTime().toDate());
             if (((actualPeriodHours * 60) + event.getDuration()) > (allowedPeriodHours * 60)) {
-                Exclusion exclusion = new Exclusion("exceedsAllowedPeriodHours", Exclusion.Status.EXCLUDE);
+                Exclusion exclusion = new Exclusion(EXCEEDS_ALLOWED_PERIOD_HOURS, Exclusion.Status.EXCLUDE);
                 appendExclusion(exclusions, exclusion);
             }
         }
@@ -246,11 +246,11 @@ public class CiCustomerVerificationServiceImpl implements CiCustomerVerification
         try {
             int notifMinutes = TimeUtil.differenceMinutes(event.getNotificationTime().toDate(), event.getStartTime().toDate());
             if (isEventNoticeTooShort(customer, notifMinutes)) {
-                Exclusion exclusion = new Exclusion("shortNotice", Exclusion.Status.EXCLUDE_OVERRIDABLE);
+                Exclusion exclusion = new Exclusion(SHORT_NOTICE, Exclusion.Status.EXCLUDE_OVERRIDABLE);
                 appendExclusion(exclusions, exclusion);
             }
         } catch (PointException e) {
-            Exclusion exclusion = new Exclusion("pointError", Exclusion.Status.EXCLUDE, e.getMessage());
+            Exclusion exclusion = new Exclusion(POINT_ERROR, Exclusion.Status.EXCLUDE, e.getMessage());
             appendExclusion(exclusions, exclusion);
         }
     }
@@ -268,7 +268,7 @@ public class CiCustomerVerificationServiceImpl implements CiCustomerVerification
             if (calendar.get(Calendar.YEAR) == proposedYear
                     && calendar.get(Calendar.DAY_OF_YEAR) == proposedDay
                     && doesEventContributeToAllowedHours(econEvent)) {
-                Exclusion exclusion = new Exclusion("econEventCollision", Exclusion.Status.EXCLUDE, econEvent.getDisplayName());
+                Exclusion exclusion = new Exclusion(ECON_EVENT_COLLISION, Exclusion.Status.EXCLUDE, econEvent.getDisplayName());
                 appendExclusion(exclusions, exclusion);
             }
         }
@@ -306,21 +306,10 @@ public class CiCustomerVerificationServiceImpl implements CiCustomerVerification
     }
     
     private double getTotalEventHours(CICustomerStub customer) {
-        //get first day this year
-        Date now = new Date();
-        TimeZone timeZone = TimeZone.getTimeZone(customer.getLite().getTimeZone());
-        Calendar cal = Calendar.getInstance(timeZone);
-        cal.setTime(now);
-        cal.set(Calendar.DAY_OF_YEAR, 1);
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        Date from = cal.getTime();
-        cal.add(Calendar.YEAR, 1);
-        Date to = cal.getTime();
+        DateTime begin = DateTime.now().withDayOfYear(1).withTimeAtStartOfDay();
+        DateTime end = begin.plusYears(1);
         
-        return getTotalEventHours(customer, from, to);
+        return getTotalEventHours(customer, begin.toDate(), end.toDate());
     }
     
     private double getTotalEventHours(CICustomerStub customer, Date start, Date stop) {

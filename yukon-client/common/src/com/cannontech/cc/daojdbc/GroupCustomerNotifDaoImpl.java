@@ -37,7 +37,7 @@ public class GroupCustomerNotifDaoImpl implements GroupCustomerNotifDao {
     private GroupCustomerNotifRowMapper rowMapper;
     
     @PostConstruct
-    public void init() throws Exception {
+    public void init() {
         template = new SimpleTableAccessTemplate<GroupCustomerNotif>(yukonJdbcTemplate, nextValueHelper);
         template.setTableName("CCurtGroupCustomerNotif");
         template.setPrimaryKeyField("CCurtGroupCustomerNotifID");

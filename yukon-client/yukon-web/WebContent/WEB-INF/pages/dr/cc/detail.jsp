@@ -70,7 +70,31 @@
             </c:if>
             <tr>
                 <td class="name"><i:inline key=".operations"/></td>
-                <td><cti:button nameKey="refresh" onClick="history.go(0)"/></td>
+                <td class="value">
+                    <c:if test="${showDeleteButton}">
+                        <cti:url var="deleteUrl" value="/dr/cc/program/${program.id}/event/${event.id}"/>
+                        <form:form action="${deleteUrl}" method="DELETE">
+                            <cti:button type="submit" nameKey="delete" />
+                        </form:form>
+                    </c:if>
+                    <c:if test="${showCancelButton}">
+                        <cti:url var="cancelUrl" value="/dr/cc/program/${program.id}/event/${event.id}/cancel"/>
+                        <cti:button nameKey="cancel" href="${cancelUrl}"/>
+                    </c:if>
+                    <c:if test="${showSuppressButton}">
+                        <cti:url var="suppressUrl" value="/dr/cc/program/${program.id}/event/${event.id}/suppress"/>
+                        <cti:button nameKey="suppress" href="${suppressUrl}"/>
+                    </c:if>
+                    <c:if test="${showReviseButton}">
+                        <cti:url var="reviseUrl" value="/dr/cc/program/${program.id}/event/${event.id}/revise"/>
+                        <cti:button nameKey="revise" href="${reviseUrl}"/>
+                    </c:if>
+                    <c:if test="${showExtendButton}">
+                        <cti:url var="extendUrl" value="/dr/cc/program/${program.id}/event/${event.id}/extend"/>
+                        <cti:button nameKey="extend" href="${extendUrl}"/>
+                    </c:if>
+                    <cti:button nameKey="refresh" onClick="history.go(0)"/>
+                </td>
             </tr>
         </table>
         <c:if test="${not empty pricingTableHead}">

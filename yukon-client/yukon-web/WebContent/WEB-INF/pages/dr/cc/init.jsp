@@ -13,13 +13,13 @@
 <%-- Form action will vary, depending on what type of program is being activated --%>
 <c:choose>
 	<c:when test="${event.eventType.economic}">
-	    <c:set var="urlEndPart" value="pricing"/>
+	    <c:set var="action" value="pricing"/>
 	</c:when>
 	<c:otherwise>
-	   <c:set var="urlEndPart" value="groupSelection"/>
+	   <c:set var="action" value="groupSelection"/>
 	</c:otherwise>
 </c:choose>
-<cti:url var="url" value="/dr/cc/program/${event.programId}/${urlEndPart}"/>
+<cti:url var="url" value="/dr/cc/program/${event.programId}/${action}"/>
 
 <form:form modelAttribute="event" action="${url}">
     <cti:csrfToken/>
@@ -39,22 +39,22 @@
 	    </tags:nameValue2>
 	    <c:if test="${event.eventType.accounting or event.eventType.notification}">
 	        <tags:nameValue2 nameKey=".duration">
-	            <form:input path="duration"/>
+	            <tags:input path="duration"/>
 	        </tags:nameValue2>
 	    </c:if>
 	    <c:if test="${event.eventType.accounting}">
 	       <tags:nameValue2 nameKey=".reason">
-	           <form:input path="message"/>
+	           <tags:input path="message"/>
 	       </tags:nameValue2>
 	    </c:if>
 	    <c:if test="${event.eventType.notification}">
            <tags:nameValue2 nameKey=".message">
-               <form:input path="message"/>
+               <tags:input path="message"/>
            </tags:nameValue2>
         </c:if>
         <c:if test="${event.eventType.economic}">
             <tags:nameValue2 nameKey=".numberOfWindows">
-                <form:input path="numberOfWindows"/>
+                <tags:input path="numberOfWindows"/>
             </tags:nameValue2>
         </c:if>
     </tags:nameValueContainer2>

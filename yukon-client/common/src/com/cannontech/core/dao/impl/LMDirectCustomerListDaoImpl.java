@@ -29,7 +29,10 @@ public class LMDirectCustomerListDaoImpl implements LMDirectCustomerListDao {
     @Override
     public Set<Integer> getLMProgramIdsForCustomer(Integer customerId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select ProgramID from LMDirectCustomerList where CustomerID").eq(customerId);
+        sql.append("SELECT ProgramID");
+        sql.append("FROM LMDirectCustomerList");
+        sql.append("WHERE CustomerID").eq(customerId);
+        
         Set<Integer> result = Sets.newHashSet(jdbcTemplate.query(sql, RowMapper.INTEGER));
         return result;
     }

@@ -15,6 +15,10 @@
 <form:form modelAttribute="event" action="${url}">
     <cti:csrfToken/>
     
+    <spring:hasBindErrors name="event">
+        <form:errors cssClass="error"/><br>
+    </spring:hasBindErrors>
+    
     <form:hidden path="eventType"/>
     <form:hidden path="programId"/>
     <form:hidden path="notificationTime"/>
@@ -22,6 +26,7 @@
     <form:hidden path="duration"/>
     <form:hidden path="message"/>
     <form:hidden path="numberOfWindows"/>
+    <form:hidden path="windowPrices"/>
     <form:hidden path="selectedGroupIds"/>
     
     <div id="customerTableDiv" class="stacked-md">
@@ -76,7 +81,7 @@
 	                   <span class="js-exclusion-reason error">
 	                       <c:forEach var="exclusion" items="${exclusions[customerNotif.id]}" varStatus="status">
 	                           <c:if test="${status.index gt 0}"><br></c:if>
-	                           <i:inline key="${exclusion.key}" arguments="${exclusion.arguments}"/>
+	                           <i:inline key="${exclusion}"/>
 	                       </c:forEach>
 	                   </span>
 	               </td>

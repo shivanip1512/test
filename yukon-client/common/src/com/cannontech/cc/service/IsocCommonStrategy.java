@@ -19,8 +19,6 @@ import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.CurtailmentEvent;
 import com.cannontech.cc.model.EconomicEvent;
 import com.cannontech.cc.service.builder.VerifiedCustomer;
-import com.cannontech.cc.service.CurtailmentEventState;
-import com.cannontech.cc.service.EconomicEventState;
 import com.cannontech.common.exception.PointException;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.SimplePointAccessDao;

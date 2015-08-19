@@ -1,21 +1,21 @@
 package com.cannontech.web.dr.cc.model;
 
-public class Exclusion {
-    public enum Status {EXCLUDE_OVERRIDABLE, EXCLUDE};
-    private static final String keyBase = "yukon.web.modules.dr.cc.init.customerVerification.exclusion.";
+import org.springframework.context.MessageSourceResolvable;
+
+import com.cannontech.common.i18n.Displayable;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
+
+public class Exclusion implements Displayable {
+    public enum Status {EXCLUDE_OVERRIDABLE, EXCLUDE}
     
     private String key;
     private Status status;
     private Object[] arguments;
     
-    public Exclusion(String key, Status status, Object... arguments) {
-        this.key = keyBase + key;
+    public Exclusion(ExclusionType type, Status status, Object... arguments) {
+        key = type.getFormatKey();
         this.status = status;
         this.arguments = arguments;
-    }
-    
-    public String getKey() {
-        return key;
     }
     
     public Status getStatus() {
@@ -25,8 +25,9 @@ public class Exclusion {
     public boolean isForceExcluded() {
         return status == Status.EXCLUDE;
     }
-    
-    public Object[] getArguments() {
-        return arguments;
+
+    @Override
+    public MessageSourceResolvable getMessage() {
+        return new YukonMessageSourceResolvable(key, arguments);
     }
 }

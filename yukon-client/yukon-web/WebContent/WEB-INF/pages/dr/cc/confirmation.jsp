@@ -2,7 +2,6 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
@@ -10,23 +9,40 @@
 
 <div class="stacked-md">
 	<h3><i:inline key=".parameters"/></h3>
+	
+	<spring:hasBindErrors name="event">
+        <form:errors cssClass="error"/><br>
+    </spring:hasBindErrors>
+	
 	<tags:nameValueContainer2>
 	    <c:if test="${not empty event.startTime}">
            <tags:nameValue2 nameKey=".notificationTime">
                <cti:formatDate type="FULL" value="${event.notificationTime}"/>
            </tags:nameValue2>
         </c:if>
+	    
 	    <tags:nameValue2 nameKey=".startTime">
 	        <cti:formatDate type="FULL" value="${event.startTime}"/>
 	    </tags:nameValue2>
-	    <tags:nameValue2 nameKey=".duration">
-	        <i:inline key=".durationValue" arguments="${event.duration}"/>
-	    </tags:nameValue2>
+	    
+	    <c:if test="${event.eventType.accounting or event.eventType.notification}">
+		    <tags:nameValue2 nameKey=".duration">
+		        <i:inline key=".durationValue" arguments="${event.duration}"/>
+		    </tags:nameValue2>
+	    </c:if>
+	    
+	    <c:if test="${event.eventType.economic}">
+	       <tags:nameValue2 nameKey=".numberOfWindows">
+	           ${event.numberOfWindows}
+	       </tags:nameValue2>
+	    </c:if>
+	    
 	    <c:if test="${event.eventType.accounting}">
 	        <tags:nameValue2 nameKey=".reason">
-            ${fn:escapeXml(event.message)}
-        </tags:nameValue2>
+                ${fn:escapeXml(event.message)}
+            </tags:nameValue2>
 	    </c:if>
+	    
 	    <c:if test="${event.eventType.notification}">
 		    <tags:nameValue2 nameKey=".message">
 		        ${fn:escapeXml(event.message)}
@@ -34,6 +50,29 @@
 		</c:if>
 	</tags:nameValueContainer2>
 </div>
+
+<c:if test="${event.eventType.economic}">
+    <div class="stacked-md">
+        <h3><i:inline key=".prices"/></h3>
+        <table class="compact-results-table natural-width">
+            <thead>
+                <cti:formatDate var="tz" type="TIMEZONE" value="${event.startTime}"/>
+                <th><i:inline key=".pricesStartTime" arguments="${tz}"/></th>
+                <th class="tar"><i:inline key=".energyPrice"/></th>
+            </thead>
+            <tbody>
+	            <c:forEach var="price" items="${event.windowPrices}" varStatus="status">
+	                <tr>
+	                    <td>
+                            <cti:formatDate type="DATEHM" value="${windowTimes[status.index]}"/>
+                        </td>
+	                    <td class="tar">${price}</td>
+	                </tr>
+	            </c:forEach>
+            </tbody>
+        </table>
+    </div>
+</c:if>
 
 <h3><i:inline key=".customers"/></h3>
 <ul>
@@ -55,6 +94,7 @@
     <form:hidden path="duration"/>
     <form:hidden path="message"/>
     <form:hidden path="numberOfWindows"/>
+    <form:hidden path="windowPrices"/>
     <form:hidden path="selectedGroupIds"/>
     <form:hidden path="selectedCustomerIds"/>
 

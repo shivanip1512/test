@@ -40,6 +40,9 @@
     <entry key="yukon.web.modules.dr.cc.detail.company">Company</entry>
     <entry key="yukon.web.modules.dr.cc.detail.reason">Reason</entry>
     <entry key="yukon.web.modules.dr.cc.detail.notificationType">Notification Type</entry>
+    <entry key="yukon.web.modules.dr.cc.detail.suppress.label">Suppress</entry>
+    <entry key="yukon.web.modules.dr.cc.detail.revise.label">Revise</entry>
+    <entry key="yukon.web.modules.dr.cc.detail.extend.label">Extend</entry>
     
     <!-- customerList.jsp -->
     <entry key="yukon.web.modules.dr.cc.customerList.pageTitle">Curtailment Customers</entry>
@@ -154,28 +157,31 @@
     <entry key="yukon.web.modules.dr.cc.init.customerVerification.crumbTitle">Start Event</entry>
     <entry key="yukon.web.modules.dr.cc.init.customerVerification.verifyCustomers">Verify Customers</entry>
     <entry key="yukon.web.modules.dr.cc.init.customerVerification.customer">Customer</entry>
-    <entry key="yukon.web.modules.dr.cc.init.customerVerification.currentLoad">CurrentLoad</entry>
+    <entry key="yukon.web.modules.dr.cc.init.customerVerification.currentLoad">Current Load</entry>
     <entry key="yukon.web.modules.dr.cc.init.customerVerification.contractFirmDemand">CFD</entry>
     <entry key="yukon.web.modules.dr.cc.init.customerVerification.loadReduction">Load Reduction</entry>
     <entry key="yukon.web.modules.dr.cc.init.customerVerification.constraintStatus">Constraint Status</entry>
     <entry key="yukon.web.modules.dr.cc.init.customerVerification.loadReductionSelected">Load Reduction Selected</entry>
-    <entry key="yukon.web.modules.dr.cc.init.customerVerification.hoursRemaining">{0} Hours Remaining</entry>
     
-    <entry key="yukon.web.modules.dr.cc.init.customerVerification.exclusion.pointError">Couldn't get point value ({0})</entry>
-    <entry key="yukon.web.modules.dr.cc.init.customerVerification.exclusion.noDirectProgram">No direct program is attached</entry>
-    <entry key="yukon.web.modules.dr.cc.init.customerVerification.exclusion.isocPoints"></entry>
-    <entry key="yukon.web.modules.dr.cc.init.customerVerification.exclusion.eventCollision">Already in event ({0}) at that time</entry>
-    <entry key="yukon.web.modules.dr.cc.init.customerVerification.exclusion.exceedsAllowedHours">Has exceeded allowed hours</entry>
-    <entry key="yukon.web.modules.dr.cc.init.customerVerification.exclusion.exceedsAllowedPeriodHours">Has exceeded allowed hours in a 24 hour period</entry>
-    <entry key="yukon.web.modules.dr.cc.init.customerVerification.exclusion.shortNotice">Requires longer notification time</entry>
-    <entry key="yukon.web.modules.dr.cc.init.customerVerification.exclusion.econEventCollision">Already in an economic event ({0}) that day</entry>
+    <entry key="yukon.web.modules.dr.cc.init.customerVerification.exclusion.POINT_ERROR">Couldn't get point value ({0})</entry>
+    <entry key="yukon.web.modules.dr.cc.init.customerVerification.exclusion.NO_DIRECT_PROGRAM">No direct program is attached</entry>
+    <entry key="yukon.web.modules.dr.cc.init.customerVerification.exclusion.ISOC_POINTS">One or more 'ISOC' points is missing</entry>
+    <entry key="yukon.web.modules.dr.cc.init.customerVerification.exclusion.EVENT_COLLISION">Already in event ({0}) at that time</entry>
+    <entry key="yukon.web.modules.dr.cc.init.customerVerification.exclusion.EXCEEDS_ALLOWED_HOURS">Has exceeded allowed hours</entry>
+    <entry key="yukon.web.modules.dr.cc.init.customerVerification.exclusion.EXCEEDS_ALLOWED_PERIOD_HOURS">Has exceeded allowed hours in a 24 hour period</entry>
+    <entry key="yukon.web.modules.dr.cc.init.customerVerification.exclusion.SHORT_NOTICE">Requires longer notification time</entry>
+    <entry key="yukon.web.modules.dr.cc.init.customerVerification.exclusion.ECON_EVENT_COLLISION">Already in an economic event ({0}) that day</entry>
     
     <!-- confirmation.jsp (init step 4) -->
     <entry key="yukon.web.modules.dr.cc.init.confirmation.pageTitle">Start Event</entry>
     <entry key="yukon.web.modules.dr.cc.init.confirmation.pageHeading">Start "{1}" Event ({0})</entry>
     <entry key="yukon.web.modules.dr.cc.init.confirmation.crumbTitle">Start Event</entry>
     <entry key="yukon.web.modules.dr.cc.init.confirmation.parameters">Parameters</entry>
+    <entry key="yukon.web.modules.dr.cc.init.confirmation.prices">Prices</entry>
+    <entry key="yukon.web.modules.dr.cc.init.confirmation.energyPrice">Energy Price ($/kWh)</entry>
     <entry key="yukon.web.modules.dr.cc.init.confirmation.startTime">Start Time</entry>
+    <entry key="yukon.web.modules.dr.cc.init.confirmation.pricesStartTime">Start Time ({0})</entry>
+    <entry key="yukon.web.modules.dr.cc.init.confirmation.numberOfWindows">Number of Windows</entry>
     <entry key="yukon.web.modules.dr.cc.init.confirmation.duration">Duration</entry>
     <entry key="yukon.web.modules.dr.cc.init.confirmation.durationValue">{0} minutes</entry>
     <entry key="yukon.web.modules.dr.cc.init.confirmation.reason">Reason</entry>
@@ -187,12 +193,26 @@
     <entry key="yukon.web.modules.dr.cc.init.pricing.pageTitle">Start Event</entry>
     <entry key="yukon.web.modules.dr.cc.init.pricing.pageHeading">Start "{1}" Event ({0})</entry>
     <entry key="yukon.web.modules.dr.cc.init.pricing.crumbTitle">Start Event</entry>
+    <entry key="yukon.web.modules.dr.cc.init.pricing.energyPrices">Enter Energy Prices</entry>
+    <entry key="yukon.web.modules.dr.cc.init.pricing.pricingUnits">$ / kWh</entry>
+    
+    <!-- event init validation -->
+    <entry key="yukon.web.modules.dr.cc.init.error.startTime">Start time must be after notification time.</entry>
+    <entry key="yukon.web.modules.dr.cc.init.error.duration">Duration must be greater than {0} minutes.</entry>
+    <entry key="yukon.web.modules.dr.cc.init.error.notificationBeforeStart">Notification time must be at least {0} minutes before start.</entry>
+    <entry key="yukon.web.modules.dr.cc.init.error.notificationPast">Notification time must not be in the past.</entry>
+    <entry key="yukon.web.modules.dr.cc.init.error.numberOfWindows">There must be at least one pricing window.</entry>
+    <entry key="yukon.web.modules.dr.cc.init.error.windowPrice">Invalid window price.</entry>
+    <entry key="yukon.web.modules.dr.cc.init.error.noGroupsSelected">At least one group must be selected.</entry>
+    <entry key="yukon.web.modules.dr.cc.init.error.noCustomersSelected">At least one customer must be selected.</entry>
+    <entry key="yukon.web.modules.dr.cc.init.error.customerExcluded">Customer {0} can no longer be included: {1}</entry>
+    <entry key="yukon.web.modules.dr.cc.init.error.noAdvancedBuyThrough">Unable to retrieve Advanced Buy Through point value.</entry>
+    <entry key="yukon.web.modules.dr.cc.init.error.hoursRemaining">{0} Hours Remaining</entry>
     
     <!-- EventType.java -->
     <entry key="yukon.web.modules.dr.cc.eventType.CURRENT">Current Events</entry>
     <entry key="yukon.web.modules.dr.cc.eventType.PENDING">Pending Events</entry>
     <entry key="yukon.web.modules.dr.cc.eventType.RECENT">Recent Events</entry>
-    
     
     <!-- TEMP for old pages / controller code -->
     <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEventType.CURRENT">current events</entry>

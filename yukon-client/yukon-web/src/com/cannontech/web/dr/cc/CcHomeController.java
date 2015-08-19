@@ -1,6 +1,7 @@
 package com.cannontech.web.dr.cc;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -45,6 +46,7 @@ import com.cannontech.cc.dao.EconomicEventDao;
 import com.cannontech.cc.dao.EconomicEventParticipantDao;
 import com.cannontech.cc.dao.GroupCustomerNotifDao;
 import com.cannontech.cc.dao.GroupDao;
+import com.cannontech.cc.dao.ProgramParameterDao;
 import com.cannontech.cc.model.AccountingEvent;
 import com.cannontech.cc.model.AccountingEventParticipant;
 import com.cannontech.cc.model.AvailableProgramGroup;
@@ -64,6 +66,7 @@ import com.cannontech.cc.model.GroupBean;
 import com.cannontech.cc.model.GroupCustomerNotif;
 import com.cannontech.cc.model.Program;
 import com.cannontech.cc.model.ProgramParameter;
+import com.cannontech.cc.model.ProgramParameterKey;
 import com.cannontech.cc.model.ProgramType;
 import com.cannontech.cc.service.AccountingStrategy;
 import com.cannontech.cc.service.CICurtailmentStrategy;
@@ -76,6 +79,7 @@ import com.cannontech.cc.service.GroupService;
 import com.cannontech.cc.service.NotificationStatus;
 import com.cannontech.cc.service.ProgramService;
 import com.cannontech.cc.service.StrategyFactory;
+import com.cannontech.cc.service.exception.EventCreationException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.predicate.Predicate;
@@ -119,15 +123,23 @@ import com.cannontech.web.tools.trends.TrendUtils;
 import com.cannontech.web.updater.point.PointDataRegistrationService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+//TODO: remove unused method parameters
+//TODO: handle event extension (see CreateEconomicBean.doAfterPricingEntry()
+
 @Controller
 public class CcHomeController {
     private static Logger log = YukonLogManager.getLogger(CcHomeController.class);
     private static String eventHeadingBase = "yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_heading_";
     private static String companyHeadingBase = "yukon.web.modules.commercialcurtailment.ccurtSetup.";
+    /** Default minutes curtailment event will run */
+    private static final int defaultEventDuration = 240; 
+    /** Default number of pricing windows for econ events */
+    private static final int defaultNumberOfWindows = 4;
     
     @Autowired private AccountingEventDao accountingEventDao;
     @Autowired private BaseEventDao baseEventDao;
     @Autowired private CiEventCreationService ciEventCreationService;
+    @Autowired private CiInitEventModelValidator eventModelValidator;
     @Autowired private CiCustomerVerificationService customerVerificationService;
     @Autowired private CurtailmentEventDao curtailmentEventDao;
     @Autowired private CurtailmentEventNotifDao curtailmentNotifDao;
@@ -154,6 +166,7 @@ public class CcHomeController {
     @Autowired private NotificationGroupDao notificationGroupDao;
     @Autowired private PaoDao paoDao;
     @Autowired private PointDataRegistrationService pointDataRegistrationService;
+    @Autowired private ProgramParameterDao programParameterDao;
     @Autowired private ProgramService programService;
     @Autowired private StrategyFactory strategyFactory;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -229,15 +242,65 @@ public class CcHomeController {
         CiEventType eventType = CiEventType.of(strategyString);
         event.setEventType(eventType);
         
+        DateTime currentTime = new DateTime(userContext.getJodaTimeZone());
+        DateTime nextHourTime = roundUpToNextHour(currentTime);
         if (event.getEventType().isNotification() || event.getEventType().isEconomic()) {
-            DateTime notificationTime = new DateTime(userContext.getJodaTimeZone());
-            
-            event.setNotificationTime(notificationTime);
+            event.setNotificationTime(nextHourTime);
+            event.setStartTime(nextHourTime.plus(Duration.standardHours(1)));
+        } else {
+            event.setStartTime(nextHourTime);
         }
-        DateTime startTime = new DateTime(userContext.getJodaTimeZone()).plus(Duration.standardHours(1));
-        event.setStartTime(startTime);
+        
+        event.setDuration(defaultEventDuration);
+        
+        if (event.getEventType().isEconomic()) {
+            event.setNumberOfWindows(defaultNumberOfWindows);
+        }
         
         return "dr/cc/init.jsp";
+    }
+    
+    @RequestMapping("/cc/program/{programId}/pricing")
+    public String pricing(ModelMap model, 
+                          @ModelAttribute("event") CiInitEventModel event,
+                          BindingResult bindingResult,
+                          @PathVariable int programId) {
+        
+        Program program = programService.getProgramById(programId);
+        model.addAttribute("program", program);
+        
+        // Validate input so far
+        CiInitEventModelValidator validator = eventModelValidator.getAfterInitValidator();
+        validator.doValidation(event, bindingResult);
+        if (bindingResult.hasErrors()) {
+            return "dr/cc/init.jsp";
+        }
+        
+        int numberOfWindows = event.getNumberOfWindows();
+        float defaultPriceParameter = programParameterDao.getParameterValueFloat(program, ProgramParameterKey.DEFAULT_ENERGY_PRICE);
+        BigDecimal defaultEnergyPrice = new BigDecimal(defaultPriceParameter, new MathContext(5));
+        
+        // Populate times for window price fields
+        List<DateTime> windowTimes = getEconEventWindowTimes(event);
+        model.addAttribute("windowTimes", windowTimes);
+        
+        // Set window price values in event model to the default
+        List<BigDecimal> windowPrices = new ArrayList<>(numberOfWindows);
+        for (int i = 0; i < numberOfWindows; i++) {
+            windowPrices.add(defaultEnergyPrice);
+        }
+        event.setWindowPrices(windowPrices);
+        
+        return "dr/cc/pricing.jsp";
+    }
+    
+    private List<DateTime> getEconEventWindowTimes(CiInitEventModel event) {
+        List<DateTime> windowTimes = new ArrayList<>(event.getNumberOfWindows());
+        for (int i = 0; i < event.getNumberOfWindows(); i++) {
+            DateTime windowStart = event.getStartTime().plus(Duration.standardHours(i));
+            windowTimes.add(windowStart);
+        }
+        return windowTimes;
     }
     
     @RequestMapping("/cc/program/{programId}/groupSelection")
@@ -246,15 +309,25 @@ public class CcHomeController {
                                  BindingResult bindingResult,
                                  @PathVariable int programId) {
         
-        //(accounting?)verify:
-        //start time before notification time
-        //duration greater than minimum
-        //programParameterDao.getParameterValueInt(program, ProgramParameterKey.MINIMUM_EVENT_DURATION_MINUTES);
-        //notification is early enough before start time
-        //programParameterDao.getParameterValueInt(program, ProgramParameterKey.MINIMUM_NOTIFICATION_MINUTES);
-        
         Program program = programService.getProgramById(programId);
         model.addAttribute("program", program);
+        
+        // Validate input so far
+        if (event.getEventType().isEconomic()) {
+            CiInitEventModelValidator validator = eventModelValidator.getAfterPricingValidator();
+            validator.doValidation(event, bindingResult);
+            if (bindingResult.hasErrors()) {
+                List<DateTime> windowTimes = getEconEventWindowTimes(event);
+                model.addAttribute("windowTimes", windowTimes);
+                return "dr/cc/pricing.jsp";
+            }
+        } else {
+            CiInitEventModelValidator validator = eventModelValidator.getAfterInitValidator();
+            validator.doValidation(event, bindingResult);
+            if (bindingResult.hasErrors()) {
+                return "dr/cc/init.jsp";
+            }
+        }
         
         List<AvailableProgramGroup> availableGroups = programService.getAvailableProgramGroups(program);
         model.addAttribute("availableGroups", availableGroups);
@@ -270,9 +343,22 @@ public class CcHomeController {
                                        YukonUserContext userContext) {
         
         Program program = programService.getProgramById(programId);
-        
         model.addAttribute("program", program);
         
+        CiInitEventModelValidator validator = eventModelValidator.getAfterGroupSelectionValidator();
+        validator.doValidation(event, bindingResult);
+        if (bindingResult.hasErrors()) {
+            List<AvailableProgramGroup> availableGroups = programService.getAvailableProgramGroups(program);
+            model.addAttribute("availableGroups", availableGroups);
+            return "dr/cc/groupSelection.jsp";
+        }
+        
+        setUpCustomerVerificationModel(model, event, userContext);
+        
+        return "dr/cc/customerVerification.jsp";
+    }
+    
+    private void setUpCustomerVerificationModel(ModelMap model, CiInitEventModel event, YukonUserContext userContext) {
         //Determine which customers to display (and exclusions which prevent customers from being selected)
         Map<Integer, List<Exclusion>> exclusions = new HashMap<>();
         List<Group> selectedGroups = groupService.getGroupsById(event.getSelectedGroupIds());
@@ -289,14 +375,16 @@ public class CcHomeController {
         model.addAttribute("exclusions", exclusions);
         
         //Determine which customers should be checked
-        List<Integer> selectedCustomerIds = new ArrayList<>();
-        for (GroupCustomerNotif customerNotif : customerNotifs) {
-            List<Exclusion> customerExclusions = exclusions.get(customerNotif.getId());
-            if (customerExclusions.isEmpty()) {
-                selectedCustomerIds.add(customerNotif.getId());
+        if (event.getSelectedCustomerIds() == null) {
+            List<Integer> selectedCustomerIds = new ArrayList<>();
+            for (GroupCustomerNotif customerNotif : customerNotifs) {
+                List<Exclusion> customerExclusions = exclusions.get(customerNotif.getId());
+                if (customerExclusions.isEmpty()) {
+                    selectedCustomerIds.add(customerNotif.getId());
+                }
             }
+            event.setSelectedCustomerIds(selectedCustomerIds);
         }
-        event.setSelectedCustomerIds(selectedCustomerIds);
         
         //Get constraint status strings
         Map<Integer, String> customerConstraintStatuses = new HashMap<>();
@@ -321,32 +409,69 @@ public class CcHomeController {
             cfdUpdaters.put(customerNotif.getId(), updaterString);
         }
         model.addAttribute("cfdUpdaters", cfdUpdaters);
-        
-        return "dr/cc/customerVerification.jsp";
     }
     
     @RequestMapping("/cc/program/{programId}/confirmation")
     public String confirmation(ModelMap model,
                                @ModelAttribute("event") CiInitEventModel event,
-                               @PathVariable int programId) {
+                               BindingResult bindingResult,
+                               @PathVariable int programId,
+                               YukonUserContext userContext) {
         
+        CiInitEventModelValidator validator = eventModelValidator.getAfterCustomerVerificationValidator();
+        validator.doValidation(event, bindingResult);
+        if (bindingResult.hasErrors()) {
+            Program program = programService.getProgramById(programId);
+            model.addAttribute("program", program);
+            setUpCustomerVerificationModel(model, event, userContext);
+            return "dr/cc/customerVerification.jsp";
+        }
+        
+        setUpConfirmationModel(model, event, programId);
+        
+        return "dr/cc/confirmation.jsp";
+    }
+    
+    private void setUpConfirmationModel(ModelMap model, CiInitEventModel event, int programId) {
         Program program = programService.getProgramById(programId);
         model.addAttribute("program", program);
         
         List<GroupCustomerNotif> customerNotifs = groupCustomerNotifDao.getByIds(event.getSelectedCustomerIds());
         model.addAttribute("customerNotifs", customerNotifs);
         
-        return "dr/cc/confirmation.jsp";
+        if (event.getEventType().isEconomic()) {
+            int numberOfWindows = event.getNumberOfWindows();
+            List<DateTime> windowTimes = new ArrayList<>(numberOfWindows);
+            for (int i = 0; i < numberOfWindows; i++) {
+                DateTime windowStart = event.getStartTime().plus(Duration.standardHours(i));
+                windowTimes.add(windowStart);
+            }
+            model.addAttribute("windowTimes", windowTimes);
+        }
     }
     
     @RequestMapping("/cc/program/{programId}/createEvent")
     public String createEvent(ModelMap model,
                               @ModelAttribute("event") CiInitEventModel event,
-                              @PathVariable int programId) {
+                              BindingResult bindingResult,
+                              @PathVariable int programId,
+                              YukonUserContext userContext) {
         
-        int eventId = ciEventCreationService.createEvent(event);
-
-        return "redirect:/dr/cc/program/" + programId + "/event/" + eventId + "/detail";
+        CiInitEventModelValidator validator = eventModelValidator.getPreCreateValidator();
+        validator.doValidation(event, bindingResult);
+        if (bindingResult.hasErrors()) {
+            setUpConfirmationModel(model, event, programId);
+            return "dr/cc/confirmation.jsp";
+        }
+        
+        try {
+            int eventId = ciEventCreationService.createEvent(event);
+            return "redirect:/dr/cc/program/" + programId + "/event/" + eventId + "/detail";
+        } catch (EventCreationException e) {
+            bindingResult.reject("yukon.web.modules.dr.cc.init.error.noAdvancedBuyThrough");
+            setUpConfirmationModel(model, event, programId);
+            return "dr/cc/confirmation.jsp";
+        }
     }
     
     //TODO: clean up
@@ -362,17 +487,6 @@ public class CcHomeController {
         } catch (NoPointException e) {
             return "n/a";
         }
-    }
-    
-    @RequestMapping("/cc/program/{programId}/pricing")
-    public String pricing(ModelMap model, 
-                          @ModelAttribute("event") CiInitEventModel event, 
-                          @PathVariable int programId) {
-        
-        Program program = programService.getProgramById(programId);
-        model.addAttribute("program", program);
-        
-        return "dr/cc/pricing.jsp";
     }
     
     @RequestMapping("/cc/program/{programId}/history")
@@ -1138,6 +1252,14 @@ public class CcHomeController {
         others.remove(economicEvent.getLatestRevision());
         ListDataModel otherRevisionsModel = new ListDataModel(others);
         return otherRevisionsModel;
+    }
+    
+    private DateTime roundUpToNextHour(DateTime dateTime) {
+        int hourOfDay = dateTime.getHourOfDay();
+        return dateTime.withHourOfDay(hourOfDay + 1)
+                       .withMinuteOfHour(0)
+                       .withSecondOfMinute(0)
+                       .withMillisOfSecond(0);
     }
     
     private class RecentEventPredicate implements Predicate<BaseEvent> {

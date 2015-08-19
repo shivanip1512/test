@@ -1217,6 +1217,7 @@
     <bean class="com.cannontech.web.stars.gateway.GatewayControllerHelper"/>
     
     <bean class="com.cannontech.web.dr.cc.GroupBeanValidator"/>
+    <bean class="com.cannontech.web.dr.cc.CiInitEventModelValidator"/>
     <bean class="com.cannontech.web.dr.cc.service.impl.CiCustomerVerificationServiceImpl"/>
     <bean class="com.cannontech.web.dr.cc.service.impl.CiEventCreationServiceImpl"/>
     
