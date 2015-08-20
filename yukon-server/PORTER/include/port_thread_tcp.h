@@ -54,7 +54,6 @@ protected:
 public:
 
     TcpPortHandler( Ports::TcpPortSPtr &port, CtiDeviceManager &deviceManager );
-    virtual ~TcpPortHandler() {};
 };
 
 }

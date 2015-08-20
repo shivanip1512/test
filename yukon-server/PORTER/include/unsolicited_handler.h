@@ -157,7 +157,7 @@ private:
     device_list _request_complete;
 
     template<class Element>
-    bool processQueue(std::list<Element> &queue, void (UnsolicitedHandler::*processElement)(Element), const Cti::Timing::MillisecondTimer &timer, const unsigned long until);
+    bool processQueue(std::list<Element> &queue, const char *function, void (UnsolicitedHandler::*processElement)(Element), const Cti::Timing::MillisecondTimer &timer, const unsigned long until);
 
     std::multimap<CtiTime, device_list::iterator> _timeouts;
 

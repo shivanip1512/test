@@ -166,24 +166,31 @@ void TcpConnectionManager::checkPendingConnectionBlock(vector<pending_map::itera
 
     for each( pending_map::iterator itr in pending_block )
     {
-        const long &id = itr->first;
-        pending_connection    &p  = *(itr->second);
-
-        if( ready_count && p.is_in(&new_connections) )
+        try
         {
-            _established.insert(id, new established_connection(p));
+            const long &id = itr->first;
+            pending_connection &p = *(itr->second);
 
-            _pending.erase(itr);
+            if( ready_count && p.is_in(&new_connections) )
+            {
+                _established.insert(id, new established_connection(p));
 
-            connected.insert(id);
+                _pending.erase(itr);
+
+                connected.insert(id);
+            }
+            else if( p.timeout < Now )
+            {
+                boost::assign::ptr_map_insert(_inactive)(id, p);
+
+                _pending.erase(itr);
+
+                errors.insert(id);
+            }
         }
-        else if( p.timeout < Now )
+        catch( ... )
         {
-            boost::assign::ptr_map_insert(_inactive)(id, p);
-
-            _pending.erase(itr);
-
-            errors.insert(id);
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "failure during pending connection test");
         }
     }
 }

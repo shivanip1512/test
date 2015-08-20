@@ -170,11 +170,21 @@ void TcpPortHandler::loadDeviceTcpProperties(const set<long> &device_ids)
 
             if( paoProperty.getPropertyName() == "TcpPort" )
             {
-                tmp_ports[paoProperty.getPaoId()] = atoi(paoProperty.getPropertyValue().c_str());
+                auto port = paoProperty.getPropertyValue();
+
+                if( ! ciStringEqual(port, "(none)") )
+                {
+                    tmp_ports[paoProperty.getPaoId()] = atoi(port.c_str());
+                }
             }
             else if( paoProperty.getPropertyName() == "TcpIpAddress" )
             {
-                tmp_ip_addresses[paoProperty.getPaoId()] = paoProperty.getPropertyValue();
+                auto address = paoProperty.getPropertyValue();
+
+                if( ! ciStringEqual(address, "(none)") )
+                {
+                    tmp_ip_addresses[paoProperty.getPaoId()] = address;
+                }
             }
         }
 

@@ -162,7 +162,7 @@ int EstablishedTcpConnection::send(const bytes &data) const
 
 void EstablishedTcpConnection::recv()
 {
-    u_long bytes_available;
+    u_long bytes_available = 0;
 
     if( ioctlsocket(sock(), FIONREAD, &bytes_available) )
     {

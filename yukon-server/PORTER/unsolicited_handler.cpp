@@ -199,7 +199,16 @@ bool UnsolicitedHandler::handleDbChanges(const MillisecondTimer &timer, const un
         {
             if( msg->isA() == MSG_DBCHANGE )
             {
-                handleDbChange(*static_cast<CtiDBChangeMsg *>(msg));
+                auto dbchg = static_cast<CtiDBChangeMsg *>(msg);
+
+                try
+                {
+                    handleDbChange(*dbchg);
+                }
+                catch( ... )
+                {
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, describePort() << " failed while processing DBChange " << dbchg)
+                }
             }
 
             delete msg;
@@ -388,18 +397,25 @@ bool UnsolicitedHandler::distributeRequests(const MillisecondTimer &timer, const
     }
 
     //  if we got work, attempt to distribute it to the device records
-    return processQueue(_request_queue, &UnsolicitedHandler::handleDeviceRequest, timer, until);
+    return processQueue(_request_queue, __FUNCTION__, &UnsolicitedHandler::handleDeviceRequest, timer, until);
 }
 
 
 template<class Element>
-bool UnsolicitedHandler::processQueue(std::list<Element> &queue, void (UnsolicitedHandler::*processElement)(Element), const Cti::Timing::MillisecondTimer &timer, const unsigned long until)
+bool UnsolicitedHandler::processQueue(std::list<Element> &queue, const char *function, void (UnsolicitedHandler::*processElement)(Element), const Cti::Timing::MillisecondTimer &timer, const unsigned long until)
 {
     while( ! queue.empty() )
     {
-        if( Element element = queue.front() )
+        try
         {
-            (this->*processElement)(element);
+            if( Element element = queue.front() )
+            {
+                (this->*processElement)(element);
+            }
+        }
+        catch( ... )
+        {
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, describePort() << " failed while processing queue for method " << function);
         }
 
         queue.pop_front();
@@ -557,7 +573,7 @@ void UnsolicitedHandler::generateDnpKeepalive(CtiPortSPtr &port, const device_re
 
 bool UnsolicitedHandler::startPendingRequests(const MillisecondTimer &timer, const unsigned long until)
 {
-    return processQueue(_request_pending, &UnsolicitedHandler::startPendingRequest, timer, until);
+    return processQueue(_request_pending, __FUNCTION__, &UnsolicitedHandler::startPendingRequest, timer, until);
 }
 
 
@@ -634,7 +650,7 @@ void UnsolicitedHandler::startPendingRequest(device_record *dr)
 
 bool UnsolicitedHandler::generateOutbounds(const MillisecondTimer &timer, const unsigned long until)
 {
-    return processQueue(_to_generate, &UnsolicitedHandler::tryGenerate, timer, until);
+    return processQueue(_to_generate, __FUNCTION__, &UnsolicitedHandler::tryGenerate, timer, until);
 }
 
 
@@ -923,7 +939,7 @@ bool UnsolicitedHandler::expireTimeouts(const MillisecondTimer &timer, const uns
 
 bool UnsolicitedHandler::processInbounds(const MillisecondTimer &timer, const unsigned long until)
 {
-    return processQueue(_to_decode, &UnsolicitedHandler::processInbound, timer, until);
+    return processQueue(_to_decode, __FUNCTION__, &UnsolicitedHandler::processInbound, timer, until);
 }
 
 
@@ -1157,7 +1173,7 @@ void UnsolicitedHandler::trace()
 
 bool UnsolicitedHandler::sendResults(const MillisecondTimer &timer, const unsigned long until)
 {
-    return processQueue(_request_complete, &UnsolicitedHandler::sendResult, timer, until);
+    return processQueue(_request_complete, __FUNCTION__, &UnsolicitedHandler::sendResult, timer, until);
 }
 
 
