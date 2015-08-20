@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.joda.time.Instant;
 import org.joda.time.LocalTime;
+import org.joda.time.ReadableInstant;
 
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -332,4 +333,10 @@ public interface RawPointHistoryDao {
     * if no value exists for that point in time
     */
    public PointValueQualityHolder getSpecificValue(int pointId, long timestamp) throws NotFoundException;
+
+   /**
+    * The time in the specified range where the highest value was recorded on the point
+    * or <code>null</code> if there are no readings in the time range
+    */
+   Instant getPeakTimeInRange(int pointId, ReadableRange<ReadableInstant> instantRange);
 }

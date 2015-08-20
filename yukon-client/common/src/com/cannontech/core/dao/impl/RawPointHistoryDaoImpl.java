@@ -14,12 +14,10 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.Instant;
 import org.joda.time.LocalTime;
-import org.joda.time.format.PeriodFormatter;
-import org.joda.time.format.PeriodFormatterBuilder;
+import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
-import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -48,6 +46,7 @@ import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueBuilder;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -73,13 +72,6 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     @Autowired private AttributeService attributeService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
-    
-    private final static PeriodFormatter timingFormatter;
-    
-    static {
-        timingFormatter = new PeriodFormatterBuilder().appendMinutes().appendSuffix(" minute", " minutes")
-                .appendSeparator(" and ").appendSecondsWithMillis().appendSuffix(" second", " seconds").toFormatter();
-    }
     
     YukonRowMapper<Map.Entry<Integer, PointValueQualityHolder>> rphYukonRowMapper =
         new YukonRowMapper<Map.Entry<Integer, PointValueQualityHolder>>() {
@@ -315,7 +307,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             }
         };
         ListMultimap<PaoIdentifier, PointValueQualityHolder> values = loadValuesForGeneratorFactory(factory,
-                displayableDevices, attribute, maxRows, excludeDisabledPaos);
+                displayableDevices, attribute, maxRows);
 
         if (log.isInfoEnabled()){
             stopwatch.stop();
@@ -379,7 +371,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             }
         };
 
-        return loadValuesForGeneratorFactory(factory, paos, attribute, 20, excludeDisabledPaos);
+        return loadValuesForGeneratorFactory(factory, paos, attribute, 20);
     }
     
     @Override
@@ -420,7 +412,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             }
         };
 
-        return loadValuesForGeneratorFactory(factory, paos, attribute, 20, excludeDisabledPaos);
+        return loadValuesForGeneratorFactory(factory, paos, attribute, 20);
     }
 
     private void appendAttributeDataSql(SqlStatementBuilder sql, List<Integer> subList,
@@ -489,7 +481,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             }
         };
 
-        return loadValuesForGeneratorFactory(factory, displayableDevices, attribute, 20, excludeDisabledPaos);
+        return loadValuesForGeneratorFactory(factory, displayableDevices, attribute, 20);
     }
 
 
@@ -740,8 +732,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
 
     private ListMultimap<PaoIdentifier, PointValueQualityHolder> loadValuesForGeneratorFactory(
             SqlFragmentGeneratorFactory sqlGeneratorFactory,
-            Iterable<? extends YukonPao> paos, Attribute attribute, int valuePerPaoHint,
-            final boolean excludeDisabledDevices) {
+            Iterable<? extends YukonPao> paos, Attribute attribute, int valuePerPaoHint) {
         /*
          * The general idea here is that input PAOs will probably be of a mix of PaoTypes. Any of those
          * PaoTypes could use a different point for a given attribute, and in the case of mappable
@@ -821,7 +812,10 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                 PaoPointIdentifier identifier = attributeService.getPaoPointIdentifierForAttribute(pao, attribute);
                 paoIdentifierLookup.put(identifier, pao.getPaoIdentifier());
             } catch (IllegalUseOfAttribute e) {
-                LogHelper.debug(log, "unable to look up values for %s on %s: %s", attribute, pao, e.toString());
+                if (log.isDebugEnabled()) {
+                    String output = String.format("unable to look up values for %s on %s: %s", attribute, pao, e.toString());
+                    log.debug(output);
+                }
                 continue; //This device does not support the selected attribute.
             }
         }
@@ -1018,6 +1012,36 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     	sql.append("WHERE ChangeId").eq(changeId);
 
     	yukonTemplate.update(sql);
+    }
+
+    @Override
+    public Instant getPeakTimeInRange(int pointId, ReadableRange<ReadableInstant> instantRange) {
+
+        VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
+        SqlBuilder sqla = builder.buildFor(DatabaseVendor.MS2000);
+        sqla.append("SELECT TOP 1 TIMESTAMP");
+        sqla.append("FROM RAWPOINTHISTORY");
+        sqla.append("WHERE POINTID").eq(pointId);
+        sqla.append("AND TIMESTAMP").gt(instantRange.getMin());
+        sqla.append("AND TIMESTAMP").lt(instantRange.getMax());
+        sqla.append("ORDER BY VALUE DESC, TIMESTAMP DESC");
+
+        SqlBuilder sqlb = builder.buildOther();
+        sqlb.append("SELECT TIMESTAMP FROM (");
+        sqlb.append(  "SELECT DISTINCT TIMESTAMP,");
+        sqlb.append(  "ROW_NUMBER() over (");
+        sqlb.append(    "ORDER BY VALUE DESC, TIMESTAMP DESC");
+        sqlb.append(  ") rn");
+        sqlb.append(  "FROM RAWPOINTHISTORY");
+        sqlb.append(  "WHERE POINTID").eq(pointId);
+        sqlb.append(  "AND TIMESTAMP").gt(instantRange.getMin());
+        sqlb.append(  "AND TIMESTAMP").lt(instantRange.getMax());
+        sqlb.append(") numberedRows");
+        sqlb.append("WHERE numberedRows.rn").eq(1);
+
+        Instant peakTime = yukonTemplate.queryForObject(builder, RowMapper.INSTANT_NULLABLE);
+
+        return peakTime;
     }
 
 }
