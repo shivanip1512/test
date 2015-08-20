@@ -78,6 +78,24 @@ yukon.tools.point = (function () {
         
         $('.js-status-control-input').toggle(inputsNeeded);
     };
+    
+    /**
+     * Shows and hides status control fields based on control type selected
+     */
+    var updateLimits1 = function () {
+        var enabled = $('.js-limit-one-enabled').is(':checked');
+
+        $('.js-limit-one-input').toggle(enabled);
+    };
+
+    /**
+     * Shows and hides status control fields based on control type selected
+     */
+    var updateLimits2 = function () {
+        var enabled = $('.js-limit-two-enabled').is(':checked');
+
+        $('.js-limit-two-input').toggle(enabled);
+    };
 
     /**
      * When stale data is enabled, show the subfields. otherwise, hide them.
@@ -253,6 +271,10 @@ yukon.tools.point = (function () {
             $('.js-analog-control-type').on('change', updateAnalogControl);
             updateStatusControl();
             $('.js-status-control-type').on('change', updateStatusControl);
+            updateLimits1();
+            $('.js-limit-one-enabled').on('change', updateLimits1);
+            updateLimits2();
+            $('.js-limit-two-enabled').on('change', updateLimits2);
             updateStaleData();
             $('.js-stale-data-enabled').on('change', updateStaleData);
 

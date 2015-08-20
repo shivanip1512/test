@@ -295,52 +295,46 @@
                         <%-- The first limit that can be set for this point, used to determine if an alarm condition is active --%>
                         <%-- Determines visibility of the below limitOne inputs --%>
                         <tags:nameValue2 nameKey=".limit.1">
-                            <tags:switchButton path="pointBase.limitOneSpecified" offClasses="M0" 
-                                toggleGroup="limitOne" toggleAction="disable"/>
+                            <tags:switchButton path="pointBase.limitOneSpecified"
+                                offClasses="M0" inputClass="js-limit-one-enabled"/>
                         </tags:nameValue2>
 
                         <%-- The upper value for this limit (used for an alarming condition) --%>
-                        <tags:nameValue2 nameKey=".limit.upper">
-                            <tags:input path="pointBase.pointLimitsMap[1].highLimit" size="6" 
-                                toggleGroup="limitOne"/>
+                        <tags:nameValue2 nameKey=".limit.upper" rowClass="js-limit-one-input">
+                            <tags:input path="pointBase.pointLimitsMap[1].highLimit" size="6"/>
                         </tags:nameValue2>
 
                         <%-- The lower value for this limit (used for an alarming condition) --%>
-                        <tags:nameValue2 nameKey=".limit.lower">
-                            <tags:input path="pointBase.pointLimitsMap[1].lowLimit" size="6"
-                                toggleGroup="limitOne"/>
+                        <tags:nameValue2 nameKey=".limit.lower" rowClass="js-limit-one-input">
+                            <tags:input path="pointBase.pointLimitsMap[1].lowLimit" size="6"/>
                         </tags:nameValue2>
 
                         <%-- The number of seconds the limit must be violated before an alarm is generated --%>
-                        <tags:nameValue2 nameKey=".limit.duration">
-                            <tags:input path="pointBase.pointLimitsMap[1].limitDuration" size="6"
-                                toggleGroup="limitOne"/>
+                        <tags:nameValue2 nameKey=".limit.duration" rowClass="js-limit-one-input">
+                            <tags:input path="pointBase.pointLimitsMap[1].limitDuration" size="6"/>
                             <i:inline key="yukon.common.durationFormatting.symbol.S_SHORT.suffix.singular"/>
                         </tags:nameValue2>
 
                         <%-- The second limit that can be set for this point, used to determine if an alarm condition is active --%>
                         <%-- Determines visibilty of the below limitTwo inputs --%>
                         <tags:nameValue2 nameKey=".limit.2">
-                            <tags:switchButton path="pointBase.limitTwoSpecified" offClasses="M0"
-                                toggleGroup="limitTwo" toggleAction="disable"/>
+                            <tags:switchButton path="pointBase.limitTwoSpecified"
+                                offClasses="M0" inputClass="js-limit-two-enabled"/>
                         </tags:nameValue2>
 
                         <%-- The upper value for this limit (used for an alarming condition) --%>
-                        <tags:nameValue2 nameKey=".limit.upper">
-                            <tags:input path="pointBase.pointLimitsMap[2].highLimit" size="6"
-                                toggleGroup="limitTwo"/>
+                        <tags:nameValue2 nameKey=".limit.upper" rowClass="js-limit-two-input">
+                            <tags:input path="pointBase.pointLimitsMap[2].highLimit" size="6"/>
                         </tags:nameValue2>
 
                         <%-- The lower value for this limit (used for an alarming condition) --%>
-                        <tags:nameValue2 nameKey=".limit.lower">
-                            <tags:input path="pointBase.pointLimitsMap[2].lowLimit" size="6"
-                                toggleGroup="limitTwo"/>
+                        <tags:nameValue2 nameKey=".limit.lower" rowClass="js-limit-two-input">
+                            <tags:input path="pointBase.pointLimitsMap[2].lowLimit" size="6"/>
                         </tags:nameValue2>
 
                         <%-- The number of seconds the limit must be violated before an alarm is generated --%>
-                        <tags:nameValue2 nameKey=".limit.duration">
-                            <tags:input path="pointBase.pointLimitsMap[2].limitDuration" size="6"
-                                toggleGroup="limitTwo"/>
+                        <tags:nameValue2 nameKey=".limit.duration" rowClass="js-limit-two-input">
+                            <tags:input path="pointBase.pointLimitsMap[2].limitDuration" size="6"/>
                             <i:inline key="yukon.common.durationFormatting.symbol.S_SHORT.suffix.singular"/>
                         </tags:nameValue2>
 
