@@ -21,11 +21,24 @@ Cti::Logging::AutoShutdownLoggers g_autoShutdownLoggers;
 // Close all messaging connections when this object is destroyed
 Cti::Messaging::AutoCloseAllConnections g_autoCloseAllConnections;
 
-int main(int argc, char* argv[] )
+/* Called when we get an SEH exception.  Generates a minidump. */
+LONG WINAPI MyUnhandledExceptionFilter(PEXCEPTION_POINTERS pExceptionPtrs)
+{
+    std::ostringstream os;
+    os << CompileInfo.project << "-" << GetCurrentThreadId();
+    CreateMiniDump(os.str());
+
+    return EXCEPTION_EXECUTE_HANDLER;
+}
+
+int main(int argc, char* argv[])
 {
    BOOL bConsole;
    LPTSTR szName = "Dispatch";
    LPTSTR szDisplay = "Yukon Dispatch Service";
+
+   // Catch and clean SEH Exceptions and make sure we get a minidump
+   SetUnhandledExceptionFilter(MyUnhandledExceptionFilter);
 
    try
    {

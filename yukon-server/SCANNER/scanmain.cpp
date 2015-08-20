@@ -21,13 +21,26 @@ Cti::Messaging::AutoCloseAllConnections g_autoCloseAllConnections;
 
 extern INT ScannerMainFunction(INT, CHAR**);
 
-int main(int argc, char* argv[] )
+/* Called when we get an SEH exception.  Generates a minidump. */
+LONG WINAPI MyUnhandledExceptionFilter(PEXCEPTION_POINTERS pExceptionPtrs)
+{
+    std::ostringstream os;
+    os << CompileInfo.project << "-" << GetCurrentThreadId();
+    CreateMiniDump(os.str());
+
+    return EXCEPTION_EXECUTE_HANDLER;
+}
+
+int main(int argc, char* argv[])
 {
    LPTSTR szName = "Scanner";
    LPTSTR szDisplay = "Yukon Real-Time Scan Service";
    LPTSTR szDesc = "Manages the periodic - timed scanning of field devices";
 
-   doutManager.setOwnerInfo     ( CompileInfo );
+   // Catch and clean SEH Exceptions and make sure we get a minidump
+   SetUnhandledExceptionFilter(MyUnhandledExceptionFilter);
+
+   doutManager.setOwnerInfo(CompileInfo);
    doutManager.setOutputPath    ( gLogDirectory );
    doutManager.setRetentionDays ( gLogRetention );
    doutManager.setOutputFile    ( "scanner" );
