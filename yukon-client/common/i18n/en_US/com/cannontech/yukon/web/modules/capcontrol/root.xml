@@ -339,8 +339,7 @@
                                                                                    -U: CBC reported unsolicited state change.<br>
                                                                                    -Q: Cap Bank state reflects abnormal data quality.<br>
                                                                                    -CF: Communications Failure.<br>
-                                                                                   -P: Partial - phase imbalance.<br>
-                                                                                   -S: Significant - questionable var response on all phases.<br>
+                                                                                   -A|B|C: Phase.<br>
                                                                                    -L: Local Mode]]></entry>
     <entry key="yukon.web.modules.capcontrol.substation.cbOrderInfo.tooltip">Order is the order the Cap Bank will control in.</entry>
     <entry key="yukon.web.modules.capcontrol.substation.timestampInfo.hoverText">Click to see the timestamp information for the cap bank controller device.</entry>
