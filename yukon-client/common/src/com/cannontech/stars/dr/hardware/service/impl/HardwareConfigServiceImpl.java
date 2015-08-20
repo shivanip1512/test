@@ -9,8 +9,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -189,8 +187,7 @@ public class HardwareConfigServiceImpl implements HardwareConfigService{
            this.ecId = ecId;
        }
 
-       private void processItem(InventoryConfigTaskItem item)
-               throws InterruptedException {
+       private void processItem(InventoryConfigTaskItem item){
            log.debug("Configuration task" + item);
            InventoryConfigTask task = item.getInventoryConfigTask();
       
@@ -284,9 +281,11 @@ public class HardwareConfigServiceImpl implements HardwareConfigService{
        }
    }
 
-   @PostConstruct
-   public void init() {
-       log.debug("HardwareConfigService - starting up");
+   /**
+    * Called from inventoryContext.xml. Starts config task when Service Manager starts up.
+    */
+   public void startConfigTask() {
+       log.debug("HardwareConfigService - starting up config task");
 
        Collection<EnergyCompany> allEnergyCompanies = ecDao.getAllEnergyCompanies();
        for (EnergyCompany energyCompany : allEnergyCompanies) {
