@@ -34,21 +34,8 @@ LPTSTR szServiceName = "Porter";
 LPTSTR szDisplayName = "Yukon Port Control Service";
 LPTSTR szDesc = "Controls communications to field devices";
 
-/* Called when we get an SEH exception.  Generates a minidump. */
-LONG WINAPI MyUnhandledExceptionFilter(PEXCEPTION_POINTERS pExceptionPtrs)
+int main(int argc, char* argv[] )
 {
-    std::ostringstream os;
-    os << CompileInfo.project << "-" << GetCurrentThreadId();
-    CreateMiniDump(os.str());
-
-    return EXCEPTION_EXECUTE_HANDLER;
-}
-
-int main(int argc, char* argv[])
-{
-   // Catch and clean SEH Exceptions and make sure we get a minidump
-   SetUnhandledExceptionFilter(MyUnhandledExceptionFilter);
-
    InitYukonBaseGlobals();
 
    doutManager.setOwnerInfo     ( CompileInfo );
