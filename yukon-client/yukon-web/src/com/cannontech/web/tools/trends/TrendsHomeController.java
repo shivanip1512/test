@@ -86,7 +86,7 @@ public class TrendsHomeController {
         fileName += ".csv";
 
         ServletOutputStream out = resp.getOutputStream();
-        resp.addHeader("Content-Disposition", "attachment; filename=\"" + fileName);
+        resp.addHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
         resp.setContentType("text/x-comma-separated-values");
         graph.encodeCSV(out);
         
