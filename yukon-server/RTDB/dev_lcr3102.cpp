@@ -3,6 +3,8 @@
 #include "dev_lcr3102.h"
 #include "ctidate.h"
 #include "date_utility.h"
+#include "database_writer.h"
+#include "database_exceptions.h"
 
 #include <boost/optional.hpp>
 
@@ -721,6 +723,10 @@ YukonError_t Lcr3102Device::decodeGetConfigSoftspec( const INMESS &InMessage, co
     return status;
 }
 
+/**
+ Process the responses from a GetConfigAddressing command.
+ Records the results in the database as soon as all 3 responses come in.
+*/
 YukonError_t Lcr3102Device::decodeGetConfigAddressing( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     YukonError_t status = ClientErrors::None;
@@ -735,37 +741,37 @@ YukonError_t Lcr3102Device::decodeGetConfigAddressing( const INMESS &InMessage, 
     string results;
     int function = InMessage.Return.ProtocolInfo.Emetcon.Function;
 
+    // When we sent the getConfigAddress command, we sent 3 commands with 3 different functions under the covers.
+    // Figure out which command this response is from.
     if(function == DataRead_AddressInfoPos)
     {
-        int programAddressRelay1, programAddressRelay2, programAddressRelay3, programAddressRelay4,
-            splinterAddressRelay1, splinterAddressRelay2, splinterAddressRelay3, splinterAddressRelay4;
-
         decodeMessageAddress(DSt->Message,
-                             programAddressRelay1, programAddressRelay2, programAddressRelay3, programAddressRelay4,
-                             splinterAddressRelay1, splinterAddressRelay2, splinterAddressRelay3, splinterAddressRelay4);
+            programAddressRelay[0], programAddressRelay[1], programAddressRelay[2], programAddressRelay[3],
+            splinterAddressRelay[0], splinterAddressRelay[1], splinterAddressRelay[2], splinterAddressRelay[3]);
 
-        results = getName() + " / Program Address Relay 1:  " + CtiNumStr(programAddressRelay1 )  + "\n"
-                + getName() + " / Program Address Relay 2:  " + CtiNumStr(programAddressRelay2 )  + "\n"
-                + getName() + " / Program Address Relay 3:  " + CtiNumStr(programAddressRelay3 )  + "\n"
-                + getName() + " / Program Address Relay 4:  " + CtiNumStr(programAddressRelay4 )  + "\n"
-                + getName() + " / Splinter Address Relay 1: " + CtiNumStr(splinterAddressRelay1) + "\n"
-                + getName() + " / Splinter Address Relay 2: " + CtiNumStr(splinterAddressRelay2) + "\n"
-                + getName() + " / Splinter Address Relay 3: " + CtiNumStr(splinterAddressRelay3) + "\n"
-                + getName() + " / Splinter Address Relay 4: " + CtiNumStr(splinterAddressRelay4);
+        results = getName() + " / Program Address Relay 1:  " + CtiNumStr(programAddressRelay[0]) + "\n"
+            + getName() + " / Program Address Relay 2:  " + CtiNumStr(programAddressRelay[1]) + "\n"
+            + getName() + " / Program Address Relay 3:  " + CtiNumStr(programAddressRelay[2]) + "\n"
+            + getName() + " / Program Address Relay 4:  " + CtiNumStr(programAddressRelay[3]) + "\n"
+            + getName() + " / Splinter Address Relay 1: " + CtiNumStr(splinterAddressRelay[0]) + "\n"
+            + getName() + " / Splinter Address Relay 2: " + CtiNumStr(splinterAddressRelay[1]) + "\n"
+            + getName() + " / Splinter Address Relay 3: " + CtiNumStr(splinterAddressRelay[2]) + "\n"
+            + getName() + " / Splinter Address Relay 4: " + CtiNumStr(splinterAddressRelay[3]);
 
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_ProgramAddressRelay1,    (long)programAddressRelay1);
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_ProgramAddressRelay2,    (long)programAddressRelay2);
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_ProgramAddressRelay3,    (long)programAddressRelay3);
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_ProgramAddressRelay4,    (long)programAddressRelay4);
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SplinterAddressRelay1,   (long)splinterAddressRelay1);
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SplinterAddressRelay2,   (long)splinterAddressRelay2);
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SplinterAddressRelay3,   (long)splinterAddressRelay3);
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SplinterAddressRelay4,   (long)splinterAddressRelay4);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_ProgramAddressRelay1, (long)programAddressRelay[0]);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_ProgramAddressRelay2, (long)programAddressRelay[1]);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_ProgramAddressRelay3, (long)programAddressRelay[2]);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_ProgramAddressRelay4, (long)programAddressRelay[3]);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SplinterAddressRelay1, (long)splinterAddressRelay[0]);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SplinterAddressRelay2, (long)splinterAddressRelay[1]);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SplinterAddressRelay3, (long)splinterAddressRelay[2]);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SplinterAddressRelay4, (long)splinterAddressRelay[3]);
+
+        // Mark that we have received part 1
+        lastAddressingMessage1 = InMessage.Time;
     }
     else if(function == DataRead_SubstationDataPos)
     {
-        int substation, feeder, zipcode, uda;
-
         decodeMessageSubstation(DSt->Message, substation, feeder, zipcode, uda);
 
         results = getName() + " / Substation Address: "     + CtiNumStr(substation) + "\n"
@@ -777,11 +783,66 @@ YukonError_t Lcr3102Device::decodeGetConfigAddressing( const INMESS &InMessage, 
         setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_Feeder,      (long)feeder);
         setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_ZipCode,     (long)zipcode);
         setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_Uda,         (long)uda);
+
+        // Mark that we have received part 2
+        lastAddressingMessage2 = InMessage.Time;
+    }
+    else if(function == DataRead_SoftspecPos)
+    {
+        decodeMessageSoftspec(DSt->Message, sspec, rev, serial, spid, geo);
+
+        results = getName() + " / Software Specification " + CtiNumStr(sspec)
+            + " rev " + CtiNumStr(((double)rev) / 10.0, 1) + "\n"
+            + getName() + " / Serial Number: " + CtiNumStr(serial) + "\n"
+            + getName() + " / SPID Address: " + CtiNumStr(spid) + "\n"
+            + getName() + " / Geo Address: " + CtiNumStr(geo);
+
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SSpec, (long)sspec);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SSpecRevision, (long)rev);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SerialAddress, (long)serial);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_Spid, (long)spid);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_GeoAddress, (long)geo);
+
+        // Mark that we have received part 3
+        lastAddressingMessage3 = InMessage.Time;
     }
     else
     {
-        // Somehow we didn't get back either of the two designated functions. Bad!
+        // Somehow we did got back something we didn't expect. Bad!
         return ClientErrors::Abnormal;
+    }
+
+    // If the last Addressing Messages were less than 5 minutes ago, 
+    CtiTime fiveMinAgo = CtiTime::now() - 300;
+
+    // And we've received all 3 responces
+    if(lastAddressingMessage1 && *lastAddressingMessage1 > fiveMinAgo &&
+        lastAddressingMessage2 && *lastAddressingMessage2 > fiveMinAgo &&
+        lastAddressingMessage3 && *lastAddressingMessage3 > fiveMinAgo)
+    {
+        // Write the information to the database
+        Database::DatabaseConnection conn;
+        if(conn.isValid())
+        {
+            Database::DatabaseWriter writer(conn);
+            // Unique key
+            int id = SynchronizedIdGen("ReportedAddressExpressCom", 1);
+
+            writeAddress(writer, id, InMessage.DeviceID);
+            writeRelay(writer, id, 0);
+            writeRelay(writer, id, 1);
+            writeRelay(writer, id, 2);
+            writeRelay(writer, id, 3);
+
+            // Once we've written the values, don't do it again from this data
+            lastAddressingMessage1.reset();
+            lastAddressingMessage2.reset();
+            lastAddressingMessage3.reset();
+        }
+        else
+        {
+            CTILOG_ERROR(dout, "Invalid Connection to Database");
+        }
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -790,6 +851,78 @@ YukonError_t Lcr3102Device::decodeGetConfigAddressing( const INMESS &InMessage, 
     retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
+}
+
+/**
+    Write LCR config info to the ReportedAddressExpressCom table.
+    Uses id as key.  Writes from the device objects data.
+*/
+void Lcr3102Device::writeAddress(Database::DatabaseWriter &writer, int id, long devid)
+{
+    try
+    {
+        static const std::string sql =
+            "insert into ReportedAddressExpressCom "
+            "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        writer.setCommandText(sql);
+
+        writer << id;
+        writer << devid;
+        writer << *lastAddressingMessage1;
+        writer << spid;
+        writer << geo;
+        writer << substation;
+        writer << feeder;
+        writer << zipcode;
+        writer << uda;
+        writer << -1;                       /* This is not available, so set it to a useless value. */
+
+        writer.executeWithDatabaseException();
+    }
+    catch(std::runtime_error &e)
+    {
+        CTILOG_EXCEPTION_ERROR(dout, e);
+    }
+    catch(Database::DatabaseException &)
+    {
+        // Swallow the database exception without logging
+    }
+}
+
+/**
+    Write relay addresses to the ReportedAddressRelayExpressCom table. 
+    Uses id as key.  Writes from the device objects data.
+    Relay is indexed from 0.  If both relay addresses are 0, they are unused, so skip the write.
+*/
+void Lcr3102Device::writeRelay(Database::DatabaseWriter &writer, int id, int relay)
+{
+    if(programAddressRelay > 0 && splinterAddressRelay)
+    {
+        try
+        {
+            static const std::string sql =
+                "insert into ReportedAddressRelayExpressCom "
+                "values (?, ?, ?, ?)";
+
+            writer.setCommandText(sql);
+
+            writer << id;
+            writer << relay;
+            writer << programAddressRelay[relay];
+            writer << splinterAddressRelay[relay];
+
+            writer.executeWithDatabaseException();
+        }
+        catch(std::runtime_error &e)
+        {
+            CTILOG_EXCEPTION_ERROR(dout, e);
+        }
+        catch(Database::DatabaseException &)
+        {
+            // Swallow the database exception without logging
+        }
+    }
 }
 
 YukonError_t Lcr3102Device::decodeGetConfigTime( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
@@ -1182,7 +1315,7 @@ YukonError_t Lcr3102Device::executeGetConfig( CtiRequestMsg *pReq, CtiCommandPar
     }
     if(parse.isKeyValid("addressing"))
     {
-        // This one is special. Two requests will be sent here, data reads 0x01 and 0x02.
+        // This one is special. Three requests will be sent here, data reads 0x00, 0x01 and 0x02.
         function = EmetconProtocol::GetConfig_Addressing;
         found = getOperation(function, OutMessage->Buffer.BSt);
 
@@ -1199,12 +1332,20 @@ YukonError_t Lcr3102Device::executeGetConfig( CtiRequestMsg *pReq, CtiCommandPar
             OutMessage->Retry     = 2;
             OutMessage->Request.RouteID   = getRouteID();
 
+            // Queue the read of function DataRead_SoftspecPos
+            OutMessage->Buffer.BSt.Function = DataRead_SoftspecPos;
             strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
             outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
             incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
 
-            // go to next function to get next set of data bytes
-            OutMessage->Buffer.BSt.Function += 1;
+            // Queue the read of function DataRead_SubstationDataPos
+            OutMessage->Buffer.BSt.Function = DataRead_SubstationDataPos;
+            strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+            outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+            incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+
+            // Let the remander of the method queue the read of relay addresses function DataRead_AddressInfoPos
+            OutMessage->Buffer.BSt.Function = DataRead_AddressInfoPos;
         }
     }
     if(parse.isKeyValid("time"))

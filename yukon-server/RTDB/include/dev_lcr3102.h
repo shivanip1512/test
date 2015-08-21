@@ -18,7 +18,22 @@ class IM_EX_DEVDB Lcr3102Device : public CarrierDevice
 
     CtiTableDynamicLcrCommunications    _dynamicComms;
 
+    // Data received from the last get config addressing.  We save these
+    //   to save in the database when all messages are received.
+    int programAddressRelay[4], splinterAddressRelay[4];
+    int substation, feeder, zipcode, uda;
+    int sspec, rev, serial, spid, geo;
+
+    // Times from all 3 get config addressing messages.  When we have all 3,
+    // we write to the database
+    boost::optional<CtiTime> lastAddressingMessage1;
+    boost::optional<CtiTime> lastAddressingMessage2;
+    boost::optional<CtiTime> lastAddressingMessage3;
+
     void updateLastCommsTime( const INT sequence_id, const CtiTime & current_time );
+
+    void writeAddress(Database::DatabaseWriter &writer, int id, long devid);
+    void writeRelay(Database::DatabaseWriter &writer, int id, int relay);
 
 protected:
 
