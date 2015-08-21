@@ -50,6 +50,7 @@ public class Colors {
 	        .put(Colors.ORANGE_ID, "#FF9500")
 	        .put(Colors.PINK_ID, "#FFB5E8")
 	        .put(Colors.RED_ID, "#FF0000")
+	        .put(Colors.YELLOW_ID, "#FFDD00")
 	        .build();
 	    
 	public static String colorPaletteToWeb(int color) {

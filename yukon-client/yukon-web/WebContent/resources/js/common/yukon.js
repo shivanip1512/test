@@ -1083,7 +1083,7 @@ yukon.ui = (function () {
            if (blockElement) {
                mod.elementGlass.show(blockElement);
            } else {
-               mod.pageGlass.show();
+               mod.pagezGlass.show();
            }
         },
         

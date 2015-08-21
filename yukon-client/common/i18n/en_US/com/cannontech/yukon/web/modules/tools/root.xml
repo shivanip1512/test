@@ -3,7 +3,6 @@
 <properties>
 
     <entry key="yukon.web.modules.tools.moduleName">Tools</entry>
-
     <!-- module wide key -->
     <entry key="yukon.web.modules.tools.options.title">Options</entry>
     <entry key="yukon.web.modules.tools.instructions.title">Instructions</entry>
@@ -84,25 +83,25 @@
     <entry key="yukon.web.modules.tools.trend.all">All</entry>
     <entry key="yukon.web.modules.tools.trend.noTrends">No Trends</entry>
     <!-- Trends GRAPHS -->
-    <entry key="yukon.web.modules.tools.trend.GraphType.BASIC_GRAPH_TYPE">Graph</entry>
-    <entry key="yukon.web.modules.tools.trend.GraphType.USAGE_GRAPH_TYPE">Usage Graph</entry>
-    <entry key="yukon.web.modules.tools.trend.GraphType.PEAK_GRAPH_TYPE">Peak Graph</entry>
-    <entry key="yukon.web.modules.tools.trend.GraphType.YESTERDAY_GRAPH_TYPE">Yesterday Graph</entry>
-    <entry key="yukon.web.modules.tools.trend.GraphType.DATE_GRAPH_TYPE">Date Graph</entry>
-    <entry key="yukon.web.modules.tools.trend.GraphType.MARKER_GRAPH_TYPE">Marker Graph</entry>
-    <entry key="yukon.web.modules.tools.trend.GraphType.GRAPH_TYPE">Graph</entry>
-    <entry key="yukon.web.modules.tools.trend.GraphType.PRIMARY_TYPE">Primary</entry>
-    <entry key="yukon.web.modules.tools.trend.GraphType.USAGE_TYPE">Usage</entry>
-    <entry key="yukon.web.modules.tools.trend.GraphType.BASIC_TYPE">Basic</entry>
-    <entry key="yukon.web.modules.tools.trend.GraphType.PEAK_TYPE">Peak</entry>
-    <entry key="yukon.web.modules.tools.trend.GraphType.YESTERDAY_TYPE">Yesterday</entry>
-    <entry key="yukon.web.modules.tools.trend.GraphType.MARKER_TYPE">Mark</entry>
-    <entry key="yukon.web.modules.tools.trend.GraphType.DATE_TYPE">Date</entry>
+    <entry key="yukon.web.modules.tools.trend.graphType.BASIC_GRAPH_TYPE">Graph</entry>
+    <entry key="yukon.web.modules.tools.trend.graphType.USAGE_GRAPH_TYPE">Usage Graph</entry>
+    <entry key="yukon.web.modules.tools.trend.graphType.PEAK_GRAPH_TYPE">Peak Graph</entry>
+    <entry key="yukon.web.modules.tools.trend.graphType.YESTERDAY_GRAPH_TYPE">Yesterday Graph</entry>
+    <entry key="yukon.web.modules.tools.trend.graphType.DATE_GRAPH_TYPE">Date Graph</entry>
+    <entry key="yukon.web.modules.tools.trend.graphType.MARKER_GRAPH_TYPE">Marker Graph</entry>
+    <entry key="yukon.web.modules.tools.trend.graphType.GRAPH_TYPE">Graph</entry>
+    <entry key="yukon.web.modules.tools.trend.graphType.PRIMARY_TYPE">Primary</entry>
+    <entry key="yukon.web.modules.tools.trend.graphType.USAGE_TYPE">Usage</entry>
+    <entry key="yukon.web.modules.tools.trend.graphType.BASIC_TYPE">Basic</entry>
+    <entry key="yukon.web.modules.tools.trend.graphType.PEAK_TYPE">Peak</entry>
+    <entry key="yukon.web.modules.tools.trend.graphType.YESTERDAY_TYPE">Yesterday</entry>
+    <entry key="yukon.web.modules.tools.trend.graphType.MARKER_TYPE">Mark</entry>
+    <entry key="yukon.web.modules.tools.trend.graphType.DATE_TYPE">Date</entry>
     <!-- Trend Graph State -->
-    <entry key="yukon.web.modules.tools.trend.GraphDataState.DATA_AVAILABLE">Data is available.</entry>
-    <entry key="yukon.web.modules.tools.trend.GraphDataState.NO_TREND_DATA_AVAILABLE">No Data available.</entry>
-    <entry key="yukon.web.modules.tools.trend.GraphDataState.DB_ERROR">A database transaction has occurred. Contact Administrator</entry>
-    <entry key="yukon.web.modules.tools.trend.GraphDataState.PARSE_ERROR">A parsing error occurred. Please check logs.</entry>
+    <entry key="yukon.web.modules.tools.trend.graphDataState.DATA_AVAILABLE">Data is available.</entry>
+    <entry key="yukon.web.modules.tools.trend.graphDataState.NO_TREND_DATA_AVAILABLE">No Data available.</entry>
+    <entry key="yukon.web.modules.tools.trend.graphDataState.DB_ERROR">A database transaction has occurred. Contact Administrator</entry>
+    <entry key="yukon.web.modules.tools.trend.graphDataState.PARSE_ERROR">A parsing error occurred. Please check logs.</entry>
     <!-- TDC -->
     <entry key="yukon.web.modules.tools.tdc.displays">Displays</entry>
 

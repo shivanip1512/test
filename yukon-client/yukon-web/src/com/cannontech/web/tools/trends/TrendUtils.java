@@ -14,7 +14,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 public final class TrendUtils {
     private static final Logger log = YukonLogManager.getLogger(TrendUtils.class);
-    
     private TrendUtils() {};
     
     public static String getLabels(YukonUserContext userContext, YukonUserContextMessageSourceResolver messageSourceResolver) {

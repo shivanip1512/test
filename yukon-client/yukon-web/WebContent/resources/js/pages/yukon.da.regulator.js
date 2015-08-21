@@ -120,9 +120,7 @@ yukon.da.regulator = (function () {
                             row.insertBefore(tr);
                             attached = true;
                         } 
-                       
-                    });
-                    
+                   });
                     if (!attached) {
                         body.append(row);
                     }
@@ -182,7 +180,7 @@ yukon.da.regulator = (function () {
                 var dialog = $(ev.target);
                 debug.log(dialog);
                 
-                yukon.ui.elementGlass.show('.js-auto-map-dialog');
+                yukon.ui.block('.js-auto-map-dialog');
                 dialog.parent().find('.ui-dialog-buttonpane').find('.ui-button').prop('disabled', true);
                  
                 $.ajax(yukon.url('/capcontrol/regulators/' + _id + '/automap'))
