@@ -1,6 +1,7 @@
 #pragma once
 
 #include "utility.h"
+#include "streamBuffer.h"
 
 #include "boost/optional/optional.hpp"
 #include <boost/range/iterator_range.hpp>
@@ -160,6 +161,16 @@ inline std::ostream &operator<<(std::ostream &logger, const boost::iterator_rang
     logger.fill(oldFill);
 
     logger.flags(oldflags);
+
+    return logger;
+}
+
+inline StreamBufferSink &operator<<(StreamBufferSink &logger, const boost::iterator_range<unsigned char*> &buf)
+{
+
+    std::for_each(buf.begin(), buf.end(), [&](int ch) {
+        logger << std::hex << std::setfill('0') << std::setw(2) << ch << " ";
+    });
 
     return logger;
 }
