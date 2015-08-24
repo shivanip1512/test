@@ -900,6 +900,7 @@ void Lcr3102Device::writeRelay(Database::DatabaseWriter &writer, int id, int rel
     if(relay < 0 || relay > 4)
     {
         CTILOG_ERROR(dout, "Invalid relay number specified");
+        return;
     }
 
     if(programAddressRelay[relay] > 0 && splinterAddressRelay[relay] > 0)
