@@ -2259,7 +2259,8 @@ void CreateMiniDump( const std::string &dumpfilePrefix )
     time_t now    =  time(0);
     tm     now_tm = *localtime(&now);
 
-    os << dumpfilePrefix
+    os << gLogDirectory << "\\"
+        << dumpfilePrefix
         << "-"
         << setfill('0')
         << setw(4) << (now_tm.tm_year + 1900)

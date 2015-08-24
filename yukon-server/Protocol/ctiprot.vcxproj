@@ -135,7 +135,6 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>precompiled.h</PrecompiledHeaderFile>
-      <ExceptionHandling>Async</ExceptionHandling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <ProgramDataBaseFileName>Debug\ctiprot\I386\</ProgramDataBaseFileName>
       <WarningLevel>Level1</WarningLevel>
@@ -190,7 +189,6 @@ xcopy /d/y/f $(SolutionDir)Protocol\3rdParty\SAprotocol.dll $(SolutionDir)bin</C
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>precompiled.h</PrecompiledHeaderFile>
-      <ExceptionHandling>Async</ExceptionHandling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <WarningLevel>Level1</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -245,7 +243,6 @@ xcopy /d/y/f $(SolutionDir)Protocol\3rdParty\SAprotocol.dll $(SolutionDir)bin</C
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>precompiled.h</PrecompiledHeaderFile>
-      <ExceptionHandling>Async</ExceptionHandling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <ProgramDataBaseFileName>Debug\ctiprot\AMD64\</ProgramDataBaseFileName>
       <WarningLevel>Level1</WarningLevel>
@@ -307,7 +304,6 @@ xcopy /d/y/f $(SolutionDir)Protocol\3rdParty\SAprotocol.dll $(SolutionDir)bin</C
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>precompiled.h</PrecompiledHeaderFile>
-      <ExceptionHandling>Async</ExceptionHandling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <WarningLevel>Level1</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>

@@ -23,11 +23,28 @@ Cti::Messaging::AutoCloseAllConnections g_autoCloseAllConnections;
 
 using namespace std;
 
+#if defined(WIN32)
+/* Called when we get an SEH exception.  Generates a minidump. */
+static LONG WINAPI MyUnhandledExceptionFilter(PEXCEPTION_POINTERS pExceptionPtrs)
+{
+    std::ostringstream os;
+    os << CompileInfo.project << "-" << GetCurrentThreadId();
+    CreateMiniDump(os.str());
+
+    return EXCEPTION_EXECUTE_HANDLER;
+}
+#endif
+
 int main(int argc, char* argv[] )
 {
     INT RunningInConsole = false;
     LPTSTR szServiceName = "CapControl";
     LPTSTR szDisplayName = "Yukon Cap Control Service";
+
+#if defined(WIN32)
+    // Catch and clean SEH Exceptions and make sure we get a minidump
+    SetUnhandledExceptionFilter(MyUnhandledExceptionFilter);
+#endif
 
     try
     {

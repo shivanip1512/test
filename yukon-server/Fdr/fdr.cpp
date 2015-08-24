@@ -28,8 +28,25 @@ int remove( void );
 LPTSTR szServiceName = "FDR";
 LPTSTR szDisplayName = "Yukon Foreign Data Service";
 
-int main( int argc, char *argv[] )
+#if defined(WIN32)
+/* Called when we get an SEH exception.  Generates a minidump. */
+static LONG WINAPI MyUnhandledExceptionFilter(PEXCEPTION_POINTERS pExceptionPtrs)
 {
+    std::ostringstream os;
+    os << CompileInfo.project << "-" << GetCurrentThreadId();
+    CreateMiniDump(os.str());
+
+    return EXCEPTION_EXECUTE_HANDLER;
+}
+#endif
+
+int main(int argc, char *argv[])
+{
+#if defined(WIN32)
+    // Catch and clean SEH Exceptions and make sure we get a minidump
+    SetUnhandledExceptionFilter(MyUnhandledExceptionFilter);
+#endif
+
     try
     {
         if( ! Cti::createExclusiveEvent("FDR_EXCLUSION_EVENT") )
