@@ -142,6 +142,15 @@ inline std::ostream &operator<<(std::ostream &logger, const std::vector<unsigned
     return logger;
 }
 
+inline StreamBufferSink &operator<<(StreamBufferSink &logger, const std::vector<unsigned char> &buf)
+{
+    std::for_each(buf.begin(), buf.end(), [&](int ch) {
+        logger << std::hex << std::setfill('0') << std::setw(2) << ch << " ";
+    });
+
+    return logger;
+}
+
 }
 } // namespace Vector::Hex
 
@@ -167,7 +176,6 @@ inline std::ostream &operator<<(std::ostream &logger, const boost::iterator_rang
 
 inline StreamBufferSink &operator<<(StreamBufferSink &logger, const boost::iterator_range<unsigned char*> &buf)
 {
-
     std::for_each(buf.begin(), buf.end(), [&](int ch) {
         logger << std::hex << std::setfill('0') << std::setw(2) << ch << " ";
     });
