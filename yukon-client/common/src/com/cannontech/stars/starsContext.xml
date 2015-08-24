@@ -114,6 +114,7 @@
         <property name="nextValueHelper" ref="nextValueHelper" />
     </bean>
     
+    <!-- This defines the bean in Web Server. This bean is defined for the Service Manager in inventoryContext.xml -->
     <bean class="com.cannontech.stars.dr.hardware.service.impl.HardwareConfigServiceImpl"/>
 	
     <bean id="customerAccountDao" class="com.cannontech.stars.dr.account.dao.impl.CustomerAccountDaoImpl"/>
