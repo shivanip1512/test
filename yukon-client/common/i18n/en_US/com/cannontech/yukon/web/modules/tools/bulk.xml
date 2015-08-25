@@ -665,6 +665,7 @@
         <li>The first column is always the <i><b>Identifier Column</b></i>. <br>It will be used to determine which device is to be updated.</li><br>
         <li>One of the following column identifiers must be used in the <i><b>Identifier Column</b></i>: <br><b>ADDRESS</b>, <b>METER_NUMBER</b>, <b>NAME</b>, or <b>DEVICE_ID</b>.</li><br>
         <li>Leaving a field blank indicates that the field should not be changed. <br>Chosen columns should be included for each row even if they contain no value.</li><br>
+        <li>All of the three fields(RFN Serial Number, RFN Model, RFN Manufacturer) are required together to update any of these fields.</li><br>
     ]]></entry>
     <entry key="yukon.common.device.bulk.updateUpload.sampleFilesLabel">Sample Files</entry>
     

@@ -197,6 +197,11 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             deleteRfnAddress(device);
             return;
         }
+        if (!device.getRfnIdentifier().isNotBlank()) {
+            //Insert or Update fails as all of the three fields are required to support an update of any of these field.
+            throw new DataIntegrityViolationException("Serial Number, Manufacturer, and Model all these fields are "
+                    + "required to update any of these field.");
+        }
         /* If there is a row in RfnAddress for this device, update it, otherwise insert it. */
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("insert into RfnAddress");
