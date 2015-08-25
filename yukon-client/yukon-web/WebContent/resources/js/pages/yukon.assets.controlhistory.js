@@ -17,19 +17,19 @@ yukon.assets.controlHistory = (function () {
                 return;
             }
             
-            yukon.ui.elementGlass.show($('.js-current-enrollment-history'));
-            yukon.ui.elementGlass.show($('.js-past-enrollment-history'));
+            yukon.ui.block($('.js-current-enrollment-history'));
+            yukon.ui.block($('.js-past-enrollment-history'));
             accountId = $('[data-account-id]').data('accountId');
             
             $('.js-current-enrollment-history').load(yukon.url('/stars/operator/program/controlHistory/currentEnrollment'),
                 {accountId: accountId},
                 function () {
-                    yukon.ui.elementGlass.hide($('.js-current-enrollment-history'));
+                    yukon.ui.unblock($('.js-current-enrollment-history'));
                 });
             $('.js-past-enrollment-history').load(yukon.url('/stars/operator/program/controlHistory/pastEnrollment'),
                 {accountId: accountId},
                 function () {
-                    yukon.ui.elementGlass.hide($('.js-past-enrollment-history'));
+                    yukon.ui.unblock($('.js-past-enrollment-history'));
                 });
             
             _initialized = true;

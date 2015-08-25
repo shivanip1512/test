@@ -64,7 +64,7 @@ yukon.assets.controlHistory.detail = (function () {
                 programId,
                 past, 
                 data;
-            yukon.ui.elementGlass.show($('.js-control-events'));
+            yukon.ui.block($('.js-control-events'));
             accountId = $('[data-account-id]').data('accountId');
             programId = $('[data-program-id]').data('programId');
             past = $('[data-past]').data('past');
@@ -74,7 +74,7 @@ yukon.assets.controlHistory.detail = (function () {
             $('.js-control-events').load(yukon.url('/stars/operator/program/controlHistory/innerCompleteHistoryView'),
                 data,
                 function() {
-                    yukon.ui.elementGlass.hide($('.js-control-events'));
+                    yukon.ui.unblock($('.js-control-events'));
                 });
         }
     };

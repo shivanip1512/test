@@ -77,6 +77,7 @@ public enum JsLibrary {
     YUKON_UI_MOVABLES("/resources/js/common/yukon.ui.movables.js"),
     YUKON_UI_UTIL("/resources/js/common/yukon.ui.util.js"),
     YUKON_UPDATER("/resources/js/common/yukon.data.updater.js"),
+    YUKON_UI("/resources/js/common/yukon.ui.js"),
     
     MOMENT("/resources/js/lib/moment/moment.min.js"),
     MOMENT_TZ("/resources/js/lib/moment/moment-timezone-with-data.min.js"),

@@ -26,11 +26,11 @@ yukon.assets.report = (function () {
         var container = $('#device-report');
         var url = container.data('url');
         
-        yukon.ui.elementGlass.show(container);
+        yukon.ui.block(container);
         
         $.ajax(url).done(function (table) {
             container.html(table);
-            yukon.ui.elementGlass.hide(container);
+            yukon.ui.unblock(container);
         });
         
     },
@@ -47,12 +47,12 @@ yukon.assets.report = (function () {
             if (_count > _threshold) {
                 /** Show loading glass when user clicks any of the paging controls. */
                 $('#device-report').on('click', yg.selectors.paging, function (ev) {
-                    yukon.ui.elementGlass.show($('#device-report'));
+                    yukon.ui.block($('#device-report'));
                 });
                 
                 /** Hide loading glass when any paging action finishes. */
                 $('#device-report').on(yg.events.pagingend, function (ev) {
-                    yukon.ui.elementGlass.hide($('#device-report'));
+                    yukon.ui.unblock($('#device-report'));
                 });
             }
             

@@ -20,7 +20,7 @@ $(function() {
             yukon.ui.unblockPage();
             
             $('.js-block-this').each(function() {
-                yukon.ui.elementGlass.hide($(this));
+                yukon.ui.unblock($(this));
             });
         }
     });
@@ -61,7 +61,7 @@ $(function() {
 &lt;script&gt;
 $(document).keyup(function(e) {
     if (e.which == yg.keys.escape) {
-        yukon.ui.elementGlass.hide($('.js-my-container'));
+        yukon.ui.unblock($('.js-my-container'));
     }
 });
 &lt;/script&gt;

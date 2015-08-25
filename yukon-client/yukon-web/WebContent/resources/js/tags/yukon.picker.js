@@ -99,11 +99,11 @@ yukon.protoPicker = function (okText,
     },
     
     block = function () {
-        yukon.ui.elementGlass.show(document.getElementById(this.pickerId + ' .js-block-this'));
+        yukon.ui.block(document.getElementById(this.pickerId + ' .js-block-this'));
     },
     
     unblock = function () {
-        yukon.ui.elementGlass.hide(document.getElementById(this.pickerId + ' .js-block-this'));
+        yukon.ui.unblock(document.getElementById(this.pickerId + ' .js-block-this'));
     },
     
     updateSelectAllCheckbox = function () {

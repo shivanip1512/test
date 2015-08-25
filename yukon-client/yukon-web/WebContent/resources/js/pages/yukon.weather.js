@@ -30,7 +30,7 @@ yukon.weather = (function() {
         $("#findCloseStationsForm").ajaxSubmit({success: function(data) {
             $("#weatherStationDialog").fadeOut(50, function () {
                 $(this).html(data).fadeIn(50);
-                yukon.ui.elementGlass.hide($("#weatherStationDialog"));
+                yukon.ui.unblock($("#weatherStationDialog"));
             });
         }});
     },

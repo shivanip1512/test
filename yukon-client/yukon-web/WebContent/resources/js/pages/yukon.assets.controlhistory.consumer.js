@@ -24,11 +24,11 @@ yukon.assets.controlHistory.consumer = (function () {
         
         updateControlEvents: function (controlPeriod) {
             var programId = $('[data-program-id]').data('programId');
-            yukon.ui.elementGlass.show($('#controlEventsDiv'));
+            yukon.ui.block($('#controlEventsDiv'));
             $('#controlEventsDiv').load(yukon.url('/stars/consumer/controlhistory/innerCompleteHistoryView'),
                 {'programId': programId, 'controlPeriod': controlPeriod},
                 function () {
-                    yukon.ui.elementGlass.hide($('#controlEventsDiv'));
+                    yukon.ui.unblock($('#controlEventsDiv'));
                 });
         }
     };

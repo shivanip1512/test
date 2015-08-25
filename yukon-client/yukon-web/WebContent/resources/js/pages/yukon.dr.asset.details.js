@@ -102,14 +102,14 @@ yukon.dr.assetDetails = (function() {
             $(document).on('click', '#pingButton', _pingDevices);
 
             if (_aaDiv.length) {
-                yukon.ui.elementGlass.show(_aaDiv);
+                yukon.ui.block(_aaDiv);
                 $.ajax('assetAvailability', {
                     data : {
                         'paoId' : _assetId
                     }
                 }).done(function(data) {
                     _aaDiv.html(data);
-                    yukon.ui.elementGlass.hide(_aaDiv);
+                    yukon.ui.unblock(_aaDiv);
                 });
             }
 

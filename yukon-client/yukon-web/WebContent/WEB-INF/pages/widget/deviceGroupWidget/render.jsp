@@ -24,7 +24,7 @@
         $('#deviceGroupWidgetTree').on('yukon.ui.widget.DeviceGroupWidget.save', function() {
             var groupIds = $('#groupIds').val();
             ${widgetParameters.jsWidget}.setParameter('groupIds', groupIds);
-            yukon.ui.elementGlass.show('#currentGroups');
+            yukon.ui.block('#currentGroups');
             ${widgetParameters.jsWidget}.doDirectActionRefresh('update');
         })
     });

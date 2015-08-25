@@ -107,6 +107,7 @@ public class LayoutController {
         b = ImmutableList.builder();
         // Add Yukon common libraries
         b.add(JsLibrary.YUKON.getPath(dev));
+        b.add(JsLibrary.YUKON_UI.getPath(dev));
         b.add(JsLibrary.YUKON_HUB.getPath(dev));
         b.add(JsLibrary.YUKON_COOKIE.getPath(dev));
         b.add(JsLibrary.YUKON_ALERTS.getPath(dev));

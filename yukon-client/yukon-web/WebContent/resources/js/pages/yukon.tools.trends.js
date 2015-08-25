@@ -15,7 +15,7 @@ yukon.tools.trends = (function () {
             var trendList;
             
             Highcharts.setOptions(yg.highcharts_options);
-            yukon.ui.elementGlass.show('[data-trend]');
+            yukon.ui.block('[data-trend]');
             
             $.getJSON(yukon.url('/tools/trends/' + trendId + '/data'), function (trend) {
                 
@@ -39,7 +39,7 @@ yukon.tools.trends = (function () {
                         
                         events: {
                             load: function (ev) {
-                                yukon.ui.elementGlass.hide('[data-trend]');
+                                yukon.ui.unblock('[data-trend]');
                             }
                         }
                     },

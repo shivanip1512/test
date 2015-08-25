@@ -185,10 +185,8 @@ yukon.da.regulator = (function () {
                  
                 $.ajax(yukon.url('/capcontrol/regulators/' + _id + '/automap'))
                 .done(function (result) {
-                    
-                    debug.debug('Mapping Result', result);
-                    
-                    yukon.ui.elementGlass.hide('.js-auto-map-dialog');
+                    yukon.ui.unblock('.js-auto-map-dialog');
+
                     dialog.parent().find('.ui-dialog-buttonpane').find('.ui-button').prop('disabled', false);
                     
                     var tbody = $('.js-auto-map-dialog .js-mappings');
@@ -221,12 +219,9 @@ yukon.da.regulator = (function () {
                     
                 });
             });
-            
             /** Reset the attribute mapping dialog when closed */
             $(document).on('dialogclose', '.js-auto-map-dialog', function (ev) {
-                
                 var dialog = $(this);
-                
                 dialog.find('.js-automap-results').hide();
                 $('.js-result-header').hide();
                 dialog.find('.js-result').empty();
