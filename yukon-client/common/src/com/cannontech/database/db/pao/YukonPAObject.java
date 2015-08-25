@@ -21,6 +21,8 @@ public class YukonPAObject extends DBPersistent implements YukonPao {
     private String description = CtiUtilities.STRING_NONE;
     private Character disableFlag = new Character('N');
     private String paoStatistics = PaoUtils.DEFAULT_PAO_STATS;
+    private String category;
+    private String paoClass;
 
     public static final String SETTER_COLUMNS[] = { "Category", "PAOClass",
             "PAOName", "Type", "Description", "DisableFlag", "PAOStatistics" };
@@ -161,5 +163,22 @@ public class YukonPAObject extends DBPersistent implements YukonPao {
         UserPageDao userPageDao = YukonSpringHook.getBean(UserPageDao.class);
         userPageDao.updatePagesForPao(getPaoIdentifier(), paoName);
     }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getPaoClass() {
+        return paoClass;
+    }
+
+    public void setPaoClass(String paoClass) {
+        this.paoClass = paoClass;
+    }
+
     
 }

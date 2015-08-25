@@ -167,6 +167,6 @@ $(function() {
 
 <%@ include file="busTier.jspf" %>
 <%@ include file="feederTier.jspf" %>
-<%@ include file="bankTier.jspf" %>
+<%@ include file="bankTier.jsp" %>
 
 </cti:standardPage>

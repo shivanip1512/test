@@ -687,6 +687,15 @@
               </page>
             </pages>
           </page>
+          <page name="CBC Editor" type="BASIC">
+        	<link>${parentLink}</link>
+	        <labelArgument>${parentName}</labelArgument>
+        	<pages>
+          		<page name="capControlCBC.EDIT" type="BASIC">
+                	<labelArgument>${capControlCBC.yukonPAObject.paoName}</labelArgument>
+	            </page>
+        	</pages>
+      	  </page>
           <page name="movedCapBanks" type="BASIC">
             <link>/capcontrol/move/movedCapBanks</link>
           </page>

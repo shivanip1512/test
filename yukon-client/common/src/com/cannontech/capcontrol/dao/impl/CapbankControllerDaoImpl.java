@@ -1,9 +1,12 @@
 package com.cannontech.capcontrol.dao.impl;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.capcontrol.dao.CapbankControllerDao;
@@ -20,6 +23,7 @@ import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
@@ -29,6 +33,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
     @Autowired private PaoDao paoDao;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private AttributeService attributeService;
+    private final ParameterizedRowMapper<YukonPAObject> rowMapper = new YukonPAObjectRowMapper();
     
     @Override
     public boolean assignController(int controllerId, String capbankName) {
@@ -142,4 +147,50 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
             throw new NotFoundException("Parent Subbus was not found for cbc with ID: " + cbcPaoId);
         }
     }
+    
+    @Override
+    public YukonPAObject getForId(int cbcId) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT PaObjectId,Category,PAOClass,PAOName,Type,Description,DisableFlag,PAOStatistics");
+        sql.append("  FROM YukonPAObject");
+        sql.append("WHERE PAObjectID").eq(cbcId);
+        YukonPAObject capControlCBC = yukonJdbcTemplate.queryForObject(sql, rowMapper);
+        return capControlCBC;
+    }
+
+    @Override
+    public YukonPAObject getParentCBC(int cbcId) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+
+        sql.append("SELECT YPO.PaObjectId,YPO.Category,YPO.PAOClass,YPO.PAOName,YPO.Type,YPO.Description ,YPO.DisableFlag,YPO.PAOStatistics");
+        sql.append("FROM CAPBANK CB");
+        sql.append("JOIN YukonPAObject YPO ON CB.DEVICEID = YPO.PAObjectID");
+        sql.append("WHERE cb.CONTROLDEVICEID").eq(cbcId);
+
+        try {
+            YukonPAObject pao = yukonJdbcTemplate.queryForObject(sql, rowMapper);
+            return pao;
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException("Parent CBC was not found for cbc with ID: " + cbcId);
+        }
+    }
+
+    private class YukonPAObjectRowMapper implements ParameterizedRowMapper<YukonPAObject> {
+
+        @Override
+        public YukonPAObject mapRow(ResultSet rs, int rowNum) throws SQLException {
+            YukonPAObject capControlCBC = new YukonPAObject();
+            capControlCBC.setPaObjectID(rs.getInt("PaObjectId"));
+            capControlCBC.setCategory(rs.getString("Category"));
+            capControlCBC.setPaoClass(rs.getString("PAOClass"));
+            capControlCBC.setPaoName(rs.getString("PAOName"));
+            capControlCBC.setPaoType(PaoType.getForDbString((rs.getString("Type"))));
+            capControlCBC.setDescription(rs.getString("Description"));
+            capControlCBC.setDisableFlag(rs.getString("DisableFlag").charAt(0));
+            return capControlCBC;
+        }
+    }
+
 }

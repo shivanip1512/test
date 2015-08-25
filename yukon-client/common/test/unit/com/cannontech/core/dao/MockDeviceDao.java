@@ -11,6 +11,13 @@ import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.db.capcontrol.DeviceCBC;
+import com.cannontech.database.db.device.Device;
+import com.cannontech.database.db.device.DeviceAddress;
+import com.cannontech.database.db.device.DeviceDialupSettings;
+import com.cannontech.database.db.device.DeviceDirectCommSettings;
+import com.cannontech.database.db.device.DeviceScanRate;
+import com.cannontech.database.db.device.DeviceWindow;
 
 public class MockDeviceDao implements DeviceDao {
     @Override
@@ -150,6 +157,66 @@ public class MockDeviceDao implements DeviceDao {
 
     @Override
     public List<SimpleDevice> getYukonDeviceObjectByIds(Iterable<Integer> ids) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public Device getDevice(int deviceId) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public DeviceDirectCommSettings getDeviceDirectCommSettings(int deviceId) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public DeviceDialupSettings getDeviceDialupSettings(int deviceId) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public DeviceAddress getDeviceAddress(int deviceId) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public DeviceWindow getDeviceWindow(int deviceId) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public int saveDeviceAddress(DeviceAddress deviceAddress, int cbcId) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public int saveDeviceCBC(DeviceCBC deviceCBC, int cbcId) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public int saveYukonPao(String paoName, String disableFlag, int cbcId) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public DeviceCBC getDeviceCBC(int deviceId) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public List<DeviceScanRate> getDeviceScanRates(int deviceId) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public int saveDeviceDirectCommSettings(int portId, int cbcId) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public int saveDeviceScanRates(DeviceScanRate deviceScanRate, int deviceId, String type) {
         throw new MethodNotImplementedException();
     }
 

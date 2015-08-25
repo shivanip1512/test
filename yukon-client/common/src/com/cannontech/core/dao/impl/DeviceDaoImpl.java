@@ -10,7 +10,9 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.SimpleMeter;
@@ -41,7 +43,14 @@ import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.capcontrol.DeviceCBC;
+import com.cannontech.database.db.device.Device;
+import com.cannontech.database.db.device.DeviceAddress;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
+import com.cannontech.database.db.device.DeviceDialupSettings;
+import com.cannontech.database.db.device.DeviceDirectCommSettings;
+import com.cannontech.database.db.device.DeviceScanRate;
+import com.cannontech.database.db.device.DeviceWindow;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.IDatabaseCache;
@@ -412,5 +421,235 @@ public final class DeviceDaoImpl implements DeviceDao {
         SimpleDevice device = new SimpleDevice(paoIdentifier);
 
         return device;
+    }
+    
+    @Override
+    public Device getDevice(int deviceId){
+        //ParameterizedRowMapper<Device> rowMapper = new DeviceRowMapper();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+
+        sql.append("SELECT AlarmInhibit,ControlInhibit ");
+        sql.append("FROM Device ");
+        sql.append("WHERE DeviceId").eq(deviceId);
+
+        ParameterizedRowMapper<Device> rowMapper=new ParameterizedRowMapper<Device>() {
+            @Override
+            public Device mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Device device = new Device();
+                device.setAlarmInhibit(new Character(rs.getString("AlarmInhibit").charAt(0)));
+                device.setControlInhibit(new Character(rs.getString("ControlInhibit").charAt(0)));
+                return device;
+            }
+        };
+            Device device = jdbcTemplate.queryForObject(sql, rowMapper);
+            return device;
+        
+    }
+    
+    @Override
+    public DeviceDirectCommSettings getDeviceDirectCommSettings(int deviceId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+
+        sql.append("SELECT PortID ");
+        sql.append("FROM DeviceDirectCommSettings ");
+        sql.append("WHERE DeviceId").eq(deviceId);
+        ParameterizedRowMapper<DeviceDirectCommSettings> rowMapper = new ParameterizedRowMapper<DeviceDirectCommSettings>() {
+            @Override
+            public DeviceDirectCommSettings mapRow(ResultSet rs, int rowNum) throws SQLException {
+                DeviceDirectCommSettings deviceDirectCommSettings = new DeviceDirectCommSettings();
+                deviceDirectCommSettings.setPortID(rs.getInt("PortID"));
+                return deviceDirectCommSettings;
+            }
+        };
+
+        DeviceDirectCommSettings deviceDirectCommSettings = jdbcTemplate.queryForObject(sql, rowMapper);
+        return deviceDirectCommSettings;
+    }
+    
+    @Override
+    public DeviceDialupSettings getDeviceDialupSettings(int deviceId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+
+        sql.append("SELECT PhoneNumber,MinConnectTime, MaxConnectTime, LineSettings, BaudRate ");
+        sql.append("FROM DeviceDialupSettings ");
+        sql.append("WHERE DeviceId").eq(deviceId);
+        ParameterizedRowMapper<DeviceDialupSettings> rowMapper = new ParameterizedRowMapper<DeviceDialupSettings>() {
+            @Override
+            public DeviceDialupSettings mapRow(ResultSet rs, int rowNum) throws SQLException {
+                DeviceDialupSettings deviceDialupSettings = new DeviceDialupSettings();
+                deviceDialupSettings.setPhoneNumber(rs.getString("PhoneNumber"));
+                deviceDialupSettings.setPhoneNumber(rs.getString("MinConnectTime"));
+                deviceDialupSettings.setPhoneNumber(rs.getString("MaxConnectTime"));
+                deviceDialupSettings.setPhoneNumber(rs.getString("LineSettings"));
+                deviceDialupSettings.setPhoneNumber(rs.getString("BaudRate"));
+                return deviceDialupSettings;
+            }
+        };
+        DeviceDialupSettings deviceDialupSettings = null;
+        try {
+            deviceDialupSettings = jdbcTemplate.queryForObject(sql, rowMapper);
+        } catch (EmptyResultDataAccessException e) {
+
+        }
+        return deviceDialupSettings;
+    }
+    
+    @Override
+    public DeviceAddress getDeviceAddress(int deviceId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+
+        sql.append("SELECT MasterAddress, SlaveAddress, PostCommWait ");
+        sql.append("FROM DeviceAddress ");
+        sql.append("WHERE DeviceId").eq(deviceId);
+        ParameterizedRowMapper<DeviceAddress> rowMapper = new ParameterizedRowMapper<DeviceAddress>() {
+            @Override
+            public DeviceAddress mapRow(ResultSet rs, int rowNum) throws SQLException {
+                DeviceAddress deviceAddress = new DeviceAddress();
+                deviceAddress.setMasterAddress(rs.getInt("MasterAddress"));
+                deviceAddress.setSlaveAddress(rs.getInt("SlaveAddress"));
+                deviceAddress.setPostCommWait(rs.getInt("PostCommWait"));
+                return deviceAddress;
+            }
+        };
+
+        DeviceAddress deviceAddress = jdbcTemplate.queryForObject(sql, rowMapper);
+        return deviceAddress;
+    }
+    
+    @Override
+    public DeviceWindow getDeviceWindow(int deviceId) {
+        ParameterizedRowMapper<DeviceWindow> rowMapper = new ParameterizedRowMapper<DeviceWindow>() {
+            @Override
+            public DeviceWindow mapRow(ResultSet rs, int rowNum) throws SQLException {
+                DeviceWindow deviceWindow = new DeviceWindow();
+                deviceWindow.setType(rs.getString("Type"));
+                deviceWindow.setWinOpen(rs.getInt("WinOpen"));
+                deviceWindow.setWinClose(rs.getInt("WinClose"));
+                deviceWindow.setAlternateOpen(rs.getInt("AlternateOpen"));
+                deviceWindow.setAlternateClose(rs.getInt("AlternateClose"));
+                return deviceWindow;
+            }
+        };
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+
+        sql.append("SELECT Type, WinOpen, WinClose, AlternateOpen, AlternateClose ");
+        sql.append("FROM DeviceWindow ");
+        sql.append("WHERE DeviceID").eq(deviceId);
+        DeviceWindow deviceWindow=null;
+        try {
+            deviceWindow = jdbcTemplate.queryForObject(sql, rowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            
+        }
+        return deviceWindow;
+
+    }
+    
+    @Override
+    public DeviceCBC getDeviceCBC(int deviceId) {
+        ParameterizedRowMapper<DeviceCBC> rowMapper = new ParameterizedRowMapper<DeviceCBC>() {
+            @Override
+            public DeviceCBC mapRow(ResultSet rs, int rowNum) throws SQLException {
+                DeviceCBC deviceCBC = new DeviceCBC();
+                deviceCBC.setSerialNumber(rs.getInt("SerialNumber"));
+                deviceCBC.setRouteID(rs.getInt("RouteID"));
+                return deviceCBC;
+            }
+
+        };
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+
+        sql.append("SELECT SerialNumber, RouteID ");
+        sql.append("FROM DeviceCBC");
+        sql.append("WHERE DeviceID").eq(deviceId);
+
+        try {
+            DeviceCBC deviceCBC = jdbcTemplate.queryForObject(sql, rowMapper);
+            return deviceCBC;
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException("Parent CBC was not found for cbc with ID: " + deviceId);
+        }
+    }
+    
+    @Override
+    @Transactional
+    public int saveDeviceAddress(DeviceAddress deviceAddress,int cbcId) {
+        SqlStatementBuilder updateSql = new SqlStatementBuilder();
+        updateSql.append("UPDATE DeviceAddress");
+        updateSql.append("SET MasterAddress").eq(deviceAddress.getMasterAddress());
+        updateSql.append(  ", SlaveAddress").eq(deviceAddress.getSlaveAddress());
+        updateSql.append(  ", PostCommWait").eq(deviceAddress.getPostCommWait());
+        updateSql.append("WHERE DEVICEID").eq(cbcId);
+        jdbcTemplate.update(updateSql);
+        return cbcId;
+    }
+
+    @Override
+    @Transactional
+    public int saveDeviceCBC(DeviceCBC deviceCBC, int cbcId) {
+        SqlStatementBuilder updateSql = new SqlStatementBuilder();
+        updateSql.append("UPDATE DeviceCBC");
+        updateSql.append("SET SERIALNUMBER").eq(deviceCBC.getSerialNumber());
+        updateSql.append(", ROUTEID").eq(deviceCBC.getRouteID());
+        updateSql.append("WHERE DEVICEID").eq(cbcId);
+        jdbcTemplate.update(updateSql);
+        return cbcId;
+    }
+    
+    @Override
+    @Transactional
+    public int saveYukonPao(String paoName, String disableFlag, int cbcId) {
+        SqlStatementBuilder updateSql = new SqlStatementBuilder();
+        updateSql.append("UPDATE YukonPAObject");
+        updateSql.append("SET PAOName").eq(paoName);
+        updateSql.append(", DisableFlag").eq(disableFlag);
+        updateSql.append("WHERE PAObjectID").eq(cbcId);
+        jdbcTemplate.update(updateSql);
+        return cbcId;
+    }
+    
+    @Override
+    public List<DeviceScanRate> getDeviceScanRates(int deviceId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT IntervalRate, ScanType, ScanGroup, AlternateRate");
+        sql.append("FROM DeviceScanRate");
+        sql.append("where DeviceID").eq(deviceId);
+        ParameterizedRowMapper<DeviceScanRate> rowMapper = new ParameterizedRowMapper<DeviceScanRate>() {
+            @Override
+            public DeviceScanRate mapRow(ResultSet rs, int rowNum) throws SQLException {
+                DeviceScanRate deviceScanRate = new DeviceScanRate();
+                deviceScanRate.setIntervalRate(rs.getInt("IntervalRate"));
+                deviceScanRate.setScanType(rs.getString("ScanType"));
+                deviceScanRate.setScanGroup(rs.getInt("ScanGroup"));
+                deviceScanRate.setAlternateRate(rs.getInt("AlternateRate"));
+                return deviceScanRate;
+            }
+        };
+        return jdbcTemplate.query(sql, rowMapper);
+    }
+    
+    @Override
+    @Transactional
+    public int saveDeviceDirectCommSettings(int portId,int cbcId) {
+        SqlStatementBuilder updateSql = new SqlStatementBuilder();
+        updateSql.append("UPDATE DeviceDirectCommSettings");
+        updateSql.append("SET PORTID").eq(portId);
+        updateSql.append("WHERE DEVICEID").eq(cbcId);
+        jdbcTemplate.update(updateSql);
+        return cbcId;
+    }
+    
+    @Override
+    public int saveDeviceScanRates(DeviceScanRate deviceScanRate,int deviceId,String type) {
+        SqlStatementBuilder updateSql = new SqlStatementBuilder();
+        updateSql.append("UPDATE DEVICESCANRATE");
+        updateSql.append("SET INTERVALRATE").eq(deviceScanRate.getIntervalRate());
+        updateSql.append(", SCANGROUP").eq(deviceScanRate.getScanGroup());
+        updateSql.append(", AlternateRate").eq(deviceScanRate.getAlternateRate());
+        updateSql.append("WHERE DEVICEID").eq(deviceId);
+        updateSql.append("AND SCANTYPE").eq(type);
+        jdbcTemplate.update(updateSql);
+        return deviceId;
     }
 }

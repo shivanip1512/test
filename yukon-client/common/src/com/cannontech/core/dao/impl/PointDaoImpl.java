@@ -1,8 +1,10 @@
 package com.cannontech.core.dao.impl;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,6 +14,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.model.Phase;
@@ -270,7 +273,70 @@ public class PointDaoImpl implements PointDao {
 
         return idAndTypes;
     }
+    
+    @Override
+    public Map<PointType, List<PointInfo>> getAllPointNamesAndTypesForPAObject(int paobjectId) {
 
+        ParameterizedRowMapper<PointInfo> rowMapper = new PointInfoMapper();
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+
+        sql.append("SELECT POINTID,POINTTYPE,POINTNAME");
+        sql.append("FROM Point");
+        sql.append("WHERE PAObjectID").eq(paobjectId);
+
+        List<PointInfo> points = jdbcTemplate.query(sql, rowMapper);
+
+        // List<LitePoint> points = getLitePointsByPaObjectId(paobjectId);
+        List<PointInfo> analogPoints = new ArrayList<PointInfo>();
+        List<PointInfo> pulseAccumulatorPoints = new ArrayList<PointInfo>();
+        List<PointInfo> calcAnalogPoints = new ArrayList<PointInfo>();
+        List<PointInfo> statusPoints = new ArrayList<PointInfo>();
+        List<PointInfo> calcStatusPoints = new ArrayList<PointInfo>();
+        Map<PointType, List<PointInfo>> pointNameAndTypes = new HashMap<PointType, List<PointInfo>>();
+        for (PointInfo point : points) {
+            switch (point.getPointType()) {
+
+            case Status:
+                statusPoints.add(point);
+                break;
+            case PulseAccumulator:
+                pulseAccumulatorPoints.add(point);
+                break;
+            case CalcAnalog:
+                calcAnalogPoints.add(point);
+                break;
+            case CalcStatus:
+                calcStatusPoints.add(point);
+                break;
+            case Analog:
+                analogPoints.add(point);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown Point type given, PAO Id = " + paobjectId);
+            }
+        }
+        pointNameAndTypes.put(PointType.Status, statusPoints);
+        pointNameAndTypes.put(PointType.PulseAccumulator, pulseAccumulatorPoints);
+        pointNameAndTypes.put(PointType.CalcAnalog, calcAnalogPoints);
+        pointNameAndTypes.put(PointType.CalcStatus, calcStatusPoints);
+        pointNameAndTypes.put(PointType.Analog, analogPoints);
+        return pointNameAndTypes;
+    }
+
+    private class PointInfoMapper implements ParameterizedRowMapper<PointInfo> {
+
+        @Override
+        public PointInfo mapRow(ResultSet rs, int rowNum) throws SQLException {
+            PointInfo pointInfo = new PointInfo();
+            pointInfo.setPointId(rs.getInt("POINTID"));
+            pointInfo.setPointType(PointType.getForString(rs.getString("POINTTYPE")));
+            pointInfo.setName(rs.getString("POINTNAME"));
+           
+            return pointInfo;
+        }
+
+    }
     @Override
     public String getPointName(int pointId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();

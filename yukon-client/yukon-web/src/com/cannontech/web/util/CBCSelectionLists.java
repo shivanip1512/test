@@ -196,31 +196,31 @@ public class CBCSelectionLists {
     }
 
     // generic time list in seconds for a many fields
-    public static final SelectItem[] TIME_INTERVAL = {
+    public static final SelectListItem[] TIME_INTERVAL = {
         // value, label
-        new SelectItem(1, "1 second"),
-        new SelectItem(2, "2 seconds"),
-        new SelectItem(5, "5 seconds"),
-        new SelectItem(10, "10 seconds"),
-        new SelectItem(15, "15 seconds"),
-        new SelectItem(30, "30 seconds"),
-        new SelectItem(60, "1 minute"),
-        new SelectItem(120, "2 minutes"),
-        new SelectItem(180, "3 minutes"),
-        new SelectItem(240, "4 minutes"),
-        new SelectItem(300, "5 minutes"),
-        new SelectItem(420, "7 minutes"),
-        new SelectItem(600, "10 minutes"),
-        new SelectItem(720, "12 minutes"),
-        new SelectItem(900, "15 minutes"),
-        new SelectItem(1200, "20 minutes"),
-        new SelectItem(1500, "25 minutes"),
-        new SelectItem(1800, "30 minutes"),
-        new SelectItem(3600, "1 hour"),
-        new SelectItem(7200, "2 hours"),
-        new SelectItem(21600, "6 hours"),
-        new SelectItem(43200, "12 hours"),
-        new SelectItem(86400, "1 day") };
+        new SelectListItem(1, "1 second"),
+        new SelectListItem(2, "2 seconds"),
+        new SelectListItem(5, "5 seconds"),
+        new SelectListItem(10, "10 seconds"),
+        new SelectListItem(15, "15 seconds"),
+        new SelectListItem(30, "30 seconds"),
+        new SelectListItem(60, "1 minute"),
+        new SelectListItem(120, "2 minutes"),
+        new SelectListItem(180, "3 minutes"),
+        new SelectListItem(240, "4 minutes"),
+        new SelectListItem(300, "5 minutes"),
+        new SelectListItem(420, "7 minutes"),
+        new SelectListItem(600, "10 minutes"),
+        new SelectListItem(720, "12 minutes"),
+        new SelectListItem(900, "15 minutes"),
+        new SelectListItem(1200, "20 minutes"),
+        new SelectListItem(1500, "25 minutes"),
+        new SelectListItem(1800, "30 minutes"),
+        new SelectListItem(3600, "1 hour"),
+        new SelectListItem(7200, "2 hours"),
+        new SelectListItem(21600, "6 hours"),
+        new SelectListItem(43200, "12 hours"),
+        new SelectListItem(86400, "1 day") };
 
     private static final SelectItem[] ptArchiveType = {
         new SelectItem(PointArchiveType.NONE.getPointArchiveTypeName(), PointArchiveType.NONE.getDisplayName()),
@@ -273,18 +273,18 @@ public class CBCSelectionLists {
     /**
      * Returns all possible Comm Channels
      */
-    public SelectItem[] getCommChannels() {
+    public SelectListItem[] getCommChannels() {
 
-        SelectItem[] selItems = new SelectItem[0];
+        SelectListItem[] selItems = new SelectListItem[0];
 
         IDatabaseCache cache = DefaultDatabaseCache.getInstance();
         synchronized (cache) {
             List<LiteYukonPAObject> ports = cache.getAllPorts();
 
-            selItems = new SelectItem[ports.size()];
+            selItems = new SelectListItem[ports.size()];
             for (int i = 0; i < ports.size(); i++) {
                 LiteYukonPAObject litePort = ports.get(i);
-                selItems[i] = new SelectItem(new Integer(litePort.getYukonID()), litePort.getPaoName());
+                selItems[i] = new SelectListItem(new Integer(litePort.getYukonID()), litePort.getPaoName());
             }
 
         }
@@ -305,18 +305,18 @@ public class CBCSelectionLists {
     /**
      * Returns all possible Routes
      */
-    public SelectItem[] getRoutes() {
+    public SelectListItem[] getRoutes() {
 
-        SelectItem[] selItems = new SelectItem[0];
+        SelectListItem[] selItems = new SelectListItem[0];
 
         IDatabaseCache cache = DefaultDatabaseCache.getInstance();
         synchronized (cache) {
             List<LiteYukonPAObject> routes = cache.getAllRoutes();
 
-            selItems = new SelectItem[routes.size()];
+            selItems = new SelectListItem[routes.size()];
             for (int i = 0; i < routes.size(); i++) {
                 LiteYukonPAObject liteRoute = routes.get(i);
-                selItems[i] = new SelectItem(new Integer(liteRoute.getYukonID()), liteRoute.getPaoName());
+                selItems[i] = new SelectListItem(new Integer(liteRoute.getYukonID()), liteRoute.getPaoName());
             }
         }
 
@@ -360,7 +360,7 @@ public class CBCSelectionLists {
     /**
      * Returns a sublist of Time Interval SelectItem[]
      */
-    public static SelectItem[] getTimeSubList(int startSecs, int endSecs) {
+    public static SelectListItem[] getTimeSubList(int startSecs, int endSecs) {
 
         if (startSecs >= endSecs)
             return CBCSelectionLists.TIME_INTERVAL;
@@ -380,7 +380,7 @@ public class CBCSelectionLists {
             }
         }
 
-        SelectItem[] items = new SelectItem[endIndx - startIndx];
+        SelectListItem[] items = new SelectListItem[endIndx - startIndx];
         System.arraycopy(CBCSelectionLists.TIME_INTERVAL, startIndx, items, 0, items.length);
         return items;
     }
@@ -389,7 +389,7 @@ public class CBCSelectionLists {
      * Returns a sublist of Time Interval SelectItem[].
      * Starts at the given startSecs value and returns the entire upper list
      */
-    public static SelectItem[] getTimeSubList(int startSecs) {
+    public static SelectListItem[] getTimeSubList(int startSecs) {
         return getTimeSubList(startSecs, Integer.MAX_VALUE);
     }
 
@@ -433,7 +433,7 @@ public class CBCSelectionLists {
         return typeListDNP;
     }
 
-    public SelectItem[] getTimeInterval() {
+    public SelectListItem[] getTimeInterval() {
 
         return TIME_INTERVAL;
     }
@@ -558,4 +558,10 @@ public class CBCSelectionLists {
     public void setYukonUserContextMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
         this.messageSourceResolver = messageSourceResolver;
     }
+    
+    public static final SelectListItem[] SCAN_GROUP = {
+        // value, label
+        new SelectListItem("0", "Default"),
+        new SelectListItem("1", "First"),
+        new SelectListItem("2", "Second")};
 }

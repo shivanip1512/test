@@ -262,5 +262,8 @@ public interface PointDao {
     List<LitePoint> findAllPointsWithName(String pointName);
 
     PointBase get(int id);
+    
+    /** Retrieves all points and puts them in a Map. */
+    Map<PointType, List<PointInfo>> getAllPointNamesAndTypesForPAObject(int paobjectId);
 
 }

@@ -58,6 +58,7 @@ import com.cannontech.web.exceptions.InvalidPointLimits;
 import com.cannontech.web.exceptions.InvalidPointOffsetException;
 import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.util.JSFParamUtil;
+import com.cannontech.web.util.SelectListItem;
 import com.cannontech.web.wizard.PointWizardModel;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -138,14 +139,14 @@ public class PointForm extends DBEditorForm {
         return logicalGroups;
     }
 
-    public SelectItem[] getTimeInterval() {
+    public SelectListItem[] getTimeInterval() {
         return CBCSelectionLists.TIME_INTERVAL;
     }
 
     /**
      * Have the lowest value for archiving set to 60 seconds
      */
-    public SelectItem[] getArchiveInterval() {
+    public SelectListItem[] getArchiveInterval() {
         return CBCSelectionLists.getTimeSubList(60);
     }
 

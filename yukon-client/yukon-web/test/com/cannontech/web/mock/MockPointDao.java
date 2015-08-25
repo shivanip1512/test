@@ -243,4 +243,9 @@ public class MockPointDao implements PointDao {
     public PointBase get(int id) {
         return null;
     }
+
+    @Override
+    public Map<PointType, List<PointInfo>> getAllPointNamesAndTypesForPAObject(int paobjectId) {
+        return null;
+    }
 }

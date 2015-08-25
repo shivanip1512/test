@@ -115,6 +115,7 @@ import com.cannontech.web.util.CBCDBUtil;
 import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.web.util.JSFUtil;
+import com.cannontech.web.util.SelectListItem;
 import com.cannontech.web.wizard.CBCWizardModel;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
@@ -1296,7 +1297,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
         this.hasEditingRole = hasEditingRole;
     }
 
-    public SelectItem[] getTimeInterval() {
+    public SelectListItem[] getTimeInterval() {
 		return CBCSelectionLists.TIME_INTERVAL;
 	}
 
