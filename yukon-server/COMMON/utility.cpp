@@ -13,6 +13,7 @@
 #include "devicetypes.h"
 #include "desolvers.h"
 #include "dsm2.h"
+#include "module_util.h"
 
 #include <boost/regex.hpp>
 #include <boost/optional.hpp>
@@ -2250,6 +2251,15 @@ void SetThreadName( DWORD dwThreadID, LPCSTR szThreadName)
     __except(EXCEPTION_CONTINUE_EXECUTION)
     {
     }
+}
+
+LONG WINAPI CreateMiniDumpExceptionHandler(const Cti::compileinfo_t &info)
+{
+    std::ostringstream os;
+    os << info.project << "-" << GetCurrentThreadId();
+    CreateMiniDump(os.str());
+
+    return EXCEPTION_EXECUTE_HANDLER;
 }
 
 void CreateMiniDump( const std::string &dumpfilePrefix )
