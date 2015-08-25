@@ -87,7 +87,7 @@ public class CBCController {
     @RequestMapping(value = { "capControlCBC" }, method = RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String save(@ModelAttribute("capControlCBC") CapControlCBC capControlCBC, FlashScope flashScope,
-            YukonUserContext userContext, BindingResult result, RedirectAttributes redirectAttributes) {
+            YukonUserContext userContext) {
         try {
             cbcService.save(capControlCBC);
         } catch (SerialNumberExistsException | PortDoesntExistException | MultipleDevicesOnPortException
