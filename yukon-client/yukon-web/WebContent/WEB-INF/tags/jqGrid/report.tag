@@ -16,7 +16,6 @@
 <cti:uniqueIdentifier var="gridId" prefix="gridId_"/>
 
 <%--jqGrid --%>
-<cti:includeScript link="JQUERY"/>
 <cti:includeScript link="/resources/js/lib/jqgrid/jqgrid.locale.js.jsp"/>
 <cti:includeScript link="JQUERY_GRID"/>
 <cti:includeScript link="JQUERY_GRID_HELPER"/>
