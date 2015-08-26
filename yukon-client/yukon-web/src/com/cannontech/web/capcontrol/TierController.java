@@ -22,6 +22,7 @@ import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -127,7 +128,7 @@ public class TierController {
             FlashScope flashScope, 
             ModelMap model,
             YukonUserContext userContext, 
-            int substationId) {
+            int substationId) throws NotAuthorizedException {
         
         Instant startPage = Instant.now();
 
@@ -144,7 +145,9 @@ public class TierController {
 
         model.addAttribute("substationName", substation.getName());
         model.addAttribute("substationId", substationId);
-
+        if(cachedSubstation == null){
+            throw new NotAuthorizedException("Not Authorized to use substation!");
+        }
         int areaId = cachedSubstation.getParentID();
         String areaName = cache.getObject(areaId).getCcName();
 

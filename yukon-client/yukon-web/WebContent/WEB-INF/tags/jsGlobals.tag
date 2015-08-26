@@ -64,7 +64,8 @@ var yg = {
         save: '<cti:msg2 key="yukon.web.components.button.save.label"/>',
         successful: '<cti:msg2 key="yukon.common.successful"/>',
         view: '<cti:msg2 key="yukon.web.components.button.view.label"/>',
-        yes: '<cti:msg2 key="yukon.common.yes"/>'
+        yes: '<cti:msg2 key="yukon.common.yes"/>',
+        ajaxError: '<cti:msg2 key="yukon.common.ajaxError"/>'
     },
     
     timezone: jstz.determine().name(),

@@ -98,6 +98,8 @@ yukon.admin.permission = (function () {
                     // Clear picker selection and add new paos to pickers excluded list.
                     picker.clearEntireSelection();
                     picker.excludeIds = picker.excludeIds.concat(paoIds);
+                }).fail(function(){
+                    yukon.ui.alertError(yg.text.ajaxError);
                 });
             });
             

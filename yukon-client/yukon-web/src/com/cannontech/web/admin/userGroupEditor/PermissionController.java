@@ -195,10 +195,10 @@ public class PermissionController {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         boolean allow = permission == Permission.LM_VISIBLE;
         List<Map<String, Object>> paos = new ArrayList<>();
-        
         for (int paoId : paoIds) {
             Map<String, Object> pao = new HashMap<>();
             LiteYukonPAObject lyp = dbCache.getAllPaosMap().get(paoId);
+            
             pao.put("id", paoId);
             pao.put("name", lyp.getPaoName());
             pao.put("type", accessor.getMessage(lyp.getPaoType()));
@@ -213,7 +213,6 @@ public class PermissionController {
                     + " for " + pao.get("name")
                     + " to " + group.getUserGroupName());
         }
-        
         return paos;
     }
     

@@ -5,6 +5,7 @@
 <entry key="yukon.common.add">Add</entry>
 <entry key="yukon.common.address">Address</entry>
 <entry key="yukon.common.actions">Actions</entry>
+<entry key="yukon.common.ajaxError">An error occurred processing the request!</entry>
 <entry key="yukon.common.all">All</entry>
 <entry key="yukon.common.always">Always</entry>
 <entry key="yukon.common.assigned">Assigned</entry>
