@@ -60,7 +60,9 @@ ADD SendOutOfService CHAR(1);
 GO
 
 UPDATE InventoryConfigTask
-SET SendOutOfService = 'N';
+SET SendOutOfService = 'N'
+WHERE SendOutOfService NOT LIKE 'Y'
+   OR SendOutOfService IS NULL;
 
 ALTER TABLE InventoryConfigTask
 ALTER COLUMN SendOutOfService CHAR(1) NOT NULL;
