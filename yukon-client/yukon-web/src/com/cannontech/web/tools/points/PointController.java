@@ -207,7 +207,7 @@ public class PointController {
 
     @RequestMapping(value = "/points/PulseAccumulator", method = RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
-    public String saveAccumulator(PointModel<AccumulatorPoint> pointModel, BindingResult result,
+    public String saveAccumulator(AccumulatorPointModel pointModel, BindingResult result,
             RedirectAttributes redirectAttributes) {
 
         return save(pointModel, result, redirectAttributes);
