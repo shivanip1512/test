@@ -374,6 +374,8 @@
     <entry key="yukon.common.energyCompanySetting.AUTO_CREATE_LOGIN_FOR_ACCOUNT.description">Automatically create a login for the primary contact on a STARS account.</entry>
     <entry key="yukon.common.energyCompanySetting.AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS">Auto create login for additional contacts</entry>
     <entry key="yukon.common.energyCompanySetting.AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS.description">Automatically create a default login for each additional contact created on a STARS account.</entry>
+    <entry key="yukon.common.energyCompanySetting.ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY">Enroll Multiple Programs per Category</entry>
+    <entry key="yukon.common.energyCompanySetting.ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY.description">Enables you to enroll in multiple programs within an appliance category.</entry>
     
     <entry key="yukon.common.energyCompanySetting.INVENTORY_CHECKING">Inventory Checking</entry>
     <entry key="yukon.common.energyCompanySetting.INVENTORY_CHECKING.description">Controls whether to perform inventory checking while creating or updating hardware information.</entry>

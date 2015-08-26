@@ -224,7 +224,6 @@ public enum YukonRoleProperty {
     
     // NOTICE: Property IDs for CONSUMER_INFO were split into 2 spaces. Note the (1) in getBasePropertyId.
     
-    OPERATOR_ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY(CONSUMER_INFO, CONSUMER_INFO.getBasePropertyId() - 64, booleanType()),
     OPERATOR_ACCOUNT_SEARCH(CONSUMER_INFO, CONSUMER_INFO.getBasePropertyId() - 65, booleanType()),
     OPERATOR_SURVEY_EDIT(CONSUMER_INFO, CONSUMER_INFO.getBasePropertyId() - 66, booleanType()),
     OPERATOR_OPT_OUT_SURVEY_EDIT(CONSUMER_INFO, CONSUMER_INFO.getBasePropertyId() - 67, booleanType()),

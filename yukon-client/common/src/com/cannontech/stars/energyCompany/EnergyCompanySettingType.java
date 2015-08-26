@@ -23,7 +23,7 @@ public enum EnergyCompanySettingType implements DisplayableEnum {
     AUTO_CREATE_LOGIN_FOR_ACCOUNT(ACCOUNT, booleanType(), false),
     AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS(ACCOUNT, booleanType(), true),
     ROTATION_DIGIT_LENGTH(ACCOUNT, integerType(), 0),
-
+    ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY(ACCOUNT, booleanType(), false),
     // HARDWARE
     AUTOMATIC_CONFIGURATION(HARDWARE, booleanType(), false),
     ADMIN_ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_SATURDAY_SUNDAY(HARDWARE, booleanType(), true),

@@ -44,6 +44,7 @@ import com.cannontech.stars.dr.hardware.model.HardwareConfigAction;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -201,7 +202,7 @@ public class OperatorEnrollmentController {
         model.addAttribute("assignedProgram", assignedProgram);
 
         List<com.cannontech.stars.dr.program.service.ProgramEnrollment> conflictingEnrollments =
-            getConflictingEnrollments(account.getAccountId(), assignedProgramId, user);
+            getConflictingEnrollments(account.getAccountId(), assignedProgramId);
 
         // For confirmation, we just need a list of conflicting programs.
         Set<Integer> conflictingAssignedProgramIds = Sets.newHashSet();
@@ -249,7 +250,7 @@ public class OperatorEnrollmentController {
         List<com.cannontech.stars.dr.program.service.ProgramEnrollment> programEnrollments = Lists.newArrayList();
         programEnrollments.addAll(programEnrollment.makeProgramEnrollments(assignedProgram.getApplianceCategoryId(), assignedProgramId));
         programEnrollments.addAll(getConflictingEnrollments(accountInfoFragment.getAccountId(),
-                                                            assignedProgramId, user));
+                                                            assignedProgramId));
         try {
             enrollmentHelper.updateProgramEnrollments(programEnrollments, accountInfoFragment.getAccountId(), userContext);
             
@@ -310,12 +311,12 @@ public class OperatorEnrollmentController {
 
     private List<com.cannontech.stars.dr.program.service.ProgramEnrollment> getConflictingEnrollments(
             int accountId, 
-            int assignedProgramId, 
-            LiteYukonUser user) {
-        
-        boolean multiplePerCategory =
-            rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY, user);
+            int assignedProgramId) {
 
+        YukonEnergyCompany yec = ecDao.getEnergyCompanyByAccountId(accountId);
+        boolean multiplePerCategory = ecSettingDao.getBoolean(EnergyCompanySettingType.ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY,
+                yec.getEnergyCompanyId());
+        
         List<com.cannontech.stars.dr.program.service.ProgramEnrollment> conflictingEnrollments = Lists.newArrayList();
         if (!multiplePerCategory) {
             // Only one program per appliance category is allowed.  Find other
