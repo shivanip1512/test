@@ -130,7 +130,7 @@ public class MultispeakFuncs {
      * @throws javax.xml.soap.SOAPExceptionn
      */
     private SoapEnvelope getResponseMessageSOAPEnvelope() throws SOAPException {
-        
+
         MessageContext ctx = MessageContextHolder.getMessageContext();
         WebServiceMessage responseMessage = ctx.getResponse();
         AbstractSoapMessage abstractSoapMessage = (AbstractSoapMessage) responseMessage;
@@ -143,6 +143,8 @@ public class MultispeakFuncs {
         SaajSoapMessage saajSoapRequestMessage = (SaajSoapMessage) webServiceRequestMessage;
         Node nxtNode =
             saajSoapRequestMessage.getSaajMessage().getSOAPPart().getEnvelope().getBody().getFirstChild().getNextSibling();
+        if (nxtNode == null)
+            nxtNode = saajSoapRequestMessage.getSaajMessage().getSOAPPart().getEnvelope().getBody().getFirstChild();
         String soapAction = nxtNode.getNamespaceURI() + "/" + nxtNode.getLocalName();
         mimeHeaders.setHeader("SOAPAction", soapAction);
         return soapEnvelop;
