@@ -198,7 +198,8 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             return;
         }
         if (!device.getRfnIdentifier().isNotBlank()) {
-            //Insert or Update fails as all of the three fields are required to support an update of any of these field.
+            // Throws an exception if any of the three fields(Serial Number, Manufacturer, and
+            // Model) is missing.
             throw new DataIntegrityViolationException("Serial Number, Manufacturer, and Model all these fields are "
                     + "required to update any of these field.");
         }
