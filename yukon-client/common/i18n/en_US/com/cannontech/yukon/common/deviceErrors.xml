@@ -712,7 +712,7 @@
             daily read can be in progress at a time. Wait for a moment and attempt the command
             again.]]></entry>
 
-	<entry key="yukon.web.error.code.275.porter">Device is not connected</entry>
+	<entry key="yukon.web.error.code.275.porter">No connection to device</entry>
 	<entry key="yukon.web.error.code.275.description">Yukon is unable to establish a connection with the
 		device.</entry>
 	<entry key="yukon.web.error.code.275.troubleshooting"><![CDATA[Verify the device's connection parameters.]]></entry>

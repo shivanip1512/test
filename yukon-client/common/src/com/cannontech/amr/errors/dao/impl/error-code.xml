@@ -933,7 +933,7 @@
     </error>
     <error code="275">
         <category>Bulk Communications</category>
-        <porter>Device is not connected</porter>
+        <porter>No connection to device</porter>
         <description>Yukon is unable to establish a connection with the device.</description>
         <troubleshooting>
             Verify the device's connection parameters.

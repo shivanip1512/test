@@ -218,7 +218,7 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of<std::string
     ("Device Not Supported")
     ("Port not initialized")
     ("Command already in progress")
-    ("Device is not connected")
+    ("No connection to device")
     ("No disconnect configured on this device")
     ("Transmitter is overheating")
     ("Command needs channel config to continue.")
