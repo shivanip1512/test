@@ -24,15 +24,6 @@ public interface DeviceDataMonitorService {
     DeviceDataMonitor saveAndProcess(DeviceDataMonitor monitor) throws DuplicateException;
     
     /**
-     * Asynchronously perform the following actions
-     *   1) Recalculate the "violating" devices (if need be)
-     *   2) Add any found violating devices to our violation device group. More specifically, this step will
-     *      ensure the violation device group contains only the devices found in step 1 above. So, if no devices
-     *      are found, then this step will clear out any existing devices in this group
-     */
-    void asyncRecalculateViolatingPaosForMonitor(DeviceDataMonitor monitor);
-    
-    /**
      * Returns a boolean indicating whether or not a worker is currently "working"
      * on calculating violations for a monitor
      */

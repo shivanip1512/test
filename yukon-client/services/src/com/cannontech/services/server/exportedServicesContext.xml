@@ -9,7 +9,7 @@
 
     <context:annotation-config/>
     
-    <bean id="deviceDataMonitorListener" class="com.cannontech.amr.deviceDataMonitor.service.impl.DeviceDataMonitorCalculationImpl"/>
+    <bean id="deviceDataMonitorListener" class="com.cannontech.amr.deviceDataMonitor.service.impl.DeviceDataMonitorCalculationServiceImpl"/>
     <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
         <property name="destinationName" value="yukon.qr.obj.amr.dataDeviceMonitor.RecalculateStatus.Request" />
         <property name="pubSubDomain" value="false"/>

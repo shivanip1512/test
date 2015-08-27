@@ -15,7 +15,7 @@ import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitorProcessor;
 import com.cannontech.amr.deviceDataMonitor.service.DeviceDataMonitorCalculationService;
 import com.cannontech.amr.deviceDataMonitor.service.DeviceDataMonitorService;
-import com.cannontech.amr.deviceDataMonitor.service.impl.DeviceDataMonitorCalculationImpl;
+import com.cannontech.amr.deviceDataMonitor.service.impl.DeviceDataMonitorCalculationServiceImpl;
 import com.cannontech.amr.deviceDataMonitor.service.impl.DeviceDataMonitorServiceImpl;
 import com.cannontech.amr.monitors.impl.DeviceDataMonitorProcessorFactoryImpl;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
@@ -202,7 +202,7 @@ public class DeviceDataMonitorTest {
             }
         };
 
-        deviceDataMonitorCalculationService = new DeviceDataMonitorCalculationImpl();
+        deviceDataMonitorCalculationService = new DeviceDataMonitorCalculationServiceImpl();
         deviceDataMonitorService = new DeviceDataMonitorServiceImpl();
         deviceDataMonitorProcessorFactory = new DeviceDataMonitorProcessorFactoryImpl();
         ReflectionTestUtils.setField(deviceDataMonitorProcessorFactory, "attributeService", attributeService);

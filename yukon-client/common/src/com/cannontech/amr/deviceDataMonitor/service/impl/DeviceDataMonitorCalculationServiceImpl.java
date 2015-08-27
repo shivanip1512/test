@@ -3,6 +3,7 @@ package com.cannontech.amr.deviceDataMonitor.service.impl;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,9 +29,11 @@ import com.cannontech.amr.monitors.message.DeviceDataMonitorMessage;
 import com.cannontech.amr.monitors.message.DeviceDataMonitorStatusRequest;
 import com.cannontech.amr.monitors.message.DeviceDataMonitorStatusResponse;
 import com.cannontech.amr.worker.ServiceWorker;
+import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigInteger;
+import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
@@ -47,22 +50,30 @@ import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
+import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.message.dispatch.DispatchClientConnection;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.conns.ConnPool;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-public class DeviceDataMonitorCalculationImpl extends ServiceWorker<DeviceDataMonitorMessage> implements
+public class DeviceDataMonitorCalculationServiceImpl extends ServiceWorker<DeviceDataMonitorMessage> implements
         DeviceDataMonitorCalculationService, MessageListener  {
     
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private AttributeService attributeService;
     @Autowired private ConnPool connPool;
     @Autowired private ConfigurationSource configurationSource;
@@ -73,14 +84,19 @@ public class DeviceDataMonitorCalculationImpl extends ServiceWorker<DeviceDataMo
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private DynamicDataSource dynamicDataSource;
     @Autowired private PointDao pointDao;
+    @Autowired private DeviceGroupProviderDao deviceGroupProviderDao;
     private JmsTemplate jmsTemplate;
     
-    private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorCalculationImpl.class);
+    private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorCalculationServiceImpl.class);
     private DispatchClientConnection dispatchConnection;
     
     @PostConstruct
     public void init() {
         initServiceWorker();
+        createDatabaseChangeListener();
+        for (DeviceDataMonitor monitor : deviceDataMonitorCacheService.getAllMonitors()) {
+            addObjectToQueue(new DeviceDataMonitorMessage(monitor));
+        }
     }
     
     private static final class CorrelationIdPostProcessor implements MessagePostProcessor {
@@ -446,10 +462,73 @@ public class DeviceDataMonitorCalculationImpl extends ServiceWorker<DeviceDataMo
         dispatchConnection.waitForValidConnection();
     }
     
+    private void createDatabaseChangeListener() {
+        // listen for devices added/removed from device groups
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.DEVICE_GROUP_MEMBER,
+                                                              EnumSet.of(DbChangeType.ADD,
+                                                                         DbChangeType.DELETE),
+                                                                         new DatabaseChangeEventListener() {
+            @Override
+            public void eventReceived(DatabaseChangeEvent event) {
+                StoredDeviceGroup deviceGroupWithModifiedDevices = deviceGroupEditorDao.getGroupById(event.getPrimaryKey());
+                String basePath = deviceGroupService.getFullPath(SystemGroupEnum.DEVICE_DATA);
+                if (deviceGroupWithModifiedDevices.getFullName().contains(basePath)) {
+                    // don't trigger violation count updates based on devices in the Device Data Monitor groups
+                    return;
+                }
+                // get a list of our cached monitors from the processor factory. The factory is holding onto these instead of
+                // this service because he needs to access it MUCH more frequently then this listener will
+                // and it is an expensive operation to send this serialized list "over the wire"
+                for (DeviceDataMonitor monitor: deviceDataMonitorCacheService.getAllEnabledMonitors()) {
+                    if (!monitor.isEnabled()) {
+                        continue;
+                    }
+                    try {
+                        // this resolveGroupName uses the cache - so we're good
+                        DeviceGroup monitoringGroup = deviceGroupService.resolveGroupName(monitor.getGroupName());
+                        if (deviceGroupWithModifiedDevices.isEqualToOrDescendantOf(monitoringGroup)) {
+                            // this deviceGroupWithModifiedDevices is a child of our monitoring group - so we need to recalculate our violations
+                            LogHelper.debug(log, "detected add or remove from group [id: %s] - recalculating DDM [%s]", event.getPrimaryKey(), monitor.getName());
+                            addObjectToQueue(new DeviceDataMonitorMessage(monitor));
+                        }
+                    } catch (NotFoundException e) {
+                        // user deleted monitoring group - oh well!
+                        log.error("Could not find device group " + monitor.getGroupName() + " for device data monitor " + monitor.getName());
+                    }
+                }
+            }
+        });
+        // listen for all ADD/UPDATE pao db change messages (there may be some overlap between this one and the
+        // DEVICE_GROUP_MEMBER one above, which should be fine since the ServiceWorker queue will
+        // handle that for us (duplicates))
+        // we don't care about delete's b/c those will get removed automatically from our violation's group
+        // if they were in there
+        asyncDynamicDataSource.addDBChangeListener(new DBChangeListener() {
+            @Override
+            public void dbChangeReceived(DBChangeMsg dbChange) {
+                if (dbChange.getDatabase() == DBChangeMsg.CHANGE_PAO_DB && dbChange.getDbChangeType() != DbChangeType.DELETE) {
+                    int paoId = dbChange.getId();
+                    SimpleDevice yukonDevice = deviceDao.getYukonDevice(paoId);
+
+                    for (DeviceDataMonitor monitor: deviceDataMonitorCacheService.getAllEnabledMonitors()) {
+                        DeviceGroup monitoringGroup = deviceGroupService.resolveGroupName(monitor.getGroupName());
+                        boolean deviceInMonitoringGroup = deviceGroupProviderDao.isDeviceInGroup(monitoringGroup, yukonDevice);
+                        
+                        if (deviceInMonitoringGroup) {
+                            // recalculate the violating paos for this monitor if this paoId belongs to the monitoring group
+                            LogHelper.debug(log, "pao change detected [id: %s] - recalculating DDM [%s]", paoId, monitor.getName());
+                            addObjectToQueue(new DeviceDataMonitorMessage(monitor));
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
     @Autowired
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
         jmsTemplate = new JmsTemplate(connectionFactory);
-        //jmsTemplate.setExplicitQosEnabled(true);
-        //jmsTemplate.setDeliveryPersistent(false);
+        jmsTemplate.setExplicitQosEnabled(true);
+        jmsTemplate.setDeliveryPersistent(false);
     }
 }
