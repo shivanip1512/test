@@ -36,14 +36,18 @@ E2eMessenger::E2eMessenger() :
             std::uniform_int_distribution<long long>()(
                     std::mt19937_64(
                             std::random_device()()));
-
-    _timeoutProcessor.start();
 }
 
 E2eMessenger::~E2eMessenger()
 {
     _timeoutProcessor.interrupt();
     _timeoutProcessor.tryJoinOrTerminateFor(Timing::Chrono::seconds(2));
+}
+
+
+void E2eMessenger::start()
+{
+    _timeoutProcessor.start();
 }
 
 

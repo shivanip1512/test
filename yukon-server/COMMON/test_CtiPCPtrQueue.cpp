@@ -82,6 +82,9 @@ BOOST_AUTO_TEST_CASE(test_writeread)
     q->close();
     q->read(garbage, 20);
     BOOST_CHECK_EQUAL(garbage == NULL, true);
+
+    delete itemOne;
+    delete itemTwo;
 }
 
 BOOST_AUTO_TEST_CASE(test_tryRead)
@@ -118,6 +121,9 @@ BOOST_AUTO_TEST_CASE(test_tryRead)
     tester = q->tryRead(temp2);
     BOOST_CHECK_EQUAL(temp2, itemTwo);
     BOOST_CHECK_EQUAL(tester, true);
+
+    delete itemOne;
+    delete itemTwo;
 }
 
 void readOne()//for MultiThread Test
@@ -152,6 +158,9 @@ BOOST_AUTO_TEST_CASE(test_timeOutMultiThread)
     }
     threads.join_all();
 
+    delete one;
+    delete two;
+    delete three;
 }
 
 BOOST_AUTO_TEST_SUITE_END()

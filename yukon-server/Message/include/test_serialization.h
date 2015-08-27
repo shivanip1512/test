@@ -627,6 +627,8 @@ struct TestCase<CtiServerRequestMsg> : public TestCase<CtiMessage>
 
     TestCaseItem<payload_t> _tc_payload;
 
+    std::auto_ptr<payload_t> imsg_payload, omsg_payload;
+
     void Create()
     {
         _imsg.reset( new CtiServerRequestMsg );
@@ -641,7 +643,10 @@ struct TestCase<CtiServerRequestMsg> : public TestCase<CtiMessage>
 
         GenerateRandom( imsg._id );
 
-        imsg.setPayload( new payload_t );
+        //  retain ownership of the payload, since CtiServerRequestMsg doesn't delete it
+        imsg_payload.reset(new payload_t);
+
+        imsg.setPayload( imsg_payload.get() );
         _tc_payload.Populate( (payload_t*)imsg._payload );
     }
 
@@ -658,6 +663,9 @@ struct TestCase<CtiServerRequestMsg> : public TestCase<CtiMessage>
         {
             reportMismatch( "_payload", _tc_payload._failures );
         }
+
+        //  retain ownership of the payload, since CtiServerRequestMsg doesn't delete it
+        omsg_payload.reset(dynamic_cast<payload_t*>(omsg.getPayload()));
     }
 };
 

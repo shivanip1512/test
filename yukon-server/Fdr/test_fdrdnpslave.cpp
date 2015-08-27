@@ -194,6 +194,8 @@ BOOST_AUTO_TEST_CASE( test_scan_request )
 
     fdrPointList.setPointList(fdrManager);
 
+    dnpSlave.getSendToList().deletePointList();
+    dnpSlave.getSendToList().deletePointList();
     dnpSlave.setSendToList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
@@ -328,6 +330,8 @@ BOOST_AUTO_TEST_CASE( test_scan_request_class1230 )
 
     fdrPointList.setPointList(fdrManager);
 
+    dnpSlave.getSendToList().deletePointList();
+    dnpSlave.getSendToList().deletePointList();
     dnpSlave.setSendToList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
@@ -385,6 +389,7 @@ BOOST_AUTO_TEST_CASE( test_scan_request_multiple_packet )
 
     fdrPointList.setPointList(fdrManager);
 
+    dnpSlave.getSendToList().deletePointList();
     dnpSlave.setSendToList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
@@ -524,6 +529,8 @@ BOOST_AUTO_TEST_CASE( test_control_close_dispatch )
 
     fdrPointList.setPointList(fdrManager);
 
+    dnpSlave.getReceiveFromList().deletePointList();
+    dnpSlave.getReceiveFromList().deletePointList();
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
@@ -755,6 +762,7 @@ BOOST_AUTO_TEST_CASE( test_control_close_porter )
 
     fdrPointList.setPointList(fdrManager);
 
+    dnpSlave.getReceiveFromList().deletePointList();
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
@@ -972,6 +980,7 @@ BOOST_AUTO_TEST_CASE( test_control_close_sbo_porter )
 
     fdrPointList.setPointList(fdrManager);
 
+    dnpSlave.getReceiveFromList().deletePointList();
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
@@ -1234,6 +1243,7 @@ BOOST_AUTO_TEST_CASE( test_control_open_dispatch )
 
     fdrPointList.setPointList(fdrManager);
 
+    dnpSlave.getReceiveFromList().deletePointList();
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
@@ -1428,6 +1438,7 @@ BOOST_AUTO_TEST_CASE( test_control_open_porter )
 
     fdrPointList.setPointList(fdrManager);
 
+    dnpSlave.getReceiveFromList().deletePointList();
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
@@ -1615,6 +1626,7 @@ BOOST_AUTO_TEST_CASE( test_control_open_sbo_porter )
 
     fdrPointList.setPointList(fdrManager);
 
+    dnpSlave.getReceiveFromList().deletePointList();
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
@@ -1871,6 +1883,7 @@ BOOST_AUTO_TEST_CASE( test_control_request_shortIndexShortQuantity )
 
     fdrPointList.setPointList(fdrManager);
 
+    dnpSlave.getReceiveFromList().deletePointList();
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
@@ -1929,6 +1942,7 @@ BOOST_AUTO_TEST_CASE( test_control_request_visualTD_MCT )
 
     fdrPointList.setPointList(fdrManager);
 
+    dnpSlave.getReceiveFromList().deletePointList();
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
@@ -1987,6 +2001,7 @@ BOOST_AUTO_TEST_CASE( test_control_request_visualTD_CBC )
 
     fdrPointList.setPointList(fdrManager);
 
+    dnpSlave.getReceiveFromList().deletePointList();
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
@@ -2045,6 +2060,7 @@ BOOST_AUTO_TEST_CASE( test_control_request_controlDisabled )
 
     fdrPointList.setPointList(fdrManager);
 
+    dnpSlave.getReceiveFromList().deletePointList();
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
@@ -2103,6 +2119,7 @@ BOOST_AUTO_TEST_CASE( test_control_request_invalidObject )
 
     fdrPointList.setPointList(fdrManager);
 
+    dnpSlave.getReceiveFromList().deletePointList();
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
@@ -2151,8 +2168,6 @@ BOOST_AUTO_TEST_CASE( test_control_noPoints )
 {
     Test_FdrDnpSlave dnpSlave;
 
-    CtiFDRManager *fdrManager = new CtiFDRManager("DNP slave, but this is just a test");
-
     const byte_str request(
             "05 64 18 c4 f6 01 e8 03 36 79 "
             "c0 c1 05 0c 01 17 01 00 41 01 00 00 00 00 00 00 84 a9 "
@@ -2182,6 +2197,7 @@ BOOST_AUTO_TEST_CASE( test_analog_output_dispatch )
 
     fdrPointList.setPointList(fdrManager);
 
+    dnpSlave.getReceiveFromList().deletePointList();
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
@@ -2252,6 +2268,7 @@ BOOST_AUTO_TEST_CASE( test_analog_output_porter )
 
     fdrPointList.setPointList(fdrManager);
 
+    dnpSlave.getReceiveFromList().deletePointList();
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out

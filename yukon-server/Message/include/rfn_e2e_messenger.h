@@ -30,6 +30,8 @@ public:
     E2eMessenger();
     virtual ~E2eMessenger();
 
+    void start();
+
     template<class Msg>
     struct CallbackFor
     {

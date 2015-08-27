@@ -91,10 +91,13 @@ CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig, bool mark
                     }
 
                     SigMgrMap_t::key_type key = make_pair( sig.getId(), sig.getCondition() );
-                    pair< SigMgrMap_t::iterator, bool > ip = _map.insert( make_pair( key, (CtiSignalMsg*)sig.replicateMessage() ) );
+                    auto replicatedSignal = static_cast<CtiSignalMsg *>(sig.replicateMessage());
+                    pair< SigMgrMap_t::iterator, bool > ip = _map.insert( make_pair( key, replicatedSignal ) );
 
                     if(ip.second != true)
                     {
+                        delete replicatedSignal;
+
                         if(isDebugLudicrous())
                         {
                             CTILOG_DEBUG(dout, "INSERT COLLISION");

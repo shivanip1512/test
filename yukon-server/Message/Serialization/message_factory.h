@@ -4,6 +4,8 @@
 #include "amq_constants.h"
 #include "logger.h"
 
+#include "std_helper.h"
+
 #include <thrift/thrift.h>
 #include <thrift/transport/TBufferTransports.h>
 #include <thrift/protocol/tBinaryProtocol.h>
@@ -29,20 +31,20 @@ struct MessagePtr
     Message serializer base Class
 -----------------------------------------------------------------------------*/
 template <typename MessageBase_t>
-class SerializerBase
+struct SerializerBase
 {
-public:
     virtual const std::string serialize( const MessageBase_t& imsg, std::vector<unsigned char>& obytes ) const = 0;
+    virtual ~SerializerBase() = default;
 };
 
 /*-----------------------------------------------------------------------------
     Message deserializer base class
 -----------------------------------------------------------------------------*/
 template <typename MessageBase_t>
-class DeserializerBase
+struct DeserializerBase
 {
-public:
     virtual typename MessagePtr<MessageBase_t>::type deserialize( const std::vector<unsigned char>& ibytes ) const = 0;
+    virtual ~DeserializerBase() = default;
 };
 
 /*-----------------------------------------------------------------------------
@@ -52,8 +54,8 @@ template <typename MessageBase_t>
 class MessageFactory
 {
     // could be boost::ptr_map to automatically handle the memory
-    std::map<std::string, SerializerBase<MessageBase_t> *>   _serializers;
-    std::map<std::string, DeserializerBase<MessageBase_t> *> _deserializers;
+    std::map<std::string, std::unique_ptr<SerializerBase<MessageBase_t>>>   _serializers;
+    std::map<std::string, std::unique_ptr<DeserializerBase<MessageBase_t>>> _deserializers;
 
     std::string _prefix;
 
@@ -73,26 +75,27 @@ public:
 
         if( thriftPopulator != NULL )
         {
-            _serializers[typeid(Msg_t).name()] = new Serializer<MessageBase_t, Msg_t, ThriftMsg_t>( thriftPopulator, qualifiedMsgType );
+            _serializers.emplace(
+                    typeid(Msg_t).name(), 
+                    std::make_unique<Serializer<MessageBase_t, Msg_t, ThriftMsg_t>>(thriftPopulator, qualifiedMsgType));
         }
 
         if( messagePopulator != NULL )
         {
-            _deserializers[qualifiedMsgType] = new Deserializer<MessageBase_t, Msg_t, ThriftMsg_t>( messagePopulator );
+            _deserializers.emplace(
+                    qualifiedMsgType,
+                    std::make_unique<Deserializer<MessageBase_t, Msg_t, ThriftMsg_t>>(messagePopulator));
         }
     }
 
     const std::string serialize( const MessageBase_t& imsg, std::vector<unsigned char>& obytes ) const
     {
-        std::map<std::string, SerializerBase<MessageBase_t> *>::const_iterator itr;
-
-        itr = _serializers.find( typeid(imsg).name() );
-        if( itr != _serializers.end() )
+        if( auto serializer = Cti::mapFindRef(_serializers, typeid(imsg).name()) )
         {
             try
             {
                 // return the message type if all went well
-                return itr->second->serialize( imsg, obytes );
+                return (*serializer)->serialize( imsg, obytes );
             }
             catch( apache::thrift::TException &e )
             {
@@ -106,15 +109,12 @@ public:
 
     typename MessagePtr<MessageBase_t>::type deserialize( const std::string& msgType, const std::vector<unsigned char>& ibytes ) const
     {
-        std::map<std::string, DeserializerBase<MessageBase_t> *>::const_iterator itr;
-
-        itr = _deserializers.find( msgType );
-        if( itr != _deserializers.end() )
+        if( auto deserializer = Cti::mapFindRef(_deserializers, msgType) )
         {
             try
             {
                 // return a new instance ot the MessageBase_t
-                return itr->second->deserialize( ibytes );
+                return (*deserializer)->deserialize( ibytes );
             }
             catch( apache::thrift::TException &e )
             {
@@ -145,7 +145,7 @@ public:
     {
     }
 
-    virtual const std::string serialize( const MessageBase_t& imsg, std::vector<unsigned char>& obytes ) const
+    const std::string serialize( const MessageBase_t& imsg, std::vector<unsigned char>& obytes ) const override
     {
         if( const Msg_t *p_imsg = dynamic_cast<const Msg_t *>(&imsg) )
         {
@@ -221,7 +221,7 @@ public:
     }
 
     //  Throws apache::thrift::TException
-    virtual typename MessagePtr<MessageBase_t>::type deserialize( const std::vector<unsigned char>& ibytes ) const
+    typename MessagePtr<MessageBase_t>::type deserialize( const std::vector<unsigned char>& ibytes ) const override
     {
         // deserialize bytes into Thrift message - may throw apache::thrift::TException
         ThriftMsg_t imsg = DeserializeThriftBytes<ThriftMsg_t>( ibytes );

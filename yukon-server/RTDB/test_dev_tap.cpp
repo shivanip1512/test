@@ -87,6 +87,8 @@ BOOST_AUTO_TEST_CASE(test_dev_tap_early_hangup)
     ULONG   bytesReceived = 0;
     CtiDeviceBase::CtiMessageList traceList;
 
+    VerificationSequenceGen(true, 99);
+    
     transfer.setInBuffer ( inBuffer );
     transfer.setOutBuffer( outBuffer );
     transfer.setInCountActual( &bytesReceived );

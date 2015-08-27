@@ -1,9 +1,8 @@
 #include <boost/test/unit_test.hpp>
 
 #include "dev_lcr3102.h"
-#include <map>
 
-BOOST_AUTO_TEST_SUITE( test_lcr3102 )
+#include "rtdb_test_helpers.h"
 
 using std::list;
 using std::string;
@@ -54,6 +53,14 @@ struct test_Lcr3102Device : Cti::Devices::Lcr3102Device
         return pi;
     }
 };
+
+struct resetGlobals_helper
+{
+    Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;
+};
+
+BOOST_FIXTURE_TEST_SUITE(test_dev_lcr3102, resetGlobals_helper)
+//{  Brace matching for BOOST_FIXTURE_TEST_SUITE
 
 BOOST_AUTO_TEST_CASE(test_dev_lcr3102_get6BitData)
 {
@@ -283,9 +290,9 @@ BOOST_AUTO_TEST_CASE(test_decode_get_propcount)
     BOOST_CHECK_EQUAL(pi.quality, NormalQuality);
     BOOST_CHECK_CLOSE(pi.value, (double)propcount, 0.0000001);
 
-	delete_container(vgList);
-	delete_container(retList);
-	delete_container(outList);
+    delete_container(vgList);
+    delete_container(retList);
+    delete_container(outList);
 }
 
 BOOST_AUTO_TEST_CASE(test_decode_control_time)
@@ -346,9 +353,9 @@ BOOST_AUTO_TEST_CASE(test_decode_control_time)
         BOOST_CHECK_EQUAL(pi.description, "Control Time Remaining Relay 2"); // Relay + 1 should be reported here!
     }
 
-	delete_container(vgList);
-	delete_container(retList);
-	delete_container(outList);
+    delete_container(vgList);
+    delete_container(retList);
+    delete_container(outList);
 }
 
 BOOST_AUTO_TEST_CASE(test_data_read_address)

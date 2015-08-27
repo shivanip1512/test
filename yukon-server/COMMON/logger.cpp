@@ -99,7 +99,9 @@ Logger::Logger(const std::string &loggerName, const Indents indentStyle)
 {}
 
 Logger::~Logger()
-{}
+{
+    log4cxx::MDC::clear();
+}
 
 static const size_t MaxMessageSize = 1024 * 1024;  //  1 MB, which should be enough for all sane log entries
 

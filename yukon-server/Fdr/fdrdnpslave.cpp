@@ -1190,6 +1190,8 @@ ControlStatus DnpSlave::waitForResponse(const long userMessageId)
     {
         if( auto msg = readPorterConnection(Timing::Chrono::seconds(1)) )
         {
+            std::unique_ptr<CtiReturnMsg> scopedMsg(msg);
+
             if( msg->UserMessageId() == userMessageId && ! msg->ExpectMore() )
             {
                 std::regex re { "Control result \\(([0-9]+)\\)" };

@@ -17,6 +17,8 @@ public:
     {
     }
 
+    virtual ~Behavior() = default;
+
 protected:
 
     bool behaviorOccurs()
