@@ -207,7 +207,7 @@ bool UnsolicitedHandler::handleDbChanges(const MillisecondTimer &timer, const un
                 }
                 catch( ... )
                 {
-                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, describePort() << " failed while processing DBChange " << dbchg)
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, describePort() << " failed while processing DBChange " << dbchg);
                 }
             }
 
