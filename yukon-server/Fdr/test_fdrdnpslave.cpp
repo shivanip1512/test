@@ -32,7 +32,7 @@ struct Test_FdrDnpSlave : Cti::Fdr::DnpSlave
         return ClientErrors::None;
     }
 
-    CtiReturnMsg *readPorterConnection(const Cti::Timing::Chrono duration) override
+    std::unique_ptr<CtiReturnMsg> readPorterConnection(const Cti::Timing::Chrono duration) override
     {
         if( ! lastRequestMsg )
         {
@@ -48,7 +48,7 @@ struct Test_FdrDnpSlave : Cti::Fdr::DnpSlave
         returnMsg->setExpectMore(false);
         returnMsg->setUserMessageId(lastRequestMsg->UserMessageId());
 
-        return returnMsg.release();
+        return returnMsg;
     }
 
     LitePoint lookupPointById(long pointId) override

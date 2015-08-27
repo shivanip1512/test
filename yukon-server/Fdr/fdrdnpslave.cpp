@@ -1151,9 +1151,9 @@ YukonError_t DnpSlave::writePorterConnection(CtiRequestMsg *msg, const Timing::C
 }
 
 
-CtiReturnMsg *DnpSlave::readPorterConnection(const Timing::Chrono duration)
+std::unique_ptr<CtiReturnMsg> DnpSlave::readPorterConnection(const Timing::Chrono duration)
 {
-    return dynamic_cast<CtiReturnMsg *>(_porterConnection.ReadConnQue(duration.milliseconds()));
+    return std::unique_ptr<CtiReturnMsg>(dynamic_cast<CtiReturnMsg *>(_porterConnection.ReadConnQue(duration.milliseconds())));
 }
 
 
@@ -1190,8 +1190,6 @@ ControlStatus DnpSlave::waitForResponse(const long userMessageId)
     {
         if( auto msg = readPorterConnection(Timing::Chrono::seconds(1)) )
         {
-            std::unique_ptr<CtiReturnMsg> scopedMsg(msg);
-
             if( msg->UserMessageId() == userMessageId && ! msg->ExpectMore() )
             {
                 std::regex re { "Control result \\(([0-9]+)\\)" };

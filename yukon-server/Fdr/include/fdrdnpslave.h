@@ -82,7 +82,7 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
         unsigned int getHeaderLength() override;
 
         virtual YukonError_t  writePorterConnection(CtiRequestMsg *msg, const Timing::Chrono duration);
-        virtual CtiReturnMsg *readPorterConnection(const Timing::Chrono duration);
+        virtual std::unique_ptr<CtiReturnMsg> readPorterConnection(const Timing::Chrono duration);
 
         virtual LitePoint lookupPointById(long pointid);
 
