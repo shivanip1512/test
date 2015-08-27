@@ -1,22 +1,4 @@
-/*-----------------------------------------------------------------------------
-    Filename:
-         port_direct.cpp
-
-    Programmer:
-         Corey G. Plender
-
-    Description:
-        Defines functions related to retrieving port data from a rdbms and
-        mapping it into C style structs.
-
-    Initial Date:  1/11/99, 07/07/99
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999
------------------------------------------------------------------------------*/
 #include "precompiled.h"
-
-#include <iostream>
-#include <iomanip>
 
 #include "cparms.h"
 #include "dllbase.h"
@@ -31,94 +13,91 @@ YukonError_t CtiPortDirect::openPort(INT rate, INT bits, INT parity, INT stopbit
     YukonError_t status = ClientErrors::None;
     ULONG    Result;
 
-    if( !isSimulated() )
+    if( isSimulated() )
     {
-        if( isViable() )
+        return ClientErrors::None;
+    }
+
+    if( isViable() )
+    {
+        close(FALSE);
+    }
+
+    if(isInhibited())
+    {
+        return ClientErrors::PortInhibited;
+    }
+
+    try
+    {
+        if(CTIOpen ((char*)(_localSerial.getPhysicalPort().c_str()),
+                    &getHandle(),
+                    &Result,
+                    0L,
+                    FILE_NORMAL,
+                    FILE_OPEN,
+                    OPEN_ACCESS_READWRITE | OPEN_SHARE_DENYREADWRITE | OPEN_FLAGS_WRITE_THROUGH,
+                    0L) || Result != 1)
         {
-            close(FALSE);
+            close(false);
+
+            CTILOG_ERROR(dout, "Could not acquire port handle "<< _localSerial.getPhysicalPort());
+
+            Sleep(5000);
+
+            return ClientErrors::BadPort;
         }
 
-        if(isInhibited())
+        CTILOG_INFO(dout, "Port "<< getName() <<" acquiring port handle");
+
+        /* load _dcb and set the default DCB/COMMTIMEOUTS info for the port */
+        initPrivateStores();
+
+        YukonError_t i;
+
+        /* set the baud rate bits parity etc! on the port */
+        if( i = setLine() )
         {
-            status = ClientErrors::PortInhibited;
+            CTILOG_ERROR(dout, "Could not set baud rate/parity on port "<< getName());
+
+            return(i);
         }
-        else
+
+        /* set the Read Timeout for the port */
+        if( i = setPortReadTimeOut(1000) )
         {
-            try
-            {
-                if(CTIOpen ((char*)(_localSerial.getPhysicalPort().c_str()),
-                            &getHandle(),
-                            &Result,
-                            0L,
-                            FILE_NORMAL,
-                            FILE_OPEN,
-                            OPEN_ACCESS_READWRITE | OPEN_SHARE_DENYREADWRITE | OPEN_FLAGS_WRITE_THROUGH,
-                            0L) || Result != 1)
-                {
-                    close(false);
+            CTILOG_ERROR(dout, "Could not set the read timeout on port "<< getName());
 
-                    CTILOG_ERROR(dout, "Could not acquire port handle"<< _localSerial.getPhysicalPort());
-
-                    Sleep(5000);
-
-                    return ClientErrors::BadPort;
-                }
-                else
-                {
-                    CTILOG_INFO(dout, "Port "<< getName() <<" acquiring port handle");
-                }
-
-
-                /* load _dcb and set the default DCB/COMMTIMEOUTS info for the port */
-                initPrivateStores();
-
-                YukonError_t i;
-
-                /* set the baud rate bits parity etc! on the port */
-                if( i = setLine() )
-                {
-                    CTILOG_ERROR(dout, "Could not set baud rate/parity on port "<< getName());
-
-                    return(i);
-                }
-
-                /* set the Read Timeout for the port */
-                if( i = setPortReadTimeOut(1000) )
-                {
-                    CTILOG_ERROR(dout, "Could not set the read timeout on port "<< getName());
-
-                    return(i);
-                }
-
-                /* set the write timeout for the port */
-                if( i = setPortWriteTimeOut(1000) )
-                {
-                    CTILOG_ERROR(dout, "Could not set the write timeout on port "<< getName());
-
-                    return(i);
-                }
-
-                /* Lower RTS */
-                lowerRTS();
-
-                /* Raise DTR */
-                raiseDTR();
-
-                if( status = reset(true) )
-                {
-                    CTILOG_ERROR(dout, "Could not reset port on "<< getName());
-                }
-                /* set the modem parameters */
-                if( status = setup(true) )
-                {
-                    CTILOG_ERROR(dout, "Could not set port on "<< getName());
-                }
-            }
-            catch(...)
-            {
-                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-            }
+            return(i);
         }
+
+        /* set the write timeout for the port */
+        if( i = setPortWriteTimeOut(1000) )
+        {
+            CTILOG_ERROR(dout, "Could not set the write timeout on port "<< getName());
+
+            return(i);
+        }
+
+        /* Lower RTS */
+        lowerRTS();
+
+        /* Raise DTR */
+        raiseDTR();
+
+        if( status = reset(true) )
+        {
+            CTILOG_ERROR(dout, "Could not reset port on "<< getName());
+        }
+        /* set the modem parameters */
+        if( status = setup(true) )
+        {
+            CTILOG_ERROR(dout, "Could not set port on "<< getName());
+        }
+    }
+    catch(...)
+    {
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return status;
