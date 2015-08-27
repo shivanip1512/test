@@ -698,7 +698,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
             multispeakEventLogService.notificationResponse("ODEventNotification", transactionId,
                 outageDetectionEvent.getObjectID(), outageDetectionEvent.getOutageEventType().toString(),
-                ArrayUtils.getLength(errObjects), responseUrl);
+                CollectionUtils.size(errObjects), responseUrl);
             if (CollectionUtils.isNotEmpty(errObjects)) {
                 multispeakFuncs.logErrorObjects(responseUrl, "ODEventNotification", errObjects);
             }
@@ -852,7 +852,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                             errObjects = responseErrorObjects;
                         }
                         multispeakEventLogService.notificationResponse("readingChangedNotification", transactionID, meterRead.getObjectID(), 
-                                                                       meterRead.getPosKWh().toString(), ArrayUtils.getLength(errObjects), responseUrl); //just picked PoskWh to log...because nothing better
+                                                                       meterRead.getPosKWh().toString(), CollectionUtils.size(errObjects), responseUrl); //just picked PoskWh to log...because nothing better
                         if (CollectionUtils.isNotEmpty(errObjects)) {
                             multispeakFuncs.logErrorObjects(responseUrl, "ReadingChangedNotification", errObjects);
                         }
@@ -953,7 +953,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                         errObjects = responseErrorObjects;
                     }
                     multispeakEventLogService.notificationResponse("formattedBlockNotification", transactionId, block.getObjectId(), 
-                                                                   "", ArrayUtils.getLength(errObjects), responseUrl);
+                                                                   "", CollectionUtils.size(errObjects), responseUrl);
                     if (CollectionUtils.isNotEmpty(errObjects)) {
                         multispeakFuncs.logErrorObjects(responseUrl, "FormattedBlockNotification", errObjects);
                     }

@@ -66,7 +66,7 @@ import com.cannontech.multispeak.db.MultispeakInterface;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
-import com.cannontech.user.SimpleYukonUserContext;
+import com.cannontech.user.YukonUserContext;
 
 public class MultispeakFuncs {
     private final static Logger log = YukonLogManager.getLogger(MultispeakFuncs.class);
@@ -142,11 +142,17 @@ public class MultispeakFuncs {
         WebServiceMessage webServiceRequestMessage = ctx.getRequest();
         SaajSoapMessage saajSoapRequestMessage = (SaajSoapMessage) webServiceRequestMessage;
         Node nxtNode = saajSoapRequestMessage.getSaajMessage().getSOAPPart().getEnvelope().getBody().getFirstChild();
-        if (nxtNode.getNamespaceURI() == null)
+        if (nxtNode.getNamespaceURI() == null) {
             nxtNode = nxtNode.getNextSibling();
-            
-        String soapAction = nxtNode.getNamespaceURI() + "/" + nxtNode.getLocalName();
-        mimeHeaders.setHeader("SOAPAction", soapAction);
+        }
+
+        if (nxtNode != null) {
+            String soapAction = nxtNode.getNamespaceURI() + "/" + nxtNode.getLocalName();
+            mimeHeaders.setHeader("SOAPAction", soapAction);
+        } else {
+            log.warn("Namespace and method not identified. SOAPAction not set.");
+        }
+
         return soapEnvelop;
     }
 
@@ -501,8 +507,7 @@ public class MultispeakFuncs {
         try {
 
             log.debug("Returning disconnect status from cache: "
-                + pointFormattingService.getCachedInstance().getValueString(pointValueHolder, Format.FULL,
-                    new SimpleYukonUserContext()));
+                + pointFormattingService.getCachedInstance().getValueString(pointValueHolder, Format.FULL, YukonUserContext.system));
 
             boolean isRfnDisconnect = paoDefinitionDao.isTagSupported(yukonDevice.getPaoIdentifier().getPaoType(),
                                                                       PaoTag.DISCONNECT_RFN);

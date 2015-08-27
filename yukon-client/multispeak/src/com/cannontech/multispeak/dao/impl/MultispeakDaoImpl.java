@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -93,7 +94,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
             for (int i = 0; i < mspVendors.size(); i++) {
                 MultispeakVendor tempVendor = mspVendors.get(i);
                 if (tempVendor.getAppName().equalsIgnoreCase("(none)")
-                    || tempVendor.getAppName().toUpperCase().startsWith(appName.toUpperCase()))
+                    || StringUtils.startsWithIgnoreCase(tempVendor.getAppName(), appName))
                     return tempVendor;
             }
             // throw new IncorrectResultSizeDataAccessException(1, mspInterfaces.size());

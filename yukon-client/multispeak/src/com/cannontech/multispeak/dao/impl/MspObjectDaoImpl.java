@@ -75,6 +75,7 @@ import com.cannontech.multispeak.client.core.SCADAClient;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MultispeakGetAllServiceLocationsCallback;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
+import com.google.common.collect.Lists;
 
 public class MspObjectDaoImpl implements MspObjectDao {
     private static final Logger log = YukonLogManager.getLogger(MspObjectDaoImpl.class);
@@ -490,46 +491,30 @@ public class MspObjectDaoImpl implements MspObjectDao {
 
         ErrorObject[] objects = new ErrorObject[] {};
         List<ErrorObject> errorObjects = new ArrayList<>();
+        
+        PingURL pingURL = objectFactory.createPingURL();
+        PingURLResponse response;
+        
         if (service.equalsIgnoreCase(MultispeakDefines.OD_Server_STR)) {
-            PingURL pingURL = objectFactory.createPingURL();
-            PingURLResponse response = odClient.pingURL(mspVendor, endpointUrl, pingURL);
-            errorObjects = response.getPingURLResult().getErrorObject();
+            response = odClient.pingURL(mspVendor, endpointUrl, pingURL);
         } else if (service.equalsIgnoreCase(MultispeakDefines.OA_Server_STR)) {
-            PingURL pingURL = objectFactory.createPingURL();
-            PingURLResponse response = oaClient.pingURL(mspVendor, endpointUrl, pingURL);
-            errorObjects = response.getPingURLResult().getErrorObject();
+            response = oaClient.pingURL(mspVendor, endpointUrl, pingURL);
         } else if (service.equalsIgnoreCase(MultispeakDefines.MDM_Server_STR)) {
-            PingURL pingURL = objectFactory.createPingURL();
-            PingURLResponse response = mdmClient.pingURL(mspVendor, endpointUrl, pingURL);
-            errorObjects = response.getPingURLResult().getErrorObject();
+            response = mdmClient.pingURL(mspVendor, endpointUrl, pingURL);
         } else if (service.equalsIgnoreCase(MultispeakDefines.MR_Server_STR)) {
-            PingURL pingURL = objectFactory.createPingURL();
-            PingURLResponse response = mrClient.pingURL(mspVendor, endpointUrl, pingURL);
-            errorObjects = response.getPingURLResult().getErrorObject();
+            response = mrClient.pingURL(mspVendor, endpointUrl, pingURL);
         } else if (service.equalsIgnoreCase(MultispeakDefines.EA_Server_STR)) {
-            PingURL pingURL = objectFactory.createPingURL();
-            PingURLResponse response = eaClient.pingURL(mspVendor, endpointUrl, pingURL);
-            errorObjects = response.getPingURLResult().getErrorObject();
+            response = eaClient.pingURL(mspVendor, endpointUrl, pingURL);
         } else if (service.equalsIgnoreCase(MultispeakDefines.LM_Server_STR)) {
-            PingURL pingURL = objectFactory.createPingURL();
-            PingURLResponse response = lmClient.pingURL(mspVendor, endpointUrl, pingURL);
-            errorObjects = response.getPingURLResult().getErrorObject();
+            response = lmClient.pingURL(mspVendor, endpointUrl, pingURL);
         } else if (service.equalsIgnoreCase(MultispeakDefines.CD_Server_STR)) {
-            PingURL pingURL = objectFactory.createPingURL();
-            PingURLResponse response = cdClient.pingURL(mspVendor, endpointUrl, pingURL);
-            errorObjects = response.getPingURLResult().getErrorObject();
+            response = cdClient.pingURL(mspVendor, endpointUrl, pingURL);
         } else if (service.equalsIgnoreCase(MultispeakDefines.CB_Server_STR)) {
-            PingURL pingURL = objectFactory.createPingURL();
-            PingURLResponse response = cbClient.pingURL(mspVendor, endpointUrl, pingURL);
-            errorObjects = response.getPingURLResult().getErrorObject();
+            response = cbClient.pingURL(mspVendor, endpointUrl, pingURL);
         } else if (service.equalsIgnoreCase(MultispeakDefines.SCADA_Server_STR)) {
-            PingURL pingURL = objectFactory.createPingURL();
-            PingURLResponse response = scadaClient.pingURL(mspVendor, endpointUrl, pingURL);
-            errorObjects = response.getPingURLResult().getErrorObject();
+            response = scadaClient.pingURL(mspVendor, endpointUrl, pingURL);
         } else if (service.equalsIgnoreCase(MultispeakDefines.CB_CD_STR)) {
-            PingURL pingURL = objectFactory.createPingURL();
-            PingURLResponse response = cbClient.pingURL(mspVendor, endpointUrl, pingURL);
-            errorObjects = response.getPingURLResult().getErrorObject();
+            response = cbClient.pingURL(mspVendor, endpointUrl, pingURL);
         } else {
             ErrorObject obj = new ErrorObject();
             obj.setObjectID("-100");
@@ -538,7 +523,11 @@ public class MspObjectDaoImpl implements MspObjectDao {
             obj.setEventTime(null);
             return new ErrorObject[] { obj };
         }
-        objects = toErrorObject(errorObjects);
+
+        if (response.getPingURLResult() != null) {
+            errorObjects = response.getPingURLResult().getErrorObject();
+            objects = toErrorObject(errorObjects);
+        }
         return objects;
     }
 
@@ -560,45 +549,36 @@ public class MspObjectDaoImpl implements MspObjectDao {
 
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, service);
         List<String> methods = new ArrayList<>();
+        
+        GetMethods getMethods = objectFactory.createGetMethods();
+        GetMethodsResponse response;
+        
         if (service.equalsIgnoreCase(MultispeakDefines.OD_Server_STR)) {
-            GetMethods getMethods = objectFactory.createGetMethods();
-            GetMethodsResponse response = odClient.getMethods(mspVendor, endpointUrl, getMethods);
-            methods = response.getGetMethodsResult().getString();
+            response = odClient.getMethods(mspVendor, endpointUrl, getMethods);
         } else if (service.equalsIgnoreCase(MultispeakDefines.OA_Server_STR)) {
-            GetMethods getMethods = objectFactory.createGetMethods();
-            GetMethodsResponse response = oaClient.getMethods(mspVendor, endpointUrl, getMethods);
-            methods = response.getGetMethodsResult().getString();
+            response = oaClient.getMethods(mspVendor, endpointUrl, getMethods);
         } else if (service.equalsIgnoreCase(MultispeakDefines.MDM_Server_STR)) {
-            GetMethods getMethods = objectFactory.createGetMethods();
-            GetMethodsResponse response = mdmClient.getMethods(mspVendor, endpointUrl, getMethods);
-            methods = response.getGetMethodsResult().getString();
+            response = mdmClient.getMethods(mspVendor, endpointUrl, getMethods);
         } else if (service.equalsIgnoreCase(MultispeakDefines.MR_Server_STR)) {
-            GetMethods getMethods = objectFactory.createGetMethods();
-            GetMethodsResponse response = mrClient.getMethods(mspVendor, endpointUrl, getMethods);
-            methods = response.getGetMethodsResult().getString();
+            response = mrClient.getMethods(mspVendor, endpointUrl, getMethods);
         } else if (service.equalsIgnoreCase(MultispeakDefines.EA_Server_STR)) {
-            GetMethods getMethods = objectFactory.createGetMethods();
-            GetMethodsResponse response = eaClient.getMethods(mspVendor, endpointUrl, getMethods);
-            methods = response.getGetMethodsResult().getString();
+            response = eaClient.getMethods(mspVendor, endpointUrl, getMethods);
         } else if (service.equalsIgnoreCase(MultispeakDefines.LM_Server_STR)) {
-            GetMethods getMethods = objectFactory.createGetMethods();
-            GetMethodsResponse response = lmClient.getMethods(mspVendor, endpointUrl, getMethods);
-            methods = response.getGetMethodsResult().getString();
+            response = lmClient.getMethods(mspVendor, endpointUrl, getMethods);
         } else if (service.equalsIgnoreCase(MultispeakDefines.CD_Server_STR)) {
-            GetMethods getMethods = objectFactory.createGetMethods();
-            GetMethodsResponse response = cdClient.getMethods(mspVendor, endpointUrl, getMethods);
-            methods = response.getGetMethodsResult().getString();
+            response = cdClient.getMethods(mspVendor, endpointUrl, getMethods);
         } else if (service.equalsIgnoreCase(MultispeakDefines.CB_Server_STR)) {
-            GetMethods pingURL = objectFactory.createGetMethods();
-            GetMethodsResponse response = cbClient.getMethods(mspVendor, endpointUrl, pingURL);
-            methods = response.getGetMethodsResult().getString();
+            response = cbClient.getMethods(mspVendor, endpointUrl, getMethods);
         } else if (service.equalsIgnoreCase(MultispeakDefines.SCADA_Server_STR)) {
-            GetMethods getMethods = objectFactory.createGetMethods();
-            GetMethodsResponse response = scadaClient.getMethods(mspVendor, endpointUrl, getMethods);
-            methods = response.getGetMethodsResult().getString();
+            response = scadaClient.getMethods(mspVendor, endpointUrl, getMethods);
         } else if (service.equalsIgnoreCase(MultispeakDefines.CB_CD_STR)) {
-            GetMethods pingURL = objectFactory.createGetMethods();
-            GetMethodsResponse response = cbClient.getMethods(mspVendor, endpointUrl, pingURL);
+            response = cbClient.getMethods(mspVendor, endpointUrl, getMethods);
+        } else {
+            String string = "No server for " + service;
+            return Lists.newArrayList(string);
+        }
+
+        if (response.getGetMethodsResult() != null) {
             methods = response.getGetMethodsResult().getString();
         }
         
