@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableSet;
 
 public enum UnitOfMeasure {
     
-    INVALID(-1, null, null),
+    INVALID(-1, "", ""),
     KW(0, "kW", "kW"),
     KWH(1, "kWH", "kWH"),
     KVA(2, "kVA", "kVA"),
