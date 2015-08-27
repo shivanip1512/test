@@ -21,13 +21,13 @@ private:
 
     coll_type      _smartMap;
 
-    typedef std::map<time_t, std::set<long>, std::greater<time_t> > lru_timeslice_map;  //  the make sure the map is sorted as newest-first (largest timestamps)
-    typedef std::map<long, lru_timeslice_map::iterator>      lru_point_lookup_map;
-    typedef CtiLockGuard<CtiCriticalSection>                 lru_guard_t;
+    using lru_timeslice_map     = std::map<time_t, std::set<long>, std::greater<time_t> >;  //  the make sure the map is sorted as newest-first (largest timestamps)
+    using pointid_timeslice_map = std::map<long, time_t>;
+    using lru_guard_t = CtiLockGuard<CtiCriticalSection>;
 
-    CtiCriticalSection   _lru_mux;
-    lru_timeslice_map    _lru_timeslices;
-    lru_point_lookup_map _lru_points;
+    CtiCriticalSection    _lru_mux;
+    lru_timeslice_map     _lru_timeslices;
+    pointid_timeslice_map _lru_points;
 
     void refreshPoints(std::set<long> &pointIdsFound, Cti::RowReader& rdr);
 
@@ -62,6 +62,9 @@ protected:
     //ONLY used by unit test.
     void setAllPointsLoaded(bool isLoaded) { _all_paoids_loaded = isLoaded; }
     void addPoint(CtiPointBase *point);
+
+    virtual time_t currentTime() { return time(nullptr); };
+    virtual int maxPointsAllowed();
 
     coll_type::lock_t &getLock();
     coll_type::lock_t &getLock() const;

@@ -22,7 +22,9 @@
 #include "database_reader.h"
 #include "database_util.h"
 
-using namespace std;
+#include "std_helper.h"
+
+#include <boost/range/algorithm/find_if.hpp>
 
 using namespace std;
 
@@ -679,43 +681,30 @@ void CtiPointManager::refreshPoints(std::set<long> &pointIdsFound, Cti::RowReade
 
 void CtiPointManager::updateAccess(long pointid)
 {
-    time_t time_now = time(0);
-
     lru_guard_t lru_guard(_lru_mux);
 
-    time_t time_index = time_now / 10;
-
-    lru_point_lookup_map::iterator lru_point = _lru_points.find(pointid);
-
-    lru_timeslice_map::iterator timeslice_itr;
+    auto time_index = currentTime() / 10;
 
     //  we know about this pointid
-    if( lru_point != _lru_points.end() )
+    if( const auto oldTimeslice = Cti::mapFind(_lru_points, pointid) )
     {
-        timeslice_itr = lru_point->second;
-
         //  it's already in the right timeslice - we're done
-        if( timeslice_itr->first == time_index )  return;
+        if( oldTimeslice == time_index )
+        {
+            return;
+        }
 
-        //  invalidate the old entry
-        timeslice_itr->second.erase(pointid);
+        if( auto oldTimesliceSet = Cti::mapFindRef(_lru_timeslices, *oldTimeslice) )
+        {
+            //  remove the old entry
+            oldTimesliceSet->erase(pointid);
+        }
     }
 
-    //  check to see if the current timeslice exists...  we do this because operator[] calls
-    //    insert(), which creates and destroys a value_type - in this case, a set, which is
-    //    very expensive
-    timeslice_itr = _lru_timeslices.find(time_index);
+    _lru_timeslices[time_index].insert(pointid);
 
-    //  insert the pointid into the current timeslice's set
-    if( timeslice_itr == _lru_timeslices.end() )
-    {
-        timeslice_itr = _lru_timeslices.insert(make_pair( (long) time_index, set<long>())).first;
-    }
-
-    timeslice_itr->second.insert( (const long) pointid);
-
-    //  update the point's iterator
-    _lru_points[pointid] = _lru_timeslices.find(time_now / 10);
+    //  update the point's timeslice
+    _lru_points[pointid] = time_index;
 }
 
 
@@ -857,8 +846,6 @@ void CtiPointManager::getEqualByPAO(long pao, vector<ptr_type> &points)
 
         multimap<long, long>::const_iterator itr         = _pao_pointids.lower_bound(pao),
                                              lower_bound = _pao_pointids.upper_bound(pao);
-
-        time_t time_now = std::time(0);
 
         for( ; itr != lower_bound; itr++ )
         {
@@ -1087,66 +1074,67 @@ void CtiPointManager::ClearList(void)
 }
 
 
+int CtiPointManager::maxPointsAllowed()
+{
+    return gConfigParms.getValueAsInt("MAX_POINT_CACHE_SIZE", 100000);
+}
+
+
 void CtiPointManager::processExpired()
 {
     coll_type::writer_lock_guard_t guard(getLock());
 
     lru_guard_t lru_guard(_lru_mux);
 
-    lru_timeslice_map::iterator timeslice_itr = _lru_timeslices.begin(),
-                                timeslice_end = _lru_timeslices.end();
-
     //default cache size is 100k, or 100*1000, or 100000
-    const int cache_max = gConfigParms.getValueAsULong("MAX_POINT_CACHE_SIZE",100000);
-    int valid_points = 0;
+    int points_allowed  = maxPointsAllowed();
+    int expiration_time = gConfigParms.getValueAsInt("MIN_POINT_CACHE_TIME", 300);
 
-    time_t expiration_time  = 300;  //  only expire points that were created longer than this ago
-    time_t expiration_index = (std::time(0) - expiration_time) / 10;
+    time_t expiration_index = (currentTime() - expiration_time) / 10;
 
-    //  add up to our maximum number of points
-    for( ; timeslice_itr != timeslice_end && (valid_points + timeslice_itr->second.size()) < cache_max; ++timeslice_itr )
+    //  iterate through until a timeslice exceeds the max cache size
+    auto itr =
+        boost::range::find_if(
+            _lru_timeslices,
+            [&points_allowed](lru_timeslice_map::value_type &kv)
+            {
+                return (points_allowed -= kv.second.size()) <= 0;
+            });
+
+    if( itr == _lru_timeslices.end() )
     {
-        valid_points += timeslice_itr->second.size();
+        return;
     }
 
     //  if we're not already into the expired timeslices, find the first expired entry
-    if( timeslice_itr != timeslice_end && _lru_timeslices.key_comp()(timeslice_itr->first, expiration_index) )
+    if( _lru_timeslices.key_comp()(itr->first, expiration_index) )
     {
-        timeslice_itr = _lru_timeslices.upper_bound(expiration_index);
+        itr = _lru_timeslices.upper_bound(expiration_index);
     }
 
     set<long> expired_pointids;
 
     //  go through the remaining timeslices and expire everything
-    while( timeslice_itr != timeslice_end )
+    while( itr != _lru_timeslices.end() )
     {
-        set<long>::iterator point_itr = timeslice_itr->second.begin(),
-                            point_end = timeslice_itr->second.end();
+        const auto &pointids = itr->second;
 
-        while( point_itr != point_end )
-        {
-            expired_pointids.insert(*point_itr++);
-        }
+        expired_pointids.insert(pointids.begin(), pointids.end());
 
-        timeslice_itr = _lru_timeslices.erase(timeslice_itr);
+        itr = _lru_timeslices.erase(itr);
     }
 
-    vector<ptr_type> expired;
-
-    set<long>::iterator pointid_itr = expired_pointids.begin(),
-                        pointid_end = expired_pointids.end();
-
-    if( !expired_pointids.empty() )
+    if( ! expired_pointids.empty() )
     {
         CTILOG_WARN(dout, "expiring "<< expired_pointids.size() <<" points");
     }
 
     //  erase all expired points
-    for( ; pointid_itr != pointid_end; ++pointid_itr )
+    for( const auto pointid : expired_pointids )
     {
-        expire(*pointid_itr);
+        expire(pointid);
 
-        _lru_points.erase(*pointid_itr);
+        _lru_points.erase(pointid);
     }
 }
 

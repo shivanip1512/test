@@ -39,6 +39,20 @@ struct Test_CtiPointManager : public CtiPointManager
     }
 
     using CtiPointManager::addPoint;
+
+    time_t test_currentTime = 0x50000000;  //  Arbitrarily chosen - July 13, 2012 at 6:01:20 AM
+
+    time_t currentTime() override
+    {
+        return test_currentTime;
+    }
+
+    int test_maxPointsAllowed = 100000;
+
+    int maxPointsAllowed() override
+    {
+        return test_maxPointsAllowed;
+    }
 };
 
 
@@ -173,5 +187,59 @@ BOOST_AUTO_TEST_CASE(test_mgr_point_get_equal_by_pao)
     BOOST_CHECK_EQUAL(manager.getOffsetTypeEqual(device2_id, 1, AnalogPointType).get(), point_analog3);
 }
 */
+
+BOOST_AUTO_TEST_CASE(test_pointExpiration)
+{
+    Test_CtiPointManager mgr;
+
+    mgr.test_maxPointsAllowed = 3;
+
+    CtiPointStatus *point_status1 = Cti::Test::makeStatusPoint(device1_id, status1_id, point1_offset);
+    CtiPointStatus *point_status2 = Cti::Test::makeStatusPoint(device1_id, status2_id, point2_offset);
+    CtiPointAnalog *point_analog1 = Cti::Test::makeAnalogPoint(device1_id, analog1_id, point1_offset);
+    CtiPointAnalog *point_analog2 = Cti::Test::makeAnalogPoint(device1_id, analog2_id, point2_offset);
+    CtiPointAnalog *point_analog3 = Cti::Test::makeAnalogPoint(device2_id, analog3_id, point1_offset);
+
+    mgr.addPoint(point_status1);
+    mgr.addPoint(point_status2);
+    mgr.addPoint(point_analog1);
+    mgr.addPoint(point_analog2);
+    mgr.addPoint(point_analog3);
+
+    //  Check expiration immediately, make sure nothing expired.
+    BOOST_CHECK_EQUAL(mgr.entries(), 5);
+    mgr.processExpired();
+    BOOST_CHECK_EQUAL(mgr.entries(), 5);
+
+    //  Two minutes later, access status 1, then check expiration and make sure nothing expired.
+    mgr.test_currentTime += 120;
+    BOOST_CHECK_EQUAL(mgr.getPoint(status1_id).get(), point_status1);
+    mgr.processExpired();
+    BOOST_CHECK_EQUAL(mgr.entries(), 5);
+
+    //  Two minutes later, access status 2, then check expiration and make sure nothing expired.
+    mgr.test_currentTime += 120;
+    BOOST_CHECK_EQUAL(mgr.getPoint(status2_id).get(), point_status2);
+    mgr.processExpired();
+    BOOST_CHECK_EQUAL(mgr.entries(), 5);
+
+    //  Two minutes later, access analog 1, then check expiration and make sure the other two analogs expired.
+    mgr.test_currentTime += 120;
+    BOOST_CHECK_EQUAL(mgr.getPoint(analog1_id).get(), point_analog1);
+    mgr.processExpired();
+    BOOST_CHECK_EQUAL(mgr.entries(), 3);
+
+    BOOST_CHECK_EQUAL(mgr.getPoint(status1_id).get(), point_status1);
+    BOOST_CHECK_EQUAL(mgr.getPoint(status2_id).get(), point_status2);
+    BOOST_CHECK_EQUAL(mgr.getPoint(analog1_id).get(), point_analog1);
+    BOOST_CHECK( ! mgr.getPoint(analog2_id));
+    BOOST_CHECK( ! mgr.getPoint(analog3_id));
+
+    //  Two minutes later, access analog 1, then check expiration and make sure nothing expired.
+    mgr.test_currentTime += 120;
+    BOOST_CHECK_EQUAL(mgr.getPoint(analog1_id).get(), point_analog1);
+    mgr.processExpired();
+    BOOST_CHECK_EQUAL(mgr.entries(), 3);
+}
 
 BOOST_AUTO_TEST_SUITE_END()
