@@ -136,7 +136,7 @@ static const std::map<YukonError_t, error_info> CtiErrors = {
         { ClientErrors::UnsupportedDevice,           ei{ ERRTYPESYSTEM,   "Device Not Supported"                        } },
         { ClientErrors::PortNotInitialized,          ei{ ERRTYPECOMM,     "Port not initialized"                        } },
         { ClientErrors::CommandAlreadyInProgress,    ei{ ERRTYPESYSTEM,   "Command already in progress"                 } },
-        { ClientErrors::DeviceNotConnected,          ei{ ERRTYPESYSTEM,   "No connection to device"                } },
+        { ClientErrors::DeviceNotConnected,          ei{ ERRTYPESYSTEM,   "No connection to device"                     } },
         { ClientErrors::NoDisconnect,                ei{ ERRTYPESYSTEM,   "No disconnect configured on this device"     } },
         { ClientErrors::TransmitterOverheating,      ei{ ERRTYPEPROTOCOL, "Transmitter is overheating"                  } },
         { ClientErrors::NeedsChannelConfig,          ei{ ERRTYPESYSTEM,   "Command needs channel config to continue."   } },
