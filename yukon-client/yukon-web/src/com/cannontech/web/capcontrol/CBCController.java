@@ -7,18 +7,15 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.cbc.exceptions.MultipleDevicesOnPortException;
 import com.cannontech.cbc.exceptions.PortDoesntExistException;
 import com.cannontech.cbc.exceptions.SameMasterSlaveCombinationException;
 import com.cannontech.cbc.exceptions.SerialNumberExistsException;
-import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -46,16 +43,11 @@ public class CBCController {
     @Autowired private CBCService cbcService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    private static final String baseKey = "yukon.web.modules.capcontrol.edit";
+    private static final String baseKey = "yukon.web.modules.capcontrol.cbc.edit";
 
-    @RequestMapping(value = "capControlCBC/{id}/edit", method = RequestMethod.GET)
+    @RequestMapping(value = "cbc/{id}/edit", method = RequestMethod.GET)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String edit(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
-        if (!isEditingAuthorized(userContext)) {
-            throw new NotAuthorizedException("User " + userContext.getYukonUser().getUsername()
-                + " is not authorized to edit this object.");
-        }
-
         CapControlCBC capControlCBC = cbcService.getCapControlCBC(id);
         Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(id);
         model.addAttribute("mode", PageEditMode.EDIT);
@@ -84,7 +76,7 @@ public class CBCController {
         return "cbc.jsp";
     }
 
-    @RequestMapping(value = { "capControlCBC" }, method = RequestMethod.POST)
+    @RequestMapping(value = { "cbc" }, method = RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String save(@ModelAttribute("capControlCBC") CapControlCBC capControlCBC, FlashScope flashScope,
             YukonUserContext userContext) {
@@ -95,11 +87,7 @@ public class CBCController {
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".saveFailed", e.getMessage()));
         }
 
-        return "redirect:capControlCBC/" + capControlCBC.getYukonPAObject().getPaObjectID() + "/edit";
-    }
-
-    private boolean isEditingAuthorized(YukonUserContext userContext) {
-        return rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, userContext.getYukonUser());
+        return "redirect:cbc/" + capControlCBC.getYukonPAObject().getPaObjectID() + "/edit";
     }
 
 }

@@ -15,6 +15,7 @@ import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.database.db.device.DeviceWindow;
 import com.cannontech.database.db.pao.YukonPAObject;
 
+
 public class CapControlCBC {
 
     private boolean disableFlag;
@@ -35,7 +36,7 @@ public class CapControlCBC {
     private boolean editingIntegrity;
     private boolean editingException;
     private YukonPAObject yukonPAObject;
-
+    
     public String getCbcParent() {
         return cbcParent;
     }
@@ -180,4 +181,5 @@ public class CapControlCBC {
         this.yukonPAObject = yukonPAObject;
     }
 
+    
 }

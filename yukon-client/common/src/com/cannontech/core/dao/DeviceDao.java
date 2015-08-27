@@ -11,13 +11,6 @@ import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.db.capcontrol.DeviceCBC;
-import com.cannontech.database.db.device.Device;
-import com.cannontech.database.db.device.DeviceAddress;
-import com.cannontech.database.db.device.DeviceDialupSettings;
-import com.cannontech.database.db.device.DeviceDirectCommSettings;
-import com.cannontech.database.db.device.DeviceScanRate;
-import com.cannontech.database.db.device.DeviceWindow;
 
 public interface DeviceDao {
     SimpleDevice getYukonDevice(int paoId);
@@ -136,64 +129,4 @@ public interface DeviceDao {
      * Returns a list of {@link SimpleDevice} objects for a list of pao ids.
      */
     List<SimpleDevice> getYukonDeviceObjectByIds(Iterable<Integer> ids);
-
-    /**
-     * Returns Device based on the given deviceId.
-     */
-    Device getDevice(int deviceId);
-
-    /**
-     * Returns DeviceDirectCommSettings based on the given deviceId.
-     */
-    DeviceDirectCommSettings getDeviceDirectCommSettings(int deviceId);
-
-    /**
-     * Returns DeviceDirectCommSettings based on the given deviceId.
-     */
-    DeviceDialupSettings getDeviceDialupSettings(int deviceId);
-
-    /**
-     * Returns DeviceAddress information based on the given deviceId.
-     */
-    DeviceAddress getDeviceAddress(int deviceId);
-
-    /**
-     * Returns DeviceWindow information based on the given deviceId.
-     */
-    DeviceWindow getDeviceWindow(int deviceId);
-
-    /**
-     * Saves the provided data in DeviceAddress table and returns the deviceId.
-     */
-    int saveDeviceAddress(DeviceAddress deviceAddress, int cbcId);
-
-    /**
-     * Saves the provided data in DeviceCBC table and returns the deviceId.
-     */
-    int saveDeviceCBC(DeviceCBC deviceCBC, int cbcId);
-
-    /**
-     * Saves the provided data in YukonPao table and returns the deviceId.
-     */
-    int saveYukonPao(String paoName, String disableFlag, int cbcId);
-
-    /**
-     * Returns DeviceCBC information based on the given deviceId.
-     */
-    DeviceCBC getDeviceCBC(int deviceId);
-
-    /**
-     * Returns a List<DeviceScanRate> for given deviceId;
-     */
-    List<DeviceScanRate> getDeviceScanRates(int deviceId);
-
-    /**
-     * Saves the provided data in DeviceDirectCommSettings table and returns the deviceId.
-     */
-    int saveDeviceDirectCommSettings(int portId, int cbcId);
-
-    /**
-     * Saves the provided data in DeviceScanRates table and returns the deviceId.
-     */
-    int saveDeviceScanRates(DeviceScanRate deviceScanRate, int deviceId, String type);
 }

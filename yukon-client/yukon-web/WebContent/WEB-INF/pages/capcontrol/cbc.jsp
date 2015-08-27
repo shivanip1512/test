@@ -6,40 +6,17 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<cti:standardPage module="capcontrol" page="capControlCBC.${mode}">
-	<cti:msgScope paths="yukon.web.modules.capcontrol.capControlCBC">
+<cti:standardPage module="capcontrol" page="cbc.${mode}">
+	<cti:msgScope paths="yukon.web.modules.capcontrol.cbc">
 
 		<tags:setFormEditMode mode="${mode}" />
 
-		<cti:url var="action" value="/capcontrol/capControlCBC" />
+		<cti:url var="action" value="/capcontrol/cbc" />
 		<form:form id="cbcEditor-form" commandName="capControlCBC"
 			action="${action}" method="POST">
 			<cti:csrfToken />
 			<form:hidden path="yukonPAObject.paObjectID" />
 			<form:hidden path="yukonPAObject.paoType" />
-
-			<div class="page-action-area">
-				<cti:button nameKey="save" type="submit" classes="primary action" />
-				<cti:msgScope paths="capcontrol.cbcBase">
-					<cti:url var="deleteUrl" value="/editor/deleteBasePAO.jsf">
-						<cti:param name="value" value="${yukonPAObject.paObjectID}" />
-					</cti:url>
-					<cti:button nameKey="delete" href="${deleteUrl}" />
-
-					<%-- Copy CBC Button --%>
-					<cti:url var="copyUrl" value="/editor/copyBase.jsf">
-						<cti:param name="itemid" value="${yukonPAObject.paObjectID}" />
-						<cti:param name="type" value="1" />
-					</cti:url>
-					<cti:button nameKey="copy" href="${copyUrl}" />
-
-					<cti:url var="returnUrl"
-						value="" />
-					<cti:button label="Return" href="javascript:window.history.back()" />
-
-				</cti:msgScope>
-			</div>
-			<br/>
 			<cti:tabs containerName="yukon:capcontrol:cbcEditor:tab">
             <cti:msg2 var="generalTab" key=".tab.general" />
             <cti:tab title="${generalTab}">

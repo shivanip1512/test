@@ -104,7 +104,7 @@ public class YukonPAObject extends DBPersistent implements YukonPao {
 
         if (results.length == SETTER_COLUMNS.length) {
 //            setCategory((String) results[0]);
-//            setPaoClass((String) results[1]);
+            setPaoClass((String) results[1]);
             setPaoName((String) results[2]);
             PaoType.getForDbString((String) results[3]);
             setDescription((String) results[4]);

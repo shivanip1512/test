@@ -64,7 +64,7 @@
                             <a href="${editUrl}">
                                 ${fn:escapeXml(viewableCapBank.cbcName)}
                             </a> --%>
-                            <cti:url var="editUrl" value="/capcontrol/capControlCBC/${viewableCapBank.cbcId}/edit" />
+                            <cti:url var="editUrl" value="/capcontrol/cbc/${viewableCapBank.cbcId}/edit" />
                                 <a href="${editUrl}">${fn:escapeXml(viewableCapBank.cbcName)}</a> 
                         </c:when>
                         <c:otherwise>

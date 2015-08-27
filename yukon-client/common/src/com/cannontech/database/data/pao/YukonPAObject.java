@@ -148,6 +148,10 @@ public abstract class YukonPAObject extends DBPersistent implements CTIDbChange 
         return getYukonPAObject().getPaoType();
     }
    
+    public String getPAOClass() {
+        return getYukonPAObject().getPaoClass();
+    }
+    
     protected com.cannontech.database.db.pao.YukonPAObject getYukonPAObject() {
         if (yukonPAObject == null) {
             yukonPAObject = new com.cannontech.database.db.pao.YukonPAObject();
