@@ -1,23 +1,9 @@
 package com.cannontech.amr.deviceDataMonitor.service;
 
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
-import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitorProcessor;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dynamic.PointValueHolder;
 
-/**
- * This whole service is running in the service manager and all calls
- * to it are being made through Spring Remoting (which is using Active MQ)
- * see: http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/remoting.html
- * 
- * Because of this it should be noted that all objects being passed to this service
- * are copied, serialized, and sent as a message. These calls block as would any other method call.
- * 
- * The context files behind the scenes that are doing this:
- * /services/src/com/cannontech/services/server/exportedServicesContext.xml
- * /common/src/com/cannontech/remoteServicesContext.xml
- */
 public interface DeviceDataMonitorService {
     
     /**
@@ -66,27 +52,4 @@ public interface DeviceDataMonitorService {
      * @throws NotFoundException
      */
     boolean toggleEnabled(int monitorId) throws NotFoundException;
-    
-    /**
-     * Returns a boolean indicating whether or not the passed in processor's LiteState.stateRawState
-     * matches the passed in PointValueHolder's value 
-     */
-    boolean isPointValueMatch(DeviceDataMonitorProcessor processor, PointValueHolder pointValue);
-
-    /**
-     * Returns a boolean indicating whether or not a monitor's violations device group
-     * should be updated given an updatedMonitor and existingMonitor.
-     * 
-     * All this method is doing is performing an equality comparison of the monitor's violationsDeviceGroupPath
-     * 
-     * Used internally in the service and in unit tests
-     */
-    boolean shouldUpdateViolationsGroupNameBeforeSave(DeviceDataMonitor updatedMonitor, DeviceDataMonitor existingMonitor);
-
-    /**
-     * Returns a boolean indicating whether or not a recalculation of violating devices should be
-     * triggered if the passed in updatedMonitor and existingMonitor were to be saved. Used internally in the service
-     * and in unit tests
-     */
-    boolean shouldFindViolatingPaosBeforeSave(DeviceDataMonitor updatedMonitor, DeviceDataMonitor existingMonitor);
 }

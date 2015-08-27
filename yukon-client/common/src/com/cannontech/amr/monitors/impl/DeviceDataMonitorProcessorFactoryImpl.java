@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.deviceDataMonitor.dao.DeviceDataMonitorDao;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitorProcessor;
-import com.cannontech.amr.deviceDataMonitor.service.DeviceDataMonitorService;
+import com.cannontech.amr.deviceDataMonitor.service.DeviceDataMonitorCalculationService;
 import com.cannontech.amr.monitors.DeviceDataMonitorCacheService;
 import com.cannontech.amr.monitors.DeviceDataMonitorProcessorFactory;
 import com.cannontech.clientutils.LogHelper;
@@ -43,7 +43,7 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
     @Autowired private AttributeService attributeService;
     @Autowired private DeviceDataMonitorDao deviceDataMonitorDao;
     @Autowired private DeviceDataMonitorCacheService deviceDataMonitorCacheService;
-    @Autowired private DeviceDataMonitorService deviceDataMonitorService;
+    @Autowired private DeviceDataMonitorCalculationService deviceDataMonitorCalculationService;
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
     @Autowired private PointDao pointDao;
     @Autowired private PaoDao paoDao;
@@ -117,7 +117,7 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
             }
             
             /* only set matchFound to true if it isn't already true and the pointValue is a match */
-            if (deviceDataMonitorService.isPointValueMatch(processor, pointValueHolder)) {
+            if (deviceDataMonitorCalculationService.isPointValueMatch(processor, pointValueHolder)) {
                 matchFound = true;
             } else if (matchFound == null) {
                 matchFound = false;

@@ -13,7 +13,10 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitorProcessor;
+import com.cannontech.amr.deviceDataMonitor.service.DeviceDataMonitorCalculationService;
 import com.cannontech.amr.deviceDataMonitor.service.DeviceDataMonitorService;
+import com.cannontech.amr.deviceDataMonitor.service.impl.DeviceDataMonitorCalculationImpl;
+import com.cannontech.amr.deviceDataMonitor.service.impl.DeviceDataMonitorServiceImpl;
 import com.cannontech.amr.monitors.impl.DeviceDataMonitorProcessorFactoryImpl;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.dao.impl.DeviceGroupProviderDaoMain;
@@ -56,6 +59,7 @@ public class DeviceDataMonitorTest {
     private DeviceDataMonitorProcessorFactoryImpl deviceDataMonitorProcessorFactory;
     private AttributeService attributeService;
     private DeviceDataMonitorService deviceDataMonitorService;
+    private DeviceDataMonitorCalculationService deviceDataMonitorCalculationService;
     private DeviceGroupService deviceGroupService;
     private DeviceGroupEditorDao deviceGroupEditorDao;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
@@ -198,6 +202,7 @@ public class DeviceDataMonitorTest {
             }
         };
 
+        deviceDataMonitorCalculationService = new DeviceDataMonitorCalculationImpl();
         deviceDataMonitorService = new DeviceDataMonitorServiceImpl();
         deviceDataMonitorProcessorFactory = new DeviceDataMonitorProcessorFactoryImpl();
         ReflectionTestUtils.setField(deviceDataMonitorProcessorFactory, "attributeService", attributeService);
@@ -320,7 +325,7 @@ public class DeviceDataMonitorTest {
         RichPointData rpd = getRPD(1, 5.0, PAO_POINT_IDENTIFIER_1);
         Assert.assertNotSame(processor.getAttribute(), paoPointToAttributeMap.get(PAO_POINT_IDENTIFIER_1));
         Assert.assertNotSame(processor.getStateGroup().getStateGroupID(), pointIdToLitePointMap.get(rpd.getPointValue().getId()).getStateGroupID());
-        Assert.assertFalse(deviceDataMonitorService.isPointValueMatch(processor, rpd.getPointValue()));
+        Assert.assertFalse(deviceDataMonitorCalculationService.isPointValueMatch(processor, rpd.getPointValue()));
         
         Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 0);
         deviceDataMonitorProcessorFactory.handlePointDataReceived(monitor1, rpd);
@@ -343,7 +348,7 @@ public class DeviceDataMonitorTest {
         RichPointData rpd = getRPD(1, 5.0, PAO_POINT_IDENTIFIER_1);
         Assert.assertEquals(processor.getAttribute(), paoPointToAttributeMap.get(PAO_POINT_IDENTIFIER_1));
         Assert.assertNotSame(processor.getStateGroup().getStateGroupID(), pointIdToLitePointMap.get(rpd.getPointValue().getId()).getStateGroupID());
-        Assert.assertFalse(deviceDataMonitorService.isPointValueMatch(processor, rpd.getPointValue()));
+        Assert.assertFalse(deviceDataMonitorCalculationService.isPointValueMatch(processor, rpd.getPointValue()));
 
         Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 0);
         deviceDataMonitorProcessorFactory.handlePointDataReceived(monitor1, rpd);
@@ -366,7 +371,7 @@ public class DeviceDataMonitorTest {
         RichPointData rpd = getRPD(1, 5.0, PAO_POINT_IDENTIFIER_1);
         Assert.assertNotSame(processor.getAttribute(), paoPointToAttributeMap.get(PAO_POINT_IDENTIFIER_1));
         Assert.assertEquals(processor.getStateGroup().getStateGroupID(), pointIdToLitePointMap.get(rpd.getPointValue().getId()).getStateGroupID());
-        Assert.assertFalse(deviceDataMonitorService.isPointValueMatch(processor, rpd.getPointValue()));
+        Assert.assertFalse(deviceDataMonitorCalculationService.isPointValueMatch(processor, rpd.getPointValue()));
         
         Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 0);
         deviceDataMonitorProcessorFactory.handlePointDataReceived(monitor1, rpd);
@@ -389,7 +394,7 @@ public class DeviceDataMonitorTest {
         RichPointData rpd = getRPD(1, 1.0, PAO_POINT_IDENTIFIER_1);
         Assert.assertNotSame(processor.getAttribute(), paoPointToAttributeMap.get(PAO_POINT_IDENTIFIER_1));
         Assert.assertNotSame(processor.getStateGroup().getStateGroupID(), pointIdToLitePointMap.get(rpd.getPointValue().getId()).getStateGroupID());
-        Assert.assertTrue(deviceDataMonitorService.isPointValueMatch(processor, rpd.getPointValue()));
+        Assert.assertTrue(deviceDataMonitorCalculationService.isPointValueMatch(processor, rpd.getPointValue()));
         
         Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 0);
         deviceDataMonitorProcessorFactory.handlePointDataReceived(monitor1, rpd);
@@ -412,7 +417,7 @@ public class DeviceDataMonitorTest {
         RichPointData rpd = getRPD(1, 5.0, PAO_POINT_IDENTIFIER_1);
         Assert.assertEquals(processor.getAttribute(), paoPointToAttributeMap.get(PAO_POINT_IDENTIFIER_1));
         Assert.assertEquals(processor.getStateGroup().getStateGroupID(), pointIdToLitePointMap.get(rpd.getPointValue().getId()).getStateGroupID());
-        Assert.assertFalse(deviceDataMonitorService.isPointValueMatch(processor, rpd.getPointValue()));
+        Assert.assertFalse(deviceDataMonitorCalculationService.isPointValueMatch(processor, rpd.getPointValue()));
         
         Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 0);
         deviceDataMonitorProcessorFactory.handlePointDataReceived(monitor1, rpd);
@@ -435,7 +440,7 @@ public class DeviceDataMonitorTest {
         RichPointData rpd = getRPD(1, 1.0, PAO_POINT_IDENTIFIER_1);
         Assert.assertEquals(processor.getAttribute(), paoPointToAttributeMap.get(PAO_POINT_IDENTIFIER_1));
         Assert.assertNotSame(processor.getStateGroup().getStateGroupID(), pointIdToLitePointMap.get(rpd.getPointValue().getId()).getStateGroupID());
-        Assert.assertTrue(deviceDataMonitorService.isPointValueMatch(processor, rpd.getPointValue()));
+        Assert.assertTrue(deviceDataMonitorCalculationService.isPointValueMatch(processor, rpd.getPointValue()));
         
         Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 0);
         deviceDataMonitorProcessorFactory.handlePointDataReceived(monitor1, rpd);
@@ -458,7 +463,7 @@ public class DeviceDataMonitorTest {
         RichPointData rpd = getRPD(1, 1.0, PAO_POINT_IDENTIFIER_1);
         Assert.assertNotSame(processor.getAttribute(), paoPointToAttributeMap.get(PAO_POINT_IDENTIFIER_1));
         Assert.assertEquals(processor.getStateGroup().getStateGroupID(), pointIdToLitePointMap.get(rpd.getPointValue().getId()).getStateGroupID());
-        Assert.assertTrue(deviceDataMonitorService.isPointValueMatch(processor, rpd.getPointValue()));
+        Assert.assertTrue(deviceDataMonitorCalculationService.isPointValueMatch(processor, rpd.getPointValue()));
         
         Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 0);
         deviceDataMonitorProcessorFactory.handlePointDataReceived(monitor1, rpd);
@@ -481,7 +486,7 @@ public class DeviceDataMonitorTest {
         RichPointData rpd = getRPD(1, 1.0, PAO_POINT_IDENTIFIER_1);
         Assert.assertEquals(processor.getAttribute(), paoPointToAttributeMap.get(PAO_POINT_IDENTIFIER_1));
         Assert.assertEquals(processor.getStateGroup().getStateGroupID(), pointIdToLitePointMap.get(rpd.getPointValue().getId()).getStateGroupID());
-        Assert.assertTrue(deviceDataMonitorService.isPointValueMatch(processor, rpd.getPointValue()));
+        Assert.assertTrue(deviceDataMonitorCalculationService.isPointValueMatch(processor, rpd.getPointValue()));
         
         Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 0);
         deviceDataMonitorProcessorFactory.handlePointDataReceived(monitor1, rpd);
@@ -490,47 +495,47 @@ public class DeviceDataMonitorTest {
 
     @Test
     public void should_not_update_violations_group_with_equal_monitors() {
-        Assert.assertFalse(deviceDataMonitorService.shouldUpdateViolationsGroupNameBeforeSave(monitor1, monitor1));
+        Assert.assertFalse(deviceDataMonitorCalculationService.shouldUpdateViolationsGroupNameBeforeSave(monitor1, monitor1));
     }
     
     @Test
     public void should_update_violations_group_with_monitors_with_diff_names() {
-        Assert.assertTrue(deviceDataMonitorService.shouldUpdateViolationsGroupNameBeforeSave(monitor1, monitor1WithNameChanged));
+        Assert.assertTrue(deviceDataMonitorCalculationService.shouldUpdateViolationsGroupNameBeforeSave(monitor1, monitor1WithNameChanged));
     }
     
     @Test
     public void should_not_recalculate_violations_before_save_with_equal_monitors() {
-        Assert.assertFalse(deviceDataMonitorService.shouldFindViolatingPaosBeforeSave(monitor1, monitor1));
+        Assert.assertFalse(deviceDataMonitorCalculationService.shouldFindViolatingPaosBeforeSave(monitor1, monitor1));
     }
     
     @Test
     public void should_not_recalculate_violations_before_save_with_no_processors() {
-        Assert.assertFalse(deviceDataMonitorService.shouldFindViolatingPaosBeforeSave(monitor1WithNoProcessors, monitor1));
+        Assert.assertFalse(deviceDataMonitorCalculationService.shouldFindViolatingPaosBeforeSave(monitor1WithNoProcessors, monitor1));
     }
     
     @Test
     public void should_not_recalculate_violations_before_save_with_disabled_monitor() {
-        Assert.assertFalse(deviceDataMonitorService.shouldFindViolatingPaosBeforeSave(monitor1Disabled, monitor1));
+        Assert.assertFalse(deviceDataMonitorCalculationService.shouldFindViolatingPaosBeforeSave(monitor1Disabled, monitor1));
     }
     
     @Test
     public void should_recalculate_violations_before_save_with_null_old_monitor() {
-        Assert.assertTrue(deviceDataMonitorService.shouldFindViolatingPaosBeforeSave(monitor1, null));
+        Assert.assertTrue(deviceDataMonitorCalculationService.shouldFindViolatingPaosBeforeSave(monitor1, null));
     }
     
     @Test
     public void should_recalculate_violations_before_save_with_changed_monitoring_group() {
-        Assert.assertTrue(deviceDataMonitorService.shouldFindViolatingPaosBeforeSave(monitor1, monitor1WithGroupChanged));
+        Assert.assertTrue(deviceDataMonitorCalculationService.shouldFindViolatingPaosBeforeSave(monitor1, monitor1WithGroupChanged));
     }
     
     @Test
     public void should_recalculate_violations_before_save_with_changed_processors() {
-        Assert.assertTrue(deviceDataMonitorService.shouldFindViolatingPaosBeforeSave(monitor1, monitor1WithProcessorsChanged));
+        Assert.assertTrue(deviceDataMonitorCalculationService.shouldFindViolatingPaosBeforeSave(monitor1, monitor1WithProcessorsChanged));
     }
     
     @Test
     public void should_recalculate_violations_before_save_with_enabling_existing_monitor() {
-        Assert.assertTrue(deviceDataMonitorService.shouldFindViolatingPaosBeforeSave(monitor1, monitor1Disabled));
+        Assert.assertTrue(deviceDataMonitorCalculationService.shouldFindViolatingPaosBeforeSave(monitor1, monitor1Disabled));
     }
     
     

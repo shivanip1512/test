@@ -46,6 +46,18 @@ public class RequestReplyReplyTemplate<R1 extends Serializable, R2 extends Seria
         
         replyConsumer.close();
         replyQueue.delete();
+        
+        /**
+         * This code doesn't seem to delete the queue if the message was send to the replyToQueue
+         * (jmsTemplate.convertAndSend(message.getJMSReplyTo(),.....)
+         *  
+         * If you plan to send the reply message to temp queue add this code. Put break on first System.out. and observe temp queues
+         * 
+         * System.out.println("Before delete");
+         * replyQueue.delete();
+         * System.out.println("After delete");
+         * 
+         */
     }
 
     private void handleRepliesAndOrTimeouts(JmsReplyReplyHandler<R1, R2> callback,
