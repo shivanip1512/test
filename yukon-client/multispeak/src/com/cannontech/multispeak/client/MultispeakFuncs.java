@@ -142,7 +142,7 @@ public class MultispeakFuncs {
         WebServiceMessage webServiceRequestMessage = ctx.getRequest();
         SaajSoapMessage saajSoapRequestMessage = (SaajSoapMessage) webServiceRequestMessage;
         Node nxtNode = saajSoapRequestMessage.getSaajMessage().getSOAPPart().getEnvelope().getBody().getFirstChild();
-        if (nxtNode.getNextSibling() != null)
+        if (nxtNode.getNamespaceURI() == null)
             nxtNode = nxtNode.getNextSibling();
             
         String soapAction = nxtNode.getNamespaceURI() + "/" + nxtNode.getLocalName();
