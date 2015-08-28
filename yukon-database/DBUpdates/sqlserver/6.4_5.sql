@@ -19,4 +19,4 @@ GO
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('6.4', '31-AUG-2015', 'Latest Update', 5, GETDATE());*/
+INSERT INTO CTIDatabase VALUES ('6.4', '28-AUG-2015', 'Latest Update', 5, GETDATE());
