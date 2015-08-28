@@ -83,7 +83,7 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
         tableTemplate.setTableName("YukonGroup");
         tableTemplate.setFieldMapper(fieldMapper);
         tableTemplate.setPrimaryKeyField("GroupId");
-        tableTemplate.setPrimaryKeyValidNotEqualTo(0);
+        tableTemplate.setPrimaryKeyValidNotEqualTo(-9999);  //Using -9999 instead of 0 to fix YUK-14556
     }
     
     public static YukonRowMapper<LiteYukonGroup> mapper = new YukonRowMapper<LiteYukonGroup> () {

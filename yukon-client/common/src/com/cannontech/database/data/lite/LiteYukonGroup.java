@@ -8,7 +8,7 @@ public class LiteYukonGroup extends LiteBase {
     private String groupDescription;
 
     public LiteYukonGroup() {
-        initialize(0, null);
+        initialize(-9999, null); // Using -9999 instead of 0 to fix YUK-14556
     }
 
     public LiteYukonGroup(int id) {
