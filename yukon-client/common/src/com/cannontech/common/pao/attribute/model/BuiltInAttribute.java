@@ -2,7 +2,6 @@ package com.cannontech.common.pao.attribute.model;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -323,7 +322,6 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
     // These are informational sets not used for display group purposes.
     private static Set<BuiltInAttribute> rfnEventTypes;
-    private static Set<BuiltInAttribute> rfnEventStatusTypes;
     private static Set<BuiltInAttribute> rfnEventAnalogTypes;
 
     // These are both informational and used for display group purposes.
@@ -335,7 +333,6 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     private static Map<AttributeGroup, Set<BuiltInAttribute>> groupedDataAttributes;
 
     private static Map<AttributeGroup, Set<BuiltInAttribute>> groupedRfnEventAttributes;
-    private static Set<BuiltInAttribute> rfnNonReadableEvents;
 
     private static Map<AttributeGroup, Set<BuiltInAttribute>> allGroupedAttributes;
 
@@ -398,102 +395,23 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
      * indicates that some significant event has occurred on a device.
      */
     private static void buildRfnEventAttributeSets() {
-        rfnEventStatusTypes = ImmutableSet.of(
-                ALTERNATE_MODE_ENTRY,
-                ANSI_SECURITY_FAILED,
-                BAD_UPGRADE_SECURITY_PARAM,
-                CLOCK_ERROR,
-                CONFIGURATION_ERROR,
-                CRYSTAL_OSCILLATOR_ERROR,
-                CURRENT_LOSS,
-                CURRENT_WAVEFORM_DISTORTION,
-                DEMAND_OVERLOAD,
-                DEMAND_READS_AND_RESET,
-                DEMAND_THRESHOLD_EXCEEDED_WARNING,
-                DISPLAY_LOCKED_BY_WARNING,
-                EEPROM_ACCESS_ERROR,
-                ENCRYPTION_KEY_TABLE_CRC_ERROR,
-                END_OF_CALENDAR_WARNING,
-                ENERGY_ACCUMULATED_WHILE_IN_STANDBY_MODE,
-                FAILED_UPGRADE_SIGNATURE_VERIF,
-                IMPROPER_METER_ENGINE_OPERATION_WARNING,
-                INACTIVE_PHASE_CURRENT_DIAGNOSTIC_ERROR,
-                INTERNAL_COMMUNICATION_ERROR,
-                INTERNAL_ERROR_FLAG,
-                INVALID_SERVICE,
-                LINE_FREQUENCY_WARNING,
-                LOAD_SIDE_VOLTAGE_IS_MISSING,
-                LOSS_OF_ALL_CURRENT,
-                LOSS_OF_PHASE_A_CURRENT,
-                LOSS_OF_PHASE_C_CURRENT,
-                LOW_BATTERY_WARNING,
-                LOW_LOSS_POTENTIAL,
-                MASS_MEMORY_ERROR,
-                MEASUREMENT_ERROR,
-                METER_RECONFIGURE,
-                METROLOGY_COMM_FAILURE,
-                NON_VOLATILE_MEM_FAILURE,
-                OUTAGE_STATUS,                 //[PLC & RFN] Shared
-                OVER_VOLTAGE,
-                PASSWORD_TABLE_CRC_ERROR,
-                PHASE_ANGLE_DISPLACEMENT,
-                PHASE_LOSS,
-                POLARITY_CROSS_PHASE_ENERGY_FLOW_DIAGNOSTIC,
-                POTENTIAL_INDICATOR_WARNING,
-                POWER_FAIL_DATA_SAVE_ERROR,
-                POWER_FAIL_FLAG,             //[PLC & RFN] Shared
-                PQM_TEST_FAILURE_WARNING,
-                RAM_ERROR,
-                REGISTER_FULL_SCALE_EXCEEDED,
-                REVERSED_AGGREGATE,
-                REVERSED_PHASE_A,
-                REVERSED_PHASE_C,
-                REVERSE_POWER_FLAG,          //[PLC & RFN] Shared
-                RFN_TEMPERATURE_ALARM,
-                ROM_ERROR,
-                SEASON_CHANGE,
-                SECURITY_CONFIGURATION_ERROR,
-                SELF_CHECK_ERROR,
-                SERVICE_CURRENT_TEST_FAILURE_WARNING,
-                SERVICE_DISCONNECT_SWITCH_ERROR,
-                SERVICE_DISCONNECT_SWITCH_OPEN,
-                SERVICE_DISCONNECT_SWITCH_SENSOR_ERROR,
-                SITESCAN_ERROR,
-                STUCK_SWITCH,
-                TABLE_CRC_ERROR,
-                TAMPER_FLAG,                 //[PLC & RFN] Shared
-                TIME_ADJUSTMENT,
-                TIME_SYNC_FAILED,
-                THD_V_OR_TDD_I_ERROR,
-                TOU_SCHEDULE_ERROR,
-                UNCONFIGURED,
-                UNDER_VOLTAGE,
-                UNPROGRAMMED,
-                USER_PROGRAMMABLE_TEMPERATURE_THRESHOLD_EXCEEDED,
-                VOLTAGE_ALERTS,
-                VOLTAGE_LOSS,
-                VOLTAGE_PHASE_A_OUT,
-                VOLTAGE_PHASE_B_OUT,
-                VOLTAGE_PHASE_C_OUT,
-                VOLTAGE_PHASE_ERROR,
-                WATT_HOUR_PULSE_FAILURE);
 
+        // rfn "events" that are analog, not status
         rfnEventAnalogTypes = ImmutableSet.of(
-                DNP3_ADDRESS_CHANGED,
-                OUTSTATION_DNP3_SERCOMM_LOCKED,
                 OVER_VOLTAGE_MEASURED,
                 OVER_VOLTAGE_THRESHOLD,
-                RFN_BLINK_COUNT,
-                RFN_BLINK_RESTORE_COUNT,
-                RFN_OUTAGE_COUNT,
-                RFN_OUTAGE_RESTORE_COUNT,
                 TEMPERATURE_DEVICE,
                 UNDER_VOLTAGE_MEASURED,
                 UNDER_VOLTAGE_THRESHOLD);
 
         Builder<BuiltInAttribute> builder = ImmutableSet.builder();
-        builder.addAll(rfnEventStatusTypes);
-        builder.addAll(rfnEventAnalogTypes);
+        builder.addAll(lookupByGroup.get(AttributeGroup.RFN_HARDWARE_EVENT));
+        builder.addAll(lookupByGroup.get(AttributeGroup.RFN_SOFTWARE_EVENT));
+        builder.addAll(lookupByGroup.get(AttributeGroup.RFN_VOLTAGE_EVENT));
+        builder.addAll(lookupByGroup.get(AttributeGroup.RFN_CURRENT_EVENT));
+        builder.addAll(lookupByGroup.get(AttributeGroup.RFN_DEMAND_EVENT));
+        builder.addAll(lookupByGroup.get(AttributeGroup.RFN_OTHER_EVENT));;
+        builder.addAll(lookupByGroup.get(AttributeGroup.RFN_METERING_EVENT));
         rfnEventTypes = builder.build();
 
 
@@ -510,14 +428,6 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         groupedRfnEventBuilder.put(AttributeGroup.RFN_METERING_EVENT, lookupByGroup.get(AttributeGroup.RFN_METERING_EVENT));
 
         groupedRfnEventAttributes = groupedRfnEventBuilder.build();
-
-        ImmutableSet.Builder<BuiltInAttribute> nonReadableRfnEventBuilder = ImmutableSet.builder();
-        nonReadableRfnEventBuilder.addAll(Sets.difference(BuiltInAttribute.getRfnEventTypes(),
-                                    EnumSet.of(BuiltInAttribute.POWER_FAIL_FLAG,
-                                               BuiltInAttribute.REVERSE_POWER_FLAG,
-                                               BuiltInAttribute.TAMPER_FLAG,
-                                               BuiltInAttribute.OUTAGE_STATUS)));
-        rfnNonReadableEvents = nonReadableRfnEventBuilder.build();
     }
 
     /**
@@ -603,14 +513,25 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         return lookupByGroup.get(AttributeGroup.USAGE);
     }
 
-    public static Set<BuiltInAttribute> getRfnEventStatusTypes() {
-        return rfnEventStatusTypes;
+    /**
+     * All status and event types (excluding analog events)
+     * @return
+     */
+    public static Set<BuiltInAttribute> getAllStatusTypes() {
+        return Sets.union(lookupByGroup.get(AttributeGroup.STATUS), Sets.difference(getRfnEventTypes(), rfnEventAnalogTypes));
     }
-
-    public static Set<BuiltInAttribute> getRfnEventAnalogTypes() {
-        return rfnEventAnalogTypes;
+    
+    /** 
+     * Is status or event type (excluding analog events)
+     * @return
+     */
+    public boolean isStatusType() {
+        return getAllStatusTypes().contains(this);
     }
-
+    /**
+     * All RFN event types (including status and analog)
+     * @return
+     */
     public static Set<BuiltInAttribute> getRfnEventTypes() {
         return rfnEventTypes;
     }
@@ -627,22 +548,6 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     /** Readable attributes + readable profile attributes */
     public static Set<BuiltInAttribute> getAdvancedReadableAttributes() {
         return Sets.union(readableAttributes, readableProfileAttributes);
-    }
-
-    public boolean isRfnEventType() {
-        return rfnEventTypes.contains(this);
-    }
-
-    public boolean isRfnEventStatusType() {
-        return rfnEventStatusTypes.contains(this);
-    }
-
-    public boolean isRfnEventAnalogType() {
-        return rfnEventAnalogTypes.contains(this);
-    }
-
-    public boolean isRfnNonReadableEvent() {
-        return rfnNonReadableEvents.contains(this);
     }
 
     @Override

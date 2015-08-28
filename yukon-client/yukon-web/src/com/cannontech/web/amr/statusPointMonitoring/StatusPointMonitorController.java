@@ -305,10 +305,10 @@ public class StatusPointMonitorController {
         
         modelMap.addAttribute("statusPointMonitor", statusPointMonitor);
         
-        Set<Attribute> allReadableAttributes = attributeService.getReadableAttributes();
+        Set<BuiltInAttribute> allStatusAttributes = BuiltInAttribute.getAllStatusTypes();
         
         Map<AttributeGroup, List<BuiltInAttribute>> allGroupedReadableAttributes = attributeService.
-                getGroupedAttributeMapFromCollection(allReadableAttributes, userContext); 
+                getGroupedAttributeMapFromCollection(allStatusAttributes, userContext); 
         
         modelMap.addAttribute("allGroupedReadableAttributes", allGroupedReadableAttributes);
         

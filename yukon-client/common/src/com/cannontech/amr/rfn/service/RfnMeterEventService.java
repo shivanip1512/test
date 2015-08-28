@@ -65,7 +65,7 @@ public class RfnMeterEventService {
                                                                  List<? super PointData> pointDatas) {
         try {
             BuiltInAttribute eventAttr = BuiltInAttribute.valueOf(event.getType().name());
-            if (eventAttr.isRfnEventStatusType()) {
+            if (eventAttr.isStatusType()) {
                 int rawEventStatusState = getRawClearedStateForEvent(event);
                 processAttributePointData(meter, pointDatas, eventAttr, event.getTimeStamp(), rawEventStatusState);
                 return true;

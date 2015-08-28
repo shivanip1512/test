@@ -73,7 +73,6 @@ import com.cannontech.web.input.StateIdPairingPropertyEditor;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.DEVICE_DATA_MONITORING)
@@ -327,13 +326,7 @@ public class DeviceDataMonitorController {
     
     private void setupAttributes(ModelMap model, YukonUserContext userContext) {
         // attributes
-        Set<BuiltInAttribute> allReadableAttributes = BuiltInAttribute.getStandardGroupedAttributes()
-                .get(AttributeGroup.STATUS);
-        Set<BuiltInAttribute> rfnEventStatusAttributes = BuiltInAttribute.getRfnEventStatusTypes();
-        Set<BuiltInAttribute> allAttributes = Sets.newHashSet();
-        
-        allAttributes.addAll(allReadableAttributes);
-        allAttributes.addAll(rfnEventStatusAttributes);
+        Set<BuiltInAttribute> allAttributes = BuiltInAttribute.getAllStatusTypes();
         
         Map<AttributeGroup, List<BuiltInAttribute>> allGroupedReadableAttributes = 
                 attributeService.getGroupedAttributeMapFromCollection(allAttributes, userContext);
