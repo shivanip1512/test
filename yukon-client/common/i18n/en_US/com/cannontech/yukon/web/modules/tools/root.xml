@@ -304,7 +304,35 @@
     
     <entry key="yukon.web.modules.search.capcontrol.edit.CAPBANK.title">Cap Bank Editor: {0}</entry>
     <entry key="yukon.web.modules.search.capcontrol.edit.CAPBANK.summary"></entry>
+    <entry key="yukon.web.modules.search.capcontrol.edit.CAPBANKCONTROLLER.title">CBC Editor: {0}</entry>
+    <entry key="yukon.web.modules.search.capcontrol.edit.CAPBANKCONTROLLER.summary"></entry>
+    <entry key="yukon.web.modules.search.capcontrol.edit.CBC_EXPRESSCOM.title">CBC Editor: {0}</entry>
+    <entry key="yukon.web.modules.search.capcontrol.edit.CBC_EXPRESSCOM.summary"></entry>
 
+    <entry key="yukon.web.modules.search.capcontrol.edit.CBC_7010.title">CBC Editor: {0}</entry>
+    <entry key="yukon.web.modules.search.capcontrol.edit.CBC_7010.summary"></entry>
+    <entry key="yukon.web.modules.search.capcontrol.edit.CBC_7020.title">CBC Editor: {0}</entry>
+    <entry key="yukon.web.modules.search.capcontrol.edit.CBC_7020.summary"></entry>
+    <entry key="yukon.web.modules.search.capcontrol.edit.CBC_7022.title">CBC Editor: {0}</entry>
+    <entry key="yukon.web.modules.search.capcontrol.edit.CBC_7022.summary"></entry>
+    <entry key="yukon.web.modules.search.capcontrol.edit.CBC_7023.title">CBC Editor: {0}</entry>
+    <entry key="yukon.web.modules.search.capcontrol.edit.CBC_7023.summary"></entry>
+    <entry key="yukon.web.modules.search.capcontrol.edit.CBC_7024.title">CBC Editor: {0}</entry>
+    <entry key="yukon.web.modules.search.capcontrol.edit.CBC_7024.summary"></entry>
+    <entry key="yukon.web.modules.search.capcontrol.edit.CBC_7011.title">CBC Editor: {0}</entry>
+    <entry key="yukon.web.modules.search.capcontrol.edit.CBC_7011.summary"></entry>
+    <entry key="yukon.web.modules.search.capcontrol.edit.CBC_7012.title">CBC Editor: {0}</entry>
+    <entry key="yukon.web.modules.search.capcontrol.edit.CBC_7012.summary"></entry>
+    <entry key="yukon.web.modules.search.capcontrol.edit.CBC_8020.title">CBC Editor: {0}</entry>
+    <entry key="yukon.web.modules.search.capcontrol.edit.CBC_8020.summary"></entry>
+    <entry key="yukon.web.modules.search.capcontrol.edit.CBC_8024.title">CBC Editor: {0}</entry>
+    <entry key="yukon.web.modules.search.capcontrol.edit.CBC_8024.summary"></entry>
+    <entry key="yukon.web.modules.search.capcontrol.edit.CBC_DNP.title">CBC Editor: {0}</entry>
+    <entry key="yukon.web.modules.search.capcontrol.edit.CBC_DNP.summary"></entry>
+    <entry key="yukon.web.modules.search.capcontrol.edit.CBC_FP_2800.title">CBC Editor: {0}</entry>
+    <entry key="yukon.web.modules.search.capcontrol.edit.CBC_FP_2800.summary"></entry>
+    <entry key="yukon.web.modules.search.capcontrol.edit.DNP_CBC_6510.title">CBC Editor: {0}</entry>
+    <entry key="yukon.web.modules.search.capcontrol.edit.DNP_CBC_6510.summary"></entry>
 
     <entry key="yukon.web.modules.search.capcontrol.edit.CAP_CONTROL_SUBBUS.title">Substation Bus Editor: {0}</entry>
     <entry key="yukon.web.modules.search.capcontrol.edit.CAP_CONTROL_SUBBUS.summary"></entry>
@@ -434,5 +462,4 @@
     <entry key="yukon.web.modules.search.LOAD_CONTROL_TEST.summary"></entry>
     <entry key="yukon.web.modules.search.ACCOUNT_TEST.summary"></entry>
     
-    <entry key="yukon.web.modules.capcontrol.edit.saveFailed">Unable to Save CBC: {0}</entry>
 </properties>
