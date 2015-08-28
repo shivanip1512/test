@@ -19,6 +19,7 @@ import com.cannontech.common.events.model.EventSource;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.displayable.dao.DisplayableEnrollmentDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment;
@@ -30,6 +31,9 @@ import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.optout.service.OptOutStatusService;
 import com.cannontech.stars.dr.program.model.ProgramEnrollmentResultEnum;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -47,7 +51,9 @@ public class EnrollmentController extends AbstractConsumerController {
     @Autowired private EnrollmentHelperService enrollmentHelperService;
     @Autowired private OptOutStatusService optOutStatusService;
     @Autowired private RolePropertyDao rolePropertyDao;
-
+    @Autowired private EnergyCompanySettingDao ecSettingDao;
+    @Autowired private EnergyCompanyDao ecDao;
+    
     @RequestMapping(value = "/consumer/enrollment", method = RequestMethod.GET)
     public String view(@ModelAttribute CustomerAccount customerAccount,
             YukonUserContext yukonUserContext, ModelMap map) {
@@ -221,11 +227,17 @@ public class EnrollmentController extends AbstractConsumerController {
 
     private List<ProgramEnrollment> getConflictingEnrollments(ModelMap model,
             int accountId, int assignedProgramId, YukonUserContext userContext) {
-        boolean multiplePerCategory = rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY,
-                                                                    userContext.getYukonUser());
+        YukonEnergyCompany yec = ecDao.getEnergyCompanyByAccountId(accountId);
+        boolean multiplePerCategoryEC =
+            ecSettingDao.getBoolean(EnergyCompanySettingType.ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY,
+                yec.getEnergyCompanyId());
+
+        boolean multiplePerCategoryResidential =
+            rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY,
+                userContext.getYukonUser());
 
         List<ProgramEnrollment> conflictingEnrollments = Lists.newArrayList();
-        if (!multiplePerCategory) {
+        if (!multiplePerCategoryEC && !multiplePerCategoryResidential) {
             // Only one program per appliance category is allowed. Find other
             // programs in the same appliance category and make sure they
             // aren't enrolled.
