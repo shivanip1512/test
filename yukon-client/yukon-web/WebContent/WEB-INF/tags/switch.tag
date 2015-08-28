@@ -1,4 +1,4 @@
-<%@ tag body-content="empty" description="A component that looks like a toggle switch with an html checkbox." %>
+<%@ tag body-content="empty" dynamic-attributes="attrs" description="A component that looks like a toggle switch with an html checkbox." %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
@@ -28,7 +28,7 @@
             <c:when test="${not empty name}">
                 <input class="checkbox-input" type="checkbox" name="${name}" id="${id}" 
                     data-toggle="${pageScope.toggleGroup}"
-                    <c:if test="${checked}">checked</c:if> <c:if test="${disabled}">disabled</c:if>>
+                    <c:if test="${checked}">checked</c:if> <c:if test="${disabled}">disabled</c:if> <c:forEach items="${pageScope.attrs}" var="attr">${attr.key}="${attr.value}"</c:forEach>>
             </c:when>
             <c:otherwise>
                 <form:checkbox cssClass="checkbox-input" path="${path}" id="${id}" disabled="${disabled}"
