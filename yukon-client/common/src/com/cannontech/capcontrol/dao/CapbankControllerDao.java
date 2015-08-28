@@ -8,7 +8,6 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.database.db.pao.YukonPAObject;
 
 public interface CapbankControllerDao {
     
@@ -80,21 +79,4 @@ public interface CapbankControllerDao {
 	 * @throws NotFoundException if orphaned
 	 */
 	public PaoIdentifier getParentBus(int cbcPaoId);
-
-    /**
-     * Looks up for CBC in YukonPaoObject table for a given PaoId.
-     * 
-     * @param cbcId the paoId of the CBC
-     * @return the YukonPAObject
-     */
-    YukonPAObject getForId(int cbcId);
-
-    /**
-     * Looks up for Parent CBC.
-     * 
-     * @param cbcId the paoId of the CBC
-     * @return the YukonPAObject
-     */
-    YukonPAObject getParentCBC(int cbcId);
-
 }
