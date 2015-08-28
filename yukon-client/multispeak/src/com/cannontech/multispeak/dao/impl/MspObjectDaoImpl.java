@@ -524,7 +524,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
             return new ErrorObject[] { obj };
         }
 
-        if (response.getPingURLResult() != null) {
+        if (response != null && response.getPingURLResult() != null) {
             errorObjects = response.getPingURLResult().getErrorObject();
             objects = toErrorObject(errorObjects);
         }
@@ -578,7 +578,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
             return Lists.newArrayList(string);
         }
 
-        if (response.getGetMethodsResult() != null) {
+        if (response != null && response.getGetMethodsResult() != null) {
             methods = response.getGetMethodsResult().getString();
         }
         
