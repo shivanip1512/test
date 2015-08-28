@@ -225,24 +225,24 @@ public class EnrollmentController extends AbstractConsumerController {
         return "consumer/enrollment/enrollmentResult.jsp";
     }
 
-    private List<ProgramEnrollment> getConflictingEnrollments(ModelMap model,
-            int accountId, int assignedProgramId, YukonUserContext userContext) {
-        YukonEnergyCompany yec = ecDao.getEnergyCompanyByAccountId(accountId);
-        boolean multiplePerCategoryEC =
-            ecSettingDao.getBoolean(EnergyCompanySettingType.ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY,
-                yec.getEnergyCompanyId());
-
+    private List<ProgramEnrollment> getConflictingEnrollments(ModelMap model, int accountId, int assignedProgramId,
+            YukonUserContext userContext) {
         boolean multiplePerCategoryResidential =
             rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY,
                 userContext.getYukonUser());
 
         List<ProgramEnrollment> conflictingEnrollments = Lists.newArrayList();
-        if (!multiplePerCategoryEC && !multiplePerCategoryResidential) {
+        if (!multiplePerCategoryResidential) {
             // Only one program per appliance category is allowed. Find other
             // programs in the same appliance category and make sure they
             // aren't enrolled.
-            conflictingEnrollments = enrollmentDao.findConflictingEnrollments(accountId,
-                                                                              assignedProgramId);
+            YukonEnergyCompany yec = ecDao.getEnergyCompanyByAccountId(accountId);
+            boolean multiplePerCategoryEC =
+                ecSettingDao.getBoolean(EnergyCompanySettingType.ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY,
+                    yec.getEnergyCompanyId());
+            if (!multiplePerCategoryEC) {
+                conflictingEnrollments = enrollmentDao.findConflictingEnrollments(accountId, assignedProgramId);
+            }
         }
 
         return conflictingEnrollments;
