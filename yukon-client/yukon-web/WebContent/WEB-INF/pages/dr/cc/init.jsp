@@ -38,7 +38,7 @@
 	        <c:set var="eventType" value="${event.eventType}"/>
 	        <c:if test="${eventType.notification or eventType.economic}">
 		        <tags:nameValue2 nameKey=".notificationTime">
-		            <dt:dateTime path="notificationTime""/>
+		            <dt:dateTime path="notificationTime"/>
 		        </tags:nameValue2>
 		    </c:if>
 		    <tags:nameValue2 nameKey=".startTime">
