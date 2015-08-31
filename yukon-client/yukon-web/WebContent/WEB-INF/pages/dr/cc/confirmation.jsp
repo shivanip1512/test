@@ -27,7 +27,7 @@
 	    
 	    <c:if test="${event.eventType.accounting or event.eventType.notification}">
 		    <tags:nameValue2 nameKey=".duration">
-		        <cti:formatDuration TYPE="DHMS_REDUCED" value="${event.duration * 60 * 1000}"/>
+		        <cti:formatDuration type="DHMS_REDUCED" value="${event.duration * 60 * 1000}"/>
 		    </tags:nameValue2>
 	    </c:if>
 	    
