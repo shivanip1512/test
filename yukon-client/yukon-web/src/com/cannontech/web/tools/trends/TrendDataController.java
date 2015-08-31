@@ -1,36 +1,5 @@
-/**
- * Class TrendDataController
- * <p>
- * TrendData is the Controller responsible for providing the consumable
- * Trend Data as JSON serialized nodes 
- * There are no presentations or JSTL transforms or views, and thus remains
- * headless.
- * 
- * <p>
- * The chart types provided are:
- * <ul>
- * <li> Graph @see com.cannontech.web.tools.trends.data.GraphType#BASIC_GRAPH_TYPE
- * <li> Date Graph @see com.cannontech.web.tools.trends.data.GraphType#DATE_GRAPH_TYPE
- * <li> Peak Graph @see com.cannontech.web.tools.trends.data.GraphType#PEAK_GRAPH_TYPE
- * <li> Usage Graph @see com.cannontech.web.tools.trends.data.GraphType#USAGE_GRAPH_TYPE
- * <li> Yesterday Graph @see com.cannontech.web.tools.trends.data.GraphType#YESTERDAY_GRAPH_TYPE
- * <li> Marker @see com.cannontech.web.tools.trends.data.GraphType#MARKER_TYPE
- * </ul>
- *
- * <p>
- * The main REST method is /trends and requires for completion {id} 
- * the point id associated.
- * 
- * 
- * @author      Thomas Red-Cloud
- * @email       ThomasRedCloud@Eaton.com
- * @version     %I%, %G%
- * @since       1.0
- */
 package com.cannontech.web.tools.trends;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +21,8 @@ import com.cannontech.core.dao.GraphDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.DurationFormattingService;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.database.data.point.PointType;
@@ -59,61 +30,48 @@ import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
-import com.cannontech.web.tools.trends.data.GraphType;
 import com.cannontech.web.tools.trends.data.RenderType;
+import com.cannontech.web.tools.trends.data.TrendType;
+import com.cannontech.web.tools.trends.data.TrendType.GraphType;
 import com.cannontech.web.tools.trends.data.error.GraphDataError;
 import com.cannontech.web.tools.trends.service.TrendDataService;
 import com.google.common.collect.ImmutableMap;
 
-
 @Controller
-// @RestController when we get spring 4
 @CheckRole(YukonRole.TRENDING)
+
 public class TrendDataController {
-    /**
-     * The {@link GraphDao} graphDao is a spring injected provider for Graph Series
-     */
-    @Autowired 
-    private GraphDao graphDao;
-   
-    /**
-     * The {@link TrendDataService} is a spring injected provider for Trend Data Service
-     */
-    @Autowired 
-    private TrendDataService trendDataService;
-    
-    /**
-     * The {@link YukonUserContextMessageSourceResolver} messageResolver is a spring injected provider for the Context Mapping
-     */
-    @Autowired 
-    private YukonUserContextMessageSourceResolver messageResolver;
-    
-    /**
-     * The {@link DurationFormattingService} durationFormatting is a spring injected provider for the time encoding mapping
-     */
-    @Autowired 
-    private DurationFormattingService durationFormatting;
-    /**
-     * The {@link Logger} log is the journal utility for benchmarking and debugging this class. 
-     */
+
+    @Autowired private DurationFormattingService durationFormatting;
+
+    @Autowired private DateFormattingService dateFormattingService;
+
+    @Autowired private GraphDao graphDao;
+
+    @Autowired private TrendDataService trendDataService;
+
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+
     private static final Logger log = YukonLogManager.getLogger(TrendDataController.class);
-     /**
-     * trend
-     * Get the trend data payload for the chart display
+
+    /**
+     * trend Get the trend data payload for the chart display
      * <p>
      * <ul>
-     * <li>step 1 {@link GraphDataSeries} take the series list and begin processing the series
+     * <li>step 1 {@link GraphDataSeries} take the series list and begin
+     * processing the series
      * <li>step 2 {@link GraphType} determine the graph type to render
-     * <li>step 3 {@link RawPointHistoryDao} request a dao for the raw data determined by the graph type
-     * <li>step 4 Inject the points into a dataprovider based on GraphType 
+     * <li>step 3 {@link RawPointHistoryDao} request a dao for the raw data
+     * determined by the graph type
+     * <li>step 4 Inject the points into a dataprovider based on GraphType
+     * 
      * @see {@link #graphDataProvider(List)}
      * @see {@link #dateGraphDataProvider(List, DateTime, ReadableInstant)}
      * @see {@link #yesterdayGraphDataProvider(List)}
-     * @see {@link #usageGraphDataProvider(List)}
-     * <li>step 5 add to json object
-     * <li>step 6 add payload decoration.
-     * <li>step 7 return the json payload to the Response Object to send to client.
-     * </ul>
+     * @see {@link #usageGraphDataProvider(List)} <li>step 5 add to json object
+     *      <li>step 6 add payload decoration. <li>step 7 return the json
+     *      payload to the Response Object to send to client.
+     *      </ul>
      * 
      * @param id
      * @return {@link ResponseBody} json serialized data.
@@ -135,26 +93,21 @@ public class TrendDataController {
             Map<String, Object> seriesProperties = new HashMap<>();
             List<PointValueHolder> seriesItemResult = new ArrayList<>();
             List<Object[]> seriesData = new ArrayList<>();
-            GraphType itemType = GraphType.getByType(seriesItem.getType());
-            switch (itemType) {
-            case DATE_GRAPH_TYPE:
+            TrendType itemType = TrendType.of(seriesItem.getType());
+            switch (itemType.getGraphType()) {
             case DATE_TYPE:
-            case PEAK_GRAPH_TYPE:
             case PEAK_TYPE:
                 dateGraphDataSeriesList.add(seriesItem);
                 continue;
             case USAGE_TYPE:
-            case USAGE_GRAPH_TYPE:
                 seriesItemResult = trendDataService.rawPointHistoryDataProvider(seriesItem.getPointID());
                 seriesData = trendDataService.usageGraphDataProvider(seriesItemResult);
                 break;
-            case YESTERDAY_GRAPH_TYPE:
             case YESTERDAY_TYPE:
                 seriesItemResult = trendDataService.rawPointHistoryDataProvider(seriesItem.getPointID());
                 seriesData = trendDataService.yesterdayGraphDataProvider(seriesItemResult);
                 break;
-            case GRAPH_TYPE:
-            case BASIC_GRAPH_TYPE:
+            case BASIC_TYPE:
                 seriesItemResult = trendDataService.rawPointHistoryDataProvider(seriesItem.getPointID());
                 seriesData = trendDataService.graphDataProvider(seriesItemResult);
                 break;
@@ -199,8 +152,8 @@ public class TrendDataController {
                     chartDateLimit = (chartDateLimit.isBefore(valueDeltaLimitDT)) ? valueDeltaLimitDT : chartDateLimit;
 
                 } else {
-                    chartDatePrime = new DateTime(valueDeltaPrimeDT);
-                    chartDateLimit = new DateTime(valueDeltaLimitDT);
+                    chartDatePrime = valueDeltaPrimeDT;
+                    chartDateLimit = valueDeltaLimitDT;
                     hasCurrentDateBoundary = true;
                 }
             }
@@ -213,27 +166,24 @@ public class TrendDataController {
             Map<String, Object> seriesProperties = new HashMap<>();
             List<PointValueHolder> seriesItemResult = new ArrayList<>();
             List<Object[]> seriesData = new ArrayList<>();
-            GraphType itemType = GraphType.getByType(seriesItem.getType());
+            TrendType itemType = TrendType.of(seriesItem.getType());
+            Integer pointId = seriesItem.getPointID();
             DateTime specificDate;
             DateTime endDate;
-            if (itemType.equals(GraphType.PEAK_GRAPH_TYPE)) {
+            if (itemType.getGraphType().equals(TrendType.GraphType.PEAK_TYPE)) {
                 long ts = Long.valueOf(seriesItem.getMoreData()).longValue();
                 DateTime dateToStartSearch = new DateTime(ts);
-                specificDate = new DateTime(trendDataService.requestPeakDateDataProvider(seriesItem.getPointID(), dateToStartSearch), 
-                userContext.getJodaTimeZone()).withTimeAtStartOfDay();
-                log.debug("specificDate:" + specificDate.toString());
+                ReadableInstant peakDataInstant = trendDataService.requestPeakDateDataProvider(pointId, dateToStartSearch);
+                specificDate = new DateTime( peakDataInstant, userContext.getJodaTimeZone()).withTimeAtStartOfDay();
                 endDate = specificDate.plusDays(1);
-                log.debug("endDate:" + endDate.toString());
-                log.debug("pointID:" + seriesItem.getPointID());
-                seriesItemResult = trendDataService.datePointHistoryDataProvider(seriesItem.getPointID(), specificDate, endDate);
-                log.debug("Data size:" + seriesItemResult.size());
-                seriesData = trendDataService.dateGraphDataProvider(seriesItemResult, chartDatePrime, chartDateLimit);
+                seriesItemResult = trendDataService.datePointHistoryDataProvider( pointId, specificDate, endDate);
             } else {
                 specificDate = new DateTime(seriesItem.getSpecificDate());
-                endDate = specificDate.plusDays(1);
-                seriesItemResult = trendDataService.datePointHistoryDataProvider(seriesItem.getPointID(), specificDate, endDate);
-                seriesData = trendDataService.dateGraphDataProvider(seriesItemResult, chartDatePrime, chartDateLimit);
             }
+            endDate = specificDate.plusDays(1);
+            seriesItemResult = trendDataService.datePointHistoryDataProvider( pointId, specificDate, endDate);
+            seriesData = trendDataService.dateGraphDataProvider(seriesItemResult, chartDatePrime, chartDateLimit);
+            
             if (seriesData.isEmpty()) {
                 seriesProperties.put("error", graphDataStateMessage(GraphDataError.NO_TREND_DATA_AVAILABLE, userContext));
             }
@@ -249,11 +199,9 @@ public class TrendDataController {
                     seriesProperties.put("dataGrouping", ImmutableMap.of("enabled", false));
                 }
             }
-            DateFormat df = new SimpleDateFormat(" [MM/dd/yyyy] ");
-            String reportDate = df.format(specificDate.toDate());
-            seriesProperties.put("name", seriesItem.getLabel() + " " + graphTypeLabel(seriesItem.getType(), userContext) + reportDate);
-
-            seriesProperties.put("color", Colors.colorPaletteToWeb(seriesItem.getColor()));
+            String reportDate = dateFormattingService.format(specificDate, DateFormatEnum.DATE, userContext);
+            seriesProperties.put("name", seriesItem.getLabel() + " " + graphTypeLabel(seriesItem.getType(), userContext) +" " + reportDate);
+            seriesProperties.put("color", Colors.colorPaletteToWeb(seriesItem.getColor() ));
             seriesList.add(seriesProperties);
         }
         Map<String, Object> json = new HashMap<>();
@@ -269,15 +217,19 @@ public class TrendDataController {
         json.put("yAxis", yAxis);
         return json;
     }
-    
+
     /**
-     * graphDataStateMessage
-     * This data provider a {@link GraphDataError} to render the message, and the YukonUserContext instance of interface
-     * and grabs the message stored in the context mapping. 
-     * The call returns a String of data.
+     * graphDataStateMessage This data provider a {@link GraphDataError} to
+     * render the message, and the YukonUserContext instance of interface and
+     * grabs the message stored in the context mapping. The call returns a
+     * String of data.
      * <p>
-     * @param state {@link GraphDataError} is state of the data for being passed back to the client.
-     * @param userContext{@link YukonUserContext}
+     * 
+     * @param state
+     *            {@link GraphDataError} is state of the data for being passed
+     *            back to the client.
+     * @param userContext
+     *            {@link YukonUserContext}
      * @return {@link String}
      */
     private String graphDataStateMessage(GraphDataError state, YukonUserContext userContext) {
@@ -286,31 +238,41 @@ public class TrendDataController {
     }
 
     /**
-     * graphTypeLabel
-     * This method takes the integer form of the graphType that is native to the DataSource, match
-     * it to the GraphType enumerator and pass back the associate context stored for localization.
-     * The call returns a String Identifier
+     * graphTypeLabel This method takes the integer form of the graphType that
+     * is native to the DataSource, match it to the GraphType enumerator and
+     * pass back the associate context stored for localization. The call returns
+     * a String Identifier
      * <p>
-     * @param graphType {@link int} is the unique identifier for the range of entries.
-     * @param userContext{@link YukonUserContext}
+     * 
+     * @param graphType
+     *            {@link int} is the unique identifier for the range of entries.
+     * @param userContext
+     *            {@link YukonUserContext}
      * 
      * @return {@link String}
      */
     private String graphTypeLabel(int graphType, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        GraphType graph = GraphType.getByType(graphType);
+        GraphType graph = TrendType.of(graphType).getGraphType();
         return accessor.getMessage(graph);
     }
 
     /**
-     * addRightAxis
-     * right access determine if we need to arnder a x-axis for data, it then updates the seriesList in place instead 
-     * of passsing back. 
+     * addRightAxis right access determine if we need to arnder a x-axis for
+     * data, it then updates the seriesList in place instead of passsing back.
      * <p>
-     * @param userContext {@link GraphType} is the unique identifier for the range of entries.
-     * @param  seriesList <code> List<Map<String, Object></code> in place referrenced object 
-     * @param  yAxis <code> List<Map<String, Object>></code> in place referrenced object
-     * @param labels <code> ImmutableMap<String, ImmutableMap<String, String></code>
+     * 
+     * @param userContext
+     *            {@link GraphType} is the unique identifier for the range of
+     *            entries.
+     * @param seriesList
+     *            <code> List<Map<String, Object></code> in place referrenced
+     *            object
+     * @param yAxis
+     *            <code> List<Map<String, Object>></code> in place referrenced
+     *            object
+     * @param labels
+     *            <code> ImmutableMap<String, ImmutableMap<String, String></code>
      * @return void
      */
     private void addRightAxis(YukonUserContext userContext, List<Map<String, Object>> seriesList, List<Map<String, Object>> yAxis, ImmutableMap<String, ImmutableMap<String, String>> labels) {
