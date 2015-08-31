@@ -1,13 +1,3 @@
-yukon.namespace('yukon.ui');
-
-/**
- * Module that manages the regulator page in capcontrol
- *
- * @requires JQUERY
- * @requires MOMENT
- * @requires MOMENT_TZ
- * @requires yukon
- */
 /** 
  * UI module - General purpose ui functionality for yukon.
  * 
@@ -17,11 +7,69 @@ yukon.namespace('yukon.ui');
  */
 yukon.namespace('yukon.ui');
 yukon.ui = (function () {
+    /** Object to glass out an element, used by #block and #unblock */
+   var elementGlass = {
+        show: function (element) {
+            
+            element = $(element);
+            var glass;
+            
+            if (element[0]) {
+                glass = element.find('.glass');
+                if (!glass[0]) {
+                    element.prepend($('<div>').addClass('glass'));
+                    glass = element.find('.glass');
+                }
+                return elementGlass.redraw(glass);
+            }
+            // nothing to block
+            return null;
+        },
+        
+        hide: function (element) {
+            $(element).find('.glass:first').fadeOut(200, function () {$(this).remove();});
+        },
+        
+        redraw: function (glass) {
+            var container = glass.closest('.js-block-this');
+            if (!container.length) {
+                container = $(glass).parent();
+            }
+            // resize the glass
+            glass.css('width', container.width())
+            .css('height', container.height()).fadeIn(200);
+        },
+        
+        resize: function (ev) {
+            elementGlass.redraw($(ev.currentTarget));
+        }
+    };
+    /** Object to glass out the page, used by #block and #unblock */
+  var pageGlass = {
+        
+        show: function (args) {
+            
+            var defaults = $.extend({ color:'#000', alpha: 0.25 }, args || {}),
+                glass = $('#modal-glass');
+            
+            if (glass == null) {
+                glass = $('<div>').attr('id', 'modal-glass')
+                .append($('<div>').addClass('tint').append($('<div>').addClass('loading')))
+                .prependTo('body');
+            }
+            glass.find('.tint').css('opacity', defaults.alpha).css('background-color', defaults.color);
+            glass.fadeIn(200);
+        },
+        
+        hide: function () {
+            $('#modal-glass').fadeOut(200);
+        }
+    };
     
     var initialized = false,
     
     /** Initialize the site wide search autocomplete. */
-    _initSearch = function () {
+     _initSearch = function () {
         
         var field = $('.yukon-search-form .search-field');
         field.autocomplete({
@@ -842,10 +890,10 @@ yukon.ui = (function () {
         block: function (target) {
             var blockElement = $(target).closest('.js-block-this')[0];
            if (blockElement) {
-               mod.elementGlass.show(blockElement);
+               elementGlass.show(blockElement);
                debug.log("->block");
            } else {
-               mod.pageGlass.show();
+               pageGlass.show();
                debug.log("->block");
            }
         },
@@ -854,23 +902,23 @@ yukon.ui = (function () {
         unblock: function (target) {
             var blockElement = $(target).closest('.js-block-this')[0];
             if (blockElement) {
-                mod.elementGlass.hide(blockElement);
+                elementGlass.hide(blockElement);
                 debug.log("->unblockPage");
             } else {
-                mod.pageGlass.hide();
+                pageGlass.hide();
                 debug.log("->unblock");
             }
         },
         
         /** Block out the whole page */
         blockPage: function (args) {
-            mod.pageGlass.show();
+            pageGlass.show();
             debug.log("->blockPage");
         },
         
         /** Unblock the whole page */
         unblockPage: function () {
-            mod.pageGlass.hide();
+            pageGlass.hide();
             debug.log("->unblockPage");
         },
         
@@ -1110,67 +1158,6 @@ yukon.ui = (function () {
                 }
             }
         },
-        
-        /** Object to glass out an element, used by #block and #unblock */
-        elementGlass: {
-            show: function (element) {
-                
-                element = $(element);
-                var glass;
-                
-                if (element[0]) {
-                    glass = element.find('.glass');
-                    if (!glass[0]) {
-                        element.prepend($('<div>').addClass('glass'));
-                        glass = element.find('.glass');
-                    }
-                    return mod.elementGlass.redraw(glass);
-                }
-                // nothing to block
-                return null;
-            },
-            
-            hide: function (element) {
-                $(element).find('.glass:first').fadeOut(200, function () {$(this).remove();});
-            },
-            
-            redraw: function (glass) {
-                var container = glass.closest('.js-block-this');
-                if (!container.length) {
-                    container = $(glass).parent();
-                }
-                // resize the glass
-                glass.css('width', container.width())
-                .css('height', container.height()).fadeIn(200);
-            },
-            
-            resize: function (ev) {
-                mod.elementGlass.redraw($(ev.currentTarget));
-            }
-        },
-        
-        /** Object to glass out the page, used by #block and #unblock */
-        pageGlass: {
-            
-            show: function (args) {
-                
-                var defaults = $.extend({ color:'#000', alpha: 0.25 }, args || {}),
-                    glass = $('#modal-glass');
-                
-                if (glass == null) {
-                    glass = $('<div>').attr('id', 'modal-glass')
-                    .append($('<div>').addClass('tint').append($('<div>').addClass('loading')))
-                    .prependTo('body');
-                }
-                glass.find('.tint').css('opacity', defaults.alpha).css('background-color', defaults.color);
-                glass.fadeIn(200);
-            },
-            
-            hide: function () {
-                $('#modal-glass').fadeOut(200);
-            }
-        },
-        
         /**
          * @param {jQuery|String} row - Element (or selector to element) to be removed.
          *    Expected to have attributes:
