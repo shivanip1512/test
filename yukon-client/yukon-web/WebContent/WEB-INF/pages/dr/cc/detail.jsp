@@ -93,6 +93,15 @@
                         <cti:url var="extendUrl" value="/dr/cc/program/${program.id}/event/${event.id}/extend"/>
                         <cti:button nameKey="extend" href="${extendUrl}"/>
                     </c:if>
+                    <c:if test="${showAdjustButton}">
+                        <cti:url var="adjustUrl" value="/dr/cc/program/${program.id}/event/${event.id}/adjust"/>
+                        <cti:button nameKey="adjust" href="${adjustUrl}"/>
+                    </c:if>
+                    <c:if test="${showRemoveButton}">
+                        <cti:url var="removeUrl" value="/dr/cc/program/${program.id}/event/${event.id}/remove"/>
+                        <cti:button nameKey="remove" href="${removeUrl}"/>
+                    </c:if>
+                    
                     <cti:button nameKey="refresh" onClick="history.go(0)"/>
                 </td>
             </tr>

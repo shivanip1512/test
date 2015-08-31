@@ -497,6 +497,11 @@
                 <labelArgument>${program.programType.name}</labelArgument>
                 <labelArgument>${program.name}</labelArgument>
             </page>
+            <page name="cc.init.reviseEconomicEvent" type="BASIC" hideFavorite="true">
+                <link>/dr/cc/init</link>
+                <labelArgument>${program.programType.name}</labelArgument>
+                <labelArgument>${program.name}</labelArgument>
+            </page>
             <page name="cc.history" type="BASIC">
                 <link>/dr/cc/program/${programId}/history</link>
                 <pages>

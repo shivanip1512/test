@@ -13,21 +13,21 @@
 	<spring:hasBindErrors name="event">
         <form:errors cssClass="error"/><br>
     </spring:hasBindErrors>
-	
-	<tags:nameValueContainer2>
-	    <c:if test="${not empty event.startTime}">
+    
+    <tags:nameValueContainer2>
+        <c:if test="${not empty event.startTime}">
            <tags:nameValue2 nameKey=".notificationTime">
                <cti:formatDate type="FULL" value="${event.notificationTime}"/>
            </tags:nameValue2>
         </c:if>
-	    
+        
 	    <tags:nameValue2 nameKey=".startTime">
 	        <cti:formatDate type="FULL" value="${event.startTime}"/>
 	    </tags:nameValue2>
 	    
 	    <c:if test="${event.eventType.accounting or event.eventType.notification}">
 		    <tags:nameValue2 nameKey=".duration">
-		        <i:inline key=".durationValue" arguments="${event.duration}"/>
+		        <cti:formatDuration TYPE="DHMS_REDUCED" value="${event.duration * 60 * 1000}"/>
 		    </tags:nameValue2>
 	    </c:if>
 	    

@@ -136,6 +136,16 @@ public static void roundDateUp(Date date, int minuteInterval) {
     date.setTime(calendar.getTimeInMillis());
 }
 
+public static DateTime roundDateTimeUp(DateTime dateTime, int minuteInterval) {
+    Validate.isTrue(minuteInterval <= 60, "minuteInterval must be less than or equal to 60");
+    Validate.isTrue(minuteInterval > 0, "minuteInterval must be greater than 0");
+    int minutePart = dateTime.getMinuteOfHour();
+    int minutesOverInterval = minutePart % minuteInterval;
+    return dateTime.plusMinutes(minuteInterval - minutesOverInterval)
+                   .withSecondOfMinute(0)
+                   .withMillisOfSecond(0);
+}
+
 public static Date addMinutes(Date date, int minutes) {
     return TimeUtil.addUnit(date, Calendar.MINUTE, minutes);
 }
@@ -314,5 +324,13 @@ public static int differenceMinutes(Date from, Date to) {
 
     public static Instant toMidnightAtEndOfDay(LocalDate date, DateTimeZone dateTimeZone) {
         return date.plusDays(1).toDateTimeAtStartOfDay(dateTimeZone).toInstant();
+    }
+    
+    public static DateTime roundUpToNextHour(DateTime dateTime) {
+        int hourOfDay = dateTime.getHourOfDay();
+        return dateTime.withHourOfDay(hourOfDay + 1)
+                       .withMinuteOfHour(0)
+                       .withSecondOfMinute(0)
+                       .withMillisOfSecond(0);
     }
 }

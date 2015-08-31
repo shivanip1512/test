@@ -9,10 +9,20 @@
 <cti:standardPage module="dr" page="cc.init.customerVerification">
 <cti:includeScript link="/resources/js/pages/yukon.dr.curtailment.js"/>
 
-<h3><i:inline key=".verifyCustomers"/></h3>
+<c:if test="${isSplit}">
+    <i:inline var="heading" key=".removeCustomers"/>
+    <cti:url var="action" value="/dr/cc/program/${program.id}/event/${eventId}/split"/>
+    <c:set var="submitKey" value="remove"/>
+</c:if>
+<c:if test="${not isSplit}">
+    <i:inline var="heading" key=".verifyCustomers"/>
+    <cti:url var="action" value="/dr/cc/program/${event.programId}/confirmation"/>
+    <c:set var="submitKey" value="next"/>
+</c:if>
 
-<cti:url var="url" value="/dr/cc/program/${event.programId}/confirmation"/>
-<form:form modelAttribute="event" action="${url}">
+<h3>${heading}</h3>
+
+<form:form modelAttribute="event" action="${action}">
     <cti:csrfToken/>
     
     <spring:hasBindErrors name="event">
@@ -101,7 +111,7 @@
     </tags:nameValueContainer2>
     
     <div class="page-action-area">
-        <cti:button type="submit" classes="action primary" nameKey="next"/>
+        <cti:button type="submit" classes="action primary" nameKey="${submitKey}"/>
         
         <cti:url var="cancelUrl" value="/dr/cc/home"/>
         <cti:button href="${cancelUrl}" nameKey="cancel"/>

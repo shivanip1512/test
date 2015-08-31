@@ -3,7 +3,6 @@ package com.cannontech.web.dr.cc;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -12,7 +11,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
@@ -77,19 +79,20 @@ import com.cannontech.cc.service.EconomicStrategy;
 import com.cannontech.cc.service.EventService;
 import com.cannontech.cc.service.GroupService;
 import com.cannontech.cc.service.NotificationStatus;
+import com.cannontech.cc.service.NotificationStrategy;
 import com.cannontech.cc.service.ProgramService;
 import com.cannontech.cc.service.StrategyFactory;
 import com.cannontech.cc.service.exception.EventCreationException;
+import com.cannontech.cc.service.exception.EventModificationException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.util.predicate.Predicate;
+import com.cannontech.common.util.TimeUtil;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.GraphDao;
 import com.cannontech.core.dao.NotificationGroupDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
-import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
@@ -100,8 +103,6 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
-import com.cannontech.support.CustomerPointTypeHelper;
-import com.cannontech.support.NoPointException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.cc.EventDetailHelper;
 import com.cannontech.web.cc.EventListBean;
@@ -115,37 +116,31 @@ import com.cannontech.web.dr.cc.model.CiInitEventModel;
 import com.cannontech.web.dr.cc.model.CustomerModel;
 import com.cannontech.web.dr.cc.model.CustomerModel.ProgramPaoModel;
 import com.cannontech.web.dr.cc.model.Exclusion;
+import com.cannontech.web.dr.cc.service.CiCurtailmentService;
 import com.cannontech.web.dr.cc.service.CiCustomerVerificationService;
 import com.cannontech.web.dr.cc.service.CiEventCreationService;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.tools.trends.TrendUtils;
-import com.cannontech.web.updater.point.PointDataRegistrationService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-//TODO: remove unused method parameters
-//TODO: handle event extension (see CreateEconomicBean.doAfterPricingEntry()
-
+//TODO: JAVA8 - Replace Filters and Functions with lambdas
 @Controller
 public class CcHomeController {
     private static Logger log = YukonLogManager.getLogger(CcHomeController.class);
     private static String eventHeadingBase = "yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_heading_";
     private static String companyHeadingBase = "yukon.web.modules.commercialcurtailment.ccurtSetup.";
-    /** Default minutes curtailment event will run */
-    private static final int defaultEventDuration = 240; 
-    /** Default number of pricing windows for econ events */
-    private static final int defaultNumberOfWindows = 4;
     
     @Autowired private AccountingEventDao accountingEventDao;
     @Autowired private BaseEventDao baseEventDao;
     @Autowired private CiEventCreationService ciEventCreationService;
     @Autowired private CiInitEventModelValidator eventModelValidator;
+    @Autowired private CiCurtailmentService ciCurtailmentService;
     @Autowired private CiCustomerVerificationService customerVerificationService;
     @Autowired private CurtailmentEventDao curtailmentEventDao;
     @Autowired private CurtailmentEventNotifDao curtailmentNotifDao;
     @Autowired private CustomerLMProgramService customerLMProgramService;
     @Autowired private CustomerPointService customerPointService;
-    @Autowired private CustomerPointTypeHelper customerPointTypeHelper;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private DetailEconomicBean detailEconomicBean;
@@ -165,7 +160,6 @@ public class CcHomeController {
     @Autowired private GroupService groupService;
     @Autowired private NotificationGroupDao notificationGroupDao;
     @Autowired private PaoDao paoDao;
-    @Autowired private PointDataRegistrationService pointDataRegistrationService;
     @Autowired private ProgramParameterDao programParameterDao;
     @Autowired private ProgramService programService;
     @Autowired private StrategyFactory strategyFactory;
@@ -182,9 +176,9 @@ public class CcHomeController {
         EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
         
         //Retrieve current, pending, recent events
-        List<BaseEvent> currentEvents = baseEventDao.getAllForEnergyCompany(energyCompany, new CurrentEventPredicate());
-        List<BaseEvent> pendingEvents = baseEventDao.getAllForEnergyCompany(energyCompany, new PendingEventPredicate());
-        List<BaseEvent> recentEvents = baseEventDao.getAllForEnergyCompany(energyCompany, new RecentEventPredicate());
+        List<BaseEvent> currentEvents = baseEventDao.getAllForEnergyCompany(energyCompany, ciCurtailmentService.getCurrentEventPredicate());
+        List<BaseEvent> pendingEvents = baseEventDao.getAllForEnergyCompany(energyCompany, ciCurtailmentService.getPendingEventPredicate());
+        List<BaseEvent> recentEvents = baseEventDao.getAllForEnergyCompany(energyCompany, ciCurtailmentService.getRecentEventPredicate());
         Collections.reverse(currentEvents);
         Collections.reverse(pendingEvents);
         Collections.reverse(recentEvents);
@@ -243,7 +237,7 @@ public class CcHomeController {
         event.setEventType(eventType);
         
         DateTime currentTime = new DateTime(userContext.getJodaTimeZone());
-        DateTime nextHourTime = roundUpToNextHour(currentTime);
+        DateTime nextHourTime = TimeUtil.roundUpToNextHour(currentTime);
         if (event.getEventType().isNotification() || event.getEventType().isEconomic()) {
             event.setNotificationTime(nextHourTime);
             event.setStartTime(nextHourTime.plus(Duration.standardHours(1)));
@@ -251,10 +245,11 @@ public class CcHomeController {
             event.setStartTime(nextHourTime);
         }
         
-        event.setDuration(defaultEventDuration);
+        int programDefaultDuration = programParameterDao.getParameterValueInt(program, ProgramParameterKey.DEFAULT_EVENT_DURATION_MINUTES);
+        event.setDuration(programDefaultDuration);
         
         if (event.getEventType().isEconomic()) {
-            event.setNumberOfWindows(defaultNumberOfWindows);
+            event.setNumberOfWindows(programDefaultDuration / 60);
         }
         
         return "dr/cc/init.jsp";
@@ -281,7 +276,7 @@ public class CcHomeController {
         BigDecimal defaultEnergyPrice = new BigDecimal(defaultPriceParameter, new MathContext(5));
         
         // Populate times for window price fields
-        List<DateTime> windowTimes = getEconEventWindowTimes(event);
+        List<DateTime> windowTimes = ciCurtailmentService.getEconEventWindowTimes(event);
         model.addAttribute("windowTimes", windowTimes);
         
         // Set window price values in event model to the default
@@ -292,15 +287,6 @@ public class CcHomeController {
         event.setWindowPrices(windowPrices);
         
         return "dr/cc/pricing.jsp";
-    }
-    
-    private List<DateTime> getEconEventWindowTimes(CiInitEventModel event) {
-        List<DateTime> windowTimes = new ArrayList<>(event.getNumberOfWindows());
-        for (int i = 0; i < event.getNumberOfWindows(); i++) {
-            DateTime windowStart = event.getStartTime().plus(Duration.standardHours(i));
-            windowTimes.add(windowStart);
-        }
-        return windowTimes;
     }
     
     @RequestMapping("/cc/program/{programId}/groupSelection")
@@ -317,7 +303,7 @@ public class CcHomeController {
             CiInitEventModelValidator validator = eventModelValidator.getAfterPricingValidator();
             validator.doValidation(event, bindingResult);
             if (bindingResult.hasErrors()) {
-                List<DateTime> windowTimes = getEconEventWindowTimes(event);
+                List<DateTime> windowTimes = ciCurtailmentService.getEconEventWindowTimes(event);
                 model.addAttribute("windowTimes", windowTimes);
                 return "dr/cc/pricing.jsp";
             }
@@ -329,8 +315,23 @@ public class CcHomeController {
             }
         }
         
-        List<AvailableProgramGroup> availableGroups = programService.getAvailableProgramGroups(program);
-        model.addAttribute("availableGroups", availableGroups);
+        if (event.isEventExtension()) {
+            // Copy customers from previous event, remove if they've exceeded their limit.
+            // Then go straight to confirmation
+            EconomicEvent initialEvent = economicEventDao.getForId(event.getInitialEventId());
+            List<EconomicEventParticipant> initialParticipants = economicEventParticipantDao.getForEvent(initialEvent);
+            List<Integer> extensionCustomerIds = new ArrayList<>();
+            for (EconomicEventParticipant originalParticipant : initialParticipants) {
+                CICustomerStub customer = originalParticipant.getCustomer();
+                if (ciCurtailmentService.canCustomerParticipateInExtension(event, customer)) {
+                    extensionCustomerIds.add(customer.getId());
+                }
+            }
+            return "redirect:/dr/cc/confirmation";
+        } else {
+            List<AvailableProgramGroup> availableGroups = programService.getAvailableProgramGroups(program);
+            model.addAttribute("availableGroups", availableGroups);
+        }
         
         return "dr/cc/groupSelection.jsp";
     }
@@ -397,7 +398,7 @@ public class CcHomeController {
         //Set up "current load" point updaters
         Map<Integer, String> currentLoadUpdaters = new HashMap<>();
         for (GroupCustomerNotif customerNotif : customerNotifs) {
-            String updaterString = getUpdaterString(customerNotif, CICustomerPointType.CurrentLoad, userContext);
+            String updaterString = ciCurtailmentService.getUpdaterString(customerNotif, CICustomerPointType.CurrentLoad, userContext);
             currentLoadUpdaters.put(customerNotif.getId(), updaterString);
         }
         model.addAttribute("currentLoadUpdaters", currentLoadUpdaters);
@@ -405,7 +406,7 @@ public class CcHomeController {
         //Set up contract firm demand updaters
         Map<Integer, String> cfdUpdaters = new HashMap<>();
         for (GroupCustomerNotif customerNotif : customerNotifs) {
-            String updaterString = getUpdaterString(customerNotif, CICustomerPointType.ContractFrmDmd, userContext);
+            String updaterString = ciCurtailmentService.getUpdaterString(customerNotif, CICustomerPointType.ContractFrmDmd, userContext);
             cfdUpdaters.put(customerNotif.getId(), updaterString);
         }
         model.addAttribute("cfdUpdaters", cfdUpdaters);
@@ -454,8 +455,7 @@ public class CcHomeController {
     public String createEvent(ModelMap model,
                               @ModelAttribute("event") CiInitEventModel event,
                               BindingResult bindingResult,
-                              @PathVariable int programId,
-                              YukonUserContext userContext) {
+                              @PathVariable int programId) {
         
         CiInitEventModelValidator validator = eventModelValidator.getPreCreateValidator();
         validator.doValidation(event, bindingResult);
@@ -471,21 +471,6 @@ public class CcHomeController {
             bindingResult.reject("yukon.web.modules.dr.cc.init.error.noAdvancedBuyThrough");
             setUpConfirmationModel(model, event, programId);
             return "dr/cc/confirmation.jsp";
-        }
-    }
-    
-    //TODO: clean up
-    private String getUpdaterString(GroupCustomerNotif customerNotif, 
-                                    CICustomerPointType pointType, 
-                                    YukonUserContext userContext) {
-        
-        CICustomerStub customer = customerNotif.getCustomer();
-        try {
-            int pointId = customerPointTypeHelper.getPoint(customer, pointType).getPointID();
-            String format = Format.VALUE.toString();
-            return pointDataRegistrationService.getRawPointDataUpdaterSpan(pointId, format, userContext);
-        } catch (NoPointException e) {
-            return "n/a";
         }
     }
     
@@ -516,19 +501,13 @@ public class CcHomeController {
         List<? extends BaseEvent> eventList = strategy.getEventsForProgram(program);
         Collections.reverse(eventList);
         
-        boolean success = false;
-        BaseEvent deletedEvent = null;
-        for (BaseEvent event : eventList) {
-            if (event.getId() == eventId) {
-                strategy.forceDelete(event);
-                deletedEvent = event;
-                success = true;
-                break;
-            }
-        }
+        Optional<? extends BaseEvent> eventToDelete = eventList.stream()
+                                                               .filter(ciCurtailmentService.getEventIdFilter(eventId))
+                                                               .findFirst();
         
-        if (success) {
-            eventList.remove(deletedEvent);
+        if (eventToDelete.isPresent()) {
+            strategy.forceDelete(eventToDelete.get());
+            eventList.remove(eventToDelete.get());
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.history.eventDelete.success"));
         } else {
             flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.history.eventDelete.failure"));
@@ -537,6 +516,254 @@ public class CcHomeController {
         model.addAttribute("eventHistory", eventList);
         
         return "dr/cc/history.jsp";
+    }
+    
+    @RequestMapping("/cc/program/{programId}/event/{eventId}/cancel")
+    public String cancelEvent(@PathVariable int programId,
+                              @PathVariable int eventId,
+                              LiteYukonUser user,
+                              FlashScope flash) {
+        
+        Program program = programService.getProgramById(programId);
+        String strategyString = program.getProgramType().getStrategy();
+        CiEventType eventType = CiEventType.of(strategyString);
+        
+        try {
+            if (eventType.isNotification()) {
+                NotificationStrategy strategy = (NotificationStrategy) strategyFactory.getStrategy(program);
+                CurtailmentEvent event = curtailmentEventDao.getForId(eventId);
+                strategy.cancelEvent(event, user);
+            } else {
+                EconomicStrategy strategy = (EconomicStrategy) strategyFactory.getStrategy(program);
+                EconomicEvent event = economicEventDao.getForId(eventId);
+                strategy.cancelEvent(event, user);
+            }
+            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.detail.cancel.error"));
+        } catch (RuntimeException e) {
+            // Unfortunate to have to catch this. 
+            // Consider changing to a more specific exception in strategy.
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.detail.cancel.success"));
+        }
+        
+        return "redirect:/dr/cc/program/" + programId + "/event/" + eventId;
+    }
+    
+    @RequestMapping("/cc/program/{programId}/event/{eventId}/suppress")
+    public String suppressEvent(@PathVariable int programId,
+                                @PathVariable int eventId,
+                                LiteYukonUser user,
+                                FlashScope flash) {
+        
+        EconomicEvent event = economicEventDao.getForId(eventId);
+        EconomicStrategy strategy = (EconomicStrategy) strategyFactory.getStrategy(event.getProgram());
+        strategy.suppressEvent(event, user);
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.detail.suppress.success"));
+        
+        return "redirect:/dr/cc/program/" + programId + "/event/" + eventId;
+    }
+    
+    @RequestMapping("/cc/program/{programId}/event/{eventId}/revise")
+    public String reviseEvent(ModelMap model,
+                              @PathVariable int programId,
+                              @PathVariable int eventId,
+                              LiteYukonUser user,
+                              FlashScope flash) {
+        
+        model.addAttribute("programId", programId);
+        model.addAttribute("eventId", eventId);
+        
+        EconomicEvent event = economicEventDao.getForId(eventId);
+        EconomicStrategy strategy = (EconomicStrategy) strategyFactory.getStrategy(event.getProgram());
+        
+        try {
+            EconomicEventPricing nextRevision = strategy.createEventRevision(event, user);
+            List<EconomicEventPricingWindow> list = 
+                    new ArrayList<EconomicEventPricingWindow>(nextRevision.getWindows().values());
+            Collections.sort(list);
+            
+            return "dr/cc/reviseEconomicEvent.jsp";
+        } catch (EventModificationException e) {
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.detail.revise.error"));
+            return "redirect:/dr/cc/program/" + programId + "/event/" + eventId;
+        }
+    }
+    
+    @RequestMapping("/cc/program/{programId}/event/{eventId}/reviseComplete")
+    public String reviseEventComplete(@PathVariable int programId,
+                                      @PathVariable int eventId,
+                                      List<BigDecimal> prices,
+                                      LiteYukonUser user,
+                                      FlashScope flash) {
+        
+        EconomicEvent event = economicEventDao.getForId(eventId);
+        EconomicStrategy strategy = (EconomicStrategy) strategyFactory.getStrategy(event.getProgram());
+        
+        EconomicEventPricing nextRevision = strategy.createEventRevision(event, user);
+        List<EconomicEventPricingWindow> pricingWindows = 
+                new ArrayList<EconomicEventPricingWindow>(nextRevision.getWindows().values());
+        Collections.sort(pricingWindows);
+        for (int i = 0; i < pricingWindows.size(); i++) {
+            BigDecimal newPrice = prices.get(i);
+            pricingWindows.get(i).setEnergyPrice(newPrice);
+        }
+        
+        strategy.saveRevision(nextRevision);
+        
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.init.reviseEconomicEvent.success"));
+        return "dr/cc/program/" + programId + "/event/" + eventId;
+    }
+    
+    @RequestMapping("/cc/program/{programId}/event/{eventId}/extend")
+    public String extendEvent(ModelMap model,
+                              YukonUserContext userContext,
+                              @ModelAttribute("event") CiInitEventModel event, 
+                              @PathVariable int programId,
+                              @PathVariable int eventId) {
+               
+        Program program = programService.getProgramById(programId);
+        model.addAttribute("program", program);
+        event.setProgramId(program.getId());
+        
+        String strategyString = program.getProgramType().getStrategy();
+        CiEventType eventType = CiEventType.of(strategyString);
+        event.setEventType(eventType);
+        event.setInitialEventId(eventId); //this marks the event as an extension
+        
+        EconomicEvent previousEvent = economicEventDao.getForId(eventId);
+        
+        // Set the start time to the previous event's stop time
+        DateTime startTime = new DateTime(previousEvent.getStopTime(), userContext.getJodaTimeZone());
+        event.setStartTime(startTime);
+        
+        DateTime now = new DateTime(userContext.getJodaTimeZone());
+        // Add 5 minutes, then round to the nearest 5
+        DateTime notificationTime = TimeUtil.roundDateTimeUp(now.plusMinutes(5), 5);
+        // If the new notif time is before the previous event's notif time, use the previous event's time
+        DateTime oldNotificationTime = new DateTime(previousEvent.getNotificationTime(), userContext.getJodaTimeZone());
+        if (notificationTime.isBefore(oldNotificationTime)) {
+            notificationTime = oldNotificationTime;
+        }
+        event.setNotificationTime(notificationTime);
+        
+        int programDefaultDuration = programParameterDao.getParameterValueInt(program, ProgramParameterKey.DEFAULT_EVENT_DURATION_MINUTES);
+        event.setDuration(programDefaultDuration);
+        event.setNumberOfWindows(programDefaultDuration / 60);
+        
+        return "dr/cc/init.jsp";
+    }
+    
+    @RequestMapping("/cc/program/{programId}/event/{eventId}/adjust")
+    public String adjustEvent(ModelMap model,
+                              @ModelAttribute("event") CiInitEventModel event, 
+                              @PathVariable int programId,
+                              @PathVariable int eventId) {
+        
+        Program program = programService.getProgramById(programId);
+        model.addAttribute("program", program);
+        event.setProgramId(program.getId());
+        
+        String strategyString = program.getProgramType().getStrategy();
+        CiEventType eventType = CiEventType.of(strategyString);
+        event.setEventType(eventType);
+        
+        model.addAttribute("isAdjust", true);
+        
+        CurtailmentEvent originalEvent = curtailmentEventDao.getForId(eventId);
+        event.setStartTime(new DateTime(originalEvent.getStartTime()));
+        event.setDuration(originalEvent.getDuration());
+        event.setAdjustEventId(eventId);
+        
+        return "dr/cc/init.jsp";
+    }
+    
+    @RequestMapping("/cc/program/{programId}/event/{eventId}/completeEventAdjustment")
+    public String completeAdjustEvent(LiteYukonUser user,
+                                      @ModelAttribute("event") CiInitEventModel event, 
+                                      @PathVariable int programId,
+                                      @PathVariable int eventId,
+                                      FlashScope flash) {
+        
+        CurtailmentEvent originalEvent = curtailmentEventDao.getForId(eventId);
+        if (!ciCurtailmentService.canCurtailmentEventBeAdjusted(originalEvent, user)) {
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.modify.eventModifyFailed"));
+            return "redirect:/dr/cc/program/" + programId + "/event/" + eventId + "/detail";
+        }
+        
+        ciEventCreationService.adjustEvent(originalEvent, event);
+        
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.modify.success"));
+        return "redirect:/dr/cc/program/" + programId + "/event/" + eventId + "/detail";
+    }
+    
+    //A.K.A "Split" event
+    @RequestMapping("/cc/program/{programId}/event/{eventId}/remove")
+    public String removeEvent(ModelMap model,
+                              YukonUserContext userContext,
+                              @ModelAttribute("event") CiInitEventModel event, 
+                              @PathVariable int programId,
+                              @PathVariable int eventId) {
+        
+        Program program = programService.getProgramById(programId);
+        model.addAttribute("program", program);
+        model.addAttribute("eventId", eventId);
+        
+        String strategyString = program.getProgramType().getStrategy();
+        CiEventType eventType = CiEventType.of(strategyString);
+        event.setEventType(eventType);
+        
+        // Populate groups for program
+        List<AvailableProgramGroup> availableGroups = programService.getAvailableProgramGroups(program);
+        List<Integer> groupIds = availableGroups.stream()
+                                                .map(new Function<AvailableProgramGroup, Integer>() {
+                                                    @Override
+                                                    public Integer apply(AvailableProgramGroup apg) {
+                                                        return apg.getGroup().getId();
+                                                    }
+                                                }).collect(Collectors.toList());
+        event.setSelectedGroupIds(groupIds);
+        
+        // Set up customers, exclusions, etc. just like original customer verification
+        setUpCustomerVerificationModel(model, event, userContext);
+        
+        // Only show customers if they participated in the original event
+        List<Integer> customers = ciCurtailmentService.getCurtailmentCustomerIds(eventId);
+        event.setSelectedCustomerIds(customers);
+        
+        // Tell the page we're doing a split, not regular customer verification
+        model.addAttribute("isSplit", true);
+        
+        return "dr/cc/customerVerification.jsp";
+    }
+    
+    @RequestMapping("/cc/program/{programId}/event/{eventId}/split")
+    public String splitEvent(LiteYukonUser user,
+                             @ModelAttribute("event") CiInitEventModel event, 
+                             @PathVariable int programId,
+                             @PathVariable int eventId,
+                             FlashScope flash) {
+        
+        CurtailmentEvent originalEvent = curtailmentEventDao.getForId(eventId);
+        if (!ciCurtailmentService.canCurtailmentEventBeAdjusted(originalEvent, user)) {
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.modify.eventModifyFailed"));
+            return "redirect:/dr/cc/program/" + programId + "/event/" + eventId + "/detail";
+        }
+        
+        // Determine customers to be removed
+        List<Integer> customerToRemoveIds = event.getSelectedCustomerIds();
+        List<CICustomerStub> customersToRemove = new ArrayList<>();
+        for (Integer customerId : customerToRemoveIds) {
+            CICustomerStub customer = customerPointService.getCustomer(customerId);
+            if (!ciCurtailmentService.canCustomerBeRemovedFromEvent(customer, originalEvent)) {
+                flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.modify.eventModifyFailedForCustomer", customer.getCompanyName()));
+                return "redirect:/dr/cc/program/" + programId + "/event/" + eventId + "/detail";
+            }
+            customersToRemove.add(customer);
+        }
+        
+        int splitEventId = ciEventCreationService.splitEvent(originalEvent, customersToRemove);
+        
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.modify.success"));
+        return "redirect:/dr/cc/program/" + programId + "/event/" + splitEventId + "/detail";
     }
     
     @RequestMapping("/cc/program/{programId}/event/{eventId}/companyInfo/{companyId}/companyDetail")
@@ -593,32 +820,10 @@ public class CcHomeController {
         List<GroupCustomerNotif> assignedGroupCustomerList = groupService.getAssignedCustomers(group);
         List<GroupCustomerNotif> unassignedGroupCustomerList = groupService.getUnassignedCustomers(group, false);
         
-        groupBean = getGroupBean(group, assignedGroupCustomerList, unassignedGroupCustomerList);
+        groupBean = ciCurtailmentService.buildGroupBean(group, assignedGroupCustomerList, unassignedGroupCustomerList);
         model.addAttribute("group", groupBean);
         
         return "dr/cc/groupDetail.jsp";
-    }
-    
-    private GroupBean getGroupBean(Group group, List<GroupCustomerNotif> assigned, List<GroupCustomerNotif> unassigned) {
-        GroupBean groupBean = new GroupBean();
-        groupBean.setId(group.getId());
-        groupBean.setName(group.getName());
-        
-        List<GroupBean.Customer> assignedCustomers = new ArrayList<>();
-        for (GroupCustomerNotif assignedNotif : assigned) {
-            GroupBean.Customer customer = GroupBean.Customer.of(assignedNotif);
-            assignedCustomers.add(customer);
-        }
-        groupBean.setAssignedCustomers(assignedCustomers);
-        
-        List<GroupBean.Customer> unassignedCustomers = new ArrayList<>();
-        for (GroupCustomerNotif unassignedNotif : unassigned) {
-            GroupBean.Customer customer = GroupBean.Customer.of(unassignedNotif);
-            unassignedCustomers.add(customer);
-        }
-        groupBean.setAvailableCustomers(unassignedCustomers);
-        
-        return groupBean;
     }
     
     @RequestMapping("/cc/groupCreate")
@@ -628,7 +833,7 @@ public class CcHomeController {
         List<GroupCustomerNotif> assignedGroupCustomerList = new ArrayList<>();
         List<GroupCustomerNotif> unassignedGroupCustomerList = groupService.getUnassignedCustomers(newGroup, true);
         
-        groupBean = getGroupBean(newGroup, assignedGroupCustomerList, unassignedGroupCustomerList);
+        groupBean = ciCurtailmentService.buildGroupBean(newGroup, assignedGroupCustomerList, unassignedGroupCustomerList);
         model.addAttribute("group", groupBean);
         
         return "dr/cc/groupDetail.jsp";
@@ -645,8 +850,7 @@ public class CcHomeController {
     }
     
     @RequestMapping("/cc/groupSave")
-    public String groupSave(ModelMap model, 
-                            YukonUserContext userContext,
+    public String groupSave(YukonUserContext userContext,
                             @ModelAttribute("group") GroupBean groupBean,
                             BindingResult bindingResult,
                             FlashScope flash) {
@@ -666,39 +870,10 @@ public class CcHomeController {
         }
         group.setName(groupBean.getName());
         
-        List<GroupCustomerNotif> assignedGroupCustomerNotifs = getCustomerNotificationSettings(group, groupBean);
+        List<GroupCustomerNotif> assignedGroupCustomerNotifs = ciCurtailmentService.buildAssignedGroupCustomerNotifSettings(group, groupBean);
         
         groupService.saveGroup(group, assignedGroupCustomerNotifs);
         return "redirect:/dr/cc/groupList";
-    }
-    
-    private List<GroupCustomerNotif> getCustomerNotificationSettings(Group group, GroupBean groupBean) {
-        //Get list of all customers - available and unassigned
-        List<GroupCustomerNotif> allCustomers = groupService.getAssignedCustomers(group);
-        allCustomers.addAll(groupService.getUnassignedCustomers(group, false));
-        
-        //Build a list of assigned customer notifications, and update settings
-        List<GroupCustomerNotif> assignedGroupCustomerNotifs = new ArrayList<>();
-        
-        if (groupBean.getAssignedCustomers() != null) {
-            for (GroupBean.Customer customer : groupBean.getAssignedCustomers()) {
-                int customerId = customer.getId();
-                for (GroupCustomerNotif groupCustomerNotif : allCustomers) {
-                    if (groupCustomerNotif.getCustomer().getId() == customerId) {
-                        //update notif values
-                        boolean emails = customer.isEmails();
-                        boolean voice = customer.isVoice();
-                        boolean sms = customer.isSms();
-                        groupCustomerNotif.getNotifMap().setSendEmails(emails);
-                        groupCustomerNotif.getNotifMap().setSendOutboundCalls(voice);
-                        groupCustomerNotif.getNotifMap().setSendSms(sms);
-                        //add to list
-                        assignedGroupCustomerNotifs.add(groupCustomerNotif);
-                    }
-                }
-            }
-        }
-        return assignedGroupCustomerNotifs;
     }
     
     @RequestMapping("/cc/programList")
@@ -715,9 +890,7 @@ public class CcHomeController {
     }
     
     @RequestMapping("/cc/programDetail/{programId}")
-    public String programDetail (ModelMap model,
-            YukonUserContext userContext,
-            @PathVariable int programId) {
+    public String programDetail(ModelMap model, @PathVariable int programId) {
         
         Program program = programService.getProgramById(programId);
         model.addAttribute("program", program);
@@ -748,7 +921,7 @@ public class CcHomeController {
     }
     
     @RequestMapping("/cc/programCreate")
-    public String programCreate (ModelMap model, LiteYukonUser user) {
+    public String programCreate(ModelMap model, LiteYukonUser user) {
         
         List<ProgramType> programTypeList = programService.getProgramTypeList(user);
         model.addAttribute("programTypes", programTypeList);
@@ -756,8 +929,7 @@ public class CcHomeController {
     }
 
     @RequestMapping("/cc/programDetailCreate/{programTypeId}/{name}")
-    public String programDetailCreate(ModelMap model, 
-                                      LiteYukonUser user, 
+    public String programDetailCreate(LiteYukonUser user, 
                                       @PathVariable int programTypeId,
                                       @PathVariable String name, 
                                       FlashScope flash) {
@@ -789,7 +961,7 @@ public class CcHomeController {
     }
     
     @RequestMapping("/cc/programDelete/{programId}")
-    public String programDelete (ModelMap model, @PathVariable int programId, FlashScope flash) {
+    public String programDelete(@PathVariable int programId, FlashScope flash) {
         
         Program program = programService.getProgramById(programId);
         programService.deleteProgram(program);
@@ -800,23 +972,23 @@ public class CcHomeController {
     }
     
     @RequestMapping("/cc/programSave/{programId}")
-    public String programSave (ModelMap model,
-                               @PathVariable int programId,
-                               String programName,
-                               String programIdentifierPrefix,
-                               Integer programLastIdentifier,
-                               Integer DEFAULT_EVENT_OFFSET_MINUTES,
-                               Integer DEFAULT_NOTIFICATION_OFFSET_MINUTES,
-                               Integer MINIMUM_NOTIFICATION_MINUTES,
-                               Integer DEFAULT_EVENT_DURATION_MINUTES,
-                               Integer MINIMUM_EVENT_DURATION_MINUTES,
-                               Double DEFAULT_ENERGY_PRICE,
-                               Integer CUSTOMER_ELECTION_CUTOFF_MINUTES,
-                               @RequestParam(value="assignedGroup", required=false) List<Integer> assignedGroupIds,
-                               @RequestParam(value="assignedNotifGroup", required=false) List<Integer> assignedNotifGroupIds,
-                               @RequestParam(value="unassignedGroup", required=false) List<Integer> unassignedGroupIds,
-                               @RequestParam(value="unassignedNotifGroup", required=false) List<Integer> unassignedNotifGroupIds,
-                               FlashScope flash) {
+    public String programSave(ModelMap model,
+                              @PathVariable int programId,
+                              String programName,
+                              String programIdentifierPrefix,
+                              Integer programLastIdentifier,
+                              Integer DEFAULT_EVENT_OFFSET_MINUTES,
+                              Integer DEFAULT_NOTIFICATION_OFFSET_MINUTES,
+                              Integer MINIMUM_NOTIFICATION_MINUTES,
+                              Integer DEFAULT_EVENT_DURATION_MINUTES,
+                              Integer MINIMUM_EVENT_DURATION_MINUTES,
+                              Double DEFAULT_ENERGY_PRICE,
+                              Integer CUSTOMER_ELECTION_CUTOFF_MINUTES,
+                              @RequestParam(value="assignedGroup", required=false) List<Integer> assignedGroupIds,
+                              @RequestParam(value="assignedNotifGroup", required=false) List<Integer> assignedNotifGroupIds,
+                              @RequestParam(value="unassignedGroup", required=false) List<Integer> unassignedGroupIds,
+                              @RequestParam(value="unassignedNotifGroup", required=false) List<Integer> unassignedNotifGroupIds,
+                              FlashScope flash) {
                 
         Program program = programService.getProgramById(programId);
         program.setName(programName);
@@ -829,25 +1001,25 @@ public class CcHomeController {
         for (ProgramParameter parameter : programParameters) {
             switch(parameter.getParameterKey()) {
             case DEFAULT_EVENT_OFFSET_MINUTES:
-                setParameter(parameter, DEFAULT_EVENT_OFFSET_MINUTES);
+                setProgramParameter(parameter, DEFAULT_EVENT_OFFSET_MINUTES);
                 break;
             case DEFAULT_NOTIFICATION_OFFSET_MINUTES:
-                setParameter(parameter, DEFAULT_NOTIFICATION_OFFSET_MINUTES);
+                setProgramParameter(parameter, DEFAULT_NOTIFICATION_OFFSET_MINUTES);
                 break;
             case MINIMUM_NOTIFICATION_MINUTES:
-                setParameter(parameter, MINIMUM_NOTIFICATION_MINUTES);
+                setProgramParameter(parameter, MINIMUM_NOTIFICATION_MINUTES);
                 break;
             case DEFAULT_EVENT_DURATION_MINUTES:
-                setParameter(parameter, DEFAULT_EVENT_DURATION_MINUTES);
+                setProgramParameter(parameter, DEFAULT_EVENT_DURATION_MINUTES);
                 break;
             case MINIMUM_EVENT_DURATION_MINUTES:
-                setParameter(parameter, MINIMUM_EVENT_DURATION_MINUTES);
+                setProgramParameter(parameter, MINIMUM_EVENT_DURATION_MINUTES);
                 break;
             case DEFAULT_ENERGY_PRICE:
-                setParameter(parameter, DEFAULT_ENERGY_PRICE);
+                setProgramParameter(parameter, DEFAULT_ENERGY_PRICE);
                 break;
             case CUSTOMER_ELECTION_CUTOFF_MINUTES:
-                setParameter(parameter, CUSTOMER_ELECTION_CUTOFF_MINUTES);
+                setProgramParameter(parameter, CUSTOMER_ELECTION_CUTOFF_MINUTES);
                 break;
             default:
                 break;
@@ -902,7 +1074,7 @@ public class CcHomeController {
         return "redirect:/dr/cc/programList";
     }
     
-    private void setParameter(ProgramParameter parameter, Number parameterInput) {
+    private void setProgramParameter(ProgramParameter parameter, Number parameterInput) {
         if (parameterInput != null) {
             parameter.setParameterValue(parameterInput.toString());
         }
@@ -943,6 +1115,8 @@ public class CcHomeController {
                                     YukonUserContext userContext,
                                     Integer programTypeId,
                                     int id) {
+        
+        model.addAttribute("showDeleteButton", true);
         
         AccountingEvent acctEvent = accountingEventDao.getForId(id);
         model.addAttribute("event", acctEvent);
@@ -986,8 +1160,24 @@ public class CcHomeController {
         List<String> notificationTableHead = assembleHeading(userContext, companyHeadingBase, headingSuffixes);;
         model.addAttribute("notificationTableHead", notificationTableHead);
         
-        model.addAttribute("programType", curtailmentEvent.getProgram().getProgramType().getName());
-        model.addAttribute("programName", curtailmentEvent.getProgram().getName());
+        Program program = curtailmentEvent.getProgram();
+        model.addAttribute("programType", program.getProgramType().getName());
+        model.addAttribute("programName", program.getName());
+        
+        LiteYukonUser user = userContext.getYukonUser();
+        NotificationStrategy notifStrategy = (NotificationStrategy) strategyFactory.getStrategy(program);
+        
+        Boolean canEventBeDeleted = notifStrategy.canEventBeDeleted(curtailmentEvent, user);
+        model.addAttribute("showDeleteButton", canEventBeDeleted);
+        
+        Boolean canEventBeCancelled = notifStrategy.canEventBeCancelled(curtailmentEvent, user);
+        model.addAttribute("showCancelButton", canEventBeCancelled);
+        
+        Boolean canEventBeAdjusted = notifStrategy.canEventBeAdjusted(curtailmentEvent, user);
+        model.addAttribute("showAdjustButton", canEventBeAdjusted);
+        
+        Boolean canEventBeRemoved = notifStrategy.canCustomersBeRemovedFromEvent(curtailmentEvent, user);
+        model.addAttribute("showRemoveButton", canEventBeRemoved);
         
         return "dr/cc/detail.jsp";
     }
@@ -1061,7 +1251,7 @@ public class CcHomeController {
             revisionList.add(revision);
             pricingWindows.add(pricingWindowsForRevision);
         }
-        model.addAttribute("pricingWindows", pricingWindows); // TODO: needed? remove if not
+        model.addAttribute("pricingWindows", pricingWindows);
         model.addAttribute("revisionList", revisionList);
         model.addAttribute("selectedRevision", curEconEventPricingRevision.getRevision());
         pricingWindows.get(0).get(0).getPricingRevision().getRevision();
@@ -1104,6 +1294,24 @@ public class CcHomeController {
         model.addAttribute("legend", composeEventHeading(companyHeadingBase, userContext, "ccurtEvent_pricing_legend"));
         Program program = programService.getProgramById(programId);
         model.addAttribute("program", program);
+        
+        LiteYukonUser user = userContext.getYukonUser();
+        
+        Boolean canEventBeDeleted = strategy.canEventBeDeleted(event, user);
+        model.addAttribute("showDeleteButton", canEventBeDeleted);
+        
+        Boolean canEventBeCancelled = strategy.canEventBeCancelled(event, user);
+        model.addAttribute("showCancelButton", canEventBeCancelled);
+        
+        Boolean canEventBeSuppressed = strategy.canEventBeSuppressed(event, user);
+        model.addAttribute("showSuppressButton", canEventBeSuppressed);
+        
+        Boolean canEventBeRevised = strategy.canEventBeRevised(event, user);
+        model.addAttribute("showReviseButton", canEventBeRevised);
+        
+        Boolean canEventBeExtended = strategy.canEventBeExtended(event, user);
+        model.addAttribute("showExtendButton", canEventBeExtended);
+        
         return "dr/cc/detail.jsp";
     }
     
@@ -1241,79 +1449,12 @@ public class CcHomeController {
 
     }
     
-    private boolean isConsideredActive(BaseEvent event) {
-        CICurtailmentStrategy strategy = strategyFactory.getStrategy(event.getProgram());
-        return strategy.isConsideredActive(event);
-    }
-    
     private ListDataModel getOtherRevisionsModel(EconomicEvent economicEvent) {
         ArrayList<EconomicEventPricing> others = 
             new ArrayList<EconomicEventPricing>(economicEvent.getRevisions().values());
         others.remove(economicEvent.getLatestRevision());
         ListDataModel otherRevisionsModel = new ListDataModel(others);
         return otherRevisionsModel;
-    }
-    
-    private DateTime roundUpToNextHour(DateTime dateTime) {
-        int hourOfDay = dateTime.getHourOfDay();
-        return dateTime.withHourOfDay(hourOfDay + 1)
-                       .withMinuteOfHour(0)
-                       .withSecondOfMinute(0)
-                       .withMillisOfSecond(0);
-    }
-    
-    private class RecentEventPredicate implements Predicate<BaseEvent> {
-        private Date now;
-        private Date sixMonthsAgo;
-        public RecentEventPredicate () {
-            now = new Date();
-            // get for last six months
-            // used computer's TZ because the length of time is so long it won't matter
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(now);
-            calendar.add(Calendar.MONTH, -6);
-            sixMonthsAgo = calendar.getTime();
-        }
-
-        @Override
-        public boolean evaluate(BaseEvent event) {
-            if (event.getStopTime().before(sixMonthsAgo)) {
-                return false;
-            } else if (event.getStopTime().after(now)) {
-                return !isConsideredActive(event);
-            }
-                return true;
-        }
-    }
-    
-    private class CurrentEventPredicate implements Predicate<BaseEvent> {
-        @Override
-        public boolean evaluate(BaseEvent event) {
-            Date now = new Date();
-            if (event.getStopTime().before(now)) {
-                return false;
-            } else if (event.getStartTime().after(now)) {
-                return false;
-            } else if (!isConsideredActive(event)) {
-                return false;
-            } else {
-                return true;
-            }
-        }
-    }
-    
-    private class PendingEventPredicate implements Predicate<BaseEvent> {
-        private Date now = new Date();
-        @Override
-        public boolean evaluate(BaseEvent event) {
-            if (event.getStartTime().before(now)) {
-                return false;
-            } else if (!isConsideredActive(event)) {
-                return false;
-            } else {
-                return true;
-            }
-        }
     }
     
     @SuppressWarnings("unused")

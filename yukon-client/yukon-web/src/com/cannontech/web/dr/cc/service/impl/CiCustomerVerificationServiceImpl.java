@@ -147,7 +147,7 @@ public class CiCustomerVerificationServiceImpl implements CiCustomerVerification
     }
     
     private void appendExclusion(List<Exclusion> exclusions, Exclusion exclusion) {
-        if (exclusion != null) {
+        if (exclusion != null & exclusions != null) {
             exclusions.add(exclusion);
         }
     }
@@ -155,8 +155,8 @@ public class CiCustomerVerificationServiceImpl implements CiCustomerVerification
     private void doCommonVerifications(CICustomerStub customer, CiInitEventModel event, List<Exclusion> exclusions) {
         verifyPointGroupSatisfaction(customer, exclusions);
         verifyEventOverlap(customer, event, exclusions);
-        verifyExceedsAllowedHours(customer, event, exclusions);
-        verifyExceedsPeriodHours(customer, event, exclusions);
+        exceedsAllowedHours(customer, event, exclusions);
+        exceedsPeriodHours(customer, event, exclusions);
         verifyNoticeTime(customer, event, exclusions);
     }
     
@@ -201,31 +201,35 @@ public class CiCustomerVerificationServiceImpl implements CiCustomerVerification
         }
     }
     
-    private void verifyExceedsAllowedHours(CICustomerStub customer, CiInitEventModel event, List<Exclusion> exclusions) {
+    @Override
+    public boolean exceedsAllowedHours(CICustomerStub customer, CiInitEventModel event, List<Exclusion> exclusions) {
         double allowedHours; 
         try {
             allowedHours = customerPointTypeHelper.getPointValue(customer, CICustomerPointType.InterruptHours);
         } catch (PointException e) {
             Exclusion exclusion = new Exclusion(POINT_ERROR, Exclusion.Status.EXCLUDE, e.getMessage());
             appendExclusion(exclusions, exclusion);
-            return;
+            return true;
         }
         
         double actualHours = getTotalEventHours(customer);
         if (((actualHours * 60) + event.getDuration()) > (allowedHours * 60)) {
             Exclusion exclusion = new Exclusion(EXCEEDS_ALLOWED_HOURS, Exclusion.Status.EXCLUDE);
             appendExclusion(exclusions, exclusion);
+            return true;
         }
+        return false;
     }
     
-    private void verifyExceedsPeriodHours(CICustomerStub customer, CiInitEventModel event, List<Exclusion> exclusions) {
+    @Override
+    public boolean exceedsPeriodHours(CICustomerStub customer, CiInitEventModel event, List<Exclusion> exclusions) {
         double allowedPeriodHours;
         try {
             allowedPeriodHours = customerPointTypeHelper.getPointValue(customer, CICustomerPointType.InterruptHrs24Hr);
         } catch (PointException e) {
             Exclusion exclusion = new Exclusion(POINT_ERROR, Exclusion.Status.EXCLUDE, e.getMessage());
             appendExclusion(exclusions, exclusion);
-            return;
+            return true;
         }
         
         if (allowedPeriodHours == 0 || allowedPeriodHours == 24) {
@@ -238,8 +242,10 @@ public class CiCustomerVerificationServiceImpl implements CiCustomerVerification
             if (((actualPeriodHours * 60) + event.getDuration()) > (allowedPeriodHours * 60)) {
                 Exclusion exclusion = new Exclusion(EXCEEDS_ALLOWED_PERIOD_HOURS, Exclusion.Status.EXCLUDE);
                 appendExclusion(exclusions, exclusion);
+                return true;
             }
         }
+        return false;
     }
     
     private void verifyNoticeTime(CICustomerStub customer, CiInitEventModel event, List<Exclusion> exclusions) {

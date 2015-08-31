@@ -21,7 +21,9 @@ public class CiInitEventModel {
     private List<Integer> selectedGroupIds;
     private List<Integer> selectedCustomerIds;
     private List<BigDecimal> windowPrices;
-    
+    private Integer initialEventId;
+    private Integer adjustEventId;
+
     public int getProgramId() {
         return programId;
     }
@@ -110,5 +112,29 @@ public class CiInitEventModel {
 
     public void setWindowPrices(List<BigDecimal> windowPrices) {
         this.windowPrices = windowPrices;
+    }
+    
+    public Integer getInitialEventId() {
+        return initialEventId;
+    }
+
+    public void setInitialEventId(Integer initialEventId) {
+        this.initialEventId = initialEventId;
+    }
+    
+    public boolean isEventExtension() {
+        return initialEventId != null;
+    }
+    
+    public Integer getAdjustEventId() {
+        return adjustEventId;
+    }
+    
+    public void setAdjustEventId(int eventId) {
+        adjustEventId = eventId;
+    }
+    
+    public boolean isEventAdjustment() {
+        return adjustEventId != null;
     }
 }

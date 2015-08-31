@@ -101,16 +101,18 @@ public class CiInitEventModelValidator extends SimpleValidator<CiInitEventModel>
             List<Group> selectedGroups = groupService.getGroupsById(event.getSelectedGroupIds());
             List<GroupCustomerNotif> customerNotifs = customerVerificationService.getVerifiedCustomerList(event, selectedGroups, exclusions);
             
-            // Check to make sure that none of the selected customers are now excluded
-            for (Integer selectedCustomerId : event.getSelectedCustomerIds()) {
-                for (GroupCustomerNotif notif : customerNotifs) {
-                    if (notif.getCustomer().getId() == selectedCustomerId) {
-                        for (Exclusion exclusion : exclusions.get(notif.getId())) {
-                            if (exclusion.isForceExcluded()) {
-                                String customerName = notif.getCustomer().getCompanyName();
-                                MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
-                                String reason = accessor.getMessage(exclusion.getMessage());
-                                errors.reject(key("customerExcluded"), new Object[] {customerName, reason}, "");
+            if (!event.isEventExtension()) {
+                // Check to make sure that none of the selected customers are now excluded
+                for (Integer selectedCustomerId : event.getSelectedCustomerIds()) {
+                    for (GroupCustomerNotif notif : customerNotifs) {
+                        if (notif.getCustomer().getId() == selectedCustomerId) {
+                            for (Exclusion exclusion : exclusions.get(notif.getId())) {
+                                if (exclusion.isForceExcluded()) {
+                                    String customerName = notif.getCustomer().getCompanyName();
+                                    MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
+                                    String reason = accessor.getMessage(exclusion.getMessage());
+                                    errors.reject(key("customerExcluded"), new Object[] {customerName, reason}, "");
+                                }
                             }
                         }
                     }

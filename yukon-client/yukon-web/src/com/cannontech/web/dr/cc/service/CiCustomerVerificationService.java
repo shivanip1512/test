@@ -27,4 +27,16 @@ public interface CiCustomerVerificationService {
      * Gets the i18ned constraint status string for the specified event and customer.
      */
     String getConstraintStatus(CiInitEventModel event, CICustomerStub customer, YukonUserContext userContext);
+    
+    /**
+     * Returns true if the customer will exceed the allowed hours by participating in the specified event, and adds an
+     * exclusion to the exclusion list.
+     */
+    public boolean exceedsAllowedHours(CICustomerStub customer, CiInitEventModel event, List<Exclusion> exclusions);
+    
+    /**
+     * Returns true if the customer would exceed the period hours by participating in the specified event, and adds an
+     * exclusion to the exclusion list.
+     */
+    public boolean exceedsPeriodHours(CICustomerStub customer, CiInitEventModel event, List<Exclusion> exclusions);
 }

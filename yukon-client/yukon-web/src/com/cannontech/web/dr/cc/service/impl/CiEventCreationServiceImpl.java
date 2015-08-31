@@ -24,6 +24,7 @@ import com.cannontech.cc.dao.GroupCustomerNotifDao;
 import com.cannontech.cc.dao.ProgramDao;
 import com.cannontech.cc.model.AccountingEvent;
 import com.cannontech.cc.model.AccountingEventParticipant;
+import com.cannontech.cc.model.BaseParticipant;
 import com.cannontech.cc.model.CICustomerPointData;
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.CurtailmentEvent;
@@ -39,17 +40,22 @@ import com.cannontech.cc.model.GroupCustomerNotif;
 import com.cannontech.cc.model.Program;
 import com.cannontech.cc.service.CurtailmentEventAction;
 import com.cannontech.cc.service.CurtailmentEventState;
+import com.cannontech.cc.service.EconomicEventAction;
 import com.cannontech.cc.service.EconomicEventState;
 import com.cannontech.cc.service.ProgramService;
 import com.cannontech.cc.service.exception.EventCreationException;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.PointException;
+import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.LMDirectCustomerListDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.customer.CICustomerPointType;
+import com.cannontech.database.db.web.LMDirectCustomerList;
 import com.cannontech.loadcontrol.LoadManagementService;
+import com.cannontech.web.dr.cc.model.CiEventType;
 import com.cannontech.web.dr.cc.model.CiInitEventModel;
 import com.cannontech.web.dr.cc.service.CiEventCreationService;
 import com.cannontech.yukon.INotifConnection;
@@ -91,6 +97,122 @@ public class CiEventCreationServiceImpl implements CiEventCreationService {
         }
     }
     
+    @Override
+    @Transactional
+    public void adjustEvent(CurtailmentEvent originalEvent, CiInitEventModel newEventParams) {
+        originalEvent.setDuration(newEventParams.getDuration());
+        originalEvent.setMessage(newEventParams.getMessage());
+        originalEvent.setState(CurtailmentEventState.MODIFIED);
+        curtailmentEventDao.save(originalEvent);
+        
+        notifConnection.sendCurtailmentNotification(originalEvent.getId(), CurtailmentEventAction.ADJUSTING);
+        
+        List<CurtailmentEventParticipant> participants = curtailmentEventParticipantDao.getForEvent(originalEvent);
+        int customerIds[] = new int[participants.size()];
+        int index = 0;
+        for (BaseParticipant participant : participants) {
+            customerIds[index++] = participant.getCustomer().getId();
+        }
+        notifConnection.sendProgramEventNotification(originalEvent.getProgram().getId(), 
+                                                     originalEvent.getDisplayName(), 
+                                                     "adjusted", 
+                                                     originalEvent.getStartTime(), 
+                                                     originalEvent.getStopTime(), 
+                                                     originalEvent.getNotificationTime(), 
+                                                     customerIds);
+        
+        if (newEventParams.getEventType().isDirect()) {
+            for (CurtailmentEventParticipant participant : participants) {
+                CICustomerStub customer = participant.getCustomer();
+                long[] lmProgramIds = LMDirectCustomerList.getProgramIDs(customer.getId());
+                for (int i = 0; i < lmProgramIds.length; i++) {
+                    long lmProgramId = lmProgramIds[i];
+                    CTILogger.debug("Sending changeProgramStop for event: " + originalEvent);
+                    CTILogger.debug("  lmProgramId=" + lmProgramId + ", stopTime=" + originalEvent.getStopTime());
+                    loadManagementService.changeProgramStop((int)lmProgramId, originalEvent.getStopTime());
+                }
+            }
+        }
+    }
+    
+    @Override
+    @Transactional
+    public int splitEvent(CurtailmentEvent originalEvent, List<CICustomerStub> customersToRemove) {
+        
+        // Update original event
+        originalEvent.setState(CurtailmentEventState.MODIFIED);
+        curtailmentEventDao.save(originalEvent);
+        
+        // Create new event
+        CurtailmentEvent splitEvent = new CurtailmentEvent();
+        Integer identifier = programDao.incrementAndReturnIdentifier(originalEvent.getProgram());
+        splitEvent.setIdentifier(identifier);
+        
+        // Copy fields from original event
+        splitEvent.setProgram(originalEvent.getProgram());
+        splitEvent.setMessage(originalEvent.getMessage() + "[Split-OrigId:" + originalEvent.getIdentifier() + "]");
+        splitEvent.setNotificationTime(originalEvent.getNotificationTime());
+        splitEvent.setStartTime(originalEvent.getStartTime());
+        
+        // Set duration to now - start
+        int splitDuration = TimeUtil.differenceMinutes(originalEvent.getStartTime(), new Date());
+        splitEvent.setDuration(splitDuration);
+        
+        // Set state
+        splitEvent.setState(CurtailmentEventState.SPLIT);
+        
+        // Save new event (must happen before we can add participants)
+        curtailmentEventDao.save(splitEvent);
+        
+        // Remove customers from original event, add to split event
+        List<CurtailmentEventParticipant> allOrigEventParticipants = curtailmentEventParticipantDao.getForEvent(originalEvent);
+        for (CurtailmentEventParticipant origEventParticipant : allOrigEventParticipants) {
+            if (customersToRemove.contains(origEventParticipant.getCustomer())) {
+                // Remove from original event
+                curtailmentEventParticipantDao.delete(origEventParticipant);
+
+                // Add to new event
+                CurtailmentEventParticipant splitEventParticipant = new CurtailmentEventParticipant();
+                splitEventParticipant.setCustomer(origEventParticipant.getCustomer());
+                splitEventParticipant.setEvent(splitEvent);
+                splitEventParticipant.setNotifAttribs(origEventParticipant.getNotifAttribs());
+                curtailmentEventParticipantDao.save(splitEventParticipant);
+            }
+        }
+        
+        notifConnection.sendCurtailmentNotification(splitEvent.getId(), CurtailmentEventAction.ADJUSTING);
+        
+        int[] customerIds = new int[customersToRemove.size()];
+        for (int i = 0; i < customersToRemove.size(); i++) {
+            customerIds[i] = customersToRemove.get(i).getId();
+        }
+        Program program = splitEvent.getProgram();
+        String eventDisplayName = program.getIdentifierPrefix() + identifier;
+        notifConnection.sendProgramEventNotification(program.getId(), 
+                                                     eventDisplayName, 
+                                                     "split", 
+                                                     splitEvent.getStartTime(), 
+                                                     splitEvent.getStopTime(), 
+                                                     splitEvent.getNotificationTime(), 
+                                                     customerIds);
+        
+        // "Direct" events message load management
+        String strategyString = program.getProgramType().getStrategy();
+        CiEventType eventType = CiEventType.of(strategyString);
+        if (eventType.isDirect()) {
+            for (CICustomerStub customer : customersToRemove) {
+                Set<Integer> lmProgramIds = lmDirectCustomerListDao.getLMProgramIdsForCustomer(customer.getId());
+                for (Integer programId : lmProgramIds) {
+                    log.debug("Sending changeProgramStop for event: " + splitEvent + " lmProgramId=" + programId 
+                              + ", stopTime=" + splitEvent.getStopTime());
+                    loadManagementService.stopProgram(programId);
+                }
+            }
+        }
+        
+        return splitEvent.getId();
+    }
+    
     private int createAccountingEvent(CiInitEventModel event) {
         // Build accounting event object
         AccountingEvent accountingEvent = new AccountingEvent();
@@ -115,7 +237,7 @@ public class CiEventCreationServiceImpl implements CiEventCreationService {
             accountingEventParticipantDao.save(participant);
         }
         
-        sendNotifications(event, program, identifier, customerNotifs);
+        sendNotifications(event, program, identifier, customerNotifs, "started");
         
         return eventId;
     }
@@ -148,7 +270,7 @@ public class CiEventCreationServiceImpl implements CiEventCreationService {
         }
         
         notifConnection.sendCurtailmentNotification(eventId, CurtailmentEventAction.STARTING);
-        sendNotifications(event, program, identifier, customerNotifs);
+        sendNotifications(event, program, identifier, customerNotifs, "started");
         
         // "Direct" events message load management to start LM programs
         if (event.getEventType().isDirect()) {
@@ -245,6 +367,11 @@ public class CiEventCreationServiceImpl implements CiEventCreationService {
             economicEventParticipantDao.save(participant);
         }
         
+        EconomicEventAction action = event.isEventExtension() ? EconomicEventAction.EXTENDING : EconomicEventAction.STARTING;
+        String actionString = event.isEventExtension() ? "extended" : "started";
+        notifConnection.sendEconomicNotification(economicEvent.getId(), 1, action);
+        sendNotifications(event, program, identifier, customerNotifs, actionString);
+        
         return eventId;
     }
     
@@ -275,7 +402,7 @@ public class CiEventCreationServiceImpl implements CiEventCreationService {
     }
     
     private void sendNotifications(CiInitEventModel event, Program program, Integer programIdentifier, 
-                                   List<GroupCustomerNotif> customerNotifs) {
+                                   List<GroupCustomerNotif> customerNotifs, String action) {
         // Get notification info
         int[] customerIds = new int[customerNotifs.size()];
         for (int i = 0; i < customerNotifs.size(); i++) {
@@ -285,9 +412,9 @@ public class CiEventCreationServiceImpl implements CiEventCreationService {
         DateTime stopTime = event.getStartTime().plus(Duration.standardMinutes(event.getDuration()));
         
         // Send event notifications
-        notifConnection.sendProgramEventNotification(event.getProgramId(), 
+        notifConnection.sendProgramEventNotification(program.getId(), 
                                                      eventDisplayName, 
-                                                     "started", 
+                                                     action, 
                                                      event.getStartTime().toDate(), 
                                                      stopTime.toDate(), 
                                                      event.getNotificationTime().toDate(), 

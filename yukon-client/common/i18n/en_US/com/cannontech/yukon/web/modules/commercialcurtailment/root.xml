@@ -41,8 +41,15 @@
     <entry key="yukon.web.modules.dr.cc.detail.reason">Reason</entry>
     <entry key="yukon.web.modules.dr.cc.detail.notificationType">Notification Type</entry>
     <entry key="yukon.web.modules.dr.cc.detail.suppress.label">Suppress</entry>
+    <entry key="yukon.web.modules.dr.cc.detail.suppress.success">Event suppressed.</entry>
     <entry key="yukon.web.modules.dr.cc.detail.revise.label">Revise</entry>
+    <entry key="yukon.web.modules.dr.cc.detail.revise.error">The event cannot be revised.</entry>
     <entry key="yukon.web.modules.dr.cc.detail.extend.label">Extend</entry>
+    <entry key="yukon.web.modules.dr.cc.detail.adjust.label">Adjust</entry>
+    <entry key="yukon.web.modules.dr.cc.detail.remove.label">Remove</entry>
+    <entry key="yukon.web.modules.dr.cc.detail.refresh.label">Refresh</entry>
+    <entry key="yukon.web.modules.dr.cc.detail.cancel.error">Event can't be cancelled right now by this user.</entry>
+    <entry key="yukon.web.modules.dr.cc.detail.cancel.success">Event cancelled.</entry>
     
     <!-- customerList.jsp -->
     <entry key="yukon.web.modules.dr.cc.customerList.pageTitle">Curtailment Customers</entry>
@@ -156,12 +163,14 @@
     <entry key="yukon.web.modules.dr.cc.init.customerVerification.pageHeading">Start "{1}" Event ({0})</entry>
     <entry key="yukon.web.modules.dr.cc.init.customerVerification.crumbTitle">Start Event</entry>
     <entry key="yukon.web.modules.dr.cc.init.customerVerification.verifyCustomers">Verify Customers</entry>
+    <entry key="yukon.web.modules.dr.cc.init.customerVerification.removeCustomers">Remove Customers</entry>
     <entry key="yukon.web.modules.dr.cc.init.customerVerification.customer">Customer</entry>
     <entry key="yukon.web.modules.dr.cc.init.customerVerification.currentLoad">Current Load</entry>
     <entry key="yukon.web.modules.dr.cc.init.customerVerification.contractFirmDemand">CFD</entry>
     <entry key="yukon.web.modules.dr.cc.init.customerVerification.loadReduction">Load Reduction</entry>
     <entry key="yukon.web.modules.dr.cc.init.customerVerification.constraintStatus">Constraint Status</entry>
     <entry key="yukon.web.modules.dr.cc.init.customerVerification.loadReductionSelected">Load Reduction Selected</entry>
+    <entry key="yukon.web.modules.dr.cc.init.customerVerification.remove.label">Remove</entry>
     
     <entry key="yukon.web.modules.dr.cc.init.customerVerification.exclusion.POINT_ERROR">Couldn't get point value ({0})</entry>
     <entry key="yukon.web.modules.dr.cc.init.customerVerification.exclusion.NO_DIRECT_PROGRAM">No direct program is attached</entry>
@@ -183,7 +192,6 @@
     <entry key="yukon.web.modules.dr.cc.init.confirmation.pricesStartTime">Start Time ({0})</entry>
     <entry key="yukon.web.modules.dr.cc.init.confirmation.numberOfWindows">Number of Windows</entry>
     <entry key="yukon.web.modules.dr.cc.init.confirmation.duration">Duration</entry>
-    <entry key="yukon.web.modules.dr.cc.init.confirmation.durationValue">{0} minutes</entry>
     <entry key="yukon.web.modules.dr.cc.init.confirmation.reason">Reason</entry>
     <entry key="yukon.web.modules.dr.cc.init.confirmation.message">Message</entry>
     <entry key="yukon.web.modules.dr.cc.init.confirmation.customers">Customers</entry>
@@ -209,10 +217,24 @@
     <entry key="yukon.web.modules.dr.cc.init.error.noAdvancedBuyThrough">Unable to retrieve Advanced Buy Through point value.</entry>
     <entry key="yukon.web.modules.dr.cc.init.error.hoursRemaining">{0} Hours Remaining</entry>
     
+    <!-- reviseEconomicEvent.jsp -->
+    <entry key="yukon.web.modules.dr.cc.init.reviseEconomicEvent.pageTitle">Revise Event</entry>
+    <entry key="yukon.web.modules.dr.cc.init.reviseEconomicEvent.pageHeading">Revise "{1}" Event ({0})</entry>
+    <entry key="yukon.web.modules.dr.cc.init.reviseEconomicEvent.crumbTitle">Revise Event</entry>
+    <entry key="yukon.web.modules.dr.cc.init.reviseEconomicEvent.newPrices">Enter New Energy Prices</entry>
+    <entry key="yukon.web.modules.dr.cc.init.reviseEconomicEvent.priceUnits">($/MWh)</entry>
+    <entry key="yukon.web.modules.dr.cc.init.reviseEconomicEvent.submitButton.label">Revise Event</entry>
+    <entry key="yukon.web.modules.dr.cc.init.reviseEconomicEvent.success">Revision added</entry>
+    
     <!-- EventType.java -->
     <entry key="yukon.web.modules.dr.cc.eventType.CURRENT">Current Events</entry>
     <entry key="yukon.web.modules.dr.cc.eventType.PENDING">Pending Events</entry>
     <entry key="yukon.web.modules.dr.cc.eventType.RECENT">Recent Events</entry>
+    
+    <!-- Event Modification Results -->
+    <entry key="yukon.web.modules.dr.cc.modify.eventModifyFailed">Event cannot be modified at this time by this user</entry>
+    <entry key="yukon.web.modules.dr.cc.modify.eventModifyFailedForCustomer">Event cannot be modified at this time for customer {0}.</entry>
+    <entry key="yukon.web.modules.dr.cc.modify.success">Event modified successfully.</entry>
     
     <!-- TEMP for old pages / controller code -->
     <entry key="yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEventType.CURRENT">current events</entry>

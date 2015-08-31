@@ -19,6 +19,7 @@
     <form:hidden path="notificationTime"/>
     <form:hidden path="startTime"/>
     <form:hidden path="numberOfWindows"/>
+    <form:hidden path="initialEventId"/>
     
     <table class="name-value-table natural-width">
 	    <c:forEach var="windowTime" items="${windowTimes}" varStatus="status">
@@ -34,8 +35,6 @@
                 </td>
 	       </tr>
 	    </c:forEach>
-	    
-	    
 	</table>
     
     <div class="page-action-area">

@@ -12,14 +12,17 @@
 
 <%-- Form action will vary, depending on what type of program is being activated --%>
 <c:choose>
+	<c:when test="${isAdjust}">
+       <cti:url var="url" value="/dr/cc/program/${event.programId}/event/${event.adjustEventId}/completeEventAdjustment"/>
+    </c:when>
 	<c:when test="${event.eventType.economic}">
-	    <c:set var="action" value="pricing"/>
+	    <cti:url var="url" value="/dr/cc/program/${event.programId}/pricing"/>
 	</c:when>
 	<c:otherwise>
-	   <c:set var="action" value="groupSelection"/>
+	   <cti:url var="url" value="/dr/cc/program/${event.programId}/groupSelection"/>
 	</c:otherwise>
 </c:choose>
-<cti:url var="url" value="/dr/cc/program/${event.programId}/${action}"/>
+
 
 <form:form modelAttribute="event" action="${url}">
     <cti:csrfToken/>
@@ -27,32 +30,55 @@
     <tags:nameValueContainer2>
         <form:hidden path="eventType"/>
         <form:hidden path="programId"/>
+        <form:hidden path="initialEventId"/>
+        <form:hidden path="adjustEventId"/>
         
-        <c:set var="eventType" value="${event.eventType}"/>
-        <c:if test="${event.eventType.notification or event.eventType.economic}">
-	        <tags:nameValue2 nameKey=".notificationTime">
-	            <dt:dateTime path="notificationTime"/>
-	        </tags:nameValue2>
+        <%-- Start and notification times --%>
+        <c:if test="${not event.eventExtension}">
+	        <c:set var="eventType" value="${event.eventType}"/>
+	        <c:if test="${eventType.notification or eventType.economic}">
+		        <tags:nameValue2 nameKey=".notificationTime">
+		            <dt:dateTime path="notificationTime""/>
+		        </tags:nameValue2>
+		    </c:if>
+		    <tags:nameValue2 nameKey=".startTime">
+		        <dt:dateTime path="startTime"/>
+		    </tags:nameValue2>
 	    </c:if>
-	    <tags:nameValue2 nameKey=".startTime">
-	        <dt:dateTime path="startTime"/>
-	    </tags:nameValue2>
-	    <c:if test="${event.eventType.accounting or event.eventType.notification}">
+	    
+	    <%-- For extensions, the notification and start times are not editable. --%>
+	    <c:if test="${event.eventExtension}">
+	        <tags:nameValue2 nameKey=".notificationTime">
+	            <cti:formatDate value="${event.notificationTime}" type="FULL"/>
+	        </tags:nameValue2>
+	        <tags:nameValue2 nameKey=".startTime">
+                <cti:formatDate value="${event.startTime}" type="FULL"/>
+            </tags:nameValue2>
+	        <form:hidden path="startTime"/>
+	        <form:hidden path="notificationTime"/>
+	    </c:if>
+	    
+	    <%-- Duration --%>
+	    <c:if test="${eventType.accounting or eventType.notification}">
 	        <tags:nameValue2 nameKey=".duration">
 	            <tags:input path="duration"/>
 	        </tags:nameValue2>
 	    </c:if>
-	    <c:if test="${event.eventType.accounting}">
+	    
+	    <%-- Reason / Message --%>
+	    <c:if test="${eventType.accounting}">
 	       <tags:nameValue2 nameKey=".reason">
 	           <tags:input path="message"/>
 	       </tags:nameValue2>
 	    </c:if>
-	    <c:if test="${event.eventType.notification}">
+	    <c:if test="${eventType.notification}">
            <tags:nameValue2 nameKey=".message">
                <tags:input path="message"/>
            </tags:nameValue2>
         </c:if>
-        <c:if test="${event.eventType.economic}">
+        
+        <%-- Number of windows --%>
+        <c:if test="${eventType.economic}">
             <tags:nameValue2 nameKey=".numberOfWindows">
                 <tags:input path="numberOfWindows"/>
             </tags:nameValue2>

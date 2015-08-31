@@ -1220,6 +1220,7 @@
     <bean class="com.cannontech.web.dr.cc.CiInitEventModelValidator"/>
     <bean class="com.cannontech.web.dr.cc.service.impl.CiCustomerVerificationServiceImpl"/>
     <bean class="com.cannontech.web.dr.cc.service.impl.CiEventCreationServiceImpl"/>
+    <bean class="com.cannontech.web.dr.cc.service.impl.CiCurtailmentServiceImpl"/>
     
     <bean class="com.cannontech.web.cc.EventListBean"/>
     <bean id="detailNotificationBean" class="com.cannontech.web.cc.methods.DetailNotificationBean"/>
