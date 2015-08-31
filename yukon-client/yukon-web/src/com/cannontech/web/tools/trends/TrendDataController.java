@@ -64,16 +64,16 @@ public class TrendDataController {
      * <li>step 3 {@link RawPointHistoryDao} request a dao for the raw data
      * determined by the graph type
      * <li>step 4 Inject the points into a dataprovider based on GraphType
-     * 
+     * <li>step 5 add to json object
+     * <li>step 6 add payload decoration. <li>step 7 return the json
+     *     payload to the Response Object to send to client.
+     *</ul>
      * @see {@link #graphDataProvider(List)}
      * @see {@link #dateGraphDataProvider(List, DateTime, ReadableInstant)}
      * @see {@link #yesterdayGraphDataProvider(List)}
-     * @see {@link #usageGraphDataProvider(List)} <li>step 5 add to json object
-     *      <li>step 6 add payload decoration. <li>step 7 return the json
-     *      payload to the Response Object to send to client.
-     *      </ul>
+     * @see {@link #usageGraphDataProvider(List)} 
      * 
-     * @param id
+     * @param id - the graphDefinition id
      * @return {@link ResponseBody} json serialized data.
      */
     @RequestMapping("/trends/{id}/data")
@@ -170,7 +170,7 @@ public class TrendDataController {
             Integer pointId = seriesItem.getPointID();
             DateTime specificDate;
             DateTime endDate;
-            if (itemType.getGraphType().equals(TrendType.GraphType.PEAK_TYPE)) {
+            if (itemType.getGraphType() == (TrendType.GraphType.PEAK_TYPE)) {
                 long ts = Long.valueOf(seriesItem.getMoreData()).longValue();
                 DateTime dateToStartSearch = new DateTime(ts);
                 ReadableInstant peakDataInstant = trendDataService.requestPeakDateDataProvider(pointId, dateToStartSearch);
@@ -235,14 +235,9 @@ public class TrendDataController {
     }
 
     /**
-     * graphTypeLabel This method takes the integer form of the graphType that
-     * is native to the DataSource, match it to the GraphType enumerator and
-     * pass back the associate context stored for localization. The call returns
-     * a String Identifier
+     * Returns context sensitive message for {@link GraphType}
      * <p>
-     * 
-     * @param graphType
-     *            {@link int} is the unique identifier for the range of entries.
+     * @param graphType {@link int} the GraphDataSeries.type value.
      * @param userContext
      *            {@link YukonUserContext}
      * 
@@ -255,9 +250,9 @@ public class TrendDataController {
     }
 
     /**
-     * addRightAxis right access determine if we need to arnder a x-axis for
-     * data, it then updates the seriesList in place instead of passsing back.
-     * <p>
+     * Determine if we need to render an x-axis for data, 
+     * it then updates the seriesList in place instead of passing back.
+     *<p>
      * 
      * @param userContext
      *            {@link GraphType} is the unique identifier for the range of

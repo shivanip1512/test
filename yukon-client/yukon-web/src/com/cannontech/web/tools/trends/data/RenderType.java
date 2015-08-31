@@ -5,18 +5,19 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableBiMap.Builder;
+import com.cannontech.database.db.graph.GraphRenderers;
 
 public enum RenderType {
-    LINE(0),
-    LINE_SHAPES(1),
-    LINE_AREA(2),
-    LINE_AREA_SHAPES(3),
-    STEP(4),
-    STEP_SHAPES(5),
-    STEP_AREA(6),
-    STEP_AREA_SHAPES(7),
-    BAR(8),
-    BAR_3D(9);
+    LINE(GraphRenderers.LINE),
+    LINE_SHAPES(GraphRenderers.LINE_SHAPES),
+    LINE_AREA(GraphRenderers.LINE_AREA),
+    LINE_AREA_SHAPES(GraphRenderers.LINE_AREA_SHAPES),
+    STEP(GraphRenderers.STEP),
+    STEP_SHAPES(GraphRenderers.STEP_SHAPES),
+    STEP_AREA(GraphRenderers.STEP_AREA),
+    STEP_AREA_SHAPES(GraphRenderers.STEP_AREA_SHAPES),
+    BAR(GraphRenderers.BAR),
+    BAR_3D(GraphRenderers.BAR_3D);
     
    
     private final static Set<RenderType> lines = ImmutableSet.of(LINE, LINE_AREA, LINE_AREA_SHAPES, LINE_SHAPES);
