@@ -269,8 +269,8 @@ public class TrendDataController {
      */
     private void addRightAxis(YukonUserContext userContext, List<Map<String, Object>> seriesList, List<Map<String, Object>> yAxis, ImmutableMap<String, ImmutableMap<String, String>> labels) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        String left = accessor.getMessage("yukon.web.modules.tools.trend.axis", accessor.getMessage("yukon.common.left"));
-        String right = accessor.getMessage("yukon.web.modules.tools.trend.axis", accessor.getMessage("yukon.common.right"));
+        String left = accessor.getMessage("yukon.web.modules.tools.trends.axis", accessor.getMessage("yukon.common.left"));
+        String right = accessor.getMessage("yukon.web.modules.tools.trends.axis", accessor.getMessage("yukon.common.right"));
         Map<String, Object> secondaryAxis = new HashMap<>();
         secondaryAxis.put("labels", labels);
         secondaryAxis.put("opposite", true);
