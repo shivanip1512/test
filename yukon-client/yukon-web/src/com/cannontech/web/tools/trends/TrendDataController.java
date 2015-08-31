@@ -219,10 +219,7 @@ public class TrendDataController {
     }
 
     /**
-     * graphDataStateMessage This data provider a {@link GraphDataError} to
-     * render the message, and the YukonUserContext instance of interface and
-     * grabs the message stored in the context mapping. The call returns a
-     * String of data.
+    * Returns context sensitive message for {@link GraphDataError}
      * <p>
      * 
      * @param state
