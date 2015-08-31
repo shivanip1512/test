@@ -139,14 +139,14 @@ public class PointForm extends DBEditorForm {
         return logicalGroups;
     }
 
-    public SelectListItem[] getTimeInterval() {
+    public SelectItem[] getTimeInterval() {
         return CBCSelectionLists.TIME_INTERVAL;
     }
 
     /**
      * Have the lowest value for archiving set to 60 seconds
      */
-    public SelectListItem[] getArchiveInterval() {
+    public SelectItem[] getArchiveInterval() {
         return CBCSelectionLists.getTimeSubList(60);
     }
 

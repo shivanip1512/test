@@ -72,18 +72,14 @@
 												<tags:checkboxNameValue id="" path="editingIntegrity"
 												nameKey=".integrityScanRate" excludeColon="true" />
 												<tags:nameValue2 nameKey=".interval">
-													<tags:selectWithItems path="deviceScanRateMap['Integrity'].intervalRate"
-													items="${timeIntervals}" itemValue="value"
-													itemLabel="label"
-													inputClass="with-option-hiding" />
+													<tags:intervalStepper path="deviceScanRateMap['Integrity'].intervalRate"
+															intervals="${timeIntervals}" />
 												</tags:nameValue2>
 												<tags:nameValue2 nameKey=".altInterval">
-													<tags:selectWithItems path="deviceScanRateMap['Integrity'].alternateRate"
-													items="${timeIntervals}" itemValue="value"
-													itemLabel="label"
-													inputClass="with-option-hiding" />
+													<tags:intervalStepper path="deviceScanRateMap['Integrity'].alternateRate"
+															intervals="${timeIntervals}" />
 												</tags:nameValue2>
-												<tags:nameValue2 nameKey=".scanGroup">
+													<tags:nameValue2 nameKey=".scanGroup">
 													<tags:selectWithItems path="deviceScanRateMap['Integrity'].scanGroup"
 													items="${scanGroups}" itemValue="value"
 													itemLabel="label"
@@ -94,16 +90,12 @@
 												<tags:checkboxNameValue id="" path="editingException"
 												nameKey=".exceptionScanRate" excludeColon="true" />
 												<tags:nameValue2 nameKey=".interval">
-													<tags:selectWithItems path="deviceScanRateMap['Exception'].intervalRate"
-													items="${timeIntervals}" itemValue="value"
-													itemLabel="label"
-													inputClass="with-option-hiding" />
+													<tags:intervalStepper path="deviceScanRateMap['Exception'].intervalRate"
+															intervals="${timeIntervals}" />
 												</tags:nameValue2>
 												<tags:nameValue2 nameKey=".altInterval">
-													<tags:selectWithItems path="deviceScanRateMap['Exception'].alternateRate"
-													items="${timeIntervals}" itemValue="value"
-													itemLabel="label"
-													inputClass="with-option-hiding" />
+													<tags:intervalStepper path="deviceScanRateMap['Exception'].alternateRate"
+															intervals="${timeIntervals}" />
 												</tags:nameValue2>
 												<tags:nameValue2 nameKey=".scanGroup">
 													<tags:selectWithItems path="deviceScanRateMap['Exception'].scanGroup"

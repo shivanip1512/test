@@ -147,4 +147,35 @@ public enum TimeIntervals {
         return archiveIntervals;
     }
 
+    private static final Set<TimeIntervals> capControlIntervals = ImmutableSet.of(
+        SECONDS_1,
+        SECONDS_2,
+        SECONDS_5,
+        SECONDS_10,
+        SECONDS_15,
+        SECONDS_30,
+        MINUTES_1,
+        MINUTES_2,
+        MINUTES_3,
+        MINUTES_4,
+        MINUTES_5,
+        MINUTES_7,
+        MINUTES_10,
+        MINUTES_12,
+        MINUTES_15,
+        MINUTES_20,
+        MINUTES_25,
+        MINUTES_30,
+        HOURS_1,
+        HOURS_2,
+        HOURS_6,
+        HOURS_12,
+        DAYS_1);
+    
+    /**
+     * Used forCapControl CBC Setup
+     */
+    public static Set<TimeIntervals> getCapControlIntervals() {
+        return capControlIntervals;
+    }
 }

@@ -10,7 +10,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 
-import com.cannontech.capcontrol.dao.CapbankControllerDao;
 import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.cbc.exceptions.MultipleDevicesOnPortException;
 import com.cannontech.cbc.exceptions.PortDoesntExistException;
@@ -46,16 +45,16 @@ import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.DeviceCBC;
 import com.cannontech.database.db.device.DeviceAddress;
+import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.web.capcontrol.service.CBCService;
+import com.cannontech.web.capcontrol.service.CbcService;
 import com.cannontech.web.editor.CapControlCBC;
 
 @Service
-public class CBCServiceImpl implements CBCService {
+public class CbcServiceImpl implements CbcService {
     @Autowired private DeviceDao deviceDao;
     @Autowired private PaoPropertyDao propertyDao;
     @Autowired private DeviceConfigurationDao configurationDao;
-    @Autowired private CapbankControllerDao capbankControllerDao;
     @Autowired private CapbankDao capbankDao;
     @Autowired private PaoDao paoDao;
     private transient Logger logger = YukonLogManager.getLogger(RemoteBase.class);
@@ -148,10 +147,16 @@ public class CBCServiceImpl implements CBCService {
         return capControlCBC;
     }
 
-    private void checkForErrorsAndSave(DBPersistent dbPersistent, CapControlCBC capControlCBC)
+    private void checkForErrorsAndSave(CapControlCBC capControlCBC)
             throws PortDoesntExistException, MultipleDevicesOnPortException, SameMasterSlaveCombinationException,
-            SQLException, SerialNumberExistsException {
+ SQLException,
+            SerialNumberExistsException {
         int cbcId = capControlCBC.getYukonPAObject().getPaObjectID();
+        YukonPAObject pao = PAOFactory.createPAObject(cbcId);
+        DBPersistent dbPersistent = retrieveDBPersistent(pao);
+        Connection connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+        dbPersistent.setDbConnection(connection);
+
         // error handling when serial number exists
         handleSerialNumber(capControlCBC, cbcId);
 
@@ -201,6 +206,8 @@ public class CBCServiceImpl implements CBCService {
             dnpBase.getDeviceDirectCommSettings().setPortID(capControlCBC.getDeviceDirectCommSettings().getPortID());
 
             if (capControlCBC.getDeviceScanRateMap().containsKey("Exception")) {
+                if (dnpBase.getDeviceScanRateMap().get("Exception") == null)
+                    dnpBase.getDeviceScanRateMap().put("Exception", new DeviceScanRate(cbcId, "Exception"));
                 dnpBase.getDeviceScanRateMap().get("Exception").setAlternateRate(
                     capControlCBC.getDeviceScanRateMap().get("Exception").getAlternateRate());
                 dnpBase.getDeviceScanRateMap().get("Exception").setScanGroup(
@@ -209,6 +216,8 @@ public class CBCServiceImpl implements CBCService {
                     (capControlCBC.getDeviceScanRateMap().get("Exception").getIntervalRate()));
             }
             if (capControlCBC.getDeviceScanRateMap().containsKey("Integrity")) {
+                if (dnpBase.getDeviceScanRateMap().get("Integrity") == null)
+                    dnpBase.getDeviceScanRateMap().put("Integrity", new DeviceScanRate(cbcId, "Integrity"));
                 dnpBase.getDeviceScanRateMap().get("Integrity").setAlternateRate(
                     capControlCBC.getDeviceScanRateMap().get("Integrity").getAlternateRate());
                 dnpBase.getDeviceScanRateMap().get("Integrity").setScanGroup(
@@ -235,7 +244,7 @@ public class CBCServiceImpl implements CBCService {
             capBankControllerDNP.getDeviceCBC().setSerialNumber(capControlCBC.getDeviceCBC().getSerialNumber());
             capBankControllerDNP.getDeviceCBC().setRouteID(capControlCBC.getDeviceCBC().getRouteID());
         }
-
+        //dbPersistent.setDbConnection(connection);
         dbPersistent.update();
 
     }
@@ -268,12 +277,8 @@ public class CBCServiceImpl implements CBCService {
     @Override
     public int save(CapControlCBC capControlCBC) throws SerialNumberExistsException, SQLException,
             PortDoesntExistException, MultipleDevicesOnPortException, SameMasterSlaveCombinationException {
-        int cbcId = capControlCBC.getYukonPAObject().getPaObjectID();
-        YukonPAObject pao = PAOFactory.createPAObject(cbcId);
-        DBPersistent dbPersistent = retrieveDBPersistent(pao);
-        Connection connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-        dbPersistent.setDbConnection(connection);
-        checkForErrorsAndSave(dbPersistent, capControlCBC);
+
+        checkForErrorsAndSave(capControlCBC);
         return capControlCBC.getYukonPAObject().getPaObjectID();
     }
 

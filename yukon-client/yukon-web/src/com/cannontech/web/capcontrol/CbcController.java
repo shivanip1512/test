@@ -26,8 +26,9 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
-import com.cannontech.web.capcontrol.service.CBCService;
+import com.cannontech.web.capcontrol.service.CbcService;
 import com.cannontech.web.capcontrol.validators.StrategyValidator;
+import com.cannontech.web.common.TimeIntervals;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.editor.CapControlCBC;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -35,12 +36,12 @@ import com.cannontech.web.util.CBCSelectionLists;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
-public class CBCController {
+public class CbcController {
 
     @Autowired private PaoDao paoDao;
     @Autowired private StrategyValidator validator;
     @Autowired private PointDao pointDao;
-    @Autowired private CBCService cbcService;
+    @Autowired private CbcService cbcService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     private static final String baseKey = "yukon.web.modules.capcontrol.cbc.edit";
@@ -65,7 +66,7 @@ public class CBCController {
 
         model.addAttribute("capControlCBC", capControlCBC);
         model.addAttribute("selectionLists", lists);
-        model.addAttribute("timeIntervals", CBCSelectionLists.TIME_INTERVAL);
+        model.addAttribute("timeIntervals",TimeIntervals.getCapControlIntervals());
         model.addAttribute("scanGroups", CBCSelectionLists.SCAN_GROUP);
         model.addAttribute("analogPoints", points.get(PointType.Analog));
         model.addAttribute("pulseAccumulatorPoints", points.get(PointType.PulseAccumulator));

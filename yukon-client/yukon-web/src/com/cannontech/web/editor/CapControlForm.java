@@ -1297,7 +1297,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
         this.hasEditingRole = hasEditingRole;
     }
 
-    public SelectListItem[] getTimeInterval() {
+    public SelectItem[] getTimeInterval() {
 		return CBCSelectionLists.TIME_INTERVAL;
 	}
 

@@ -8,7 +8,7 @@ import com.cannontech.cbc.exceptions.SameMasterSlaveCombinationException;
 import com.cannontech.cbc.exceptions.SerialNumberExistsException;
 import com.cannontech.web.editor.CapControlCBC;
 
-public interface CBCService {
+public interface CbcService {
     CapControlCBC getCapControlCBC(int id);
 
     int save(CapControlCBC capControlCBC) throws SerialNumberExistsException, SQLException, PortDoesntExistException,
