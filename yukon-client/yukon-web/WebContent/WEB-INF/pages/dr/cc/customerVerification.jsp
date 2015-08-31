@@ -10,12 +10,12 @@
 <cti:includeScript link="/resources/js/pages/yukon.dr.curtailment.js"/>
 
 <c:if test="${isSplit}">
-    <i:inline var="heading" key=".removeCustomers"/>
+    <cti:msg2 var="heading" key=".removeCustomers"/>
     <cti:url var="action" value="/dr/cc/program/${program.id}/event/${eventId}/split"/>
     <c:set var="submitKey" value="remove"/>
 </c:if>
 <c:if test="${not isSplit}">
-    <i:inline var="heading" key=".verifyCustomers"/>
+    <cti:msg2 var="heading" key=".verifyCustomers"/>
     <cti:url var="action" value="/dr/cc/program/${event.programId}/confirmation"/>
     <c:set var="submitKey" value="next"/>
 </c:if>
