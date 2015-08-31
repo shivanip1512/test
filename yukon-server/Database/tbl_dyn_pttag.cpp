@@ -174,7 +174,7 @@ bool CtiTableDynamicTag::Update(Cti::Database::DatabaseConnection &conn)
         << getTaggedForStr()
         << getInstanceId();
 
-    if( ! executeUpdater( updater, __FILE__, __LINE__ ), LogDebug(isDebugLudicrous()), LogNoRowsAffected::Disable )
+    if( ! executeUpdater( updater, __FILE__, __LINE__ , LogDebug(isDebugLudicrous()), LogNoRowsAffected::Disable ))
     {
         return Insert(conn); // Try a vanilla insert if the update failed!
     }
