@@ -328,9 +328,10 @@ public static int differenceMinutes(Date from, Date to) {
     
     public static DateTime roundUpToNextHour(DateTime dateTime) {
         int hourOfDay = dateTime.getHourOfDay();
-        return dateTime.withHourOfDay(hourOfDay + 1)
-                       .withMinuteOfHour(0)
-                       .withSecondOfMinute(0)
-                       .withMillisOfSecond(0);
+        if (hourOfDay == 23) {
+            return dateTime.plusDays(1)
+                            .withTimeAtStartOfDay();
+        }
+        return dateTime.withTime(hourOfDay + 1, 0, 0, 0);
     }
 }
