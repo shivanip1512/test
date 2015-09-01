@@ -2,8 +2,8 @@ package com.cannontech.common.login.ldap.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -70,17 +70,15 @@ public class LDAPADLogin  implements AuthenticationProvider {
     }
 
     /**
-     * build the list of url information (host,port) using space delimiter.
+     * Builds and returns a list of url information (host,port) using space delimiter.
      */
 
-    private static List<String> buildListForUrlInfo(String urlInfo) {
+    private List<String> buildListForUrlInfo(String urlInfo) {
 
-        List<String> urlInfoList = new ArrayList<String>();
-        StringTokenizer st = new StringTokenizer(urlInfo, " ");
+        String[] urlInfoArr = urlInfo.split(" ");
 
-        while (st.hasMoreTokens()) {
-            urlInfoList.add(st.nextToken());
-        }
+        List<String> urlInfoList = new ArrayList<String>(urlInfoArr.length);
+        Collections.addAll(urlInfoList, urlInfoArr);
 
         return urlInfoList;
     }
