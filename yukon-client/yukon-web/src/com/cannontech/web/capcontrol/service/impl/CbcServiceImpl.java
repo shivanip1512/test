@@ -244,7 +244,7 @@ public class CbcServiceImpl implements CbcService {
             capBankControllerDNP.getDeviceCBC().setSerialNumber(capControlCBC.getDeviceCBC().getSerialNumber());
             capBankControllerDNP.getDeviceCBC().setRouteID(capControlCBC.getDeviceCBC().getRouteID());
         }
-        //dbPersistent.setDbConnection(connection);
+		dbPersistent.setDbConnection(connection);
         dbPersistent.update();
 
     }

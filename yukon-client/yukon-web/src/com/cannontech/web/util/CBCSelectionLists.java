@@ -273,7 +273,29 @@ public class CBCSelectionLists {
     /**
      * Returns all possible Comm Channels
      */
-    public SelectListItem[] getCommChannels() {
+    public SelectItem[] getCommChannels() {
+
+        SelectItem[] selItems = new SelectItem[0];
+
+        IDatabaseCache cache = DefaultDatabaseCache.getInstance();
+        synchronized (cache) {
+            List<LiteYukonPAObject> ports = cache.getAllPorts();
+
+            selItems = new SelectItem[ports.size()];
+            for (int i = 0; i < ports.size(); i++) {
+                LiteYukonPAObject litePort = ports.get(i);
+                selItems[i] = new SelectItem(new Integer(litePort.getYukonID()), litePort.getPaoName());
+            }
+
+        }
+
+        return selItems;
+    }
+
+    /**
+     * Returns all possible Comm Channels
+     */
+    public SelectListItem[] getPorts() {
 
         SelectListItem[] selItems = new SelectListItem[0];
 
@@ -291,7 +313,7 @@ public class CBCSelectionLists {
 
         return selItems;
     }
-
+    
     /**
      * Returns the valid start of time for Yukon
      * 

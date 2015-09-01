@@ -115,7 +115,6 @@ import com.cannontech.web.util.CBCDBUtil;
 import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.web.util.JSFUtil;
-import com.cannontech.web.util.SelectListItem;
 import com.cannontech.web.wizard.CBCWizardModel;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
@@ -443,7 +442,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
 		FacesContext context = FacesContext.getCurrentInstance();
 		HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
 		CtiNavObject navObject = (CtiNavObject) session.getAttribute("CtiNavObject");
-		if (navObject.getModuleExitPage() == null || "".equalsIgnoreCase(navObject.getModuleExitPage())) {
+        if (navObject != null
+            && (navObject.getModuleExitPage() == null || "".equalsIgnoreCase(navObject.getModuleExitPage()))) {
 			navObject.setModuleExitPage(navObject.getCurrentPage());
 			//Hack to preserve an address that will normally fall off our 2 page history.
 			navObject.setPreservedAddress(navObject.getPreviousPage());

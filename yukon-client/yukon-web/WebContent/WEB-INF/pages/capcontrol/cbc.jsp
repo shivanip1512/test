@@ -58,7 +58,7 @@
 										
 										<tags:nameValue2 nameKey=".commChannel">
 													<tags:selectWithItems path="deviceDirectCommSettings.portID"
-													items="${selectionLists.commChannels}" itemValue="value"
+													items="${selectionLists.ports}" itemValue="value"
 													itemLabel="label"
 													inputClass="with-option-hiding" />
 												</tags:nameValue2>

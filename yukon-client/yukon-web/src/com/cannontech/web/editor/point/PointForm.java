@@ -58,7 +58,6 @@ import com.cannontech.web.exceptions.InvalidPointLimits;
 import com.cannontech.web.exceptions.InvalidPointOffsetException;
 import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.util.JSFParamUtil;
-import com.cannontech.web.util.SelectListItem;
 import com.cannontech.web.wizard.PointWizardModel;
 import com.cannontech.yukon.IDatabaseCache;
 

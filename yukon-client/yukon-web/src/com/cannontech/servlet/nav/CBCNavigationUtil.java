@@ -24,6 +24,7 @@ public class CBCNavigationUtil {
     
     public static void redirect(String redirectURL, HttpSession session) {
         CtiNavObject navObject = (CtiNavObject) session.getAttribute(ServletUtil.NAVIGATE);
+		if (navObject != null)
         navObject.setNavigation(redirectURL);
     }
     

@@ -65,7 +65,7 @@ public class CtiNavObject implements Serializable{
 	 */
 	public void setNavigation(String page)
 	{
-		if (!currentPage.equals(page)) {
+		if (currentPage != null && !currentPage.equals(page)) {
 	        previousPage = currentPage;
 	        currentPage = page;
 	    }
