@@ -1,6 +1,10 @@
 package com.cannontech.common.login.ldap.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+
 import javax.naming.Context;
 import javax.naming.NamingException;
 
@@ -34,14 +38,52 @@ public class LDAPADLogin  implements AuthenticationProvider {
         return result;
     }
 
-   
     public String getConnectionURL() {
-        String host = globalSettingDao.getString(GlobalSettingType.AD_SERVER_ADDRESS);
-        String port = globalSettingDao.getString(GlobalSettingType.AD_SERVER_PORT);
-        String url = "ldap://" + host + ":" + port;
-        return url;
+        String hosts = globalSettingDao.getString(GlobalSettingType.AD_SERVER_ADDRESS);
+        String ports = globalSettingDao.getString(GlobalSettingType.AD_SERVER_PORT);
+
+        List<String> hostList = buildListForUrlInfo(hosts);
+        List<String> portList = buildListForUrlInfo(ports);
+
+        return getURLs(hostList, portList);
+
     }
 
+    /**
+     * Returns a string that contains space separated list of urls and also provides a default port if
+     * required
+     */
+
+    private String getURLs(List<String> hostList, List<String> portList) {
+        StringBuilder urls = new StringBuilder();
+        int index = 0;
+        for (String host : hostList) {
+
+            if (index > portList.size() - 1) {
+                portList.add(index, (String) GlobalSettingType.AD_SERVER_PORT.getDefaultValue());
+            }
+
+            urls.append("ldap://" + host + ":" + portList.get(index) + " ");
+            index++;
+        }
+        return urls.toString();
+    }
+
+    /**
+     * build the list of url information (host,port) using space delimiter.
+     */
+
+    private static List<String> buildListForUrlInfo(String urlInfo) {
+
+        List<String> urlInfoList = new ArrayList<String>();
+        StringTokenizer st = new StringTokenizer(urlInfo, " ");
+
+        while (st.hasMoreTokens()) {
+            urlInfoList.add(st.nextToken());
+        }
+
+        return urlInfoList;
+    }
    
     public String getConnectionTimeout() {
         int timeout = globalSettingDao.getInteger(GlobalSettingType.AD_SERVER_TIMEOUT);

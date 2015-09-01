@@ -44,7 +44,7 @@ public enum GlobalSettingType implements DisplayableEnum {
 
     // Authentication > Active Directory (only enabled when DEFAULT_AUTH_TYPE = AD)
     AD_SERVER_ADDRESS(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "127.0.0.1"),
-    AD_SERVER_PORT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 389),
+    AD_SERVER_PORT(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "389"),
     AD_SERVER_TIMEOUT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 30),
     AD_NTDOMAIN(GlobalSettingSubCategory.AUTHENTICATION, stringType(), null),
     AD_SSL_ENABLED(GlobalSettingSubCategory.AUTHENTICATION, booleanType(), true),

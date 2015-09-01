@@ -237,9 +237,9 @@
     <entry key="yukon.common.setting.AD_SERVER_TIMEOUT">AD Server Timeout</entry>
     <entry key="yukon.common.setting.AD_SERVER_TIMEOUT.description">Active Directory Server Timeout (in seconds)</entry>
     <entry key="yukon.common.setting.AD_SERVER_PORT">AD Server Port</entry>
-    <entry key="yukon.common.setting.AD_SERVER_PORT.description">Active Directory Server Port</entry>
+    <entry key="yukon.common.setting.AD_SERVER_PORT.description">Active Directory Server Port. A space separated list of ports can be provided for failover. These must directly correspond to the AD Server Address list ordering.</entry>
     <entry key="yukon.common.setting.AD_SERVER_ADDRESS">AD Server Address</entry>
-    <entry key="yukon.common.setting.AD_SERVER_ADDRESS.description">Active Directory Server Address</entry>
+    <entry key="yukon.common.setting.AD_SERVER_ADDRESS.description">Active Directory Server Address. A space separated list of addresses can be provided for failover.</entry>
     <entry key="yukon.common.setting.AD_SSL_ENABLED">AD SSL Enabled</entry>
     <entry key="yukon.common.setting.AD_SSL_ENABLED.description">Controls the use of SSL for the Active Directory connection</entry>
     <entry key="yukon.common.setting.CLIENT_APPLICATIONS_REMEMBER_ME">Application Remember Me</entry>
