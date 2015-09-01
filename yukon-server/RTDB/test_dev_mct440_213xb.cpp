@@ -101,6 +101,20 @@ struct test_Mct440_213xBDevice : Cti::Devices::Mct440_213xBDevice
     {
         return 0;
     }
+
+    std::string resolveStateName(long groupId, long rawValue) const override
+    {
+        static const std::array<const char *, 10> stateNames{
+            "False", "True", "State Two", "State Three", "State Four", "State Five", "State Six", "State Seven", "State Eight", "State Nine"
+        };
+
+        if( rawValue >= 0 && rawValue < stateNames.size() )
+        {
+            return stateNames[rawValue];
+        }
+
+        return "State " + std::to_string(rawValue);
+    }
 };
 
 struct test_Mct440_213xB : test_Mct440_213xBDevice
@@ -411,6 +425,7 @@ BOOST_AUTO_TEST_CASE(test_isProfileTablePointerCurrent)
 
 struct beginExecuteRequest_helper
 {
+    Cti::Test::Override_DynamicPaoInfoManager overrideDpi;
     CtiRequestMsg           request;
     std::list<CtiMessage*>  vgList, retList;
     std::list<OUTMESS*>     outList;

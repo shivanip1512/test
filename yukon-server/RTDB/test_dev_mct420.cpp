@@ -101,7 +101,12 @@ namespace test_tools {
 }
 }
 
-BOOST_AUTO_TEST_SUITE( test_dev_mct420 )
+struct overrideGlobals
+{
+    Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;
+};
+
+BOOST_FIXTURE_TEST_SUITE( test_dev_mct420, overrideGlobals )
 
 BOOST_AUTO_TEST_CASE(test_isSupported_Mct410Feature_DisconnectCollar)
 {
@@ -526,7 +531,7 @@ BOOST_AUTO_TEST_CASE(test_isProfileTablePointerCurrent)
 }
 
 
-struct beginExecuteRequest_helper
+struct beginExecuteRequest_helper : overrideGlobals
 {
     CtiRequestMsg           request;
     std::list<CtiMessage*>  vgList, retList;
