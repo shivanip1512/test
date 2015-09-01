@@ -127,6 +127,10 @@ BOOST_AUTO_TEST_CASE(test_cannot_control_bank_text)
     bus->createCannotControlBankText("Increase Var", "Open", ccEvents);
     BOOST_CHECK_EQUAL(ccEvents.size(), 2);
     store->deleteInstance();
+
+    delete station;
+    delete area;
+    delete bus;
 }
 
 BOOST_AUTO_TEST_CASE(test_lock_invalid_ctitime)
@@ -207,6 +211,9 @@ BOOST_AUTO_TEST_CASE(test_temp_move_feeder)
     BOOST_CHECK_EQUAL(bus2->getCCFeeders().size(), 3);
 
     store->deleteInstance();
+
+    delete station;
+    delete area;
 }
 
 
@@ -318,6 +325,9 @@ BOOST_AUTO_TEST_CASE(test_parallel_bus)
     BOOST_CHECK_EQUAL(bus2->getEstimatedVarLoadPointValue(), 2000);
 
     store->deleteInstance();
+
+    delete station;
+    delete area;
 }
 
 BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
@@ -336,9 +346,9 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
     _strategyManager.reloadAll();
 
     CtiTime currentDateTime;
-    CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
-    CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
-    CtiMultiMsg* multiCapMsg = new CtiMultiMsg();
+    auto multiDispatchMsg = std::make_unique<CtiMultiMsg>();
+    auto multiPilMsg      = std::make_unique<CtiMultiMsg>();
+    auto multiCapMsg      = std::make_unique<CtiMultiMsg>();
     CtiMultiMsg_vec& pointChanges = multiDispatchMsg->getData();
     CtiMultiMsg_vec& pilMessages = multiPilMsg->getData();
     CtiMultiMsg_vec& capMessages = multiCapMsg->getData();
@@ -460,6 +470,9 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
     BOOST_CHECK_EQUAL(cap11a->getVerificationFlag(), false);
 
     store->deleteInstance();
+
+    delete station;
+    delete area;
 }
 
 BOOST_AUTO_TEST_SUITE_END()

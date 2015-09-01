@@ -74,13 +74,14 @@ CtiCCSubstationsMsg::CtiCCSubstationsMsg(const CtiCCSubstationsMsg& ccSubstation
 
 CtiCCSubstationsMsg::~CtiCCSubstationsMsg()
 {
-    if( _ccSubstations != NULL &&
-            _ccSubstations->size() > 0 )
+    if( _ccSubstations != NULL )
+    {
+        if( _ccSubstations->size() > 0 )
         {
             delete_container(*_ccSubstations);
-            _ccSubstations->clear();
-            delete _ccSubstations;
         }
+        delete _ccSubstations;
+    }
 }
 
 CtiMessage* CtiCCSubstationsMsg::replicateMessage() const

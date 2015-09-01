@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(test_signalmanager_alarming)
     BOOST_CHECK_EQUAL(manager.entries(), 2);
     BOOST_CHECK_EQUAL(manager.pointMapEntries(), 2);
     //basic setup complete.
-    manager.setAlarmActive(1, CtiTablePointAlarming::commandFailure);
+    delete manager.setAlarmActive(1, CtiTablePointAlarming::commandFailure);
     BOOST_CHECK(manager.isAlarmed(1, CtiTablePointAlarming::commandFailure));
     BOOST_CHECK(manager.isAlarmActive(1, CtiTablePointAlarming::commandFailure));
     //Check our other point
@@ -75,19 +75,19 @@ BOOST_AUTO_TEST_CASE(test_signalmanager_alarming)
     BOOST_CHECK(manager.isAlarmUnacknowledged(1, CtiTablePointAlarming::commandFailure));
     BOOST_CHECK(!manager.isAlarmUnacknowledged(1, CtiTablePointAlarming::uncommandedStateChange));
 
-    manager.setAlarmAcknowledged(1, CtiTablePointAlarming::uncommandedStateChange);//This is not the alarm!
+    delete manager.setAlarmAcknowledged(1, CtiTablePointAlarming::uncommandedStateChange);//This is not the alarm!
     BOOST_CHECK(manager.isAlarmed(1, CtiTablePointAlarming::commandFailure));
     BOOST_CHECK(manager.isAlarmActive(1, CtiTablePointAlarming::commandFailure));
     BOOST_CHECK(!manager.isAlarmed(1, CtiTablePointAlarming::uncommandedStateChange));
     BOOST_CHECK(!manager.isAlarmActive(1, CtiTablePointAlarming::uncommandedStateChange));
     BOOST_CHECK(manager.isAlarmUnacknowledged(1, CtiTablePointAlarming::commandFailure));
 
-    manager.setAlarmAcknowledged(1, CtiTablePointAlarming::commandFailure);
+    delete manager.setAlarmAcknowledged(1, CtiTablePointAlarming::commandFailure);
     BOOST_CHECK(manager.isAlarmed(1, CtiTablePointAlarming::commandFailure));
     BOOST_CHECK(manager.isAlarmActive(1, CtiTablePointAlarming::commandFailure));
     BOOST_CHECK(!manager.isAlarmUnacknowledged(1, CtiTablePointAlarming::commandFailure));
-    manager.clearAlarms(1);
-    manager.setAlarmActive(1, CtiTablePointAlarming::commandFailure, false);
+    delete manager.clearAlarms(1);
+    delete manager.setAlarmActive(1, CtiTablePointAlarming::commandFailure, false);
     BOOST_CHECK(!manager.isAlarmed(1, CtiTablePointAlarming::commandFailure));
     BOOST_CHECK(!manager.isAlarmActive(1, CtiTablePointAlarming::commandFailure));
     BOOST_CHECK(!manager.isAlarmUnacknowledged(1, CtiTablePointAlarming::commandFailure));
@@ -99,16 +99,16 @@ BOOST_AUTO_TEST_CASE(test_signalmanager_alarming)
     manager.addSignal(testMessage1);
     BOOST_CHECK_EQUAL(manager.entries(), 3);
     BOOST_CHECK_EQUAL(manager.pointMapEntries(), 3);
-    manager.setAlarmActive(1, CtiTablePointAlarming::commandFailure, false);
+    delete manager.setAlarmActive(1, CtiTablePointAlarming::commandFailure, false);
     BOOST_CHECK_EQUAL(manager.entries(), 3);
     BOOST_CHECK_EQUAL(manager.pointMapEntries(), 3);
-    manager.setAlarmAcknowledged(1, CtiTablePointAlarming::commandFailure);
+    delete manager.setAlarmAcknowledged(1, CtiTablePointAlarming::commandFailure);
     BOOST_CHECK_EQUAL(manager.entries(), 2);
     BOOST_CHECK_EQUAL(manager.pointMapEntries(), 2);
-    manager.setAlarmAcknowledged(1, CtiTablePointAlarming::uncommandedStateChange);
+    delete manager.setAlarmAcknowledged(1, CtiTablePointAlarming::uncommandedStateChange);
     BOOST_CHECK_EQUAL(manager.entries(), 2);
     BOOST_CHECK_EQUAL(manager.pointMapEntries(), 2);
-    manager.setAlarmActive(1, CtiTablePointAlarming::uncommandedStateChange, false);
+    delete manager.setAlarmActive(1, CtiTablePointAlarming::uncommandedStateChange, false);
     BOOST_CHECK_EQUAL(manager.entries(), 1);
     BOOST_CHECK_EQUAL(manager.pointMapEntries(), 1);
 }
@@ -139,10 +139,10 @@ BOOST_AUTO_TEST_CASE(test_signalmanager_getters)
     BOOST_CHECK_EQUAL(manager.getConditionTags(1, CtiTablePointAlarming::uncommandedStateChange), TAG_ACTIVE_CONDITION | TAG_UNACKNOWLEDGED_ALARM);
 
     BOOST_CHECK_EQUAL(manager.getTagMask(1),TAG_ACTIVE_CONDITION | TAG_ACTIVE_ALARM | TAG_UNACKNOWLEDGED_ALARM);
-    manager.setAlarmAcknowledged(1, CtiTablePointAlarming::commandFailure, true);
+    delete manager.setAlarmAcknowledged(1, CtiTablePointAlarming::commandFailure, true);
     BOOST_CHECK_EQUAL(manager.getTagMask(1),TAG_ACTIVE_CONDITION | TAG_ACTIVE_ALARM | TAG_UNACKNOWLEDGED_ALARM);
-    manager.setAlarmAcknowledged(1, CtiTablePointAlarming::uncommandedStateChange, true);
-    BOOST_CHECK_EQUAL(manager.getTagMask(1),TAG_ACTIVE_CONDITION | TAG_ACTIVE_ALARM);
+    delete manager.setAlarmAcknowledged(1, CtiTablePointAlarming::uncommandedStateChange, true);
+    BOOST_CHECK_EQUAL(manager.getTagMask(1), TAG_ACTIVE_CONDITION | TAG_ACTIVE_ALARM);
 
     CtiSignalMsg* messagePtr;
     messagePtr = manager.getAlarm(1, CtiTablePointAlarming::commandFailure);
@@ -190,7 +190,7 @@ BOOST_AUTO_TEST_CASE(test_signalmanager_getters)
         tempMulti = NULL;
     }
 
-    manager.setAlarmActive(1, CtiTablePointAlarming::uncommandedStateChange, false);
+    delete manager.setAlarmActive(1, CtiTablePointAlarming::uncommandedStateChange, false);
     BOOST_CHECK_EQUAL(manager.entries(), 1);
     BOOST_CHECK_EQUAL(manager.pointMapEntries(), 1);
 
@@ -207,6 +207,7 @@ BOOST_AUTO_TEST_CASE(test_signalmanager_getters)
     if( tempMulti != NULL )
     {
         BOOST_CHECK_EQUAL(tempMulti->getCount(), 0);
+        delete tempMulti;
     }
 
 }

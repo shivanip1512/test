@@ -52,13 +52,14 @@ CtiCCSpecialAreasMsg::CtiCCSpecialAreasMsg(const CtiCCSpecialAreasMsg& ccSpecial
 
 CtiCCSpecialAreasMsg::~CtiCCSpecialAreasMsg()
 {
-    if( _ccSpecialAreas != NULL &&
-            _ccSpecialAreas->size() > 0 )
+    if( _ccSpecialAreas != NULL )
+    {
+        if( _ccSpecialAreas->size() > 0 )
         {
             delete_container(*_ccSpecialAreas);
-            _ccSpecialAreas->clear();
-            delete _ccSpecialAreas;
         }
+        delete _ccSpecialAreas;
+    }
 }
 
 CtiMessage* CtiCCSpecialAreasMsg::replicateMessage() const

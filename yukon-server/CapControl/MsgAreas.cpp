@@ -61,13 +61,14 @@ CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(const CtiCCGeoAreasMsg& ccGeoAreasMsg) : Inhe
 
 CtiCCGeoAreasMsg::~CtiCCGeoAreasMsg()
 {
-    if( _ccGeoAreas != NULL &&
-            _ccGeoAreas->size() > 0 )
+    if( _ccGeoAreas != NULL )
+    {
+        if( _ccGeoAreas->size() > 0 )
         {
             delete_container(*_ccGeoAreas);
-            _ccGeoAreas->clear();
-            delete _ccGeoAreas;
         }
+        delete _ccGeoAreas;
+    }
 }
 
 CtiMessage* CtiCCGeoAreasMsg::replicateMessage() const

@@ -27,6 +27,8 @@ class IM_EX_CTIBASE AttributeService
         // sacrilege
         virtual LitePoint getLitePointById(int pointId);
 
+        virtual ~AttributeService() = default;
+
     private:
 
         std::vector<LitePoint> getLitePointsById(const std::vector<int>& pointIds);

@@ -6,6 +6,8 @@
 #include "GangOperatedVoltageRegulator.h"
 #include "mgr_config.h"
 
+#include "capcontrol_test_helpers.h"
+
 using Cti::CapControl::VoltageRegulatorManager;
 using Cti::CapControl::GangOperatedVoltageRegulator;
 
@@ -31,53 +33,13 @@ struct ivvc_test_environment
 
     IVVCStrategy    strategy;
 
-    struct test_DeviceConfig : public Cti::Config::DeviceConfig
-    {
-        using Cti::Config::DeviceConfig::insertValue;
-        using Cti::Config::DeviceConfig::findValue;
-        using Cti::Config::DeviceConfig::addCategory;
-    };
+    boost::shared_ptr<Cti::Test::test_DeviceConfig>    fixtureConfig;
 
-    boost::shared_ptr<test_DeviceConfig>    fixtureConfig;
-
-    struct test_ConfigManager : Cti::ConfigManager
-    {
-        const Cti::Config::DeviceConfigSPtr config;
-
-        test_ConfigManager( Cti::Config::DeviceConfigSPtr config_ )
-            : config( config_ )
-        {
-        }
-
-        virtual Cti::Config::DeviceConfigSPtr fetchConfig( const long deviceID, const DeviceTypes deviceType )
-        {
-            return config;
-        }
-    };
-
-    class Override_ConfigManager
-    {
-        std::auto_ptr<Cti::ConfigManager> _oldConfigManager;
-
-    public:
-
-        Override_ConfigManager(Cti::Config::DeviceConfigSPtr config)
-        {
-            _oldConfigManager = Cti::gConfigManager;
-
-            Cti::gConfigManager.reset(new test_ConfigManager(config));
-        }
-
-        ~Override_ConfigManager()
-        {
-            Cti::gConfigManager = _oldConfigManager;
-        }
-    }
-    overrideConfigManager;
+    Cti::Test::Override_ConfigManager overrideConfigManager;
 
     ivvc_test_environment()
         :   strategy( PointDataRequestFactoryPtr( new PointDataRequestFactory ) ),
-            fixtureConfig( new test_DeviceConfig ),
+            fixtureConfig( new Cti::Test::test_DeviceConfig ),
             overrideConfigManager( fixtureConfig )
     {
         fixtureConfig->insertValue( "voltageControlMode",  "DIRECT_TAP" );

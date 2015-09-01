@@ -73,11 +73,12 @@ CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(const CtiCCSubstationBusMsg& substa
 
 CtiCCSubstationBusMsg::~CtiCCSubstationBusMsg()
 {
-    if( _ccSubstationBuses != NULL &&
-        _ccSubstationBuses->size() > 0 )
+    if( _ccSubstationBuses != NULL )
     {
-        delete_container(*_ccSubstationBuses);
-        _ccSubstationBuses->clear();
+        if( _ccSubstationBuses->size() > 0 )
+        {
+            delete_container(*_ccSubstationBuses);
+        }
         delete _ccSubstationBuses;
     }
 }

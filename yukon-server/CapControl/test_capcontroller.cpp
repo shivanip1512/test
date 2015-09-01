@@ -4,10 +4,24 @@
 #include "ccunittestutil.h"
 #include "msg_pcreturn.h"
 
+#include "capcontrol_test_helpers.h"
+
 using namespace Cti::Test::CapControl;
 using namespace Cti::CapControl;
 
-BOOST_AUTO_TEST_SUITE( test_capcontroller )
+struct overrideGlobals
+{
+    boost::shared_ptr<Cti::Test::test_DeviceConfig> fixtureConfig;
+    Cti::Test::Override_ConfigManager overrideConfigManager;
+
+    overrideGlobals() :
+        fixtureConfig(new Cti::Test::test_DeviceConfig),
+        overrideConfigManager(fixtureConfig)
+    {
+    }
+};
+
+BOOST_FIXTURE_TEST_SUITE( test_capcontroller, overrideGlobals )
 
 struct test_AttributeService : AttributeService
 {
@@ -245,6 +259,9 @@ BOOST_AUTO_TEST_CASE( test_porterReturnMsg_oneway_device )
             BOOST_CHECK_EQUAL( bank->getControlStatus(), CtiCCCapBank::CloseQuestionable );
         }
     }
+
+    delete substation;
+    delete area;
 }
 
 BOOST_AUTO_TEST_SUITE_END()

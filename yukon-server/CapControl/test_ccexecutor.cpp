@@ -6,10 +6,25 @@
 
 #include <boost/ptr_container/ptr_vector.hpp>
 
+#include "capcontrol_test_helpers.h"
+
 using namespace Cti::Test::CapControl;
 using namespace Cti::CapControl;
 
-BOOST_AUTO_TEST_SUITE( test_ccexecutor )
+struct overrideGlobals
+{
+    boost::shared_ptr<Cti::Test::test_DeviceConfig>    fixtureConfig;
+
+    Cti::Test::Override_ConfigManager overrideConfigManager;
+
+    overrideGlobals() :
+        fixtureConfig(new Cti::Test::test_DeviceConfig),
+        overrideConfigManager(fixtureConfig)
+    {
+    }
+};
+
+BOOST_FIXTURE_TEST_SUITE( test_ccexecutor, overrideGlobals )
 
 struct test_CtiCapController : CtiCapController
 {
@@ -454,6 +469,9 @@ BOOST_AUTO_TEST_CASE( test_commands )
         BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
     }
     cc->pilMultiMsgs.clear();
+
+    delete substation;
+    delete area;
 }
 
 BOOST_AUTO_TEST_SUITE_END()

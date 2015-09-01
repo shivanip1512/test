@@ -28,15 +28,15 @@ private:
 
     readers_writer_lock_t         _lock;
 
-    void loadAllConfigs();
+    virtual void loadAllConfigs();
     void loadConfig( const long configID );
     void executeLoadConfig( const std::string & sql );
 
-    void loadAllCategoryItems();
+    virtual void loadAllCategoryItems();
     void loadCategoryItems( const long categoryID );
     void executeLoadItems( const std::string & sql );
 
-    void loadAllDeviceAssignments();
+    virtual void loadAllDeviceAssignments();
     void loadDeviceAssignment( const long deviceID );
     void executeLoadDeviceAssignments( const std::string & sql );
 

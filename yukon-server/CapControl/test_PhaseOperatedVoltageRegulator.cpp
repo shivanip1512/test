@@ -7,6 +7,8 @@
 #include "std_helper.h"
 #include "RegulatorEvents.h"
 
+#include "capcontrol_test_helpers.h"
+
 // Objects
 using Cti::CapControl::VoltageRegulator;
 using Cti::CapControl::VoltageRegulatorManager;
@@ -101,55 +103,15 @@ struct phase_operated_voltage_regulator_fixture_core
     }
     attributes;
 
-    struct test_DeviceConfig : public Cti::Config::DeviceConfig
-    {
-        using Cti::Config::DeviceConfig::insertValue;
-        using Cti::Config::DeviceConfig::findValue;
-        using Cti::Config::DeviceConfig::addCategory;
-    };
+    boost::shared_ptr<Cti::Test::test_DeviceConfig>    fixtureConfig;
 
-    boost::shared_ptr<test_DeviceConfig>    fixtureConfig;
-
-    struct test_ConfigManager : Cti::ConfigManager
-    {
-        const Cti::Config::DeviceConfigSPtr config;
-
-        test_ConfigManager( Cti::Config::DeviceConfigSPtr config_ )
-            : config( config_ )
-        {
-        }
-
-        virtual Cti::Config::DeviceConfigSPtr fetchConfig( const long deviceID, const DeviceTypes deviceType )
-        {
-            return config;
-        }
-    };
-
-    class Override_ConfigManager
-    {
-        std::auto_ptr<Cti::ConfigManager> _oldConfigManager;
-
-    public:
-
-        Override_ConfigManager(Cti::Config::DeviceConfigSPtr config)
-        {
-            _oldConfigManager = Cti::gConfigManager;
-
-            Cti::gConfigManager.reset(new test_ConfigManager(config));
-        }
-
-        ~Override_ConfigManager()
-        {
-            Cti::gConfigManager = _oldConfigManager;
-        }
-    }
-    overrideConfigManager;
+    Cti::Test::Override_ConfigManager overrideConfigManager;
 
     VoltageRegulatorManager::SharedPtr  regulator;
 
     phase_operated_voltage_regulator_fixture_core()
         :   regulator( new PhaseOperatedVoltageRegulator ),
-            fixtureConfig( new test_DeviceConfig ),
+            fixtureConfig( new Cti::Test::test_DeviceConfig ),
             overrideConfigManager( fixtureConfig )
     {
         regulator->setPaoId( 23456 );
