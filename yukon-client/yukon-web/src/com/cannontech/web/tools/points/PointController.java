@@ -19,15 +19,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.common.bulk.model.StatusPointUpdateType;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogControlType;
 import com.cannontech.database.data.point.AnalogPoint;
@@ -51,7 +55,6 @@ import com.cannontech.web.common.TimeIntervals;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
 import com.cannontech.web.editor.point.StaleData;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.tools.points.model.PointModel;
 import com.cannontech.web.tools.points.service.PointEditorService;
 import com.cannontech.web.tools.points.service.PointEditorService.AttachedException;
@@ -66,6 +69,7 @@ public class PointController {
     @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
     @Autowired private PointEditorService pointEditorService;
     @Autowired private PointValidator pointValidator;
+    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private StateDao stateDao;
     @Autowired private UnitMeasureDao unitMeasureDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
@@ -91,8 +95,9 @@ public class PointController {
     }
 
     @RequestMapping("/points/{type}/create")
-    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String create(@PathVariable String type, @RequestParam int parentId, YukonUserContext userContext) {
+
+        verifyRoles(userContext.getYukonUser());
 
         int pointType = PointTypes.getType(type);
 
@@ -198,41 +203,46 @@ public class PointController {
     public static class CalcStatusPointModel extends PointModel<CalcStatusPoint> {}
 
     @RequestMapping(value = "/points/Analog", method = RequestMethod.POST)
-    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String saveAnalog(@ModelAttribute("pointModel") AnalogPointModel pointModel, BindingResult result,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes, YukonUserContext userContext) {
+
+        verifyRoles(userContext.getYukonUser());
 
         return save(pointModel, result, redirectAttributes);
     }
 
     @RequestMapping(value = "/points/PulseAccumulator", method = RequestMethod.POST)
-    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String saveAccumulator(AccumulatorPointModel pointModel, BindingResult result,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes, YukonUserContext userContext) {
+
+        verifyRoles(userContext.getYukonUser());
 
         return save(pointModel, result, redirectAttributes);
     }
 
     @RequestMapping(value = "/points/CalcAnalog", method = RequestMethod.POST)
-    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String saveCalcAnalog(@ModelAttribute("pointModel") CalculatedPointModel pointModel, BindingResult result,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes, YukonUserContext userContext) {
+
+        verifyRoles(userContext.getYukonUser());
 
         return save(pointModel, result, redirectAttributes);
     }
 
     @RequestMapping(value = "/points/Status", method = RequestMethod.POST)
-    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String saveStatusAnalog(@ModelAttribute("pointModel") StatusPointModel pointModel, BindingResult result,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes, YukonUserContext userContext) {
+
+        verifyRoles(userContext.getYukonUser());
 
         return save(pointModel, result, redirectAttributes);
     }
 
     @RequestMapping(value = "/points/CalcStatus", method = RequestMethod.POST)
-    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String saveCalcStatusAnalog(@ModelAttribute("pointModel") CalcStatusPointModel pointModel, BindingResult result,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes, YukonUserContext userContext) {
+
+        verifyRoles(userContext.getYukonUser());
 
         return save(pointModel, result, redirectAttributes);
     }
@@ -263,6 +273,8 @@ public class PointController {
     @RequestMapping(value = "/points/{id}", method = RequestMethod.DELETE)
     public String delete(@PathVariable int id, FlashScope flashScope, YukonUserContext userContext) {
 
+        verifyRoles(userContext.getYukonUser());
+
         PointModel pointModel = pointEditorService.getModelForId(id);
         int paoId = pointModel.getPointBase().getPoint().getPaoID();
 
@@ -286,5 +298,19 @@ public class PointController {
         flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".deleteSuccess", pointName));
 
         return "redirect:" + paoDetailUrlHelper.getUrlForPaoDetailPage(pao);
+    }
+
+    /**
+     * Checks if the user has either the DB Editor Role, or the Cap Control Editor role
+     *
+     * @throws NotAuthorizedException if user doesn't have required permissions
+     */
+    private void verifyRoles(LiteYukonUser user) throws NotAuthorizedException {
+        boolean capControlEditor = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
+        boolean dbEditor = rolePropertyDao.checkRole(YukonRole.DATABASE_EDITOR, user);
+
+        if (!capControlEditor && !dbEditor) {
+            throw new NotAuthorizedException("User not allowed to edit points");
+        }
     }
 }
