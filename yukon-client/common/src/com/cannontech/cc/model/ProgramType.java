@@ -7,7 +7,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.cannontech.core.dao.support.Identifiable;
 
-public class ProgramType implements Identifiable, Serializable {
+public class ProgramType implements Identifiable, Serializable, Comparable<ProgramType> {
     private String name;
     private String strategy;
     private Integer id;
@@ -29,6 +29,7 @@ public class ProgramType implements Identifiable, Serializable {
         this.strategy = strategy;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
@@ -65,6 +66,11 @@ public class ProgramType implements Identifiable, Serializable {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(id).toHashCode();
+    }
+
+    @Override
+    public int compareTo(ProgramType other) {
+        return name.compareTo(other.name);
     }
 
 }

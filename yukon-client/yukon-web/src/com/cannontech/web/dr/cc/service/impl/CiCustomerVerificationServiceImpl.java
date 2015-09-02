@@ -147,7 +147,7 @@ public class CiCustomerVerificationServiceImpl implements CiCustomerVerification
     }
     
     private void appendExclusion(List<Exclusion> exclusions, Exclusion exclusion) {
-        if (exclusion != null & exclusions != null) {
+        if (exclusion != null && exclusions != null) {
             exclusions.add(exclusion);
         }
     }

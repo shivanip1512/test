@@ -8,12 +8,15 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.IntFunction;
+import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
 import javax.faces.model.DataModel;
@@ -76,7 +79,6 @@ import com.cannontech.cc.service.CustomerLMProgramService;
 import com.cannontech.cc.service.CustomerPointService;
 import com.cannontech.cc.service.EconomicService;
 import com.cannontech.cc.service.EconomicStrategy;
-import com.cannontech.cc.service.EventService;
 import com.cannontech.cc.service.GroupService;
 import com.cannontech.cc.service.NotificationStatus;
 import com.cannontech.cc.service.NotificationStrategy;
@@ -101,14 +103,10 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.customer.CICustomerPointType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.message.util.ConnectionException;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.cc.EventDetailHelper;
-import com.cannontech.web.cc.EventListBean;
-import com.cannontech.web.cc.methods.DetailAccountingBean;
-import com.cannontech.web.cc.methods.DetailEconomicBean;
-import com.cannontech.web.cc.methods.DetailNotificationBean;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dr.cc.model.CiEventStatus;
 import com.cannontech.web.dr.cc.model.CiEventType;
@@ -122,7 +120,7 @@ import com.cannontech.web.dr.cc.service.CiEventCreationService;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.tools.trends.TrendUtils;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.cannontech.yukon.IDatabaseCache;
 
 //TODO: JAVA8 - Replace Filters and Functions with lambdas
 @Controller
@@ -143,16 +141,10 @@ public class CcHomeController {
     @Autowired private CustomerPointService customerPointService;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
-    @Autowired private DetailEconomicBean detailEconomicBean;
-    @Autowired private DetailAccountingBean detailAccountingBean;
-    @Autowired private DetailNotificationBean detailNotificationBean;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private EconomicEventDao economicEventDao;
     @Autowired private EconomicEventParticipantDao economicEventParticipantDao;
     @Autowired private EconomicService economicService;
-    @Autowired private EventDetailHelper eventDetailHelper;
-    @Autowired private EventListBean eventListBean;
-    @Autowired private EventService eventService;
     @Autowired private GraphDao graphDao;
     @Autowired private GroupBeanValidator groupBeanValidator;
     @Autowired private GroupCustomerNotifDao groupCustomerNotifDao;
@@ -163,6 +155,7 @@ public class CcHomeController {
     @Autowired private ProgramParameterDao programParameterDao;
     @Autowired private ProgramService programService;
     @Autowired private StrategyFactory strategyFactory;
+    @Autowired private IDatabaseCache serverDatabaseCache;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     @InitBinder
@@ -171,7 +164,7 @@ public class CcHomeController {
     }
     
     @RequestMapping("/cc/home")
-    public String home(ModelMap model, YukonUserContext userContext, Integer trendId) throws JsonProcessingException {
+    public String home(ModelMap model, YukonUserContext userContext, Integer trendId) {
         
         EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
         
@@ -184,7 +177,7 @@ public class CcHomeController {
         Collections.reverse(recentEvents);
         
         //Map events by type
-        Map<CiEventStatus, List<BaseEvent>> events = new HashMap<>();
+        Map<CiEventStatus, List<BaseEvent>> events = new LinkedHashMap<>();
         events.put(CiEventStatus.CURRENT, currentEvents);
         events.put(CiEventStatus.PENDING, pendingEvents);
         events.put(CiEventStatus.RECENT, recentEvents);
@@ -201,6 +194,17 @@ public class CcHomeController {
                 allPrograms.add(program);
             }
         }
+        
+        Collections.sort(allPrograms, new Comparator<Program>() {
+            @Override
+            public int compare(Program one, Program two) {
+                int typeComparison = one.getProgramType().compareTo(two.getProgramType());
+                if (typeComparison != 0) {
+                    return typeComparison;
+                }
+                return one.getName().compareTo(two.getName());
+            }
+        });
         model.addAttribute("programs", allPrograms);
         
         //Set up trends
@@ -471,6 +475,10 @@ public class CcHomeController {
             bindingResult.reject("yukon.web.modules.dr.cc.init.error.noAdvancedBuyThrough");
             setUpConfirmationModel(model, event, programId);
             return "dr/cc/confirmation.jsp";
+        } catch (ConnectionException e) {
+            bindingResult.reject("yukon.web.modules.dr.cc.init.error.noConnection");
+            setUpConfirmationModel(model, event, programId);
+            return "dr/cc/confirmation.jsp";
         }
     }
     
@@ -518,6 +526,7 @@ public class CcHomeController {
         return "dr/cc/history.jsp";
     }
     
+    //TODO: test
     @RequestMapping("/cc/program/{programId}/event/{eventId}/cancel")
     public String cancelEvent(@PathVariable int programId,
                               @PathVariable int eventId,
@@ -548,6 +557,7 @@ public class CcHomeController {
         return "redirect:/dr/cc/program/" + programId + "/event/" + eventId;
     }
     
+    //TODO: test 
     @RequestMapping("/cc/program/{programId}/event/{eventId}/suppress")
     public String suppressEvent(@PathVariable int programId,
                                 @PathVariable int eventId,
@@ -562,6 +572,7 @@ public class CcHomeController {
         return "redirect:/dr/cc/program/" + programId + "/event/" + eventId;
     }
     
+    //TODO: test
     @RequestMapping("/cc/program/{programId}/event/{eventId}/revise")
     public String reviseEvent(ModelMap model,
                               @PathVariable int programId,
@@ -588,6 +599,7 @@ public class CcHomeController {
         }
     }
     
+    //TODO: test
     @RequestMapping("/cc/program/{programId}/event/{eventId}/reviseComplete")
     public String reviseEventComplete(@PathVariable int programId,
                                       @PathVariable int eventId,
@@ -613,6 +625,7 @@ public class CcHomeController {
         return "dr/cc/program/" + programId + "/event/" + eventId;
     }
     
+    //TODO: test
     @RequestMapping("/cc/program/{programId}/event/{eventId}/extend")
     public String extendEvent(ModelMap model,
                               YukonUserContext userContext,
@@ -652,6 +665,7 @@ public class CcHomeController {
         return "dr/cc/init.jsp";
     }
     
+    //TODO: test
     @RequestMapping("/cc/program/{programId}/event/{eventId}/adjust")
     public String adjustEvent(ModelMap model,
                               @ModelAttribute("event") CiInitEventModel event, 
@@ -676,6 +690,7 @@ public class CcHomeController {
         return "dr/cc/init.jsp";
     }
     
+    //TODO: test
     @RequestMapping("/cc/program/{programId}/event/{eventId}/completeEventAdjustment")
     public String completeAdjustEvent(LiteYukonUser user,
                                       @ModelAttribute("event") CiInitEventModel event, 
@@ -695,6 +710,7 @@ public class CcHomeController {
         return "redirect:/dr/cc/program/" + programId + "/event/" + eventId + "/detail";
     }
     
+    //TODO: test
     //A.K.A "Split" event
     @RequestMapping("/cc/program/{programId}/event/{eventId}/remove")
     public String removeEvent(ModelMap model,
@@ -735,6 +751,7 @@ public class CcHomeController {
         return "dr/cc/customerVerification.jsp";
     }
     
+    //TODO: test
     @RequestMapping("/cc/program/{programId}/event/{eventId}/split")
     public String splitEvent(LiteYukonUser user,
                              @ModelAttribute("event") CiInitEventModel event, 
@@ -785,6 +802,8 @@ public class CcHomeController {
         
         String tz = userContext.getTimeZone().getDisplayName();
         model.addAttribute("tz", tz);
+        
+        model.addAttribute("program", event.getProgram());
         
         String programType = event.getProgram().getProgramType().getName();
         model.addAttribute("programType", programType);
@@ -1087,7 +1106,7 @@ public class CcHomeController {
             @PathVariable int eventId,
             @PathVariable int revision,
             HttpServletRequest request) {
-        return economicDetail(model, userContext, 0, programId, eventId, revision, request);
+        return economicDetail(model, userContext, programId, eventId, revision, request);
     }
     
     @RequestMapping("/cc/program/{programId}/event/{eventId}/detail")
@@ -1105,7 +1124,7 @@ public class CcHomeController {
         case 3:
             return accountingDetail(model, userContext, programTypeId, eventId);
         case 4:
-            return economicDetail(model, userContext, programTypeId, programId, eventId, -1, request);
+            return economicDetail(model, userContext, programId, eventId, -1, request);
         default:
             throw new IllegalArgumentException("Invalid program type id: " + programTypeId);
         }
@@ -1125,12 +1144,12 @@ public class CcHomeController {
         model.addAttribute("duration", acctEvent.getDuration());
         
         Program acctProgram = acctEvent.getProgram();
+        model.addAttribute("program", acctProgram);
+        
         AccountingStrategy strategy = (AccountingStrategy) strategyFactory.getStrategy(acctProgram);
         List<AccountingEventParticipant> eventNotifications = strategy.getParticipants(acctEvent);
         model.addAttribute("eventNotifications", eventNotifications);
-        
-        model.addAttribute("programType", acctEvent.getProgram().getProgramType().getName());
-        model.addAttribute("programName", acctEvent.getProgram().getName());
+
         model.addAttribute("affectedCustomers", composeEventHeading(eventHeadingBase, userContext, "accounting_affected_customers"));
         
         return "dr/cc/detail.jsp";
@@ -1157,12 +1176,11 @@ public class CcHomeController {
                 "ccurtEvent_heading_time",
                 "programState"};
         
-        List<String> notificationTableHead = assembleHeading(userContext, companyHeadingBase, headingSuffixes);;
+        List<String> notificationTableHead = assembleHeading(userContext, companyHeadingBase, headingSuffixes);
         model.addAttribute("notificationTableHead", notificationTableHead);
         
         Program program = curtailmentEvent.getProgram();
-        model.addAttribute("programType", program.getProgramType().getName());
-        model.addAttribute("programName", program.getName());
+        model.addAttribute("program", program);
         
         LiteYukonUser user = userContext.getYukonUser();
         NotificationStrategy notifStrategy = (NotificationStrategy) strategyFactory.getStrategy(program);
@@ -1184,7 +1202,6 @@ public class CcHomeController {
     
     private String economicDetail(ModelMap model,
             YukonUserContext userContext,
-            Integer programTypeId,
             int programId,
             int eventId,
             int revisionNumber,
@@ -1287,9 +1304,6 @@ public class CcHomeController {
         model.addAttribute("tableData", tableData);
         model.addAttribute("pricingTableTotals", pricingTableTotals);
         
-        model.addAttribute("programType", event.getProgram().getProgramType().getName());
-        model.addAttribute("programName", event.getProgram().getName());
-        
         model.addAttribute("economicDetail", "yes");
         model.addAttribute("legend", composeEventHeading(companyHeadingBase, userContext, "ccurtEvent_pricing_legend"));
         Program program = programService.getProgramById(programId);
@@ -1316,7 +1330,7 @@ public class CcHomeController {
     }
     
     @RequestMapping("/cc/customerList")
-    public String customerList (ModelMap model, YukonUserContext userContext) {
+    public String customerList(ModelMap model, YukonUserContext userContext) {
         
         EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
         List<CICustomerStub> customerList = customerPointService.getCustomers(energyCompany);
@@ -1353,18 +1367,35 @@ public class CcHomeController {
     @RequestMapping("/cc/customerSave/{customerId}")
     @Transactional
     public String customerSave(@PathVariable int customerId,
-                               @ModelAttribute CustomerModel customerModel, 
-                               BindingResult bindingResult,
+                               @ModelAttribute CustomerModel customerModel,
                                FlashScope flash) {
         
         CICustomerStub customer = customerPointService.getCustomer(customerId);
         customerPointService.savePointValues(customer, customerModel.getPointValues());
         
-        List<Integer> activeProgramIds = new ArrayList<>();
-        for(ProgramPaoModel model : customerModel.getActivePrograms()) {
-            activeProgramIds.add(model.getPaoId());
-        }
-        List<LiteYukonPAObject> activeProgramPaos = paoDao.getLiteYukonPaos(activeProgramIds);
+        //TODO Java8
+        /*
+        List<LiteYukonPAObject> activeProgramPaos = customerModel.getActivePrograms()
+                .stream()
+                .mapToInt(model -> model.getPaoId())
+                .mapToObj(paoId -> serverDatabaseCache.getAllPaosMap().get(paoId))
+                .collect(Collectors.toList());
+         */
+        List<LiteYukonPAObject> activeProgramPaos = customerModel.getActivePrograms()
+                .stream()
+                .mapToInt(new ToIntFunction<ProgramPaoModel>() {
+                    @Override
+                    public int applyAsInt(ProgramPaoModel model) {
+                        return model.getPaoId();
+                    }
+                })
+                .mapToObj(new IntFunction<LiteYukonPAObject>() {
+                    @Override
+                    public LiteYukonPAObject apply(int paoId) {
+                        return serverDatabaseCache.getAllPaosMap().get(paoId);
+                    }
+                })
+                .collect(Collectors.toList());
         
         customerLMProgramService.saveProgramList(customer, activeProgramPaos);
         
@@ -1374,8 +1405,7 @@ public class CcHomeController {
     }
     
     @RequestMapping("/cc/customerDetail/{customerId}/createPoint/{pointType}")
-    public String customerCreatePoint(ModelMap model,
-                                      @PathVariable int customerId, 
+    public String customerCreatePoint(@PathVariable int customerId, 
                                       @PathVariable CICustomerPointType pointType,
                                       FlashScope flash) {
         
