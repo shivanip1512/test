@@ -104,6 +104,9 @@ $(function() {
                 menu.append(items.join(''));
                 target.find('.icon-spinner').removeClass('icon-spinner').addClass('icon-cog');
                 positionDropdownMenu(menu, target);
+            }).fail(function(data){
+                target.find('.icon-cog').removeClass('icon-cog').removeClass('icon-spinner');
+                yukon.ui.alertError(yg.text.ajaxError);
             });
         }
         return false;
