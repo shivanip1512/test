@@ -551,6 +551,9 @@
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.play.hoverText">Run Multiple Commands</entry>
     <entry key="yukon.web.modules.capcontrol.play.label">Run Commands</entry>
     
+    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.noScheduleAvaialable_play.hoverText">No schedules available</entry>
+    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.noScheduleAvaialable_play.label">Run Commands</entry>
+    
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.runCommand.hoverText">Run Command</entry>
     
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.stopVerification.hoverText">Stop Verification</entry>
@@ -561,11 +564,17 @@
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.stop.hoverText">Stop Multiple Commands</entry>
     <entry key="yukon.web.modules.capcontrol.stop.label">Stop Commands</entry>
     
+    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.noScheduleAvaialable_stop.hoverText">No schedules available</entry>
+    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.noScheduleAvaialable_stop.label">Stop Commands</entry>
+    
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.stopDisabled.hoverText">You do not have permission to perform this action.</entry>
     <entry key="yukon.web.modules.capcontrol.stopDisabled.label">Stop Commands</entry>
     
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.add.hoverText">Create a new schedule assignment</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.add.label">New Assignment</entry>
+    
+    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.noScheduleAvaialable_add.hoverText">No schedules available</entry>
+    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.noScheduleAvaialable_add.label">New Assignment</entry>
     
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.addDisabled.hoverText">You do not have permission to perform this action.</entry>
     <entry key="yukon.web.modules.capcontrol.addDisabled.label">New Schedule Assignment </entry>
