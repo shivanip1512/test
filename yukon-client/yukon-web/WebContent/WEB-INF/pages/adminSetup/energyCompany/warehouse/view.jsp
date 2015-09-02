@@ -7,8 +7,8 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:standardPage module="adminSetup" page="warehouse.${mode}">
-    
         <span class="meta">
+        <spring:escapeBody htmlEscape="true">${warehouseDto.warehouse.warehouseName}</spring:escapeBody></br>
             <tags:liteAddress address="${warehouseDto.address}"/>
         </span>
         <br/>
