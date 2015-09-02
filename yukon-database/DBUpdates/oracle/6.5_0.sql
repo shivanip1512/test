@@ -67,10 +67,8 @@ MODIFY SendOutOfService CHAR(1) NOT NULL;
 /* End YUK-14537 */
 
 /* Start YUK-14474 */
-UPDATE GlobalSetting 
-SET Value = 'eaton_logo.png'
-WHERE Name = 'WEB_LOGO_URL'
-AND Value = 'CannonLogo.gif';
+DELETE FROM GlobalSetting 
+WHERE Name = 'WEB_LOGO_URL';
 /* End YUK-14474 */
 
 /* Start YUK-14433 */
