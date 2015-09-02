@@ -48,7 +48,7 @@
             </li>
         </c:if>
         <li class="PASSWORD_DOES_NOT_MEET_POLICY_QUALITY">
-            <cti:icon icon="icon-tick vh"/>
+            <cti:icon icon=""/>
             <span><i:inline key="${keyBase}quality.description" 
                 arguments="${passwordPolicy.passwordQualityCheck}"/>
             </span>

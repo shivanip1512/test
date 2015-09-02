@@ -11,10 +11,50 @@ yukon.ui.passwords = (function () {
     
     'use strict';
     
-    var 
-    _initialized = false,
+    var indicatePassFail = function (data) {
+        
+        $('.password-manager .icon-tick').removeClass('vh');
+        
+        var errors = ['policy_errors', 'rule_errors'],
+            validations = ['policy_validations', 'rule_validations'],
+            i, j;
+        for (i = 0; i < validations.length; i++) {
+            if (data[validations[i]]) {
+                for (j = 0; j < data[validations[i]].length; j++) {
+                    console.debug("validations:" + data[errors[i]][j]);
+                    if(data[validations[i]][j] === "PASSWORD_DOES_NOT_MEET_POLICY_QUALITY") {
+                        $('.' + data[validations[i]][j] + ' .icon').addClass('icon-tick');
+                        $('.' + data[validations[i]][j] + ' .icon').removeClass('icon-cross');
+                    }
+                    else {
+                        $('.' + data[validations[i]][j] + ' .icon')
+                        .removeClass('vh');    
+                    }
+                    
+                }
+            }
+        }
+        
+        for (i = 0; i < errors.length; i++) {
+            if (data[errors[i]]) {
+                for (j = 0; j < data[errors[i]].length; j++) {
+                    console.debug("Errors:" + data[errors[i]][j]);
+                    if(data[errors[i]][j] === "PASSWORD_DOES_NOT_MEET_POLICY_QUALITY") {
+                        $('.' + data[errors[i]][j] + ' .icon').removeClass('icon-tick');
+                        $('.' + data[errors[i]][j] + ' .icon').addClass('icon-cross');
+                    }
+                    else {
+                        $('.' + data[errors[i]][j] + ' .icon').addClass('vh');    
+                    }    
+                    
+                    
+                }
+            }
+        }
+    };
+   var _initialized = false;
     
-    mod = {
+   var mod = {
         
         init: function () {
             
@@ -41,10 +81,10 @@ yukon.ui.passwords = (function () {
                     },
                     dataType: 'json'
                 }).done(function (data) {
-                    mod.indicatePassFail(data);
+                    indicatePassFail(data);
                     return false;
                 }).fail(function (err) {
-                    mod.indicatePassFail($.parseJSON(err.responseText));
+                    indicatePassFail($.parseJSON(err.responseText));
                     return false;
                 });
                 
@@ -71,33 +111,7 @@ yukon.ui.passwords = (function () {
             
             $(newPwSelector).trigger('keyup');
         },
-        
-        indicatePassFail: function (data) {
-            
-            $('.password-manager .icon-tick').removeClass('vh');
-            
-            var errors = ['policy_errors', 'rule_errors'],
-                validations = ['policy_validations', 'rule_validations'],
-                i, j;
-            
-            for (i = 0; i < validations.length; i++) {
-                if (data[validations[i]]) {
-                    for (j = 0; j < data[validations[i]].length; j++) {
-                        $('.' + data[validations[i]][j] + ' .icon')
-                        .removeClass('vh');
-                    }
-                }
-            }
-            
-            for (i = 0; i < errors.length; i++) {
-                if (data[errors[i]]) {
-                    for (j = 0; j < data[errors[i]].length; j++) {
-                        $('.' + data[errors[i]][j] + ' .icon').addClass('vh');
-                    }
-                }
-            }
-        }
-        
+
     };
     
     return mod;
