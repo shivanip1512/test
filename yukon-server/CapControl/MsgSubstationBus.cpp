@@ -18,30 +18,27 @@ CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus_vec& buses, unsi
     }
     if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )
     {
-        for (int h=0;h < buses.size(); h++)
+        for( const auto bus : buses )
         {
-            CTILOG_DEBUG(dout, "Sub: "<<((CtiCCSubstationBus*)buses[h])->getPaoName()<<" "<<((CtiCCSubstationBus*)buses[h])->getCurrentVarLoadPointValue()<<" "<<((CtiCCSubstationBus*)buses[h])->getEstimatedVarLoadPointValue() <<" "<<
-                    ((CtiCCSubstationBus*)buses[h])->getStrategy()->getPeakLead()<<" "<<((CtiCCSubstationBus*)buses[h])->getStrategy()->getPeakLag());
+            CTILOG_DEBUG(dout, "Sub: "<<bus->getPaoName()<<" "<<bus->getCurrentVarLoadPointValue()<<" "<<bus->getEstimatedVarLoadPointValue() <<" "<<
+                    bus->getStrategy()->getPeakLead()<<" "<<bus->getStrategy()->getPeakLag());
 
-            CtiFeeder_vec& feeds =   ((CtiCCSubstationBus*)buses[h])->getCCFeeders();
-            for (int hh = 0; hh < feeds.size(); hh++)
+            for( const auto feeder : bus->getCCFeeders() )
             {
-                CTILOG_DEBUG(dout, "  Feed: "<<((CtiCCFeeder*)feeds[hh])->getPaoName()<<" "<<((CtiCCFeeder*)feeds[hh])->getCurrentVarLoadPointValue()<<" "<<((CtiCCFeeder*)feeds[hh])->getEstimatedVarLoadPointValue() <<" " <<
-                        ((CtiCCFeeder*)feeds[hh])->getStrategy()->getPeakLead()<<" "<<((CtiCCFeeder*)feeds[hh])->getStrategy()->getPeakLag());
+                CTILOG_DEBUG(dout, "  Feed: "<<feeder->getPaoName()<<" "<<feeder->getCurrentVarLoadPointValue()<<" "<<feeder->getEstimatedVarLoadPointValue() <<" " <<
+                        feeder->getStrategy()->getPeakLead()<<" "<<feeder->getStrategy()->getPeakLag());
 
-                CtiCCCapBank_SVector& caps =   ((CtiCCFeeder*)feeds[hh])->getCCCapBanks();
-                for (int hhh = 0; hhh < caps.size(); hhh++)
+                for ( const auto cap : feeder->getCCCapBanks() )
                 {
-                    CTILOG_DEBUG(dout, "      Cap: "<<((CtiCCCapBank*)caps[hhh])->getPaoName() <<" "<<
-                            ((CtiCCCapBank*)caps[hhh])->getControlStatusText());
+                    CTILOG_DEBUG(dout, "      Cap: "<<cap->getPaoName() <<" "<<cap->getControlStatusText());
                 }
 
             }
         }
     }
-    for(int i=0;i<buses.size();i++)
+    for( const auto bus : buses )
     {
-        _ccSubstationBuses->push_back(((CtiCCSubstationBus*)buses.at(i))->replicate());
+        _ccSubstationBuses->push_back(bus->replicate());
     }
 }
 
@@ -52,10 +49,9 @@ CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus_set& buses, unsi
     {
         CTILOG_DEBUG(dout, "CtiCCSubstationBusMsg has "<< buses.size()<<" entries.");
     }
-    CtiCCSubstationBus_set::iterator it;
-    for(it = buses.begin(); it != buses.end();it++)
+    for( const auto bus : buses )
     {
-        _ccSubstationBuses->push_back(((CtiCCSubstationBus*)*it)->replicate());
+        _ccSubstationBuses->push_back(bus->replicate());
     }
 }
 
@@ -66,19 +62,24 @@ CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus* substationBus) 
 }
 
 
-CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(const CtiCCSubstationBusMsg& substationBusMsg) : Inherited(), _ccSubstationBuses(NULL), _msgInfoBitMask(0)
+CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(const CtiCCSubstationBusMsg& right)
 {
-    operator=(substationBusMsg);
+    Inherited::operator=(right);
+
+    _msgInfoBitMask = right.getMsgInfoBitMask();
+    _ccSubstationBuses = new CtiCCSubstationBus_vec;
+    for( const auto bus : *right.getCCSubstationBuses() )
+    {
+        _ccSubstationBuses->push_back(bus->replicate());
+    }
 }
 
 CtiCCSubstationBusMsg::~CtiCCSubstationBusMsg()
 {
     if( _ccSubstationBuses != NULL )
     {
-        if( _ccSubstationBuses->size() > 0 )
-        {
-            delete_container(*_ccSubstationBuses);
-        }
+        delete_container(*_ccSubstationBuses);
+
         delete _ccSubstationBuses;
     }
 }
@@ -86,31 +87,6 @@ CtiCCSubstationBusMsg::~CtiCCSubstationBusMsg()
 CtiMessage* CtiCCSubstationBusMsg::replicateMessage() const
 {
     return new CtiCCSubstationBusMsg(*this);
-}
-
-CtiCCSubstationBusMsg& CtiCCSubstationBusMsg::operator=(const CtiCCSubstationBusMsg& right)
-{
-    if( this != &right )
-    {
-        Inherited::operator=(right);
-
-        _msgInfoBitMask = right.getMsgInfoBitMask();
-        if( _ccSubstationBuses != NULL &&
-            _ccSubstationBuses->size() > 0 )
-        {
-            delete_container(*_ccSubstationBuses);
-            _ccSubstationBuses->clear();
-            delete _ccSubstationBuses;
-        }
-        if ( _ccSubstationBuses == NULL )
-            _ccSubstationBuses = new CtiCCSubstationBus_vec;
-        for(int i=0;i<(right.getCCSubstationBuses())->size();i++)
-        {
-            _ccSubstationBuses->push_back(((CtiCCSubstationBus*)(*right.getCCSubstationBuses()).at(i))->replicate());
-        }
-    }
-
-    return *this;
 }
 
 // Static Members

@@ -24,7 +24,7 @@ class CtiCCGeoAreasMsg : public CapControlMessage
 
         virtual CtiMessage* replicateMessage() const;
 
-        CtiCCGeoAreasMsg& operator=(const CtiCCGeoAreasMsg& right);
+        CtiCCGeoAreasMsg& operator=(const CtiCCGeoAreasMsg& right) = delete;
 
         static unsigned long AllAreasSent;
         static unsigned long AreaDeleted;

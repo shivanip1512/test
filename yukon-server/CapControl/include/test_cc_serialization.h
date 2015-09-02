@@ -431,8 +431,7 @@ public:
                 SubstationBusControlMethod,
                 BusOptimizedFeederControlMethod,
                 ManualOnlyControlMethod,
-                TimeOfDayControlMethod,
-                NoControlMethod
+                TimeOfDayControlMethod
         };
 
         GenerateRandom( _maxDailyOperation );

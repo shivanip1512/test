@@ -19,15 +19,15 @@ CtiCCSpecialAreasMsg::CtiCCSpecialAreasMsg(CtiCCSpArea_vec& ccSpecialAreas) : In
     }
     if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )
     {
-        for (int h=0;h < ccSpecialAreas.size(); h++)
+        for( const auto spArea : ccSpecialAreas )
         {
-            CTILOG_DEBUG(dout, "Area: "<<((CtiCCSpecial*)ccSpecialAreas[h])->getPaoName());
+            CTILOG_DEBUG(dout, "Area: "<<spArea->getPaoName());
         }
     }
 
-    for(int i=0;i<ccSpecialAreas.size();i++)
+    for( const auto spArea : ccSpecialAreas )
     {
-        _ccSpecialAreas->push_back((CtiCCSpecial*)(ccSpecialAreas.at(i))->replicate());
+        _ccSpecialAreas->push_back(spArea->replicate());
     }
 }
 
@@ -38,26 +38,30 @@ CtiCCSpecialAreasMsg::CtiCCSpecialAreasMsg(CtiCCSpArea_set& ccSpecialAreas) : In
     {
         CTILOG_DEBUG(dout, "CtiCCSpecialAreasMsg has "<< ccSpecialAreas.size()<<" entries.");
     }
-    CtiCCSpArea_set::iterator it;
-    for(it = ccSpecialAreas.begin(); it != ccSpecialAreas.end(); it++)
+    for( const auto spArea : ccSpecialAreas )
     {
-        _ccSpecialAreas->push_back((CtiCCSpecial*)(*it)->replicate());
+        _ccSpecialAreas->push_back(spArea->replicate());
     }
 }
 
-CtiCCSpecialAreasMsg::CtiCCSpecialAreasMsg(const CtiCCSpecialAreasMsg& ccSpecialAreasMsg) : Inherited(), _ccSpecialAreas(NULL)
+CtiCCSpecialAreasMsg::CtiCCSpecialAreasMsg(const CtiCCSpecialAreasMsg& right)
 {
-    operator=(ccSpecialAreasMsg);
+    Inherited::operator=(right);
+
+    _ccSpecialAreas = new CtiCCSpArea_vec;
+
+    for( const auto spArea : *right.getCCSpecialAreas() )
+    {
+        _ccSpecialAreas->push_back(spArea->replicate());
+    }
 }
 
 CtiCCSpecialAreasMsg::~CtiCCSpecialAreasMsg()
 {
     if( _ccSpecialAreas != NULL )
     {
-        if( _ccSpecialAreas->size() > 0 )
-        {
-            delete_container(*_ccSpecialAreas);
-        }
+         delete_container(*_ccSpecialAreas);
+
         delete _ccSpecialAreas;
     }
 }
@@ -65,29 +69,4 @@ CtiCCSpecialAreasMsg::~CtiCCSpecialAreasMsg()
 CtiMessage* CtiCCSpecialAreasMsg::replicateMessage() const
 {
     return new CtiCCSpecialAreasMsg(*this);
-}
-
-CtiCCSpecialAreasMsg& CtiCCSpecialAreasMsg::operator=(const CtiCCSpecialAreasMsg& right)
-{
-    if( this != &right )
-    {
-        Inherited::operator=(right);
-
-        if( _ccSpecialAreas != NULL &&
-            _ccSpecialAreas->size() > 0 )
-        {
-            delete_container(*_ccSpecialAreas);
-            _ccSpecialAreas->clear();
-            delete _ccSpecialAreas;
-        }
-        if ( _ccSpecialAreas == NULL )
-            _ccSpecialAreas = new CtiCCSpArea_vec;
-        for(int i=0;i<(right.getCCSpecialAreas())->size();i++)
-        {
-
-            _ccSpecialAreas->push_back(((CtiCCSpecial*)(*right.getCCSpecialAreas()).at(i))->replicate());
-        }
-    }
-
-    return *this;
 }

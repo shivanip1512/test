@@ -24,15 +24,15 @@ CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(CtiCCArea_vec& ccGeoAreas, unsigned long bitM
     }
     if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )
     {
-        for (int h=0;h < ccGeoAreas.size(); h++)
+        for( const auto geoArea : ccGeoAreas )
         {
-            CTILOG_DEBUG(dout, "Area: "<<((CtiCCArea*)ccGeoAreas[h])->getPaoName());
+            CTILOG_DEBUG(dout, "Area: "<<geoArea->getPaoName());
         }
     }
 
-    for(int i=0;i<ccGeoAreas.size();i++)
+    for( const auto geoArea : ccGeoAreas )
     {
-        _ccGeoAreas->push_back(((CtiCCArea*)ccGeoAreas.at(i))->replicate());
+        _ccGeoAreas->push_back(geoArea->replicate());
     }
 }
 
@@ -44,29 +44,35 @@ CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(CtiCCArea_set& ccGeoAreas, unsigned long bitM
     {
         CTILOG_DEBUG(dout, "CtiCCGeoAreasMsg has "<< ccGeoAreas.size()<<" entries.");
     }
-    CtiCCArea_set::iterator it;
-    for(it = ccGeoAreas.begin(); it != ccGeoAreas.end(); it++)
+    for( const auto geoArea : ccGeoAreas )
     {
-        _ccGeoAreas->push_back(((CtiCCArea*)*it)->replicate());
+        _ccGeoAreas->push_back(geoArea->replicate());
     }
 }
 
 
 
 
-CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(const CtiCCGeoAreasMsg& ccGeoAreasMsg) : Inherited(), _ccGeoAreas(NULL), _msgInfoBitMask(ccGeoAreasMsg._msgInfoBitMask)
+CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(const CtiCCGeoAreasMsg& right)
 {
-    operator=(ccGeoAreasMsg);
+    _msgInfoBitMask = right._msgInfoBitMask;
+
+    Inherited::operator=(right);
+
+    _ccGeoAreas = new CtiCCArea_vec;
+
+    for( const auto geoArea : *right.getCCGeoAreas() )
+    {
+        _ccGeoAreas->push_back(geoArea->replicate());
+    }
 }
 
 CtiCCGeoAreasMsg::~CtiCCGeoAreasMsg()
 {
     if( _ccGeoAreas != NULL )
     {
-        if( _ccGeoAreas->size() > 0 )
-        {
-            delete_container(*_ccGeoAreas);
-        }
+        delete_container(*_ccGeoAreas);
+
         delete _ccGeoAreas;
     }
 }
@@ -74,29 +80,4 @@ CtiCCGeoAreasMsg::~CtiCCGeoAreasMsg()
 CtiMessage* CtiCCGeoAreasMsg::replicateMessage() const
 {
     return new CtiCCGeoAreasMsg(*this);
-}
-
-CtiCCGeoAreasMsg& CtiCCGeoAreasMsg::operator=(const CtiCCGeoAreasMsg& right)
-{
-    if( this != &right )
-    {
-        Inherited::operator=(right);
-
-        if( _ccGeoAreas != NULL &&
-            _ccGeoAreas->size() > 0 )
-        {
-            delete_container(*_ccGeoAreas);
-            _ccGeoAreas->clear();
-            delete _ccGeoAreas;
-        }
-
-        if ( _ccGeoAreas == NULL )
-            _ccGeoAreas = new CtiCCArea_vec;
-        for(int i=0;i<(right.getCCGeoAreas())->size();i++)
-        {
-            _ccGeoAreas->push_back(((CtiCCArea*)(*right.getCCGeoAreas()).at(i))->replicate());
-        }
-    }
-
-    return *this;
 }

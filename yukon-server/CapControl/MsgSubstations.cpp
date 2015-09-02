@@ -24,10 +24,8 @@ CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_vec& ccSubstations, uns
     }
     if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )
     {
-        for (int h=0;h < ccSubstations.size(); h++)
+        for( const auto station : ccSubstations )
         {
-            CtiCCSubstation* station = (CtiCCSubstation*)ccSubstations[h];
-
             Cti::FormattedList list;
 
             list.add("Substation") << station->getPaoName();
@@ -35,7 +33,7 @@ CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_vec& ccSubstations, uns
             list.add("SAEnabled")  << station->getSaEnabledFlag();
             list.add("SAEnId")     << station->getSaEnabledId();
 
-            for each (long busId in station->getCCSubIds())
+            for( auto busId : station->getCCSubIds() )
             {
                 list.add("SubBus") << busId;
             }
@@ -44,11 +42,10 @@ CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_vec& ccSubstations, uns
         }
     }
 
-    for(int i=0;i<ccSubstations.size();i++)
+    for( const auto station : ccSubstations )
     {
-        _ccSubstations->push_back((CtiCCSubstation*)(ccSubstations.at(i))->replicate());
+        _ccSubstations->push_back(station->replicate());
     }
-
 }
 
 CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_set& ccSubstations, unsigned long bitMask) : Inherited(), _ccSubstations(NULL), _msgInfoBitMask(bitMask)
@@ -58,28 +55,30 @@ CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_set& ccSubstations, uns
     {
         CTILOG_DEBUG(dout, "CtiCCSubstationsMsg has "<< ccSubstations.size()<<" entries.");
     }
-    CtiCCSubstation_set::iterator it;
-    for(it = ccSubstations.begin(); it != ccSubstations.end(); it++)
+    for( const auto station : ccSubstations )
     {
-        _ccSubstations->push_back((CtiCCSubstation*)(*it)->replicate());
+        _ccSubstations->push_back(station->replicate());
     }
-
 }
 
 
-CtiCCSubstationsMsg::CtiCCSubstationsMsg(const CtiCCSubstationsMsg& ccSubstationsMsg) : Inherited(), _ccSubstations(NULL)
+CtiCCSubstationsMsg::CtiCCSubstationsMsg(const CtiCCSubstationsMsg& right)
 {
-    operator=(ccSubstationsMsg);
+    Inherited::operator=(right);
+    _msgInfoBitMask = right.getMsgInfoBitMask();
+    _ccSubstations = new CtiCCSubstation_vec;
+    for( const auto sub : *right.getCCSubstations() )
+    {
+        _ccSubstations->push_back(sub->replicate());
+    }
 }
 
 CtiCCSubstationsMsg::~CtiCCSubstationsMsg()
 {
     if( _ccSubstations != NULL )
     {
-        if( _ccSubstations->size() > 0 )
-        {
-            delete_container(*_ccSubstations);
-        }
+        delete_container(*_ccSubstations);
+
         delete _ccSubstations;
     }
 }
@@ -87,28 +86,4 @@ CtiCCSubstationsMsg::~CtiCCSubstationsMsg()
 CtiMessage* CtiCCSubstationsMsg::replicateMessage() const
 {
     return new CtiCCSubstationsMsg(*this);
-}
-
-CtiCCSubstationsMsg& CtiCCSubstationsMsg::operator=(const CtiCCSubstationsMsg& right)
-{
-    if( this != &right )
-    {
-        Inherited::operator=(right);
-        _msgInfoBitMask = right.getMsgInfoBitMask();
-        if( _ccSubstations != NULL &&
-            _ccSubstations->size() > 0 )
-        {
-            delete_container(*_ccSubstations);
-            _ccSubstations->clear();
-            delete _ccSubstations;
-        }
-        if ( _ccSubstations == NULL )
-            _ccSubstations = new CtiCCSubstation_vec;
-        for(int i=0;i<(right.getCCSubstations())->size();i++)
-        {
-            _ccSubstations->push_back(((CtiCCSubstation*)(*right.getCCSubstations()).at(i))->replicate());
-        }
-    }
-
-    return *this;
 }

@@ -24,7 +24,8 @@ class CtiCCSpecialAreasMsg : public CapControlMessage
 
         virtual CtiMessage* replicateMessage() const;
 
-        CtiCCSpecialAreasMsg& operator=(const CtiCCSpecialAreasMsg& right);
+        CtiCCSpecialAreasMsg& operator=(const CtiCCSpecialAreasMsg& right) = delete;
+
     private:
         CtiCCSpecialAreasMsg() : Inherited(), _ccSpecialAreas(NULL){};
 

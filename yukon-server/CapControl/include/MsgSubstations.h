@@ -25,7 +25,7 @@ class CtiCCSubstationsMsg : public CapControlMessage
 
         virtual CtiMessage* replicateMessage() const;
 
-        CtiCCSubstationsMsg& operator=(const CtiCCSubstationsMsg& right);
+        CtiCCSubstationsMsg& operator=(const CtiCCSubstationsMsg& right) = delete;
 
         // Possible bit mask settings
         static const unsigned long AllSubsSent;

@@ -24,7 +24,7 @@ class CtiCCSubstationBusMsg : public CapControlMessage
         CtiCCSubstationBus_vec* getCCSubstationBuses() const { return _ccSubstationBuses; }
         virtual CtiMessage* replicateMessage() const;
 
-        CtiCCSubstationBusMsg& operator=(const CtiCCSubstationBusMsg& right);
+        CtiCCSubstationBusMsg& operator=(const CtiCCSubstationBusMsg& right) = delete;
 
         // Possible bit mask settings
         static unsigned long AllSubBusesSent;
