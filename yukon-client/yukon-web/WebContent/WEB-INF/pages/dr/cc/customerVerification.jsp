@@ -5,6 +5,7 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <cti:standardPage module="dr" page="cc.init.customerVerification">
 <cti:includeScript link="/resources/js/pages/yukon.dr.curtailment.js"/>

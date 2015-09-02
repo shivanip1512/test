@@ -507,8 +507,9 @@
                 <pages>
                     <page name="cc.detail" type="BASIC">
                         <labelArgument>${event.displayName}</labelArgument>
-                        <labelArgument>${programType}</labelArgument>
-                        <labelArgument>${programName}</labelArgument>
+                        <labelArgument>${program.programType.name}</labelArgument>
+                        <labelArgument>${program.name}</labelArgument>
+                        <labelArgument>${(not empty participant) ? '(' : ''}${(not empty participant) ? participant : ''}${(not empty participant) ? ')' : ''}</labelArgument>
                     </page>
                 </pages>
             </page>

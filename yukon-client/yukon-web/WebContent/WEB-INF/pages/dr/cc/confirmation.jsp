@@ -4,15 +4,23 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <cti:standardPage module="dr" page="cc.init.confirmation">
 
 <div class="stacked-md">
-	<h3><i:inline key=".parameters"/></h3>
 	
 	<spring:hasBindErrors name="event">
-        <form:errors cssClass="error"/><br>
+        <div class="stacked-md">
+            <spring:bind path="event">
+                <c:forEach items="${status.errorMessages}" var="error">
+                    <span class="error">${error}</span>
+                </c:forEach>
+            </spring:bind>
+        </div>
     </spring:hasBindErrors>
+	
+	<h3><i:inline key=".parameters"/></h3>
     
     <tags:nameValueContainer2>
         <c:if test="${not empty event.startTime}">

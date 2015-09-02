@@ -55,6 +55,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.customer.CICustomerPointType;
 import com.cannontech.database.db.web.LMDirectCustomerList;
 import com.cannontech.loadcontrol.LoadManagementService;
+import com.cannontech.message.util.ConnectionException;
 import com.cannontech.web.dr.cc.model.CiEventType;
 import com.cannontech.web.dr.cc.model.CiInitEventModel;
 import com.cannontech.web.dr.cc.service.CiEventCreationService;
@@ -81,7 +82,7 @@ public class CiEventCreationServiceImpl implements CiEventCreationService {
     
     @Override
     @Transactional
-    public int createEvent(CiInitEventModel event) throws EventCreationException {
+    public int createEvent(CiInitEventModel event) throws EventCreationException, ConnectionException {
         if (event.getEventType().isAccounting()) {
             return createAccountingEvent(event);
         } else if (event.getEventType().isNotification()) {
@@ -402,7 +403,7 @@ public class CiEventCreationServiceImpl implements CiEventCreationService {
     }
     
     private void sendNotifications(CiInitEventModel event, Program program, Integer programIdentifier, 
-                                   List<GroupCustomerNotif> customerNotifs, String action) {
+                                   List<GroupCustomerNotif> customerNotifs, String action) throws ConnectionException {
         // Get notification info
         int[] customerIds = new int[customerNotifs.size()];
         for (int i = 0; i < customerNotifs.size(); i++) {
