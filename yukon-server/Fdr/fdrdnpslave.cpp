@@ -470,7 +470,7 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection)
 
 bool DnpSlave::isDnpDeviceId(const long deviceId) const
 {
-    const std::string sql = "select paotype from yukonpaobject where paobjectid=?";
+    const std::string sql = "select type from yukonpaobject where paobjectid=?";
 
     Cti::Database::DatabaseConnection connection;
     Cti::Database::DatabaseReader rdr(connection, sql);
