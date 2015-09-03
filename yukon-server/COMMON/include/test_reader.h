@@ -193,15 +193,17 @@ public:
     //  only implemented for StringRow so far
     RowReader &extractChars(char *destination, unsigned count)
     {
+        auto dest = stdext::make_checked_array_iterator(destination, count);
+
         if( _currentRow < _values.size() && _currentColumn < _columnNames.size() )
         {
             const std::string &s = _values[_currentRow][_currentColumn];
 
             unsigned to_copy = std::min(s.size(), count - 1);
 
-            std::copy(s.begin(), s.begin() + to_copy, destination);
+            std::copy(s.begin(), s.begin() + to_copy, dest);
 
-            std::fill(destination + to_copy, destination + count, 0);
+            std::fill(dest + to_copy, dest + count, 0);
         }
         else
         {

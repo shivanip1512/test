@@ -256,15 +256,17 @@ RowReader &DatabaseReader::extractChars(char *destination, unsigned count)
     {
         SAString s = _command[_currentIndex++].asString();
 
+        auto dest = stdext::make_checked_array_iterator(destination, count);
+
         if( count )
         {
             const unsigned chars_to_extract = std::min<unsigned>(count - 1, s.GetLength());
 
             const char *source = s.GetBuffer(chars_to_extract);
 
-            std::copy(source, source + chars_to_extract, destination);
+            std::copy(source, source + chars_to_extract, dest);
 
-            std::fill(destination + chars_to_extract, destination + count, 0);
+            std::fill(dest + chars_to_extract, dest + count, 0);
         }
 
         return *this;
