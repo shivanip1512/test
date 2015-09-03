@@ -107,25 +107,33 @@
     </div>
     
     <div class="action-area">
-     <c:choose>
+    <c:choose>
+        <c:when test="${not empty scheduleList}">
+            <c:set var="disabled" value="false"/>
+            <cti:msg2 var="addAssignment" key=".add.hoverText"/>
+            <cti:msg2 var="playCommands" key=".play.hoverText"/>
+            <cti:msg2 var="stopCommands" key=".stop.hoverText"/>
+        </c:when>
+        <c:otherwise>
+            <c:set var="disabled" value="true"/>
+            <cti:msg2 var="addAssignment" key=".noScheduleAvaialable_add.hoverText"/>
+            <cti:msg2 var="playCommands" key=".noScheduleAvaialable_play.hoverText"/>
+            <cti:msg2 var="stopCommands" key=".noScheduleAvaialable_stop.hoverText"/>
+        </c:otherwise>
+    </c:choose>
+    
+    <c:choose>
         <c:when test="${hasActionRoles}">
-            <c:if test="${not empty scheduleList}">
-                <cti:button id="systemAddScheduleAssignments" data-popup="#add-assignments" icon="icon-add" nameKey="add" />
-                <cti:button id="systemStartScheduleAssignments" data-popup="#start-assignments" icon="icon-control-play-blue" nameKey="play" />
-                <cti:button id="systemStopScheduleAssignments" data-popup="#stop-assignments" icon="icon-control-stop-blue" nameKey="stop" />
-            </c:if>
-            <c:if test="${empty scheduleList}">
-                <cti:button id="systemAddScheduleAssignments" data-popup="#add-assignments" icon="icon-add" nameKey="noScheduleAvaialable_add" disabled="true" />
-                <cti:button id="systemStartScheduleAssignments" data-popup="#start-assignments" icon="icon-control-play-blue" nameKey="noScheduleAvaialable_play" disabled="true" />
-                <cti:button id="systemStopScheduleAssignments" data-popup="#stop-assignments" icon="icon-control-stop-blue" nameKey="noScheduleAvaialable_stop" disabled="true" />
-            </c:if>
+            <cti:button id="systemAddScheduleAssignments" data-popup="#add-assignments" icon="icon-add" nameKey="add" disabled="${disabled}" title="${addAssignment}" />
+            <cti:button id="systemStartScheduleAssignments" data-popup="#start-assignments" icon="icon-control-play-blue" nameKey="play" disabled="${disabled}" title="${playCommands}"/>
+            <cti:button id="systemStopScheduleAssignments" data-popup="#stop-assignments" icon="icon-control-stop-blue" nameKey="stop" disabled="${disabled}" title="${stopCommands}"/>
         </c:when>
         <c:otherwise>
                 <cti:button id="systemAddScheduleAssignments" icon="icon-add" nameKey="addDisabled" />
                 <cti:button id="systemStartScheduleAssignments" icon="icon-control-play-blue" nameKey="playDisabled" />
                 <cti:button id="systemStopScheduleAssignments" icon="icon-control-stop-blue" nameKey="stopDisabled" />
         </c:otherwise>
-     </c:choose>
+    </c:choose>
     </div>
 
 </cti:standardPage>
