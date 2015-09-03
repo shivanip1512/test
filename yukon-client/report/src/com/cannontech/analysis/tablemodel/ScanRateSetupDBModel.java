@@ -44,8 +44,8 @@ public class ScanRateSetupDBModel extends ReportModelBase<ScanRateMeterData> imp
 	public final static String ADDRESS_STRING  = "Address";
 	public final static String ROUTE_NAME_STRING = "Route Name";
 	public final static String SCAN_TYPE_STRING = "Scan Type";
-	public final static String INTERVAL_RATE_STRING = "Interval\r\nRate";
-	public final static String ALTERNATE_RATE_STRING = "Alternate\r\nRate";
+	public final static String INTERVAL_RATE_STRING = "Interval Rate";
+	public final static String ALTERNATE_RATE_STRING = "Alternate Rate";
 		
 	public static final int ORDER_BY_DEVICE_NAME = 0;
 	public static final int ORDER_BY_METER_NUMBER = 1;

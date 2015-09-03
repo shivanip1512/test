@@ -56,10 +56,10 @@ public class LPSetupDBModel extends ReportModelBase<LPMeterData> implements Comp
 	public final static String METER_NUMBER_STRING = "Meter #";
 	public final static String ADDRESS_STRING  = "Address";
 	public final static String ROUTE_NAME_STRING = "Route Name";
-	public final static String LAST_INTERVAL_DEMAND_STRING = "Demand\r\nInterval";
-	public final static String LAST_INTERVAL_VOLTAGE_STRING = "Voltage\r\nInterval";
-	public final static String CHANNEL_1_DEMAND_RATE_STRING = "Channel 1\r\nRate";
-	public final static String CHANNEL_4_VOLTAGE_RATE_STRING = "Channel 4\r\nRate";
+	public final static String LAST_INTERVAL_DEMAND_STRING = "Demand Interval";
+	public final static String LAST_INTERVAL_VOLTAGE_STRING = "Voltage Interval";
+	public final static String CHANNEL_1_DEMAND_RATE_STRING = "Channel 1 Rate";
+	public final static String CHANNEL_4_VOLTAGE_RATE_STRING = "Channel 4 Rate";
 	
 	public static final int ORDER_BY_DEVICE_NAME = 0;
 	public static final int ORDER_BY_METER_NUMBER = 1;
