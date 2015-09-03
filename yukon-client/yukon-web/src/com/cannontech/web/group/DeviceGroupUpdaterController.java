@@ -10,6 +10,8 @@ import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.ByteOrderMark;
+import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,15 +83,17 @@ public class DeviceGroupUpdaterController {
         if (dataFile == null || StringUtils.isBlank(dataFile.getOriginalFilename())) {
             error = "No file selected.";
         } else {
-            
             InputStream inputStream = dataFile.getInputStream();
+            
             if (inputStream.available() <= 0) {
                 error = "File is empty.";
             } else {
-            
-                // header row
-                InputStreamReader inputStreamReader = new InputStreamReader(dataFile.getInputStream());
+                BOMInputStream bomInputStream = new BOMInputStream(inputStream, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE,
+                        ByteOrderMark.UTF_16BE, ByteOrderMark.UTF_32LE, ByteOrderMark.UTF_32BE);
+                InputStreamReader inputStreamReader = new InputStreamReader(bomInputStream);
                 CSVReader csvReader = new CSVReader(inputStreamReader);
+
+                // header row
                 String[] headerRow = csvReader.readNext();
                 
                 if (headerRow.length < 2) {

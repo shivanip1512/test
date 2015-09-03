@@ -15,6 +15,8 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.ByteOrderMark;
+import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.web.multipart.MultipartFile;
@@ -62,7 +64,9 @@ public class WebFileUtils {
         }
 
         FileSystemResource fileResource = new FileSystemResource(tempFile);
-        InputStreamReader inputStreamReader = new InputStreamReader(fileResource.getInputStream());
+        BOMInputStream bomInputStream = new BOMInputStream(fileResource.getInputStream(), ByteOrderMark.UTF_8,
+                ByteOrderMark.UTF_16LE, ByteOrderMark.UTF_16BE, ByteOrderMark.UTF_32LE, ByteOrderMark.UTF_32BE);
+        InputStreamReader inputStreamReader = new InputStreamReader(bomInputStream);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         return new CSVReader(bufferedReader);
     }

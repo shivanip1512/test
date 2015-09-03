@@ -2,6 +2,7 @@ package com.cannontech.web.bulk;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.ByteOrderMark;
+import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -220,7 +223,10 @@ public class BulkController {
         ImportUpdateCallbackResult callback = (ImportUpdateCallbackResult)backGroundCallback;
         
         // header row
-        InputStreamReader inputStreamReader = new InputStreamReader(callback.getBulkFileInfo().getFileResource().getInputStream());
+        InputStream inputStream = callback.getBulkFileInfo().getFileResource().getInputStream();
+        BOMInputStream bomInputStream = new BOMInputStream(inputStream, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE,
+                ByteOrderMark.UTF_16BE, ByteOrderMark.UTF_32LE, ByteOrderMark.UTF_32BE);
+        InputStreamReader inputStreamReader = new InputStreamReader(bomInputStream);
         BufferedReader reader = new BufferedReader(inputStreamReader);
         CSVReader csvReader = new CSVReader(reader);
         String[] headerRow = csvReader.readNext();

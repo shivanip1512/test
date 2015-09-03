@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.io.ByteOrderMark;
+import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -219,8 +221,9 @@ public abstract class BaseBulkService {
     }
 
     protected CSVReader getCSVReader(FileSystemResource fileResource) throws IOException  {
-
-        InputStreamReader inputStreamReader = new InputStreamReader(fileResource.getInputStream());
+        BOMInputStream bomInputStream = new BOMInputStream(fileResource.getInputStream(), ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE,
+                ByteOrderMark.UTF_16BE, ByteOrderMark.UTF_32LE, ByteOrderMark.UTF_32BE);
+        InputStreamReader inputStreamReader = new InputStreamReader(bomInputStream);
         BufferedReader reader = new BufferedReader(inputStreamReader);
         return new CSVReader(reader);
     }

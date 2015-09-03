@@ -10,6 +10,8 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.ByteOrderMark;
+import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -146,9 +148,12 @@ public class DeviceFileUploadCollectionProducer implements DeviceCollectionProdu
         DeviceResult result = new DeviceResult();
         
         InputStream inputStream = dataFile.getInputStream();
-        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+        BOMInputStream bomInputStream = new BOMInputStream(inputStream, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE,
+                ByteOrderMark.UTF_16BE, ByteOrderMark.UTF_32LE, ByteOrderMark.UTF_32BE);
+        InputStreamReader inputStreamReader = new InputStreamReader(bomInputStream);
         CSVReader csvReader = new CSVReader(inputStreamReader);
         CsvColumnReaderIterator iterator = new CsvColumnReaderIterator(csvReader, 0);
+        
         Set<String> data = new HashSet<>();
         try {
             if (uploadType.isHasHeader()) {
