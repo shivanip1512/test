@@ -20,7 +20,7 @@
 <cti:includeCss link="/resources/js/lib/dynatree/skin/ui.dynatree.css"/>
 <c:if test="${not empty pageScope.treeCss}"><cti:includeCss link="${treeCss}"/></c:if>
 
-<c:set var="maxHeight" value="${not empty maxHeight and maxHeight > 0  ? maxHeight : 500}"/>
+<c:set var="maxHeight" value="${not empty maxHeight and maxHeight > 0  ? maxHeight : none}"/>
 
 <script type="text/javascript">
 
