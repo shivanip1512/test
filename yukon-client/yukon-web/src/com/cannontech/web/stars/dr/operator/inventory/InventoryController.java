@@ -183,8 +183,7 @@ public class InventoryController {
         try {
             int defaultRouteId = defaultRouteService.getDefaultRouteId(ec);
             defaultRoute = paoDao.getYukonPAOName(defaultRouteId);
-            defaultRoute = accessor.getMessage("yukon.common.route.default")
-                    + defaultRoute;
+            defaultRoute = accessor.getMessage("yukon.common.route.default", defaultRoute);
         } catch(NotFoundException e) {
             defaultRoute = accessor.getMessage("yukon.common.route.default.none");
         }
@@ -406,7 +405,7 @@ public class InventoryController {
         try {
             int defaultRouteId = defaultRouteService.getDefaultRouteId(ec);
             defaultRoute = paoDao.getYukonPAOName(defaultRouteId);
-            defaultRoute = accessor.getMessage("yukon.common.route.default") + defaultRoute;
+            defaultRoute = accessor.getMessage("yukon.common.route.default", defaultRoute);
         } catch(NotFoundException e) {
             defaultRoute = accessor.getMessage("yukon.common.route.default.none");
         }

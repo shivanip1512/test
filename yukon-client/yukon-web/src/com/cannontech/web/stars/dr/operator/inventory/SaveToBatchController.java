@@ -101,7 +101,7 @@ public class SaveToBatchController {
         int ecDefaultRouteId = -1;
         try {
             ecDefaultRoute = paoDao.getYukonPAOName(defaultRouteService.getDefaultRouteId(ec));
-            ecDefaultRoute = accessor.getMessage("yukon.common.route.default") + ecDefaultRoute;
+            ecDefaultRoute = accessor.getMessage("yukon.common.route.default", ecDefaultRoute);
         } catch(NotFoundException e) {
             ecDefaultRoute = accessor.getMessage("yukon.common.route.default.none");
         }

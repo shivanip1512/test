@@ -216,7 +216,7 @@
 <entry key="yukon.common.right">Right</entry>
 <entry key="yukon.common.role.group">Role Group</entry>
 <entry key="yukon.common.route">Route</entry>
-<entry key="yukon.common.route.default">Default - </entry>
+<entry key="yukon.common.route.default">Default - {0}</entry>
 <entry key="yukon.common.route.default.none">Default - (none)</entry>
 <entry key="yukon.common.save">Save</entry>
 <entry key="yukon.common.search">Search</entry>
