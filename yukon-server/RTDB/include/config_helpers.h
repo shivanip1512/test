@@ -86,6 +86,28 @@ unsigned getConfigData<unsigned>( const Config::DeviceConfigSPtr & deviceConfig,
     return require<unsigned>( getConfigData<long>(deviceConfig, configKey), configKey );
 }
 
+
+/**
+* throws MissingConfigDataException() if config value does not exist
+* throws InvalidConfigDataException() if value is outside the min/max ranges
+*/
+template<typename T, T min, T max>
+T getConfigData(const Config::DeviceConfigSPtr & deviceConfig, const std::string & configKey)
+{
+    T val = getConfigData<T>(deviceConfig, configKey);
+
+    if( val < min || val > max )
+    {
+        std::ostringstream cause;
+        cause << "invalid value " << val << " is out of range, expected [" << std::to_string(min) << " - " << std::to_string(max) << "]";
+
+        throw InvalidConfigDataException(configKey, cause.str());
+    }
+
+    return val;
+}
+
+
 /**
  * getConfigData() for indexed config items. Retrieve a vector of config data for a given prefix and config key
  * throws MissingConfigDataException() if config data is missing
@@ -142,7 +164,7 @@ std::set<T> getConfigDataSet( Config::DeviceConfigSPtr &deviceConfig, const std:
  * throws InvalidConfigDataException() if data is not found
  */
 template <class MapType, typename KeyType>
-typename MapType::iterator::value_type::second_type resolveConfigData( MapType& m, KeyType& configData, const std::string & configKey )
+typename MapType::mapped_type resolveConfigData( MapType& m, KeyType& configData, const std::string & configKey )
 {
     MapType::const_iterator itr = m.find(configData);
 
@@ -163,6 +185,15 @@ typename MapType::iterator::value_type::second_type resolveConfigData( MapType& 
 
     return itr->second;
 }
+
+template <class MapType>
+typename MapType::mapped_type getConfigDataEnum(Config::DeviceConfigSPtr deviceConfig, const std::string &configKey, const MapType &m)
+{
+    auto configValue = getConfigData<MapType::key_type>(deviceConfig, configKey);
+
+    return resolveConfigData(m, configValue, configKey);
+}
+
 
 } // Anonymous
 

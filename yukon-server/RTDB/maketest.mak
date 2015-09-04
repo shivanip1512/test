@@ -98,6 +98,7 @@ test_dev_rf_da.obj \
 test_dev_rfnMeter.obj \
 test_dev_rfnCommercial.obj \
 test_dev_rfnResidential.obj \
+test_dev_rfn410centron.obj \
 test_dev_rfn420centron.obj \
 test_dev_rfn420focus_al.obj \
 test_dev_rtm.obj \

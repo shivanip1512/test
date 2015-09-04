@@ -92,6 +92,14 @@ RfnCentronSetLcdConfigurationCommand::RfnCentronSetLcdConfigurationCommand(
 {
 }
 
+RfnCentronSetLcdConfigurationCommand::RfnCentronSetLcdConfigurationCommand(
+        const metric_vector_t &display_metrics_, const DisplayDigits display_digits_, const unsigned char cycle_time_) :
+    display_metrics(display_metrics_),
+    display_digits(display_digits_),
+    cycle_time(cycle_time_)
+{
+}
+
 RfnCentronGetLcdConfigurationCommand::RfnCentronGetLcdConfigurationCommand()
 {
 }
@@ -272,14 +280,13 @@ RfnCommandResult RfnCentronSetLcdConfigurationCommand::decodeCommand(const CtiTi
 
     resultDescription << "Display metrics successfully set" << describeMetrics(display_metrics);
 
-    resultDescription << "\nDisconnect display: ";
-    if( disconnect_display )
+    if( disconnect_display.is_initialized() )
     {
-        resultDescription << "enabled";
-    }
-    else
-    {
-        resultDescription << "disabled";
+        resultDescription 
+                << "\nDisconnect display: " 
+                << (*disconnect_display 
+                       ? "enabled" 
+                       : "disabled");
     }
 
     resultDescription << "\nLCD cycle time: ";
@@ -344,8 +351,11 @@ RfnCommand::Bytes RfnCentronSetLcdConfigurationCommand::getCommandData()
     data.push_back(Slot_CycleDelay);
     data.push_back(cycle_time);
 
-    data.push_back(Slot_DisconnectDisplay);
-    data.push_back(disconnect_display);
+    if( disconnect_display.is_initialized() )
+    {
+        data.push_back(Slot_DisconnectDisplay);
+        data.push_back(*disconnect_display);
+    }
 
     return data;
 }

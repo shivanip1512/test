@@ -84,8 +84,6 @@ public:
 typedef RfnResidentialDevice Rfn410fxDevice;
 typedef RfnResidentialDevice Rfn410fdDevice;
 
-typedef RfnResidentialDevice Rfn410clDevice;
-
 }
 }
 

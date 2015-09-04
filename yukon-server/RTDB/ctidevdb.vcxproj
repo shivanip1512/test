@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -545,8 +545,8 @@ if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(So
     </ClCompile>
     <ClCompile Include="dev_rfn.cpp">
     </ClCompile>
-    <ClCompile Include="dev_rfn420centron.cpp">
-    </ClCompile>
+    <ClCompile Include="dev_rfn410centron.cpp" />
+    <ClCompile Include="dev_rfn420centron.cpp" />
     <ClCompile Include="dev_rfn420focus_al.cpp">
     </ClCompile>
     <ClCompile Include="dev_rfnCommercial.cpp">
@@ -731,6 +731,7 @@ if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(So
     <ClInclude Include="include\dev_repeater850.h" />
     <ClInclude Include="include\dev_rf_da.h" />
     <ClInclude Include="include\dev_rfn.h" />
+    <ClInclude Include="include\dev_rfn410centron.h" />
     <ClInclude Include="include\dev_rfn420centron.h" />
     <ClInclude Include="include\dev_rfn420focus_al.h" />
     <ClInclude Include="include\dev_rfnCommercial.h" />

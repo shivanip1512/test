@@ -55,10 +55,15 @@ public:
             const DisplayDigits display_digits,
             const unsigned char cycle_time);
 
+    RfnCentronSetLcdConfigurationCommand(
+            const metric_vector_t &display_metrics,
+            const DisplayDigits display_digits,
+            const unsigned char cycle_time);
+
     virtual RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response);
 
     const metric_vector_t display_metrics;
-    const DisconnectDisplayState disconnect_display;
+    const boost::optional<DisconnectDisplayState> disconnect_display;
     const DisplayDigits display_digits;
     const unsigned char cycle_time;
 

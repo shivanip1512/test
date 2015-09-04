@@ -1,9 +1,8 @@
 #include <boost/test/unit_test.hpp>
-#include <boost/assign/list_of.hpp>
-
-#include "ctidate.h"
 
 #include "cmd_rfn_CentronLcdConfiguration.h"
+
+#include "boost_test_helpers.h"
 
 using Cti::Devices::Commands::RfnCommand;
 using Cti::Devices::Commands::RfnCommandResult;
@@ -20,35 +19,68 @@ BOOST_AUTO_TEST_CASE(test_send_no_items)
     const std::vector<unsigned char> metrics;
 
     RfnCentronSetLcdConfigurationCommand lcdConfiguration(
-            metrics,
-            RfnCentronSetLcdConfigurationCommand::DisconnectDisplayDisabled,
-            RfnCentronSetLcdConfigurationCommand::DisplayDigits5x1,
-            0 );
+        metrics,
+        RfnCentronSetLcdConfigurationCommand::DisconnectDisplayDisabled,
+        RfnCentronSetLcdConfigurationCommand::DisplayDigits5x1,
+        0);
 
     // execute
     {
         RfnCommand::RfnRequestPayload rcv = lcdConfiguration.executeCommand(execute_time);
 
-        std::vector<unsigned> exp = boost::assign::list_of
-                (0x70)(0x00)(0x03)(0xfd)(0x05)(0xfe)(0x00)(0xff)(0x00);
+        const std::vector<unsigned> exp{
+            0x70, 0x00, 0x03, 0xfd, 0x05, 0xfe, 0x00, 0xff, 0x00 };
 
-        BOOST_CHECK_EQUAL_COLLECTIONS(
-                rcv.begin(), rcv.end(),
-                exp.begin(), exp.end());
+        BOOST_CHECK_EQUAL_RANGES(rcv, exp);
     }
 
     // decode
     {
-        std::vector<unsigned char> response = boost::assign::list_of
-                (0x71)(0x00)(0x00);
+        std::vector<unsigned char> response{
+            0x71, 0x00, 0x00 };
 
         RfnCommandResult rcv = lcdConfiguration.decodeCommand(execute_time, response);
 
         std::string exp = "Display metrics successfully set"
-                          "\nNo display metrics"
-                          "\nDisconnect display: disabled"
-                          "\nLCD cycle time: (default)"
-                          "\nDisplay digits: 5x1";
+            "\nNo display metrics"
+            "\nDisconnect display: disabled"
+            "\nLCD cycle time: (default)"
+            "\nDisplay digits: 5x1";
+
+        BOOST_CHECK_EQUAL(rcv.description, exp);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(test_send_no_items_disconnect_omitted)
+{
+    const std::vector<unsigned char> metrics;
+
+    RfnCentronSetLcdConfigurationCommand lcdConfiguration(
+        metrics,
+        RfnCentronSetLcdConfigurationCommand::DisplayDigits5x1,
+        0);
+
+    // execute
+    {
+        RfnCommand::RfnRequestPayload rcv = lcdConfiguration.executeCommand(execute_time);
+
+        const std::vector<unsigned> exp{
+            0x70, 0x00, 0x03, 0xfd, 0x05, 0xfe, 0x00 };
+
+        BOOST_CHECK_EQUAL_RANGES(rcv, exp);
+    }
+
+    // decode
+    {
+        std::vector<unsigned char> response{
+            0x71, 0x00, 0x00 };
+
+        RfnCommandResult rcv = lcdConfiguration.decodeCommand(execute_time, response);
+
+        std::string exp = "Display metrics successfully set"
+            "\nNo display metrics"
+            "\nLCD cycle time: (default)"
+            "\nDisplay digits: 5x1";
 
         BOOST_CHECK_EQUAL(rcv.description, exp);
     }
@@ -62,18 +94,16 @@ BOOST_AUTO_TEST_CASE(test_read_no_items)
     {
         RfnCommand::RfnRequestPayload rcv = lcdConfiguration.executeCommand(execute_time);
 
-        std::vector<unsigned char> exp = boost::assign::list_of
-                (0x70)(0x01)(0x00);
+        std::vector<unsigned char> exp{
+                0x70, 0x01, 0x00 };
 
-        BOOST_CHECK_EQUAL_COLLECTIONS(
-                rcv.begin(), rcv.end(),
-                exp.begin(), exp.end());
+        BOOST_CHECK_EQUAL_RANGES(rcv, exp);
     }
 
     // decode
     {
-        std::vector<unsigned char> response = boost::assign::list_of
-                (0x71)(0x00)(0x00);
+        std::vector<unsigned char> response {
+                0x71, 0x00, 0x00 };
 
         RfnCommandResult rcv = lcdConfiguration.decodeCommand(execute_time, response);
 
@@ -86,8 +116,8 @@ BOOST_AUTO_TEST_CASE(test_read_no_items)
 
 BOOST_AUTO_TEST_CASE(test_send_3_items)
 {
-    const std::vector<unsigned char> metrics = boost::assign::list_of
-            (0x00)(0x01)(0x02);
+    const std::vector<unsigned char> metrics {
+            0x00, 0x01, 0x02 };
 
     RfnCentronSetLcdConfigurationCommand lcdConfiguration(
             metrics,
@@ -99,18 +129,16 @@ BOOST_AUTO_TEST_CASE(test_send_3_items)
     {
         RfnCommand::RfnRequestPayload rcv = lcdConfiguration.executeCommand(execute_time);
 
-        std::vector<unsigned> exp = boost::assign::list_of
-                (0x70)(0x00)(0x06)(0x00)(0x00)(0x01)(0x01)(0x02)(0x02)(0xfd)(0x06)(0xfe)(0x01)(0xff)(0x01);
+        std::vector<unsigned> exp {
+                0x70, 0x00, 0x06, 0x00, 0x00, 0x01, 0x01, 0x02, 0x02, 0xfd, 0x06, 0xfe, 0x01, 0xff, 0x01 };
 
-        BOOST_CHECK_EQUAL_COLLECTIONS(
-                rcv.begin(), rcv.end(),
-                exp.begin(), exp.end());
+        BOOST_CHECK_EQUAL_RANGES(rcv, exp);
     }
 
     // decode
     {
-        std::vector<unsigned char> response = boost::assign::list_of
-                (0x71)(0x00)(0x00);
+        std::vector<unsigned char> response {
+                0x71, 0x00, 0x00 };
 
         RfnCommandResult rcv = lcdConfiguration.decodeCommand(execute_time, response);
 
@@ -134,18 +162,16 @@ BOOST_AUTO_TEST_CASE(test_read_3_items)
     {
         RfnCommand::RfnRequestPayload rcv = lcdConfiguration.executeCommand(execute_time);
 
-        std::vector<unsigned char> exp = boost::assign::list_of
-                (0x70)(0x01)(0x00); // read_only -> operation code = 0x01, zero metric items
+        std::vector<unsigned char> exp {
+                0x70, 0x01, 0x00 }; // read_only -> operation code = 0x01, zero metric items
 
-        BOOST_CHECK_EQUAL_COLLECTIONS(
-                rcv.begin(), rcv.end(),
-                exp.begin(), exp.end());
+        BOOST_CHECK_EQUAL_RANGES(rcv, exp);
     }
 
     // decode
     {
-        std::vector<unsigned char> response = boost::assign::list_of
-                (0x71)(0x00)(0x03)(0x00)(0x00)(0x01)(0x01)(0x02)(0x02);
+        std::vector<unsigned char> response {
+                0x71, 0x00, 0x03, 0x00, 0x00, 0x01, 0x01, 0x02, 0x02 };
 
         RfnCommandResult rcv = lcdConfiguration.decodeCommand(execute_time, response);
 
@@ -160,11 +186,11 @@ BOOST_AUTO_TEST_CASE(test_read_3_items)
 
 BOOST_AUTO_TEST_CASE(test_send_all_items)
 {
-    const std::vector<unsigned char> metrics = boost::assign::list_of
-            (0x00)(0x01)(0x02)(0x03)(0x04)(0x05)(0x06)(0x07)(0x08)(0x09)
-            (0x0A)(0x0B)(0x0C)(0x0D)(0x0E)(0x0F)(0x10)(0x11)(0x12)(0x13)
-            (0x14)(0x15)(0x16)(0x17)(0x18)(0x19)(0x1A)(0x1B)(0x1C)(0x1D)
-            (0x1E)(0x1F)(0x20)(0x21)(0x22)(0x23)(0x24);
+    const std::vector<unsigned char> metrics {
+            0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
+            0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13,
+            0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D,
+            0x1E, 0x1F, 0x20, 0x21, 0x22, 0x23, 0x24 };
 
     RfnCentronSetLcdConfigurationCommand lcdConfiguration(
             metrics,
@@ -176,26 +202,24 @@ BOOST_AUTO_TEST_CASE(test_send_all_items)
     {
         RfnCommand::RfnRequestPayload rcv = lcdConfiguration.executeCommand(execute_time);
 
-        std::vector<unsigned char> exp = boost::assign::list_of
-                (0x70)(0x00)(0x28)(0x00)(0x00)(0x01)(0x01)(0x02)(0x02)(0x03)
-                (0x03)(0x04)(0x04)(0x05)(0x05)(0x06)(0x06)(0x07)(0x07)(0x08)
-                (0x08)(0x09)(0x09)(0x0A)(0x0A)(0x0B)(0x0B)(0x0C)(0x0C)(0x0D)
-                (0x0D)(0x0E)(0x0E)(0x0F)(0x0F)(0x10)(0x10)(0x11)(0x11)(0x12)
-                (0x12)(0x13)(0x13)(0x14)(0x14)(0x15)(0x15)(0x16)(0x16)(0x17)
-                (0x17)(0x18)(0x18)(0x19)(0x19)(0x1A)(0x1A)(0x1B)(0x1B)(0x1C)
-                (0x1C)(0x1D)(0x1D)(0x1E)(0x1E)(0x1F)(0x1F)(0x20)(0x20)(0x21)
-                (0x21)(0x22)(0x22)(0x23)(0x23)(0x24)(0x24)(0xfd)(0x04)(0xfe)
-                (0x02)(0xff)(0x01);
+        std::vector<unsigned char> exp {
+                0x70, 0x00, 0x28, 0x00, 0x00, 0x01, 0x01, 0x02, 0x02, 0x03,
+                0x03, 0x04, 0x04, 0x05, 0x05, 0x06, 0x06, 0x07, 0x07, 0x08,
+                0x08, 0x09, 0x09, 0x0A, 0x0A, 0x0B, 0x0B, 0x0C, 0x0C, 0x0D,
+                0x0D, 0x0E, 0x0E, 0x0F, 0x0F, 0x10, 0x10, 0x11, 0x11, 0x12,
+                0x12, 0x13, 0x13, 0x14, 0x14, 0x15, 0x15, 0x16, 0x16, 0x17,
+                0x17, 0x18, 0x18, 0x19, 0x19, 0x1A, 0x1A, 0x1B, 0x1B, 0x1C,
+                0x1C, 0x1D, 0x1D, 0x1E, 0x1E, 0x1F, 0x1F, 0x20, 0x20, 0x21,
+                0x21, 0x22, 0x22, 0x23, 0x23, 0x24, 0x24, 0xfd, 0x04, 0xfe,
+                0x02, 0xff, 0x01 };
 
-        BOOST_CHECK_EQUAL_COLLECTIONS(
-                rcv.begin(), rcv.end(),
-                exp.begin(), exp.end());
+        BOOST_CHECK_EQUAL_RANGES(rcv, exp);
     }
 
     // decode
     {
-        std::vector<unsigned char> response = boost::assign::list_of
-                (0x71)(0x00)(0x00);
+        std::vector<unsigned char> response {
+                0x71, 0x00, 0x00 };
 
         RfnCommandResult rcv = lcdConfiguration.decodeCommand(execute_time, response);
 
@@ -253,26 +277,24 @@ BOOST_AUTO_TEST_CASE(test_read_all_items)
     {
         RfnCommand::RfnRequestPayload rcv = lcdConfiguration.executeCommand(execute_time);
 
-        std::vector<unsigned char> exp = boost::assign::list_of
-                (0x70)(0x01)(0x00); // read_only -> operation code = 0x01, zero metric items
+        std::vector<unsigned char> exp {
+                0x70, 0x01, 0x00 }; // read_only -> operation code = 0x01, zero metric items
 
-        BOOST_CHECK_EQUAL_COLLECTIONS(
-                rcv.begin(), rcv.end(),
-                exp.begin(), exp.end());
+        BOOST_CHECK_EQUAL_RANGES(rcv, exp);
     }
 
     // decode
     {
-        std::vector<unsigned char> response = boost::assign::list_of
-                (0x71)(0x00)(0x28)(0x00)(0x00)(0x01)(0x01)(0x02)(0x02)(0x03)
-                (0x03)(0x04)(0x04)(0x05)(0x05)(0x06)(0x06)(0x07)(0x07)(0x08)
-                (0x08)(0x09)(0x09)(0x0A)(0x0A)(0x0B)(0x0B)(0x0C)(0x0C)(0x0D)
-                (0x0D)(0x0E)(0x0E)(0x0F)(0x0F)(0x10)(0x10)(0x11)(0x11)(0x12)
-                (0x12)(0x13)(0x13)(0x14)(0x14)(0x15)(0x15)(0x16)(0x16)(0x17)
-                (0x17)(0x18)(0x18)(0x19)(0x19)(0x1A)(0x1A)(0x1B)(0x1B)(0x1C)
-                (0x1C)(0x1D)(0x1D)(0x1E)(0x1E)(0x1F)(0x1F)(0x20)(0x20)(0x21)
-                (0x21)(0x22)(0x22)(0x23)(0x23)(0x24)(0x24)(0xff)(0x01)(0xfe)
-                (0x0f)(0xfd)(0x05);
+        std::vector<unsigned char> response {
+                0x71, 0x00, 0x28, 0x00, 0x00, 0x01, 0x01, 0x02, 0x02, 0x03,
+                0x03, 0x04, 0x04, 0x05, 0x05, 0x06, 0x06, 0x07, 0x07, 0x08,
+                0x08, 0x09, 0x09, 0x0A, 0x0A, 0x0B, 0x0B, 0x0C, 0x0C, 0x0D,
+                0x0D, 0x0E, 0x0E, 0x0F, 0x0F, 0x10, 0x10, 0x11, 0x11, 0x12,
+                0x12, 0x13, 0x13, 0x14, 0x14, 0x15, 0x15, 0x16, 0x16, 0x17,
+                0x17, 0x18, 0x18, 0x19, 0x19, 0x1A, 0x1A, 0x1B, 0x1B, 0x1C,
+                0x1C, 0x1D, 0x1D, 0x1E, 0x1E, 0x1F, 0x1F, 0x20, 0x20, 0x21,
+                0x21, 0x22, 0x22, 0x23, 0x23, 0x24, 0x24, 0xff, 0x01, 0xfe,
+                0x0f, 0xfd, 0x05 };
 
         RfnCommandResult rcv = lcdConfiguration.decodeCommand(execute_time, response);
 

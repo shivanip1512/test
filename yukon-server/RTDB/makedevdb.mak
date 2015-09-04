@@ -131,6 +131,7 @@ dev_repeater850.obj \
 dev_rf_da.obj \
 dev_rfn.obj \
 dev_rfnMeter.obj \
+dev_rfn410centron.obj \
 dev_rfn420centron.obj \
 dev_rfn420focus_al.obj \
 dev_rfnResidential.obj \

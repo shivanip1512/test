@@ -1,24 +1,32 @@
 #pragma once
 
-#include "dev_rfnResidential.h"
-#include "cmd_rfn_CentronLcdConfiguration.h"
+#include "dev_rfn410Centron.h"
 
 namespace Cti {
 namespace Devices {
 
 class IM_EX_DEVDB Rfn420CentronDevice :
-    public RfnResidentialDevice
+    public Rfn410CentronDevice
 {
-    virtual ConfigMap getConfigMethods(bool readOnly);
+    struct c2sx_display : c1sx_display
+    {
+        c2sx_display(const c1sx_display &rhs) :
+            c1sx_display(rhs)
+        {
+        }
 
-    YukonError_t executeGetConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
-    YukonError_t executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+        Commands::RfnCentronLcdConfigurationCommand::DisconnectDisplayState disconnect_display;
+    };
 
-    void handleCommandResult(const Commands::RfnCentronSetLcdConfigurationCommand &cmd);
-    void handleCommandResult(const Commands::RfnCentronGetLcdConfigurationCommand &cmd);
+    c2sx_display getDisplayConfigItems(const Config::DeviceConfigSPtr &config);
 
-public:
-    Rfn420CentronDevice() {};
+    bool isDisplayConfigCurrent(const c2sx_display &config);
+
+protected:
+    YukonError_t executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
+
+    void handleCommandResult(const Commands::RfnCentronSetLcdConfigurationCommand &cmd) override;
+    void handleCommandResult(const Commands::RfnCentronGetLcdConfigurationCommand &cmd) override;
 };
 
 

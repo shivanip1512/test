@@ -134,7 +134,7 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class Cti::Devices::RfnResidentialDevice")
         ("class Cti::Devices::RfnResidentialDevice")
         ("class Cti::Devices::RfnResidentialDevice")
-        ("class Cti::Devices::RfnResidentialDevice")
+        ("class Cti::Devices::Rfn410CentronDevice")
         ("class Cti::Devices::Rfn420CentronDevice")
         //  60
         ("class Cti::Devices::Rfn420CentronDevice")
@@ -335,7 +335,7 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "rfn-420fd",                      "class Cti::Devices::RfnResidentialDevice" },
         { "rfn-420frx",                     "class Cti::Devices::RfnResidentialDevice" },
         { "rfn-420frd",                     "class Cti::Devices::RfnResidentialDevice" },
-        { "rfn-410cl",                      "class Cti::Devices::RfnResidentialDevice" },
+        { "rfn-410cl",                      "class Cti::Devices::Rfn410CentronDevice" },
         { "rfn-420cl",                      "class Cti::Devices::Rfn420CentronDevice" },
         { "rfn-420cd",                      "class Cti::Devices::Rfn420CentronDevice" },
         { "rfn-430a3d",                     "class Cti::Devices::RfnCommercialDevice" },
