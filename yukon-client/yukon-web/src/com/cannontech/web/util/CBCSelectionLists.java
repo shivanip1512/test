@@ -327,7 +327,28 @@ public class CBCSelectionLists {
     /**
      * Returns all possible Routes
      */
-    public SelectListItem[] getRoutes() {
+    public SelectItem[] getRoutes() {
+
+        SelectItem[] selItems = new SelectItem[0];
+
+        IDatabaseCache cache = DefaultDatabaseCache.getInstance();
+        synchronized (cache) {
+            List<LiteYukonPAObject> routes = cache.getAllRoutes();
+
+            selItems = new SelectItem[routes.size()];
+            for (int i = 0; i < routes.size(); i++) {
+                LiteYukonPAObject liteRoute = routes.get(i);
+                selItems[i] = new SelectItem(new Integer(liteRoute.getYukonID()), liteRoute.getPaoName());
+            }
+        }
+
+        return selItems;
+    }
+
+    /**
+     * Returns all possible Routes
+     */
+    public SelectListItem[] getCbcRoutes() {
 
         SelectListItem[] selItems = new SelectListItem[0];
 
@@ -344,7 +365,6 @@ public class CBCSelectionLists {
 
         return selItems;
     }
-
     public SelectItem[] getCBCTypes() {
         return wizardCBCTypes;
     }

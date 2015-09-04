@@ -113,7 +113,7 @@
 											
 											<tags:nameValue2 nameKey=".controlRoute">
 													<tags:selectWithItems path="deviceCBC.routeID"
-													items="${selectionLists.routes}" itemValue="value"
+													items="${selectionLists.cbcRoutes}" itemValue="value"
 													itemLabel="label"
 													inputClass="with-option-hiding" />
 												</tags:nameValue2>
