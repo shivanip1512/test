@@ -174,7 +174,7 @@ public class PointValidator extends SimpleValidator<PointModel> {
         }
         
         YukonValidationUtils.checkRange(errors, "staleData.time", 
-            model.getStaleData().getTime(), 0, 99999999, true);
+            model.getStaleData().getTime(), 0, 99999999, model.getStaleData().isEnabled());
     }
     
     private void doAnalogValidation(PointBase base, Errors errors) {
@@ -238,7 +238,7 @@ public class PointValidator extends SimpleValidator<PointModel> {
             point.getPointStatusControl().getCommandTimeOut(), 0, 9999999, true);
         
         YukonValidationUtils.checkRange(errors, "staleData.time", 
-            model.getStaleData().getTime(), 0, 99999999, true);
+            model.getStaleData().getTime(), 0, 99999999,  model.getStaleData().isEnabled());
         
     }
     
