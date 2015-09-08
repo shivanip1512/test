@@ -193,14 +193,15 @@ YukonError_t MacroRoute::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
 
         if(!retList.empty())
         {
-            size_t count = retList.size()-1;
+            auto itr = retList.rbegin();
 
             // Set expectMore on the CtiReturnMsgs, but don't touch the last one if there was no OM sent.
             //   That probably means the command is done, but do NOT unset it in case it was manually set.
-            for each (auto retMsg in retList)
+            ++itr;
+
+            while(itr != retList.rend())
             {
-                static_cast<CtiReturnMsg *>(retMsg)->setExpectMore(true);
-                if(--count == 0) break;
+                static_cast<CtiReturnMsg *>(*itr++)->setExpectMore(true);
             }
         }
 
