@@ -45,13 +45,16 @@ public class PaoPageIndexBuilder extends DbPageIndexBuilder {
     static {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select ypo.paobjectId, ypo.paoName, ypo.type, ypo.category, ypo.paoClass, ypo.description,");
-        sql.append(    "d.deviceId, dmg.meterNumber");
+        sql.append(    "d.deviceId, dmg.meterNumber,");
+        sql.append(    "dcs.address, rfna.serialNumber");
         baseQuery = sql;
 
         sql = new SqlStatementBuilder();
         sql.append("from yukonPaobject ypo");
         sql.append(    "left join device d on d.deviceId = ypo.paobjectId");
         sql.append(    "left join deviceMeterGroup dmg on dmg.deviceId = ypo.paobjectId");
+        sql.append(    "LEFT JOIN DeviceCarrierSettings dcs ON dcs.deviceid = ypo.paobjectid");
+        sql.append(    "LEFT JOIN RFNAddress rfna ON rfna.deviceId = d.deviceId");
         queryTables = sql;
     }
 

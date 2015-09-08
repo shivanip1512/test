@@ -9,7 +9,7 @@
 <entry key="yukon.common.rfPerformance.unknownStatus.NEW_INSTALL_NOT_COMMUNICATING.title">Never Reported - In system less than 4 days</entry>
 
 <!-- Metering -->
-<entry key="yukon.web.standardFilterBy.address">Address</entry>
+<entry key="yukon.web.standardFilterBy.address">Address/Serial</entry>
 <entry key="yukon.web.standardFilterBy.deviceName">Device Name</entry>
 <entry key="yukon.web.standardFilterBy.deviceType">Device Type</entry>
 <entry key="yukon.web.standardFilterBy.meterNumber">Meter Number</entry>

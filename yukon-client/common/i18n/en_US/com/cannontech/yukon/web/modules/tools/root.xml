@@ -249,7 +249,7 @@
     </entry>
 
     <!-- Arguments available for the electric and water meter detail pages are 0: device name, 1: meter number -->
-    <entry key="yukon.web.modules.search.amr.meterDetail.electric.summary"><![CDATA[Meter Number: <strong class="subtle">{1}</strong>]]></entry>
+    <entry key="yukon.web.modules.search.amr.meterDetail.electric.summary"><![CDATA[Meter Number: <strong class="subtle">{1}</strong>, Address/Serial Number: <strong class="subtle">{2}</strong>]]></entry>
     <entry key="yukon.web.modules.search.amr.meterDetail.water.summary"><![CDATA[Meter Number: <strong class="subtle">{1}</strong>]]></entry>
 
     <!-- Arguments available for the control area page 0: control area name -->

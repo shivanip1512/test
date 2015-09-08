@@ -14,7 +14,7 @@ public class StandardFilterByGenerator {
         filterByList.add(new StandardFilterBy("meterNumber", MeterSearchField.METERNUMBER));
         filterByList.add(new StandardFilterBy("deviceName", MeterSearchField.PAONAME));
         filterByList.add(new StandardFilterBy("deviceType", MeterSearchField.TYPE));
-        filterByList.add(new StandardFilterBy("address", MeterSearchField.ADDRESS));
+        filterByList.add(new StandardFilterBy("address", MeterSearchField.ADDRESS, MeterSearchField.SERIALNUMBER));
         filterByList.add(new StandardFilterBy("route", MeterSearchField.ROUTE));
 
         return filterByList;

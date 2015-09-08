@@ -21,6 +21,7 @@ public enum MeterSearchField {
 
     },
     ADDRESS("Address"), 
+    SERIALNUMBER("SerialNumber"),
     ROUTE(
             "Route") {
         @Override

@@ -42,7 +42,7 @@ public class MeterPaoTypeHandler implements PaoTypeHandler {
     
     @Override
     public void buildDocument(DocumentBuilder builder, YukonResultSet rs, PaoIdentifier paoIdentifier) throws SQLException {
-        
+        String addressOrSerialNumber = null;
         int paoId = paoIdentifier.getPaoId();
         
         builder.module(SiteModule.AMI.getName());
@@ -60,8 +60,13 @@ public class MeterPaoTypeHandler implements PaoTypeHandler {
         builder.pageArgs(deviceName);
         
         String meterNumber = rs.getString("meterNumber");
-        
-        builder.summaryArgs(meterNumber);
+        if (paoIdentifier.getPaoType().isRfn()) {
+            addressOrSerialNumber = rs.getString("serialNumber");
+        } else if (paoIdentifier.getPaoType().isPlc()) {
+            addressOrSerialNumber = rs.getString("address");
+        }
+
+        builder.summaryArgs(meterNumber, addressOrSerialNumber);
     }
     
     @Override
