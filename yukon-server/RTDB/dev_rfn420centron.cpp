@@ -104,7 +104,7 @@ void Rfn420CentronDevice::handleCommandResult(const Commands::RfnCentronSetLcdCo
 {
     Rfn410CentronDevice::handleCommandResult(cmd);
 
-    if( cmd.disconnect_display.is_initialized() )
+    if( cmd.disconnect_display )
     {
         setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_LcdDisconnectDisplayDisabled, cmd.disconnect_display == Commands::RfnCentronGetLcdConfigurationCommand::DisconnectDisplayDisabled);
     }

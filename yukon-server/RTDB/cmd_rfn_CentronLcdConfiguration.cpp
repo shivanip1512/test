@@ -280,12 +280,12 @@ RfnCommandResult RfnCentronSetLcdConfigurationCommand::decodeCommand(const CtiTi
 
     resultDescription << "Display metrics successfully set" << describeMetrics(display_metrics);
 
-    if( disconnect_display.is_initialized() )
+    if( disconnect_display )
     {
-        resultDescription 
-                << "\nDisconnect display: " 
-                << (*disconnect_display 
-                       ? "enabled" 
+        resultDescription
+                << "\nDisconnect display: "
+                << (*disconnect_display
+                       ? "enabled"
                        : "disabled");
     }
 
@@ -351,7 +351,7 @@ RfnCommand::Bytes RfnCentronSetLcdConfigurationCommand::getCommandData()
     data.push_back(Slot_CycleDelay);
     data.push_back(cycle_time);
 
-    if( disconnect_display.is_initialized() )
+    if( disconnect_display )
     {
         data.push_back(Slot_DisconnectDisplay);
         data.push_back(*disconnect_display);
