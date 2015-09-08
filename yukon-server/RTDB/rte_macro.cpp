@@ -191,6 +191,19 @@ YukonError_t MacroRoute::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
             }
         }
 
+        if(!retList.empty())
+        {
+            size_t count = retList.size()-1;
+
+            // Set expectMore on the CtiReturnMsgs, but don't touch the last one if there was no OM sent.
+            //   That probably means the command is done, but do NOT unset it in case it was manually set.
+            for each (auto retMsg in retList)
+            {
+                static_cast<CtiReturnMsg *>(retMsg)->setExpectMore(true);
+                if(--count == 0) break;
+            }
+        }
+
         /* if(OutMessage)       // 20050217 CGP.  This OM will be deleted elsewhere dev_base.cpp as OutMessageTemplate.
         {
             delete OutMessage;
