@@ -34,7 +34,8 @@ public class Field implements Displayable {
     }
     
     public String getDisplayName() {
-        return type == FieldType.ATTRIBUTE? attribute.getAttribute().getKey(): type.getKey();
+        return (type == FieldType.ATTRIBUTE && attribute.getAttribute() != null) ? attribute.getAttribute().getKey()
+            : type.getKey();
     }
     
     public boolean isAttributeType() {
@@ -48,7 +49,8 @@ public class Field implements Displayable {
     @JsonIgnore
     @Override
     public MessageSourceResolvable getMessage() {
-        return type == FieldType.ATTRIBUTE? attribute.getAttribute().getMessage() : type.getMessage();
+        return (type == FieldType.ATTRIBUTE && attribute.getAttribute() != null)
+            ? attribute.getAttribute().getMessage() : type.getMessage();
     }
 
     @Override
