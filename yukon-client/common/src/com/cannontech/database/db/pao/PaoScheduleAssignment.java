@@ -4,7 +4,7 @@ import org.joda.time.Instant;
 
 public class PaoScheduleAssignment implements Comparable<PaoScheduleAssignment> {
 
-    private int eventId;
+    private Integer eventId;
     private int scheduleId;
     private int paoId;
     private String deviceName;
@@ -63,7 +63,7 @@ public class PaoScheduleAssignment implements Comparable<PaoScheduleAssignment> 
         this.commandId = commandId;
     }
 
-    public int getEventId() {
+    public Integer getEventId() {
         return eventId;
     }
 

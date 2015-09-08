@@ -175,9 +175,6 @@ public class TierController {
         boolean hasSubBusControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_SUBBUS_CONTROLS, user);
         model.addAttribute("hasSubBusControl", hasSubBusControl);
         
-        boolean hasFeederControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_FEEDER_CONTROLS, user);
-        model.addAttribute("hasFeederControl", hasFeederControl);
-        
         boolean hasCapbankControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, user);
         model.addAttribute("hasCapbankControl", hasCapbankControl);
         

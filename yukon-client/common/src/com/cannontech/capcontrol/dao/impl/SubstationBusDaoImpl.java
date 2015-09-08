@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -24,7 +25,6 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.impl.LitePaoRowMapper;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlParameterSink;
@@ -37,11 +37,10 @@ import com.cannontech.yukon.IDatabaseCache;
 
 public class SubstationBusDaoImpl implements SubstationBusDao {
     
-    @Autowired private IDatabaseCache dbCache;
     @Autowired private DbChangeManager dbChangeManager;
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private IDatabaseCache dbCache;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private ZoneDao zoneDao;
-    @Autowired private PaoDao paoDao;
     
     private static final ParameterizedRowMapper<SubstationBus> rowMapper = new ParameterizedRowMapper<SubstationBus>() {
         @Override
@@ -86,7 +85,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         sql.append("FROM CapControlSubstationBus, YukonPAObject YP");
         sql.append("WHERE SubstationBusID = YP.PAObjectID AND SubstationBusID").eq(id);
         
-        SubstationBus sub = yukonJdbcTemplate.queryForObject(sql, rowMapper);
+        SubstationBus sub = jdbcTemplate.queryForObject(sql, rowMapper);
         
         return sub;
     }
@@ -99,7 +98,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         sql.append("FROM YukonPaObject PAO");
         sql.append("    JOIN CapControlSubstationBus S ON PAO.PaObjectID = S.SubstationBusID");
         
-        List<PaoIdentifier> listmap = yukonJdbcTemplate.query(sql, RowMapper.PAO_IDENTIFIER);
+        List<PaoIdentifier> listmap = jdbcTemplate.query(sql, RowMapper.PAO_IDENTIFIER);
         
         return listmap;
     }
@@ -120,7 +119,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         sql.append(   "(SELECT SubstationBusID");
         sql.append(   " FROM CCSubstationSubBusList)");
         
-        List<LiteYukonPAObject> buses = yukonJdbcTemplate.query(sql, new LitePaoRowMapper());
+        List<LiteYukonPAObject> buses = jdbcTemplate.query(sql, new LitePaoRowMapper());
         
         return buses;
     }
@@ -135,17 +134,28 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         sql.append("    AND PAObjectID not in (SELECT SubstationBusId FROM CCSubstationSubBusList)");
         sql.append("ORDER BY PAOName");
         
-        List<LiteCapControlObject> orphans = yukonJdbcTemplate.query(sql, CapbankControllerDao.LITE_ORPHAN_MAPPER);
+        List<LiteCapControlObject> orphans = jdbcTemplate.query(sql, CapbankControllerDao.LITE_ORPHAN_MAPPER);
         
         return orphans;
     }
     
     @Override
     public boolean assignSubstationBus(YukonPao subBus, String substationName) {
+        
+        LiteYukonPAObject substation = dbCache.getAllCapControlSubStations()
+            .parallelStream()
+            .filter(new Predicate<LiteYukonPAObject>() {
 
-        YukonPao substation = paoDao.findYukonPao(substationName, PaoType.CAP_CONTROL_AREA);
+                @Override
+                public boolean test(LiteYukonPAObject station) {
+                    return station.getPaoName().equals(substationName);
+                }
+            })
+            .findFirst()
+            .get();
+
         return (substation == null) ? false : assignSubstationBus(substation, subBus);
-    };
+    }
   
     @Override
     public boolean assignSubstationBus(YukonPao substation, YukonPao substationBus) {
@@ -156,7 +166,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         displaySql.append("FROM CCSubstationSubBusList");
         displaySql.append("WHERE SubstationID").eq(substationId);
 
-        int displayOrder = yukonJdbcTemplate.queryForInt(displaySql);
+        int displayOrder = jdbcTemplate.queryForInt(displaySql);
 
         // remove any existing assignment
         unassignSubstationBus(substationBus);
@@ -168,7 +178,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         params.addValue("SubstationBusID", substationBus.getPaoIdentifier().getPaoId());
         params.addValue("DisplayOrder", ++displayOrder);
 
-        int rowsAffected = yukonJdbcTemplate.update(assignSql);
+        int rowsAffected = jdbcTemplate.update(assignSql);
 
         boolean result = (rowsAffected == 1);
 
@@ -187,7 +197,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         sql.append("DELETE FROM CCSubstationSubBusList");
         sql.append("WHERE SubstationBusID").eq(substationBus.getPaoIdentifier().getPaoId());
 
-        int rowsAffected = yukonJdbcTemplate.update(sql);
+        int rowsAffected = jdbcTemplate.update(sql);
 
         boolean result = (rowsAffected == 1);
 
@@ -201,7 +211,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         sql.append("SELECT P.PointId, YPO.PaoName, YPO.PAObjectId, YPO.Type");
         buildBankStatusPointQueryEnd(sql,substationBusId);        
         
-        List<CymePaoPoint> statusPoints = yukonJdbcTemplate.query(sql,cymePaoPointRowMapper);
+        List<CymePaoPoint> statusPoints = jdbcTemplate.query(sql,cymePaoPointRowMapper);
         
         return statusPoints;
     }
@@ -223,7 +233,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         sql.append("WHERE SubstationBusId").eq(substationBusId);
         
         try {
-            PointIdContainer points = yukonJdbcTemplate.queryForObject(sql, FeederDao.pointIdContainerMapper);
+            PointIdContainer points = jdbcTemplate.queryForObject(sql, FeederDao.pointIdContainerMapper);
             return points;
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Bus not found with Id:" + substationBusId);
@@ -238,7 +248,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         sql.append("JOIN YukonPaObject YPO on YPO.PaObjectId = FSA.FeederID");
         sql.append("WHERE FSA.SubStationBusID").eq(subbusId);
         
-        return yukonJdbcTemplate.query(sql, RowMapper.STRING);
+        return jdbcTemplate.query(sql, RowMapper.STRING);
     }
     
     @Override

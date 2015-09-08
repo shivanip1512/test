@@ -23,6 +23,30 @@ public class ViewableFeeder {
         usePhaseData = feeder.getUsePhaseData();
     }
 
+    public void setCcId(int id) {
+        ccId = id;
+    }
+
+    public void setCcName(String name) {
+        ccName = name;
+    }
+
+    public void setParentId(int parentId) {
+        this.parentId = parentId;
+    }
+
+    public void setIvvcControlled(boolean ivvcControlled) {
+        this.ivvcControlled = ivvcControlled;
+    }
+
+    public void setIndividualFeederControlled(boolean individualFeederControlled) {
+        this.individualFeederControlled = individualFeederControlled;
+    }
+
+    public void setUsePhaseData(boolean usePhaseData) {
+        this.usePhaseData = usePhaseData;
+    }
+
     public final boolean isUsePhaseData() {
         return usePhaseData;
     }

@@ -1,5 +1,6 @@
 package com.cannontech.database.data.capcontrol;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,7 @@ import com.cannontech.database.db.capcontrol.CapControlSubstationBus;
 import com.cannontech.spring.YukonSpringHook;
 
 public class CapControlSubBus extends CapControlYukonPAOBase implements EditorPanel {
+
     public static final String ENABLE_OPSTATE = "subEnabled";
     public static final String DISABLE_OPSTATE = "subDisabled";
     public static final String ENABLE_OVUVSTATE = "subOVUVEnabled";
@@ -75,9 +77,9 @@ public class CapControlSubBus extends CapControlYukonPAOBase implements EditorPa
         }
     }
 
-    public com.cannontech.database.db.capcontrol.CapControlSubstationBus getCapControlSubstationBus() {
+    public CapControlSubstationBus getCapControlSubstationBus() {
         if( capControlSubstationBus == null )
-            capControlSubstationBus = new com.cannontech.database.db.capcontrol.CapControlSubstationBus();
+            capControlSubstationBus = new CapControlSubstationBus();
 
         return capControlSubstationBus;
     }
@@ -108,7 +110,7 @@ public class CapControlSubBus extends CapControlYukonPAOBase implements EditorPa
             getChildList().get(i).setSubstationBusID( subBusID );
     }
 
-    public void setCapControlSubstationBus(com.cannontech.database.db.capcontrol.CapControlSubstationBus newCapControlSubstationBus) {
+    public void setCapControlSubstationBus(CapControlSubstationBus newCapControlSubstationBus) {
         capControlSubstationBus = newCapControlSubstationBus;
     }
 
@@ -117,7 +119,7 @@ public class CapControlSubBus extends CapControlYukonPAOBase implements EditorPa
     }
 
     @Override
-    public void setDbConnection(java.sql.Connection conn) {
+    public void setDbConnection(Connection conn) {
         super.setDbConnection( conn );
         getCapControlSubstationBus().setDbConnection(conn);
 

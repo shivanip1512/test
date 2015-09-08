@@ -217,8 +217,9 @@ public class AreasController {
     
     /** SAVE INFO */
     @RequestMapping(value="areas/{areaId}/info", method=RequestMethod.PUT)
-    public String saveInfo(HttpServletResponse resp, ModelMap model, 
-            @ModelAttribute("area") Area area, BindingResult result, FlashScope flash) {
+    public String saveInfo(HttpServletResponse resp, 
+            @ModelAttribute("area") Area area, BindingResult result, 
+            FlashScope flash) {
         
         validator.validate(area, result);
         
@@ -237,7 +238,7 @@ public class AreasController {
     
     /** SUB ASSIGNMENT POPUP */
     @RequestMapping("areas/{areaId}/stations/edit")
-    public String subAssignmentPopup(ModelMap model, LiteYukonUser user, @PathVariable int areaId) {
+    public String subAssignmentPopup(ModelMap model, @PathVariable int areaId) {
         
         LiteYukonPAObject pao = dbcache.getAllPaosMap().get(areaId);
         
@@ -268,8 +269,7 @@ public class AreasController {
     
     /** SUB ASSIGNMENT SAVE */
     @RequestMapping(value="areas/{areaId}/stations", method=RequestMethod.POST)
-    public void subAssignmentSave(HttpServletResponse resp, ModelMap model,
-            @PathVariable int areaId, FlashScope flash,
+    public void subAssignmentSave(HttpServletResponse resp, @PathVariable int areaId, FlashScope flash,
             @RequestParam("stations[]") Integer[] stations) {
         
         substationDao.updateSubAssignments(areaId, Arrays.asList(stations));

@@ -77,10 +77,10 @@
         <c:set var="checked" value="${not checked}"/>
     </c:if>
     <c:if test="${checked}">
-        <span class="${color ? 'green' : ''}"><cti:msg2 key="${onNameKey}"/></span>
+        <span class="${classes} ${color ? 'green' : ''}"><cti:msg2 key="${onNameKey}"/></span>
     </c:if>
     <c:if test="${not checked}">
-        <span class="${color ? 'red' : ''}"><cti:msg2 key="${offNameKey}"/></span>
+        <span class="${classes} ${color ? 'red' : ''}"><cti:msg2 key="${offNameKey}"/></span>
     </c:if>
 </cti:displayForPageEditModes>
 

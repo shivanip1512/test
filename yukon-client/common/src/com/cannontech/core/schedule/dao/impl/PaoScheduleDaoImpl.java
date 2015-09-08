@@ -38,7 +38,7 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
 
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private NextValueHelper nextValueHelper;
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
 
     static {
         assignmentRowMapper = new YukonRowMapper<PaoScheduleAssignment>() {
@@ -120,7 +120,7 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
         sql.append("FROM PAOSchedule");
         sql.append("WHERE ScheduleID").eq(id);
 
-        return yukonJdbcTemplate.queryForObject(sql, scheduleRowMapper);
+        return jdbcTemplate.queryForObject(sql, scheduleRowMapper);
     }
 
     @Override
@@ -131,7 +131,7 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
         sql.append("WHERE ScheduleName").eq(name);
 
         try {
-            return yukonJdbcTemplate.queryForObject(sql, scheduleRowMapper);
+            return jdbcTemplate.queryForObject(sql, scheduleRowMapper);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -144,7 +144,7 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
         sql.append("FROM PAOSchedule");
         sql.append("ORDER BY ScheduleName");
 
-        List<PaoSchedule> scheduleNames = yukonJdbcTemplate.query(sql, scheduleRowMapper);
+        List<PaoSchedule> scheduleNames = jdbcTemplate.query(sql, scheduleRowMapper);
         return scheduleNames;
     }
 
@@ -166,7 +166,7 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
         sink.addValue("ScheduleName", name);
         sink.addValue("Disabled", disabled ? YNBoolean.YES : YNBoolean.NO);
 
-        yukonJdbcTemplate.update(sql);
+        jdbcTemplate.update(sql);
 
         return scheduleId;
     }
@@ -184,7 +184,7 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(selectAllAssignments);
 
-        List<PaoScheduleAssignment> assignmentList = yukonJdbcTemplate.query(sql, assignmentRowMapper);
+        List<PaoScheduleAssignment> assignmentList = jdbcTemplate.query(sql, assignmentRowMapper);
         return assignmentList;
     }
 
@@ -201,7 +201,7 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
         sql.append("AND sa.EventID").eq(eventId);
 
         try {
-            PaoScheduleAssignment assignment = yukonJdbcTemplate.queryForObject(sql, assignmentRowMapper);
+            PaoScheduleAssignment assignment = jdbcTemplate.queryForObject(sql, assignmentRowMapper);
             return assignment;
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("PaoSchedule with id of " + eventId + " was not found.");
@@ -222,7 +222,7 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
         sql.append("AND sa.ScheduleId").eq(scheduleId);
 
         
-        List<PaoScheduleAssignment> assignment = yukonJdbcTemplate.query(sql, assignmentRowMapper);
+        List<PaoScheduleAssignment> assignment = jdbcTemplate.query(sql, assignmentRowMapper);
         return assignment;
     }
     
@@ -239,7 +239,7 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
         
         sql.append("WHERE EventId").eq(assignment.getEventId());
         
-        int rowsAffected = yukonJdbcTemplate.update(sql);
+        int rowsAffected = jdbcTemplate.update(sql);
         
         return rowsAffected == 1;
     }
@@ -257,7 +257,7 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
         sink.addValue("Command", pao.getCommandName());
         sink.addValue("DisableOVUV", pao.getDisableOvUv());
         
-        int rowsAffected = yukonJdbcTemplate.update(sql);
+        int rowsAffected = jdbcTemplate.update(sql);
         return rowsAffected == 1;
     }
 
@@ -281,7 +281,7 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
         sql.append("DELETE FROM PAOScheduleAssignment");
         sql.append("WHERE EventID").eq(eventId);
         
-        int rowsAffected = yukonJdbcTemplate.update(sql);
+        int rowsAffected = jdbcTemplate.update(sql);
         return rowsAffected == 1;
     }
 
@@ -292,7 +292,7 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
         sql.append("DELETE FROM PAOScheduleAssignment");
         sql.append("WHERE ScheduleId").eq(scheduleId);
         
-        int rowsAffected = yukonJdbcTemplate.update(sql);
+        int rowsAffected = jdbcTemplate.update(sql);
         return rowsAffected == 1;
     }
 
@@ -305,7 +305,7 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
         sql.append("DELETE FROM PAOSchedule");
         sql.append("WHERE ScheduleId").eq(scheduleId);
         
-        int rowsAffected = yukonJdbcTemplate.update(sql);
+        int rowsAffected = jdbcTemplate.update(sql);
 
         DBChangeMsg changeMessage = makeScheduleDbChangeMsg(scheduleId, DbChangeType.DELETE);
         dbChangeManager.processDbChange(changeMessage);
@@ -320,7 +320,7 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
         sql.append("SELECT COUNT(*) FROM PaoSchedule");
         sql.append("WHERE ScheduleName").eq(name);
         
-        int numWithName = yukonJdbcTemplate.queryForInt(sql);
+        int numWithName = jdbcTemplate.queryForInt(sql);
 
         return numWithName != 0;
     }
@@ -336,7 +336,7 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
     
     @PostConstruct
     public void init() throws Exception {
-        scheduleTemplate = new SimpleTableAccessTemplate<PaoSchedule>(yukonJdbcTemplate, nextValueHelper);
+        scheduleTemplate = new SimpleTableAccessTemplate<PaoSchedule>(jdbcTemplate, nextValueHelper);
         scheduleTemplate.setTableName("PAOSchedule");
         scheduleTemplate.setPrimaryKeyField("ScheduleId");
         scheduleTemplate.setAdvancedFieldMapper(scheduleMapper);
