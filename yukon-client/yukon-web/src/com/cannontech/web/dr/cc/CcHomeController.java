@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.IntFunction;
+import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
@@ -325,13 +326,21 @@ public class CcHomeController {
             EconomicEvent initialEvent = economicEventDao.getForId(event.getInitialEventId());
             List<EconomicEventParticipant> initialParticipants = economicEventParticipantDao.getForEvent(initialEvent);
             List<Integer> extensionCustomerIds = new ArrayList<>();
+            List<CICustomerStub> extensionCustomers = new ArrayList<>();
             for (EconomicEventParticipant originalParticipant : initialParticipants) {
                 CICustomerStub customer = originalParticipant.getCustomer();
                 if (ciCurtailmentService.canCustomerParticipateInExtension(event, customer)) {
                     extensionCustomerIds.add(customer.getId());
+                    extensionCustomers.add(customer);
                 }
             }
-            return "redirect:/dr/cc/confirmation";
+            event.setSelectedCustomerIds(extensionCustomerIds);
+            model.addAttribute("extensionCustomers", extensionCustomers);
+            
+            List<DateTime> windowTimes = getWindowTimes(event);
+            model.addAttribute("windowTimes", windowTimes);
+            
+            return "/dr/cc/confirmation.jsp";
         } else {
             List<AvailableProgramGroup> availableGroups = programService.getAvailableProgramGroups(program);
             model.addAttribute("availableGroups", availableGroups);
@@ -363,7 +372,7 @@ public class CcHomeController {
         return "dr/cc/customerVerification.jsp";
     }
     
-    private void setUpCustomerVerificationModel(ModelMap model, CiInitEventModel event, YukonUserContext userContext) {
+    private List<GroupCustomerNotif> setUpCustomerVerificationModel(ModelMap model, CiInitEventModel event, YukonUserContext userContext) {
         //Determine which customers to display (and exclusions which prevent customers from being selected)
         Map<Integer, List<Exclusion>> exclusions = new HashMap<>();
         List<Group> selectedGroups = groupService.getGroupsById(event.getSelectedGroupIds());
@@ -414,6 +423,8 @@ public class CcHomeController {
             cfdUpdaters.put(customerNotif.getId(), updaterString);
         }
         model.addAttribute("cfdUpdaters", cfdUpdaters);
+        
+        return customerNotifs;
     }
     
     @RequestMapping("/cc/program/{programId}/confirmation")
@@ -445,14 +456,19 @@ public class CcHomeController {
         model.addAttribute("customerNotifs", customerNotifs);
         
         if (event.getEventType().isEconomic()) {
-            int numberOfWindows = event.getNumberOfWindows();
-            List<DateTime> windowTimes = new ArrayList<>(numberOfWindows);
-            for (int i = 0; i < numberOfWindows; i++) {
-                DateTime windowStart = event.getStartTime().plus(Duration.standardHours(i));
-                windowTimes.add(windowStart);
-            }
+            List<DateTime> windowTimes = getWindowTimes(event);
             model.addAttribute("windowTimes", windowTimes);
         }
+    }
+    
+    private List<DateTime> getWindowTimes(CiInitEventModel event) {
+        int numberOfWindows = event.getNumberOfWindows();
+        List<DateTime> windowTimes = new ArrayList<>(numberOfWindows);
+        for (int i = 0; i < numberOfWindows; i++) {
+            DateTime windowStart = event.getStartTime().plus(Duration.standardHours(i));
+            windowTimes.add(windowStart);
+        }
+        return windowTimes;
     }
     
     @RequestMapping("/cc/program/{programId}/createEvent")
@@ -526,7 +542,6 @@ public class CcHomeController {
         return "dr/cc/history.jsp";
     }
     
-    //TODO: test
     @RequestMapping("/cc/program/{programId}/event/{eventId}/cancel")
     public String cancelEvent(@PathVariable int programId,
                               @PathVariable int eventId,
@@ -547,17 +562,17 @@ public class CcHomeController {
                 EconomicEvent event = economicEventDao.getForId(eventId);
                 strategy.cancelEvent(event, user);
             }
-            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.detail.cancel.error"));
+            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.detail.cancel.success"));
         } catch (RuntimeException e) {
             // Unfortunate to have to catch this. 
             // Consider changing to a more specific exception in strategy.
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.detail.cancel.success"));
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.detail.cancel.error"));
+            log.error("Error cancelling event.", e);
         }
         
-        return "redirect:/dr/cc/program/" + programId + "/event/" + eventId;
+        return "redirect:/dr/cc/program/" + programId + "/event/" + eventId + "/detail";
     }
     
-    //TODO: test 
     @RequestMapping("/cc/program/{programId}/event/{eventId}/suppress")
     public String suppressEvent(@PathVariable int programId,
                                 @PathVariable int eventId,
@@ -569,10 +584,9 @@ public class CcHomeController {
         strategy.suppressEvent(event, user);
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.detail.suppress.success"));
         
-        return "redirect:/dr/cc/program/" + programId + "/event/" + eventId;
+        return "redirect:/dr/cc/program/" + programId + "/event/" + eventId + "/detail";
     }
     
-    //TODO: test
     @RequestMapping("/cc/program/{programId}/event/{eventId}/revise")
     public String reviseEvent(ModelMap model,
                               @PathVariable int programId,
@@ -580,6 +594,8 @@ public class CcHomeController {
                               LiteYukonUser user,
                               FlashScope flash) {
         
+        Program program = programService.getProgramById(programId);
+        model.addAttribute("program", program);
         model.addAttribute("programId", programId);
         model.addAttribute("eventId", eventId);
         
@@ -588,22 +604,22 @@ public class CcHomeController {
         
         try {
             EconomicEventPricing nextRevision = strategy.createEventRevision(event, user);
-            List<EconomicEventPricingWindow> list = 
+            List<EconomicEventPricingWindow> nextRevisionPrices = 
                     new ArrayList<EconomicEventPricingWindow>(nextRevision.getWindows().values());
-            Collections.sort(list);
+            Collections.sort(nextRevisionPrices);
+            model.addAttribute("nextRevisionPrices", nextRevisionPrices);
             
             return "dr/cc/reviseEconomicEvent.jsp";
         } catch (EventModificationException e) {
             flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.detail.revise.error"));
-            return "redirect:/dr/cc/program/" + programId + "/event/" + eventId;
+            return "redirect:/dr/cc/program/" + programId + "/event/" + eventId + "/detail";
         }
     }
     
-    //TODO: test
     @RequestMapping("/cc/program/{programId}/event/{eventId}/reviseComplete")
     public String reviseEventComplete(@PathVariable int programId,
                                       @PathVariable int eventId,
-                                      List<BigDecimal> prices,
+                                      @RequestParam double[] prices,
                                       LiteYukonUser user,
                                       FlashScope flash) {
         
@@ -615,17 +631,16 @@ public class CcHomeController {
                 new ArrayList<EconomicEventPricingWindow>(nextRevision.getWindows().values());
         Collections.sort(pricingWindows);
         for (int i = 0; i < pricingWindows.size(); i++) {
-            BigDecimal newPrice = prices.get(i);
+            BigDecimal newPrice = new BigDecimal(prices[i]);
             pricingWindows.get(i).setEnergyPrice(newPrice);
         }
         
         strategy.saveRevision(nextRevision);
         
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.init.reviseEconomicEvent.success"));
-        return "dr/cc/program/" + programId + "/event/" + eventId;
+        return "redirect:/dr/cc/program/" + programId + "/event/" + eventId + "/detail";
     }
     
-    //TODO: test
     @RequestMapping("/cc/program/{programId}/event/{eventId}/extend")
     public String extendEvent(ModelMap model,
                               YukonUserContext userContext,
@@ -641,6 +656,7 @@ public class CcHomeController {
         CiEventType eventType = CiEventType.of(strategyString);
         event.setEventType(eventType);
         event.setInitialEventId(eventId); //this marks the event as an extension
+        model.addAttribute("eventType", eventType);
         
         EconomicEvent previousEvent = economicEventDao.getForId(eventId);
         
@@ -660,12 +676,11 @@ public class CcHomeController {
         
         int programDefaultDuration = programParameterDao.getParameterValueInt(program, ProgramParameterKey.DEFAULT_EVENT_DURATION_MINUTES);
         event.setDuration(programDefaultDuration);
-        event.setNumberOfWindows(programDefaultDuration / 60);
+        event.setNumberOfWindows(programDefaultDuration / 60 / 2);
         
         return "dr/cc/init.jsp";
     }
     
-    //TODO: test
     @RequestMapping("/cc/program/{programId}/event/{eventId}/adjust")
     public String adjustEvent(ModelMap model,
                               @ModelAttribute("event") CiInitEventModel event, 
@@ -690,7 +705,6 @@ public class CcHomeController {
         return "dr/cc/init.jsp";
     }
     
-    //TODO: test
     @RequestMapping("/cc/program/{programId}/event/{eventId}/completeEventAdjustment")
     public String completeAdjustEvent(LiteYukonUser user,
                                       @ModelAttribute("event") CiInitEventModel event, 
@@ -710,7 +724,6 @@ public class CcHomeController {
         return "redirect:/dr/cc/program/" + programId + "/event/" + eventId + "/detail";
     }
     
-    //TODO: test
     //A.K.A "Split" event
     @RequestMapping("/cc/program/{programId}/event/{eventId}/remove")
     public String removeEvent(ModelMap model,
@@ -738,12 +751,26 @@ public class CcHomeController {
                                                 }).collect(Collectors.toList());
         event.setSelectedGroupIds(groupIds);
         
+        // Copy over parameters from original event
+        CurtailmentEvent originalEvent = curtailmentEventDao.getForId(eventId);
+        event.setStartTime(new DateTime(originalEvent.getStartTime()));
+        event.setNotificationTime(new DateTime(originalEvent.getNotificationTime()));
+        event.setDuration(originalEvent.getDuration());
+        
         // Set up customers, exclusions, etc. just like original customer verification
-        setUpCustomerVerificationModel(model, event, userContext);
+        List<GroupCustomerNotif> notifs = setUpCustomerVerificationModel(model, event, userContext);
         
         // Only show customers if they participated in the original event
         List<Integer> customers = ciCurtailmentService.getCurtailmentCustomerIds(eventId);
-        event.setSelectedCustomerIds(customers);
+        notifs = notifs.stream()
+                       .filter(new Predicate<GroupCustomerNotif>() {
+                           @Override
+                           public boolean test(GroupCustomerNotif notif) {
+                               return customers.contains(notif.getCustomer().getId());
+                           }
+                       })
+                       .collect(Collectors.toList());
+        model.addAttribute("customerNotifs", notifs);
         
         // Tell the page we're doing a split, not regular customer verification
         model.addAttribute("isSplit", true);
@@ -751,7 +778,6 @@ public class CcHomeController {
         return "dr/cc/customerVerification.jsp";
     }
     
-    //TODO: test
     @RequestMapping("/cc/program/{programId}/event/{eventId}/split")
     public String splitEvent(LiteYukonUser user,
                              @ModelAttribute("event") CiInitEventModel event, 
@@ -766,16 +792,16 @@ public class CcHomeController {
         }
         
         // Determine customers to be removed
-        List<Integer> customerToRemoveIds = event.getSelectedCustomerIds();
-        List<CICustomerStub> customersToRemove = new ArrayList<>();
-        for (Integer customerId : customerToRemoveIds) {
-            CICustomerStub customer = customerPointService.getCustomer(customerId);
-            if (!ciCurtailmentService.canCustomerBeRemovedFromEvent(customer, originalEvent)) {
-                flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.modify.eventModifyFailedForCustomer", customer.getCompanyName()));
-                return "redirect:/dr/cc/program/" + programId + "/event/" + eventId + "/detail";
-            }
-            customersToRemove.add(customer);
-        }
+        List<GroupCustomerNotif> customerNotifsToRemove = groupCustomerNotifDao.getByIds(event.getSelectedCustomerIds());
+        List<CICustomerStub> customersToRemove = customerNotifsToRemove.stream()
+                .map(new Function<GroupCustomerNotif, CICustomerStub>() {
+                    @Override
+                    public CICustomerStub apply(GroupCustomerNotif notif) {
+                        int id = notif.getCustomer().getId();
+                        return customerPointService.getCustomer(id);
+                    }
+                })
+                .collect(Collectors.toList());
         
         int splitEventId = ciEventCreationService.splitEvent(originalEvent, customersToRemove);
         
@@ -1373,7 +1399,7 @@ public class CcHomeController {
         CICustomerStub customer = customerPointService.getCustomer(customerId);
         customerPointService.savePointValues(customer, customerModel.getPointValues());
         
-        //TODO Java8
+        //Java8
         /*
         List<LiteYukonPAObject> activeProgramPaos = customerModel.getActivePrograms()
                 .stream()

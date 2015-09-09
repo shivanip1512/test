@@ -22,6 +22,14 @@ public class Exclusion implements Displayable {
         return status;
     }
     
+    public Object[] getArguments() {
+        return arguments;
+    }
+    
+    public String getKey() {
+        return key;
+    }
+    
     public boolean isForceExcluded() {
         return status == Status.EXCLUDE;
     }

@@ -12,8 +12,8 @@
 <cti:url var="action" value="/dr/cc/program/${programId}/event/${eventId}/reviseComplete"/>
 <form action="${action}">
 	<table class="name-value-table natural-width">
-	    <tr>
-	        <c:forEach var="price" items="nextRevisionPrices">
+	    <c:forEach var="price" items="${nextRevisionPrices}">
+	       <tr>
 	            <td class="name">
 	                <cti:formatDate type="DATEHM" value="${price.startTime}"/>
 	            </td>
@@ -23,13 +23,13 @@
 	            <td>
 	                <i:inline key=".priceUnits"/>
 	            </td>
-	        </c:forEach>
-	    </tr>
+	       </tr>
+	    </c:forEach>
 	</table>
 	<div class="page-action-area">
 	    <cti:button type="submit" classes="action primary" nameKey="submitButton"/>
 	        
-	    <cti:url var="cancelUrl" value="/dr/cc/program/${programId}/event/${eventId}"/>
+	    <cti:url var="cancelUrl" value="/dr/cc/program/${programId}/event/${eventId}/detail"/>
 	    <cti:button href="${cancelUrl}" nameKey="cancel"/>
 	</div>
 </form>

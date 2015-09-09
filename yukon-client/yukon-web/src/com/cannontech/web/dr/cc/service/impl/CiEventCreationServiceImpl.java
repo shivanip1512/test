@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.Validate;
 import org.apache.log4j.Logger;
@@ -47,6 +49,7 @@ import com.cannontech.cc.service.exception.EventCreationException;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.PointException;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.LMDirectCustomerListDao;
 import com.cannontech.core.dao.PointDao;
@@ -305,6 +308,12 @@ public class CiEventCreationServiceImpl implements CiEventCreationService {
         Integer identifier = programDao.incrementAndReturnIdentifier(program);
         economicEvent.setIdentifier(identifier);
         
+        // For event extension, set the initial event being extended.
+        if (event.isEventExtension()) {
+            EconomicEvent initialEvent = economicEventDao.getForId(event.getInitialEventId());
+            economicEvent.setInitialEvent(initialEvent);
+        }
+        
         // Create the revision
         EconomicEventPricing revision = new EconomicEventPricing();
         revision.setRevision(1);
@@ -328,52 +337,87 @@ public class CiEventCreationServiceImpl implements CiEventCreationService {
         int eventId = economicEvent.getId();
         
         // Save the participant customers for the event
-        List<GroupCustomerNotif> customerNotifs = groupCustomerNotifDao.getByIds(event.getSelectedCustomerIds());
-        for (GroupCustomerNotif notif : customerNotifs) {
-            EconomicEventParticipant participant = new EconomicEventParticipant();
-            participant.setCustomer(notif.getCustomer());
-            participant.setEvent(economicEvent);
-            participant.setNotifAttribs(notif.getAttribs());
+        List<GroupCustomerNotif> customerNotifs = null;
+        if (event.isEventExtension()) {
+            EconomicEvent initialEvent = economicEventDao.getForId(event.getInitialEventId());
+            List<EconomicEventParticipant> initialParticipants = economicEventParticipantDao.getForEvent(initialEvent);
+            List<EconomicEventParticipant> extensionParticipants = initialParticipants.stream()
+                    .filter(new Predicate<EconomicEventParticipant>() {
+                        @Override
+                        public boolean test(EconomicEventParticipant participant) {
+                            return event.getSelectedCustomerIds().contains(participant.getCustomer().getId());
+                        }
+                    }).collect(Collectors.toList());
             
-            // create "default" selections for first revision
-            EconomicEventParticipantSelection initialSelection = new EconomicEventParticipantSelection();
-            initialSelection.setPricingRevision(revision);
-            initialSelection.setSubmitTime(creationTime);
-            initialSelection.setState(SelectionState.DEFAULT);
-            initialSelection.setConnectionAudit("default entries");
-            participant.addSelection(initialSelection);
-            
-            BigDecimal lastHourBuy = null;
-            for (EconomicEventPricingWindow window : windows) {
-                BigDecimal energyPrice = window.getEnergyPrice();
-                BigDecimal buyThroughPrice = getCustomerElectionPrice(participant);
-                BigDecimal energyToBuy = null;
-                if (lastHourBuy != null && isCurtailPrice(lastHourBuy)) {
-                    // you curtailed last hour, you shall curtail this hour
-                    energyToBuy = BigDecimal.ZERO;
-                } else if (energyPrice.compareTo(buyThroughPrice) > 0) {
-                    // curtail
-                    energyToBuy = BigDecimal.ZERO;
-                } else {
-                    // buy through
-                    energyToBuy = getCustomerElectionBuyThrough(participant);
-                }
-                EconomicEventParticipantSelectionWindow selectionWindow = new EconomicEventParticipantSelectionWindow();
-                selectionWindow.setEnergyToBuy(energyToBuy);
-                selectionWindow.setWindow(window);
-                initialSelection.addWindow(selectionWindow);
-
-                lastHourBuy = energyToBuy;
+            for (EconomicEventParticipant oldParticipant : extensionParticipants) {
+                EconomicEventParticipant participant = new EconomicEventParticipant();
+                participant.setCustomer(oldParticipant.getCustomer());
+                participant.setEvent(economicEvent);
+                participant.setNotifAttribs(oldParticipant.getNotifAttribs());
+                setUpSelection(participant, revision, creationTime, windows);
+                economicEventParticipantDao.save(participant);
             }
-            economicEventParticipantDao.save(participant);
+            
+        } else {
+            customerNotifs = groupCustomerNotifDao.getByIds(event.getSelectedCustomerIds());
+            for (GroupCustomerNotif notif : customerNotifs) {
+                EconomicEventParticipant participant = new EconomicEventParticipant();
+                participant.setCustomer(notif.getCustomer());
+                participant.setEvent(economicEvent);
+                participant.setNotifAttribs(notif.getAttribs());
+                setUpSelection(participant, revision, creationTime, windows);
+                economicEventParticipantDao.save(participant);
+            }
         }
         
         EconomicEventAction action = event.isEventExtension() ? EconomicEventAction.EXTENDING : EconomicEventAction.STARTING;
         String actionString = event.isEventExtension() ? "extended" : "started";
         notifConnection.sendEconomicNotification(economicEvent.getId(), 1, action);
-        sendNotifications(event, program, identifier, customerNotifs, actionString);
+        
+        if (event.isEventExtension()) {
+            int[] customerIds = CtiUtilities.toArrayUnbox(event.getSelectedCustomerIds());
+            sendNotifications(event, program, identifier, customerIds, actionString);
+        } else {
+            sendNotifications(event, program, identifier, customerNotifs, actionString);
+        }
         
         return eventId;
+    }
+    
+    private void setUpSelection(EconomicEventParticipant participant, EconomicEventPricing revision, Date creationTime, 
+                                List<EconomicEventPricingWindow> windows) throws PointException {
+        
+        // create "default" selections for first revision
+        EconomicEventParticipantSelection initialSelection = new EconomicEventParticipantSelection();
+        initialSelection.setPricingRevision(revision);
+        initialSelection.setSubmitTime(creationTime);
+        initialSelection.setState(SelectionState.DEFAULT);
+        initialSelection.setConnectionAudit("default entries");
+        participant.addSelection(initialSelection);
+        
+        BigDecimal lastHourBuy = null;
+        for (EconomicEventPricingWindow window : windows) {
+            BigDecimal energyPrice = window.getEnergyPrice();
+            BigDecimal buyThroughPrice = getCustomerElectionPrice(participant);
+            BigDecimal energyToBuy = null;
+            if (lastHourBuy != null && isCurtailPrice(lastHourBuy)) {
+                // you curtailed last hour, you shall curtail this hour
+                energyToBuy = BigDecimal.ZERO;
+            } else if (energyPrice.compareTo(buyThroughPrice) > 0) {
+                // curtail
+                energyToBuy = BigDecimal.ZERO;
+            } else {
+                // buy through
+                energyToBuy = getCustomerElectionBuyThrough(participant);
+            }
+            EconomicEventParticipantSelectionWindow selectionWindow = new EconomicEventParticipantSelectionWindow();
+            selectionWindow.setEnergyToBuy(energyToBuy);
+            selectionWindow.setWindow(window);
+            initialSelection.addWindow(selectionWindow);
+
+            lastHourBuy = energyToBuy;
+        }
+        
     }
     
     /**
@@ -409,6 +453,12 @@ public class CiEventCreationServiceImpl implements CiEventCreationService {
         for (int i = 0; i < customerNotifs.size(); i++) {
             customerIds[i] = customerNotifs.get(i).getCustomer().getId();
         }
+        
+        sendNotifications(event, program, programIdentifier, customerIds, action);
+    }
+    
+    private void sendNotifications(CiInitEventModel event, Program program, Integer programIdentifier, 
+                                   int[] customerIds, String action) throws ConnectionException {
         String eventDisplayName = program.getIdentifierPrefix() + programIdentifier;
         DateTime stopTime = event.getStartTime().plus(Duration.standardMinutes(event.getDuration()));
         

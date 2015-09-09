@@ -53,52 +53,87 @@
             </tr>
         </thead>
         <tbody>
-            <c:forEach var="customerNotif" items="${customerNotifs}">
-            <tr>
-	            <td>
-	               <c:set var="disabled" value="false"/>
-	               <c:if test="${not empty exclusions[customerNotif.id]}">
-	                   <c:forEach var="exclusion" items="${exclusions[customerNotif.id]}">
-	                       <c:if test="${exclusion.forceExcluded}">
-			                   <c:set var="disabled" value="true"/>
-		                   </c:if>
-	                   </c:forEach>
-	               </c:if>
-                   <form:checkbox path="selectedCustomerIds" value="${customerNotif.id}" 
-	                              onclick="yukon.dr.curtailment.doCalcSelectedLoad();"
-	                              disabled="${disabled}"/>
-	               ${fn:escapeXml(customerNotif.customer.companyName)}
-	            </td>
-	            <td>
-	               <span class="js-current-load">
-	                   ${currentLoadUpdaters[customerNotif.id]}
-	               </span>
-	            </td>
-	            <td>
-	               <span class="js-cfd">
-	                   ${cfdUpdaters[customerNotif.id]}
-	               </span>
-	            </td>
-	            <td>
-	               <span class="js-load-reduct">
-	                   <i:inline key="yukon.common.dashes"/>
-	               </span>
-	            </td>
-	            <td>
-	               ${customerConstraintStatuses[customerNotif.id]}
-	            </td>
-	            <c:if test="${not empty exclusions[customerNotif.id]}">
-	               <td>
-	                   <span class="js-exclusion-reason error">
-	                       <c:forEach var="exclusion" items="${exclusions[customerNotif.id]}" varStatus="status">
-	                           <c:if test="${status.index gt 0}"><br></c:if>
-	                           <i:inline key="${exclusion}"/>
-	                       </c:forEach>
-	                   </span>
-	               </td>
-	            </c:if>
-	        </tr>
-	        </c:forEach>
+            <c:choose>
+                <c:when test="${isSplit}">
+                    <c:forEach var="customerNotif" items="${customerNotifs}">
+	                    <tr>
+	                        <td>
+	                            <form:checkbox path="selectedCustomerIds" value="${customerNotif.id}" 
+	                                           onclick="yukon.dr.curtailment.doCalcSelectedLoad();"
+	                                           disabled="${disabled}"/>
+	                            ${fn:escapeXml(customerNotif.customer.companyName)}
+	                        </td>
+	                        <td>
+	                           <span class="js-current-load">
+	                               ${currentLoadUpdaters[customerNotif.id]}
+	                           </span>
+	                        </td>
+	                        <td>
+	                           <span class="js-cfd">
+	                               ${cfdUpdaters[customerNotif.id]}
+	                           </span>
+	                        </td>
+	                        <td>
+	                           <span class="js-load-reduct">
+	                               <i:inline key="yukon.common.dashes"/>
+	                           </span>
+	                        </td>
+	                        <td>
+	                           ${customerConstraintStatuses[customerNotif.id]}
+	                        </td>
+	                        <td></td>
+	                    </tr>
+	                </c:forEach>
+                </c:when>
+                <c:otherwise>
+		            <c:forEach var="customerNotif" items="${customerNotifs}">
+		            <tr>
+			            <td>
+			               <c:set var="disabled" value="false"/>
+			               <c:if test="${not empty exclusions[customerNotif.id]}">
+			                   <c:forEach var="exclusion" items="${exclusions[customerNotif.id]}">
+			                       <c:if test="${exclusion.forceExcluded}">
+					                   <c:set var="disabled" value="true"/>
+				                   </c:if>
+			                   </c:forEach>
+			               </c:if>
+		                   <form:checkbox path="selectedCustomerIds" value="${customerNotif.id}" 
+			                              onclick="yukon.dr.curtailment.doCalcSelectedLoad();"
+			                              disabled="${disabled}"/>
+			               ${fn:escapeXml(customerNotif.customer.companyName)}
+			            </td>
+			            <td>
+			               <span class="js-current-load">
+			                   ${currentLoadUpdaters[customerNotif.id]}
+			               </span>
+			            </td>
+			            <td>
+			               <span class="js-cfd">
+			                   ${cfdUpdaters[customerNotif.id]}
+			               </span>
+			            </td>
+			            <td>
+			               <span class="js-load-reduct">
+			                   <i:inline key="yukon.common.dashes"/>
+			               </span>
+			            </td>
+			            <td>
+			               ${customerConstraintStatuses[customerNotif.id]}
+			            </td>
+			            <c:if test="${not empty exclusions[customerNotif.id]}">
+			               <td>
+			                   <span class="js-exclusion-reason error">
+			                       <c:forEach var="exclusion" items="${exclusions[customerNotif.id]}" varStatus="status">
+			                           <c:if test="${status.index gt 0}"><br></c:if>
+			                           <i:inline key="${exclusion.key}"/>
+			                       </c:forEach>
+			                   </span>
+			               </td>
+			            </c:if>
+			        </tr>
+			        </c:forEach>
+			    </c:otherwise>
+			</c:choose>
         </tbody>
     </table>
     </div>

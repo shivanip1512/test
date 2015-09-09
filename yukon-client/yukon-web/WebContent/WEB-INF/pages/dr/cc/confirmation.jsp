@@ -89,6 +89,9 @@
             ${fn:escapeXml(customerNotif.customer.companyName)}
         </li>
     </c:forEach>
+    <c:forEach var="extensionCustomer" items="${extensionCustomers}">
+        <li>${fn:escapeXml(extensionCustomer.companyName)}</li>
+    </c:forEach>
 </ul>
 
 <cti:url var="url" value="/dr/cc/program/${event.programId}/createEvent"/>
@@ -105,7 +108,8 @@
     <form:hidden path="windowPrices"/>
     <form:hidden path="selectedGroupIds"/>
     <form:hidden path="selectedCustomerIds"/>
-
+    <form:hidden path="initialEventId"/>
+    
 	<div class="page-action-area">
 	    <cti:button type="submit" classes="action primary" nameKey="confirm"/>
 	    

@@ -134,8 +134,10 @@ public class CiCustomerVerificationServiceImpl implements CiCustomerVerification
             //Customers are always included for accounting events
         } else if (eventType == CiEventType.DIRECT) {
             verifyDirectProgram(customer, exclusions);
-        } else if (eventType == CiEventType.ISOC_DIRECT || eventType == CiEventType.ISOC_NOTIFICATION) {
+        } else if (eventType == CiEventType.ISOC_DIRECT) {
             verifyDirectProgram(customer, exclusions);
+            doCommonVerifications(customer, event, exclusions);
+        } else if (eventType == CiEventType.ISOC_NOTIFICATION) {
             doCommonVerifications(customer, event, exclusions);
         } else if (eventType == CiEventType.ISOC_SUPERCEDE_DIRECT || eventType == CiEventType.ISOC_SUPERCEDE_NOTIFICATION) {
             verifyNoticeTime(customer, event, exclusions);

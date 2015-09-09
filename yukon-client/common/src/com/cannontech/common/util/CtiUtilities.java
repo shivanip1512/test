@@ -18,11 +18,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -872,6 +874,19 @@ public final class CtiUtilities {
             return Integer.MIN_VALUE;
         }
         return (int) num;
+    }
+    
+    /**
+     * Creates an int array containing the values of an Integer collection.
+     * (Identical to Collection.toArray(), except the values are changed to primatives.
+     */
+    public final static int[] toArrayUnbox(Collection<Integer> collection) {
+        int[] array = new int[collection.size()];
+        Iterator<Integer> iterator = collection.iterator();
+        for (int i = 0; i < array.length; i++) {
+            array[i] = iterator.next();
+        }
+        return array;
     }
     
 }
