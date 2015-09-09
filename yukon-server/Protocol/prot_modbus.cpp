@@ -52,11 +52,6 @@ void ModbusProtocol::setAddresses( unsigned short slaveAddress )
 //Should we use non-blocking reads? It could cause problems with serial over IP and other applications...
 YukonError_t ModbusProtocol::generate( CtiXfer &xfer )
 {
-    if( _points_start == _points_finish )
-    {
-        return ClientErrors::NoPointsOnDevice;
-    }
-
     _asciiOutput = false;
     int i = 0;
     output_point point;
@@ -68,7 +63,6 @@ YukonError_t ModbusProtocol::generate( CtiXfer &xfer )
 
     xfer.getOutBuffer()[i++] = _slaveAddress; //assign slave address
     xfer.setMessageStart(true);//how handy! This clears out my inbuffer so I dont have to worry about garbage in it!
-
 
     prepareNextOutMessage(function,address,lengthOrData);
 
@@ -281,8 +275,16 @@ bool ModbusProtocol::prepareNextOutMessage(int &function,int &address,int &lengt
                     function = (*_points_start).pointType;
                     current = base;
 
-                    while((function == (*_points_finish).pointType) && ((*_points_finish).pointOffset - base < ReadStatusMaxBits)
-                           && (((*_points_finish).pointOffset - current)<=ReadStatusGapBitLimit) && (_points_finish != _points.end()))
+                    /* Run through the list of points and find the next sequence of points that:
+                        All have the same function
+                        We have no more than ReadStatusMaxBits points
+                        The gap between points is no more than ReadStatusGapBitLimit
+                       We will then process all these points in one request and save the next for later.
+                    */
+                    while((_points_finish != _points.end()) &&
+                        (function == (*_points_finish).pointType) && 
+                        ((*_points_finish).pointOffset - base < ReadStatusMaxBits) && 
+                        ((*_points_finish).pointOffset - current <= ReadStatusGapBitLimit))
                     {
                         current = (*_points_finish).pointOffset;
                         _points_finish++;
@@ -302,6 +304,7 @@ bool ModbusProtocol::prepareNextOutMessage(int &function,int &address,int &lengt
                     lengthOrData = 0;
                     retVal =  false;
                 }
+                CTILOG_DEBUG(dout, "Status Read Register command " << (*_points_start).pointType << " from " << base << " to " << current);
                 break;
             }
         case Command_ReadHoldingRegisters:
@@ -314,13 +317,22 @@ bool ModbusProtocol::prepareNextOutMessage(int &function,int &address,int &lengt
                     function = (*_points_start).pointType;
                     current = base;
 
-                    while((function == (*_points_finish).pointType) && ((*_points_finish).pointOffset - base < ReadAnalogDataPointLimit)
-                           && (((*_points_finish).pointOffset - current)<=ReadAnalogGapLimit) && (_points_finish != _points.end()))
+                    /* Run through the list of points and find the next sequence of points that:
+                           All have the same function
+                           We have no more than ReadAnalogDataPointLimit points
+                           The gap between points is no more than ReadAnalogGapLimit
+                       We will then process all these points in one request and save the next for later.
+                    */
+                    while((_points_finish != _points.end()) && 
+                        (function == (*_points_finish).pointType) && 
+                        ((*_points_finish).pointOffset - base < ReadAnalogDataPointLimit) && 
+                        ((*_points_finish).pointOffset - current <= ReadAnalogGapLimit))
                     {
                         current = (*_points_finish).pointOffset;
                         _points_finish++;
                     }
 
+                    // base and current have the start and end point to request
                     if(base == current)
                         lengthOrData = 1;
                     else
@@ -334,6 +346,7 @@ bool ModbusProtocol::prepareNextOutMessage(int &function,int &address,int &lengt
                     lengthOrData = 0;
                     retVal =  false;
                 }
+                CTILOG_DEBUG(dout, "Read Register command " << (*_points_start).pointType << " from " << base << " to " << current);
                 break;
             }
         case Command_DecomposeReadHoldingRegisters:
@@ -346,8 +359,16 @@ bool ModbusProtocol::prepareNextOutMessage(int &function,int &address,int &lengt
                     function = (*_points_start).pointType==Command_DecomposeReadHoldingRegisters ? Command_ReadHoldingRegisters : Command_ReadInputRegisters;
                     current = base;
 
-                    while(((*_points_start).pointType == (*_points_finish).pointType) && ((*_points_finish).pointOffset - base < ReadStatusMaxBits)
-                           && (((*_points_finish).pointOffset - current)<=ReadStatusGapBitLimit) && (_points_finish != _points.end()))
+                    /* Run through the list of points and find the next sequence of points that:
+                        All have the same function
+                        We have no more than ReadStatusMaxBits points
+                        The gap between points is no more than ReadStatusGapBitLimit
+                       We will then process all these points in one request and save the next for later.
+                    */
+                    while((_points_finish != _points.end()) &&
+                        ((*_points_start).pointType == (*_points_finish).pointType) && 
+                        ((*_points_finish).pointOffset - base < ReadStatusMaxBits) && 
+                        ((*_points_finish).pointOffset - current <= ReadStatusGapBitLimit))
                     {
                         current = (*_points_finish).pointOffset;
                         _points_finish++;
@@ -359,6 +380,7 @@ bool ModbusProtocol::prepareNextOutMessage(int &function,int &address,int &lengt
                         lengthOrData = (current - base)/NumBitsPerRegister + (current%NumBitsPerRegister + base%NumBitsPerRegister)>NumBitsPerRegister?1:0 + 1;//+1 so we read base and current
                     address = base/NumBitsPerRegister;
                     retVal = true;
+                    CTILOG_DEBUG(dout, "Decompose Read Register command " << (*_points_start).pointType << " from " << base << " to " << current);
                 }
                 break;
             }
