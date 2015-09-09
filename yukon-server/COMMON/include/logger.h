@@ -6,6 +6,7 @@
 #include "exception_helper.h"
 #include "boostutil.h"
 #include "critical_section.h"
+#include "streamBuffer.h"
 
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
@@ -176,3 +177,81 @@ IM_EX_CTIBASE extern Cti::Logging::LoggerPtr slog; // Global instance. Simulator
 #define CTILOG_UNKNOWN_EXCEPTION_FATAL(...) CTILOG_UNKNOWN_EXCEPTION_LOG(Cti::Logging::Logger::Fatal, __VA_ARGS__)
 #define CTILOG_UNKNOWN_EXCEPTION_ERROR(...) CTILOG_UNKNOWN_EXCEPTION_LOG(Cti::Logging::Logger::Error, __VA_ARGS__)
 #define CTILOG_UNKNOWN_EXCEPTION_WARN(...)  CTILOG_UNKNOWN_EXCEPTION_LOG(Cti::Logging::Logger::Warn,  __VA_ARGS__)
+
+#define CTILOG_ENTRY(logger, message) \
+    Cti::StreamBufferSink logStream_; \
+    logStream_ << message; \
+    Cti::Logging::LogMethodEntry<int> log_entry(logger, __FUNCTION__, logStream_.extractToString(), __FILE__, __FUNCSIG__, __LINE__);
+
+#define CTILOG_ENTRY_RC(logger, message, rc) \
+    Cti::StreamBufferSink logStream_; \
+    logStream_ << message; \
+    Cti::Logging::LogMethodEntry<decltype(rc)> log_entry(logger, __FUNCTION__, logStream_.extractToString(), __FILE__, __FUNCSIG__, __LINE__, rc);
+
+namespace Cti {
+    namespace Logging {
+        template<class RC>
+        class LogMethodEntry
+        {
+            Cti::Logging::LoggerPtr logger;
+            const char* func;
+            const char* func_sig;
+            const char* file;
+            int line;
+            bool rcDefined = false;
+            RC rc;
+
+        public:
+            LogMethodEntry(Cti::Logging::LoggerPtr logger, const char* func, std::string message, char *file, char *func_sig, int line)
+            {
+                if(logger == nullptr || !logger->isLevelEnable(Cti::Logging::Logger::Trace)) return;
+
+                this->logger = logger;
+                this->func = func;
+                this->func_sig = func_sig;
+                this->file = file;
+                this->line = line;
+
+                Cti::StreamBufferSink logStream;
+                logStream << "Entry " << func << "(" << message << ")";
+
+                logger->formatAndForceLog(Cti::Logging::Logger::Trace, logStream, file, func_sig, line);
+            }
+
+            LogMethodEntry(Cti::Logging::LoggerPtr logger, const char* func, std::string message, char *file, char *func_sig, int line, RC &rc)
+            {
+                if(logger == nullptr || !logger->isLevelEnable(Cti::Logging::Logger::Trace)) return;
+
+                this->logger = logger;
+                this->func = func;
+                this->func_sig = func_sig;
+                this->file = file;
+                this->line = line;
+                this->rc = rc;
+                rcDefined = true;
+
+                Cti::StreamBufferSink logStream;
+                logStream << "Entry " << func << "(" << message << ")";
+
+                logger->formatAndForceLog(Cti::Logging::Logger::Trace, logStream, file, func_sig, line);
+            }
+
+            ~LogMethodEntry()
+            {
+                if(logger == nullptr || !logger->isLevelEnable(Cti::Logging::Logger::Trace)) return;
+
+                Cti::StreamBufferSink logStream;
+
+                if(rcDefined)
+                {
+                    logStream << "Exit " << func << "() rc=" << rc;
+                }
+                else
+                {
+                    logStream << "Exit " << func << "()";
+                }
+                logger->formatAndForceLog(Cti::Logging::Logger::Trace, logStream, file, func_sig, line);
+            }
+        };
+    }
+} // namespace Cti::Logging

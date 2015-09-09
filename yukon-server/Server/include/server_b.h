@@ -42,11 +42,11 @@ public:
    void join();
    bool join(unsigned long milliseconds);  //  returns true if thread joined
 
-   void  clientConnect(CtiServer::ptr_type CM);
-   virtual void  clientShutdown(CtiServer::ptr_type CM);
-   virtual YukonError_t clientRegistration(CtiServer::ptr_type CM);
+   void  clientConnect(CtiServer::ptr_type &CM);
+   virtual void  clientShutdown(CtiServer::ptr_type &CM);
+   virtual YukonError_t clientRegistration(CtiServer::ptr_type &CM);
    virtual void  commandMsgHandler(CtiCommandMsg *Cmd);
-   virtual int   clientArbitrationWinner(CtiServer::ptr_type CM);
+   virtual int   clientArbitrationWinner(CtiServer::ptr_type &CM);
    int   clientConfrontEveryone(PULONG pClientCount);
    virtual int   clientPurgeQuestionables(PULONG pDeadClients);
 

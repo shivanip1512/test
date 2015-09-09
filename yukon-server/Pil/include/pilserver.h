@@ -84,7 +84,7 @@ public:
    PilServer(CtiDeviceManager *DM = NULL, CtiPointManager *PM = NULL, CtiRouteManager *RM = NULL);
    virtual ~PilServer();
 
-   void  clientShutdown(CtiServer::ptr_type CM) override;
+   void  clientShutdown(CtiServer::ptr_type &CM) override;
    void  shutdown() override;
 
    YukonError_t executeRequest(const CtiRequestMsg*);

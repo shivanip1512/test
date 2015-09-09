@@ -160,7 +160,7 @@ public:
     CtiVanGogh();
     virtual ~CtiVanGogh();
 
-    void  clientShutdown(CtiServer::ptr_type CM) override;
+    void  clientShutdown(CtiServer::ptr_type &CM) override;
     void  commandMsgHandler(CtiCommandMsg *Cmd) override;
 
     void  shutdown() override;
@@ -168,7 +168,7 @@ public:
 
     void  shutdownAllClients();
 
-    void  registration(CtiServer::ptr_type, const CtiPointRegistrationMsg &aReg);
+    void  registration(CtiServer::ptr_type& CM, const CtiPointRegistrationMsg &aReg);
 
     int   execute();
     void  VGMainThread();
@@ -237,8 +237,8 @@ public:
 
     int clientPurgeQuestionables(PULONG pDeadClients) override;
     std::string getMyServerName() const override;
-    YukonError_t clientRegistration(CtiServer::ptr_type CM) override;
-    int   clientArbitrationWinner(CtiServer::ptr_type CM) override;
+    YukonError_t clientRegistration(CtiServer::ptr_type &CM) override;
+    int   clientArbitrationWinner(CtiServer::ptr_type &CM) override;
     void messageDump(CtiMessage *pMsg);
     void loadRTDB(bool force = false, CtiMessage *pMsg = NULL);     // Loads all relevant RTDB elements
     std::string resolveDeviceNameByPaoId(const LONG PAOId);

@@ -39,12 +39,15 @@ CtiPointConnection::~CtiPointConnection()
     ConnectionManagerCollection.clear();
 }
 
-void CtiPointConnection::AddConnectionManager(CtiServer::ptr_type cm)
+void CtiPointConnection::AddConnectionManager(CtiServer::ptr_type &cm)
 {
    CtiLockGuard<CtiMutex> guard(_classMutex);
-   ConnectionManagerCollection.insert(cm);
+
+   CTILOG_DEBUG(dout, cm->getClientName() << " " << reinterpret_cast<size_t>(cm.get()) << " use_count=" << cm.use_count());
+   auto rc = ConnectionManagerCollection.insert(cm);
+   CTILOG_DEBUG(dout, cm->getClientName() << " " << reinterpret_cast<size_t>(cm.get()) << " use_count=" << cm.use_count() << " ret=" << rc.second);
 }
-void CtiPointConnection::RemoveConnectionManager(CtiServer::ptr_type cm)
+void CtiPointConnection::RemoveConnectionManager(CtiServer::ptr_type &cm)
 {
    CtiLockGuard<CtiMutex> guard(_classMutex);
    bool present = false;
@@ -72,7 +75,7 @@ CtiPointConnection::CollectionType  CtiPointConnection::getManagerList() const
     return ConnectionManagerCollection;
 }
 
-bool CtiPointConnection::HasConnection(const CtiServer::ptr_type cm)
+bool CtiPointConnection::HasConnection(const CtiServer::ptr_type &cm)
 {
    CollectionType::iterator iter = ConnectionManagerCollection.find(cm);
    if(iter != ConnectionManagerCollection.end())

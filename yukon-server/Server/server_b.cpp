@@ -22,21 +22,26 @@ DLLEXPORT bool isQuestionable(CtiServer::ptr_type &ptr, void* narg)
 
 void  CtiServer::shutdown()
 {
+    CTILOG_ENTRY(dout, "");
+
     CtiServerExclusion server_guard(_server_exclusion);
 
     mConnectionTable.getMap().clear();
     MainQueue_.clearAndDestroy();
 }
 
-void  CtiServer::clientConnect(CtiServer::ptr_type CM)
+void  CtiServer::clientConnect(CtiServer::ptr_type &CM)
 {
+    CTILOG_ENTRY(dout, reinterpret_cast<size_t>(CM.get()));
+
     CtiServerExclusion server_guard(_server_exclusion);
-    CTILOG_INFO(dout, "Client Connect on handle " << (unsigned long)CM.get() << " for " << CM->getClientName() << " / " << CM->getClientAppId() << " / " << CM->getPeer() << " / " << CM->who());
-    mConnectionTable.insert((long)CM.get(), CM);
+    CTILOG_INFO(dout, "inserting CM " << reinterpret_cast<size_t>(CM.get()) << ", use_count=" << CM.use_count());
+    mConnectionTable.insert(reinterpret_cast<size_t>(CM.get()), CM);
 }
 
-void CtiServer::clientShutdown(CtiServer::ptr_type CM)
+void CtiServer::clientShutdown(CtiServer::ptr_type &CM)
 {
+    CTILOG_ENTRY(dout, reinterpret_cast<size_t>(CM.get()));
     if(CM)
     {
         CtiServerExclusion server_guard(_server_exclusion);      // Get a lock on it.
@@ -45,15 +50,18 @@ void CtiServer::clientShutdown(CtiServer::ptr_type CM)
         // This call will block until the threads have exited
         CTILOG_INFO(dout, "Client Shutdown on handle " << (unsigned long)CM.get() << " for " << CM->getClientName() << " / " << CM->getClientAppId() << " / " << CM->getPeer() << " / " << CM->who());
 
-        mConnectionTable.remove((unsigned long)CM.get());  // Get it out of the list, if it is in there.
+        CTILOG_INFO(dout, "removing CM, use_count=" << CM.use_count());
+        mConnectionTable.remove(reinterpret_cast<size_t>(CM.get()));  // Get it out of the list, if it is in there.
 
         // This connection manager is abandoned now...
         // delete CM;       // Smart Pointer is no longer held here.  It will destruct on last release.
+
+        CTILOG_INFO(dout, "CM removed, use_count=" << CM.use_count());
     }
 }
 
 
-YukonError_t CtiServer::clientRegistration(CtiServer::ptr_type CM)
+YukonError_t CtiServer::clientRegistration(CtiServer::ptr_type &CM)
 {
     YukonError_t nRet = ClientErrors::None;
     CtiTime  NowTime;
@@ -146,7 +154,7 @@ YukonError_t CtiServer::clientRegistration(CtiServer::ptr_type CM)
         CM->WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::Shutdown, 15));  // Ask the new guy to blow off..
 
         {
-            if(mConnectionTable.remove((long)CM.get()))
+            if(mConnectionTable.remove(reinterpret_cast<size_t>(CM.get())))
             {
                 // This connection manager is abandoned now...
                 // delete CM;   // destructor occurs if no references remain.
@@ -290,7 +298,7 @@ void CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
  * The client CM has just responded that he's the man and the other guy
  * which made him become questionable should be blown away,.. find him.
  *----------------------------------------------------------------------------*/
-int  CtiServer::clientArbitrationWinner(CtiServer::ptr_type CM)
+int  CtiServer::clientArbitrationWinner(CtiServer::ptr_type &CM)
 {
     int status = ClientErrors::None;
     ptr_type Mgr;
@@ -347,6 +355,10 @@ int  CtiServer::clientConfrontEveryone(PULONG pClientCount)
     {
         Mgr = itr->second;
 
+        CTILOG_DEBUG(dout, "Considering confront on " << Mgr->getClientName() << " (" << (unsigned long)Mgr.get() 
+            << "), use_count=" << Mgr.use_count() << " " << " Last Receipt was " << (Now.seconds() - Mgr->getLastReceiptTime().seconds())
+            << " Expiration is " << Mgr->getClientExpirationDelay());
+
         if( (Now.seconds() - Mgr->getLastReceiptTime().seconds()) > Mgr->getClientExpirationDelay() )
         {
             Mgr->setClientQuestionable(TRUE);
@@ -386,6 +398,10 @@ int  CtiServer::clientPurgeQuestionables(PULONG pDeadClients)
 
     while( (Mgr = mConnectionTable.remove(isQuestionable, NULL)) )
     {
+        CTILOG_DEBUG(dout, "Purging " << (unsigned long)Mgr.get() << " for "
+            << Mgr->getClientName() << " / " << Mgr->getClientAppId()
+            << " / " << Mgr->getPeer() << " / " << Mgr->who() << " use_count=" << Mgr.use_count() << " ");
+
         if(pDeadClients != NULL) (*pDeadClients)++;
 
         // delete Mgr; // This connection manager is abandoned now...

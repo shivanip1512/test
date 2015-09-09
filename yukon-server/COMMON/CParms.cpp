@@ -8,6 +8,7 @@
 #include "utility.h"
 #include "shlwapi.h"
 #include "encryption.h"
+#include "logManager.h"
 
 using namespace std;
 
@@ -470,6 +471,8 @@ bool CtiConfigParameters::checkForRefresh()
         {
             LastRefresh = now;
             RefreshConfigParameters();
+            Cti::Logging::LogManager::refresh();
+            slogManager.refresh();
             bRet = true;
         }
     }

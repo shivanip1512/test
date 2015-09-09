@@ -1298,7 +1298,7 @@ YukonError_t PilServer::executeMulti(const CtiMultiMsg *pMulti)
     return status;
 }
 
-void PilServer::clientShutdown(CtiServer::ptr_type CM)
+void PilServer::clientShutdown(CtiServer::ptr_type &CM)
 {
 //#ifdef DEBUG_SHUTDOWN
     CTILOG_INFO(dout, "Now shutting down");

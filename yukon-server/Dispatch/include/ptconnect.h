@@ -11,19 +11,21 @@
 
 class IM_EX_CTIVANGOGH CtiPointConnection
 {
+public:
    // Vector of managers who care about this point.
    typedef std::set< CtiServer::ptr_type > CollectionType;
+
+private:
    CollectionType ConnectionManagerCollection;
    mutable CtiMutex _classMutex;
 
 public:
-
    CtiPointConnection();
    CtiPointConnection(const CtiPointConnection& aRef);
    virtual ~CtiPointConnection();
-   void AddConnectionManager(CtiServer::ptr_type cm);
-   void RemoveConnectionManager(CtiServer::ptr_type cm);
-   bool HasConnection(const CtiServer::ptr_type cm);
+   void AddConnectionManager(CtiServer::ptr_type &cm);
+   void RemoveConnectionManager(CtiServer::ptr_type &cm);
+   bool HasConnection(const CtiServer::ptr_type &cm);
    bool CtiPointConnection::IsEmpty();
    CtiPointConnection& operator=(const CtiPointConnection &aRef);
 

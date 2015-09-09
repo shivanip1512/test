@@ -94,6 +94,7 @@ void CtiConnection::threadInitiate()
 {
     try
     {
+        CTILOG_DEBUG(dout, who() << " - Starting _outthread");
         _outthread.start();
     }
     catch(...)
@@ -107,13 +108,16 @@ void CtiConnection::threadInitiate()
  */
 void CtiConnection::outThreadFunc()
 {
+    CTILOG_DEBUG(dout, "outThreadFunc started");
+
     try
     {
         for(;!_bQuit;)
         {
             if( !_bConnected )
             {
-                if( ! establishConnection() )
+                CTILOG_DEBUG(dout, who() << " - Establishing connection");
+                if(!establishConnection())
                 {
                     _bQuit = _dontReconnect;
 
@@ -147,6 +151,7 @@ void CtiConnection::outThreadFunc()
 
                     try
                     {
+                        CTILOG_DEBUG(dout, "Outbound message " << *_outMessage);
                         sendMessage( *_outMessage );
 
                         _outMessage.reset();
@@ -162,6 +167,8 @@ void CtiConnection::outThreadFunc()
 
             if( !_valid )
             {
+                CTILOG_DEBUG(dout, who() << " - connection no longer valid ");
+
                 // we need to close the producer before receiving all messaging.
                 // this will tell the peer connection that we are closing, but still listening
                 _producer->close();
@@ -191,6 +198,8 @@ void CtiConnection::outThreadFunc()
     }
 
     _valid = false;
+
+    CTILOG_DEBUG(dout, who() << " - outThreadFunc ended");
 }
 
 /**
@@ -627,6 +636,8 @@ void CtiConnection::forceTermination()
  */
 void CtiConnection::triggerReconnect()
 {
+    CTILOG_DEBUG(dout, who() << " - triggerReconnect");
+
     if( ! _valid )
     {
         return;

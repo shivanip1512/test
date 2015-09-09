@@ -1215,7 +1215,8 @@ void CtiCCSubstationBusStore::reset()
         {
             CtiLockGuard<CtiCriticalSection>  guard(getMux());
             {
-                CTILOG_INFO(dout, "Obtained connection to the database..." << " - Resetting substation buses from database...");            }
+                CTILOG_INFO(dout, "Obtained connection to the database..." << " - Resetting substation buses from database...");            
+            }
 
             wasAlreadyRunning = deleteCapControlMaps();
 

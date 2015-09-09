@@ -13,7 +13,7 @@ CtiConnectionManager::CtiConnectionManager( CtiListenerConnection& listenerConn,
    ClientUnique(FALSE),
    ClientQuestionable(FALSE),
    ClientRegistered(FALSE),
-   _clientExpirationDelay(180),
+   _clientExpirationDelay(900),
    _serverRequestId(0),
    CtiServerConnection(listenerConn, inQ)
 {}

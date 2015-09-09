@@ -72,6 +72,8 @@ public:
     void setOutputFormat  (const LogFormats format);
     void start();
 
+    static void refresh();
+
     bool isStarted() const;
 
     LoggerPtr getLogger () const;

@@ -17,7 +17,7 @@
 #include "pt_accum.h"
 #include "pt_status.h"
 #include "debug_timer.h"
-
+#include "ptconnect.h"
 
 #include "con_mgr_vg.h"
 #include "pointdefs.h"
@@ -468,26 +468,32 @@ void CtiPointClientManager::refreshArchivalList(LONG pntID, LONG paoID, const se
     }
 }
 
-int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type CM, const CtiPointRegistrationMsg &aReg, bool debugprint)
+int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type &CM, const CtiPointRegistrationMsg &aReg, DebugPrint debugprint)
 {
     int nRet = 0;
+    CTILOG_ENTRY_RC(dout, "CM=" << reinterpret_cast<size_t>(CM.get()) << ", aReg.getFlags()=" << aReg.getFlags(), nRet);
+
     CtiTime   NowTime;
+    CTILOG_DEBUG(dout, CM->getClientName() << " " << reinterpret_cast<size_t>(CM.get()) << " use_count=" << CM.use_count());
     const int ptcnt = aReg.getCount();
     ConnectionMgrPointMap::iterator conIter = _conMgrPointMap.end();
 
     if(!(aReg.getFlags() & (REG_ADD_POINTS | REG_REMOVE_POINTS)) )     // If add/remove is set, we are augmenting or removing an existing registration (Not the whole thing).
         RemoveConnectionManager(CM);
 
-    if( debugprint )
+    CTILOG_DEBUG(dout, CM->getClientName() << " " << reinterpret_cast<size_t>(CM.get()) << " use_count=" << CM.use_count());
+
+    if(debugprint == DebugPrint::True)
     {
         Cti::StreamBuffer outLog;
-        outLog << CM->getClientName() <<" has registered for "<< ptcnt <<" points:";
+        outLog << CM->getClientName() <<" " << reinterpret_cast<size_t>(CM.get()) << " has registered for "<< ptcnt <<" points:";
         for(int pointNbr = 0 ; pointNbr < ptcnt; pointNbr++)
         {
             outLog << endl << aReg[pointNbr];
         }
 
         CTILOG_DEBUG(dout, outLog);
+        CTILOG_DEBUG(dout, CM->getClientName() << " " << reinterpret_cast<size_t>(CM.get()) << " use_count=" << CM.use_count());
     }
 
     /*
@@ -503,11 +509,22 @@ int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type CM, const
             WeakPointMap tempMap;
             pair<ConnectionMgrPointMap::iterator, bool> tempVal;
             tempVal = _conMgrPointMap.insert(ConnectionMgrPointMap::value_type(CM->hash(*CM.get()), tempMap));
+            if(!tempVal.second)
+            {
+                CTILOG_DEBUG(dout, "Unable to insert into _conMgrPointMap");
+            }
+
             conIter = tempVal.first;
+        }
+        else
+        {
+            CTILOG_DEBUG(dout, "Already have _conMgrPointMap entry for " << hex << CM->hash(*CM.get()));
         }
     }
 
-    for(int i = 0 ; i < ptcnt; i++)
+    CTILOG_DEBUG(dout, CM->getClientName() << " " << reinterpret_cast<size_t>(CM.get()) << " use_count=" << CM.use_count());
+
+    for(int i = 0; i < ptcnt; i++)
     {
         /*
          *  OK, now I walk the list of points looking at each one's ID to find who to add this guy to
@@ -534,6 +551,8 @@ int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type CM, const
                         if( conIter != _conMgrPointMap.end() )
                         {
                             conIter->second.erase(temp->getPointID());
+                            CTILOG_DEBUG(dout, "Removing point " << temp->getPointID() 
+                                << " from _conMgrPointMap(" << hex << CM->hash(*CM.get()) << ") = 0x" << hex << &conIter->second);
                         }
                     }
                     else
@@ -554,31 +573,40 @@ int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type CM, const
 
                         if( conIter != _conMgrPointMap.end() )
                         {
-                            conIter->second.insert(WeakPointMap::value_type(temp->getPointID(), temp));
+                            CTILOG_DEBUG(dout, "Adding point " << temp->getPointID()
+                                << " to _conMgrPointMap(" << hex << CM->hash(*CM.get()) << ") = 0x" << hex << &conIter->second);
+
+                            pair<WeakPointMap::iterator, bool> was = conIter->second.insert(WeakPointMap::value_type(temp->getPointID(), temp));
+
+                            CTILOG_DEBUG(dout, "_conMgrPointMap(" << hex << CM->hash(*CM.get()) << ") has " << dec 
+                                << conIter->second.size() << " entries.  Insert return was " << was.second);
                         }
                     }
                 }
             }
         }
     }
-
-
-
+    CTILOG_DEBUG(dout, CM->getClientName() << " " << reinterpret_cast<size_t>(CM.get()) << " use_count=" << CM.use_count());
 
     return nRet;
 }
 
-int CtiPointClientManager::RemoveConnectionManager(CtiServer::ptr_type CM)
+int CtiPointClientManager::RemoveConnectionManager(CtiServer::ptr_type &CM, DebugPrint debugprint)
 {
     int nRet = 0;
+    CTILOG_ENTRY_RC(dout, "CM=" << reinterpret_cast<size_t>(CM.get()), nRet);
 
     // OK, now I walk the list of points looking at each one's list to remove the CM
     {
         coll_type::writer_lock_guard_t guard(getLock());
         ConnectionMgrPointMap::iterator conIter = _conMgrPointMap.find(CM->hash(*CM.get()));
 
+        CTILOG_DEBUG(dout, CM->getClientName() << " " << reinterpret_cast<size_t>(CM.get()) << " use_count=" << CM.use_count());
+
         if( conIter != _conMgrPointMap.end() && conIter->second.size() > 0 )
         {
+            CTILOG_DEBUG(dout, " point list size=" << conIter->second.size());
+
             long pointID;
             for(WeakPointMap::iterator pointIter = conIter->second.begin(); pointIter != conIter->second.end(); pointIter++)
             {
@@ -587,16 +615,29 @@ int CtiPointClientManager::RemoveConnectionManager(CtiServer::ptr_type CM)
                 PointConnectionMap::iterator iter = _pointConnectionMap.find(pointID);
                 if(iter != _pointConnectionMap.end())
                 {
+                    if(debugprint == DebugPrint::True)
+                    {
+                        CTILOG_DEBUG(dout, "Removing CM " << reinterpret_cast<size_t>(CM.get()) << " from pointid " << pointID);
+                    }
                     iter->second.RemoveConnectionManager(CM);
                     if(iter->second.IsEmpty())
                     {
                         _pointConnectionMap.erase(iter);
                     }
                 }
+                else
+                {
+                    CTILOG_DEBUG(dout, "Cant find pointid " << pointID);
+                }
             }
         }
     }
+
+    CTILOG_DEBUG(dout, CM->getClientName() << " " << reinterpret_cast<size_t>(CM.get()) << " use_count=" << CM.use_count());
+
     _conMgrPointMap.erase(CM->hash(*CM.get()));
+
+    CTILOG_DEBUG(dout, CM->getClientName() << " " << reinterpret_cast<size_t>(CM.get()) << " use_count=" << CM.use_count());
 
     return nRet;
 }
@@ -814,6 +855,7 @@ void CtiPointClientManager::DeleteList(void)
     coll_type::writer_lock_guard_t guard(getLock());
 
     _conMgrPointMap.clear();
+    CTILOG_DEBUG(dout, "Clearing _conMgrPointMap");
     _pointConnectionMap.clear();
     _reasonabilityLimits.clear();
     _limits.clear();
@@ -1165,8 +1207,24 @@ void CtiPointClientManager::erase(long pid)
 //If this is an expiration, the dynamic data is not erased.
 void CtiPointClientManager::removePoint(long pointID, bool isExpiration)
 {
-    for( ConnectionMgrPointMap::iterator iter = _conMgrPointMap.begin(); iter != _conMgrPointMap.end(); iter++ )
+    CTILOG_ENTRY(dout, "pointID=" << pointID << ", isExpiration=" << isExpiration);
+
+    PointConnectionMap::iterator pointConIter = _pointConnectionMap.find(pointID);
+    if(pointConIter != _pointConnectionMap.end())
     {
+        CtiPointConnection::CollectionType collection = pointConIter->second.getManagerList();
+        for(std::set< CtiServer::ptr_type >::iterator pointConIter = collection.begin(); pointConIter != collection.end(); pointConIter++)
+        {
+            CtiServer::ptr_type cm = *pointConIter;
+            CTILOG_INFO(dout, "Pre removePoint " << reinterpret_cast<size_t>(cm.get()) << ", use_count=" << cm.use_count());
+            RemoveConnectionManager(cm);
+            CTILOG_INFO(dout, "Post removePoint " << reinterpret_cast<size_t>(cm.get()) << ", use_count=" << cm.use_count());
+        }
+    }
+
+    for(ConnectionMgrPointMap::iterator iter = _conMgrPointMap.begin(); iter != _conMgrPointMap.end(); iter++)
+    {
+        CTILOG_DEBUG(dout, "Removing point " << pointID << " from _conMgrPointMap @ 0x" << hex << &iter->second);
         iter->second.erase(pointID);
     }
 

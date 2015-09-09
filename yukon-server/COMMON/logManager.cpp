@@ -181,7 +181,10 @@ void LogManager::start()
     log4cxx::helpers::ObjectPtrT<log4cxx::AsyncAppender> asyncAppender(new log4cxx::AsyncAppender);
     asyncAppender->setBufferSize(gConfigParms.getValueAsULong("LOG_BUFFER_SIZE", 1024 * 1024));  //  default is 128, which was not sufficient for heavy logging
 
-    if( _toStdout )
+    // This provides an overall logging level.  
+    LogManager::refresh();
+
+    if(_toStdout)
     {
         std::auto_ptr<TruncatingConsoleAppender> consoleAppender(new TruncatingConsoleAppender(logLayout));
         consoleAppender->setInterval(Timing::Chrono::seconds(gConfigParms.getValueAsULong("LOG_CONSOLE_BURST_INTERVAL_SECONDS", 1)));
@@ -196,6 +199,18 @@ void LogManager::start()
     baseLogger->addAppender(asyncAppender);
 
     _started = true;
+}
+
+void LogManager::refresh()
+{
+    // This provides an overall logging level.  
+    std::string logLevelString = gConfigParms.getValueAsString("LOG_LEVEL", "DEBUG");
+    log4cxx::LevelPtr level = log4cxx::Level::toLevel(logLevelString);
+
+    // Set overall logging level in root logger, which propigates to all children 
+    // unless overriden in the child.
+    log4cxx::LoggerPtr rootLogger = log4cxx::LogManager::getRootLogger();
+    rootLogger->setLevel(level);
 }
 
 bool LogManager::isStarted() const

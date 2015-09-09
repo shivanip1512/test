@@ -104,8 +104,14 @@ public:
    virtual void erase  (long pid);
    //virtual void refresh(long pid);
 
-   int InsertConnectionManager(CtiServer::ptr_type CM, const CtiPointRegistrationMsg &aReg, bool debugprint = false);
-   int RemoveConnectionManager(CtiServer::ptr_type CM);
+   enum class DebugPrint
+   {
+       False,
+       True
+   };
+
+   int InsertConnectionManager(CtiServer::ptr_type &CM, const CtiPointRegistrationMsg &aReg, DebugPrint debugprint = DebugPrint::False);
+   int RemoveConnectionManager(CtiServer::ptr_type &CM, DebugPrint debugprint = DebugPrint::False);
    bool pointHasConnection(LONG pointID, const CtiServer::ptr_type &Conn);
 
    CtiTime findNextNearestArchivalTime();

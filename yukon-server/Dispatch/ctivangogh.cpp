@@ -63,6 +63,7 @@
 #include "std_helper.h"
 #include "amq_constants.h"
 #include "module_util.h"
+#include "logger.h"
 
 #include <boost/tuple/tuple_comparison.hpp>
 #include <boost/ptr_container/ptr_deque.hpp>
@@ -347,6 +348,10 @@ void CtiVanGogh::VGMainThread()
                     {
                         sptrCM->setRequestId(pSvrReq->getID());  // Stow this, you'll need it for a response.
                     }
+                    else
+                    {
+                        CTILOG_ERROR(dout, "Received message for unknown handle " << (long)pSvrReq->getConnectionHandle());
+                    }
                 }
 
                 msgCounts.inc( MsgPtr->isA() );
@@ -547,8 +552,10 @@ void CtiVanGogh::VGConnectionHandlerThread()
 }
 
 
-void CtiVanGogh::registration(CtiServer::ptr_type pCM, const CtiPointRegistrationMsg &aReg)
+void CtiVanGogh::registration(CtiServer::ptr_type &pCM, const CtiPointRegistrationMsg &aReg)
 {
+    CTILOG_ENTRY(dout, "pCM=" << reinterpret_cast<size_t>(pCM.get()) << ", aReg.getFlags()=" << aReg.getFlags());
+
     CtiVanGoghConnectionManager *CM = (CtiVanGoghConnectionManager*)pCM.get();
 
     if(gDispatchDebugLevel & DISPATCH_DEBUG_CONNECTIONS)
@@ -625,7 +632,13 @@ void CtiVanGogh::registration(CtiServer::ptr_type pCM, const CtiPointRegistratio
         }
 
         validateConnections();        // Make sure nobody has disappeared on us since the last registration
-        PointMgr.InsertConnectionManager(pCM, aReg, gDispatchDebugLevel & DISPATCH_DEBUG_REGISTRATION);
+
+        CTILOG_INFO(dout, "Pre Point Mgr Insert " << reinterpret_cast<size_t>(pCM.get()) << ", use_count=" << pCM.use_count());
+        PointMgr.InsertConnectionManager(pCM, aReg, 
+            ((gDispatchDebugLevel & DISPATCH_DEBUG_REGISTRATION) ? 
+            CtiPointClientManager::DebugPrint::True : 
+            CtiPointClientManager::DebugPrint::False));
+        CTILOG_INFO(dout, "Post Point Mgr Insert " << reinterpret_cast<size_t>(pCM.get()) << ", use_count=" << pCM.use_count());
 
 
         if(!(aReg.getFlags() & (REG_NO_UPLOAD | REG_ADD_POINTS | REG_REMOVE_POINTS)))
@@ -1140,8 +1153,10 @@ void CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
     }
 }
 
-void CtiVanGogh::clientShutdown(CtiServer::ptr_type CM)
+void CtiVanGogh::clientShutdown(CtiServer::ptr_type &CM)
 {
+    CTILOG_ENTRY(dout, reinterpret_cast<size_t>(CM.get()));
+
     CtiServerExclusion guard(_server_exclusion);
 
     try
@@ -1159,7 +1174,12 @@ void CtiVanGogh::clientShutdown(CtiServer::ptr_type CM)
             CTILOG_DEBUG(dout, "Removing point registrations for this connection");
         }
 
-        PointMgr.RemoveConnectionManager(CM);
+        CTILOG_INFO(dout, "Pre Point Mgr Remove " << reinterpret_cast<size_t>(CM.get()) << ", use_count=" << CM.use_count());
+        PointMgr.RemoveConnectionManager(CM, 
+            ((gDispatchDebugLevel & DISPATCH_DEBUG_REGISTRATION) ?
+            CtiPointClientManager::DebugPrint::True :
+            CtiPointClientManager::DebugPrint::False));
+        CTILOG_INFO(dout, "Post Point Mgr Remove " << reinterpret_cast<size_t>(CM.get()) << ", use_count=" << CM.use_count());
 
         if(gDispatchDebugLevel & DISPATCH_DEBUG_CONNECTIONS)
         {
@@ -3527,13 +3547,16 @@ INT CtiVanGogh::sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGrou
 
 string CtiVanGogh::getAlarmStateName( INT alarm )
 {
+    string str;
+    CTILOG_ENTRY_RC(dout, "()", str);
+
     CtiServerExclusion guard(_server_exclusion);
     if( _alarmToDestInfo[alarm].grpid < SignalEvent )  // Zero is invalid!
     {
         // OK, prime the array!
         loadAlarmToDestinationTranslation();
     }
-    string str = _alarmToDestInfo[alarm].name;
+    str = _alarmToDestInfo[alarm].name;
     return str;
 }
 
@@ -3546,6 +3569,8 @@ int CtiVanGogh::clientPurgeQuestionables(PULONG pDeadClients)
     extern bool isQuestionable(CtiServer::ptr_type &ptr, void* narg);
 
     int status = ClientErrors::None;
+    CTILOG_ENTRY_RC(dout, "()", status);
+
     CtiServer::ptr_type Mgr;
 
     CtiServerExclusion server_guard(_server_exclusion);      // Get a lock on it.
@@ -3570,9 +3595,11 @@ int CtiVanGogh::clientPurgeQuestionables(PULONG pDeadClients)
 }
 
 
-YukonError_t CtiVanGogh::clientRegistration(CtiServer::ptr_type CM)
+YukonError_t CtiVanGogh::clientRegistration(CtiServer::ptr_type &CM)
 {
     YukonError_t nRet = ClientErrors::None;
+    CTILOG_ENTRY_RC(dout, "()", nRet);
+
     CtiTime NowTime;
     bool    validEntry(TRUE);
     bool    questionedEntry(FALSE);
@@ -3631,6 +3658,7 @@ YukonError_t CtiVanGogh::clientRegistration(CtiServer::ptr_type CM)
                         pCmd->setSource(getMyServerName());
                         pCmd->setOpString(CompileInfo.version);
 
+                        CTILOG_DEBUG(dout, "Sending AreYouThere to " << Mgr->getClientName());
                         Mgr->WriteConnQue(pCmd, 500);   // Ask the old guy to respond to us..
                         CM->setClientRegistered(FALSE); // New guy is not quite kosher yet...
 
@@ -3688,9 +3716,11 @@ YukonError_t CtiVanGogh::clientRegistration(CtiServer::ptr_type CM)
  * the man and the other guy which made him become questionable should be
  * blown away,.. find him.
  *----------------------------------------------------------------------------*/
-int  CtiVanGogh::clientArbitrationWinner(CtiServer::ptr_type CM)
+int  CtiVanGogh::clientArbitrationWinner(CtiServer::ptr_type &CM)
 {
     int status = ClientErrors::None;
+    CTILOG_ENTRY_RC(dout, "()", status);
+
     CtiServer::ptr_type Mgr;
 
     CtiServerExclusion guard(_server_exclusion);
