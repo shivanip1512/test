@@ -52,6 +52,12 @@ void ModbusProtocol::setAddresses( unsigned short slaveAddress )
 //Should we use non-blocking reads? It could cause problems with serial over IP and other applications...
 YukonError_t ModbusProtocol::generate( CtiXfer &xfer )
 {
+    if( _points.empty() )
+    {
+        _status = End;
+        return ClientErrors::NoPointsOnDevice;
+    }
+
     _asciiOutput = false;
     int i = 0;
     output_point point;
