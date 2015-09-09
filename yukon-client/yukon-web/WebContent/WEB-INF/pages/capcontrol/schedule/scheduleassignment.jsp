@@ -129,9 +129,9 @@
             <cti:button id="systemStopScheduleAssignments" data-popup="#stop-assignments" icon="icon-control-stop-blue" nameKey="stop" disabled="${disabled}" title="${stopCommands}"/>
         </c:when>
         <c:otherwise>
-                <cti:button id="systemAddScheduleAssignments" icon="icon-add" nameKey="addDisabled" />
-                <cti:button id="systemStartScheduleAssignments" icon="icon-control-play-blue" nameKey="playDisabled" />
-                <cti:button id="systemStopScheduleAssignments" icon="icon-control-stop-blue" nameKey="stopDisabled" />
+            <cti:button id="systemAddScheduleAssignments" icon="icon-add" nameKey="addDisabled" />
+            <cti:button id="systemStartScheduleAssignments" icon="icon-control-play-blue" nameKey="playDisabled" />
+            <cti:button id="systemStopScheduleAssignments" icon="icon-control-stop-blue" nameKey="stopDisabled" />
         </c:otherwise>
     </c:choose>
     </div>
