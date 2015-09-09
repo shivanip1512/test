@@ -16,7 +16,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
  *     &lt;enumeration value="timeZone"/>
  *     &lt;enumeration value="meterParameters"/>
- *     &lt;enumeration value="centronDisplayItems"/>
+ *     &lt;enumeration value="centron410Display"/>
+ *     &lt;enumeration value="centron420DisplayItems"/>
  *     &lt;enumeration value="focusAlDisplay"/>
  *     &lt;enumeration value="mct440Configuration"/>
  *     &lt;enumeration value="mct440Addressing"/>
@@ -55,8 +56,10 @@ public enum CategoryType {
     TIME_ZONE("timeZone"),
     @XmlEnumValue("meterParameters")
     METER_PARAMETERS("meterParameters"),
-    @XmlEnumValue("centronDisplayItems")
-    CENTRON_DISPLAY_ITEMS("centronDisplayItems"),
+    @XmlEnumValue("centron410Display")
+    CENTRON_410_DISPLAY("centron410Display"),
+    @XmlEnumValue("centron420DisplayItems")
+    CENTRON_420_DISPLAY_ITEMS("centron420DisplayItems"),
     @XmlEnumValue("focusAlDisplay")
     FOCUS_AL_DISPLAY("focusAlDisplay"),
     @XmlEnumValue("mct440Configuration")

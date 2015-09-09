@@ -277,10 +277,17 @@
         </configuration>
     </pao>
 
-    <pao id="CENTRON_DISPLAY_CONFIGURATION" abstract="true"
+    <pao id="CENTRON_410_DISPLAY_CONFIGURATION" abstract="true"
         inherits="LCD_CONFIGURATION">
         <configuration>
-            <category type="centronDisplayItems" />
+            <category type="centron410Display" />
+        </configuration>
+    </pao>
+
+    <pao id="CENTRON_420_DISPLAY_CONFIGURATION" abstract="true"
+        inherits="LCD_CONFIGURATION">
+        <configuration>
+            <category type="centron420DisplayItems" />
         </configuration>
     </pao>
 
@@ -1677,7 +1684,7 @@
     <pao id="MCT420FD" inherits="MCT_420_BASE, SUPPORTS_INTEGRATED_DISCONNECT_CONFIG ,LCD_CONFIGURATION">
         <displayName>MCT-420fD</displayName>
     </pao>
-    <pao id="MCT420CL" inherits="MCT_420_BASE, CENTRON_DISPLAY_CONFIGURATION"> <!-- This doesn't support a disconnect collar either -->
+    <pao id="MCT420CL" inherits="MCT_420_BASE, CENTRON_420_DISPLAY_CONFIGURATION"> <!-- This doesn't support a disconnect collar either -->
         <displayName>MCT-420cL</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE">
@@ -1687,7 +1694,7 @@
         </tags>
     </pao>
     <pao id="MCT420CD"
-        inherits="MCT_420_BASE, SUPPORTS_INTEGRATED_DISCONNECT_CONFIG, CENTRON_DISPLAY_CONFIGURATION">
+        inherits="MCT_420_BASE, SUPPORTS_INTEGRATED_DISCONNECT_CONFIG, CENTRON_420_DISPLAY_CONFIGURATION">
         <displayName>MCT-420cD</displayName>
     </pao>
 
@@ -8220,10 +8227,11 @@
 
     <!-- ITRON RFN METERS -->
     <pao id="RFN410CL"
-        inherits="RFN_L3_CENTRON, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS, SUPPORTS_RFN_DEMAND_RESET_TAG, RFN_CONFIGURATION">
+        inherits="RFN_L3_CENTRON, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS, SUPPORTS_RFN_DEMAND_RESET_TAG, RFN_CONFIGURATION, CENTRON_410_DISPLAY_CONFIGURATION">
         <displayName>RFN-410cL</displayName>
     </pao>
-    <pao id="RFN420CL" inherits="RFN410CL, CENTRON_DISPLAY_CONFIGURATION">
+    <pao id="RFN420CL" 
+        inherits="RFN_L3_CENTRON, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS, SUPPORTS_RFN_DEMAND_RESET_TAG, RFN_CONFIGURATION, CENTRON_420_DISPLAY_CONFIGURATION">
         <displayName>RFN-420cL</displayName>
     </pao>
     <pao id="RFN420CD" inherits="RFN420CL, RFN_DISCONNECT, RFN_DISCONNECT_CONFIG">

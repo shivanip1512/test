@@ -14,8 +14,9 @@ import com.cannontech.web.input.type.InputOption;
 import com.google.common.base.CaseFormat;
 
 @Component
-public final class CentronDisplayItemEnumeration implements DeviceConfigurationInputEnumeration {
+public final class Centron410DisplayItemEnumeration implements DeviceConfigurationInputEnumeration {
 
+    //  Note that both this and the Centron420DisplayItem use the same i18n keys
     private static final String baseKey = "yukon.web.modules.tools.configs.enum.centronDisplayItem.";
 
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
@@ -36,12 +37,7 @@ public final class CentronDisplayItemEnumeration implements DeviceConfigurationI
         PEAK_KW_DATE("12"),
         PEAK_KW_TIME("13"),
         LAST_INTERVAL_VOLTAGE("14"),
-        PEAK_VOLTAGE("15"),
-        PEAK_VOLTAGE_DATE("16"),
-        PEAK_VOLTAGE_TIME("17"),
-        MINIMUM_VOLTAGE("18"),
-        MINIMUM_VOLTAGE_DATE("19"),
-        MINIMUM_VOLTAGE_TIME("20"),
+        // Items #15-20 are not supported on C1SX meters (RFN-410cL). 
         TOU_RATE_A_KWH("21"),
         TOU_RATE_A_PEAK_KW("22"),
         TOU_RATE_A_DATE_OF_PEAK_KW("23"),
@@ -85,7 +81,7 @@ public final class CentronDisplayItemEnumeration implements DeviceConfigurationI
 
     @Override
     public String getEnumOptionName() {
-        return "CentronDisplayItem";
+        return "Centron410DisplayItem";
     }
 
     @Override

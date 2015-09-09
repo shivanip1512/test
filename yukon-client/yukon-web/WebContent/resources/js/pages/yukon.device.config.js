@@ -41,7 +41,7 @@ yukon.deviceConfig = (function () {
             $(displayItems.slice(lastShownIdx + 1)).hide();
 
 
-            if (displayItems.length < lastShownIdx + 1) {
+            if (displayItems.length > lastShownIdx + 1) {
                 form.find('.js-show-next').show();
             } else {
                 form.find('.js-show-next').hide();

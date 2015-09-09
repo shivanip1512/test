@@ -15,7 +15,8 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;simpleType name="EnumOption">
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
  *     &lt;enumeration value="TimeZoneInput"/>
- *     &lt;enumeration value="CentronDisplayItem"/>
+ *     &lt;enumeration value="Centron420DisplayItem"/>
+ *     &lt;enumeration value="Centron410DisplayItem"/>
  *     &lt;enumeration value="FocusAlDisplayItem"/>
  *     &lt;enumeration value="Interval"/>
  *     &lt;enumeration value="Rate"/>
@@ -50,8 +51,10 @@ public enum EnumOption {
 
     @XmlEnumValue("TimeZoneInput")
     TIME_ZONE_INPUT("TimeZoneInput"),
-    @XmlEnumValue("CentronDisplayItem")
-    CENTRON_DISPLAY_ITEM("CentronDisplayItem"),
+    @XmlEnumValue("Centron420DisplayItem")
+    CENTRON_420_DISPLAY_ITEM("Centron420DisplayItem"),
+    @XmlEnumValue("Centron410DisplayItem")
+    CENTRON_410_DISPLAY_ITEM("Centron410DisplayItem"),
     @XmlEnumValue("FocusAlDisplayItem")
     FOCUS_AL_DISPLAY_ITEM("FocusAlDisplayItem"),
     @XmlEnumValue("Interval")
