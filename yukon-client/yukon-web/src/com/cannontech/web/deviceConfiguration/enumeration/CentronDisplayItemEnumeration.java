@@ -2,6 +2,8 @@ package com.cannontech.web.deviceConfiguration.enumeration;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -11,6 +13,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.input.type.InputOption;
 import com.google.common.base.CaseFormat;
+import com.google.common.collect.Lists;
 
 public abstract class CentronDisplayItemEnumeration implements DeviceConfigurationInputEnumeration {
 
@@ -77,15 +80,16 @@ public abstract class CentronDisplayItemEnumeration implements DeviceConfigurati
         }
         
         public static List<Item> get410Values() {
-            List<Item> items = new ArrayList<>();
-
-            for (Item item : values() ) {
-                if( item.model == DisplayType.CENTRON_410 ) {
-                    items.add(item);
-                }
-            }
             
-            return items;
+            return Lists.newArrayList(values())
+                    .stream()
+                    .filter(new Predicate<Item>() {
+                        @Override
+                        public boolean test(Item item) {
+                            return item.model == DisplayType.CENTRON_410;
+                        }
+                    })
+                    .collect(Collectors.toList());            
         }
 
         @Override
