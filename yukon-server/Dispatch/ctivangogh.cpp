@@ -2882,17 +2882,26 @@ YukonError_t CtiVanGogh::checkDataStateQuality(CtiMessage *pMsg, CtiMultiWrapper
  */
 YukonError_t CtiVanGogh::checkMultiDataStateQuality(CtiMultiMsg  *pMulti, CtiMultiWrapper &aWrap)
 {
-    auto status = ClientErrors::None;
-
     if( pMulti )
     {
-        for( auto msg : pMulti->getData() )
+        auto &bag = pMulti->getData();
+
+        for( auto itr = bag.begin(); itr != bag.end(); )
         {
-            status = checkDataStateQuality( msg, aWrap );
+            if( const auto status = checkDataStateQuality(*itr, aWrap) )
+            {
+                CTILOG_WARN(dout, "Pointdata filtered " << static_cast<unsigned>(status) << " " << GetErrorString(status) << *itr);
+
+                itr = bag.erase(itr);
+            }
+            else
+            {
+                ++itr;
+            }
         }
     }
 
-    return status;
+    return ClientErrors::None;
 }
 
 YukonError_t CtiVanGogh::checkSignalStateQuality(CtiSignalMsg  *pSig, CtiMultiWrapper &aWrap)

@@ -2,6 +2,7 @@ package com.cannontech.amr.rfn.service.processor.impl;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -13,6 +14,7 @@ import com.cannontech.amr.rfn.message.event.RfnEvent;
 import com.cannontech.amr.rfn.model.RfnInvalidValues;
 import com.cannontech.amr.rfn.service.processor.RfnArchiveRequestProcessor;
 import com.cannontech.amr.rfn.service.processor.RfnEventConditionDataProcessorHelper;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.rfn.model.InvalidEventMessageException;
@@ -25,6 +27,8 @@ public class RfnRestoreEventArchiveRequestProcessor extends RfnEventConditionDat
     
     static final DateTime y2k = new LocalDate(2000, 1, 1).toDateTimeAtStartOfDay();
     static final Duration year = Duration.standardDays(365);
+
+    private final static Logger log = YukonLogManager.getLogger(RfnRestoreEventArchiveRequestProcessor.class);
 
     @Override
     public <T extends RfnEvent> void process(RfnDevice device, T event, List<? super PointData> pointDatas) {
@@ -42,6 +46,7 @@ public class RfnRestoreEventArchiveRequestProcessor extends RfnEventConditionDat
         }
         // Bad timestamp - do not process this record
         else if (eventTime.isAfter(now.plus(year)) || eventTime.isBefore(y2k)) {
+            log.trace(device + " invalid event timestamp " + eventTimestamp + " for event " + event.toString());
             return;
         }
 
