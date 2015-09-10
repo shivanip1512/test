@@ -349,7 +349,6 @@
         <configuration>
             <category type="rfnOvUv" />
             <category type="demand" />
-            <category type="profile" />
             <category type="tou" />
         </configuration>
     </pao>
