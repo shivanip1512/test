@@ -73,26 +73,8 @@
 
                     <%-- enable/disable --%>
                     <td class="tar">
-
-                        <c:choose>
-                            <c:when test="${monitor.enabled}">
-                                <tags:widgetActionRefreshImage method="toggleEnabledDeviceData"
-                                                               nameKey="disable"
-                                                               arguments="${monitor.name}"
-                                                               btnClass="fr M0"
-                                                               monitorId="${monitor.id}"
-                                                               icon="icon-enabled"/>
-                            </c:when>
-                            <c:otherwise>
-                                <tags:widgetActionRefreshImage method="toggleEnabledDeviceData"
-                                                               nameKey="enable"
-                                                               arguments="${monitor.name}"
-                                                               btnClass="fr M0"
-                                                               monitorId="${monitor.id}"
-                                                               checked="false"
-                                                               icon="icon-disabled"/>
-                            </c:otherwise>
-                        </c:choose>
+                        <tags:switch checked="${monitor.enabled}" name="toggle" data-monitor-id="${monitor.id}" 
+                            data-monitor-type="device-data-monitor" classes="js-monitor-toggle"/>
                     </td>
                 </tr>
             </c:forEach>
@@ -154,24 +136,8 @@
 
                     <%-- enable/disable --%>
                     <td class="tar">
-                        <c:choose>
-                            <c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
-                                <tags:widgetActionRefreshImage method="toggleEnabledOutage"
-                                                               outageMonitorId="${monitorId}"
-                                                               btnClass="fr M0"
-                                                               nameKey="disable"
-                                                               arguments="${monitorName}"
-                                                               icon="icon-enabled"/>
-                            </c:when>
-                            <c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
-                                <tags:widgetActionRefreshImage method="toggleEnabledOutage"
-                                                               outageMonitorId="${monitorId}"
-                                                               btnClass="fr M0"
-                                                               nameKey="enable"
-                                                               arguments="${monitorName}"
-                                                               icon="icon-disabled"/>
-                            </c:when>
-                        </c:choose>
+                        <tags:switch checked="${monitor.evaluatorStatus eq 'ENABLED'}" name="toggle" data-monitor-id="${monitorId}"
+                            data-monitor-type="outage-monitor" classes="js-monitor-toggle"/>
                     </td>
                 </tr>
             </c:forEach>
@@ -238,24 +204,8 @@
 
                     <%-- enable/disable --%>
                     <td class="${tdClass} tar">
-                        <c:choose>
-                            <c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
-                                <tags:widgetActionRefreshImage method="toggleEnabledTamperFlag"
-                                                               tamperFlagMonitorId="${monitorId}"
-                                                               btnClass="fr M0"
-                                                               nameKey="disable"
-                                                               arguments="${monitorName}"
-                                                               icon="icon-enabled"/>
-                            </c:when>
-                            <c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
-                                <tags:widgetActionRefreshImage method="toggleEnabledTamperFlag"
-                                                               tamperFlagMonitorId="${monitorId}"
-                                                               btnClass="fr M0"
-                                                               nameKey="enable"
-                                                               arguments="${monitorName}"
-                                                               icon="icon-disabled"/>
-                            </c:when>
-                        </c:choose>
+                        <tags:switch checked="${monitor.evaluatorStatus eq 'ENABLED'}" name="toggle" data-monitor-id="${monitorId}"
+                            data-monitor-type="tamper-flag-monitor" classes="js-monitor-toggle"/>
                     </td>
                 </tr>
             </c:forEach>
@@ -315,24 +265,9 @@
 
                 <%-- enable/disable --%>
                 <td class="tar">
-                    <c:choose>
-                        <c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
-                            <tags:widgetActionRefreshImage method="toggleEnabledStatusPoint"
-                                                           statusPointMonitorId="${monitorId}"
-                                                           btnClass="fr M0"
-                                                           nameKey="disable"
-                                                           arguments="${monitorName}"
-                                                           icon="icon-enabled"/>
-                        </c:when>
-                        <c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
-                            <tags:widgetActionRefreshImage method="toggleEnabledStatusPoint"
-                                                           statusPointMonitorId="${monitorId}"
-                                                           btnClass="fr M0"
-                                                           nameKey="enable"
-                                                           arguments="${monitorName}"
-                                                           icon="icon-disabled"/>
-                        </c:when>
-                    </c:choose>
+                    <tags:switch checked="${monitor.evaluatorStatus eq 'ENABLED'}" name="toggle" data-monitor-id="${monitorId}"
+                        data-monitor-type="status-point-monitor" classes="js-monitor-toggle"/>
+
                 </td> 
             </tr>
         </c:forEach>
@@ -386,25 +321,8 @@
 
                 <%-- enable/disable --%>
                 <td class="tar">
-                     <c:choose>
-                        <c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
-                            <tags:widgetActionRefreshImage method="toggleEnabledPorterResponse"
-                                                           nameKey="disable"
-                                                           arguments="${monitor.name}"
-                                                           btnClass="fr M0"
-                                                           monitorId="${monitor.monitorId}"
-                                                           icon="icon-enabled"/>
-                        </c:when>
-                        <c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
-                            <tags:widgetActionRefreshImage method="toggleEnabledPorterResponse"
-                                                           nameKey="enable"
-                                                           arguments="${monitor.name}"
-                                                           btnClass="fr M0"
-                                                           monitorId="${monitor.monitorId}"
-                                                           checked="false"
-                                                           icon="icon-disabled"/>
-                        </c:when>
-                    </c:choose>
+                    <tags:switch checked="${monitor.evaluatorStatus eq 'ENABLED'}" name="toggle" data-monitor-id="${monitor.monitorId}"
+                        data-monitor-type="porter-response-monitor" classes="js-monitor-toggle"/>
                 </td> 
             </tr>
         </c:forEach>
@@ -472,24 +390,8 @@
 
                 <%-- Enable/Disable --%>
                 <td>
-                    <c:choose>
-                        <c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
-                            <tags:widgetActionRefreshImage method="toggleEnabledValidation"
-                                                           validationMonitorId="${monitorId}"
-                                                           btnClass="fr M0"
-                                                           nameKey="disable"
-                                                           arguments="${monitorName}"
-                                                           icon="icon-enabled"/>
-                        </c:when>
-                        <c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
-                            <tags:widgetActionRefreshImage method="toggleEnabledValidation"
-                                                           validationMonitorId="${monitorId}"
-                                                           btnClass="fr M0"
-                                                           nameKey="enable"
-                                                           arguments="${monitorName}"
-                                                           icon="icon-disabled"/>
-                        </c:when>
-                    </c:choose>
+                    <tags:switch checked="${monitor.evaluatorStatus eq 'ENABLED'}" name="toggle" data-monitor-id="${monitorId}"
+                        data-monitor-type="validation-monitor" classes="js-monitor-toggle"/>
                 </td> 
             </tr>
         </c:forEach>
@@ -550,3 +452,4 @@
         </cm:dropdown>
     </c:if>
 </div>
+<cti:includeScript link="/resources/js/widgets/yukon.widget.monitors.js"/>
