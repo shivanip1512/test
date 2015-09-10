@@ -15,7 +15,7 @@
     <cti:displayForPageEditModes modes="VIEW">
         <c:set var="viewMode" value="${true}" />
     </cti:displayForPageEditModes>
-
+	<input type="hidden" class="js-page-mode" value="${mode}">
     <c:set var="nameValueClass" value="natural-width ${viewMode ? '' : 'with-form-controls' }" />
 
     <cti:url var="action" value="/tools/points/${pointModel.pointBase.point.pointType}" />
@@ -223,11 +223,16 @@
                 <c:if test="${isStatusPoint}">
 
                     <tags:nameValueContainer2 tableClass="${nameValueClass}">
-                        
+                        <cti:displayForPageEditModes modes="EDIT,CREATE">
+                                <tags:checkboxNameValue nameKey="yukon.common.blank" 
+                                    path="pointBase.point.physicalOffset" 
+                                    inputClass="js-use-offset" 
+                                    checkBoxDescriptionNameKey=".physicalOffset" excludeColon="true"/>
+                    	</cti:displayForPageEditModes>
                         <%-- The physical offset value within the current device or parent this point belongs to --%>
                         <%-- 0 = No offset set --%>
                         <tags:nameValue2 nameKey=".offset">
-                            <tags:input path="pointBase.point.pointOffset" size="6"/>
+                            <tags:input path="pointBase.point.pointOffset" size="6" inputClass="js-offset js-point-offset"/>
                         </tags:nameValue2>
 
                         <tags:nameValue2 nameKey=".control.type">

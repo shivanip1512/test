@@ -29,6 +29,19 @@ yukon.tools.point = (function () {
         });
     };
 
+    var _togglePhysicalOffset = function () {
+        if ($('.js-use-offset').is(':checked')) {
+            $('.js-point-offset').val(1);
+            _setOffsetDisabled(false);
+        } else {
+        	$('.js-point-offset').val(0);
+        	_setOffsetDisabled(true);
+        }
+    };
+    
+    var _setOffsetDisabled = function (disabled) {
+        $('.js-offset').each(function() { this.disabled = disabled; });
+    };
     /**
      * Shows and hides archive interval field based on Archive Type selected
      */
@@ -260,7 +273,16 @@ yukon.tools.point = (function () {
 
         /** Initialize this module. */
         init: function () {
-
+        	var _mode = $('.js-page-mode').val();
+        	if (_mode !== 'VIEW') {
+                 var useOffset = $('.js-use-offset').prop('checked');
+                 
+                 if (useOffset) {
+                	 _setOffsetDisabled(false);
+                 }
+             }
+        	$(document).on('click', '.js-use-offset', _togglePhysicalOffset);
+        	
             $('.js-state-group').on('change', updateStateGroup);
 
             updateArchive();

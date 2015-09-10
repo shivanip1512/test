@@ -100,8 +100,8 @@ public class PointValidator extends SimpleValidator<PointModel> {
         if (base.getPoint().getPointOffset() != null) {
             for (LitePoint pointOnPao : pointsOnPao) {
 
-                if (pointOnPao.getPointOffset() == base.getPoint().getPointOffset() &&
-                    pointOnPao.getPointTypeEnum() == base.getPoint().getPointTypeEnum()) {
+                if (base.getPoint().getPointOffset() != 0
+                    && (pointOnPao.getPointOffset() == base.getPoint().getPointOffset() && pointOnPao.getPointTypeEnum() == base.getPoint().getPointTypeEnum())) {
 
                     if (pointOnPao.getPointID() != base.getPoint().getPointID()) {
                         List<Object> arguments = ImmutableList.of(pointOnPao.getPointName());

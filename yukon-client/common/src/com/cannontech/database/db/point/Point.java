@@ -28,6 +28,7 @@ public class Point extends DBPersistent {
     private Integer pointOffset = null;
     private PointArchiveType archiveType = null;
     private Integer archiveInterval = null;
+    private boolean physicalOffset = true;
     
     /* TODO Can be removed with PointForm.java */
     private boolean archiveStatusData = false;
@@ -292,4 +293,13 @@ public class Point extends DBPersistent {
         this.archiveStatusData = archiveStatusData;
     }
 
+    public boolean isPhysicalOffset() {
+        return physicalOffset;
+    }
+
+    public void setPhysicalOffset(boolean physicalOffset) {
+        this.physicalOffset = physicalOffset;
+    }
+
+    
 }
