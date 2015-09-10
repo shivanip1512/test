@@ -9,8 +9,8 @@
 <cti:standardPage module="dr" page="cc.init.confirmation">
 
 <div class="stacked-md">
-	
-	<spring:hasBindErrors name="event">
+    
+    <spring:hasBindErrors name="event">
         <div class="stacked-md">
             <spring:bind path="event">
                 <c:forEach items="${status.errorMessages}" var="error">
@@ -19,8 +19,8 @@
             </spring:bind>
         </div>
     </spring:hasBindErrors>
-	
-	<h3><i:inline key=".parameters"/></h3>
+    
+    <h3><i:inline key=".parameters"/></h3>
     
     <tags:nameValueContainer2>
         <c:if test="${not empty event.startTime}">
@@ -29,34 +29,34 @@
            </tags:nameValue2>
         </c:if>
         
-	    <tags:nameValue2 nameKey=".startTime">
-	        <cti:formatDate type="FULL" value="${event.startTime}"/>
-	    </tags:nameValue2>
-	    
-	    <c:if test="${event.eventType.accounting or event.eventType.notification}">
-		    <tags:nameValue2 nameKey=".duration">
-		        <cti:formatDuration type="DHMS_REDUCED" value="${event.duration * 60 * 1000}"/>
-		    </tags:nameValue2>
-	    </c:if>
-	    
-	    <c:if test="${event.eventType.economic}">
-	       <tags:nameValue2 nameKey=".numberOfWindows">
-	           ${event.numberOfWindows}
-	       </tags:nameValue2>
-	    </c:if>
-	    
-	    <c:if test="${event.eventType.accounting}">
-	        <tags:nameValue2 nameKey=".reason">
-                ${fn:escapeXml(event.message)}
-            </tags:nameValue2>
-	    </c:if>
-	    
-	    <c:if test="${event.eventType.notification}">
-		    <tags:nameValue2 nameKey=".message">
-		        ${fn:escapeXml(event.message)}
-		    </tags:nameValue2>
-		</c:if>
-	</tags:nameValueContainer2>
+        <tags:nameValue2 nameKey=".startTime">
+            <cti:formatDate type="FULL" value="${event.startTime}"/>
+        </tags:nameValue2>
+        
+        <c:if test="${event.eventType.accounting or event.eventType.notification}">
+        <tags:nameValue2 nameKey=".duration">
+            <cti:formatDuration type="DHMS_REDUCED" value="${event.duration * 60 * 1000}"/>
+        </tags:nameValue2>
+        </c:if>
+        
+        <c:if test="${event.eventType.economic}">
+           <tags:nameValue2 nameKey=".numberOfWindows">
+               ${event.numberOfWindows}
+           </tags:nameValue2>
+        </c:if>
+         
+         <c:if test="${event.eventType.accounting}">
+             <tags:nameValue2 nameKey=".reason">
+                 ${fn:escapeXml(event.message)}
+             </tags:nameValue2>
+         </c:if>
+         
+         <c:if test="${event.eventType.notification}">
+             <tags:nameValue2 nameKey=".message">
+                 ${fn:escapeXml(event.message)}
+             </tags:nameValue2>
+         </c:if>
+     </tags:nameValueContainer2>
 </div>
 
 <c:if test="${event.eventType.economic}">
@@ -110,11 +110,11 @@
     <form:hidden path="selectedCustomerIds"/>
     <form:hidden path="initialEventId"/>
     
-	<div class="page-action-area">
-	    <cti:button type="submit" classes="action primary" nameKey="confirm"/>
-	    
-	    <cti:url var="cancelUrl" value="/dr/cc/home"/>
-	    <cti:button href="${cancelUrl}" nameKey="cancel"/>
-	</div>
+    <div class="page-action-area">
+        <cti:button type="submit" classes="action primary" nameKey="confirm"/>
+        
+        <cti:url var="cancelUrl" value="/dr/cc/home"/>
+        <cti:button href="${cancelUrl}" nameKey="cancel"/>
+</div>
 </form:form>
 </cti:standardPage>

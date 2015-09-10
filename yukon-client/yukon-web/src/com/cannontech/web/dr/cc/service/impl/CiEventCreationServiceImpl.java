@@ -49,7 +49,6 @@ import com.cannontech.cc.service.exception.EventCreationException;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.PointException;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.LMDirectCustomerListDao;
 import com.cannontech.core.dao.PointDao;
@@ -63,6 +62,7 @@ import com.cannontech.web.dr.cc.model.CiEventType;
 import com.cannontech.web.dr.cc.model.CiInitEventModel;
 import com.cannontech.web.dr.cc.service.CiEventCreationService;
 import com.cannontech.yukon.INotifConnection;
+import com.google.common.primitives.Ints;
 
 public class CiEventCreationServiceImpl implements CiEventCreationService {
     
@@ -375,7 +375,7 @@ public class CiEventCreationServiceImpl implements CiEventCreationService {
         notifConnection.sendEconomicNotification(economicEvent.getId(), 1, action);
         
         if (event.isEventExtension()) {
-            int[] customerIds = CtiUtilities.toArrayUnbox(event.getSelectedCustomerIds());
+            int[] customerIds = Ints.toArray(event.getSelectedCustomerIds());
             sendNotifications(event, program, identifier, customerIds, actionString);
         } else {
             sendNotifications(event, program, identifier, customerNotifs, actionString);

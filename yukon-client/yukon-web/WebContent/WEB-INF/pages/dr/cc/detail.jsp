@@ -112,46 +112,46 @@
         </c:if>
         <c:choose>
         <c:when test="${(empty affectedCustomers) && (empty pricingTableHead)}">
-	        <c:if test="${empty eventNotifications}">
-	            <span class="empty-list">
-	                <i:inline key=".noNotifications"/>
-	            </span>
-	        </c:if>
-	        <c:if test="${not empty eventNotifications}">
-		        <table class="compact-results-table" id="notifications">
-		            <thead>
-		                <tr>
-		                    <td><i:inline key=".company"/></td>
-		                    <td><i:inline key=".reason"/></td>
-		                    <td><i:inline key=".notificationType"/></td>
-		                    <td><i:inline key=".notificationTime"/></td>
-		                    <td><i:inline key=".state"/></td>
-		                </tr>
-		            </thead>
-		            <tfoot></tfoot>
-		            <tbody>
-		                <c:forEach var="notification" items="${eventNotifications}">
-			                <tr>
-			                    <td>${notification.customer.companyName}</td>
-			                    <td>${notification.reason}</td>
-			                    <td>${notification.notifType}</td>
-			                    <td><cti:formatDate value="${notification.notificationTime}" type="DATEHM"/></td>
-			                    <td>${notification.state}</td>
-			                </tr>
-		                </c:forEach>
-		            </tbody>
-		        </table>
-		    </c:if>
+            <c:if test="${empty eventNotifications}">
+                <span class="empty-list">
+                    <i:inline key=".noNotifications"/>
+                </span>
+            </c:if>
+            <c:if test="${not empty eventNotifications}">
+                <table class="compact-results-table" id="notifications">
+                    <thead>
+                        <tr>
+                            <td><i:inline key=".company"/></td>
+                            <td><i:inline key=".reason"/></td>
+                            <td><i:inline key=".notificationType"/></td>
+                            <td><i:inline key=".notificationTime"/></td>
+                            <td><i:inline key=".state"/></td>
+                        </tr>
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody>
+                        <c:forEach var="notification" items="${eventNotifications}">
+                            <tr>
+                                <td>${notification.customer.companyName}</td>
+                                <td>${notification.reason}</td>
+                                <td>${notification.notifType}</td>
+                                <td><cti:formatDate value="${notification.notificationTime}" type="DATEHM"/></td>
+                                <td>${notification.state}</td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
+        </c:if>
         </c:when>
         <c:otherwise>
         <c:if test="${empty pricingTableHead}">
         <h3>${affectedCustomers}</h3>
         <table class="compact-results-table" id="notifications">
-	        <c:forEach var="notification" items="${eventNotifications}">
+            <c:forEach var="notification" items="${eventNotifications}">
                 <tr>
                     <td>${fn:escapeXml(notification.customer.companyName)}</td>
                 </tr>
-	        </c:forEach>
+            </c:forEach>
         </table>
         </c:if>
         </c:otherwise>
