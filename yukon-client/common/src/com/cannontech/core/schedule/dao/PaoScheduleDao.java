@@ -55,4 +55,13 @@ public interface PaoScheduleDao {
 
     void save(PaoSchedule schedule);
 
+    /**
+     * @return All assignments for the given paoId.
+     */
+    List<PaoScheduleAssignment> getByPaoId(int paoId);
+    
+    /**
+     * Deletes all schedule assignments for the given paoId.
+     */
+    void deleteAssignmentsForPao(int paoId);
 }

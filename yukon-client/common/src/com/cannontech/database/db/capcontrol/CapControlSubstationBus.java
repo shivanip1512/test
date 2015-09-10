@@ -172,8 +172,20 @@ public class CapControlSubstationBus extends DBPersistent {
         return dualBusEnabled;
     }
 
+    public boolean isDualBusEnabledBoolean() {
+        return "Y".equals(dualBusEnabled);
+    }
+
     public void setDualBusEnabled(String dualBusEnabled) {
         this.dualBusEnabled = dualBusEnabled;
+    }
+
+    public void setDualBusEnabledBoolean(boolean bool) {
+        if (bool) {
+            this.dualBusEnabled = "Y";
+        } else {
+            this.dualBusEnabled = "N";
+        }
     }
 
     public Integer getAltSubPAOId() {
@@ -190,6 +202,18 @@ public class CapControlSubstationBus extends DBPersistent {
 
     public void setMultiMonitorControl(String multiMonitorControl) {
         this.multiMonitorControl = multiMonitorControl;
+    }
+
+    public boolean isMultiMonitorControlBoolean() {
+        return "Y".equals(multiMonitorControl);
+    }
+
+    public void setMultiMonitorControlBoolean(boolean bool) {
+        if (bool) {
+            this.multiMonitorControl = "Y";
+        } else {
+            this.multiMonitorControl = "N";
+        }
     }
 
     /**
@@ -276,6 +300,10 @@ public class CapControlSubstationBus extends DBPersistent {
             return true;
         }
         return false;
+    }
+
+    public boolean isUsePhaseDataBoolean() {
+        return getUsePhaseDataBoolean();
     }
 
     public void setUsePhaseDataBoolean(boolean bool) {

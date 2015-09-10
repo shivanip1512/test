@@ -215,4 +215,35 @@ public class PAOScheduleAssign extends DBPersistent {
         return disableOvUv.equalsIgnoreCase("N") ? false : true;
     }
 
+    public static PAOScheduleAssign of(PaoScheduleAssignment assignment) {
+
+        PAOScheduleAssign assign = new PAOScheduleAssign();
+
+        assign.setEventID(assignment.getEventId());
+        assign.setScheduleID(assignment.getScheduleId());
+        assign.setPaoID(assignment.getPaoId());
+        assign.setCommand(assignment.getCommandName());
+        assign.setDisableOvUv(assignment.getDisableOvUv());
+
+        return assign;
+    }
+
+    public PaoScheduleAssignment asPaoScheduleAssignment() {
+
+        PaoScheduleAssignment assignment = new PaoScheduleAssignment();
+
+        if (getEventID() == null) {
+            assignment.setEventId(0);
+        } else {
+            assignment.setEventId(getEventID());
+        }
+
+        assignment.setScheduleId(getScheduleID());
+        assignment.setPaoId(getPaoID());
+        assignment.setCommandName(getCommand());
+        assignment.setDisableOvUv(getDisableOvUv());
+
+        return assignment;
+    }
+
 }

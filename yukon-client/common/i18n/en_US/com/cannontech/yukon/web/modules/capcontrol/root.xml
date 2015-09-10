@@ -258,7 +258,9 @@
     <entry key="yukon.web.modules.capcontrol.type.LTC">Load Tap Changer</entry>
     <entry key="yukon.web.modules.capcontrol.type.GO_REGULATOR">Gang Operated Regulator</entry>
     <entry key="yukon.web.modules.capcontrol.type.PO_REGULATOR">Phase Operated Regulator</entry>
-    
+
+    <entry key="yukon.web.modules.capcontrol.edit.strategy">Edit Strategy Assignment</entry>
+
     <!-- areaTier.jsp -->
     <entry key="yukon.web.modules.capcontrol.areas.pageName">Volt/Var Dashboard</entry>
     <entry key="yukon.web.modules.capcontrol.areas.contextualPageName">Volt/Var</entry>
@@ -282,7 +284,6 @@
     <entry key="yukon.web.modules.capcontrol.area.stratContainer.title">Strategy</entry>
     <entry key="yukon.web.modules.capcontrol.area.substationsContainer.title">Substations</entry>
     <entry key="yukon.web.modules.capcontrol.area.edit.stations">Add/Remove Substations</entry>
-    <entry key="yukon.web.modules.capcontrol.area.edit.strategy">Edit Strategy Assignment</entry>
     <entry key="yukon.web.modules.capcontrol.area.info.updated">Area info updated successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.area.subs.updated">Substions updated successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.area.strat.updated">Strategy assignment updated successfully.</entry>
@@ -377,7 +378,26 @@
     <entry key="yukon.web.modules.capcontrol.substation.filter.hoverUrl">/WebConfig/yukon/Icons/filter.gif</entry>
     <entry key="yukon.web.modules.capcontrol.substation.filter.hoverText"></entry>
     <entry key="yukon.web.modules.capcontrol.substation.filter.label">Filter:</entry>
-    
+
+    <entry key="yukon.web.modules.capcontrol.bus.VIEW.pageTitle">Bus: {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.bus.VIEW.pageHeading">{0}</entry>
+    <entry key="yukon.web.modules.capcontrol.bus.VIEW.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.capcontrol.bus.EDIT.pageTitle">Bus: {0} Edit</entry>
+    <entry key="yukon.web.modules.capcontrol.bus.EDIT.pageHeading">Edit {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.bus.EDIT.crumbTitle">Edit</entry>
+    <entry key="yukon.web.modules.capcontrol.bus.orphan.VIEW.pageTitle">Bus: {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.bus.orphan.VIEW.pageHeading">{0}</entry>
+    <entry key="yukon.web.modules.capcontrol.bus.orphan.VIEW.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.capcontrol.bus.orphan.EDIT.pageTitle">Bus: {0} Edit</entry>
+    <entry key="yukon.web.modules.capcontrol.bus.orphan.EDIT.pageHeading">Edit {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.bus.orphan.EDIT.crumbTitle">Edit</entry>
+    <entry key="yukon.web.modules.capcontrol.bus.orphan.CREATE.pageTitle">Create Bus</entry>
+    <entry key="yukon.web.modules.capcontrol.bus.orphan.CREATE.pageHeading">Create Bus</entry>
+    <entry key="yukon.web.modules.capcontrol.bus.orphan.CREATE.crumbTitle">Create</entry>
+
+    <entry key="yukon.web.modules.capcontrol.bus.feeders.updated">Feeders successfully updated. Please allow a few seconds for changes to be reflected.</entry>
+    <entry key="yukon.web.modules.capcontrol.bus.edit.feeders">Add/Remove Feeders</entry>
+
     <!-- cbcChart.jsp -->
     <entry key="yukon.web.modules.capcontrol.tabularData">Tabular Data:</entry>
 

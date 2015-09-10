@@ -106,4 +106,20 @@ public interface SubstationBusDao {
      */
     List<Integer> getRegulatorsForBus(int id);
 
+    /**
+     * @return the id of the parent bus of the substation, or <code>null</code> if it is not attached.
+     */
+    Integer getParent(int busId);
+
+    /**
+     * @return A list of ids attached to the bus with the given id, ordered by displayOrder
+     */
+    List<Integer> getFeederIds(int busId);
+
+    /**
+     * Removes existing assignments from the bus with the given id,
+     * then attaches the given feederIds with consecutive increasing displayOrders.
+     */
+    void assignFeeders(int busId, Iterable<Integer> feederIds);
+
 }

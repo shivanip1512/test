@@ -227,7 +227,7 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
     }
     
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public boolean updateAssignment(PaoScheduleAssignment assignment) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
@@ -340,5 +340,31 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
         scheduleTemplate.setTableName("PAOSchedule");
         scheduleTemplate.setPrimaryKeyField("ScheduleId");
         scheduleTemplate.setAdvancedFieldMapper(scheduleMapper);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PaoScheduleAssignment> getByPaoId(int paoId) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT sa.EventID, sa.ScheduleID, s.ScheduleName, s.NextRunTime, s.LastRunTime, sa.PaoID, " +
+                          "po.PAOName, sa.Command, sa.disableOvUv");
+        sql.append("FROM PAOScheduleAssignment sa");
+        sql.append("JOIN PAOSchedule s ON s.ScheduleID = sa.ScheduleID");
+        sql.append("JOIN YukonPAObject po ON sa.PaoID = po.PAObjectID");
+        sql.append("AND po.PAObjectID").eq(paoId);
+
+        List<PaoScheduleAssignment> assignment = jdbcTemplate.query(sql, assignmentRowMapper);
+        return assignment;
+    }
+
+    @Override
+    public void deleteAssignmentsForPao(int paoId) {
+
+        SqlStatementBuilder deleteSql = new SqlStatementBuilder();
+        deleteSql.append("DELETE FROM PAOScheduleAssignment");
+        deleteSql.append("WHERE PaoID").eq(paoId);
+
+       jdbcTemplate.update(deleteSql);
     }
 }

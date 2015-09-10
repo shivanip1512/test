@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.capcontrol.dao.CapbankControllerDao;
 import com.cannontech.capcontrol.dao.FeederDao;
@@ -23,6 +24,9 @@ import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.impl.LitePaoRowMapper;
@@ -268,5 +272,65 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         }
         
         return regulatorIds;
+    }
+
+    @Override
+    public Integer getParent(int busId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT SubStationID FROM CCSubstationSubBusList");
+        sql.append("WHERE SubstationBusID").eq(busId);
+
+        Integer parentId;
+        try {
+            parentId = jdbcTemplate.queryForObject(sql, RowMapper.INTEGER);
+        } catch (EmptyResultDataAccessException e) {
+            parentId = null;
+        }
+        return parentId;
+    }
+
+    @Override
+    @Transactional
+    public void assignFeeders(int busId, Iterable<Integer> feederIds) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM CCFeederSubAssignment");
+        sql.append("WHERE SubStationBusID").eq(busId);
+
+        jdbcTemplate.update(sql);
+
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
+        template.setChunkSize(ChunkingSqlTemplate.DEFAULT_SIZE / 3);
+
+        SqlFragmentGenerator<Integer> generator = new SqlFragmentGenerator<Integer>() {
+
+            private Integer displayOrder = 1;
+
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                for (Integer feederId : subList) {
+                    sql.append("INSERT INTO CCFeederSubAssignment");
+                    sql.values(busId, feederId, displayOrder);
+                    displayOrder++;
+                }
+                return sql;
+            }
+        };
+
+        template.update(generator, feederIds);
+    }
+
+    @Override
+    public List<Integer> getFeederIds(int busId) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT FeederID FROM CCFeederSubAssignment");
+        sql.append("WHERE SubStationBusID").eq(busId);
+        sql.append("ORDER BY DisplayOrder");
+
+        List<Integer> feederIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
+
+        return feederIds;
     }
 }

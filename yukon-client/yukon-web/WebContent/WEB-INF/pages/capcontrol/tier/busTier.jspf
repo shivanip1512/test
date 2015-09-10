@@ -130,27 +130,25 @@
                 
                 <%-- Date/Time --%>
                 <td>
-                    <span id="dateTime_${subbusId}"><cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="DATE_TIME"/></span>
+                    <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="DATE_TIME"/>
                 </td>
                 
                 <%-- PFactor / Est. --%>
                 <td>
-                    <span id="pFactor_${subbusId}"><cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="PFACTOR"/></span>
+                    <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="PFACTOR"/>
                 </td>
                 
                 <%-- kW / Volts --%>
                 <td>
-                    <span id="kwVolts_${subbusId}">
-                        <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="KW"/>
-                        <cti:classUpdater type="SUBBUS" identifier="${subbusId}/WATT_QUALITY">
-                            <cti:icon nameKey="questionableQuality" icon="icon-bullet-red" classes="thin fn M0"/>
-                        </cti:classUpdater>
-                        <i:inline key=".statSeparator"/> 
-                        <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="VOLTS"/>
-                        <cti:classUpdater type="SUBBUS" identifier="${subbusId}/VOLT_QUALITY">
-                            <cti:icon nameKey="questionableQuality" icon="icon-bullet-red" classes="thin fn M0"/>
-                        </cti:classUpdater>
-                    </span>
+                    <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="KW"/>
+                    <cti:classUpdater type="SUBBUS" identifier="${subbusId}/WATT_QUALITY">
+                        <cti:icon nameKey="questionableQuality" icon="icon-bullet-red" classes="thin fn M0"/>
+                    </cti:classUpdater>
+                    <i:inline key=".statSeparator"/>
+                    <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="VOLTS"/>
+                    <cti:classUpdater type="SUBBUS" identifier="${subbusId}/VOLT_QUALITY">
+                        <cti:icon nameKey="questionableQuality" icon="icon-bullet-red" classes="thin fn M0"/>
+                    </cti:classUpdater>
                 </td>
                 
                 <%-- Daily / Max Ops --%>
