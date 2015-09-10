@@ -227,6 +227,7 @@
     <entry key="yukon.web.modules.tools.point.fdr.direction">Direction</entry>
     <entry key="yukon.web.modules.tools.point.fdr.translation">Translation</entry>
     <entry key="yukon.web.modules.tools.point.fdr.none">No FDR Translations</entry>
+    <entry key="yukon.web.modules.tools.point.physicalOffset">Physical point Offset</entry>
 
     <entry key="yukon.web.modules.tools.point.attachment.SUBSTATION_BUS">Point is a Watt/Load point for a Substation Bus.</entry>
     <entry key="yukon.web.modules.tools.point.attachment.CAP_BANK">Point is a control point for a Cap Bank.</entry>
@@ -445,5 +446,6 @@
     <entry key="yukon.web.modules.search.EIM_TEST.summary"></entry>
     <entry key="yukon.web.modules.search.LOAD_CONTROL_TEST.summary"></entry>
     <entry key="yukon.web.modules.search.ACCOUNT_TEST.summary"></entry>
-    
+
+	<entry key="yukon.web.modules.tools.collectionActions.deviceUploadFailed">{0} errors were encountered while processing the import file.</entry>    
 </properties>
