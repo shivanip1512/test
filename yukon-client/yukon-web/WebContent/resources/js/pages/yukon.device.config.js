@@ -80,7 +80,7 @@ yukon.deviceConfig = (function () {
      */
     _determineScheduleAddButtonVisibility = function (form) {
 
-        $('.js-rate-schedule').each(function (idx, table) {
+        form.find('.js-rate-schedule').each(function (idx, table) {
 
             table = $(table);
 
@@ -119,6 +119,13 @@ yukon.deviceConfig = (function () {
 
             _determineScheduleAddButtonVisibility(form);
         });
+
+        _actionOnFormWith('.js-add-schedule', function (form) {
+
+            _determineScheduleAddButtonVisibility(form);
+
+        });
+
     },
 
     _hidingMap = [
