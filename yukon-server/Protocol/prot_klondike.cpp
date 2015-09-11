@@ -112,7 +112,7 @@ bool KlondikeProtocol::commandStateValid()
         if( _current_command.command_code == CommandCode_WaitingQueueWrite
             && _device_queue_entries_available == 0 )
         {
-            CTILOG_ERROR(dout, "Command_LoadQueue/CommandCode_CheckStatus : _device_queue_entries_available == 0");
+            CTILOG_WARN(dout, "Command_LoadQueue/CommandCode_CheckStatus : _device_queue_entries_available == 0");
 
             command_valid = false;
         }
