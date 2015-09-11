@@ -1,5 +1,7 @@
 package com.cannontech.amr.deviceDataMonitor.service;
 
+import java.util.concurrent.ExecutionException;
+
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
@@ -26,8 +28,9 @@ public interface DeviceDataMonitorService {
     /**
      * Returns a boolean indicating whether or not a worker is currently "working"
      * on calculating violations for a monitor
+     * @throws ExecutionException 
      */
-    boolean areViolationsBeingCalculatedForMonitor(Integer monitorId);
+    boolean areViolationsBeingCalculatedForMonitor(Integer monitorId) throws ExecutionException;
     
     /**
      * Gets the count of the number of devices in the monitor's violations group

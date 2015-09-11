@@ -17,9 +17,10 @@
         <tags:nameValueContainer2 tableClass="has-actions">
             
             <tags:nameValue2 nameKey=".name">${fn:escapeXml(monitor.name)}</tags:nameValue2>
-            <tags:nameValue2 nameKey=".violations">${violationsCount}</tags:nameValue2>
-            <tags:nameValue2 nameKey=".monitoring">${monitoringCount}</tags:nameValue2>
-            
+            <tags:nameValue2 nameKey=".violations">
+               <cti:dataUpdaterValue type="DEVICE_DATA_MONITOR" identifier="${monitor.id}/VIOLATIONS_COUNT"/>
+            </tags:nameValue2>
+     		<tags:nameValue2 nameKey=".monitoring">${monitoringCount}</tags:nameValue2>
             <tags:nameValueGap2 gapHeight="20px"/>
             
             <tags:nameValue2 nameKey=".supportedDevices">${supportedDevices}</tags:nameValue2>

@@ -41,10 +41,10 @@
 
                 <%-- name --%>
                 <tags:inputNameValue nameKey=".name" path="name" size="35" maxlength="50" />
-                <cti:displayForPageEditModes modes="EDIT">
-                    <tags:nameValue2 nameKey=".violations">${violationsCount}</tags:nameValue2>
-                </cti:displayForPageEditModes>
-                <tags:nameValue2 nameKey=".monitoring">
+                <tags:nameValue2 nameKey=".violations">
+               		<cti:dataUpdaterValue type="DEVICE_DATA_MONITOR" identifier="${monitor.id}/VIOLATIONS_COUNT"/>
+                </tags:nameValue2>
+          		<tags:nameValue2 nameKey=".monitoring">
                     <span class="dn js-calc-indicator">
                         <cti:icon icon="icon-spinner"/>
                         <span class="b-label"><i:inline key=".calculating"/></span>

@@ -350,19 +350,6 @@ public class DeviceDataMonitorController {
         StoredDeviceGroup violationsDeviceGroup = deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.DEVICE_DATA, 
                 monitor.getViolationsDeviceGroupName(), true);
         model.addAttribute("violationsDeviceGroup", violationsDeviceGroup);
-
-        boolean areViolationsBeingCalculated = false;
-        try {
-            areViolationsBeingCalculated = monitorService.areViolationsBeingCalculatedForMonitor(monitor.getId());
-        } catch (RemoteAccessException e) {
-            log.error("Yukon Service Manager is down or we are not configured properly to talk to it.", e);
-        }
-        model.addAttribute("areViolationsBeingCalculated", areViolationsBeingCalculated);
-        
-        if (!areViolationsBeingCalculated) {
-            int violationsCount = deviceGroupService.getDeviceCount(Collections.singleton(violationsDeviceGroup));
-            model.addAttribute("violationsCount", violationsCount);
-        }
     }
     
     private void setupEditModelMap(DeviceDataMonitor monitor, ModelMap model, YukonUserContext userContext) {
@@ -394,20 +381,6 @@ public class DeviceDataMonitorController {
         }
         
         return Collections.singletonMap("count", monitoringCount);
-    }
-    
-    @RequestMapping(method = RequestMethod.GET, value = "/violations-count")
-    public @ResponseBody Map<String, Object> getViolationsCount(int monitorId) {
-        
-        Map<String, Object> obj = new HashMap<>();
-        if (monitorService.areViolationsBeingCalculatedForMonitor(monitorId)) {
-            obj.put("status", "working");
-        } else {
-            obj.put("status", "done");
-            obj.put("count", monitorService.getMonitorViolationCountById(monitorId));
-        }
-        
-        return obj;
     }
     
     @RequestMapping(method = RequestMethod.GET, value = "deviceDataMonitor/monitor-supported-count")

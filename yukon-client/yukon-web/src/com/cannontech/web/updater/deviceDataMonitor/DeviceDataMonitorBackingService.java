@@ -29,19 +29,39 @@ public class DeviceDataMonitorBackingService implements UpdateBackingService {
 	
 	@Override
     public String getLatestValue(String identifier, long afterDate, YukonUserContext userContext) {
-		String[] idParts = StringUtils.split(identifier, "/");
-		int monitorId = Integer.parseInt(idParts[0]);
-		String updaterTypeStr = idParts[1];
+	    ParsedInfo parsedInfo = new ParsedInfo(identifier);
 		
-		DeviceDataMonitorUpdaterTypeEnum updaterType = DeviceDataMonitorUpdaterTypeEnum.valueOf(updaterTypeStr);
-		DeviceDataUpdaterHandler handler = handlersMap.get(updaterType);
-		return handler.handle(monitorId, userContext);
+        DeviceDataMonitorUpdaterTypeEnum updaterType =
+            DeviceDataMonitorUpdaterTypeEnum.valueOf(parsedInfo.updaterTypeStr);
+        DeviceDataUpdaterHandler handler = handlersMap.get(updaterType);
+        return handler.handle(parsedInfo.monitorId, userContext);
     }
     
     @Override
     public boolean isValueAvailableImmediately(String fullIdentifier,
     		long afterDate, YukonUserContext userContext) {
-    	return true;
+        
+        ParsedInfo parsedInfo = new ParsedInfo(fullIdentifier);
+        DeviceDataMonitorUpdaterTypeEnum updaterType =
+                DeviceDataMonitorUpdaterTypeEnum.valueOf(parsedInfo.updaterTypeStr);
+        DeviceDataUpdaterHandler handler = handlersMap.get(updaterType);
+    	return handler.isValueAvailableImmediately();
+    }
+    
+    private class ParsedInfo {
+        int monitorId;
+        String updaterTypeStr;
+
+        ParsedInfo(String identifier) {
+            String[] idParts = StringUtils.split(identifier, "/");
+            if(idParts[0].equals("CALCULATION_STATUS")){
+                monitorId = Integer.parseInt(idParts[1]);
+                updaterTypeStr = idParts[0];
+            }else{
+                monitorId = Integer.parseInt(idParts[0]);
+                updaterTypeStr = idParts[1];  
+            } 
+        }
     }
 }
 

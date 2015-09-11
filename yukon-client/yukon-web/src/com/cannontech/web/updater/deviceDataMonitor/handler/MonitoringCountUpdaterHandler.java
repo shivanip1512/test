@@ -46,4 +46,9 @@ public class MonitoringCountUpdaterHandler implements DeviceDataUpdaterHandler {
 	public DeviceDataMonitorUpdaterTypeEnum getUpdaterType() {
 		return DeviceDataMonitorUpdaterTypeEnum.MONITORING_COUNT;
 	}
+
+    @Override
+    public boolean isValueAvailableImmediately() {
+        return true;
+    }
 }

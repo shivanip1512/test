@@ -429,6 +429,7 @@
     <bean id="deviceDataMonitorBackingService" class="com.cannontech.web.updater.deviceDataMonitor.DeviceDataMonitorBackingService"/>
     <bean id="deviceDataMonitorMonitoringCountUpdaterHandler" class="com.cannontech.web.updater.deviceDataMonitor.handler.MonitoringCountUpdaterHandler"/>
     <bean id="deviceDataMonitorViolationsCountUpdaterHandler" class="com.cannontech.web.updater.deviceDataMonitor.handler.ViolationsCountUpdaterHandler"/>
+    <bean id="deviceDataMonitorCalculationStatusUpdaterHandler" class="com.cannontech.web.updater.deviceDataMonitor.handler.CalculationStatusUpdaterHandler"/>
 
     <!-- validation -->
     <bean id="validationMonitorBackingService" class="com.cannontech.web.updater.validationProcessing.ValidationMonitorBackingService">

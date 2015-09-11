@@ -36,9 +36,6 @@
 <input type="hidden" class="js-view_details_text" value="${viewDetails_i18n_text}"/>
 <input type="hidden" class="js-add_points_text" value="${addPoints_i18n_text}"/>
 
-<c:if test="${areViolationsBeingCalculated}">
-    <input type="hidden" class="js-violations-loading"/>
-</c:if>
 <c:set var="supportedDevicesInner">
     <span class="js-loading"><cti:icon icon="icon-spinner"/><i:inline key=".calculating"/></span>
     <span class="js-supported-counts"></span>
@@ -100,23 +97,23 @@
 
 <span class="js-violation-report-links dn">&nbsp;${violationReportLinks}</span>
 
-<c:set var="violationsCount">
-    <c:choose>
-        <c:when test="${areViolationsBeingCalculated}">
-            <span>
-                <i class="icon icon-spinner js-violations-loading">&nbsp;</i><i:inline key=".calculating"/>
-            </span>
-        </c:when>
-        <c:when test="${not empty violationsCount && violationsCount > 0}">
-            ${violationsCount}
-            ${violationReportLinks}
-        </c:when>
-        <c:when test="${!monitor.enabled}">
-            <i:inline key="yukon.common.na"/>
-        </c:when>
-        <c:otherwise>0</c:otherwise>
-    </c:choose>
-</c:set>
+<cti:dataUpdaterCallback function="yukon.ami.ddm.violationUpdater" initialize="true" value="DEVICE_DATA_MONITOR/CALCULATION_STATUS/${monitor.id}"/>
+
+<!-- CALCULATING -->
+<span class="dn js-violations js-violations-calculating">
+    <i class="icon icon-spinner js-violations-loading">&nbsp;</i><i:inline key=".calculating"/>
+</span>
+
+<!-- NA -->
+<span class="dn js-violations js-violations-na">
+    <i:inline key="yukon.common.na"/>
+</span>
+
+<!-- a number of violations -->
+<span class="dn js-violations js-violations-exist">
+    <span class="js-violations-count">0</span>
+    ${violationReportLinks}
+</span>
 
 <c:set var="monitoringEnabled"><i:inline key=".enabled${monitor.enabled}"/></c:set>
 </cti:displayForPageEditModes>

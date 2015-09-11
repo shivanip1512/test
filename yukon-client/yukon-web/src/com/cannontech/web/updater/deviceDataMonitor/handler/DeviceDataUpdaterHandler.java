@@ -5,7 +5,9 @@ import com.cannontech.web.updater.deviceDataMonitor.DeviceDataMonitorUpdaterType
 
 public interface DeviceDataUpdaterHandler {
 
-	public String handle(int monitorId, YukonUserContext userContext);
+	String handle(int monitorId, YukonUserContext userContext);
 	
-	public DeviceDataMonitorUpdaterTypeEnum getUpdaterType();
+	DeviceDataMonitorUpdaterTypeEnum getUpdaterType();
+	
+	boolean isValueAvailableImmediately();
 }

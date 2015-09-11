@@ -18,30 +18,6 @@ yukon.ami.ddm = (function () {
         _supported_counts_xhr = null,
         _group_count_xhr = null,
         
-        /** Gets the total count of violations. */
-        _get_violations_count = function () {
-            $.ajax({
-                url: 'violations-count',
-                data: { 'monitorId': $('#monitor-id').val() },
-                dataType: 'json'
-            }).done(function (data, textStatus, jqXHR) {
-                if (_violations_interval_id !== null && typeof _violations_interval_id !== 'undefined') {
-                    clearInterval(_violations_interval_id);
-                }
-                if (data.status === 'working') {
-                    _violations_interval_id = setInterval(_get_violations_count, 3000);
-                } else {
-                    var violations_container = $('.js-violations-loading').closest('span');
-                    violations_container.html(data.count);
-                    if (data.count === 0) return;
-                    var report_links = $('.js-violation-report-links').clone();
-                    report_links.removeClass('dn');
-                    violations_container.append(report_links);
-                    return;
-                }
-            });
-        },
-        
         /** Shows a update dialog based on the count_status. */
         _show_update_dialog = function () {
             var count_status = $('.js-supported-counts').attr('data-count-status');
@@ -664,15 +640,34 @@ yukon.ami.ddm = (function () {
             
             _get_supported_counts({ initial_load: true });
             
-            if ($('.js-violations-loading').length > 0) {
+/*            if ($('.js-violations-loading').length > 0) {
                 _get_violations_count();
-            }
+            }*/
             
             // Add our help icons next to the two column titles (Settings and Processors)
             $('.js-settings-section .title-bar').append('<i class="icon icon-help js-open-settings-help cp"></i>');
             $('.js-processors-section .title-bar').append('<i class="icon icon-help js-open-processors-help cp"></i>');
             
             _initialized = true;
+        },
+        
+        violationUpdater: function (data) {
+        	
+        	$('.js-violations').addClass('dn');
+        	if (data === 'CALCULATING') {
+        		$('.js-violations-calculating').removeClass('dn');
+        	}
+        	else if (data === 'NA') {
+        		$('.js-violations-na').removeClass('dn');
+        	}
+        	else {
+        		data = +data;
+        		if (data > 0) {
+        			$('.js-violations-count').text(data);
+        			$('.js-violations-exist').removeClass('dn');
+        		}
+        	}
+        	
         }
         
     };

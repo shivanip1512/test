@@ -4,5 +4,6 @@ public enum DeviceDataMonitorUpdaterTypeEnum {
 
 	MONITORING_COUNT,
 	VIOLATIONS_COUNT,
+	CALCULATION_STATUS,
 	;
 }

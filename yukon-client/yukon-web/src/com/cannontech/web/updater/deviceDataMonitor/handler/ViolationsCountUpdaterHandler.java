@@ -1,8 +1,9 @@
 package com.cannontech.web.updater.deviceDataMonitor.handler;
 
+import java.util.concurrent.ExecutionException;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.remoting.RemoteAccessException;
 
 import com.cannontech.amr.deviceDataMonitor.dao.DeviceDataMonitorDao;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
@@ -38,8 +39,7 @@ public class ViolationsCountUpdaterHandler implements DeviceDataUpdaterHandler {
 	        boolean areViolationsBeingCalculated;
             try {
                 areViolationsBeingCalculated = deviceDataMonitorService.areViolationsBeingCalculatedForMonitor(monitorId);
-            } catch (RemoteAccessException e) {
-                logErrorOrDebug("Yukon Service Manager is probably down or we are not configured properly to talk to it.", e);
+            } catch (ExecutionException e) {
                 return messageSourceAccessor.getMessage(NA_MSG_KEY);
             }
 	        if (!areViolationsBeingCalculated) {
@@ -60,12 +60,9 @@ public class ViolationsCountUpdaterHandler implements DeviceDataUpdaterHandler {
 	public DeviceDataMonitorUpdaterTypeEnum getUpdaterType() {
 		return DeviceDataMonitorUpdaterTypeEnum.VIOLATIONS_COUNT;
 	}
-	
-    private void logErrorOrDebug(String logMsg, Exception e) {
-        if (log.isDebugEnabled()) {
-            log.debug(logMsg, e);
-        } else {
-            log.error(logMsg);
-        }
+
+    @Override
+    public boolean isValueAvailableImmediately() {
+        return false;
     }
 }
