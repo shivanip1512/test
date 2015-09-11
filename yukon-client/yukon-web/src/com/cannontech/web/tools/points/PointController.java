@@ -45,6 +45,7 @@ import com.cannontech.database.data.point.ScalarPoint;
 import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.point.PointAlarming;
+import com.cannontech.database.db.point.*;
 import com.cannontech.database.db.point.PointAlarming.AlarmNotificationTypes;
 import com.cannontech.database.db.point.fdr.FDRTranslation;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -90,8 +91,9 @@ public class PointController {
         model.addAttribute("mode", PageEditMode.EDIT);
         PointModel pointModel = pointEditorService.getModelForId(id);
         Character pseudoFlag = pointModel.getPointBase().getPoint().getPseudoFlag();
-        if (pseudoFlag == 'P')
-            pointModel.getPointBase().getPoint().setPhysicalOffset(false);
+		if (pseudoFlag.equals(Point.PSEUDOFLAG_PSEUDO)) {
+			pointModel.getPointBase().getPoint().setPhysicalOffset(false);
+		}
         return setUpModel(model, pointModel, userContext);
     }
 
