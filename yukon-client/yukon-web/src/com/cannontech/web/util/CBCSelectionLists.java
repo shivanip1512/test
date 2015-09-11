@@ -293,28 +293,6 @@ public class CBCSelectionLists {
     }
 
     /**
-     * Returns all possible Comm Channels
-     */
-    public SelectListItem[] getPorts() {
-
-        SelectListItem[] selItems = new SelectListItem[0];
-
-        IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-        synchronized (cache) {
-            List<LiteYukonPAObject> ports = cache.getAllPorts();
-
-            selItems = new SelectListItem[ports.size()];
-            for (int i = 0; i < ports.size(); i++) {
-                LiteYukonPAObject litePort = ports.get(i);
-                selItems[i] = new SelectListItem(new Integer(litePort.getYukonID()), litePort.getPaoName());
-            }
-
-        }
-
-        return selItems;
-    }
-    
-    /**
      * Returns the valid start of time for Yukon
      * 
      * @return
@@ -345,26 +323,6 @@ public class CBCSelectionLists {
         return selItems;
     }
 
-    /**
-     * Returns all possible Routes
-     */
-    public SelectListItem[] getCbcRoutes() {
-
-        SelectListItem[] selItems = new SelectListItem[0];
-
-        IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-        synchronized (cache) {
-            List<LiteYukonPAObject> routes = cache.getAllRoutes();
-
-            selItems = new SelectListItem[routes.size()];
-            for (int i = 0; i < routes.size(); i++) {
-                LiteYukonPAObject liteRoute = routes.get(i);
-                selItems[i] = new SelectListItem(new Integer(liteRoute.getYukonID()), liteRoute.getPaoName());
-            }
-        }
-
-        return selItems;
-    }
     public SelectItem[] getCBCTypes() {
         return wizardCBCTypes;
     }
@@ -600,10 +558,4 @@ public class CBCSelectionLists {
     public void setYukonUserContextMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
         this.messageSourceResolver = messageSourceResolver;
     }
-    
-    public static final SelectListItem[] SCAN_GROUP = {
-        // value, label
-        new SelectListItem("0", "Default"),
-        new SelectListItem("1", "First"),
-        new SelectListItem("2", "Second")};
 }
