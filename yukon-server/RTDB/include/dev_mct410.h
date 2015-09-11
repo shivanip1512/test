@@ -340,11 +340,13 @@ protected:
 
     enum PointOffsets
     {
-        PointOffset_Voltage       =    4,
-        PointOffset_VoltageMax    =   14,
-        PointOffset_VoltageMin    =   15,
+        PointOffset_Voltage          =  4,
+        PointOffset_VoltageMax       = 14,
+        PointOffset_VoltageMin       = 15,
+        PointOffset_VoltageMaxFrozen = 24,
+        PointOffset_VoltageMinFrozen = 25,
 
-        PointOffset_Analog_Outage =  100,
+        PointOffset_Analog_Outage = 100,
         PointOffset_Status_PhaseDetect =  3000,
     };
 

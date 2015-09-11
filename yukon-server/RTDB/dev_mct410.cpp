@@ -2842,9 +2842,13 @@ YukonError_t Mct410Device::decodeGetValueVoltage( const INMESS &InMessage, const
     if( InMessage.Sequence == EmetconProtocol::GetValue_FrozenVoltage )
     {
         insertPointDataReport(DemandAccumulatorPointType, PointOffset_VoltageMax,
+                              ReturnMsg, max_volt_info, "", maxTime, 0.1);
+        insertPointDataReport(DemandAccumulatorPointType, PointOffset_VoltageMaxFrozen,
                               ReturnMsg, max_volt_info, "Frozen Maximum Voltage", maxTime, 0.1);
 
         insertPointDataReport(DemandAccumulatorPointType, PointOffset_VoltageMin,
+                              ReturnMsg, min_volt_info, "", minTime, 0.1);
+        insertPointDataReport(DemandAccumulatorPointType, PointOffset_VoltageMinFrozen,
                               ReturnMsg, min_volt_info, "Frozen Minimum Voltage", minTime, 0.1);
     }
     else
