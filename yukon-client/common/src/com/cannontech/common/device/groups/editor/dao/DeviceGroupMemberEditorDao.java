@@ -37,21 +37,23 @@ public interface DeviceGroupMemberEditorDao {
      * Method to add a list of devices to a group (quietly ignores duplicates)
      * @param group - Group to add devices to
      * @param devices - Devices to add
-     * @return number of added devices 
      */
-    public int addDevices(StoredDeviceGroup group, YukonPao... yukonPao);
+    public void addDevices(StoredDeviceGroup group, YukonPao... yukonPao);
     
     /**
      * Add devices to the group. Illegal or duplicate devices will be silently ignored.
-     * @return number of added devices
      */
-    public int addDevices(StoredDeviceGroup group, Iterable<? extends YukonPao> yukonPaos);
+    public void addDevices(StoredDeviceGroup group, Iterable<? extends YukonPao> yukonPaos);
     
     /**
      * Add devices to the group. Illegal or duplicate devices will be silently ignored.
-     * @return number of added devices 
      */
-    public int addDevices(StoredDeviceGroup group, Iterator<? extends YukonPao> yukonPaos);
+    public void addDevices(StoredDeviceGroup group, Iterator<? extends YukonPao> yukonPaos);
+    
+    /**
+     * Adds device to the group. Returns 1 if the device was added, 0 if not.
+     */
+    int addDevice(StoredDeviceGroup group, YukonPao device);
     
     /**
      * Remove child devices under group that are contained in the devices collection.
@@ -106,5 +108,4 @@ public interface DeviceGroupMemberEditorDao {
      * @return
      */
     public boolean isChildDevice(StoredDeviceGroup group, int paoId);
-
 }

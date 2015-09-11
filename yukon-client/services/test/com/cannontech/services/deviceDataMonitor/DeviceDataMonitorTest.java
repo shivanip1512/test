@@ -156,7 +156,7 @@ public class DeviceDataMonitorTest {
         };
         deviceGroupMemberEditorDao = new DeviceGroupEditorDaoImpl() {
             @Override
-            public int addDevices(StoredDeviceGroup group, YukonPao... pao) {
+            public void addDevices(StoredDeviceGroup group, YukonPao... pao) {
                 List<YukonPao> paos = Lists.newArrayList(pao);
                 HashSet<PaoIdentifier> paoIdentifiers = Sets.newHashSet(Lists.transform(paos, new Function<YukonPao, PaoIdentifier>() {
                     @Override
@@ -166,10 +166,8 @@ public class DeviceDataMonitorTest {
                 }));
                 if (!deviceGroupPaos.containsKey(group)) {
                     deviceGroupPaos.put(group, paoIdentifiers);
-                    return 1;
                 } else {
                     deviceGroupPaos.get(group).addAll(paoIdentifiers);
-                    return 0;
                 }
             }
             @Override

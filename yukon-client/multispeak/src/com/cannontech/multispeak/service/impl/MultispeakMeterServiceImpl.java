@@ -2191,7 +2191,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
         if (!alreadyInGroup) {
             StoredDeviceGroup deviceGroup = deviceGroupEditorDao.getGroupByName(deviceGroupParent, groupName, true);
-            int numAffected = deviceGroupMemberEditorDao.addDevices(deviceGroup, yukonDevice);
+            int numAffected = deviceGroupMemberEditorDao.addDevice(deviceGroup, yukonDevice);
             if (numAffected > 0) {
                 multispeakEventLogService.addMeterToGroup(meterNumber, deviceGroup.getFullName(), mspMethod, mspVendor.getCompanyName());
                 systemLog(mspMethod, "MeterNumber(" + meterNumber+ ") - Added to Group: " + deviceGroup.getFullName() + ".", mspVendor);
@@ -2219,7 +2219,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     private void addToGroup(YukonMeter meter, SystemGroupEnum systemGroup, String mspMethod, MultispeakVendor mspVendor) {
 
         DeviceGroup deviceGroup = deviceGroupEditorDao.getSystemGroup(systemGroup);
-        int numAffected = deviceGroupMemberEditorDao.addDevices((StoredDeviceGroup) deviceGroup, Collections.singletonList(meter));
+        int numAffected = deviceGroupMemberEditorDao.addDevice((StoredDeviceGroup) deviceGroup, meter);
         if (numAffected > 0) {
             String basePath = deviceGroupEditorDao.getFullPath(systemGroup);
             multispeakEventLogService.addMeterToGroup(meter.getMeterNumber(), basePath, mspMethod, mspVendor.getCompanyName());

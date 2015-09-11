@@ -115,16 +115,76 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     
     @Override
     @Transactional
-    public int addDevices(StoredDeviceGroup group, Iterable<? extends YukonPao> yukonPaos) {
-        return addDevices(group, yukonPaos.iterator());
+    public void addDevices(StoredDeviceGroup group, Iterable<? extends YukonPao> yukonPaos) {
+        addDevices(group, yukonPaos.iterator());
     }
     
 
     @Override
     @Transactional
-    public int addDevices(StoredDeviceGroup group, Iterator<? extends YukonPao> paos) {
+    public void addDevices(StoredDeviceGroup group, Iterator<? extends YukonPao> paos) {
+        
+        Collection<? extends YukonPao> validDevices = getValidDevicesToAdd(paos);
+        if (!validDevices.isEmpty()) {
+            boolean success = true;
+            log.debug("Devices to add=" + validDevices.size());
 
-        Collection<YukonPao> validDevices = Collections2.filter(Lists.newArrayList(paos), new Predicate<YukonPao>() {
+            List<List<YukonPao>> devices =
+                Lists.partition(Lists.newArrayList(validDevices), ChunkingSqlTemplate.DEFAULT_SIZE);
+            for (List<YukonPao> subList : devices) {
+                log.debug("Batch=" + subList.size());
+                try {
+                    jdbcTemplate.batchUpdate(deviceGroupMemberInsertSql.toString(), new BatchPreparedStatementSetter() {
+                        @Override
+                        public void setValues(PreparedStatement ps, int i) throws SQLException {
+                            YukonPao device = subList.get(i);
+                            ps.setInt(1, group.getId());
+                            ps.setInt(2, device.getPaoIdentifier().getPaoId());
+                        }
+
+                        @Override
+                        public int getBatchSize() {
+                            return subList.size();
+                        }
+                    });
+                } catch (DataIntegrityViolationException e) {
+                    success = false;
+                    log.debug("Attempted to insert a duplicate device in a batch");
+                }
+            }
+
+            if (success || (!success && validDevices.size() > 1)) {
+                dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.DEVICE_GROUP_MEMBER, group.getId());
+            }
+        }
+    }
+        
+    @Override
+    @Transactional
+    public int addDevice(StoredDeviceGroup group, YukonPao device) {
+
+        int rowsAffected = 0;
+        log.debug("Attempted to insert device=" + device + " group =" + group);
+        if (!getValidDevicesToAdd(Lists.newArrayList(device).iterator()).isEmpty()) {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append(deviceGroupMemberInsertSql);
+            try {
+                rowsAffected +=
+                    jdbcTemplate.update(sql.toString(), group.getId(), device.getPaoIdentifier().getPaoId());
+            } catch (DataIntegrityViolationException e) {
+                log.debug("Duplicate device=" + device);
+                // ignore - tried to insert duplicate
+            }
+            log.debug("rowsAffected=" + rowsAffected);
+            if (rowsAffected > 0) {
+                dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.DEVICE_GROUP_MEMBER, group.getId());
+            }
+        }
+        return rowsAffected;
+    }
+
+    private Collection<? extends YukonPao> getValidDevicesToAdd(Iterator<? extends YukonPao> paos) {
+        return Collections2.filter(Lists.newArrayList(paos), new Predicate<YukonPao>() {
             @Override
             public boolean apply(YukonPao pao) {
                 PaoIdentifier paoId = pao.getPaoIdentifier();
@@ -135,35 +195,8 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
                 return true;
             }
         });
-
-        log.debug("Devices to add=" + validDevices.size());
-
-        int rowsAffected = 0;
-        List<List<YukonPao>> devices =
-            Lists.partition(Lists.newArrayList(validDevices), ChunkingSqlTemplate.DEFAULT_SIZE);
-        for (List<YukonPao> subList : devices) {
-            log.debug("Batch=" + subList.size());
-            rowsAffected += jdbcTemplate.batchUpdate(deviceGroupMemberInsertSql.toString(), new BatchPreparedStatementSetter() {
-                @Override
-                public void setValues(PreparedStatement ps, int i) throws SQLException {
-                    YukonPao device = subList.get(i);
-                    ps.setInt(1, group.getId());
-                    ps.setInt(2, device.getPaoIdentifier().getPaoId());
-                }
-                @Override
-                public int getBatchSize() {
-                    return subList.size();
-                }
-            }).length;
-        }
-
-        if (rowsAffected > 0) {
-            dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.DEVICE_GROUP_MEMBER, group.getId());
-        }
-        log.debug("rowsAffected=" + rowsAffected);
-        return rowsAffected;
     }
-        
+    
     @Override
     public List<SimpleDevice> getChildDevices(StoredDeviceGroup group) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -248,9 +281,9 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     }
 
     @Override
-    public int addDevices(StoredDeviceGroup group, YukonPao... yukonPao) {
+    public void addDevices(StoredDeviceGroup group, YukonPao... yukonPao) {
         List<YukonPao> yukonPaos = Arrays.asList(yukonPao);
-        return addDevices(group, yukonPaos);
+        addDevices(group, yukonPaos);
     }
     
     @Override
