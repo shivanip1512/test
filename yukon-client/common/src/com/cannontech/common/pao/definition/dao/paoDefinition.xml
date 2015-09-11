@@ -6072,7 +6072,6 @@
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="188">
-                <init>true</init>
                 <name>Delivered kW Load Profile</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kW" />
@@ -6091,14 +6090,12 @@
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="180">
-                <init>true</init>
                 <name>Sum kWh per Interval</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWh" />
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="187">
-                <init>true</init>
                 <name>Sum kW Load Profile</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kW" />
@@ -6167,7 +6164,6 @@
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="261">
-                <init>true</init>
                 <name>Delivered kVAr Load Profile</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVar"/>
@@ -6235,7 +6231,7 @@
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="3">
-                <init>false</init>
+                <init>true</init>
                 <name>Sum kWh</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
@@ -8400,7 +8396,6 @@
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="183">
-                <init>true</init>
                 <name>Received kWh per Interval</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
@@ -9082,7 +9077,6 @@
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="188">
-                <init>true</init>
                 <name>Delivered kW Load Profile</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kW" />
@@ -9160,14 +9154,12 @@
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="180">
-                <init>true</init>
                 <name>Sum kWh per Interval</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWh" />
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="187">
-                <init>true</init>
                 <name>Sum kW Load Profile</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kW" />
