@@ -125,16 +125,26 @@ auto DnpSlaveProtocol::identifyRequest( const char* data, unsigned int size ) ->
                             application_payload.size() - 2);
 
             if( blocks.size() == 4
-                && blocks[0]->getGroup()     == Class::Group
+                && blocks[0]->getGroup() == Class::Group
                 && blocks[0]->getVariation() == Class::Class1
-                && blocks[1]->getGroup()     == Class::Group
+                && blocks[1]->getGroup() == Class::Group
                 && blocks[1]->getVariation() == Class::Class2
-                && blocks[2]->getGroup()     == Class::Group
+                && blocks[2]->getGroup() == Class::Group
                 && blocks[2]->getVariation() == Class::Class3
-                && blocks[3]->getGroup()     == Class::Group
+                && blocks[3]->getGroup() == Class::Group
                 && blocks[3]->getVariation() == Class::Class0 )
             {
                 //  nothing, this is an actual class 1230 poll
+            }
+            else if( blocks.size() == 3
+                && blocks[0]->getGroup() == Class::Group
+                && blocks[0]->getVariation() == Class::Class1
+                && blocks[1]->getGroup() == Class::Group
+                && blocks[1]->getVariation() == Class::Class2
+                && blocks[2]->getGroup() == Class::Group
+                && blocks[2]->getVariation() == Class::Class3 )
+            {
+                CTILOG_WARN(dout, "Class 123 poll received, returning class 1230 poll anyway");
             }
             else
             {
