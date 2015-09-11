@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cannontech.common.device.config.model.DNPConfiguration;
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.capcontrol.DeviceCBC;
@@ -181,5 +182,26 @@ public class CapControlCBC {
         this.yukonPAObject = yukonPAObject;
     }
 
-    
+    public static enum ScanGroup implements DisplayableEnum {
+        DEFAULT(0),
+        FIRST(1),
+        SECOND(2);
+
+        private static String baseKey = "yukon.web.modules.capcontrol.scanGroup.";
+
+        private int dbValue;
+
+        private ScanGroup(int dbValue) {
+            this.dbValue = dbValue;
+        }
+
+        public int getDbValue() {
+            return dbValue;
+        }
+
+        @Override
+        public String getFormatKey() {
+            return baseKey + name();
+        }
+    }   
 }

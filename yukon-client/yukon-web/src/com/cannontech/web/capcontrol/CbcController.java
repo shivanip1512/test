@@ -20,6 +20,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -32,7 +33,7 @@ import com.cannontech.web.common.TimeIntervals;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.editor.CapControlCBC;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.util.CBCSelectionLists;
+import com.cannontech.yukon.IDatabaseCache;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
@@ -44,6 +45,7 @@ public class CbcController {
     @Autowired private CbcService cbcService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private IDatabaseCache dbCache;
     private static final String baseKey = "yukon.web.modules.capcontrol.cbc.edit";
 
     @RequestMapping(value = "cbc/{id}/edit", method = RequestMethod.GET)
@@ -62,17 +64,18 @@ public class CbcController {
             capControlCBC = (CapControlCBC) modelCapControlCBC;
         }
 
-        CBCSelectionLists lists = new CBCSelectionLists();
-
+        List<LiteYukonPAObject> ports = dbCache.getAllPorts();
+        model.addAttribute("availablePorts", ports);
+        List<LiteYukonPAObject> routes = dbCache.getAllRoutes();
+        model.addAttribute("availableRoutes", routes);
         model.addAttribute("capControlCBC", capControlCBC);
-        model.addAttribute("selectionLists", lists);
-        model.addAttribute("timeIntervals",TimeIntervals.getCapControlIntervals());
-        model.addAttribute("scanGroups", CBCSelectionLists.SCAN_GROUP);
+        model.addAttribute("timeIntervals", TimeIntervals.getCapControlIntervals());
         model.addAttribute("analogPoints", points.get(PointType.Analog));
         model.addAttribute("pulseAccumulatorPoints", points.get(PointType.PulseAccumulator));
         model.addAttribute("calcAnalogPoints", points.get(PointType.CalcAnalog));
         model.addAttribute("statusPoints", points.get(PointType.Status));
         model.addAttribute("calcStatusPoints", points.get(PointType.CalcStatus));
+        model.addAttribute("scanGroups", CapControlCBC.ScanGroup.values());
 
         return "cbc.jsp";
     }
