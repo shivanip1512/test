@@ -2,6 +2,8 @@ package com.cannontech.jobs.model;
 
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class JobStatus<J extends YukonJob> {
     private Integer id;
     private J job;
@@ -32,7 +34,11 @@ public class JobStatus<J extends YukonJob> {
         return message;
     }
     public void setMessage(String message) {
-        this.message = message;
+        if (message.length() > 1000) {  //trim to fit JobStatus.message field size
+            this.message = StringUtils.abbreviate(message,  1000);
+        } else {
+            this.message = message;
+        }
     }
     public Date getStartTime() {
         return startTime;
