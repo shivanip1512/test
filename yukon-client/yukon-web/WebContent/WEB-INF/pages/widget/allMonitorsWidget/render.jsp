@@ -74,7 +74,7 @@
                     <%-- enable/disable --%>
                     <td class="tar">
                         <tags:switch checked="${monitor.enabled}" name="toggle" data-monitor-id="${monitor.id}" 
-                            data-monitor-type="device-data-monitor" classes="js-monitor-toggle"/>
+                            data-monitor-type="device-data-monitor" classes="js-monitor-toggle toggle-sm"/>
                     </td>
                 </tr>
             </c:forEach>
@@ -137,7 +137,7 @@
                     <%-- enable/disable --%>
                     <td class="tar">
                         <tags:switch checked="${monitor.evaluatorStatus eq 'ENABLED'}" name="toggle" data-monitor-id="${monitorId}"
-                            data-monitor-type="outage-monitor" classes="js-monitor-toggle"/>
+                            data-monitor-type="outage-monitor" classes="js-monitor-toggle toggle-sm"/>
                     </td>
                 </tr>
             </c:forEach>
@@ -205,7 +205,7 @@
                     <%-- enable/disable --%>
                     <td class="${tdClass} tar">
                         <tags:switch checked="${monitor.evaluatorStatus eq 'ENABLED'}" name="toggle" data-monitor-id="${monitorId}"
-                            data-monitor-type="tamper-flag-monitor" classes="js-monitor-toggle"/>
+                            data-monitor-type="tamper-flag-monitor" classes="js-monitor-toggle toggle-sm"/>
                     </td>
                 </tr>
             </c:forEach>
@@ -266,7 +266,7 @@
                 <%-- enable/disable --%>
                 <td class="tar">
                     <tags:switch checked="${monitor.evaluatorStatus eq 'ENABLED'}" name="toggle" data-monitor-id="${monitorId}"
-                        data-monitor-type="status-point-monitor" classes="js-monitor-toggle"/>
+                        data-monitor-type="status-point-monitor" classes="js-monitor-toggle toggle-sm"/>
 
                 </td> 
             </tr>
@@ -322,7 +322,7 @@
                 <%-- enable/disable --%>
                 <td class="tar">
                     <tags:switch checked="${monitor.evaluatorStatus eq 'ENABLED'}" name="toggle" data-monitor-id="${monitor.monitorId}"
-                        data-monitor-type="porter-response-monitor" classes="js-monitor-toggle"/>
+                        data-monitor-type="porter-response-monitor" classes="js-monitor-toggle toggle-sm"/>
                 </td> 
             </tr>
         </c:forEach>
@@ -391,7 +391,7 @@
                 <%-- Enable/Disable --%>
                 <td>
                     <tags:switch checked="${monitor.evaluatorStatus eq 'ENABLED'}" name="toggle" data-monitor-id="${monitorId}"
-                        data-monitor-type="validation-monitor" classes="js-monitor-toggle"/>
+                        data-monitor-type="validation-monitor" classes="js-monitor-toggle toggle-sm"/>
                 </td> 
             </tr>
         </c:forEach>

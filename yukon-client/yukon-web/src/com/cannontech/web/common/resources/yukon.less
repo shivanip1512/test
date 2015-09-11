@@ -249,7 +249,7 @@ input[type=radio] {
     margin: 0 0.2em;
     position: relative;
     transition: all 120ms;
-    vertical-align: -0.5em;
+    vertical-align: text-top;
     width: 2.5em;
 }
 .checkbox-value::before {
@@ -278,6 +278,20 @@ input[type=radio] {
     border-color: #5A9E51;
 }
 .checkbox-input:checked ~ .checkbox-value::before { left: 75%; }
+
+.toggle-sm .checkbox-value {
+    height: 1em;
+    width: 2em;
+}
+.toggle-sm .checkbox-value::before {
+    top: -0.125em;
+    left: 35%;
+    height: 1.25em;
+    width: 1.25em;
+}
+
+.toggle-sm .checkbox-input:checked ~ .checkbox-value::before { left: 85%; }
+
 .with-form-controls .checkbox-value::before { top: 1px; }
 
 /** Styles for a 'toggle button' checkbox and radio buttons **/
