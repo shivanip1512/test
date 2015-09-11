@@ -410,7 +410,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         builder.addAll(lookupByGroup.get(AttributeGroup.RFN_VOLTAGE_EVENT));
         builder.addAll(lookupByGroup.get(AttributeGroup.RFN_CURRENT_EVENT));
         builder.addAll(lookupByGroup.get(AttributeGroup.RFN_DEMAND_EVENT));
-        builder.addAll(lookupByGroup.get(AttributeGroup.RFN_OTHER_EVENT));;
+        builder.addAll(lookupByGroup.get(AttributeGroup.RFN_OTHER_EVENT));
         builder.addAll(lookupByGroup.get(AttributeGroup.RFN_METERING_EVENT));
         rfnEventTypes = builder.build();
 
