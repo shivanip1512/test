@@ -262,9 +262,9 @@ public class UserEditorController {
         model.addAttribute("roles", sortedRoles.asMap());
     }
     
-    private List<LiteUserGroup> escapeHtml(List<LiteUserGroup> allLiteUserGroups) {
-		for(LiteUserGroup userGroup : allLiteUserGroups){
-			userGroup.setUserGroupName(HtmlUtils.htmlEscape(userGroup.getUserGroupName()));			
+	private List<LiteUserGroup> escapeHtml(List<LiteUserGroup> allLiteUserGroups) {
+		for (LiteUserGroup userGroup : allLiteUserGroups) {
+			userGroup.setUserGroupName(HtmlUtils.htmlEscape(userGroup.getUserGroupName()));
 		}
 		return allLiteUserGroups;
 	}
