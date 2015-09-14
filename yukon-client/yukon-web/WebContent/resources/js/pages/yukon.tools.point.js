@@ -40,7 +40,7 @@ yukon.tools.point = (function () {
     };
     
     var _setOffsetDisabled = function (disabled) {
-    	$('.js-point-offset').prop('disabled', disabled);
+        $('.js-point-offset').prop('disabled', disabled);
     };
     /**
      * Shows and hides archive interval field based on Archive Type selected
@@ -279,6 +279,8 @@ yukon.tools.point = (function () {
                  
                  if (useOffset) {
                 	 _setOffsetDisabled(false);
+                 }else{
+                	 _setOffsetDisabled(true);
                  }
              }
         	$(document).on('click', '.js-use-offset', _togglePhysicalOffset);
