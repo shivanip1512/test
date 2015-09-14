@@ -265,7 +265,7 @@ void DnpSlave::logCommand(const std::string &description, const char *data, cons
 {
     if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
     {
-        CTILOG_DEBUG(dout, logNow() <<" received " << description <<
+        CTILOG_DEBUG(dout, logNow() <<" received " << description << std::endl <<
                      arrayToRange(reinterpret_cast<const unsigned char*>(data), size));
     }
 }
@@ -332,7 +332,7 @@ int DnpSlave::processMessageFromForeignSystem (ServerConnection& connection,
 
     if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
     {
-        CTILOG_DEBUG(dout, logNow() << " received an "<<
+        CTILOG_DEBUG(dout, logNow() << " request received: "<< std::endl <<
                 arrayToRange(reinterpret_cast<const unsigned char*>(data), size));
     }
 
@@ -447,7 +447,7 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection)
                  std::memcpy(buffer, xfer.getOutBuffer(), bufferSize);
                  if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                  {
-                     CTILOG_DEBUG(dout, logNow() <<" sending DNP scan response message."<<
+                     CTILOG_DEBUG(dout, logNow() <<" sending DNP scan response message."<< std::endl <<
                              arrayToRange(reinterpret_cast<const unsigned char*>(buffer), bufferSize));
                  }
                  connection.queueMessage(buffer,bufferSize, MAXPRIORITY - 1);
@@ -455,12 +455,9 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection)
 
              _dnpSlave.decode(xfer);
          }
-         else
+         else if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
          {
-             if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
-             {
-                 CTILOG_DEBUG(dout, logNow() <<" was not able to generate scan response.");
-             }
+             CTILOG_DEBUG(dout, logNow() <<" was not able to generate scan response.");
          }
      }
 
@@ -584,7 +581,7 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
                 std::memcpy(buffer, xfer.getOutBuffer(), bufferSize);
                 if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CTILOG_DEBUG(dout, logNow() <<" sending DNP scan response message."<<
+                    CTILOG_DEBUG(dout, logNow() << " sending DNP control response message." << std::endl <<
                                         arrayToRange(reinterpret_cast<const unsigned char*>(buffer), bufferSize));
                 }
                 connection.queueMessage(buffer,bufferSize, MAXPRIORITY - 1);
@@ -1040,7 +1037,7 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
                 std::memcpy(buffer, xfer.getOutBuffer(), bufferSize);
                 if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CTILOG_DEBUG(dout, logNow() <<" sending DNP scan response message."<<
+                    CTILOG_DEBUG(dout, logNow() << " sending DNP analog output response message." << std::endl <<
                                         arrayToRange(reinterpret_cast<const unsigned char*>(buffer), bufferSize));
                 }
                 connection.queueMessage(buffer,bufferSize, MAXPRIORITY - 1);
@@ -1050,7 +1047,7 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
         }
         else if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
         {
-            CTILOG_DEBUG(dout, logNow() <<" was not able to generate control response.");
+            CTILOG_DEBUG(dout, logNow() <<" was not able to generate analog output response.");
         }
     }
 

@@ -174,6 +174,15 @@ inline std::ostream &operator<<(std::ostream &logger, const boost::iterator_rang
     return logger;
 }
 
+inline StreamBufferSink &operator<<(StreamBufferSink &logger, const boost::iterator_range<const unsigned char*> &buf)
+{
+    std::for_each(buf.begin(), buf.end(), [&](int ch) {
+        logger << std::hex << std::setfill('0') << std::setw(2) << ch << " ";
+    });
+
+    return logger;
+}
+
 inline StreamBufferSink &operator<<(StreamBufferSink &logger, const boost::iterator_range<unsigned char*> &buf)
 {
     std::for_each(buf.begin(), buf.end(), [&](int ch) {
