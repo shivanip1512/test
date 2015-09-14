@@ -640,10 +640,6 @@ yukon.ami.ddm = (function () {
             
             _get_supported_counts({ initial_load: true });
             
-/*            if ($('.js-violations-loading').length > 0) {
-                _get_violations_count();
-            }*/
-            
             // Add our help icons next to the two column titles (Settings and Processors)
             $('.js-settings-section .title-bar').append('<i class="icon icon-help js-open-settings-help cp"></i>');
             $('.js-processors-section .title-bar').append('<i class="icon icon-help js-open-processors-help cp"></i>');
@@ -652,22 +648,23 @@ yukon.ami.ddm = (function () {
         },
         
         violationUpdater: function (data) {
-        	
-        	$('.js-violations').addClass('dn');
-        	if (data === 'CALCULATING') {
-        		$('.js-violations-calculating').removeClass('dn');
-        	}
-        	else if (data === 'NA') {
-        		$('.js-violations-na').removeClass('dn');
-        	}
-        	else {
-        		data = +data;
-        		if (data > 0) {
-        			$('.js-violations-count').text(data);
-        			$('.js-violations-exist').removeClass('dn');
-        		}
-        	}
-        	
+            $(function () {
+                var value = data.value;
+                var count = +value;
+                $('.js-violations').addClass('dn');
+                if (value === undefined || value === 'CALCULATING') {
+                    $('.js-violations-calculating').removeClass('dn');
+                }
+                else if (value === 'NA') {
+                    $('.js-violations-na').removeClass('dn');
+                }
+                else {
+                    $('.js-violations-count').removeClass('dn').text(count);
+                    if (count > 0) {
+                        $('.js-violations-exist').removeClass('dn');
+                    }
+                }
+            });
         }
         
     };

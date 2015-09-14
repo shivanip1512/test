@@ -18,7 +18,25 @@
             
             <tags:nameValue2 nameKey=".name">${fn:escapeXml(monitor.name)}</tags:nameValue2>
             <tags:nameValue2 nameKey=".violations">
-               <cti:dataUpdaterValue type="DEVICE_DATA_MONITOR" identifier="${monitor.id}/VIOLATIONS_COUNT"/>
+            
+            <cti:dataUpdaterCallback function="yukon.ami.ddm.violationUpdater" initialize="true" value="DEVICE_DATA_MONITOR/CALCULATION_STATUS/${monitor.id}"/>
+
+            <!-- CALCULATING -->
+            <span class="dn js-violations js-violations-calculating">
+                <i class="icon icon-spinner js-violations-loading">&nbsp;</i><i:inline key=".calculating"/>
+            </span>
+            
+            <!-- NA -->
+            <span class="dn js-violations js-violations-na">
+                <i:inline key="yukon.common.na"/>
+            </span>
+            
+            <!-- a number of violations -->
+            <span class="dn js-violations js-violations-count">0</span>
+            <span class="dn js-violations js-violations-exist">
+                ${violationReportLinks}
+            </span>
+            
             </tags:nameValue2>
      		<tags:nameValue2 nameKey=".monitoring">${monitoringCount}</tags:nameValue2>
             <tags:nameValueGap2 gapHeight="20px"/>
