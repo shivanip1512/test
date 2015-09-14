@@ -332,7 +332,7 @@ int DnpSlave::processMessageFromForeignSystem (ServerConnection& connection,
 
     if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
     {
-        CTILOG_DEBUG(dout, logNow() << " request received: "<< std::endl <<
+        CTILOG_DEBUG(dout, logNow() << " request received: " << std::endl <<
                 arrayToRange(reinterpret_cast<const unsigned char*>(data), size));
     }
 
