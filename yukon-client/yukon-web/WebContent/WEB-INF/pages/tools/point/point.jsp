@@ -232,7 +232,7 @@
                         <%-- The physical offset value within the current device or parent this point belongs to --%>
                         <%-- 0 = No offset set --%>
                         <tags:nameValue2 nameKey=".offset">
-                            <tags:input path="pointBase.point.pointOffset" size="6" inputClass="js-offset js-point-offset"/>
+                            <tags:input path="pointBase.point.pointOffset" size="6" inputClass="js-point-offset"/>
                         </tags:nameValue2>
 
                         <tags:nameValue2 nameKey=".control.type">
