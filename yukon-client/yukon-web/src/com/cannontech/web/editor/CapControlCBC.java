@@ -187,7 +187,7 @@ public class CapControlCBC {
         FIRST(1),
         SECOND(2);
 
-        private static String baseKey = "yukon.web.modules.capcontrol.scanGroup.";
+        private static String baseKey = "yukon.web.modules.capcontrol.cbc.scanGroup.";
 
         private int dbValue;
 

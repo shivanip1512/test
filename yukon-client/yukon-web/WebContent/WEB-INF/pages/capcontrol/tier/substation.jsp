@@ -167,9 +167,11 @@ $(function() {
 
 <%@ include file="busTier.jspf" %>
 <%@ include file="feederTier.jspf" %>
-<%@ include file="bankTier.jspf" %>
-<cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
-	<%@ include file="bankTier.jsp" %>
-</cti:checkGlobalRolesAndProperties>
+ <cti:checkGlobalRolesAndProperties value="!DEVELOPMENT_MODE">
+  <%@ include file="bankTier.jspf"%>
+ </cti:checkGlobalRolesAndProperties>
+ <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
+  <%@ include file="bankTier.jsp"%>
+ </cti:checkGlobalRolesAndProperties>
 
 </cti:standardPage>

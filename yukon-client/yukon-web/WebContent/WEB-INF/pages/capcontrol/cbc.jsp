@@ -26,7 +26,7 @@
       <tags:nameValue2 nameKey=".type">${capControlCBC.yukonPAObject.paoType.dbString}</tags:nameValue2>
       <tags:nameValue2 nameKey=".class">${capControlCBC.yukonPAObject.paoClass}</tags:nameValue2>
       <tags:nameValue2 nameKey=".parent">${capControlCBC.cbcParent}</tags:nameValue2>
-      <tags:nameValue2 nameKey=".name" valueClass="tar">
+      <tags:nameValue2 nameKey=".name">
        <tags:input path="yukonPAObject.paoName" size="25" />
       </tags:nameValue2>
 
@@ -43,13 +43,11 @@
        <tags:sectionContainer2 nameKey="config" styleClass="stacked-lg">
 
         <tags:nameValueContainer2 tableClass="natural-width">
+         <tags:nameValue2 nameKey=".serialNumber">
+          <tags:input path="deviceCBC.serialNumber" size="25" />
+         </tags:nameValue2>
          <c:choose>
           <c:when test="${capControlCBC.twoWay}">
-
-           <tags:nameValue2 nameKey=".serialNumber" valueClass="tar">
-            <tags:input path="deviceCBC.serialNumber" size="25"
-             id="serialNum" />
-           </tags:nameValue2>
            <tags:nameValue2 nameKey=".masterAddr" valueClass="tar">
             <tags:input path="deviceAddress.masterAddress" size="25" />
            </tags:nameValue2>
@@ -69,12 +67,10 @@
 
            <div class="column-6-6 clearfix">
             <div class="column one">
-             <tags:nameValue2 excludeColon="true">
-              <label> <tags:checkbox path="editingIntegrity"
-                styleClass="js-is-scan-cbc" /> <i:inline
-                key=".integrityScanRate" />
-              </label>
-             </tags:nameValue2>
+             <tags:checkboxNameValue nameKey=".integrityScanRate"
+              path="editingIntegrity" inputClass="js-is-scan-cbc"
+              checkBoxDescriptionNameKey=".integrityScanRate"
+              excludeColon="true" />
              <tags:nameValue2 nameKey=".interval">
               <tags:intervalStepper
                path="deviceScanRateMap['Integrity'].intervalRate"
@@ -91,11 +87,12 @@
                items="${scanGroups}" itemValue="dbValue"
                inputClass="with-option-hiding" />
              </tags:nameValue2>
-
             </div>
             <div class="column two nogutter">
-             <tags:checkboxNameValue id="" path="editingException"
-              nameKey=".exceptionScanRate" excludeColon="true" />
+             <tags:checkboxNameValue nameKey=".exceptionScanRate"
+              path="editingException" inputClass="js-is-scan-cbc"
+              checkBoxDescriptionNameKey=".exceptionScanRate"
+              excludeColon="true" />
              <tags:nameValue2 nameKey=".interval">
               <tags:intervalStepper
                path="deviceScanRateMap['Exception'].intervalRate"
@@ -108,7 +105,7 @@
              </tags:nameValue2>
              <tags:nameValue2 nameKey=".scanGroup">
               <tags:selectWithItems
-               path="deviceScanRateMap['Integrity'].scanGroup"
+               path="deviceScanRateMap['Exception'].scanGroup"
                items="${scanGroups}" itemValue="dbValue"
                inputClass="with-option-hiding" />
              </tags:nameValue2>
@@ -116,9 +113,6 @@
            </div>
           </c:when>
           <c:otherwise>
-           <tags:nameValue2 nameKey=".serialNumber" valueClass="tar">
-            <tags:input path="deviceCBC.serialNumber" size="25" />
-           </tags:nameValue2>
            <tags:nameValue2 nameKey=".controlRoute">
             <tags:selectWithItems path="deviceCBC.routeID"
              items="${availableRoutes}" itemValue="liteID"

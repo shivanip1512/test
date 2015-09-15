@@ -147,9 +147,8 @@ public class CbcServiceImpl implements CbcService {
         return capControlCBC;
     }
 
-    private void checkForErrorsAndSave(CapControlCBC capControlCBC)
-            throws PortDoesntExistException, MultipleDevicesOnPortException, SameMasterSlaveCombinationException,
- SQLException,
+    private void checkForErrorsAndSave(CapControlCBC capControlCBC) throws PortDoesntExistException,
+            MultipleDevicesOnPortException, SameMasterSlaveCombinationException, SQLException,
             SerialNumberExistsException {
         int cbcId = capControlCBC.getYukonPAObject().getPaObjectID();
         YukonPAObject pao = PAOFactory.createPAObject(cbcId);
@@ -160,44 +159,45 @@ public class CbcServiceImpl implements CbcService {
         // error handling when serial number exists
         handleSerialNumber(capControlCBC, cbcId);
 
-        /*
-         * A. Show an error and don't save the update if the user tries to put
-         * the same master/slave address combination for a different device on the same communication port
-         * B. Show a warning if the user uses the same master/slave address for a
-         * device on a different communication port
-         */
-
-        DeviceAddress currentDeviceAddress;
-        Integer commPortId;
-
-        currentDeviceAddress = capControlCBC.getDeviceAddress();
-        commPortId = capControlCBC.getDeviceDirectCommSettings().getPortID();
-
-        List<Integer> devicesWithSameAddress =
-            deviceDao.getDevicesByDeviceAddress(currentDeviceAddress.getMasterAddress(),
-                currentDeviceAddress.getSlaveAddress());
-        List<Integer> devicesByPort = deviceDao.getDevicesByPort(commPortId.intValue());
-        // remove the current device from the list
-        devicesWithSameAddress.remove(new Integer(cbcId));
-
-        if (commPortId.intValue() <= 0) {
-            throw new PortDoesntExistException();
-        }
-
-        // check to see if the master slave combination is the same
-        if (devicesWithSameAddress.size() > 0) {
-            for (int i = 0; i < devicesWithSameAddress.size(); i++) {
-                Integer paoId = devicesWithSameAddress.get(i);
-                if (devicesByPort.contains(paoId)) {
-                    LiteYukonPAObject litePAO = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(paoId.intValue());
-                    throw new MultipleDevicesOnPortException(litePAO.getPaoName());
-                }
-            }
-            LiteYukonPAObject litePAO =
-                YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(devicesWithSameAddress.get(0).intValue());
-            throw new SameMasterSlaveCombinationException(litePAO.getPaoName());
-        }
         if (dbPersistent instanceof TwoWayDevice) {
+            /*
+             * A. Show an error and don't save the update if the user tries to put
+             * the same master/slave address combination for a different device on the same communication port
+             * B. Show a warning if the user uses the same master/slave address for a
+             * device on a different communication port
+             */
+            DeviceAddress currentDeviceAddress;
+            Integer commPortId;
+
+            currentDeviceAddress = capControlCBC.getDeviceAddress();
+            commPortId = capControlCBC.getDeviceDirectCommSettings().getPortID();
+
+            List<Integer> devicesWithSameAddress =
+                deviceDao.getDevicesByDeviceAddress(currentDeviceAddress.getMasterAddress(),
+                    currentDeviceAddress.getSlaveAddress());
+            List<Integer> devicesByPort = deviceDao.getDevicesByPort(commPortId.intValue());
+            // remove the current device from the list
+            devicesWithSameAddress.remove(new Integer(cbcId));
+
+            if (commPortId.intValue() <= 0) {
+                throw new PortDoesntExistException();
+            }
+
+            // check to see if the master slave combination is the same
+            if (devicesWithSameAddress.size() > 0) {
+                for (int i = 0; i < devicesWithSameAddress.size(); i++) {
+                    Integer paoId = devicesWithSameAddress.get(i);
+                    if (devicesByPort.contains(paoId)) {
+                        LiteYukonPAObject litePAO =
+                            YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(paoId.intValue());
+                        throw new MultipleDevicesOnPortException(litePAO.getPaoName());
+                    }
+                }
+                LiteYukonPAObject litePAO =
+                    YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(devicesWithSameAddress.get(0).intValue());
+                throw new SameMasterSlaveCombinationException(litePAO.getPaoName());
+            }
+
             DNPBase dnpBase = (DNPBase) dbPersistent;
 
             dnpBase.getDeviceAddress().setMasterAddress(capControlCBC.getDeviceAddress().getMasterAddress());
