@@ -13,6 +13,9 @@ struct test_Mct31xDevice : Cti::Devices::Mct31xDevice
 {
     using MctDevice::getOperation;
     using CtiTblPAOLite::_type;
+    using CtiTblPAOLite::_name;
+
+    using Mct31xDevice::decodeGetConfigIED;
 };
 
 
@@ -126,7 +129,104 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             expected_message.begin(),
             expected_message.end() );
     }
-//}  Brace matching for BOOST_FIXTURE_TEST_SUITE
+
+    BOOST_AUTO_TEST_CASE(test_decode_getconfig_ied_time)
+    {
+        test_Mct31xDevice mct;
+
+        mct._type = TYPEMCT360;
+        mct._name = "Jimmy";
+
+        {
+            mct.getIEDPort().setIEDType(CtiTableDeviceMCTIEDPort::AlphaPowerPlus);
+
+            std::vector<unsigned char> inbound {
+                0x15, 0x12, 0x25, 0x08, 0x27, 0x29, 0x99, 8
+            };
+
+            INMESS im;
+
+            im.Sequence = EmetconProtocol::GetConfig_IEDTime;
+
+            std::copy(inbound.begin(), inbound.end(), im.Buffer.DSt.Message);
+
+            mct.decodeGetConfigIED(im, CtiTime{}, vgList, retList, outList);
+
+            BOOST_CHECK(vgList.empty());
+            BOOST_CHECK(outList.empty());
+            BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+            auto retMsg = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(retMsg);
+
+            BOOST_CHECK_EQUAL(retMsg->ResultString(),
+                "Jimmy / IED / current time: 12/25/15 08:27:29"
+                "\nDemand Reset Count: 99"
+                "\nctrical Service: ");
+        }
+        delete_container(retList);
+        retList.clear();
+        {
+            mct.getIEDPort().setIEDType(CtiTableDeviceMCTIEDPort::LandisGyrS4);
+
+            std::vector<unsigned char> inbound{
+                0x29, 0x27, 0x08, 0x15, 0x25, 0x12, 0xff, 99, 2
+            };
+
+            INMESS im;
+
+            im.Sequence = EmetconProtocol::GetConfig_IEDTime;
+
+            std::copy(inbound.begin(), inbound.end(), im.Buffer.DSt.Message);
+
+            mct.decodeGetConfigIED(im, CtiTime{}, vgList, retList, outList);
+
+            BOOST_CHECK(vgList.empty());
+            BOOST_CHECK(outList.empty());
+            BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+            auto retMsg = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(retMsg);
+
+            BOOST_CHECK_EQUAL(retMsg->ResultString(),
+                "Jimmy / IED / current time: 12/25/15 08:27:29"
+                "\nOutage count: 99"
+                "\nctrical Service: ");
+        }
+        delete_container(retList);
+        retList.clear();
+        {
+            mct.getIEDPort().setIEDType(CtiTableDeviceMCTIEDPort::GeneralElectricKV);
+
+            std::vector<unsigned char> inbound{
+                0x1f, 0x99, 8, 27, 29, 2, 0xff, 0xff, 0x02, 0xff, 0x04
+            };
+
+            INMESS im;
+
+            im.Sequence = EmetconProtocol::GetConfig_IEDTime;
+
+            std::copy(inbound.begin(), inbound.end(), im.Buffer.DSt.Message);
+
+            mct.decodeGetConfigIED(im, CtiTime{}, vgList, retList, outList);
+
+            BOOST_CHECK(vgList.empty());
+            BOOST_CHECK(outList.empty());
+            BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+            auto retMsg = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(retMsg);
+
+            BOOST_CHECK_EQUAL(retMsg->ResultString(),
+                "Jimmy / IED / current time: 8:27:29 12/25/2015"
+                "\nctrical Service: "
+                "\nElectrical Service: 3-Phase, 4-Wire (Wye)\n");
+        }
+    }
+    //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()
 
 
