@@ -355,6 +355,9 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             DR_87,
             FOCUS,
             FULCRUM,
+            ION_7330,
+            ION_7700,
+            ION_8300,
             IPC410FL,
             IPC420FD,
             IPC430S4E,
@@ -423,10 +426,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             SENTINEL,
             SIXNET,
             TRANSDATA_MARKV,
-            VECTRON,
-            ION_7330,
-            ION_7700,
-            ION_8300
+            VECTRON
             );
         
         rfTypes = ImmutableSet.of(
