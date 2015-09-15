@@ -270,7 +270,7 @@ public class AreasController {
     /** SUB ASSIGNMENT SAVE */
     @RequestMapping(value="areas/{areaId}/stations", method=RequestMethod.POST)
     public void subAssignmentSave(HttpServletResponse resp, @PathVariable int areaId, FlashScope flash,
-            @RequestParam("stations[]") Integer[] stations) {
+            @RequestParam(value="stations[]", required=false, defaultValue="") Integer[] stations) {
         
         substationDao.updateSubAssignments(areaId, Arrays.asList(stations));
         flash.setConfirm(new YukonMessageSourceResolvable(areaKey + "subs.updated"));
