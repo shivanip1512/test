@@ -163,7 +163,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             BOOST_CHECK_EQUAL(retMsg->ResultString(),
                 "Jimmy / IED / current time: 12/25/15 08:27:29"
                 "\nDemand Reset Count: 99"
-                "\nctrical Service: ");
+                "\nCurrent TOU Rate: C");
         }
         delete_container(retList);
         retList.clear();
@@ -193,7 +193,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             BOOST_CHECK_EQUAL(retMsg->ResultString(),
                 "Jimmy / IED / current time: 12/25/15 08:27:29"
                 "\nOutage count: 99"
-                "\nctrical Service: ");
+                "\nCurrent TOU Rate: C");
         }
         delete_container(retList);
         retList.clear();
@@ -222,8 +222,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
             BOOST_CHECK_EQUAL(retMsg->ResultString(),
                 "Jimmy / IED / current time: 8:27:29 12/25/2015"
-                "\nctrical Service: "
-                "\nElectrical Service: 3-Phase, 4-Wire (Wye)\n");
+                "\nCurrent TOU Rate: C"
+                "\nElectrical Service: 3-Phase, 4-Wire (Wye)");
         }
     }
     //}  Brace matching for BOOST_FIXTURE_TEST_SUITE

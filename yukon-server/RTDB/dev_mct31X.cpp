@@ -912,7 +912,7 @@ YukonError_t Mct31xDevice::decodeGetConfigIED(const INMESS &InMessage, const Cti
                                         CtiNumStr((int)DSt->Message[4]).zpad(2) + ":" +
                                         CtiNumStr((int)DSt->Message[5]).zpad(2) + "\n";
                         resultString += "Demand Reset Count: " + CtiNumStr((int)DSt->Message[6]) + string("\n");
-                        resultString += "Current TOU Rate: " + (char)('A' + ((DSt->Message[7] & 0x0C) >> 2));
+                        resultString += "Current TOU Rate: " + string(1, (char)('A' + ((DSt->Message[7] & 0x0C) >> 2)));
 
                         break;
                     }
@@ -939,7 +939,7 @@ YukonError_t Mct31xDevice::decodeGetConfigIED(const INMESS &InMessage, const Cti
                                         CtiNumStr((int)DSt->Message[0]).zpad(2) + "\n";
 
                         resultString += "Outage count: " + CtiNumStr((int)DSt->Message[7]) + string("\n");
-                        resultString += "Current TOU Rate: " + (char)('A' + (DSt->Message[8] & 0x07));
+                        resultString += "Current TOU Rate: " + string(1, (char)('A' + (DSt->Message[8] & 0x07)));
 
                         break;
                     }
@@ -971,7 +971,7 @@ YukonError_t Mct31xDevice::decodeGetConfigIED(const INMESS &InMessage, const Cti
                         meter_class =  (DSt->Message[6] & 0x74) >> 3;
                         frequency   =  (DSt->Message[6] & 0x80) >> 7;
 
-                        resultString += "Current TOU Rate: " + (char)('A' + (DSt->Message[8] & 0x07)) + string("\n");
+                        resultString += "Current TOU Rate: " + string(1, (char)('A' + (DSt->Message[8] & 0x07)));
 
                         holiday     =  (DSt->Message[7] & 0xf0) >> 4;
                         season      =   DSt->Message[7] & 0x0f;
@@ -982,7 +982,7 @@ YukonError_t Mct31xDevice::decodeGetConfigIED(const INMESS &InMessage, const Cti
                         service     =   DSt->Message[10];
 
 
-                        resultString += "Electrical Service: ";
+                        resultString += "\nElectrical Service: ";
 
                         switch( service )
                         {
@@ -995,8 +995,6 @@ YukonError_t Mct31xDevice::decodeGetConfigIED(const INMESS &InMessage, const Cti
                             case 0xff:  resultString += "Service Error";            break;
                             default:    resultString += "Unknown service status " + CtiNumStr(service);  break;
                         }
-
-                        resultString += "\n";
 
                         break;
                     }
