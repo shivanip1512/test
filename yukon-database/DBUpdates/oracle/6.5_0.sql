@@ -91,6 +91,67 @@ END;
 DELETE FROM YukonServices WHERE ServiceId = 3 OR ServiceId = -3;
 /* End YUK-14433 */
 
+/* Start YUK-14581 */
+/* @error warn-once */
+/* @start-block */
+DECLARE 
+    v_errorCount NUMBER;
+    v_NewLine VARCHAR2(2) := CHR(13) || CHR(10);
+    v_errorText VARCHAR2(1024) := 'The role property ''Enroll Multiple Programs per Category'' has been changed to an Energy Company Setting.' || v_NewLine || 'An attempt was made to use the current role property value for each Energy Company Admin Operator User, but no value could be found for one or more of the energy companies in the database.' || v_NewLine || 'Attention should be paid to the new energy company setting ''Enroll Multiple Programs per Category'' after the upgrade is completed to ensure it is set to the desired value.' || v_NewLine || 'See YUK-14581 for additional information.';
+BEGIN
+    SELECT COUNT(EnergyCompanyId) INTO v_errorCount
+    FROM EnergyCompany ec
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM YukonUser yu
+        JOIN UserGroup ug                        ON yu.UserGroupId = ug.UserGroupId
+        JOIN UserGroupToYukonGroupMapping ugtygm ON ug.UserGroupId = ugtygm.UserGroupId
+        JOIN YukonGroup yg                       ON ugtygm.GroupId = yg.GroupID
+        JOIN YukonGroupRole ygr                  ON yg.GroupId = ygr.GroupID
+        WHERE yu.UserID = ec.UserID
+          AND ygr.RolePropertyID = -20164
+    )
+    AND ec.EnergyCompanyID > -1;
+    
+    IF 0 < v_errorCount
+    THEN
+        RAISE_APPLICATION_ERROR(-20001, v_errorText);
+        v_errorCount := 100;
+    END IF;
+END;
+/* @end-block */
+
+/* @start-block */
+DECLARE v_MaxSetting NUMBER; 
+BEGIN
+    SELECT NVL(MAX(EnergyCompanySettingId), 0) INTO v_MaxSetting FROM EnergyCompanySetting;
+    INSERT INTO EnergyCompanySetting (
+        SELECT
+            v_MaxSetting + ROW_NUMBER() OVER (ORDER BY ec.EnergyCompanyId DESC) AS EnergyCompanySettingId,
+            ec.EnergyCompanyId,
+            'ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY' AS Name,
+            ygr.Value as Value,
+            'Y' as Enabled,
+            NULL, NULL
+        FROM EnergyCompany ec
+        JOIN YukonUser yu                        ON ec.UserId = yu.UserId
+        JOIN UserGroup ug                        ON yu.UserGroupId = ug.UserGroupId
+        JOIN UserGroupToYukonGroupMapping ugtygm ON ug.UserGroupId = ugtygm.UserGroupId
+        JOIN YukonGroup yg                       ON ugtygm.GroupId = yg.GroupID
+        JOIN YukonGroupRole ygr                  ON yg.GroupId = ygr.GroupID
+        WHERE YGR.RolePropertyID  = -20164
+          AND ec.EnergyCompanyId > -1);
+END;
+/* @end-block */
+
+DELETE FROM YukonGroupRole 
+WHERE RoleID = -201 
+  AND RolePropertyID = -20164;
+
+DELETE FROM YukonRoleProperty 
+WHERE RolePropertyID = -20164;
+/* End YUK-14581 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
