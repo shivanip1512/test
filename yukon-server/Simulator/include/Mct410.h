@@ -105,6 +105,8 @@ private:
     bytes getAllCurrentMeterReadings();
     bytes getAllRecentDemandReadings();
     bytes getAllCurrentPeakDemandReadings();
+    bytes getAllCurrentVoltageReadings();
+    bytes getFrozenMinMaxVoltageReadings();
     bytes getLongLoadProfile(const unsigned offset);
     bytes getLoadProfile(const unsigned offset, const unsigned channel);
 
@@ -158,7 +160,9 @@ private:
         FR_GetFrozen_kWh = 0x91,
         FR_AllRecentDemandReadings = 0x92,
         FR_AllCurrentPeakDemandReadings = 0x93,
-        FR_AllFrozenChannel1Readings = 0x94
+        FR_AllFrozenChannel1Readings = 0x94,
+        FR_AllCurrentVoltageReadings = 0x95,
+        FR_FrozenMinMaxVoltageReadings = 0x96,
     };
 
     enum FunctionWrites

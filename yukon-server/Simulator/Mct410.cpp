@@ -107,6 +107,8 @@ Mct410Sim::function_reads_t Mct410Sim::initFunctionReads()
     reads[FR_AllCurrentPeakDemandReadings] = function_read_t(&Mct410Sim::getAllCurrentPeakDemandReadings);
     reads[FR_GetFrozen_kWh]                = function_read_t(&Mct410Sim::getFrozenKwh);
     reads[FR_AllFrozenChannel1Readings]    = function_read_t(&Mct410Sim::getAllFrozenChannel1Readings);
+    reads[FR_AllCurrentVoltageReadings]    = function_read_t(&Mct410Sim::getAllCurrentVoltageReadings);
+    reads[FR_FrozenMinMaxVoltageReadings]  = function_read_t(&Mct410Sim::getFrozenMinMaxVoltageReadings);
 
     read_range = makeFunctionReadRange(FR_LongLoadProfileTableMin,
                                        FR_LongLoadProfileTableMax, &Mct410Sim::getLongLoadProfile);
@@ -952,6 +954,80 @@ void Mct410Sim::writeNewPeakDemand(const int dynamicDemand, const unsigned secon
 
     _memory.writeDataToMemoryMap(MM_CurrentPeakDemand1, demandData);
     _memory.writeDataToMemoryMap(MM_CurrentPeakDemand1Timestamp, demandTimestamp);
+}
+
+bytes Mct410Sim::getAllCurrentVoltageReadings()
+{
+    bytes result;
+
+    {
+        auto reading = 1234;
+
+        result.push_back(reading >> 8);
+        result.push_back(reading);
+    }
+    {
+        auto sec = CtiTime{ CtiDate{ 1, 2, 2015 }, 12, 34, 56 }.seconds();
+
+        result.push_back(sec >> 24);
+        result.push_back(sec >> 16);
+        result.push_back(sec >> 8);
+        result.push_back(sec);
+    }
+
+    {
+        auto reading = 1166;
+
+        result.push_back(reading >> 8);
+        result.push_back(reading);
+    }
+    {
+        auto sec = CtiTime{ CtiDate{ 1, 2, 2015 }, 1, 23, 45 }.seconds();
+
+        result.push_back(sec >> 24);
+        result.push_back(sec >> 16);
+        result.push_back(sec >> 8);
+        result.push_back(sec);
+    }
+
+    return result;
+}
+
+bytes Mct410Sim::getFrozenMinMaxVoltageReadings()
+{
+    bytes result;
+
+    {
+        auto reading = 1244;
+
+        result.push_back(reading >> 8);
+        result.push_back(reading);
+    }
+    {
+        auto sec = CtiTime{ CtiDate{ 31, 1, 2015 }, 12, 34, 56 }.seconds();
+
+        result.push_back(sec >> 24);
+        result.push_back(sec >> 16);
+        result.push_back(sec >> 8);
+        result.push_back(sec);
+    }
+
+    {
+        auto reading = 1156;
+
+        result.push_back(reading >> 8);
+        result.push_back(reading);
+    }
+    {
+        auto sec = CtiTime{ CtiDate{ 31, 1, 2015 }, 1, 23, 45 }.seconds();
+
+        result.push_back(sec >> 24);
+        result.push_back(sec >> 16);
+        result.push_back(sec >> 8);
+        result.push_back(sec);
+    }
+
+    return result;
 }
 
 double Mct410Sim::getConsumptionMultiplier(const unsigned address)
