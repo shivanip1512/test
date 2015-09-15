@@ -6,8 +6,10 @@
 #include "rfn_statistics.h"
 #include "std_helper.h"
 
-#include <boost/assign/list_of.hpp>
-#include <sstream>
+#include <boost/range/adaptor/map.hpp>
+#include <boost/range/adaptor/transformed.hpp>
+#include <boost/range/algorithm/count_if.hpp>
+#include <boost/range/numeric.hpp>
 
 using Cti::Logging::Vector::Hex::operator<<;
 using Cti::Messaging::Rfn::E2eMessenger;
@@ -83,117 +85,121 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
         std::swap(recentIndications, _indications);
     }
 
-    for each( E2eMessenger::Indication indication in recentIndications )
     {
-        RfnIdToActiveRequest::iterator itr = _activeRequests.find(indication.rfnIdentifier);
+        LockGuard guard(_activeRequestsMux);
 
-        if( itr == _activeRequests.end() )
+        for( auto &indication : recentIndications )
         {
-            CTILOG_WARN(dout, "Indication message received for inactive device "<< indication.rfnIdentifier);
-            continue;
-        }
+            auto request = mapFindRef(_activeRequests, indication.rfnIdentifier);
 
-        ActiveRfnRequest &activeRequest = itr->second;
-
-        CTILOG_INFO(dout, "Indication message received for device "<< activeRequest.request.rfnIdentifier <<
-                std::endl << "rfnId: " << activeRequest.request.rfnIdentifier << ": " << indication.payload);
-
-        std::auto_ptr<RfnDeviceResult> result;
-
-        try
-        {
-            const Protocols::E2eDataTransferProtocol::EndpointResponse er =
-                    handleE2eDtIndication(indication.payload, activeRequest.request.deviceId);
-
-            if( ! er.ack.empty() )
+            if( ! request )
             {
-                sendE2eDataAck(
-                        er.ack,
-                        activeRequest.request.command->getApplicationServiceId(),
-                        activeRequest.request.rfnIdentifier);
-
-                stats.incrementAcks(activeRequest.request.deviceId, CtiTime::now());
-            }
-
-            if( er.token != activeRequest.request.rfnRequestId )
-            {
-                CTILOG_ERROR(dout, "Indication received for inactive request token "<< er.token <<" for device "<< activeRequest.request.rfnIdentifier);
+                CTILOG_WARN(dout, "Indication message received for inactive device "<< indication.rfnIdentifier);
                 continue;
             }
 
-            CTILOG_INFO(dout, "Response received for token "<< er.token <<" for device "<< activeRequest.request.rfnIdentifier <<
-                    std::endl <<"rfnId: "<< activeRequest.request.rfnIdentifier << ": " << er.data);
+            ActiveRfnRequest &activeRequest = *request;
 
-            activeRequest.response.insert(
-                    activeRequest.response.end(),
-                    er.data.begin(),
-                    er.data.end());
+            CTILOG_INFO(dout, "Indication message received for device "<< activeRequest.request.rfnIdentifier <<
+                    std::endl << "rfnId: " << activeRequest.request.rfnIdentifier << ": " << indication.payload);
 
-            if( ! er.blockContinuation.empty() )
+            std::auto_ptr<RfnDeviceResult> result;
+
+            try
             {
-                const CtiTime  previousBlockTimeSent   = activeRequest.currentPacket.timeSent;
-                const unsigned previousRetransmitCount = activeRequest.currentPacket.retransmits;
+                const Protocols::E2eDataTransferProtocol::EndpointResponse er =
+                        handleE2eDtIndication(indication.payload, activeRequest.request.deviceId);
 
-                activeRequest.currentPacket =
-                        sendE2eDataRequestPacket(
-                                er.blockContinuation,
-                                activeRequest.request.command->getApplicationServiceId(),
-                                activeRequest.request.rfnIdentifier,
-                                activeRequest.request.priority,
-                                activeRequest.timeout);
+                if( ! er.ack.empty() )
+                {
+                    sendE2eDataAck(
+                            er.ack,
+                            activeRequest.request.command->getApplicationServiceId(),
+                            activeRequest.request.rfnIdentifier);
 
-                activeRequest.status = ActiveRfnRequest::PendingConfirm;
+                    stats.incrementAcks(activeRequest.request.deviceId, CtiTime::now());
+                }
 
-                stats.incrementBlockContinuation(activeRequest.request.deviceId, previousRetransmitCount, activeRequest.currentPacket.timeSent, previousBlockTimeSent);
+                if( er.token != activeRequest.request.rfnRequestId )
+                {
+                    CTILOG_ERROR(dout, "Indication received for inactive request token "<< er.token <<" for device "<< activeRequest.request.rfnIdentifier);
+                    continue;
+                }
 
-                CTILOG_INFO(dout, "Block continuation sent for device "<< activeRequest.request.rfnIdentifier <<
-                        std::endl <<"rfnId: "<< activeRequest.request.rfnIdentifier <<": "<< activeRequest.currentPacket.payloadSent);
+                CTILOG_INFO(dout, "Response received for token "<< er.token <<" for device "<< activeRequest.request.rfnIdentifier <<
+                        std::endl <<"rfnId: "<< activeRequest.request.rfnIdentifier << ": " << er.data);
+
+                activeRequest.response.insert(
+                        activeRequest.response.end(),
+                        er.data.begin(),
+                        er.data.end());
+
+                if( ! er.blockContinuation.empty() )
+                {
+                    const CtiTime  previousBlockTimeSent   = activeRequest.currentPacket.timeSent;
+                    const unsigned previousRetransmitCount = activeRequest.currentPacket.retransmits;
+
+                    activeRequest.currentPacket =
+                            sendE2eDataRequestPacket(
+                                    er.blockContinuation,
+                                    activeRequest.request.command->getApplicationServiceId(),
+                                    activeRequest.request.rfnIdentifier,
+                                    activeRequest.request.priority,
+                                    activeRequest.timeout);
+
+                    activeRequest.status = ActiveRfnRequest::PendingConfirm;
+
+                    stats.incrementBlockContinuation(activeRequest.request.deviceId, previousRetransmitCount, activeRequest.currentPacket.timeSent, previousBlockTimeSent);
+
+                    CTILOG_INFO(dout, "Block continuation sent for device "<< activeRequest.request.rfnIdentifier <<
+                            std::endl <<"rfnId: "<< activeRequest.request.rfnIdentifier <<": "<< activeRequest.currentPacket.payloadSent);
+
+                    continue;
+                }
+
+                stats.incrementCompletions(activeRequest.request.deviceId, activeRequest.currentPacket.retransmits, CtiTime::now());
+
+                result.reset(
+                        new RfnDeviceResult(
+                                    activeRequest.request,
+                                    activeRequest.request.command->decodeCommand(CtiTime::now(), activeRequest.response),
+                                    ClientErrors::None));
+            }
+            catch( const Devices::Commands::DeviceCommand::CommandException &ce )
+            {
+                result.reset(
+                        new RfnDeviceResult(
+                                    activeRequest.request,
+                                    ce.error_description,
+                                    ce.error_code));
+            }
+            catch( const Protocols::E2eDataTransferProtocol::RequestNotAcceptable &rne )
+            {
+                CTILOG_ERROR(dout, "Endpoint indicated request not acceptable for device "<< activeRequest.request.rfnIdentifier);
+
+                result.reset(
+                        new RfnDeviceResult(
+                                    activeRequest.request,
+                                    rne.reason,
+                                    ClientErrors::E2eRequestNotAcceptable));
+            }
+            catch( Protocols::E2eDataTransferProtocol::E2eException &ex )
+            {
+                CTILOG_EXCEPTION_ERROR(dout, ex, "device " << activeRequest.request.rfnIdentifier);
 
                 continue;
             }
 
-            stats.incrementCompletions(activeRequest.request.deviceId, activeRequest.currentPacket.retransmits, CtiTime::now());
+            CTILOG_INFO(dout, "Result ["<< result->status <<", "<< result->commandResult.description <<"] for device "<< activeRequest.request.rfnIdentifier);
 
-            result.reset(
-                    new RfnDeviceResult(
-                                activeRequest.request,
-                                activeRequest.request.command->decodeCommand(CtiTime::now(), activeRequest.response),
-                                ClientErrors::None));
+            _tickResults.push_back(result);
+
+            completedDevices.insert(indication.rfnIdentifier);
+
+            CTILOG_INFO(dout, "Erasing active request for device " << indication.rfnIdentifier);
+
+            _activeRequests.erase(indication.rfnIdentifier);
         }
-        catch( const Devices::Commands::DeviceCommand::CommandException &ce )
-        {
-            result.reset(
-                    new RfnDeviceResult(
-                                activeRequest.request,
-                                ce.error_description,
-                                ce.error_code));
-        }
-        catch( const Protocols::E2eDataTransferProtocol::RequestNotAcceptable &rne )
-        {
-            CTILOG_ERROR(dout, "Endpoint indicated request not acceptable for device "<< activeRequest.request.rfnIdentifier);
-
-            result.reset(
-                    new RfnDeviceResult(
-                                activeRequest.request,
-                                rne.reason,
-                                ClientErrors::E2eRequestNotAcceptable));
-        }
-        catch( Protocols::E2eDataTransferProtocol::E2eException &ex )
-        {
-            CTILOG_EXCEPTION_ERROR(dout, ex, "device " << activeRequest.request.rfnIdentifier);
-
-            continue;
-        }
-
-        CTILOG_INFO(dout, "Result ["<< result->status <<", "<< result->commandResult.description <<"] for device "<< activeRequest.request.rfnIdentifier);
-
-        _tickResults.push_back(result);
-
-        completedDevices.insert(indication.rfnIdentifier);
-
-        CTILOG_INFO(dout, "Erasing active request for device " << indication.rfnIdentifier);
-
-        _activeRequests.erase(indication.rfnIdentifier);
     }
 
     return completedDevices;
@@ -212,40 +218,44 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleConfirms()
         std::swap(recentConfirms, _confirms);
     }
 
-    for each( E2eMessenger::Confirm confirm in recentConfirms )
     {
-        RfnIdToActiveRequest::iterator itr = _activeRequests.find(confirm.rfnIdentifier);
+        LockGuard guard(_activeRequestsMux);
 
-        if( itr == _activeRequests.end() )
+        for( auto &confirm : recentConfirms )
         {
-            CTILOG_WARN(dout, "Confirm message received for inactive device "<< confirm.rfnIdentifier);
-            continue;
+            auto request = mapFindRef(_activeRequests, confirm.rfnIdentifier);
+
+            if( ! request )
+            {
+                CTILOG_WARN(dout, "Confirm message received for inactive device "<< confirm.rfnIdentifier);
+                continue;
+            }
+
+            ActiveRfnRequest &activeRequest = *request;
+
+            CTILOG_INFO(dout, "Confirm message received for device "<< activeRequest.request.rfnIdentifier);
+
+            if( confirm.error )
+            {
+                std::auto_ptr<RfnDeviceResult> result(
+                    new RfnDeviceResult(
+                            activeRequest.request,
+                            activeRequest.request.command->error(CtiTime::now(), *confirm.error),
+                            *confirm.error));
+
+                CTILOG_INFO(dout, "Result ["<< result->status <<", "<< result->commandResult.description <<"] for device "<< activeRequest.request.rfnIdentifier);
+
+                _tickResults.push_back(result);
+
+                rejected.insert(confirm.rfnIdentifier);
+
+                _activeRequests.erase(confirm.rfnIdentifier);
+
+                continue;
+            }
+
+            activeRequest.status = ActiveRfnRequest::PendingReply;
         }
-
-        ActiveRfnRequest &activeRequest = itr->second;
-
-        CTILOG_INFO(dout, "Confirm message received for device "<< activeRequest.request.rfnIdentifier);
-
-        if( confirm.error )
-        {
-            std::auto_ptr<RfnDeviceResult> result(
-                new RfnDeviceResult(
-                        activeRequest.request,
-                        activeRequest.request.command->error(CtiTime::now(), *confirm.error),
-                        *confirm.error));
-
-            CTILOG_INFO(dout, "Result ["<< result->status <<", "<< result->commandResult.description <<"] for device "<< activeRequest.request.rfnIdentifier);
-
-            _tickResults.push_back(result);
-
-            rejected.insert(confirm.rfnIdentifier);
-
-            _activeRequests.erase(confirm.rfnIdentifier);
-
-            continue;
-        }
-
-        activeRequest.status = ActiveRfnRequest::PendingReply;
     }
 
     return rejected;
@@ -268,74 +278,78 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleTimeouts()
 
     RfnIdentifierSet retransmits;
 
-    for( const auto &rfnId : recentExpirations )
     {
-        RfnIdToActiveRequest::iterator request_itr = _activeRequests.find(rfnId);
+        LockGuard guard(_activeRequestsMux);
 
-        if( request_itr == _activeRequests.end() )
+        for( const auto &rfnId : recentExpirations )
         {
-            CTILOG_WARN(dout, "Timeout occurred for inactive device " << rfnId);
-            continue;
-        }
+            auto &request = mapFindRef(_activeRequests, rfnId);
 
-        ActiveRfnRequest &activeRequest = request_itr->second;
-
-        CTILOG_INFO(dout, "Timeout occurred for device "<< activeRequest.request.rfnIdentifier);
-
-        if( activeRequest.status == ActiveRfnRequest::PendingReply )
-        {
-            CTILOG_INFO(dout, "Timeout reply was pending for device "<< activeRequest.request.rfnIdentifier);
-
-            stats.incrementFailures(activeRequest.request.deviceId);
-
-            if( activeRequest.currentPacket.retransmits < activeRequest.currentPacket.maxRetransmits )
+            if( ! request )
             {
-                sendE2eDataRequestPacket(
-                        activeRequest.currentPacket.payloadSent,
-                        activeRequest.request.command->getApplicationServiceId(),
-                        activeRequest.request.rfnIdentifier,
-                        E2EDT_RETRANSMIT_PRIORITY,
-                        CtiTime::now() + activeRequest.currentPacket.retransmissionDelay);
-                        //  expire the message if it hasn't gone out by the time we will send the next one
-
-                activeRequest.currentPacket.retransmits++;
-                activeRequest.currentPacket.retransmissionDelay *= 2;
-                activeRequest.status  = ActiveRfnRequest::PendingConfirm;
-
-                CTILOG_INFO(dout, "Retransmit sent ("<< (activeRequest.currentPacket.maxRetransmits - activeRequest.currentPacket.retransmits) <<" remaining) for device "<< activeRequest.request.rfnIdentifier);
-
+                CTILOG_WARN(dout, "Timeout occurred for inactive device " << rfnId);
                 continue;
             }
+
+            ActiveRfnRequest &activeRequest = *request;
+
+            CTILOG_INFO(dout, "Timeout occurred for device "<< activeRequest.request.rfnIdentifier);
+
+            if( activeRequest.status == ActiveRfnRequest::PendingReply )
+            {
+                CTILOG_INFO(dout, "Timeout reply was pending for device "<< activeRequest.request.rfnIdentifier);
+
+                stats.incrementFailures(activeRequest.request.deviceId);
+
+                if( activeRequest.currentPacket.retransmits < activeRequest.currentPacket.maxRetransmits )
+                {
+                    sendE2eDataRequestPacket(
+                            activeRequest.currentPacket.payloadSent,
+                            activeRequest.request.command->getApplicationServiceId(),
+                            activeRequest.request.rfnIdentifier,
+                            E2EDT_RETRANSMIT_PRIORITY,
+                            CtiTime::now() + activeRequest.currentPacket.retransmissionDelay);
+                            //  expire the message if it hasn't gone out by the time we will send the next one
+
+                    activeRequest.currentPacket.retransmits++;
+                    activeRequest.currentPacket.retransmissionDelay *= 2;
+                    activeRequest.status  = ActiveRfnRequest::PendingConfirm;
+
+                    CTILOG_INFO(dout, "Retransmit sent ("<< (activeRequest.currentPacket.maxRetransmits - activeRequest.currentPacket.retransmits) <<" remaining) for device "<< activeRequest.request.rfnIdentifier);
+
+                    continue;
+                }
+            }
+
+            YukonError_t error = ClientErrors::Unknown;
+
+            switch( activeRequest.status )
+            {
+                default:
+                    CTILOG_WARN(dout, "Timeout occurred for device \""<< activeRequest.request.rfnIdentifier <<"\" deviceid "<< activeRequest.request.deviceId <<" in unknown state "<< activeRequest.status);
+                    break;
+                case ActiveRfnRequest::PendingConfirm:
+                    error = ClientErrors::NetworkManagerTimeout;
+                    break;
+                case ActiveRfnRequest::PendingReply:
+                    error = ClientErrors::E2eRequestTimeout;
+                    break;
+            }
+
+            std::auto_ptr<RfnDeviceResult> result(
+                    new RfnDeviceResult(
+                            activeRequest.request,
+                            activeRequest.request.command->error(CtiTime::now(), error),
+                            error));
+
+            CTILOG_INFO(dout, "Result ["<< result->status <<", "<< result->commandResult.description <<"] for device "<< activeRequest.request.rfnIdentifier);
+
+            _tickResults.push_back(result);
+
+            expirations.insert(rfnId);
+
+            _activeRequests.erase(rfnId);
         }
-
-        YukonError_t error = ClientErrors::Unknown;
-
-        switch( activeRequest.status )
-        {
-            default:
-                CTILOG_WARN(dout, "Timeout occurred for device \""<< activeRequest.request.rfnIdentifier <<"\" deviceid "<< activeRequest.request.deviceId <<" in unknown state "<< activeRequest.status);
-                break;
-            case ActiveRfnRequest::PendingConfirm:
-                error = ClientErrors::NetworkManagerTimeout;
-                break;
-            case ActiveRfnRequest::PendingReply:
-                error = ClientErrors::E2eRequestTimeout;
-                break;
-        }
-
-        std::auto_ptr<RfnDeviceResult> result(
-                new RfnDeviceResult(
-                        activeRequest.request,
-                        activeRequest.request.command->error(CtiTime::now(), error),
-                        error));
-
-        CTILOG_INFO(dout, "Result ["<< result->status <<", "<< result->commandResult.description <<"] for device "<< activeRequest.request.rfnIdentifier);
-
-        _tickResults.push_back(result);
-
-        expirations.insert(rfnId);
-
-        _activeRequests.erase(rfnId);
     }
 
     return expirations;
@@ -381,9 +395,13 @@ int calcExpiration(const RfnDeviceRequest &request)
 
 void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
 {
-    if( _activeRequests.count(rfnIdentifier) )
     {
-        return;  //  already busy
+        LockGuard guard(_activeRequestsMux);
+
+        if( _activeRequests.count(rfnIdentifier) )
+        {
+            return;  //  already busy
+        }
     }
 
     //  note that _pendingRequestMux is already acquired by handleNewRequests, so we are safe to access _pendingRequests
@@ -449,9 +467,13 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
             logItems.add("timeout")                  << newRequest.timeout;
 
             CTILOG_INFO(dout, "Added request for device "<< rfnIdentifier <<
-                    logItems);
+                logItems);
 
-            _activeRequests[request.rfnIdentifier] = newRequest;
+            {
+                LockGuard guard(_activeRequestsMux);
+
+                _activeRequests[request.rfnIdentifier] = newRequest;
+            }
 
             return;
         }
@@ -539,6 +561,55 @@ void RfnRequestManager::cancelByGroupMessageId(long groupMessageId)
 
     //  Cancel status will be returned via E2eIndication for any canceled messages
     E2eMessenger::cancelByGroupId(groupMessageId);
+}
+
+
+size_t RfnRequestManager::countByGroupMessageId(long groupMessageId)
+{
+    using boost::adaptors::map_values;
+    using boost::adaptors::transformed;
+
+    const auto rfnDeviceRequestGroupIdMatches =
+            [=](const RfnDeviceRequest &r)
+            {
+                return r.groupMessageId == groupMessageId;
+            };
+
+    size_t count = 0;
+
+    {
+        LockGuard guard(_pendingRequestsMux);
+
+        {
+            LockGuard guard(_submittedRequestsMux);
+
+            count += boost::count_if(_submittedRequests,
+                                     rfnDeviceRequestGroupIdMatches);
+        }
+
+        auto countRequestQueueMatches =
+                [=](RequestQueue &rq)
+                {
+                    return boost::count_if(rq, rfnDeviceRequestGroupIdMatches);
+                };
+
+        count += boost::accumulate(_pendingRequests | map_values | transformed(countRequestQueueMatches), size_t{});
+    }
+
+    {
+        LockGuard guard(_activeRequestsMux);
+
+        auto activeRfnRequestGroupIdMatches =
+                [=](const ActiveRfnRequest &r)
+                {
+                    return rfnDeviceRequestGroupIdMatches(r.request);
+                };
+
+        count += boost::count_if(_activeRequests | map_values,
+                                 activeRfnRequestGroupIdMatches);
+    }
+
+    return count;
 }
 
 
@@ -632,7 +703,7 @@ void RfnRequestManager::handleStatistics()
     {
         nextStatisticsReport = nextScheduledTimeAlignedOnRate(nextStatisticsReport, statsReportFrequency);
 
-        std::ostringstream report;
+        StreamBuffer report;
 
         report << "RFN statistics report:" << std::endl;
         report << "Attempted communication with # nodes: " << stats.nodeStatistics.size() << std::endl;
@@ -699,7 +770,7 @@ void RfnRequestManager::handleStatistics()
             report << "," << nodeStats.totalFailures;
         }
 
-        CTILOG_INFO(dout, report.str());
+        CTILOG_INFO(dout, report);
 
         stats.nodeStatistics.clear();
     }

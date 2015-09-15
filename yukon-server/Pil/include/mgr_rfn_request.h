@@ -56,7 +56,8 @@ public:
 
     ResultQueue getResults(unsigned max);
 
-    void cancelByGroupMessageId(long groupMessageId);
+    void  cancelByGroupMessageId(long groupMessageId);
+    size_t countByGroupMessageId(long groupMessageId);
 
     void start();
 
@@ -140,6 +141,7 @@ private:
 
     typedef std::map<RfnIdentifier, ActiveRfnRequest> RfnIdToActiveRequest;
 
+    Mutex                _activeRequestsMux;
     RfnIdToActiveRequest _activeRequests;
 };
 

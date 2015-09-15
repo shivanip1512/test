@@ -13,7 +13,6 @@
 #include "porter.h"
 
 #include "cparms.h"
-#include "netports.h"
 #include "pil_exefct.h"
 #include "pilserver.h"
 #include "msg_pcrequest.h"
@@ -49,7 +48,7 @@
 #include <boost/regex.hpp>
 #include <boost/bind.hpp>
 #include <boost/algorithm/string.hpp>
-#include <boost/assign/list_of.hpp>
+#include <boost/range/algorithm/count_if.hpp>
 #include <boost/ptr_container/ptr_deque.hpp>
 
 #include <iomanip>
@@ -1019,12 +1018,13 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
 
         tempReqMsg->setConnectionHandle(pReq->getConnectionHandle());
 
+        const int group_message_id = pReq->GroupMessageId();
+
         //  first, scrub our queue of this request
         if( _currentParse.isKeyValid("request_cancel") )
         {
             auto itr = _groupQueue.begin(),
                  end = _groupQueue.end();
-            const int group_message_id = pReq->GroupMessageId();
 
             while( itr != end )
             {
@@ -1051,15 +1051,22 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
         //  This does not count items still in the MainQueue_, only group processed items.
         if( _currentParse.isKeyValid("request_count") )
         {
-            tempReqMsg->setOptionsField(
-                    std::count_if(
-                            _groupQueue.begin(),
-                            _groupQueue.end(),
-                            [=](const CtiRequestMsg *msg) {
-                                return msg->GroupMessageId() == pReq->GroupMessageId();
-                            }));
+            auto requestMsgGroupIdMatches =
+                [=](const CtiRequestMsg *msg)
+                {
+                    return msg->GroupMessageId() == group_message_id;
+                };
+
+            long group_id_count = 0;
+
+            group_id_count += boost::count_if(_groupQueue, requestMsgGroupIdMatches);
+
+            group_id_count += _rfnManager.countByGroupMessageId(group_message_id);
+
+            tempReqMsg->setOptionsField(group_id_count);
         }
 
+        //  now ask Porter to do the same work on the port queues
         PorterSystemMessageQueue.putQueue(tempReqMsg.release());
 
         return ClientErrors::None;
@@ -1589,10 +1596,10 @@ void PilServer::analyzeWhiteRabbits(const CtiRequestMsg& Req, CtiCommandParser &
         typedef std::pair<std::string, std::string> GroupKeyAndPrefix;
 
         //  group keys and prefixes, in the order that we look them up
-         std::vector<GroupKeyAndPrefix> ordered_group_parse_keys = boost::assign::map_list_of
-            ("group",     "/Meters/Collection/")
-            ("altgroup",  "/Meters/Alternate/")
-            ("billgroup", "/Meters/Billing/");
+         std::vector<GroupKeyAndPrefix> ordered_group_parse_keys {
+             {"group",     "/Meters/Collection/"},
+             {"altgroup",  "/Meters/Alternate/"},
+             {"billgroup", "/Meters/Billing/"}};
 
          std::string group_key, group_prefix;
 
