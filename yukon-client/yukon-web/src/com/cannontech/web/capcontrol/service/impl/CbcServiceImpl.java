@@ -73,7 +73,8 @@ public class CbcServiceImpl implements CbcService {
         yukonPAObject.setPaoType(pao.getPaoType());
         yukonPAObject.setDisableFlag(pao.getPAODisableFlag());
         capControlCBC.setYukonPAObject(yukonPAObject);
-
+        capControlCBC.setDisableFlag(yukonPAObject.getDisableFlag()=='N'?false:true);
+        
         PaoIdentifier capbank = capbankDao.findCapBankByCbc(id);
         int parentID = (capbank != null) ? capbank.getPaoId() : 0;
         if (parentID == CtiUtilities.NONE_ZERO_ID) {
@@ -230,16 +231,19 @@ public class CbcServiceImpl implements CbcService {
         if (dbPersistent instanceof CapBankController) {
             CapBankController cbc = (CapBankController) dbPersistent;
             cbc.setPAOName(capControlCBC.getYukonPAObject().getPaoName());
+            cbc.setDisableFlag(capControlCBC.isDisableFlag()?'Y':'N');
             cbc.getDeviceCBC().setSerialNumber(capControlCBC.getDeviceCBC().getSerialNumber());
             cbc.getDeviceCBC().setSerialNumber(capControlCBC.getDeviceCBC().getSerialNumber());
             cbc.getDeviceCBC().setRouteID(capControlCBC.getDeviceCBC().getRouteID());
         } else if (dbPersistent instanceof CapBankController702x) {
             CapBankController702x capBankController702x = (CapBankController702x) dbPersistent;
+            capBankController702x.setDisableFlag(capControlCBC.isDisableFlag()?'Y':'N');
             capBankController702x.setPAOName(capControlCBC.getYukonPAObject().getPaoName());
             capBankController702x.getDeviceCBC().setSerialNumber(capControlCBC.getDeviceCBC().getSerialNumber());
             capBankController702x.getDeviceCBC().setRouteID(capControlCBC.getDeviceCBC().getRouteID());
         } else if (dbPersistent instanceof CapBankControllerDNP) {
             CapBankControllerDNP capBankControllerDNP = (CapBankControllerDNP) dbPersistent;
+            capBankControllerDNP.setDisableFlag(capControlCBC.isDisableFlag()?'Y':'N');
             capBankControllerDNP.setPAOName(capControlCBC.getYukonPAObject().getPaoName());
             capBankControllerDNP.getDeviceCBC().setSerialNumber(capControlCBC.getDeviceCBC().getSerialNumber());
             capBankControllerDNP.getDeviceCBC().setRouteID(capControlCBC.getDeviceCBC().getRouteID());

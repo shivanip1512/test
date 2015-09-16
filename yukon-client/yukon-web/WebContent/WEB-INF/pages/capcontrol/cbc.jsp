@@ -69,7 +69,6 @@
             <div class="column one">
              <tags:checkboxNameValue nameKey=".integrityScanRate"
               path="editingIntegrity" inputClass="js-is-scan-cbc"
-              checkBoxDescriptionNameKey=".integrityScanRate"
               excludeColon="true" />
              <tags:nameValue2 nameKey=".interval">
               <tags:intervalStepper
@@ -91,7 +90,6 @@
             <div class="column two nogutter">
              <tags:checkboxNameValue nameKey=".exceptionScanRate"
               path="editingException" inputClass="js-is-scan-cbc"
-              checkBoxDescriptionNameKey=".exceptionScanRate"
               excludeColon="true" />
              <tags:nameValue2 nameKey=".interval">
               <tags:intervalStepper
