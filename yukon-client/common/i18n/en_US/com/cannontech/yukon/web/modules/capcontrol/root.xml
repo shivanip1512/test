@@ -881,4 +881,7 @@
     <entry key="yukon.web.modules.capcontrol.cbc.unsolicit2">Unsolicited Class 2</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.unsolicit3">Unsolicited Class 3</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.edit.saveFailed">Unable to Save CBC: {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.scanGroup.DEFAULT">Default</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.scanGroup.FIRST">First</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.scanGroup.SECOND">Second</entry>
 </properties>
