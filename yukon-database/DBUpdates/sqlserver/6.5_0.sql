@@ -139,6 +139,12 @@ DELETE FROM YukonRoleProperty
 WHERE RolePropertyID = -20164;
 /* End YUK-14581 */
 
+/* Start YUK-14616 */
+UPDATE DeviceConfigCategory 
+SET CategoryType = 'centron420DisplayItems' 
+WHERE CategoryType = 'centronDisplayItems';
+/* End YUK-14616 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
