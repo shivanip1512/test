@@ -76,7 +76,7 @@ public class NotificationQueue implements NotificationQueueMBean {
     }
     
     private synchronized CallPool getCallPool(EnergyCompany energyCompany) throws UnknownRolePropertyException {
-        if (_poolMap.containsKey(energyCompany)) {
+        if (_poolMap.containsKey(energyCompany.getId())) {
             return _poolMap.get(energyCompany.getId());
         }
         CallPool newPool = callPoolFactory.createCallPool(energyCompany);
