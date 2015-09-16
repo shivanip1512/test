@@ -12,13 +12,17 @@
  */
 package com.cannontech.web.tools.trends.service;
 
+import java.util.Date;
 import java.util.List;
+
 import org.joda.time.DateTime;
 import org.joda.time.ReadableInstant;
+
 import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.user.YukonUserContext;
 
 public interface TrendDataService {
  
@@ -30,7 +34,7 @@ public interface TrendDataService {
      * @see {@link RawPointHistoryDao#getPointData(int, java.util.Date, java.util.Date)
      * <p>
      * @param pointId {@link int} is the unique identifier for the range of entries.
-     * @param rphInstance {@link RawPointHistoryDao} is dependency service the client object needs to provide the data back.   
+     * @param rawPointHistoryDao {@link RawPointHistoryDao} is dependency service the client object needs to provide the data back.   
      * @return {@link PointValueHolder} <code>List<PointValueHolder></code>
      */
     List<PointValueHolder> rawPointHistoryDataProvider(int pointId);
@@ -48,10 +52,11 @@ public interface TrendDataService {
      * <p>
      * @param pointId {@link int} is the unique identifier for the range of entries.
      * @param startDate {@link ReadableInstant} The timestamp of where to start the scan for peak -> limit of data.
-     * @param rphInstance {@link RawPointHistoryDao} is dependency service the client object needs to provide the data back.
-     * @return {@link ReadableInstant} ReadableInstant
+     * @param userContext {@YukonUserContext} The user to adjust the peak date to
+     * @param rawPointHistoryDao {@link RawPointHistoryDao} is dependency service the client object needs to provide the data back.
+     * @return {@link DateTime} the peak date, adjusted to userContext
      */
-    ReadableInstant requestPeakDateDataProvider(int pointId, ReadableInstant startDate);
+    DateTime requestPeakDateDataProvider(int pointId, Date startDate, YukonUserContext userContext);
     
     /**
      * datePointHistoryDataProvider
@@ -65,7 +70,7 @@ public interface TrendDataService {
      * @param pointId {@link int} is the unique identifier for the range of entries.
      * @param specificDate {@link DateTime} is the timestamp of where to take the snapshot of data and record the points to build with.
      * @param endDate {@link DateTime} is the timestamp of where to stop taking the snapshot of data, and begin the loop for fill of the trend line.
-     * @param rphInstance {@link RawPointHistoryDao} is dependency service the client object needs to provide the data back.
+     * @param rawPointHistoryDao {@link RawPointHistoryDao} is dependency service the client object needs to provide the data back.
      * @return {@link List<PointValueHolder>} 
      */
     List<PointValueHolder> datePointHistoryDataProvider(int pointId, DateTime specificDate, DateTime endDate);

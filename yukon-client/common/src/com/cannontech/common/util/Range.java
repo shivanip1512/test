@@ -27,6 +27,10 @@ public final class Range<T extends Comparable<? super T>> extends BaseRange<T> i
         return (Range<T>) unbounded;
     }
     
+    public static <U extends Comparable<? super U>> Range<U> fromInclusive(U min) {
+        return new Range<U>(min, true, null, true);
+    }
+
     public static <U extends Comparable<? super U>> Range<U> fromExclusive(U min) {
         return new Range<U>(min, false, null, true);
     }

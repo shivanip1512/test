@@ -95,7 +95,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         return sql;
     }
 
-    private SqlFragmentSource buildLimitedSql(Range<Instant> instantRange, int pointId, boolean excludeDisabledPaos, int maxRows, Order order) {
+    private SqlFragmentSource buildLimitedSql(Range<Instant> instantRange, int pointId, boolean excludeDisabledPaos, int maxRows, Order order, OrderBy orderBy) {
         VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
         SqlBuilder sqla = builder.buildFor(DatabaseVendor.MS2000);
         sqla.append("SELECT DISTINCT TOP " + maxRows);
@@ -108,7 +108,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         sqlb.append(  "SELECT DISTINCT rph.pointid, rph.timestamp,");
         sqlb.append(    "rph.value, rph.quality, p.pointtype,");
         sqlb.append(    "ROW_NUMBER() over (");
-        appendOrderByClause(sqlb, order);
+        appendOrderByClause(sqlb, order, orderBy);
         sqlb.append(    ") rn");
         appendFromAndWhereClause(sqlb, Collections.singleton(pointId), instantRange, excludeDisabledPaos);
         sqlb.append(") numberedRows");
@@ -179,7 +179,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     }
 
     private static void appendOrderByClause(SqlBuilder sql, Order order) {
-        appendOrderByClause(sql,order,OrderBy.TIMESTAMP);
+        appendOrderByClause(sql, order, OrderBy.TIMESTAMP);
     }
 
     private static void appendOrderByClause(SqlBuilder sql, Order order, OrderBy orderBy) {
@@ -228,9 +228,14 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     }
  
     @Override
-    public List<PointValueHolder> getLimitedPointData(int pointId, Range<Instant> range, boolean excludeDisabledPaos, Order order, int maxRows) {
-        SqlFragmentSource sql = buildLimitedSql(range, pointId,excludeDisabledPaos, maxRows, order);
+    public List<PointValueHolder> getLimitedPointData(int pointId, Range<Instant> range, boolean excludeDisabledPaos, Order order, OrderBy orderBy, int maxRows) {
+        SqlFragmentSource sql = buildLimitedSql(range, pointId, excludeDisabledPaos, maxRows, order, orderBy);
         return executeQuery(sql);
+    }
+
+    @Override
+    public List<PointValueHolder> getLimitedPointData(int pointId, Range<Instant> range, boolean excludeDisabledPaos, Order order, int maxRows) {
+        return getLimitedPointData(pointId, range, excludeDisabledPaos, order, OrderBy.TIMESTAMP, maxRows);
     }
 
     @Override
@@ -1013,35 +1018,4 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
 
     	yukonTemplate.update(sql);
     }
-
-    @Override
-    public Instant getPeakTimeInRange(int pointId, ReadableRange<ReadableInstant> instantRange) {
-
-        VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
-        SqlBuilder sqla = builder.buildFor(DatabaseVendor.MS2000);
-        sqla.append("SELECT TOP 1 TIMESTAMP");
-        sqla.append("FROM RAWPOINTHISTORY");
-        sqla.append("WHERE POINTID").eq(pointId);
-        sqla.append("AND TIMESTAMP").gt(instantRange.getMin());
-        sqla.append("AND TIMESTAMP").lt(instantRange.getMax());
-        sqla.append("ORDER BY VALUE DESC, TIMESTAMP DESC");
-
-        SqlBuilder sqlb = builder.buildOther();
-        sqlb.append("SELECT TIMESTAMP FROM (");
-        sqlb.append(  "SELECT DISTINCT TIMESTAMP,");
-        sqlb.append(  "ROW_NUMBER() over (");
-        sqlb.append(    "ORDER BY VALUE DESC, TIMESTAMP DESC");
-        sqlb.append(  ") rn");
-        sqlb.append(  "FROM RAWPOINTHISTORY");
-        sqlb.append(  "WHERE POINTID").eq(pointId);
-        sqlb.append(  "AND TIMESTAMP").gt(instantRange.getMin());
-        sqlb.append(  "AND TIMESTAMP").lt(instantRange.getMax());
-        sqlb.append(") numberedRows");
-        sqlb.append("WHERE numberedRows.rn").eq(1);
-
-        Instant peakTime = yukonTemplate.queryForObject(builder, RowMapper.INSTANT_NULLABLE);
-
-        return peakTime;
-    }
-
 }

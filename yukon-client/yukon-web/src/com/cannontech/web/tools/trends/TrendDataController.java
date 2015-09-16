@@ -1,6 +1,7 @@
 package com.cannontech.web.tools.trends;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,13 +44,9 @@ import com.google.common.collect.ImmutableMap;
 public class TrendDataController {
 
     @Autowired private DurationFormattingService durationFormatting;
-
     @Autowired private DateFormattingService dateFormattingService;
-
     @Autowired private GraphDao graphDao;
-
     @Autowired private TrendDataService trendDataService;
-
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     private static final Logger log = YukonLogManager.getLogger(TrendDataController.class);
@@ -162,6 +159,7 @@ public class TrendDataController {
             seriesProperties.put("color", Colors.colorPaletteToWeb(seriesItem.getColor()));
             seriesList.add(seriesProperties);
         }
+        
         for (GraphDataSeries seriesItem : dateGraphDataSeriesList) {
             Map<String, Object> seriesProperties = new HashMap<>();
             List<PointValueHolder> seriesItemResult = new ArrayList<>();
@@ -171,17 +169,15 @@ public class TrendDataController {
             DateTime specificDate;
             DateTime endDate;
             if (itemType.getGraphType() == (TrendType.GraphType.PEAK_TYPE)) {
-                long ts = Long.valueOf(seriesItem.getMoreData()).longValue();
-                DateTime dateToStartSearch = new DateTime(ts);
-                ReadableInstant peakDataInstant = trendDataService.requestPeakDateDataProvider(pointId, dateToStartSearch);
-                specificDate = new DateTime( peakDataInstant, userContext.getJodaTimeZone()).withTimeAtStartOfDay();
-                endDate = specificDate.plusDays(1);
-                seriesItemResult = trendDataService.datePointHistoryDataProvider( pointId, specificDate, endDate);
+                long millis = Long.valueOf(seriesItem.getMoreData()).longValue();
+                Date dateToStartSearch = new Date(millis);
+                specificDate = trendDataService.requestPeakDateDataProvider(pointId, dateToStartSearch, userContext);
             } else {
                 specificDate = new DateTime(seriesItem.getSpecificDate());
             }
+            
             endDate = specificDate.plusDays(1);
-            seriesItemResult = trendDataService.datePointHistoryDataProvider( pointId, specificDate, endDate);
+            seriesItemResult = trendDataService.datePointHistoryDataProvider(pointId, specificDate, endDate);
             seriesData = trendDataService.dateGraphDataProvider(seriesItemResult, chartDatePrime, chartDateLimit);
             
             if (seriesData.isEmpty()) {
@@ -201,7 +197,7 @@ public class TrendDataController {
             }
             String reportDate = dateFormattingService.format(specificDate, DateFormatEnum.DATE, userContext);
             seriesProperties.put("name", seriesItem.getLabel() + " " + graphTypeLabel(seriesItem.getType(), userContext) +" " + reportDate);
-            seriesProperties.put("color", Colors.colorPaletteToWeb(seriesItem.getColor() ));
+            seriesProperties.put("color", Colors.colorPaletteToWeb(seriesItem.getColor()));
             seriesList.add(seriesProperties);
         }
         Map<String, Object> json = new HashMap<>();
@@ -222,11 +218,8 @@ public class TrendDataController {
     * Returns context sensitive message for {@link GraphDataError}
      * <p>
      * 
-     * @param state
-     *            {@link GraphDataError} is state of the data for being passed
-     *            back to the client.
-     * @param userContext
-     *            {@link YukonUserContext}
+     * @param state {@link GraphDataError} is state of the data for being passed back to the client.
+     * @param userContext {@link YukonUserContext}
      * @return {@link String}
      */
     private String graphDataStateMessage(GraphDataError state, YukonUserContext userContext) {
@@ -238,9 +231,7 @@ public class TrendDataController {
      * Returns context sensitive message for {@link GraphType}
      * <p>
      * @param graphType {@link int} the GraphDataSeries.type value.
-     * @param userContext
-     *            {@link YukonUserContext}
-     * 
+     * @param userContext {@link YukonUserContext}
      * @return {@link String}
      */
     private String graphTypeLabel(int graphType, YukonUserContext userContext) {
@@ -253,18 +244,10 @@ public class TrendDataController {
      * Determine if we need to render an x-axis for data, 
      * it then updates the seriesList in place instead of passing back.
      *<p>
-     * 
-     * @param userContext
-     *            {@link GraphType} is the unique identifier for the range of
-     *            entries.
-     * @param seriesList
-     *            <code> List<Map<String, Object></code> in place referrenced
-     *            object
-     * @param yAxis
-     *            <code> List<Map<String, Object>></code> in place referrenced
-     *            object
-     * @param labels
-     *            <code> ImmutableMap<String, ImmutableMap<String, String></code>
+     * @param userContext {@link GraphType} is the unique identifier for the range of entries.
+     * @param seriesList <code> List<Map<String, Object></code> in place referrenced object
+     * @param yAxis <code> List<Map<String, Object>></code> in place referrenced object
+     * @param labels <code> ImmutableMap<String, ImmutableMap<String, String></code>
      * @return void
      */
     private void addRightAxis(YukonUserContext userContext, List<Map<String, Object>> seriesList, List<Map<String, Object>> yAxis, ImmutableMap<String, ImmutableMap<String, String>> labels) {

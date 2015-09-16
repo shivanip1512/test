@@ -7,7 +7,6 @@ import java.util.Set;
 
 import org.joda.time.Instant;
 import org.joda.time.LocalTime;
-import org.joda.time.ReadableInstant;
 
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -87,6 +86,19 @@ public interface RawPointHistoryDao {
      */
     public List<PointValueHolder> getLimitedPointData(int pointId, Range<Instant> instantRange, boolean excludeDisabledPaos, Order order, int maxRows);
 
+    /**
+     * Method to get a list of point values for a given point and time period,
+     * but only returning up to maxRows rows.
+     * To return a list with maxRows closest to startDate, use reverseOrder of false.
+     * To return a list with maxRows closest to stopDate, use reverseOrder of true.
+     * @param pointId - Id of point to get values for
+     * @param instantRange - time period, also defines clusivity
+     * @param order - controls ordering by orderBy
+     * @param orderBy - controls the data to order respective of (value or timestamp)
+     * @param maxRows - Maximum number of rows to return
+     * @return List of values for the point
+     */
+    public List<PointValueHolder> getLimitedPointData(int pointId, Range<Instant> instantRange, boolean excludeDisabledPaos, Order order, OrderBy orderBy, int maxRows);
     /**
      * This method returns RawPointHistory data for a list of PAOs and a given Attribute. This data will be returned
      * as a ListMultimap such that the RPH values for each PAO will be accessible (and ordered) on their own.
@@ -333,10 +345,4 @@ public interface RawPointHistoryDao {
     * if no value exists for that point in time
     */
    public PointValueQualityHolder getSpecificValue(int pointId, long timestamp) throws NotFoundException;
-
-   /**
-    * The time in the specified range where the highest value was recorded on the point
-    * or <code>null</code> if there are no readings in the time range
-    */
-   Instant getPeakTimeInRange(int pointId, ReadableRange<ReadableInstant> instantRange);
 }

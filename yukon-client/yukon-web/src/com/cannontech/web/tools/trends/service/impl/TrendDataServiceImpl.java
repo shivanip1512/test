@@ -12,6 +12,7 @@
 package com.cannontech.web.tools.trends.service.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -24,40 +25,43 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
+import com.cannontech.core.dao.RawPointHistoryDao.OrderBy;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.impl.SimplePointValue;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.tools.trends.TrendDataController;
 import com.cannontech.web.tools.trends.service.TrendDataService;
 @Service
-public class TrendDataServiceImpl implements TrendDataService{
+public class TrendDataServiceImpl implements TrendDataService {
 
-    /**
-     * The {@link RawPointHistoryDao} rphDao is a spring injected DAO provider for point data
-     */
-    @Autowired 
-    private RawPointHistoryDao rphDaoInstance;
-    
-    /**
-     * The {@link Logger} log is the journal utility for benchmarking and debugging this class. 
-     */
+    @Autowired private RawPointHistoryDao rawPointHistoryDao;
+
     private static final Logger log = YukonLogManager.getLogger(TrendDataController.class);
-    
 
    @Override 
    public List<PointValueHolder> rawPointHistoryDataProvider(int pointId) {
         Instant end = Instant.now();
         Instant start = end.minus(Duration.standardDays(365 * 2));
         Range<Instant> instantRange = Range.inclusive(start, end);
-        return  rphDaoInstance.getPointData(pointId, instantRange, Order.FORWARD);
+        return  rawPointHistoryDao.getPointData(pointId, instantRange, Order.FORWARD);
     }
     
     @Override
-    public ReadableInstant requestPeakDateDataProvider(int pointId, ReadableInstant startDate) {
-        Range<ReadableInstant> instantRange = Range.inclusive(startDate, Instant.now());
-        return rphDaoInstance.getPeakTimeInRange(pointId, instantRange);
+    public DateTime requestPeakDateDataProvider(int pointId, Date startDate, YukonUserContext userContext) {
+        Range<Date> instantRange = Range.fromInclusive(startDate);
+        List<PointValueHolder> peakPointValue = rawPointHistoryDao.getLimitedPointData(pointId, instantRange.translate(CtiUtilities.INSTANT_FROM_DATE), 
+                                                                                       false, Order.REVERSE, OrderBy.VALUE, 1);
+        
+        if (!peakPointValue.isEmpty()) {
+            Date peakDate = peakPointValue.get(0).getPointDataTimeStamp();
+            return new DateTime(peakDate, userContext.getJodaTimeZone()).withTimeAtStartOfDay();
+        } else {    //no peak found default to now...there is no data for the point anyways.
+            return DateTime.now();
+        }
     }
 
     @Override
@@ -65,7 +69,7 @@ public class TrendDataServiceImpl implements TrendDataService{
         Instant start = specificDate.toInstant();
         Instant end = endDate.toInstant();
         Range<Instant> instantRange = Range.inclusive(start, end);
-        List<PointValueHolder> results = rphDaoInstance.getPointData(pointId, instantRange, Order.FORWARD);
+        List<PointValueHolder> results = rawPointHistoryDao.getPointData(pointId, instantRange, Order.FORWARD);
         return results;
     }
 
