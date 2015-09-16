@@ -63,12 +63,12 @@
 
                     <%-- violations count --%>
                     <td class="tar">
-                        <cti:dataUpdaterValue type="DEVICE_DATA_MONITOR" identifier="${monitor.id}/VIOLATIONS_COUNT"/>
+                        <cti:dataUpdaterValue type="DEVICE_DATA_MONITOR" identifier="/VIOLATIONS_COUNT/${monitor.id}"/>
                     </td>
 
                     <%-- monitoring count --%>
                     <td class="tar">
-                        <cti:dataUpdaterValue type="DEVICE_DATA_MONITOR" identifier="${monitor.id}/MONITORING_COUNT"/>
+                        <cti:dataUpdaterValue type="DEVICE_DATA_MONITOR" identifier="/MONITORING_COUNT/${monitor.id}"/>
                     </td>
 
                     <%-- enable/disable --%>

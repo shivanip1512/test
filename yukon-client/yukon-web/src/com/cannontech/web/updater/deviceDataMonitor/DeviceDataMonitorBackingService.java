@@ -48,19 +48,18 @@ public class DeviceDataMonitorBackingService implements UpdateBackingService {
     	return handler.isValueAvailableImmediately();
     }
     
-    private class ParsedInfo {
-        int monitorId;
+    private static class ParsedInfo {
+        int monitorId = -1;
         String updaterTypeStr;
 
         ParsedInfo(String identifier) {
             String[] idParts = StringUtils.split(identifier, "/");
-            if(idParts[0].equals("CALCULATION_STATUS")){
+            updaterTypeStr = idParts[0];
+            try {
                 monitorId = Integer.parseInt(idParts[1]);
-                updaterTypeStr = idParts[0];
-            }else{
-                monitorId = Integer.parseInt(idParts[0]);
-                updaterTypeStr = idParts[1];  
-            } 
+            }catch (ArrayIndexOutOfBoundsException e) {
+                //ignore, when the new monitor is created there is no id
+            }
         }
     }
 }
