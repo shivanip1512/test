@@ -14,7 +14,7 @@
                 $(function () {
                     $.ajax({
                         type: 'post',
-                        url: '/support/database/validate/results'
+                        url: yukon.url('/support/database/validate/results')
                     }).done(function (data, textStatus, jqXHR) {
                         $('#compareResults').html(jqXHR.responseText);
                     });
