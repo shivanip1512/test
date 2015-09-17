@@ -43,7 +43,12 @@
                 <tags:inputNameValue nameKey=".name" path="name" size="35" maxlength="50" />
                 <tags:nameValue2 nameKey=".violations">
                 
-                <cti:dataUpdaterCallback function="yukon.ami.ddm.violationUpdater" initialize="true" value="DEVICE_DATA_MONITOR/CALCULATION_STATUS/${monitor.id}"/>
+                <c:if test="${monitor.id != null}">
+                    <cti:dataUpdaterCallback function="yukon.ami.ddm.violationUpdater" initialize="true" value="DEVICE_DATA_MONITOR/CALCULATION_STATUS/${monitor.id}"/>
+                </c:if>
+                <c:if test="${monitor.id == null}">
+                    <i:inline key="yukon.common.na"/>
+                </c:if>
 
                 <!-- CALCULATING -->
                 <span class="dn js-violations js-violations-calculating">

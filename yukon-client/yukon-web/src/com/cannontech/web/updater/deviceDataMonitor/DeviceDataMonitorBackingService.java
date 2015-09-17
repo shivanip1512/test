@@ -49,17 +49,13 @@ public class DeviceDataMonitorBackingService implements UpdateBackingService {
     }
     
     private static class ParsedInfo {
-        int monitorId = -1;
+        int monitorId;
         String updaterTypeStr;
 
         ParsedInfo(String identifier) {
             String[] idParts = StringUtils.split(identifier, "/");
             updaterTypeStr = idParts[0];
-            try {
-                monitorId = Integer.parseInt(idParts[1]);
-            }catch (ArrayIndexOutOfBoundsException e) {
-                //ignore, when the new monitor is created there is no id
-            }
+            monitorId = Integer.parseInt(idParts[1]);
         }
     }
 }
