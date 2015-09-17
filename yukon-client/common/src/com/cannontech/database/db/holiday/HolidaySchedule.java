@@ -1,7 +1,6 @@
 package com.cannontech.database.db.holiday;
 
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.ToIntFunction;
 
@@ -35,33 +34,42 @@ public class HolidaySchedule extends DBPersistent {
     public Integer getHolidayScheduleId() {
         return holidayScheduleId;
     }
+    
+    public boolean isExists() {
+        return holidayScheduleId >= 0;
+    }
 
     public String getHolidayScheduleName() {
         return holidayScheduleName;
     }
 
-    /**
-     * @return The lowest unused holiday schedule id
-     */
     public final static Integer getNextHolidayScheduleID() {
         IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 
         synchronized (cache) {
             List<LiteHolidaySchedule> holidaySchedules = cache.getAllHolidaySchedules();
-            Collections.sort(holidaySchedules);
 
-            int counter = 1;
+            int maxId = holidaySchedules.parallelStream()
+                .mapToInt(new ToIntFunction<LiteHolidaySchedule>() {
 
-            for (LiteHolidaySchedule holidaySchedule : holidaySchedules) {
-                int currentID = holidaySchedule.getHolidayScheduleID();
+                    @Override
+                    public int applyAsInt(LiteHolidaySchedule schedule) {
+                        return schedule.getLiteID();
+                    }
+                })
+                .max()
+                .orElse(0);
 
-                if (currentID > counter)
-                    break;
-                else
-                    counter = currentID + 1;
-            }
+            /* TODO Java 8
+             *
+             * int maxId = holidaySchedules.parallelStream()
+             *     .mapToInt(i -> i.getLiteID())
+             *     .max()
+             *     .orElse(0);
+             *
+             */
 
-            return counter;
+            return maxId + 1;
         }
     }
 

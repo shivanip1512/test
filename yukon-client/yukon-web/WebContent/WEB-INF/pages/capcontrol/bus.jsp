@@ -57,7 +57,7 @@
                     <%-- SEASON SCHEDULE --%>
                     <tags:nameValueContainer2 tableClass="stacked">
                         <tags:nameValue2 nameKey=".schedule.season">
-                            <c:set var="clazz" value="${seasonSchedule.scheduleId == -1 ? 'hint' : ''}"/>
+                            <c:set var="clazz" value="${seasonSchedule.exists ? 'hint' : ''}"/>
                             <span class="${clazz}">${fn:escapeXml(seasonSchedule.scheduleName)}</span>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
@@ -93,7 +93,7 @@
                     <%-- HOLIDAY SCHEDULE --%>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".schedule.holiday">
-                            <c:set var="clazz" value="${holidaySchedule.holidayScheduleId == -1 ? 'hint' : ''}"/>
+                            <c:set var="clazz" value="${holidaySchedule.exists ? 'hint' : ''}"/>
                             <span class="${clazz}">${fn:escapeXml(holidaySchedule.holidayScheduleName)}</span>
                         </tags:nameValue2>
                         <c:if test="${not empty holidayStrat}">

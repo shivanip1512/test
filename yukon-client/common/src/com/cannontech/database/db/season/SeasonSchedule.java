@@ -1,9 +1,9 @@
 package com.cannontech.database.db.season;
 
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
+import java.util.function.ToIntFunction;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -25,9 +25,7 @@ public class SeasonSchedule extends DBPersistent {
 
     public static final String TABLE_NAME = "SeasonSchedule";
 
-    public SeasonSchedule() {
-        super();
-    }
+    public SeasonSchedule() {}
 
     public void add() throws SQLException {
         Object addValues[] = { getScheduleId(), getScheduleName() };
@@ -43,6 +41,10 @@ public class SeasonSchedule extends DBPersistent {
         return scheduleID;
     }
 
+    public boolean isExists() {
+        return scheduleID >= 0;
+    }
+
     public String getScheduleName() {
         return scheduleName;
     }
@@ -52,21 +54,28 @@ public class SeasonSchedule extends DBPersistent {
 
         synchronized (cache) {
             List<LiteSeasonSchedule> seasonSchedules = cache.getAllSeasonSchedules();
-            Collections.sort(seasonSchedules);
 
-            int counter = 1;
-            int currentID;
+            int maxId = seasonSchedules.parallelStream()
+                    .mapToInt(new ToIntFunction<LiteSeasonSchedule>() {
 
-            for (int i = 0; i < seasonSchedules.size(); i++) {
-                currentID = seasonSchedules.get(i).getScheduleID();
+                        @Override
+                        public int applyAsInt(LiteSeasonSchedule schedule) {
+                            return schedule.getLiteID();
+                        }
+                    })
+                    .max()
+                    .orElse(0);
 
-                if (currentID > counter)
-                    break;
-                else
-                    counter = currentID + 1;
-            }
+                /* TODO Java 8
+                 *
+                 * int maxId = seasonSchedules.parallelStream()
+                 *     .mapToInt(i -> i.getLiteID())
+                 *     .max()
+                 *     .orElse(0);
+                 *
+                 */
 
-            return new Integer(counter);
+                return maxId + 1;
         }
     }
 
