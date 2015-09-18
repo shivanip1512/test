@@ -129,22 +129,34 @@ public class ProfileWidget extends WidgetControllerBase {
                                                               YukonUserContext userContext) {
 
         // get load profile
-        DeviceLoadProfile deviceLoadProfile = profilingService.getDeviceLoadProfile(deviceId);
+        DeviceLoadProfile deviceLoadProfile = null;
         YukonMeter meter = meterDao.getForId(deviceId);
-
+        if (!meter.getPaoType().isRfn()) {
+            deviceLoadProfile = profilingService.getDeviceLoadProfile(deviceId);
+        }
         Set<Attribute> supportedProfileAttributes = getSupportedProfileAttributes(meter);
+        // Load Profile should not show up in the profiling page for RFN Meters.
+        if (meter.getPaoType().isRfn()) {
+            if (supportedProfileAttributes.contains(ProfileAttributeChannel.LOAD_PROFILE)) {
+                supportedProfileAttributes.remove(ProfileAttributeChannel.LOAD_PROFILE);
+            }
+        }
         List<Map<String, Object>> availableChannels = new ArrayList<Map<String, Object>>();
         for (ProfileAttributeChannel attrChanEnum : ProfileAttributeChannel.values()) {
 
             if (supportedProfileAttributes.contains(attrChanEnum.getAttribute())) {
 
                 Map<String, Object> channelInfo = new HashMap<String, Object>();
-                channelInfo.put("channelProfilingOn", profilingService.isProfilingOnNow(deviceId, attrChanEnum.getChannel()));
-                channelInfo.put("jobInfos", profilingService.getToggleJobInfos(deviceId, attrChanEnum.getChannel()));
-                channelInfo.put("channelNumber", Integer.toString(attrChanEnum.getChannel()));
-                channelInfo.put("channelDescription", messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(attrChanEnum.getAttribute().getMessage()));
-                channelInfo.put("channelProfileRate", calcIntervalStr(attrChanEnum.getRate(deviceLoadProfile), userContext));
-
+                if (!meter.getPaoType().isRfMeter()) {
+                    channelInfo.put("channelProfilingOn", profilingService.isProfilingOnNow(deviceId, attrChanEnum.getChannel()));
+                    channelInfo.put("jobInfos", profilingService.getToggleJobInfos(deviceId, attrChanEnum.getChannel()));
+                    channelInfo.put("channelNumber", Integer.toString(attrChanEnum.getChannel()));
+                    channelInfo.put("channelDescription", messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(attrChanEnum.getAttribute().getMessage()));
+                    channelInfo.put("channelProfileRate", calcIntervalStr(attrChanEnum.getRate(deviceLoadProfile), userContext));
+                } else {
+                    channelInfo.put("channelNumber", Integer.toString(attrChanEnum.getChannel()));
+                    channelInfo.put("channelDescription", messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(attrChanEnum.getAttribute().getMessage()));
+                }
                 availableChannels.add(channelInfo);
             }
         }
@@ -181,6 +193,7 @@ public class ProfileWidget extends WidgetControllerBase {
 
         // get lite device, set name
         LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
+        PaoType paoType = device.getPaoType();
 
         // get info about each channels scanning status
         List<Map<String, Object>> availableChannels =
@@ -234,7 +247,14 @@ public class ProfileWidget extends WidgetControllerBase {
         List<Map<String, String>> pendingRequests = loadProfileService.getPendingRequests(device, userContext);
         mav.addObject("pendingRequests", pendingRequests);
         mav.addObject("deviceId", deviceId);
+        mav.addObject("isRfn", paoType.isRfMeter());
 
+        if (paoType.isRfMeter()) {
+            Date minDate = DateUtils.addDays(new Date(), -7);
+            Date maxDate = DateUtils.addDays(new Date(), -2);
+            mav.addObject("minDate", minDate);
+            mav.addObject("maxDate", maxDate);
+        }
         return mav;
     }
     
@@ -496,7 +516,6 @@ public class ProfileWidget extends WidgetControllerBase {
                 }
             }
         }
-
         // re-load page values into mav, add any error from scheduling
         ModelAndView mav = render(request, response);
         mav.addObject("toggleErrorMsg", toggleErrorMsg);

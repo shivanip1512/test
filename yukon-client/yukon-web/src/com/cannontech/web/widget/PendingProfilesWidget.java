@@ -74,8 +74,8 @@ public class PendingProfilesWidget extends WidgetControllerBase {
 
         // stop request
         long stopRequestId = ServletRequestUtils.getLongParameter(request, "stopRequestId", 0);
+        LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
         if (stopRequestId > 0) {
-            LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
             loadProfileService.removePendingLoadProfileRequest(device, stopRequestId, userContext);
         }
         
@@ -100,7 +100,7 @@ public class PendingProfilesWidget extends WidgetControllerBase {
             }
         }
         
-        
+        mav.addObject("isRfn",device.getPaoType().isRfMeter());
         mav.addObject("pendingRequests", pendingRequests);
         mav.addObject("deviceId", deviceId);
         

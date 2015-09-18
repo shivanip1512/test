@@ -42,7 +42,11 @@ public class ProfileController extends MultiActionController {
         mav.addObject("deviceId", deviceId);
         mav.addObject("deviceName", paoLoadingService.getDisplayablePao(device).getName());
         
-        boolean lpSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.LOAD_PROFILE);
+        boolean lpSupported = false;
+        if (paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.LOAD_PROFILE) || paoDefinitionDao.isTagSupported(device.getDeviceType(),
+                                                                                                                            PaoTag.VOLTAGE_PROFILE)) {
+            lpSupported = true;
+        }
         mav.addObject("lpSupported", lpSupported);
         
         boolean profileCollection = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.PROFILE_COLLECTION, user);

@@ -91,7 +91,16 @@ public class LoadProfileServiceImpl implements LoadProfileService {
     }
     
     @Override
-    public synchronized long initiateLoadProfile(LiteYukonPAObject device, int channel,
+    public synchronized long initiateLoadProfile(LiteYukonPAObject device, int channel, Date start,
+            Date stop, CompletionCallback callback, YukonUserContext userContext) {
+        if (device.getPaoType().isRfMeter()) {
+            return initiateRfnLoadProfile(device, channel, start, stop, callback, userContext);
+        } else {
+            return initiateLoadProfileNonRfn(device, channel, start, stop, callback, userContext);
+        }
+    }
+   
+    private synchronized long initiateLoadProfileNonRfn(LiteYukonPAObject device, int channel,
             Date start, Date stop, CompletionCallback callback, YukonUserContext userContext) {
         Validate.isTrue(channel <= 4, "channel must be less than or equal to 4");
         Validate.isTrue(channel > 0, "channel must be greater than 0");
@@ -168,7 +177,59 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         currentRequestIds.put(requestId, callback);
         return requestId;
     }
+    
+    
+    private synchronized long initiateRfnLoadProfile(LiteYukonPAObject device, int channel,
+            Date start, Date stop, CompletionCallback callback, YukonUserContext userContext) {
+        Validate.isTrue(channel <= 4, "channel must be less than or equal to 4");
+        Validate.isTrue(channel > 0, "channel must be greater than 0");
+        Validate.isTrue(paoDefinitionDao.isTagSupported(device.getPaoType(), PaoTag.VOLTAGE_PROFILE),
+                        "Device must support 4 channel voltage profile");
 
+        // build command
+        Request req = new Request();
+        StringBuilder formatString = new StringBuilder("getvalue voltage profile ");
+        formatString.append(" ");
+        if (start != null) {
+            DateFormat cmdFormatter = systemDateFormattingService.getSystemDateFormat(DateFormatEnum.LoadProfile);
+            formatString.append(cmdFormatter.format(start));
+            formatString.append(" ");
+        }
+        if (stop == null) {
+            stop = new Date();
+        }
+        DateFormat cmdFormatter = systemDateFormattingService.getSystemDateFormat(DateFormatEnum.LoadProfile);
+        formatString.append(cmdFormatter.format(stop));
+
+        // setup request
+        req.setCommandString(formatString.toString());
+        req.setDeviceID(device.getLiteID());
+        long requestId = random.nextInt();
+        req.setUserMessageID(requestId);
+
+        // setup profile request info
+        ProfileRequestInfo info = new ProfileRequestInfo();
+        info.from = start;
+        info.to = stop;
+        info.request = req;
+        info.callback = callback;
+        info.requestId = requestId;
+        info.channel = channel;
+        info.userName = userContext.getYukonUser().getUsername();
+        info.percentDone = 0.00;
+
+        // activity log
+        activityLoggerService.logEvent(userContext.getYukonUser().getUserID(),
+                                       ActivityLogActions.INITIATE_PROFILE_REQUEST_ACTION,
+                                       req.getCommandString());
+
+        // pass off to handleOutgoingMessage
+        handleOutgoingMessage(info);
+        // if write fails, we don't want this to happen
+        currentRequestIds.put(requestId, callback);
+        return requestId;
+    }
+    
     private synchronized void handleOutgoingMessage(ProfileRequestInfo info) {
         int deviceId = info.request.getDeviceID();
         if (currentDeviceRequests.containsKey(deviceId)) {
@@ -309,7 +370,9 @@ public class LoadProfileServiceImpl implements LoadProfileService {
             
             
             if (returnMsg.getMessages().size() != 0) {
-                receivedReturnsCount.put(requestId, receivedReturnsCount.get(requestId) + 1);
+                if (receivedReturnsCount.get(requestId) != null) {
+                    receivedReturnsCount.put(requestId, receivedReturnsCount.get(requestId) + 1);
+                }
             }
             
             // check for expect more

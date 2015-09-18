@@ -18,7 +18,22 @@
                         <tags:nameValue2 nameKey="yukon.common.status">
                             <table>
                                 <tr>
-                                    <td><tags:pendingProfileProgressBar requestId="${pendingRequest.requestId}" percentDone="${pendingRequest.percentDone}" lastReturnMsg="${lastReturnMsg}"/></td>
+                                    <c:if test="${not isRfn}">
+                                        <td><tags:pendingProfileProgressBar requestId="${pendingRequest.requestId}" percentDone="${pendingRequest.percentDone}" lastReturnMsg="${lastReturnMsg}"/></td>
+                                    </c:if>
+                                    <c:if test="${isRfn}">
+                                    <td>
+                                        <c:if test="${empty pendingRequest.percentDone}">
+                                            <div id="progressMsg_${requestId}" class="error"><i:inline key="yukon.common.requestFailed"/></div><div>${pageScope.lastReturnMsg}</div>
+                                        </c:if>
+                                        <c:if test="${pendingRequest.percentDone >= 100.0}">
+                                           <div id="progressMsg_${requestId}" class="success"><i:inline key="yukon.common.completed"/></div>
+                                        </c:if>
+                                        <c:if test="${pendingRequest.percentDone <= 0.0}">
+                                            <div id="progressMsg_${requestId}"><i:inline key="yukon.common.inProgress"/></div>
+                                        </c:if>
+                                     </td>   
+                                    </c:if>
                                     <td><cti:button onclick="javascript:cancelLoadProfile(${pendingRequest.requestId});" icon="icon-cross" renderMode="buttonImage"/></td>
                                 </tr>
                             </table>

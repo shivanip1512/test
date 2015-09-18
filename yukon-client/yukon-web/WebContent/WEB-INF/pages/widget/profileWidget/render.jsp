@@ -48,6 +48,7 @@
             ${widgetParameters.jsWidget}.doDirectActionRefresh("toggleProfiling");
         }
     </script>
+     <c:if test="${not isRfn}">
     <%-- CHANNEL SCANNING --%>
     <c:if test="${not empty toggleErrorMsg}">
         <cti:msg2 var="errorToggleChannel" key=".errorToggleChannel"/>
@@ -58,6 +59,7 @@
     
     <c:set var="channelScanDiv" value="${widgetParameters.widgetId}_channelScanning"/>
     <div id="${channelScanDiv}" class="stacked"></div>
+    
     <script>
         var refreshCmd = 'refreshChannelScanningInfo',
             refreshParams = {'deviceId':${deviceId}},
@@ -66,7 +68,7 @@
                                                                          refreshParams, refreshPeriod,
                                                                          '${channelScanDiv}');
     </script>
-    
+    </c:if>
     <%--PAST PROFILES, don't display if the device does not support --%>
     <cti:checkRolesAndProperties value="METERING">
     <cti:checkRolesAndProperties value="PROFILE_COLLECTION">
@@ -79,12 +81,22 @@
                         </c:forEach>
                     </select>
                 </tags:nameValue2>
+                <c:if test="${isRfn}">
                 <tags:nameValue2 nameKey=".startDate">
-                    <dt:date name="startDateStr" value="${startDate}" />
+                    <dt:date name="startDateStr" value="${startDate}" minDate="${minDate}" maxDate="${maxDate}"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".stopDate">
-                    <dt:date name="stopDateStr" value="${stopDate}" />
+                    <dt:date name="stopDateStr" value="${stopDate}" minDate="${minDate}" maxDate="${maxDate}"/>
                 </tags:nameValue2>
+                </c:if>
+                <c:if test="${not isRfn}">
+                <tags:nameValue2 nameKey=".startDate">
+                    <dt:date name="startDateStr" value="${startDate}"/>
+                </tags:nameValue2>
+                <tags:nameValue2 nameKey=".stopDate">
+                    <dt:date name="stopDateStr" value="${stopDate}"/>
+                </tags:nameValue2>
+                </c:if>
                 <tags:nameValue2 nameKey=".email">
                     <input id="email" name="email" type="text" value="${email}">
                 </tags:nameValue2>
@@ -107,6 +119,7 @@
     </cti:checkRolesAndProperties>
     
     <%-- DAILY USAGE REPORT --%>
+    <c:if test="${not isRfn}">
     <form id="reportForm" action="/widget/profileWidget/viewDailyUsageReport">
     
     <input type="hidden" name="deviceId" value="${deviceId}">
@@ -134,5 +147,6 @@
         </tags:hideReveal>
     </c:if>
     </form>
+    </c:if>
 </c:otherwise>
 </c:choose>

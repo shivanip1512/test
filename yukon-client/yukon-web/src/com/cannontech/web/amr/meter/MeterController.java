@@ -199,6 +199,7 @@ public class MeterController {
         boolean commanderDevice = paoDefDao.isTagSupported(type, PaoTag.COMMANDER_REQUESTS);
         boolean highBillDevice = paoDefDao.isTagSupported(type, PaoTag.HIGH_BILL);
         boolean loadProfileDevice = paoDefDao.isTagSupported(type, PaoTag.LOAD_PROFILE);
+        boolean voltageProfileDevice = paoDefDao.isTagSupported(type, PaoTag.VOLTAGE_PROFILE);
         boolean moveDevice = paoDefDao.isTagSupported(type, PaoTag.MOVE_SUPPORTED);
         boolean outageDevice = paoDefDao.isTagSupported(type, PaoTag.OUTAGE);
         boolean peakReportDevice = paoDefDao.isTagSupported(type, PaoTag.PEAK_REPORT);
@@ -255,7 +256,7 @@ public class MeterController {
         model.addAttribute("showHighBill", highBillDevice && highBillUser);
         model.addAttribute("showLocateRoute", porterCommandsDevice && locateRouteUser);
         model.addAttribute("showMoveInOut", moveDevice && moveUser);
-        model.addAttribute("showProfile", loadProfileDevice || peakReportDevice);
+        model.addAttribute("showProfile", loadProfileDevice || peakReportDevice || voltageProfileDevice);
         model.addAttribute("showVoltageAndTou", voltageAndTouDevice);
         
         model.addAttribute("hasActions", hasActions);
