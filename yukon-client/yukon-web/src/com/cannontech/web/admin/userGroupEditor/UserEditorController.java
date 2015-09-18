@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.util.HtmlUtils;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.user.Password;
@@ -248,7 +247,7 @@ public class UserEditorController {
         }
         model.addAttribute("supportsPasswordSet", passwordSettable);
         model.addAttribute("loginStatusTypes", LoginStatusEnum.values());
-        model.addAttribute("userGroups", escapeHtml(userGroupDao.getAllLiteUserGroups()));
+        model.addAttribute("userGroups", userGroupDao.getAllLiteUserGroups());
         
         if (user.getUserGroupId() != null) {
             LiteUserGroup liteUserGroup = userGroupDao.getLiteUserGroup(user.getUserGroupId());
@@ -262,14 +261,7 @@ public class UserEditorController {
         model.addAttribute("roles", sortedRoles.asMap());
     }
     
-	private List<LiteUserGroup> escapeHtml(List<LiteUserGroup> allLiteUserGroups) {
-		for (LiteUserGroup userGroup : allLiteUserGroups) {
-			userGroup.setUserGroupName(HtmlUtils.htmlEscape(userGroup.getUserGroupName()));
-		}
-		return allLiteUserGroups;
-	}
-
-	private class PasswordValidator extends SimpleValidator<Password> {
+    private class PasswordValidator extends SimpleValidator<Password> {
         
         private List<MessageSourceResolvable> messages = Lists.newArrayList();
         private LiteYukonUser yukonUser;

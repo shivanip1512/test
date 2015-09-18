@@ -120,7 +120,8 @@
                 <form:option value="${enumSafeValue}">
                     <c:choose>
                         <c:when test="${not empty fn:trim(labelArg)}">
-                            <cti:formatObject value="${labelArg}"/>
+                            <cti:formatObject var="optionText" value="${labelArg}"/> 
+                            ${fn:escapeXml(optionText)}
                         </c:when>
                         <c:otherwise>
                             <c:choose>
