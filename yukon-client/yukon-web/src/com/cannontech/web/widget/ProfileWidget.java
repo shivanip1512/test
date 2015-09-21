@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -139,12 +140,7 @@ public class ProfileWidget extends WidgetControllerBase {
             deviceLoadProfile = profilingService.getDeviceLoadProfile(deviceId);
         }
         Set<Attribute> supportedProfileAttributes = getSupportedProfileAttributes(meter);
-        // Load Profile should not show up in the profiling page for RFN Meters.
-        if (meter.getPaoType().isRfn()) {
-            if (supportedProfileAttributes.contains(ProfileAttributeChannel.LOAD_PROFILE)) {
-                supportedProfileAttributes.remove(ProfileAttributeChannel.LOAD_PROFILE);
-            }
-        }
+        
         List<Map<String, Object>> availableChannels = new ArrayList<Map<String, Object>>();
         for (ProfileAttributeChannel attrChanEnum : ProfileAttributeChannel.values()) {
 
@@ -181,18 +177,16 @@ public class ProfileWidget extends WidgetControllerBase {
     }
 
     private Set<Attribute> getSupportedProfileAttributes(YukonMeter meter) {
-        if (paoDefDao.isTagSupported(meter.getPaoType(), PaoTag.VOLTAGE_PROFILE) && paoDefDao.isTagSupported(meter.getPaoType(),
-                                                                                                             PaoTag.LOAD_PROFILE)) {
-            return attributeService.getExistingAttributes(meter,
-                                                          ProfileAttributeChannel.getAttributes());
-        } else if (paoDefDao.isTagSupported(meter.getPaoType(), PaoTag.VOLTAGE_PROFILE)) {
-            return attributeService.getExistingAttributes(meter,
-                                                          ProfileAttributeChannel.getVoltageProfileAttributes());
-        } else if (paoDefDao.isTagSupported(meter.getPaoType(), PaoTag.LOAD_PROFILE)) {
-            return attributeService.getExistingAttributes(meter,
-                                                          ProfileAttributeChannel.getLoadProfileAttributes());
+        
+        Set<Attribute> profileAttributes = new HashSet<Attribute>();
+        if (paoDefDao.isTagSupported(meter.getPaoType(), PaoTag.VOLTAGE_PROFILE)) {
+            profileAttributes.addAll(ProfileAttributeChannel.getVoltageProfileAttributes());
         }
-        return null;
+        if (paoDefDao.isTagSupported(meter.getPaoType(), PaoTag.LOAD_PROFILE)) {
+            profileAttributes.addAll(ProfileAttributeChannel.getLoadProfileAttributes());
+        }
+        
+        return attributeService.getExistingAttributes(meter, profileAttributes);
     }
 
     @Override

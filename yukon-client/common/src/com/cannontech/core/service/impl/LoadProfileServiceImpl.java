@@ -182,12 +182,11 @@ public class LoadProfileServiceImpl implements LoadProfileService {
     private synchronized long initiateLoadProfileRfn(LiteYukonPAObject device,
             Date start, Date stop, CompletionCallback callback, YukonUserContext userContext) {
         Validate.isTrue(paoDefinitionDao.isTagSupported(device.getPaoType(), PaoTag.VOLTAGE_PROFILE),
-                        "Device must support 4 channel voltage profile");
+                        "Device must support voltage profile");
 
         // build command
         Request req = new Request();
         StringBuilder formatString = new StringBuilder("getvalue voltage profile ");
-        formatString.append(" ");
         if (start != null) {
             DateFormat cmdFormatter = systemDateFormattingService.getSystemDateFormat(DateFormatEnum.LoadProfile);
             formatString.append(cmdFormatter.format(start));
