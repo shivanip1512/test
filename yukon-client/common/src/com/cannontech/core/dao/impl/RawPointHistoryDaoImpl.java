@@ -14,7 +14,6 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.Instant;
 import org.joda.time.LocalTime;
-import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -46,7 +45,6 @@ import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueBuilder;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
-import com.cannontech.database.RowMapper;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -318,8 +316,9 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             stopwatch.stop();
             int numPaos = Iterables.size(displayableDevices);
             String logMessage = "getLimitedAttributeData() - " + numPaos + " paos. Attribute: " + attribute.getKey();
-            if (dateRange != null && dateRange.getMax() != null && dateRange.getMax() != null) {
-                logMessage += ". Date range: " + dateRange.getMin().toString() + " to " + dateRange.getMax().toString(); 
+            if (dateRange != null) {
+                logMessage += ". Date range: " + (dateRange.getMin() == null ? null : dateRange.getMin().toString()); 
+                logMessage += " to " + (dateRange.getMax() == null ? null : dateRange.getMax().toString());
             }
             logMessage +=  ".  Elapsed time: " + stopwatch.toString();
             log.info(logMessage);
