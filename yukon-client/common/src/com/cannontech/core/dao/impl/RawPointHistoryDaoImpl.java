@@ -317,7 +317,12 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         if (log.isInfoEnabled()){
             stopwatch.stop();
             int numPaos = Iterables.size(displayableDevices);
-            log.info("getLimitedAttributeData() - " + numPaos + " paos. Attribute: " + attribute.getKey() + ". Date range: " + dateRange.getMin().toString() + " to " + dateRange.getMax().toString() + ".  Elapsed time: " + stopwatch.toString());
+            String logMessage = "getLimitedAttributeData() - " + numPaos + " paos. Attribute: " + attribute.getKey();
+            if (dateRange != null && dateRange.getMax() != null && dateRange.getMax() != null) {
+                logMessage += ". Date range: " + dateRange.getMin().toString() + " to " + dateRange.getMax().toString(); 
+            }
+            logMessage +=  ".  Elapsed time: " + stopwatch.toString();
+            log.info(logMessage);
         }
         
         return values; 
