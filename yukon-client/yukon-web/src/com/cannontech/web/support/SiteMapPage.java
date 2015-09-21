@@ -240,7 +240,7 @@ public enum SiteMapPage implements DisplayableEnum {
 
     private SiteMapPage(SiteMapCategory siteMenu, String messageKey, String link, MatchStyle matchStyle,
             Object... permissions) {
-        this.category = siteMenu;
+        category = siteMenu;
         this.link = link;
         this.matchStyle = matchStyle;
         this.permissions = permissions;

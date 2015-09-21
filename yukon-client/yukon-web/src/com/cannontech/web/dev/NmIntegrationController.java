@@ -34,7 +34,12 @@ import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.rfn.message.RfnArchiveStartupNotification;
+import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeRequestAckType;
+import com.cannontech.common.rfn.model.GatewayCertificateUpdateStatus;
+import com.cannontech.common.rfn.model.SimulatedCertificateReplySettings;
+import com.cannontech.common.rfn.model.SimulatedGatewayDataSettings;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
+import com.cannontech.common.rfn.service.RfnGatewaySimulatorService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.service.RfnEventTestingService;
@@ -64,6 +69,7 @@ public class NmIntegrationController {
     @Autowired private RfnLcrDataSimulatorService dataSimulator;
     @Autowired private YsmJmxQueryService jmxQueryService;
     @Autowired private RfnGatewayDataCache gatewayCache;
+    @Autowired private RfnGatewaySimulatorService gatewaySimService;
     
     private JmsTemplate jmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(NmIntegrationController.class);
@@ -217,7 +223,82 @@ public class NmIntegrationController {
         
         return data;
     }
-
+    
+    @RequestMapping("gatewaySimulator")
+    public String gatewaySimulator(ModelMap model) {
+        model.addAttribute("ackTypes", RfnGatewayUpgradeRequestAckType.values());
+        model.addAttribute("acceptedUpdateStatusTypes", SimulatedCertificateReplySettings.acceptedUpdateStatusTypes);
+        model.addAttribute("autoDataReplyActive", gatewaySimService.isAutoDataReplyActive());
+        model.addAttribute("autoCertificateReplyActive", gatewaySimService.isAutoUpgradeReplyActive());
+        
+        return "rfn/gatewayDataSimulator.jsp";
+    }
+    
+    @RequestMapping("createNewGateway")
+    public String createNewGateway(@RequestParam String name, 
+                                   @RequestParam String serial, 
+                                   @RequestParam(defaultValue="false") boolean isGateway2,
+                                   FlashScope flash) {
+        
+        gatewaySimService.sendGatewayArchiveRequest(name, serial, isGateway2);
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.gatewaySimulator.gatewayCreated", name));
+        
+        return "redirect:gatewaySimulator";
+    }
+    
+    @RequestMapping("enableGatewayDataReply")
+    public String enableGatewayDataReply(@RequestParam(defaultValue="false") boolean alwaysGateway2, FlashScope flash) {
+        
+        SimulatedGatewayDataSettings dataSettings = new SimulatedGatewayDataSettings();
+        dataSettings.setReturnGwy800Model(alwaysGateway2);
+        boolean autoDataReplyActive = gatewaySimService.startAutoDataReply(dataSettings);
+        
+        if (autoDataReplyActive == true) {
+            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.gatewaySimulator.simStartSuccess"));
+        } else {
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.gatewaySimulator.simStartFailed"));
+        }
+        
+        return "redirect:gatewaySimulator";
+    }
+    
+    @RequestMapping("disableGatewayDataReply")
+    public String disableGatewayDataReply() {
+        gatewaySimService.stopAutoDataReply();
+        while (gatewaySimService.isAutoDataReplyActive()) {
+            //wait for sim to stop
+        }
+        return "redirect:gatewaySimulator";
+    }
+    
+    @RequestMapping("enableGatewayCertificateReply")
+    public String enableGatewayCertificateReply(@RequestParam RfnGatewayUpgradeRequestAckType ackType,
+                                                @RequestParam GatewayCertificateUpdateStatus updateStatus,
+                                                FlashScope flash) {
+        
+        SimulatedCertificateReplySettings certSettings = new SimulatedCertificateReplySettings();
+        certSettings.setAckType(ackType);
+        certSettings.setDeviceUpdateStatus(updateStatus);
+        boolean autoUpdateReplyActive = gatewaySimService.startAutoCertificateReply(certSettings);
+        
+        if (autoUpdateReplyActive == true) {
+            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.gatewaySimulator.simStartSuccess"));
+        } else {
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.gatewaySimulator.simStartFailed"));
+        }
+        
+        return "redirect:gatewaySimulator";
+    }
+    
+    @RequestMapping("disableGatewayCertificateReply")
+    public String disableGatewayCertificateReply() {
+        gatewaySimService.stopAutoCertificateReply();
+        while (gatewaySimService.isAutoUpgradeReplyActive()) {
+            //wait for sim to stop
+        }
+        return "redirect:gatewaySimulator";
+    }
+    
     @RequestMapping("viewMeterReadArchiveRequest")
     public String viewMeterReadArchiveRequest() {
         return "rfn/viewMeterReadArchive.jsp";
@@ -247,6 +328,11 @@ public class NmIntegrationController {
     @RequestMapping("viewRfDaArchiveRequest")
     public String viewRfDaArchiveRequest() {
         return "rfn/viewRfDaArchive.jsp";
+    }
+    
+    @RequestMapping("viewGatewayDataSimulator")
+    public String viewGatewayDataSimulator() {
+        return "rfn/gatewayDataSimulator.jsp";
     }
     
     @RequestMapping("sendPerformanceVerification")

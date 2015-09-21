@@ -113,7 +113,8 @@ public class RfnGatewayCertificateUpdateServiceImpl implements RfnGatewayCertifi
 
                 @Override
                 public void handleReply(RfnGatewayUpgradeRequestAck reply) {
-                    log.info("Received acknowledgement of gateway certificate upgrade from Network Manager.");
+                    log.info("Received acknowledgement of gateway certificate upgrade from Network Manager. " + 
+                            "Status: " + reply.getRequestAckType() + ". Message: " + reply.getRequestAckMessage());
                     logGatewayUpgradeStatusFromAck(updateDbId, reply);
                 }
 
