@@ -37,8 +37,8 @@ public enum ProfileAttributeChannel {
     };
 
     private final BuiltInAttribute attribute;
-    private static Set<Attribute> loadProfileAttributes;
-    private static Set<Attribute> voltageProfileAttributes;
+    private final static Set<Attribute> loadProfileAttributes;
+    private final static Set<Attribute> voltageProfileAttributes;
     
     static {
         Builder<Attribute> loadProfilebuilder = ImmutableSet.builder();
