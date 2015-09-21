@@ -82,20 +82,23 @@ public class ScheduledFileExportDaoImpl implements ScheduledFileExportDao {
         return result;
     }
 
+    /**
+     * Returns the maximum ChangeId from RawPointHisotry where the Timestamp is 
+     *  less than or equal to the maximum SINCE_LAST_RUN_INIT_DAYS
+     * This query has been changed YUK-14660 to only use MAX and only one Timestamp for performance purposes.
+     *  These changes may result in a changeId that is "old" however, the expectation is if that happens, there isn't much data anyways.
+     */
     private long getOldestRphIdInDaysPrevious() {
         Instant xDaysAgo = Instant.now().minus(Duration.standardDays(initDays));
-        Instant now = Instant.now();
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select min(ChangeId)");
-        sql.append("from RawPointHistory");
-        sql.append("where Timestamp").gte(xDaysAgo);
-        sql.append(  "and Timestamp").lt(now);
-
+        sql.append("SELECT MAX(ChangeId)");
+        sql.append("FROM RawPointHistory");
+        sql.append("WHERE Timestamp").lte(xDaysAgo);
+        
         long changeId = yukonJdbcTemplate.queryForLong(sql);
         if (changeId == 0) {
-            // No changeIds from the past X days. Just return the most recent
-            // one.
+            // No changeIds returned. Just return the most recent one (this scenario probably doesn't occur after the query changes to remove "range").
             return rawPointHistoryDao.getMaxChangeId();
         }
         return changeId;
