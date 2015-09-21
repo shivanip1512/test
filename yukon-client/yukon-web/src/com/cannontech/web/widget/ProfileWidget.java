@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -39,6 +40,8 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.TemplateProcessorFactory;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
@@ -94,6 +97,7 @@ public class ProfileWidget extends WidgetControllerBase {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private ObjectFormattingService objectFormattingService;
+    @Autowired private PaoDefinitionDao paoDefDao;
 
     
     @Autowired
@@ -177,7 +181,18 @@ public class ProfileWidget extends WidgetControllerBase {
     }
 
     private Set<Attribute> getSupportedProfileAttributes(YukonMeter meter) {
-        return attributeService.getExistingAttributes(meter, ProfileAttributeChannel.getAttributes());
+        if (paoDefDao.isTagSupported(meter.getPaoType(), PaoTag.VOLTAGE_PROFILE) && paoDefDao.isTagSupported(meter.getPaoType(),
+                                                                                                             PaoTag.LOAD_PROFILE)) {
+            return attributeService.getExistingAttributes(meter,
+                                                          ProfileAttributeChannel.getAttributes());
+        } else if (paoDefDao.isTagSupported(meter.getPaoType(), PaoTag.VOLTAGE_PROFILE)) {
+            return attributeService.getExistingAttributes(meter,
+                                                          ProfileAttributeChannel.getVoltageProfileAttributes());
+        } else if (paoDefDao.isTagSupported(meter.getPaoType(), PaoTag.LOAD_PROFILE)) {
+            return attributeService.getExistingAttributes(meter,
+                                                          ProfileAttributeChannel.getLoadProfileAttributes());
+        }
+        return null;
     }
 
     @Override
@@ -250,8 +265,9 @@ public class ProfileWidget extends WidgetControllerBase {
         mav.addObject("isRfn", paoType.isRfMeter());
 
         if (paoType.isRfMeter()) {
-            Date minDate = DateUtils.addDays(new Date(), -7);
-            Date maxDate = DateUtils.addDays(new Date(), -2);
+            DateTime minDate = DateTime.now().minus(Days.SEVEN);
+            DateTime maxDate = DateTime.now().minus(Days.TWO);
+
             mav.addObject("minDate", minDate);
             mav.addObject("maxDate", maxDate);
         }
@@ -369,7 +385,6 @@ public class ProfileWidget extends WidgetControllerBase {
     @RequestMapping("toggleProfiling")
     public ModelAndView toggleProfiling(HttpServletRequest request,
                                         HttpServletResponse response) throws Exception {
-
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         rolePropertyDao.verifyProperty(YukonRoleProperty.PROFILE_COLLECTION_SCANNING, userContext.getYukonUser());
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
@@ -529,7 +544,7 @@ public class ProfileWidget extends WidgetControllerBase {
         ModelAndView mav = new ModelAndView("profileWidget/channelScanning.jsp");
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-
+        
         // get info about each channels scanning status
         List<Map<String, Object>> availableChannels = getAvailableChannelInfo(deviceId, userContext);
         mav.addObject("availableChannels", availableChannels);

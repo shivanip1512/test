@@ -7,6 +7,8 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.database.db.device.DeviceLoadProfile;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
+import com.google.common.collect.Sets;
+
 
 public enum ProfileAttributeChannel {
     LOAD_PROFILE(BuiltInAttribute.LOAD_PROFILE) {
@@ -35,15 +37,25 @@ public enum ProfileAttributeChannel {
     };
 
     private final BuiltInAttribute attribute;
-    private final static Set<Attribute> allAttributes;
+    private static Set<Attribute> loadProfileAttributes;
+    private static Set<Attribute> voltageProfileAttributes;
+    
+    static {
+        Builder<Attribute> loadProfilebuilder = ImmutableSet.builder();
+        loadProfilebuilder.add(LOAD_PROFILE.attribute);
+        loadProfilebuilder.add(PROFILE_CHANNEL_2.attribute);
+        loadProfilebuilder.add(PROFILE_CHANNEL_3.attribute);
+
+        loadProfileAttributes = loadProfilebuilder.build();
+    }
 
     static {
-        Builder<Attribute> builder = ImmutableSet.builder();
-        for (ProfileAttributeChannel profileAttributeChannel : values()) {
-            builder.add(profileAttributeChannel.attribute);
-        }
-        allAttributes = builder.build();
-    }
+        Builder<Attribute> voltageProfileBuilder = ImmutableSet.builder();
+        voltageProfileBuilder.add(VOLTAGE_PROFILE.attribute);
+
+        voltageProfileAttributes = voltageProfileBuilder.build();
+    }  
+    
     private ProfileAttributeChannel(BuiltInAttribute attribute) {
         this.attribute = attribute;
     }
@@ -66,6 +78,15 @@ public enum ProfileAttributeChannel {
     }
     
     public final static Set<Attribute> getAttributes() {
-        return allAttributes;
+        return Sets.union(loadProfileAttributes, voltageProfileAttributes);
     }
+    
+    public final static Set<Attribute> getLoadProfileAttributes() {
+        return loadProfileAttributes;
+    }
+    
+    public final static Set<Attribute> getVoltageProfileAttributes() {
+        return voltageProfileAttributes;
+    }
+
 }

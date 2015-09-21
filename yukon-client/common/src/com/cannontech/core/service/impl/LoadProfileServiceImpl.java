@@ -94,13 +94,13 @@ public class LoadProfileServiceImpl implements LoadProfileService {
     public synchronized long initiateLoadProfile(LiteYukonPAObject device, int channel, Date start,
             Date stop, CompletionCallback callback, YukonUserContext userContext) {
         if (device.getPaoType().isRfMeter()) {
-            return initiateRfnLoadProfile(device, channel, start, stop, callback, userContext);
+            return initiateLoadProfileRfn(device, start, stop, callback, userContext);
         } else {
-            return initiateLoadProfileNonRfn(device, channel, start, stop, callback, userContext);
+            return initiateLoadProfilePlc(device, channel, start, stop, callback, userContext);
         }
     }
    
-    private synchronized long initiateLoadProfileNonRfn(LiteYukonPAObject device, int channel,
+    private synchronized long initiateLoadProfilePlc(LiteYukonPAObject device, int channel,
             Date start, Date stop, CompletionCallback callback, YukonUserContext userContext) {
         Validate.isTrue(channel <= 4, "channel must be less than or equal to 4");
         Validate.isTrue(channel > 0, "channel must be greater than 0");
@@ -179,10 +179,8 @@ public class LoadProfileServiceImpl implements LoadProfileService {
     }
     
     
-    private synchronized long initiateRfnLoadProfile(LiteYukonPAObject device, int channel,
+    private synchronized long initiateLoadProfileRfn(LiteYukonPAObject device,
             Date start, Date stop, CompletionCallback callback, YukonUserContext userContext) {
-        Validate.isTrue(channel <= 4, "channel must be less than or equal to 4");
-        Validate.isTrue(channel > 0, "channel must be greater than 0");
         Validate.isTrue(paoDefinitionDao.isTagSupported(device.getPaoType(), PaoTag.VOLTAGE_PROFILE),
                         "Device must support 4 channel voltage profile");
 
@@ -214,7 +212,6 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         info.request = req;
         info.callback = callback;
         info.requestId = requestId;
-        info.channel = channel;
         info.userName = userContext.getYukonUser().getUsername();
         info.percentDone = 0.00;
 
@@ -431,7 +428,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         // this return is for a cancel command that we sent out
         }
         else if(outstandingCancelRequestIds.containsKey(requestId)){
-            
+                    
             receivedCancelRequestIds.add(requestId);
             
         } else {

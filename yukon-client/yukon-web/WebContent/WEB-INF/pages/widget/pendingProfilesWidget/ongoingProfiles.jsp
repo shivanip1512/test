@@ -24,13 +24,13 @@
                                     <c:if test="${isRfn}">
                                     <td>
                                         <c:if test="${empty pendingRequest.percentDone}">
-                                            <div id="progressMsg_${requestId}" class="error"><i:inline key="yukon.common.requestFailed"/></div><div>${pageScope.lastReturnMsg}</div>
+                                            <div class="error"><i:inline key="yukon.common.requestFailed"/></div><div>${pageScope.lastReturnMsg}</div>
                                         </c:if>
                                         <c:if test="${pendingRequest.percentDone >= 100.0}">
-                                           <div id="progressMsg_${requestId}" class="success"><i:inline key="yukon.common.completed"/></div>
+                                           <div class="success"><i:inline key="yukon.common.completed"/></div>
                                         </c:if>
                                         <c:if test="${pendingRequest.percentDone <= 0.0}">
-                                            <div id="progressMsg_${requestId}"><i:inline key="yukon.common.inProgress"/></div>
+                                            <div><i:inline key="yukon.common.inProgress"/></div>
                                         </c:if>
                                      </td>   
                                     </c:if>

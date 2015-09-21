@@ -6,7 +6,7 @@
     <tags:widgetContainer deviceId="${deviceId}">
         <div class="column-12-12">
             <div class="column one">
-                <c:if test="${lpSupported}">
+                <c:if test="${profileSupported}">
                     <tags:widget bean="profileWidget" />
                 </c:if>
                 <c:if test="${peakReportSupported}">
@@ -16,7 +16,7 @@
             <div class="column two nogutter">
                 <tags:widget bean="meterInformationWidget" />
 
-                <c:if test="${lpSupported && profileCollection}">
+                <c:if test="${profileSupported && profileCollection}">
                     <tags:widget bean="pendingProfilesWidget" />
                 </c:if>
             </div>
