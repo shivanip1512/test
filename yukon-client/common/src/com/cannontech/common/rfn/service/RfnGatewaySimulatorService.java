@@ -42,8 +42,18 @@ public interface RfnGatewaySimulatorService {
     void sendGatewayDataResponse(GatewayDataResponse response);
     
     /**
-     * Send an unsolicited gateway archive message (which will create a new gateway device in Yukon.
+     * Send an unsolicited gateway archive message (which will create a new gateway device in Yukon).
      */
     void sendGatewayArchiveRequest(String name, String serial, boolean isGateway2);
+    
+    /**
+     * @return true if the simulator is actively replying to data requests.
+     */
+    public boolean isAutoDataReplyActive();
+    
+    /**
+     * @return true if the simulator is actively replying to certificate update requests.
+     */
+    public boolean isAutoUpgradeReplyActive();
     
 }

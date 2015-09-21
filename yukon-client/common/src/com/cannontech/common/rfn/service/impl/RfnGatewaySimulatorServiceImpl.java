@@ -400,4 +400,12 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         
         return response;
     }
+    
+    public boolean isAutoDataReplyActive() {
+        return autoDataReplyActive;
+    }
+    
+    public boolean isAutoUpgradeReplyActive() {
+        return autoUpgradeReplyActive;
+    }
 }

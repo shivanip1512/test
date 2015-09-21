@@ -228,6 +228,10 @@
     <entry key="yukon.web.modules.dev.rfnTest.alarmArchiveRequest.label">Alarm Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.rfDaArchiveRequest.label">RF DA Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.rfLocationArchiveRequest.label">RF Location Archive Request</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.gatewaySimulator.label">NM Gateway Simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.gatewaySimulator.gatewayCreated">Gateway {0} creation message sent.</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.gatewaySimulator.simStartFailed">Failed to start simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.gatewaySimulator.simStartSuccess">Simulator started</entry>
     <entry key="yukon.web.modules.dev.rfnTest.dataType.CLEARED">Cleared</entry>
     <entry key="yukon.web.modules.dev.rfnTest.dataType.COUNT">Count</entry>
     <entry key="yukon.web.modules.dev.rfnTest.dataType.DIRECTION">Direction</entry>
