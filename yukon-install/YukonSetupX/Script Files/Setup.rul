@@ -181,8 +181,8 @@ begin
     		 		"Click Finish to exit setup.",
     		 		"","",opt,opt);
     endif;
-    CopyFile(TARGETDIR + "\\Server\\web\\conf\\server.xml", TARGETDIR + "\\Server\\Config\\Backup\\server" + IFX_PRODUCT_VERSION + ".xml");
-	CopyFile(TARGETDIR + "\\Server\\web\\conf\\web.xml", TARGETDIR + "\\Server\\Config\\Backup\\web" + IFX_PRODUCT_VERSION + ".xml");
+    CopyFile(TARGETDIR + "\\Server\\web\\conf\\server.xml", TARGETDIR + "\\Server\\Config\\Backup\\server_" + IFX_PRODUCT_VERSION + ".xml");
+	CopyFile(TARGETDIR + "\\Server\\web\\conf\\web.xml", TARGETDIR + "\\Server\\Config\\Backup\\web_" + IFX_PRODUCT_VERSION + ".xml");
 end;
 
 //--------------------------------------------------------------------------
@@ -334,8 +334,8 @@ begin
 	//Save the jvm memory and options parameters for Tomcat
 	SaveJvmParams();
 	
-	CopyFile(TARGETDIR + "\\Server\\web\\conf\\server.xml", TARGETDIR + "\\Server\\Config\\Backup\\server" + IFX_INSTALLED_VERSION + ".xml");
-	CopyFile(TARGETDIR + "\\Server\\web\\conf\\web.xml", TARGETDIR + "\\Server\\Config\\Backup\\web" + IFX_INSTALLED_VERSION + ".xml");
+	CopyFile(TARGETDIR + "\\Server\\web\\conf\\server.xml", TARGETDIR + "\\Server\\Config\\Backup\\server_" + IFX_INSTALLED_VERSION + ".xml");
+	CopyFile(TARGETDIR + "\\Server\\web\\conf\\web.xml", TARGETDIR + "\\Server\\Config\\Backup\\web_" + IFX_INSTALLED_VERSION + ".xml");
 	
 	//remove the YukonWebApplicationService, if it exists (i.e. upgrade install)
 	//so the new service installs correctly
@@ -633,8 +633,8 @@ if(IsDowngrade()) then
 		abort; //shut down the installer
 endif;
 
-CopyFile(TARGETDIR + "\\Server\\web\\conf\\server.xml", TARGETDIR + "\\Server\\Config\\Backup\\server" + IFX_INSTALLED_VERSION + ".xml");
-CopyFile(TARGETDIR + "\\Server\\web\\conf\\web.xml", TARGETDIR + "\\Server\\Config\\Backup\\web" + IFX_INSTALLED_VERSION + ".xml");
+CopyFile(TARGETDIR + "\\Server\\web\\conf\\server.xml", TARGETDIR + "\\Server\\Config\\Backup\\server_" + IFX_INSTALLED_VERSION + ".xml");
+CopyFile(TARGETDIR + "\\Server\\web\\conf\\web.xml", TARGETDIR + "\\Server\\Config\\Backup\\web_" + IFX_INSTALLED_VERSION + ".xml");
 
 //Beginning of UI Sequence
 Dlg_Start:
