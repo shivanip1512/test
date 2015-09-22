@@ -285,7 +285,7 @@
     <entry key="yukon.web.modules.capcontrol.area.substationsContainer.title">Substations</entry>
     <entry key="yukon.web.modules.capcontrol.area.edit.stations">Add/Remove Substations</entry>
     <entry key="yukon.web.modules.capcontrol.area.info.updated">Area info updated successfully.</entry>
-    <entry key="yukon.web.modules.capcontrol.area.subs.updated">Substions updated successfully.</entry>
+    <entry key="yukon.web.modules.capcontrol.area.subs.updated">Substations updated successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.area.strat.updated">Strategy assignment updated successfully.</entry>
     
     <!-- substation.jsp -->
