@@ -20,13 +20,13 @@ public final class TrendUtils {
         
         Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        json.put("day", accessor.getMessage("yukon.common.day"));
+        json.put("day", accessor.getMessage("yukon.web.modules.tools.trends.day"));
         json.put("week", accessor.getMessage("yukon.web.modules.tools.trends.week"));
-        json.put("month", accessor.getMessage("yukon.common.month"));
+        json.put("month", accessor.getMessage("yukon.web.modules.tools.trends.month"));
         json.put("threeMonths", accessor.getMessage("yukon.web.modules.tools.trends.threeMonths"));
         json.put("sixMonths", accessor.getMessage("yukon.web.modules.tools.trends.sixMonths"));
         json.put("ytd", accessor.getMessage("yukon.web.modules.tools.trends.ytd"));
-        json.put("year", accessor.getMessage("yukon.common.year"));
+        json.put("year", accessor.getMessage("yukon.web.modules.tools.trends.year"));
         json.put("all", accessor.getMessage("yukon.common.all"));
         
         String jsonString = "";
