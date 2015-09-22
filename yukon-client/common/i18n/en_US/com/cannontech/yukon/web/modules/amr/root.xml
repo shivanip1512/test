@@ -23,7 +23,7 @@
     <entry key="yukon.web.modules.tools.deviceGroupUpload.pageName">Device Group</entry>
     <entry key="yukon.web.modules.amr.deviceGroupUpload.tab.title">Upload</entry>
     <entry key="yukon.web.modules.tools.deviceGroupUpload.autoCreate">Auto Create Groups</entry>
-    <entry key="yukon.web.modules.tools.deviceGroupUpload.success">Successfully updated {0} device groups.</entry>
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.success">Successfully updated {0} device(s).</entry>
     <entry key="yukon.web.modules.tools.deviceGroupUpload.createGroups">Create Groups</entry>
     <entry key="yukon.web.modules.tools.deviceGroupUpload.colHeader">Column Header</entry>
     <entry key="yukon.web.modules.tools.deviceGroupUpload.description">Description</entry>
