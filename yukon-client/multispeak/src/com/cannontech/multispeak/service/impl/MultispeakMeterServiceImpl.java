@@ -1943,7 +1943,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                                 // If no template found, just use this meter as the template (meaning, same meter, no type changes).
                                 templateMeter = meterToChange;
                             }
-                            meterToChange = updateExistingMeter(mspMeter, meterToChange, templateMeter, METER_CHANGED_STRING, mspVendor, true);
+                            meterToChange = updateExistingMeter(mspMeter, meterToChange, templateMeter, METER_CHANGED_STRING, mspVendor, false);
 
                             // using null for mspServiceLocation. See comments in getSubstationNameFromMspMeter(...)
                             verifyAndUpdateSubstationGroupAndRoute(meterToChange, mspVendor, mspMeter, null, SERV_LOC_CHANGED_STRING);
