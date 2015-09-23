@@ -57,11 +57,18 @@ public class BusServiceImpl implements BusService {
         List<PAOScheduleAssign> assigns = schedules.stream()
            .map(new Function<PaoScheduleAssignment, PAOScheduleAssign>(){
 
-            @Override
-            public PAOScheduleAssign apply(PaoScheduleAssignment assignment) {
-                return PAOScheduleAssign.of(assignment);
-            }})
+                @Override
+                public PAOScheduleAssign apply(PaoScheduleAssignment assignment) {
+                    return PAOScheduleAssign.of(assignment);
+                }
+            })
            .collect(Collectors.toList());
+
+        /*
+         * TODO JAVA 8
+         *
+         * .map(assign -> PAOScheduleAssign.of(assign))
+         */
 
         bus.setSchedules(assigns);
         return bus;
@@ -82,7 +89,7 @@ public class BusServiceImpl implements BusService {
             .filter(new Predicate<PAOScheduleAssign>() {
                 @Override
                 public boolean test(PAOScheduleAssign assign) {
-                    return !StringUtils.isEmpty(assign.getCommand());
+                    return !StringUtils.isEmpty(assign.getCommand()) && assign.getScheduleID() != -1;
                 }
             })
             .map(new Function<PAOScheduleAssign, PaoScheduleAssignment>() {

@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -22,6 +23,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.cbc.cache.CapControlCache;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.HolidayScheduleDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.SeasonScheduleDao;
@@ -65,6 +67,8 @@ public class BusController {
     @Autowired private StrategyDao strategyDao;
     @Autowired private StrategyService strategyService;
     @Autowired private SubstationBusDao busDao;
+
+    private Logger log = YukonLogManager.getLogger(getClass());
 
     private final static String busKey = "yukon.web.modules.capcontrol.bus";
 
@@ -177,8 +181,8 @@ public class BusController {
         try {
             id = busService.save(bus);
         } catch (Exception e) {
-            result.rejectValue("name", "Something Broke");
-
+            redirectAttributes.addFlashAttribute("error", e);
+            log.error("Error saving bus:", e);
             return bindAndForward(bus, result, redirectAttributes);
         }
 

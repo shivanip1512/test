@@ -220,7 +220,6 @@
                             <tags:input path="capControlSubstationBus.switchPointID"/>
                         </tags:nameValue>
                     </tags:nameValueContainer>
-                    <cti:button data-popup="#dual-bus-edit" label="Edit"/>
                 </cti:tab>
             </cti:tabs>
         </div>
