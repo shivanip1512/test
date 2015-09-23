@@ -5,7 +5,6 @@ import com.cannontech.common.i18n.DisplayableEnum;
 public enum GlobalSettingSubCategory implements DisplayableEnum {
 
     DATA_EXPORT(GlobalSettingCategory.APPLICATION),
-    CALC_HISTORICAL(GlobalSettingCategory.APPLICATION),
     GRAPHING(GlobalSettingCategory.APPLICATION),
     
     MULTISPEAK(GlobalSettingCategory.INTEGRATION),

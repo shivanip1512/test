@@ -58,11 +58,6 @@ public enum GlobalSettingType implements DisplayableEnum {
     ENABLE_CAPTCHAS(GlobalSettingSubCategory.AUTHENTICATION, booleanType(), true),
     // END Authentication
 
-    // Calc Historical
-    INTERVAL(GlobalSettingSubCategory.CALC_HISTORICAL, integerType(), 900),
-    BASELINE_CALCTIME(GlobalSettingSubCategory.CALC_HISTORICAL, integerType(), 4),
-    DAYS_PREVIOUS_TO_COLLECT(GlobalSettingSubCategory.CALC_HISTORICAL, integerType(), 30),
-
     // Multispeak
     MSP_PAONAME_ALIAS(GlobalSettingSubCategory.MULTISPEAK, InputTypeFactory.enumType(MspPaoNameAliasEnum.class), MspPaoNameAliasEnum.METER_NUMBER),
     MSP_PAONAME_EXTENSION(GlobalSettingSubCategory.MULTISPEAK, stringType(), null),

@@ -78,7 +78,6 @@ public class YukonConfigurationController {
         b.put(GlobalSettingSubCategory.YUKON_SERVICES, "icon-32-gear");
         b.put(GlobalSettingSubCategory.WEB_SERVER, "icon-32-world");
         b.put(GlobalSettingSubCategory.DATA_EXPORT, "icon-32-list");
-        b.put(GlobalSettingSubCategory.CALC_HISTORICAL, "icon-32-calculator");
         b.put(GlobalSettingSubCategory.GRAPHING, "icon-32-stats-lines");
         b.put(GlobalSettingSubCategory.MULTISPEAK, "icon-32-multispeak");
         b.put(GlobalSettingSubCategory.VOICE, "icon-32-phone");
@@ -130,7 +129,6 @@ public class YukonConfigurationController {
         
         List<Pair<GlobalSettingSubCategory, String>> application = Lists.newArrayList();
         application.add(Pair.of(GlobalSettingSubCategory.DATA_EXPORT, iconMap.get(GlobalSettingSubCategory.DATA_EXPORT)));
-        application.add(Pair.of(GlobalSettingSubCategory.CALC_HISTORICAL, iconMap.get(GlobalSettingSubCategory.CALC_HISTORICAL)));
         application.add(Pair.of(GlobalSettingSubCategory.GRAPHING, iconMap.get(GlobalSettingSubCategory.GRAPHING)));
         Collections.sort(application, sorter);
         
