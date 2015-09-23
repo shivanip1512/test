@@ -1,4 +1,4 @@
-<%@ tag trimDirectiveWhitespaces="true" %>
+<%@ tag trimDirectiveWhitespaces="true" dynamic-attributes="attrs" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
@@ -32,7 +32,8 @@
                 <c:set var="colonSuffix" value=""/>
             </c:if>
             <tr <c:if test="${!empty rowId}"> id="${rowId}"</c:if>
-                <c:if test="${!empty rowClass}"> class="${rowClass}"</c:if>>
+                <c:if test="${!empty rowClass}"> class="${rowClass}"</c:if>
+                <c:forEach items="${pageScope.attrs}" var="attr">${attr.key}="${attr.value}"</c:forEach>>
                 <td class="name <c:if test="${!empty nameClass}">${nameClass}</c:if>" 
                     style="<c:if test="${not empty pageScope.nameColumnWidth}">width:${pageScope.nameColumnWidth};</c:if>" 
                     title="<cti:msg2 key="${nameKey}.title" blankIfMissing="true"/>">

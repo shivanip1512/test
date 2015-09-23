@@ -27,6 +27,8 @@
 @primary-button-color-border: #444;
 @primary-button-color-hover: #888;
 
+@form-control-height: 26px;
+
 
 
 /* Button */
@@ -72,6 +74,11 @@ button.naked, .button.naked {
 button.naked .b-label, .button.naked .b-label {
     color: @primary-color;
     font-weight: normal;
+}
+
+button.naked.form-control
+.button.naked.form-control {
+    line-height: @form-control-height !important;
 }
 
 button.naked:not([disabled]):hover .b-label, 

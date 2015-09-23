@@ -25,7 +25,7 @@
         
     </c:when>
     <c:otherwise>
-        <div class="simple-input-image" <tags:attributeHelper name="id" value="${param.id}"/>>
+        <div class="simple-input-image simple-input-image-disabled" <tags:attributeHelper name="id" value="${param.id}"/>>
             <a href="<cti:url value="/common/images/${status.value}"/>"><img alt="${status.value}" src="${imageUrl}"></a>
         </div>
     </c:otherwise>
