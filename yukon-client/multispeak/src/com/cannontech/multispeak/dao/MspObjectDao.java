@@ -113,10 +113,13 @@ public interface MspObjectDao {
      * @param objectID The Multispeak objectID
      * @param nounType The object type
      * @param notFoundObjectType The objectID type
+     * @param exceptionMessage An alternative message to return.
      * @return
      */
-    public ErrorObject getNotFoundErrorObject(String objectID, String notFoundObjectType, String nounType, String method, String userName);
+    public ErrorObject getNotFoundErrorObject(String objectID, String notFoundObjectType, String nounType, String method, String userName, String exceptionMessage);
 
+    public ErrorObject getNotFoundErrorObject(String objectID, String notFoundObjectType, String nounType, String method, String userName);
+    
     /**
      * Creates and ErrorObject array from errorObjects List
      * @param errorObjects

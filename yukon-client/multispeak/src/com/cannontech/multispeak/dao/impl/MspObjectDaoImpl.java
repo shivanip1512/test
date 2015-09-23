@@ -334,11 +334,17 @@ public class MspObjectDaoImpl implements MspObjectDao {
 
     @Override
     public ErrorObject getNotFoundErrorObject(String objectID, String notFoundObjectType, String nounType,
-            String method, String userName) {
+            String method, String userName, String exceptionMessage) {
         ErrorObject errorObject =
-            getErrorObject(objectID, notFoundObjectType + ": " + objectID + " - Was NOT found in Yukon.", nounType,
+            getErrorObject(objectID, notFoundObjectType + ": " + objectID + " - " + exceptionMessage + ".", nounType,
                 method, userName);
         return errorObject;
+    }
+    
+    @Override
+    public ErrorObject getNotFoundErrorObject(String objectID, String notFoundObjectType, String nounType,
+            String method, String userName) {
+        return getNotFoundErrorObject(objectID, notFoundObjectType, nounType, method, userName, "Was NOT found in Yukon");
     }
 
     @Override

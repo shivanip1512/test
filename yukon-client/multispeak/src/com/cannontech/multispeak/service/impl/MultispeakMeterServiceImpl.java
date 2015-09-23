@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -1996,7 +1997,13 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                     SimpleDevice yukonDevice = deviceDao.getYukonDeviceObjectByMeterNumber(meterNumber);
                     yukonDevices.add(yukonDevice);
                 } catch (EmptyResultDataAccessException e) {
-                    ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "addMetersToGroup", mspVendor.getCompanyName());
+                    String exceptionMessage = "Unknown meter number " + meterNumber;
+                    ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "addMetersToGroup", mspVendor.getCompanyName(), exceptionMessage);
+                    errorObjects.add(errorObject);
+                    log.error(e);
+                } catch (IncorrectResultSizeDataAccessException e) {
+                    String exceptionMessage = "Duplicate meters were found for this meter number  " + meterNumber;
+                    ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "addMetersToGroup", mspVendor.getCompanyName(), exceptionMessage);
                     errorObjects.add(errorObject);
                     log.error(e);
                 }
@@ -2023,7 +2030,13 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                         SimpleDevice yukonDevice = deviceDao.getYukonDeviceObjectByMeterNumber(meterNumber);
                         yukonDevices.add(yukonDevice);
                     } catch (EmptyResultDataAccessException e) {
-                        ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "removeMetersFromGroup", mspVendor.getCompanyName());
+                        String exceptionMessage = "Unknown meter number " + meterNumber;
+                        ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "removeMetersFromGroup", mspVendor.getCompanyName(), exceptionMessage);
+                        errorObjects.add(errorObject);
+                        log.error(e);
+                    } catch (IncorrectResultSizeDataAccessException e) {
+                        String exceptionMessage = "Duplicate meters were found for this meter number  " + meterNumber;
+                        ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "removeMetersFromGroup", mspVendor.getCompanyName(), exceptionMessage);
                         errorObjects.add(errorObject);
                         log.error(e);
                     }
@@ -2256,7 +2269,8 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                                                                       "MeterNumber",
                                                                       "Meter",
                                                                       "addToGroup",
-                                                                      mspVendor.getCompanyName());
+                                                                      mspVendor.getCompanyName(),
+                                                                      e.getMessage());
                 errorObjects.add(err);
                 log.error(e);
             }

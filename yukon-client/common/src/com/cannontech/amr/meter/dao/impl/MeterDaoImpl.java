@@ -197,6 +197,8 @@ public class MeterDaoImpl implements MeterDao {
             return meter;
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Unknown meter number " + meterNumber);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException("Duplicate meters were found for this meter number " + meterNumber);
         }
     }
     
