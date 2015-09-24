@@ -19,7 +19,7 @@ import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.jobs.dao.JobStatusDao;
-import com.cannontech.jobs.model.JobState;
+import com.cannontech.jobs.model.JobRunStatus;
 import com.cannontech.jobs.model.JobStatus;
 import com.cannontech.jobs.model.YukonJob;
 
@@ -39,7 +39,7 @@ public class JobStatusDaoImpl implements JobStatusDao {
             p.addValue("startTime", startTime, Types.TIMESTAMP);
             Date stopTime = status.getStopTime();
             p.addValue("stopTime", stopTime, Types.TIMESTAMP);
-            String jobState = status.getJobState().name();
+            String jobState = status.getJobRunStatus().name();
             p.addValue("jobState", jobState);
             String message = status.getMessage();
             p.addValue("message", message);   
@@ -115,7 +115,7 @@ public class JobStatusDaoImpl implements JobStatusDao {
             sql.append("FROM JobStatus js");
             sql.append("JOIN Job j ON js.jobid = j.jobid");
             sql.append("WHERE js.jobid").eq(jobId);
-            sql.append("AND js.JobState").eq_k(JobState.COMPLETED);
+            sql.append("AND js.JobState").eq_k(JobRunStatus.COMPLETED);
             
             Instant result = jdbcTemplate.queryForObject(sql, RowMapper.INSTANT);
             return result.toDate();
@@ -133,7 +133,7 @@ public class JobStatusDaoImpl implements JobStatusDao {
             sql.append("FROM JobStatus js");
             sql.append("JOIN Job j ON js.jobid = j.jobid");
             sql.append("WHERE js.jobId").eq(jobId);
-            sql.append("AND js.JobState").in(JobState.getCompletedJobStateNames());
+            sql.append("AND js.JobState").in(JobRunStatus.getCompletedJobStateNames());
             result = jdbcTemplate.queryForObject(sql, new DateRowMapper());
     	} catch (EmptyResultDataAccessException e) {
     		return null;

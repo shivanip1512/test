@@ -18,7 +18,7 @@ import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.jobs.dao.ScheduledOneTimeJobDao;
-import com.cannontech.jobs.model.JobState;
+import com.cannontech.jobs.model.JobRunStatus;
 import com.cannontech.jobs.model.JobStatus;
 import com.cannontech.jobs.model.ScheduledOneTimeJob;
 import com.cannontech.jobs.support.YukonJobDefinition;
@@ -108,7 +108,7 @@ public class ScheduledOneTimeJobDaoImpl extends JobDaoBase implements ScheduledO
         sql.append(  "LEFT JOIN JobStatus js ON job.JobId = js.JobId");
         sql.append("WHERE Job.beanName").eq(definition.getName());
         sql.append("AND Disabled").eq_k(JobDisabledStatus.N);
-        sql.append("AND (JobState IS NULL OR JobState").eq_k(JobState.RESTARTED).append(")");
+        sql.append("AND (JobState IS NULL OR JobState").eq_k(JobRunStatus.RESTARTED).append(")");
 
         List<ScheduledOneTimeJob> jobList = jdbcTemplate.query(sql, jobRowMapper);
         Set<ScheduledOneTimeJob> jobSet = new HashSet<ScheduledOneTimeJob>(jobList);
@@ -119,7 +119,7 @@ public class ScheduledOneTimeJobDaoImpl extends JobDaoBase implements ScheduledO
     
     @Override
     public Set<JobStatus<ScheduledOneTimeJob>> getAllUnfinished() {
-        String jobState = JobState.STARTED.name();
+        String jobState = JobRunStatus.STARTED.name();
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select *");

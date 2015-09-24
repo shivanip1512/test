@@ -44,7 +44,12 @@ import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.jobs.dao.JobStatusDao;
+import com.cannontech.jobs.dao.impl.JobDisabledStatus;
+import com.cannontech.jobs.model.JobState;
+import com.cannontech.jobs.model.JobStatus;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
+import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -80,6 +85,7 @@ public class DataExporterScheduleController {
     @Autowired private DeviceCollectionService deviceCollectionService;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private JobManager jobManager;
+    @Autowired private JobStatusDao jobStatusDao;
     @Autowired private ScheduledFileExportHelper exportHelper;
     @Autowired private ScheduledFileExportService scheduledFileExportService;
     @Autowired private ToolsEventLogService toolsEventLogService;
@@ -119,6 +125,12 @@ public class DataExporterScheduleController {
             exportData.setExportFileExtension(task.getExportFileExtension());
             exportData.setIncludeExportCopy(task.isIncludeExportCopy());
             exportData.setExportPath(task.getExportPath());
+
+            // TODO We wouldn't have to (re)load this if the YukonJob would have just kept this state instead of isDeleted and isDisabled...A change for another day.
+            JobDisabledStatus jobDisabledStatus = jobManager.getJobDisabledStatus(jobId);
+            JobStatus<YukonJob> status = jobStatusDao.findLatestStatusByJobId(jobId);
+            JobState jobState = JobState.of(jobDisabledStatus, status);
+            exportData.setJobState(jobState);
             if (task.getNotificationEmailAddresses() != null) {
                 exportData.setNotificationEmailAddresses(task.getNotificationEmailAddresses());
                 exportData.setSendEmail(task.isSendEmail());

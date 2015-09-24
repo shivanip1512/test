@@ -28,6 +28,7 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportFormatDao;
@@ -161,17 +162,40 @@ public class DataExporterHomeController {
         return "data-exporter/scheduledJobsTable.jsp";
     }
     
-    @RequestMapping("/data-exporter/deleteJob")
-    public String deleteJob(int jobId, FlashScope flashScope, YukonUserContext userContext) {
+    @RequestMapping("/data-exporter/jobs/{jobId}/delete")
+    public String deleteJob(@PathVariable int jobId, FlashScope flashScope, YukonUserContext userContext) {
         YukonJob job = jobManager.getJob(jobId);
-        ScheduledArchivedDataFileExportTask task = (ScheduledArchivedDataFileExportTask) jobManager.instantiateTask(job);
+        ScheduledArchivedDataFileExportTask task =
+            (ScheduledArchivedDataFileExportTask) jobManager.instantiateTask(job);
         String jobName = task.getName();
         jobManager.deleteJob(job);
         int deviceCollectionId = task.getDeviceCollectionId();
         deviceCollectionService.deleteCollection(deviceCollectionId);
         toolsEventLogService.dataExportScheduleDeleted(userContext.getYukonUser(), jobName);
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.archivedValueExporter.deletedJobSuccess", jobName));
-        return "redirect:view";
+        flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "deletedJobSuccess", jobName));
+        return "redirect:/tools/data-exporter/view";
+    }
+
+    @RequestMapping("/data-exporter/jobs/{jobId}/enable")
+    public String enableJob(@PathVariable int jobId, FlashScope flashScope, YukonUserContext userContext) {
+        YukonJob job = jobManager.getJob(jobId);
+        ScheduledArchivedDataFileExportTask task =
+            (ScheduledArchivedDataFileExportTask) jobManager.instantiateTask(job);
+        String jobName = task.getName();
+        jobManager.enableJob(job);
+        flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "enableJobSuccess", jobName));
+        return "redirect:/tools/data-exporter/view";
+    }
+
+    @RequestMapping("/data-exporter/jobs/{jobId}/disable")
+    public String disableJob(@PathVariable int jobId, FlashScope flashScope, YukonUserContext userContext) {
+        YukonJob job = jobManager.getJob(jobId);
+        ScheduledArchivedDataFileExportTask task =
+            (ScheduledArchivedDataFileExportTask) jobManager.instantiateTask(job);
+        String jobName = task.getName();
+        jobManager.disableJob(job);
+        flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "disableJobSuccess", jobName));
+        return "redirect:/tools/data-exporter/view";
     }
 
     @RequestMapping("/data-exporter/selectDevices")

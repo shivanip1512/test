@@ -28,7 +28,7 @@
         <td>${fn:escapeXml(jobStatus.job.jobDefinition.title)}</td>
         <td><cti:formatDate value="${jobStatus.startTime}" type="BOTH" /></td>
         <td><cti:formatDate value="${jobStatus.stopTime}" type="BOTH" /></td>
-        <td>${jobStatus.jobState}</td>
+        <td>${jobStatus.jobRunStatus}</td>
         <td>${jobStatus.job.disabled}</td>
         <td>${fn:escapeXml(jobStatus.message)}</td>
       </tr>

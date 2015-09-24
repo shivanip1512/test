@@ -20,7 +20,7 @@ public interface ScheduledOneTimeJobDao {
     
     /**
      * Returns set of one time jobs that are considered runnable yet
-     * These include enabled jobs, with either no JobStatus or JobState=Restarted
+     * These include enabled jobs, with either no JobStatus or JobRunStatus=Restarted
      */
     public Set<ScheduledOneTimeJob> getJobsStillRunnableByDefinition(YukonJobDefinition<? extends YukonTask> definition);
     /**

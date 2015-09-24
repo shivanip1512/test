@@ -45,12 +45,27 @@
         
         <tags:sectionContainer2 nameKey="exportParameters">
             <tags:nameValueContainer2 id="exportParametersContainer">
-                <tags:scheduledFileExportInputs cronExpressionTagState="${cronExpressionTagState}" exportData="${exportData}" />
+                <tags:scheduledFileExportInputs cronExpressionTagState="${cronExpressionTagState}" exportData="${exportData}"/>
+                <tags:nameValue2 nameKey=".jobStatus">
+                    <c:set var ="disabled" value ="false"></c:set>
+                    <c:if test="${exportData.jobState eq 'RUNNING'}">
+                        <c:set var ="disabled" value ="true">
+                    </c:set>
+                    </c:if>
+                    <c:if test='${!exportData.jobState.active}'>
+                        <span class="error"><i:inline key="${exportData.jobState}" />
+                    </c:if>
+                    <c:if test='${exportData.jobState.active}'>
+                        <span class="success"><i:inline key="${exportData.jobState}"/></span>
+                    </c:if>
+                </tags:nameValue2>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
         
         <div class="page-action-area">
-            <cti:button nameKey="submit" type="submit" classes="action primary"/>
+       
+            <!--Disable the Submit button if Deleted, Disabled, or Running -->
+            <cti:button nameKey="submit" type="submit" classes="action primary" disabled="${disabled}"/>
             <cti:button nameKey="cancel" href="view"/>
         </div>
     </form:form>

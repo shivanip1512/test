@@ -34,7 +34,7 @@ import com.cannontech.jobs.dao.ScheduledOneTimeJobDao;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.dao.YukonJobDao;
 import com.cannontech.jobs.dao.impl.JobDisabledStatus;
-import com.cannontech.jobs.model.JobState;
+import com.cannontech.jobs.model.JobRunStatus;
 import com.cannontech.jobs.model.JobStatus;
 import com.cannontech.jobs.model.ScheduledOneTimeJob;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
@@ -145,7 +145,7 @@ public class JobManagerImpl implements JobManager {
 
     private void handleDisabledRestart(final JobStatus<?> status) {
         // this is weird, so we're going to use a special case for it
-        status.setJobState(JobState.DISABLED);
+        status.setJobRunStatus(JobRunStatus.DISABLED);
         jobStatusDao.saveOrUpdate(status);
         log.info("tried to restart a disabled job status, changed status do DISABLED: " + status);
     }
@@ -450,10 +450,11 @@ public class JobManagerImpl implements JobManager {
 	private void executeJob(final JobStatus<?> status) throws TransactionException {
         // assume the best
         JobException jobException;
-        status.setJobState(JobState.COMPLETED);
+        status.setJobRunStatus(JobRunStatus.COMPLETED);
         try {
             YukonTask task = instantiateTask(status.getJob());
-
+                Thread.sleep(10000);
+                 
             YukonTask existingTask = currentlyRunning.putIfAbsent(status.getJob(), task);
             if (existingTask != null) {
                 // this should have been caught before the job was
@@ -465,7 +466,7 @@ public class JobManagerImpl implements JobManager {
             task.start(); // this should block until task is complete
         } catch (Throwable e) {
             log.error("YukonTask failed", e);
-            status.setJobState(JobState.FAILED);
+            status.setJobRunStatus(JobRunStatus.FAILED);
             status.setMessage(e.toString());
             jobException = new JobException(status.getJob().getId(), e.getClass().getName(), true);
             boolean isJobException = jobExceptions.add(jobException);
@@ -476,7 +477,7 @@ public class JobManagerImpl implements JobManager {
             currentlyRunning.remove(status.getJob());
         }
 
-        removeJobException(status.getJob().getId(), status.getJobState());
+        removeJobException(status.getJob().getId(), status.getJobRunStatus());
         // record status in database
         status.setStopTime(timeSource.getCurrentTime());
         jobStatusDao.saveOrUpdate(status);
@@ -501,9 +502,9 @@ public class JobManagerImpl implements JobManager {
      * jobExceptions
      */
 
-    private void removeJobException(Integer jobId, JobState jobStatus) {
+    private void removeJobException(Integer jobId, JobRunStatus jobStatus) {
         for (JobException it : jobExceptions) {
-            if (it.jobId == jobId && jobStatus == JobState.COMPLETED) {
+            if (it.jobId == jobId && jobStatus == JobRunStatus.COMPLETED) {
                 jobExceptions.remove(it);
             }
         }
@@ -543,18 +544,18 @@ public class JobManagerImpl implements JobManager {
         JobStatus<YukonJob> status = jobStatusDao.findLatestStatusByJobId(jobId);
 
         try {
-            status.setJobState(JobState.STOPPING);
+            status.setJobRunStatus(JobRunStatus.STOPPING);
             jobStatusDao.saveOrUpdate(status);
 
             task.stop();
 
-            status.setJobState(JobState.CANCELLED);
+            status.setJobRunStatus(JobRunStatus.CANCELLED);
             status.setStopTime(timeSource.getCurrentTime());
             jobStatusDao.saveOrUpdate(status);
             currentlyRunning.remove(job);
         } catch (UnsupportedOperationException e) {
             log.warn("Tried to stop an unstoppable task, job was: " + job, e);
-            status.setJobState(JobState.STARTED);
+            status.setJobRunStatus(JobRunStatus.STARTED);
             jobStatusDao.saveOrUpdate(status);
             return false;
         }
@@ -584,7 +585,7 @@ public class JobManagerImpl implements JobManager {
 
                         beforeRun();
                         status.setStartTime(timeSource.getCurrentTime());
-                        status.setJobState(JobState.STARTED);
+                        status.setJobRunStatus(JobRunStatus.STARTED);
                         status.setMessage("");
                         status.setJob(job);
                         jobStatusDao.saveOrUpdate(status);
@@ -618,7 +619,7 @@ public class JobManagerImpl implements JobManager {
 
         @Override
         protected void beforeRun() {
-            oldStatus.setJobState(JobState.RESTARTED);
+            oldStatus.setJobRunStatus(JobRunStatus.RESTARTED);
             jobStatusDao.saveOrUpdate(oldStatus);
         }
     }

@@ -4,7 +4,7 @@ import java.sql.SQLException;
 
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.jobs.model.JobState;
+import com.cannontech.jobs.model.JobRunStatus;
 import com.cannontech.jobs.model.JobStatus;
 import com.cannontech.jobs.model.YukonJob;
 
@@ -19,8 +19,8 @@ final class JobStatusRowMapper<T extends YukonJob> implements YukonRowMapper<Job
         JobStatus<T> jobStatus = new JobStatus<T>();
         jobStatus.setId(rs.getInt("jobStatusId"));
         String jobStateStr = rs.getString("jobState");
-        JobState jobState = JobState.valueOf(jobStateStr);
-        jobStatus.setJobState(jobState);
+        JobRunStatus jobRunStatus = JobRunStatus.valueOf(jobStateStr);
+        jobStatus.setJobRunStatus(jobRunStatus);
         jobStatus.setStartTime(rs.getDate("startTime"));
         jobStatus.setStopTime(rs.getDate("stopTime"));
         jobStatus.setMessage(rs.getString("message"));

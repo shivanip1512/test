@@ -1,36 +1,66 @@
 package com.cannontech.jobs.model;
 
-import java.util.List;
+import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.jobs.dao.impl.JobDisabledStatus;
 
-import com.google.common.collect.Lists;
+/**
+ * The status of a job itself
+ * not to be confused with a running or previously run _instance_ of a Job (see {@link JobRunStatus})
+ */
+public enum JobState implements DisplayableEnum {
 
-public enum JobState {
-    STARTED(false),   // the job has been started, but has not completed or failed
-    COMPLETED(true),  // the job has completed without "job level" errors, it will not be restarted
-    FAILED(false),    // the job has failed (i.e. threw an exception while running), it will not be restarted
-    RESTARTED(false), // the job did not finish, but a new job has since been created as a 2nd attempt
-    DISABLED(false),  // the job did not finish, but the job entry was marked as disabled in the interim (it was not restarted)
-    STOPPING(false),  // the job was cancelled and is in the process of stopping
-    CANCELLED(true),  // the job was cancelled and has stopped
+    SCHEDULED(true), // an enabled job that _should_ run in the future
+    RUNNING(true), // an enabled job that is currently executing
+    DISABLED(false), // a disabled job, it is not expected to run again until
+                     // enabled
+    DELETED(false), // a deleted job, it will never run again
     ;
-    
-    private final boolean isCompleted;
-    private final static List<String> completedStates;
-    
-    static {
-    	completedStates = Lists.newArrayList();
-    	for(JobState state : values()) {
-    		if(state.isCompleted) {
-    			completedStates.add(state.name());
-    		}
-    	}
+
+    private final boolean active; // represents an "enabled" job
+
+    private JobState(boolean active) {
+        this.active = active;
     }
-    
-    private JobState(boolean isCompleted) {
-    	this.isCompleted = isCompleted;
+
+    public boolean isActive() {
+        return active;
     }
-    
-    public static List<String> getCompletedJobStateNames() {
-    	return completedStates;
+
+    @Override
+    public String getFormatKey() {
+        return "yukon.common.jobState." + this.name();
+    }
+
+    /**
+     * Returns a JobState based on the job's disabledStatus AND the job's
+     * current/last run If jobStatus is null, then JobState.Scheduled shall be
+     * assumed.
+     */
+    public static JobState of(JobDisabledStatus jobDisabledStatus, JobStatus<YukonJob> jobStatus) {
+
+        switch (jobDisabledStatus) {
+        case Y:
+            return DISABLED;
+        case D:
+            return DELETED;
+        case N: {
+            if (jobStatus != null) {
+                JobRunStatus jobRunStatus = jobStatus.getJobRunStatus();
+                switch (jobRunStatus) {
+                case STARTED:
+                case STOPPING:
+                    return RUNNING;
+                case COMPLETED:
+                case CANCELLED:
+
+                case FAILED:
+                case RESTARTED:
+
+                }
+            }
+          }
+        }
+        return SCHEDULED; // returning as default (want to keep the warnings
+                          // active in the switch statements)
     }
 }

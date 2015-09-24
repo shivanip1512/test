@@ -109,6 +109,7 @@
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporterScheduleSetup.adeParameters.title">Archive Data Export Parameters</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporterScheduleSetup.devices">Devices</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporterScheduleSetup.formatName">Format Name</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporterScheduleSetup.jobStatus">Status</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporterScheduleSetup.formatType">Format Type</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporterScheduleSetup.attribute">Attribute</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporterScheduleSetup.dataRange">Data Range</entry>
@@ -128,11 +129,14 @@
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.nameHeader">Name</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.scheduleHeader">Schedule</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.nextRunHeader">Next Run</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.jobStatus">Status</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.actionsHeader">Actions</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.noJobs">No data exports have been scheduled.</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.deleteSchedule.title">Confirm Schedule Deletion</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.deleteSchedule.message">Are you sure you want to delete this schedule?</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.deletedJobSuccess">Job "{0}" successfully deleted.</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.deletedJobSuccess">Scheduled Data Export "{0}" successfully deleted.</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.enableJobSuccess">Scheduled Data Export "{0}" successfully enabled.</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.disableJobSuccess">Scheduled Data Export "{0}" successfully disabled.</entry>
 
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.endDate">End Date</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.dateRange">Date Range</entry>

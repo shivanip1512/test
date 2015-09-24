@@ -14,7 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
+import com.cannontech.jobs.dao.JobStatusDao;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
+import com.cannontech.jobs.dao.impl.JobDisabledStatus;
+import com.cannontech.jobs.model.JobState;
+import com.cannontech.jobs.model.JobStatus;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
@@ -37,6 +41,7 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
     private Logger log = YukonLogManager.getLogger(ScheduledFileExportServiceImpl.class);
 
     @Autowired private JobManager jobManager;
+    @Autowired private JobStatusDao jobStatusDao;
     @Autowired private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
     @Autowired private CronExpressionTagService cronExpressionTagService;
     @Resource(name="scheduledBillingFileExportJobDefinition")
@@ -198,14 +203,18 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
         private String name;
         private String cronString;
         private int jobGroupId;
-
+        private JobState jobState;
+        
         public ScheduledFileExportJobDataImpl(ScheduledRepeatingJob job) {
             jobId = job.getId();
             jobGroupId = job.getJobGroupId();
             cronString = cronExpressionTagService.getDescription(job.getCronString(), job.getUserContext());
-
             ScheduledFileExportTask task = (ScheduledFileExportTask) jobManager.instantiateTask(job);
             this.name = task.getName();
+            JobStatus<YukonJob> status = jobStatusDao.findLatestStatusByJobId(jobId);
+
+            JobDisabledStatus jobDisabledStatus = jobManager.getJobDisabledStatus(jobId);
+            jobState = JobState.of(jobDisabledStatus, status);
         }
 
         @Override
@@ -232,5 +241,11 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
         public int getJobGroupId() {
             return jobGroupId;
         }
+
+        @Override
+        public JobState getJobState() {
+            return jobState;
+        }
+
     }
 }

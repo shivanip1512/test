@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.util.StringUtils;
 
+import com.cannontech.jobs.model.JobState;
 import com.google.common.collect.Lists;
 
 /**
@@ -17,7 +18,8 @@ public class ScheduledFileExportData {
     private Integer hoursPrevious;
     private Double threshold;
     private String scheduleName;
-	private String scheduleCronString;
+    private JobState jobState;
+    private String scheduleCronString;
 	private ExportFileGenerationParameters parameters;
 	private String exportFileName;
 	private String notificationEmailAddresses; //optional
@@ -96,19 +98,27 @@ public class ScheduledFileExportData {
         this.overrideFileExtension = overrideFileExtension;
     }
 
-	public String getNotificationEmailAddresses() {
-		return notificationEmailAddresses;
-	}
-	
-	public List<String> getNotificationEmailAddressesAsList() {
-		if(notificationEmailAddresses != null) {
-			String[] emailArray = notificationEmailAddresses.split(",");
-			return Arrays.asList(emailArray);
-		}
-		return Lists.newArrayList();
-	}
-	
-	public ScheduledExportType getExportType() {
+    public JobState getJobState() {
+        return jobState;
+    }
+
+    public void setJobState(JobState jobState) {
+        this.jobState = jobState;
+    }
+
+    public String getNotificationEmailAddresses() {
+        return notificationEmailAddresses;
+    }
+
+    public List<String> getNotificationEmailAddressesAsList() {
+        if (notificationEmailAddresses != null) {
+            String[] emailArray = notificationEmailAddresses.split(",");
+            return Arrays.asList(emailArray);
+        }
+        return Lists.newArrayList();
+    }
+
+    public ScheduledExportType getExportType() {
         return parameters.getExportType();
     }
 

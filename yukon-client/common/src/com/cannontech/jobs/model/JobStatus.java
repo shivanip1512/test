@@ -9,7 +9,7 @@ public class JobStatus<J extends YukonJob> {
     private J job;
     private Date startTime;
     private Date stopTime;
-    private JobState jobState;
+    private JobRunStatus jobRunStatus;
     private String message;
     
     public Integer getId() {
@@ -24,11 +24,11 @@ public class JobStatus<J extends YukonJob> {
     public void setJob(J job) {
         this.job = job;
     }
-    public JobState getJobState() {
-        return jobState;
+    public JobRunStatus getJobRunStatus() {
+        return jobRunStatus;
     }
-    public void setJobState(JobState jobStatus) {
-        this.jobState = jobStatus;
+    public void setJobRunStatus(JobRunStatus jobStatus) {
+        this.jobRunStatus = jobStatus;
     }
     public String getMessage() {
         return message;

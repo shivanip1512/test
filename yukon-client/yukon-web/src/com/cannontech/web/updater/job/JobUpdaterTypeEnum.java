@@ -7,5 +7,6 @@ public enum JobUpdaterTypeEnum {
 	SCHEDULE_DESCRIPTION,
 	STATE,
 	STATE_TEXT,
+	JOB_STATE_TEXT,
 	;
 }
