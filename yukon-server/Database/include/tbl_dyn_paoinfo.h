@@ -349,6 +349,7 @@ public:
 
         Key_RFN_DemandInterval,
         Key_RFN_LoadProfileInterval,
+        Key_RFN_VoltageProfileEnabledUntil,
 
         Key_RFN_DemandFreezeDay,
 

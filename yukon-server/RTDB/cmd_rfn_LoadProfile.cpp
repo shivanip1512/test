@@ -5,7 +5,6 @@
 #include "std_helper.h"
 #include "cmd_rfn_helper.h"
 
-#include <boost/assign/list_of.hpp>
 #include <boost/optional.hpp>
 
 
@@ -16,22 +15,22 @@ namespace Commands   {
 
 namespace   { // anonymous namespace
 
-const std::map<unsigned char, std::string>  loadProfileStatusResolver = boost::assign::map_list_of
-    ( 0, "Success")
-    ( 1, "Failure");
+const std::map<unsigned char, std::string>  loadProfileStatusResolver {
+    { 0, "Success" },
+    { 1, "Failure" }};
 
 
-const std::map<unsigned char, std::string>  loadProfileStateResolver = boost::assign::map_list_of
-    ( 0, "Disabled")
-    ( 1, "Enabled");
+const std::map<unsigned char, std::string>  loadProfileStateResolver {
+    { 0, "Disabled" },
+    { 1, "Enabled"  }};
 
 } // anonymous namespace
 
 
-RfnLoadProfileCommand::LongTlvList RfnLoadProfileCommand::longTlvs = boost::assign::list_of
-    (TlvType_VoltageProfileConfiguration)
-    (TlvType_LoadProfileState)
-    (TlvType_GetProfilePointsResponse);
+RfnLoadProfileCommand::LongTlvList RfnLoadProfileCommand::longTlvs {
+    TlvType_VoltageProfileConfiguration,
+    TlvType_LoadProfileState,
+    TlvType_GetProfilePointsResponse };
 
 
 //
@@ -230,7 +229,7 @@ RfnLoadProfileCommand::TlvList RfnVoltageProfileSetConfigurationCommand::getTlvs
         tlv.value.push_back( demandIntervalIncrements );
         tlv.value.push_back( loadProfileInterval );
 
-        return boost::assign::list_of(tlv);
+        return { tlv };
 }
 
 
@@ -274,7 +273,13 @@ void RfnLoadProfileGetRecordingCommand::invokeResultHandler(RfnCommand::ResultHa
 }
 
 
-RfnCommandResult RfnLoadProfileGetRecordingCommand::decodeCommand( const CtiTime now,
+auto RfnLoadProfileGetRecordingCommand::getRecordingOption() const -> boost::optional<RecordingOption>
+{
+    return _option;
+}
+
+
+RfnCommandResult RfnLoadProfileGetRecordingCommand::decodeCommand(const CtiTime now,
                                                                    const RfnResponsePayload & response )
 {
     RfnCommandResult result = decodeResponseHeader( now, response );
@@ -306,12 +311,6 @@ RfnCommandResult RfnLoadProfileGetRecordingCommand::decodeCommand( const CtiTime
 }
 
 
-RfnLoadProfileRecordingCommand::RecordingOption RfnLoadProfileGetRecordingCommand::getRecordingOption() const
-{
-    return _option;
-}
-
-
 //
 // Load Profile Set Recording State
 //
@@ -319,7 +318,8 @@ RfnLoadProfileRecordingCommand::RecordingOption RfnLoadProfileGetRecordingComman
 RfnLoadProfileSetRecordingCommand::RfnLoadProfileSetRecordingCommand( const RecordingOption option )
     :   RfnLoadProfileRecordingCommand( option == EnableRecording
                                                   ? Operation_EnableLoadProfileRecording
-                                                  : Operation_DisableLoadProfileRecording )
+                                                  : Operation_DisableLoadProfileRecording ),
+        recordingOption(option)
 {
 }
 
@@ -402,17 +402,17 @@ struct PointStatusDesc
         }
 };
 
-const std::map<unsigned, PointTypeDesc> pointTypeDescriptionMap = boost::assign::map_list_of
-    ( Delta_8Bit,     PointTypeDesc( "8-bit delta",     1 ))
-    ( Delta_16Bit,    PointTypeDesc( "16-bit delta",    2 ))
-    ( Absolute_32Bit, PointTypeDesc( "32-bit absolute", 4 ))
-    ( Absolute_16Bit, PointTypeDesc( "16-bit absolute", 2 ));
+const std::map<unsigned, PointTypeDesc> pointTypeDescriptionMap {
+    { Delta_8Bit,     PointTypeDesc( "8-bit delta",     1 ) },
+    { Delta_16Bit,    PointTypeDesc( "16-bit delta",    2 ) },
+    { Absolute_32Bit, PointTypeDesc( "32-bit absolute", 4 ) },
+    { Absolute_16Bit, PointTypeDesc( "16-bit absolute", 2 ) }};
 
-const std::map<unsigned, PointStatusDesc> pointStatusDescriptionMap = boost::assign::map_list_of
-    ( Ok,      PointStatusDesc( "Ok",      NormalQuality  ))
-    ( Long,    PointStatusDesc( "Long",    InvalidQuality ))
-    ( Failure, PointStatusDesc( "Failure", InvalidQuality ))
-    ( Timeout, PointStatusDesc( "Timeout", InvalidQuality ));
+const std::map<unsigned, PointStatusDesc> pointStatusDescriptionMap {
+    { Ok,      PointStatusDesc( "Ok",      NormalQuality  ) },
+    { Long,    PointStatusDesc( "Long",    InvalidQuality ) },
+    { Failure, PointStatusDesc( "Failure", InvalidQuality ) },
+    { Timeout, PointStatusDesc( "Timeout", InvalidQuality ) }};
 
 } // anonymous
 
@@ -441,7 +441,7 @@ RfnLoadProfileReadPointsCommand::TlvList RfnLoadProfileReadPointsCommand::getTlv
     setBits_bEndian(tlv.value,  0, 32, _begin.seconds());
     setBits_bEndian(tlv.value, 32, 32, _end.seconds());
 
-    return boost::assign::list_of(tlv);
+    return { tlv };
 }
 
 

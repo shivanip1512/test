@@ -5,6 +5,7 @@
 #include "cmd_rfn_LoadProfile.h"
 #include "boost_test_helpers.h"
 
+#include <boost/optional/optional_io.hpp>
 
 using Cti::Devices::Commands::RfnCommand;
 using Cti::Devices::Commands::RfnCommandResult;

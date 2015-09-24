@@ -170,11 +170,11 @@ public:
     virtual RfnCommandResult decodeCommand( const CtiTime now,
                                             const RfnResponsePayload & response );
 
-    RecordingOption getRecordingOption() const;
+    boost::optional<RecordingOption> getRecordingOption() const;
 
 private:
 
-    RecordingOption _option;
+    boost::optional<RecordingOption> _option;
 };
 
 
@@ -189,6 +189,8 @@ public:
 
     virtual RfnCommandResult decodeCommand( const CtiTime now,
                                             const RfnResponsePayload & response );
+
+    const RecordingOption recordingOption;
 };
 
 

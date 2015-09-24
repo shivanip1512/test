@@ -19,6 +19,7 @@ class RfnFocusAlLcdConfigurationWriteCommand;
 class RfnDemandFreezeConfigurationCommand;
 class RfnGetDemandFreezeInfoCommand;
 class RfnLoadProfileGetRecordingCommand;
+class RfnLoadProfileSetRecordingCommand;
 class RfnVoltageProfileGetRecordingCommand;
 class RfnVoltageProfileGetConfigurationCommand;
 class RfnVoltageProfileSetConfigurationCommand;
@@ -74,6 +75,7 @@ public:
         virtual void handleCommandResult(const RfnDemandFreezeConfigurationCommand &)                 {}
         virtual void handleCommandResult(const RfnGetDemandFreezeInfoCommand &)                       {}
         virtual void handleCommandResult(const RfnLoadProfileGetRecordingCommand &)                   {}
+        virtual void handleCommandResult(const RfnLoadProfileSetRecordingCommand &)                   {}
         virtual void handleCommandResult(const RfnVoltageProfileGetRecordingCommand &)                {}
         virtual void handleCommandResult(const RfnVoltageProfileGetConfigurationCommand &)            {}
         virtual void handleCommandResult(const RfnVoltageProfileSetConfigurationCommand &)            {}

@@ -53,6 +53,7 @@ protected:
     void handleCommandResult( const Commands::RfnVoltageProfileGetConfigurationCommand   & cmd ) override;
     void handleCommandResult( const Commands::RfnVoltageProfileSetConfigurationCommand   & cmd ) override;
     void handleCommandResult( const Commands::RfnLoadProfileGetRecordingCommand          & cmd ) override;
+    void handleCommandResult( const Commands::RfnLoadProfileSetRecordingCommand          & cmd ) override;
     void handleCommandResult( const Commands::RfnGetDemandFreezeInfoCommand              & cmd ) override;
     void handleCommandResult( const Commands::RfnDemandFreezeConfigurationCommand        & cmd ) override;
     void handleCommandResult( const Commands::RfnTouScheduleGetConfigurationCommand      & cmd ) override;
