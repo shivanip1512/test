@@ -29,7 +29,7 @@
             <xs:enumeration value="mct430PrecannedTable"/>
             <xs:enumeration value="rfnDisconnectConfiguration"/>
             <xs:enumeration value="mctDisconnectConfiguration"/>
-            <xs:enumeration value="rfnOvUv"/>
+            <xs:enumeration value="rfnVoltage"/>
             <xs:enumeration value="rfnTempAlarm"/>
             <xs:enumeration value="regulatorCategory"/>
             <xs:enumeration value="heartbeat"/>

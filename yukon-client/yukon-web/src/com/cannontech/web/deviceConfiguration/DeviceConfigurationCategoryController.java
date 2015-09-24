@@ -1,6 +1,7 @@
 package com.cannontech.web.deviceConfiguration;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,13 +25,17 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigDouble;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.DeviceConfigCategory;
 import com.cannontech.common.device.config.model.DeviceConfigCategoryItem;
+import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.model.jaxb.Category;
 import com.cannontech.common.device.config.model.jaxb.CategoryType;
 import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DuplicateException;
@@ -54,12 +59,16 @@ import com.cannontech.web.deviceConfiguration.model.RateMapField;
 import com.cannontech.web.deviceConfiguration.model.RateMapField.DisplayableRate;
 import com.cannontech.web.deviceConfiguration.validation.CategoryEditValidator;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.collect.ImmutableSet;
 
 @Controller
 @RequestMapping("/category/*")
 @CheckRoleProperty(YukonRoleProperty.ADMIN_VIEW_CONFIG)
 public class DeviceConfigurationCategoryController {
 
+    Set<PaoType> voltageDataStreamingTypes = ImmutableSet.of(PaoType.RFN410CL, PaoType.RFN420CL, PaoType.RFN410FX,
+        PaoType.RFN410FD, PaoType.RFN420FD);
+    
     private static final Logger log = YukonLogManager.getLogger(DeviceConfigurationCategoryController.class);
 
     @Autowired private DeviceConfigurationDao deviceConfigDao;
@@ -67,6 +76,8 @@ public class DeviceConfigurationCategoryController {
     @Autowired private DeviceConfigurationService deviceConfigService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private ConfigurationSource configurationSource;
+    @Autowired private DeviceConfigurationDao deviceConfigurationDao;
 
     private final static String baseKey = "yukon.web.modules.tools.configs";
 
@@ -459,7 +470,21 @@ public class DeviceConfigurationCategoryController {
         model.addAttribute("isDeletable", isDeletable);
 
         CategoryType type = CategoryType.fromValue(categoryEditBean.getCategoryType());
-
+        
+        if (configId != null && (type == CategoryType.RFN_VOLTAGE || type == CategoryType.RFN_CHANNEL_CONFIGURATION)) {
+            DeviceConfiguration config = deviceConfigurationDao.getDeviceConfiguration(configId);
+            // Returns true if the two specified collections have no elements in common.
+            boolean isAssignedToConfig =
+                !Collections.disjoint(config.getSupportedDeviceTypes(), voltageDataStreamingTypes);
+            model.addAttribute("enableVoltageDataStreamingOptions", isAssignedToConfig);
+            System.out.println("------------------enableDataStreamingOptions=" + isAssignedToConfig);
+        }
+        if (type == CategoryType.RFN_CHANNEL_CONFIGURATION) {
+            boolean isNMCompatible = configurationSource.getDouble(MasterConfigDouble.NM_COMPATIBILITY) == 7.0;
+            model.addAttribute("isNMCompatible", isNMCompatible);
+            System.out.println("------------------isNMCompatible="+isNMCompatible);
+        }
+        
         CategoryTemplate categoryTemplate = deviceConfigHelper.createTemplate(
                 deviceConfigDao.getCategoryByType(type), categoryEditBean.getCategoryInputs(), configId, userContext);
 
@@ -480,5 +505,7 @@ public class DeviceConfigurationCategoryController {
 
         model.addAttribute("mode", mode);
         model.addAttribute("editingRoleProperty", YukonRoleProperty.ADMIN_EDIT_CONFIG);
+        
     }
+    
 }

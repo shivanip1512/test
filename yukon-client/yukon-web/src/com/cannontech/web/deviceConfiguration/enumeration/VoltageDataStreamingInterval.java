@@ -14,11 +14,10 @@ import com.cannontech.web.input.type.InputOption;
 import com.google.common.collect.ImmutableList;
 
 @Component
-public final class ReportingInterval implements DeviceConfigurationInputEnumeration {
-
-    private static final List<Integer> minuteIntervals = 
-            //  5m, 15m, 30m, 1h, 2h, 4h, 6h, 12h, 1d, 2d
-            ImmutableList.of(5, 15, 30, 60, 2*60, 4*60, 6*60, 12*60, 24*60, 2*24*60);
+public final class VoltageDataStreamingInterval implements DeviceConfigurationInputEnumeration {
+    
+    // 5m, 15m, 30m, 1h
+    private static final List<Integer> minuteIntervals = ImmutableList.of(5, 15, 30, 60);
 
     @Autowired private DurationFormattingService durationService;
 
@@ -36,6 +35,6 @@ public final class ReportingInterval implements DeviceConfigurationInputEnumerat
 
     @Override
     public String getEnumOptionName() {
-        return "ReportingInterval";
+        return "VoltageDataStreamingInterval";
     }
 }

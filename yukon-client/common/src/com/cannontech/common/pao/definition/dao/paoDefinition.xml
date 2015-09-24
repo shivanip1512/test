@@ -347,7 +347,7 @@
     <pao id="RFN_CONFIGURATION" abstract="true"
         inherits="DEMAND_FREEZE_CONFIGURATION">
         <configuration>
-            <category type="rfnOvUv" />
+            <category type="rfnVoltage" />
             <category type="demand" />
             <category type="tou" />
         </configuration>

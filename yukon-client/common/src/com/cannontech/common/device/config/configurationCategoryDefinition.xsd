@@ -96,6 +96,8 @@
             <xs:enumeration value="ReportingInterval"/>
             <xs:enumeration value="VoltageControlMode"/>
             <xs:enumeration value="HeartbeatMode"/>
+            <xs:enumeration value="VoltageAveragingInterval"/>
+            <xs:enumeration value="VoltageDataStreamingInterval"/>
         </xs:restriction>
     </xs:simpleType>
 

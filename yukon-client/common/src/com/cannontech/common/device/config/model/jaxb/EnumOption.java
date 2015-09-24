@@ -40,6 +40,8 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="ReportingInterval"/>
  *     &lt;enumeration value="VoltageControlMode"/>
  *     &lt;enumeration value="HeartbeatMode"/>
+ *     &lt;enumeration value="VoltageAveragingInterval"/>
+ *     &lt;enumeration value="VoltageDataStreamingInterval"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -100,7 +102,11 @@ public enum EnumOption {
     @XmlEnumValue("VoltageControlMode")
     VOLTAGE_CONTROL_MODE("VoltageControlMode"),
     @XmlEnumValue("HeartbeatMode")
-    HEARTBEAT_MODE("HeartbeatMode");
+    HEARTBEAT_MODE("HeartbeatMode"),
+    @XmlEnumValue("VoltageAveragingInterval")
+    VOLTAGE_AVERAGING_INTERVAL("VoltageAveragingInterval"),
+    @XmlEnumValue("VoltageDataStreamingInterval")
+    VOLTAGE_DATA_STREAMING_INTERVAL("VoltageDataStreamingInterval");
     private final String value;
 
     EnumOption(String v) {

@@ -4,5 +4,6 @@ public enum MasterConfigDouble {
 
     AUTH_THROTTLE_DELTA,
     AUTH_THROTTLE_EXP_BASE,
+    NM_COMPATIBILITY
     ;
 }

@@ -11,20 +11,23 @@ import com.cannontech.core.service.DurationFormattingService;
 import com.cannontech.core.service.durationFormatter.DurationFormat;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.input.type.InputOption;
+import com.google.common.collect.ImmutableList;
 
 @Component
 public final class RecordingInterval implements DeviceConfigurationInputEnumeration {
 
     @Autowired private DurationFormattingService durationService;
 
+    // 5m, 15m, 30m, 1h, 2h, 4h
+    private static final List<Integer> minuteIntervals = ImmutableList.of(5, 15, 30, 60, 2 * 60, 4 * 60);
+    
     @Override
     public List<InputOption> getDisplayableValues(YukonUserContext userContext) {
         List<InputOption> recordingIntervals = new ArrayList<>();
 
-        //  15m, 30m, 1h, 2h, 4h
-        for (int intervalMinutes = 15; intervalMinutes <= 240; intervalMinutes *= 2) {
-            recordingIntervals.add( new InputOption( Integer.toString(intervalMinutes), 
-                durationService.formatDuration(intervalMinutes, TimeUnit.MINUTES, DurationFormat.DHMS_REDUCED, userContext)));
+        for (int interval : minuteIntervals) {
+            recordingIntervals.add( new InputOption( Integer.toString(interval), 
+                durationService.formatDuration(interval, TimeUnit.MINUTES, DurationFormat.DHMS_REDUCED, userContext)));
         }
 
         return recordingIntervals;

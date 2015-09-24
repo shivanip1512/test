@@ -346,6 +346,10 @@
     <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.title">RFN Channel Configuration</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.definition">Settings for channel recording and reporting</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.enabledChannels">Channel Configuration</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.enableDataStreaming">Voltage Data Streaming</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.enableDataStreaming.description">This allows voltage data to be recorded at much shorter intervals than other channels.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.voltageDataStreamingIntervalMinutes">Voltage Data Streaming Interval</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.voltageDataStreamingIntervalMinutes.description">Interval to record voltage data internally in the meter to be returned at the Reporting Interval.</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.enabledChannels.helpText">Enabling Interval will report both Interval and Midnight readings; Enabling Midnight will report only Daily Midnight readings.</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.recordingIntervalMinutes">Recording Interval</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.recordingIntervalMinutes.description">Interval to record data internally in the meter to be returned with Interval reporting.</entry>
@@ -495,20 +499,22 @@
     <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.connectMinutes">Connect Minutes</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.connectMinutes.description">When a disconnect command is issued to a meter configured for cycling disconnects, this is the number of minutes in the cycle that service will be connected. Valid range from 5 to 1440 minutes.</entry>
 
-    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.title">RFN OV/UV Configuration</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.definition">Configuration parameters for the OV/UV metrology features for RFN devices.</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.ovuvEnabled">OV/UV Enabled</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.ovuvEnabled.description">When true, OV/UV alarming is enabled for the RFN device. Else, the OV/UV alarming is disabled.</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.ovThreshold">Over Voltage Threshold</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.ovThreshold.description">Voltages higher than this threshold will trigger an over voltage alarm. Values will be normalized to a 240-volt or 480-volt range automatically by the device if necessary. OV threshold shall be greater than UV threshold.</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.uvThreshold">Under Voltage Threshold</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.uvThreshold.description">Voltages lower than this threshold will trigger an under voltage alarm. Values will be normalized to a 240-volt or 480-volt range automatically by the device if necessary. UV threshold shall be less than OV threshold.</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.alarmReportingInterval">Alarm Reporting Interval</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.alarmReportingInterval.description">The interval at which the RFN device reports new alarms (in minutes).</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.alarmRepeatInterval">Alarm Repeat Interval</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.alarmRepeatInterval.description">Time before repeating an alarm if state didn't change (in minutes).</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.ovuvRepeats">OV/UV Alarm Repeat Count</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.ovuvRepeats.description">The number of times the RFN device will report an alarm whose state has not changed.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnVoltage.title">RFN Single Phase Voltage</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnVoltage.definition">Configuration parameters for the voltage metrology features for RFN devices.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnVoltage.averagingInterval">Voltage Averaging Interval</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnVoltage.averagingInterval.description">The period of time all voltage measurements are averaged over 60 seconds is recommended.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnVoltage.ovuvEnabled">OV/UV Enabled</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnVoltage.ovuvEnabled.description">When true, OV/UV alarming is enabled for the RFN device. Else, the OV/UV alarming is disabled.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnVoltage.ovThreshold">Over Voltage Threshold</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnVoltage.ovThreshold.description">Voltages higher than this threshold will trigger an over voltage alarm. Values will be normalized to a 240-volt or 480-volt range automatically by the device if necessary. OV threshold shall be greater than UV threshold.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnVoltage.uvThreshold">Under Voltage Threshold</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnVoltage.uvThreshold.description">Voltages lower than this threshold will trigger an under voltage alarm. Values will be normalized to a 240-volt or 480-volt range automatically by the device if necessary. UV threshold shall be less than OV threshold.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnVoltage.alarmReportingInterval">Alarm Reporting Interval</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnVoltage.alarmReportingInterval.description">The interval at which the RFN device reports new alarms (in minutes).</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnVoltage.alarmRepeatInterval">Alarm Repeat Interval</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnVoltage.alarmRepeatInterval.description">Time before repeating an alarm if state didn't change (in minutes).</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnVoltage.ovuvRepeats">OV/UV Alarm Repeat Count</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnVoltage.ovuvRepeats.description">The number of times the RFN device will report an alarm whose state has not changed.</entry>
 
     <entry key="yukon.web.modules.tools.configs.category.rfnTempAlarm.title">RFN Temperature Alarm Configuration</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnTempAlarm.definition">Configuration parameters for the temperature alarm feature for RFN devices.</entry>
