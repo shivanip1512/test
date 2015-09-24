@@ -145,9 +145,7 @@ public class TierController {
 
         model.addAttribute("substationName", substation.getName());
         model.addAttribute("substationId", substationId);
-        if(cachedSubstation == null){
-            throw new NotAuthorizedException("Not Authorized to use substation!");
-        }
+        
         int areaId = cachedSubstation.getParentID();
         String areaName = cache.getObject(areaId).getCcName();
 
