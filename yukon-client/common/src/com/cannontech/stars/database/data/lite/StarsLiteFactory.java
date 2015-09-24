@@ -1485,11 +1485,6 @@ public class StarsLiteFactory {
             hw.setManufacturerSerialNumber( StarsUtils.forceNotNull(((LiteLmHardwareBase)liteInv).getManufacturerSerialNumber()) );
             extendLiteInventoryBase( liteHw, energyCompany);
             
-            if (liteHw.getThermostatSettings() != null) {
-                StarsThermostatSettings starsSettings = new StarsThermostatSettings();
-                hw.setStarsThermostatSettings( starsSettings );
-            }
-            
             if (liteHw.getLMConfiguration() != null) {
                 hw.setStarsLMConfiguration( createStarsLMConfiguration(liteHw.getLMConfiguration()) );
             }
