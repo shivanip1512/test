@@ -7584,15 +7584,6 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CSTRES_YKLST10</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>GENERALCONDITIONID</i__columnName>
-            <i__foreignColumnName>ENTRYID</i__foreignColumnName>
-            <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
-            <i__deleteRule>0</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>FK_CSTRES_YKLST8</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>RESIDENCETYPEID</i__columnName>
@@ -7611,9 +7602,9 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CSTRES_YKLST1</i__foreignKeyName>
+            <i__foreignKeyName>FK_CSTRES_YKLST6</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>CONSTRUCTIONMATERIALID</i__columnName>
+            <i__columnName>DECADEBUILTID</i__columnName>
             <i__foreignColumnName>ENTRYID</i__foreignColumnName>
             <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -7623,15 +7614,6 @@
             <i__foreignKeyName>FK_CUSTOMER_REF_CSTRE_YUKONLIS</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>MAINFUELTYPEID</i__columnName>
-            <i__foreignColumnName>ENTRYID</i__foreignColumnName>
-            <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
-            <i__deleteRule>0</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CSTRES_YKLST4</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>MAINCOOLINGSYSTEMID</i__columnName>
             <i__foreignColumnName>ENTRYID</i__foreignColumnName>
             <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -7665,6 +7647,24 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_CSTRES_YKLST10</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>GENERALCONDITIONID</i__columnName>
+            <i__foreignColumnName>ENTRYID</i__foreignColumnName>
+            <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
+            <i__deleteRule>0</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_CSTRES_YKLST1</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>CONSTRUCTIONMATERIALID</i__columnName>
+            <i__foreignColumnName>ENTRYID</i__foreignColumnName>
+            <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
+            <i__deleteRule>0</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>FK_CSTRES_YKLST9</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>MAINHEATINGSYSTEMID</i__columnName>
@@ -7674,9 +7674,9 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CSTRES_YKLST6</i__foreignKeyName>
+            <i__foreignKeyName>FK_CSTRES_YKLST4</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>DECADEBUILTID</i__columnName>
+            <i__columnName>MAINCOOLINGSYSTEMID</i__columnName>
             <i__foreignColumnName>ENTRYID</i__foreignColumnName>
             <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -7809,6 +7809,24 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_APPIRR_YKLST5</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>SOILTYPEID</i__columnName>
+            <i__foreignColumnName>ENTRYID</i__foreignColumnName>
+            <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
+            <i__deleteRule>0</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_APPIRR_YKLST1</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>METERVOLTAGEID</i__columnName>
+            <i__foreignColumnName>ENTRYID</i__foreignColumnName>
+            <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
+            <i__deleteRule>0</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>FK_APPIRR_YKLST3</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>IRRIGATIONTYPEID</i__columnName>
@@ -7827,15 +7845,6 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_APPIRR_YKLST5</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>SOILTYPEID</i__columnName>
-            <i__foreignColumnName>ENTRYID</i__foreignColumnName>
-            <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
-            <i__deleteRule>0</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>FK_APPIRR_YKLST4</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>ENERGYSOURCEID</i__columnName>
@@ -7848,15 +7857,6 @@
             <i__foreignKeyName>FK_APPIRR_YKLST6</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>HORSEPOWERID</i__columnName>
-            <i__foreignColumnName>ENTRYID</i__foreignColumnName>
-            <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
-            <i__deleteRule>0</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_APPIRR_YKLST1</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>METERVOLTAGEID</i__columnName>
             <i__foreignColumnName>ENTRYID</i__foreignColumnName>
             <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
