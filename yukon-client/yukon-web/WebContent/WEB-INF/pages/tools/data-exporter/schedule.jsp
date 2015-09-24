@@ -48,7 +48,7 @@
                 <tags:scheduledFileExportInputs cronExpressionTagState="${cronExpressionTagState}" exportData="${exportData}"/>
                 <tags:nameValue2 nameKey=".jobStatus">
                     <c:set var ="disabled" value ="false"></c:set>
-                    <c:if test="${exportData.jobState eq 'RUNNING'}">
+                    <c:if test="${exportData.jobState eq 'RUNNING' or exportData.jobState eq 'DISABLED'}">
                         <c:set var ="disabled" value ="true">
                     </c:set>
                     </c:if>
