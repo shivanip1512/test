@@ -39,6 +39,8 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     
     private String collectionSchedule; // Cron string
     private Set<DataSequence> sequences;
+    private String updateServerUrl;
+    private Authentication updateServerLogin;
     
     @Override
     public RfnIdentifier getRfnIdentifier() {
@@ -201,6 +203,22 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         this.routeColor = routeColor;
     }
     
+    public String getUpdateServerUrl() {
+        return updateServerUrl;
+    }
+
+    public void setUpdateServerUrl(String updateServerUrl) {
+        this.updateServerUrl = updateServerUrl;
+    }
+
+    public Authentication getUpdateServerLogin() {
+        return updateServerLogin;
+    }
+
+    public void setUpdateServerLogin(Authentication updateServerLogin) {
+        this.updateServerLogin = updateServerLogin;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -227,6 +245,8 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         result = prime * result + ((superAdmin == null) ? 0 : superAdmin.hashCode());
         result = prime * result + ((upperStackVersion == null) ? 0 : upperStackVersion.hashCode());
         result = prime * result + ((versionConflicts == null) ? 0 : versionConflicts.hashCode());
+        result = prime * result + ((updateServerUrl == null) ? 0 : updateServerUrl.hashCode());
+        result = prime * result + ((updateServerLogin == null) ? 0 : updateServerLogin.hashCode());
         return result;
     }
 
@@ -321,13 +341,23 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
                 return false;
         } else if (!versionConflicts.equals(other.versionConflicts))
             return false;
+        if (updateServerUrl == null) {
+            if (other.updateServerUrl != null)
+                return false;
+        } else if (!updateServerUrl.equals(other.updateServerUrl))
+            return false;
+        if (updateServerLogin == null) {
+            if (other.updateServerLogin != null)
+                return false;
+        } else if (!updateServerLogin.equals(other.updateServerLogin))
+            return false;
         return true;
     }
 
     @Override
     public String toString() {
         return String
-            .format("GatewayDataResponse [rfnIdentifier=%s, hardwareVersion=%s, softwareVersion=%s, upperStackVersion=%s, radioVersion=%s, releaseVersion=%s, versionConflicts=%s, mode=%s, connectionType=%s, ipAddress=%s, port=%s, connectionStatus=%s, lastCommStatus=%s, lastCommStatusTimestamp=%s, radios=%s, routeColor=%s, superAdmin=%s, admin=%s, collectionSchedule=%s, sequences=%s]",
+            .format("GatewayDataResponse [rfnIdentifier=%s, hardwareVersion=%s, softwareVersion=%s, upperStackVersion=%s, radioVersion=%s, releaseVersion=%s, versionConflicts=%s, mode=%s, connectionType=%s, ipAddress=%s, port=%s, connectionStatus=%s, lastCommStatus=%s, lastCommStatusTimestamp=%s, radios=%s, routeColor=%s, superAdmin=%s, admin=%s, collectionSchedule=%s, sequences=%s, updateServerUrl=%s, updateServerLogin=%s]",
                     rfnIdentifier,
                     hardwareVersion,
                     softwareVersion,
@@ -347,6 +377,8 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
                     superAdmin,
                     admin,
                     collectionSchedule,
-                    sequences);
+                    sequences,
+                    updateServerUrl,
+                    updateServerLogin);
     }
 }

@@ -37,6 +37,9 @@ public final class RfnGatewayData {
     private final String collectionSchedule; // Cron string
     private final Set<DataSequence> sequences;
     private final short routeColor;
+    private final String updateServerUrl;
+    private final Authentication updateServerLogin;
+    
     
     public RfnGatewayData(GatewayDataResponse dataResponse) {
         
@@ -61,6 +64,9 @@ public final class RfnGatewayData {
         collectionSchedule = dataResponse.getCollectionSchedule();
         sequences = dataResponse.getSequences(); //copy?
         routeColor = dataResponse.getRouteColor();
+        updateServerUrl = dataResponse.getUpdateServerUrl(); 
+        updateServerLogin = dataResponse.getUpdateServerLogin();
+        
     }
     
     /** Private constructor for builder */
@@ -70,7 +76,7 @@ public final class RfnGatewayData {
                            ConnectionStatus connectionStatus, LastCommStatus lastCommStatus, 
                            long lastCommStatusTimestamp, Set<Radio> radios, Authentication user, Authentication admin,
                            Authentication superAdmin, String collectionSchedule, Set<DataSequence> sequences, 
-                           short routeColor) {
+                           short routeColor, String updateServerUrl, Authentication updateServerLogin ) {
         this.name = name;
         this.hardwareVersion = hardwareVersion;
         this.softwareVersion = softwareVersion;
@@ -91,6 +97,8 @@ public final class RfnGatewayData {
         this.collectionSchedule = collectionSchedule;
         this.sequences = sequences;
         this.routeColor = routeColor;
+        this.updateServerUrl = updateServerUrl;
+        this.updateServerLogin = updateServerLogin;
     }
     
     public String getName() {
@@ -173,16 +181,26 @@ public final class RfnGatewayData {
         return routeColor;
     }
     
+    public String getUpdateServerUrl() {
+        return updateServerUrl;
+    }
+
+    public Authentication getUpdateServerLogin() {
+        return updateServerLogin;
+    }
+
     @Override
     public String toString() {
         return String
             .format("RfnGatewayData [name=%s, hardwareVersion=%s, softwareVersion=%s, upperStackVersion=%s, " +
                     "radioVersion=%s, releaseVersion=%s, versionConflicts=%s, mode=%s, connectionType=%s, ipAddress=%s, " +
                     "port=%s, connectionStatus=%s, lastCommStatus=%s, lastCommStatusTimestamp=%s, radios=%s, user=%s, " +
-                    "admin=%s, superAdmin=%s, collectionSchedule=%s, sequences=%s, routeColor=%s]",
+                    "admin=%s, superAdmin=%s, collectionSchedule=%s, sequences=%s, routeColor=%s, updateServerUrl=%s, " +
+                     "updateServerLogin=%s]",
                     name, hardwareVersion, softwareVersion, upperStackVersion, radioVersion, releaseVersion,
                     versionConflicts, mode, connectionType, ipAddress, port, connectionStatus, lastCommStatus,
-                    lastCommStatusTimestamp, radios, admin, superAdmin, collectionSchedule, sequences, routeColor);
+                    lastCommStatusTimestamp, radios, admin, superAdmin, collectionSchedule, sequences, routeColor,
+                    updateServerUrl,updateServerLogin);
     }
     
     @Override
@@ -209,6 +227,8 @@ public final class RfnGatewayData {
         result = prime * result + ((superAdmin == null) ? 0 : superAdmin.hashCode());
         result = prime * result + ((upperStackVersion == null) ? 0 : upperStackVersion.hashCode());
         result = prime * result + ((versionConflicts == null) ? 0 : versionConflicts.hashCode());
+        result = prime * result + ((updateServerUrl == null) ? 0 : updateServerUrl.hashCode());
+        result = prime * result + ((updateServerLogin == null) ? 0 : updateServerLogin.hashCode());
         return result;
     }
 
@@ -340,6 +360,20 @@ public final class RfnGatewayData {
         } else if (!versionConflicts.equals(other.versionConflicts)) {
             return false;
         }
+        if (updateServerUrl == null) {
+            if (other.updateServerUrl != null) {
+                return false;
+            }
+        } else if (!updateServerUrl.equals(other.updateServerUrl)) {
+            return false;
+        }
+        if (updateServerLogin == null) {
+            if (other.updateServerLogin != null) {
+                return false;
+            }
+        } else if (!versionConflicts.equals(other.updateServerLogin)) {
+            return false;
+        }
         return true;
     }
 
@@ -366,13 +400,16 @@ public final class RfnGatewayData {
         private String collectionSchedule;
         private Set<DataSequence> sequences;
         private short routeColor;
+        private String updateServerUrl;
+        private Authentication updateServerLogin;
         
         public RfnGatewayData build() {
             
             return new RfnGatewayData(name, hardwareVersion, softwareVersion, upperStackVersion, radioVersion, 
                                       releaseVersion, versionConflicts, mode, connectionType, ipAddress, port, 
                                       connectionStatus, lastCommStatus, lastCommStatusTimestamp, radios, user, admin,
-                                      superAdmin, collectionSchedule, sequences, routeColor);
+                                      superAdmin, collectionSchedule, sequences, routeColor,updateServerUrl,
+                                      updateServerLogin);
             
         }
         
@@ -398,7 +435,8 @@ public final class RfnGatewayData {
             collectionSchedule = oldData.getCollectionSchedule();
             sequences = oldData.getSequences();
             routeColor = oldData.getRouteColor();
-            
+            updateServerUrl = oldData.getUpdateServerUrl();
+            updateServerLogin = oldData.getUpdateServerLogin();
             return this;
         }
         
@@ -499,6 +537,16 @@ public final class RfnGatewayData {
         
         public Builder routeColor(short routeColor) {
             this.routeColor = routeColor;
+            return this;
+        }
+        
+        public Builder updateServerUrl(String updateServerUrl) {
+            this.updateServerUrl = updateServerUrl;
+            return this;
+        }
+        
+        public Builder updateServerLogin(Authentication updateServerLogin) {
+            this.updateServerLogin = updateServerLogin;
             return this;
         }
     }

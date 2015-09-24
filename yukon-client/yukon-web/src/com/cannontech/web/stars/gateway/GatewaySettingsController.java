@@ -19,11 +19,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigDouble;
 import com.cannontech.common.events.loggers.EndpointEventLogService;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
+import com.cannontech.common.rfn.message.gateway.Authentication;
 import com.cannontech.common.rfn.message.gateway.DataType;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
 import com.cannontech.common.rfn.model.GatewaySettings;
@@ -40,6 +43,8 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.amr.util.cronExpressionTag.CronException;
@@ -68,12 +73,27 @@ public class GatewaySettingsController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private GatewayEventLogService gatewayEventLogService;
     @Autowired private EndpointEventLogService endpointEventLogService;
+    @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private ConfigurationSource configurationSource;
+    private Double nmVersion = 7.0;
     
     @RequestMapping("/gateways/create")
     public String createDialog(ModelMap model) {
         
         model.addAttribute("mode", PageEditMode.CREATE);
         GatewaySettings settings = new GatewaySettings();
+        
+        if (configurationSource.getDouble(MasterConfigDouble.NM_COMPATIBILITY) == nmVersion) {
+
+            settings.setUpdateServerUrl(globalSettingDao.getString(GlobalSettingType.UPDATE_SERVER_URL));
+
+            Authentication auth = new Authentication();
+            auth.setUsername(globalSettingDao.getString(GlobalSettingType.UPDATE_SERVER_ADMIN_USER));
+            auth.setPassword(globalSettingDao.getString(GlobalSettingType.UPDATE_SERVER_ADMIN_PASSWORD));
+
+            settings.setUpdateServerLogin(auth);
+            settings.setUseDefault(true);
+        }
         model.addAttribute("settings", settings);
         
         return "gateways/settings.jsp";
@@ -106,7 +126,8 @@ public class GatewaySettingsController {
             log.info("Gateway Created: " + gateway);
             gatewayEventLogService.createdGateway(userContext.getYukonUser(), gateway.getName(), 
                                                   gateway.getRfnIdentifier().getSensorSerialNumber(), 
-                                                  settings.getIpAddress(), settings.getAdmin().getUsername(), 
+                                                  settings.getIpAddress(),
+                                                  settings.getAdmin().getUsername(), 
                                                   settings.getSuperAdmin().getUsername());
             
             // Success
@@ -158,6 +179,15 @@ public class GatewaySettingsController {
                 settings.setLongitude(gateway.getLocation().getLongitude());
             }
             
+            
+            if(configurationSource.getDouble(MasterConfigDouble.NM_COMPATIBILITY) == nmVersion) {
+            
+            settings.setUpdateServerUrl(gateway.getData().getUpdateServerUrl());
+            settings.setUpdateServerLogin(gateway.getData().getUpdateServerLogin());
+            if(gateway.getData().getUpdateServerUrl().equals(globalSettingDao.getString(GlobalSettingType.UPDATE_SERVER_URL))) {
+                settings.setUseDefault(true);
+            }
+            }
             model.addAttribute("settings", settings);
             
         } catch (NmCommunicationException e) {
@@ -190,6 +220,9 @@ public class GatewaySettingsController {
         
         try {
             
+            String updateServerUrl = null;
+            Authentication auth = new Authentication();
+            
             RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(id);
             
             gateway.setName(settings.getName());
@@ -198,12 +231,27 @@ public class GatewaySettingsController {
                     settings.getLongitude()));
             }
             
+            
+            if(configurationSource.getDouble(MasterConfigDouble.NM_COMPATIBILITY) == nmVersion) {
+            
+            if(settings.isUseDefault()) {
+                updateServerUrl = globalSettingDao.getString(GlobalSettingType.UPDATE_SERVER_URL);
+                auth.setUsername(globalSettingDao.getString(GlobalSettingType.UPDATE_SERVER_ADMIN_USER));
+                auth.setUsername(globalSettingDao.getString(GlobalSettingType.UPDATE_SERVER_ADMIN_PASSWORD));
+            } else {
+                updateServerUrl = settings.getUpdateServerUrl();
+                auth.setUsername(settings.getUpdateServerLogin().getUsername());
+                auth.setUsername(settings.getUpdateServerLogin().getPassword());
+            }
+            }
             RfnGatewayData.Builder builder = new RfnGatewayData.Builder();
             RfnGatewayData data = builder.copyOf(gateway.getData())
            .ipAddress(settings.getIpAddress())
            .name(settings.getName())
            .admin(settings.getAdmin())
            .superAdmin(settings.getSuperAdmin())
+           .updateServerUrl(updateServerUrl)
+           .updateServerLogin(auth)
            .build();
             
             gateway.setData(data);
@@ -214,7 +262,8 @@ public class GatewaySettingsController {
                 log.info("Gateway updated: " + gateway);
                 gatewayEventLogService.updatedGateway(userContext.getYukonUser(), gateway.getName(), 
                                                       gateway.getRfnIdentifier().getSensorSerialNumber(), 
-                                                      settings.getIpAddress(), settings.getAdmin().getUsername(), 
+                                                      settings.getIpAddress(),
+                                                      settings.getAdmin().getUsername(), 
                                                       settings.getSuperAdmin().getUsername());
                 
                 // Success
@@ -355,5 +404,4 @@ public class GatewaySettingsController {
         
         return "gateways/collect.data.options.jsp";
     }
-    
 }

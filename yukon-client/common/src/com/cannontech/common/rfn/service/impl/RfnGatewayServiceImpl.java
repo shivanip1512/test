@@ -262,7 +262,8 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         
         data.setAdmin(settings.getAdmin());
         data.setSuperAdmin(settings.getSuperAdmin());
-        
+        data.setUpdateServerUrl(settings.getUpdateServerUrl());
+        data.setUpdateServerLogin(settings.getUpdateServerLogin());
         request.setData(data);
         
         return request;

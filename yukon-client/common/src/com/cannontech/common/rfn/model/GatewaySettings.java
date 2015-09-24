@@ -12,6 +12,9 @@ public class GatewaySettings {
     private Authentication superAdmin;
     private Double latitude;
     private Double longitude;
+    private String updateServerUrl;
+    private Authentication updateServerLogin;
+    private boolean useDefault;
     
     public Integer getId() {
         return id;
@@ -49,6 +52,8 @@ public class GatewaySettings {
         result = prime * result + ((longitude == null) ? 0 : longitude.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((superAdmin == null) ? 0 : superAdmin.hashCode());
+        result = prime * result + ((updateServerUrl == null) ? 0 : updateServerUrl.hashCode());
+        result = prime * result + ((updateServerLogin == null) ? 0 : updateServerLogin.hashCode());
         return result;
     }
 
@@ -96,6 +101,16 @@ public class GatewaySettings {
                 return false;
         } else if (!superAdmin.equals(other.superAdmin))
             return false;
+        if (updateServerUrl == null) {
+            if (other.updateServerUrl != null)
+                return false;
+        } else if (!updateServerUrl.equals(other.updateServerUrl))
+            return false;
+        if (updateServerLogin == null) {
+            if (other.updateServerLogin != null)
+                return false;
+        } else if (!updateServerLogin.equals(other.updateServerLogin))
+            return false;
         return true;
     }
 
@@ -133,6 +148,30 @@ public class GatewaySettings {
     
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
+    }
+
+    public String getUpdateServerUrl() {
+        return updateServerUrl;
+    }
+
+    public void setUpdateServerUrl(String updateServerUrl) {
+        this.updateServerUrl = updateServerUrl;
+    }
+
+    public Authentication getUpdateServerLogin() {
+        return updateServerLogin;
+    }
+
+    public void setUpdateServerLogin(Authentication updateServerLogin) {
+        this.updateServerLogin = updateServerLogin;
+    }
+
+    public boolean isUseDefault() {
+        return useDefault;
+    }
+
+    public void setUseDefault(boolean useDefault) {
+        this.useDefault = useDefault;
     }
     
 }

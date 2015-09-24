@@ -109,6 +109,11 @@ public enum GlobalSettingType implements DisplayableEnum {
     GOOGLE_ANALYTICS_ENABLED(GlobalSettingSubCategory.WEB_SERVER, booleanType(), true),
     GOOGLE_ANALYTICS_TRACKING_IDS(GlobalSettingSubCategory.WEB_SERVER, stringType(), null),
     
+    // Network Manager
+    UPDATE_SERVER_URL(GlobalSettingSubCategory.NETWORK_MANAGER, stringType(), "https://10.10.10.10:8080/updateServer/latest"),
+    UPDATE_SERVER_ADMIN_USER(GlobalSettingSubCategory.NETWORK_MANAGER, stringType(), "admin001"),
+    UPDATE_SERVER_ADMIN_PASSWORD(GlobalSettingSubCategory.NETWORK_MANAGER, stringType(), "admin002"),
+    
     // Data Export (previously Billing)
     WIZ_ACTIVATE(GlobalSettingSubCategory.DATA_EXPORT, booleanType(), false),
     INPUT_FILE(GlobalSettingSubCategory.DATA_EXPORT, stringType(), "c:\\yukon\\client\\bin\\BillingIn.txt"),
