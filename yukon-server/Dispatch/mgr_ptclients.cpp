@@ -1209,7 +1209,7 @@ void CtiPointClientManager::removePoint(long pointID, bool isExpiration)
 {
     CTILOG_ENTRY(dout, "pointID=" << pointID << ", isExpiration=" << isExpiration);
 
-    PointConnectionMap::iterator pointConIter = _pointConnectionMap.find(pointID);
+    auto pointConIter = _pointConnectionMap.find(pointID);
     if(pointConIter != _pointConnectionMap.end())
     {
         CtiPointConnection::CollectionType collection = pointConIter->second.getManagerList();
