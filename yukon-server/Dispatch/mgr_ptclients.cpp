@@ -1213,9 +1213,8 @@ void CtiPointClientManager::removePoint(long pointID, bool isExpiration)
     if(pointConIter != _pointConnectionMap.end())
     {
         CtiPointConnection::CollectionType collection = pointConIter->second.getManagerList();
-        for(std::set< CtiServer::ptr_type >::iterator pointConIter = collection.begin(); pointConIter != collection.end(); pointConIter++)
+        for(auto cm : pointConIter->second.getManagerList())
         {
-            CtiServer::ptr_type cm = *pointConIter;
             CTILOG_INFO(dout, "Pre removePoint " << reinterpret_cast<size_t>(cm.get()) << ", use_count=" << cm.use_count());
             RemoveConnectionManager(cm);
             CTILOG_INFO(dout, "Post removePoint " << reinterpret_cast<size_t>(cm.get()) << ", use_count=" << cm.use_count());
