@@ -145,6 +145,11 @@ SET CategoryType = 'centron420DisplayItems'
 WHERE CategoryType = 'centronDisplayItems';
 /* End YUK-14616 */
 
+/* Start YUK-14668 */
+DELETE FROM GlobalSetting 
+WHERE Name IN ('INTERVAL', 'BASELINE_CALCTIME', 'DAYS_PREVIOUS_TO_COLLECT');
+/* End YUK-14668 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
