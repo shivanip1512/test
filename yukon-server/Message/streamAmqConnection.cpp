@@ -165,7 +165,7 @@ size_t StreamAmqConnection<Outbound, Inbound>::read(void *buf, int len, const Ch
                     return 0;
                 }
 
-                std::copy(_inbound.front().begin(), _inbound.front().end(), reinterpret_cast<unsigned char *>(buf));
+                std::copy(_inbound.front().begin(), _inbound.front().end(), stdext::make_checked_array_iterator(reinterpret_cast<unsigned char *>(buf), len));
 
                 _inbound.pop();
 
@@ -216,7 +216,7 @@ size_t StreamAmqConnection<Outbound, Inbound>::peek(void *buf, int len)
 
         if( msg.size() < len )
         {
-            std::copy(msg.begin(), msg.begin() + len, reinterpret_cast<unsigned char *>(buf));
+            std::copy(msg.begin(), msg.begin() + len, stdext::make_checked_array_iterator(reinterpret_cast<unsigned char *>(buf), len));
 
             return len;
         }

@@ -19,7 +19,10 @@
 #include "std_helper.h"
 
 #include <boost/optional.hpp>
-#include <boost/assign/list_of.hpp>
+#include <boost/range/algorithm/for_each.hpp>
+#include <boost/range/adaptor/adjacent_filtered.hpp>
+#include <boost/range/adaptor/filtered.hpp>
+#include <boost/range/adaptor/map.hpp>
 
 using std::make_pair;
 using std::auto_ptr;
@@ -178,14 +181,17 @@ bool ActiveMQConnectionManager::verifyConnectionObjects()
 
 void ActiveMQConnectionManager::registerConsumersForCallbacks(const CallbacksPerQueue &callbacks)
 {
-    CallbacksPerQueue::const_iterator itr = callbacks.begin();
-    for( ; itr != callbacks.end(); itr = callbacks.upper_bound(itr->first) )
-    {
-        if( ! _consumers.count(itr->first) )
-        {
-            registerConsumer(itr->first);
-        }
-    }
+    using ActiveMQ::Queues::InboundQueue;
+
+    boost::for_each(
+            callbacks
+                | boost::adaptors::map_keys
+                | boost::adaptors::adjacent_filtered(std::not_equal_to<const InboundQueue *>{})
+                | boost::adaptors::filtered([this](const InboundQueue *q) { return ! _consumers.count(q); }),
+            [this](const InboundQueue *q)
+            {
+                registerConsumer(q);
+            });
 }
 
 
@@ -247,7 +253,7 @@ void ActiveMQConnectionManager::sendOutgoingMessages()
 
         if( debugActivityInfo() )
         {
-            CTILOG_DEBUG(dout, "Sending outgoing message for queue \"" << e->queue->name << "\" id " << reinterpret_cast<unsigned long>(e->queue));
+            CTILOG_DEBUG(dout, "Sending outgoing message for queue \"" << e->queueName << "\"");
         }
 
         if( e->replyListener )
@@ -293,7 +299,7 @@ void ActiveMQConnectionManager::sendOutgoingMessages()
                                 e->replyListener->timedOut }));
         }
 
-        ActiveMQ::QueueProducer &queueProducer = getQueueProducer(*_producerSession, e->queue->name);
+        ActiveMQ::QueueProducer &queueProducer = getQueueProducer(*_producerSession, e->queueName);
 
         queueProducer.send(message.get());
     }
@@ -324,7 +330,8 @@ void ActiveMQConnectionManager::dispatchIncomingMessages()
             CTILOG_DEBUG(dout, "Received incoming message(s) for queue \"" << queue->name << "\" id " << reinterpret_cast<unsigned long>(queue));
         }
 
-        const auto queueCallbacks = _callbacks.equal_range(queue);
+        const auto callbackRange = _callbacks.equal_range(queue);
+        const auto callbacks     = boost::make_iterator_range(callbackRange.first, callbackRange.second) | boost::adaptors::map_values;
 
         for( const auto &md : descriptors )
         {
@@ -334,12 +341,8 @@ void ActiveMQConnectionManager::dispatchIncomingMessages()
                         << reinterpret_cast<unsigned long>(queue) << ": " << md.msg);
             }
 
-            auto cb_itr = queueCallbacks.first;
-
-            for( ; cb_itr != queueCallbacks.second; ++cb_itr )
+            for( auto callback : callbacks )
             {
-                auto callback = cb_itr->second;
-
                 if( debugActivityInfo() )
                 {
                     CTILOG_DEBUG(dout, "Calling callback " << reinterpret_cast<unsigned long>(&callback) << " for queue \"" << queue->name << "\" id " << reinterpret_cast<unsigned long>(queue));
@@ -417,12 +420,12 @@ void ActiveMQConnectionManager::dispatchTempQueueReplies()
 
 void ActiveMQConnectionManager::enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type message)
 {
-    gActiveMQConnection->enqueueOutgoingMessage(queue, message, boost::none);
+    gActiveMQConnection->enqueueOutgoingMessage(queue.name, message, boost::none);
 }
 
 void ActiveMQConnectionManager::enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message)
 {
-    gActiveMQConnection->enqueueOutgoingMessage(queue, message, boost::none);
+    gActiveMQConnection->enqueueOutgoingMessage(queue.name, message, boost::none);
 }
 
 template<typename Msg>
@@ -457,7 +460,7 @@ void ActiveMQConnectionManager::enqueueMessageWithCallbackFor(
 {
     MessageCallback callbackWrapper = DeserializationHelper<Msg>(callback);
 
-    gActiveMQConnection->enqueueOutgoingMessage(queue, message, TemporaryListener{ callbackWrapper, timeout, timedOut });
+    gActiveMQConnection->enqueueOutgoingMessage(queue.name, message, TemporaryListener{ callbackWrapper, timeout, timedOut });
 }
 
 
@@ -468,12 +471,12 @@ void ActiveMQConnectionManager::enqueueMessageWithCallback(
         CtiTime timeout,
         TimeoutCallback timedOut)
 {
-    gActiveMQConnection->enqueueOutgoingMessage(queue, message, TemporaryListener{ callback, timeout, timedOut });
+    gActiveMQConnection->enqueueOutgoingMessage(queue.name, message, TemporaryListener{ callback, timeout, timedOut });
 }
 
 
 void ActiveMQConnectionManager::enqueueOutgoingMessage(
-        const ActiveMQ::Queues::OutboundQueue &queue,
+        const std::string &queueName,
         StreamableMessage::auto_type message,
         boost::optional<TemporaryListener> replyListener)
 {
@@ -499,7 +502,7 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(
 
     std::auto_ptr<StreamableEnvelope> e(new StreamableEnvelope);
 
-    e->queue = &queue;
+    e->queueName = queueName;
     e->message.reset(message.release());
     e->replyListener = replyListener;
 
@@ -517,7 +520,7 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(
 
 
 void ActiveMQConnectionManager::enqueueOutgoingMessage(
-        const ActiveMQ::Queues::OutboundQueue &queue,
+        const std::string &queueName,
         const SerializedMessage &message,
         boost::optional<TemporaryListener> replyListener)
 {
@@ -527,7 +530,7 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(
 
         cms::Message *extractMessage(cms::Session &session) const
         {
-            std::auto_ptr<cms::BytesMessage> bytesMessage(session.createBytesMessage());
+            std::unique_ptr<cms::BytesMessage> bytesMessage{session.createBytesMessage()};
 
             bytesMessage->writeBytes(message);
 
@@ -537,14 +540,13 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(
 
     std::auto_ptr<BytesEnvelope> e(new BytesEnvelope);
 
-    e->queue    = &queue;
-    e->message  = message;
+    e->queueName = queueName;
+    e->message   = message;
     e->replyListener = replyListener;
 
     if( debugActivityInfo() )
     {
-        CTILOG_DEBUG(dout,  "Enqueuing outbound message for queue \"" << queue.name << "\" id " << reinterpret_cast<unsigned long>(&queue) << std::endl
-                << reinterpret_cast<unsigned long>(&queue) << ": " << message);
+        CTILOG_DEBUG(dout,  "Enqueuing outbound message for queue \"" << queueName << "\"" << std::endl << message);
     }
 
     {

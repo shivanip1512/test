@@ -24,11 +24,11 @@ struct test_ActiveMQConnectionManager : Cti::Messaging::ActiveMQConnectionManage
     {
     }
 
-    void enqueueOutgoingMessage(const Cti::Messaging::ActiveMQ::Queues::OutboundQueue &queueId, Cti::Messaging::StreamableMessage::auto_type message, boost::optional<TemporaryListener> callback) override
+    void enqueueOutgoingMessage(const std::string &queueName, Cti::Messaging::StreamableMessage::auto_type message, boost::optional<TemporaryListener> callback) override
     {
         //  ignore message, do not send
     }
-    void enqueueOutgoingMessage(const Cti::Messaging::ActiveMQ::Queues::OutboundQueue &queueId, const Cti::Messaging::ActiveMQConnectionManager::SerializedMessage &message, boost::optional<TemporaryListener> callback) override
+    void enqueueOutgoingMessage(const std::string &queueName, const Cti::Messaging::ActiveMQConnectionManager::SerializedMessage &message, boost::optional<TemporaryListener> callback) override
     {
         //  ignore message, do not send
     }

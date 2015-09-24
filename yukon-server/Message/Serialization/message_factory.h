@@ -127,6 +127,32 @@ public:
     }
 };
 
+template<class ThriftMsg_t>
+std::vector<unsigned char> SerializeThriftBytes(const ThriftMsg_t &omsg)
+{
+    // create memory buffer and binary protocol
+    boost::shared_ptr<apache::thrift::transport::TMemoryBuffer> transport(new apache::thrift::transport::TMemoryBuffer());
+    apache::thrift::protocol::TBinaryProtocol protocol(transport);
+
+    // write message to buffer with the protocol
+    omsg.write(&protocol);
+
+    unsigned char* bufPtr = 0;
+    unsigned int   bufSize = 0;
+
+    transport->getBuffer(&bufPtr, &bufSize);
+
+    if( !bufPtr || !bufSize )
+    {
+        // serialization failed... return empty vector
+        return {};
+    }
+
+    auto itr = stdext::make_checked_array_iterator(bufPtr, bufSize);
+
+    return std::vector<unsigned char>{ itr, itr + bufSize };
+}
+
 /*-----------------------------------------------------------------------------
     Message serializer derived class
 -----------------------------------------------------------------------------*/
@@ -149,10 +175,6 @@ public:
     {
         if( const Msg_t *p_imsg = dynamic_cast<const Msg_t *>(&imsg) )
         {
-            // create memory buffer and binary protocol
-            boost::shared_ptr<apache::thrift::transport::TMemoryBuffer> transport( new apache::thrift::transport::TMemoryBuffer() );
-            apache::thrift::protocol::TBinaryProtocol protocol( transport );
-
             // call function pointer to translate from MessageBase_t to thrift message
             MessagePtr<ThriftMsg_t>::type omsg = _thriftPopulateFn( *p_imsg );
 
@@ -162,21 +184,14 @@ public:
                 return std::string();
             }
 
-            // write message to buffer with the protocol
-            omsg->write( &protocol );
+            auto result = SerializeThriftBytes(*omsg);
 
-            unsigned char* bufPtr  = 0;
-            unsigned int   bufSize = 0;
-
-            transport->getBuffer(&bufPtr, &bufSize);
-
-            if( !bufPtr || !bufSize )
+            if( result.empty() )
             {
-                // serialization failed... return empty string
-                return std::string();
+                return {};
             }
 
-            obytes = std::vector<unsigned char>(bufPtr, bufPtr+bufSize);
+            obytes = result;
 
             // return the message type if all goes well
             return _msgType;
@@ -233,9 +248,9 @@ public:
 
 
 template<typename Msg>
-struct IM_EX_MSG MessageSerializer
+struct MessageSerializer
 {
-    static std::vector<unsigned char> &serialize( const Msg &m );
+    static std::vector<unsigned char> serialize( const Msg &m );
     static boost::optional<Msg> deserialize( const std::vector<unsigned char> &buf );
 };
 

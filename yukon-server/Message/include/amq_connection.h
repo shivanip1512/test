@@ -125,11 +125,11 @@ protected:
     };
 
     virtual void enqueueOutgoingMessage(
-            const ActiveMQ::Queues::OutboundQueue &queue,
+            const std::string &queueName,
             StreamableMessage::auto_type message,
             boost::optional<TemporaryListener> callback);
     virtual void enqueueOutgoingMessage(
-            const ActiveMQ::Queues::OutboundQueue &queue,
+            const std::string &queueName,
             const SerializedMessage &message,
             boost::optional<TemporaryListener> callback);
 
@@ -154,13 +154,13 @@ private:
     //  Message submission objects and methods
     struct Envelope
     {
-        const ActiveMQ::Queues::OutboundQueue *queue;
+        std::string queueName;
 
         boost::optional<TemporaryListener> replyListener;
 
         virtual cms::Message *extractMessage(cms::Session &session) const = 0;
 
-        virtual ~Envelope() {};
+        virtual ~Envelope() = default;
     };
 
     typedef boost::ptr_deque<Envelope> EnvelopeQueue;
