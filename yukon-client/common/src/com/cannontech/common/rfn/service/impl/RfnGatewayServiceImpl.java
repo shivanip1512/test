@@ -296,6 +296,16 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             editData.setSuperAdmin(newGatewayData.getSuperAdmin());
             sendGatewayEditRequest = true;
         }
+        if (newGatewayData.getUpdateServerUrl() != null 
+                && !newGatewayData.getUpdateServerUrl().equals(existingGatewayData.getUpdateServerUrl())) {
+            editData.setUpdateServerUrl(newGatewayData.getUpdateServerUrl());
+            sendGatewayEditRequest = true;
+        }
+        if (newGatewayData.getUpdateServerLogin() != null 
+                && !newGatewayData.getUpdateServerLogin().equals(existingGatewayData.getUpdateServerLogin())) {
+            editData.setUpdateServerLogin(newGatewayData.getUpdateServerLogin());
+            sendGatewayEditRequest = true;
+        }
         
         GatewayUpdateResult result = GatewayUpdateResult.SUCCESSFUL;
         

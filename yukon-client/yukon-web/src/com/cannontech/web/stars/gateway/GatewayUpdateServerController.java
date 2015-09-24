@@ -88,7 +88,7 @@ public class GatewayUpdateServerController {
 
                 if (updateResult == GatewayUpdateResult.SUCCESSFUL) {
                     log.info("Gateway update server updated: " + gateway);
-                    gatewayEventLogService.createdGateway(userContext.getYukonUser(),
+                    gatewayEventLogService.updatedGateway(userContext.getYukonUser(),
                                                           gateway.getName(),
                                                           gateway.getRfnIdentifier()
                                                                  .getSensorSerialNumber(),
