@@ -8,7 +8,6 @@ public class LMHardware {
     private boolean hasRouteID;
     private String manufacturerSerialNumber;
     private Vector<StarsLMHardwareConfig> starsLMHardwareConfigList;
-    private StarsThermostatSettings starsThermostatSettings;
     private StarsLMConfiguration starsLMConfiguration;
 
     public LMHardware() {
@@ -65,10 +64,6 @@ public class LMHardware {
         return starsLMHardwareConfigList.size();
     }
 
-    public StarsThermostatSettings getStarsThermostatSettings() {
-        return this.starsThermostatSettings;
-    }
-
     public boolean hasRouteID() {
         return this.hasRouteID;
     }
@@ -110,10 +105,6 @@ public class LMHardware {
         for (int i = 0; i < starsLMHardwareConfigArray.length; i++) {
             starsLMHardwareConfigList.addElement(starsLMHardwareConfigArray[i]);
         }
-    }
-
-    public void setStarsThermostatSettings(StarsThermostatSettings starsThermostatSettings) {
-        this.starsThermostatSettings = starsThermostatSettings;
     }
 
 }
