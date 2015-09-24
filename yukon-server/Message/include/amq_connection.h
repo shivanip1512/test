@@ -64,6 +64,7 @@ struct IM_EX_MSG InboundQueue
     static const InboundQueue NetworkManagerE2eDataIndication;
     static const InboundQueue ScannerOutMessages;
     static const InboundQueue ScannerInMessages;
+    static const InboundQueue PorterDynamicPaoInfoRequest;
 
 private:
     InboundQueue(std::string name);
@@ -84,9 +85,11 @@ public:
     {
         std::string type;
         SerializedMessage msg;
+        const cms::Destination * replyTo;
     };
 
-    using MessageCallback = std::function<void (const MessageDescriptor &)>;
+    using MessageCallback = std::function<void(const MessageDescriptor &)>;
+    using MessageCallbackWithReply = std::function<std::unique_ptr<SerializedMessage>(const MessageDescriptor &)>;
     using TimeoutCallback = std::function<void()>;
 
     template<class Msg>
@@ -111,7 +114,8 @@ public:
             const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message,
             MessageCallback callback, CtiTime timeout, TimeoutCallback timedOut);
 
-    static void registerHandler(const ActiveMQ::Queues::InboundQueue &queue, const MessageCallback callback);
+    static void registerHandler     (const ActiveMQ::Queues::InboundQueue &queue, const MessageCallback callback);
+    static void registerReplyHandler(const ActiveMQ::Queues::InboundQueue &queue, const MessageCallbackWithReply callback);
 
     virtual void close();
 
@@ -134,6 +138,7 @@ protected:
             boost::optional<TemporaryListener> callback);
 
     void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, const MessageCallback callback);
+    void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, const MessageCallbackWithReply callback);
 
     void onInboundMessage(const ActiveMQ::Queues::InboundQueue *queue, const cms::Message *message);
     void onTempQueueReply(const cms::Message *message);

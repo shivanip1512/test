@@ -15,11 +15,13 @@ INCLPATHS+= \
 -I$(PIL)\include \
 -I$(SERVER)\include \
 -I$(MSG)\include \
+-I$(MSG)\Serialization \
 -I$(PROT)\include \
 -I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
 -I$(XERCES)\include \
 -I$(OPENSSL)\include \
+-I$(THRIFT_INCLUDE) \
 
 
 .PATH.cpp = .
@@ -71,6 +73,7 @@ porttime.obj \
 portverify.obj \
 ripple.obj \
 systemmsgthread.obj \
+porter_message_serialization.obj \
 encryption_lantronix.obj \
 EncodingFilterFactory.obj \
 encryption_noOp.obj \
@@ -87,6 +90,7 @@ PORTERLIBS=\
 advapi32.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
+$(COMPILEBASE)\lib\ctithriftmsg.lib \
 $(COMPILEBASE)\lib\rfn-e2e.lib \
 $(COMPILEBASE)\lib\portglob.lib \
 $(COMPILEBASE)\lib\service.lib \
@@ -99,6 +103,7 @@ $(COMPILEBASE)\lib\ctipntdb.lib \
 $(COMPILEBASE)\lib\ctiprot.lib \
 $(COMPILEBASE)\lib\cticonfig.lib \
 $(COMPILEBASE)\lib\dynpaoinfo.lib \
+$(THRIFT_LIB) \
 $(OPENSSL_LIBS)
 
 EXECS=\

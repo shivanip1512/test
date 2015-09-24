@@ -589,6 +589,12 @@ void ActiveMQConnectionManager::registerHandler(const ActiveMQ::Queues::InboundQ
 }
 
 
+void ActiveMQConnectionManager::registerReplyHandler(const ActiveMQ::Queues::InboundQueue &queue, MessageCallbackWithReply callback)
+{
+    gActiveMQConnection->addNewCallback(queue, callback);
+}
+
+
 void ActiveMQConnectionManager::addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, MessageCallback callback)
 {
     {
@@ -604,13 +610,49 @@ void ActiveMQConnectionManager::addNewCallback(const ActiveMQ::Queues::InboundQu
 }
 
 
+void ActiveMQConnectionManager::addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, MessageCallbackWithReply callback)
+{
+    {
+        CtiLockGuard<CtiCriticalSection> lock(_newCallbackMux);
+
+        _newCallbacks.emplace(&queue,
+                [=, &queue](const MessageDescriptor &md)
+                {
+                    std::unique_ptr<ActiveMQ::DestinationProducer> tempQueueProducer(
+                        ActiveMQ::createDestinationProducer(*_producerSession, md.replyTo));
+
+                    auto result = callback(md);
+
+                    if( ! result )
+                    {
+                        CTILOG_WARN(dout, "Callback-with-reply returned no reply for queue " << queue.name);
+
+                        return;
+                    }
+
+                    std::unique_ptr<cms::BytesMessage> bytesMessage{ _producerSession->createBytesMessage() };
+
+                    bytesMessage->writeBytes(*result);
+
+                    tempQueueProducer->send(bytesMessage.release());
+                });
+    }
+
+    if( !isRunning() )
+    {
+        start();
+    }
+}
+
+
 void ActiveMQConnectionManager::onInboundMessage(const ActiveMQ::Queues::InboundQueue *queue, const cms::Message *message)
 {
     if( const cms::BytesMessage *bytesMessage = dynamic_cast<const cms::BytesMessage *>(message) )
     {
         MessageDescriptor md;
 
-        md.type = bytesMessage->getCMSType();
+        md.type    = bytesMessage->getCMSType();
+        md.replyTo = bytesMessage->getCMSReplyTo();
 
         md.msg.resize(bytesMessage->getBodyLength());
 
@@ -723,6 +765,9 @@ const IM_EX_MSG InboundQueue
 const IM_EX_MSG InboundQueue
         InboundQueue::ScannerInMessages
                 ("com.eaton.eas.yukon.scanner.inmessages");
+const IM_EX_MSG InboundQueue
+        InboundQueue::PorterDynamicPaoInfoRequest
+                ("com.eaton.eas.yukon.porter.dynamicPaoInfoRequest");
 }
 }
 

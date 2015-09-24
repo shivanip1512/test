@@ -72,12 +72,17 @@
 #include "dev_ccu721.h"
 
 #include "connection_client.h"
+#include "amq_connection.h"
+#include "porter_message_serialization.h"
 
 #include <boost/interprocess/ipc/message_queue.hpp>
 #include <boost/interprocess/exceptions.hpp>
 #include <boost/interprocess/creation_tags.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/range/algorithm/set_algorithm.hpp>
+#include <boost/range/algorithm/copy.hpp>
+#include <boost/range/adaptor/filtered.hpp>
+#include <boost/range/adaptor/transformed.hpp>
 
 using namespace std;
 using Cti::Database::DatabaseConnection;
@@ -101,6 +106,7 @@ void DebugKeyEvent(KEY_EVENT_RECORD *ke);
 string GetDeviceName( ULONG id );
 void KickPIL();
 bool processInputFunction(CHAR Char);
+void registerServices();
 
 void reportOnWorkObjects();
 
@@ -787,6 +793,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     _dispThread.start();
     _tsyncThread.start();
     _statisticsThread.start();
+    registerServices();
 
     /* Start the verification thread */
     if(gConfigParms.isTrue("PORTER_START_VERIFICATIONTHREAD", true))
@@ -962,6 +969,92 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     writeDynamicPaoInfo();
 
     return 0;
+}
+
+
+void registerServices()
+{
+    using Cti::Messaging::ActiveMQConnectionManager;
+    using MessageDescriptor = ActiveMQConnectionManager::MessageDescriptor;
+    using SerializedMessage = ActiveMQConnectionManager::SerializedMessage;
+    using Cti::Messaging::ActiveMQ::Queues::InboundQueue;
+    using Cti::Messaging::Porter::DynamicPaoInfoKeys;
+    using Cti::Messaging::Porter::PorterDynamicPaoInfoRequestMsg;
+    using Cti::Messaging::Porter::PorterDynamicPaoInfoResponseMsg;
+    using Cti::Messaging::Serialization::MessageSerializer;
+
+    ActiveMQConnectionManager::registerReplyHandler(
+        InboundQueue::PorterDynamicPaoInfoRequest,
+        [](const MessageDescriptor &md) -> std::unique_ptr<SerializedMessage>
+        {
+            if( auto req = MessageSerializer<PorterDynamicPaoInfoRequestMsg>::deserialize(md.msg) )
+            {
+                PorterDynamicPaoInfoResponseMsg rsp;
+
+                const std::map<DynamicPaoInfoKeys, CtiTableDynamicPaoInfo::PaoInfoKeys> keyLookup{
+                    { DynamicPaoInfoKeys::RfnVoltageProfileEnabledUntil, CtiTableDynamicPaoInfo::Key_RFN_VoltageProfileEnabledUntil },
+                    { DynamicPaoInfoKeys::RfnVoltageProfileInterval,     CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval } };
+
+                using PaoValue = std::pair<DynamicPaoInfoKeys, PorterDynamicPaoInfoResponseMsg::AllowedTypes>;
+
+                boost::range::copy(
+                        req->paoInfoKeys
+                                | boost::adaptors::transformed(
+                                        [&](DynamicPaoInfoKeys k) -> boost::optional<PaoValue>
+                                        {
+                                            if( const auto resolvedKey = Cti::mapFind(keyLookup, k) )
+                                            {
+                                                switch( *resolvedKey )
+                                                {
+                                                    case CtiTableDynamicPaoInfo::Key_RFN_VoltageProfileEnabledUntil:
+                                                    {
+                                                        CtiTime timeValue;
+
+                                                        if( Cti::DynamicPaoInfoManager::getInfo(req->deviceId, *resolvedKey, timeValue) )
+                                                        {
+                                                            return PaoValue{ k, timeValue };
+                                                        }
+
+                                                        break;
+                                                    }
+                                                    case CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval:
+                                                    {
+                                                        long longValue;
+
+                                                        if( Cti::DynamicPaoInfoManager::getInfo(req->deviceId, *resolvedKey, longValue) )
+                                                        {
+                                                            return PaoValue{ k, longValue };
+                                                        }
+
+                                                        break;
+                                                    }
+                                                }
+                                            }
+
+                                            return boost::none;
+                                        })
+                                | boost::adaptors::filtered(
+                                        [&](const boost::optional<PaoValue> &pv)
+                                        {
+                                            return !!pv;
+                                        })
+                                | boost::adaptors::transformed(
+                                        [](const boost::optional<PaoValue> &pv)
+                                        {
+                                            return *pv;
+                                        }),
+                        std::inserter(rsp.result, rsp.result.begin()));
+
+                auto serializedRsp = MessageSerializer<PorterDynamicPaoInfoResponseMsg>::serialize(rsp);
+
+                if( !serializedRsp.empty() )
+                {
+                    return std::make_unique<SerializedMessage>(std::move(serializedRsp));
+                }
+            }
+
+            return nullptr;
+        });
 }
 
 

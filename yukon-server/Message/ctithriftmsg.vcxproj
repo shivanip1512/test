@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -543,6 +543,8 @@ if exist $(OutDir)$(TargetName).lib xcopy /d/y $(OutDir)$(TargetName).lib $(Solu
     </ClCompile>
     <ClCompile Include="Serialization\Thrift\PointRegistration_types.cpp">
     </ClCompile>
+    <ClCompile Include="Serialization\Thrift\PorterDynamicPaoInfo_constants.cpp" />
+    <ClCompile Include="Serialization\Thrift\PorterDynamicPaoInfo_types.cpp" />
     <ClCompile Include="Serialization\Thrift\QueueData_constants.cpp">
     </ClCompile>
     <ClCompile Include="Serialization\Thrift\QueueData_types.cpp">
@@ -717,6 +719,8 @@ if exist $(OutDir)$(TargetName).lib xcopy /d/y $(OutDir)$(TargetName).lib $(Solu
     <ClInclude Include="Serialization\Thrift\PointData_types.h" />
     <ClInclude Include="Serialization\Thrift\PointRegistration_constants.h" />
     <ClInclude Include="Serialization\Thrift\PointRegistration_types.h" />
+    <ClInclude Include="Serialization\Thrift\PorterDynamicPaoInfo_constants.h" />
+    <ClInclude Include="Serialization\Thrift\PorterDynamicPaoInfo_types.h" />
     <ClInclude Include="Serialization\Thrift\QueueData_constants.h" />
     <ClInclude Include="Serialization\Thrift\QueueData_types.h" />
     <ClInclude Include="Serialization\Thrift\Registration_constants.h" />

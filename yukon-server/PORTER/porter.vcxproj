@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -128,7 +128,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(BOOST)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;.;..\common\include;..\database\include;..\deviceconfiguration\include;..\message\include;..\pil\include;..\porter\include;..\protocol\include;..\rtdb\include;..\scanner\include;..\server\include;..\service\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BOOST)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;$(THRIFT)\include;.;..\common\include;..\database\include;..\deviceconfiguration\include;..\message\Serialization;..\message\include;..\pil\include;..\porter\include;..\protocol\include;..\rtdb\include;..\scanner\include;..\server\include;..\service\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USING_PCH;_DEBUG;WIN32;_CONSOLE;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WIN32;WINDOWS;_CONSOLE;_DEBUG;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=porter;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -149,7 +149,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Ws2_32.lib;$(BOOST)\lib\boost_system-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-gd-1_58.lib;advapi32.lib;..\lib\ctibase.lib;..\lib\ctimsg.lib;..\lib\rfn-e2e.lib;..\lib\portglob.lib;..\lib\service.lib;..\lib\ctipil.lib;..\lib\ctisvr.lib;..\lib\ctidbsrc.lib;..\lib\ctidevdb.lib;..\lib\ctiprtdb.lib;..\lib\ctipntdb.lib;..\lib\ctiprot.lib;..\lib\cticonfig.lib;..\lib\dynpaoinfo.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libeay32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\ssleay32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;$(BOOST)\lib\boost_system-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-gd-1_58.lib;$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;advapi32.lib;..\lib\ctibase.lib;..\lib\ctimsg.lib;..\lib\ctithriftmsg.lib;..\lib\rfn-e2e.lib;..\lib\portglob.lib;..\lib\service.lib;..\lib\ctipil.lib;..\lib\ctisvr.lib;..\lib\ctidbsrc.lib;..\lib\ctidevdb.lib;..\lib\ctiprtdb.lib;..\lib\ctipntdb.lib;..\lib\ctiprot.lib;..\lib\cticonfig.lib;..\lib\dynpaoinfo.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libeay32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\ssleay32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)porter.exe</OutputFile>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(OutDir)\porter_exe.pdb</ProgramDatabaseFile>
@@ -355,6 +355,7 @@ xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
     </ClCompile>
     <ClCompile Include="plidlc.cpp">
     </ClCompile>
+    <ClCompile Include="porter_message_serialization.cpp" />
     <ClCompile Include="port_thread_rf_da.cpp">
     </ClCompile>
     <ClCompile Include="port_thread_tcp.cpp">
@@ -417,6 +418,8 @@ xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
     <ClInclude Include="include\mgr_port.h" />
     <ClInclude Include="include\PaoStatistics.h" />
     <ClInclude Include="include\PaoStatisticsRecord.h" />
+    <ClInclude Include="include\PorterDynamicPaoInfoMsg.h" />
+    <ClInclude Include="include\porter_message_serialization.h" />
     <ClInclude Include="include\port_shr.h" />
     <ClInclude Include="include\port_shr_ip.h" />
     <ClInclude Include="include\port_thread_rf_da.h" />
