@@ -17,7 +17,16 @@
     <bean class="com.cannontech.web.tools.commander.service.CommanderServiceImpl"/>
     
     <bean class="com.cannontech.web.tools.mapping.service.impl.PaoLocationServiceImpl"/>
-
+    <bean class="com.cannontech.web.common.resources.service.impl.CSSCompressionFilterServiceImpl">
+        <qualifier value="cssCompressionFilterService"/>
+    </bean>
+    <bean class="com.cannontech.web.common.resources.service.impl.JSCompressionFilterServiceImpl">
+        <qualifier value="jsCompressionFilterService"/>
+    </bean>
+    <bean class="com.cannontech.web.common.resources.service.impl.LessToCSSFilterServiceImpl">
+        <qualifier value="lessToCssFilterService"/>
+    </bean>
+    
     <bean id="deviceCollectionFactory" class="com.cannontech.web.bulk.model.DeviceCollectionFactoryImpl"/>
     <bean id="inventoryCollectionFactory" class="com.cannontech.web.common.collection.InventoryCollectionFactoryImpl">
         <property name="collectionProducerList">
