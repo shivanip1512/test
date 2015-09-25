@@ -18,8 +18,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
-import org.joda.time.Duration;
 import org.joda.time.Instant;
+import org.joda.time.Months;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,22 +32,25 @@ import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dao.RawPointHistoryDao.OrderBy;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.impl.SimplePointValue;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.tools.trends.TrendDataController;
 import com.cannontech.web.tools.trends.service.TrendDataService;
 @Service
 public class TrendDataServiceImpl implements TrendDataService {
 
+    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
 
     private static final Logger log = YukonLogManager.getLogger(TrendDataController.class);
 
-   @Override 
-   public List<PointValueHolder> rawPointHistoryDataProvider(int pointId) {
-        Instant end = Instant.now();
-        Instant start = end.minus(Duration.standardDays(365 * 2));
+    @Override
+    public List<PointValueHolder> rawPointHistoryDataProvider(int pointId) {
+        Instant end = new DateTime().withTimeAtStartOfDay().plusDays(1).toInstant();
+        Instant start = getEarliestStartDate().toInstant();
         Range<Instant> instantRange = Range.inclusive(start, end);
-        return  rawPointHistoryDao.getPointData(pointId, instantRange, Order.FORWARD);
+        return rawPointHistoryDao.getPointData(pointId, instantRange, Order.FORWARD);
     }
     
     @Override
@@ -93,25 +96,37 @@ public class TrendDataServiceImpl implements TrendDataService {
     public  List<Object[]> usageGraphDataProvider(List<PointValueHolder> data) {
         log.debug("UsageGraphDataProvider Called");
         List<Object[]> values = new ArrayList<>();
-        DateTime dateNow = new DateTime();
-        DateTime datePrime = dateNow.minusYears(2);
-        DateTime currentTimeStamp = new DateTime();
-        double currentPoint = 0;
-        double previousPoint = 0;
+        DateTime dateNow = new DateTime().withTimeAtStartOfDay().plusDays(1);
+        DateTime datePrime = getEarliestStartDate();
+        DateTime previousTimeStamp = new DateTime();
+        double previousPointValue = 0;
 
+        boolean skipFirstPvh = true;
         for (PointValueHolder pvh : data) {
+            
+            double itemPointValue = pvh.getValue();
             DateTime itemTimeStamp = new DateTime(pvh.getPointDataTimeStamp().getTime());
             DateTime compareTimeStamp = itemTimeStamp.withTimeAtStartOfDay();
+            
+            if (skipFirstPvh) {
+                // skip the first reading in the list, but capture it for comparing for the next pvh
+                previousTimeStamp = compareTimeStamp;
+                previousPointValue = itemPointValue;
+                skipFirstPvh = false;
+                continue;
+            }
+
             boolean flagNow = itemTimeStamp.isBefore(dateNow);
             boolean flagPrime = itemTimeStamp.isAfter(datePrime);
             if (flagPrime && flagNow) {
-                if (values.isEmpty() || compareTimeStamp.isAfter(currentTimeStamp)) {
-                    currentTimeStamp = compareTimeStamp;
-                    currentPoint = pvh.getValue();
-                    double mPoint = currentPoint - previousPoint;
+                if (values.isEmpty() || compareTimeStamp.isAfter(previousTimeStamp)) {
+                    previousTimeStamp = compareTimeStamp;
+                    double mPoint = itemPointValue - previousPointValue;
                     Object[] value = new Object[] { itemTimeStamp.getMillis(), mPoint };
-                    previousPoint = currentPoint;
+                    previousPointValue = itemPointValue;
                     values.add(value);
+                } else {
+                    continue;
                 }
             } else {
                 continue;
@@ -128,9 +143,12 @@ public class TrendDataServiceImpl implements TrendDataService {
         if (!data.isEmpty()) {
             DateTime datePrime = new DateTime(data.get(0).getPointDataTimeStamp());
             ReadableInstant dateLimit = new DateTime(data.get(data.size() - 1).getPointDataTimeStamp());
-            datePrime = (datePrime.isAfter(chartDatePrime)) ? chartDatePrime : datePrime;
+            datePrime = (datePrime.isAfter(chartDatePrime)) ? chartDatePrime : datePrime;                   // the earlier of chartDatePrime and this data set's datePrime
+            datePrime = (datePrime.isBefore(getEarliestStartDate())) ? getEarliestStartDate() : datePrime;  // but limited to the earliest day 
             dateLimit = (dateLimit.isBefore(chartDateLimit)) ? chartDateLimit : dateLimit;
             int days = Days.daysBetween(datePrime, dateLimit).getDays();
+            log.debug("DatePrime: " + datePrime.toString() + " DateLimit:" + dateLimit.toString() +  " DaysBetween:" + days);
+            
             List<PointValueHolder> rangeList = new ArrayList<>();
             for (PointValueHolder pvh : data) {
                 DateTime itemTimeStamp = new DateTime(pvh.getPointDataTimeStamp().getTime());
@@ -169,5 +187,12 @@ public class TrendDataServiceImpl implements TrendDataService {
         return values;
     }
 
+    /**
+     * Returns the earliest starting date to collect trending data for. 
+     */
+    private DateTime getEarliestStartDate() {
+        Months months = Months.months(globalSettingDao.getInteger(GlobalSettingType.TRENDS_HISTORICAL_MONTHS));
+        return new DateTime().withTimeAtStartOfDay().minus(months);
+    }
 }
 

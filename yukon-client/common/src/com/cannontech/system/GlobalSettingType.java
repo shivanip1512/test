@@ -145,14 +145,16 @@ public enum GlobalSettingType implements DisplayableEnum {
     CONTACT_EMAIL(GlobalSettingSubCategory.MISC, stringType(), "EAS-Support@Eaton.com"),
     CONTACT_PHONE(GlobalSettingSubCategory.MISC, stringType(), "1-800-815-2258"),
     SCHEDULED_REQUEST_MAX_RUN_HOURS(GlobalSettingSubCategory.MISC, integerType(), 23),
-
+    // Misc. > Web Graph
+    HOME_DIRECTORY(GlobalSettingSubCategory.MISC, stringType(), "c:\\yukon\\client\\webgraphs\\"),
+    RUN_INTERVAL(GlobalSettingSubCategory.MISC, integerType(), 900),
+    
+    //Trending
+    TRENDS_HISTORICAL_MONTHS(GlobalSettingSubCategory.GRAPHING, integerType(), 24),
     // Voice Server
     CALL_RESPONSE_TIMEOUT(GlobalSettingSubCategory.VOICE, integerType(), 240),
     CALL_PREFIX(GlobalSettingSubCategory.VOICE, stringType(), null),
 
-    // Web Graph
-    HOME_DIRECTORY(GlobalSettingSubCategory.GRAPHING, stringType(), "c:\\yukon\\client\\webgraphs\\"),
-    RUN_INTERVAL(GlobalSettingSubCategory.GRAPHING, integerType(), 900),
     ;
 
     private static final ImmutableSetMultimap<GlobalSettingSubCategory, GlobalSettingType> categoryMapping;

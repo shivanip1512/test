@@ -27,6 +27,7 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.DurationFormattingService;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.database.db.graph.GDSTypesFuncs;
 import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -86,11 +87,16 @@ public class TrendDataController {
         boolean hasCurrentDateBoundary = false;
         boolean showRightAxis = false;
         for (GraphDataSeries seriesItem : graphDataSeriesList) {
-            log.debug("Graph Type:" + seriesItem.getType() + ":" + graphTypeLabel(seriesItem.getType(), userContext));
+            TrendType itemType = TrendType.of(seriesItem.getType());
+            log.info("TrendType:" + itemType.getGraphType() + " Graph Type:" + GDSTypesFuncs.getType(seriesItem.getType()));
+            if (!itemType.isGraphType()) {
+                continue;
+            }
+
             Map<String, Object> seriesProperties = new HashMap<>();
             List<PointValueHolder> seriesItemResult = new ArrayList<>();
             List<Object[]> seriesData = new ArrayList<>();
-            TrendType itemType = TrendType.of(seriesItem.getType());
+
             switch (itemType.getGraphType()) {
             case DATE_TYPE:
             case PEAK_TYPE:
@@ -139,21 +145,25 @@ public class TrendDataController {
                     seriesProperties.put("dataGrouping", ImmutableMap.of("enabled", false));
                 }
             }
-            if (!seriesItemResult.isEmpty()) {
+            
+            // Set the chartDate boundaries, exclude peak/yesterday/specific dates from being used to determine
+            if (!seriesItemResult.isEmpty() && 
+                    (itemType.getGraphType() == GraphType.BASIC_TYPE || itemType.getGraphType() == GraphType.USAGE_TYPE)) {
                 DateTime valueDeltaPrimeDT = new DateTime(seriesItemResult.get(0).getPointDataTimeStamp());
                 DateTime valueDeltaLimitDT = new DateTime(seriesItemResult.get(seriesData.size() - 1).getPointDataTimeStamp());
+                log.debug("Series Boundaries: " + valueDeltaPrimeDT.toString() + " - " + valueDeltaLimitDT.toString());
 
                 if (hasCurrentDateBoundary) {
-
-                    chartDatePrime = (chartDatePrime.isAfter(valueDeltaLimitDT)) ? valueDeltaPrimeDT : chartDatePrime;
+                    chartDatePrime = (chartDatePrime.isAfter(valueDeltaPrimeDT)) ? valueDeltaPrimeDT : chartDatePrime;
                     chartDateLimit = (chartDateLimit.isBefore(valueDeltaLimitDT)) ? valueDeltaLimitDT : chartDateLimit;
-
                 } else {
                     chartDatePrime = valueDeltaPrimeDT;
                     chartDateLimit = valueDeltaLimitDT;
                     hasCurrentDateBoundary = true;
                 }
             }
+            log.debug("Adjusted Boundaries: " + chartDatePrime.toString() + " - " + chartDateLimit.toString());
+            
             seriesProperties.put("name", seriesItem.getLabel() + " " + graphTypeLabel(seriesItem.getType(), userContext));
             log.debug("color from series:" + seriesItem.getColor());
             seriesProperties.put("color", Colors.colorPaletteToWeb(seriesItem.getColor()));
