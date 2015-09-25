@@ -130,15 +130,15 @@ public class GatewayUpdateServerController {
             settings.setName(gateway.getRfnIdentifier().getSensorSerialNumber());
             settings.setName(gateway.getData().getReleaseVersion());
             if (gateway.getData().getUpdateServerUrl() == null) {
-                settings.setUpdateServerUrl(globalSettingDao.getString(GlobalSettingType.UPDATE_SERVER_URL));
+                settings.setUpdateServerUrl(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER));
             } else {
                 settings.setUpdateServerUrl(gateway.getData().getUpdateServerUrl());
             }
 
             if (gateway.getData().getUpdateServerLogin() == null) {
                 Authentication updateServerAuth = new Authentication();
-                updateServerAuth.setUsername(globalSettingDao.getString(GlobalSettingType.UPDATE_SERVER_ADMIN_USER));
-                updateServerAuth.setPassword(globalSettingDao.getString(GlobalSettingType.UPDATE_SERVER_ADMIN_PASSWORD));
+                updateServerAuth.setUsername(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_USER));
+                updateServerAuth.setPassword(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD));
                 settings.setUpdateServerLogin(updateServerAuth);
             } else {
                 settings.setUpdateServerLogin(gateway.getData().getUpdateServerLogin());

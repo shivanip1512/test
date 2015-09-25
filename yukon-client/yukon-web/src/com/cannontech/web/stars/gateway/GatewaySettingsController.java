@@ -85,11 +85,11 @@ public class GatewaySettingsController {
         
         if (nmConfigurationService.isFirmwareUpdateSupported()) {
 
-            settings.setUpdateServerUrl(globalSettingDao.getString(GlobalSettingType.UPDATE_SERVER_URL));
+            settings.setUpdateServerUrl(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER));
 
             Authentication auth = new Authentication();
-            auth.setUsername(globalSettingDao.getString(GlobalSettingType.UPDATE_SERVER_ADMIN_USER));
-            auth.setPassword(globalSettingDao.getString(GlobalSettingType.UPDATE_SERVER_ADMIN_PASSWORD));
+            auth.setUsername(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_USER));
+            auth.setPassword(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD));
 
             settings.setUpdateServerLogin(auth);
             settings.setUseDefault(true);
@@ -184,7 +184,7 @@ public class GatewaySettingsController {
             
             settings.setUpdateServerUrl(gateway.getData().getUpdateServerUrl());
             settings.setUpdateServerLogin(gateway.getData().getUpdateServerLogin());
-            if(gateway.getData().getUpdateServerUrl().equals(globalSettingDao.getString(GlobalSettingType.UPDATE_SERVER_URL))) {
+            if(gateway.getData().getUpdateServerUrl().equals(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER))) {
                 settings.setUseDefault(true);
             }
             }
@@ -235,13 +235,13 @@ public class GatewaySettingsController {
             if(nmConfigurationService.isFirmwareUpdateSupported()) {
             
             if(settings.isUseDefault()) {
-                updateServerUrl = globalSettingDao.getString(GlobalSettingType.UPDATE_SERVER_URL);
-                auth.setUsername(globalSettingDao.getString(GlobalSettingType.UPDATE_SERVER_ADMIN_USER));
-                auth.setUsername(globalSettingDao.getString(GlobalSettingType.UPDATE_SERVER_ADMIN_PASSWORD));
+                updateServerUrl = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
+                auth.setUsername(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_USER));
+                auth.setPassword(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD));
             } else {
                 updateServerUrl = settings.getUpdateServerUrl();
                 auth.setUsername(settings.getUpdateServerLogin().getUsername());
-                auth.setUsername(settings.getUpdateServerLogin().getPassword());
+                auth.setPassword(settings.getUpdateServerLogin().getPassword());
             }
             }
             RfnGatewayData.Builder builder = new RfnGatewayData.Builder();

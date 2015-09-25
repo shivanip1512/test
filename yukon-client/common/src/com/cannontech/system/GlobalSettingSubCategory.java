@@ -15,7 +15,6 @@ public enum GlobalSettingSubCategory implements DisplayableEnum {
     MISC(GlobalSettingCategory.OTHER),
     SECURITY(GlobalSettingCategory.OTHER),
     
-    NETWORK_MANAGER(GlobalSettingCategory.INTEGRATION),
     AMI(GlobalSettingCategory.SYSTEM_SETUP),
     AUTHENTICATION(GlobalSettingCategory.SYSTEM_SETUP),
     DR(GlobalSettingCategory.SYSTEM_SETUP),

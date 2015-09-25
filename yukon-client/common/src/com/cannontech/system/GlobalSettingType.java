@@ -92,6 +92,10 @@ public enum GlobalSettingType implements DisplayableEnum {
     MAIL_FROM_ADDRESS(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "yukon@cannontech.com"),
     NETWORK_MANAGER_ADDRESS(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "http://127.0.0.1:8081/nmclient/"),
     SMTP_TLS_ENABLED(GlobalSettingSubCategory.YUKON_SERVICES, booleanType(), false),
+    RFN_FIRMWARE_UPDATE_SERVER(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "http://127.0.0.1:8081/updateServer/latest/"),
+    RFN_FIRMWARE_UPDATE_SERVER_USER(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "admin"),
+    RFN_FIRMWARE_UPDATE_SERVER_PASSWORD(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "admin"),
+    
 
     // DR
     BATCHED_SWITCH_COMMAND_TOGGLE(GlobalSettingSubCategory.DR, stringType(), "auto"),
@@ -108,11 +112,6 @@ public enum GlobalSettingType implements DisplayableEnum {
     // Web Server
     GOOGLE_ANALYTICS_ENABLED(GlobalSettingSubCategory.WEB_SERVER, booleanType(), true),
     GOOGLE_ANALYTICS_TRACKING_IDS(GlobalSettingSubCategory.WEB_SERVER, stringType(), null),
-    
-    // Network Manager
-    UPDATE_SERVER_URL(GlobalSettingSubCategory.NETWORK_MANAGER, stringType(), "http://127.0.0.1:8081/nmclient/"),
-    UPDATE_SERVER_ADMIN_USER(GlobalSettingSubCategory.NETWORK_MANAGER, stringType(), "admin"),
-    UPDATE_SERVER_ADMIN_PASSWORD(GlobalSettingSubCategory.NETWORK_MANAGER, stringType(), "admin"),
     
     // Data Export (previously Billing)
     WIZ_ACTIVATE(GlobalSettingSubCategory.DATA_EXPORT, booleanType(), false),
