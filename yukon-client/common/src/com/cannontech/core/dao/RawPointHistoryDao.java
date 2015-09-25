@@ -76,8 +76,8 @@ public interface RawPointHistoryDao {
     /**
      * Method to get a list of point values for a given point and time period,
      * but only returning up to maxRows rows.
-     * To return a list with maxRows closest to startDate, use reverseOrder of false.
-     * To return a list with maxRows closest to stopDate, use reverseOrder of true.
+     * To return a list with maxRows closest to startDate, use Order.Forward.
+     * To return a list with maxRows closest to stopDate, use Order.Reverse.
      * @param pointId - Id of point to get values for
      * @param instantRange - time period, also defines clusivity
      * @param order - controls ordering by timestamp and changeid
@@ -89,8 +89,8 @@ public interface RawPointHistoryDao {
     /**
      * Method to get a list of point values for a given point and time period,
      * but only returning up to maxRows rows.
-     * To return a list with maxRows closest to startDate, use reverseOrder of false.
-     * To return a list with maxRows closest to stopDate, use reverseOrder of true.
+     * To return a list with maxRows closest to startDate, use Order.Forward.
+     * To return a list with maxRows closest to stopDate, use Order.Reverse.
      * @param pointId - Id of point to get values for
      * @param instantRange - time period, also defines clusivity
      * @param order - controls ordering by orderBy
