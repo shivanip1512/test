@@ -1,3 +1,4 @@
+prototype LONG kernel32.GetEnvironmentVariable(BYVAL STRING, BYREF STRING, BYREF LONG);
 // Included header files
 #include "ifx.h"
 #include "ISRTWindows.h"
@@ -19,9 +20,11 @@
 function OnFirstUIBefore()
 number nResult, nSize;
 string sDir, sDirLow, sDestWarn;
+
 begin
 	//set the string shown on the installer windows' title bars
 	IFX_SETUP_TITLE = "Yukon Application Suite - Installation Wizard";
+	//Calling the API Function.
 	
 	Dialog_Welcome:
 	Disable(BACKBUTTON);
@@ -149,7 +152,7 @@ begin
     if(bOptYes) then
     	sProg = TARGETDIR ^ "\\Client\\bin\\DBToolsFrame.bat";
 		LaunchAppAndWait(sProg, "", LAAW_OPTION_WAIT);
-    endif;
+	endif;
 
     Dialog_StartServices:
 	//only give the option to start services if services were installed
@@ -181,8 +184,8 @@ begin
     		 		"Click Finish to exit setup.",
     		 		"","",opt,opt);
     endif;
-    CopyFile(TARGETDIR + "\\Server\\web\\conf\\server.xml", TARGETDIR + "\\Server\\Config\\Backup\\server_" + IFX_PRODUCT_VERSION + ".xml");
-	CopyFile(TARGETDIR + "\\Server\\web\\conf\\web.xml", TARGETDIR + "\\Server\\Config\\Backup\\web_" + IFX_PRODUCT_VERSION + ".xml");
+    CopyFile(TARGETDIR + "\\Server\\web\\conf\\server.xml", TARGETDIR + "\\Server\\Config\\Backup\\server_" + CleanupVersionNum(IFX_PRODUCT_VERSION) + ".xml");
+	CopyFile(TARGETDIR + "\\Server\\web\\conf\\web.xml", TARGETDIR + "\\Server\\Config\\Backup\\web_" + CleanupVersionNum(IFX_PRODUCT_VERSION) + ".xml");
 end;
 
 //--------------------------------------------------------------------------
@@ -255,7 +258,7 @@ end;
 // installation that has already been installed on the machine.
 //-----------------------------------------------------------------------------
 function OnUpdateUIBefore()
-number nResult;
+number nResult ;
 BOOL bOptYes, bOptNo, bOpt;
 string sMasterConfig, sOldVersion, sMsg1, sMsg2, sCMD, sArgs, sDir;
 begin
@@ -334,8 +337,8 @@ begin
 	//Save the jvm memory and options parameters for Tomcat
 	SaveJvmParams();
 	
-	CopyFile(TARGETDIR + "\\Server\\web\\conf\\server.xml", TARGETDIR + "\\Server\\Config\\Backup\\server_" + IFX_INSTALLED_VERSION + ".xml");
-	CopyFile(TARGETDIR + "\\Server\\web\\conf\\web.xml", TARGETDIR + "\\Server\\Config\\Backup\\web_" + IFX_INSTALLED_VERSION + ".xml");
+	CopyFile(TARGETDIR + "\\Server\\web\\conf\\server.xml", TARGETDIR + "\\Server\\Config\\Backup\\server_" + CleanupVersionNum(IFX_INSTALLED_VERSION) + ".xml");
+	CopyFile(TARGETDIR + "\\Server\\web\\conf\\web.xml", TARGETDIR + "\\Server\\Config\\Backup\\web_" + CleanupVersionNum(IFX_INSTALLED_VERSION) + ".xml");
 	
 	//remove the YukonWebApplicationService, if it exists (i.e. upgrade install)
 	//so the new service installs correctly
@@ -633,8 +636,8 @@ if(IsDowngrade()) then
 		abort; //shut down the installer
 endif;
 
-CopyFile(TARGETDIR + "\\Server\\web\\conf\\server.xml", TARGETDIR + "\\Server\\Config\\Backup\\server_" + IFX_INSTALLED_VERSION + ".xml");
-CopyFile(TARGETDIR + "\\Server\\web\\conf\\web.xml", TARGETDIR + "\\Server\\Config\\Backup\\web_" + IFX_INSTALLED_VERSION + ".xml");
+CopyFile(TARGETDIR + "\\Server\\web\\conf\\server.xml", TARGETDIR + "\\Server\\Config\\Backup\\server_" + CleanupVersionNum(IFX_INSTALLED_VERSION) + ".xml");
+CopyFile(TARGETDIR + "\\Server\\web\\conf\\web.xml", TARGETDIR + "\\Server\\Config\\Backup\\web_" + CleanupVersionNum(IFX_INSTALLED_VERSION) + ".xml");
 
 //Beginning of UI Sequence
 Dlg_Start:

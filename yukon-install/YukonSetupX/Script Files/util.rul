@@ -433,3 +433,34 @@ begin
 		MessageBox("Error deleting files of type \"" + sSearchString + "\" in directory \"" + sDirectory + ". Old files may still be present.", WARNING);
 	endif;
 end;
+
+//-------------------------------------------------------
+// Helper function to clean up the version string for the
+// installed version passed as the parameter.  Version 5.1.2
+// initially looks like 5.01.002.  Thus, we need to parse
+// it.
+//-------------------------------------------------------
+export prototype string CleanupVersionNum(string);
+function string CleanupVersionNum(versionNumber)
+string sV1, sV2, sV3;
+number nTemp;
+begin
+	
+	//the first segment is fine
+	StrSub(sV1, versionNumber, 0, 1);
+	//convert to number and back to remove leading 0s
+	StrSub(sV2, versionNumber, 2, 2);
+	StrToNum(nTemp, sV2);
+	NumToStr(sV2, nTemp);
+	//rinse and repeat
+	StrSub(sV3, versionNumber, 5, 3);
+	if(sV3 != '') then
+		StrToNum(nTemp, sV3);
+		NumToStr(sV3, nTemp);
+	else 
+		sV3 = '0';
+	endif;
+	//put it all back together
+	versionNumber = sV1 + "." + sV2 + "." + sV3;
+	return versionNumber;
+end;
