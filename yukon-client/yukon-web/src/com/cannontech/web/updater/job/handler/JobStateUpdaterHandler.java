@@ -19,7 +19,6 @@ public class JobStateUpdaterHandler implements JobUpdaterHandler {
 
     @Override
     public String handle(int jobId, YukonUserContext userContext) {
-        // TODO Auto-generated method stub
 
         JobStatus<YukonJob> jobStatus = jobStatusDao.findLatestStatusByJobId(jobId);
 
@@ -31,8 +30,7 @@ public class JobStateUpdaterHandler implements JobUpdaterHandler {
     }
 
     @Override
-    public JobUpdaterTypeEnum getUpdaterType() {
-        // TODO Auto-generated method stub
+    public JobUpdaterTypeEnum getUpdaterType() {      
         return JobUpdaterTypeEnum.JOB_STATE_TEXT;
     }
 
