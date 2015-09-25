@@ -24,8 +24,7 @@ string sDir, sDirLow, sDestWarn;
 begin
 	//set the string shown on the installer windows' title bars
 	IFX_SETUP_TITLE = "Yukon Application Suite - Installation Wizard";
-	//Calling the API Function.
-	
+		
 	Dialog_Welcome:
 	Disable(BACKBUTTON);
 	TARGETDIR = "C:\\Yukon";

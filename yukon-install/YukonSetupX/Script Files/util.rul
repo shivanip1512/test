@@ -454,7 +454,7 @@ begin
 	NumToStr(sV2, nTemp);
 	//rinse and repeat
 	StrSub(sV3, versionNumber, 5, 3);
-	if(sV3 != '') then
+	if (sV3 != '') then
 		StrToNum(nTemp, sV3);
 		NumToStr(sV3, nTemp);
 	else 
