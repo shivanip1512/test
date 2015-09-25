@@ -118,6 +118,13 @@ public interface MspObjectDao {
      */
     public ErrorObject getNotFoundErrorObject(String objectID, String notFoundObjectType, String nounType, String method, String userName, String exceptionMessage);
 
+    /**
+     * Creates a new (MSP) ErrorObject 
+     * @param objectID The Multispeak objectID
+     * @param nounType The object type
+     * @param notFoundObjectType The objectID type
+     * @return
+     */
     public ErrorObject getNotFoundErrorObject(String objectID, String notFoundObjectType, String nounType, String method, String userName);
     
     /**
