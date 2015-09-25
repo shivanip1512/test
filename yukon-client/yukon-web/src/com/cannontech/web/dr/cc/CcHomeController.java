@@ -123,7 +123,7 @@ import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.tools.trends.TrendUtils;
 import com.cannontech.yukon.IDatabaseCache;
 
-//TODO: JAVA8 - Replace Filters and Functions with lambdas
+//TODO JAVA 8 - Replace Filters and Functions with lambdas
 @Controller
 public class CcHomeController {
     private static Logger log = YukonLogManager.getLogger(CcHomeController.class);
