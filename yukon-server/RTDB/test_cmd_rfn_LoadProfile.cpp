@@ -42,12 +42,12 @@ const CtiTime execute_time( CtiDate( 29, 7, 2013 ) , 11 );
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration )
 {
-    RfnVoltageProfileSetConfigurationCommand  command( 4, 34 );
+    RfnVoltageProfileSetConfigurationCommand  command( 60, 34 );
 
     // execute
     {
         const std::vector< unsigned char > exp = boost::assign::list_of
-            ( 0x68 )( 0x00 )( 0x01 )( 0x01 )( 0x00 )( 0x02 )( 0x10 )( 0x22 );
+            ( 0x68 )( 0x00 )( 0x01 )( 0x01 )( 0x00 )( 0x02 )( 0x04 )( 0x22 );
 
         RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
 
@@ -88,14 +88,14 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration )
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration_constructor_exceptions )
 {
     const std::vector< std::pair< unsigned, unsigned > > inputs = pair_list_of
-        (  0,  15 )       // demand interval of 0 seconds
-        ( 64,  15 )       // demand interval > 255 * 15 / 60 == 63
-        (  5,   0 )       // load profile interval of 0 minutes
-        (  5, 300 );      // load profile interval > 255
+        (   0,  15 )      // voltage averaging interval of 0 seconds
+        (  64,  15 )      // voltage averaging interval not modulo 15 and not one of the allowed values
+        ( 300,   0 )      // load profile interval of 0 minutes
+        ( 300, 300 );     // load profile interval > 255
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Voltage Demand Interval: (0) underflow (minimum: 1)" ) )
-        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Voltage Demand Interval: (64) overflow (maximum: 63)" ) )
+        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Voltage Averaging Interval: (0) invalid setting" ) )
+        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Voltage Averaging Interval: (64) invalid setting" ) )
         ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Load Profile Demand Interval: (0) underflow (minimum: 1)" ) )
         ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Load Profile Demand Interval: (300) overflow (maximum: 255)" ) );
 
@@ -134,7 +134,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration_decoding_excepti
 
     std::vector< RfnCommand::CommandException > actual;
 
-    RfnVoltageProfileSetConfigurationCommand command( 5, 15 );
+    RfnVoltageProfileSetConfigurationCommand command( 60, 15 );
 
     for each ( const RfnCommand::RfnResponsePayload & response in responses )
     {
@@ -175,17 +175,17 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration )
         const std::vector< unsigned char > response = boost::assign::list_of
             ( 0x69 )( 0x01 )( 0x00 )( 0x01 )( 0x01 )( 0x00 )( 0x02 )( 0x04 )( 0x06 );
 
-        BOOST_CHECK_EQUAL( 0.0, command.getDemandIntervalMinutes() );
+        BOOST_CHECK_EQUAL( 0.0, command.getVoltageAveragingIntervalSeconds() );
         BOOST_CHECK_EQUAL(   0, command.getLoadProfileIntervalMinutes() );
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
         BOOST_CHECK_EQUAL( rcv.description,
                                  "Status: Success (0)"
-                                 "\nVoltage Demand interval: 1.0 minutes"
+                                 "\nVoltage Averaging interval: 60 seconds"
                                  "\nLoad Profile Demand interval: 6 minutes" );
 
-        BOOST_CHECK_EQUAL(  1.0, command.getDemandIntervalMinutes() );
+        BOOST_CHECK_EQUAL(   60, command.getVoltageAveragingIntervalSeconds() );
         BOOST_CHECK_EQUAL(    6, command.getLoadProfileIntervalMinutes() );
     }
 

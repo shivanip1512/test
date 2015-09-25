@@ -308,6 +308,7 @@ const PaoInfoKeyNames KeyNames = boost::assign::list_of<PaoInfoKeyNames::relatio
         (Dpi::Key_RFN_Holiday2,           "rfn holiday 2")
         (Dpi::Key_RFN_Holiday3,           "rfn holiday 3")
 
+        (Dpi::Key_RFN_VoltageAveragingInterval,   "rfn voltage averaging interval")
         (Dpi::Key_RFN_DemandInterval,             "rfn demand interval")
         (Dpi::Key_RFN_LoadProfileInterval,        "rfn load profile interval")
         (Dpi::Key_RFN_VoltageProfileEnabledUntil, "rfn voltage profile enabled until")

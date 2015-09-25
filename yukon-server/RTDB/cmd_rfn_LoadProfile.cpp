@@ -116,10 +116,27 @@ RfnLoadProfileCommand::TlvList RfnLoadProfileCommand::getTlvsFromPayload( const 
 // Voltage Profile Configuration Base Class
 //
 
-RfnVoltageProfileConfigurationCommand::RfnVoltageProfileConfigurationCommand( const Operation op )
-    :   RfnLoadProfileCommand(op)
+RfnVoltageProfileConfigurationCommand::RfnVoltageProfileConfigurationCommand( const Operation op,
+                                                                              const unsigned voltageAveragingIntervalIncrements,
+                                                                              const unsigned loadProfileIntervalMinutes )
+    :   RfnLoadProfileCommand( op ),
+        _voltageAveragingIntervalIncrements( voltageAveragingIntervalIncrements ),
+        _loadProfileInterval( loadProfileIntervalMinutes )
 {
 }
+
+
+unsigned RfnVoltageProfileConfigurationCommand::getVoltageAveragingIntervalSeconds() const
+{
+    return _voltageAveragingIntervalIncrements * SecondsPerIncrement;
+}
+
+
+unsigned RfnVoltageProfileConfigurationCommand::getLoadProfileIntervalMinutes() const
+{
+    return _loadProfileInterval;
+}
+
 
 
 //
@@ -127,9 +144,9 @@ RfnVoltageProfileConfigurationCommand::RfnVoltageProfileConfigurationCommand( co
 //
 
 RfnVoltageProfileGetConfigurationCommand::RfnVoltageProfileGetConfigurationCommand()
-    :   RfnVoltageProfileConfigurationCommand( Operation_GetConfiguration ),
-        _demandIntervalIncrements( 0x00 ),
-        _loadProfileInterval( 0x00 )
+    :   RfnVoltageProfileConfigurationCommand( Operation_GetConfiguration,
+                                               0x00,
+                                               0x00 )
 {
 }
 
@@ -158,25 +175,13 @@ RfnCommandResult RfnVoltageProfileGetConfigurationCommand::decodeCommand( const 
     validate( Condition( tlv.value.size() == 2, ClientErrors::InvalidData )
             << "Invalid TLV length (" << tlv.value.size() << ")" );
 
-    _demandIntervalIncrements = tlv.value[0];
-    _loadProfileInterval      = tlv.value[1];
+    _voltageAveragingIntervalIncrements = tlv.value[0];
+    _loadProfileInterval                = tlv.value[1];
 
-    result.description += "\nVoltage Demand interval: " + CtiNumStr(getDemandIntervalMinutes(), 1) + " minutes";
+    result.description += "\nVoltage Averaging interval: " + CtiNumStr(getVoltageAveragingIntervalSeconds()) + " seconds";
     result.description += "\nLoad Profile Demand interval: " + CtiNumStr(getLoadProfileIntervalMinutes()) + " minutes";
 
     return result;
-}
-
-
-double RfnVoltageProfileGetConfigurationCommand::getDemandIntervalMinutes() const
-{
-    return static_cast<double>(_demandIntervalIncrements) * SecondsPerIncrement / SecondsPerMinute;
-}
-
-
-unsigned RfnVoltageProfileGetConfigurationCommand::getLoadProfileIntervalMinutes() const
-{
-    return _loadProfileInterval;
 }
 
 
@@ -184,26 +189,21 @@ unsigned RfnVoltageProfileGetConfigurationCommand::getLoadProfileIntervalMinutes
 // Voltage profile set configuration
 //
 
-RfnVoltageProfileSetConfigurationCommand::RfnVoltageProfileSetConfigurationCommand( const double demand_interval_minutes,
+RfnVoltageProfileSetConfigurationCommand::RfnVoltageProfileSetConfigurationCommand( const unsigned voltage_averaging_interval_seconds,
                                                                                     const unsigned load_profile_interval_minutes )
-    :   RfnVoltageProfileConfigurationCommand( Operation_SetConfiguration ),
-        demandInterval( demand_interval_minutes ),
-        loadProfileInterval( load_profile_interval_minutes )
+    :   RfnVoltageProfileConfigurationCommand( Operation_SetConfiguration,
+                                               voltage_averaging_interval_seconds / SecondsPerIncrement,
+                                               load_profile_interval_minutes )
 {
-    validate( Condition( demand_interval_minutes >= 1, ClientErrors::BadParameter )
-            << "Invalid Voltage Demand Interval: (" << demand_interval_minutes
-            << ") underflow (minimum: 1)" );
+    static const std::set<unsigned>     allowedAveragingIntervals_seconds
+    {
+        15, 30, 45, 60, 90, 120, 180, 300, 600, 900
+    };
 
-    const unsigned MaxDemandIntervalMinutes = 255 * SecondsPerIncrement / SecondsPerMinute;
+    validate( Condition( allowedAveragingIntervals_seconds.count( voltage_averaging_interval_seconds ) == 1, ClientErrors::BadParameter )
+            << "Invalid Voltage Averaging Interval: (" << voltage_averaging_interval_seconds
+            << ") invalid setting" );
 
-    validate( Condition( demand_interval_minutes <= MaxDemandIntervalMinutes, ClientErrors::BadParameter )
-            << "Invalid Voltage Demand Interval: (" << demand_interval_minutes
-            << ") overflow (maximum: " << MaxDemandIntervalMinutes << ")" );
-    /*
-    validate( Condition( ! (demand_interval_seconds % SecondsPerIncrement), BADPARAM )
-            << "Invalid Voltage Demand Interval: (" << demand_interval_seconds
-            << ") not divisible by " << SecondsPerInterval );
-    */
     validate( Condition( load_profile_interval_minutes > 0, ClientErrors::BadParameter )
             << "Invalid Load Profile Demand Interval: (" << load_profile_interval_minutes
             << ") underflow (minimum: 1)" );
@@ -221,15 +221,12 @@ void RfnVoltageProfileSetConfigurationCommand::invokeResultHandler(RfnCommand::R
 
 RfnLoadProfileCommand::TlvList RfnVoltageProfileSetConfigurationCommand::getTlvs()
 {
-        TypeLengthValue tlv = TypeLengthValue::makeLongTlv(TlvType_VoltageProfileConfiguration);
+    TypeLengthValue tlv = TypeLengthValue::makeLongTlv(TlvType_VoltageProfileConfiguration);
 
-        const unsigned demandIntervalSeconds = demandInterval * SecondsPerMinute;
-        const unsigned demandIntervalIncrements = demandIntervalSeconds / SecondsPerIncrement;
+    tlv.value.push_back( _voltageAveragingIntervalIncrements );
+    tlv.value.push_back( _loadProfileInterval );
 
-        tlv.value.push_back( demandIntervalIncrements );
-        tlv.value.push_back( loadProfileInterval );
-
-        return { tlv };
+    return { tlv };
 }
 
 

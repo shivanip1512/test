@@ -41,6 +41,7 @@ struct IM_EX_CONFIG RfnStrings
     static const std::string DisconnectDisplayDisabled;
     static const std::string DisplayDigits;
 
+    static const std::string voltageAveragingInterval;
     static const std::string demandInterval;
     static const std::string profileInterval;
 

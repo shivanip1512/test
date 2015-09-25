@@ -76,10 +76,6 @@ YukonError_t RfnMeterDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandPar
     {
         return executePutConfigHoliday(pReq, parse, returnMsgs, rfnRequests);
     }
-    if( parse.isKeyValid("voltage_profile") )
-    {
-        return executePutConfigVoltageProfile(pReq, parse, returnMsgs, rfnRequests);
-    }
 
     return ClientErrors::NoMethod;
 }
@@ -98,10 +94,6 @@ YukonError_t RfnMeterDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandPar
     if( parse.isKeyValid("holiday") )
     {
         return executeGetConfigHoliday(pReq, parse, returnMsgs, rfnRequests);
-    }
-    if( parse.isKeyValid("voltage_profile") )
-    {
-        return executeGetConfigVoltageProfile(pReq, parse, returnMsgs, rfnRequests);
     }
 
     return ClientErrors::NoMethod;

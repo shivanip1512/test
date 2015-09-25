@@ -241,6 +241,7 @@ const string RfnStrings::LcdCycleTime = "lcdCycleTime";
 const string RfnStrings::DisconnectDisplayDisabled = "disconnectDisplayDisabled";
 const string RfnStrings::DisplayDigits = "displayDigits";
 
+const string RfnStrings::voltageAveragingInterval   = "averagingInterval";
 const string RfnStrings::demandInterval        = "demandInterval";
 const string RfnStrings::profileInterval       = "profileInterval";
 

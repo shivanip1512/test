@@ -1201,196 +1201,6 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_disconnect_invalid_config )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_voltage_profile )
-{
-    test_RfnResidentialDevice dut;
-
-    CtiCommandParser parse("putconfig emetcon voltage profile demandinterval 17 lpinterval 34");
-
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
-    BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
-    BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
-
-    {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
-
-        BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
-        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
-    }
-
-    {
-        Commands::RfnCommandSPtr command = rfnRequests.front();
-
-        Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
-
-        std::vector<unsigned char> exp = boost::assign::list_of
-                ( 0x68 )( 0x00 )( 0x01 )( 0x01 )( 0x00 )( 0x02 )( 0x44 )( 0x22 );
-
-        BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
-                                       exp.begin() , exp.end() );
-
-        dut.extractCommandResult( *command );
-
-        double   test_DemandInterval = 0;
-        unsigned test_LoadProfileInterval = 0;
-
-        BOOST_CHECK( dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandInterval,      test_DemandInterval ));
-        BOOST_CHECK( dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval, test_LoadProfileInterval ));
-
-        BOOST_CHECK_EQUAL( test_DemandInterval,      17 );
-        BOOST_CHECK_EQUAL( test_LoadProfileInterval, 34 );
-
-    }
-}
-
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_voltage_profile_enable )
-{
-    test_RfnResidentialDevice dut;
-
-    CtiCommandParser parse("putconfig emetcon voltage profile enable");
-
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
-    BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
-    BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
-
-    {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
-
-        BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
-        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
-    }
-
-    {
-        Commands::RfnCommandSPtr command = rfnRequests.front();
-
-        Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
-
-        std::vector<unsigned char> exp = boost::assign::list_of
-                ( 0x68 )( 0x03 )( 0x00 );
-
-        BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
-                                       exp.begin() , exp.end() );
-    }
-}
-
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_voltage_profile_disable )
-{
-    test_RfnResidentialDevice dut;
-
-    CtiCommandParser parse("putconfig emetcon voltage profile disable");
-
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
-    BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
-    BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
-
-    {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
-
-        BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
-        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
-    }
-
-    {
-        Commands::RfnCommandSPtr command = rfnRequests.front();
-
-        Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
-
-        std::vector<unsigned char> exp = boost::assign::list_of
-                ( 0x68 )( 0x02 )( 0x00 );
-
-        BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
-                                       exp.begin() , exp.end() );
-    }
-}
-
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getconfig_voltage_profile )
-{
-    test_RfnResidentialDevice dut;
-
-    CtiCommandParser parse("getconfig voltage profile");
-
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
-    BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
-    BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
-
-    {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
-
-        BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
-        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
-    }
-
-    {
-        Commands::RfnCommandSPtr command = rfnRequests.front();
-
-        {
-            Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
-
-            std::vector<unsigned char> exp = boost::assign::list_of
-                    ( 0x68 )( 0x01 )( 0x00 );
-
-            BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
-                                           exp.begin() , exp.end() );
-        }
-
-        {
-            std::vector<unsigned char> response = boost::assign::list_of
-                    ( 0x69 )( 0x01 )( 0x00 )( 0x01 )( 0x01 )( 0x00 )( 0x02 )( 0x44 )( 0x22 );
-
-            const Cti::Devices::Commands::RfnCommandResult rcv = command->decodeCommand( decode_time, response );
-
-            const std::string exp = "Status: Success (0)\n"
-                                    "Voltage Demand interval: 17.0 minutes\n"
-                                    "Load Profile Demand interval: 34 minutes";
-
-            BOOST_CHECK_EQUAL( rcv.description, exp );
-        }
-
-        {
-            dut.extractCommandResult( *command );
-
-            double   test_DemandInterval = 0;
-            unsigned test_LoadProfileInterval = 0;
-
-            BOOST_CHECK( dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandInterval,      test_DemandInterval ));
-            BOOST_CHECK( dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval, test_LoadProfileInterval ));
-
-            BOOST_CHECK_EQUAL( test_DemandInterval,      17 );
-            BOOST_CHECK_EQUAL( test_LoadProfileInterval, 34 );
-        }
-    }
-}
-
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getvalue_voltage_profile_state )
-{
-    test_RfnResidentialDevice dut;
-
-    CtiCommandParser parse("getconfig voltage profile state");
-
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
-    BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
-    BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
-
-    {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
-
-        BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
-        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
-    }
-
-    {
-        Commands::RfnCommandSPtr command = rfnRequests.front();
-
-        Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
-
-        std::vector<unsigned char> exp = boost::assign::list_of
-                ( 0x68 )( 0x04 )( 0x00 );
-
-        BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
-                                       exp.begin() , exp.end() );
-    }
-}
-
 BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_immediate_demand_freeze )
 {
     test_RfnResidentialDevice    dev;
@@ -2084,7 +1894,8 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
 
             // OVUV config
             ( CategoryDefinition(
-                "rfnOvUv", map_list_of
+                "rfnVoltage", map_list_of
+                    ( RfnStrings::voltageAveragingInterval,   "60"      )
                     ( RfnStrings::OvUvEnabled,                "true"    )
                     ( RfnStrings::OvUvAlarmReportingInterval, "5"       )
                     ( RfnStrings::OvUvAlarmRepeatInterval,    "60"      )
@@ -2291,7 +2102,8 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_groupMessageCount )
 
             // OVUV config
             ( CategoryDefinition(
-                "rfnOvUv", map_list_of
+                "rfnVoltage", map_list_of
+                    ( RfnStrings::voltageAveragingInterval,   "60"      )
                     ( RfnStrings::OvUvEnabled,                "true"    )
                     ( RfnStrings::OvUvAlarmReportingInterval, "5"       )
                     ( RfnStrings::OvUvAlarmRepeatInterval,    "60"      )
@@ -2595,7 +2407,8 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
                     ( RfnStrings::demandFreezeDay, "7" )))
 
             ( CategoryDefinition( // OVUV config
-                "rfnOvUv", map_list_of
+                "rfnVoltage", map_list_of
+                    ( RfnStrings::voltageAveragingInterval,   "60"      )
                     ( RfnStrings::OvUvEnabled,                "true"    )
                     ( RfnStrings::OvUvAlarmReportingInterval, "5"       )
                     ( RfnStrings::OvUvAlarmRepeatInterval,    "60"      )

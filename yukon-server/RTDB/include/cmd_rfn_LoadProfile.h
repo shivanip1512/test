@@ -78,14 +78,24 @@ public:
  */
 class IM_EX_DEVDB RfnVoltageProfileConfigurationCommand : public RfnLoadProfileCommand
 {
+public:
+
+    unsigned getVoltageAveragingIntervalSeconds() const;
+    unsigned getLoadProfileIntervalMinutes() const;
+
 protected:
 
-    RfnVoltageProfileConfigurationCommand( const Operation operation );
+    RfnVoltageProfileConfigurationCommand( const Operation operation,
+                                           const unsigned voltageAveragingIntervalIncrements,
+                                           const unsigned loadProfileIntervalMinutes );
 
     enum
     {
         SecondsPerIncrement = 15
     };
+
+    unsigned _voltageAveragingIntervalIncrements,
+             _loadProfileInterval;
 };
 
 
@@ -102,14 +112,6 @@ public:
 
     virtual RfnCommandResult decodeCommand( const CtiTime now,
                                             const RfnResponsePayload & response );
-
-    double   getDemandIntervalMinutes() const;
-    unsigned getLoadProfileIntervalMinutes() const;
-
-private:
-
-    unsigned _demandIntervalIncrements,
-             _loadProfileInterval;
 };
 
 
@@ -122,14 +124,11 @@ public:
 
     virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
 
-    RfnVoltageProfileSetConfigurationCommand( const double   demand_interval_minutes,
+    RfnVoltageProfileSetConfigurationCommand( const unsigned voltage_averaging_interval_seconds,
                                               const unsigned load_profile_interval_minutes );
 
     virtual RfnCommandResult decodeCommand( const CtiTime now,
                                             const RfnResponsePayload & response );
-
-    const double   demandInterval;
-    const unsigned loadProfileInterval;
 
 protected:
 

@@ -348,6 +348,7 @@ public:
         Key_RFN_Holiday3,
 
         Key_RFN_DemandInterval,
+        Key_RFN_VoltageAveragingInterval,
         Key_RFN_LoadProfileInterval,
         Key_RFN_VoltageProfileEnabledUntil,
 

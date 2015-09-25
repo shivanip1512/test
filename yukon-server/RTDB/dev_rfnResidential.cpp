@@ -142,87 +142,6 @@ RfnMeterDevice::ConfigMap RfnResidentialDevice::getConfigMethods(bool readOnly)
     return m;
 }
 
-YukonError_t RfnResidentialDevice::executePutConfigVoltageProfile( CtiRequestMsg     * pReq,
-                                                                   CtiCommandParser  & parse,
-                                                                   ReturnMsgList     & returnMsgs,
-                                                                   RfnCommandList    & rfnRequests )
-{
-    // putconfig voltage profile demandinterval 1234 lpinterval 123
-    // putconfig voltage profile enable|disable
-
-    using Commands::RfnLoadProfileSetRecordingCommand;
-    using Commands::RfnVoltageProfileSetConfigurationCommand;
-
-    //
-    // enable|disable recording
-    //
-
-    if( parse.isKeyValid("voltage_profile_enable") )
-    {
-        RfnLoadProfileSetRecordingCommand::RecordingOption option = (parse.getiValue("voltage_profile_enable")) ? RfnLoadProfileSetRecordingCommand::EnableRecording
-                                                                                                                : RfnLoadProfileSetRecordingCommand::DisableRecording;
-
-        rfnRequests.push_back( boost::make_shared<RfnLoadProfileSetRecordingCommand>( option ));
-
-        return ClientErrors::None;
-    }
-
-    //
-    // demand interval
-    //
-
-    const int demand_interval_minutes = parse.getiValue("demand_interval_minutes");
-
-    if( demand_interval_minutes < 0 )
-    {
-        CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - Missing \"demandinterval\" parameter.");
-
-        return ClientErrors::MissingParameter;
-    }
-
-    //
-    // load profile interval
-    //
-
-    const int load_profile_interval_minutes = parse.getiValue("load_profile_interval_minutes");
-
-    if( load_profile_interval_minutes < 0 )
-    {
-        CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - Missing \"lpinterval\" parameter.");
-
-        return ClientErrors::MissingParameter;
-    }
-
-    rfnRequests.push_back( boost::make_shared<RfnVoltageProfileSetConfigurationCommand>( demand_interval_minutes,
-                                                                                         load_profile_interval_minutes ));
-
-    return ClientErrors::None;
-}
-
-YukonError_t RfnResidentialDevice::executeGetConfigVoltageProfile( CtiRequestMsg     * pReq,
-                                                                   CtiCommandParser  & parse,
-                                                                   ReturnMsgList     & returnMsgs,
-                                                                   RfnCommandList    & rfnRequests )
-{
-    // getconfig voltage profile
-    // getconfig voltage profile state
-
-    using Commands::RfnLoadProfileGetRecordingCommand;
-    using Commands::RfnVoltageProfileGetConfigurationCommand;
-
-    if( parse.isKeyValid("voltage_profile_state") )
-    {
-        rfnRequests.push_back( boost::make_shared<RfnLoadProfileGetRecordingCommand>());
-
-        return ClientErrors::None;
-    }
-
-    rfnRequests.push_back( boost::make_shared<RfnVoltageProfileGetConfigurationCommand>());
-
-    return ClientErrors::None;
-}
-
-
 YukonError_t RfnResidentialDevice::executeGetValueVoltageProfile( CtiRequestMsg     * pReq,
                                                                   CtiCommandParser  & parse,
                                                                   ReturnMsgList     & returnMsgs,
@@ -316,20 +235,20 @@ YukonError_t RfnResidentialDevice::executePutConfigVoltageAveragingInterval( Cti
 
     struct IntervalSettings
     {
-        boost::optional<double>     demandInterval;
-        boost::optional<unsigned>   loadProfileInterval;
+        boost::optional<unsigned>   voltageAveragingInterval,
+                                    loadProfileInterval;
 
         bool operator==( const IntervalSettings & rhs ) const
         {
-            return demandInterval && rhs.demandInterval && (fabs(*demandInterval - *rhs.demandInterval) < 0.1) && loadProfileInterval == rhs.loadProfileInterval;
+            return voltageAveragingInterval == rhs.voltageAveragingInterval && loadProfileInterval == rhs.loadProfileInterval;
         }
     }
     configSettings,
     paoSettings;
 
     {
-        const std::string             configKey( Config::RfnStrings::demandInterval );
-        const boost::optional<double> configValue = deviceConfig->findValue<double>( configKey );
+        const std::string             configKey( Config::RfnStrings::voltageAveragingInterval );
+        const boost::optional<long>   configValue = deviceConfig->findValue<long>( configKey );
 
         if ( ! configValue  )
         {
@@ -337,7 +256,13 @@ YukonError_t RfnResidentialDevice::executePutConfigVoltageAveragingInterval( Cti
             return ClientErrors::NoConfigData;
         }
 
-        configSettings.demandInterval = *configValue;
+        if ( *configValue < 0 || *configValue > std::numeric_limits<unsigned>::max() )
+        {
+            CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - Invalid value (" << *configValue << ") for config key \"" << configKey << "\"");
+            return ClientErrors::InvalidConfigData;
+        }
+
+        configSettings.voltageAveragingInterval = static_cast<unsigned>( *configValue );
     }
 
     {
@@ -362,9 +287,9 @@ YukonError_t RfnResidentialDevice::executePutConfigVoltageAveragingInterval( Cti
     {
         double pao_value;
 
-        if ( getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandInterval, pao_value ) )
+        if ( getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_VoltageAveragingInterval, pao_value ) )
         {
-            paoSettings.demandInterval = pao_value;
+            paoSettings.voltageAveragingInterval = pao_value;
         }
     }
 
@@ -392,7 +317,7 @@ YukonError_t RfnResidentialDevice::executePutConfigVoltageAveragingInterval( Cti
         }
     }
 
-    rfnRequests.push_back( boost::make_shared<Commands::RfnVoltageProfileSetConfigurationCommand>( *configSettings.demandInterval,
+    rfnRequests.push_back( boost::make_shared<Commands::RfnVoltageProfileSetConfigurationCommand>( *configSettings.voltageAveragingInterval,
                                                                                                    *configSettings.loadProfileInterval ) );
 
     return ClientErrors::None;
@@ -408,30 +333,6 @@ YukonError_t RfnResidentialDevice::executeGetConfigVoltageAveragingInterval( Cti
 
     return ClientErrors::None;
 }
-
-
-//YukonError_t RfnResidentialDevice::executeLoadProfileRecording( CtiRequestMsg     * pReq,
-//                                                                CtiCommandParser  & parse,
-//                                                                ReturnMsgList     & returnMsgs,
-//                                                                RfnCommandList    & rfnRequests )
-//{
-//    // TBD
-//
-//    if ( 0 /* parse says enable or disable recording -- TBD */ )
-//    {
-//        Commands::RfnLoadProfileRecordingCommand::RecordingOption option =
-//            Commands::RfnLoadProfileRecordingCommand::DisableRecording;  // get from parse...
-//
-//        rfnRequests.push_back( boost::make_shared<Commands::RfnLoadProfileSetRecordingCommand>( option ) );
-//    }
-//    else    // reading the state of recording from the device
-//    {
-//        rfnRequests.push_back( boost::make_shared<Commands::RfnLoadProfileGetRecordingCommand>() );
-//    }
-//
-//    return NoError;
-//}
-
 
 YukonError_t RfnResidentialDevice::executePutConfigDemandFreezeDay( CtiRequestMsg     * pReq,
                                                                     CtiCommandParser  & parse,
@@ -1392,15 +1293,15 @@ void RfnResidentialDevice::handleCommandResult( const Commands::RfnSetOvUvSetUnd
 
 void RfnResidentialDevice::handleCommandResult( const Commands::RfnVoltageProfileGetConfigurationCommand & cmd )
 {
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandInterval,      cmd.getDemandIntervalMinutes() );
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval, cmd.getLoadProfileIntervalMinutes() );
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_VoltageAveragingInterval, cmd.getVoltageAveragingIntervalSeconds() );
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval,      cmd.getLoadProfileIntervalMinutes() );
 }
 
 
 void RfnResidentialDevice::handleCommandResult( const Commands::RfnVoltageProfileSetConfigurationCommand & cmd )
 {
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandInterval,      cmd.demandInterval );
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval, cmd.loadProfileInterval );
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_VoltageAveragingInterval, cmd.getVoltageAveragingIntervalSeconds() );
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval,      cmd.getLoadProfileIntervalMinutes() );
 }
 
 
