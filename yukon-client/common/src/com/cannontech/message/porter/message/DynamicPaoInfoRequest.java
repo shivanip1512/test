@@ -1,23 +1,23 @@
 package com.cannontech.message.porter.message;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.EnumSet;
 
 public class DynamicPaoInfoRequest {
     
     private int deviceID;
-    private Set<DynamicPaoInfoKeyEnum> keys;
+    private EnumSet<DynamicPaoInfoKeyEnum> keys;
 
     public DynamicPaoInfoRequest() { }
     
     public DynamicPaoInfoRequest(int deviceID, DynamicPaoInfoKeyEnum key) {
         this.deviceID = deviceID;
-        keys.add(key);
+        keys = EnumSet.of(key);
     }
     
     public DynamicPaoInfoRequest(int deviceID, Collection<DynamicPaoInfoKeyEnum> keys) {
         this.deviceID = deviceID;
-        this.keys.addAll(keys);
+        this.keys = EnumSet.copyOf(keys);
     }
     
     public int getDeviceID() {
@@ -33,8 +33,7 @@ public class DynamicPaoInfoRequest {
     }
     
     public void setKeys(Collection<DynamicPaoInfoKeyEnum> keys) {
-        this.keys.clear();
-        this.keys.addAll(keys);
+        this.keys = EnumSet.copyOf(keys);
     }
     
     @Override

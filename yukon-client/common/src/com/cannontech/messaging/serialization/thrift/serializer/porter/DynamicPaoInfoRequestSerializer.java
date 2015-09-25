@@ -13,11 +13,9 @@ import com.cannontech.messaging.serialization.thrift.generated.DynamicPaoInfoKey
 import com.cannontech.messaging.serialization.thrift.generated.PorterDynamicPaoInfoRequest;
 import com.google.common.collect.ImmutableMap;
 
-public class DynamicPaoInfoRequestSerializer
-    extends
-    ThriftSerializer<DynamicPaoInfoRequest, PorterDynamicPaoInfoRequest> {
+public class DynamicPaoInfoRequestSerializer extends ThriftSerializer<DynamicPaoInfoRequest, PorterDynamicPaoInfoRequest> {
 
-    static final ImmutableMap<DynamicPaoInfoKeyEnum, DynamicPaoInfoKeys> keyMapping = ImmutableMap.of(
+    private static final ImmutableMap<DynamicPaoInfoKeyEnum, DynamicPaoInfoKeys> keyMapping = ImmutableMap.of(
             DynamicPaoInfoKeyEnum.RFN_VOLTAGE_PROFILE_ENABLED_UNTIL, DynamicPaoInfoKeys.RFN_VOLTAGE_PROFILE_ENABLED_UNTIL,
             DynamicPaoInfoKeyEnum.RFN_VOLTAGE_PROFILE_INTERVAL, DynamicPaoInfoKeys.RFN_VOLTAGE_PROFILE_INTERVAL);
     
