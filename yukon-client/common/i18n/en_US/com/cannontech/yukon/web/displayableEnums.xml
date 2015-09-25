@@ -274,11 +274,11 @@
     <entry key="yukon.common.setting.BATCHED_SWITCH_COMMAND_TOGGLE.description">Specifies whether the STARS application should automatically process batched switch commands</entry>
     <entry key="yukon.common.setting.NETWORK_MANAGER_ADDRESS">Network Manager Address</entry>
     <entry key="yukon.common.setting.NETWORK_MANAGER_ADDRESS.description">Name or IP address of the Network Manager web server</entry>
-    <entry key="yukon.common.setting.RFN_FIRMWARE_UPDATE_SERVER">Network Manager Update Server Address</entry>
-    <entry key="yukon.common.setting.RFN_FIRMWARE_UPDATE_SERVER.description">Name or IP address of the Network Manager update server</entry>
-    <entry key="yukon.common.setting.RFN_FIRMWARE_UPDATE_SERVER_USER">Network Manager Update Server User</entry>
+    <entry key="yukon.common.setting.RFN_FIRMWARE_UPDATE_SERVER">RFN Firmware Update Server Address</entry>
+    <entry key="yukon.common.setting.RFN_FIRMWARE_UPDATE_SERVER.description">Name or IP address of the RFN Firmware update server</entry>
+    <entry key="yukon.common.setting.RFN_FIRMWARE_UPDATE_SERVER_USER">RFN Firmware Update Server User</entry>
     <entry key="yukon.common.setting.RFN_FIRMWARE_UPDATE_SERVER_USER.description">Name of the update server user</entry>
-    <entry key="yukon.common.setting.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD">Network Manager Update Server Password</entry>
+    <entry key="yukon.common.setting.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD">RFN Firmware Update Server Password</entry>
     <entry key="yukon.common.setting.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD.description">Password of the update server user</entry>
     <entry key="yukon.common.setting.WEB_LOGO_URL">Web Logo URL</entry>
     <entry key="yukon.common.setting.WEB_LOGO_URL.description">The logo that is used for the yukon web applications</entry>
