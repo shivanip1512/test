@@ -71,6 +71,7 @@ public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadM
 	public final static String ROUTE_NAME_STRING = "Route Name";
 	public final static String READ_TIMESTAMP_STRING= "Timestamp";
 	public final static String STATUS_CODE_STRING = "StatusCode";
+	public final static int SCHEDULED_METER_READ_RECORDS_LIMIT = 150000;
 	
 	/** Class fields */
 	private HashMap totals = null;
@@ -198,7 +199,7 @@ public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadM
 	 */
 	public SqlFragmentSource buildSQLStatement() {
 	    SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT SCHEDULE.PAONAME, DRJL.STARTTIME, DRJL.STOPTIME, ");
+        sql.append("SELECT TOP "+ SCHEDULED_METER_READ_RECORDS_LIMIT +"SCHEDULE.PAONAME, DRJL.STARTTIME, DRJL.STOPTIME, ");
         sql.append(" DRRL.REQUESTID, DRRL.COMMAND, DRRL.STARTTIME, DRRL.STOPTIME, ");
         sql.append(" DRL.TIMESTAMP, DRL.STATUSCODE, ");
         sql.append(" PAO.PAONAME, DCS.ADDRESS, DMG.METERNUMBER, ROUTE.PAONAME ");
