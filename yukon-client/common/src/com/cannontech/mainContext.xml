@@ -374,6 +374,7 @@
     <bean class="com.cannontech.common.rfn.service.impl.RfnDeviceCreationServiceImpl"/>
     <bean class="com.cannontech.common.rfn.service.impl.RfDaCreationServiceImpl"/>
     <bean class="com.cannontech.common.rfn.service.impl.RfnGatewayServiceImpl"/>
+    <bean class="com.cannontech.common.rfn.service.impl.NMConfigurationServiceImpl"/>
     <bean class="com.cannontech.common.rfn.service.impl.RfnGatewayDataCacheImpl"/>
     <bean class="com.cannontech.common.rfn.service.impl.RfnGatewayCertificateUpdateServiceImpl"/>
     <bean class="com.cannontech.common.rfn.service.impl.RfnGatewaySimulatorServiceImpl"/>
