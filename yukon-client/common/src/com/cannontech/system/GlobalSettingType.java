@@ -110,9 +110,9 @@ public enum GlobalSettingType implements DisplayableEnum {
     GOOGLE_ANALYTICS_TRACKING_IDS(GlobalSettingSubCategory.WEB_SERVER, stringType(), null),
     
     // Network Manager
-    UPDATE_SERVER_URL(GlobalSettingSubCategory.NETWORK_MANAGER, stringType(), "https://10.10.10.10:8080/updateServer/latest"),
-    UPDATE_SERVER_ADMIN_USER(GlobalSettingSubCategory.NETWORK_MANAGER, stringType(), "admin001"),
-    UPDATE_SERVER_ADMIN_PASSWORD(GlobalSettingSubCategory.NETWORK_MANAGER, stringType(), "admin002"),
+    UPDATE_SERVER_URL(GlobalSettingSubCategory.NETWORK_MANAGER, stringType(), "http://127.0.0.1:8081/nmclient/"),
+    UPDATE_SERVER_ADMIN_USER(GlobalSettingSubCategory.NETWORK_MANAGER, stringType(), "admin"),
+    UPDATE_SERVER_ADMIN_PASSWORD(GlobalSettingSubCategory.NETWORK_MANAGER, stringType(), "admin"),
     
     // Data Export (previously Billing)
     WIZ_ACTIVATE(GlobalSettingSubCategory.DATA_EXPORT, booleanType(), false),

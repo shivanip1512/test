@@ -35,6 +35,7 @@ import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
+import com.cannontech.common.rfn.service.NMConfigurationService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -74,8 +75,7 @@ public class GatewaySettingsController {
     @Autowired private GatewayEventLogService gatewayEventLogService;
     @Autowired private EndpointEventLogService endpointEventLogService;
     @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private ConfigurationSource configurationSource;
-    private Double nmVersion = 7.0;
+    @Autowired private NMConfigurationService nmConfigurationService;
     
     @RequestMapping("/gateways/create")
     public String createDialog(ModelMap model) {
@@ -83,7 +83,7 @@ public class GatewaySettingsController {
         model.addAttribute("mode", PageEditMode.CREATE);
         GatewaySettings settings = new GatewaySettings();
         
-        if (configurationSource.getDouble(MasterConfigDouble.NM_COMPATIBILITY) == nmVersion) {
+        if (nmConfigurationService.isFirmwareUpdateSupported()) {
 
             settings.setUpdateServerUrl(globalSettingDao.getString(GlobalSettingType.UPDATE_SERVER_URL));
 
@@ -180,7 +180,7 @@ public class GatewaySettingsController {
             }
             
             
-            if(configurationSource.getDouble(MasterConfigDouble.NM_COMPATIBILITY) == nmVersion) {
+            if(nmConfigurationService.isFirmwareUpdateSupported()) {
             
             settings.setUpdateServerUrl(gateway.getData().getUpdateServerUrl());
             settings.setUpdateServerLogin(gateway.getData().getUpdateServerLogin());
@@ -232,7 +232,7 @@ public class GatewaySettingsController {
             }
             
             
-            if(configurationSource.getDouble(MasterConfigDouble.NM_COMPATIBILITY) == nmVersion) {
+            if(nmConfigurationService.isFirmwareUpdateSupported()) {
             
             if(settings.isUseDefault()) {
                 updateServerUrl = globalSettingDao.getString(GlobalSettingType.UPDATE_SERVER_URL);
