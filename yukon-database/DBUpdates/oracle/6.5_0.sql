@@ -163,6 +163,12 @@ DELETE FROM GlobalSetting
 WHERE Name IN ('INTERVAL', 'BASELINE_CALCTIME', 'DAYS_PREVIOUS_TO_COLLECT');
 /* End YUK-14668 */
 
+/* Start YUK-14667 */
+UPDATE DeviceConfigCategory 
+SET CategoryType = 'rfnVoltage' 
+WHERE CategoryType = 'rfnOvUv';
+/* End YUK-14667 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
