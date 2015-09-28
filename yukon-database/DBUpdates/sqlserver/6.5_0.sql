@@ -127,8 +127,7 @@ JOIN UserGroup ug                        ON yu.UserGroupId = ug.UserGroupId
 JOIN UserGroupToYukonGroupMapping ugtygm ON ug.UserGroupId = ugtygm.UserGroupId
 JOIN YukonGroup yg                       ON ugtygm.GroupId = yg.GroupID
 JOIN YukonGroupRole ygr                  ON yg.GroupId = ygr.GroupID
-WHERE YGR.RolePropertyID  = -20164
-  AND ec.EnergyCompanyId > -1;
+WHERE YGR.RolePropertyID  = -20164;
 /* @end-block */
 
 DELETE FROM YukonGroupRole 
