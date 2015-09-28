@@ -471,7 +471,7 @@ public class DeviceConfigurationCategoryController {
 
         CategoryType type = CategoryType.fromValue(categoryEditBean.getCategoryType());
         
-        if (configId != null && (type == CategoryType.RFN_VOLTAGE || type == CategoryType.RFN_CHANNEL_CONFIGURATION)) {
+        if (configId != null && type == CategoryType.RFN_VOLTAGE) {
             DeviceConfiguration config = deviceConfigurationDao.getDeviceConfiguration(configId);
             // Returns true if the two specified collections have no elements in common.
             boolean isAssignedToConfig =

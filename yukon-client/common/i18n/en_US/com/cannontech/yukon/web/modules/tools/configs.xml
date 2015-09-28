@@ -501,8 +501,8 @@
 
     <entry key="yukon.web.modules.tools.configs.category.rfnVoltage.title">RFN Single Phase Voltage</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnVoltage.definition">Configuration parameters for the voltage metrology features for RFN devices.</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnVoltage.averagingInterval">Voltage Averaging Interval</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnVoltage.averagingInterval.description">The period of time all voltage measurements are averaged over 60 seconds is recommended.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnVoltage.voltageAveragingInterval">Voltage Averaging Interval</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnVoltage.voltageAveragingInterval.description">The period of time all voltage measurements are averaged over 60 seconds is recommended.</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnVoltage.ovuvEnabled">OV/UV Enabled</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnVoltage.ovuvEnabled.description">When true, OV/UV alarming is enabled for the RFN device. Else, the OV/UV alarming is disabled.</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnVoltage.ovThreshold">Over Voltage Threshold</entry>
