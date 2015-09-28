@@ -417,11 +417,11 @@ public class NmIntegrationController {
         
         if (numEventsSent > 0) {
             MessageSourceResolvable createMessage = 
-                    new YukonMessageSourceResolvable("yukon.web.modules.support.rfnTest.numEventsSent", numEventsSent);
+                    new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.numEventsSent", numEventsSent);
             flashScope.setConfirm(createMessage);
         } else {
             MessageSourceResolvable createMessage = 
-                    new YukonMessageSourceResolvable("yukon.web.modules.support.rfnTest.numEventsSent", numEventsSent);
+                    new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.numEventsSent", numEventsSent);
             flashScope.setError(createMessage);
         }
         
