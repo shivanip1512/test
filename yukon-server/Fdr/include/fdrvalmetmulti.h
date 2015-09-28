@@ -11,6 +11,8 @@
 struct CtiValmetPortId;
 std::ostream& operator<< (std::ostream&, const CtiValmetPortId&);
 
+using boost::thread;
+
 struct CtiValmetPortId : public Cti::Loggable
 {
     std::string PointName;
@@ -125,6 +127,8 @@ class IM_EX_FDRVALMETMULTI CtiFDR_ValmetMulti : public CtiFDRScadaServer
 
         CtiFDRScadaHelper<CtiValmetPortId>* _helper;
 
+        typedef std::map<int,thread*> PortNumToListenerThreadMap;
+        PortNumToListenerThreadMap _listenerThreadMap;
         boost::thread_group _listenerThreads;
 
         typedef std::map<std::string,int> NameToPointIdMap;

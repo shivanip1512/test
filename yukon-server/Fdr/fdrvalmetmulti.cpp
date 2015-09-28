@@ -32,6 +32,8 @@
 using std::string;
 using std::endl;
 using std::set;
+using boost::thread;
+
 using namespace Fdr::Valmet;
 
 /** local definitions **/
@@ -102,6 +104,14 @@ BOOL CtiFDR_ValmetMulti::stop( void )
     return TRUE;
 }
 
+/** 
+  Since ValmetMulti supports multiple forign sockets, we have elected to not 
+  start listening in the fdrsocketserver code, but to start the listening of 
+  these sockets to here.  We also start a listener thread for that socket.
+
+  Note that we only listen to the socket once, even if there are multiple 
+  points referencing it. 
+*/
 void CtiFDR_ValmetMulti::startMultiListeners()
 {
     CtiLockGuard<CtiMutex> lockGuard(_listeningThreadManagementMutex);
@@ -110,7 +120,16 @@ void CtiFDR_ValmetMulti::startMultiListeners()
     {
         const int port = _listeningPortNumbers.getQueue();
 
-        _listenerThreads.add_thread( new boost::thread( &CtiFDR_ValmetMulti::threadFunctionConnection, this, port, _listenerThreadStartupDelay ) );
+        // Search to see if we alredy have a thread for this port.  If not, start one
+        auto itr = _listenerThreadMap.find(port);
+        if(itr == _listenerThreadMap.end())
+        {
+            thread *listenerThread = new boost::thread(&CtiFDR_ValmetMulti::threadFunctionConnection, this, port, _listenerThreadStartupDelay);
+            _listenerThreads.add_thread(listenerThread);
+
+            _listenerThreadMap[port] = listenerThread;
+
+        } // There is already a thread running.
     }
 }
 
@@ -340,7 +359,7 @@ CtiFDRClientServerConnectionSPtr CtiFDR_ValmetMulti::createNewConnection(SOCKET 
     const std::string connName = ss.str();
     CtiFDRClientServerConnectionSPtr newConnection(new CtiFDRClientServerConnection(connName.c_str(), newSocket, this));
 
-    newConnection->setRegistered(true); //ACS doesn't have a separate registration message
+    newConnection->setRegistered(true); // Valmet doesn't have a separate registration message
 
     // I'm not sure this is the best location for this
     sendAllPoints(newConnection);
