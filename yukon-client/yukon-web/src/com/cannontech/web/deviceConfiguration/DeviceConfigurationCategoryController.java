@@ -471,18 +471,21 @@ public class DeviceConfigurationCategoryController {
 
         CategoryType type = CategoryType.fromValue(categoryEditBean.getCategoryType());
         
-        if (configId != null && type == CategoryType.RFN_VOLTAGE) {
-            DeviceConfiguration config = deviceConfigurationDao.getDeviceConfiguration(configId);
-            // Returns true if the two specified collections have no elements in common.
-            boolean isAssignedToConfig =
-                !Collections.disjoint(config.getSupportedDeviceTypes(), voltageDataStreamingTypes);
-            model.addAttribute("enableVoltageDataStreamingOptions", isAssignedToConfig);
-            System.out.println("------------------enableDataStreamingOptions=" + isAssignedToConfig);
-        }
         if (type == CategoryType.RFN_CHANNEL_CONFIGURATION) {
-            boolean isNMCompatible = configurationSource.getDouble(MasterConfigDouble.NM_COMPATIBILITY) == 7.0;
-            model.addAttribute("isNMCompatible", isNMCompatible);
-            System.out.println("------------------isNMCompatible="+isNMCompatible);
+            if(configId != null){
+                DeviceConfiguration config = deviceConfigurationDao.getDeviceConfiguration(configId);
+                // Returns true if the two specified collections have no elements in common.
+                boolean isAssignedToConfig =
+                    !Collections.disjoint(config.getSupportedDeviceTypes(), voltageDataStreamingTypes);
+                model.addAttribute("enableVoltageDataStreamingOptions", isAssignedToConfig);
+                System.out.println("------------------enableDataStreamingOptions=" + isAssignedToConfig);
+            }
+            Double nmCompatibility = configurationSource.getDouble(MasterConfigDouble.NM_COMPATIBILITY);
+            if (nmCompatibility != null) {
+                boolean isNMCompatible = configurationSource.getDouble(MasterConfigDouble.NM_COMPATIBILITY) == 7.0;
+                model.addAttribute("isNMCompatible", isNMCompatible);
+                System.out.println("------------------isNMCompatible=" + isNMCompatible);
+            }
         }
         
         CategoryTemplate categoryTemplate = deviceConfigHelper.createTemplate(
