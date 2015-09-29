@@ -22,6 +22,13 @@
             <c:set var="classes" value="js-display-item" />
         </c:if>
 
+        <c:if test="${field.fieldName == 'enableDataStreaming' or
+                      field.fieldName == 'voltageDataStreamingIntervalMinutes'}">
+            <c:if test="${not enableVoltageDataStreamingOptions}">
+                <c:set var="classes" value="${classes} dn" />
+            </c:if>
+        </c:if>
+
         <div class="setting clearfix column-6-18 ${classes}" data-field="${field.fieldName}">
             <div class="column one form-control">${field.displayName}</div>
             <div class="column two form-control nogutter">

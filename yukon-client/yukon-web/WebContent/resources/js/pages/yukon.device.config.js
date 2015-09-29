@@ -168,6 +168,21 @@ yukon.deviceConfig = (function () {
                     show : ['heartbeatValue', 'heartbeatPeriod']
                 },
             ]
+        },
+        {
+            keyHolder: 'enableDataStreaming',
+            valueHideMap : [
+                {
+                    value : 'true',
+                    hide : [],
+                    show : ['voltageDataStreamingIntervalMinutes']
+                },
+                {
+                    value : 'false',
+                    hide : ['voltageDataStreamingIntervalMinutes'],
+                    show : []
+                }
+            ]
         }
     ],
 
@@ -184,7 +199,14 @@ yukon.deviceConfig = (function () {
 
         _actionOnFormWith('[data-field="' + hidingMapEntry.keyHolder +'"]', function (form) {
 
-            var value = form.find('[data-field="' + hidingMapEntry.keyHolder + '"]').find(':input').val();
+            var field = form.find('[data-field="' + hidingMapEntry.keyHolder + '"]');
+
+            var value;
+            if (field.find('[data-input]').length) {
+                value = field.find('[data-input]').val();
+            } else {
+                value = field.find(':input').val();
+            }
 
             hidingMapEntry.valueHideMap.forEach(function (currentEntry) {
                 if (value === currentEntry.value) {
