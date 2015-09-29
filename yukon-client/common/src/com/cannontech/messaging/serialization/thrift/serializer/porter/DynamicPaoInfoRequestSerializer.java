@@ -1,7 +1,5 @@
 package com.cannontech.messaging.serialization.thrift.serializer.porter;
 
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.cannontech.common.util.MethodNotImplementedException;
@@ -50,20 +48,11 @@ public class DynamicPaoInfoRequestSerializer extends ThriftSerializer<DynamicPao
     protected void
         populateThriftEntityFromMessage(ThriftMessageFactory msgFactory, DynamicPaoInfoRequest msg,
                                         com.cannontech.messaging.serialization.thrift.generated.PorterDynamicPaoInfoRequest entity) {
+
         entity.set_deviceId(msg.getDeviceID());
         entity.set_keys(msg.getKeys().stream()
-            .filter(new Predicate<DynamicPaoInfoKeyEnum>() {
-                @Override
-                public boolean test(DynamicPaoInfoKeyEnum key) {
-                    return keyMapping.containsKey(key);
-                }
-            })
-            .map(new Function<DynamicPaoInfoKeyEnum, DynamicPaoInfoKeys>() {
-                @Override
-                public DynamicPaoInfoKeys apply(DynamicPaoInfoKeyEnum key) {
-                    return keyMapping.get(key);
-                }
-            })
+            .filter(keyMapping::containsKey)
+            .map(keyMapping::get)
             .collect(Collectors.toSet()));
     }
 

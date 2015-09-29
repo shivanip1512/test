@@ -2,7 +2,6 @@ package com.cannontech.messaging.serialization.thrift.serializer.porter;
 
 import java.util.Map.Entry;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.joda.time.Instant;
@@ -49,86 +48,30 @@ public class DynamicPaoInfoResponseSerializer extends ThriftSerializer<DynamicPa
                                         DynamicPaoInfoResponse msg) {
         msg.setDeviceID(entity.get_deviceId());
         
-        abstract class EntryValuePredicate implements Predicate<Entry<DynamicPaoInfoKeys, DynamicPaoInfoTypes>> {
-            @Override
-            public boolean test(Entry<DynamicPaoInfoKeys, DynamicPaoInfoTypes> entry) {
-                return test(entry.getValue());
-            }
-            abstract boolean test(DynamicPaoInfoTypes value);
-        }
-        
-        abstract class MapEntryValueTo<R> implements Function<Entry<DynamicPaoInfoKeys, DynamicPaoInfoTypes>, R> {
-            @Override
-            public R apply(Entry<DynamicPaoInfoKeys, DynamicPaoInfoTypes> entry) {
-                return map(entry.getValue());
-            }
-            abstract R map(DynamicPaoInfoTypes value);
-        }
-        
-        Predicate<Entry<DynamicPaoInfoKeys, DynamicPaoInfoTypes>> keyMappingContainsEntryKey = new Predicate<Entry<DynamicPaoInfoKeys, DynamicPaoInfoTypes>>() {
-            @Override
-            public boolean test(Entry<DynamicPaoInfoKeys, DynamicPaoInfoTypes> entry) {
-                return keyMapping.containsKey(entry.getKey());
-            }
-        };
-        
-        Function<Entry<DynamicPaoInfoKeys, DynamicPaoInfoTypes>, DynamicPaoInfoKeyEnum> getKeyMappingForEntryKey = new Function<Entry<DynamicPaoInfoKeys, DynamicPaoInfoTypes>, DynamicPaoInfoKeyEnum>() {
-            @Override
-            public DynamicPaoInfoKeyEnum apply(Entry<DynamicPaoInfoKeys, DynamicPaoInfoTypes> entry) {
-                return keyMapping.get(entry.getKey());
-            }
-        };
+        Function<Entry<DynamicPaoInfoKeys, DynamicPaoInfoTypes>, DynamicPaoInfoKeys> getEntryKey = Entry<DynamicPaoInfoKeys, DynamicPaoInfoTypes>::getKey;
+        Function<Entry<DynamicPaoInfoKeys, DynamicPaoInfoTypes>, DynamicPaoInfoTypes> getEntryValue = Entry<DynamicPaoInfoKeys, DynamicPaoInfoTypes>::getValue;
 
+        //TODO JAVA 8
         msg.setTimeValues(entity.get_values().entrySet().stream()
-            .filter(new EntryValuePredicate() {
-                @Override
-                boolean test(DynamicPaoInfoTypes value) {
-                    return value.isSet_time();
-                }
-            })
-            .filter(keyMappingContainsEntryKey)
+            .filter(getEntryValue.andThen(DynamicPaoInfoTypes::isSet_time)::apply)
+            .filter(getEntryKey.andThen(keyMapping::containsKey)::apply)
             .collect(Collectors.toMap(
-                    getKeyMappingForEntryKey,
-                    new MapEntryValueTo<Instant>() {
-                        @Override
-                        Instant map(DynamicPaoInfoTypes value) {
-                            return new Instant(value.get_time());
-                        }
-                    })));
+                    getEntryKey.andThen(keyMapping::get),
+                    getEntryValue.andThen(DynamicPaoInfoTypes::get_time).andThen(Instant::new))));
         
         msg.setStringValues(entity.get_values().entrySet().stream()
-            .filter(new EntryValuePredicate() {
-                @Override
-                boolean test(DynamicPaoInfoTypes value) {
-                    return value.isSet_string();
-                }
-            })
-            .filter(keyMappingContainsEntryKey)
+            .filter(getEntryValue.andThen(DynamicPaoInfoTypes::isSet_string)::apply)
+            .filter(getEntryKey.andThen(keyMapping::containsKey)::apply)
             .collect(Collectors.toMap(
-                    getKeyMappingForEntryKey,
-                    new MapEntryValueTo<String>() {
-                        @Override
-                        String map(DynamicPaoInfoTypes value) {
-                            return value.get_string();
-                        }
-                    })));
+                    getEntryKey.andThen(keyMapping::get),
+                    getEntryValue.andThen(DynamicPaoInfoTypes::get_string))));
         
         msg.setLongValues(entity.get_values().entrySet().stream()
-            .filter(new EntryValuePredicate() {
-                @Override
-                boolean test(DynamicPaoInfoTypes value) {
-                    return value.isSet_integer();
-                }
-            })
-            .filter(keyMappingContainsEntryKey)
+            .filter(getEntryValue.andThen(DynamicPaoInfoTypes::isSet_integer)::apply)
+            .filter(getEntryKey.andThen(keyMapping::containsKey)::apply)
             .collect(Collectors.toMap(
-                    getKeyMappingForEntryKey,
-                    new MapEntryValueTo<Long>() {
-                        @Override
-                        Long map(DynamicPaoInfoTypes value) {
-                            return value.get_integer();
-                        }
-                    })));
+                    getEntryKey.andThen(keyMapping::get),
+                    getEntryValue.andThen(DynamicPaoInfoTypes::get_integer))));
     }
 
     @Override
