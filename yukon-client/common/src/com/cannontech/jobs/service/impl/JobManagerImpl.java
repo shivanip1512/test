@@ -453,7 +453,6 @@ public class JobManagerImpl implements JobManager {
         status.setJobRunStatus(JobRunStatus.COMPLETED);
         try {
             YukonTask task = instantiateTask(status.getJob());
-                Thread.sleep(10000);
                  
             YukonTask existingTask = currentlyRunning.putIfAbsent(status.getJob(), task);
             if (existingTask != null) {
