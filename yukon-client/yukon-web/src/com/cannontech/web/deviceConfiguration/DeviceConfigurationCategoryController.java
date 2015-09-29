@@ -66,8 +66,8 @@ import com.google.common.collect.ImmutableSet;
 @CheckRoleProperty(YukonRoleProperty.ADMIN_VIEW_CONFIG)
 public class DeviceConfigurationCategoryController {
 
-    Set<PaoType> voltageDataStreamingTypes = ImmutableSet.of(PaoType.RFN410CL, PaoType.RFN420CL, PaoType.RFN410FX,
-        PaoType.RFN410FD, PaoType.RFN420FD);
+    private final Set<PaoType> voltageDataStreamingTypes = ImmutableSet.of(PaoType.RFN410CL, PaoType.RFN420CL, PaoType.RFN420FX,
+        PaoType.RFN420FD, PaoType.RFN420FL, PaoType.RFN420FRX, PaoType.RFN420FRD, PaoType.RFN420CD);
     
     private static final Logger log = YukonLogManager.getLogger(DeviceConfigurationCategoryController.class);
 

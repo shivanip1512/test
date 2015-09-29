@@ -347,12 +347,17 @@
     <pao id="RFN_CONFIGURATION" abstract="true"
         inherits="DEMAND_FREEZE_CONFIGURATION">
         <configuration>
-            <category type="rfnVoltage" />
             <category type="demand" />
             <category type="tou" />
         </configuration>
     </pao>
-
+    
+    <pao id="RFN_VOLTAGE_CONFIG" abstract="true">
+        <configuration>
+            <category type="rfnVoltage" />
+        </configuration>
+    </pao>
+    
     <pao id="RFN_DISCONNECT_CONFIG" abstract="true"
         inherits="SUPPORTS_DEVICE_CONFIGURATION">
         <configuration>
@@ -8205,18 +8210,18 @@
         <displayName>RFN-410fD</displayName>
     </pao>
     <pao id="RFN420FL"
-        inherits="RFN_L3_FOCUS_420FL, FOCUS_AL_DISPLAY_CONFIGURATION, RFN_CONFIGURATION, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS">
+        inherits="RFN_L3_FOCUS_420FL, FOCUS_AL_DISPLAY_CONFIGURATION, RFN_CONFIGURATION, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS, RFN_VOLTAGE_CONFIG">
         <displayName>RFN-420fL</displayName>
     </pao>
     <pao id="RFN420FX"
-        inherits="RFN410FX, SUPPORTS_RFN_DEMAND_RESET_TAG, RFN_CENTRON_AND_FOCUS_ADV_VOLTAGE, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS">
+        inherits="RFN410FX, SUPPORTS_RFN_DEMAND_RESET_TAG, RFN_CENTRON_AND_FOCUS_ADV_VOLTAGE, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS, RFN_VOLTAGE_CONFIG">
         <displayName>RFN-420fX</displayName>
     </pao>
     <pao id="RFN420FD" inherits="RFN420FX, RFN_DISCONNECT, RFN_DISCONNECT_CONFIG">
         <displayName>RFN-420fD</displayName>
     </pao>
     <pao id="RFN420FRX"
-        inherits="RFN_L5_FOCUS_FR_, RFN_CONFIGURATION, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS">
+        inherits="RFN_L5_FOCUS_FR_, RFN_CONFIGURATION, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS, RFN_VOLTAGE_CONFIG">
         <displayName>RFN-420fRX</displayName>
     </pao>
     <pao id="RFN420FRD" inherits="RFN420FRX, RFN_DISCONNECT, RFN_DISCONNECT_CONFIG">
@@ -8225,11 +8230,11 @@
 
     <!-- ITRON RFN METERS -->
     <pao id="RFN410CL"
-        inherits="RFN_L3_CENTRON, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS, SUPPORTS_RFN_DEMAND_RESET_TAG, RFN_CONFIGURATION, CENTRON_410_DISPLAY_CONFIGURATION">
+        inherits="RFN_L3_CENTRON, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS, SUPPORTS_RFN_DEMAND_RESET_TAG, RFN_CONFIGURATION, CENTRON_410_DISPLAY_CONFIGURATION, RFN_VOLTAGE_CONFIG">
         <displayName>RFN-410cL</displayName>
     </pao>
     <pao id="RFN420CL" 
-        inherits="RFN_L3_CENTRON, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS, SUPPORTS_RFN_DEMAND_RESET_TAG, RFN_CONFIGURATION, CENTRON_420_DISPLAY_CONFIGURATION">
+        inherits="RFN_L3_CENTRON, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS, SUPPORTS_RFN_DEMAND_RESET_TAG, RFN_CONFIGURATION, CENTRON_420_DISPLAY_CONFIGURATION, RFN_VOLTAGE_CONFIG">
         <displayName>RFN-420cL</displayName>
     </pao>
     <pao id="RFN420CD" inherits="RFN420CL, RFN_DISCONNECT, RFN_DISCONNECT_CONFIG">
