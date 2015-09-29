@@ -78,7 +78,7 @@
     <entry key="yukon.web.modules.tools.trends.sixMonths">6m</entry>
     <entry key="yukon.web.modules.tools.trends.ytd">YTD</entry>
     <entry key="yukon.web.modules.tools.trends.year">1y</entry>
-    <entry key="yukon.web.modules.tools.trend.pageDescription">Trends</entry>
+    <entry key="yukon.web.modules.tools.trend.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.tools.trend.axis">Axis: {0}</entry>
     <entry key="yukon.web.modules.tools.trend.day">1d</entry>
     <entry key="yukon.web.modules.tools.trend.week">1w</entry>
