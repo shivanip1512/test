@@ -48,6 +48,7 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
 						CommandCallback commandCallback = callbackCache.get(commandStr);
 						if (commandCallback == null) {
 							commandCallback = new PorterCommandCallback(commandStr);
+							callbackCache.put(commandStr, commandCallback);
 						}
 
 						CommandRequestDevice request = new CommandRequestDevice();
