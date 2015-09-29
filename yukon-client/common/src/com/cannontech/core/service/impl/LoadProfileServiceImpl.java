@@ -613,10 +613,10 @@ public class LoadProfileServiceImpl implements LoadProfileService {
             data.put("email", email);
             data.put("from",
                      dateFormattingService.format(info.from,
-                                                      DateFormattingService.DateFormatEnum.BOTH,
+                                                      DateFormattingService.DateFormatEnum.DATE,
                                                       userContext));
             data.put("to", dateFormattingService.format(info.to,
-                                                        DateFormattingService.DateFormatEnum.BOTH,
+                                                        DateFormattingService.DateFormatEnum.DATE,
                                                         userContext));
             data.put("command", info.request.getCommandString());
             data.put("requestId", Long.toString(info.request.getUserMessageID()));
