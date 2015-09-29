@@ -471,22 +471,21 @@ public class DeviceConfigurationCategoryController {
 
         CategoryType type = CategoryType.fromValue(categoryEditBean.getCategoryType());
         
+        boolean enableVoltageDataStreamingOptions = false;
         if (type == CategoryType.RFN_CHANNEL_CONFIGURATION) {
-            if(configId != null){
+            boolean isNMCompatible = false;
+            Double nmCompatibility = configurationSource.getDouble(MasterConfigDouble.NM_COMPATIBILITY);
+            if (nmCompatibility != null && nmCompatibility == 7.0) {
+                isNMCompatible = true;
+            }
+            if (configId != null && isNMCompatible) {
                 DeviceConfiguration config = deviceConfigurationDao.getDeviceConfiguration(configId);
                 // Returns true if the two specified collections have no elements in common.
-                boolean isAssignedToConfig =
+                enableVoltageDataStreamingOptions =
                     !Collections.disjoint(config.getSupportedDeviceTypes(), voltageDataStreamingTypes);
-                model.addAttribute("enableVoltageDataStreamingOptions", isAssignedToConfig);
-                System.out.println("------------------enableDataStreamingOptions=" + isAssignedToConfig);
-            }
-            Double nmCompatibility = configurationSource.getDouble(MasterConfigDouble.NM_COMPATIBILITY);
-            if (nmCompatibility != null) {
-                boolean isNMCompatible = configurationSource.getDouble(MasterConfigDouble.NM_COMPATIBILITY) == 7.0;
-                model.addAttribute("isNMCompatible", isNMCompatible);
-                System.out.println("------------------isNMCompatible=" + isNMCompatible);
             }
         }
+        model.addAttribute("enableVoltageDataStreamingOptions", enableVoltageDataStreamingOptions);
         
         CategoryTemplate categoryTemplate = deviceConfigHelper.createTemplate(
                 deviceConfigDao.getCategoryByType(type), categoryEditBean.getCategoryInputs(), configId, userContext);
