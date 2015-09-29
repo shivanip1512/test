@@ -277,7 +277,7 @@
     <!-- area.jsp -->
     <entry key="yukon.web.modules.capcontrol.area.pageTitle">Area {0}</entry>
     <entry key="yukon.web.modules.capcontrol.area.pageHeading">Area {0}</entry>
-    <entry key="yukon.web.modules.capcontrol.area.crumbTitle">Area {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.area.crumbTitle">{0}</entry>
     <entry key="yukon.web.modules.capcontrol.area.infoContainer.title">Info</entry>
     <entry key="yukon.web.modules.capcontrol.area.pointsContainer.title">Points</entry>
     <entry key="yukon.web.modules.capcontrol.area.statsContainer.title">Statistics</entry>
