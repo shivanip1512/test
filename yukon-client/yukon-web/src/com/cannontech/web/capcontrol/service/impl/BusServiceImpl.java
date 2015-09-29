@@ -46,6 +46,8 @@ public class BusServiceImpl implements BusService {
     @Override
     public CapControlSubBus get(int id) {
 
+        assertBusExists(id);
+
         CompleteCapControlSubstationBus completeBus = new CompleteCapControlSubstationBus();
         completeBus.setPaoIdentifier(PaoIdentifier.of(id, PaoType.CAP_CONTROL_SUBBUS));
         completeBus = paoPersistenceService.retreivePao(completeBus, CompleteCapControlSubstationBus.class);
@@ -79,9 +81,10 @@ public class BusServiceImpl implements BusService {
 
         CompleteCapControlSubstationBus completeBus = bus.asCompletePao();
 
-        if (bus.getCapControlPAOID() == null) {
+        if (bus.getId() == null) {
             paoPersistenceService.createPaoWithDefaultPoints(completeBus, bus.getPaoType());
         } else {
+            assertBusExists(bus.getId());
             paoPersistenceService.updatePao(completeBus);
         }
 
@@ -195,4 +198,13 @@ public class BusServiceImpl implements BusService {
             PaoIdentifier.of(busId, PaoType.CAP_CONTROL_SUBBUS), DbChangeType.UPDATE);
     }
 
+    /**
+     * @throws NotFoundException if the given id is not a bus
+     */
+    private void assertBusExists(int id) throws NotFoundException {
+        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(id);
+        if (pao == null || pao.getPaoType() != PaoType.CAP_CONTROL_SUBBUS) {
+            throw new NotFoundException("No bus with id " + id + " found.");
+        }
+    }
 }
