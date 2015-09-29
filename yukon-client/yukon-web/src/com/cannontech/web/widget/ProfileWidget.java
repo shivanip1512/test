@@ -260,7 +260,7 @@ public class ProfileWidget extends WidgetControllerBase {
 
         if (paoType.isRfMeter()) {
             DateTime minDate = DateTime.now().minus(Days.SEVEN);
-            DateTime maxDate = DateTime.now().minus(Days.TWO);
+            DateTime maxDate = DateTime.now();
 
             mav.addObject("minDate", minDate);
             mav.addObject("maxDate", maxDate);
@@ -297,9 +297,13 @@ public class ProfileWidget extends WidgetControllerBase {
         if (errorMsg.isEmpty()) {
             LocalDate startDate = dateFormattingService.parseLocalDate(startDateStr, userContext);
             LocalDate stopDate = dateFormattingService.parseLocalDate(stopDateStr, userContext);
-            stopDate = stopDate.plusDays(1); // move stop date to end of specified day
             Instant startInstant = TimeUtil.toMidnightAtBeginningOfDay(startDate, userContext.getJodaTimeZone());
-            Instant stopInstant = TimeUtil.toMidnightAtEndOfDay(stopDate, userContext.getJodaTimeZone());
+            Instant stopInstant = null; 
+            if (Days.daysBetween(stopDate, new LocalDate()).getDays() == 0) {
+                stopInstant = Instant.now();
+            } else {
+                stopInstant = TimeUtil.toMidnightAtEndOfDay(stopDate, userContext.getJodaTimeZone());
+            }
             // map of email elements
             Map<String, Object> msgData = Maps.newHashMap();
             msgData.put("email", email);

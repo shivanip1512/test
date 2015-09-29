@@ -12,7 +12,9 @@
                 <div class="section">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey="yukon.common.range">${pendingRequest.from}&nbsp;-&nbsp;${pendingRequest.to}</tags:nameValue2>
+                        <c:if test="${ not isRfn}">
                         <tags:nameValue2 nameKey=".channel">${pendingRequest.channel}</tags:nameValue2>
+                        </c:if>
                         <tags:nameValue2 nameKey=".requestedBy">${pendingRequest.userName}</tags:nameValue2>
                         <tags:nameValue2 nameKey="yukon.common.email">${pendingRequest.email}</tags:nameValue2>
                         <tags:nameValue2 nameKey="yukon.common.status">

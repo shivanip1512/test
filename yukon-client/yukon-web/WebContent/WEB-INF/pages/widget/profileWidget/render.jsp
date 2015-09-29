@@ -48,8 +48,10 @@
             ${widgetParameters.jsWidget}.doDirectActionRefresh("toggleProfiling");
         }
     </script>
-     <c:if test="${not isRfn}">
+     
     <%-- CHANNEL SCANNING --%>
+    <c:if test = "${not empty availableChannels}">
+     <c:if test="${not isRfn}">
     <c:if test="${not empty toggleErrorMsg}">
         <cti:msg2 var="errorToggleChannel" key=".errorToggleChannel"/>
         <tags:hideReveal title="${errorToggleChannel}" styleClass="error" escapeTitle="true" showInitially="true">
@@ -64,7 +66,7 @@
         var refreshCmd = 'refreshChannelScanningInfo',
             refreshParams = {'deviceId':${deviceId}},
             refreshPeriod = 90;
-        scanningUpdater = ${widgetParameters.jsWidget}.doPeriodicRefresh(refreshCmd,
+                   scanningUpdater = ${widgetParameters.jsWidget}.doPeriodicRefresh(refreshCmd,
                                                                          refreshParams, refreshPeriod,
                                                                          '${channelScanDiv}');
     </script>
@@ -147,6 +149,11 @@
         </tags:hideReveal>
     </c:if>
     </form>
+    </c:if>
+    </c:if>
+    
+    <c:if test="${empty availableChannels}">
+        <i:inline key=".notConfigured"/>
     </c:if>
 </c:otherwise>
 </c:choose>
