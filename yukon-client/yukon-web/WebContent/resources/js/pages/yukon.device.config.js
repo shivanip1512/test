@@ -201,6 +201,8 @@ yukon.deviceConfig = (function () {
 
             var field = form.find('[data-field="' + hidingMapEntry.keyHolder + '"]');
 
+            if (!field.is(':visible')) return;
+
             var value;
             if (field.find('[data-input]').length) {
                 value = field.find('[data-input]').val();
