@@ -168,6 +168,25 @@ SET CategoryType = 'rfnVoltage'
 WHERE CategoryType = 'rfnOvUv';
 /* End YUK-14667 */
 
+/* Start YUK-14624 */
+DELETE FROM DeviceConfigCategoryMap
+WHERE DeviceConfigurationId IN (
+    SELECT dc.DeviceConfigurationID
+    FROM DeviceConfiguration dc
+    WHERE EXISTS (
+       SELECT 1 FROM DeviceConfigDeviceTypes dcdt
+       WHERE dcdt.DeviceConfigurationId = dc.DeviceConfigurationID
+         AND dcdt.PaoType LIKE 'RFN%')
+      AND NOT EXISTS (
+        SELECT 1 FROM DeviceConfigDeviceTypes dcdt
+       WHERE dcdt.DeviceConfigurationId = dc.DeviceConfigurationID
+         AND dcdt.PaoType LIKE 'MCT%'))
+AND DeviceConfigCategoryId IN (
+    SELECT DeviceConfigCategoryId
+    FROM DeviceConfigCategory
+    WHERE CategoryType = 'profile');
+/* End YUK-14624 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
