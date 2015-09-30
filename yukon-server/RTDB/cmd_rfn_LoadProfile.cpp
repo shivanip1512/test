@@ -116,27 +116,10 @@ RfnLoadProfileCommand::TlvList RfnLoadProfileCommand::getTlvsFromPayload( const 
 // Voltage Profile Configuration Base Class
 //
 
-RfnVoltageProfileConfigurationCommand::RfnVoltageProfileConfigurationCommand( const Operation op,
-                                                                              const unsigned voltageAveragingIntervalIncrements,
-                                                                              const unsigned loadProfileIntervalMinutes )
-    :   RfnLoadProfileCommand( op ),
-        _voltageAveragingIntervalIncrements( voltageAveragingIntervalIncrements ),
-        _loadProfileInterval( loadProfileIntervalMinutes )
+RfnVoltageProfileConfigurationCommand::RfnVoltageProfileConfigurationCommand( const Operation operation )
+    :   RfnLoadProfileCommand( operation )
 {
 }
-
-
-unsigned RfnVoltageProfileConfigurationCommand::getVoltageAveragingIntervalSeconds() const
-{
-    return _voltageAveragingIntervalIncrements * SecondsPerIncrement;
-}
-
-
-unsigned RfnVoltageProfileConfigurationCommand::getLoadProfileIntervalMinutes() const
-{
-    return _loadProfileInterval;
-}
-
 
 
 //
@@ -144,9 +127,7 @@ unsigned RfnVoltageProfileConfigurationCommand::getLoadProfileIntervalMinutes() 
 //
 
 RfnVoltageProfileGetConfigurationCommand::RfnVoltageProfileGetConfigurationCommand()
-    :   RfnVoltageProfileConfigurationCommand( Operation_GetConfiguration,
-                                               0x00,
-                                               0x00 )
+    :   RfnVoltageProfileConfigurationCommand( Operation_GetConfiguration )
 {
 }
 
@@ -175,15 +156,26 @@ RfnCommandResult RfnVoltageProfileGetConfigurationCommand::decodeCommand( const 
     validate( Condition( tlv.value.size() == 2, ClientErrors::InvalidData )
             << "Invalid TLV length (" << tlv.value.size() << ")" );
 
-    _voltageAveragingIntervalIncrements = tlv.value[0];
-    _loadProfileInterval                = tlv.value[1];
+    _voltageAveragingInterval = tlv.value[0] * SecondsPerIncrement;
+    _loadProfileInterval      = tlv.value[1];
 
-    result.description += "\nVoltage Averaging interval: " + CtiNumStr(getVoltageAveragingIntervalSeconds()) + " seconds";
-    result.description += "\nLoad Profile Demand interval: " + CtiNumStr(getLoadProfileIntervalMinutes()) + " minutes";
+    result.description += "\nVoltage Averaging interval: " + CtiNumStr(*getVoltageAveragingInterval()) + " seconds";
+    result.description += "\nLoad Profile Demand interval: " + CtiNumStr(*getLoadProfileInterval()) + " minutes";
 
     return result;
 }
 
+
+boost::optional<unsigned> RfnVoltageProfileGetConfigurationCommand::getVoltageAveragingInterval() const
+{
+    return _voltageAveragingInterval;
+}
+
+
+boost::optional<unsigned> RfnVoltageProfileGetConfigurationCommand::getLoadProfileInterval() const
+{
+    return _loadProfileInterval;
+}
 
 //
 // Voltage profile set configuration
@@ -191,16 +183,16 @@ RfnCommandResult RfnVoltageProfileGetConfigurationCommand::decodeCommand( const 
 
 RfnVoltageProfileSetConfigurationCommand::RfnVoltageProfileSetConfigurationCommand( const unsigned voltage_averaging_interval_seconds,
                                                                                     const unsigned load_profile_interval_minutes )
-    :   RfnVoltageProfileConfigurationCommand( Operation_SetConfiguration,
-                                               voltage_averaging_interval_seconds / SecondsPerIncrement,
-                                               load_profile_interval_minutes )
+    :   RfnVoltageProfileConfigurationCommand( Operation_SetConfiguration ),
+        voltageAveragingInterval( voltage_averaging_interval_seconds  ),
+        loadProfileInterval( load_profile_interval_minutes )
 {
     static const std::set<unsigned>     allowedAveragingIntervals_seconds
     {
         15, 30, 45, 60, 90, 120, 180, 300, 600, 900
     };
 
-    validate( Condition( allowedAveragingIntervals_seconds.count( voltage_averaging_interval_seconds ) == 1, ClientErrors::BadParameter )
+    validate( Condition( allowedAveragingIntervals_seconds.count( voltage_averaging_interval_seconds ), ClientErrors::BadParameter )
             << "Invalid Voltage Averaging Interval: (" << voltage_averaging_interval_seconds
             << ") invalid setting" );
 
@@ -223,8 +215,8 @@ RfnLoadProfileCommand::TlvList RfnVoltageProfileSetConfigurationCommand::getTlvs
 {
     TypeLengthValue tlv = TypeLengthValue::makeLongTlv(TlvType_VoltageProfileConfiguration);
 
-    tlv.value.push_back( _voltageAveragingIntervalIncrements );
-    tlv.value.push_back( _loadProfileInterval );
+    tlv.value.push_back( voltageAveragingInterval / SecondsPerIncrement );
+    tlv.value.push_back( loadProfileInterval );
 
     return { tlv };
 }

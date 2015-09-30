@@ -1152,7 +1152,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_disconnect_cycling )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_putconfig_install_disconnect_invalid_config )
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_disconnect_invalid_config )
 {
     test_RfnResidentialDevice dut;
 
@@ -1198,6 +1198,132 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_disconnect_invalid_config )
             BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::InvalidConfigData );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "ERROR: NoMethod or invalid config. Config name:disconnect" );
         }
+    }
+}
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_voltage_profile )
+{
+    test_RfnResidentialDevice dut;
+
+    CtiCommandParser parse("putconfig emetcon voltage profile demandinterval 17 lpinterval 34");
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+    BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
+
+    {
+        const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       202 );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Invalid command." );
+    }
+}
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_voltage_profile_enable )
+{
+    test_RfnResidentialDevice dut;
+
+    CtiCommandParser parse("putconfig emetcon voltage profile enable");
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+    BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+
+    {
+        const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+    }
+
+    {
+        Commands::RfnCommandSPtr command = rfnRequests.front();
+
+        Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+        std::vector<unsigned char> exp = boost::assign::list_of
+                ( 0x68 )( 0x03 )( 0x00 );
+
+        BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                       exp.begin() , exp.end() );
+    }
+}
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_voltage_profile_disable )
+{
+    test_RfnResidentialDevice dut;
+
+    CtiCommandParser parse("putconfig emetcon voltage profile disable");
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+    BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+
+    {
+        const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+    }
+
+    {
+        Commands::RfnCommandSPtr command = rfnRequests.front();
+
+        Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+        std::vector<unsigned char> exp = boost::assign::list_of
+                ( 0x68 )( 0x02 )( 0x00 );
+
+        BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                       exp.begin() , exp.end() );
+    }
+}
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getconfig_voltage_profile )
+{
+    test_RfnResidentialDevice dut;
+
+    CtiCommandParser parse("getconfig voltage profile");
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+    BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
+
+    {
+        const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       202 );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Invalid command." );
+    }
+}
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getvalue_voltage_profile_state )
+{
+    test_RfnResidentialDevice dut;
+
+    CtiCommandParser parse("getconfig voltage profile state");
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+    BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+
+    {
+        const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+    }
+
+    {
+        Commands::RfnCommandSPtr command = rfnRequests.front();
+
+        Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+        std::vector<unsigned char> exp = boost::assign::list_of
+                ( 0x68 )( 0x04 )( 0x00 );
+
+        BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                       exp.begin() , exp.end() );
     }
 }
 
@@ -1331,338 +1457,6 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_tou_critical_peak_tomorrow )
                                        exp.begin() , exp.end() );
     }
 }
-
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getconfig_install_ovuv_meterids )
-{
-    test_RfnResidentialDevice    dev;
-
-    const std::vector<DeviceTypes> rfnTypes = boost::assign::list_of
-        //(TYPE_RFN410FL)  not an rfnResidential device
-        (TYPE_RFN410FX)
-        (TYPE_RFN410FD)
-        (TYPE_RFN420FL)
-        (TYPE_RFN420FX)
-        (TYPE_RFN420FD)
-        (TYPE_RFN420FRX)
-        (TYPE_RFN420FRD)
-        (TYPE_RFN410CL)
-        (TYPE_RFN420CL)
-        (TYPE_RFN420CD);
-
-    CtiCommandParser parse("getconfig install ovuv");
-
-    const std::vector<std::vector<unsigned char>> expected = boost::assign::list_of
-        (boost::assign::list_of(0x34)(0x03)(0x07)(0xe6))
-        (boost::assign::list_of(0x34)(0x03)(0x07)(0xe7))
-        (boost::assign::list_of(0x34)(0x03)(0x07)(0xe6))
-        (boost::assign::list_of(0x34)(0x03)(0x07)(0xe7))
-        (boost::assign::list_of(0x34)(0x02)(0x07)(0xe6))
-        (boost::assign::list_of(0x34)(0x02)(0x07)(0xe7))
-        (boost::assign::list_of(0x34)(0x03)(0x07)(0xe6))
-        (boost::assign::list_of(0x34)(0x03)(0x07)(0xe7))
-        (boost::assign::list_of(0x34)(0x03)(0x07)(0xe6))
-        (boost::assign::list_of(0x34)(0x03)(0x07)(0xe7))
-        (boost::assign::list_of(0x34)(0x03)(0x07)(0xe6))
-        (boost::assign::list_of(0x34)(0x03)(0x07)(0xe7))
-        (boost::assign::list_of(0x34)(0x03)(0x07)(0xe6))
-        (boost::assign::list_of(0x34)(0x03)(0x07)(0xe7))
-        (boost::assign::list_of(0x34)(0x06)(0x07)(0xe6))
-        (boost::assign::list_of(0x34)(0x06)(0x07)(0xe7))
-        (boost::assign::list_of(0x34)(0x04)(0x07)(0xe6))
-        (boost::assign::list_of(0x34)(0x04)(0x07)(0xe7))
-        (boost::assign::list_of(0x34)(0x04)(0x07)(0xe6))
-        (boost::assign::list_of(0x34)(0x04)(0x07)(0xe7));
-
-    std::vector<std::vector<unsigned char>> results;
-
-    for each( DeviceTypes type in rfnTypes )
-    {
-        dev._type = type;
-
-        BOOST_CHECK_EQUAL( ClientErrors::None, dev.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
-        BOOST_REQUIRE_EQUAL( 2, rfnRequests.size() );
-
-        for each( Cti::Devices::Commands::RfnCommandSPtr cmd in rfnRequests )
-        {
-            results.push_back(cmd->executeCommand(execute_time));
-        }
-
-        rfnRequests.clear();
-    }
-
-    BOOST_CHECK_EQUAL_COLLECTIONS(
-            expected.begin(), expected.end(),
-            results.begin(),  results.end());
-}
-
-
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_ovuv )
-{
-    test_RfnResidentialDevice dut;
-
-    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
-
-    cfg.insertValue( RfnStrings::OvUvEnabled,                "true" );
-    cfg.insertValue( RfnStrings::OvUvAlarmReportingInterval, "5" );
-    cfg.insertValue( RfnStrings::OvUvAlarmRepeatInterval,    "60" );
-    cfg.insertValue( RfnStrings::OvUvRepeatCount,            "2" );
-    cfg.insertValue( RfnStrings::OvThreshold,                "123.456" );
-    cfg.insertValue( RfnStrings::UvThreshold,                 "78.901" );
-
-    dut._type = TYPE_RFN410FX;
-
-    {
-        CtiCommandParser parse("putconfig install ovuv");
-
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
-        BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
-        BOOST_REQUIRE_EQUAL( 6, rfnRequests.size() );
-
-        {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
-
-            BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
-            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "6 commands queued for device" );
-        }
-
-        RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
-        {
-            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
-
-            Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
-
-            std::vector<unsigned char> exp = boost::assign::list_of
-                    (0x24)(0x01);
-
-            BOOST_CHECK_EQUAL( rcv, exp );
-
-            dut.extractCommandResult( *command );
-
-            long test_ovuvEnabled;
-
-            BOOST_CHECK( dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvUvEnabled, test_ovuvEnabled ));
-            BOOST_CHECK_EQUAL( static_cast<bool>(test_ovuvEnabled), true );
-        }
-        {
-            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
-
-            Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
-
-            std::vector<unsigned char> exp = boost::assign::list_of
-                    (0x26)(0x05);
-
-            BOOST_CHECK_EQUAL( rcv, exp );
-
-            dut.extractCommandResult( *command );
-
-            unsigned test_ovuvAlarmReportingInterval;
-
-            BOOST_CHECK( dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmReportingInterval, test_ovuvAlarmReportingInterval ));
-            BOOST_CHECK_EQUAL( test_ovuvAlarmReportingInterval, 5 );
-        }
-        {
-            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
-
-            Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
-
-            std::vector<unsigned char> exp = boost::assign::list_of
-                    (0x27)(0x3c);
-
-            BOOST_CHECK_EQUAL( rcv, exp );
-
-            dut.extractCommandResult( *command );
-
-            unsigned test_ovuvAlarmRepeatInterval;
-
-            BOOST_CHECK( dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmRepeatInterval, test_ovuvAlarmRepeatInterval ));
-            BOOST_CHECK_EQUAL( test_ovuvAlarmRepeatInterval, 60 );
-        }
-        {
-            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
-
-            Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
-
-            std::vector<unsigned char> exp = boost::assign::list_of
-                    (0x28)(0x02);
-
-            BOOST_CHECK_EQUAL( rcv, exp );
-
-            dut.extractCommandResult( *command );
-
-            unsigned test_ovuvAlarmRepeatCount;
-
-            BOOST_CHECK( dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvUvRepeatCount, test_ovuvAlarmRepeatCount ));
-            BOOST_CHECK_EQUAL( test_ovuvAlarmRepeatCount, 2 );
-        }
-        {
-            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
-
-            Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
-
-            std::vector<unsigned char> exp = boost::assign::list_of
-                    (0x25)(0x03)(0x07)(0xe6)(0x00)(0x01)(0xe2)(0x40)(0x10)(0x80)(0x00)(0x01)(0xc0);
-
-            BOOST_CHECK_EQUAL( rcv, exp );
-
-            dut.extractCommandResult( *command );
-
-            double test_ovThreshold;
-
-            BOOST_CHECK( dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvThreshold, test_ovThreshold ));
-            BOOST_CHECK_EQUAL( test_ovThreshold, 123.456 );
-        }
-        {
-            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
-
-            Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
-
-            std::vector<unsigned char> exp = boost::assign::list_of
-                    (0x25)(0x03)(0x07)(0xe7)(0x00)(0x01)(0x34)(0x35)(0x10)(0x80)(0x00)(0x01)(0xc0);
-
-            BOOST_CHECK_EQUAL( rcv, exp );
-
-            dut.extractCommandResult( *command );
-
-            double test_uvThreshold;
-
-            BOOST_CHECK( dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_UvThreshold,  test_uvThreshold ));
-            BOOST_CHECK_EQUAL( test_uvThreshold, 78.901 );
-        }
-    }
-}
-
-
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_ovuv_meter_ids )
-{
-    test_RfnResidentialDevice dut;
-
-    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
-
-    cfg.insertValue( RfnStrings::OvUvEnabled,                "true" );
-    cfg.insertValue( RfnStrings::OvUvAlarmReportingInterval, "5" );
-    cfg.insertValue( RfnStrings::OvUvAlarmRepeatInterval,    "60" );
-    cfg.insertValue( RfnStrings::OvUvRepeatCount,            "2" );
-    cfg.insertValue( RfnStrings::OvThreshold,                "123.456" );
-    cfg.insertValue( RfnStrings::UvThreshold,                 "78.901" );
-
-    //  set the dynamic pao info to match
-    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_OvUvEnabled,                 1);
-    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmReportingInterval,  5);
-    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmRepeatInterval,    60);
-    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_OvUvRepeatCount,             2);
-    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_OvThreshold,           123.456);
-    //dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_UvThreshold,          78.901);  //  leave this out so it's the only one sent
-
-    {
-        const std::vector<DeviceTypes> rfnTypes = boost::assign::list_of
-            //(TYPE_RFN410FL)  not an rfnResidential device
-            (TYPE_RFN410FX)
-            (TYPE_RFN410FD)
-            (TYPE_RFN420FL)
-            (TYPE_RFN420FX)
-            (TYPE_RFN420FD)
-            (TYPE_RFN420FRX)
-            (TYPE_RFN420FRD)
-            (TYPE_RFN410CL)
-            (TYPE_RFN420CL)
-            (TYPE_RFN420CD);
-
-        const std::vector<std::vector<unsigned char>> expected = boost::assign::list_of
-            (boost::assign::list_of(0x25)(0x03)(0x07)(0xe7)(0x00)(0x01)(0x34)(0x35)(0x10)(0x80)(0x00)(0x01)(0xc0))
-            (boost::assign::list_of(0x25)(0x03)(0x07)(0xe7)(0x00)(0x01)(0x34)(0x35)(0x10)(0x80)(0x00)(0x01)(0xc0))
-            (boost::assign::list_of(0x25)(0x02)(0x07)(0xe7)(0x00)(0x01)(0x34)(0x35)(0x10)(0x80)(0x00)(0x01)(0xc0))
-            (boost::assign::list_of(0x25)(0x03)(0x07)(0xe7)(0x00)(0x01)(0x34)(0x35)(0x10)(0x80)(0x00)(0x01)(0xc0))
-            (boost::assign::list_of(0x25)(0x03)(0x07)(0xe7)(0x00)(0x01)(0x34)(0x35)(0x10)(0x80)(0x00)(0x01)(0xc0))
-            (boost::assign::list_of(0x25)(0x03)(0x07)(0xe7)(0x00)(0x01)(0x34)(0x35)(0x10)(0x80)(0x00)(0x01)(0xc0))
-            (boost::assign::list_of(0x25)(0x03)(0x07)(0xe7)(0x00)(0x01)(0x34)(0x35)(0x10)(0x80)(0x00)(0x01)(0xc0))
-            (boost::assign::list_of(0x25)(0x06)(0x07)(0xe7)(0x00)(0x01)(0x34)(0x35)(0x10)(0x80)(0x00)(0x01)(0xc0))
-            (boost::assign::list_of(0x25)(0x04)(0x07)(0xe7)(0x00)(0x01)(0x34)(0x35)(0x10)(0x80)(0x00)(0x01)(0xc0))
-            (boost::assign::list_of(0x25)(0x04)(0x07)(0xe7)(0x00)(0x01)(0x34)(0x35)(0x10)(0x80)(0x00)(0x01)(0xc0));
-
-        CtiCommandParser parse("putconfig install ovuv");
-
-        std::vector<std::vector<unsigned char>> results;
-
-        for each( DeviceTypes type in rfnTypes )
-        {
-            dut._type = type;
-
-            BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
-            BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
-            BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
-
-            {
-                const CtiReturnMsg &returnMsg = returnMsgs.front();
-
-                BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
-                BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
-            }
-
-            results.push_back(rfnRequests.front()->executeCommand( execute_time ));
-
-            returnMsgs.clear();
-            rfnRequests.clear();
-        }
-
-        BOOST_CHECK_EQUAL_COLLECTIONS(
-                expected.begin(), expected.end(),
-                results.begin(),  results.end());
-    }
-}
-
-
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_ovuv_invalid_config )
-{
-    test_RfnResidentialDevice dut;
-    dut._type = TYPE_RFN410FX;
-
-    {
-        ///// Missing config data /////
-
-        CtiCommandParser parse("putconfig install ovuv");
-
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
-        BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
-        BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
-
-        {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
-
-            BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::NoConfigData );
-            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "ERROR: Invalid config data. Config name:ovuv" );
-        }
-
-    }
-
-    {
-        resetTestState();
-
-        ///// Invalid config data /////
-
-        Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
-
-        cfg.insertValue( RfnStrings::OvUvEnabled,                "true" );
-        cfg.insertValue( RfnStrings::OvUvAlarmReportingInterval, "5" );
-        cfg.insertValue( RfnStrings::OvUvAlarmRepeatInterval,    "-60" ); // insert invalid negative value
-        cfg.insertValue( RfnStrings::OvUvRepeatCount,            "2" );
-        cfg.insertValue( RfnStrings::OvThreshold,                "123.456" );
-        cfg.insertValue( RfnStrings::UvThreshold,                "78.901" );
-
-        CtiCommandParser parse("putconfig install ovuv");
-
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
-        BOOST_REQUIRE_EQUAL( 2, returnMsgs.size() );
-        BOOST_REQUIRE_EQUAL( 2, rfnRequests.size() );
-
-        {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
-
-            BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::InvalidConfigData );
-            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "ERROR: NoMethod or invalid config. Config name:ovuv" );
-        }
-    }
-}
-
 
 BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_freezeday )
 {
@@ -1873,7 +1667,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_channel_configur
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_all_device )
 {
     using boost::assign::list_of;
     using boost::assign::map_list_of;
@@ -1893,15 +1687,15 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
                     ( RfnStrings::demandFreezeDay, "7" )))
 
             // OVUV config
-            ( CategoryDefinition(
-                "rfnVoltage", map_list_of
-                    ( RfnStrings::voltageAveragingInterval,   "60"      )
-                    ( RfnStrings::OvUvEnabled,                "true"    )
-                    ( RfnStrings::OvUvAlarmReportingInterval, "5"       )
-                    ( RfnStrings::OvUvAlarmRepeatInterval,    "60"      )
-                    ( RfnStrings::OvUvRepeatCount,            "2"       )
-                    ( RfnStrings::OvThreshold,                "123.456" )
-                    ( RfnStrings::UvThreshold,                "78.901"  )))
+///            ( CategoryDefinition(
+///                "rfnVoltage", map_list_of
+///                    ( RfnStrings::voltageAveragingInterval,   "60"      )
+///                    ( RfnStrings::OvUvEnabled,                "true"    )
+///                    ( RfnStrings::OvUvAlarmReportingInterval, "5"       )
+///                    ( RfnStrings::OvUvAlarmRepeatInterval,    "60"      )
+///                    ( RfnStrings::OvUvRepeatCount,            "2"       )
+///                    ( RfnStrings::OvThreshold,                "123.456" )
+///                    ( RfnStrings::UvThreshold,                "78.901"  )))
 
             // TOU config
             ( CategoryDefinition(
@@ -2015,20 +1809,18 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
     const std::vector<int> requestMsgsExp = list_of
             ( 0 )   // no config data                   -> no request
             ( 1 )   // add demand freeze day config     -> +1 request
-            ( 7 )   // add OVUV config                  -> +6 request
-            ( 9 )   // add TOU config                   -> +2 request
-            ( 9 )   // add demand config                -> +0 request
-            ( 10 )  // add profile config               -> +1 request
-            ( 11 )  // add temperature alarming config  -> +1 request
-            ( 13 )  // add channel config               -> +2 request
+            ( 3 )   // add TOU config                   -> +2 request
+            ( 3 )   // add demand config                -> +0 request
+            ( 3 )   // add profile config               -> +1 request
+            ( 4 )   // add temperature alarming config  -> +1 request
+            ( 6 )   // add channel config               -> +2 request
             ;
 
     const std::vector< std::vector<bool> > returnExpectMoreExp = list_of< std::vector<bool> >
-            ( list_of<bool>(true)(true)(true)(true)(true)(false) )  // no config data                   -> 6 error messages, NOTE: last expectMore expected to be false
-            ( list_of<bool>(true)(true)(true)(true)(true)(true) )   // add demand freeze day config     -> 5 error messages + 1 config sent message
-            ( list_of<bool>(true)(true)(true)(true)(true) )         // add OVUV config                  -> 4 error messages + 2 config sent message
-            ( list_of<bool>(true)(true)(true)(true) )               // add TOU config                   -> 3 error messages + 3 config sent message
-            ( list_of<bool>(true)(true)(true)(true) )               // add demand config                -> 3 error messages + 3 config sent message
+            ( list_of<bool>(true)(true)(true)(false) )              // no config data                   -> 6 error messages, NOTE: last expectMore expected to be false
+            ( list_of<bool>(true)(true)(true)(true) )               // add demand freeze day config     -> 5 error messages + 1 config sent message
+            ( list_of<bool>(true)(true)(true) )                     // add TOU config                   -> 3 error messages + 3 config sent message
+            ( list_of<bool>(true)(true)(true) )                     // add demand config                -> 3 error messages + 3 config sent message
             ( list_of<bool>(true)(true)(true) )                     // add profile config               -> 2 error messages + 4 config sent message
             ( list_of<bool>(true)(true) )                           // add temperature alarming config  -> 1 error messages + 5 config sent message
             ( list_of<bool>(true) )                                 // add channel config               -> 6 config sent message
@@ -2081,7 +1873,8 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
     BOOST_CHECK_EQUAL_COLLECTIONS( returnExpectMoreRcv.begin(), returnExpectMoreRcv.end(), returnExpectMoreExp.begin(), returnExpectMoreExp.end() );
 }
 
-BOOST_AUTO_TEST_CASE( test_putconfig_install_groupMessageCount )
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_groupMessageCount )
 {
     using boost::assign::list_of;
     using boost::assign::map_list_of;
@@ -2099,17 +1892,6 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_groupMessageCount )
             ( CategoryDefinition(
                 "demandFreeze", map_list_of
                     ( RfnStrings::demandFreezeDay, "7" )))
-
-            // OVUV config
-            ( CategoryDefinition(
-                "rfnVoltage", map_list_of
-                    ( RfnStrings::voltageAveragingInterval,   "60"      )
-                    ( RfnStrings::OvUvEnabled,                "true"    )
-                    ( RfnStrings::OvUvAlarmReportingInterval, "5"       )
-                    ( RfnStrings::OvUvAlarmRepeatInterval,    "60"      )
-                    ( RfnStrings::OvUvRepeatCount,            "2"       )
-                    ( RfnStrings::OvThreshold,                "123.456" )
-                    ( RfnStrings::UvThreshold,                "78.901"  )))
 
             // TOU config
             ( CategoryDefinition(
@@ -2320,21 +2102,20 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_groupMessageCount )
 
     BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
 
-    BOOST_CHECK_EQUAL( 2, rfnRequests.size() );
+    BOOST_CHECK_EQUAL( 1, rfnRequests.size() );
 
     std::vector<bool> expectMoreRcv;
-    const std::vector<bool> expectMoreExp = list_of(true).repeat(4, true);
+    const std::vector<bool> expectMoreExp = list_of(true).repeat(3, true);
 
     std::vector<std::string> resultStringRcv;
     const std::vector<std::string> resultStringExp = list_of
             ("Config channelconfig is current.")
             ("Config freezeday is current.")
-            ("Config ovuv is current.")
             ("Config tou is current.")
-            ("2 commands queued for device");
+            ("1 command queued for device");
 
     std::vector<int> statusRcv;
-    const std::vector<int> statusExp = list_of(0).repeat(4, 0);
+    const std::vector<int> statusExp = list_of(0).repeat(3, 0);
 
     for each( const CtiReturnMsg &m in returnMsgs )
     {
@@ -2352,7 +2133,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_groupMessageCount )
 
     Cti::Devices::Commands::RfnCommandSPtr command = rfnRequests.front();
 
-    BOOST_CHECK_EQUAL( 2, dut.getGroupMessageCount(request->UserMessageId(), reinterpret_cast<long>(request->getConnectionHandle())) );
+    BOOST_CHECK_EQUAL( 1, dut.getGroupMessageCount(request->UserMessageId(), reinterpret_cast<long>(request->getConnectionHandle())) );
 
     {
         // execute
@@ -2379,16 +2160,16 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_groupMessageCount )
         dut.decrementGroupMessageCount(request->UserMessageId(), reinterpret_cast<long>(request->getConnectionHandle()));
     }
 
-    BOOST_CHECK_EQUAL( 1, dut.getGroupMessageCount(request->UserMessageId(), reinterpret_cast<long>(request->getConnectionHandle()) ) );
+    BOOST_CHECK_EQUAL( 0, dut.getGroupMessageCount(request->UserMessageId(), reinterpret_cast<long>(request->getConnectionHandle()) ) );
 }
 
-BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_all_disconnect_meter )
 {
     using boost::assign::list_of;
     using boost::assign::map_list_of;
 
     test_RfnResidentialDevice dut;
-    dut._type = TYPE_RFN420CD;
+    dut._type = TYPE_RFN410FD;
 
     typedef std::map<std::string, std::string>    CategoryItems;
     typedef std::pair<std::string, CategoryItems> CategoryDefinition;
@@ -2405,16 +2186,6 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
             ( CategoryDefinition( // demand freeze day config
                 "demandFreeze", map_list_of
                     ( RfnStrings::demandFreezeDay, "7" )))
-
-            ( CategoryDefinition( // OVUV config
-                "rfnVoltage", map_list_of
-                    ( RfnStrings::voltageAveragingInterval,   "60"      )
-                    ( RfnStrings::OvUvEnabled,                "true"    )
-                    ( RfnStrings::OvUvAlarmReportingInterval, "5"       )
-                    ( RfnStrings::OvUvAlarmRepeatInterval,    "60"      )
-                    ( RfnStrings::OvUvRepeatCount,            "2"       )
-                    ( RfnStrings::OvThreshold,                "123.456" )
-                    ( RfnStrings::UvThreshold,                "78.901"  )))
 
             ( CategoryDefinition( // TOU config
                 "tou", map_list_of
@@ -2525,21 +2296,20 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
             ( 0 )   // no config data                   -> no request
             ( 1 )   // add remote disconnect config     -> +1 request
             ( 2 )   // add demand freeze day config     -> +1 request
-            ( 8 )   // add OVUV config                  -> +6 request
-            ( 10 )  // add TOU config                   -> +1 request
-            ( 10 )  // add demand config                -> +0 request
-            ( 11 )  // add profile config               -> +1 request
-            ( 12 )  // add temperature alarming config  -> +1 request
-            ( 14 )  // add channel config               -> +2 request
+            ( 4 )   // add TOU config                   -> +1 request
+            ( 4 )   // add demand config                -> +0 request
+            ( 4 )   // add profile config               -> +1 request
+            ( 5 )   // add temperature alarming config  -> +1 request
+            ( 7 )   // add channel config               -> +2 request
             ;
 
+
     const std::vector< std::vector<bool> > returnExpectMoreExp = list_of< std::vector<bool> >
-            ( list_of<bool>(true)(true)(true)(true)(true)(true)(false) )    // no config data                   -> 7 error messages, NOTE: last expectMore expected to be false
-            ( list_of<bool>(true)(true)(true)(true)(true)(true)(true) )     // add remote disconnect config     -> 6 error messages + 1 config sent message
-            ( list_of<bool>(true)(true)(true)(true)(true)(true) )           // add demand freeze day config     -> 5 error messages + 2 config sent message
-            ( list_of<bool>(true)(true)(true)(true)(true) )                 // add OVUV config                  -> 4 error messages + 3 config sent message
-            ( list_of<bool>(true)(true)(true)(true) )                       // add TOU config                   -> 3 error messages + 4 config sent message
-            ( list_of<bool>(true)(true)(true)(true) )                       // add demand config                -> 3 error messages + 4 config sent message
+            ( list_of<bool>(true)(true)(true)(true)(false) )                // no config data                   -> 7 error messages, NOTE: last expectMore expected to be false
+            ( list_of<bool>(true)(true)(true)(true)(true) )                 // add remote disconnect config     -> 6 error messages + 1 config sent message
+            ( list_of<bool>(true)(true)(true)(true) )                       // add demand freeze day config     -> 5 error messages + 2 config sent message
+            ( list_of<bool>(true)(true)(true) )                             // add TOU config                   -> 3 error messages + 4 config sent message
+            ( list_of<bool>(true)(true)(true) )                             // add demand config                -> 3 error messages + 4 config sent message
             ( list_of<bool>(true)(true)(true) )                             // add profile config               -> 2 error messages + 5 config sent message
             ( list_of<bool>(true)(true) )                                   // add temperature alarming config  -> 1 error messages + 6 config sent message
             ( list_of<bool>(true) )                                         // add channel config               -> 7 config sent message

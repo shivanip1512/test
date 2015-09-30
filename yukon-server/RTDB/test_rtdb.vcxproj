@@ -80,7 +80,8 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">test_rtdb</TargetName>
     <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">bin\$(TargetName).exe</LocalDebuggerCommand>
-    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'"></LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    </LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)</LocalDebuggerWorkingDirectory>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
@@ -90,7 +91,8 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">test_rtdb</TargetName>
     <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">bin\$(TargetName).exe</LocalDebuggerCommand>
-    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"></LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    </LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)</LocalDebuggerWorkingDirectory>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
@@ -100,7 +102,8 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">test_rtdb</TargetName>
     <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">bin\$(TargetName).exe</LocalDebuggerCommand>
-    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"></LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    </LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)</LocalDebuggerWorkingDirectory>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
@@ -110,7 +113,8 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">test_rtdb</TargetName>
     <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Release|x64'">bin\$(TargetName).exe</LocalDebuggerCommand>
-    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Release|x64'"></LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    </LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)</LocalDebuggerWorkingDirectory>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
@@ -160,10 +164,10 @@
       <Command>if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
 xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
     </PostBuildEvent>
-<!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
+    <!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
      Check if msbuild has any support for a custom post-cleaning step
  -->
-<!-- No known equivalent for DeploymentTool in vc10:
+    <!-- No known equivalent for DeploymentTool in vc10:
 -->
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -210,10 +214,10 @@ xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
       <Command>if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
 xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
     </PostBuildEvent>
-<!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
+    <!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
      Check if msbuild has any support for a custom post-cleaning step
  -->
-<!-- No known equivalent for DeploymentTool in vc10:
+    <!-- No known equivalent for DeploymentTool in vc10:
 -->
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -254,12 +258,12 @@ xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
       <OutputFile>$(OutDir)test_rtdb.exe</OutputFile>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(OutDir)\test_rtdb_exe.pdb</ProgramDatabaseFile>
-<!--
+      <!--
   Though we can set TargetMachine explicitly, VC++
   can figure it out by project type. We don't need
   to set it by ourselves.
 -->
-<!--      <TargetMachine>0</TargetMachine>-->
+      <!--      <TargetMachine>0</TargetMachine>-->
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <AdditionalOptions>/machine:AMD64 %(AdditionalOptions)</AdditionalOptions>
     </Link>
@@ -267,10 +271,10 @@ xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
       <Command>if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
 xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
     </PostBuildEvent>
-<!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
+    <!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
      Check if msbuild has any support for a custom post-cleaning step
  -->
-<!-- No known equivalent for DeploymentTool in vc10:
+    <!-- No known equivalent for DeploymentTool in vc10:
 -->
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -311,12 +315,12 @@ xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-<!--
+      <!--
   Though we can set TargetMachine explicitly, VC++
   can figure it out by project type. We don't need
   to set it by ourselves.
 -->
-<!--      <TargetMachine>0</TargetMachine>-->
+      <!--      <TargetMachine>0</TargetMachine>-->
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <AdditionalOptions>/machine:AMD64 %(AdditionalOptions)</AdditionalOptions>
     </Link>
@@ -324,10 +328,10 @@ xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
       <Command>if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
 xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
     </PostBuildEvent>
-<!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
+    <!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
      Check if msbuild has any support for a custom post-cleaning step
  -->
-<!-- No known equivalent for DeploymentTool in vc10:
+    <!-- No known equivalent for DeploymentTool in vc10:
 -->
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -427,6 +431,7 @@ xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
     </ClCompile>
     <ClCompile Include="test_dev_rds.cpp">
     </ClCompile>
+    <ClCompile Include="test_dev_rfnResidentialVoltage.cpp" />
     <ClCompile Include="test_dev_rf_da.cpp">
     </ClCompile>
     <ClCompile Include="test_dev_rfn410centron.cpp" />
@@ -578,6 +583,7 @@ xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
     <ClInclude Include="include\dev_repeater.h" />
     <ClInclude Include="include\dev_repeater800.h" />
     <ClInclude Include="include\dev_repeater850.h" />
+    <ClInclude Include="include\dev_rfnResidentialVoltage.h" />
     <ClInclude Include="include\dev_rf_da.h" />
     <ClInclude Include="include\dev_rfn.h" />
     <ClInclude Include="include\dev_rfn420centron.h" />

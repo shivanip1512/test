@@ -136,6 +136,7 @@ dev_rfn420centron.obj \
 dev_rfn420focus_al.obj \
 dev_rfnResidential.obj \
 dev_rfnCommercial.obj \
+dev_rfnResidentialVoltage.obj \
 dev_rtc.obj \
 dev_rtm.obj \
 dev_rds.obj \

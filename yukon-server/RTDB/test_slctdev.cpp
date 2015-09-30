@@ -130,10 +130,10 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class Cti::Devices::RfnResidentialDevice")
         ("class Cti::Devices::RfnResidentialDevice")
         ("class Cti::Devices::Rfn420FocusAlDevice")
-        ("class Cti::Devices::RfnResidentialDevice")
-        ("class Cti::Devices::RfnResidentialDevice")
-        ("class Cti::Devices::RfnResidentialDevice")
-        ("class Cti::Devices::RfnResidentialDevice")
+        ("class Cti::Devices::RfnResidentialVoltageDevice")
+        ("class Cti::Devices::RfnResidentialVoltageDevice")
+        ("class Cti::Devices::RfnResidentialVoltageDevice")
+        ("class Cti::Devices::RfnResidentialVoltageDevice")
         ("class Cti::Devices::Rfn410CentronDevice")
         ("class Cti::Devices::Rfn420CentronDevice")
         //  60
@@ -331,10 +331,10 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "rfn-410fd",                      "class Cti::Devices::RfnResidentialDevice" },
         { "rfn-420fl",                      "class Cti::Devices::Rfn420FocusAlDevice" },
         //  70
-        { "rfn-420fx",                      "class Cti::Devices::RfnResidentialDevice" },
-        { "rfn-420fd",                      "class Cti::Devices::RfnResidentialDevice" },
-        { "rfn-420frx",                     "class Cti::Devices::RfnResidentialDevice" },
-        { "rfn-420frd",                     "class Cti::Devices::RfnResidentialDevice" },
+        { "rfn-420fx",                      "class Cti::Devices::RfnResidentialVoltageDevice" },
+        { "rfn-420fd",                      "class Cti::Devices::RfnResidentialVoltageDevice" },
+        { "rfn-420frx",                     "class Cti::Devices::RfnResidentialVoltageDevice" },
+        { "rfn-420frd",                     "class Cti::Devices::RfnResidentialVoltageDevice" },
         { "rfn-410cl",                      "class Cti::Devices::Rfn410CentronDevice" },
         { "rfn-420cl",                      "class Cti::Devices::Rfn420CentronDevice" },
         { "rfn-420cd",                      "class Cti::Devices::Rfn420CentronDevice" },

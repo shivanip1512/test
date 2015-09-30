@@ -1,13 +1,13 @@
 #pragma once
 
-#include "dev_rfnResidential.h"
+#include "dev_rfnResidentialVoltage.h"
 #include "cmd_rfn_FocusAlLcdConfiguration.h"
 
 namespace Cti {
 namespace Devices {
 
 class IM_EX_DEVDB Rfn420FocusAlDevice
-    :   public RfnResidentialDevice
+    :   public RfnResidentialVoltageDevice
 {
     virtual ConfigMap getConfigMethods(bool readOnly);
 
@@ -29,12 +29,6 @@ public:
 
 
 typedef Rfn420FocusAlDevice  Rfn420flDevice;
-typedef RfnResidentialDevice Rfn420fxDevice;
-typedef RfnResidentialDevice Rfn420fdDevice;
-
-typedef RfnResidentialDevice Rfn420frxDevice;
-typedef RfnResidentialDevice Rfn420frdDevice;
-
 
 }
 }

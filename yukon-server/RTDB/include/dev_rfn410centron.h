@@ -1,13 +1,13 @@
 #pragma once
 
-#include "dev_rfnResidential.h"
+#include "dev_rfnResidentialVoltage.h"
 #include "cmd_rfn_CentronLcdConfiguration.h"
 
 namespace Cti {
 namespace Devices {
 
 class IM_EX_DEVDB Rfn410CentronDevice :
-    public RfnResidentialDevice
+    public RfnResidentialVoltageDevice
 {
     ConfigMap getConfigMethods(bool readOnly) override;
 

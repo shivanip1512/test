@@ -203,6 +203,9 @@
     <ClCompile Include="test_dev_rfn410centron.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="test_dev_rfnResidentialVoltage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\cmd_device.h">
@@ -740,6 +743,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\trx_info.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\dev_rfnResidentialVoltage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

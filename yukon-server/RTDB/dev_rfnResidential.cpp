@@ -50,25 +50,13 @@ unsigned getSecondsFromTimeString( std::string time )
     return hour * 3600 + minute * 60;
 }
 
-const std::map<int, Commands::RfnOvUvConfigurationCommand::MeterID> DeviceTypeToMeterId = boost::assign::map_list_of
-        (TYPE_RFN410CL,  Commands::RfnOvUvConfigurationCommand::CentronC1SX)
-        (TYPE_RFN420CL,  Commands::RfnOvUvConfigurationCommand::CentronC2SX)
-        (TYPE_RFN420CD,  Commands::RfnOvUvConfigurationCommand::CentronC2SX)
-        (TYPE_RFN410FX,  Commands::RfnOvUvConfigurationCommand::LGFocusAX)
-        (TYPE_RFN410FD,  Commands::RfnOvUvConfigurationCommand::LGFocusAX)
-        (TYPE_RFN420FX,  Commands::RfnOvUvConfigurationCommand::LGFocusAX)
-        (TYPE_RFN420FD,  Commands::RfnOvUvConfigurationCommand::LGFocusAX)
-        (TYPE_RFN420FRX, Commands::RfnOvUvConfigurationCommand::LGFocusAX)
-        (TYPE_RFN420FRD, Commands::RfnOvUvConfigurationCommand::LGFocusAX)
-        (TYPE_RFN420FL,  Commands::RfnOvUvConfigurationCommand::LGFocusAL)
-        ;
-
-const std::set<int> disconnectConfigTypes = boost::assign::list_of
-        (TYPE_RFN410FD)
-        (TYPE_RFN420CD)
-        (TYPE_RFN420FD)
-        (TYPE_RFN420FRD)
-        ;
+const std::set<int> disconnectConfigTypes
+{
+    TYPE_RFN410FD,
+    TYPE_RFN420CD,
+    TYPE_RFN420FD,
+    TYPE_RFN420FRD
+};
 
 typedef Commands::RfnRemoteDisconnectConfigurationCommand DisconnectCmd;
 
@@ -86,23 +74,12 @@ const DisconnectModeDisplayMap disconnectModeResolver = boost::assign::list_of< 
     ( DisconnectCmd::DisconnectMode_Cycling, "CYCLING" )
     ;
 
-const std::map<unsigned, DisconnectCmd::DemandInterval> intervalResolver = boost::assign::map_list_of
-    (  5, DisconnectCmd::DemandInterval_Five    )
-    ( 10, DisconnectCmd::DemandInterval_Ten     )
-    ( 15, DisconnectCmd::DemandInterval_Fifteen )
-    ;
-
-Commands::RfnOvUvConfigurationCommand::MeterID getMeterIdForDeviceType( const int deviceType )
+const std::map<unsigned, DisconnectCmd::DemandInterval> intervalResolver
 {
-    boost::optional<Commands::RfnOvUvConfigurationCommand::MeterID> meterId = mapFind(DeviceTypeToMeterId, deviceType);
-
-    if( ! meterId )
-    {
-        return Commands::RfnOvUvConfigurationCommand::Unspecified;
-    }
-
-    return *meterId;
-}
+    {  5, DisconnectCmd::DemandInterval_Five    },
+    { 10, DisconnectCmd::DemandInterval_Ten     },
+    { 15, DisconnectCmd::DemandInterval_Fifteen }
+};
 
 } // anonymous namespace
 
@@ -115,8 +92,6 @@ RfnMeterDevice::ConfigMap RfnResidentialDevice::getConfigMethods(bool readOnly)
         boost::assign::insert( m )
             ( ConfigPart::freezeday,        bindConfigMethod( &RfnResidentialDevice::executeReadDemandFreezeInfo,              this ) )
             ( ConfigPart::tou,              bindConfigMethod( &RfnResidentialDevice::executeGetConfigInstallTou,               this ) )
-            ( ConfigPart::voltageaveraging, bindConfigMethod( &RfnResidentialDevice::executeGetConfigVoltageAveragingInterval, this ) )
-            ( ConfigPart::ovuv,             bindConfigMethod( &RfnResidentialDevice::executeGetConfigOvUv,                     this ) )
                 ;
 
         if( disconnectConfigSupported() )
@@ -129,8 +104,6 @@ RfnMeterDevice::ConfigMap RfnResidentialDevice::getConfigMethods(bool readOnly)
         boost::assign::insert( m )
             ( ConfigPart::freezeday,        bindConfigMethod( &RfnResidentialDevice::executePutConfigDemandFreezeDay,          this ) )
             ( ConfigPart::tou,              bindConfigMethod( &RfnResidentialDevice::executePutConfigInstallTou,               this ) )
-            ( ConfigPart::voltageaveraging, bindConfigMethod( &RfnResidentialDevice::executePutConfigVoltageAveragingInterval, this ) )
-            ( ConfigPart::ovuv,             bindConfigMethod( &RfnResidentialDevice::executePutConfigOvUv,                     this ) )
                 ;
 
         if( disconnectConfigSupported() )
@@ -141,6 +114,52 @@ RfnMeterDevice::ConfigMap RfnResidentialDevice::getConfigMethods(bool readOnly)
 
     return m;
 }
+
+YukonError_t RfnResidentialDevice::executePutConfigVoltageProfile( CtiRequestMsg     * pReq,
+                                                                   CtiCommandParser  & parse,
+                                                                   ReturnMsgList     & returnMsgs,
+                                                                   RfnCommandList    & rfnRequests )
+{
+    // putconfig voltage profile enable|disable
+
+    using Commands::RfnLoadProfileSetRecordingCommand;
+
+    //
+    // enable|disable recording
+    //
+
+    if( parse.isKeyValid("voltage_profile_enable") )
+    {
+        RfnLoadProfileSetRecordingCommand::RecordingOption option = (parse.getiValue("voltage_profile_enable")) ? RfnLoadProfileSetRecordingCommand::EnableRecording
+                                                                                                                : RfnLoadProfileSetRecordingCommand::DisableRecording;
+
+        rfnRequests.push_back( boost::make_shared<RfnLoadProfileSetRecordingCommand>( option ));
+
+        return ClientErrors::None;
+    }
+
+    return ClientErrors::NoMethod;
+}
+
+YukonError_t RfnResidentialDevice::executeGetConfigVoltageProfile( CtiRequestMsg     * pReq,
+                                                                   CtiCommandParser  & parse,
+                                                                   ReturnMsgList     & returnMsgs,
+                                                                   RfnCommandList    & rfnRequests )
+{
+    // getconfig voltage profile state
+
+    using Commands::RfnLoadProfileGetRecordingCommand;
+
+    if( parse.isKeyValid("voltage_profile_state") )
+    {
+        rfnRequests.push_back( boost::make_shared<RfnLoadProfileGetRecordingCommand>());
+
+        return ClientErrors::None;
+    }
+
+    return ClientErrors::NoMethod;
+}
+
 
 YukonError_t RfnResidentialDevice::executeGetValueVoltageProfile( CtiRequestMsg     * pReq,
                                                                   CtiCommandParser  & parse,
@@ -220,119 +239,6 @@ YukonError_t RfnResidentialDevice::executePutValueTouResetZero(CtiRequestMsg *pR
     return ClientErrors::None;
 }
 
-
-YukonError_t RfnResidentialDevice::executePutConfigVoltageAveragingInterval( CtiRequestMsg     * pReq,
-                                                                             CtiCommandParser  & parse,
-                                                                             ReturnMsgList     & returnMsgs,
-                                                                             RfnCommandList    & rfnRequests )
-{
-    Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
-
-    if( ! deviceConfig )
-    {
-        return ClientErrors::NoConfigData;
-    }
-
-    struct IntervalSettings
-    {
-        boost::optional<unsigned>   voltageAveragingInterval,
-                                    loadProfileInterval;
-
-        bool operator==( const IntervalSettings & rhs ) const
-        {
-            return voltageAveragingInterval == rhs.voltageAveragingInterval && loadProfileInterval == rhs.loadProfileInterval;
-        }
-    }
-    configSettings,
-    paoSettings;
-
-    {
-        const std::string             configKey( Config::RfnStrings::voltageAveragingInterval );
-        const boost::optional<long>   configValue = deviceConfig->findValue<long>( configKey );
-
-        if ( ! configValue  )
-        {
-            CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - Missing value for config key \""<< configKey <<"\"");
-            return ClientErrors::NoConfigData;
-        }
-
-        if ( *configValue < 0 || *configValue > std::numeric_limits<unsigned>::max() )
-        {
-            CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - Invalid value (" << *configValue << ") for config key \"" << configKey << "\"");
-            return ClientErrors::InvalidConfigData;
-        }
-
-        configSettings.voltageAveragingInterval = static_cast<unsigned>( *configValue );
-    }
-
-    {
-        const std::string           configKey( Config::RfnStrings::profileInterval );
-        const boost::optional<long> configValue = deviceConfig->findValue<long>( configKey );
-
-        if ( ! configValue  )
-        {
-            CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - Missing value for config key \""<< configKey <<"\"");
-            return ClientErrors::NoConfigData;
-        }
-
-        if ( *configValue < 0 || *configValue > std::numeric_limits<unsigned>::max() )
-        {
-            CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - Invalid value (" << *configValue << ") for config key \"" << configKey << "\"");
-            return ClientErrors::InvalidConfigData;
-        }
-
-        configSettings.loadProfileInterval = static_cast<unsigned>( *configValue );
-    }
-
-    {
-        double pao_value;
-
-        if ( getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_VoltageAveragingInterval, pao_value ) )
-        {
-            paoSettings.voltageAveragingInterval = pao_value;
-        }
-    }
-
-    {
-        long pao_value;
-
-        if ( getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval, pao_value ) )
-        {
-            paoSettings.loadProfileInterval = static_cast<unsigned>( pao_value );
-        }
-    }
-
-    if( configSettings == paoSettings )
-    {
-        if( ! parse.isKeyValid("force") )
-        {
-            return ClientErrors::ConfigCurrent;
-        }
-    }
-    else
-    {
-        if( parse.isKeyValid("verify") )
-        {
-            return ClientErrors::ConfigNotCurrent;
-        }
-    }
-
-    rfnRequests.push_back( boost::make_shared<Commands::RfnVoltageProfileSetConfigurationCommand>( *configSettings.voltageAveragingInterval,
-                                                                                                   *configSettings.loadProfileInterval ) );
-
-    return ClientErrors::None;
-}
-
-
-YukonError_t RfnResidentialDevice::executeGetConfigVoltageAveragingInterval( CtiRequestMsg     * pReq,
-                                                                             CtiCommandParser  & parse,
-                                                                             ReturnMsgList     & returnMsgs,
-                                                                             RfnCommandList    & rfnRequests )
-{
-    rfnRequests.push_back( boost::make_shared<Commands::RfnVoltageProfileGetConfigurationCommand>() );
-
-    return ClientErrors::None;
-}
 
 YukonError_t RfnResidentialDevice::executePutConfigDemandFreezeDay( CtiRequestMsg     * pReq,
                                                                     CtiCommandParser  & parse,
@@ -808,66 +714,68 @@ namespace { // anonymous namespace
 
 typedef std::map<CtiDeviceBase::PaoInfoKeys, std::string> TouScheduleCompareKeysMap;
 
-const TouScheduleCompareKeysMap touScheduleCompareKeys = boost::assign::map_list_of
+const TouScheduleCompareKeysMap touScheduleCompareKeys
+{
     // day table
-    ( CtiTableDynamicPaoInfo::Key_RFN_MondaySchedule,        RfnStrings::MondaySchedule        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_TuesdaySchedule,       RfnStrings::TuesdaySchedule       )
-    ( CtiTableDynamicPaoInfo::Key_RFN_WednesdaySchedule,     RfnStrings::WednesdaySchedule     )
-    ( CtiTableDynamicPaoInfo::Key_RFN_ThursdaySchedule,      RfnStrings::ThursdaySchedule      )
-    ( CtiTableDynamicPaoInfo::Key_RFN_FridaySchedule,        RfnStrings::FridaySchedule        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_SaturdaySchedule,      RfnStrings::SaturdaySchedule      )
-    ( CtiTableDynamicPaoInfo::Key_RFN_SundaySchedule,        RfnStrings::SundaySchedule        )
-    ( CtiTableDynamicPaoInfo::Key_RFN_HolidaySchedule,       RfnStrings::HolidaySchedule       )
+    { CtiTableDynamicPaoInfo::Key_RFN_MondaySchedule,        RfnStrings::MondaySchedule    },
+    { CtiTableDynamicPaoInfo::Key_RFN_TuesdaySchedule,       RfnStrings::TuesdaySchedule   },
+    { CtiTableDynamicPaoInfo::Key_RFN_WednesdaySchedule,     RfnStrings::WednesdaySchedule },
+    { CtiTableDynamicPaoInfo::Key_RFN_ThursdaySchedule,      RfnStrings::ThursdaySchedule  },
+    { CtiTableDynamicPaoInfo::Key_RFN_FridaySchedule,        RfnStrings::FridaySchedule    },
+    { CtiTableDynamicPaoInfo::Key_RFN_SaturdaySchedule,      RfnStrings::SaturdaySchedule  },
+    { CtiTableDynamicPaoInfo::Key_RFN_SundaySchedule,        RfnStrings::SundaySchedule    },
+    { CtiTableDynamicPaoInfo::Key_RFN_HolidaySchedule,       RfnStrings::HolidaySchedule   },
     // default rate
-    ( CtiTableDynamicPaoInfo::Key_RFN_DefaultTOURate, RfnStrings::DefaultTouRate )
+    { CtiTableDynamicPaoInfo::Key_RFN_DefaultTOURate, RfnStrings::DefaultTouRate },
     // schedule 1
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate0, RfnStrings::Schedule1Rate0 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time1, RfnStrings::Schedule1Time1 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate1, RfnStrings::Schedule1Rate1 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time2, RfnStrings::Schedule1Time2 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate2, RfnStrings::Schedule1Rate2 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time3, RfnStrings::Schedule1Time3 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate3, RfnStrings::Schedule1Rate3 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time4, RfnStrings::Schedule1Time4 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate4, RfnStrings::Schedule1Rate4 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time5, RfnStrings::Schedule1Time5 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate5, RfnStrings::Schedule1Rate5 )
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate0, RfnStrings::Schedule1Rate0 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time1, RfnStrings::Schedule1Time1 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate1, RfnStrings::Schedule1Rate1 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time2, RfnStrings::Schedule1Time2 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate2, RfnStrings::Schedule1Rate2 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time3, RfnStrings::Schedule1Time3 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate3, RfnStrings::Schedule1Rate3 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time4, RfnStrings::Schedule1Time4 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate4, RfnStrings::Schedule1Rate4 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time5, RfnStrings::Schedule1Time5 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate5, RfnStrings::Schedule1Rate5 },
     // schedule 2
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate0, RfnStrings::Schedule2Rate0 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time1, RfnStrings::Schedule2Time1 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate1, RfnStrings::Schedule2Rate1 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time2, RfnStrings::Schedule2Time2 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate2, RfnStrings::Schedule2Rate2 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time3, RfnStrings::Schedule2Time3 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate3, RfnStrings::Schedule2Rate3 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time4, RfnStrings::Schedule2Time4 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate4, RfnStrings::Schedule2Rate4 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time5, RfnStrings::Schedule2Time5 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate5, RfnStrings::Schedule2Rate5 )
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate0, RfnStrings::Schedule2Rate0 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time1, RfnStrings::Schedule2Time1 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate1, RfnStrings::Schedule2Rate1 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time2, RfnStrings::Schedule2Time2 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate2, RfnStrings::Schedule2Rate2 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time3, RfnStrings::Schedule2Time3 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate3, RfnStrings::Schedule2Rate3 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time4, RfnStrings::Schedule2Time4 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate4, RfnStrings::Schedule2Rate4 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time5, RfnStrings::Schedule2Time5 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate5, RfnStrings::Schedule2Rate5 },
     // schedule 3
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate0, RfnStrings::Schedule3Rate0 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time1, RfnStrings::Schedule3Time1 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate1, RfnStrings::Schedule3Rate1 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time2, RfnStrings::Schedule3Time2 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate2, RfnStrings::Schedule3Rate2 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time3, RfnStrings::Schedule3Time3 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate3, RfnStrings::Schedule3Rate3 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time4, RfnStrings::Schedule3Time4 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate4, RfnStrings::Schedule3Rate4 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time5, RfnStrings::Schedule3Time5 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate5, RfnStrings::Schedule3Rate5 )
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate0, RfnStrings::Schedule3Rate0 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time1, RfnStrings::Schedule3Time1 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate1, RfnStrings::Schedule3Rate1 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time2, RfnStrings::Schedule3Time2 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate2, RfnStrings::Schedule3Rate2 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time3, RfnStrings::Schedule3Time3 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate3, RfnStrings::Schedule3Rate3 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time4, RfnStrings::Schedule3Time4 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate4, RfnStrings::Schedule3Rate4 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time5, RfnStrings::Schedule3Time5 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate5, RfnStrings::Schedule3Rate5 },
     // schedule 4
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate0, RfnStrings::Schedule4Rate0 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time1, RfnStrings::Schedule4Time1 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate1, RfnStrings::Schedule4Rate1 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time2, RfnStrings::Schedule4Time2 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate2, RfnStrings::Schedule4Rate2 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time3, RfnStrings::Schedule4Time3 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate3, RfnStrings::Schedule4Rate3 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time4, RfnStrings::Schedule4Time4 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate4, RfnStrings::Schedule4Rate4 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time5, RfnStrings::Schedule4Time5 )
-    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate5, RfnStrings::Schedule4Rate5 );
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate0, RfnStrings::Schedule4Rate0 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time1, RfnStrings::Schedule4Time1 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate1, RfnStrings::Schedule4Rate1 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time2, RfnStrings::Schedule4Time2 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate2, RfnStrings::Schedule4Rate2 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time3, RfnStrings::Schedule4Time3 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate3, RfnStrings::Schedule4Rate3 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time4, RfnStrings::Schedule4Time4 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate4, RfnStrings::Schedule4Rate4 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time5, RfnStrings::Schedule4Time5 },
+    { CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate5, RfnStrings::Schedule4Rate5 }
+};
 
 } // anonymous namespace
 
@@ -921,160 +829,6 @@ YukonError_t RfnResidentialDevice::executeGetConfigHoliday( CtiRequestMsg     * 
     return ClientErrors::None;
 }
 
-YukonError_t RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq,
-                                                         CtiCommandParser & parse,
-                                                         ReturnMsgList    & returnMsgs,
-                                                         RfnCommandList   & rfnRequests )
-{
-    using Commands::RfnOvUvConfigurationCommand;
-    using Commands::RfnSetOvUvAlarmProcessingStateCommand;
-    using Commands::RfnSetOvUvNewAlarmReportIntervalCommand;
-    using Commands::RfnSetOvUvAlarmRepeatIntervalCommand;
-    using Commands::RfnSetOvUvAlarmRepeatCountCommand;
-    using Commands::RfnSetOvUvSetOverVoltageThresholdCommand;
-    using Commands::RfnSetOvUvSetUnderVoltageThresholdCommand;
-
-    try
-    {
-        Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
-
-        if( ! deviceConfig )
-        {
-            return ClientErrors::NoConfigData;
-        }
-
-        {
-            const bool configOvUvEnabled               = getConfigData   <bool> ( deviceConfig, Config::RfnStrings::OvUvEnabled );
-            const boost::optional<bool> paoOvUvEnabled = findDynamicInfo <bool> ( CtiTableDynamicPaoInfo::Key_RFN_OvUvEnabled );
-
-            if( configOvUvEnabled != paoOvUvEnabled || parse.isKeyValid("force") )
-            {
-                if( parse.isKeyValid("verify") )
-                {
-                    return ClientErrors::ConfigNotCurrent;
-                }
-
-                RfnSetOvUvAlarmProcessingStateCommand::AlarmStates state = configOvUvEnabled
-                      ? RfnSetOvUvAlarmProcessingStateCommand::EnableOvUv
-                      : RfnSetOvUvAlarmProcessingStateCommand::DisableOvUv;
-
-                rfnRequests.push_back( boost::make_shared<RfnSetOvUvAlarmProcessingStateCommand>( state ) );
-            }
-        }
-
-        {
-            const unsigned configOvUvReportingInterval               = getConfigData   <unsigned> ( deviceConfig, Config::RfnStrings::OvUvAlarmReportingInterval );
-            const boost::optional<unsigned> paoOvUvReportingInterval = findDynamicInfo <unsigned> ( CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmReportingInterval );
-
-            if( configOvUvReportingInterval != paoOvUvReportingInterval || parse.isKeyValid("force") )
-            {
-                if( parse.isKeyValid("verify") )
-                {
-                    return ClientErrors::ConfigNotCurrent;
-                }
-
-                rfnRequests.push_back( boost::make_shared<RfnSetOvUvNewAlarmReportIntervalCommand>( configOvUvReportingInterval ) );
-            }
-        }
-
-        {
-             const unsigned configOvUvRepeatInterval               = getConfigData   <unsigned> ( deviceConfig, Config::RfnStrings::OvUvAlarmRepeatInterval );
-             const boost::optional<unsigned> paoOvUvRepeatInterval = findDynamicInfo <unsigned> ( CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmRepeatInterval );
-
-             if( configOvUvRepeatInterval != paoOvUvRepeatInterval || parse.isKeyValid("force") )
-             {
-                 if( parse.isKeyValid("verify") )
-                 {
-                     return ClientErrors::ConfigNotCurrent;
-                 }
-
-                 rfnRequests.push_back( boost::make_shared<RfnSetOvUvAlarmRepeatIntervalCommand>( configOvUvRepeatInterval ) );
-             }
-        }
-
-        {
-            const unsigned configOvUvRepeatCount               = getConfigData   <unsigned> ( deviceConfig, Config::RfnStrings::OvUvRepeatCount );
-            const boost::optional<unsigned> paoOvUvRepeatCount = findDynamicInfo <unsigned> ( CtiTableDynamicPaoInfo::Key_RFN_OvUvRepeatCount );
-
-            if( configOvUvRepeatCount != paoOvUvRepeatCount || parse.isKeyValid("force") )
-            {
-                if( parse.isKeyValid("verify") )
-                {
-                    return ClientErrors::ConfigNotCurrent;
-                }
-
-                rfnRequests.push_back( boost::make_shared<RfnSetOvUvAlarmRepeatCountCommand>( configOvUvRepeatCount ) );
-            }
-        }
-
-        // get the meter ID
-        const RfnOvUvConfigurationCommand::MeterID  meterID = getMeterIdForDeviceType(getType());
-
-        {
-            const double configOvThreshold               = getConfigData   <double> ( deviceConfig, Config::RfnStrings::OvThreshold );
-            const boost::optional<double> paoOvThreshold = findDynamicInfo <double> ( CtiTableDynamicPaoInfo::Key_RFN_OvThreshold );
-
-            if( configOvThreshold != paoOvThreshold || parse.isKeyValid("force") )
-            {
-                if( parse.isKeyValid("verify") )
-                {
-                    return ClientErrors::ConfigNotCurrent;
-                }
-
-                rfnRequests.push_back( boost::make_shared<RfnSetOvUvSetOverVoltageThresholdCommand>( meterID, configOvThreshold ) );
-            }
-        }
-
-        {
-            const double configUvThreshold               = getConfigData   <double> ( deviceConfig, Config::RfnStrings::UvThreshold );
-            const boost::optional<double> paoUvThreshold = findDynamicInfo <double> ( CtiTableDynamicPaoInfo::Key_RFN_UvThreshold );
-
-            if( configUvThreshold != paoUvThreshold || parse.isKeyValid("force") )
-            {
-                if( parse.isKeyValid("verify") )
-                {
-                    return ClientErrors::ConfigNotCurrent;
-                }
-
-                rfnRequests.push_back( boost::make_shared<RfnSetOvUvSetUnderVoltageThresholdCommand>( meterID, configUvThreshold ) );
-            }
-        }
-
-        if( ! parse.isKeyValid("force") && rfnRequests.size() == 0 )
-        {
-            return ClientErrors::ConfigCurrent;
-        }
-
-        return ClientErrors::None;
-    }
-    catch( const MissingConfigDataException &e )
-    {
-        CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
-
-        return ClientErrors::NoConfigData;
-    }
-    catch( const InvalidConfigDataException &e )
-    {
-        CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
-
-        return ClientErrors::InvalidConfigData;
-    }
-}
-
-YukonError_t RfnResidentialDevice::executeGetConfigOvUv( CtiRequestMsg    * pReq,
-                                                         CtiCommandParser & parse,
-                                                         ReturnMsgList     & returnMsgs,
-                                                         RfnCommandList   & rfnRequests )
-{
-    // get the meter ID
-
-    Commands::RfnOvUvConfigurationCommand::MeterID  meterID = getMeterIdForDeviceType(getType());
-
-    rfnRequests.push_back( boost::make_shared<Commands::RfnGetOvUvAlarmConfigurationCommand>( meterID, Commands::RfnOvUvConfigurationCommand::OverVoltage ) );
-    rfnRequests.push_back( boost::make_shared<Commands::RfnGetOvUvAlarmConfigurationCommand>( meterID, Commands::RfnOvUvConfigurationCommand::UnderVoltage ) );
-
-    return ClientErrors::None;
-}
 
 YukonError_t RfnResidentialDevice::executeGetConfigDisconnect( CtiRequestMsg    * pReq,
                                                                CtiCommandParser & parse,
@@ -1233,76 +987,6 @@ bool RfnResidentialDevice::disconnectConfigSupported() const
     return disconnectConfigTypes.count(getType());
 }
 
-void RfnResidentialDevice::handleCommandResult( const Commands::RfnGetOvUvAlarmConfigurationCommand & cmd )
-{
-    Commands::RfnGetOvUvAlarmConfigurationCommand::AlarmConfiguration   config = cmd.getAlarmConfiguration();
-
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvUvEnabled,   config.ovuvEnabled );
-
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmReportingInterval, config.ovuvAlarmReportingInterval );
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmRepeatInterval,    config.ovuvAlarmRepeatInterval );
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvUvRepeatCount,            config.ovuvAlarmRepeatCount );
-
-    if ( config.ovThreshold )
-    {
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvThreshold, *config.ovThreshold );
-    }
-    else
-    {
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_UvThreshold, *config.uvThreshold );
-    }
-}
-
-
-void RfnResidentialDevice::handleCommandResult( const Commands::RfnSetOvUvAlarmProcessingStateCommand &cmd )
-{
-    setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_OvUvEnabled,
-                   cmd.alarmState == Commands::RfnSetOvUvAlarmProcessingStateCommand::EnableOvUv);
-}
-
-
-void RfnResidentialDevice::handleCommandResult( const Commands::RfnSetOvUvAlarmRepeatCountCommand &cmd )
-{
-    setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_OvUvRepeatCount, cmd.repeatCount);
-}
-
-
-void RfnResidentialDevice::handleCommandResult( const Commands::RfnSetOvUvAlarmRepeatIntervalCommand &cmd )
-{
-    setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmRepeatInterval, cmd.repeatInterval);
-}
-
-
-void RfnResidentialDevice::handleCommandResult( const Commands::RfnSetOvUvNewAlarmReportIntervalCommand &cmd )
-{
-    setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmReportingInterval, cmd.reportingInterval);
-}
-
-
-void RfnResidentialDevice::handleCommandResult( const Commands::RfnSetOvUvSetOverVoltageThresholdCommand &cmd )
-{
-    setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_OvThreshold, cmd.ovThresholdValue);
-}
-
-
-void RfnResidentialDevice::handleCommandResult( const Commands::RfnSetOvUvSetUnderVoltageThresholdCommand &cmd )
-{
-    setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_UvThreshold, cmd.uvThresholdValue);
-}
-
-
-void RfnResidentialDevice::handleCommandResult( const Commands::RfnVoltageProfileGetConfigurationCommand & cmd )
-{
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_VoltageAveragingInterval, cmd.getVoltageAveragingIntervalSeconds() );
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval,      cmd.getLoadProfileIntervalMinutes() );
-}
-
-
-void RfnResidentialDevice::handleCommandResult( const Commands::RfnVoltageProfileSetConfigurationCommand & cmd )
-{
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_VoltageAveragingInterval, cmd.getVoltageAveragingIntervalSeconds() );
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval,      cmd.getLoadProfileIntervalMinutes() );
-}
 
 
 void RfnResidentialDevice::handleCommandResult( const Commands::RfnLoadProfileGetRecordingCommand & cmd )

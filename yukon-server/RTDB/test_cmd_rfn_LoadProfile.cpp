@@ -175,8 +175,12 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration )
         const std::vector< unsigned char > response = boost::assign::list_of
             ( 0x69 )( 0x01 )( 0x00 )( 0x01 )( 0x01 )( 0x00 )( 0x02 )( 0x04 )( 0x06 );
 
-        BOOST_CHECK_EQUAL( 0.0, command.getVoltageAveragingIntervalSeconds() );
-        BOOST_CHECK_EQUAL(   0, command.getLoadProfileIntervalMinutes() );
+
+        BOOST_CHECK( ! command.getVoltageAveragingInterval() );
+        BOOST_CHECK( ! command.getLoadProfileInterval() );
+
+//        BOOST_CHECK_EQUAL( 0.0, *command.getVoltageAveragingInterval() );
+  //      BOOST_CHECK_EQUAL(   0, *command.getLoadProfileInterval() );
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
@@ -185,8 +189,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration )
                                  "\nVoltage Averaging interval: 60 seconds"
                                  "\nLoad Profile Demand interval: 6 minutes" );
 
-        BOOST_CHECK_EQUAL(   60, command.getVoltageAveragingIntervalSeconds() );
-        BOOST_CHECK_EQUAL(    6, command.getLoadProfileIntervalMinutes() );
+        BOOST_CHECK_EQUAL(   60, *command.getVoltageAveragingInterval() );
+        BOOST_CHECK_EQUAL(    6, *command.getLoadProfileInterval() );
     }
 
     // decode -- failure response
