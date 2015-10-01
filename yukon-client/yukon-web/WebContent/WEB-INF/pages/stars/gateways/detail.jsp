@@ -148,11 +148,11 @@
             <div class="column one">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".admin" valueClass="js-gw-admin">
-                        <c:if test="${empty data.admin}"><i:inline key="yukon.common.none"/></c:if>
+                        <c:if test="${empty data.admin}"><span class="empty-list"><i:inline key="yukon.common.none"/></span></c:if>
                         <c:if test="${not empty data.admin}">${fn:escapeXml(data.admin.username)}</c:if>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".superAdmin" valueClass="js-gw-super-admin">
-                        <c:if test="${empty data.superAdmin}"><i:inline key="yukon.common.none"/></c:if>
+                        <c:if test="${empty data.superAdmin}"><span class="empty-list"><i:inline key="yukon.common.none"/></span></c:if>
                         <c:if test="${not empty data.superAdmin}">${fn:escapeXml(data.superAdmin.username)}</c:if>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".connectionType" valueClass="js-gw-conn-type">

@@ -74,7 +74,7 @@ public final class RfnGatewayData {
                            String radioVersion, String releaseVersion, Set<ConflictType> versionConflicts, 
                            AppMode mode, ConnectionType connectionType, String ipAddress, String port, 
                            ConnectionStatus connectionStatus, LastCommStatus lastCommStatus, 
-                           long lastCommStatusTimestamp, Set<Radio> radios, Authentication user, Authentication admin,
+                           long lastCommStatusTimestamp, Set<Radio> radios, Authentication admin,
                            Authentication superAdmin, String collectionSchedule, Set<DataSequence> sequences, 
                            short routeColor, String updateServerUrl, Authentication updateServerLogin ) {
         this.name = name;
@@ -394,7 +394,6 @@ public final class RfnGatewayData {
         private LastCommStatus lastCommStatus;
         private long lastCommStatusTimestamp;
         private Set<Radio> radios;
-        private Authentication user;
         private Authentication admin;
         private Authentication superAdmin;
         private String collectionSchedule;
@@ -407,7 +406,7 @@ public final class RfnGatewayData {
             
             return new RfnGatewayData(name, hardwareVersion, softwareVersion, upperStackVersion, radioVersion, 
                                       releaseVersion, versionConflicts, mode, connectionType, ipAddress, port, 
-                                      connectionStatus, lastCommStatus, lastCommStatusTimestamp, radios, user, admin,
+                                      connectionStatus, lastCommStatus, lastCommStatusTimestamp, radios, admin,
                                       superAdmin, collectionSchedule, sequences, routeColor,updateServerUrl,
                                       updateServerLogin);
             

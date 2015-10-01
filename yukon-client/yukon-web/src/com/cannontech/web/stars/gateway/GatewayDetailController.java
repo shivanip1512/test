@@ -52,8 +52,7 @@ public class GatewayDetailController {
     @Autowired private GatewayEventLogService gatewayEventLogService;
     
     @RequestMapping("/gateways/{id}")
-    public String detail(ModelMap model, YukonUserContext userContext, @PathVariable int id) 
-            throws NmCommunicationException {
+    public String detail(ModelMap model, YukonUserContext userContext, @PathVariable int id) {
         
         RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(id);
         model.addAttribute("gateway", gateway);
@@ -75,8 +74,7 @@ public class GatewayDetailController {
     
     @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_DELETE)
     @RequestMapping(value="/gateways/{id}", method=RequestMethod.DELETE)
-    public String delete(FlashScope flash, LiteYukonUser user, ModelMap model, @PathVariable int id) 
-            throws NmCommunicationException {
+    public String delete(FlashScope flash, LiteYukonUser user, ModelMap model, @PathVariable int id) {
         
         LiteYukonPAObject pao = cache.getAllPaosMap().get(id);
         RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(id);
@@ -117,7 +115,7 @@ public class GatewayDetailController {
     }
     
     @RequestMapping("/gateways/{id}/data")
-    public @ResponseBody Map<String, Object> data(ModelMap model, YukonUserContext userContext, @PathVariable int id) 
+    public @ResponseBody Map<String, Object> data(YukonUserContext userContext, @PathVariable int id) 
             throws NmCommunicationException {
         
         RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(id);
