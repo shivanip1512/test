@@ -179,9 +179,6 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration )
         BOOST_CHECK( ! command.getVoltageAveragingInterval() );
         BOOST_CHECK( ! command.getLoadProfileInterval() );
 
-//        BOOST_CHECK_EQUAL( 0.0, *command.getVoltageAveragingInterval() );
-  //      BOOST_CHECK_EQUAL(   0, *command.getLoadProfileInterval() );
-
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
         BOOST_CHECK_EQUAL( rcv.description,
