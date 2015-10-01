@@ -1,9 +1,10 @@
-
 #pragma once
 
 #include <string>
 
 #include <boost/noncopyable.hpp>
+
+class CtiTime;
 
 
 class ControlStrategy : private boost::noncopyable
@@ -148,6 +149,8 @@ public:
 
     // The following is for saving and restoring the embedded states for a database reload.
     virtual void restoreStates(const ControlStrategy * backup);
+
+    bool isPeakTime( const CtiTime & now ) const;
 
 private:
 

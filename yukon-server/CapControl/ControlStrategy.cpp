@@ -1,11 +1,10 @@
-
 #include "precompiled.h"
-
-#include <string>
 
 #include "logger.h"
 #include "ControlStrategy.h"
 #include "ccid.h"
+#include "ctitime.h"
+#include "mgr_holiday.h"
 
 extern unsigned long _CC_DEBUG;
 
@@ -569,6 +568,38 @@ const bool ControlStrategy::getPeakTimeFlag() const
 void ControlStrategy::restoreStates(const ControlStrategy * backup)
 {
     // empty!
+}
+
+
+bool ControlStrategy::isPeakTime( const CtiTime & now ) const
+{
+    const unsigned secondsAfterMidnight = ( ( now.hour() * 60 ) + now.minute() ) * 60 + now.second();
+
+    if ( getPeakStartTime() <= secondsAfterMidnight && secondsAfterMidnight <= getPeakStopTime() )
+    {
+        // we are in the peak time window
+
+        struct tm   timeComponents;
+
+        now.extract( &timeComponents );
+
+        if ( getDaysOfWeek()[ timeComponents.tm_wday ] == 'Y' )
+        {
+            // today is a peak day
+
+            return true;
+        }
+
+        if ( getDaysOfWeek()[ 7 ] == 'Y' &&
+             CtiHolidayManager::getInstance().isHoliday( now.date() ) )
+        {
+            // holidays are peak days and today is a holiday
+
+            return true;
+        }
+    }
+
+    return false;
 }
 
 

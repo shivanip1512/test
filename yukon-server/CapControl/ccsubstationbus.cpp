@@ -5,7 +5,6 @@
 #include "database_util.h"
 #include "ccsubstationbusstore.h"
 #include "capcontroller.h"
-#include "mgr_holiday.h"
 #include "tbl_pt_alarm.h"
 #include "MsgVerifyBanks.h"
 
@@ -3403,16 +3402,9 @@ double CtiCCSubstationBus::figureCurrentSetPoint(const CtiTime& currentDateTime)
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBus::isPeakTime(const CtiTime& currentDateTime)
 {
-    unsigned secondsFromBeginningOfDay = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
-    if( isPeakDay(currentDateTime) && getStrategy()->getPeakStartTime() <= secondsFromBeginningOfDay && secondsFromBeginningOfDay <= getStrategy()->getPeakStopTime() )
-    {
-        setPeakTimeFlag(true);
-    }
-    else
-    {
-        setPeakTimeFlag(false);
-    }
-    return _peaktimeflag;
+    setPeakTimeFlag( getStrategy()->isPeakTime( currentDateTime ) );
+
+    return getPeakTimeFlag();
 }
 
 /*---------------------------------------------------------------------------
@@ -5132,31 +5124,6 @@ bool CtiCCSubstationBus::isConfirmCheckNeeded()
     }
 
     return returnBoolean;
-}
-
-/*---------------------------------------------------------------------------
-    isPeakDay
-
-    Returns a boolean if the current day of the week can be a peak day
----------------------------------------------------------------------------*/
-bool CtiCCSubstationBus::isPeakDay(const CtiTime& currentDateTime)
-{
-    //-------------------------------------
-    //Need to check if it is a holiday today
-    //also, but we must wait until there is
-    //a dll with a function to do this
-    //-------------------------------------
-    CtiTime now;
-    struct tm start_tm;
-
-    currentDateTime.extract(&start_tm);
-
-    if( getStrategy()->getDaysOfWeek()[start_tm.tm_wday] == 'Y' &&
-        ( getStrategy()->getDaysOfWeek()[7] == 'Y' ||
-          !CtiHolidayManager::getInstance().isHoliday(CtiDate()) ) )
-        return true;
-    else
-        return false;
 }
 
 /*---------------------------------------------------------------------------

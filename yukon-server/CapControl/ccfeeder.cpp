@@ -6,7 +6,6 @@
 #include "ccsubstationbusstore.h"
 #include "capcontroller.h"
 #include "msg_signal.h"
-#include "mgr_holiday.h"
 #include "msg_lmcontrolhistory.h"
 #include "tbl_pt_alarm.h"
 
@@ -2141,41 +2140,9 @@ CtiCCFeeder& CtiCCFeeder::figureEstimatedVarLoadPointValue()
 ---------------------------------------------------------------------------*/
 bool CtiCCFeeder::isPeakTime(const CtiTime& currentDateTime)
 {
-    unsigned secondsFromBeginningOfDay = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
-    if( isPeakDay() && getStrategy()->getPeakStartTime() <= secondsFromBeginningOfDay && secondsFromBeginningOfDay <= getStrategy()->getPeakStopTime() )
-    {
-        setPeakTimeFlag(true);
-    }
-    else
-    {
-        setPeakTimeFlag(false);
-    }
-    return _peakTimeFlag;
-}
+    setPeakTimeFlag( getStrategy()->isPeakTime( currentDateTime ) );
 
-/*---------------------------------------------------------------------------
-    isPeakDay
-
-    Returns a boolean if the current day of the week can be a peak day
----------------------------------------------------------------------------*/
-bool CtiCCFeeder::isPeakDay()
-{
-    //-------------------------------------
-    //Need to check if it is a holiday today
-    //also, but we must wait until there is
-    //a dll with a function to do this
-    //-------------------------------------
-    CtiTime now;
-    struct tm start_tm;
-
-    now.extract(&start_tm);
-
-    if( getStrategy()->getDaysOfWeek()[start_tm.tm_wday] == 'Y' &&
-        ( getStrategy()->getDaysOfWeek()[7] == 'Y' ||
-          !CtiHolidayManager::getInstance().isHoliday(CtiDate()) ) )
-        return true;
-    else
-        return false;
+    return getPeakTimeFlag();
 }
 
 bool CtiCCFeeder::isControlPoint(long pointid)

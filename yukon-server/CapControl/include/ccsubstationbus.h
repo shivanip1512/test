@@ -250,7 +250,6 @@ public:
     bool isConfirmCheckNeeded();
     bool capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents);
     double figureCurrentSetPoint(const CtiTime& currentDateTime);
-    bool isPeakDay(const CtiTime& currentDateTime);
     bool isPeakTime(const CtiTime& currentDateTime);
     bool isControlPoint(long pointid);
     void updateIntegrationVPoint(const CtiTime &currentDateTime);

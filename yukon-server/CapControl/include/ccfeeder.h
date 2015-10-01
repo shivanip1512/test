@@ -232,7 +232,6 @@ public:
     std::string createPhaseVarText(double aValue,double bValue, double cValue, float multiplier);
     std::string createPhaseRatioText(double aValue,double bValue, double cValue, float multiplier);
     std::string createVarText(double aValue, float multiplier);
-    bool isPeakDay();
     bool isPastMaxConfirmTime(const CtiTime& currentDateTime, long maxConfirmTime, long feederRetries);
     bool checkForAndProvideNeededIndividualControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages,
                                                    bool peakTimeFlag, long decimalPlaces, const std::string& controlUnits,
