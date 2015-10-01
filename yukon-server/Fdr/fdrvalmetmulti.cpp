@@ -121,15 +121,13 @@ void CtiFDR_ValmetMulti::startMultiListeners()
         const int port = _listeningPortNumbers.getQueue();
 
         // Search to see if we alredy have a thread for this port.  If not, start one
-        auto itr = _listenerThreadMap.find(port);
-        if(itr == _listenerThreadMap.end())
+        if(_listenerThreadMap.count(port) == 0)
         {
             thread *listenerThread = new boost::thread(&CtiFDR_ValmetMulti::threadFunctionConnection, this, port, _listenerThreadStartupDelay);
             _listenerThreads.add_thread(listenerThread);
 
             _listenerThreadMap[port] = listenerThread;
-
-        } // There is already a thread running.
+        }
     }
 }
 
