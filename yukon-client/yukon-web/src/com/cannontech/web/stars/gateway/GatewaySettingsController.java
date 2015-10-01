@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,8 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigDouble;
 import com.cannontech.common.events.loggers.EndpointEventLogService;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -181,12 +180,18 @@ public class GatewaySettingsController {
             
             
             if(nmConfigurationService.isFirmwareUpdateSupported()) {
-            
-            settings.setUpdateServerUrl(gateway.getData().getUpdateServerUrl());
-            settings.setUpdateServerLogin(gateway.getData().getUpdateServerLogin());
-            if(gateway.getData().getUpdateServerUrl().equals(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER))) {
-                settings.setUseDefault(true);
-            }
+
+                String defaultUpdateServer = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
+
+                model.addAttribute("defaultUpdateServer", defaultUpdateServer);
+
+                String updateServerUrl = gateway.getData().getUpdateServerUrl();
+                settings.setUpdateServerUrl(updateServerUrl);
+                settings.setUpdateServerLogin(gateway.getData().getUpdateServerLogin());
+
+                if(StringUtils.isBlank(updateServerUrl) || updateServerUrl.equals(defaultUpdateServer)) {
+                    settings.setUseDefault(true);
+                }
             }
             model.addAttribute("settings", settings);
             

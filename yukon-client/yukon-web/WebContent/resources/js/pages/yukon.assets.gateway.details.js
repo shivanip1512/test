@@ -211,6 +211,7 @@ yukon.assets.gateway.details = (function () {
                     },
                     error: function (xhr, status, error, $form) {
                         popup.html(xhr.responseText);
+                        yukon.ui.initContent(popup);
                         yukon.assets.gateway.shared.adjustTestConnectionButtons();
                     },
                     complete: function () {
