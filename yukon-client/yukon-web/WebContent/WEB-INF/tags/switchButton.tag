@@ -15,7 +15,8 @@
                                                                    will be toggled on instead of the green button." %>
                                                                    
 <%@ attribute name="toggleGroup" description="Used to setup a toggle group driven by a checkbox." %>
-<%@ attribute name="toggleAction" description="Action to perform to other inputs. Options: disable,hide Default: disable" %>
+<%@ attribute name="toggleInverse" type="java.lang.Boolean" description="Use the opposite of the checked status for toggling other inputs" %>
+<%@ attribute name="toggleAction" description="Action to perform to other inputs. Options: disable,hide,invisible Default: disable" %>
 
 <%@ attribute name="onNameKey" description="i18n key used for the on button." %> 
 <%@ attribute name="offNameKey" description="i18n key used for the off button." %> 
@@ -50,14 +51,24 @@
                 <input type="checkbox" name="${name}" id="${id}" class="switch-btn-checkbox ${pageScope.inputClass}" 
                     data-toggle="${pageScope.toggleGroup}" 
                     data-toggle-action="${pageScope.toggleAction}" 
+                    <c:if test="${toggleInverse}">data-toggle-inverse="inverse"</c:if>
                     <c:if test="${checked}">checked</c:if> 
                     <c:if test="${disabled}">disabled</c:if>>
             </c:when>
             <c:otherwise>
-                <form:checkbox path="${path}" id="${id}" cssClass="switch-btn-checkbox ${pageScope.inputClass}" 
-                    data-toggle="${pageScope.toggleGroup}" 
-                    data-toggle-action="${pageScope.toggleAction}" 
-                    disabled="${disabled}"/>
+                <c:if test="${pageScope.toggleInverse}">
+                    <form:checkbox path="${path}" id="${id}" cssClass="switch-btn-checkbox ${pageScope.inputClass}" 
+                        data-toggle="${pageScope.toggleGroup}" 
+                        data-toggle-action="${pageScope.toggleAction}"
+                        data-toggle-inverse="true"
+                        disabled="${disabled}"/>
+                </c:if>
+                <c:if test="${not pageScope.toggleInverse}">
+                    <form:checkbox path="${path}" id="${id}" cssClass="switch-btn-checkbox ${pageScope.inputClass}" 
+                        data-toggle="${pageScope.toggleGroup}" 
+                        data-toggle-action="${pageScope.toggleAction}"
+                        disabled="${disabled}"/>
+                </c:if>
             </c:otherwise>
         </c:choose>
         <label for="${id}" class="${offClasses}"><span class="b-label"><cti:msg2 key="${offNameKey}"/></span></label

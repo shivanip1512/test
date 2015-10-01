@@ -239,8 +239,6 @@ yukon.deviceConfig = (function () {
 
     _initFields = function () {
 
-        yukon.ui.initChosen();
-
         _setupDisplayItems();
         _showSandwichedMidnightEntries();
         _registerScheduleButtons();
@@ -259,6 +257,7 @@ yukon.deviceConfig = (function () {
                 buttons = yukon.ui.buttons({ okText: yg.text.save, event: 'yukon.deviceConfigs.category.save' });
 
             $('#category-popup').dialog({ width: 900, height: 600, title: title, buttons: buttons });
+            yukon.ui.initContent($('#category-popup'));
             _initFields();
             yukon.ui.unbusy(btn);
         });
@@ -313,6 +312,7 @@ yukon.deviceConfig = (function () {
                     },
                     error: function (xhr, status, error, $form) {
                         $('#category-popup').html(xhr.responseText);
+                        yukon.ui.initContent($('#category-popup'));
                         _initFields();
                     }
                 });

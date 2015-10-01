@@ -44,8 +44,9 @@ yukon.ui = (function () {
             elementGlass.redraw($(ev.currentTarget));
         }
     };
+
     /** Object to glass out the page, used by #block and #unblock */
-  var pageGlass = {
+    var pageGlass = {
         
         show: function (args) {
             
@@ -97,16 +98,416 @@ yukon.ui = (function () {
                 window.location = yukon.url(ui.item.link);
             }
         });
-    },
-    
-    mod = {
+    };
+
+    /** Initialize any chosen selects */
+    var initChosen = function () {
+
+        $('.js-init-chosen').each(function () {
+            $(this).chosen({ 'width' : $(this).getHiddenDimensions().innerWidth + 11 + 'px' });
+        }).removeClass('js-init-chosen');
+
+        $(document).off('click.yukon.chosen', '.chosen-single');
+        $(document).on('click.yukon.chosen', '.chosen-single', function () {
+
+            var chosenElem = $(this),
+                chosenContainer = chosenElem.closest('.chosen-container'),
+                chosenHeight = chosenElem.outerHeight() + chosenContainer.find('.chosen-drop').outerHeight(),
+                offsetInContainer = chosenContainer.offset().top - chosenContainer.offsetParent().offset().top,
+                minBottom = offsetInContainer + chosenHeight,
+
+                /* The following properties are specific to being in a dialog */
+                scrollContainer = chosenElem.closest('.ui-dialog-content'),
+                currentBottom = scrollContainer.outerHeight(),
+                scrollOffset = scrollContainer.scrollTop();
+
+            /* If we're not in a dialog, scroll the page */
+            if (!scrollContainer.length) {
+
+                scrollContainer = $(window);
+                currentBottom = scrollContainer.outerHeight() + window.pageYOffset;
+                scrollOffset = 0;
+            }
+
+            if (minBottom > currentBottom) {
+                scrollContainer.scrollTop(minBottom - scrollContainer.outerHeight() + scrollOffset);
+            }
+        });
+    };
+
+    var addEventListeners = function () {
+
+        /** Follow clicks on top level nav menus when not using a touch screen. */
+        $(document).on('click', '.yukon-header .menu-title', function (ev) {
+            if ($(this).is('[data-url]') && !Modernizr.touch) {
+                window.location.href = $(this).data('url');
+            }
+        });
+
+        /** Fix file path on all yukon <tags:file> usage in windows. */
+        $(document).on('change', '.file-upload input[type="file"]', function (ev) {
+
+            var input = $(this),
+                container = input.closest('.file-upload'),
+                nameInput = container.find('.file-name'),
+                value = input.val();
+
+            // Windwows adds C:\fakepath\ for security reasons.
+            value = value.replace('C:\\fakepath\\', '');
+            nameInput.text(value);
+        });
+
+        /** Toggle selection (pipe) on rows of selectable tables. */
+        $(document).on('click', 'table.selectable tbody tr, ul.selectable li', function (ev) {
+            $(this).addClass('selected').siblings().removeClass('selected');
+        });
+
+        /** Sorting Handler: Sort a table by column. */
+        $(document).on('click', '.sortable', function (ev) {
+
+            var anchor = $(this),
+                dir = anchor.is('.desc') ? 'asc' : 'desc',
+                sort = anchor.data('sort'),
+                container = anchor.closest('[data-url]'),
+                url = container.data('url'),
+                pagingArea = container.find('.paging-area'),
+                params = {sort: sort, dir: dir};
+
+            // Add page size if paging is available
+            if (pagingArea.length) {
+                params.itemsPerPage = pagingArea.data('pageSize');
+                params.page = 1;
+            }
+            if (container.is('[data-static]')) {
+                var joiner = url.indexOf('?') === -1 ? '?' : '&';
+                window.location.href = url + joiner + $.param(params);
+            } else {
+                $.get(url, params).done(function (data) {
+                    container.html(data);
+                });
+            }
+        });
+
+        /** Paging Handler: Get the next or previous page, or change page size. */
+        $(document).on('click', yg.selectors.paging, function (ev) {
+
+            var
+            target = $(this),
+            container = target.closest('[data-url]'),
+            sortables = container.find('.sortable'),
+            url = container.data('url'),
+            pagingArea = container.find('.paging-area'),
+            page = pagingArea.data('currentPage'),
+            pageSize = pagingArea.data('pageSize'),
+            changePage = target.parent().is('.previous-page') || target.parent().is('.next-page'),
+            params = {},
+            sort;
+
+            if (changePage) {
+                // they clicked the next or previous page buttons
+                params.page = target.parent().is('.previous-page') ? page - 1 : page + 1;
+                params.itemsPerPage = pageSize;
+            } else {
+                // they clicked one of the page size links
+                params.page = 1;
+                params.itemsPerPage = target.data('pageSize');
+            }
+
+            // add sorting parameters if necessary
+            if (sortables.length) {
+                sort = sortables.filter('.desc');
+                if (sort.length) {
+                    params.dir = 'desc';
+                    params.sort = sort.data('sort');
+                } else {
+                    sort = sortables.filter('.asc');
+                    if (sort.length) {
+                        params.dir = 'asc';
+                        params.sort = sort.data('sort');
+                    }
+                }
+            }
+
+            if (container.is('[data-static]')) {
+                var joiner = url.indexOf('?') === -1 ? '?' : '&';
+                window.location.href = url + joiner + $.param(params);
+            } else {
+                $.get(url, params).done(function (data) {
+                    container.html(data);
+                    container.trigger(yg.events.pagingend);
+                });
+            }
+            return false; // return false to stop form submissions
+        });
+
+        /** Show or hide an element when something is clicked. */
+        $(document).on('click', '[data-show-hide]', function (ev) {
+            var trigger = $(this);
+            var target = $(trigger.data('showHide'));
+            if (target.is('[data-url]')) {
+                if (target.is(':visible')) {
+
+                    target.slideUp(150);
+
+                    if (trigger.is('.revealer')) {
+                        trigger.removeClass('revealer-expanded');
+                    }
+                } else {
+                    target.load(target.data('url'), function () {
+
+                        target.slideDown(150);
+
+                        if (target.is('[data-event]')) {
+                            target.trigger(target.data('event'));
+                        }
+                        if (trigger.is('.revealer')) {
+                            trigger.addClass('revealer-expanded');
+                        }
+                    });
+                }
+            } else {
+                if (target.is(':visible')) {
+
+                    target.slideUp(150);
+
+                    if (trigger.is('.revealer')) {
+                        trigger.removeClass('revealer-expanded');
+                    }
+                } else {
+
+                    target.slideDown(150);
+                    if (target.is('[data-event]')) {
+                        target.trigger(target.data('event'));
+                    }
+                    if (trigger.is('.revealer')) {
+                        trigger.addClass('revealer-expanded');
+                    }
+                }
+            }
+        });
+
+        /** Toggle buttons in a button group */
+        $(document).on('click', '.button-group-toggle .button', function (ev) {
+
+            var btn = $(this), input, value;
+
+            btn.addClass('on').siblings('.button').removeClass('on');
+            // Toggle visibility of show/hide elements
+            if (btn.is('[data-show]')) {
+                btn.siblings('[data-show]').each(function () {
+                    $($(this).data('show')).hide();
+                });
+                $(btn.data('show')).show();
+            }
+            // Set an input if we need to
+            if (btn.is('[data-value]')) {
+                value = btn.data('value');
+                input = btn.is('[data-input]') ? $(btn.data('input')) : btn.siblings('[data-input]');
+                if (input.length) input.val(value).change();
+            }
+        });
+
+        /** Elements that navigate on click */
+        $(document).on('click', '[data-href]', function (ev) { window.location = $(this).attr('data-href'); });
+
+        /** Page blockers */
+        $(document).on('click', '.js-blocker', function () { mod.block(this); });
+        $(document).on('resize', '#modal-glass', mod.blockPage);
+
+        /** Clear page blocker */
+        $(document).on('click', '.js-clearBlocker', mod.unblockPage);
+
+        /** Disable a form element after clicked */
+        $(document).on('click', '.js-disable-after-click', function (ev) {
+
+            var button = $(this), group, form;
+
+            if (button.is(':input')) {
+                button.prop('disabled', true);
+                group = button.attr('data-disable-group');
+                if (group !== '') {
+                    $("[data-disable-group='" + group + "']").each(function (idx) {
+                        $(this).prop('disabled', true);
+                    });
+                }
+
+                // if this is a busy button, add the spinner icon and use the busy text
+                if (button.is('[data-busy]')) {
+                    mod.busy(button);
+                }
+
+                // if this is a submit button, trigger the submit event on the form
+                if (button.is(':submit')) {
+                    form = $(this.form);
+
+                    // insert the name and or value of the button into the form action
+                    if (typeof button.attr('name') != 'undefined' && button.attr('name').length !== 0) {
+                        form.prepend('<input name="'+ button.attr('name') +
+                            '" value="' + button.attr('value') + '" type="hidden"/>');
+                    }
+                    form.trigger('submit');
+                }
+            }
+            return false;
+        });
+
+        /** Prevent forms from submitting via enter key */
+        $(document).on('keydown', 'form.js-no-submit-on-enter', function (e) {
+            // allow override submission elements
+            if ($(e.target).hasClass('js-submit-on-enter')) {
+                return true;
+            }
+            if (e.keyCode == yg.keys.enter) {
+                return false;
+            }
+        });
+
+        /** Close dialogs when clicking .js-close elements or the yukon.dialog.ok event fires. */
+        $(document).on('click', '.js-close', function (ev) {
+            var dialog = $(ev.target).closest('.ui-dialog');
+            if (dialog.length) dialog.find('.ui-dialog-content').dialog('close');
+        });
+        $(document).on('yukon.dialog.ok', function (ev) {
+            $(ev.target).closest('.ui-dialog-content').dialog('close');
+        });
+
+        $(document).on('blur', 'input.js-format-phone', function (event) {
+            mod.formatPhone(event.target);
+        });
+
+        /** Enable or disable elements based on the state of a checkbox. */
+        $(document).on('change click', '[data-toggle]', function (ev) {
+            mod.toggleInputs($(this));
+        });
+
+        /** Select all checkbox was clicked, select or unselect all items in a .js-select-all-container. */
+        $(document).on('click', '.js-select-all', function (ev) {
+            $(this).closest('.js-select-all-container').find('.js-select-all-item').prop('checked', $(this).prop('checked'));
+        });
+
+        /** A checkbox in a 'select all' container was clicked. */
+        $(document).on('click', '.js-select-all-item', function (ev) {
+
+            var selectAll = true,
+                selected = $(this).prop('checked'),
+                container = $(this).closest('.js-select-all-container'),
+                allItems = container.find('.js-select-all-item');
+
+            if (selected) {
+                allItems.each(function (idx, item) { if (!$(item).prop('checked')) selectAll = false; });
+                container.find('.js-select-all').prop('checked', selectAll);
+            } else {
+                container.find('.js-select-all').prop('checked', false);
+            }
+        });
+
+        /** STEPPER SELECT BEHAVIOR. */
+        /** Move selection backward when previous button clicked. */
+        $(document).on('click', '.stepper .stepper-prev', function (ev) {
+
+            var btn = $(this);
+            var wrapper = btn.closest('.stepper');
+            var select = wrapper.find('.stepper-select');
+            var prev = select.find('option:selected').prev('option');
+
+            if (!prev.length) {
+                prev = select.find('option:last-child');
+            }
+            prev.prop('selected', true);
+            select.trigger('change');
+
+            return true;
+        });
+
+        /** Move selection backward when previous button clicked. */
+        $(document).on('click', '.stepper .stepper-next', function (ev) {
+
+            var btn = $(this);
+            var wrapper = btn.closest('.stepper');
+            var select = wrapper.find('.stepper-select');
+            var next = select.find('option:selected').next('option');
+
+            if (!next.length) {
+                next = select.find('option:first-child');
+            }
+            next.prop('selected', true);
+            select.trigger('change');
+
+            return true;
+        });
+
+        /** END STEPPER SELECT BEHAVIOR. */
+
+        /** 
+         * Show a popup when a popup trigger (element with a [data-popup] attribute) is clicked.
+         * If the trigger element has a [data-popup-toggle] attribute and the popup is currently open,
+         * the popup will be closed instead and the event propigated normally...otherwise yukon.ui.dialog is 
+         * called passing the popup element.
+         */
+        $(document).on('click', '[data-popup]', function (ev) {
+
+            var trigger = $(this),
+                popup = $(trigger.data('popup'));
+
+            try { /* Close popup if the trigger is a toggle and the popup is open */
+                if (trigger.is('[data-popup-toggle]') && popup.dialog('isOpen')) {
+                    popup.dialog('close');
+                    // Return so we don't re-open it, return true to propigate event incase others are listening.
+                    return true;
+                }
+            } catch (error) {/* Ignore error, occurs when dialog not initialized yet. */ }
+
+            // Set a create/edit/view mode if possible
+            if (trigger.is('[data-mode]')) {
+                var mode = trigger.data('mode');
+                popup.attr('data-mode', mode).data('mode', mode);
+            }
+
+            // show the popup
+            mod.dialog(popup);
+        });
+    };
+
+    var setupPageButtons = function () {
+
+        /** Init page 'Actions' button */
+        var pageActions = $('#page-actions');
+        var pageActionsButton = $('#b-page-actions');
+        if (pageActions.length) {
+            pageActions.remove();
+            var menu = pageActionsButton.find('.dropdown-menu');
+            menu.html(pageActions.html());
+            if (menu.find('.icon').length === menu.find('.icon-blank').length) {
+                menu.addClass('no-icons');
+            }
+            pageActionsButton.show();
+        }
+
+        /** Init page buttons */
+        var pageButtons = $('#page-buttons');
+        if (pageButtons.length) {
+            pageButtons.remove();
+            $('.page-actions').append(pageButtons.html());
+        }
+
+        /** Add additional options to page 'Actions' button */
+        $(document).find('.js-page-additional-actions').each(function (index, elem) {
+            elem = $(elem);
+            pageActionsButton.find('.dropdown-menu').append(elem.html());
+            elem.remove();
+        });
+    };
+
+    var mod = {
         
         init: function () {
             if (!initialized) {
                 
                 _initSearch();
                 
-                mod.autowire();
+                addEventListeners();
+                setupPageButtons();
+                mod.initContent();
                 
                 initialized = true;
                 
@@ -364,6 +765,7 @@ yukon.ui = (function () {
                             }
                         });
                         popup.dialog(options);
+                        mod.initContent(popup);
                     }
                 });
             } else {
@@ -373,60 +775,22 @@ yukon.ui = (function () {
                     popup.tabbedDialog(options);
                 } else {
                     popup.dialog(options);
+                    mod.initContent(popup);
                 }
             }
         },
         
-        /** Initialize any chosen selects on page load. */
-        initChosen : function () {
-            
-            $('.js-init-chosen').each(function () {
-                $(this).chosen({ 'width' : $(this).getHiddenDimensions().innerWidth + 11 + 'px' });
-            }).removeClass('js-init-chosen');
-            
-            $(document).off('click.yukon.chosen', '.chosen-single');
-            $(document).on('click.yukon.chosen', '.chosen-single', function () {
-                
-                var chosenElem = $(this),
-                    chosenContainer = chosenElem.closest('.chosen-container'),
-                    chosenHeight = chosenElem.outerHeight() + chosenContainer.find('.chosen-drop').outerHeight(),
-                    offsetInContainer = chosenContainer.offset().top - chosenContainer.offsetParent().offset().top,
-                    minBottom = offsetInContainer + chosenHeight,
-                    
-                    /* The following properties are specific to being in a dialog */
-                    scrollContainer = chosenElem.closest('.ui-dialog-content'),
-                    currentBottom = scrollContainer.outerHeight(),
-                    scrollOffset = scrollContainer.scrollTop();
-                
-                /* If we're not in a dialog, scroll the page */
-                if (!scrollContainer.length) {
-                    
-                    scrollContainer = $(window);
-                    currentBottom = scrollContainer.outerHeight() + window.pageYOffset;
-                    scrollOffset = 0;
-                }
-                
-                if (minBottom > currentBottom) {
-                    scrollContainer.scrollTop(minBottom - scrollContainer.outerHeight() + scrollOffset);
-                }
-            });
-        },
-        
-        autowire: function () {
-            
-            /** Follow clicks on top level nav menus when not using a touch screen. */
-            $(document).on('click', '.yukon-header .menu-title', function (ev) {
-                if ($(this).is('[data-url]') && !Modernizr.touch) {
-                    window.location.href = $(this).data('url');
-                }
-            });
-            
-            mod.initChosen();
-            
-            /** Initialize any tabbed containers on page load. */
-            $('.js-init-tabs').each(function (idx, elem) {
+        initContent: function (container) {
+
+            container = container || document;
+            container = $(container);
+
+            initChosen();
+
+            /** Initialize any tabbed containers */
+            container.find('.js-init-tabs').each(function (idx, elem) {
                 elem = $(elem);
-                elem.tabs({'active': elem.data('selectedTab')}).show().removeClass('js-init-tabs')
+                elem.tabs({'active': elem.data('selectedTab')}).show().removeClass('js-init-tabs');
 
                 if (elem.is('[data-container-name]')) {
                     var containerName = elem.data('containerName');
@@ -438,366 +802,29 @@ yukon.ui = (function () {
             });
                 
             /** Add placeholder functionality if needed. */
-            if (!Modernizr.input.placeholder) $('input, textarea').placeholder();
-            
-            /** Fix file path on all yukon <tags:file> usage in windows. */
-            $(document).on('change', '.file-upload input[type="file"]', function (ev) {
-                
-                var input = $(this),
-                    container = input.closest('.file-upload'),
-                    nameInput = container.find('.file-name'),
-                    value = input.val();
-                
-                // Windwows adds C:\fakepath\ for security reasons.
-                value = value.replace('C:\\fakepath\\', '');
-                nameInput.text(value);
-            });
-            
-            /** Toggle selection (pipe) on rows of selectable tables. */
-            $(document).on('click', 'table.selectable tbody tr, ul.selectable li', function (ev) {
-                $(this).addClass('selected').siblings().removeClass('selected');
-            });
-            
-            /** Sorting Handler: Sort a table by column. */
-            $(document).on('click', '.sortable', function (ev) {
-                
-                var anchor = $(this),
-                    dir = anchor.is('.desc') ? 'asc' : 'desc',
-                    sort = anchor.data('sort'),
-                    container = anchor.closest('[data-url]'),
-                    url = container.data('url'),
-                    pagingArea = container.find('.paging-area'),
-                    params = {sort: sort, dir: dir};
-                
-                // Add page size if paging is available
-                if (pagingArea.length) {
-                    params.itemsPerPage = pagingArea.data('pageSize');
-                    params.page = 1;
-                }
-                if (container.is('[data-static]')) {
-                    var joiner = url.indexOf('?') === -1 ? '?' : '&';
-                    window.location.href = url + joiner + $.param(params);
-                } else {
-                    $.get(url, params).done(function (data) {
-                        container.html(data);
-                    });
-                }
-            });
-            
-            /** Paging Handler: Get the next or previous page, or change page size. */
-            $(document).on('click', yg.selectors.paging, function (ev) {
-                
-                var
-                target = $(this),
-                container = target.closest('[data-url]'),
-                sortables = container.find('.sortable'),
-                url = container.data('url'),
-                pagingArea = container.find('.paging-area'),
-                page = pagingArea.data('currentPage'),
-                pageSize = pagingArea.data('pageSize'),
-                changePage = target.parent().is('.previous-page') || target.parent().is('.next-page'),
-                params = {},
-                sort;
-                
-                if (changePage) {
-                    // they clicked the next or previous page buttons
-                    params.page = target.parent().is('.previous-page') ? page - 1 : page + 1;
-                    params.itemsPerPage = pageSize;
-                } else {
-                    // they clicked one of the page size links
-                    params.page = 1;
-                    params.itemsPerPage = target.data('pageSize');
-                }
-                
-                // add sorting parameters if necessary
-                if (sortables.length) {
-                    sort = sortables.filter('.desc');
-                    if (sort.length) {
-                        params.dir = 'desc';
-                        params.sort = sort.data('sort');
-                    } else {
-                        sort = sortables.filter('.asc');
-                        if (sort.length) {
-                            params.dir = 'asc';
-                            params.sort = sort.data('sort');
-                        }
-                    }
-                }
-                
-                if (container.is('[data-static]')) {
-                    var joiner = url.indexOf('?') === -1 ? '?' : '&';
-                    window.location.href = url + joiner + $.param(params);
-                } else {
-                    $.get(url, params).done(function (data) {
-                        container.html(data);
-                        container.trigger(yg.events.pagingend);
-                    });
-                }
-                return false; // return false to stop form submissions
-            });
-            
-            /** Show or hide an element when something is clicked. */
-            $(document).on('click', '[data-show-hide]', function (ev) {
-                var trigger = $(this);
-                var target = $(trigger.data('showHide'));
-                if (target.is('[data-url]')) {
-                    if (target.is(':visible')) {
+            if (!Modernizr.input.placeholder) {
+                container.find('input, textarea').placeholder();
+            }
 
-                        target.slideUp(150);
-
-                        if (trigger.is('.revealer')) {
-                            trigger.removeClass('revealer-expanded');
-                        }
-                    } else {
-                        target.load(target.data('url'), function () {
-
-                            target.slideDown(150);
-
-                            if (target.is('[data-event]')) {
-                                target.trigger(target.data('event'));
-                            }
-                            if (trigger.is('.revealer')) {
-                                trigger.addClass('revealer-expanded');
-                            }
-                        });
-                    }
-                } else {
-                    if (target.is(':visible')) {
-
-                        target.slideUp(150);
-
-                        if (trigger.is('.revealer')) {
-                            trigger.removeClass('revealer-expanded');
-                        }
-                    } else {
-
-                        target.slideDown(150);
-                        if (target.is('[data-event]')) {
-                            target.trigger(target.data('event'));
-                        }
-                        if (trigger.is('.revealer')) {
-                            trigger.addClass('revealer-expanded');
-                        }
-                    }
-                }
-            });
-            
-            /** Toggle buttons in a button group */
-            $(document).on('click', '.button-group-toggle .button', function (ev) {
-                
-                var btn = $(this), input, value;
-                
-                btn.addClass('on').siblings('.button').removeClass('on');
-                // Toggle visibility of show/hide elements
-                if (btn.is('[data-show]')) {
-                    btn.siblings('[data-show]').each(function () {
-                        $($(this).data('show')).hide();
-                    });
-                    $(btn.data('show')).show();
-                }
-                // Set an input if we need to
-                if (btn.is('[data-value]')) {
-                    value = btn.data('value');
-                    input = btn.is('[data-input]') ? $(btn.data('input')) : btn.siblings('[data-input]');
-                    if (input.length) input.val(value).change();
-                }
-            });
-            
-            /** Elements that navigate on click */
-            $(document).on('click', '[data-href]', function (ev) { window.location = $(this).attr('data-href'); });
-            
-            /** Page blockers */
-            $(document).on('click', '.js-blocker', function () { mod.block(this); });
-            $(document).on('resize', '#modal-glass', mod.blockPage);
-            
-            /** Clear page blocker */
-            $(document).on('click', '.js-clearBlocker', mod.unblockPage);
-            
-            /** Disable a form element after clicked */
-            $(document).on('click', '.js-disable-after-click', function (ev) {
-                
-                var button = $(this), group, form;
-                
-                if (button.is(':input')) {
-                    button.prop('disabled', true);
-                    group = button.attr('data-disable-group');
-                    if (group !== '') {
-                        $("[data-disable-group='" + group + "']").each(function (idx) {
-                            $(this).prop('disabled', true);
-                        });
-                    }
-                    
-                    // if this is a busy button, add the spinner icon and use the busy text
-                    if (button.is('[data-busy]')) {
-                        mod.busy(button);
-                    }
-                    
-                    // if this is a submit button, trigger the submit event on the form
-                    if (button.is(':submit')) {
-                        form = $(this.form);
-                        
-                        // insert the name and or value of the button into the form action
-                        if (typeof button.attr('name') != 'undefined' && button.attr('name').length !== 0) {
-                            form.prepend('<input name="'+ button.attr('name') +
-                                '" value="' + button.attr('value') + '" type="hidden"/>');
-                        }
-                        form.trigger('submit');
-                    }
-                }
-                return false;
-            });
-            
-            /** Prevent forms from submitting via enter key */
-            $(document).on('keydown', 'form.js-no-submit-on-enter', function (e) {
-                // allow override submission elements
-                if ($(e.target).hasClass('js-submit-on-enter')) {
-                    return true;
-                }
-                if (e.keyCode == yg.keys.enter) {
-                    return false;
-                }
-            });
-            
-            /** Close dialogs when clicking .js-close elements or the yukon.dialog.ok event fires. */
-            $(document).on('click', '.js-close', function (ev) {
-                var dialog = $(ev.target).closest('.ui-dialog');
-                if (dialog.length) dialog.find('.ui-dialog-content').dialog('close');
-            });
-            $(document).on('yukon.dialog.ok', function (ev) {
-                $(ev.target).closest('.ui-dialog-content').dialog('close');
-            });
-            
             /** Format phone numbers initially and on input blur */
-            $('input.js-format-phone').each(function (idx, elem) {
+            container.find('input.js-format-phone').each(function (idx, elem) {
                 mod.formatPhone(elem);
             });
-            $(document).on('blur', 'input.js-format-phone', function (event) {
-                mod.formatPhone(event.target);
-            });
-            
-            /** Enable or disable elements based on the state of a checkbox. */
-            $(document).on('change click', '[data-toggle]', function (ev) {
-                mod.toggleInputs($(this));
-            });
-            $('[data-toggle]').each(function (idx, item) { mod.toggleInputs(item); });
-            
-            /** Select all checkbox was clicked, select or unselect all items in a .js-select-all-container. */
-            $(document).on('click', '.js-select-all', function (ev) {
-                $(this).closest('.js-select-all-container').find('.js-select-all-item').prop('checked', $(this).prop('checked'));
-            });
-            
-            /** A checkbox in a 'select all' container was clicked. */
-            $(document).on('click', '.js-select-all-item', function (ev) {
-                
-                var selectAll = true,
-                    selected = $(this).prop('checked'),
-                    container = $(this).closest('.js-select-all-container'),
-                    allItems = container.find('.js-select-all-item');
-                
-                if (selected) {
-                    allItems.each(function (idx, item) { if (!$(item).prop('checked')) selectAll = false; });
-                    container.find('.js-select-all').prop('checked', selectAll);
-                } else {
-                    container.find('.js-select-all').prop('checked', false);
-                }
-            });
-            
-            /** STEPPER SELECT BEHAVIOR. */
-            /** Move selection backward when previous button clicked. */
-            $(document).on('click', '.stepper .stepper-prev', function (ev) {
-                
-                var btn = $(this);
-                var wrapper = btn.closest('.stepper');
-                var select = wrapper.find('.stepper-select');
-                var prev = select.find('option:selected').prev('option');
-                
-                if (!prev.length) {
-                    prev = select.find('option:last-child');
-                }
-                prev.prop('selected', true);
-                select.trigger('change');
-                
-                return true;
-            });
-            
-            /** Move selection backward when previous button clicked. */
-            $(document).on('click', '.stepper .stepper-next', function (ev) {
-                
-                var btn = $(this);
-                var wrapper = btn.closest('.stepper');
-                var select = wrapper.find('.stepper-select');
-                var next = select.find('option:selected').next('option');
-                
-                if (!next.length) {
-                    next = select.find('option:first-child');
-                }
-                next.prop('selected', true);
-                select.trigger('change');
-                
-                return true;
+
+            container.find('[data-toggle]').each(function (idx, item) { 
+                mod.toggleInputs(item); 
             });
 
-            /** END STEPPER SELECT BEHAVIOR. */
-            
-            /** Focus the designated input element */
-            mod.autofocus();
-            
-            /** Init page 'Actions' button */
-            var pageActions = $('#page-actions');
-            var pageActionsButton = $('#b-page-actions');
-            if (pageActions.length) {
-                pageActions.remove();
-                var menu = pageActionsButton.find('.dropdown-menu');
-                menu.html(pageActions.html());
-                if (menu.find('.icon').length === menu.find('.icon-blank').length) {
-                    menu.addClass('no-icons');
-                }
-                pageActionsButton.show();
-            }
-            
-            /** Init page buttons */
-            var pageButtons = $('#page-buttons');
-            if (pageButtons.length) {
-                pageButtons.remove();
-                $('.page-actions').append(pageButtons.html());
-            }
-            
+
             /** Add additional options to page 'Actions' button */
-            $('.js-page-additional-actions').each(function (index, elem) {
+            container.find('.js-page-additional-actions').each(function (index, elem) {
                 elem = $(elem);
                 pageActionsButton.find('.dropdown-menu').append(elem.html());
                 elem.remove();
             });
             
-            /** 
-             * Show a popup when a popup trigger (element with a [data-popup] attribute) is clicked.
-             * If the trigger element has a [data-popup-toggle] attribute and the popup is currently open,
-             * the popup will be closed instead and the event propigated normally...otherwise yukon.ui.dialog is 
-             * called passing the popup element.
-             */
-            $(document).on('click', '[data-popup]', function (ev) {
-                
-                var trigger = $(this),
-                    popup = $(trigger.data('popup'));
-                
-                try { /* Close popup if the trigger is a toggle and the popup is open */
-                    if (trigger.is('[data-popup-toggle]') && popup.dialog('isOpen')) {
-                        popup.dialog('close');
-                        // Return so we don't re-open it, return true to propigate event incase others are listening.
-                        return true;
-                    }
-                } catch (error) {/* Ignore error, occurs when dialog not initialized yet. */ }
-                
-                // Set a create/edit/view mode if possible
-                if (trigger.is('[data-mode]')) {
-                    var mode = trigger.data('mode');
-                    popup.attr('data-mode', mode).data('mode', mode);
-                }
-                
-                // show the popup
-                mod.dialog(popup);
-            });
-            
+            /** Focus the designated input element */
+            mod.autofocus();
         },
         
         /**
@@ -977,16 +1004,22 @@ yukon.ui = (function () {
         toggleInputs: function (checkbox) {
             
             checkbox = $(checkbox);
-            var enable = checkbox.is('[data-toggle-inverse]') ? checkbox.not(':checked') : checkbox.is(':checked'),
+            var enable = checkbox.is(':checked'),
                 toggleGroup = checkbox.data('toggle'),
                 inputs = $('[data-toggle-group="' + toggleGroup + '"]');
             
+            if (checkbox.is('[data-toggle-inverse]')) {
+                enable = !enable;
+            }
+
             if (toggleGroup === '') return;
                 
             var action = checkbox.data('toggleAction');
 
             if (action === 'hide') {
                 inputs.each(function (idx, input) { $(input).toggleClass('dn', !enable); });
+            } else if (action === 'invisible') {
+                inputs.each(function (idx, input) { $(input).toggleClass('vh', !enable); });
             } else {
                 inputs.each(function (idx, input) { $(input).prop('disabled', !enable); });
             }

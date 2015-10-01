@@ -734,8 +734,8 @@ $(&#39;.js-set-cookie-btn&#39;).click(function () {
 <h2>Module: Yukon UI</h2>
 <p class="description">
     The <span class="label label-attr">yukon.ui</span> module contains ui functionality for the whole application as well 
-    as some event handling that is bound on every page through it's <span class="label label-attr">yukon.ui.autowire</span>
-    function which is run on page ready. 
+    as some event handling that is bound on every page through it's <span class="label label-attr">yukon.ui.init</span>
+    function which is run on page ready. The ui functionality can be set up with <span class="label label-attr">yukon.ui.initContent</span>
 </p>
 
 <h3>Function: yukon.ui.busy and yukon.ui.unbusy</h3>
