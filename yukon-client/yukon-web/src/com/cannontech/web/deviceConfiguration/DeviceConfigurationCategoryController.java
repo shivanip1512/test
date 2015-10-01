@@ -473,16 +473,16 @@ public class DeviceConfigurationCategoryController {
         
         boolean enableVoltageDataStreamingOptions = false;
         if (type == CategoryType.RFN_CHANNEL_CONFIGURATION) {
-            boolean isNMCompatible = false;
             Double nmCompatibility = configurationSource.getDouble(MasterConfigDouble.NM_COMPATIBILITY);
-            if (nmCompatibility != null && nmCompatibility == 7.0) {
-                isNMCompatible = true;
-            }
-            if (configId != null && isNMCompatible) {
-                DeviceConfiguration config = deviceConfigurationDao.getDeviceConfiguration(configId);
-                // Returns true if the two specified collections have no elements in common.
-                enableVoltageDataStreamingOptions =
-                    !Collections.disjoint(config.getSupportedDeviceTypes(), voltageDataStreamingTypes);
+            if (nmCompatibility != null && nmCompatibility >= 7.0) {
+                if (configId == null) {
+                    enableVoltageDataStreamingOptions = true;
+                } else {
+                    DeviceConfiguration config = deviceConfigurationDao.getDeviceConfiguration(configId);
+                    // Returns true if the two specified collections have no elements in common.
+                    enableVoltageDataStreamingOptions =
+                        !Collections.disjoint(config.getSupportedDeviceTypes(), voltageDataStreamingTypes);
+                }
             }
         }
         model.addAttribute("enableVoltageDataStreamingOptions", enableVoltageDataStreamingOptions);
