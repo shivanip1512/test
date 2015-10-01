@@ -36,8 +36,6 @@ Commands::RfnOvUvConfigurationCommand::MeterID getMeterIdForDeviceType( const in
         { TYPE_RFN420FL,  Commands::RfnOvUvConfigurationCommand::LGFocusAL }
     };
 
-    boost::optional<Commands::RfnOvUvConfigurationCommand::MeterID> meterId = mapFind(DeviceTypeToMeterId, deviceType);
-
     if ( auto meterId = mapFind( DeviceTypeToMeterId, deviceType ) )
     {
         return *meterId;
