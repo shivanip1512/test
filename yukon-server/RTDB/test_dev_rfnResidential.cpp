@@ -1686,17 +1686,6 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_all_device )
                 "demandFreeze", map_list_of
                     ( RfnStrings::demandFreezeDay, "7" )))
 
-            // OVUV config
-///            ( CategoryDefinition(
-///                "rfnVoltage", map_list_of
-///                    ( RfnStrings::voltageAveragingInterval,   "60"      )
-///                    ( RfnStrings::OvUvEnabled,                "true"    )
-///                    ( RfnStrings::OvUvAlarmReportingInterval, "5"       )
-///                    ( RfnStrings::OvUvAlarmRepeatInterval,    "60"      )
-///                    ( RfnStrings::OvUvRepeatCount,            "2"       )
-///                    ( RfnStrings::OvThreshold,                "123.456" )
-///                    ( RfnStrings::UvThreshold,                "78.901"  )))
-
             // TOU config
             ( CategoryDefinition(
                 "tou", map_list_of
