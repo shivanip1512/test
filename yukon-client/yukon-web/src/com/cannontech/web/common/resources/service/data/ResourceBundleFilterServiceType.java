@@ -6,5 +6,7 @@ package com.cannontech.web.common.resources.service.data;
 * 
 */
 public enum ResourceBundleFilterServiceType {
-    CSS_MINIFY, JS_MINIFY, LESS_TO_CSS 
+    CSS_MINIFY, 
+    JS_MINIFY, 
+    LESS_TO_CSS 
 }
