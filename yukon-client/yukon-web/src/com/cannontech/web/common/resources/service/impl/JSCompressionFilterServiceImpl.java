@@ -28,8 +28,8 @@ public class JSCompressionFilterServiceImpl implements PackageFilterService {
     private final static int lineBreakPos = -1;
     private final static boolean munge = true;
     private final static boolean verbose = false;
-    private final static boolean preserveAllSemiColons = false;
-    private final static boolean disableOptimizations = false; 
+    private final static boolean preserveAllSemiColons = true;
+    private final static boolean disableOptimizations = true; 
     
     
     private ResourceBundleFilterServiceType filterType = ResourceBundleFilterServiceType.JS_MINIFY;

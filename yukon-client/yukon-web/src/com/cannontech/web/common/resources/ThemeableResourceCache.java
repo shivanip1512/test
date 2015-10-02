@@ -38,7 +38,6 @@ public class ThemeableResourceCache {
     private boolean debug;
     private static final Logger log = YukonLogManager.getLogger(ThemeableResourceCache.class);
     
-    private CssCompressor compressor;
     private static Cache<ThemeableResource, CachedResourceValue> cache = CacheBuilder.newBuilder().build();
     
     public CachedResourceValue getResource(final ThemeableResource resource) throws Exception {
@@ -97,7 +96,7 @@ public class ThemeableResourceCache {
         
         if (!debug) {
             StringWriter minified = new StringWriter();
-            compressor = new CssCompressor(new StringReader(css.toString()));
+            CssCompressor compressor = new CssCompressor(new StringReader(css.toString()));
             compressor.compress(minified, -1);
             log.info("Loading " + resource + ": css compression took " + new Duration(start, Instant.now()).getMillis() + "ms");
             css = minified.toString();

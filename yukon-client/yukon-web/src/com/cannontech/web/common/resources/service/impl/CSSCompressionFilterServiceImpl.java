@@ -28,7 +28,7 @@ import com.cannontech.web.common.resources.service.error.PackageResourceFilterSe
 */
 public class CSSCompressionFilterServiceImpl implements PackageFilterService {
 
-    private CssCompressor compressor; 
+     
     private ResourceBundleFilterServiceType filterType = ResourceBundleFilterServiceType.CSS_MINIFY;
     private static final Logger log = YukonLogManager.getLogger(CSSCompressionFilterServiceImpl.class);
     @Override
@@ -43,7 +43,7 @@ public class CSSCompressionFilterServiceImpl implements PackageFilterService {
             Instant start = Instant.now();
             StringWriter minified = new StringWriter();
             try {
-                compressor = new CssCompressor(new StringReader(bundle.getResourceResult()));
+                CssCompressor compressor = new CssCompressor(new StringReader(bundle.getResourceResult()));
                 compressor.compress(minified, -1);
                 bundle.setResourceResult(minified.toString());
                 minified.close();
