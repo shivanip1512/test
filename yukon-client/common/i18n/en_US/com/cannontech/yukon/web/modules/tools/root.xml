@@ -69,6 +69,14 @@
     <entry key="yukon.web.modules.tools.map.liveUpdate">Live Update:</entry>
     
     <!-- Trends -->
+    <entry key="yukon.web.modules.tools.trend.pageTitle">Trends: {0}</entry>
+    <entry key="yukon.web.modules.tools.trend.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.tools.trend.crumbTitle">{0}</entry>
+    
+    <entry key="yukon.web.modules.tools.trends.pageTitle">Tools: Trends</entry>
+    <entry key="yukon.web.modules.tools.trends.pageDescription">Trends</entry>
+    <entry key="yukon.web.modules.tools.trends.crumbTitle">Trends</entry>
+    
     <entry key="yukon.web.modules.tools.trends.pageName">Trends</entry>
     <entry key="yukon.web.modules.tools.trends.axis">Axis: {0}</entry>
     <entry key="yukon.web.modules.tools.trends.day">1d</entry>
@@ -78,9 +86,11 @@
     <entry key="yukon.web.modules.tools.trends.sixMonths">6m</entry>
     <entry key="yukon.web.modules.tools.trends.ytd">YTD</entry>
     <entry key="yukon.web.modules.tools.trends.year">1y</entry>
-    <entry key="yukon.web.modules.tools.trend.pageDescription">{0}</entry>
     
-    
+    <!-- If no trend is found -->
+    <entry key="yukon.web.modules.tools.trend.noTrends">No Trends</entry>
+    <entry key="yukon.web.modules.tools.trends.noTrends">No Trends</entry>
+
     <!-- Trends GRAPHS -->
     <entry key="yukon.web.modules.tools.trends.data.trendType.graphType.BASIC_TYPE">Basic</entry>
     <entry key="yukon.web.modules.tools.trends.data.trendType.graphType.USAGE_TYPE">Usage</entry>
