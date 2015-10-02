@@ -4,7 +4,7 @@ package com.cannontech.web.common.resources.service;
 import com.cannontech.web.common.resources.data.ResourceBundle;
 import com.cannontech.web.common.resources.data.ResourceType;
 import com.cannontech.web.common.resources.service.data.ResourceBundleFilterServiceType;
-
+import com.cannontech.web.common.resources.service.error.*;
 public interface PackageFilterService {
     
     /**
@@ -16,10 +16,10 @@ public interface PackageFilterService {
      * @see {@link ResourceType}
      *
      * @param bundle - the model {@link ResourceBundle} to be processed.
-     * @exception {@link Exception} Anything that causes the process to flunk. 
+     * @throws PackageResourceFilterException  
      * @return void
      */
-    void validateResourceBundle(ResourceBundle bundle) throws Exception;
+    void validateResourceBundle(ResourceBundle bundle) throws PackageResourceFilterException;
     
     /**
      * processResourceBundle As the name suggests, apply a filter to the model {@link ResourceBundle}.
@@ -29,11 +29,11 @@ public interface PackageFilterService {
      * @see {@link ResourceType}
      *
      * @param bundle - the model {@link ResourceBundle} to be processed.
-     * @exception {@link Exception} Anything that causes the process to flunk. 
+     * @throws PackageResourceFilterException 
      * @return void
      */    
     
-    void processResourceBundle(ResourceBundle bundle) throws Exception;
+    void processResourceBundle(ResourceBundle bundle) throws PackageResourceFilterException;
     
     /**
      * getFitlerType retrieve the {@link ResourceBundleFilterServiceType} described for this filter service interface.

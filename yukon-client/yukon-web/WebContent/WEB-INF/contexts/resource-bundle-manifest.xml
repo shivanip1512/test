@@ -11,7 +11,7 @@
         <property name="packages">
             <map>
                 <entry key="yukon-core" value-ref="yukonCorePackage"/>
-                <entry key="highchart-core" value-ref="highChartPackage"/>
+                <entry key="highchart-core-3" value-ref="highChartPackage"/>
                 <entry key="trends-core" value-ref="trendsPackage"/>
                 <entry key="standard-css-core" value-ref="standardCssPackage"/>
                 <entry key="yukon-less-core" value-ref="yukonLessPackage"/>
@@ -23,7 +23,7 @@
             <value>standard-css-core</value>
         </property>
         <property name="resourceType">
-            <value type="com.cannontech.web.common.resources.data.ResourceType">CSS</value>
+            <value type="com.cannontech.web.common.resources.data.ResourceType">css</value>
         </property>
         <property name="TTL">
             <value>1800000</value>
@@ -54,7 +54,7 @@
             <value>1800000</value>
         </property>
         <property name="resourceType">
-            <value type="com.cannontech.web.common.resources.data.ResourceType" >CSS</value>
+            <value type="com.cannontech.web.common.resources.data.ResourceType" >css</value>
         </property>
         <property name="resourcesPathList">
             <list>
@@ -79,7 +79,7 @@
             <value>1800000</value>
         </property>
         <property name="resourceType">
-            <value type="com.cannontech.web.common.resources.data.ResourceType">JAVASCRIPT</value>
+            <value type="com.cannontech.web.common.resources.data.ResourceType">javascript</value>
         </property>
         <property name="resourcesPathList">
             <list>
@@ -94,13 +94,13 @@
    </bean>
    <bean id="highChartPackage" class="com.cannontech.web.common.resources.data.ResourceBundle">
         <property name="name">
-           <value>highchart-core</value>
+           <value>highchart-core-3</value>
         </property>
         <property name="TTL">
             <value>1800000</value>
         </property>
         <property name="resourceType">
-            <value type="com.cannontech.web.common.resources.data.ResourceType">JAVASCRIPT</value>
+            <value type="com.cannontech.web.common.resources.data.ResourceType">javascript</value>
         </property>
         <property name="resourcesPathList">
             <list>
@@ -111,7 +111,7 @@
         </property>
         <property name="filterServiceList">
             <list>
-                <value type="com.cannontech.web.common.resources.service.data.ResourceBundleFilterServiceType">JS_MINIFY</value>
+                 <value type="com.cannontech.web.common.resources.service.data.ResourceBundleFilterServiceType">JS_MINIFY</value>
             </list>
         </property>
    </bean>
@@ -123,7 +123,7 @@
             <value>1800000</value>
         </property>
         <property name="resourceType">
-            <value type="com.cannontech.web.common.resources.data.ResourceType">JAVASCRIPT</value>
+            <value type="com.cannontech.web.common.resources.data.ResourceType">javascript</value>
         </property>
         <property name="resourcesPathList">
             <list>

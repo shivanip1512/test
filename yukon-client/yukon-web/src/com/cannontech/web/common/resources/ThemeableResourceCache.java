@@ -16,9 +16,7 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-
-import ro.isdc.wro.extensions.processor.css.YUICssCompressorProcessor;
-
+import com.yahoo.platform.yui.compressor.*;
 import com.asual.lesscss.LessEngine;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
@@ -40,7 +38,7 @@ public class ThemeableResourceCache {
     private boolean debug;
     private static final Logger log = YukonLogManager.getLogger(ThemeableResourceCache.class);
     
-    private YUICssCompressorProcessor compressor = new YUICssCompressorProcessor();
+    private CssCompressor compressor;
     private static Cache<ThemeableResource, CachedResourceValue> cache = CacheBuilder.newBuilder().build();
     
     public CachedResourceValue getResource(final ThemeableResource resource) throws Exception {
@@ -99,7 +97,8 @@ public class ThemeableResourceCache {
         
         if (!debug) {
             StringWriter minified = new StringWriter();
-            compressor.process(new StringReader(css.toString()), minified);
+            compressor = new CssCompressor(new StringReader(css.toString()));
+            compressor.compress(minified, -1);
             log.info("Loading " + resource + ": css compression took " + new Duration(start, Instant.now()).getMillis() + "ms");
             css = minified.toString();
         }

@@ -1,6 +1,6 @@
 package com.cannontech.web.common.resources.service.impl;
 
-import java.io.IOException;
+
 import java.util.Scanner;
 
 import org.apache.log4j.Logger;
@@ -9,6 +9,7 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.asual.lesscss.LessEngine;
+import com.asual.lesscss.LessException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.web.admin.theme.dao.ThemeDao;
 import com.cannontech.web.admin.theme.model.Theme;
@@ -16,6 +17,7 @@ import com.cannontech.web.admin.theme.model.ThemePropertyType;
 import com.cannontech.web.common.resources.data.ResourceBundle;
 import com.cannontech.web.common.resources.service.PackageFilterService;
 import com.cannontech.web.common.resources.service.data.ResourceBundleFilterServiceType;
+import com.cannontech.web.common.resources.service.error.*;
 import com.cannontech.web.input.type.ImageType;
 import com.cannontech.web.input.type.PixelType;
 
@@ -34,31 +36,37 @@ public class LessToCSSFilterServiceImpl implements PackageFilterService {
     private ResourceBundleFilterServiceType filterType = ResourceBundleFilterServiceType.LESS_TO_CSS;
     
     @Override
-    public void validateResourceBundle(ResourceBundle bundle) throws Exception {
+    public void validateResourceBundle(ResourceBundle bundle) throws PackageResourceFilterException {
         //TODO:create validation for CSS validation
     }
 
     @Override
-    public void processResourceBundle(ResourceBundle bundle) throws Exception {
+    public void processResourceBundle(ResourceBundle bundle) throws PackageResourceFilterException {
         log.debug("processFilterList -> " + bundle.getName());
         Instant start = Instant.now();
         String less = bundle.getResourceResult();
-        if (!bundle.isDefaultLessPackage()){
-            less = applyThemeProperties(bundle);
+        try {
+            if (!bundle.isDefaultLessPackage()){
+                less = applyThemeProperties(bundle);
+            }
+            LessEngine engine = new LessEngine();
+            bundle.setResourceResult(engine.compile(less));
+            log.debug("processFilterList operation for : " +  bundle.getName() + "duration of : " + 
+            new Duration(start, Instant.now()).getMillis() + "ms");
+        } catch (LessException e) {
+            String message = "caught exception in processResourceBundle: Less engine failed to compile";
+            log.warn(message, e);
+            
+            throw new PackageResourceFilterException(message, e, PackageResourceFilterServiceErrorState.LESS_CONVERSION_FAIL);
         }
-         LessEngine engine = new LessEngine();
-        bundle.setResourceResult(engine.compile(less));
-        log.debug("processFilterList operation for : " +  bundle.getName() + "duration of : " + 
-                new Duration(start, Instant.now()).getMillis() + "ms");
-        
     }
 
     @Override
     public ResourceBundleFilterServiceType getFilterType() {
         return this.filterType;
     }
-    
-    private String applyThemeProperties(ResourceBundle bundle) throws IOException {
+
+    private String applyThemeProperties(ResourceBundle bundle)  {
         log.debug("applyThemeProperties -> " + bundle.getName());
         Instant start = Instant.now();
         Theme theme = themeDao.getCurrentTheme();

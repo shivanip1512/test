@@ -2,6 +2,8 @@
 package com.cannontech.web.common.resources.service;
 import com.cannontech.web.common.resources.data.ResourceBundle;
 import com.cannontech.web.common.resources.data.ResourceType;
+import com.cannontech.web.common.resources.service.error.*;
+import com.cannontech.web.common.resources.service.impl.ResourceBundleServiceImpl;
 
 public interface ResourceBundleService {
     
@@ -19,10 +21,10 @@ public interface ResourceBundleService {
      *
      * @param packageName - the name of the package request minus the exention ~i.e. .js, .css ext.
      * @param type - {@ResourceType}.
-     * @exception {@link Exception} Anything that causes the process to flunk. 
+     * @throws ResourceBundleException 
      * @return ResourceBundle
      */
-    ResourceBundle getResourceBundle(String packageName, ResourceType type) throws Exception;
+    ResourceBundle getResourceBundle(String packageName, ResourceType type) throws ResourceBundleException;
     
     /**
      * combineResourceContent - Combine the list of files described by bean factory of the model ResourceBundle - 
@@ -33,10 +35,10 @@ public interface ResourceBundleService {
      * @see {@link ResourceBundle}
      * @see {@link ResourceType}
      * @param resource - the model {@link ResourceBundle} to be consumed.
-     * @exception {@link Exception} Anything that causes the process to flunk. 
+     * @throws ResourceBundleException
      * @return void
      */
-    void combineResourceContent(ResourceBundle resource) throws Exception;
+    void combineResourceContent(ResourceBundle resource) throws ResourceBundleException;
     
     /**
      * processFilterList - Apply a transform to the model {@link ResourceBundle} listed by bean factory
@@ -46,10 +48,10 @@ public interface ResourceBundleService {
      * @see {@link ResourceBundle}
      * @see {@link PackageFilterService}
      * @param resource - the model {@link ResourceBundle} to be consumed.
-     * @exception {@link Exception} Anything that causes the process to flunk. 
      * @return void
+     * @throws PackageResourceFilterException 
      */
-    void processFilterList(ResourceBundle resource) throws Exception;
+    void processFilterList(ResourceBundle resource) throws PackageResourceFilterException;
 
 }
 

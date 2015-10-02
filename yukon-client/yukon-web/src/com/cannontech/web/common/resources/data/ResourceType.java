@@ -4,7 +4,7 @@ package com.cannontech.web.common.resources.data;
 *   Defines the ResourceBundle encoding and description type. 
 */
 public enum ResourceType {
-    JAVASCRIPT("text/javascript", ".js", "UTF-8"), CSS("text/css", ".css", "UTF-8");
+    javascript("text/javascript", ".js", "UTF-8"), css("text/css", ".css", "UTF-8");
 
     public String getContentType() {
         
