@@ -1,5 +1,6 @@
 package com.cannontech.web.common.resources.service.impl;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 
@@ -38,22 +39,24 @@ public class CSSCompressionFilterServiceImpl implements PackageFilterService {
     @Override
     public void processResourceBundle(ResourceBundle bundle) throws PackageResourceFilterException {
         log.debug("processResourceBundle -> " + bundle.getName());
-        try{
+        
             Instant start = Instant.now();
             StringWriter minified = new StringWriter();
-            compressor = new CssCompressor(new StringReader(bundle.getResourceResult()));
-            compressor.compress(minified, -1);
-            bundle.setResourceResult(minified.toString());
-            minified.close();
+            try {
+                compressor = new CssCompressor(new StringReader(bundle.getResourceResult()));
+                compressor.compress(minified, -1);
+                bundle.setResourceResult(minified.toString());
+                minified.close();
+            } catch (IOException e) {
+                
+                log.warn("caught exception in processResourceBundle", e);
+                String message =e.getMessage(); 
+                log.debug(message);
+                throw new PackageResourceFilterException(message, e, PackageResourceFilterServiceErrorState.CSS_COMPRESSION_FAIL);
+            }
             log.debug("processResourceBundle operation for : " +  bundle.getName() + "duration of : " + 
             new Duration(start, Instant.now()).getMillis() + "ms");
-        }
-        catch(Exception e)
-        {
-            String message =e.getMessage(); 
-            log.debug(message);
-            throw new PackageResourceFilterException(message, e, PackageResourceFilterServiceErrorState.CSS_COMPRESSION_FAIL);
-        }
+                
     }
 
     @Override
