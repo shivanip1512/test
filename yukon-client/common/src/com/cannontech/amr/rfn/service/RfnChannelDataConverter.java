@@ -99,7 +99,7 @@ public class RfnChannelDataConverter {
                 .map(new Function<PaoPointValue, PointData>() {
                     @Override
                     public PointData apply(PaoPointValue ppv) {
-                        return of(ppv.getPointValueQualityHolder());
+                        return setMustArchive(ppv.getPointValueQualityHolder());
                     }
                 })
                 .forEachOrdered(new Consumer<PointData>(){
@@ -126,7 +126,7 @@ public class RfnChannelDataConverter {
                 .collect(Collectors.toList());
     }
 
-    static PointData of(PointValueQualityHolder pvqh) {
+    static PointData setMustArchive(PointValueQualityHolder pvqh) {
         PointData pointData = PointData.of(pvqh);
         
         pointData.setTagsPointMustArchive(true); // temporary solution
@@ -137,7 +137,7 @@ public class RfnChannelDataConverter {
     public PointData convert(RfnDevice rfnDevice, ChannelData channelData, Instant readingInstant) {
         PaoPointValue ppv = convertSingleChannelData(rfnDevice, channelData, readingInstant);
         
-        PointData pointData = of(ppv.getPointValueQualityHolder());
+        PointData pointData = setMustArchive(ppv.getPointValueQualityHolder());
         
         return pointData;
     }
