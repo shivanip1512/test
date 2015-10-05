@@ -9,13 +9,9 @@
 <cti:standardPage module="operator" page="gateways.list">
 
 <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
-    <div id="page-buttons" class="dn">
-        <cti:button icon="icon-plus-green" nameKey="create" data-popup="#gateway-create-popup"/>
-    </div>
-    
     <div id="gateway-create-popup" class="dn" 
         data-dialog 
-        data-title="<cti:msg2 key=".create.title"/>" 
+        data-title="<cti:msg2 key=".create.gateway.label"/>" 
         data-url="<cti:url value="/stars/gateways/create"/>" 
         data-width="570" 
         data-min-width="570" 
@@ -23,6 +19,36 @@
         data-ok-text="<cti:msg2 key="components.button.save.label"/>" 
         data-load-event="yukon:assets:gateway:load"></div>
 </cti:checkRolesAndProperties>
+
+<cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
+    <%-- YUK-14626 Work in Progress --%>
+    <div id="firmware-upgrade-popup"
+        data-dialog
+        data-url="<cti:url value="/stars/gateways/update-servers"/>"
+        data-title="<cti:msg2 key=".updateServer.set"/>"
+        data-ok-text="<cti:msg2 key="components.button.save.label"/>">
+    </div>
+</cti:checkGlobalRolesAndProperties>
+
+<c:set var="showPageActions" value="${false}"/>
+<cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
+    <c:set var="showPageActions" value="${true}"/>
+</cti:checkRolesAndProperties>
+<cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
+    <c:set var="showPageActions" value="${true}"/>
+</cti:checkGlobalRolesAndProperties>
+
+<c:if test="${showPageActions}">
+    <div id="page-actions">
+        <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
+            <cm:dropdownOption data-popup="#gateway-create-popup" icon="icon-plus-green"><i:inline key=".create.gateway.label"/></cm:dropdownOption>
+        </cti:checkRolesAndProperties>
+        <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
+            <%-- YUK-14626 Work in Progress --%>
+            <cm:dropdownOption data-popup="#firmware-upgrade-popup" icon="icon-drive-go"><i:inline key=".updateServer.set"/></cm:dropdownOption>
+        </cti:checkGlobalRolesAndProperties>
+    </div>
+</c:if>
 
 <cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
     <div id="gateway-cert-popup" class="dn" data-dialog 
@@ -116,6 +142,11 @@
         </c:forEach>
     </tbody>
 </table>
+<cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
+    <div class="action-area">
+        <cti:button icon="icon-plus-green" nameKey="create.gateway" data-popup="#gateway-create-popup"/>
+    </div>
+</cti:checkRolesAndProperties>
 </div>
 
 <h3><i:inline key=".cert.updates"/></h3>

@@ -3,6 +3,9 @@ package com.cannontech.web.stars.gateway;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -201,7 +204,35 @@ public class GatewaySettingsController {
         
         return "gateways/settings.jsp";
     }
-    
+
+    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
+    @RequestMapping("/gateways/update-servers")
+    public String editUpdateServers(ModelMap model) {
+
+        model.addAttribute("mode", PageEditMode.EDIT);
+
+        Set<RfnGateway> allGateways = rfnGatewayService.getAllGateways();
+
+        Set<GatewaySettings> allGatewaySettings = allGateways.stream()
+            .map(new Function<RfnGateway, GatewaySettings>() {
+
+                @Override
+                public GatewaySettings apply(RfnGateway gateway) {
+                    GatewaySettings settings = rfnGatewayService.gatewayAsSettings(gateway);
+                    return settings;
+                }
+            }).collect(Collectors.toSet());
+
+        model.addAttribute("allSettings", allGatewaySettings);
+
+        String defaultUpdateServer = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
+
+        model.addAttribute("defaultUpdateServer", defaultUpdateServer);
+
+
+        return "gateways/update-servers.jsp";
+    }
+
     /** Update the gateway */
     @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
     @RequestMapping(value="/gateways/{id}", method=RequestMethod.PUT)

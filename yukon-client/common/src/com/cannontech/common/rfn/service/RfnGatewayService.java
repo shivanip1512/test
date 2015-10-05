@@ -33,6 +33,16 @@ public interface RfnGatewayService {
     Set<RfnGateway> getAllGateways();
     
     /**
+     * Retrieves all gateways that have paos in the Yukon database. 
+     * If the gateway data is not cached, a request will be sent to Network Manager. 
+     * The request for gateway data from Network Manager is a blocking request.
+     * 
+     * @throws NmCommunicationException if there is a communication error between Yukon
+     *             and Network Manager.
+     */
+    Set<RfnGateway> getAllGatewaysWithData() throws NmCommunicationException;
+
+    /**
      * Retrieves the specified gateway. If the gateway data is not cached, a request will be sent to
      * Network Manager. The request for gateway data from Network Manager is a blocking request.
      * 
@@ -171,4 +181,7 @@ public interface RfnGatewayService {
     /** Clears gateway data cache, mostly for testing/debugging */
     void clearCache();
     
+    /** Converts an {@link RfnGateway} to a {@link GatewaySettings} */
+    GatewaySettings gatewayAsSettings(RfnGateway gateway);
+
 }

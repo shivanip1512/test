@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutionException;
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -49,6 +50,7 @@ import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.model.RfnGwy800;
 import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
+import com.cannontech.common.rfn.service.NMConfigurationService;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.rfn.service.RfnGatewayService;
@@ -56,6 +58,8 @@ import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Sets;
 
@@ -69,17 +73,19 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     private static final String gatewayUpdateRequestQueue = "yukon.qr.obj.common.rfn.GatewayUpdateRequest";
     private static final String gatewayActionRequestQueue = "yukon.qr.obj.common.rfn.GatewayActionRequest";
     
-    @Autowired private EndpointEventLogService endpointEventLogService;
     
     // Autowired in constructor
-    private RfnDeviceDao rfnDeviceDao;
-    private DeviceDao deviceDao;
-    private IDatabaseCache dbCache;
-    private RfnGatewayDataCache dataCache;
-    private ConnectionFactory connectionFactory;
     private ConfigurationSource configSource;
-    private RfnDeviceCreationService creationService;
+    private ConnectionFactory connectionFactory;
+    private DeviceDao deviceDao;
+    private EndpointEventLogService endpointEventLogService;
+    private GlobalSettingDao globalSettingDao;
+    private IDatabaseCache dbCache;
+    private NMConfigurationService nmConfigurationService;
     private PaoLocationDao paoLocationDao;
+    private RfnDeviceCreationService creationService;
+    private RfnDeviceDao rfnDeviceDao;
+    private RfnGatewayDataCache dataCache;
 
        
     // Created in post-construct
@@ -88,25 +94,30 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     private RequestReplyTemplate<GatewayConnectionTestResponse> connectionTestRequestTemplate;
     
     @Autowired
-    public RfnGatewayServiceImpl(RfnGatewayDataCache dataCache, 
-                                 ConnectionFactory connectionFactory, 
-                                 ConfigurationSource configurationSource, 
-                                 RfnDeviceCreationService rfnDeviceCreationService, 
-                                 PaoLocationDao paoLocationDao,
-                                 RfnDeviceDao rfnDeviceDao,
-                                 DeviceDao deviceDao,
-                                 IDatabaseCache serverDatabaseCache,
-                                 EndpointEventLogService endpointEventLogService) {
-        
-        this.dataCache = dataCache;
+    public RfnGatewayServiceImpl(
+            ConfigurationSource configSource,
+            ConnectionFactory connectionFactory,
+            DeviceDao deviceDao,
+            EndpointEventLogService endpointEventLogService,
+            GlobalSettingDao globalSettingDao,
+            IDatabaseCache dbCache,
+            NMConfigurationService nmConfigurationService,
+            PaoLocationDao paoLocationDao,
+            RfnDeviceCreationService creationService,
+            RfnDeviceDao rfnDeviceDao,
+            RfnGatewayDataCache dataCache) {
+
+        this.configSource = configSource;
         this.connectionFactory = connectionFactory;
-        configSource = configurationSource;
-        creationService = rfnDeviceCreationService;
-        this.paoLocationDao = paoLocationDao;
-        this.rfnDeviceDao = rfnDeviceDao;
         this.deviceDao = deviceDao;
-        dbCache = serverDatabaseCache;
         this.endpointEventLogService = endpointEventLogService;
+        this.globalSettingDao = globalSettingDao;
+        this.dbCache = dbCache;
+        this.nmConfigurationService = nmConfigurationService;
+        this.paoLocationDao = paoLocationDao;
+        this.creationService = creationService;
+        this.rfnDeviceDao = rfnDeviceDao;
+        this.dataCache = dataCache;
     }
     
     @PostConstruct
@@ -129,6 +140,22 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         return gateways;
     }
     
+    @Override
+    public Set<RfnGateway> getAllGatewaysWithData() throws NmCommunicationException {
+
+        List<RfnDevice> devices = rfnDeviceDao.getDevicesByPaoTypes(PaoType.getRfGatewayTypes());
+
+        Set<RfnGateway> gateways = new HashSet<>();
+
+        for (RfnDevice device : devices) {
+            RfnGatewayData data = dataCache.get(device.getPaoIdentifier());
+            RfnGateway gateway = buildRfnGateway(device, device.getName(), data);
+            gateways.add(gateway);
+        }
+
+        return gateways;
+    }
+
     @Override
     public RfnGateway getGatewayByPaoIdWithData(int paoId) throws NmCommunicationException {
         
@@ -518,4 +545,33 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         dataCache.getCache().asMap().clear();
     }
     
+    @Override
+    public GatewaySettings gatewayAsSettings(RfnGateway gateway) {
+        GatewaySettings settings = new GatewaySettings();
+
+        settings.setId(gateway.getPaoIdentifier().getPaoId());
+        settings.setName(gateway.getName());
+        settings.setIpAddress(gateway.getData().getIpAddress());
+        settings.setAdmin(gateway.getData().getAdmin());
+        settings.setSuperAdmin(gateway.getData().getSuperAdmin());
+        if (gateway.getLocation() != null) {
+            settings.setLatitude(gateway.getLocation().getLatitude());
+            settings.setLongitude(gateway.getLocation().getLongitude());
+        }
+
+        if(nmConfigurationService.isFirmwareUpdateSupported()) {
+
+            String defaultUpdateServer = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
+
+            String updateServerUrl = gateway.getData().getUpdateServerUrl();
+            settings.setUpdateServerUrl(updateServerUrl);
+            settings.setUpdateServerLogin(gateway.getData().getUpdateServerLogin());
+
+            if(StringUtils.isBlank(updateServerUrl) || updateServerUrl.equals(defaultUpdateServer)) {
+                settings.setUseDefault(true);
+            }
+        }
+
+        return settings;
+    }
 }
