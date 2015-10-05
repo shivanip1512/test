@@ -166,6 +166,37 @@ WHERE Name IN ('INTERVAL', 'BASELINE_CALCTIME', 'DAYS_PREVIOUS_TO_COLLECT');
 UPDATE DeviceConfigCategory 
 SET CategoryType = 'rfnVoltage' 
 WHERE CategoryType = 'rfnOvUv';
+
+INSERT INTO DeviceConfigCategoryItem
+    SELECT MaxDeviceConfigCategoryItemId + ROWNUM,
+        DeviceConfigCategoryId,
+        Name,
+        Value
+    FROM (
+        SELECT
+           (SELECT NVL(MAX(DeviceConfigCategoryItemId), 0) AS Id FROM DeviceConfigCategoryItem) AS MaxDeviceConfigCategoryItemId,
+           ROWNUM,
+           T.DeviceConfigCategoryId AS DeviceConfigCategoryId,
+           'voltageAveragingInterval' AS Name,
+           60 AS Value
+        FROM (
+           SELECT DeviceConfigCategoryId
+           FROM DeviceConfigCategory 
+           WHERE CategoryType = 'rfnVoltage') T
+    ) U;
+
+DELETE FROM DeviceConfigCategoryMap
+WHERE DeviceConfigurationId IN (
+    SELECT dc.DeviceConfigurationID
+    FROM DeviceConfiguration dc
+    WHERE NOT EXISTS (
+       SELECT 1 FROM DeviceConfigDeviceTypes dcdt
+       WHERE dcdt.DeviceConfigurationId = dc.DeviceConfigurationID
+         AND dcdt.PaoType IN ('RFN-410cL', 'RFN-420cL', 'RFN-420fX', 'RFN-420fD', 'RFN-420fL', 'RFN-420fRX', 'RFN-420fRD', 'RFN-420cD')))
+AND DeviceConfigCategoryId IN (
+    SELECT DeviceConfigCategoryId
+    FROM DeviceConfigCategory
+    WHERE CategoryType = 'rfnVoltage');
 /* End YUK-14667 */
 
 /* Start YUK-14624 */
