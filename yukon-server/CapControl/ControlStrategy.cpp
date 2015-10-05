@@ -579,24 +579,20 @@ bool ControlStrategy::isPeakTime( const CtiTime & now ) const
     {
         // we are in the peak time window
 
-        struct tm   timeComponents;
+        if ( CtiHolidayManager::getInstance().isHoliday( now.date() ) )
+        {
+            // it's a holiday, return our holiday peak setting
+
+            return ( getDaysOfWeek()[ 7 ] == 'Y' );
+        }
+
+        // return day of the week peak setting
+
+        tm  timeComponents;
 
         now.extract( &timeComponents );
 
-        if ( getDaysOfWeek()[ timeComponents.tm_wday ] == 'Y' )
-        {
-            // today is a peak day
-
-            return true;
-        }
-
-        if ( getDaysOfWeek()[ 7 ] == 'Y' &&
-             CtiHolidayManager::getInstance().isHoliday( now.date() ) )
-        {
-            // holidays are peak days and today is a holiday
-
-            return true;
-        }
+        return ( getDaysOfWeek()[ timeComponents.tm_wday ] == 'Y' );
     }
 
     return false;
