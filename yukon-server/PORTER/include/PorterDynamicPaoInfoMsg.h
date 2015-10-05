@@ -1,14 +1,8 @@
 #pragma once
 
-#include "ctitime.h"
-#include "tbl_dyn_paoinfo.h"
-
-#include <boost/optional.hpp>
-#include <boost/variant/variant.hpp>
-
-#include <string>
 #include <set>
 #include <map>
+#include <chrono>
 
 namespace Cti {
 namespace Messaging {
