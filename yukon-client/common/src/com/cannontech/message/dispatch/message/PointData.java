@@ -45,6 +45,18 @@ public class PointData extends com.cannontech.message.util.Message implements Po
         super();
     }
 
+    public static PointData of(PointValueQualityHolder pvqh) {
+        PointData pointData = new PointData();
+        
+        pointData.setId(pvqh.getId());
+        pointData.setType(pvqh.getType());
+        pointData.setPointQuality(pvqh.getPointQuality());
+        pointData.setValue(pvqh.getValue());
+        pointData.setTimeStamp(pvqh.getPointDataTimeStamp());
+        
+        return pointData;
+    }
+    
     public long getForced() {
         return forced;
     }

@@ -35,6 +35,7 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.ImmutableSet;
@@ -59,25 +60,6 @@ public class RfnChannelDataConverter {
     private ImmutableSet<PaoTypePointIdentifier> calculationContributors;
     private static final Logger log = YukonLogManager.getLogger(RfnChannelDataConverter.class);
     
-    public class PointDataWithIdentifier {
-        private PointData pointData;
-        private PaoPointIdentifier ppi;
-        
-        PointDataWithIdentifier(PointData pointData, PaoPointIdentifier ppi) {
-            this.pointData = pointData;
-            this.ppi = ppi;
-        }
-        public PointData getPointData() {
-            return pointData;
-        }
-        public PaoPointIdentifier getPaoPointIdentifier() {
-            return ppi;
-        }
-        public PaoPointValue asPaoPointValue() {
-            return PaoPointValue.of(ppi, pointData);
-        }
-    }
-    
     public List<CalculationData> convert(RfnMeterPlusReadingData reading, List<? super PointData> toArchive) {
         
         List<ChannelData> nonDatedChannelData = reading.getRfnMeterReadingData().getChannelDataList();
@@ -97,16 +79,14 @@ public class RfnChannelDataConverter {
         
         //TODO JAVA 8
         
-        List<PointDataWithIdentifier> pointData =
+        List<PaoPointValue> paoPointValues =
                 allChannelData.stream()
-                    //.map(channelData -> convertSingleChannelData(reading.getRfnDevice(), channelData, readingInstant))
-                    .map(new Function<ChannelData, PointDataWithIdentifier>() {
+                    .map(new Function<ChannelData, PaoPointValue>() {
                             @Override
-                            public PointDataWithIdentifier apply(ChannelData channelData) {
+                            public PaoPointValue apply(ChannelData channelData) {
                                 return convertSingleChannelData(reading.getRfnDevice(), channelData, readingInstant);
                             }
                         })
-                    //.filter(Objects::nonNull)
                     .filter(new Predicate<Object>() {
                         @Override
                         public boolean test(Object t) {
@@ -115,15 +95,13 @@ public class RfnChannelDataConverter {
                     })
                     .collect(Collectors.toList());
         
-        pointData.stream()
-                //.map(PointDataWithIdentifier::getPointData)
-                .map(new Function<PointDataWithIdentifier, PointData>() {
+        paoPointValues.stream()
+                .map(new Function<PaoPointValue, PointData>() {
                     @Override
-                    public PointData apply(PointDataWithIdentifier pdwi) {
-                        return pdwi.getPointData();
+                    public PointData apply(PaoPointValue ppv) {
+                        return of(ppv.getPointValueQualityHolder());
                     }
                 })
-                //.forEachOrdered(toArchive::add)
                 .forEachOrdered(new Consumer<PointData>(){
                     @Override
                     public void accept(PointData pointData) {
@@ -132,25 +110,39 @@ public class RfnChannelDataConverter {
                 });
         
         /* If this point is used to calculate other points, return it. */
-        return pointData.stream()
-                //.filter(pdwi -> calculationContributors.contains(pdwi.getPaoPointIdentifier().getPaoTypePointIdentifier()))
-                .filter(new Predicate<PointDataWithIdentifier>() {
+        return paoPointValues.stream()
+                .filter(new Predicate<PaoPointValue>() {
                     @Override
-                    public boolean test(PointDataWithIdentifier pdwi) {
-                        return calculationContributors.contains(pdwi.getPaoPointIdentifier().getPaoTypePointIdentifier());
+                    public boolean test(PaoPointValue ppv) {
+                        return calculationContributors.contains(ppv.getPaoPointIdentifier().getPaoTypePointIdentifier());
                     }
                 })
-                //.map(pdwi -> return CalculationData.of(pdwi.asPaoPointValue(), reading.getRfnMeterReadingData().getRecordInterval())) 
-                .map(new Function<PointDataWithIdentifier, CalculationData>() {
+                .map(new Function<PaoPointValue, CalculationData>() {
                     @Override
-                    public CalculationData apply(PointDataWithIdentifier pdwi) {
-                        return CalculationData.of(pdwi.asPaoPointValue(), reading.getRfnMeterReadingData().getRecordInterval());
+                    public CalculationData apply(PaoPointValue ppv) {
+                        return CalculationData.of(ppv, reading.getRfnMeterReadingData().getRecordInterval());
                     }
                 })
                 .collect(Collectors.toList());
     }
 
-    public PointDataWithIdentifier convertSingleChannelData(RfnDevice rfnDevice, ChannelData channelData, Instant readingInstant) {
+    static PointData of(PointValueQualityHolder pvqh) {
+        PointData pointData = PointData.of(pvqh);
+        
+        pointData.setTagsPointMustArchive(true); // temporary solution
+        
+        return pointData;
+    }
+    
+    public PointData convert(RfnDevice rfnDevice, ChannelData channelData, Instant readingInstant) {
+        PaoPointValue ppv = convertSingleChannelData(rfnDevice, channelData, readingInstant);
+        
+        PointData pointData = of(ppv.getPointValueQualityHolder());
+        
+        return pointData;
+    }
+
+    private PaoPointValue convertSingleChannelData(RfnDevice rfnDevice, ChannelData channelData, Instant readingInstant) {
         if (log.isDebugEnabled()) {
             log.debug("Processing " + channelData + " for " + rfnDevice);
         }
@@ -213,13 +205,12 @@ public class RfnChannelDataConverter {
             pointData.setTime(readingInstant.toDate());
         }
         pointData.setType(ppi.getPointIdentifier().getPointType().getPointTypeId());
-        pointData.setTagsPointMustArchive(true); // temporary solution
         
         if (log.isDebugEnabled()) {
             log.debug("PointData converted: " + pointData);
         }
         
-        return new PointDataWithIdentifier(pointData, ppi);
+        return PaoPointValue.of(ppi, pointData);
     }
     
     @PostConstruct
