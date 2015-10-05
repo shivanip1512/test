@@ -2,7 +2,6 @@ package com.cannontech.web.common.resources.service.impl;
 
 import java.io.StringReader;
 import java.io.StringWriter;
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -15,7 +14,7 @@ import com.cannontech.web.common.resources.service.error.PackageResourceFilterSe
 import com.cannontech.web.common.resources.service.error.YuiCompressorErrorState;
 import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
 import com.yahoo.platform.yui.compressor.org.mozilla.javascript.EvaluatorException;
-
+import com.yahoo.platform.yui.compressor.org.mozilla.javascript.ErrorReporter;
 
 /** JSCompressionFilterServiceImpl
 *The JS Compression lib minifies/compresses the specifeid ResourceBundle exposed. 
@@ -30,52 +29,38 @@ public class JSCompressionFilterServiceImpl implements PackageFilterService {
     private final static boolean verbose = false;
     private final static boolean preserveAllSemiColons = true;
     private final static boolean disableOptimizations = true; 
-    
-    
     private ResourceBundleFilterServiceType filterType = ResourceBundleFilterServiceType.JS_MINIFY;
-     
     private static final Logger log = YukonLogManager.getLogger(JSCompressionFilterServiceImpl.class);
     @Override
     public void validateResourceBundle(ResourceBundle bundle) throws PackageResourceFilterException {
         //TODO:create the validation for JS in next phase/sprint.
     }
-
     @Override
     public void processResourceBundle(ResourceBundle bundle) throws PackageResourceFilterException {
         log.debug("processResourceBundle -> " + bundle.getName());
         Instant start = Instant.now();
-        StringReader in = null;
+        try(        
+        StringReader in = new StringReader(bundle.getResourceResult());
         StringWriter mungeMap = null;
-        StringWriter out = new StringWriter();
-        try {
-            in = new StringReader(bundle.getResourceResult());
-            
+        StringWriter out = new StringWriter();)
+        {
             JavaScriptCompressor compressor = new JavaScriptCompressor(in,  new YuiCompressorErrorReporter());   
-            
             compressor.compress(out,mungeMap, lineBreakPos, munge, verbose, preserveAllSemiColons, disableOptimizations);
             bundle.setResourceResult(out.toString());
             log.debug("load operation for : " +  bundle.getName() + "duration of : " + 
                     new Duration(start, Instant.now()).getMillis() + "ms");
         }
-        catch(Exception e)
-        {
+        catch(Exception e){
             String message = e.getMessage();
             log.debug(message);
             throw new PackageResourceFilterException(message, e, PackageResourceFilterServiceErrorState.JS_MINIFY_FAIL);
         }
-        finally{
-            IOUtils.closeQuietly(in);
-            IOUtils.closeQuietly(out);
-            IOUtils.closeQuietly(mungeMap);
-        }
     }
-
     @Override
     public ResourceBundleFilterServiceType getFilterType() {
         return this.filterType;
     }
-   
-    private static class YuiCompressorErrorReporter implements com.yahoo.platform.yui.compressor.org.mozilla.javascript.ErrorReporter
+    private static class YuiCompressorErrorReporter implements ErrorReporter
     {
         @Override
         public void error(String message, String sourceName, int line, String lineSource, int lineOffset) {
@@ -85,7 +70,6 @@ public class JSCompressionFilterServiceImpl implements PackageFilterService {
                 log.debug("[" + YuiCompressorErrorState.SEVERE + "]" +  line + ':' + lineOffset + ':' + message);
             }
         }
-
         @Override
         public void warning(String message, String sourceName, int line, String lineSource, int lineOffset) {
             if (line < 0) {
@@ -94,7 +78,6 @@ public class JSCompressionFilterServiceImpl implements PackageFilterService {
                 log.debug("[" + YuiCompressorErrorState.WARNING + "]" +  line + ':' + lineOffset + ':' + message);
             }
         }
-
         @Override
         public EvaluatorException runtimeError(String message, String sourceName, int line, String lineSource, int lineOffset) {
             error(message,sourceName,line, lineSource, lineOffset);
@@ -102,5 +85,3 @@ public class JSCompressionFilterServiceImpl implements PackageFilterService {
         }
     }
 }
-
-

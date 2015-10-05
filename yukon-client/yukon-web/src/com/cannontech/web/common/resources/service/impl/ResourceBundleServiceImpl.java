@@ -127,7 +127,7 @@ public class ResourceBundleServiceImpl implements ResourceBundleService {
             processFilterList(resourceBundle);
         } catch (PackageResourceFilterException e) {
             log.warn("caught exception in loadResourceBundle", e);
-            throw new ResourceBundleException(e.getMessage(), e.getCause(), ResourceBundleErrorState.FILTER_EXECUTION_ERROR, e.getState());
+            throw new ResourceBundleException(e.getMessage(), e, ResourceBundleErrorState.FILTER_EXECUTION_ERROR, e.getState());
         }
         log.debug("load operation for : " + packageName + "duration of : " + new Duration(start, Instant.now()).getMillis() + "ms");
         return resourceBundle;

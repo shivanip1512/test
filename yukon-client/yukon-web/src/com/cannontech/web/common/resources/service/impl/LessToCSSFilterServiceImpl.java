@@ -77,7 +77,7 @@ public class LessToCSSFilterServiceImpl implements PackageFilterService {
         while(scanner.hasNextLine()){
            String line = scanner.nextLine();
            for (ThemePropertyType type : theme.getProperties().keySet()) {
-               
+               log.debug("regex composite token:" + type.getVarName());
                String regex = regexPrefix + type.getVarName() + regexSuffix;
                String replacement = (String)theme.getProperties().get(type);
                
@@ -86,6 +86,7 @@ public class LessToCSSFilterServiceImpl implements PackageFilterService {
                } else if (type.getInputType() instanceof PixelType) {
                    replacement = replacement + "px";
                }
+               
                line = line.replaceAll(regex, replacement);
            }
            css.append(line).append("\n");   
