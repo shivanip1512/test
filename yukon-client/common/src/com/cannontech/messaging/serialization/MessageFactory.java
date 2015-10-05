@@ -118,10 +118,6 @@ public class MessageFactory {
         return byMessageClassSerializerMap.get(targetClass);
     }
 
-    public MessageSerializer<?> findSerializer(String messageType) {
-        return null;
-    }
-
     public String getName() {
         return name;
     }

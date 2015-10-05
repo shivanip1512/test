@@ -6,19 +6,10 @@ import java.util.EnumSet;
 public class DynamicPaoInfoRequest {
     
     private int deviceID;
-    private EnumSet<DynamicPaoInfoKeyEnum> keys;
+    private EnumSet<DynamicPaoInfoDurationKeyEnum> durationKeys;
+    private EnumSet<DynamicPaoInfoTimestampKeyEnum> timestampKeys;
 
     public DynamicPaoInfoRequest() { }
-    
-    public DynamicPaoInfoRequest(int deviceID, DynamicPaoInfoKeyEnum key) {
-        this.deviceID = deviceID;
-        keys = EnumSet.of(key);
-    }
-    
-    public DynamicPaoInfoRequest(int deviceID, Collection<DynamicPaoInfoKeyEnum> keys) {
-        this.deviceID = deviceID;
-        this.keys = EnumSet.copyOf(keys);
-    }
     
     public int getDeviceID() {
         return deviceID;
@@ -28,17 +19,25 @@ public class DynamicPaoInfoRequest {
         this.deviceID = deviceID;
     }
     
-    public Collection<DynamicPaoInfoKeyEnum> getKeys() {
-        return keys;
+    public Collection<DynamicPaoInfoDurationKeyEnum> getDurationKeys() {
+        return durationKeys;
     }
     
-    public void setKeys(Collection<DynamicPaoInfoKeyEnum> keys) {
-        this.keys = EnumSet.copyOf(keys);
+    public void setDurationKeys(Collection<DynamicPaoInfoDurationKeyEnum> durationKeys) {
+        this.durationKeys = EnumSet.copyOf(durationKeys);
+    }
+    
+    public Collection<DynamicPaoInfoTimestampKeyEnum> getTimestampKeys() {
+        return timestampKeys;
+    }
+    
+    public void setTimestampKeys(Collection<DynamicPaoInfoTimestampKeyEnum> timestampKeys) {
+        this.timestampKeys = EnumSet.copyOf(timestampKeys);
     }
     
     @Override
     public String toString() {
-        return String.format("Request [deviceID=%s, keys=%s]", deviceID, keys);
+        return String.format("Request [deviceID=%s, durationKeys=%s, timestampKeys=%s]", deviceID, durationKeys, timestampKeys);
     }
     
 }

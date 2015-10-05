@@ -15,6 +15,10 @@
     <property name="porterConnection" ref="porterConnection"/>
   </bean>
   
+  <bean id="porterDynamicPaoInfoService" class="com.cannontech.core.service.impl.PorterDynamicPaoInfoServiceImpl">
+    <constructor-arg name="queueName" value="com.eaton.eas.yukon.porter.dynamicPaoInfoRequest"/>
+  </bean>
+  
   <bean id="templateProcessorFactory" class="com.cannontech.common.util.TemplateProcessorFactory"/>
   
   <bean id="pointFormattingService" class="com.cannontech.core.service.impl.PointFormattingServiceImpl" />

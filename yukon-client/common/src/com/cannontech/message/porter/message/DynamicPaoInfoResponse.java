@@ -2,6 +2,7 @@ package com.cannontech.message.porter.message;
 
 import java.util.Map;
 
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 import com.google.common.collect.ImmutableMap;
@@ -9,9 +10,8 @@ import com.google.common.collect.ImmutableMap;
 public class DynamicPaoInfoResponse {
     
     private int deviceID;
-    private ImmutableMap<DynamicPaoInfoKeyEnum, Instant> timeValues;
-    private ImmutableMap<DynamicPaoInfoKeyEnum, String> stringValues;
-    private ImmutableMap<DynamicPaoInfoKeyEnum, Long> longValues;
+    private ImmutableMap<DynamicPaoInfoTimestampKeyEnum, Instant> timestampValues;
+    private ImmutableMap<DynamicPaoInfoDurationKeyEnum, Duration> durationValues;
 
     public DynamicPaoInfoResponse() { }
     
@@ -29,25 +29,19 @@ public class DynamicPaoInfoResponse {
     
     @Override
     public String toString() {
-        return String.format("Response [deviceID=%s, timeResults=%s, stringResults=%s, longResults=%s]", deviceID, timeValues, stringValues, longValues);
+        return String.format("Response [deviceID=%s, timeValues=%s, durationValues=%s]", deviceID, timestampValues, durationValues);
     }
 
-    public Map<DynamicPaoInfoKeyEnum, Instant> getTimeValues() {
-        return timeValues;
+    public Map<DynamicPaoInfoTimestampKeyEnum, Instant> getTimestampValues() {
+        return timestampValues;
     }
-    public void setTimeValues(Map<DynamicPaoInfoKeyEnum, Instant> timeValues) {
-        this.timeValues = ImmutableMap.copyOf(timeValues);
+    public void setTimestampValues(Map<DynamicPaoInfoTimestampKeyEnum, Instant> timestampValues) {
+        this.timestampValues = ImmutableMap.copyOf(timestampValues);
     }
-    public Map<DynamicPaoInfoKeyEnum, String> getStringValues() {
-        return stringValues;
+    public Map<DynamicPaoInfoDurationKeyEnum, Duration> getDurationValues() {
+        return durationValues;
     }
-    public void setStringValues(Map<DynamicPaoInfoKeyEnum, String> stringValues) {
-        this.stringValues = ImmutableMap.copyOf(stringValues);
-    }
-    public Map<DynamicPaoInfoKeyEnum, Long> getLongValues() {
-        return longValues;
-    }
-    public void setLongValues(Map<DynamicPaoInfoKeyEnum, Long> longValues) {
-        this.longValues = ImmutableMap.copyOf(longValues);
+    public void setDurationValues(Map<DynamicPaoInfoDurationKeyEnum, Duration> durationValues) {
+        this.durationValues = ImmutableMap.copyOf(durationValues);
     }
 }
