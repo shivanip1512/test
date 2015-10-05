@@ -37,20 +37,22 @@
                                     <td><a href="${editUrl}">${fn:escapeXml(job.name)}</a></td>
                                     <td>${job.cronString}</td>
                                     <td><cti:dataUpdaterValue type="JOB" identifier="${job.id}/NEXT_RUN_DATE" /> <!-- Display job State -->
-                                    <td><c:if test="${job.jobState eq 'SCHEDULED'}">
+                                    <td>
+                                    	<c:if test="${job.jobState eq 'SCHEDULED'}">
+                                    	<cti:classUpdater type="JOB" identifier="${job.id}/JOB_STATUS_CLASS">
                                             <cti:dataUpdaterValue type="JOB" identifier="${job.id}/JOB_STATE_TEXT" />
+                                        </cti:classUpdater>    
                                         </c:if> 
                                         <c:if test="${job.jobState eq 'RUNNING'}">
-                                            <span class="fwb success"> <cti:dataUpdaterValue type="JOB"
-                                                    identifier="${job.id}/JOB_STATE_TEXT" />
-                                            </span>
-                                        </c:if> 
-                                        <c:if test="${job.jobState eq 'DISABLED' || job.jobState eq 'DELETED'}">
-                                            <span class="fwb error"> <cti:dataUpdaterValue type="JOB"
-                                                    identifier="${job.id}/JOB_STATE_TEXT" />
-                                            </span>
-                                        </c:if>
-                                        <cm:dropdown triggerClasses="fr">
+											<cti:classUpdater type="JOB" identifier="${job.id}/JOB_STATUS_CLASS">
+												<cti:dataUpdaterValue type="JOB" identifier="${job.id}/JOB_STATE_TEXT" />
+											</cti:classUpdater>											
+										</c:if> 
+										<c:if test="${job.jobState eq 'DISABLED' || job.jobState eq 'DELETED'}">
+											<cti:classUpdater type="JOB" identifier="${job.id}/JOB_STATUS_CLASS">
+												<cti:dataUpdaterValue type="JOB" identifier="${job.id}/JOB_STATE_TEXT" />
+											</cti:classUpdater>											
+										</c:if> <cm:dropdown triggerClasses="fr">
                                             <cm:dropdownOption key="yukon.web.components.button.history.label"
                                                 href="${historyUrl}" icon="icon-script" />
 

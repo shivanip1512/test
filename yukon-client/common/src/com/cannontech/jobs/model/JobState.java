@@ -2,6 +2,7 @@ package com.cannontech.jobs.model;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.jobs.dao.impl.JobDisabledStatus;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * The status of a job itself
@@ -17,13 +18,18 @@ public enum JobState implements DisplayableEnum {
     ;
 
     private final boolean active; // represents an "enabled" job
-
+    private static final ImmutableSet<JobState> editableStates = ImmutableSet.of(SCHEDULED);
+    
     private JobState(boolean active) {
         this.active = active;
     }
 
     public boolean isActive() {
         return active;
+    }
+
+    public boolean isEditable() {
+        return editableStates.contains(this);
     }
 
     @Override

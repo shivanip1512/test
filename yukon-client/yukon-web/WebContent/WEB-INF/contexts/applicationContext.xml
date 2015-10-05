@@ -461,6 +461,7 @@
     <bean id="stateJobUpdaterHandler" class="com.cannontech.web.updater.job.handler.StateJobUpdaterHandler"/>
     <bean id="stateTextJobUpdaterHandler" class="com.cannontech.web.updater.job.handler.StateTextJobUpdaterHandler"/>
     <bean id="jobStateUpdaterHandler" class="com.cannontech.web.updater.job.handler.JobStateUpdaterHandler" />
+    <bean id="jobStateClassUpdaterHandler" class="com.cannontech.web.updater.job.handler.JobStatusClassUpdaterHandler" />
 
     <bean id="drEstimatedLoadBackingService" class="com.cannontech.web.updater.dr.EstimatedLoadBackingService"/>
     <bean id="drControlAreaBackingService" class="com.cannontech.web.updater.dr.ControlAreaBackingService"/>

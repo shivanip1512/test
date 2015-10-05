@@ -8,5 +8,9 @@ public enum JobUpdaterTypeEnum {
 	STATE,
 	STATE_TEXT,
 	JOB_STATE_TEXT,
+	JOB_STATUS_CLASS,
 	;
+  
+	
+   
 }
