@@ -18,100 +18,111 @@ namespace Serialization {
 
 namespace {
 
-using KeyMapping = boost::bimap<Thrift::DynamicPaoInfoKeys::type, Messaging::Porter::DynamicPaoInfoKeys>;
+using ThriftDurationKeys = Thrift::Porter::DynamicPaoInfoDurationKeys::type;
+using YukonDurationKeys = Messaging::Porter::DynamicPaoInfoDurationKeys;
 
-static const KeyMapping PaoInfoKeyMapping = boost::assign::list_of<KeyMapping::relation>
-    (Thrift::DynamicPaoInfoKeys::RFN_VOLTAGE_PROFILE_ENABLED_UNTIL, Messaging::Porter::DynamicPaoInfoKeys::RfnVoltageProfileEnabledUntil)
-    (Thrift::DynamicPaoInfoKeys::RFN_VOLTAGE_PROFILE_INTERVAL,      Messaging::Porter::DynamicPaoInfoKeys::RfnVoltageProfileInterval);
+using DurationKeyMapping = boost::bimap<ThriftDurationKeys, YukonDurationKeys>;
 
-boost::optional<const Messaging::Porter::DynamicPaoInfoKeys> mapping(Thrift::DynamicPaoInfoKeys::type k)
+static const DurationKeyMapping durationKeyLookup = boost::assign::list_of<DurationKeyMapping::relation>
+    (ThriftDurationKeys::RFN_VOLTAGE_PROFILE_INTERVAL, YukonDurationKeys::RfnVoltageProfileInterval);
+
+boost::optional<const YukonDurationKeys> mapping(ThriftDurationKeys k)
 {
-    return mapFind(PaoInfoKeyMapping.left, k);
+    return mapFind(durationKeyLookup.left, k);
 }
 
-boost::optional<const Thrift::DynamicPaoInfoKeys::type> mapping(Messaging::Porter::DynamicPaoInfoKeys k)
+boost::optional<const ThriftDurationKeys> mapping(YukonDurationKeys k)
 {
-    return mapFind(PaoInfoKeyMapping.right, k);
+    return mapFind(durationKeyLookup.right, k);
+}
+
+using ThriftTimestampKeys = Thrift::Porter::DynamicPaoInfoTimestampKeys::type;
+using YukonTimestampKeys = Messaging::Porter::DynamicPaoInfoTimestampKeys;
+
+using TimestampKeyMapping = boost::bimap<ThriftTimestampKeys, YukonTimestampKeys>;
+
+static const TimestampKeyMapping timestampKeyLookup = boost::assign::list_of<TimestampKeyMapping::relation>
+    (ThriftTimestampKeys::RFN_VOLTAGE_PROFILE_ENABLED_UNTIL, YukonTimestampKeys::RfnVoltageProfileEnabledUntil);
+
+boost::optional<const YukonTimestampKeys> mapping(ThriftTimestampKeys k)
+{
+    return mapFind(timestampKeyLookup.left, k);
+}
+
+boost::optional<const ThriftTimestampKeys> mapping(YukonTimestampKeys k)
+{
+    return mapFind(timestampKeyLookup.right, k);
 }
 
 }
 
-using ReqMsg = ::Cti::Messaging::Porter::PorterDynamicPaoInfoRequestMsg;
-using RspMsg = ::Cti::Messaging::Porter::PorterDynamicPaoInfoResponseMsg;
+using ReqMsg = ::Cti::Messaging::Porter::DynamicPaoInfoRequestMsg;
+using RspMsg = ::Cti::Messaging::Porter::DynamicPaoInfoResponseMsg;
 
+using std::chrono::milliseconds;
+using std::chrono::duration_cast;
+using std::chrono::system_clock;
 
-MessagePtr<Thrift::PorterDynamicPaoInfoResponse>::type populateThrift( const RspMsg & imsg )
+MessagePtr<Thrift::Porter::DynamicPaoInfoResponse>::type populateThrift( const RspMsg & imsg )
 {
-    MessagePtr<Thrift::PorterDynamicPaoInfoResponse>::type omsg( new Thrift::PorterDynamicPaoInfoResponse );
+    MessagePtr<Thrift::Porter::DynamicPaoInfoResponse>::type omsg( new Thrift::Porter::DynamicPaoInfoResponse );
 
     omsg->__set__deviceId( imsg.deviceId );
 
-    struct convert : boost::static_visitor<Thrift::DynamicPaoInfoTypes>
+    for( const auto &kv : imsg.durationValues )
     {
-        using Dpit = Thrift::DynamicPaoInfoTypes;
-
-        Dpit operator()(long long ll) const
+        if( auto key = mapping(kv.first) )
         {
-            Dpit d;
-
-            d._integer = ll;
-            d.__isset._integer = true;  //  have to manually do this until the C++ Thrift library does it for us via __set__integer
-
-            return d;
-        }
-
-        Dpit operator()(CtiTime t) const
-        {
-            Dpit d;
-
-            d._time = t.seconds() * 1000;  //  milliseconds
-            d.__isset._time = true;  //  have to manually do this until the C++ Thrift library does it for us via __set__integer
-
-            return d;
-        }
-
-        Dpit operator()(std::string s) const
-        {
-            Dpit d;
-
-            d._string = s;
-            d.__isset._string = true;  //  have to manually do this until the C++ Thrift library does it for us via __set__integer
-
-            return d;
-        }
-    }
-    const converter;
-
-    for( const auto &kv : imsg.result )
-    {
-        if( auto mappedKey = mapping(kv.first) )
-        {
-            omsg->_values.emplace(*mappedKey, kv.second.apply_visitor(converter));
+            omsg->_durationValues.emplace(*key, kv.second.count());
         }
         else
         {
-            CTILOG_ERROR(dout, "No conversion for Thrift DynamicPaoInfoKeys value " << static_cast<int>(kv.first));
+            CTILOG_ERROR(dout, "Unmapped duration key " << static_cast<int>(kv.first));
+        }
+    }
+
+    for( const auto &kv : imsg.timestampValues )
+    {
+        if( auto key = mapping(kv.first) )
+        {
+            omsg->_timestampValues.emplace(*key, duration_cast<milliseconds>(kv.second.time_since_epoch()).count());
+        }
+        else
+        {
+            CTILOG_ERROR(dout, "Unmapped timestamp key " << static_cast<int>(kv.first));
         }
     }
 
     return omsg;
 }
 
-MessagePtr<ReqMsg>::type populateMessage(const Thrift::PorterDynamicPaoInfoRequest& imsg)
+MessagePtr<ReqMsg>::type populateMessage(const Thrift::Porter::DynamicPaoInfoRequest& imsg)
 {
     MessagePtr<ReqMsg>::type omsg(new ReqMsg);
 
     omsg->deviceId = imsg._deviceId;
 
-    for( const auto &key : imsg._keys )
+    for( const auto &key : imsg._durationKeys )
     {
         if( auto mappedKey = mapping(key) )
         {
-            omsg->paoInfoKeys.insert(*mappedKey);
+            omsg->durationKeys.insert(*mappedKey);
         }
         else
         {
-            CTILOG_ERROR(dout, "No conversion for Thrift DynamicPaoInfoKeys value " << static_cast<int>(key));
+            CTILOG_ERROR(dout, "Unmapped duration key " << static_cast<int>(key));
+        }
+    }
+
+    for( const auto &key : imsg._timestampKeys )
+    {
+        if( auto mappedKey = mapping(key) )
+        {
+            omsg->timestampKeys.insert(*mappedKey);
+        }
+        else
+        {
+            CTILOG_ERROR(dout, "Unmapped timestamp key " << static_cast<int>(key));
         }
     }
 
@@ -124,7 +135,7 @@ boost::optional<ReqMsg> MessageSerializer<ReqMsg>::deserialize(const ActiveMQCon
 {
     try
     {
-        auto tmsg = DeserializeThriftBytes<Thrift::PorterDynamicPaoInfoRequest>(msg);
+        auto tmsg = DeserializeThriftBytes<Thrift::Porter::DynamicPaoInfoRequest>(msg);
 
         auto msg = populateMessage(tmsg);
 

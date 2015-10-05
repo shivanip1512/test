@@ -4,6 +4,7 @@
 
 #include <set>
 #include <map>
+#include <chrono>
 
 BOOST_AUTO_TEST_SUITE( test_compiler_behaviors )
 
@@ -154,6 +155,37 @@ BOOST_AUTO_TEST_CASE(test_map_range_for_is_mutable)
     BOOST_CHECK_EQUAL( numbers[3], "three (3)");
     BOOST_CHECK_EQUAL( numbers[5], "five (5)");
     BOOST_CHECK_EQUAL( numbers[7], "seven (7)");
+}
+
+
+BOOST_AUTO_TEST_CASE(test_std_chrono_system_clock_time_since_epoch)
+{
+    {
+        //  January 1, 1970, 0:00 GMT
+        time_t tm = 0;
+
+        auto time_point = std::chrono::system_clock::from_time_t(tm);
+
+        BOOST_CHECK_EQUAL(std::chrono::duration_cast<std::chrono::seconds>(time_point.time_since_epoch()).count(), 0);
+    }
+
+    {
+        //  January 1, 2015, 0:00 GMT
+        time_t tm = 1420092000;
+
+        auto time_point = std::chrono::system_clock::from_time_t(tm);
+
+        BOOST_CHECK_EQUAL(std::chrono::duration_cast<std::chrono::seconds>(time_point.time_since_epoch()).count(), 1420092000);
+    }
+
+    {
+        //  January 1, 2015, 0:00 GMT
+        time_t tm = 1420092000;
+
+        auto time_point = std::chrono::system_clock::from_time_t(tm);
+
+        BOOST_CHECK_EQUAL(std::chrono::duration_cast<std::chrono::milliseconds>(time_point.time_since_epoch()).count(), 1420092000000LL);
+    }
 }
 
 

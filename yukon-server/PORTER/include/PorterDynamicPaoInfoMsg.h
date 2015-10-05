@@ -14,26 +14,33 @@ namespace Cti {
 namespace Messaging {
 namespace Porter {
 
-enum class DynamicPaoInfoKeys
+enum class DynamicPaoInfoDurationKeys
 {
-    RfnVoltageProfileEnabledUntil,
     RfnVoltageProfileInterval  //  data streaming interval
 };
 
-struct PorterDynamicPaoInfoRequestMsg
+enum class DynamicPaoInfoTimestampKeys
 {
-    long deviceId;
-
-    std::set<DynamicPaoInfoKeys> paoInfoKeys;
+    RfnVoltageProfileEnabledUntil
 };
 
-struct PorterDynamicPaoInfoResponseMsg
+struct DynamicPaoInfoRequestMsg
 {
-    using AllowedTypes = boost::variant<long long, CtiTime, std::string>;
-
     long deviceId;
 
-    std::map<DynamicPaoInfoKeys, AllowedTypes> result;
+    std::set<DynamicPaoInfoDurationKeys> durationKeys;
+    std::set<DynamicPaoInfoTimestampKeys> timestampKeys;
+};
+
+struct DynamicPaoInfoResponseMsg
+{
+    long deviceId;
+
+    using DurationMap = std::map<DynamicPaoInfoDurationKeys, std::chrono::milliseconds>;
+    using TimestampMap = std::map<DynamicPaoInfoTimestampKeys, std::chrono::system_clock::time_point>;
+
+    DurationMap durationValues;
+    TimestampMap timestampValues;
 };
 
 }

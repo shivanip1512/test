@@ -978,74 +978,64 @@ void registerServices()
     using MessageDescriptor = ActiveMQConnectionManager::MessageDescriptor;
     using SerializedMessage = ActiveMQConnectionManager::SerializedMessage;
     using Cti::Messaging::ActiveMQ::Queues::InboundQueue;
-    using Cti::Messaging::Porter::DynamicPaoInfoKeys;
-    using Cti::Messaging::Porter::PorterDynamicPaoInfoRequestMsg;
-    using Cti::Messaging::Porter::PorterDynamicPaoInfoResponseMsg;
+    using Cti::Messaging::Porter::DynamicPaoInfoDurationKeys;
+    using Cti::Messaging::Porter::DynamicPaoInfoTimestampKeys;
+    using Cti::Messaging::Porter::DynamicPaoInfoRequestMsg;
+    using Cti::Messaging::Porter::DynamicPaoInfoResponseMsg;
     using Cti::Messaging::Serialization::MessageSerializer;
 
     ActiveMQConnectionManager::registerReplyHandler(
         InboundQueue::PorterDynamicPaoInfoRequest,
         [](const MessageDescriptor &md) -> std::unique_ptr<SerializedMessage>
         {
-            if( auto req = MessageSerializer<PorterDynamicPaoInfoRequestMsg>::deserialize(md.msg) )
+            if( auto req = MessageSerializer<DynamicPaoInfoRequestMsg>::deserialize(md.msg) )
             {
-                PorterDynamicPaoInfoResponseMsg rsp;
+                DynamicPaoInfoResponseMsg rsp;
 
-                const std::map<DynamicPaoInfoKeys, CtiTableDynamicPaoInfo::PaoInfoKeys> keyLookup{
-                    { DynamicPaoInfoKeys::RfnVoltageProfileEnabledUntil, CtiTableDynamicPaoInfo::Key_RFN_VoltageProfileEnabledUntil },
-                    { DynamicPaoInfoKeys::RfnVoltageProfileInterval,     CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval } };
+                rsp.deviceId = req->deviceId;
 
-                using PaoValue = std::pair<DynamicPaoInfoKeys, PorterDynamicPaoInfoResponseMsg::AllowedTypes>;
+                static const std::map<DynamicPaoInfoDurationKeys, CtiTableDynamicPaoInfo::PaoInfoKeys> durationKeyLookup{
+                    { DynamicPaoInfoDurationKeys::RfnVoltageProfileInterval, CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval } };
 
-                boost::range::copy(
-                        req->paoInfoKeys
-                                | boost::adaptors::transformed(
-                                        [&](DynamicPaoInfoKeys k) -> boost::optional<PaoValue>
-                                        {
-                                            if( const auto resolvedKey = Cti::mapFind(keyLookup, k) )
-                                            {
-                                                switch( *resolvedKey )
-                                                {
-                                                    case CtiTableDynamicPaoInfo::Key_RFN_VoltageProfileEnabledUntil:
-                                                    {
-                                                        CtiTime timeValue;
+                for( const auto key : req->durationKeys )
+                {
+                    if( const auto mappedKey = Cti::mapFind(durationKeyLookup, key) )
+                    {
+                        long longValue;
 
-                                                        if( Cti::DynamicPaoInfoManager::getInfo(req->deviceId, *resolvedKey, timeValue) )
-                                                        {
-                                                            return PaoValue{ k, timeValue };
-                                                        }
+                        if( Cti::DynamicPaoInfoManager::getInfo(req->deviceId, *mappedKey, longValue) )
+                        {
+                            //  switch per key, since some may be stored as minutes, some as seconds, etc
+                            switch( *mappedKey )
+                            {
+                            case CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval:
+                                rsp.durationValues.emplace(key, std::chrono::minutes(longValue));
+                                break;
+                            }
+                        }
+                    }
+                }
 
-                                                        break;
-                                                    }
-                                                    case CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval:
-                                                    {
-                                                        long longValue;
+                static const std::map<DynamicPaoInfoTimestampKeys, CtiTableDynamicPaoInfo::PaoInfoKeys> timestampKeyLookup{
+                    { DynamicPaoInfoTimestampKeys::RfnVoltageProfileEnabledUntil, CtiTableDynamicPaoInfo::Key_RFN_VoltageProfileEnabledUntil } };
 
-                                                        if( Cti::DynamicPaoInfoManager::getInfo(req->deviceId, *resolvedKey, longValue) )
-                                                        {
-                                                            return PaoValue{ k, longValue };
-                                                        }
+                for( const auto key : req->timestampKeys )
+                {
+                    if( const auto mappedKey = Cti::mapFind(timestampKeyLookup, key) )
+                    {
+                        CtiTime timeValue;
 
-                                                        break;
-                                                    }
-                                                }
-                                            }
+                        if( Cti::DynamicPaoInfoManager::getInfo(req->deviceId, *mappedKey, timeValue) )
+                        {
+                            //  presumably all timestamp values are stored as CtiTimes
+                            rsp.timestampValues.emplace(key,
+                                    std::chrono::system_clock::time_point(
+                                            std::chrono::seconds(timeValue.seconds())));
+                        }
+                    }
+                }
 
-                                            return boost::none;
-                                        })
-                                | boost::adaptors::filtered(
-                                        [&](const boost::optional<PaoValue> &pv)
-                                        {
-                                            return !!pv;
-                                        })
-                                | boost::adaptors::transformed(
-                                        [](const boost::optional<PaoValue> &pv)
-                                        {
-                                            return *pv;
-                                        }),
-                        std::inserter(rsp.result, rsp.result.begin()));
-
-                auto serializedRsp = MessageSerializer<PorterDynamicPaoInfoResponseMsg>::serialize(rsp);
+                auto serializedRsp = MessageSerializer<DynamicPaoInfoResponseMsg>::serialize(rsp);
 
                 if( !serializedRsp.empty() )
                 {

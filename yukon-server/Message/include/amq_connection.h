@@ -85,7 +85,9 @@ public:
     {
         std::string type;
         SerializedMessage msg;
-        const cms::Destination * replyTo;
+        const cms::Destination* replyTo = nullptr;
+
+        ~MessageDescriptor();
     };
 
     using MessageCallback = std::function<void(const MessageDescriptor &)>;
@@ -172,7 +174,7 @@ private:
     CtiCriticalSection _outgoingMessagesMux;
     EnvelopeQueue      _outgoingMessages;
 
-    typedef std::map<const ActiveMQ::Queues::InboundQueue *, std::vector<MessageDescriptor>> IncomingPerQueue;
+    typedef std::map<const ActiveMQ::Queues::InboundQueue *, std::vector<std::unique_ptr<MessageDescriptor>>> IncomingPerQueue;
     CtiCriticalSection _newIncomingMessagesMux;
     IncomingPerQueue   _newIncomingMessages;
 
@@ -213,7 +215,7 @@ private:
 
     std::multimap<CtiTime, ExpirationHandler> _temporaryExpirations;
 
-    typedef std::map<std::string, MessageDescriptor> ReplyPerDestination;
+    typedef std::map<std::string, std::unique_ptr<MessageDescriptor>> ReplyPerDestination;
     CtiCriticalSection  _tempQueueRepliesMux;
     ReplyPerDestination _tempQueueReplies;
 

@@ -36,6 +36,10 @@ namespace Messaging {
 
 extern IM_EX_MSG std::auto_ptr<ActiveMQConnectionManager> gActiveMQConnection;
 
+ActiveMQConnectionManager::MessageDescriptor::~MessageDescriptor() {
+    delete replyTo;
+}
+
 ActiveMQConnectionManager::ActiveMQConnectionManager(const string &broker_uri) :
     _broker_uri(broker_uri)
 {
@@ -313,11 +317,7 @@ void ActiveMQConnectionManager::dispatchIncomingMessages()
     {
         CtiLockGuard<CtiCriticalSection> lock(_newIncomingMessagesMux);
 
-        incomingMessages.insert(
-                _newIncomingMessages.begin(),
-                _newIncomingMessages.end());
-
-        _newIncomingMessages.clear();
+        incomingMessages.swap(_newIncomingMessages);
     }
 
     for( const auto &inbound : incomingMessages )
@@ -338,7 +338,7 @@ void ActiveMQConnectionManager::dispatchIncomingMessages()
             if( debugActivityInfo() )
             {
                 CTILOG_DEBUG(dout, "Dispatching message to callbacks from queue \"" << queue->name << "\" id " << reinterpret_cast<unsigned long>(queue) << std::endl
-                        << reinterpret_cast<unsigned long>(queue) << ": " << md.msg);
+                        << reinterpret_cast<unsigned long>(queue) << ": " << md->msg);
             }
 
             for( auto callback : callbacks )
@@ -348,7 +348,7 @@ void ActiveMQConnectionManager::dispatchIncomingMessages()
                     CTILOG_DEBUG(dout, "Calling callback " << reinterpret_cast<unsigned long>(&callback) << " for queue \"" << queue->name << "\" id " << reinterpret_cast<unsigned long>(queue));
                 }
 
-                callback(md);
+                callback(*md);
             }
         }
     }
@@ -362,9 +362,7 @@ void ActiveMQConnectionManager::dispatchTempQueueReplies()
     {
         CtiLockGuard<CtiCriticalSection> lock(_tempQueueRepliesMux);
 
-        replies = _tempQueueReplies;
-
-        _tempQueueReplies.clear();
+        _tempQueueReplies.swap(replies);
     }
 
     for( const auto &kv : replies )
@@ -386,10 +384,10 @@ void ActiveMQConnectionManager::dispatchTempQueueReplies()
         if( debugActivityInfo() )
         {
             CTILOG_DEBUG(dout, "Calling temp queue callback " << reinterpret_cast<unsigned long>(&(consumer->callback)) << " for temp queue \"" << destination << "\"" << std::endl
-                    << reinterpret_cast<unsigned long>(&(consumer->callback)) << ": " << descriptor.msg);
+                    << reinterpret_cast<unsigned long>(&(consumer->callback)) << ": " << descriptor->msg);
         }
 
-        consumer->callback(descriptor);
+        consumer->callback(*descriptor);
 
         _temporaryConsumers.erase(itr);
     }
@@ -649,25 +647,25 @@ void ActiveMQConnectionManager::onInboundMessage(const ActiveMQ::Queues::Inbound
 {
     if( const cms::BytesMessage *bytesMessage = dynamic_cast<const cms::BytesMessage *>(message) )
     {
-        MessageDescriptor md;
+        auto md = std::make_unique<MessageDescriptor>();
 
-        md.type    = bytesMessage->getCMSType();
-        md.replyTo = bytesMessage->getCMSReplyTo();
+        md->type    = bytesMessage->getCMSType();
+        md->replyTo = bytesMessage->getCMSReplyTo()->clone();
 
-        md.msg.resize(bytesMessage->getBodyLength());
+        md->msg.resize(bytesMessage->getBodyLength());
 
-        bytesMessage->readBytes(md.msg);
-
-        {
-            CtiLockGuard<CtiCriticalSection> lock(_newIncomingMessagesMux);
-
-            _newIncomingMessages[queue].push_back(md);
-        }
+        bytesMessage->readBytes(md->msg);
 
         if( debugActivityInfo() )
         {
             CTILOG_DEBUG(dout, "Received inbound message for queue \"" << queue->name << "\" id " << reinterpret_cast<unsigned long>(queue) << std::endl
-                    << reinterpret_cast<unsigned long>(queue) << ": " << md.msg);
+                << reinterpret_cast<unsigned long>(queue) << ": " << md->msg);
+        }
+
+        {
+            CtiLockGuard<CtiCriticalSection> lock(_newIncomingMessagesMux);
+
+            _newIncomingMessages[queue].emplace_back(std::move(md));
         }
     }
 }
@@ -679,24 +677,24 @@ void ActiveMQConnectionManager::onTempQueueReply(const cms::Message *message)
     {
         if( const cms::Destination *dest = message->getCMSDestination() )
         {
-            MessageDescriptor md;
+            auto md = std::make_unique<MessageDescriptor>();
 
-            md.type = bytesMessage->getCMSType();
+            md->type = bytesMessage->getCMSType();
 
-            md.msg.resize(bytesMessage->getBodyLength());
+            md->msg.resize(bytesMessage->getBodyLength());
 
-            bytesMessage->readBytes(md.msg);
-
-            {
-                CtiLockGuard<CtiCriticalSection> lock(_tempQueueRepliesMux);
-
-                _tempQueueReplies[ActiveMQ::destPhysicalName(*dest)] = md;
-            }
+            bytesMessage->readBytes(md->msg);
 
             if( debugActivityInfo() )
             {
                 CTILOG_DEBUG(dout, "Received temp queue reply for \"" << ActiveMQ::destPhysicalName(*dest) << "\"" << std::endl
-                        << ActiveMQ::destPhysicalName(*dest) << ": " << md.msg);
+                    << ActiveMQ::destPhysicalName(*dest) << ": " << md->msg);
+            }
+
+            {
+                CtiLockGuard<CtiCriticalSection> lock(_tempQueueRepliesMux);
+
+                _tempQueueReplies.emplace(ActiveMQ::destPhysicalName(*dest), std::move(md));
             }
         }
     }

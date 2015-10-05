@@ -13,10 +13,10 @@ namespace Messaging {
 namespace Serialization {
 
 template<>
-boost::optional<Porter::PorterDynamicPaoInfoRequestMsg> MessageSerializer<Porter::PorterDynamicPaoInfoRequestMsg>::deserialize(const ActiveMQConnectionManager::SerializedMessage &msg);
+boost::optional<Porter::DynamicPaoInfoRequestMsg> MessageSerializer<Porter::DynamicPaoInfoRequestMsg>::deserialize(const ActiveMQConnectionManager::SerializedMessage &msg);
 
 template<>
-ActiveMQConnectionManager::SerializedMessage MessageSerializer<Porter::PorterDynamicPaoInfoResponseMsg>::serialize(const Porter::PorterDynamicPaoInfoResponseMsg &msg);
+ActiveMQConnectionManager::SerializedMessage MessageSerializer<Porter::DynamicPaoInfoResponseMsg>::serialize(const Porter::DynamicPaoInfoResponseMsg &msg);
 
 }
 }
