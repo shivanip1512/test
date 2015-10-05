@@ -169,33 +169,7 @@ public class GatewaySettingsController {
         try {
             
             RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(id);
-            
-            GatewaySettings settings = new GatewaySettings();
-            settings.setId(id);
-            settings.setName(gateway.getName());
-            settings.setIpAddress(gateway.getData().getIpAddress());
-            settings.setAdmin(gateway.getData().getAdmin());
-            settings.setSuperAdmin(gateway.getData().getSuperAdmin());
-            if (gateway.getLocation() != null) {
-                settings.setLatitude(gateway.getLocation().getLatitude());
-                settings.setLongitude(gateway.getLocation().getLongitude());
-            }
-            
-            
-            if(nmConfigurationService.isFirmwareUpdateSupported()) {
-
-                String defaultUpdateServer = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
-
-                model.addAttribute("defaultUpdateServer", defaultUpdateServer);
-
-                String updateServerUrl = gateway.getData().getUpdateServerUrl();
-                settings.setUpdateServerUrl(updateServerUrl);
-                settings.setUpdateServerLogin(gateway.getData().getUpdateServerLogin());
-
-                if(StringUtils.isBlank(updateServerUrl) || updateServerUrl.equals(defaultUpdateServer)) {
-                    settings.setUseDefault(true);
-                }
-            }
+            GatewaySettings settings = rfnGatewayService.gatewayAsSettings(gateway);
             model.addAttribute("settings", settings);
             
         } catch (NmCommunicationException e) {

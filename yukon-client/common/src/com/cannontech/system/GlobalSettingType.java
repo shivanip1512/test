@@ -180,7 +180,8 @@ public enum GlobalSettingType implements DisplayableEnum {
     }
 
     public boolean isSensitiveInformation() {
-        return this == ECOBEE_PASSWORD || this == ECOBEE_USERNAME;
+        return this == ECOBEE_PASSWORD || this == ECOBEE_USERNAME 
+                || this == RFN_FIRMWARE_UPDATE_SERVER_USER || this == RFN_FIRMWARE_UPDATE_SERVER_PASSWORD;
     }
 
     public Object getDefaultValue() {
