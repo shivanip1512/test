@@ -9,7 +9,7 @@
 
 #include "PorterDynamicPaoInfo_types.h"
 
-namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift {
+namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift { namespace Porter {
 
 class PorterDynamicPaoInfoConstants {
  public:
@@ -19,6 +19,6 @@ class PorterDynamicPaoInfoConstants {
 
 extern const PorterDynamicPaoInfoConstants g_PorterDynamicPaoInfo_constants;
 
-}}}} // namespace
+}}}}} // namespace
 
 #endif

@@ -1,23 +1,22 @@
-namespace cpp Cti.Messaging.Serialization.Thrift
-namespace java com.cannontech.messaging.serialization.thrift.generated
+namespace cpp Cti.Messaging.Serialization.Thrift.Porter
+namespace java com.cannontech.messaging.serialization.thrift.generated.porter
 
-enum DynamicPaoInfoKeys {
-    RFN_VOLTAGE_PROFILE_ENABLED_UNTIL,
+enum DynamicPaoInfoDurationKeys {
     RFN_VOLTAGE_PROFILE_INTERVAL
 }
 
-struct PorterDynamicPaoInfoRequest {
-    1: required  i32                     _deviceId;
-    2: required  set<DynamicPaoInfoKeys> _keys;
+enum DynamicPaoInfoTimestampKeys {
+    RFN_VOLTAGE_PROFILE_ENABLED_UNTIL
 }
 
-union DynamicPaoInfoTypes {
-    1: i64    _integer;
-    2: i64    _time;
-    3: string _string;
+struct DynamicPaoInfoRequest {
+    1: required  i32 _deviceId;
+    2: required  set<DynamicPaoInfoDurationKeys> _durationKeys;
+    3: required  set<DynamicPaoInfoTimestampKeys> _timestampKeys;
 }
 
-struct PorterDynamicPaoInfoResponse {
-    1: required  i32                 _deviceId;
-    2: required  map<DynamicPaoInfoKeys, DynamicPaoInfoTypes> _values;
+struct DynamicPaoInfoResponse {
+    1: required  i32 _deviceId;
+    2: required  map<DynamicPaoInfoDurationKeys, i64> _durationValues;
+    3: required  map<DynamicPaoInfoTimestampKeys, i64> _timestampValues;
 }

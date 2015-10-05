@@ -6,12 +6,12 @@
  */
 #include "PorterDynamicPaoInfo_constants.h"
 
-namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift {
+namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift { namespace Porter {
 
 const PorterDynamicPaoInfoConstants g_PorterDynamicPaoInfo_constants;
 
 PorterDynamicPaoInfoConstants::PorterDynamicPaoInfoConstants() {
 }
 
-}}}} // namespace
+}}}}} // namespace
 

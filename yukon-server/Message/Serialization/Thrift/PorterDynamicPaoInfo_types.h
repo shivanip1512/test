@@ -14,164 +14,126 @@
 
 
 
-namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift {
+namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift { namespace Porter {
 
-struct DynamicPaoInfoKeys {
+struct DynamicPaoInfoDurationKeys {
   enum type {
-    RFN_VOLTAGE_PROFILE_ENABLED_UNTIL = 0,
-    RFN_VOLTAGE_PROFILE_INTERVAL = 1
+    RFN_VOLTAGE_PROFILE_INTERVAL = 0
   };
 };
 
-extern const std::map<int, const char*> _DynamicPaoInfoKeys_VALUES_TO_NAMES;
+extern const std::map<int, const char*> _DynamicPaoInfoDurationKeys_VALUES_TO_NAMES;
+
+struct DynamicPaoInfoTimestampKeys {
+  enum type {
+    RFN_VOLTAGE_PROFILE_ENABLED_UNTIL = 0
+  };
+};
+
+extern const std::map<int, const char*> _DynamicPaoInfoTimestampKeys_VALUES_TO_NAMES;
 
 
-class PorterDynamicPaoInfoRequest {
+class DynamicPaoInfoRequest {
  public:
 
-  static const char* ascii_fingerprint; // = "F9B4A81CD5E1E8D4CF8E0FCFA30AE942";
-  static const uint8_t binary_fingerprint[16]; // = {0xF9,0xB4,0xA8,0x1C,0xD5,0xE1,0xE8,0xD4,0xCF,0x8E,0x0F,0xCF,0xA3,0x0A,0xE9,0x42};
+  static const char* ascii_fingerprint; // = "46B35B53FBCDAE8AC0A7A2CC816D67AF";
+  static const uint8_t binary_fingerprint[16]; // = {0x46,0xB3,0x5B,0x53,0xFB,0xCD,0xAE,0x8A,0xC0,0xA7,0xA2,0xCC,0x81,0x6D,0x67,0xAF};
 
-  PorterDynamicPaoInfoRequest() : _deviceId(0) {
+  DynamicPaoInfoRequest() : _deviceId(0) {
   }
 
-  virtual ~PorterDynamicPaoInfoRequest() throw() {}
+  virtual ~DynamicPaoInfoRequest() throw() {}
 
   int32_t _deviceId;
-  std::set<DynamicPaoInfoKeys::type>  _keys;
+  std::set<DynamicPaoInfoDurationKeys::type>  _durationKeys;
+  std::set<DynamicPaoInfoTimestampKeys::type>  _timestampKeys;
 
   void __set__deviceId(const int32_t val) {
     _deviceId = val;
   }
 
-  void __set__keys(const std::set<DynamicPaoInfoKeys::type> & val) {
-    _keys = val;
+  void __set__durationKeys(const std::set<DynamicPaoInfoDurationKeys::type> & val) {
+    _durationKeys = val;
   }
 
-  bool operator == (const PorterDynamicPaoInfoRequest & rhs) const
+  void __set__timestampKeys(const std::set<DynamicPaoInfoTimestampKeys::type> & val) {
+    _timestampKeys = val;
+  }
+
+  bool operator == (const DynamicPaoInfoRequest & rhs) const
   {
     if (!(_deviceId == rhs._deviceId))
       return false;
-    if (!(_keys == rhs._keys))
+    if (!(_durationKeys == rhs._durationKeys))
+      return false;
+    if (!(_timestampKeys == rhs._timestampKeys))
       return false;
     return true;
   }
-  bool operator != (const PorterDynamicPaoInfoRequest &rhs) const {
+  bool operator != (const DynamicPaoInfoRequest &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const PorterDynamicPaoInfoRequest & ) const;
+  bool operator < (const DynamicPaoInfoRequest & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-void swap(PorterDynamicPaoInfoRequest &a, PorterDynamicPaoInfoRequest &b);
+void swap(DynamicPaoInfoRequest &a, DynamicPaoInfoRequest &b);
 
-typedef struct _DynamicPaoInfoTypes__isset {
-  _DynamicPaoInfoTypes__isset() : _integer(false), _time(false), _string(false) {}
-  bool _integer;
-  bool _time;
-  bool _string;
-} _DynamicPaoInfoTypes__isset;
 
-class DynamicPaoInfoTypes {
+class DynamicPaoInfoResponse {
  public:
 
-  static const char* ascii_fingerprint; // = "6B0CD68886A371B59CE1B9EDCF067801";
-  static const uint8_t binary_fingerprint[16]; // = {0x6B,0x0C,0xD6,0x88,0x86,0xA3,0x71,0xB5,0x9C,0xE1,0xB9,0xED,0xCF,0x06,0x78,0x01};
+  static const char* ascii_fingerprint; // = "4D6599A199A14163B012BF568AC0652E";
+  static const uint8_t binary_fingerprint[16]; // = {0x4D,0x65,0x99,0xA1,0x99,0xA1,0x41,0x63,0xB0,0x12,0xBF,0x56,0x8A,0xC0,0x65,0x2E};
 
-  DynamicPaoInfoTypes() : _integer(0), _time(0), _string() {
+  DynamicPaoInfoResponse() : _deviceId(0) {
   }
 
-  virtual ~DynamicPaoInfoTypes() throw() {}
-
-  int64_t _integer;
-  int64_t _time;
-  std::string _string;
-
-  _DynamicPaoInfoTypes__isset __isset;
-
-  void __set__integer(const int64_t val) {
-    _integer = val;
-  }
-
-  void __set__time(const int64_t val) {
-    _time = val;
-  }
-
-  void __set__string(const std::string& val) {
-    _string = val;
-  }
-
-  bool operator == (const DynamicPaoInfoTypes & rhs) const
-  {
-    if (!(_integer == rhs._integer))
-      return false;
-    if (!(_time == rhs._time))
-      return false;
-    if (!(_string == rhs._string))
-      return false;
-    return true;
-  }
-  bool operator != (const DynamicPaoInfoTypes &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const DynamicPaoInfoTypes & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-void swap(DynamicPaoInfoTypes &a, DynamicPaoInfoTypes &b);
-
-
-class PorterDynamicPaoInfoResponse {
- public:
-
-  static const char* ascii_fingerprint; // = "C1C5315A5265A115670B6428BCE8E830";
-  static const uint8_t binary_fingerprint[16]; // = {0xC1,0xC5,0x31,0x5A,0x52,0x65,0xA1,0x15,0x67,0x0B,0x64,0x28,0xBC,0xE8,0xE8,0x30};
-
-  PorterDynamicPaoInfoResponse() : _deviceId(0) {
-  }
-
-  virtual ~PorterDynamicPaoInfoResponse() throw() {}
+  virtual ~DynamicPaoInfoResponse() throw() {}
 
   int32_t _deviceId;
-  std::map<DynamicPaoInfoKeys::type, DynamicPaoInfoTypes>  _values;
+  std::map<DynamicPaoInfoDurationKeys::type, int64_t>  _durationValues;
+  std::map<DynamicPaoInfoTimestampKeys::type, int64_t>  _timestampValues;
 
   void __set__deviceId(const int32_t val) {
     _deviceId = val;
   }
 
-  void __set__values(const std::map<DynamicPaoInfoKeys::type, DynamicPaoInfoTypes> & val) {
-    _values = val;
+  void __set__durationValues(const std::map<DynamicPaoInfoDurationKeys::type, int64_t> & val) {
+    _durationValues = val;
   }
 
-  bool operator == (const PorterDynamicPaoInfoResponse & rhs) const
+  void __set__timestampValues(const std::map<DynamicPaoInfoTimestampKeys::type, int64_t> & val) {
+    _timestampValues = val;
+  }
+
+  bool operator == (const DynamicPaoInfoResponse & rhs) const
   {
     if (!(_deviceId == rhs._deviceId))
       return false;
-    if (!(_values == rhs._values))
+    if (!(_durationValues == rhs._durationValues))
+      return false;
+    if (!(_timestampValues == rhs._timestampValues))
       return false;
     return true;
   }
-  bool operator != (const PorterDynamicPaoInfoResponse &rhs) const {
+  bool operator != (const DynamicPaoInfoResponse &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const PorterDynamicPaoInfoResponse & ) const;
+  bool operator < (const DynamicPaoInfoResponse & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-void swap(PorterDynamicPaoInfoResponse &a, PorterDynamicPaoInfoResponse &b);
+void swap(DynamicPaoInfoResponse &a, DynamicPaoInfoResponse &b);
 
-}}}} // namespace
+}}}}} // namespace
 
 #endif

@@ -4,20 +4,19 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-package com.cannontech.messaging.serialization.thrift.generated;
+package com.cannontech.messaging.serialization.thrift.generated.porter;
 
 
 import java.util.Map;
 import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
-public enum DynamicPaoInfoKeys implements org.apache.thrift.TEnum {
-  RFN_VOLTAGE_PROFILE_ENABLED_UNTIL(0),
-  RFN_VOLTAGE_PROFILE_INTERVAL(1);
+public enum DynamicPaoInfoDurationKeys implements org.apache.thrift.TEnum {
+  RFN_VOLTAGE_PROFILE_INTERVAL(0);
 
   private final int value;
 
-  private DynamicPaoInfoKeys(int value) {
+  private DynamicPaoInfoDurationKeys(int value) {
     this.value = value;
   }
 
@@ -32,11 +31,9 @@ public enum DynamicPaoInfoKeys implements org.apache.thrift.TEnum {
    * Find a the enum type by its integer value, as defined in the Thrift IDL.
    * @return null if the value is not found.
    */
-  public static DynamicPaoInfoKeys findByValue(int value) { 
+  public static DynamicPaoInfoDurationKeys findByValue(int value) { 
     switch (value) {
       case 0:
-        return RFN_VOLTAGE_PROFILE_ENABLED_UNTIL;
-      case 1:
         return RFN_VOLTAGE_PROFILE_INTERVAL;
       default:
         return null;
