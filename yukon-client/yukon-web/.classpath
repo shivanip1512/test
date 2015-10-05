@@ -66,10 +66,6 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/dev/apps/workspaces/trunk/third-party/yuicompressor-2.4.8.jar" sourcepath="C:/dev/third-party sources/yuicompressor-master_with_rhino_fix/yuicompressor-master/src">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/C:/dev/third-party%20sources/yuicompressor-master_with_rhino_fix/yuicompressor-master/src/"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/yuicompressor-2.4.8.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
