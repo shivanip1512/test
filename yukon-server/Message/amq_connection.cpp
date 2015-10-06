@@ -649,8 +649,12 @@ void ActiveMQConnectionManager::onInboundMessage(const ActiveMQ::Queues::Inbound
     {
         auto md = std::make_unique<MessageDescriptor>();
 
-        md->type    = bytesMessage->getCMSType();
-        md->replyTo = bytesMessage->getCMSReplyTo()->clone();
+        md->type = bytesMessage->getCMSType();
+
+        if( auto cmsReplyTo = bytesMessage->getCMSReplyTo() )
+        {
+            md->replyTo = cmsReplyTo->clone();
+        }
 
         md->msg.resize(bytesMessage->getBodyLength());
 
