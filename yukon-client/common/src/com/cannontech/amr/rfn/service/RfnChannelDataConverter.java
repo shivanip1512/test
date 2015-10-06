@@ -127,7 +127,13 @@ public class RfnChannelDataConverter {
     }
 
     static PointData setMustArchive(PointValueQualityHolder pvqh) {
-        PointData pointData = PointData.of(pvqh);
+        PointData pointData;
+        
+        if (pvqh instanceof PointData) {
+            pointData = (PointData)pvqh;
+        } else {
+            pointData = PointData.of(pvqh);
+        }
         
         pointData.setTagsPointMustArchive(true); // temporary solution
         
