@@ -162,7 +162,7 @@ INSERT INTO DeviceConfigCategoryItem
        60
     FROM (
        SELECT ROW_NUMBER() OVER (ORDER BY DeviceConfigCategoryId) as RowNum, 
-             DeviceConfigCategoryId
+              DeviceConfigCategoryId
        FROM DeviceConfigCategory 
        WHERE CategoryType = 'rfnVoltage') T;
 
@@ -198,6 +198,20 @@ AND DeviceConfigCategoryId IN (
     FROM DeviceConfigCategory
     WHERE CategoryType = 'profile');
 /* End YUK-14624 */
+
+/* Start YUK-14684 */
+INSERT INTO DeviceConfigCategoryItem
+    SELECT
+       (SELECT ISNULL(MAX(DeviceConfigCategoryItemId) + T.RowNum, 0) AS Id FROM DeviceConfigCategoryItem),
+       T.DeviceConfigCategoryId,
+       'voltageDataStreamingIntervalMinutes',
+       5
+    FROM (
+       SELECT ROW_NUMBER() OVER (ORDER BY DeviceConfigCategoryId) as RowNum, 
+              DeviceConfigCategoryId
+       FROM DeviceConfigCategory 
+       WHERE CategoryType = 'rfnChannelConfiguration') T;
+/* End YUK-14684 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

@@ -218,6 +218,26 @@ AND DeviceConfigCategoryId IN (
     WHERE CategoryType = 'profile');
 /* End YUK-14624 */
 
+/* Start YUK-14684 */
+INSERT INTO DeviceConfigCategoryItem
+    SELECT MaxDeviceConfigCategoryItemId + ROWNUM,
+        DeviceConfigCategoryId,
+        Name,
+        Value
+    FROM (
+        SELECT
+           (SELECT NVL(MAX(DeviceConfigCategoryItemId), 0) AS Id FROM DeviceConfigCategoryItem) AS MaxDeviceConfigCategoryItemId,
+           ROWNUM,
+           T.DeviceConfigCategoryId AS DeviceConfigCategoryId,
+           'voltageDataStreamingIntervalMinutes' AS Name,
+           5 AS Value
+        FROM (
+           SELECT DeviceConfigCategoryId
+           FROM DeviceConfigCategory 
+           WHERE CategoryType = 'rfnChannelConfiguration') T
+    ) U;
+/* End YUK-14684 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
