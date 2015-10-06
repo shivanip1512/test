@@ -1122,5 +1122,134 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_disco
     BOOST_CHECK_EQUAL_RANGES( returnExpectMoreRcv, returnExpectMoreExp );
 }
 
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_voltage_profile )
+{
+    test_RfnResidentialVoltageDevice    dut;
+
+    CtiCommandParser parse("putconfig emetcon voltage profile demandinterval 17 lpinterval 34");
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+    BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
+
+    {
+        const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       202 );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Invalid command." );
+    }
+}
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_voltage_profile_enable )
+{
+    test_RfnResidentialVoltageDevice    dut;
+
+    CtiCommandParser parse("putconfig emetcon voltage profile enable");
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+    BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+
+    {
+        const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+    }
+
+    {
+        Commands::RfnCommandSPtr command = rfnRequests.front();
+
+        Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+        std::vector<unsigned char> exp
+        {
+            0x68, 0x03, 0x00
+        };
+
+        BOOST_CHECK_EQUAL_RANGES( rcv, exp );
+    }
+}
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_voltage_profile_disable )
+{
+    test_RfnResidentialVoltageDevice    dut;
+
+    CtiCommandParser parse("putconfig emetcon voltage profile disable");
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+    BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+
+    {
+        const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+    }
+
+    {
+        Commands::RfnCommandSPtr command = rfnRequests.front();
+
+        Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+        std::vector<unsigned char> exp
+        {
+            0x68, 0x02, 0x00
+        };
+
+        BOOST_CHECK_EQUAL_RANGES( rcv, exp );
+    }
+}
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_getconfig_voltage_profile )
+{
+    test_RfnResidentialVoltageDevice    dut;
+
+    CtiCommandParser parse("getconfig voltage profile");
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+    BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
+
+    {
+        const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       202 );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Invalid command." );
+    }
+}
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_getvalue_voltage_profile_state )
+{
+    test_RfnResidentialVoltageDevice    dut;
+
+    CtiCommandParser parse("getconfig voltage profile state");
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+    BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+
+    {
+        const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+    }
+
+    {
+        Commands::RfnCommandSPtr command = rfnRequests.front();
+
+        Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+        std::vector<unsigned char> exp
+        {
+            0x68, 0x04, 0x00
+        };
+
+        BOOST_CHECK_EQUAL_RANGES( rcv, exp );
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 

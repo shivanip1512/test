@@ -32,6 +32,10 @@ protected:
     void handleCommandResult( const Commands::RfnSetOvUvSetOverVoltageThresholdCommand  & cmd ) override;
     void handleCommandResult( const Commands::RfnSetOvUvSetUnderVoltageThresholdCommand & cmd ) override;
 
+    YukonError_t executeGetConfigVoltageProfile           (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
+    YukonError_t executePutConfigVoltageProfile           (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
+    YukonError_t executeGetValueVoltageProfile            (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
+
 public:
 
     RfnResidentialVoltageDevice() {};

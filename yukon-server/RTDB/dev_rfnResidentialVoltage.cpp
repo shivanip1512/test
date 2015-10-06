@@ -20,6 +20,31 @@ namespace Devices   {
 namespace   // anonymous
 {
 
+/**
+ * create CtiDate object from string "mm/dd/yyyy"
+ */
+CtiDate getDateFromString( std::string date )
+{
+    int month, day, year;
+    char sep1, sep2;
+
+    std::istringstream ss(date);
+    ss >> month >> sep1 >> day >> sep2 >> year;
+
+    return CtiDate(day, month, year);
+}
+
+unsigned getSecondsFromTimeString( std::string time )
+{
+    int hour, minute;
+    char sep;
+
+    std::istringstream ss(time);
+    ss >> hour >> sep >> minute;
+
+    return hour * 3600 + minute * 60;
+}
+
 Commands::RfnOvUvConfigurationCommand::MeterID getMeterIdForDeviceType( const int deviceType )
 {
     static const std::map<int, Commands::RfnOvUvConfigurationCommand::MeterID> DeviceTypeToMeterId
@@ -403,6 +428,111 @@ void RfnResidentialVoltageDevice::handleCommandResult( const Commands::RfnSetOvU
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_UvThreshold, cmd.uvThresholdValue );
 }
 
+YukonError_t RfnResidentialVoltageDevice::executePutConfigVoltageProfile( CtiRequestMsg     * pReq,
+                                                                          CtiCommandParser  & parse,
+                                                                          ReturnMsgList     & returnMsgs,
+                                                                          RfnCommandList    & rfnRequests )
+{
+    // putconfig voltage profile enable|disable
+
+    using Commands::RfnLoadProfileSetRecordingCommand;
+
+    //
+    // enable|disable recording
+    //
+
+    if( parse.isKeyValid("voltage_profile_enable") )
+    {
+        RfnLoadProfileSetRecordingCommand::RecordingOption option = (parse.getiValue("voltage_profile_enable")) ? RfnLoadProfileSetRecordingCommand::EnableRecording
+                                                                                                                : RfnLoadProfileSetRecordingCommand::DisableRecording;
+
+        rfnRequests.push_back( boost::make_shared<RfnLoadProfileSetRecordingCommand>( option ));
+
+        return ClientErrors::None;
+    }
+
+    return ClientErrors::NoMethod;
+}
+
+YukonError_t RfnResidentialVoltageDevice::executeGetConfigVoltageProfile( CtiRequestMsg     * pReq,
+                                                                          CtiCommandParser  & parse,
+                                                                          ReturnMsgList     & returnMsgs,
+                                                                          RfnCommandList    & rfnRequests )
+{
+    // getconfig voltage profile state
+
+    using Commands::RfnLoadProfileGetRecordingCommand;
+
+    if( parse.isKeyValid("voltage_profile_state") )
+    {
+        rfnRequests.push_back( boost::make_shared<RfnLoadProfileGetRecordingCommand>());
+
+        return ClientErrors::None;
+    }
+
+    return ClientErrors::NoMethod;
+}
+
+YukonError_t RfnResidentialVoltageDevice::executeGetValueVoltageProfile( CtiRequestMsg     * pReq,
+                                                                         CtiCommandParser  & parse,
+                                                                         ReturnMsgList     & returnMsgs,
+                                                                         RfnCommandList    & rfnRequests )
+{
+    // getvalue voltage profile 12/13/2005 12/15/2005
+
+    using Commands::RfnLoadProfileReadPointsCommand;
+
+    //
+    // date begin
+    //
+
+    CtiDate date_begin;
+
+    if( const boost::optional<std::string> dateStr = parse.findStringForKey("read_points_date_begin") )
+    {
+        date_begin = getDateFromString( *dateStr );
+    }
+    else
+    {
+        CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - Missing voltage profile start date");
+
+        return ClientErrors::MissingParameter;
+    }
+
+    CtiTime begin = date_begin;
+
+    if( const boost::optional<std::string> timeStr = parse.findStringForKey("read_points_time_begin") )
+    {
+        begin += getSecondsFromTimeString(*timeStr);
+    }
+
+    //
+    // date end
+    //
+
+    CtiTime end = date_begin + 1;  //  If no end date provided, default to end of the requested day
+
+    if( const boost::optional<std::string> dateStr = parse.findStringForKey("read_points_date_end") )
+    {
+        CtiDate date_end = getDateFromString(*dateStr);
+
+        if( const boost::optional<std::string> timeStr = parse.findStringForKey("read_points_time_end") )
+        {
+            end = date_end;
+            end += getSecondsFromTimeString(*timeStr);
+        }
+        else
+        {
+            end = date_end + 1;
+        }
+    }
+
+    rfnRequests.push_back( boost::make_shared<RfnLoadProfileReadPointsCommand>( CtiTime::now(),
+                                                                                begin,
+                                                                                end ));
+
+    return ClientErrors::None;
+}
 
 }   // Devices
 }   // Cti

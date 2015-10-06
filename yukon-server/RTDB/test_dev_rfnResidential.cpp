@@ -1227,25 +1227,13 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_voltage_profile_enable )
 
     BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
-    BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+    BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
     {
         const CtiReturnMsg &returnMsg = returnMsgs.front();
 
-        BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
-        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
-    }
-
-    {
-        Commands::RfnCommandSPtr command = rfnRequests.front();
-
-        Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
-
-        std::vector<unsigned char> exp = boost::assign::list_of
-                ( 0x68 )( 0x03 )( 0x00 );
-
-        BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
-                                       exp.begin() , exp.end() );
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       202 );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Invalid command." );
     }
 }
 
@@ -1257,25 +1245,13 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_voltage_profile_disable 
 
     BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
-    BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+    BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
     {
         const CtiReturnMsg &returnMsg = returnMsgs.front();
 
-        BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
-        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
-    }
-
-    {
-        Commands::RfnCommandSPtr command = rfnRequests.front();
-
-        Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
-
-        std::vector<unsigned char> exp = boost::assign::list_of
-                ( 0x68 )( 0x02 )( 0x00 );
-
-        BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
-                                       exp.begin() , exp.end() );
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       202 );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Invalid command." );
     }
 }
 
@@ -1305,25 +1281,13 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getvalue_voltage_profile_state )
 
     BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
-    BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+    BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
     {
         const CtiReturnMsg &returnMsg = returnMsgs.front();
 
-        BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
-        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
-    }
-
-    {
-        Commands::RfnCommandSPtr command = rfnRequests.front();
-
-        Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
-
-        std::vector<unsigned char> exp = boost::assign::list_of
-                ( 0x68 )( 0x04 )( 0x00 );
-
-        BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
-                                       exp.begin() , exp.end() );
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       202 );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Invalid command." );
     }
 }
 
