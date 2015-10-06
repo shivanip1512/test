@@ -158,7 +158,7 @@ public class GatewayUpdateServerController {
      * @return
      */
     @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_VIEW)
-    @RequestMapping(value = "/gateways/retrieveRfnUpdateServerAvailableVersion", method = RequestMethod.GET)
+    @RequestMapping(value = "/gateways/retrieveRfnUpdateServerAvailableVersionForUpdateServer", method = RequestMethod.GET)
     public @ResponseBody Map<String, Object> retrieveRfnUpdateServerAvailableVersion(YukonUserContext userContext) {
         Map<String, Object> updateServerAvaailableVersionMap = new HashMap<String, Object>();
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
