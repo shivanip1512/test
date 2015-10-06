@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
+
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,9 +43,9 @@ import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
-import com.google.common.collect.ImmutableMap.Builder;
 
 @Controller
 @CheckRoleProperty({YukonRoleProperty.INFRASTRUCTURE_ADMIN, 
@@ -177,31 +178,6 @@ public class GatewayListController {
         }
         
         return json;
-    }
-
-    /**
-     * This method provides all update Server with their available version for existing gateways and
-     * uses listAllGatewaysWithUpdateServerAvailableVersion rfnGatewayservice
-     * 
-     * @param userContext
-     * @return
-     */
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_VIEW)
-    @RequestMapping(value = "/gateways/retrieveRfnUpdateServerAvailableVersion", method = RequestMethod.GET)
-    public @ResponseBody Map<String, Object> retrieveRfnUpdateServerAvailableVersion(YukonUserContext userContext) {
-        Map<String, Object> updateServerAvaailableVersionMap = new HashMap<String, Object>();
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        try {
-            updateServerAvaailableVersionMap = rfnGatewayService.listAllGatewaysWithUpdateServerAvailableVersion();
-        } catch (NmCommunicationException e) {
-            String errorMsg = accessor.getMessage(baseKey + "error.comm");
-            updateServerAvaailableVersionMap.put("success", false);
-            updateServerAvaailableVersionMap.put("message", errorMsg);
-            log.error("Failed communication with NM", e);
-            return updateServerAvaailableVersionMap;
-        }
-        updateServerAvaailableVersionMap.put("success", true);
-        return updateServerAvaailableVersionMap;
     }
 
     private static Comparator<CertificateUpdate> getTimestampComparator() {
