@@ -360,5 +360,11 @@
       <sequence>
         <table name="GatewayCertificateUpdateEntry" identitycolumn="EntryId" initsequence="true"/>
       </sequence>
+      <sequence>
+        <table name="GatewayFirmwareUpdate" identitycolumn="UpdateId" initsequence="true"/>
+      </sequence>
+      <sequence>
+        <table name="GatewayFirmwareUpdateEntry" identitycolumn="EntryId" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

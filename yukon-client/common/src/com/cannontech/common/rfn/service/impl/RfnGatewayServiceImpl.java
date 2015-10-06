@@ -129,17 +129,16 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     
     @PostConstruct
     public void init() {
-        updateRequestTemplate = new RequestReplyTemplateImpl<GatewayUpdateResponse>(gatewayUpdateRequestCparm, 
+        updateRequestTemplate = new RequestReplyTemplateImpl<>(gatewayUpdateRequestCparm, 
                 configSource, connectionFactory, gatewayUpdateRequestQueue, false);
-        actionRequestTemplate = new RequestReplyTemplateImpl<GatewayActionResponse>(gatewayActionRequestCparm,
+        actionRequestTemplate = new RequestReplyTemplateImpl<>(gatewayActionRequestCparm,
                 configSource, connectionFactory, gatewayActionRequestQueue, false);
         connectionTestRequestTemplate = 
-                new RequestReplyTemplateImpl<GatewayConnectionTestResponse>(gatewayActionRequestCparm, 
+                new RequestReplyTemplateImpl<>(gatewayActionRequestCparm, 
                 configSource, connectionFactory, gatewayActionRequestQueue, false);
         rfnUpdateServerAvailableVersionTemplate =
-                new RequestReplyTemplateImpl<RfnUpdateServerAvailableVersionResponse>(
-                    rfnUpdateServerAvailableVersionRequestCparm, configSource, connectionFactory, gatewayDataRequestQueue,
-                    false);
+                new RequestReplyTemplateImpl<>(rfnUpdateServerAvailableVersionRequestCparm, configSource, 
+                connectionFactory, gatewayDataRequestQueue, false);
     }
     
     @Override
@@ -589,7 +588,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     @Override
     public Map<String, Object> listAllGatewaysWithUpdateServerAvailableVersion() throws NmCommunicationException {
         Set<RfnGateway> gateways = getAllGateways();
-        Map<String, Object> updateServerAvaailableVersionMap = new HashMap<String, Object>();
+        Map<String, Object> updateServerAvailableVersionMap = new HashMap<String, Object>();
         // iterating all rfnGateways to set the RfnUpdateData with available version for the update server
         for (RfnGateway rfnGateway : gateways) {
             if (rfnGateway.getData() != null) {
@@ -605,12 +604,12 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
                         "Fetch Available Version for Update Server");
 
                 if (response != null && response.getResult() == RfnUpdateServerAvailableVersionResult.SUCCESS) {
-                    updateServerAvaailableVersionMap.put(rfnGatewayData.getUpdateServerUrl(),
+                    updateServerAvailableVersionMap.put(rfnGatewayData.getUpdateServerUrl(),
                         response.getAvailableVersion());
                 }
             }
         }
-        return updateServerAvaailableVersionMap;
+        return updateServerAvailableVersionMap;
     }
 
     /**

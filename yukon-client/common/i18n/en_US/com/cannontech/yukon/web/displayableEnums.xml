@@ -477,5 +477,24 @@
     <entry key="yukon.common.fdr.direction.SEND_FOR_CONTROL">Send for control</entry>
     <entry key="yukon.common.fdr.direction.LINK_STATUS">Link Status</entry>
     
-
+    <!-- RfnGatewayFirmwareUpdateSummary.RfnGatewayFirmwareUpdateSummaryStatus enum -->
+    <entry key="yukon.common.rfn.gatewayFirmwareUpdateSummary.IN_PROGRESS">In Progress</entry>
+    <entry key="yukon.common.rfn.gatewayFirmwareUpdateSummary.COMPLETE">Complete</entry>
+    
+    <!-- GatewayFirmwareUpdateStatus enum -->
+    <entry key="yukon.common.rfn.gatewayFirmwareUpdateStatus.STARTED">Started</entry>
+    <entry key="yukon.common.rfn.gatewayFirmwareUpdateStatus.TIMEOUT">Timeout</entry>
+    <entry key="yukon.common.rfn.gatewayFirmwareUpdateStatus.ACCEPTED">Accepted</entry>
+    <entry key="yukon.common.rfn.gatewayFirmwareUpdateStatus.REJECTED_UPDATE_IN_PROGRESS">Rejected: update in progress</entry>
+    <entry key="yukon.common.rfn.gatewayFirmwareUpdateStatus.REJECTED_BATTERY_ISSUE">Rejected: battery issue</entry>
+    <entry key="yukon.common.rfn.gatewayFirmwareUpdateStatus.VERSION_MISMATCH">Version mismatch</entry>
+    <entry key="yukon.common.rfn.gatewayFirmwareUpdateStatus.GENERAL_ERROR">General error</entry>
+    <entry key="yukon.common.rfn.gatewayFirmwareUpdateStatus.CONFIGURATION_PARSE_ERROR">Configuration parse error</entry>
+    <entry key="yukon.common.rfn.gatewayFirmwareUpdateStatus.FILE_IO_ERROR">File I/O error</entry>
+    <entry key="yukon.common.rfn.gatewayFirmwareUpdateStatus.NETWORK_FAILURE">Network failure</entry>
+    <entry key="yukon.common.rfn.gatewayFirmwareUpdateStatus.SSL_VERIFICATION_FAILURE">SSL verification failure</entry>
+    <entry key="yukon.common.rfn.gatewayFirmwareUpdateStatus.AUTHENTICATION_FAILURE">Authentication failure</entry>
+    <entry key="yukon.common.rfn.gatewayFirmwareUpdateStatus.PROTOCOL_ERROR">Protocol error</entry>
+    <entry key="yukon.common.rfn.gatewayFirmwareUpdateStatus.SERVER_ERROR">Server error</entry>
+    
 </properties>
