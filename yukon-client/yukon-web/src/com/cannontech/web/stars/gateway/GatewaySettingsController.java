@@ -1,7 +1,8 @@
 package com.cannontech.web.stars.gateway;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -10,7 +11,6 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,6 +40,7 @@ import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.NMConfigurationService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.JsonUtils;
+import com.cannontech.common.util.LazyList;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -58,8 +59,6 @@ import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.gateway.model.GatewaySettingsValidator;
 import com.cannontech.web.stars.gateway.model.Location;
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 @Controller
 @CheckRole(YukonRole.INVENTORY)
@@ -111,7 +110,7 @@ public class GatewaySettingsController {
             YukonUserContext userContext,
             HttpServletResponse resp,
             @ModelAttribute("settings") GatewaySettings settings,
-            BindingResult result) throws JsonGenerationException, JsonMappingException, IOException {
+            BindingResult result) {
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         
@@ -136,9 +135,8 @@ public class GatewaySettingsController {
             model.clear();
             Map<String, Object> json = new HashMap<>();
             json.put("gateway", gateway);
-            resp.setContentType("application/json");
-            JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
-            return null;
+
+            return JsonUtils.writeResponse(resp, json);
             
         } catch (NmCommunicationException e) {
             
@@ -179,6 +177,24 @@ public class GatewaySettingsController {
         return "gateways/settings.jsp";
     }
 
+    public static class GatewaySettingsList {
+        private List<GatewaySettings> list = LazyList.ofInstance(GatewaySettings.class);
+
+        public GatewaySettingsList() {}
+
+        public GatewaySettingsList(List<GatewaySettings> list) {
+            setList(list);
+        }
+
+        public List<GatewaySettings> getList() {
+            return list;
+        }
+
+        public void setList(List<GatewaySettings> list) {
+            this.list = list;
+        }
+    }
+
     @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
     @RequestMapping("/gateways/update-servers")
     public String editUpdateServers(ModelMap model) {
@@ -187,7 +203,7 @@ public class GatewaySettingsController {
 
         Set<RfnGateway> allGateways = rfnGatewayService.getAllGateways();
 
-        Set<GatewaySettings> allGatewaySettings = allGateways.stream()
+        List<GatewaySettings> allGatewaySettings = allGateways.stream()
             .map(new Function<RfnGateway, GatewaySettings>() {
 
                 @Override
@@ -195,16 +211,54 @@ public class GatewaySettingsController {
                     GatewaySettings settings = rfnGatewayService.gatewayAsSettings(gateway);
                     return settings;
                 }
-            }).collect(Collectors.toSet());
+            }).collect(Collectors.toList());
 
-        model.addAttribute("allSettings", allGatewaySettings);
+        model.addAttribute("allSettings", new GatewaySettingsList(allGatewaySettings));
 
         String defaultUpdateServer = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
 
         model.addAttribute("defaultUpdateServer", defaultUpdateServer);
 
-
         return "gateways/update-servers.jsp";
+    }
+
+    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
+    @RequestMapping(value="/gateways/update-servers", method=RequestMethod.POST)
+    public String saveUpdateServers(
+        ModelMap model,
+        HttpServletResponse resp,
+        @ModelAttribute("allSettings") GatewaySettingsList allSettings,
+        YukonUserContext userContext ) {
+
+        try {
+            List<GatewaySettings> gatewaySettings = allSettings.getList();
+
+            List<RfnGateway> gateways = new ArrayList<>();
+
+            for (GatewaySettings settings : gatewaySettings) {
+                RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(settings.getId());
+                gateway = gateway.withUpdateServer(settings);
+                gateways.add(gateway);
+            }
+
+            rfnGatewayService.updateGateways(gateways, userContext.getYukonUser());
+
+        } catch (NmCommunicationException e) {
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            model.addAttribute("mode", PageEditMode.EDIT);
+            String errorMsg = accessor.getMessage(baseKey + "error.comm");
+            model.addAttribute("errorMsg", errorMsg);
+
+            return "gateways/update-servers.jsp";
+        }
+
+        // Success
+        model.clear();
+        Map<String, Object> json = new HashMap<>();
+        json.put("success", true);
+        return JsonUtils.writeResponse(resp, json);
     }
 
     /** Update the gateway */
@@ -216,7 +270,7 @@ public class GatewaySettingsController {
             FlashScope flash,
             @PathVariable int id,
             @ModelAttribute("settings") GatewaySettings settings,
-            BindingResult result) throws JsonGenerationException, JsonMappingException, IOException {
+            BindingResult result) {
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         
@@ -278,13 +332,12 @@ public class GatewaySettingsController {
                 
                 // Success
                 model.clear();
+                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "detail.update.successful", settings.getName()));
                 Map<String, Object> json = new HashMap<>();
                 json.put("success", true);
-                resp.setContentType("application/json");
-                JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
-                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "detail.update.successful", settings.getName()));
-                
-                return null;
+
+                return JsonUtils.writeResponse(resp, json);
+
             } else {
                 resp.setStatus(HttpStatus.BAD_REQUEST.value());
                 model.addAttribute("mode", PageEditMode.EDIT);
@@ -325,8 +378,7 @@ public class GatewaySettingsController {
     @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_ADMIN)
     @RequestMapping("/gateways/{id}/schedule")
     public String schedule(HttpServletResponse resp, HttpServletRequest req, ModelMap model, FlashScope flash,
-            YukonUserContext userContext, @PathVariable int id, String uid) 
-            throws JsonGenerationException, JsonMappingException, IOException {
+            YukonUserContext userContext, @PathVariable int id, String uid) {
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         
@@ -337,14 +389,12 @@ public class GatewaySettingsController {
             
             // Success
             model.clear();
+            flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "detail.schedule.update.successful"));
             Map<String, Object> json = new HashMap<>();
             json.put("success", true);
-            resp.setContentType("application/json");
-            JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
-            flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "detail.schedule.update.successful"));
-            
-            return null;
-            
+
+            return JsonUtils.writeResponse(resp, json);
+
         } catch (CronException | NmCommunicationException e) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             model.addAttribute("id", id);
@@ -381,8 +431,7 @@ public class GatewaySettingsController {
     /** Set location. */ 
     @RequestMapping("/gateways/{id}/location")
     public String location(HttpServletResponse resp, ModelMap model, YukonUserContext userContext, FlashScope flash,
-            @PathVariable int id, @ModelAttribute Location location, BindingResult result)
-            throws JsonGenerationException, JsonMappingException, IOException {
+            @PathVariable int id, @ModelAttribute Location location, BindingResult result) {
         
         GatewaySettingsValidator.validateLocation(location.getLatitude(), location.getLongitude(), result);
         
@@ -397,13 +446,12 @@ public class GatewaySettingsController {
         
         // Success
         model.clear();
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "detail.location.update.successful"));
         Map<String, Object> json = new HashMap<>();
         json.put("success", true);
-        resp.setContentType("application/json");
-        JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
-        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "detail.location.update.successful"));
-        
-        return null;
+
+        return JsonUtils.writeResponse(resp, json);
+
     }
     
     /** Collect data popup. */

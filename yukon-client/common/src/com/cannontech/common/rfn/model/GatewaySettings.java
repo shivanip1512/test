@@ -38,7 +38,9 @@ public class GatewaySettings {
     
     @Override
     public String toString() {
-        return String.format("GatewaySettings [id=%s, name=%s, ipAddress=%s, admin=%s, superAdmin=%s, latitude=%s, longitude=%s]", id, name, ipAddress, admin, superAdmin, latitude, longitude);
+        return String.format(
+            "GatewaySettings [id=%s, name=%s, ipAddress=%s, admin=%s, superAdmin=%s, latitude=%s, longitude=%s, updateServerUrl=%s, updateServerLogin=%s, useDefault=%s]",
+            id, name, ipAddress, admin, superAdmin, latitude, longitude, updateServerUrl, updateServerLogin, useDefault);
     }
 
     @Override

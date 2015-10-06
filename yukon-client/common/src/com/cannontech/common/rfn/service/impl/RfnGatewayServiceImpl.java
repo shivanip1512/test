@@ -638,4 +638,12 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         return response;
     }
 
+    @Override
+    public void updateGateways(Iterable<RfnGateway> gateways, LiteYukonUser user) throws NmCommunicationException {
+
+        for (RfnGateway gateway : gateways) {
+            updateGateway(gateway, user);
+        }
+    }
+
 }

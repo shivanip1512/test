@@ -26,6 +26,7 @@
         data-dialog
         data-url="<cti:url value="/stars/gateways/update-servers"/>"
         data-title="<cti:msg2 key=".updateServer.set"/>"
+        data-event="yukon:assets:gateway:update-server:save"
         data-ok-text="<cti:msg2 key="components.button.save.label"/>">
     </div>
 </cti:checkGlobalRolesAndProperties>

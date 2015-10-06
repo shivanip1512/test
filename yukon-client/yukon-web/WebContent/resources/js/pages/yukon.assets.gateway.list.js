@@ -261,6 +261,35 @@ yukon.assets.gateway.list = (function () {
                 
             });
             
+            /** 'Save' button clicked on the set update servers popup. */
+            $(document).on('yukon:assets:gateway:update-server:save', function (ev) {
+
+                var btns = $('#firmware-upgrade-popup').closest('.ui-dialog').find('.ui-dialog-buttonset'),
+                    primary = btns.find('.js-primary-action'),
+                    secondary = btns.find('.js-secondary-action');
+
+                yukon.ui.busy(primary);
+                secondary.prop('disabled', true);
+
+                $('#firmware-upgrade-popup').find('.user-message').remove();
+
+                $('#update-servers-form').ajaxSubmit({
+                    success: function (result, status, xhr, $form) {
+
+                        $('#firmware-upgrade-popup').dialog('close');
+                        yukon.ui.alertSuccess('Update Servers Updated');
+
+                    },
+                    error: function (xhr, status, error, $form) {
+                        $('#firmware-upgrade-popup').html(xhr.responseText);
+                    },
+                    complete: function () {
+                        yukon.ui.unbusy(primary);
+                        secondary.prop('disabled', false);
+                    }
+                });
+            });
+
             _update();
             _updateCerts();
             

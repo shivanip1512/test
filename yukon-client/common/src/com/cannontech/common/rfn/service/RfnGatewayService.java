@@ -192,4 +192,5 @@ public interface RfnGatewayService {
      */
     Map<String, Object> listAllGatewaysWithUpdateServerAvailableVersion() throws NmCommunicationException;
 
+    void updateGateways(Iterable<RfnGateway> gateways, LiteYukonUser user) throws NmCommunicationException;
 }
