@@ -14,6 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
@@ -147,4 +149,30 @@ public class GatewayUpdateServerController {
         }
         return gatewaySettings;
     }
+    
+    /**
+     * This method provides all update Server with their available version for existing gateways and
+     * uses listAllGatewaysWithUpdateServerAvailableVersion rfnGatewayservice
+     * 
+     * @param userContext
+     * @return
+     */
+    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_VIEW)
+    @RequestMapping(value = "/gateways/retrieveRfnUpdateServerAvailableVersion", method = RequestMethod.GET)
+    public @ResponseBody Map<String, Object> retrieveRfnUpdateServerAvailableVersion(YukonUserContext userContext) {
+        Map<String, Object> updateServerAvaailableVersionMap = new HashMap<String, Object>();
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        try {
+            updateServerAvaailableVersionMap = rfnGatewayService.listAllGatewaysWithUpdateServerAvailableVersion();
+        } catch (NmCommunicationException e) {
+            String errorMsg = accessor.getMessage(baseKey + "error.comm");
+            updateServerAvaailableVersionMap.put("success", false);
+            updateServerAvaailableVersionMap.put("message", errorMsg);
+            log.error("Failed communication with NM", e);
+            return updateServerAvaailableVersionMap;
+        }
+        updateServerAvaailableVersionMap.put("success", true);
+        return updateServerAvaailableVersionMap;
+    }
+
 }

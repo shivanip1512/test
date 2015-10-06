@@ -178,7 +178,32 @@ public class GatewayListController {
         
         return json;
     }
-    
+
+    /**
+     * This method provides all update Server with their available version for existing gateways and
+     * uses listAllGatewaysWithUpdateServerAvailableVersion rfnGatewayservice
+     * 
+     * @param userContext
+     * @return
+     */
+    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_VIEW)
+    @RequestMapping(value = "/gateways/retrieveRfnUpdateServerAvailableVersion", method = RequestMethod.GET)
+    public @ResponseBody Map<String, Object> retrieveRfnUpdateServerAvailableVersion(YukonUserContext userContext) {
+        Map<String, Object> updateServerAvaailableVersionMap = new HashMap<String, Object>();
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        try {
+            updateServerAvaailableVersionMap = rfnGatewayService.listAllGatewaysWithUpdateServerAvailableVersion();
+        } catch (NmCommunicationException e) {
+            String errorMsg = accessor.getMessage(baseKey + "error.comm");
+            updateServerAvaailableVersionMap.put("success", false);
+            updateServerAvaailableVersionMap.put("message", errorMsg);
+            log.error("Failed communication with NM", e);
+            return updateServerAvaailableVersionMap;
+        }
+        updateServerAvaailableVersionMap.put("success", true);
+        return updateServerAvaailableVersionMap;
+    }
+
     private static Comparator<CertificateUpdate> getTimestampComparator() {
         Ordering<Instant> normalComparer = Ordering.natural();
         Ordering<CertificateUpdate> dateOrdering =

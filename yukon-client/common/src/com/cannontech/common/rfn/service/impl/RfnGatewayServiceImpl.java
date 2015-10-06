@@ -42,6 +42,9 @@ import com.cannontech.common.rfn.message.gateway.GatewayScheduleDeleteRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayScheduleRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResponse;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
+import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersionRequest;
+import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersionResponse;
+import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersionResult;
 import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.rfn.model.GatewayUpdateException;
 import com.cannontech.common.rfn.model.NmCommunicationException;
@@ -69,9 +72,12 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     
     private static final String gatewayUpdateRequestCparm = "RFN_GATEWAY_UPDATE_REQUEST";
     private static final String gatewayActionRequestCparm = "RFN_GATEWAY_ACTION_REQUEST";
-    
+    private static final String rfnUpdateServerAvailableVersionRequestCparm =
+        "RFN_UPDATE_SERVER_AVAILABLE_VERSION_REQUEST";
+
     private static final String gatewayUpdateRequestQueue = "yukon.qr.obj.common.rfn.GatewayUpdateRequest";
     private static final String gatewayActionRequestQueue = "yukon.qr.obj.common.rfn.GatewayActionRequest";
+    private static final String gatewayDataRequestQueue = "yukon.qr.obj.common.rfn.GatewayDataRequest";
     
     
     // Autowired in constructor
@@ -92,6 +98,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     private RequestReplyTemplate<GatewayUpdateResponse> updateRequestTemplate;
     private RequestReplyTemplate<GatewayActionResponse> actionRequestTemplate;
     private RequestReplyTemplate<GatewayConnectionTestResponse> connectionTestRequestTemplate;
+    private RequestReplyTemplate<RfnUpdateServerAvailableVersionResponse> rfnUpdateServerAvailableVersionTemplate;
     
     @Autowired
     public RfnGatewayServiceImpl(
@@ -129,6 +136,10 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         connectionTestRequestTemplate = 
                 new RequestReplyTemplateImpl<GatewayConnectionTestResponse>(gatewayActionRequestCparm, 
                 configSource, connectionFactory, gatewayActionRequestQueue, false);
+        rfnUpdateServerAvailableVersionTemplate =
+                new RequestReplyTemplateImpl<RfnUpdateServerAvailableVersionResponse>(
+                    rfnUpdateServerAvailableVersionRequestCparm, configSource, connectionFactory, gatewayDataRequestQueue,
+                    false);
     }
     
     @Override
@@ -574,4 +585,57 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
 
         return settings;
     }
+    
+    @Override
+    public Map<String, Object> listAllGatewaysWithUpdateServerAvailableVersion() throws NmCommunicationException {
+        Set<RfnGateway> gateways = getAllGateways();
+        Map<String, Object> updateServerAvaailableVersionMap = new HashMap<String, Object>();
+        // iterating all rfnGateways to set the RfnUpdateData with available version for the update server
+        for (RfnGateway rfnGateway : gateways) {
+            if (rfnGateway.getData() != null) {
+                RfnGatewayData rfnGatewayData = rfnGateway.getData();
+                RfnUpdateServerAvailableVersionRequest rfnUpdateServerAvailableVersionRequest =
+                    new RfnUpdateServerAvailableVersionRequest();
+                // setting update server to the rfnUpdateServerAvailableVersionRequest for which available
+                // version has to be fetched
+                rfnUpdateServerAvailableVersionRequest.setUpdateServerUrl(rfnGatewayData.getUpdateServerUrl());
+
+                RfnUpdateServerAvailableVersionResponse response =
+                    getUpdateServerAvailableVersionRequest(rfnUpdateServerAvailableVersionRequest,
+                        "Fetch Available Version for Update Server");
+
+                if (response != null && response.getResult() == RfnUpdateServerAvailableVersionResult.SUCCESS) {
+                    updateServerAvaailableVersionMap.put(rfnGatewayData.getUpdateServerUrl(),
+                        response.getAvailableVersion());
+                }
+            }
+        }
+        return updateServerAvaailableVersionMap;
+    }
+
+    /**
+     * This method communicates to the NM and fetches the available version for update server
+     * 
+     * @param request
+     * @param logActionString
+     * @return
+     * @throws NmCommunicationException
+     */
+    private RfnUpdateServerAvailableVersionResponse getUpdateServerAvailableVersionRequest(Serializable request,
+            String logActionString) throws NmCommunicationException {
+        RfnUpdateServerAvailableVersionResponse response = null;
+        BlockingJmsReplyHandler<RfnUpdateServerAvailableVersionResponse> replyHandler =
+            new BlockingJmsReplyHandler<>(RfnUpdateServerAvailableVersionResponse.class);
+        log.debug("Sending fetch request for UpdateServer's available version");
+        rfnUpdateServerAvailableVersionTemplate.send(request, replyHandler);
+        try {
+            response = replyHandler.waitForCompletion();
+            log.debug("Response = " + response.getResult());
+        } catch (ExecutionException e) {
+            throw new NmCommunicationException(logActionString
+                + "action failed due to communication error with Network Manager.", e);
+        }
+        return response;
+    }
+
 }
