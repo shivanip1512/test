@@ -47,6 +47,9 @@ public class ValmetSettings extends JFrame implements ActionListener
 	private JLabel defaultTrafficPath = new JLabel("src/main/resources/valmet_traffic_log.txt");
     private JLabel defaultPort = new JLabel("1666");
     private JLabel defaultExtendedName = new JLabel("Use Extended Name:");
+    private JLabel forceScanPointNameLabel= new JLabel("Force Scan Point:");
+    private JTextField forceScanPointNameField= new JTextField();
+    private JLabel defaultForceScanPoint= new JLabel("CP_SEND_ALL");
 
     private JCheckBox extendedNameCheckBox = new JCheckBox("ExtendedName", false);
 	private String name = null;
@@ -54,11 +57,11 @@ public class ValmetSettings extends JFrame implements ActionListener
 	private String trafficPath = null;
 	private String outPort = null;
 	private boolean extendedName = false;
-	private boolean set = false;
+	private String forceScanPointName;
+    private boolean set = false;
 	ImageIcon fde = new ImageIcon("src/main/resources/fdeicon.gif");
 	private RandomAccessFile settingsFile;
-
-	public ValmetSettings(String title, ValmetProtocol protocol)
+    public ValmetSettings(String title, ValmetProtocol protocol)
 	{
 		super("Valmet Settings");
 		proto = protocol;
@@ -99,13 +102,15 @@ public class ValmetSettings extends JFrame implements ActionListener
 					String pointpath = settingsFile.readLine().trim();
 					String trafficpath = settingsFile.readLine().trim();
 					String port = settingsFile.readLine().trim();
-	                String extendedNameSetting = settingsFile.readLine().trim();
+                    String extendedNameSetting = settingsFile.readLine().trim();
+                    String forceScanPointName = settingsFile.readLine().trim();
 
 					serverField.setText(primaryserver);
 					pathField.setText(pointpath);
 					trafficField.setText(trafficpath);
 					portField.setText(port);
 					extendedNameCheckBox.setSelected(extendedNameSetting.equalsIgnoreCase("Y"));
+                    forceScanPointNameField.setText(forceScanPointName);
 					
 					exit = 1;
 				}
@@ -134,7 +139,9 @@ public class ValmetSettings extends JFrame implements ActionListener
 		String primaryserver = serverField.getText();
 		String pointpath = pathField.getText();
 		String trafficpath = trafficField.getText();
-		String port = portField.getText();
+        String port = portField.getText();
+        String forceScanPointName = forceScanPointNameField.getText();
+        
 		int exit = 0;
 		while (exit != 1)
 		{
@@ -174,6 +181,14 @@ public class ValmetSettings extends JFrame implements ActionListener
 					
 					settingsFile.writeBytes(extendedNameCheckBox.isSelected() ? "Y": "N");
                     settingsFile.writeBytes("\n");
+                    
+                    settingsFile.writeBytes(forceScanPointName);
+                    for (int i = 0; i < 100 - forceScanPointName.length(); i++)
+                    {
+                        settingsFile.writeBytes(" ");
+                    }
+                    settingsFile.writeBytes("\n");
+
                     exit = 1;
 				}
 			} catch (Exception e)
@@ -189,24 +204,28 @@ public class ValmetSettings extends JFrame implements ActionListener
 		notifier = new FDTestPanelNotifier(proto.getTestPanel());
 
 		this.getContentPane().setLayout(null);
-		this.setSize(450, 400);
+		this.setSize(600, 400);
 
 		okButton.setBounds(new Rectangle(140, 290, 50, 25));
 		cancelButton.setBounds(new Rectangle(200, 290, 80, 25));
-		serverLabel.setBounds(new Rectangle(10, 30, 90, 20));
-		pathLabel.setBounds(new Rectangle(10, 150, 90, 20));
-		trafficLabel.setBounds(new Rectangle(10, 180, 90, 20));
-        portLabel.setBounds(new Rectangle(10, 210, 90, 20));
-		serverField.setBounds(new Rectangle(110, 30, 170, 20));
-		defaultServer.setBounds(new Rectangle(290, 30, 90, 20));
-		pathField.setBounds(new Rectangle(110, 150, 170, 20));
-		defaultPointPath.setBounds(new Rectangle(290, 150, 140, 20));
-		trafficField.setBounds(new Rectangle(110, 180, 170, 20));
-		defaultTrafficPath.setBounds(new Rectangle(290, 180, 140, 20));
-		portField.setBounds(new Rectangle(110, 210, 170, 20));
-		defaultPort.setBounds(new Rectangle(290, 210, 90, 20));
-	    defaultExtendedName.setBounds(new Rectangle(10, 265, 90, 20));
-	    extendedNameCheckBox.setBounds(new Rectangle(110, 265, 20, 20));
+		serverLabel.setBounds(new Rectangle(10, 30, 140, 20));
+		pathLabel.setBounds(new Rectangle(10, 150, 140, 20));
+		trafficLabel.setBounds(new Rectangle(10, 180, 140, 20));
+        portLabel.setBounds(new Rectangle(10, 210, 140, 20));
+		serverField.setBounds(new Rectangle(140, 30, 200, 20));
+		defaultServer.setBounds(new Rectangle(350, 30, 170, 20));
+		pathField.setBounds(new Rectangle(140, 150, 200, 20));
+		defaultPointPath.setBounds(new Rectangle(350, 150, 170, 20));
+		trafficField.setBounds(new Rectangle(140, 180, 200, 20));
+		defaultTrafficPath.setBounds(new Rectangle(350, 180, 170, 20));
+		portField.setBounds(new Rectangle(140, 210, 200, 20));
+		defaultPort.setBounds(new Rectangle(350, 210, 170, 20));
+        forceScanPointNameLabel.setBounds(new Rectangle(10, 240, 140, 20));
+        forceScanPointNameField.setBounds(new Rectangle(140, 240, 200, 20));
+        defaultForceScanPoint.setBounds(new Rectangle(350, 240, 170, 20));
+	    defaultExtendedName.setBounds(new Rectangle(10, 265, 140, 20));
+	    extendedNameCheckBox.setBounds(new Rectangle(140, 265, 20, 20));
+	    
 		this.getContentPane().add(okButton, null);
 		this.getContentPane().add(cancelButton, null);
 		this.getContentPane().add(serverLabel, null);
@@ -222,6 +241,9 @@ public class ValmetSettings extends JFrame implements ActionListener
 		this.getContentPane().add(defaultTrafficPath, null);
         this.getContentPane().add(defaultPort, null);       
         this.getContentPane().add(defaultExtendedName, null);
+        this.getContentPane().add(forceScanPointNameLabel, null);
+        this.getContentPane().add(forceScanPointNameField, null);
+        this.getContentPane().add(defaultForceScanPoint, null);
         this.getContentPane().add(extendedNameCheckBox, null);
         
 		okButton.addActionListener(this);
@@ -247,6 +269,7 @@ public class ValmetSettings extends JFrame implements ActionListener
 		trafficPath = trafficField.getText();
 		outPort = portField.getText();
 	    extendedName = extendedNameCheckBox.isSelected();
+	    forceScanPointName = forceScanPointNameField.getText();
 		set = true;
 		saveSettings();
 		setVisible(false);
@@ -300,7 +323,11 @@ public class ValmetSettings extends JFrame implements ActionListener
 		return outPort;
 	}
 	
-	public void listenForActions(Observer o)
+	public String getForceScanPointName() {
+        return forceScanPointName;
+    }
+
+    public void listenForActions(Observer o)
 	{
 		notifier.addObserver(o);
 	}

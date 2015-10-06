@@ -802,7 +802,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
         byte[] time = new byte[2048];
         try {
             quit = 0;
-            // Read from Socket queue, close connection if excepiton occurs and reconnects
+            // Read from Socket queue, close connection if exception occurs and reconnects
             try {
                 hbyte = in.readUnsignedByte();
                 lbyte = in.readUnsignedByte();
@@ -971,7 +971,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
         return;
     }
 
-    // Write recieved message to point list file and traffic log file
+    // Write received message to point list file and traffic log file
     public void writeToFile(String ftype, String fname, double fpoint) {
 
         boolean newpoint = false;
@@ -1309,7 +1309,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
             out.writeShort(VALMET_FORCE_SCAN);
 
             out.writeBytes(getTimeStamp());
-            writeName(out, forceScanPointName);
+            writeName(out, settings.getForceScanPointName());
             out.writeShort(0);
             out.writeShort(0);
             out.writeShort(0);
