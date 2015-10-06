@@ -7,11 +7,11 @@ import org.apache.thrift.transport.TMemoryBuffer;
 
 import com.cannontech.messaging.serialization.SerializationException;
 
-/**
- * @param <T> Type to serialize
- */
 public abstract class SimpleThriftSerializer {
 
+    /**
+     * @param <T> Type to serialize
+     */
     public <T extends TBase<T, ?>> byte[] serialize(T msg) {
         TMemoryBuffer transport = ThriftMessageFactory.createDefaultMemoryBufferTransport();
         TProtocol protocol = ThriftMessageFactory.createDefaultProtocol(transport);

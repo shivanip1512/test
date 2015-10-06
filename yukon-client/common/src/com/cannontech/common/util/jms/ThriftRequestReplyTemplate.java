@@ -17,24 +17,24 @@ import org.springframework.jms.core.SessionCallback;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ExceptionHelper;
-import com.cannontech.messaging.serialization.thrift.ConvertFromThriftBytes;
-import com.cannontech.messaging.serialization.thrift.ConvertToThriftBytes;
+import com.cannontech.messaging.serialization.thrift.ThriftByteDeserializer;
+import com.cannontech.messaging.serialization.thrift.ThriftByteSerializer;
 
 public class ThriftRequestReplyTemplate<Q, R> {
     
     private static final Logger log = YukonLogManager.getLogger(ThriftRequestReplyTemplate.class);
-    private static final Duration timeout = new Duration(60 * 1000);  //  1 minute 
+    private static final Duration timeout = Duration.standardMinutes(1); 
 
-    private ConnectionFactory connectionFactory;
+    private JmsTemplate jmsTemplate;
     private String requestQueueName;
     
     //  @Autowired when we upgrade to Spring 4.0
-    private ConvertToThriftBytes<Q> requestSerializer;
-    private ConvertFromThriftBytes<R> replyDeserializer;
+    private ThriftByteSerializer<Q> requestSerializer;
+    private ThriftByteDeserializer<R> replyDeserializer;
     
     public ThriftRequestReplyTemplate(ConnectionFactory connectionFactory, String requestQueueName, 
-            ConvertToThriftBytes<Q> requestSerializer, ConvertFromThriftBytes<R> replyDeserializer) {
-        this.connectionFactory = connectionFactory;
+            ThriftByteSerializer<Q> requestSerializer, ThriftByteDeserializer<R> replyDeserializer) {
+        this.jmsTemplate = new JmsTemplate(connectionFactory);
         this.requestQueueName = requestQueueName;
         this.requestSerializer = requestSerializer;
         this.replyDeserializer = replyDeserializer;
@@ -42,8 +42,6 @@ public class ThriftRequestReplyTemplate<Q, R> {
     
     public void send(final Q requestPayload, final CompletableFuture<R> callback) {
         try {
-            JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
-
             log.trace("RequestReplyTemplateBase execute Start " + requestPayload.toString());
             jmsTemplate.execute(new SessionCallback<Object>() {
 

@@ -7,13 +7,13 @@ import java.util.stream.Collectors;
 import com.cannontech.message.porter.message.DynamicPaoInfoDurationKeyEnum;
 import com.cannontech.message.porter.message.DynamicPaoInfoRequest;
 import com.cannontech.message.porter.message.DynamicPaoInfoTimestampKeyEnum;
-import com.cannontech.messaging.serialization.thrift.ConvertToThriftBytes;
+import com.cannontech.messaging.serialization.thrift.ThriftByteSerializer;
 import com.cannontech.messaging.serialization.thrift.SimpleThriftSerializer;
 import com.cannontech.messaging.serialization.thrift.generated.porter.DynamicPaoInfoDurationKeys;
 import com.cannontech.messaging.serialization.thrift.generated.porter.DynamicPaoInfoTimestampKeys;
 import com.google.common.collect.ImmutableMap;
 
-public class DynamicPaoInfoRequestSerializer extends SimpleThriftSerializer implements ConvertToThriftBytes<DynamicPaoInfoRequest> {
+public class DynamicPaoInfoRequestSerializer extends SimpleThriftSerializer implements ThriftByteSerializer<DynamicPaoInfoRequest> {
 
     private static final ImmutableMap<DynamicPaoInfoDurationKeyEnum, DynamicPaoInfoDurationKeys> durationKeyMapping = ImmutableMap.of(
         DynamicPaoInfoDurationKeyEnum.RFN_VOLTAGE_PROFILE_INTERVAL, DynamicPaoInfoDurationKeys.RFN_VOLTAGE_PROFILE_INTERVAL);

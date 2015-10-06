@@ -11,13 +11,13 @@ import org.joda.time.Instant;
 import com.cannontech.message.porter.message.DynamicPaoInfoDurationKeyEnum;
 import com.cannontech.message.porter.message.DynamicPaoInfoResponse;
 import com.cannontech.message.porter.message.DynamicPaoInfoTimestampKeyEnum;
-import com.cannontech.messaging.serialization.thrift.ConvertFromThriftBytes;
+import com.cannontech.messaging.serialization.thrift.ThriftByteDeserializer;
 import com.cannontech.messaging.serialization.thrift.SimpleThriftSerializer;
 import com.cannontech.messaging.serialization.thrift.generated.porter.DynamicPaoInfoDurationKeys;
 import com.cannontech.messaging.serialization.thrift.generated.porter.DynamicPaoInfoTimestampKeys;
 import com.google.common.collect.ImmutableMap;
 
-public class DynamicPaoInfoResponseSerializer extends SimpleThriftSerializer implements ConvertFromThriftBytes<DynamicPaoInfoResponse> {
+public class DynamicPaoInfoResponseSerializer extends SimpleThriftSerializer implements ThriftByteDeserializer<DynamicPaoInfoResponse> {
 
     private static final ImmutableMap<DynamicPaoInfoDurationKeys, DynamicPaoInfoDurationKeyEnum> durationKeyMapping = ImmutableMap.of(
         DynamicPaoInfoDurationKeys.RFN_VOLTAGE_PROFILE_INTERVAL, DynamicPaoInfoDurationKeyEnum.RFN_VOLTAGE_PROFILE_INTERVAL);

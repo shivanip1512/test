@@ -7,11 +7,11 @@ import org.joda.time.Instant;
 
 public interface PorterDynamicPaoInfoService {
     
-    public class VoltageProfileDetails {
+    class VoltageProfileDetails {
         public Instant enabledUntil;
         public Duration profileInterval;
     }
     
-    public void getVoltageProfileDetails(int paoId, Consumer<VoltageProfileDetails> callback);
-    public VoltageProfileDetails getVoltageProfileDetails(int paoId);
+    void getVoltageProfileDetails(int paoId, Consumer<VoltageProfileDetails> callback);
+    VoltageProfileDetails getVoltageProfileDetails(int paoId);
 }
