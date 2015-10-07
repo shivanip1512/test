@@ -159,6 +159,7 @@ public class DataExporterScheduleController {
             exportData = new ScheduledFileExportData();
             cronTagState = new CronExpressionTagState();
             exportData.setNotificationEmailAddresses(contactDao.getUserEmail(userContext.getYukonUser()));
+            exportData.setJobState(JobState.SCHEDULED);
         }
 
         model.addAttribute("exportFormat", format);
