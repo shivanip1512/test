@@ -36,6 +36,9 @@ protected:
     YukonError_t executePutConfigVoltageProfile           (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
     YukonError_t executeGetValueVoltageProfile            (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
 
+    void handleCommandResult( const Commands::RfnLoadProfileGetRecordingCommand          & cmd ) override;
+    void handleCommandResult( const Commands::RfnLoadProfileSetRecordingCommand          & cmd ) override;
+
 public:
 
     RfnResidentialVoltageDevice() {};

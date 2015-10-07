@@ -1,7 +1,6 @@
 #pragma once
 
 #include "dev_rfnMeter.h"
-#include "cmd_rfn_LoadProfile.h"
 #include "cmd_rfn_DemandFreeze.h"
 #include "cmd_rfn_TouConfiguration.h"
 #include "cmd_rfn_RemoteDisconnect.h"
@@ -40,8 +39,6 @@ protected:
     YukonError_t executePutConfigDisconnect               (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
     YukonError_t executeGetConfigDisconnect               (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
 
-    void handleCommandResult( const Commands::RfnLoadProfileGetRecordingCommand          & cmd ) override;
-    void handleCommandResult( const Commands::RfnLoadProfileSetRecordingCommand          & cmd ) override;
     void handleCommandResult( const Commands::RfnGetDemandFreezeInfoCommand              & cmd ) override;
     void handleCommandResult( const Commands::RfnDemandFreezeConfigurationCommand        & cmd ) override;
     void handleCommandResult( const Commands::RfnTouScheduleGetConfigurationCommand      & cmd ) override;

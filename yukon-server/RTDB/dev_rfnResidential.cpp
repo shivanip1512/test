@@ -855,29 +855,6 @@ bool RfnResidentialDevice::disconnectConfigSupported() const
 }
 
 
-
-void RfnResidentialDevice::handleCommandResult( const Commands::RfnLoadProfileGetRecordingCommand & cmd )
-{
-    //  If it's enabled, we don't know when it will auto-disable...  but if it's disabled, clear it out
-    if( cmd.getRecordingOption() == Commands::RfnLoadProfileRecordingCommand::DisableRecording )
-    {
-        setDynamicInfo(
-                CtiTableDynamicPaoInfo::Key_RFN_VoltageProfileEnabledUntil,
-                CtiTime::not_a_time);
-    }
-}
-
-
-void RfnResidentialDevice::handleCommandResult(const Commands::RfnLoadProfileSetRecordingCommand & cmd)
-{
-    setDynamicInfo(
-            CtiTableDynamicPaoInfo::Key_RFN_VoltageProfileEnabledUntil,
-            cmd.recordingOption == Commands::RfnLoadProfileSetRecordingCommand::EnableRecording
-                ? (CtiTime::now() + 14 * 86400)
-                : CtiTime::not_a_time);
-}
-
-
 void RfnResidentialDevice::handleCommandResult( const Commands::RfnGetDemandFreezeInfoCommand & cmd )
 {
     Commands::RfnGetDemandFreezeInfoCommand::DemandFreezeData freezeData = cmd.getDemandFreezeData();
