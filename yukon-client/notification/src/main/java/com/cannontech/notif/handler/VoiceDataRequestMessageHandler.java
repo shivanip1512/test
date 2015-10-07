@@ -31,8 +31,9 @@ public class VoiceDataRequestMessageHandler implements MessageHandler<VoiceDataR
     public void handleMessage(NotifServerConnection connection,  Message message) {
         ServerRequestMsg req = (ServerRequestMsg) message;
         VoiceDataRequestMsg reqMsg = (VoiceDataRequestMsg) req.getPayload();
-        ServerResponseMsg responseMsg = req.createResponseMsg();
-        
+        VoiceDataResponseMsg rspPayload = null;
+        int status;
+        String messageString = null;
         try {
             Call call = voiceHandler.getCall(reqMsg.callToken);
             Notification notif = call.getMessage();
@@ -42,20 +43,23 @@ public class VoiceDataRequestMessageHandler implements MessageHandler<VoiceDataR
             StringWriter stringWriter = new StringWriter();
             out.output(xmlDoc.getRootElement(), stringWriter);
             
-            VoiceDataResponseMsg rspPayload = new VoiceDataResponseMsg();
+            rspPayload = new VoiceDataResponseMsg();
             rspPayload.callToken = reqMsg.callToken;
             rspPayload.xmlData = stringWriter.toString();
             rspPayload.contactId = call.getContactId();
             
-            responseMsg.setPayload(rspPayload);
-            responseMsg.setStatus(ServerResponseMsg.STATUS_OK);
-            connection.write(responseMsg);
+            status = ServerResponseMsg.STATUS_OK;
+            messageString = "Voice data send successfully";
             
         } catch (Exception e) {
             CTILogger.warn("Unable to return xml parameters for call (token=" + reqMsg.callToken + ")", e);
-            responseMsg.setStatus(ServerResponseMsg.STATUS_ERROR);
+            messageString = "Error while sending voice data";
+            status = ServerResponseMsg.STATUS_ERROR;
         }
-
+        ServerResponseMsg responseMsg = req.createResponseMsg(status, messageString);
+        if (status == 0) {
+            responseMsg.setPayload(rspPayload);
+        }
         connection.write(responseMsg);
     }
 

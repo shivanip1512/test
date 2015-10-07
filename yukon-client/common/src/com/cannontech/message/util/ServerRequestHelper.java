@@ -31,17 +31,7 @@ public class ServerRequestHelper {
         }
         return result;
     }
-    
-    public static void makeServerResponse(ClientConnection conn, 
-                                          ServerRequestMsg req,
-                                          Object payload) {
-        ServerResponseMsg responseMsg = req.createResponseMsg();
-        responseMsg.setPayload(payload);
-        responseMsg.setStatus(ServerResponseMsg.STATUS_OK);
-        conn.write(responseMsg);
-    }
-    
-    
+
     /**
      * Convenience method that calls makeServerRequest(conn, msg, 10000).
      * @param conn

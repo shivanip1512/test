@@ -30,10 +30,16 @@ public class EconomicEventDeleteMessageHandler implements MessageHandler<Economi
                                                              reqPayload.deleteStop);
         
         CollectableBoolean respPayload = new CollectableBoolean(success);
-        
-        ServerResponseMsg responseMsg = reqMsg.createResponseMsg();
+        String messageString = null;
+        if (respPayload.getValue()) {
+            messageString = "Economic Notification deleted succesfully";
+        } else {
+            messageString = "Could not delete Economic notification";
+        }
+
+        ServerResponseMsg responseMsg = reqMsg.createResponseMsg(ServerResponseMsg.STATUS_OK,
+                                                                 messageString);
         responseMsg.setPayload(respPayload);
-        responseMsg.setStatus(ServerResponseMsg.STATUS_OK);
         connection.write(responseMsg);
     }
 

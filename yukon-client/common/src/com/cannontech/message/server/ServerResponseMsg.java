@@ -40,11 +40,6 @@ public class ServerResponseMsg extends Message {
         setMessage( message );
     }
     
-    public ServerResponseMsg(int id)
-    {
-        _id = id;
-    }
-    
     public ServerResponseMsg() {
         
     }

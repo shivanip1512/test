@@ -56,8 +56,8 @@ public class ServerRequestMsg extends Message {
 		_payload = object;
 	}
     
-    public ServerResponseMsg createResponseMsg() {
-        ServerResponseMsg responseMsg = new ServerResponseMsg(getId());
+    public ServerResponseMsg createResponseMsg(int status, String message) {
+        ServerResponseMsg responseMsg = new ServerResponseMsg(getId(), status, message);
         return responseMsg;
     }
 }

@@ -33,10 +33,16 @@ public class CurtailmentEventDeleteMessageHandler implements MessageHandler<Curt
                                                              reqPayload.deleteStop);
         
         CollectableBoolean respPayload = new CollectableBoolean(success);
-        
-        ServerResponseMsg responseMsg = reqMsg.createResponseMsg();
+        String messageString = null;
+        if (respPayload.getValue()) {
+            messageString = "Event Notification deleted succesfully";
+        } else {
+            messageString = "Could not delete event notification";
+        }
+
+        ServerResponseMsg responseMsg = reqMsg.createResponseMsg(ServerResponseMsg.STATUS_OK,
+                                                                 messageString);
         responseMsg.setPayload(respPayload);
-        responseMsg.setStatus(ServerResponseMsg.STATUS_OK);
         connection.write(responseMsg);
     }
 
