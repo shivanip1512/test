@@ -771,25 +771,16 @@ void CtiFDRSocketServer::setSingleListeningPort(bool singleListeningPort)
     _singleListeningPort = singleListeningPort;
 }
 
-bool CtiFDRSocketServer::getEnableSendAllPoints() const
-{
-    return _enableSendAllPoints;
-}
-void CtiFDRSocketServer::setEnableSendAllPoints(const bool enableSendAllPoints)
-{
-    _enableSendAllPoints = enableSendAllPoints;
-}
-
 bool CtiFDRSocketServer::readConfig()
 {
     bool sendAllPoints = gConfigParms.isTrue(KEY_ENABLE_SEND_ALL_POINTS, false);
-    setEnableSendAllPoints(sendAllPoints);
+    _enableSendAllPoints=sendAllPoints;
 
     if(getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
         Cti::FormattedList loglist;
 
-        loglist.add("Enable Send All Points ") << getEnableSendAllPoints();
+        loglist.add("Enable Send All Points ") << _enableSendAllPoints;
         CTILOG_DEBUG(dout, loglist);
     }
 

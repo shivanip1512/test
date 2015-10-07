@@ -51,9 +51,6 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
         int  getLinkTimeout() const;
         void setLinkTimeout(const int linkTimeout);
 
-        bool getEnableSendAllPoints() const;
-        void setEnableSendAllPoints(const bool sendAllPoints);
-
         void setSingleListeningPort(bool singleListeningPort);
         bool CtiFDRSocketServer::readConfig();
 
