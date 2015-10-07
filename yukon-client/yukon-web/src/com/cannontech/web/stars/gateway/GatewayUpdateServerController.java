@@ -158,21 +158,21 @@ public class GatewayUpdateServerController {
      * @return
      */
     @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_VIEW)
-    @RequestMapping(value = "/gateways/retrieveRfnUpdateServerAvailableVersionForUpdateServer", method = RequestMethod.GET)
-    public @ResponseBody Map<String, Object> retrieveRfnUpdateServerAvailableVersion(YukonUserContext userContext) {
-        Map<String, Object> updateServerAvaailableVersionMap = new HashMap<String, Object>();
+    @RequestMapping(value = "/gateways/retrieveAvailableVersionForRfnUpdateServer", method = RequestMethod.GET)
+    public @ResponseBody Map<String, Object> retrieveAvailableVersionForRfnUpdateServer(YukonUserContext userContext) {
+        Map<String, Object> updateServerAvailableVersionMap = new HashMap<String, Object>();
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         try {
-            updateServerAvaailableVersionMap = rfnGatewayService.listAllGatewaysWithUpdateServerAvailableVersion();
+            updateServerAvailableVersionMap = rfnGatewayService.listAllGatewaysWithUpdateServerAvailableVersion();
         } catch (NmCommunicationException e) {
             String errorMsg = accessor.getMessage(baseKey + "error.comm");
-            updateServerAvaailableVersionMap.put("success", false);
-            updateServerAvaailableVersionMap.put("message", errorMsg);
+            updateServerAvailableVersionMap.put("success", false);
+            updateServerAvailableVersionMap.put("message", errorMsg);
             log.error("Failed communication with NM", e);
-            return updateServerAvaailableVersionMap;
+            return updateServerAvailableVersionMap;
         }
-        updateServerAvaailableVersionMap.put("success", true);
-        return updateServerAvaailableVersionMap;
+        updateServerAvailableVersionMap.put("success", true);
+        return updateServerAvailableVersionMap;
     }
 
 }

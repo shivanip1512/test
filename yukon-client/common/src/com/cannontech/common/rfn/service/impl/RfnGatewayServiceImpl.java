@@ -77,7 +77,8 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
 
     private static final String gatewayUpdateRequestQueue = "yukon.qr.obj.common.rfn.GatewayUpdateRequest";
     private static final String gatewayActionRequestQueue = "yukon.qr.obj.common.rfn.GatewayActionRequest";
-    private static final String gatewayDataRequestQueue = "yukon.qr.obj.common.rfn.GatewayDataRequest";
+    private static final String updateServerAvailableVersionRequestQueue =
+        "yukon.qr.obj.common.rfn.UpdateServerAvailableVersionRequest";
     
     
     // Autowired in constructor
@@ -137,8 +138,8 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
                 new RequestReplyTemplateImpl<>(gatewayActionRequestCparm, 
                 configSource, connectionFactory, gatewayActionRequestQueue, false);
         rfnUpdateServerAvailableVersionTemplate =
-                new RequestReplyTemplateImpl<>(rfnUpdateServerAvailableVersionRequestCparm, configSource, 
-                connectionFactory, gatewayDataRequestQueue, false);
+            new RequestReplyTemplateImpl<>(rfnUpdateServerAvailableVersionRequestCparm, configSource,
+                connectionFactory, updateServerAvailableVersionRequestQueue, false);
     }
     
     @Override
