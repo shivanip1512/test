@@ -87,6 +87,8 @@ yukon.device.selection = (function () {
                         successContainer.find('.device-count').text(result.deviceCount);
                         successContainer.find('.js-error-count').text(result.deviceErrorCount);
                         successContainer.find(':input[name="group.name"]').val(result['group.name']);
+                        successContainer.find(':input[name="deviceErrors"]').val(result['deviceErrors']);
+                        successContainer.find(':input[name="uploadFileName"]').val(result['group.description']);
                         successContainer.show();
                     } else {
                         successContainer.hide();
@@ -307,10 +309,19 @@ yukon.device.selection = (function () {
                 
                 dialog.data('trigger', trigger);
             });
+            
+            $(document).on('click', '.js-error-devices-download', function () {
+                var downloadForm = $('<form>');
+                downloadForm.attr('action', yukon.url('/group/downloadResult'));
+                downloadForm.attr('method', 'GET');
+                downloadForm.append($('.js-error-devices-input').clone());
+                downloadForm.submit();
+            });
         }
         
     };
     
 }());
+
 
 $(function () { yukon.device.selection.init(); });

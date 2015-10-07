@@ -47,9 +47,11 @@ import com.cannontech.common.util.ReverseList;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.pao.PaoPopupHelper;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Lists;
@@ -70,6 +72,7 @@ public class BulkController {
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper; 
     @Autowired private PaoPopupHelper paoPopupHelper;
     @Resource(name="recentResultsCache") private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
+    private static final String baseKey ="yukon.web.modules.tools.collectionActions";
     
     // BULK HOME
     @RequestMapping("bulkHome")
@@ -112,7 +115,9 @@ public class BulkController {
     
     // COLLECTION ACTIONS
     @RequestMapping("collectionActions")
-    public String collectionActions(ModelMap model, HttpServletRequest request, @RequestParam(defaultValue="false") boolean isFileUpload) throws ServletRequestBindingException {
+    public String collectionActions(ModelMap model, HttpServletRequest request,
+            @RequestParam(defaultValue = "false") boolean isFileUpload, FlashScope flashScope)
+            throws ServletRequestBindingException {
 
         String view = "";
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -137,6 +142,10 @@ public class BulkController {
             model.addAttribute("showGroupManagement", showGroupManagement);
             model.addAttribute("showEditing", showEditing);
             model.addAttribute("showAddRemovePoints", showAddRemovePoints);
+            if (colleciton.getErrorDevices().size() > 0) {
+                String totalErrors = new Integer(colleciton.getErrorDevices().size()).toString();
+                flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".deviceUploadFailed", totalErrors));
+            }
         } catch (ObjectMappingException | UnsupportedOperationException e) {
             view = "redirect:/bulk/deviceSelection";
             model.addAttribute("errorMsg", e.getMessage());
@@ -157,14 +166,16 @@ public class BulkController {
     }
     
     @RequestMapping("deviceSelectionGetDevices")
-    public String deviceSelectionGetDevices(ModelMap model, HttpServletRequest request, @RequestParam(defaultValue="false") boolean isFileUpload) throws ServletRequestBindingException {
+    public String deviceSelectionGetDevices(ModelMap model, HttpServletRequest request,
+            @RequestParam(defaultValue = "false") boolean isFileUpload, FlashScope flashScope)
+            throws ServletRequestBindingException {
 
-    	try {
-    		return collectionActions(model, request, isFileUpload);
-    	} catch (DeviceCollectionCreationException e) {
+        try {
+            return collectionActions(model, request, isFileUpload, flashScope);
+        } catch (DeviceCollectionCreationException e) {
             model.addAttribute("errorMsg", e.getMessage());
             return "redirect:/bulk/deviceSelection";
-    	}
+        }
     }
     
     // DEVICE COLLECTION REPORT

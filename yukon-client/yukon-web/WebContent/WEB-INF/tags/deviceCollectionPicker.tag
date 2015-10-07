@@ -195,12 +195,17 @@
                 </tags:nameValue2>
                  <tags:nameValue2 nameKey=".errorCount" nameClass="js-upload-results dn" valueClass="js-upload-results dn">
                     <span class="js-error-count"></span>
+                    <a href="#" class="wsnw">
+          				<cti:icon icon="icon-page-excel" classes="cp fn pull-icon-down js-error-devices-download"/>
+          			</a>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </div>
         <div class="js-upload-results dn">
             <input type="hidden" class="js-device-collection-inputs" name="group.name">
             <input type="hidden" class="js-device-collection-inputs" name="collectionType" value="group">
+            <input type="hidden" class="js-device-collection-inputs js-error-devices-input" name="deviceErrors">
+            <input type="hidden" class="js-device-collection-inputs js-error-devices-input" name="uploadFileName">
         </div>
         <span class="error js-upload-errors"></span>
     </div>
