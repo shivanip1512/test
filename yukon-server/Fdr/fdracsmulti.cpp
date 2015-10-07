@@ -82,7 +82,10 @@ bool CtiFDRAcsMulti::readConfig()
 {
     string   tempStr;
 
-    setPortNumber(gConfigParms.getValueAsInt( KEY_LISTEN_PORT_NUMBER, ACS_PORTNUMBER));
+    // load up the base class
+    CtiFDRScadaServer::readConfig();
+
+    setPortNumber(gConfigParms.getValueAsInt(KEY_LISTEN_PORT_NUMBER, ACS_PORTNUMBER));
 
     setTimestampReasonabilityWindow(gConfigParms.getValueAsInt(KEY_TIMESTAMP_WINDOW, 120));
 
@@ -197,9 +200,6 @@ CtiFDRClientServerConnectionSPtr CtiFDRAcsMulti::createNewConnection(SOCKET newS
 
     CtiFDRClientServerConnectionSPtr newConnection(new CtiFDRClientServerConnection(connName.c_str(),newSocket,this));
     newConnection->setRegistered(true); //ACS doesn't have a separate registration message
-
-    // I'm not sure this is the best location for this
-    sendAllPoints(newConnection);
 
     return newConnection;
 }

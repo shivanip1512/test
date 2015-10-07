@@ -51,7 +51,11 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
         int  getLinkTimeout() const;
         void setLinkTimeout(const int linkTimeout);
 
+        bool getEnableSendAllPoints() const;
+        void setEnableSendAllPoints(const bool sendAllPoints);
+
         void setSingleListeningPort(bool singleListeningPort);
+        bool CtiFDRSocketServer::readConfig();
 
         typedef std::list<CtiFDRClientServerConnectionSPtr> ConnectionList;
 
@@ -100,6 +104,7 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
         int _pointTimeVariation;
         int _timestampReasonabilityWindow;
         int _linkTimeout;
+        bool _enableSendAllPoints;
 
         bool _singleListeningPort;
 
@@ -111,5 +116,7 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
         PortSocketsMap _socketConnections;
         CtiMutex       _socketMutex;
         bool           _socketShutdown;
+
+        static const CHAR * KEY_ENABLE_SEND_ALL_POINTS;
 };
 

@@ -106,6 +106,9 @@ bool DnpSlave::readConfig()
 
     const int DNPSLAVE_PORTNUMBER = 2085;
 
+    // load up the base class
+    CtiFDRSocketServer::readConfig();
+
     setPortNumber(
             gConfigParms.getValueAsInt(KEY_LISTEN_PORT_NUMBER, DNPSLAVE_PORTNUMBER));
 
@@ -189,9 +192,6 @@ CtiFDRClientServerConnectionSPtr DnpSlave::createNewConnection(SOCKET newSocket)
 
     CtiFDRClientServerConnectionSPtr newConnection(new CtiFDRClientServerConnection(connName.c_str(),newSocket,this));
     newConnection->setRegistered(true); //DNPSLAVE doesn't have a separate registration message
-
-    // I'm not sure this is the best location for this
-    sendAllPoints(newConnection);
 
     return newConnection;
 }

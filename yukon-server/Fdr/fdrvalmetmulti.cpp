@@ -147,6 +147,9 @@ void CtiFDR_ValmetMulti::stopMultiListeners()
 *************************************************/
 bool CtiFDR_ValmetMulti::readConfig()
 {
+    // load up the base class
+    CtiFDRScadaServer::readConfig();
+
     int linkTimeout = gConfigParms.getValueAsInt(KEY_LINK_TIMEOUT, 60);
     setLinkTimeout(linkTimeout);
 
@@ -358,9 +361,6 @@ CtiFDRClientServerConnectionSPtr CtiFDR_ValmetMulti::createNewConnection(SOCKET 
     CtiFDRClientServerConnectionSPtr newConnection(new CtiFDRClientServerConnection(connName.c_str(), newSocket, this));
 
     newConnection->setRegistered(true); // Valmet doesn't have a separate registration message
-
-    // I'm not sure this is the best location for this
-    sendAllPoints(newConnection);
 
     return newConnection;
 }
@@ -577,6 +577,10 @@ string CtiFDR_ValmetMulti::decodeClientName(CHAR * aBuffer)
     return getInterfaceName();
 }
 
+/**
+  Process a SCADA TimeSync message (type 401)
+  If Valid timestamp, set system time.
+*/
 bool CtiFDR_ValmetMulti::processTimeSyncMessage(Cti::Fdr::ServerConnection& connection,
                                          const char* aData, unsigned int size)
 {
@@ -719,6 +723,19 @@ CtiFDRPointSPtr CtiFDR_ValmetMulti::findFdrPointInPointList(const std::string &t
     return point;
 }
 
+/**
+  Process a SCADA status message (type 101)
+
+  If the point is not found log error message and return
+  If AnalogPointType, PulseAccumulatorPointType, DemandAccumulatorPointType or CalculatedPointType
+    get quality, value, and timestamp
+    if point is controllable,
+      send AnalogOutputMessage to dispatch
+    else
+      send PointDataMsg to dispatch
+
+*/
+
 bool CtiFDR_ValmetMulti::processValueMessage(Cti::Fdr::ServerConnection& connection,
                                          const char* aData, unsigned int size)
 {
@@ -822,6 +839,15 @@ bool CtiFDR_ValmetMulti::processValueMessage(Cti::Fdr::ServerConnection& connect
     return retVal;
 }
 
+/**
+  Process a SCADA status message (type 102)
+
+  If the point is not found log error message and return
+  If not StatusPointType log error message and return
+  get quality, value and timestamp
+  send PointDataMsg to dispatch
+
+*/
 bool CtiFDR_ValmetMulti::processStatusMessage(Cti::Fdr::ServerConnection& connection,
                                          const char* aData, unsigned int size)
 {
@@ -964,6 +990,13 @@ bool CtiFDR_ValmetMulti::isPortLoggingNotRestricted(int portNumber)
     return true;
 }
 
+/**
+  Process a SCADA force scan message (type 110)
+
+  If the point is not _sendAllPointsPointName log error message and return.
+  Send InitiateScan to dispatch.
+
+*/
 int CtiFDR_ValmetMulti::processScanMessage(CtiFDRClientServerConnection* connection, const char* aData)
 {
     ValmetExtendedInterface_t  *data = (ValmetExtendedInterface_t*)aData;
@@ -995,6 +1028,22 @@ int CtiFDR_ValmetMulti::processScanMessage(CtiFDRClientServerConnection* connect
     return ClientErrors::None;
 }
 
+/**
+  Process a SCADA control message (type 201)
+
+  If the point is not found or not controllable log error message and return
+  If StatusPointType,
+    If invalid state, log error message and return
+    If point name contains _scanDevicePointName,
+      If state is closed, send ScanDeviceMessage to dispatch
+    else send ControlRequest with -1 to dispatch
+  If AnalogPointType,
+    get the floating point value
+    If point offset is 10001,
+      Call ForeignToYukonStatus to determine State and ForeignToYukonStatus to determine value
+    Send AnalogOutputMessage to dispatch
+      
+*/
 bool CtiFDR_ValmetMulti::processControlMessage(Cti::Fdr::ServerConnection& connection,
                                          const char* aData, unsigned int size)
 {

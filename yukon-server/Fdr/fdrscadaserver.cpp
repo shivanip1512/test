@@ -99,6 +99,13 @@ int CtiFDRScadaServer::processMessageFromForeignSystem(Cti::Fdr::ServerConnectio
 
 }
 
+bool CtiFDRScadaServer::readConfig()
+{
+    // load up the base class
+    CtiFDRSocketServer::readConfig();
+    return true;
+}
+
 /** Return the message indicator stored in the first 2 or 4 bytes.
  *  This should return a number than can be dirrectly compared
  *  to one of the SINGLE_SOCKET_* constants (i.e. this function
