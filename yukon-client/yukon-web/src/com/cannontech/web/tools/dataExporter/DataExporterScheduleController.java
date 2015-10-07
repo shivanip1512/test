@@ -193,6 +193,7 @@ public class DataExporterScheduleController {
         }
         ArchivedDataExportFileGenerationParameters parameters = new ArchivedDataExportFileGenerationParameters(deviceCollection, formatId, attributeSet, dataRange);
         exportData.setParameters(parameters);
+        exportData.setJobState(JobState.SCHEDULED);
 
         try {
             String scheduleCronString = cronExpressionTagService.build("scheduleCronString", request, userContext);
