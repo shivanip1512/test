@@ -443,7 +443,10 @@ void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort,
                             _connectionList.push_back(newConnection);
 
                             // Now that we're connected, we can send all the points.
-                            sendAllPoints(newConnection);
+                            if(_enableSendAllPoints)
+                            {
+                                sendAllPoints(newConnection);
+                            }
 
                             newConnection->run();
                         }
