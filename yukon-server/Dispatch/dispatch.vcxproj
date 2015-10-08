@@ -341,7 +341,6 @@ xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
     </ClCompile>
     <ClCompile Include="con_mgr_vg.cpp">
     </ClCompile>
-    <ClCompile Include="ctivangogh.cpp" />
     <ClCompile Include="dispmain.cpp">
     </ClCompile>
     <ClCompile Include="dispsvc.cpp">
