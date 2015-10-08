@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.ByteOrderMark;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -355,12 +356,12 @@ public class BulkController {
     
 
     @RequestMapping("downloadResult")
-    public String downloadResult(ModelMap model, HttpServletRequest request,
-            @RequestParam(value = "deviceErrors", required = false) Set<String> errors,
+    public String downloadResult(@RequestParam(value = "deviceErrors", required = false) Set<String> errors,
             @RequestParam(value = "uploadFileName", required = false) String errorFileName,
-            @RequestParam(value = "header", required = false) String header, HttpServletResponse response)
+            @RequestParam(value = "header", required = false) String header,
+            HttpServletResponse response)
             throws ServletRequestBindingException, IOException {
-        errorFileName += "_errors.csv";
+        errorFileName = FilenameUtils.removeExtension(errorFileName) + "_errors.csv";
         buildCsv(errors, header, errorFileName, response);
 
         return null;
