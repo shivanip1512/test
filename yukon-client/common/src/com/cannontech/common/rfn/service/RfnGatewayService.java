@@ -190,7 +190,7 @@ public interface RfnGatewayService {
      * @return
      * @throws NmCommunicationException
      */
-    Map<String, Object> listAllGatewaysWithUpdateServerAvailableVersion() throws NmCommunicationException;
+    Map<String, Object> getAvailableVersionForAllExistingRfnGatewayUpdateServers() throws NmCommunicationException;
 
     void updateGateways(Iterable<RfnGateway> gateways, LiteYukonUser user) throws NmCommunicationException;
 }

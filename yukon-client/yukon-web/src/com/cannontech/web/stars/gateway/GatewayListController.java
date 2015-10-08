@@ -182,29 +182,28 @@ public class GatewayListController {
     
     /**
      * This method provides all update Server with their available version for existing gateways and
-     * uses listAllGatewaysWithUpdateServerAvailableVersion rfnGatewayservice
+     * uses getAvailableVersionForAllExistingRfnGatewayUpdateServers rfnGatewayservice
      * 
      * @param userContext
      * @return
      */
     @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_VIEW)
     @RequestMapping(value = "/gateways/retrieveRfnUpdateServerAvailableVersion", method = RequestMethod.GET)
-    public @ResponseBody Map<String, Object> retrieveRfnUpdateServerAvailableVersion(YukonUserContext userContext) {
-        Map<String, Object> updateServerAvailableVersionMap = new HashMap<String, Object>();
+    public @ResponseBody Map<String, Object> retrieveRfnUpdateServerAvailableVersion(ModelMap model,
+            YukonUserContext userContext) {
+        Map<String, Object> updateServerAvailableVersionMap = null;
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         try {
-            updateServerAvailableVersionMap = rfnGatewayService.listAllGatewaysWithUpdateServerAvailableVersion();
+            updateServerAvailableVersionMap =
+                rfnGatewayService.getAvailableVersionForAllExistingRfnGatewayUpdateServers();
         } catch (NmCommunicationException e) {
             String errorMsg = accessor.getMessage(baseKey + "error.comm");
-            updateServerAvailableVersionMap.put("success", false);
-            updateServerAvailableVersionMap.put("message", errorMsg);
+            model.addAttribute("errorMsg", errorMsg);
             log.error("Failed communication with NM", e);
             return updateServerAvailableVersionMap;
         }
-        updateServerAvailableVersionMap.put("success", true);
         return updateServerAvailableVersionMap;
     }
-
 
     private static Comparator<CertificateUpdate> getTimestampComparator() {
         Ordering<Instant> normalComparer = Ordering.natural();

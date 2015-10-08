@@ -587,27 +587,31 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     }
     
     @Override
-    public Map<String, Object> listAllGatewaysWithUpdateServerAvailableVersion() throws NmCommunicationException {
+    public Map<String, Object> getAvailableVersionForAllExistingRfnGatewayUpdateServers()
+            throws NmCommunicationException {
         Set<RfnGateway> gateways = getAllGateways();
         Map<String, Object> updateServerAvailableVersionMap = new HashMap<String, Object>();
         // iterating all rfnGateways to set the RfnUpdateData with available version for the update server
         for (RfnGateway rfnGateway : gateways) {
             if (rfnGateway.getData() != null) {
                 RfnGatewayData rfnGatewayData = rfnGateway.getData();
-                RfnUpdateServerAvailableVersionRequest rfnUpdateServerAvailableVersionRequest =
-                    new RfnUpdateServerAvailableVersionRequest();
-                // setting update server to the rfnUpdateServerAvailableVersionRequest for which available
-                // version has to be fetched
-                rfnUpdateServerAvailableVersionRequest.setUpdateServerUrl(rfnGatewayData.getUpdateServerUrl());
+                if (!updateServerAvailableVersionMap.containsKey(rfnGatewayData.getUpdateServerUrl())) {
+                    RfnUpdateServerAvailableVersionRequest rfnUpdateServerAvailableVersionRequest =
+                        new RfnUpdateServerAvailableVersionRequest();
+                    // setting update server to the rfnUpdateServerAvailableVersionRequest for which available
+                    // version has to be fetched
+                    rfnUpdateServerAvailableVersionRequest.setUpdateServerUrl(rfnGatewayData.getUpdateServerUrl());
 
-                RfnUpdateServerAvailableVersionResponse response =
-                    getUpdateServerAvailableVersionRequest(rfnUpdateServerAvailableVersionRequest,
-                        "Fetch Available Version for Update Server");
+                    RfnUpdateServerAvailableVersionResponse response =
+                        getUpdateServerAvailableVersionRequest(rfnUpdateServerAvailableVersionRequest,
+                            "Fetch Available Version for Update Server");
 
-                if (response != null && response.getResult() == RfnUpdateServerAvailableVersionResult.SUCCESS) {
-                    updateServerAvailableVersionMap.put(rfnGatewayData.getUpdateServerUrl(),
-                        response.getAvailableVersion());
+                    if (response != null && response.getResult() == RfnUpdateServerAvailableVersionResult.SUCCESS) {
+                        updateServerAvailableVersionMap.put(rfnGatewayData.getUpdateServerUrl(),
+                            response.getAvailableVersion());
+                    }
                 }
+
             }
         }
         return updateServerAvailableVersionMap;

@@ -3,8 +3,8 @@ package com.cannontech.common.rfn.message.gateway;
 import java.io.Serializable;
 
 /**
- * Message sent from Yukon to NM to request available version about an existing gateway.
- * JMS queue name: yukon.qr.obj.common.rfn.GatewayDataRequest
+ * Message sent from Yukon to NM to request available version of update server for an existing gateway.
+ * JMS queue name: yukon.qr.obj.common.rfn.UpdateServerAvailableVersionRequest
  */
 public class RfnUpdateServerAvailableVersionRequest implements Serializable {
 
