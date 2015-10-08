@@ -313,9 +313,15 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         superAdmin.setPassword("superPassword");
         response.setSuperAdmin(superAdmin);
         
+        Authentication updateServerAdmin = new Authentication();
+        admin.setUsername("updateAdmin");
+        admin.setPassword("updatePassword");
+        response.setUpdateServerLogin(updateServerAdmin);
+        
         response.setIpAddress("123.123.123.123");
         response.setPort("1234");
         response.setConnectionType(ConnectionType.TCP_IP);
+        response.setUpdateServerUrl("http://127.0.0.1:8081/updateServerTest/latest/");
         
         response.setConnectionStatus(ConnectionStatus.CONNECTED);
         response.setLastCommStatus(LastCommStatus.SUCCESSFUL);
