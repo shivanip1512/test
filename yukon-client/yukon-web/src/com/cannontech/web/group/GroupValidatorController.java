@@ -11,11 +11,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -68,14 +67,13 @@ public class GroupValidatorController {
     }
     
     @RequestMapping("downloadResult")
-    public String downloadResult(ModelMap model, HttpServletRequest request,
-            @RequestParam(value = "deviceErrors", required = false) Set<String> errors,
+    public String downloadResult(@RequestParam(value = "deviceErrors", required = false) Set<String> errors,
             @RequestParam(value = "uploadFileName", required = false) String errorFileName,
-            @RequestParam(value = "header", required = false) String header, HttpServletResponse response)
-            throws ServletRequestBindingException, IOException {
-        errorFileName += "_errors.csv";
+            @RequestParam(value = "header", required = false) String header,
+            HttpServletResponse response)
+            throws IOException {
+        errorFileName = FilenameUtils.removeExtension(errorFileName) + "_errors.csv";
         buildCsv(errors, header, errorFileName, response);
-
         return null;
     }
 

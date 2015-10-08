@@ -193,11 +193,11 @@
                 <tags:nameValue2 nameKey=".devices" nameClass="js-upload-results dn" valueClass="js-upload-results dn">
                     <span class="device-count"></span>
                 </tags:nameValue2>
-                 <tags:nameValue2 nameKey=".errorCount" nameClass="js-upload-results dn" valueClass="js-upload-results dn">
+                <tags:nameValue2 nameKey=".errorCount" nameClass="js-upload-results dn" valueClass="js-upload-results dn">
                     <span class="js-error-count"></span>
-                    <a href="#" class="wsnw">
-          				<cti:icon icon="icon-page-excel" classes="cp fn pull-icon-down js-error-devices-download"/>
-          			</a>
+                      <a href="javascript:void(0)" class="wsnw"> 
+                       <cti:icon icon="icon-page-excel" classes="cp fn pull-icon-down js-error-devices-download" />
+                      </a>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </div>
