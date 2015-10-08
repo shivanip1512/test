@@ -968,8 +968,24 @@ struct RequestExecuter : Devices::DeviceHandler
     virtual YukonError_t execute(Devices::RfnDevice &dev)
     {
         Devices::RfnDevice::RfnCommandList commands;
-
         Devices::RfnDevice::ReturnMsgList returnMsgList;
+
+        if(dev.isInhibited())
+        {
+            retList.push_back(new CtiReturnMsg(
+                dev.getID(),
+                pReq->CommandString(),
+                dev.getName() + string(": ") + 
+                  GetErrorString(ClientErrors::DeviceInhibited),
+                ClientErrors::DeviceInhibited,
+                0,
+                MacroOffset::none,
+                0,
+                pReq->GroupMessageId(),
+                pReq->UserMessageId()));
+
+            return ClientErrors::DeviceInhibited;
+        }
 
         const YukonError_t retVal = dev.ExecuteRequest(pReq, parse, returnMsgList, commands);
 
