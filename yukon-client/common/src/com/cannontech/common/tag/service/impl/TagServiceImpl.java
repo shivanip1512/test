@@ -52,7 +52,7 @@ public class TagServiceImpl implements TagService{
         reg.setAppName(BootstrapUtils.getApplicationName());
         reg.setAppIsUnique(0);
         reg.setAppKnownPort(0);
-        reg.setAppExpirationDelay(300); // 5 minutes
+        reg.setAppExpirationDelay(900); // 5 minutes
         reg.setPriority(15);
 
         PointRegistration pReg = new PointRegistration();

@@ -80,7 +80,7 @@ public class ConnPool {
         reg.setAppName(BootstrapUtils.getApplicationName());
         reg.setAppIsUnique(0);
         reg.setAppKnownPort(0);
-        reg.setAppExpirationDelay(300); // 5 minutes should be OK
+        reg.setAppExpirationDelay(900); // 5 minutes should be OK
 
         connToDispatch.setRegistrationMsg(reg);
 
