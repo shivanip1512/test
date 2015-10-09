@@ -10,6 +10,21 @@ public class RfnUpdateServerAvailableVersionRequest implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private String updateServerUrl;
+    private Authentication updateServerLogin;
+
+    /**
+     * @return the updateServerLogin
+     */
+    public Authentication getUpdateServerLogin() {
+        return updateServerLogin;
+    }
+
+    /**
+     * @param updateServerLogin the updateServerLogin to set
+     */
+    public void setUpdateServerLogin(Authentication updateServerLogin) {
+        this.updateServerLogin = updateServerLogin;
+    }
 
     /**
      * @return the updateServerUrl
@@ -33,6 +48,7 @@ public class RfnUpdateServerAvailableVersionRequest implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((updateServerLogin == null) ? 0 : updateServerLogin.hashCode());
         result = prime * result + ((updateServerUrl == null) ? 0 : updateServerUrl.hashCode());
         return result;
     }
@@ -53,6 +69,13 @@ public class RfnUpdateServerAvailableVersionRequest implements Serializable {
             return false;
         }
         RfnUpdateServerAvailableVersionRequest other = (RfnUpdateServerAvailableVersionRequest) obj;
+        if (updateServerLogin == null) {
+            if (other.updateServerLogin != null) {
+                return false;
+            }
+        } else if (!updateServerLogin.equals(other.updateServerLogin)) {
+            return false;
+        }
         if (updateServerUrl == null) {
             if (other.updateServerUrl != null) {
                 return false;
@@ -69,7 +92,8 @@ public class RfnUpdateServerAvailableVersionRequest implements Serializable {
      */
     @Override
     public String toString() {
-        return String.format("RfnUpdateServerAvailableVersionRequest [updateServerUrl=%s]", updateServerUrl);
+        return "RfnUpdateServerAvailableVersionRequest [updateServerUrl=" + updateServerUrl + ", updateServerLogin="
+            + updateServerLogin + "]";
     }
 
 }

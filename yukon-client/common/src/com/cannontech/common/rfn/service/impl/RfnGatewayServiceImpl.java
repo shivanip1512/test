@@ -601,6 +601,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
                     // setting update server to the rfnUpdateServerAvailableVersionRequest for which available
                     // version has to be fetched
                     rfnUpdateServerAvailableVersionRequest.setUpdateServerUrl(rfnGatewayData.getUpdateServerUrl());
+                    rfnUpdateServerAvailableVersionRequest.setUpdateServerLogin(rfnGatewayData.getUpdateServerLogin());
 
                     RfnUpdateServerAvailableVersionResponse response =
                         getUpdateServerAvailableVersionRequest(rfnUpdateServerAvailableVersionRequest,
