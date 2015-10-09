@@ -1,20 +1,31 @@
 package com.cannontech.common.rfn.dao.impl;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
+import javax.annotation.PostConstruct;
+import javax.jms.ConnectionFactory;
+
+import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.rfn.dao.RfnGatewayFirmwareUpgradeDao;
 import com.cannontech.common.rfn.message.gateway.GatewayFirmwareUpdateRequestResult;
+import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersionRequest;
+import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersionResponse;
+import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersionResult;
 import com.cannontech.common.rfn.model.FirmwareUpdateServerInfo;
 import com.cannontech.common.rfn.model.GatewayFirmwareUpdateStatus;
 import com.cannontech.common.rfn.model.NmCommunicationException;
@@ -22,8 +33,11 @@ import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.model.RfnGatewayFirmwareUpdateResult;
 import com.cannontech.common.rfn.model.RfnGatewayFirmwareUpdateSummary;
+import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.common.util.jms.RequestReplyTemplate;
+import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -33,14 +47,30 @@ import com.cannontech.database.incrementer.NextValueHelper;
 
 public class RfnGatewayFirmwareUpgradeDaoImpl implements RfnGatewayFirmwareUpgradeDao {
     
-    private static final int UPGRADE_TIMEOUT_MINUTES = 30;
+    private static final Logger log = YukonLogManager.getLogger(RfnGatewayFirmwareUpgradeDaoImpl.class);
+    private static final Duration upgradeTimeoutMinutes = Duration.standardMinutes(45);
+    private static final String rfnUpdateServerAvailableVersionRequestCparm =
+            "RFN_UPDATE_SERVER_AVAILABLE_VERSION_REQUEST";
+    private static final String updateServerAvailableVersionRequestQueue =
+            "yukon.qr.obj.common.rfn.UpdateServerAvailableVersionRequest";
     
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnGatewayDataCache gatewayDataCache;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private ConnectionFactory connectionFactory;
+    @Autowired private ConfigurationSource configSource;
+    
     private GatewayFirmwareUpdateSummaryRowMapper summaryRowMapper = new GatewayFirmwareUpdateSummaryRowMapper();
     private GatewayFirmwareUpdateResultRowMapper resultRowMapper = new GatewayFirmwareUpdateResultRowMapper();
+    private RequestReplyTemplate<RfnUpdateServerAvailableVersionResponse> rfnUpdateServerAvailableVersionTemplate;
+    
+    @PostConstruct
+    public void init() {
+        rfnUpdateServerAvailableVersionTemplate =
+                new RequestReplyTemplateImpl<>(rfnUpdateServerAvailableVersionRequestCparm, configSource,
+                    connectionFactory, updateServerAvailableVersionRequestQueue, false);
+    }
     
     @Override
     @Transactional
@@ -88,7 +118,7 @@ public class RfnGatewayFirmwareUpgradeDaoImpl implements RfnGatewayFirmwareUpgra
      * Checks for any upgrades that are older than the timeout period and marks any incomplete entries as timed out.
      */
     private void updateTimeouts() {
-        Instant timeout = Instant.now().minus(Duration.standardMinutes(UPGRADE_TIMEOUT_MINUTES));
+        Instant timeout = Instant.now().minus(upgradeTimeoutMinutes);
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT UpdateId");
@@ -190,24 +220,81 @@ public class RfnGatewayFirmwareUpgradeDaoImpl implements RfnGatewayFirmwareUpgra
     public Map<Integer, FirmwareUpdateServerInfo> getAllFirmwareUpdateServerInfo(Collection<RfnGateway> gateways) 
             throws GatewayDataException {
         
-        //TODO get this from the service (YUK-14629)
-        Map<String, String> serverUrlToAvailableFirmware = new HashMap<>();
-        
         Map<Integer, FirmwareUpdateServerInfo> allUpdateServerInfo = new HashMap<>();
-        for (RfnGateway gateway : gateways) {
-            RfnGatewayData gatewayData;
-            try {
-                gatewayData = gatewayDataCache.get(gateway.getPaoIdentifier());
-            } catch (NmCommunicationException e) {
-                throw new GatewayDataException("Unable to load gateway data for gateway " + gateway.getName(), e);
+        
+        try {
+            Map<String, String> serverUrlToAvailableFirmware = getFirmwareUpdateServerVersions(gateways);
+            
+            for (RfnGateway gateway : gateways) {
+                RfnGatewayData gatewayData;
+                
+                    gatewayData = gatewayDataCache.get(gateway.getPaoIdentifier());
+                
+                String updateServerUrl = gatewayData.getUpdateServerUrl();
+                String releaseVersion = gatewayData.getReleaseVersion();
+                String availableVersion = serverUrlToAvailableFirmware.get(updateServerUrl);
+                FirmwareUpdateServerInfo info = new FirmwareUpdateServerInfo(updateServerUrl, releaseVersion, availableVersion);
+                allUpdateServerInfo.put(gateway.getPaoIdentifier().getPaoId(), info);
             }
-            String updateServerUrl = gatewayData.getUpdateServerUrl();
-            String releaseVersion = gatewayData.getReleaseVersion();
-            String availableVersion = serverUrlToAvailableFirmware.get(updateServerUrl);
-            FirmwareUpdateServerInfo info = new FirmwareUpdateServerInfo(updateServerUrl, releaseVersion, availableVersion);
-            allUpdateServerInfo.put(gateway.getPaoIdentifier().getPaoId(), info);
+        } catch (NmCommunicationException e) {
+            throw new GatewayDataException("Unable to load gateway data for gateway.", e);
         }
+        
         return allUpdateServerInfo;
+    }
+    
+    @Override
+    public Map<String, String> getFirmwareUpdateServerVersions(Collection<RfnGateway> gateways) throws NmCommunicationException {
+        Map<String, String> updateServerAvailableVersionMap = new HashMap<String, String>();
+        
+        // iterating all rfnGateways to set the RfnUpdateData with available version for the update server
+        for (RfnGateway rfnGateway : gateways) {
+            RfnGatewayData rfnGatewayData = rfnGateway.getData();
+            if (rfnGatewayData != null 
+                    && !updateServerAvailableVersionMap.containsKey(rfnGatewayData.getUpdateServerUrl())) {
+                
+                RfnUpdateServerAvailableVersionRequest rfnUpdateServerAvailableVersionRequest =
+                    new RfnUpdateServerAvailableVersionRequest();
+                
+                // setting update server to the rfnUpdateServerAvailableVersionRequest for which available
+                // version has to be fetched
+                rfnUpdateServerAvailableVersionRequest.setUpdateServerUrl(rfnGatewayData.getUpdateServerUrl());
+                rfnUpdateServerAvailableVersionRequest.setUpdateServerLogin(rfnGatewayData.getUpdateServerLogin());
+
+                RfnUpdateServerAvailableVersionResponse response =
+                    sendUpdateServerVersionRequest(rfnUpdateServerAvailableVersionRequest);
+
+                if (response != null && response.getResult() == RfnUpdateServerAvailableVersionResult.SUCCESS) {
+                    updateServerAvailableVersionMap.put(rfnGatewayData.getUpdateServerUrl(),
+                        response.getAvailableVersion());
+                }
+            }
+        }
+        return updateServerAvailableVersionMap;
+    }
+
+    /**
+     * This method communicates to NM and fetches the available version for update servers.
+     * @throws NmCommunicationException If there is an error communicating with Network Manager.
+     */
+    private RfnUpdateServerAvailableVersionResponse sendUpdateServerVersionRequest(RfnUpdateServerAvailableVersionRequest request) 
+            throws NmCommunicationException {
+        
+        RfnUpdateServerAvailableVersionResponse response = null;
+        BlockingJmsReplyHandler<RfnUpdateServerAvailableVersionResponse> replyHandler =
+            new BlockingJmsReplyHandler<>(RfnUpdateServerAvailableVersionResponse.class);
+        
+        log.debug("Sending fetch request for firmware update server's available version");
+        rfnUpdateServerAvailableVersionTemplate.send(request, replyHandler);
+        
+        try {
+            response = replyHandler.waitForCompletion();
+            log.debug("Response = " + response.getResult());
+        } catch (ExecutionException e) {
+            throw new NmCommunicationException("Fetching available version for firmware update servers failed due to a "
+                    + "communication error with Network Manager.", e);
+        }
+        return response;
     }
     
     private static final class GatewayFirmwareUpdateSummaryRowMapper implements YukonRowMapper<RfnGatewayFirmwareUpdateSummary> {

@@ -8,6 +8,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.rfn.dao.impl.GatewayDataException;
 import com.cannontech.common.rfn.message.gateway.GatewayFirmwareUpdateRequestResult;
 import com.cannontech.common.rfn.model.FirmwareUpdateServerInfo;
+import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayFirmwareUpdateResult;
 import com.cannontech.common.rfn.model.RfnGatewayFirmwareUpdateSummary;
@@ -46,4 +47,11 @@ public interface RfnGatewayFirmwareUpgradeDao {
      */
     Map<Integer, FirmwareUpdateServerInfo> getAllFirmwareUpdateServerInfo(Collection<RfnGateway> gateways) 
             throws GatewayDataException;
+    
+    /**
+     * This method communicates to Network Manager and fetches the available version the update servers used by the
+     * specified gateways.
+     * @throws NmCommunicationException If there is an error communicating with Network Manager.
+     */
+    Map<String, String> getFirmwareUpdateServerVersions(Collection<RfnGateway> gateways) throws NmCommunicationException;
 }

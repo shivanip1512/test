@@ -184,13 +184,5 @@ public interface RfnGatewayService {
     /** Converts an {@link RfnGateway} to a {@link GatewaySettings} */
     GatewaySettings gatewayAsSettings(RfnGateway gateway);
 
-    /**
-     * Retrieves available versions for each update server for existing gateways.
-     * 
-     * @return
-     * @throws NmCommunicationException
-     */
-    Map<String, Object> getAvailableVersionForAllExistingRfnGatewayUpdateServers() throws NmCommunicationException;
-
     void updateGateways(Iterable<RfnGateway> gateways, LiteYukonUser user) throws NmCommunicationException;
 }

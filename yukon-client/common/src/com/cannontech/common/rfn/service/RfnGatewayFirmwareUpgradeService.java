@@ -2,8 +2,10 @@ package com.cannontech.common.rfn.service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.common.rfn.dao.impl.GatewayDataException;
+import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayFirmwareUpdateResult;
 import com.cannontech.common.rfn.model.RfnGatewayFirmwareUpdateSummary;
@@ -29,5 +31,11 @@ public interface RfnGatewayFirmwareUpgradeService {
      * Retrieves summaries for all firmware upgrade operations.
      */
     List<RfnGatewayFirmwareUpdateSummary> getFirmwareUpdateSummaries();
+    
+    /**
+     * This method communicates to Network Manager and fetches the available version for update servers.
+     * @throws NmCommunicationException If there is an error communicating with Network Manager.
+     */
+    Map<String, String> getFirmwareUpdateServerVersions() throws NmCommunicationException;
     
 }

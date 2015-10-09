@@ -3,6 +3,7 @@ package com.cannontech.common.rfn.service.impl;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.jms.ConnectionFactory;
 
@@ -16,10 +17,12 @@ import com.cannontech.common.rfn.dao.RfnGatewayFirmwareUpgradeDao;
 import com.cannontech.common.rfn.dao.impl.GatewayDataException;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayFirmwareUpdateRequest;
 import com.cannontech.common.rfn.model.FirmwareUpdateServerInfo;
+import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayFirmwareUpdateResult;
 import com.cannontech.common.rfn.model.RfnGatewayFirmwareUpdateSummary;
 import com.cannontech.common.rfn.service.RfnGatewayFirmwareUpgradeService;
+import com.cannontech.common.rfn.service.RfnGatewayService;
 
 //TODO: logging
 //TODO: event logging
@@ -30,6 +33,8 @@ public class RfnGatewayFirmwareUpgradeServiceImpl implements RfnGatewayFirmwareU
     
     @Autowired RfnGatewayFirmwareUpgradeDao firmwareUpgradeDao;
     @Autowired RfnDeviceDao rfnDeviceDao;
+    @Autowired RfnGatewayService rfnGatewayService;
+    
     private JmsTemplate firmwareUpdateRequestTemplate;
     
     @Autowired
@@ -72,4 +77,9 @@ public class RfnGatewayFirmwareUpgradeServiceImpl implements RfnGatewayFirmwareU
         return firmwareUpgradeDao.getUpdateResults(updateId);
     }
     
+    @Override
+    public Map<String, String> getFirmwareUpdateServerVersions() throws NmCommunicationException {
+        Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
+        return firmwareUpgradeDao.getFirmwareUpdateServerVersions(gateways);
+    }
 }

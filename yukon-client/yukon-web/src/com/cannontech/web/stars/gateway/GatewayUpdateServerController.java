@@ -26,6 +26,7 @@ import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
+import com.cannontech.common.rfn.service.RfnGatewayFirmwareUpgradeService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -45,6 +46,7 @@ public class GatewayUpdateServerController {
     private static final Logger log = YukonLogManager.getLogger(GatewayUpdateServerController.class);
 
     @Autowired private RfnGatewayService rfnGatewayService;
+    @Autowired private RfnGatewayFirmwareUpgradeService rfnFirmwareUpgradeService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private GatewayEventLogService gatewayEventLogService;
     @Autowired private GlobalSettingDao globalSettingDao;
@@ -151,21 +153,18 @@ public class GatewayUpdateServerController {
     }
     
     /**
-     * This method provides all update Server with their available version for existing gateways and
-     * uses getAvailableVersionForAllExistingRfnGatewayUpdateServers rfnGatewayservice
-     * 
-     * @param userContext
-     * @return
+     * This method provides a Map of all firmware update servers and their available version, for every update server
+     * currently used by existing gateways.
      */
     @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_VIEW)
     @RequestMapping(value = "/gateways/retrieveAvailableVersionForRfnUpdateServer", method = RequestMethod.GET)
-    public @ResponseBody Map<String, Object> retrieveAvailableVersionForRfnUpdateServer(ModelMap model,
+    public @ResponseBody Map<String, String> retrieveAvailableVersionForRfnUpdateServer(ModelMap model,
             YukonUserContext userContext) {
-        Map<String, Object> updateServerAvailableVersionMap = null;
+        Map<String, String> updateServerAvailableVersionMap = null;
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         try {
             updateServerAvailableVersionMap =
-                rfnGatewayService.getAvailableVersionForAllExistingRfnGatewayUpdateServers();
+                    rfnFirmwareUpgradeService.getFirmwareUpdateServerVersions();
         } catch (NmCommunicationException e) {
             String errorMsg = accessor.getMessage(baseKey + "error.comm");
             model.addAttribute("errorMsg", errorMsg);
