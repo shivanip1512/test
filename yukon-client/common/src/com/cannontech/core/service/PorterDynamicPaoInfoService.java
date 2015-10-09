@@ -12,6 +12,20 @@ public interface PorterDynamicPaoInfoService {
         public Duration profileInterval;
     }
     
+    /**
+     * Asynchronously retrieves the voltage profile details from Porter for the given device.
+     * @param paoId the device to query for.
+     * @param callback the consumer to be called once the service call returns.  As with the synchronous call, it will 
+     * provide the details message, or null if there was an error.  Any of the detail message fields may be null if 
+     * Porter does not have the DynamicPaoInfo for a given value.
+     */
     void getVoltageProfileDetails(int paoId, Consumer<VoltageProfileDetails> callback);
+
+    /**
+     * Retrieves the voltage profile details from Porter for the given device.
+     * @param paoId the device to query for.
+     * @return the details message, or null if there was an error.  Any of the detail message fields may be null 
+     * if Porter does not have the DynamicPaoInfo for a given value.
+     */
     VoltageProfileDetails getVoltageProfileDetails(int paoId);
 }
