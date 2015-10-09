@@ -295,7 +295,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
              * If RFN-420fD is changed to RFN-410fD model should remain the same as the model on RFN-420fD
              * which is FocusAXR-SD
              */
-            if (!models.containsKey(rfnAddress.getModel())) {
+            if (null != rfnAddress.getModel() && !models.containsKey(rfnAddress.getModel())) {
                 // update model only if the model for the new device is not a valid model choice for the old
                 // device
                 rfnAddress.setModel(rfnManufacturerModels.get(0).getModel());
@@ -346,10 +346,6 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         }
 
         if (newDevice instanceof RfnBase && oldDevice instanceof MCTBase) {
-            
-            if (info == null || info.getRfnIdentifier() == null || !info.getRfnIdentifier().isNotBlank()) {
-                throw new ProcessingException("Serial Number, Manufacturer and Model are required");
-            }
             
             RfnIdentifier rfnIdentifier = info.getRfnIdentifier();
             try {

@@ -20,7 +20,10 @@ import com.cannontech.common.bulk.service.ChangeDeviceTypeService.ChangeDeviceTy
 import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.spring.YukonSpringHook;
 
 public class RfnOptionPanel extends DataInputPanel implements CaretListener {
@@ -116,11 +119,24 @@ public class RfnOptionPanel extends DataInputPanel implements CaretListener {
         String serialNumber = StringUtils.trimToNull(getSerialNumberTextField().getText()); // Don't respect leading or trailing spaces
         String manufacturer = StringUtils.isBlank(getManufacturerTextField().getText()) ? null : getManufacturerTextField().getText();
         String model = StringUtils.isBlank(getModelTextField().getText()) ? null : getModelTextField().getText();
-        
+        YukonPAObject yukonPAObject = (YukonPAObject) o;
+        LiteYukonPAObject liteYukonPAObject =
+            new LiteYukonPAObject(yukonPAObject.getPAObjectID(), yukonPAObject.getPAOName(),
+                yukonPAObject.getPaoType(), yukonPAObject.getPAODescription(), yukonPAObject.isDisabled() ? "Y" : "N");
         RfnIdentifier rfnIdentifier = new RfnIdentifier(serialNumber, manufacturer, model);
-        if(!rfnIdentifier.isNotBlank())
-            throw new EditorInputValidationException("Serial Number, Manufacturer, and Model fields must all be filled in.");
-                
+
+        RfnDevice device = new RfnDevice(rfnIdentifier.getSensorSerialNumber(), liteYukonPAObject, rfnIdentifier);
+
+        if (rfnIdentifier.isBlank()) {
+            /* When someone has blanked out the three fields of the rfn device address, delete that row from RfnAddress. */
+            rfnDeviceDao.deleteRfnAddress(device);
+            return new ChangeDeviceTypeInfo(rfnIdentifier);
+        }
+        if (!rfnIdentifier.isNotBlank()) {
+            // Throws an exception if any of the three fields(Serial Number, Manufacturer, and Model) is
+            // missing.
+            throw new Error("Serial Number, Manufacturer, and Model fields must all be empty or all be filled in.");
+        }
         /* Check for duplicates */
         try {
             rfnDeviceDao.getDeviceForExactIdentifier(rfnIdentifier);

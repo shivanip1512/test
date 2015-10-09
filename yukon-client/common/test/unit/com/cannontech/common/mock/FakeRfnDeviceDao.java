@@ -75,4 +75,9 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
     public void updateGatewayType(RfnDevice device) {
         throw new MethodNotImplementedException();
     }
+
+    @Override
+    public void deleteRfnAddress(RfnDevice device) {
+        throw new MethodNotImplementedException();
+    }
 }
