@@ -79,7 +79,7 @@ const std::map<long, Commands::RfnCentronLcdConfigurationCommand::DisplayDigits>
 
 RfnMeterDevice::ConfigMap Rfn410CentronDevice::getConfigMethods(bool readOnly)
 {
-    ConfigMap m = RfnResidentialDevice::getConfigMethods( readOnly );
+    ConfigMap m = RfnResidentialVoltageDevice::getConfigMethods( readOnly );
 
     if( readOnly )
     {

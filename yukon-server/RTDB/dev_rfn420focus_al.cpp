@@ -69,7 +69,7 @@ const StringsToMetrics ConfigToCommand = boost::assign::list_of<StringsToMetrics
 
 RfnMeterDevice::ConfigMap Rfn420FocusAlDevice::getConfigMethods(bool readOnly)
 {
-    ConfigMap m = RfnResidentialDevice::getConfigMethods( readOnly );
+    ConfigMap m = RfnResidentialVoltageDevice::getConfigMethods( readOnly );
 
     if( readOnly )
     {
