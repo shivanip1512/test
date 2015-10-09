@@ -214,7 +214,7 @@ size_t StreamAmqConnection<Outbound, Inbound>::peek(void *buf, int len)
     {
         const auto &msg = _inbound.front();
 
-        if( msg.size() < len )
+        if( msg.size() >= len )
         {
             std::copy(msg.begin(), msg.begin() + len, stdext::make_checked_array_iterator(reinterpret_cast<unsigned char *>(buf), len));
 
