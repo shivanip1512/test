@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.tag.service.TagService;
@@ -52,7 +53,7 @@ public class TagServiceImpl implements TagService{
         reg.setAppName(BootstrapUtils.getApplicationName());
         reg.setAppIsUnique(0);
         reg.setAppKnownPort(0);
-        reg.setAppExpirationDelay(900); // 15 minutes
+        reg.setAppExpirationDelay((int) Duration.standardMinutes(15).getStandardSeconds());
         reg.setPriority(15);
 
         PointRegistration pReg = new PointRegistration();
