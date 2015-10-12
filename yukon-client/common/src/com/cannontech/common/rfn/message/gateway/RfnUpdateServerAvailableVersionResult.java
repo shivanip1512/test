@@ -6,5 +6,9 @@ package com.cannontech.common.rfn.message.gateway;
  * Used by {@link RfnUpdateServerAvailableVersionResponse}
  */
 public enum RfnUpdateServerAvailableVersionResult {
-    SUCCESS, INVALID_URL, RELEASE_VERSION_NOT_FOUND, NETWORK_ERROR, FAILED, ;
+    SUCCESS,
+    INVALID_URL,
+    RELEASE_VERSION_NOT_FOUND,
+    NETWORK_ERROR,
+    FAILED, ;
 }
