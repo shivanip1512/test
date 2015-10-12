@@ -10,6 +10,7 @@ import javax.jms.ConnectionFactory;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.util.StringUtils;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
@@ -24,8 +25,6 @@ import com.cannontech.common.rfn.model.RfnGatewayFirmwareUpdateSummary;
 import com.cannontech.common.rfn.service.RfnGatewayFirmwareUpgradeService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 
-//TODO: logging
-//TODO: event logging
 public class RfnGatewayFirmwareUpgradeServiceImpl implements RfnGatewayFirmwareUpgradeService {
     
     private static final Logger log = YukonLogManager.getLogger(RfnGatewayServiceImpl.class);
@@ -47,6 +46,8 @@ public class RfnGatewayFirmwareUpgradeServiceImpl implements RfnGatewayFirmwareU
     @Override
     public int sendFirmwareUpgrade(Collection<RfnGateway> gateways) throws GatewayDataException {
         
+        log.info("Sending firmware upgrade for gateways: " + StringUtils.collectionToCommaDelimitedString(gateways));
+        
         Map<Integer, FirmwareUpdateServerInfo> firmwareUpdateServerInfos = 
                 firmwareUpgradeDao.getAllFirmwareUpdateServerInfo(gateways);
         
@@ -61,6 +62,7 @@ public class RfnGatewayFirmwareUpgradeServiceImpl implements RfnGatewayFirmwareU
             request.setUpdateId(updateId);
             request.setReleaseVersion(serverInfo.getReleaseVersion());
             
+            log.debug("Sending firmware update request: " + request);
             firmwareUpdateRequestTemplate.convertAndSend(firmwareUpdateRequestQueue, request);
         }
         
