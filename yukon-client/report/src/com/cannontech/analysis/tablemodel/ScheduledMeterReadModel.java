@@ -16,13 +16,18 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFilter;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentSource;
-import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
+import com.cannontech.database.vendor.DatabaseVendor;
+import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
+import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.NaturalOrderComparator;
 
 public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadModel.ScheduledMeterReadRow>
 {
+    private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     static public class ScheduledMeterReadRow {
     	public String scheduleName;
     	public Date scheduleStartTime;
@@ -193,50 +198,6 @@ public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadM
 	    getData().add(row);
 	}
 
-	/**
-	 * Build the SQL statement to retrieve MissedMeter data.
-	 * @return StringBuffer  an sqlstatement
-	 */
-	public SqlFragmentSource buildSQLStatement() {
-	    SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT TOP "+ SCHEDULED_METER_READ_RECORDS_LIMIT +"SCHEDULE.PAONAME, DRJL.STARTTIME, DRJL.STOPTIME, ");
-        sql.append(" DRRL.REQUESTID, DRRL.COMMAND, DRRL.STARTTIME, DRRL.STOPTIME, ");
-        sql.append(" DRL.TIMESTAMP, DRL.STATUSCODE, ");
-        sql.append(" PAO.PAONAME, DCS.ADDRESS, DMG.METERNUMBER, ROUTE.PAONAME ");
-        sql.append(" FROM DEVICEREADLOG DRL, DEVICEREADREQUESTLOG DRRL, DEVICEREADJOBLOG DRJL, ");
-        sql.append(" YUKONPAOBJECT PAO, DEVICECARRIERSETTINGS DCS, DEVICEMETERGROUP DMG, ");
-        sql.append(" YUKONPAOBJECT ROUTE, DEVICEROUTES DR, YUKONPAOBJECT SCHEDULE ");
-        sql.append(" WHERE DRL.DEVICEID = PAO.PAOBJECTID ");
-        sql.append(" AND DRL.DeviceReadRequestLogID = DRRL.DeviceReadRequestLogID ");
-        sql.append(" AND DRRL.DeviceReadJobLogID = DRJL.DeviceReadJobLogID ");
-        sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID ");
-        sql.append(" AND DMG.DEVICEID = DCS.DEVICEID ");
-        sql.append(" AND PAO.PAOBJECTID = DR.DEVICEID ");
-        sql.append(" AND DR.ROUTEID = ROUTE.PAOBJECTID ");
-        sql.append(" AND SCHEDULE.PAOBJECTID = DRJL.ScheduleID ");
-        sql.append(" AND TIMESTAMP > ").appendArgument(getStartDate());
-        sql.append(" AND TIMESTAMP <= ").appendArgument(getStopDate());
-		
-//		Use paoIDs in query if they exist
-		if( getFilterModelType().equals(ReportFilter.SCHEDULE)) {
-			if( getPaoIDs() != null && getPaoIDs().length > 0) {
-                sql.append(" AND DRJL.ScheduleID IN (", getPaoIDs(), ") ");
-			}
-		} else if (getFilterModelType().equals(ReportFilter.METER) | getFilterModelType().equals(ReportFilter.DEVICE)) {
-			if( getPaoIDs() != null && getPaoIDs().length > 0) {
-                sql.append(" AND PAO.PAOBJECTID IN (" , getPaoIDs(), ") ");
-			}
-		}
-		
-		if (getStatusCodeType() == StatusCodeType.ERROR_METER_READ_TYPE) {
-            sql.append(" AND DRL.STATUSCODE > 0");
-        } else if(getStatusCodeType() == StatusCodeType.SUCCESS_METER_READ_TYPE) {
-            sql.append(" AND DRL.STATUSCODE = 0");
-        }
-
-		return sql;
-	}	
-	
     public Comparator scheduledMeterReadComparator = new java.util.Comparator<ScheduledMeterReadRow>()
     {
         public int compare(ScheduledMeterReadRow smr1, ScheduledMeterReadRow smr2){
@@ -332,29 +293,114 @@ public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadM
             return 0;
         }
     };
-    
-	
-    @Override
-	public void collectData() {
-		//Reset all objects, new data being collected!
-		setData(null);
-		totals = null;
-		
-		SqlFragmentSource sql = buildSQLStatement();
-		CTILogger.info("SQL for MeterReadModel: " + sql.toString());
-		CTILogger.info("START DATE >= " + getStartDate() + " - STOP DATE < " + getStopDate());
-		JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
-		template.query(sql.getSql(), sql.getArguments(), new RowCallbackHandler() {
-		    @Override
-		    public void processRow(ResultSet rs) throws SQLException {
-		        addDataRow(rs);
-		    }
-		});
 
-		Collections.sort(getData(), scheduledMeterReadComparator);
-		
-		CTILogger.info("Report Records Collected from Database: " + getData().size());
-	}
+    @Override
+    public void collectData() {
+        vendorSpecificSqlBuilderFactory = YukonSpringHook.getBean(VendorSpecificSqlBuilderFactory.class);
+
+        // Reset all objects, new data being collected!
+        setData(null);
+        totals = null;
+
+        SqlFragmentSource sql = buildLimitedSQLStatement();
+        CTILogger.info("SQL for MeterReadModel: " + sql.toString());
+        CTILogger.info("START DATE >= " + getStartDate() + " - STOP DATE < " + getStopDate());
+        JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
+        template.query(sql.getSql(), sql.getArguments(), new RowCallbackHandler() {
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                addDataRow(rs);
+            }
+        });
+
+        Collections.sort(getData(), scheduledMeterReadComparator);
+
+        CTILogger.info("Report Records Collected from Database: " + getData().size());
+    }
+
+    private SqlFragmentSource buildLimitedSQLStatement() {
+        VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
+        buildSqlServerQuery(builder);
+        buildOtherQuery(builder);
+        return builder;
+    }
+
+    /**
+     * Build the SQL query to retrieve MissedMeter data for sql server.
+     * 
+     * @param VendorSpecificSqlBuilder
+     * @return SqlBuilder
+     */
+    public SqlBuilder buildSqlServerQuery(VendorSpecificSqlBuilder builder) {
+        SqlBuilder sql = builder.buildFor(DatabaseVendor.getMsDatabases());
+        sql.append("SELECT TOP " + SCHEDULED_METER_READ_RECORDS_LIMIT);
+        sql.append("SCHEDULE.PAONAME, DRJL.STARTTIME, DRJL.STOPTIME, ");
+        sql.append(" DRRL.REQUESTID, DRRL.COMMAND, DRRL.STARTTIME, DRRL.STOPTIME, ");
+        sql.append(" DRL.TIMESTAMP, DRL.STATUSCODE, ");
+        sql.append(" PAO.PAONAME, DCS.ADDRESS, DMG.METERNUMBER, ROUTE.PAONAME ");
+        sql.append(" FROM DEVICEREADLOG DRL, DEVICEREADREQUESTLOG DRRL, DEVICEREADJOBLOG DRJL, ");
+        sql.append(" YUKONPAOBJECT PAO, DEVICECARRIERSETTINGS DCS, DEVICEMETERGROUP DMG, ");
+        sql.append(" YUKONPAOBJECT ROUTE, DEVICEROUTES DR, YUKONPAOBJECT SCHEDULE ");
+        sql.append(" WHERE");
+        appendCommonWhereClauses(sql);
+        return sql;
+    }
+
+    /**
+     * Build the SQL query to retrieve MissedMeter data for oracle or other vendor.
+     * 
+     * @param VendorSpecificSqlBuilder
+     * @return SqlBuilder
+     * @return
+     */
+    public SqlBuilder buildOtherQuery(VendorSpecificSqlBuilder builder) {
+        SqlBuilder sql = builder.buildOther();
+        sql.append("SELECT shdPaoName, jobstarttime,  jobstoptime, requestid, command, starttime, ");
+        sql.append("stoptime, timestamp, statuscode, paoname, address, meterno, routename ");
+        sql.append("FROM (");
+        sql.append("SELECT SCHEDULE.PAONAME as shdpaoname, DRJL.STARTTIME as jobstarttime, ");
+        sql.append("DRJL.STOPTIME jobstoptime,DRRL.REQUESTID as requestid, DRRL.COMMAND as command, ");
+        sql.append("DRRL.STARTTIME as starttime, DRRL.STOPTIME as stoptime,DRL.TIMESTAMP as timestamp, ");
+        sql.append("DRL.STATUSCODE as statuscode,PAO.PAONAME as paoname, DCS.ADDRESS as address, ");
+        sql.append("DMG.METERNUMBER as meterno, ROUTE.PAONAME as routename, ");
+        sql.append("ROW_NUMBER() over(order by SCHEDULE.PAONAME) rn ");
+        sql.append("FROM DEVICEREADLOG DRL, DEVICEREADREQUESTLOG DRRL, DEVICEREADJOBLOG DRJL, ");
+        sql.append("YUKONPAOBJECT PAO, DEVICECARRIERSETTINGS DCS, DEVICEMETERGROUP DMG, ");
+        sql.append("YUKONPAOBJECT ROUTE, DEVICEROUTES DR, YUKONPAOBJECT SCHEDULE ");
+        appendCommonWhereClauses(sql);
+        sql.append(")a where rn <=" + SCHEDULED_METER_READ_RECORDS_LIMIT);
+        return sql;
+    }
+
+    private void appendCommonWhereClauses(SqlBuilder sql) {
+        sql.append(" DRL.DEVICEID = PAO.PAOBJECTID ");
+        sql.append(" AND DRL.DeviceReadRequestLogID = DRRL.DeviceReadRequestLogID ");
+        sql.append(" AND DRRL.DeviceReadJobLogID = DRJL.DeviceReadJobLogID ");
+        sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID ");
+        sql.append(" AND DMG.DEVICEID = DCS.DEVICEID ");
+        sql.append(" AND PAO.PAOBJECTID = DR.DEVICEID ");
+        sql.append(" AND DR.ROUTEID = ROUTE.PAOBJECTID ");
+        sql.append(" AND SCHEDULE.PAOBJECTID = DRJL.ScheduleID ");
+        sql.append(" AND TIMESTAMP > ").appendArgument(getStartDate());
+        sql.append(" AND TIMESTAMP <= ").appendArgument(getStopDate());
+
+        // Use paoIDs in query if they exist
+        if (getFilterModelType().equals(ReportFilter.SCHEDULE)) {
+            if (getPaoIDs() != null && getPaoIDs().length > 0) {
+                sql.append(" AND DRJL.ScheduleID IN (", getPaoIDs(), ") ");
+            }
+        } else if (getFilterModelType().equals(ReportFilter.METER) | getFilterModelType().equals(ReportFilter.DEVICE)) {
+            if (getPaoIDs() != null && getPaoIDs().length > 0) {
+                sql.append(" AND PAO.PAOBJECTID IN (", getPaoIDs(), ") ");
+            }
+        }
+
+        if (getStatusCodeType() == StatusCodeType.ERROR_METER_READ_TYPE) {
+            sql.append(" AND DRL.STATUSCODE > 0");
+        } else if (getStatusCodeType() == StatusCodeType.SUCCESS_METER_READ_TYPE) {
+            sql.append(" AND DRL.STATUSCODE = 0");
+        }
+    }
 
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
@@ -581,7 +627,7 @@ public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadM
 	{
 		String html = "";
 		html += "<table align='center' width='90%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
-		html += "  <tr>" + LINE_SEPARATOR;
+		html += "  <tr>Note : Maximum 150,000 results will be provided. " + LINE_SEPARATOR;
 
 		html += "    <td valign='top'>" + LINE_SEPARATOR;		
 		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
