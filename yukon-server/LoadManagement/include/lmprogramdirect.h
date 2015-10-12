@@ -108,6 +108,7 @@ DECLARE_COLLECTABLE( CtiLMProgramDirect );
     BOOL notifyGroupsOfStart(CtiMultiMsg* multiNotifMsg);
     BOOL notifyGroupsOfStop(CtiMultiMsg* multiNotifMsg);
     bool notifyGroupsOfAdjustment(CtiMultiMsg* multiNotifMsg);
+    bool notifyGroupsOfSchedule(const CtiTime &start, const CtiTime &stop, CtiMultiMsg* multiNotifMsg);
     BOOL wasControlActivatedByStatusTrigger();
 
     void requestAdjustNotification(const CtiTime& stop_time);

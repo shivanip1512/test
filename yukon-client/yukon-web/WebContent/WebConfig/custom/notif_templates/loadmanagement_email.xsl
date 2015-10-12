@@ -14,13 +14,17 @@
             action - {starting,finishing,adjusting}
             startdate - date the event starts (e.g. "Tuesday, May 31")
             starttime - time the event starts (e.g. ""3:45 PM")
+            startdatetime - time and date the event starts (e.g. ""3:45 PM")
             stopdate - date the event stops (e.g. "Tuesday, May 31")
             stoptime - time the event stops (e.g. "5:45 PM")
+            stopdatetime - time and date the event stops (e.g. ""3:45 PM")
             durationhours - number of whole hours in event
             durationminutes - numer of minutes in event
             remainingminutes - equal to: durationminutes - (durationhours * 60)
             openended - {yes,no}  
             customername - name of the CICustomer being notified 
+            timezone - name of the CICustomer being notified 
+            today - Todays date 
     -->
 
 
@@ -35,6 +39,9 @@
     <xsl:template match="loadmanagement[programname='First'][action='finishing']">
         <xsl:call-template name="endFirst" />
     </xsl:template>
+    <xsl:template match="loadmanagement[programname='First'][action='scheduling']">
+        <xsl:call-template name="schedulingFirst" />
+    </xsl:template>
     <xsl:template match="loadmanagement[programname='First'][action='adjusting']">
         <xsl:call-template name="adjustFirst" />
     </xsl:template>
@@ -45,6 +52,9 @@
     </xsl:template>
     <xsl:template match="loadmanagement[action='finishing']" priority="-1">
         <xsl:call-template name="endDefault" />
+    </xsl:template>
+    <xsl:template match="loadmanagement[action='scheduling']" priority="-1">
+        <xsl:call-template name="schedulingDefault" />
     </xsl:template>
     <xsl:template match="loadmanagement[action='adjusting']" priority="-1">
         <xsl:call-template name="adjustDefault" />
@@ -91,6 +101,17 @@ Today is <xsl:value-of select="startdate" />. Utility is extending the event whi
         </body>
     </xsl:template>
 
+    <!-- First Schedule Script -->
+    <xsl:template name="schedulingFirst">
+
+        <subject>First Event Schedule</subject>
+        <body>Utility is notifying all customers enrolled in the program of a Scheduled Curtailment Event.
+
+Today is <xsl:value-of select="today" />.  Utility is asking that you control your electric load to your contracted firm demand level beginning at <xsl:value-of select="starttime" /> and continuing until <xsl:value-of select="stoptime" />.
+<xsl:call-template name="closing" />
+        </body>
+    </xsl:template>
+
 
 
 
@@ -122,6 +143,15 @@ Thank you for your participation.
 
 Today is <xsl:value-of select="startdate" />. Utility is modifying the event which will now end at <xsl:value-of select="stoptime" />.
 <xsl:call-template name="closing" />
+        </body>
+    </xsl:template>
+
+    <!-- Default Schedule Script -->
+    <xsl:template name="schedulingDefault">
+        <subject>Default Event Schedule</subject>
+        <body>Utility is notifying all customers enrolled in the program of a Scheduled Curtailment Event.
+
+Today is <xsl:value-of select="today" />.  Utility is asking that you control your electric load to your contracted firm demand level beginning at <xsl:value-of select="starttime" /> and continuing until <xsl:value-of select="stoptime" />.
         </body>
     </xsl:template>
 

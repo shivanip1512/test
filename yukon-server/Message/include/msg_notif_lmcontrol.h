@@ -16,7 +16,7 @@ public:
 
     typedef CtiMessage Inherited;
 
-    enum NotificationType { STARTING = 1, STARTING_NEVER_STOP, UPDATING, FINISHING };
+    enum NotificationType { STARTING = 1, STARTING_NEVER_STOP, UPDATING, FINISHING, SCHEDULING };
     
     CtiNotifLMControlMsg();
     CtiNotifLMControlMsg(const std::vector<int>& group_ids, int notif_type, int program_id, const CtiTime& start_time, const CtiTime& stop_time);

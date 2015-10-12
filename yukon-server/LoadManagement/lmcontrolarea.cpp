@@ -2289,6 +2289,9 @@ void CtiLMControlArea::handleTimeBasedControl(CtiTime currentTime, LONG secondsF
   handleNotification
 
   Send out any necessary notifications
+
+  This is periodically (every 15 seconds or so) called for each Control Area active.
+
 ----------------------------------------------------------------------------*/
 void CtiLMControlArea::handleNotification(CtiTime currentTime, CtiMultiMsg* multiNotifMsg)
 {

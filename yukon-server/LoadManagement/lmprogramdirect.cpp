@@ -3572,6 +3572,28 @@ BOOL CtiLMProgramDirect::notifyGroupsOfStop(CtiMultiMsg* multiNotifMsg)
     return notifyGroups(CtiNotifLMControlMsg::FINISHING, multiNotifMsg);
 }
 
+/*----------------------------------------------------------------------------
+notifyGroupsOfSchedule
+
+Let the notification groups know when we have scheduled a start program
+Returns true if a notifcation was sent.
+----------------------------------------------------------------------------*/
+bool CtiLMProgramDirect::notifyGroupsOfSchedule(const CtiTime &start, const CtiTime &stop, CtiMultiMsg* multiNotifMsg)
+{
+    if(_LM_DEBUG & LM_DEBUG_DIRECT_NOTIFY)
+    {
+        CTILOG_DEBUG(dout, "sending notification of scheduled program start. Program: " << getPAOName());
+    }
+
+    // If the notify time is longer than say a month from now then we must never
+    // be stopping
+    CtiTime now;
+
+    CtiNotifLMControlMsg* notif_msg = CTIDBG_new CtiNotifLMControlMsg(_notificationgroupids, CtiNotifLMControlMsg::SCHEDULING, getPAOId(), start, stop);
+    multiNotifMsg->insert(notif_msg);
+    return true;
+}
+
 BOOL  CtiLMProgramDirect::wasControlActivatedByStatusTrigger()
 {
     return _controlActivatedByStatusTrigger;
@@ -5848,10 +5870,19 @@ bool CtiLMProgramDirect::notifyGroups(int type, CtiMultiMsg* multiNotifMsg)
  * Sets up the notification of groups given a start (active) and a stop (inactive) time
  * If this program isn't set to do notifications then this will do nothing.
  */
-void CtiLMProgramDirect::scheduleNotification(const CtiTime&  start_time, const CtiTime& stop_time)
+void CtiLMProgramDirect::scheduleNotification(const CtiTime& start_time, const CtiTime& stop_time)
 {
+    CtiMultiMsg* multiNotifMsg = new CtiMultiMsg();
+
+    // Dont bother to send a schedule if start is withing 2 minutes
+    if(CtiTime::now().addMinutes(2) < start_time)
+    {
+        notifyGroupsOfSchedule(start_time, stop_time, multiNotifMsg);
+    }
     scheduleStartNotification(start_time);
     scheduleStopNotification(stop_time);
+
+    CtiLoadManager::getInstance()->sendMessageToNotification(multiNotifMsg);
 }
 
 /**

@@ -2,6 +2,7 @@ package com.cannontech.notif.handler;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.TimeZone;
 
 import com.cannontech.common.util.Iso8601DateUtil;
@@ -58,6 +59,9 @@ public class LoadManagementMessageHandler extends NotifHandler implements Messag
         case NotifLMControlMsg.FINISHING_CONTROL_NOTIFICATION:
             actionString = "finishing";
             break;
+        case NotifLMControlMsg.SCHEDULING_NOTIFICATION:
+            actionString = "scheduling";
+            break;
         default:
             actionString = "unknown";
         }
@@ -83,6 +87,7 @@ public class LoadManagementMessageHandler extends NotifHandler implements Messag
                     notif.addData("stoptime", _timeFormatter.format(msg.stopTime));
                     notif.addData("stopdate", _dateFormatter.format(msg.stopTime));
                     notif.addData("stopdatetime", Iso8601DateUtil.formatIso8601Date(msg.stopTime, timeZone));
+                    notif.addData("today", _dateFormatter.format(new Date()));
                 }
                 
                 notif.addData("durationminutes", durationMinutesStr);
