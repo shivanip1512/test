@@ -843,6 +843,7 @@ public class DevEventLogCreationService {
                gatewayEventLogService.updatedGateway(user, paoName, serial, ipAddress, adminUser, superUser);
                gatewayEventLogService.deletedGateway(user, paoName, serial);
                gatewayEventLogService.sentCertificateUpdate(user, "fake.pkg.nm", "fakeCertificate", 1);
+               gatewayEventLogService.sentFirmwareUpdate(user, 1);
            }
         });
         eventLogExecutables = ImmutableMap.copyOf(executables);

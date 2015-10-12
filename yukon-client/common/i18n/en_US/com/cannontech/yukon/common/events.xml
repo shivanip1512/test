@@ -231,6 +231,9 @@
     <entry key="yukon.common.events.system.rfn.gateway.sentCertificateUpdate.3">Certificate Identifier</entry>
     <entry key="yukon.common.events.system.rfn.gateway.sentCertificateUpdate.7">Gateways Affected</entry>
     
+    <entry key="yukon.common.events.system.rfn.gateway.sentFirmwareUpdate">Firmware update sent to {7} gateways by {1}.</entry>
+    <entry key="yukon.common.events.system.rfn.gateway.sentFirmwareUpdate.7">Gateways Affected</entry>
+    
 	<!-- CommandSchedule -->
     <entry key="yukon.common.events.system.commandSchedule.scheduleCreated">ScheduleId {7} created by {1}.</entry>
     <entry key="yukon.common.events.system.commandSchedule.scheduleUpdated">ScheduleId {7} updated by {1}.</entry>

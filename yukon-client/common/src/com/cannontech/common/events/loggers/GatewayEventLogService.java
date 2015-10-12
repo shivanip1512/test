@@ -36,4 +36,8 @@ public interface GatewayEventLogService {
                                       String fileName,
                                       String certificateId,
                                       int gatewaysAffected);
+    
+    @YukonEventLog(category="system.rfn.gateway")
+    public void sentFirmwareUpdate(@Arg(ArgEnum.username) LiteYukonUser user,
+                                   int gatewaysAffected);
 }
