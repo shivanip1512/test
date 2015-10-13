@@ -238,6 +238,40 @@ INSERT INTO DeviceConfigCategoryItem
     ) U;
 /* End YUK-14684 */
 
+/* Start YUK-14722 */
+CREATE TABLE GatewayFirmwareUpdate (
+   UpdateId             NUMBER              NOT NULL,
+   SendDate             DATE                NOT NULL,
+   GatewayCount         NUMBER              NOT NULL,
+   UpdateServerCount    NUMBER              NOT NULL,
+   CONSTRAINT PK_GatewayFirmwareUpdate PRIMARY KEY (UpdateId)
+);
+GO
+
+CREATE TABLE GatewayFirmwareUpdateEntry (
+   EntryId              NUMBER              NOT NULL,
+   UpdateId             NUMBER              NOT NULL,
+   GatewayId            NUMBER              NOT NULL,
+   OriginalVersion      VARCHAR2(100)       NOT NULL,
+   NewVersion           VARCHAR2(100)       NOT NULL,
+   UpdateServerUrl      VARCHAR2(300)       NOT NULL,
+   UpdateStatus         VARCHAR2(40)        NOT NULL,
+   CONSTRAINT PK_GatewayFirmwareUpdateEntry PRIMARY KEY (EntryId)
+);
+GO
+
+ALTER TABLE GatewayFirmwareUpdateEntry
+   ADD CONSTRAINT FK_GatewayFUEnt_GatewayFUUpd FOREIGN KEY (UpdateId)
+      REFERENCES GatewayFirmwareUpdate (UpdateId)
+         ON DELETE CASCADE;
+GO
+
+ALTER TABLE GatewayFirmwareUpdateEntry
+   ADD CONSTRAINT FK_GatewayFirmUpdateEnt_Device FOREIGN KEY (GatewayId)
+      REFERENCES Device (DeviceId);
+GO
+/* End YUK-14722 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/12/2015 12:34:37 PM                        */
+/* Created on:     10/12/2015 10:21:58 AM                       */
 /*==============================================================*/
 
 
@@ -5616,6 +5616,33 @@ create table GatewayCertificateUpdateEntry (
    GatewayId            numeric              not null,
    UpdateStatus         varchar(40)          not null,
    constraint PK_GatewayCertificateUpdEntry primary key (EntryId)
+)
+go
+
+/*==============================================================*/
+/* Table: GatewayFirmwareUpdate                                 */
+/*==============================================================*/
+create table GatewayFirmwareUpdate (
+   UpdateId             numeric              not null,
+   SendDate             datetime             not null,
+   GatewayCount         numeric              not null,
+   UpdateServerCount    numeric              not null,
+   constraint PK_GatewayFirmwareUpdate primary key (UpdateId)
+)
+go
+
+/*==============================================================*/
+/* Table: GatewayFirmwareUpdateEntry                            */
+/*==============================================================*/
+create table GatewayFirmwareUpdateEntry (
+   EntryId              numeric              not null,
+   UpdateId             numeric              not null,
+   GatewayId            numeric              not null,
+   OriginalVersion      varchar(100)         not null,
+   NewVersion           varchar(100)         not null,
+   UpdateServerUrl      varchar(300)         not null,
+   UpdateStatus         varchar(40)          not null,
+   constraint PK_GatewayFirmwareUpdateEntry primary key (EntryId)
 )
 go
 
@@ -12484,6 +12511,17 @@ alter table GatewayCertificateUpdateEntry
    add constraint FK_GatewayCertUpdateEnt_Device foreign key (GatewayId)
       references DEVICE (DEVICEID)
          on delete cascade
+go
+
+alter table GatewayFirmwareUpdateEntry
+   add constraint FK_GatewayFUEnt_GatewayFUUpd foreign key (UpdateId)
+      references GatewayFirmwareUpdate (UpdateId)
+         on delete cascade
+go
+
+alter table GatewayFirmwareUpdateEntry
+   add constraint FK_GatewayFirmUpdateEnt_Device foreign key (GatewayId)
+      references DEVICE (DEVICEID)
 go
 
 alter table GraphCustomerList

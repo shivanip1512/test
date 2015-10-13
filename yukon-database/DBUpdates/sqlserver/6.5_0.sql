@@ -213,6 +213,40 @@ INSERT INTO DeviceConfigCategoryItem
        WHERE CategoryType = 'rfnChannelConfiguration') T;
 /* End YUK-14684 */
 
+/* Start YUK-14722 */
+CREATE TABLE GatewayFirmwareUpdate (
+   UpdateId             NUMERIC              NOT NULL,
+   SendDate             DATETIME             NOT NULL,
+   GatewayCount         NUMERIC              NOT NULL,
+   UpdateServerCount    NUMERIC              NOT NULL,
+   CONSTRAINT PK_GatewayFirmwareUpdate PRIMARY KEY (UpdateId)
+);
+GO
+
+CREATE TABLE GatewayFirmwareUpdateEntry (
+   EntryId              NUMERIC              NOT NULL,
+   UpdateId             NUMERIC              NOT NULL,
+   GatewayId            NUMERIC              NOT NULL,
+   OriginalVersion      VARCHAR(100)         NOT NULL,
+   NewVersion           VARCHAR(100)         NOT NULL,
+   UpdateServerUrl      VARCHAR(300)         NOT NULL,
+   UpdateStatus         VARCHAR(40)          NOT NULL,
+   CONSTRAINT PK_GatewayFirmwareUpdateEntry PRIMARY KEY (EntryId)
+);
+GO
+
+ALTER TABLE GatewayFirmwareUpdateEntry
+   ADD CONSTRAINT FK_GatewayFUEnt_GatewayFUUpd FOREIGN KEY (UpdateId)
+      REFERENCES GatewayFirmwareUpdate (UpdateId)
+         ON DELETE CASCADE;
+GO
+
+ALTER TABLE GatewayFirmwareUpdateEntry
+   ADD CONSTRAINT FK_GatewayFirmUpdateEnt_Device FOREIGN KEY (GatewayId)
+      REFERENCES Device (DeviceId);
+GO
+/* End YUK-14722 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/12/2015 12:32:35 PM                        */
+/* Created on:     10/13/2015 11:11:13 AM                       */
 /*==============================================================*/
 
 
@@ -5337,6 +5337,31 @@ create table GatewayCertificateUpdateEntry  (
    GatewayId            NUMBER                          not null,
    UpdateStatus         VARCHAR2(40)                    not null,
    constraint PK_GatewayCertificateUpdEntry primary key (EntryId)
+);
+
+/*==============================================================*/
+/* Table: GatewayFirmwareUpdate                                 */
+/*==============================================================*/
+create table GatewayFirmwareUpdate  (
+   UpdateId             NUMBER                          not null,
+   SendDate             DATE                            not null,
+   GatewayCount         NUMBER                          not null,
+   UpdateServerCount    NUMBER                          not null,
+   constraint PK_GatewayFirmwareUpdate primary key (UpdateId)
+);
+
+/*==============================================================*/
+/* Table: GatewayFirmwareUpdateEntry                            */
+/*==============================================================*/
+create table GatewayFirmwareUpdateEntry  (
+   EntryId              NUMBER                          not null,
+   UpdateId             NUMBER                          not null,
+   GatewayId            NUMBER                          not null,
+   OriginalVersion      VARCHAR2(100)                   not null,
+   NewVersion           VARCHAR2(100)                   not null,
+   UpdateServerUrl      VARCHAR2(300)                   not null,
+   UpdateStatus         VARCHAR2(40)                    not null,
+   constraint PK_GatewayFirmwareUpdateEntry primary key (EntryId)
 );
 
 /*==============================================================*/
@@ -11583,6 +11608,15 @@ alter table GatewayCertificateUpdateEntry
    add constraint FK_GatewayCertUpdateEnt_Device foreign key (GatewayId)
       references DEVICE (DEVICEID)
       on delete cascade;
+
+alter table GatewayFirmwareUpdateEntry
+   add constraint FK_GatewayFUEnt_GatewayFUUpd foreign key (UpdateId)
+      references GatewayFirmwareUpdate (UpdateId)
+      on delete cascade;
+
+alter table GatewayFirmwareUpdateEntry
+   add constraint FK_GatewayFirmUpdateEnt_Device foreign key (GatewayId)
+      references DEVICE (DEVICEID);
 
 alter table GraphCustomerList
    add constraint FK_GRAPHCUS_REFGRPHCU_GRAPHDEF foreign key (GraphDefinitionID)
