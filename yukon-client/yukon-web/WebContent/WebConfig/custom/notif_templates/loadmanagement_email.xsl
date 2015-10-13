@@ -11,7 +11,7 @@
     
     <!-- Available script parameters:  
             programname - name of LM program
-            action - {starting,finishing,adjusting}
+            action - {starting,finishing,adjusting,scheduling}
             startdate - date the event starts (e.g. "Tuesday, May 31")
             starttime - time the event starts (e.g. ""3:45 PM")
             startdatetime - time and date the event starts (e.g. ""3:45 PM")
@@ -23,8 +23,8 @@
             remainingminutes - equal to: durationminutes - (durationhours * 60)
             openended - {yes,no}  
             customername - name of the CICustomer being notified 
-            timezone - name of the CICustomer being notified 
-            today - Todays date 
+            timezone - Time zone for the event's time.
+            today - Today's date 
     -->
 
 
