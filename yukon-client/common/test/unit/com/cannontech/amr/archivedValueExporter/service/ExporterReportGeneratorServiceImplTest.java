@@ -353,10 +353,10 @@ public class ExporterReportGeneratorServiceImplTest {
         List<String> previewReportRows = writer.getList();
 
         Assert.assertEquals("Device Name, Meter Route, Attribute Name, Point Value, Point Timestamp, Plain Text", previewReportRows.get(0));
-        Assert.assertEquals("MCT410FL 1,Route A,Usage,660,07/15/2012,Plain Text", previewReportRows.get(1));
+        Assert.assertEquals("MCT410FL 1,Route A,Usage,661,07/15/2012,Plain Text", previewReportRows.get(1));
         Assert.assertEquals("MCT410FL 1,Route A,Usage,670,07/16/2012,Plain Text", previewReportRows.get(2));
         Assert.assertEquals("MCT410FL 1,Route A,Usage,675,07/17/2012,Plain Text", previewReportRows.get(3));
-        Assert.assertEquals("MCT410IL 2,Route A,Usage,660,07/15/2012,Plain Text", previewReportRows.get(4));
+        Assert.assertEquals("MCT410IL 2,Route A,Usage,661,07/15/2012,Plain Text", previewReportRows.get(4));
         Assert.assertEquals("MCT410IL 2,Route A,Usage,670,07/16/2012,Plain Text", previewReportRows.get(5));
         Assert.assertEquals("MCT410IL 2,Route A,Usage,675,07/17/2012,Plain Text" , previewReportRows.get(6));
         Assert.assertEquals("MCT410FL 1,Route A,Demand,15,07/15/2012,Plain Text", previewReportRows.get(7));
@@ -421,7 +421,7 @@ public class ExporterReportGeneratorServiceImplTest {
         Assert.assertEquals("MCT410FL 1,Route A,Usage,600,07/12/2012,Plain Text", previewReportRows.get(1));
         Assert.assertEquals("MCT410FL 1,Route A,Usage,620,07/13/2012,Plain Text", previewReportRows.get(2));
         Assert.assertEquals("MCT410FL 1,Route A,Usage,646,07/14/2012,Plain Text", previewReportRows.get(3));
-        Assert.assertEquals("MCT410FL 1,Route A,Usage,660,07/15/2012,Plain Text", previewReportRows.get(4));
+        Assert.assertEquals("MCT410FL 1,Route A,Usage,661,07/15/2012,Plain Text", previewReportRows.get(4));
         Assert.assertEquals("MCT410FL 1,Route A,Usage,670,07/16/2012,Plain Text", previewReportRows.get(5));
         Assert.assertEquals("MCT410FL 1,Route A,Usage,675,07/17/2012,Plain Text" , previewReportRows.get(6));
         Assert.assertEquals("MCT410FL 1,Route A,Demand,20,07/12/2012,Plain Text", previewReportRows.get(7));
