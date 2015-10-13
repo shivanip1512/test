@@ -13,11 +13,11 @@
             programname - name of LM program
             action - {starting,finishing,adjusting,scheduling}
             startdate - date the event starts (e.g. "Tuesday, May 31")
-            starttime - time the event starts (e.g. ""3:45 PM")
-            startdatetime - time and date the event starts (e.g. ""3:45 PM")
+            starttime - time the event starts (e.g. "3:45 PM")
+            startdatetime - time and date the event starts (e.g. "2015-10-13T09:21:00")
             stopdate - date the event stops (e.g. "Tuesday, May 31")
             stoptime - time the event stops (e.g. "5:45 PM")
-            stopdatetime - time and date the event stops (e.g. ""3:45 PM")
+            stopdatetime - time and date the event stops (e.g. "2015-10-13T09:21:00")
             durationhours - number of whole hours in event
             durationminutes - numer of minutes in event
             remainingminutes - equal to: durationminutes - (durationhours * 60)
