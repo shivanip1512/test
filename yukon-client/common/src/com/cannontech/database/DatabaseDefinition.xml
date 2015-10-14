@@ -214,6 +214,7 @@
         <data name="RestoreOffset" />
         <data name="NotifyInactiveOffset" />
         <data name="NotifyAdjust" />
+        <data name="NotifySchedule" />
     </table>
     
     <table name="LMProgramDirectGroup">

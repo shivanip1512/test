@@ -45,6 +45,7 @@ DECLARE_COLLECTABLE( CtiLMProgramDirect );
     const CtiTime& getStartedRampingOutTime() const;
     BOOL getConstraintOverride() const;
     bool isAdjustNotificationPending() const;
+    bool CtiLMProgramDirect::shouldNotifyWhenScheduled() const;
 
     bool getIsRampingIn();
     bool getIsRampingOut();
@@ -162,6 +163,7 @@ private:
     LONG _notify_active_offset;
     LONG _notify_inactive_offset;
     bool _adjustment_notification_enabled;
+    bool _notify_when_scheduled;
 
     std::string _message_subject;
     std::string _message_header;

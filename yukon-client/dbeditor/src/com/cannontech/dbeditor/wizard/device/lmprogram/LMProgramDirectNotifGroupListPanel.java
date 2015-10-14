@@ -32,6 +32,8 @@ public class LMProgramDirectNotifGroupListPanel extends com.cannontech.common.gu
 	private javax.swing.JCheckBox jCheckBoxEnableStart = null;
 	private javax.swing.JCheckBox jCheckBoxEnableStop = null;
 	private javax.swing.JCheckBox jCheckBoxNotifyAdjust = null;
+    private javax.swing.JCheckBox jCheckBoxEnableSchedule = null;
+    private javax.swing.JLabel jLabelNotifySchedule = null;
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
 	
 	class IvjEventHandler implements javax.swing.event.CaretListener, java.awt.event.ActionListener 
@@ -52,10 +54,14 @@ public class LMProgramDirectNotifGroupListPanel extends com.cannontech.common.gu
 					handleOffsetEnabling(getJCheckBoxEnableStart().isSelected(), getJCheckBoxEnableStop().isSelected());
 				if (e.getSource() == getJCheckBoxEnableStop()) 
 					handleOffsetEnabling(getJCheckBoxEnableStart().isSelected(), getJCheckBoxEnableStop().isSelected());
-				if (e.getSource() == getJCheckBoxNotifyAdjust()) {
-				    getJLabelNotifyAdjust().setEnabled(getJCheckBoxNotifyAdjust().isSelected());
-				    fireInputUpdate();
+                if (e.getSource() == getJCheckBoxNotifyAdjust()) {
+                    getJLabelNotifyAdjust().setEnabled(getJCheckBoxNotifyAdjust().isSelected());
+                    fireInputUpdate();
 			    }
+                if (e.getSource() == getJCheckBoxEnableSchedule()) {
+                    getJLabelNotifySchedule().setEnabled(getJCheckBoxEnableSchedule().isSelected());
+                    fireInputUpdate();
+                }
 			};
 	}
 /**
@@ -201,6 +207,12 @@ public Object getValue(Object o)
         program.getDirectProgram().setNotifyAdjust(LMProgramDirect.NOTIFY_ADJUST_DISABLED);          // consistent with the format of the other Notify columns.  
 	}
 
+    if (getJCheckBoxEnableSchedule().isSelected()) {                                 
+        program.getDirectProgram().setEnableSchedule(LMProgramDirect.NOTIFY_SCHEDULE_ENABLED);           // The values of these class defined variables have been  
+    } else {                                                                         // chosen so that the data written to the database is  
+        program.getDirectProgram().setEnableSchedule(LMProgramDirect.NOTIFY_SCHEDULE_DISABLED);          // consistent with the format of the other Notify columns.  
+    }
+
     // Create Status point
     if(program.getPAObjectID() == null){
         PaoDao paoDao = (PaoDao) YukonSpringHook.getBean("paoDao");
@@ -253,7 +265,8 @@ private void initConnections() throws java.lang.Exception {
 	getJTextFieldNotifyInactiveOffset().addCaretListener(ivjEventHandler);
 	getJCheckBoxEnableStart().addActionListener(ivjEventHandler);
 	getJCheckBoxEnableStop().addActionListener(ivjEventHandler);
-	getJCheckBoxNotifyAdjust().addActionListener(ivjEventHandler);
+    getJCheckBoxNotifyAdjust().addActionListener(ivjEventHandler);
+    getJCheckBoxEnableSchedule().addActionListener(ivjEventHandler);
 }
 /**
  * Initialize the class.
@@ -273,12 +286,14 @@ private void initialize() {
 		java.awt.GridBagConstraints consGridBagConstraints25 = new java.awt.GridBagConstraints();
 		java.awt.GridBagConstraints consGridBagConstraints26 = new java.awt.GridBagConstraints();
 		java.awt.GridBagConstraints consGridBagConstraints27 = new java.awt.GridBagConstraints();
-		java.awt.GridBagConstraints consGridBagConstraints28 = new java.awt.GridBagConstraints();
+        java.awt.GridBagConstraints consGridBagConstraints28 = new java.awt.GridBagConstraints();
+        java.awt.GridBagConstraints consGridBagConstraints29 = new java.awt.GridBagConstraints();
+        java.awt.GridBagConstraints consGridBagConstraints30 = new java.awt.GridBagConstraints();
 		
 		consGridBagConstraints19.insets = new java.awt.Insets(20,2,50,4);
         consGridBagConstraints19.ipadx = 12;
         consGridBagConstraints19.gridwidth = 4;
-        consGridBagConstraints19.gridy = 3;
+        consGridBagConstraints19.gridy = 4;
         consGridBagConstraints19.gridx = 0;
         consGridBagConstraints19.weightx = 1.0;
         consGridBagConstraints19.weighty = 1.0;
@@ -329,6 +344,16 @@ private void initialize() {
         consGridBagConstraints28.gridwidth = 2;
         consGridBagConstraints28.anchor = java.awt.GridBagConstraints.WEST;
 		
+        consGridBagConstraints29.insets = new java.awt.Insets(2,105,1,3);
+        consGridBagConstraints29.gridy = 3;
+        consGridBagConstraints29.gridx = 0;
+        
+        consGridBagConstraints30.insets = new java.awt.Insets(2,5,0,0);
+        consGridBagConstraints30.gridy = 3;
+        consGridBagConstraints30.gridx = 1;
+        consGridBagConstraints30.gridwidth = 2;
+        consGridBagConstraints30.anchor = java.awt.GridBagConstraints.WEST;
+        
 		setLayout(new java.awt.GridBagLayout());
 		this.add(getAddRemovePanel(), consGridBagConstraints19);
 		this.add(getJCheckBoxEnableStart(), consGridBagConstraints20);
@@ -339,7 +364,9 @@ private void initialize() {
 		this.add(getJTextFieldNotifyInactiveOffset(), consGridBagConstraints25);
 		this.add(getJLabelMinutes(), consGridBagConstraints26);
 		this.add(getJCheckBoxNotifyAdjust(), consGridBagConstraints27);
-		this.add(getJLabelNotifyAdjust(), consGridBagConstraints28);
+        this.add(getJLabelNotifyAdjust(), consGridBagConstraints28);
+        this.add(getJCheckBoxEnableSchedule(), consGridBagConstraints29);
+        this.add(getJLabelNotifySchedule(), consGridBagConstraints30);
 		setSize(416, 348);
 
 		initConnections();
@@ -536,6 +563,16 @@ public void setValue(Object o)
 	    getJCheckBoxNotifyAdjust().setSelected(false);
 	    getJLabelNotifyAdjust().setEnabled(false);
 	}
+
+    if (program.getDirectProgram().shouldNotifyWhenScheduled() == LMProgramDirect.NOTIFY_SCHEDULE_ENABLED.intValue()) {
+        getJCheckBoxEnableSchedule().setSelected(true);
+        getJLabelNotifySchedule().setEnabled(true);
+    } 
+    else
+    {
+        getJCheckBoxEnableSchedule().setSelected(false);
+        getJLabelNotifySchedule().setEnabled(false);
+    }
 }
 
 @Override
@@ -682,6 +719,18 @@ public void setFirstFocus()
 		}
 		return jCheckBoxEnableStop;
 	}
+    /**
+     * This method initializes jCheckBoxEnableSchedule
+     * 
+     * @return javax.swing.JCheckBox
+     */
+    private javax.swing.JCheckBox getJCheckBoxEnableSchedule() {
+        if(jCheckBoxEnableSchedule == null) {
+            jCheckBoxEnableSchedule = new javax.swing.JCheckBox();
+            jCheckBoxEnableSchedule.setName("jCheckBoxEnableSchedule");
+        }
+        return jCheckBoxEnableSchedule;
+    }
 	
 	private javax.swing.JCheckBox getJCheckBoxNotifyAdjust() {
 	    if(jCheckBoxNotifyAdjust == null) {
@@ -690,6 +739,24 @@ public void setFirstFocus()
 	    }
 	    return jCheckBoxNotifyAdjust;
 	}
+    /**
+     * This method initializes JLabelNotifySchedule
+     * 
+     * @return javax.swing.JLabel
+     */
+    private javax.swing.JLabel getJLabelNotifySchedule() {
+        if(jLabelNotifySchedule == null) {
+            jLabelNotifySchedule = new javax.swing.JLabel();
+            jLabelNotifySchedule.setText("Notify on Schedule ");
+            jLabelNotifySchedule.setMaximumSize(new java.awt.Dimension(200,19));
+            jLabelNotifySchedule.setMinimumSize(new java.awt.Dimension(200,19));
+            jLabelNotifySchedule.setPreferredSize(new java.awt.Dimension(200,19));
+            jLabelNotifySchedule.setFont(new java.awt.Font("Dialog", java.awt.Font.BOLD, 14));
+            jLabelNotifySchedule.setName("JLabelNotifySchedule");
+            jLabelNotifySchedule.setEnabled(false);
+        }
+        return jLabelNotifySchedule;
+    }
 	
 	public void handleOffsetEnabling(boolean start, boolean stop)
 	{

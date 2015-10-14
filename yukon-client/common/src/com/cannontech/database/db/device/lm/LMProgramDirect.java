@@ -11,7 +11,8 @@ public class LMProgramDirect extends com.cannontech.database.db.DBPersistent
 	private Integer deviceID = null;
 	private Integer notifyActiveOffset = new Integer(-1);
 	private Integer notifyInactiveOffset = new Integer(-1);
-	private Integer notifyAdjust = NOTIFY_ADJUST_DISABLED;
+    private Integer notifyAdjust = NOTIFY_ADJUST_DISABLED;
+    private Integer enableSchedule = NOTIFY_SCHEDULE_DISABLED;
 	private String heading = CtiUtilities.STRING_NONE;
 	private String messageHeader = CtiUtilities.STRING_NONE;
 	private String messageFooter = CtiUtilities.STRING_NONE;
@@ -21,7 +22,8 @@ public class LMProgramDirect extends com.cannontech.database.db.DBPersistent
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"NOTIFYACTIVEOFFSET", "HEADING", "MESSAGEHEADER", "MESSAGEFOOTER", "TRIGGEROFFSET", "RESTOREOFFSET", "NOTIFYINACTIVEOFFSET", "NOTIFYADJUST"
+		"NOTIFYACTIVEOFFSET", "HEADING", "MESSAGEHEADER", "MESSAGEFOOTER", "TRIGGEROFFSET", 
+		"RESTOREOFFSET", "NOTIFYINACTIVEOFFSET", "NOTIFYADJUST", "NOTIFYSCHEDULE"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "DeviceID" };
@@ -30,6 +32,9 @@ public class LMProgramDirect extends com.cannontech.database.db.DBPersistent
 	
     public static final Integer NOTIFY_ADJUST_ENABLED = 1;
 	public static final Integer NOTIFY_ADJUST_DISABLED = -1;
+
+	public static final Integer NOTIFY_SCHEDULE_ENABLED = 1;
+    public static final Integer NOTIFY_SCHEDULE_DISABLED = -1;
 
 /**
  * LMGroupVersacomSerial constructor comment.
@@ -44,7 +49,8 @@ public void add() throws java.sql.SQLException
 {
 	Object addValues[] = { getDeviceID(), getNotifyActiveOffset(), getHeading(),
 						   getMessageHeader(), getMessageFooter(), getTriggerOffset(), 
-						   getRestoreOffset(), getNotifyInactiveOffset(), getNotifyAdjust() };
+						   getRestoreOffset(), getNotifyInactiveOffset(), getNotifyAdjust(), 
+						   shouldNotifyWhenScheduled() };
 
 	add( TABLE_NAME, addValues );
 }
@@ -70,6 +76,15 @@ public Integer getNotifyActiveOffset() {
 
 public Integer getNotifyAdjust() {
     return notifyAdjust;
+}
+
+/**
+ * Get Enable Schedule flag
+ * 
+ * @return Send notification of scheduled curtailments
+ */
+public Integer shouldNotifyWhenScheduled() {
+    return enableSchedule;
 }
 
 public String getHeading() {
@@ -168,7 +183,8 @@ public void retrieve() throws java.sql.SQLException
 		setTriggerOffset( (Double) results[4] );
 		setRestoreOffset( (Double) results[5] );
 		setNotifyInactiveOffset( (Integer) results[6]);
-		setNotifyAdjust( (Integer) results[7]);
+        setNotifyAdjust( (Integer) results[7]);
+        setEnableSchedule( (Integer) results[8]);
 	}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -210,7 +226,7 @@ public void update() throws java.sql.SQLException
 {
 	Object setValues[] = { getNotifyActiveOffset(), getHeading(), getMessageHeader(),
 							getMessageFooter(), getTriggerOffset(), getRestoreOffset(), 
-							getNotifyInactiveOffset(), getNotifyAdjust()};
+							getNotifyInactiveOffset(), getNotifyAdjust(), shouldNotifyWhenScheduled()};
 
 	Object constraintValues[] = { getDeviceID() };
 
@@ -229,4 +245,14 @@ public void setNotifyActiveOffset(Integer notifyActiveOffset) {
 public void setNotifyAdjust(Integer notifyAdjust) {
     this.notifyAdjust = notifyAdjust;
 }
+
+/**
+ * Set Enable Schedule flag
+ * 
+ * @param enableSchedule Send notification of scheduled curtailments
+ */
+public void setEnableSchedule(Integer enableSchedule) {
+    this.enableSchedule = enableSchedule;
+}
+
 }

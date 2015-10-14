@@ -41,7 +41,7 @@ using Cti::MacroOffset;
 extern ULONG _LM_DEBUG;
 extern std::queue<CtiTableLMProgramHistory> _PROGRAM_HISTORY_QUEUE;
 
-DEFINE_COLLECTABLE( CtiLMProgramDirect, CTILMPROGRAMDIRECT_ID )
+DEFINE_COLLECTABLE(CtiLMProgramDirect, CTILMPROGRAMDIRECT_ID)
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -54,6 +54,7 @@ _constraint_override(false),
 _announced_program_constraint_violation(false),
 _notify_active_offset(0),
 _notify_inactive_offset(0),
+_notify_when_scheduled(false),
 _trigger_offset(0),
 _trigger_restore_offset(0),
 _currentgearnumber(0),
@@ -112,6 +113,16 @@ LONG CtiLMProgramDirect::getNotifyActiveOffset() const
 LONG CtiLMProgramDirect::getNotifyInactiveOffset() const
 {
     return _notify_inactive_offset;
+}
+
+/*----------------------------------------------------------------------------
+getNotifySchedule
+
+Returns the schedule notification enable
+----------------------------------------------------------------------------*/
+bool CtiLMProgramDirect::shouldNotifyWhenScheduled() const
+{
+    return _notify_when_scheduled;
 }
 
 /*----------------------------------------------------------------------------
@@ -3585,12 +3596,8 @@ bool CtiLMProgramDirect::notifyGroupsOfSchedule(const CtiTime &start, const CtiT
         CTILOG_DEBUG(dout, "sending notification of scheduled program start. Program: " << getPAOName());
     }
 
-    // If the notify time is longer than say a month from now then we must never
-    // be stopping
-    CtiTime now;
-
-    CtiNotifLMControlMsg* notif_msg = CTIDBG_new CtiNotifLMControlMsg(_notificationgroupids, CtiNotifLMControlMsg::SCHEDULING, getPAOId(), start, stop);
-    multiNotifMsg->insert(notif_msg);
+    auto notif_msg = std::make_unique<CtiNotifLMControlMsg>(_notificationgroupids, CtiNotifLMControlMsg::SCHEDULING, getPAOId(), start, stop);
+    multiNotifMsg->insert(notif_msg.release());
     return true;
 }
 
@@ -5304,6 +5311,7 @@ void CtiLMProgramDirect::restore(Cti::RowReader &rdr)
 
     string tempBoolString;
     _insertDynamicDataFlag = FALSE;
+    long temp;
 
     rdr["heading"] >> _message_subject;
     rdr["messageheader"] >> _message_header;
@@ -5312,6 +5320,8 @@ void CtiLMProgramDirect::restore(Cti::RowReader &rdr)
     rdr["restoreoffset"] >> _trigger_restore_offset;
     rdr["notifyactiveoffset"] >> _notify_active_offset;
     rdr["notifyinactiveoffset"] >> _notify_inactive_offset;
+    rdr["notifyschedule"] >> temp;
+    _notify_when_scheduled = (temp == 1);
 
     {
         // NotifyAdjust is represented by -1 = false, 1 = true in the database.
@@ -5874,9 +5884,14 @@ void CtiLMProgramDirect::scheduleNotification(const CtiTime& start_time, const C
 {
     CtiMultiMsg* multiNotifMsg = new CtiMultiMsg();
 
-    // Dont bother to send a schedule if start is withing 2 minutes
+    // Don't bother to send a schedule notification if start is within 2 minutes
     if(CtiTime::now().addMinutes(2) < start_time)
     {
+        if(_LM_DEBUG & LM_DEBUG_STANDARD)
+        {
+            CTILOG_DEBUG(dout, getPAOName() << " notify of scheduled curtailment from " 
+                << start_time << " to " << stop_time);
+        }
         notifyGroupsOfSchedule(start_time, stop_time, multiNotifMsg);
     }
     scheduleStartNotification(start_time);
