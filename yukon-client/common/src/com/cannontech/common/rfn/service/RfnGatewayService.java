@@ -184,5 +184,16 @@ public interface RfnGatewayService {
     /** Converts an {@link RfnGateway} to a {@link GatewaySettings} */
     GatewaySettings gatewayAsSettings(RfnGateway gateway);
 
+    /**
+     * Update the gateways. For each gateway,
+     * If the name or location are updated, they will be stored in the Yukon database,
+     * but changes will not propagate back to Network Manager. All other changes will be
+     * sent back to Network Manager and updated in Yukon's cache. Any null parameters will not be
+     * updated. This is a blocking operation.
+     * 
+     * @return The GatewayUpdateResult indicating the success or failure reason.
+     * @throws NmCommunicationException if there is a communication error between Yukon
+     *             and Network Manager.
+     */
     void updateGateways(Iterable<RfnGateway> gateways, LiteYukonUser user) throws NmCommunicationException;
 }
