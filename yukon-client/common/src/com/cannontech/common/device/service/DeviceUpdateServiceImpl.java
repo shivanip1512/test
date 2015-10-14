@@ -279,6 +279,10 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         }
 
         if (newDevice instanceof RfnBase && oldDevice instanceof RfnBase) {
+            if (info == null || info.getRfnIdentifier() == null
+                || (!info.getRfnIdentifier().isBlank() && !info.getRfnIdentifier().isNotBlank())) {
+                throw new Error("Serial Number, Manufacturer, and Model fields must all be empty or all be filled in.");
+            }
             RfnAddress rfnAddress = (((RfnBase) oldDevice).getRfnAddress());
             List<RfnManufacturerModel> rfnManufacturerModels = RfnManufacturerModel.getForType(newDefinition.getType());
 
@@ -346,6 +350,11 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         }
 
         if (newDevice instanceof RfnBase && oldDevice instanceof MCTBase) {
+            
+            if (info == null || info.getRfnIdentifier() == null
+                || (!info.getRfnIdentifier().isBlank() && !info.getRfnIdentifier().isNotBlank())) {
+                throw new Error("Serial Number, Manufacturer, and Model fields must all be empty or all be filled in.");
+            }
             
             RfnIdentifier rfnIdentifier = info.getRfnIdentifier();
             try {
