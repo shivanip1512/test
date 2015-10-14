@@ -156,7 +156,7 @@ public class RfnGatewayServiceTest {
         PaoLocationDao paoLocationDao = new EmptyPaoLocationDao();
         
         // Do the service call
-        service = new RfnGatewayServiceImpl(null, null, null, null, null, cache, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null, null, null, null, null, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
         Set<RfnGateway> allGateways = service.getAllGateways();
         
         // Test that we got the expected number of gateways from the service
@@ -198,7 +198,7 @@ public class RfnGatewayServiceTest {
         EasyMock.replay(gatewayDataCache);
         
         // Do the service call
-        service = new RfnGatewayServiceImpl(null, null, null, null, null, cache, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null, null, null, null, null, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
         RfnGateway rfnGateway = service.getGatewayByPaoIdWithData(gatewayPaoId.getPaoId());
         
         // Test that we got the expected values
@@ -236,7 +236,7 @@ public class RfnGatewayServiceTest {
         EasyMock.replay(gatewayDataCache);
         
         // Do the service call
-        service = new RfnGatewayServiceImpl(null, null, null, null, null, cache, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null, null, null, null, null, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
         RfnGateway rfnGateway = service.getGatewayByPaoIdWithData(gateway2PaoId.getPaoId());
         
         // Test that we got the expected values
@@ -256,7 +256,7 @@ public class RfnGatewayServiceTest {
         EasyMock.replay(rfnDeviceDao);
         
         // Do the service call. NotFoundException should be thrown.
-        service = new RfnGatewayServiceImpl(null, null, null, null, null, null, null, null, null, rfnDeviceDao, null);
+        service = new RfnGatewayServiceImpl(null, null, null, null, null, null, null, null, rfnDeviceDao, null);
         service.getGatewayByPaoIdWithData(gatewayPaoId.getPaoId());
     }
     
@@ -283,7 +283,7 @@ public class RfnGatewayServiceTest {
         
         // Do the service call. NmCommunicationException should be thrown
         PaoLocationDao paoLocationDao = new EmptyPaoLocationDao();
-        service = new RfnGatewayServiceImpl(null, null, null, null, null, cache, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null, null, null, null, null, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
         service.getGatewayByPaoIdWithData(gatewayPaoId.getPaoId());
     }
     
@@ -291,7 +291,7 @@ public class RfnGatewayServiceTest {
     public void test_createGateway_communicationError() throws NmCommunicationException, GatewayUpdateException {
         
         // Dependencies can be null, because they're not called in this test scenario
-        service = new RfnGatewayServiceImpl(null, null, null, null, null, null, null, null, null, null, null);
+        service = new RfnGatewayServiceImpl(null, null, null, null, null, null, null, null, null, null);
         
         // Set up the template to call exceptionThrown() on the callback.
         // This simulates a communication/network error.
@@ -307,7 +307,7 @@ public class RfnGatewayServiceTest {
     public void test_createGateway_timeoutError() throws NmCommunicationException, GatewayUpdateException {
         
         // Dependencies can be null, because they're not called in this test scenario
-        service = new RfnGatewayServiceImpl(null, null, null, null, null, null, null, null, null, null, null);
+        service = new RfnGatewayServiceImpl(null, null, null, null, null, null, null, null, null, null);
         
         // Set up the template to call handleTimeout() on the callback.
         // This simulates a timeout, which gets wrapped in a communication exception.
@@ -323,7 +323,7 @@ public class RfnGatewayServiceTest {
     public void test_createGateway_failedResponse() throws NmCommunicationException, GatewayUpdateException {
         
         // Dependencies can be null, because they're not called in this test scenario
-        service = new RfnGatewayServiceImpl(null, null, null, null, null, null, null, null, null, null, null);
+        service = new RfnGatewayServiceImpl(null, null, null, null, null, null, null, null, null, null);
         
         // Set up the template to reply with a "failed" result.
         // This causes a GatewayUpdateException to be thrown.
@@ -361,7 +361,7 @@ public class RfnGatewayServiceTest {
         // ConnectionFactory and configurationSource can be null - they are only used by the RequestReplyTemplate,
         // which is replaced by the FakeUpdateRequestReplyTemplate in this test
         EndpointEventLogService eventLog = EasyMock.createNiceMock(EndpointEventLogService.class);
-        service = new RfnGatewayServiceImpl(null, null, null, eventLog, null, null, null, paoLocationDao, rfnDeviceCreationService, null, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null, null, null, eventLog, null, null, paoLocationDao, rfnDeviceCreationService, null, gatewayDataCache);
         
         // Set up the template to reply with a "success" result.
         FakeUpdateRequestReplyTemplate fakeTemplate = new FakeUpdateRequestReplyTemplate();
@@ -402,7 +402,7 @@ public class RfnGatewayServiceTest {
         // ConnectionFactory and configurationSource can be null - they are only used by the RequestReplyTemplate,
         // which is replaced by the FakeUpdateRequestReplyTemplate in this test
         EndpointEventLogService eventLog = EasyMock.createNiceMock(EndpointEventLogService.class);
-        service = new RfnGatewayServiceImpl(null, null, null, eventLog, null, null, null, paoLocationDao, rfnDeviceCreationService, null, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null, null, null, eventLog, null, null, paoLocationDao, rfnDeviceCreationService, null, gatewayDataCache);
         
         // Set up the template to reply with a "success" result.
         FakeUpdateRequestReplyTemplate fakeTemplate = new FakeUpdateRequestReplyTemplate();
@@ -464,7 +464,7 @@ public class RfnGatewayServiceTest {
         
         // Do the service call
         EndpointEventLogService eventLog = EasyMock.createNiceMock(EndpointEventLogService.class);
-        service = new RfnGatewayServiceImpl(null, null, deviceDao, eventLog, null, cache, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null, null, deviceDao, eventLog, null, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
         GatewayUpdateResult result = service.updateGateway(rfnGateway, null);
         Assert.assertEquals("Failed to update gateway", GatewayUpdateResult.SUCCESSFUL, result);
     }
@@ -514,7 +514,7 @@ public class RfnGatewayServiceTest {
         
         // Do the service call 
         EndpointEventLogService eventLog = EasyMock.createNiceMock(EndpointEventLogService.class);
-        service = new RfnGatewayServiceImpl(null, null, deviceDao, eventLog, null, cache, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null, null, deviceDao, eventLog, null, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
         GatewayUpdateResult result = service.updateGateway(rfnGateway, null);
         Assert.assertEquals("Failed to update gateway", GatewayUpdateResult.SUCCESSFUL, result);
     }
@@ -567,7 +567,7 @@ public class RfnGatewayServiceTest {
         
         // Inject all the mocks into the service
         EndpointEventLogService eventLog = EasyMock.createNiceMock(EndpointEventLogService.class);
-        service = new RfnGatewayServiceImpl(null, null, deviceDao, eventLog, null, cache, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null, null, deviceDao, eventLog, null, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
         
         // Set up the template to reply with a "success" result.
         FakeUpdateRequestReplyTemplate fakeTemplate = new FakeUpdateRequestReplyTemplate();
@@ -636,7 +636,7 @@ public class RfnGatewayServiceTest {
         
         // Inject all the mocks into the service
         EndpointEventLogService eventLog = EasyMock.createNiceMock(EndpointEventLogService.class);
-        service = new RfnGatewayServiceImpl(null, null, deviceDao, eventLog, null, cache, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null, null, deviceDao, eventLog, null, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
         
         // Set up the template to reply with a "success" result.
         FakeUpdateRequestReplyTemplate fakeTemplate = new FakeUpdateRequestReplyTemplate();
@@ -696,7 +696,7 @@ public class RfnGatewayServiceTest {
         EasyMock.replay(deviceDao);
         
         // Inject all the mocks into the service
-        service = new RfnGatewayServiceImpl(null, null, deviceDao, null, null, cache, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null, null, deviceDao, null, null, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
         
         // Set up the template to reply with a "failed" result
         FakeUpdateRequestReplyTemplate fakeTemplate = new FakeUpdateRequestReplyTemplate();
@@ -759,7 +759,7 @@ public class RfnGatewayServiceTest {
         EasyMock.replay(deviceDao);
         
         // Inject all the mocks into the service
-        service = new RfnGatewayServiceImpl(null, null, deviceDao, null, null, cache, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null, null, deviceDao, null, null, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
         
         // Set up the template to call handleException() on the callback.
         // This simulates a network error.
@@ -806,7 +806,7 @@ public class RfnGatewayServiceTest {
         EasyMock.replay(gatewayDataCache);
         
         // Inject mocks into the service
-        service = new RfnGatewayServiceImpl(null, null, deviceDao, null, null, null, null, null, null, rfnDeviceDao, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null, null, deviceDao, null, null, null, null, null, rfnDeviceDao, gatewayDataCache);
         
         // Set up template to reply with a "success" response
         FakeUpdateRequestReplyTemplate fakeTemplate = new FakeUpdateRequestReplyTemplate();
@@ -838,7 +838,7 @@ public class RfnGatewayServiceTest {
         
         // Inject mocks into the service
         
-        service = new RfnGatewayServiceImpl(null, null, deviceDao, null, null, null, null, null, null, rfnDeviceDao, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null, null, deviceDao, null, null, null, null, null, rfnDeviceDao, gatewayDataCache);
         
         // Set up template to reply with a "failed" response
         FakeUpdateRequestReplyTemplate fakeTemplate = new FakeUpdateRequestReplyTemplate();
@@ -870,7 +870,7 @@ public class RfnGatewayServiceTest {
         EasyMock.replay(gatewayDataCache);
         
         // Inject mocks into the service
-        service = new RfnGatewayServiceImpl(null, null, deviceDao, null, null, null, null, null, null, rfnDeviceDao, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null, null, deviceDao, null, null, null, null, null, rfnDeviceDao, gatewayDataCache);
         
         // Set up template to throw an exception.
         // This simulates a communication error.

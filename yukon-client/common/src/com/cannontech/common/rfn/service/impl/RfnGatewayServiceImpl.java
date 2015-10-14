@@ -60,7 +60,6 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
-import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Sets;
 
 public class RfnGatewayServiceImpl implements RfnGatewayService {
@@ -79,7 +78,6 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     private DeviceDao deviceDao;
     private EndpointEventLogService endpointEventLogService;
     private GlobalSettingDao globalSettingDao;
-    private IDatabaseCache dbCache;
     private NMConfigurationService nmConfigurationService;
     private PaoLocationDao paoLocationDao;
     private RfnDeviceCreationService creationService;
@@ -99,7 +97,6 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             DeviceDao deviceDao,
             EndpointEventLogService endpointEventLogService,
             GlobalSettingDao globalSettingDao,
-            IDatabaseCache dbCache,
             NMConfigurationService nmConfigurationService,
             PaoLocationDao paoLocationDao,
             RfnDeviceCreationService creationService,
@@ -111,7 +108,6 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         this.deviceDao = deviceDao;
         this.endpointEventLogService = endpointEventLogService;
         this.globalSettingDao = globalSettingDao;
-        this.dbCache = dbCache;
         this.nmConfigurationService = nmConfigurationService;
         this.paoLocationDao = paoLocationDao;
         this.creationService = creationService;
@@ -226,12 +222,11 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         for (RfnDevice device : devices) {
             // Get PAO name
             PaoIdentifier paoId = device.getPaoIdentifier();
-            String name = dbCache.getAllPaosMap().get(paoId.getPaoId()).getPaoName();
             // Get available RfnGatewayData from cache via non-blocking call. May be null.
             RfnGatewayData data = dataCache.getIfPresent(paoId);
             
             //Create gateway object
-            RfnGateway rfnGateway = buildRfnGateway(device, name, data);
+            RfnGateway rfnGateway = buildRfnGateway(device, device.getName(), data);
             gateways.add(rfnGateway);
         }
         return gateways;
