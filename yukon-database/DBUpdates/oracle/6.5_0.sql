@@ -272,6 +272,17 @@ ALTER TABLE GatewayFirmwareUpdateEntry
 GO
 /* End YUK-14722 */
 
+/* Start YUK-14739 */
+ALTER TABLE LMProgramDirect
+ADD NotifySchedule NUMBER;
+
+UPDATE LMProgramDirect
+SET NotifySchedule = -1;
+
+ALTER TABLE LMProgramDirect
+MODIFY NotifySchedule NUMBER NOT NULL;
+/* End YUK-14739 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

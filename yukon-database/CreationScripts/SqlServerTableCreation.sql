@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/12/2015 10:21:58 AM                       */
+/* Created on:     10/14/2015 10:37:57 AM                       */
 /*==============================================================*/
 
 
@@ -6752,6 +6752,7 @@ create table LMProgramDirect (
    RestoreOffset        float                not null,
    NotifyInactiveOffset numeric              not null,
    NotifyAdjust         numeric              not null,
+   NotifySchedule       numeric              not null,
    constraint PK_LMPROGRAMDIRECT primary key (DeviceID)
 )
 go
