@@ -313,6 +313,12 @@ RfnLoadProfileSetRecordingCommand::RfnLoadProfileSetRecordingCommand( const Reco
 }
 
 
+void RfnLoadProfileSetRecordingCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
+{
+    rh.handleCommandResult(*this);
+}
+
+
 RfnCommandResult RfnLoadProfileSetRecordingCommand::decodeCommand( const CtiTime now,
                                                                    const RfnResponsePayload & response )
 {

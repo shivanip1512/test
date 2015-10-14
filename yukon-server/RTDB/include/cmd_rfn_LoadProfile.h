@@ -185,6 +185,8 @@ class IM_EX_DEVDB RfnLoadProfileSetRecordingCommand : public RfnLoadProfileRecor
 {
 public:
 
+    virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
+
     RfnLoadProfileSetRecordingCommand( const RecordingOption option );
 
     virtual RfnCommandResult decodeCommand( const CtiTime now,
