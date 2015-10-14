@@ -117,8 +117,8 @@ public class RfnGatewayServiceTest {
         return new RfnGatewayData(gatewayDataResponse);
     }
     
-    private static RfnDevice createRfnDevice(final PaoIdentifier paoIdentifier, RfnIdentifier rfnIdentifier) {
-        return new RfnDevice(rfnIdentifier.getSensorSerialNumber(), new YukonPao() {
+    private static RfnDevice createRfnDevice(String name, final PaoIdentifier paoIdentifier, RfnIdentifier rfnIdentifier) {
+        return new RfnDevice(name, new YukonPao() {
             @Override
             public PaoIdentifier getPaoIdentifier() {
                 return paoIdentifier;
@@ -130,8 +130,8 @@ public class RfnGatewayServiceTest {
     public void test_getAllGateways() {
         // Setup gateway and gateway 2.0 RfnDevices.
         List<RfnDevice> rfnDevices = new ArrayList<RfnDevice>();
-        rfnDevices.add(createRfnDevice(gatewayPaoId, gatewayRfnId)); //Gateway
-        rfnDevices.add(createRfnDevice(gateway2PaoId, gateway2RfnId)); //Gateway 2.0
+        rfnDevices.add(createRfnDevice(gatewayName, gatewayPaoId, gatewayRfnId)); //Gateway
+        rfnDevices.add(createRfnDevice(gateway2Name, gateway2PaoId, gateway2RfnId)); //Gateway 2.0
         
         // Expect a call to retrieve all gateway devices from rfnDeviceDao.
         RfnDeviceDao rfnDeviceDao = EasyMock.createStrictMock(RfnDeviceDao.class);
@@ -175,7 +175,7 @@ public class RfnGatewayServiceTest {
         // Expect a call to retrieve an RfnDevice from rfnDeviceDao.
         RfnDeviceDao rfnDeviceDao = EasyMock.createStrictMock(RfnDeviceDao.class);
         EasyMock.expect(rfnDeviceDao.getDeviceForId(gatewayPaoId.getPaoId()))
-                .andReturn(createRfnDevice(gatewayPaoId, gatewayRfnId));
+                .andReturn(createRfnDevice(gatewayName, gatewayPaoId, gatewayRfnId));
         EasyMock.replay(rfnDeviceDao);
         
         // Expect a call to retrieve PAO name.
@@ -213,7 +213,7 @@ public class RfnGatewayServiceTest {
         // Expect a call to retrieve an RfnDevice from rfnDeviceDao.
         RfnDeviceDao rfnDeviceDao = EasyMock.createStrictMock(RfnDeviceDao.class);
         EasyMock.expect(rfnDeviceDao.getDeviceForId(gateway2PaoId.getPaoId()))
-                .andReturn(createRfnDevice(gateway2PaoId, gateway2RfnId));
+                .andReturn(createRfnDevice(gateway2Name, gateway2PaoId, gateway2RfnId));
         EasyMock.replay(rfnDeviceDao);
         
         // Expect a call to retrieve PAO name.
@@ -266,7 +266,7 @@ public class RfnGatewayServiceTest {
         // Expect a call to retrieve an RfnDevice from rfnDeviceDao (return value not used in this test).
         RfnDeviceDao rfnDeviceDao = EasyMock.createStrictMock(RfnDeviceDao.class);
         EasyMock.expect(rfnDeviceDao.getDeviceForId(gatewayPaoId.getPaoId()))
-                .andReturn(createRfnDevice(gatewayPaoId, gatewayRfnId));
+                .andReturn(createRfnDevice(gatewayName, gatewayPaoId, gatewayRfnId));
         EasyMock.replay(rfnDeviceDao);
         
         // Expect a call to retrieve PAO name.
@@ -423,7 +423,7 @@ public class RfnGatewayServiceTest {
     public void test_updateGateway_updateLocalSuccess() throws NmCommunicationException {
         
         // Expect a call to retrieve an RfnDevice from rfnDeviceDao (to get RfnIdentifier).
-        RfnDevice gwDevice = createRfnDevice(gatewayPaoId, gatewayRfnId);
+        RfnDevice gwDevice = createRfnDevice(gatewayName, gatewayPaoId, gatewayRfnId);
         RfnDeviceDao rfnDeviceDao = EasyMock.createStrictMock(RfnDeviceDao.class);
         EasyMock.expect(rfnDeviceDao.getDeviceForId(gatewayPaoId.getPaoId()))
                 .andReturn(gwDevice);
@@ -473,7 +473,7 @@ public class RfnGatewayServiceTest {
     public void test_updateGateway_updateLocalSuccessWithGateway2() throws NmCommunicationException {
         
         // Expect a call to retrieve an RfnDevice from rfnDeviceDao (to get RfnIdentifier).
-        RfnDevice gwDevice = createRfnDevice(gateway2PaoId, gateway2RfnId);
+        RfnDevice gwDevice = createRfnDevice(gateway2Name, gateway2PaoId, gateway2RfnId);
         RfnDeviceDao rfnDeviceDao = EasyMock.createStrictMock(RfnDeviceDao.class);
         EasyMock.expect(rfnDeviceDao.getDeviceForId(gateway2PaoId.getPaoId()))
                 .andReturn(gwDevice);
@@ -524,7 +524,7 @@ public class RfnGatewayServiceTest {
     public void test_updateGateway_successResponse() throws NmCommunicationException {
         
         // Expect a call to retrieve an RfnDevice from rfnDeviceDao (to get RfnIdentifier).
-        RfnDevice gwDevice = createRfnDevice(gatewayPaoId, gatewayRfnId);
+        RfnDevice gwDevice = createRfnDevice(gatewayName, gatewayPaoId, gatewayRfnId);
         RfnDeviceDao rfnDeviceDao = EasyMock.createStrictMock(RfnDeviceDao.class);
         EasyMock.expect(rfnDeviceDao.getDeviceForId(gatewayPaoId.getPaoId()))
                 .andReturn(gwDevice);
@@ -593,7 +593,7 @@ public class RfnGatewayServiceTest {
     public void test_updateGateway_successResponseWithGateway2() throws NmCommunicationException {
         
         // Expect a call to retrieve an RfnDevice from rfnDeviceDao (to get RfnIdentifier).
-        RfnDevice gwDevice = createRfnDevice(gateway2PaoId, gateway2RfnId);
+        RfnDevice gwDevice = createRfnDevice(gateway2Name, gateway2PaoId, gateway2RfnId);
         RfnDeviceDao rfnDeviceDao = EasyMock.createStrictMock(RfnDeviceDao.class);
         EasyMock.expect(rfnDeviceDao.getDeviceForId(gateway2PaoId.getPaoId()))
                 .andReturn(gwDevice);
@@ -662,7 +662,7 @@ public class RfnGatewayServiceTest {
     public void test_updateGateway_failedResponse() throws NmCommunicationException {
         
         // Expect a call to retrieve an RfnDevice from rfnDeviceDao (to get RfnIdentifier).
-        RfnDevice gwDevice = createRfnDevice(gatewayPaoId, gatewayRfnId);
+        RfnDevice gwDevice = createRfnDevice(gatewayName, gatewayPaoId, gatewayRfnId);
         RfnDeviceDao rfnDeviceDao = EasyMock.createStrictMock(RfnDeviceDao.class);
         EasyMock.expect(rfnDeviceDao.getDeviceForId(gatewayPaoId.getPaoId())).andReturn(gwDevice);
         EasyMock.replay(rfnDeviceDao);
@@ -724,7 +724,7 @@ public class RfnGatewayServiceTest {
     public void test_updateGateway_NetworkManagerCommunicationException() throws NmCommunicationException {
         
         // Expect a call to retrieve an RfnDevice from rfnDeviceDao (to get RfnIdentifier).
-        RfnDevice gwDevice = createRfnDevice(gatewayPaoId, gatewayRfnId);
+        RfnDevice gwDevice = createRfnDevice(gatewayName, gatewayPaoId, gatewayRfnId);
         RfnDeviceDao rfnDeviceDao = EasyMock.createStrictMock(RfnDeviceDao.class);
         EasyMock.expect(rfnDeviceDao.getDeviceForId(gatewayPaoId.getPaoId()))
                 .andReturn(gwDevice);
@@ -787,7 +787,7 @@ public class RfnGatewayServiceTest {
     public void test_deleteGateway_successResponse() throws NmCommunicationException {
         
         // Expect a call to retrieve an RfnDevice from rfnDeviceDao (to get RfnIdentifier).
-        RfnDevice gwDevice = createRfnDevice(gatewayPaoId, gatewayRfnId);
+        RfnDevice gwDevice = createRfnDevice(gatewayName, gatewayPaoId, gatewayRfnId);
         RfnDeviceDao rfnDeviceDao = EasyMock.createStrictMock(RfnDeviceDao.class);
         EasyMock.expect(rfnDeviceDao.getDeviceForId(gatewayPaoId.getPaoId()))
                 .andReturn(gwDevice);
@@ -822,7 +822,7 @@ public class RfnGatewayServiceTest {
     public void test_deleteGateway_failedResponse() throws NmCommunicationException {
         
         // Expect a call to retrieve an RfnDevice from rfnDeviceDao (to get RfnIdentifier).
-        RfnDevice gwDevice = createRfnDevice(gatewayPaoId, gatewayRfnId);
+        RfnDevice gwDevice = createRfnDevice(gatewayName, gatewayPaoId, gatewayRfnId);
         RfnDeviceDao rfnDeviceDao = EasyMock.createStrictMock(RfnDeviceDao.class);
         EasyMock.expect(rfnDeviceDao.getDeviceForId(gatewayPaoId.getPaoId()))
                 .andReturn(gwDevice);
@@ -855,7 +855,7 @@ public class RfnGatewayServiceTest {
     public void test_deleteGateway_NetworkManagerCommunicationException() throws NmCommunicationException {
         
         // Expect a call to retrieve an RfnDevice from rfnDeviceDao (to get RfnIdentifier).
-        RfnDevice gwDevice = createRfnDevice(gatewayPaoId, gatewayRfnId);
+        RfnDevice gwDevice = createRfnDevice(gatewayName, gatewayPaoId, gatewayRfnId);
         RfnDeviceDao rfnDeviceDao = EasyMock.createStrictMock(RfnDeviceDao.class);
         EasyMock.expect(rfnDeviceDao.getDeviceForId(gatewayPaoId.getPaoId()))
                 .andReturn(gwDevice);
