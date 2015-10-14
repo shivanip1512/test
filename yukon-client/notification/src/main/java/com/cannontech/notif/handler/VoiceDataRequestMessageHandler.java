@@ -57,7 +57,7 @@ public class VoiceDataRequestMessageHandler implements MessageHandler<VoiceDataR
             status = ServerResponseMsg.STATUS_ERROR;
         }
         ServerResponseMsg responseMsg = req.createResponseMsg(status, messageString);
-        if (status == 0) {
+        if (status == ServerResponseMsg.STATUS_OK) {
             responseMsg.setPayload(rspPayload);
         }
         connection.write(responseMsg);
