@@ -22,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Required;
 
+import com.cannontech.amr.toggleProfiling.service.impl.RfnVoltageProfile;
+import com.cannontech.amr.toggleProfiling.service.impl.RfnVoltageProfile.ProfilingStatus;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.InitiateLoadProfileRequestException;
 import com.cannontech.common.pao.YukonPao;
@@ -33,6 +35,8 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.service.ActivityLoggerService;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.LoadProfileService;
+import com.cannontech.core.service.PorterDynamicPaoInfoService;
+import com.cannontech.core.service.PorterDynamicPaoInfoService.VoltageProfileDetails;
 import com.cannontech.core.service.PorterQueueDataService;
 import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.core.service.SystemDateFormattingService.DateFormatEnum;
@@ -75,7 +79,13 @@ public class LoadProfileServiceImpl implements LoadProfileService {
     private Map<Long, CompletionCallback> currentRequestIds = new HashMap<Long, CompletionCallback>();
     private MapQueue<Integer,ProfileRequestInfo> pendingDeviceRequests = new MapQueue<Integer,ProfileRequestInfo>();
     private Map<Integer,ProfileRequestInfo> currentDeviceRequests = new HashMap<Integer,ProfileRequestInfo>();
-
+    private Map<Long, Integer> enableDisableVoltageProfileRequestIds = new HashMap<Long, Integer>();
+    
+    @Autowired private PorterDynamicPaoInfoService porterDynamicPaoInfoService;
+    
+    private Map<Integer, RfnVoltageProfile> profileCache = new HashMap<Integer, RfnVoltageProfile>();
+    private Map<Integer, RfnVoltageProfile> dynamicPaoInfoCache = new HashMap<Integer, RfnVoltageProfile>();
+   
     @PostConstruct
     public void initialize() {
         porterConnection.addMessageListener(new MessageListener() {
@@ -233,6 +243,34 @@ public class LoadProfileServiceImpl implements LoadProfileService {
             pendingDeviceRequests.offer(deviceId,info);
         } else {
             queueRequest(deviceId, info, false);
+        }
+    }
+   
+    private void toggleVoltageProfile(int device, boolean newToggleVal) {
+
+        // build command
+        Request req = new Request();
+        StringBuilder formatString = new StringBuilder("putconfig voltage profile");
+        if (!newToggleVal) {
+            formatString.append(" enable");
+        } else {
+            formatString.append(" disable");
+        }
+        formatString.append(" ");
+
+        // setup request
+        req.setCommandString(formatString.toString());
+        req.setDeviceID(device);
+
+        long requestId = random.nextInt();
+        req.setUserMessageID(requestId);
+
+        // run enable/disable command
+        try {
+            porterConnection.write(req);
+            enableDisableVoltageProfileRequestIds.put(requestId, device);
+        } catch (Exception e) {
+            throw new InitiateLoadProfileRequestException();
         }
     }
 
@@ -430,7 +468,16 @@ public class LoadProfileServiceImpl implements LoadProfileService {
                     
             receivedCancelRequestIds.add(requestId);
             
-        } else {
+        } else if (enableDisableVoltageProfileRequestIds.containsKey(requestId)) {
+            int deviceId = returnMsg.getDeviceID();
+            log.debug("received response for request id " + requestId + ",response was " + returnMsg.getResultString());
+            boolean finished = returnMsg.getExpectMore() == 0;
+            if(finished) {
+                profileCache.remove(deviceId);
+                enableDisableVoltageProfileRequestIds.remove(requestId);
+            }
+            
+        }  else {
             log.debug("received unwanted return for request id " + requestId);
         }
     }
@@ -613,8 +660,8 @@ public class LoadProfileServiceImpl implements LoadProfileService {
             data.put("email", email);
             data.put("from",
                      dateFormattingService.format(info.from,
-                                                      DateFormattingService.DateFormatEnum.DATE,
-                                                      userContext));
+                                                  DateFormattingService.DateFormatEnum.DATE,
+                                                  userContext));
             data.put("to", dateFormattingService.format(info.to,
                                                         DateFormattingService.DateFormatEnum.DATE,
                                                         userContext));
@@ -629,6 +676,61 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         return pendingRequests;
     }
 
+    public void startVoltageProfilingForDevice(int deviceId) {
+        toggleProfilingForDevice(deviceId, true);
+    }
+
+    public void stopVoltageProfilingForDevice(int deviceId) {
+        toggleProfilingForDevice(deviceId, false);
+    }
+
+    private void toggleProfilingForDevice(int deviceId, boolean newToggleVal) {
+        RfnVoltageProfile rfnVoltageProfile = new RfnVoltageProfile();
+        toggleVoltageProfile(deviceId, newToggleVal);
+        
+        if (!newToggleVal) {
+            Date stopDate = DateUtils.addWeeks(new Date(), 2);
+            rfnVoltageProfile.setProfilingStatus(ProfilingStatus.ENABLED);
+            rfnVoltageProfile.setEnabledTill(stopDate);
+            rfnVoltageProfile.setVoltageProfilingRate(getRfnVoltageProfileDetails(deviceId).getVoltageProfilingRate());
+        } else {
+            rfnVoltageProfile.setProfilingStatus(ProfilingStatus.DISABLED);
+            rfnVoltageProfile.setVoltageProfilingRate(getRfnVoltageProfileDetails(deviceId).getVoltageProfilingRate());
+        }
+        profileCache.put(deviceId, rfnVoltageProfile);
+    }
+    
+    @Override
+    public void getDynamicPaoInfo(int deviceId) {
+        VoltageProfileDetails voltageDetails = porterDynamicPaoInfoService.getVoltageProfileDetails(deviceId);
+
+        RfnVoltageProfile rfnVoltageProfile = new RfnVoltageProfile();
+        rfnVoltageProfile.setDeviceID(deviceId);
+        rfnVoltageProfile.setProfilingStatus(voltageDetails.enabledUntil == null ? ProfilingStatus.DISABLED
+                : ProfilingStatus.ENABLED);
+        rfnVoltageProfile.setEnabledTill(voltageDetails.enabledUntil == null ? null
+                : voltageDetails.enabledUntil.toDate());
+        rfnVoltageProfile.setVoltageProfilingRate(voltageDetails.profileInterval == null ? 0
+                : voltageDetails.profileInterval.getStandardMinutes());
+        dynamicPaoInfoCache.put(deviceId, rfnVoltageProfile);
+    }
+
+    @Override
+    public RfnVoltageProfile getRfnVoltageProfileDetails(int deviceId) {
+
+        if (profileCache.containsKey(deviceId)) {
+            return profileCache.get(deviceId);
+        } else {
+            if (dynamicPaoInfoCache.get(deviceId) == null) {
+                RfnVoltageProfile rfnVoltageProfile = new RfnVoltageProfile();
+                rfnVoltageProfile.setProfilingStatus(ProfilingStatus.UNKNOWN);
+                return rfnVoltageProfile;
+            }
+            return dynamicPaoInfoCache.get(deviceId);
+        }
+    }
+
+   
     @Required
     public void setPorterConnection(BasicServerConnection porterConnection) {
         this.porterConnection = porterConnection;

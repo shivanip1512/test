@@ -41,6 +41,11 @@
     <entry key="yukon.web.widgets.profileWidget.scanning.stops">(Stops {0})</entry>
     <entry key="yukon.web.widgets.profileWidget.scanning.neverStarts">(Never Starts)</entry>
     <entry key="yukon.web.widgets.profileWidget.scanning.neverStops">(Never Stops)</entry>
+    <entry key="yukon.web.widgets.profileWidget.scanning.popupTitle">Voltage Profile Collection Confirmation</entry>
+    <entry key="yukon.web.widgets.profileWidget.scanning.popupMessage">Voltage Profile will be collected for the next two weeks</entry>
+    <entry key="yukon.web.widgets.profileWidget.scanning.unknown.interval.title">Unknown Interval</entry>
+    <entry key="yukon.web.widgets.profileWidget.scanning.unknown.interval.helpText">Set the device profiling interval from device configuration</entry>
+    
 
     <!-- toggleProfilingPopup.tag -->
     <entry key="yukon.web.widgets.profileWidget.scheduleStart">Schedule Start</entry>

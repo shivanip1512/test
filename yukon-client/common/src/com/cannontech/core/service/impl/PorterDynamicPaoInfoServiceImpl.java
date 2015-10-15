@@ -67,13 +67,15 @@ public class PorterDynamicPaoInfoServiceImpl implements PorterDynamicPaoInfoServ
         try {
             DynamicPaoInfoResponse response = f.get(1, TimeUnit.MINUTES);
             
-            Instant enabledUntil = response.getTimestampValues().get(DynamicPaoInfoTimestampKeyEnum.RFN_VOLTAGE_PROFILE_ENABLED_UNTIL);
-            Duration profileInterval = response.getDurationValues().get(DynamicPaoInfoDurationKeyEnum.RFN_VOLTAGE_PROFILE_INTERVAL);
-            
             details = new VoltageProfileDetails();
-            
-            details.enabledUntil = enabledUntil;
-            details.profileInterval = profileInterval;
+            if (response != null) {
+                Instant enabledUntil = response.getTimestampValues()
+                                               .get(DynamicPaoInfoTimestampKeyEnum.RFN_VOLTAGE_PROFILE_ENABLED_UNTIL);
+                Duration profileInterval = response.getDurationValues()
+                                                   .get(DynamicPaoInfoDurationKeyEnum.RFN_VOLTAGE_PROFILE_INTERVAL);
+                details.enabledUntil = enabledUntil;
+                details.profileInterval = profileInterval;
+            }
         }
         catch( InterruptedException | ExecutionException | TimeoutException ex ) {
             log.error(ex);

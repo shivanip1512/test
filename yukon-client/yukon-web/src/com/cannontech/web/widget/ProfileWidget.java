@@ -33,6 +33,7 @@ import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.toggleProfiling.service.ProfilingService;
+import com.cannontech.amr.toggleProfiling.service.impl.RfnVoltageProfile;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
@@ -118,7 +119,7 @@ public class ProfileWidget extends WidgetControllerBase {
      * email clients.
      */
 
-    private String calcIntervalStr(int secs, YukonUserContext userContext) {
+    private String calcIntervalStr(long secs, YukonUserContext userContext) {
         String intervalString = null;
         if (secs == 0) {
             MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
@@ -136,9 +137,8 @@ public class ProfileWidget extends WidgetControllerBase {
         // get load profile
         DeviceLoadProfile deviceLoadProfile = null;
         YukonMeter meter = meterDao.getForId(deviceId);
-        if (!meter.getPaoType().isRfn()) {
-            deviceLoadProfile = profilingService.getDeviceLoadProfile(deviceId);
-        }
+        deviceLoadProfile = profilingService.getDeviceLoadProfile(deviceId);
+     
         Set<Attribute> supportedProfileAttributes = getSupportedProfileAttributes(meter);
         
         List<Map<String, Object>> availableChannels = new ArrayList<Map<String, Object>>();
@@ -153,10 +153,7 @@ public class ProfileWidget extends WidgetControllerBase {
                     channelInfo.put("channelNumber", Integer.toString(attrChanEnum.getChannel()));
                     channelInfo.put("channelDescription", messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(attrChanEnum.getAttribute().getMessage()));
                     channelInfo.put("channelProfileRate", calcIntervalStr(attrChanEnum.getRate(deviceLoadProfile), userContext));
-                } else {
-                    channelInfo.put("channelNumber", Integer.toString(attrChanEnum.getChannel()));
-                    channelInfo.put("channelDescription", messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(attrChanEnum.getAttribute().getMessage()));
-                }
+                } 
                 availableChannels.add(channelInfo);
             }
         }
@@ -164,6 +161,43 @@ public class ProfileWidget extends WidgetControllerBase {
         return availableChannels;
     }
 
+    private List<Map<String, Object>> getAvailableChannelInfoRfn(int deviceId,
+            YukonUserContext userContext) throws Exception {
+
+        YukonMeter meter = meterDao.getForId(deviceId);
+
+        Set<Attribute> supportedProfileAttributes = getSupportedProfileAttributes(meter);
+
+        List<Map<String, Object>> availableChannels = new ArrayList<Map<String, Object>>();
+        for (ProfileAttributeChannel attrChanEnum : ProfileAttributeChannel.values()) {
+
+            if (supportedProfileAttributes.contains(attrChanEnum.getAttribute())) {
+                Map<String, Object> channelInfo = new HashMap<String, Object>();
+                RfnVoltageProfile rfnVoltageProfile = loadProfileService.getRfnVoltageProfileDetails(deviceId);
+                channelInfo.put("channelProfilingStatus", rfnVoltageProfile.getProfilingStatus());
+                channelInfo.put("channelEnabledTill", rfnVoltageProfile.getEnabledTill());
+                channelInfo.put("channelNumber", Integer.toString(attrChanEnum.getChannel()));
+                channelInfo.put("channelDescription",
+                                messageSourceResolver.getMessageSourceAccessor(userContext)
+                                                     .getMessage(attrChanEnum.getAttribute()
+                                                                             .getMessage()));
+                channelInfo.put("channelProfileRate",
+                                calcIntervalStr(rfnVoltageProfile.getVoltageProfilingRate(),
+                                                userContext));
+                availableChannels.add(channelInfo);
+            }
+        }
+
+        return availableChannels;
+    }
+    
+    @RequestMapping("refreshChannelScanningInfoRfn")
+    public ModelAndView getRfnChannelInfo(HttpServletRequest request, HttpServletResponse response,
+            int deviceId, YukonUserContext userContext) throws Exception {
+        loadProfileService.getDynamicPaoInfo(deviceId);
+        return refreshChannelScanningInfo(request, response);
+    }
+    
     private void addFutureScheduleDateToMav(ModelAndView mav, YukonUserContext userContext) {
 
         mav.addObject("futureScheduleDate", DateUtils.addDays(new Date(), 7));
@@ -203,10 +237,13 @@ public class ProfileWidget extends WidgetControllerBase {
         // get lite device, set name
         LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
         PaoType paoType = device.getPaoType();
-
+        List<Map<String, Object>> availableChannels;
         // get info about each channels scanning status
-        List<Map<String, Object>> availableChannels =
-            getAvailableChannelInfo(deviceId, userContext);
+        if (paoType.isRfMeter()) {
+            availableChannels = getAvailableChannelInfoRfn(deviceId, userContext);
+        } else {
+            availableChannels = getAvailableChannelInfo(deviceId, userContext);
+        }
         mav.addObject("availableChannels", availableChannels);
 
         // initialize daily usage report dates
@@ -383,6 +420,20 @@ public class ProfileWidget extends WidgetControllerBase {
     @RequestMapping("toggleProfiling")
     public ModelAndView toggleProfiling(HttpServletRequest request,
                                         HttpServletResponse response) throws Exception {
+        
+        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
+        LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
+        PaoType paoType = device.getPaoType();
+        
+        if(paoType.isRfMeter()) {
+            return toggleProfilingRfn(request, response); 
+        } else {
+            return toggleProfilingPlc(request, response);
+        }
+    }
+    
+    private ModelAndView toggleProfilingPlc(HttpServletRequest request,
+                                        HttpServletResponse response) throws Exception {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         rolePropertyDao.verifyProperty(YukonRoleProperty.PROFILE_COLLECTION_SCANNING, userContext.getYukonUser());
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
@@ -534,6 +585,28 @@ public class ProfileWidget extends WidgetControllerBase {
         mav.addObject("toggleErrorMsg", toggleErrorMsg);
         return mav;
     }
+    
+    private ModelAndView toggleProfilingRfn(HttpServletRequest request, HttpServletResponse response)
+            throws Exception {
+
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        rolePropertyDao.verifyProperty(YukonRoleProperty.PROFILE_COLLECTION_SCANNING,
+                                       userContext.getYukonUser());
+
+        // get device
+        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
+        
+        boolean newToggleVal = WidgetParameterHelper.getRequiredBooleanParameter(request, "newToggleVal");
+        
+        if (newToggleVal) {
+            loadProfileService.startVoltageProfilingForDevice(deviceId);
+        } else {
+            loadProfileService.stopVoltageProfilingForDevice(deviceId);
+        }
+
+        ModelAndView mav = render(request, response);
+        return mav;
+    }
 
     @RequestMapping("refreshChannelScanningInfo")
     public ModelAndView refreshChannelScanningInfo(HttpServletRequest request,
@@ -542,11 +615,16 @@ public class ProfileWidget extends WidgetControllerBase {
         ModelAndView mav = new ModelAndView("profileWidget/channelScanning.jsp");
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        
+        YukonMeter meter = meterDao.getForId(deviceId);
+        List<Map<String, Object>> availableChannels;
         // get info about each channels scanning status
-        List<Map<String, Object>> availableChannels = getAvailableChannelInfo(deviceId, userContext);
+        if(meter.getPaoType().isRfMeter()) {
+             availableChannels = getAvailableChannelInfoRfn(deviceId, userContext);
+        } else {
+             availableChannels = getAvailableChannelInfo(deviceId, userContext);
+        }
         mav.addObject("availableChannels", availableChannels);
-
+        mav.addObject("isRfn", meter.getPaoType().isRfMeter());
         addFutureScheduleDateToMav(mav, userContext);
 
         return mav;

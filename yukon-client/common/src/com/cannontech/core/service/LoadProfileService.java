@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.amr.toggleProfiling.service.impl.RfnVoltageProfile;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -19,6 +20,28 @@ public interface LoadProfileService {
     public long initiateLoadProfile(LiteYukonPAObject device, int channel, Date start, Date stop, 
                                     CompletionCallback callback, YukonUserContext userContext);
 
+    
+    /**
+     * Get voltage profile status for RFN meters. 
+     */
+     public void getDynamicPaoInfo(int device);
+     
+     /**
+      * Returns the RfnVoltageProfile data from the available cache. If its not available in the cache means a the 
+      * request is in process sends a new RfnVoltageProfile object with status UNKNOWN
+      */
+     public RfnVoltageProfile getRfnVoltageProfileDetails(int deviceId);
+     
+     /**
+      * Enables voltage profile for a RFN device
+      */
+     public void startVoltageProfilingForDevice(int deviceId);
+     
+     /**
+      * Disable voltage profile for a RFN device
+      */
+     public void stopVoltageProfilingForDevice(int deviceId);
+    
     /**
      * Get a list of load profile requests in process.
      */

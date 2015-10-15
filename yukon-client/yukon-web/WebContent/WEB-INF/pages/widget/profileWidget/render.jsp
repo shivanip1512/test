@@ -43,6 +43,7 @@
         }
         
         function doToggleScanning(channelNum, newToggleVal) {
+        	debugger;
             $('#' + 'channelNum').val(channelNum);
             $('#' + 'newToggleVal').val(newToggleVal);
             ${widgetParameters.jsWidget}.doDirectActionRefresh("toggleProfiling");
@@ -51,7 +52,7 @@
      
     <%-- CHANNEL SCANNING --%>
     <c:if test = "${not empty availableChannels}">
-     <c:if test="${not isRfn}">
+     
     <c:if test="${not empty toggleErrorMsg}">
         <cti:msg2 var="errorToggleChannel" key=".errorToggleChannel"/>
         <tags:hideReveal title="${errorToggleChannel}" styleClass="error" escapeTitle="true" showInitially="true">
@@ -63,14 +64,24 @@
     <div id="${channelScanDiv}" class="stacked"></div>
     
     <script>
-        var refreshCmd = 'refreshChannelScanningInfo',
-            refreshParams = {'deviceId':${deviceId}},
-            refreshPeriod = 90;
-                   scanningUpdater = ${widgetParameters.jsWidget}.doPeriodicRefresh(refreshCmd,
+    var refreshCmd;
+       if('${isRfn}') {
+          refreshCmd = 'refreshChannelScanningInfoRfn';
+          refreshParams = {'deviceId':${deviceId}},
+          refreshPeriod = 90;
+          scanningUpdater = ${widgetParameters.jsWidget}.doPeriodicRefresh(refreshCmd,
+                                                                       refreshParams, refreshPeriod,
+                                                                       '${channelScanDiv}');
+       } 
+       refreshCmd = 'refreshChannelScanningInfo';
+       refreshParams = {'deviceId':${deviceId}},
+       refreshPeriod = 90;
+       scanningUpdater = ${widgetParameters.jsWidget}.doPeriodicRefresh(refreshCmd,
                                                                          refreshParams, refreshPeriod,
                                                                          '${channelScanDiv}');
+
     </script>
-    </c:if>
+    
     <%--PAST PROFILES, don't display if the device does not support --%>
     <cti:checkRolesAndProperties value="METERING">
     <cti:checkRolesAndProperties value="PROFILE_COLLECTION">

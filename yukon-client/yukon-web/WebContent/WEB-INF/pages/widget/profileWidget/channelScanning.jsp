@@ -10,6 +10,33 @@
 </cti:checkRolesAndProperties>
 </cti:checkRolesAndProperties>
 
+<div class="dn" id="confirm-popup" data-dialog data-target="#toggle-state"
+    data-title= "<cti:msg2 key=".scanning.popupTitle"/>"
+    data-width="400" data-event="yukon.toggle.click">
+       <cti:msg2 key=".scanning.popupMessage"/>  
+</div>
+
+<script>
+function toggleProfile(channelProfilingStatus) {
+
+    if(channelProfilingStatus == 'ENABLED') {
+         newToggleVal = false;
+         yukon.ui.dialog('#confirm-popup');
+    } else {
+         newToggleVal = true;
+         doToggleScanning(0,newToggleVal);
+    }
+}
+
+$('#toggle-state').on('yukon.toggle.click', function (ev) {
+    $('#confirm-popup').dialog('close');
+    doToggleScanning(0,newToggleVal);
+});
+</script>
+
+<div id="unknown-interval-help-popup" class="dn" data-title="<cti:msg2 key=".scanning.unknown.interval.title"/>">
+    <i:inline key=".scanning.unknown.interval.helpText"/>
+</div>
 
 <%--CHANNELS PROFILING--%>
 <input type="hidden" name="channelNum" id="channelNum" value="">
@@ -29,6 +56,8 @@
     <tbody>
     
     <c:forEach var="c" items="${availableChannels}">
+     <%-- This is for PLC devices --%>
+    <c:if test="${not isRfn}">
         <tr align="left" valign="top">
             <td>${c.channelDescription}</td>
             <td>${c.channelProfileRate}</td>
@@ -90,6 +119,65 @@
                 <td><tags:toggleProfilingPopup channelNum="${c.channelNumber}" newToggleVal="${not c.channelProfilingOn}"/></td>
             </c:if>
         </tr>
+        </c:if>
+        
+        <%-- This is for RFN devices --%>
+        <c:if test="${isRfn}">
+            <c:choose>
+                <c:when test="${c.channelProfilingStatus == 'DISABLED'}">
+                    <cti:msg2 var="toggleDesc" key="yukon.common.start"/>
+                </c:when>
+                <c:when test="${c.channelProfilingStatus == 'ENABLED'}">
+                    <cti:msg2 var="toggleDesc" key="yukon.common.stop"/>
+                </c:when>
+             </c:choose>
+           
+           <tr align="left" valign="top">
+           <td>${c.channelDescription}</td>
+                <c:if test="${c.channelProfilingStatus eq 'UNKNOWN'}">
+                    <td><cti:icon icon="icon-loading-bars"/></td>
+                    <td><cti:icon icon="icon-loading-bars"/></td>
+                    <td><cti:icon icon="icon-loading-bars"/></td>
+                 </c:if>
+                 
+                 <c:if test="${c.channelProfilingStatus eq 'ENABLED'}">
+                    <td>${c.channelProfileRate}
+                        <c:if test="${c.channelProfileRate eq 'Unknown'}">
+                           <cti:icon icon="icon-help" classes="cp fn vatb" data-popup="#unknown-interval-help-popup" data-popup-toggle=""/>
+                        </c:if>
+                     </td>
+                    <td>
+                    <table>
+                    <tr>
+                    <td><strong class="success"><i:inline key="yukon.common.on"/></strong></td>
+                    <td>
+                        <cti:formatDate value="${c.channelEnabledTill}" type="FULL" var="formattedScheduleDate" />
+                        <i:inline key=".scanning.stops" arguments="${formattedScheduleDate}"/>
+                    </td>
+                    </tr>
+                    </table>
+                    </td>
+                     <td><a id="toggle-state" title="${toggleDesc}"  href="javascript:toggleProfile('DISABLED');">${toggleDesc}</a></td>
+                 </c:if>
+                  
+                 <c:if test="${c.channelProfilingStatus eq 'DISABLED'}">
+                     <td>${c.channelProfileRate}
+                     <c:if test="${c.channelProfileRate eq 'Unknown'}">
+                            <cti:icon icon="icon-help" classes="cp fn vatb" data-popup="#unknown-interval-help-popup" data-popup-toggle=""/>
+                        </c:if>
+                     </td>
+                     <td>
+                     <table>
+                        <tr>
+                          <td><strong class="error"><i:inline key="yukon.common.off"/></strong></td>
+                          <td></td>
+                        </tr>
+                    </table>
+                    </td>
+                     <td><a id="toggle-state" title="${toggleDesc}"  href="javascript:toggleProfile('ENABLED');">${toggleDesc}</a></td>
+                 </c:if>
+        </tr>
+        </c:if>
     </c:forEach>
     </tbody>
 </table>
