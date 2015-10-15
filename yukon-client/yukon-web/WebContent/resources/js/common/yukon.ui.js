@@ -144,6 +144,29 @@ yukon.ui = (function () {
             }
         });
 
+        $(document).on('click', '[data-edit-toggle]', function () {
+            var btn = $(this);
+            var groupName = btn.data('editToggle');
+            var fields = $('[data-edit-group="' + groupName + '"]');
+
+            var editing = btn.closest('.js-edit,.js-view').is('.js-view');
+
+            fields.find('.js-view').toggleClass('dn', editing);
+            fields.find('.js-edit').toggleClass('dn', !editing);
+
+            fields.find('.js-edit :input').each(function (idx, elem) {
+                elem = $(elem);
+                var originalValue;
+                if (editing) {
+                    originalValue = elem.val();
+                    elem.data('originalValue', originalValue);
+                } else {
+                    originalValue = elem.data('originalValue');
+                    elem.val(originalValue);
+                }
+            });
+        });
+
         /** Fix file path on all yukon <tags:file> usage in windows. */
         $(document).on('change', '.file-upload input[type="file"]', function (ev) {
 
@@ -444,7 +467,7 @@ yukon.ui = (function () {
          * the popup will be closed instead and the event propigated normally...otherwise yukon.ui.dialog is 
          * called passing the popup element.
          */
-        $(document).on('click', '[data-popup]', function (ev) {
+        $(document).on('click', '[data-popup]:not(.disabled)', function (ev) {
 
             var trigger = $(this),
                 popup = $(trigger.data('popup'));
@@ -784,6 +807,10 @@ yukon.ui = (function () {
 
             container = container || document;
             container = $(container);
+
+            container.find('[data-edit-group] .js-view')
+                .find(':input').not(':button')
+                .prop('disabled', true);
 
             initChosen();
 
