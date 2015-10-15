@@ -33,6 +33,7 @@
     <span id="${pageScope.id}" class="${pageScope.inputClass}" data-toggle-group="${pageScope.toggleGroup}">
         ${fn:escapeXml(status.value)}
     </span>
+    <form:hidden path="${path}"/>
 </cti:displayForPageEditModes>
 
 <%-- EDIT/CREATE MODE --%>

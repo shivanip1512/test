@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.gateway;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,11 +30,13 @@ import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
+import com.cannontech.common.rfn.dao.RfnGatewayFirmwareUpgradeDao;
 import com.cannontech.common.rfn.message.gateway.Authentication;
 import com.cannontech.common.rfn.message.gateway.DataType;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
 import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.rfn.model.GatewayUpdateException;
+import com.cannontech.common.rfn.model.GatewayUpdateServer;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
@@ -77,6 +81,7 @@ public class GatewaySettingsController {
     @Autowired private EndpointEventLogService endpointEventLogService;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private NMConfigurationService nmConfigurationService;
+    @Autowired private RfnGatewayFirmwareUpgradeDao firmwareUpgradeDao;
     
     @RequestMapping("/gateways/create")
     public String createDialog(ModelMap model) {
@@ -178,38 +183,55 @@ public class GatewaySettingsController {
     }
 
     public static class GatewaySettingsList {
-        private List<GatewaySettings> list = LazyList.ofInstance(GatewaySettings.class);
+        private List<GatewayUpdateServer> list = LazyList.ofInstance(GatewayUpdateServer.class);
 
         public GatewaySettingsList() {}
 
-        public GatewaySettingsList(List<GatewaySettings> list) {
+        public GatewaySettingsList(List<GatewayUpdateServer> list) {
             setList(list);
         }
 
-        public List<GatewaySettings> getList() {
+        public List<GatewayUpdateServer> getList() {
             return list;
         }
 
-        public void setList(List<GatewaySettings> list) {
+        public void setList(List<GatewayUpdateServer> list) {
             this.list = list;
         }
     }
 
     @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
     @RequestMapping("/gateways/update-servers")
-    public String editUpdateServers(ModelMap model) {
+    public String editUpdateServers(ModelMap model, YukonUserContext userContext) {
+
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        String unknownText = accessor.getMessage("yukon.common.unknown");
 
         model.addAttribute("mode", PageEditMode.EDIT);
 
         Set<RfnGateway> allGateways = rfnGatewayService.getAllGateways();
+        Map<String, String> tempUpdateServerToVersion;
+        try {
+            tempUpdateServerToVersion = firmwareUpgradeDao.getFirmwareUpdateServerVersions(allGateways);
+        } catch (NmCommunicationException e) {
+            tempUpdateServerToVersion = Collections.emptyMap();
+        }
+        final Map<String, String> updateServerToVersion = tempUpdateServerToVersion;
 
-        List<GatewaySettings> allGatewaySettings = allGateways.stream()
-            .map(new Function<RfnGateway, GatewaySettings>() {
+        List<GatewayUpdateServer> allGatewaySettings = allGateways.stream()
+            .map(new Function<RfnGateway, GatewayUpdateServer>() {
 
                 @Override
-                public GatewaySettings apply(RfnGateway gateway) {
-                    GatewaySettings settings = rfnGatewayService.gatewayAsSettings(gateway);
-                    return settings;
+                public GatewayUpdateServer apply(RfnGateway gateway) {
+                    GatewayUpdateServer updateServer = GatewayUpdateServer.of(gateway);
+
+                    String availableVersion = updateServerToVersion.get(updateServer.getUpdateServerUrl());
+                    if (StringUtils.isEmpty(availableVersion)) {
+                        availableVersion = unknownText;
+                    }
+                    updateServer.setAvailableVersion(availableVersion);
+
+                    return updateServer;
                 }
             }).collect(Collectors.toList());
 
@@ -231,13 +253,13 @@ public class GatewaySettingsController {
         YukonUserContext userContext ) {
 
         try {
-            List<GatewaySettings> gatewaySettings = allSettings.getList();
+            List<GatewayUpdateServer> updateServerInfos = allSettings.getList();
 
             List<RfnGateway> gateways = new ArrayList<>();
 
-            for (GatewaySettings settings : gatewaySettings) {
-                RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(settings.getId());
-                gateway = gateway.withUpdateServer(settings);
+            for (GatewayUpdateServer updateServerInfo : updateServerInfos) {
+                RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(updateServerInfo.getId());
+                gateway = gateway.withUpdateServer(updateServerInfo);
                 gateways.add(gateway);
             }
 

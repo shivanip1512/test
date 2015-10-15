@@ -23,6 +23,8 @@ yukon.assets.gateway.list = (function () {
             contentType: 'application/json'
         }).done(function (gateways) {
             
+            var dataExists = false;
+
             Object.keys(gateways).forEach(function (paoId) {
                 
                 var 
@@ -32,6 +34,10 @@ yukon.assets.gateway.list = (function () {
                 row = $('[data-gateway="' + paoId + '"]');
                 
                 if (data != null) {
+                    if (dataExists === false) {
+                        dataExists = true;
+                        $('.update-servers').find('.disabled').andSelf().removeClass('disabled');
+                    }
                     
                     timestamp = moment(data.lastCommTimestamp).tz(yg.timezone).format(yg.formats.date.full_hm);
                     percent = data.collectionPercent.toFixed(2);

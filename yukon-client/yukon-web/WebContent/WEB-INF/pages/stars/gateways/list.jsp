@@ -46,7 +46,7 @@
         </cti:checkRolesAndProperties>
         <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
             <%-- YUK-14626 Work in Progress --%>
-            <cm:dropdownOption data-popup="#firmware-upgrade-popup" icon="icon-drive-go"><i:inline key=".updateServer.set"/></cm:dropdownOption>
+            <cm:dropdownOption data-popup="#firmware-upgrade-popup" icon="icon-drive-go" classes="update-servers disabled" disabled="true"><i:inline key=".updateServer.set"/></cm:dropdownOption>
         </cti:checkGlobalRolesAndProperties>
     </div>
 </c:if>

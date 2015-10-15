@@ -144,6 +144,10 @@
     <entry key="yukon.web.modules.operator.gateways.updateServer.login">Server Authentication</entry>
     <entry key="yukon.web.modules.operator.gateways.updateServer.login.user">Server Username</entry>
     <entry key="yukon.web.modules.operator.gateways.updateServer.login.password">Server Password</entry>
+    <entry key="yukon.web.modules.operator.gateways.updateServer.server">Server</entry>
+    <entry key="yukon.web.modules.operator.gateways.updateServer.auth">Auth</entry>
+    <entry key="yukon.web.modules.operator.gateways.version.current">Current Version</entry>
+    <entry key="yukon.web.modules.operator.gateways.version.available">Available Version</entry>
     <entry key="yukon.web.modules.operator.gateways.connectionType.TCP_IP">TCP/IP</entry>
     <entry key="yukon.web.modules.operator.gateways.connectionType.MODEM_PLUS_PPP">Modem Plus PPP</entry>
     <entry key="yukon.web.modules.operator.gateways.connectionType.MODEM_DIRECT">Modem Direct</entry>
