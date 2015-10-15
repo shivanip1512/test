@@ -539,20 +539,23 @@ void RfnResidentialVoltageDevice::handleCommandResult( const Commands::RfnLoadPr
     //  If it's enabled, we don't know when it will auto-disable...  but if it's disabled, clear it out
     if( cmd.getRecordingOption() == Commands::RfnLoadProfileRecordingCommand::DisableRecording )
     {
-        setDynamicInfo(
-                CtiTableDynamicPaoInfo::Key_RFN_VoltageProfileEnabledUntil,
-                CtiTime::not_a_time);
+        purgeDynamicPaoInfo(CtiTableDynamicPaoInfo::Key_RFN_VoltageProfileEnabledUntil);
     }
 }
 
 
 void RfnResidentialVoltageDevice::handleCommandResult(const Commands::RfnLoadProfileSetRecordingCommand & cmd)
 {
-    setDynamicInfo(
+    if( cmd.recordingOption == Commands::RfnLoadProfileSetRecordingCommand::EnableRecording )
+    {
+        setDynamicInfo(
             CtiTableDynamicPaoInfo::Key_RFN_VoltageProfileEnabledUntil,
-            cmd.recordingOption == Commands::RfnLoadProfileSetRecordingCommand::EnableRecording
-                ? (CtiTime::now() + 14 * 86400)
-                : CtiTime::not_a_time);
+            CtiTime::now().addDays(14));
+    }
+    else
+    {
+        purgeDynamicPaoInfo(CtiTableDynamicPaoInfo::Key_RFN_VoltageProfileEnabledUntil);
+    }
 }
 
 }   // Devices
