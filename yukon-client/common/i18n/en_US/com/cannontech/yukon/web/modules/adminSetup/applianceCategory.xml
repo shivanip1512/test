@@ -125,5 +125,8 @@
 <entry key="yukon.web.modules.adminSetup.applianceCategory.unassignedProgram.virtualProgramConfirmationQuestion">
     Are you sure you want to delete the virtual program {0} and remove it from {1}?  Deleting the program will unenroll customers currently enrolled.
 </entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.unassignedProgram.deleteError">
+    Program {0} is linked with some other program. Hence cannot be deleted.
+</entry>
 
 </properties>

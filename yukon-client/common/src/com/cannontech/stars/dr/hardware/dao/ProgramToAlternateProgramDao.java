@@ -47,4 +47,13 @@ public interface ProgramToAlternateProgramDao {
      */
     int getTotalNumberOfDevicesInSeasonalOptOuts(YukonEnergyCompany yukonEnergyCompany, List<Integer> assignedProgramIds);
 
+    /**
+     * Gets the Program id for which SeasonalProgramId is load program id
+     * 
+     * @param SeasonalProgramId : Program id which is getting deleted but it might be seasonal/alternate
+     *        program for some other load program.
+     * @return
+     */
+    int getAssignedProgramIdBySeasonalProgramId(int SeasonalProgramId);
+
 }

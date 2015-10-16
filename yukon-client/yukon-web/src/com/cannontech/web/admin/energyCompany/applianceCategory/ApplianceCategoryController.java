@@ -546,7 +546,19 @@ public class ApplianceCategoryController {
             YukonUserContext userContext) {
         
         AssignedProgram program = assignedProgramDao.getById(assignedProgramId);
-        
+        int progId = ptapDao.getAssignedProgramIdBySeasonalProgramId(assignedProgramId);
+        if (progId != -1) {
+            // Program with id {assignedProgramId} is linked with some other program. Hence cannot be deleted.
+            MessageSourceResolvable errorMsg =
+                new YukonMessageSourceResolvable(baseKey + ".unassignedProgram.deleteError",
+                    program.getName().getProgramName());
+            flash.setMessage(errorMsg, FlashScopeMessageType.ERROR);
+            model.addAttribute("applianceCategoryId", applianceCategoryId);
+            model.addAttribute("assignedProgramId", assignedProgramId);
+            model.addAttribute("ecId", ecId);
+            return "redirect:view";
+        }
+
         verifyAssignedProgramAC(assignedProgramId, applianceCategoryId);
         ApplianceCategory applianceCategory = applianceCategoryDao.getById(applianceCategoryId);
         ecService.verifyEditPageAccess(userContext.getYukonUser(),

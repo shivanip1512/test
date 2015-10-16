@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.cannontech.common.util.ChunkingSqlTemplate;
@@ -155,6 +156,23 @@ public class ProgramToAlternateProgramDaoImpl implements ProgramToAlternateProgr
         sql.append("FROM ProgramToSeasonalProgram");
 
         return yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+    }
+    
+    @Override
+    public int getAssignedProgramIdBySeasonalProgramId(int SeasonalProgramId) {
+        int result = -1;
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT DISTINCT AssignedProgramId");
+            sql.append("FROM ProgramToSeasonalProgram");
+            sql.append("WHERE SeasonalProgramId").eq(SeasonalProgramId);
+            result = yukonJdbcTemplate.queryForInt(sql);
+        } catch (EmptyResultDataAccessException e) {
+            // returns -1 in case the program to be deleted is not linked with any other program or is not an
+            // alternate enrolled program for some other.
+            return result;
+        }
+        return result;
     }
 
     @Override
