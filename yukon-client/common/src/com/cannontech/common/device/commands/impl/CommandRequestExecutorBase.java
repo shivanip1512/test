@@ -506,7 +506,14 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 
         // run cancel command
         log.debug("Sending cancel request. groupMessageId = " + messageListener.getGroupMessageId());
-        long commandsCanceled = porterRequestCancelService.cancelRequests(messageListener.getGroupMessageId(), CANCEL_PRIORITY);
+        long commandsCanceled = 0;
+        
+        try {
+            commandsCanceled =
+                porterRequestCancelService.cancelRequests(messageListener.getGroupMessageId(), CANCEL_PRIORITY);
+        } catch (ConnectionException e) {
+            log.error("Porter is not responding", e);
+        }
         
         if (updateExecutionStatus) {
             completeCommandRequestExecutionRecord(messageListener.getCommandRequestExecution(),
@@ -581,9 +588,11 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         }
 
         @Override
-        public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback, boolean noqueue) {
-            CommandRequestExecution execution = createCommandRequestExecution(parameterDto, commands);
-            return executeWithParameterDto(commands, callback, this.parameterDto.withNoqueue(noqueue), execution, false);
+        public CommandRequestExecutionIdentifier execute(List<T> commands,
+                CommandCompletionCallback<? super T> callback, CommandRequestExecution execution,
+                boolean multipleStrategies, boolean noqueue) {
+            return executeWithParameterDto(commands, callback, parameterDto.withNoqueue(noqueue), execution,
+                multipleStrategies);
         }
         
         @Override

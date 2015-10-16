@@ -7,12 +7,14 @@ import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionId
 
 public interface CommandRequestExecutionTemplate<T> {
     
-    public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback);
+    CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback);
     
     /* This method requires CommandRequestExecution to be created prior to calling execute*/
-    public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback, CommandRequestExecution execution, boolean multipleStrategies);
-    public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback, boolean noQueue);
-
+    CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback, CommandRequestExecution execution, boolean multipleStrategies);
     
-    public CommandRequestExecutionContextId getContextId();
+    CommandRequestExecutionContextId getContextId();
+
+    /* This method requires CommandRequestExecution to be created prior to calling execute*/
+    CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback,
+            CommandRequestExecution execution, boolean multipleStrategies, boolean noqueue);
 }

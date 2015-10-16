@@ -1,45 +1,27 @@
 package com.cannontech.amr.deviceread.service;
 
-import java.util.Date;
-
 public class RetryParameters {
-    private int retryCount;
-    private Date stopRetryAfterDate;
-    private Integer turnOffQueuingAfterRetryCount;
 
-    public RetryParameters(int retryCount, Date stopRetryAfterDate,
-            Integer turnOffQueuingAfterRetryCount) {
-        this.retryCount = retryCount;
-        this.stopRetryAfterDate = stopRetryAfterDate;
-        this.turnOffQueuingAfterRetryCount = turnOffQueuingAfterRetryCount;
+    private int queuedTries;
+    private int nonQueuedTries;
+    private int stopRetryAfterHoursCount;
+
+    public RetryParameters(int queuedTries, int nonQueuedTries, int stopRetryAfterHoursCount) {
+
+        this.queuedTries = queuedTries;
+        this.nonQueuedTries = nonQueuedTries;
+        this.stopRetryAfterHoursCount = stopRetryAfterHoursCount;
     }
 
-    public int getRetryCount() {
-        return retryCount;
+    public int getQueuedTries() {
+        return queuedTries;
     }
 
-    public void setRetryCount(int retryCount) {
-        this.retryCount = retryCount;
+    public int getNonQueuedTries() {
+        return nonQueuedTries;
     }
 
-    public Date getStopRetryAfterDate() {
-        return stopRetryAfterDate;
+    public int getStopRetryAfterHoursCount() {
+        return stopRetryAfterHoursCount;
     }
-
-    public void setStopRetryAfterDate(Date stopRetryAfterDate) {
-        this.stopRetryAfterDate = stopRetryAfterDate;
-    }
-
-    public Integer getTurnOffQueuingAfterRetryCount() {
-        return turnOffQueuingAfterRetryCount;
-    }
-
-    public void setTurnOffQueuingAfterRetryCount(Integer turnOffQueuingAfterRetryCount) {
-        this.turnOffQueuingAfterRetryCount = turnOffQueuingAfterRetryCount;
-    }
-
-    public static RetryParameters none() {
-        return new RetryParameters(0, null, null);
-    }
-    
 }
