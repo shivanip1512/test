@@ -14,6 +14,16 @@
             Simulating Certificate Replies!
         </div>
     </c:if>
+    <c:if test="${autoFirmwareReplyActive}">
+        <div class="user-message pending">
+            Simulating Firmware Update Replies!
+        </div>
+    </c:if>
+    <c:if test="${autoFirmwareVersionReplyActive}">
+        <div class="user-message pending">
+            Simulating Firmware Update Server Version Replies!
+        </div>
+    </c:if>
     
     <tags:sectionContainer title="Create New Gateway">
         Queue an unsolicited gateway archive message, as though it were coming from Network Manager (which will create a new gateway device in Yukon).
@@ -84,6 +94,55 @@
         </c:if>
         <c:if test="${autoCertificateReplyActive}">
             <cti:button label="Disable Certificate Reply" type="button" href="disableGatewayCertificateReply"/>
+        </c:if>
+    </tags:sectionContainer>
+    
+    <tags:sectionContainer title="Automatic Simulated Firmware Server Version Reply">
+        The simulator automatically processes RfnUpdateServerAvailableVersionRequests and sends an RfnUpdateServerAvailableVersionResponse.
+        <br><br>
+        <c:if test="${not autoFirmwareVersionReplyActive}">
+            <form action="enableFirmwareVersionReply" method="POST">
+                <cti:csrfToken/>
+                <tags:nameValueContainer tableClass="natural-width">
+                    <tags:nameValue name="Version">
+                        <input type="text" name="version" value="1.2.3"/>
+                    </tags:nameValue>
+                    <tags:nameValue name="ReplyType">
+                        <select name="replyType">
+                            <c:forEach var="replyType" items="${firmwareVersionReplyTypes}">
+                                <option value="${replyType}">${replyType}</option>
+                            </c:forEach>
+                        </select>
+                    </tags:nameValue>
+                </tags:nameValueContainer>
+                <cti:button label="Enable Firmware Server Version Reply" type="submit"/>
+            </form>
+        </c:if>
+        <c:if test="${autoFirmwareVersionReplyActive}">
+            <cti:button label="Disable Firmware Server Version Reply" type="button" href="disableFirmwareVersionReply"/>
+        </c:if>
+    </tags:sectionContainer>
+    
+    <tags:sectionContainer title="Automatic Simulated Firmware Upgrade Reply">
+        The simulator automatically processes RfnGatewayFirmwareUpdateRequests and sends an RfnGatewayFirmwareUpdateResponse.
+        <br><br>
+        <c:if test="${not autoFirmwareReplyActive}">
+            <form action="enableGatewayFirmwareReply" method="POST">
+                <cti:csrfToken/>
+                <tags:nameValueContainer tableClass="natural-width">
+                    <tags:nameValue name="Update Result Type">
+                        <select name="updateResult">
+                            <c:forEach var="updateResult" items="${firmwareUpdateResultTypes}">
+                                <option value="${updateResult}">${updateResult}</option>
+                            </c:forEach>
+                        </select>
+                    </tags:nameValue>
+                </tags:nameValueContainer>
+                <cti:button label="Enable Firmware Upgrade Reply" type="submit"/>
+            </form>
+        </c:if>
+        <c:if test="${autoFirmwareReplyActive}">
+            <cti:button label="Disable Firmware Upgrade Reply" type="button" href="disableGatewayFirmwareReply"/>
         </c:if>
     </tags:sectionContainer>
     

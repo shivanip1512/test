@@ -1,6 +1,5 @@
 package com.cannontech.common.rfn.dao.impl;
 
-import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;

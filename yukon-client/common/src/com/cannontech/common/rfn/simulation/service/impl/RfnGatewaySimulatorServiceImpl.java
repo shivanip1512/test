@@ -1,4 +1,4 @@
-package com.cannontech.common.rfn.service.impl;
+package com.cannontech.common.rfn.simulation.service.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,20 +29,27 @@ import com.cannontech.common.rfn.message.gateway.DataType;
 import com.cannontech.common.rfn.message.gateway.GatewayArchiveRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayDataRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayDataResponse;
+import com.cannontech.common.rfn.message.gateway.GatewayFirmwareUpdateRequestResult;
 import com.cannontech.common.rfn.message.gateway.LastCommStatus;
 import com.cannontech.common.rfn.message.gateway.Radio;
 import com.cannontech.common.rfn.message.gateway.RadioType;
+import com.cannontech.common.rfn.message.gateway.RfnGatewayFirmwareUpdateRequest;
+import com.cannontech.common.rfn.message.gateway.RfnGatewayFirmwareUpdateResponse;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeRequest;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeRequestAck;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeRequestAckType;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeResponse;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeResponseType;
+import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersionRequest;
+import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersionResponse;
 import com.cannontech.common.rfn.message.gateway.SequenceBlock;
 import com.cannontech.common.rfn.model.GatewayCertificateUpdateStatus;
-import com.cannontech.common.rfn.model.SimulatedCertificateReplySettings;
-import com.cannontech.common.rfn.model.SimulatedGatewayDataSettings;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
-import com.cannontech.common.rfn.service.RfnGatewaySimulatorService;
+import com.cannontech.common.rfn.simulation.SimulatedCertificateReplySettings;
+import com.cannontech.common.rfn.simulation.SimulatedFirmwareReplySettings;
+import com.cannontech.common.rfn.simulation.SimulatedFirmwareVersionReplySettings;
+import com.cannontech.common.rfn.simulation.SimulatedGatewayDataSettings;
+import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
 import com.google.common.collect.Sets;
 
 //Switch info logs to debug
@@ -52,11 +59,20 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     private static final String upgradeQueue = "yukon.qr.obj.common.rfn.GatewayUpgradeRequest";
     private static final String dataAndUpgradeResponseQueue = "yukon.qr.obj.common.rfn.GatewayData";
     private static final String archiveRequestQueue = "yukon.qr.obj.common.rfn.GatewayArchiveRequest";
+    private static final String firmwareUpgradeRequestQueue = "yukon.qr.obj.common.rfn.RfnGatewayFirmwareUpdateRequest";
+    private static final String firmwareUpgradeResponseQueue = "yukon.qr.obj.common.rfn.RfnGatewayFirmwareUpdateResponse";
+    private static final String firmwareAvailableVersionQueue = "yukon.qr.obj.common.rfn.UpdateServerAvailableVersionRequest";
     
-    private volatile boolean autoDataReplyActive = false;
-    private volatile boolean autoDataReplyStopping = false;
-    private volatile boolean autoUpgradeReplyActive = false;
-    private volatile boolean autoUpgradeReplyStopping = false;
+    private static final int incomingMessageWaitMillis = 1000;
+    
+    private volatile boolean autoDataReplyActive;
+    private volatile boolean autoDataReplyStopping;
+    private volatile boolean autoUpgradeReplyActive;
+    private volatile boolean autoUpgradeReplyStopping;
+    private volatile boolean autoFirmwareReplyActive;
+    private volatile boolean autoFirmwareReplyStopping;
+    private volatile boolean autoFirmwareVersionReplyActive;
+    private volatile boolean autoFirmwareVersionReplyStopping;
     
     @Autowired ConnectionFactory connectionFactory;
     private JmsTemplate jmsTemplate;
@@ -64,7 +80,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     @PostConstruct
     public void init() {
         jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setReceiveTimeout(5000);
+        jmsTemplate.setReceiveTimeout(incomingMessageWaitMillis);
     }
     
     @Override
@@ -100,7 +116,41 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     public void stopAutoCertificateReply() {
         autoUpgradeReplyStopping = true;
     }
-
+    
+    @Override
+    public boolean startAutoFirmwareReply(SimulatedFirmwareReplySettings settings) {
+        if (autoFirmwareReplyActive) {
+            return false;
+        } else {
+            Thread autoFirmwareThread = getAutoFirmwareThread(settings);
+            autoFirmwareThread.start();
+            autoFirmwareReplyActive = true;
+            return true;
+        }
+    }
+    
+    @Override
+    public void stopAutoFirmwareReply() {
+        autoFirmwareReplyStopping = true;
+    }
+    
+    @Override
+    public boolean startAutoFirmwareVersionReply(SimulatedFirmwareVersionReplySettings settings) {
+        if (autoFirmwareVersionReplyActive) {
+            return false;
+        } else {
+            Thread autoFirmwareVersionThread = getAutoFirmwareVersionThread(settings);
+            autoFirmwareVersionThread.start();
+            autoFirmwareVersionReplyActive = true;
+            return true;
+        }
+    }
+    
+    @Override
+    public void stopAutoFirmwareVersionReply() {
+        autoFirmwareVersionReplyStopping = true;
+    }
+    
     @Override
     public void sendGatewayDataResponse(GatewayDataResponse response) {
         jmsTemplate.convertAndSend(dataAndUpgradeResponseQueue, response);
@@ -118,6 +168,73 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         request.setRfnIdentifier(rfnIdentifier);
         
         jmsTemplate.convertAndSend(archiveRequestQueue, request);
+    }
+    
+    private Thread getAutoFirmwareThread(SimulatedFirmwareReplySettings settings) {
+        Thread autoFirmwareThread = new Thread() {
+            @Override
+            public void run() {
+                log.info("Auto firmware reply thread starting up.");
+                while (!autoFirmwareReplyStopping) {
+                    try {
+                        Object message = jmsTemplate.receive(firmwareUpgradeRequestQueue);
+                        if (message != null && message instanceof ObjectMessage) {
+                            ObjectMessage requestMessage = (ObjectMessage) message;
+                            RfnGatewayFirmwareUpdateRequest request = 
+                                    (RfnGatewayFirmwareUpdateRequest) requestMessage.getObject();
+                            
+                            RfnGatewayFirmwareUpdateResponse response = setUpFirmwareUpdateResponse(request, settings);
+                            jmsTemplate.convertAndSend(firmwareUpgradeResponseQueue, response);
+                        }
+                    } catch (Exception e) {
+                        log.error("Error occurred in auto firmware reply.", e);
+                    }
+                }
+                
+                log.info("Auto firmware update reply thread shutting down.");
+                autoFirmwareReplyStopping = false;
+                autoFirmwareReplyActive = false;
+            }
+        };
+        
+        return autoFirmwareThread;
+    }
+    
+    /**
+     * Generate a thread that monitors the firmware server available version request queue, handles requests, and sends
+     * responses.
+     */
+    private Thread getAutoFirmwareVersionThread(SimulatedFirmwareVersionReplySettings settings) {
+        Thread autoFirmwareVersionThread = new Thread() {
+            @Override
+            public void run() {
+                log.info("Auto firmware server version reply thread starting up.");
+                while (!autoFirmwareVersionReplyStopping) {
+                    try {
+                        Object message = jmsTemplate.receive(firmwareAvailableVersionQueue);
+                        if (message != null && message instanceof ObjectMessage) {
+                            log.info("Processing firmware server available version message.");
+                            ObjectMessage requestMessage = (ObjectMessage) message;
+                            RfnUpdateServerAvailableVersionRequest request = 
+                                    (RfnUpdateServerAvailableVersionRequest) requestMessage.getObject();
+                            
+                            RfnUpdateServerAvailableVersionResponse response = 
+                                    setUpFirmwareVersionResponse(request, settings);
+                            
+                            jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), response);
+                        }
+                    } catch (Exception e) {
+                        log.error("Error occurred in auto firmware server version reply.", e);
+                    }
+                }
+                
+                log.info("Auto firmware server available version reply thread shutting down.");
+                autoFirmwareVersionReplyStopping = false;
+                autoFirmwareVersionReplyActive = false;
+            }
+        };
+        
+        return autoFirmwareVersionThread;
     }
     
     /**
@@ -204,6 +321,20 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     }
     
     /**
+     * Builds a firmware server available version response based on the request and settings.
+     */
+    private RfnUpdateServerAvailableVersionResponse setUpFirmwareVersionResponse(
+            RfnUpdateServerAvailableVersionRequest request, SimulatedFirmwareVersionReplySettings settings) {
+        
+        RfnUpdateServerAvailableVersionResponse response = new RfnUpdateServerAvailableVersionResponse();
+        response.setUpdateServerURL(request.getUpdateServerUrl());
+        response.setResult(settings.getResult());
+        response.setAvailableVersion(settings.getVersion());
+        
+        return response;
+    }
+    
+    /**
      * Builds an upgrade request acknowledgement message based on the specified request and settings. (This is the
      * initial response to the request, acknowledging that the request was received and giving an overall status.)
      */
@@ -265,6 +396,24 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     }
     
     /**
+     * Builds firmware update response message for gateway rfnIdentifier based on the specified request.
+     */
+    private RfnGatewayFirmwareUpdateResponse setUpFirmwareUpdateResponse(RfnGatewayFirmwareUpdateRequest request,
+                                                                          SimulatedFirmwareReplySettings settings) {
+        
+        RfnGatewayFirmwareUpdateResponse response = new RfnGatewayFirmwareUpdateResponse();
+        response.setUpdateId(request.getUpdateId());
+        response.setGateway(request.getGateway());
+        if (settings != null) {
+            response.setResult(settings.getResultType());
+        } else {
+            response.setResult(GatewayFirmwareUpdateRequestResult.ACCEPTED);
+        }
+        
+        return response;
+    }
+    
+    /**
      * Builds upgrade response messages for rfnIdentifiers based on the specified request and settings. (This is the 
      * second response to the request, async on a separate queue, which gives the status of an individual gateway
      * certificate update).
@@ -321,7 +470,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         response.setIpAddress("123.123.123.123");
         response.setPort("1234");
         response.setConnectionType(ConnectionType.TCP_IP);
-        response.setUpdateServerUrl("http://127.0.0.1:8081/updateServerTest/latest/");
+        response.setUpdateServerUrl("http://127.0.0.1:8081/simulatedUpdateServer/latest/");
         
         response.setConnectionStatus(ConnectionStatus.CONNECTED);
         response.setLastCommStatus(LastCommStatus.SUCCESSFUL);
@@ -407,11 +556,23 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         return response;
     }
     
+    @Override
     public boolean isAutoDataReplyActive() {
         return autoDataReplyActive;
     }
     
+    @Override
     public boolean isAutoUpgradeReplyActive() {
         return autoUpgradeReplyActive;
+    }
+    
+    @Override
+    public boolean isAutoFirmwareReplyActive() {
+        return autoFirmwareReplyActive;
+    }
+    
+    @Override
+    public boolean isAutoFirmwareVersionReplyActive() {
+        return autoFirmwareVersionReplyActive;
     }
 }

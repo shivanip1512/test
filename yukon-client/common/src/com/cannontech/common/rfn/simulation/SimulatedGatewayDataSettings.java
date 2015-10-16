@@ -1,4 +1,4 @@
-package com.cannontech.common.rfn.model;
+package com.cannontech.common.rfn.simulation;
 
 public class SimulatedGatewayDataSettings {
     private boolean returnGwy800Model;

@@ -1,10 +1,11 @@
-package com.cannontech.common.rfn.model;
+package com.cannontech.common.rfn.simulation;
 
 import static com.cannontech.common.rfn.model.GatewayCertificateUpdateStatus.*;
 
 import java.util.List;
 
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeRequestAckType;
+import com.cannontech.common.rfn.model.GatewayCertificateUpdateStatus;
 import com.google.common.collect.Lists;
 
 public class SimulatedCertificateReplySettings {
