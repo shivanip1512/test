@@ -8,6 +8,7 @@ package com.cannontech.common.rfn.message.gateway;
 public enum RfnUpdateServerAvailableVersionResult {
     SUCCESS,
     INVALID_URL,
+    UNAUTHORIZED,
     RELEASE_VERSION_NOT_FOUND,
     NETWORK_ERROR,
     FAILED, ;
