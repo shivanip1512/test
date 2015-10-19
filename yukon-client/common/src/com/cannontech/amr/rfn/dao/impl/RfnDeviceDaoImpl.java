@@ -229,8 +229,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
 
     }
     
-    @Override
-    public void deleteRfnAddress(RfnDevice device) {
+    private void deleteRfnAddress(RfnDevice device) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("delete from RfnAddress");
         sql.append("where DeviceId").eq(device.getPaoIdentifier().getPaoId());

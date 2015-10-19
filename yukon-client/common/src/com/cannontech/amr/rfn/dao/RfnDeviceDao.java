@@ -82,8 +82,4 @@ public interface RfnDeviceDao {
      */
     void updateGatewayType(RfnDevice device);
 
-    /**
-     * Deletes the RfnDevice.
-     */
-    void deleteRfnAddress(RfnDevice device);
 }
