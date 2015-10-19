@@ -12,8 +12,8 @@ class  TestFdrTelegyr :  public CtiFDRTelegyr {
             return processAnalog(aPoint,groupid,group_type,index);
         }
         //Disabling the ability to send to dispatch.
-        bool sendMessageToDispatch (CtiMessage *aMessage){ return true; };
-        bool queueMessageToDispatch (CtiMessage *aMessage){ return true; };
+        bool sendMessageToDispatch(CtiMessage *aMessage){ delete aMessage;  return true; }
+        bool queueMessageToDispatch(CtiMessage *aMessage){ delete aMessage;  return true; }
 
         void setControlCenter(CtiTelegyrControlCenter& controlCenter)
         {

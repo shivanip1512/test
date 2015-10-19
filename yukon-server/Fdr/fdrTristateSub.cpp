@@ -299,6 +299,7 @@ std::list<string> FDRTriStateSub::readInFile( istream & io )
     //end the string, this is not done by the read call.
     data[length] = '\0';
     string dataString(data);
+    delete data;
 
     //tokenize based off '|' and split to individual strings.
     boost::char_separator<char> delim("|");

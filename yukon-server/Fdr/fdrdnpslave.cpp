@@ -530,7 +530,7 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
         if( dnpId.PointType   == StatusPointType
             && dnpId.SlaveId  == _dnpSlave.getSrcAddr()
             && dnpId.MasterId == _dnpSlave.getDstAddr()
-            && dnpId.Offset   == control.offset )
+            && dnpId.Offset   == (control.offset + 1) )  //  DnpId offsets are 1-based (Yukon is 1-based, DNP is 0-based)
         {
             const CtiFDRDestination &fdrdest = kv.first;
             CtiFDRPoint* fdrPoint = fdrdest.getParentPoint();
@@ -992,7 +992,7 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
         const DnpId &dnpId = kv.second;
         if( dnpId.SlaveId      == _dnpSlave.getSrcAddr()
             && dnpId.MasterId  == _dnpSlave.getDstAddr()
-            && dnpId.Offset    == analog.offset
+            && dnpId.Offset    == (analog.offset + 1)  //  DnpId is 1-based (Yukon is 1-based, DNP is 0-based)
             && dnpId.PointType == AnalogPointType )
         {
             const CtiFDRDestination &fdrdest = kv.first;

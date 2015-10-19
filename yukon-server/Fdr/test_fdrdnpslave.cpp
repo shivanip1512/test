@@ -547,7 +547,7 @@ BOOST_AUTO_TEST_CASE( test_control_close_dispatch )
         fdrPoint->setValue(0);
         fdrPoint->setControllable(true);
 
-        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:0", "Test Destination");
+        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:1", "Test Destination");
 
         vector<CtiFDRDestination> destinationList;
 
@@ -779,7 +779,7 @@ BOOST_AUTO_TEST_CASE( test_control_close_porter )
         fdrPoint->setValue(0);
         fdrPoint->setControllable(true);
 
-        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:0", "Test Destination");
+        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:1", "Test Destination");
 
         vector<CtiFDRDestination> destinationList;
 
@@ -997,7 +997,7 @@ BOOST_AUTO_TEST_CASE( test_control_close_sbo_porter )
         fdrPoint->setValue(0);
         fdrPoint->setControllable(true);
 
-        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:0", "Test Destination");
+        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:1", "Test Destination");
 
         vector<CtiFDRDestination> destinationList;
 
@@ -1260,7 +1260,7 @@ BOOST_AUTO_TEST_CASE( test_control_open_dispatch )
         fdrPoint->setValue(0);
         fdrPoint->setControllable(true);
 
-        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:0", "Test Destination");
+        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:1", "Test Destination");
 
         vector<CtiFDRDestination> destinationList;
 
@@ -1455,7 +1455,7 @@ BOOST_AUTO_TEST_CASE( test_control_open_porter )
         fdrPoint->setValue(0);
         fdrPoint->setControllable(true);
 
-        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:0", "Test Destination");
+        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:1", "Test Destination");
 
         vector<CtiFDRDestination> destinationList;
 
@@ -1643,7 +1643,7 @@ BOOST_AUTO_TEST_CASE( test_control_open_sbo_porter )
         fdrPoint->setValue(0);
         fdrPoint->setControllable(true);
 
-        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:0", "Test Destination");
+        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:1", "Test Destination");
 
         vector<CtiFDRDestination> destinationList;
 
@@ -1900,7 +1900,7 @@ BOOST_AUTO_TEST_CASE( test_control_request_shortIndexShortQuantity )
         fdrPoint->setValue(0);
         fdrPoint->setControllable(true);
 
-        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:0", "Test Destination");
+        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:1", "Test Destination");
 
         vector<CtiFDRDestination> destinationList;
 
@@ -1959,7 +1959,7 @@ BOOST_AUTO_TEST_CASE( test_control_request_visualTD_MCT )
         fdrPoint->setValue(0);
         fdrPoint->setControllable(true);
 
-        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:11;POINTTYPE:Status;Offset:1", "Test Destination");
+        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:11;POINTTYPE:Status;Offset:2", "Test Destination");
 
         vector<CtiFDRDestination> destinationList;
 
@@ -2018,7 +2018,7 @@ BOOST_AUTO_TEST_CASE( test_control_request_visualTD_CBC )
         fdrPoint->setValue(0);
         fdrPoint->setControllable(true);
 
-        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:11;POINTTYPE:Status;Offset:0", "Test Destination");
+        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:11;POINTTYPE:Status;Offset:1", "Test Destination");
 
         vector<CtiFDRDestination> destinationList;
 
@@ -2077,7 +2077,7 @@ BOOST_AUTO_TEST_CASE( test_control_request_controlDisabled )
         fdrPoint->setValue(0);
         fdrPoint->setControllable(false);
 
-        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:0", "Test Destination");
+        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:1", "Test Destination");
 
         vector<CtiFDRDestination> destinationList;
 
@@ -2136,7 +2136,7 @@ BOOST_AUTO_TEST_CASE( test_control_request_invalidObject )
         fdrPoint->setValue(0);
         fdrPoint->setControllable(true);
 
-        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:0", "Test Destination");
+        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:1", "Test Destination");
 
         vector<CtiFDRDestination> destinationList;
 
@@ -2214,7 +2214,7 @@ BOOST_AUTO_TEST_CASE( test_analog_output_dispatch )
         fdrPoint->setValue(0);
         fdrPoint->setControllable(true);
 
-        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:11;POINTTYPE:Analog;Offset:0", "Test Destination");
+        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:11;POINTTYPE:Analog;Offset:1", "Test Destination");
 
         vector<CtiFDRDestination> destinationList;
 
@@ -2285,7 +2285,7 @@ BOOST_AUTO_TEST_CASE( test_analog_output_porter )
         fdrPoint->setValue(0);
         fdrPoint->setControllable(true);
 
-        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:11;POINTTYPE:Analog;Offset:0", "Test Destination");
+        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:11;POINTTYPE:Analog;Offset:1", "Test Destination");
 
         vector<CtiFDRDestination> destinationList;
 
