@@ -376,12 +376,13 @@
     <bean class="com.cannontech.common.rfn.service.impl.NMConfigurationServiceImpl"/>
     <bean class="com.cannontech.common.rfn.service.impl.RfnGatewayDataCacheImpl"/>
     <bean class="com.cannontech.common.rfn.service.impl.RfnGatewayCertificateUpdateServiceImpl"/>
-    <bean class="com.cannontech.common.rfn.service.impl.RfnGatewaySimulatorServiceImpl"/>
     <bean class="com.cannontech.common.rfn.service.impl.RfnDeviceMetadataServiceImpl"/>
     <bean class="com.cannontech.common.rfn.service.impl.RfnGatewayFirmwareUpgradeServiceImpl"/>
     
     <bean class="com.cannontech.common.rfn.dao.impl.GatewayCertificateUpdateDaoImpl"/>
     <bean class="com.cannontech.common.rfn.dao.impl.RfnGatewayFirmwareUpgradeDaoImpl"/>
+    
+    <bean class="com.cannontech.common.rfn.simulation.service.impl.RfnGatewaySimulatorServiceImpl"/>
     
     <bean class="com.cannontech.dr.rfn.service.impl.ExiParsingServiceImpl"/>
     <bean class="com.cannontech.dr.rfn.service.impl.RfnExpressComMessageServiceImpl"/>
