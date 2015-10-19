@@ -35,9 +35,8 @@
                             <div class="clearfix">
                                 <input type="password" id="login_password" name="PASSWORD" autocomplete="off" placeholder="<cti:msg2 key="yukon.web.login.password"/>" class="fl">
                                 <cti:checkGlobalSetting setting="ENABLE_PASSWORD_RECOVERY">
-                                    <cti:url var="forgotUrl" value="login/forgottenPassword"></cti:url>
                                     <cti:msg2 key="yukon.web.login.forgot" var="forgot"/>
-                                    <cti:button id="forgot-btn" label="${forgot}" onclick="location.href='${forgotUrl}';"/>
+                                    <cti:button id="forgot-btn" href="login/forgottenPassword" label="${forgot}"/>
                                 </cti:checkGlobalSetting>
                             </div>
                             <div class="action-area">

@@ -50,6 +50,7 @@
 <cti:includeScript link="YUKON" force="true"/>
 <cti:includeScript link="YUKON_COOKIE" force="true"/>
 <cti:includeScript link="YUKON_UI_UTIL" force="true"/>
+<cti:includeScript link="YUKON_UI" force="true"/>
 
 </head>
 
