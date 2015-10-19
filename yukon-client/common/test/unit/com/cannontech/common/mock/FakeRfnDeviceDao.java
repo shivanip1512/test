@@ -76,8 +76,4 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
         throw new MethodNotImplementedException();
     }
 
-    @Override
-    public void deleteRfnAddress(RfnDevice device) {
-        throw new MethodNotImplementedException();
-    }
 }
