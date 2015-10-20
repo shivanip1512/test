@@ -25210,7 +25210,7 @@
             <i__columnName>GatewayId</i__columnName>
             <i__foreignColumnName>DEVICEID</i__foreignColumnName>
             <i__foreignTableName>DEVICE</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
+            <i__updateRule>0</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
@@ -35002,7 +35002,7 @@
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>varchar</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
-            <i__columnSize>300</i__columnSize>
+            <i__columnSize>2000</i__columnSize>
             <i__columnSizeDiffers>false</i__columnSizeDiffers>
             <i__decimalDigits>0</i__decimalDigits>
             <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
