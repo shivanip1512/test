@@ -254,7 +254,7 @@ CREATE TABLE GatewayFirmwareUpdateEntry (
    GatewayId            NUMBER              NOT NULL,
    OriginalVersion      VARCHAR2(100)       NOT NULL,
    NewVersion           VARCHAR2(100)       NOT NULL,
-   UpdateServerUrl      VARCHAR2(300)       NOT NULL,
+   UpdateServerUrl      VARCHAR2(2000)       NOT NULL,
    UpdateStatus         VARCHAR2(40)        NOT NULL,
    CONSTRAINT PK_GatewayFirmwareUpdateEntry PRIMARY KEY (EntryId)
 );

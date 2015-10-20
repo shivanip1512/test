@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/20/2015 12:01:50 PM                       */
+/* Created on:     10/20/2015 3:40:11 PM                        */
 /*==============================================================*/
 
 
@@ -5640,7 +5640,7 @@ create table GatewayFirmwareUpdateEntry (
    GatewayId            numeric              not null,
    OriginalVersion      varchar(100)         not null,
    NewVersion           varchar(100)         not null,
-   UpdateServerUrl      varchar(300)         not null,
+   UpdateServerUrl      varchar(2000)        not null,
    UpdateStatus         varchar(40)          not null,
    constraint PK_GatewayFirmwareUpdateEntry primary key (EntryId)
 )

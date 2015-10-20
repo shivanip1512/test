@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/20/2015 12:02:33 PM                       */
+/* Created on:     10/20/2015 3:39:17 PM                        */
 /*==============================================================*/
 
 
@@ -5359,7 +5359,7 @@ create table GatewayFirmwareUpdateEntry  (
    GatewayId            NUMBER                          not null,
    OriginalVersion      VARCHAR2(100)                   not null,
    NewVersion           VARCHAR2(100)                   not null,
-   UpdateServerUrl      VARCHAR2(300)                   not null,
+   UpdateServerUrl      VARCHAR2(2000)                  not null,
    UpdateStatus         VARCHAR2(40)                    not null,
    constraint PK_GatewayFirmwareUpdateEntry primary key (EntryId)
 );
