@@ -2258,7 +2258,7 @@ BOOST_AUTO_TEST_CASE( test_analog_output_dispatch )
 }
 
 
-BOOST_AUTO_TEST_CASE( test_analog_output_porter )
+BOOST_AUTO_TEST_CASE( test_analog_output_porter_controloffset )
 {
     Test_FdrDnpSlave dnpSlave;
 
@@ -2345,6 +2345,97 @@ BOOST_AUTO_TEST_CASE( test_analog_output_porter )
         BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog 1 value 67305985");  //  aka 0x04030201
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE( test_analog_output_porter_analogoutput )
+{
+    Test_FdrDnpSlave dnpSlave;
+
+    CtiFDRManager *fdrManager = new CtiFDRManager("DNP slave, but this is just a test");
+
+    CtiFDRPointList fdrPointList;
+
+    fdrPointList.setPointList(fdrManager);
+
+    dnpSlave.getReceiveFromList().deletePointList();
+    dnpSlave.setReceiveFromList(fdrPointList);
+
+    //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
+    fdrPointList.setPointList(0);
+
+    {
+        //Initialize the interface to have a point in a group.
+        CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
+
+        fdrPoint->setPointID(43);
+        fdrPoint->setPaoID(153);
+        fdrPoint->setOffset(10017);
+        fdrPoint->setPointType(AnalogPointType);
+        fdrPoint->setValue(0);
+        fdrPoint->setControllable(true);
+
+        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:11;POINTTYPE:Analog;Offset:17", "Test Destination");
+
+        vector<CtiFDRDestination> destinationList;
+
+        destinationList.push_back(pointDestination);
+
+        fdrPoint->setDestinationList(destinationList);
+
+        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+
+        dnpSlave.translateSinglePoint(fdrPoint, false);
+    }
+
+    dnpSlave.point.setPointOffset(10017);
+    dnpSlave.point.setPointId(43);
+
+    //  Success
+    {
+        const byte_str request(
+            "05 64 14 c4 0b 00 e8 03 72 f2 "
+            "c4 c3 05 29 01 28 01 00 10 00 01 02 03 04 00 45 b9");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.returnString = "Jimmy / Control result (0): Request accepted, initiated, or queued.";
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+            "05 64 16 44 e8 03 0b 00 d9 35 "
+            "c0 c3 81 00 00 29 01 28 01 00 10 00 01 02 03 04 85 5f "
+            "00 ff ff");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog 17 value 67305985");  //  aka 0x04030201
+    }
+
+    //  Failure from device
+    {
+        const byte_str request(
+            "05 64 14 c4 0b 00 e8 03 72 f2 "
+            "c4 c3 05 29 01 28 01 00 10 00 01 02 03 04 00 45 b9");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.returnString = "Jimmy / Control result (4): Request not accepted because a control operation is not supported for this point.";
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+            "05 64 16 44 e8 03 0b 00 d9 35 "
+            "c0 c3 81 00 00 29 01 28 01 00 10 00 01 02 03 04 85 5f "
+            "04 87 26");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog 17 value 67305985");  //  aka 0x04030201
     }
 }
 
