@@ -182,7 +182,16 @@ void Logger::formatAndForceLog(Level level, StreamBufferSink& logStream, const c
 
 bool Logger::isLevelEnable(Level level) const
 {
-    return _logger->_logger->isEnabledFor(getLogLevel(level));
+    log4cxx::LevelPtr ptr = getLogLevel(level);
+    // Make sure level is initialized first
+    if(ptr)
+    {
+        return _logger->_logger->isEnabledFor(ptr);
+    }
+    else
+    {
+        return false;
+    }
 }
 
 const log4cxx::LogString NoLogger, PokeEventName = LOG4CXX_STR("Poke Event");
