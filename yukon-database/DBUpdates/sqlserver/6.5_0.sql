@@ -243,7 +243,8 @@ GO
 
 ALTER TABLE GatewayFirmwareUpdateEntry
    ADD CONSTRAINT FK_GatewayFirmUpdateEnt_Device FOREIGN KEY (GatewayId)
-      REFERENCES Device (DeviceId);
+      REFERENCES Device (DeviceId)
+         ON DELETE CASCADE;
 GO
 /* End YUK-14722 */
 

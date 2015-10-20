@@ -264,12 +264,11 @@ ALTER TABLE GatewayFirmwareUpdateEntry
    ADD CONSTRAINT FK_GatewayFUEnt_GatewayFUUpd FOREIGN KEY (UpdateId)
       REFERENCES GatewayFirmwareUpdate (UpdateId)
          ON DELETE CASCADE;
-GO
 
 ALTER TABLE GatewayFirmwareUpdateEntry
    ADD CONSTRAINT FK_GatewayFirmUpdateEnt_Device FOREIGN KEY (GatewayId)
-      REFERENCES Device (DeviceId);
-GO
+      REFERENCES Device (DeviceId)
+         ON DELETE CASCADE;
 /* End YUK-14722 */
 
 /* Start YUK-14739 */

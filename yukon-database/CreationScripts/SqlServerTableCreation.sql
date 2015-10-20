@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/14/2015 10:37:57 AM                       */
+/* Created on:     10/20/2015 12:01:50 PM                       */
 /*==============================================================*/
 
 
@@ -12523,6 +12523,7 @@ go
 alter table GatewayFirmwareUpdateEntry
    add constraint FK_GatewayFirmUpdateEnt_Device foreign key (GatewayId)
       references DEVICE (DEVICEID)
+         on delete cascade
 go
 
 alter table GraphCustomerList

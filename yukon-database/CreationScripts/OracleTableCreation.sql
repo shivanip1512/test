@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/14/2015 10:33:41 AM                       */
+/* Created on:     10/20/2015 12:02:33 PM                       */
 /*==============================================================*/
 
 
@@ -11617,7 +11617,8 @@ alter table GatewayFirmwareUpdateEntry
 
 alter table GatewayFirmwareUpdateEntry
    add constraint FK_GatewayFirmUpdateEnt_Device foreign key (GatewayId)
-      references DEVICE (DEVICEID);
+      references DEVICE (DEVICEID)
+      on delete cascade;
 
 alter table GraphCustomerList
    add constraint FK_GRAPHCUS_REFGRPHCU_GRAPHDEF foreign key (GraphDefinitionID)
