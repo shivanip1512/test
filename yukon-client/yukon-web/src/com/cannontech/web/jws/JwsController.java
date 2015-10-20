@@ -126,8 +126,8 @@ public class JwsController {
         Element infoElem = new Element("information");
         jnlpElem.addContent(infoElem);
         infoElem.addContent(new Element("title").setText("Yukon\u00AE " + requestedJnlp.getTitle()));
-        infoElem.addContent(new Element("vendor").setText("Eaton Corporation plc."));
-        infoElem.addContent(new Element("homepage").setAttribute("href", "http://www.cannontech.com/"));
+        infoElem.addContent(new Element("vendor").setText("Cooper Power Systems by Eaton"));
+        infoElem.addContent(new Element("homepage").setAttribute("href", "http://www.eaton.com"));
         infoElem.addContent(new Element("description").setText(requestedJnlp.getDescription()));
 
         Element resourcesElem = new Element("resources");

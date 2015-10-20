@@ -30,8 +30,12 @@
     <entry key="yukon.web.modules.support.support.ftpUpload.title">Upload Support Bundle</entry>
 
 
-    <entry key="yukon.web.modules.support.manuals.general.title">Yukon Admin and User Manuals</entry>
-    <entry key="yukon.web.modules.support.manuals.general.link">http://www.cannontech.com/support/docs/yukon.asp</entry>
+    <entry key="yukon.web.modules.support.manuals.ami.title">Yukon AMI Manuals</entry>
+    <entry key="yukon.web.modules.support.manuals.ami.link">http://cooperpowercentral.com/yukon-ami-software/</entry>
+    <entry key="yukon.web.modules.support.manuals.dr.title">Yukon Demand Response Manuals</entry>
+    <entry key="yukon.web.modules.support.manuals.dr.link">http://cooperpowercentral.com/yukon-demand-response-software/</entry>
+    <entry key="yukon.web.modules.support.manuals.voltvar.title">Yukon Volt/Var Manuals</entry>
+    <entry key="yukon.web.modules.support.manuals.voltvar.link">http://cooperpowercentral.com/yukon-voltvar-management-software/</entry>
     <entry key="yukon.web.modules.support.manuals.general.label">(Portal)</entry>
     
     <!-- info.jsp -->

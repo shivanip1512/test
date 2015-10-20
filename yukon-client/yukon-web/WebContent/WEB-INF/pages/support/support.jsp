@@ -67,8 +67,21 @@ $(function() {
     <div class="column two">
         <tags:sectionContainer2 nameKey="manuals">
             <ul class="simple-list stacked">
-                <li class="stacked"><a href="<cti:msg2 key=".manuals.general.link"/>"><i:inline key=".manuals.general.title"/></a>&nbsp;<span class="notes"><i:inline key=".manuals.general.label"/></span></li>
-                
+            <cti:checkRolesAndProperties value="METERING">
+                <li class="stacked">
+                   <a href="<cti:msg2 key=".manuals.ami.link"/>"><i:inline key=".manuals.ami.title"/></a>&nbsp;<span class="notes"><i:inline key=".manuals.general.label"/></span>
+               </li>
+            </cti:checkRolesAndProperties>
+            <cti:checkRolesAndProperties value="DEMAND_RESPONSE">
+               <li class="stacked">
+                   <a href="<cti:msg2 key=".manuals.dr.link"/>"><i:inline key=".manuals.dr.title"/></a>&nbsp;<span class="notes"><i:inline key=".manuals.general.label"/></span>
+               </li>
+            </cti:checkRolesAndProperties>
+            <cti:checkRolesAndProperties value="CBC_SETTINGS">
+               <li class="stacked">
+                   <a href="<cti:msg2 key=".manuals.voltvar.link"/>"><i:inline key=".manuals.voltvar.title"/></a>&nbsp;<span class="notes"><i:inline key=".manuals.general.label"/></span>
+               </li>
+            </cti:checkRolesAndProperties>
                 <c:forEach var="manual" items="${manuals}">
                     <cti:url var="manualLink" value="/support/manual">
                         <cti:param name="manualName" value="${manual}" />
