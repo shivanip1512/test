@@ -190,7 +190,7 @@ bool Logger::isLevelEnable(Level level) const
     }
     else
     {
-        return false;
+        return true;
     }
 }
 
