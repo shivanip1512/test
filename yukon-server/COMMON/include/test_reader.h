@@ -80,22 +80,38 @@ public:
      */
     TestReader(std::initializer_list<std::vector<std::string>> rows)
     {
+        int columnLength = 0;
         _currentColumn = 0;
         _currentRow = 0;
         _columnNames = std::vector<std::string>();
         _values = std::vector<std::vector<std::string>>();
         _values.push_back(std::vector<std::string>());
 
-        for(std::vector<std::string> pair : rows)
+        int index = 0;
+        for(std::vector<std::string> row : rows)
         {
-            auto row_itr = pair.begin();
+            index++;
+            if(columnLength == 0)
+            {
+                columnLength = row.size();
+            }
+            else
+            {
+                if(columnLength != row.size())
+                {
+                    throw std::logic_error("Column size " + std::to_string(row.size()) +
+                        ", expected " + std::to_string(columnLength) + " in row " + std::to_string(index));
+                }
+            }
+
+            auto row_itr = row.begin();
             auto value_itr = _values.begin();
 
             // Grab the first string as the row name
             _columnNames.push_back(*row_itr++);
 
             // The rest are values
-            while(row_itr != pair.end())
+            while(row_itr != row.end())
             {
                 (*value_itr++).push_back(*row_itr++);
             }
