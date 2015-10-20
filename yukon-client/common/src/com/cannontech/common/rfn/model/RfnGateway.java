@@ -14,14 +14,33 @@ public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGa
     
     private RfnGatewayData data;
     private PaoLocation paoLocation;
+    private String upgradeVersion = " ";
     
     public RfnGateway(String name, YukonPao pao, RfnIdentifier rfnIdentifier, RfnGatewayData data) {
         super(name, pao, rfnIdentifier);
         this.data = data;
+        
     }
     
     public RfnGatewayData getData() {
         return data;
+    }
+    
+    public void setUpgradeVersion(String version){
+        this.upgradeVersion = version;
+    }
+    
+    public String getReleaseVersion()
+    {
+        return this.data.getReleaseVersion();
+    }
+    
+    public String getUpgradeVersion(){
+        return this.upgradeVersion;
+    }
+    
+    public boolean isReleaseUpgradeVersionSame(){
+        return this.getReleaseVersion().equals(this.upgradeVersion);
     }
     
     public void setData(RfnGatewayData data) {

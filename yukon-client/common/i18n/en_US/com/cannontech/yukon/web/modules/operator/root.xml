@@ -129,6 +129,8 @@
     <entry key="yukon.web.modules.operator.gateways.connectionType">Connection Type</entry>
     <entry key="yukon.web.modules.operator.gateways.ipaddress">IP Address</entry>
     <entry key="yukon.web.modules.operator.gateways.connectionStatus">Connection Status</entry>
+    <entry key="yukon.web.modules.operator.gateways.firmwareVersion">Firmware Version</entry>
+    <entry key="yukon.web.modules.operator.gateways.firmwareUpdateAvailable">Firmware Update Available</entry>
     <entry key="yukon.web.modules.operator.gateways.lastComms">Last Communication</entry>
     <entry key="yukon.web.modules.operator.gateways.radios">Radios</entry>
     <entry key="yukon.web.modules.operator.gateways.superAdmin">Super Admin</entry>

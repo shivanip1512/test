@@ -70,6 +70,9 @@
             <th><i:inline key=".name"/></th>
             <th><i:inline key=".serialNumber"/></th>
             <th><i:inline key=".ipaddress"/></th>
+            <c:if test="${enableNMGatewayVersion}">
+                <th><i:inline key=".firmwareVersion"/></th>
+            </c:if>
             <th><i:inline key=".lastComms"/></th>
             <th colspan="2"><i:inline key=".detail.dataCollection.title"/></th>
         </tr>
@@ -90,6 +93,13 @@
                         <td class="js-gw-name"><a href="${detailUrl}">${fn:escapeXml(gateway.name)}</a></td>
                         <td class="js-gw-sn">${fn:escapeXml(gateway.rfnIdentifier.sensorSerialNumber)}</td>
                         <td class="js-gw-ip">${fn:escapeXml(gateway.data.ipAddress)}</td>
+                        <c:if test="${enableNMGatewayVersion}">
+                            <td class="js-gw-rv">${gateway.releaseVersion}
+                                <c:if test="${not gateway.isReleaseUpgradeVersionSame()}">
+                                   <span><i class="icon right icon-download"></i><i:inline key=".firmwareUpdateAvailable"/></span> 
+                                </c:if>
+                            </td>
+                        </c:if>
                         <c:set var="clazz" value="green"/>
                         <c:if test="${gateway.lastCommFailed}">
                             <c:set var="clazz" value="red"/>

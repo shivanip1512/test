@@ -1,11 +1,13 @@
 package com.cannontech.web.stars.gateway;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import javax.annotation.PostConstruct;
 
@@ -22,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigDouble;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultSort;
@@ -32,6 +36,7 @@ import com.cannontech.common.rfn.model.CertificateUpdate;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayCertificateUpdateService;
+import com.cannontech.common.rfn.service.RfnGatewayFirmwareUpgradeService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -63,6 +68,8 @@ public class GatewayListController {
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private ServerDatabaseCache cache;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private RfnGatewayFirmwareUpgradeService rfnGatewayFirmwareUpgradeService;
+    @Autowired private ConfigurationSource configurationSource;
     
     private Map<SortBy, Comparator<CertificateUpdate>> sorters;
     
@@ -77,13 +84,24 @@ public class GatewayListController {
     @RequestMapping(value = {"/gateways", "/gateways/"}, method = RequestMethod.GET)
     public String gateways(ModelMap model, FlashScope flashScope, YukonUserContext userContext,
             @DefaultSort(dir = Direction.desc, sort = "TIMESTAMP") SortingParameters sorting) {
-        
-        List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
-        Collections.sort(gateways);
-        model.addAttribute("gateways", gateways);
-        
+        try {
+            Map<String, String>  upgradeVersions = rfnGatewayFirmwareUpgradeService.getFirmwareUpdateServerVersions();
+            List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
+            gateways.forEach(new Consumer<RfnGateway>() {
+                @Override
+                public void accept(RfnGateway gateway) {
+                    String updateServerUrl = gateway.getData().getUpdateServerUrl();
+                    String upgradeVersion = upgradeVersions.get(updateServerUrl);
+                    gateway.setUpgradeVersion(upgradeVersion);
+                }
+            });
+            Collections.sort(gateways);
+            model.addAttribute("gateways", gateways);
+        }
+        catch(NmCommunicationException e){
+            log.warn("caught exception in getGatewaysFromDevices", e);
+        }
         List<CertificateUpdate> certUpdates = certificateUpdateService.getAllCertificateUpdates();
-
         Direction dir = sorting.getDirection();
         SortBy sortBy = SortBy.valueOf(sorting.getSort());
         Comparator<CertificateUpdate> comparator = sorters.get(sortBy);
@@ -92,18 +110,21 @@ public class GatewayListController {
         } else {
             Collections.sort(certUpdates, comparator);
         }
-
+        
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         for (SortBy column : SortBy.values()) {
             String text = accessor.getMessage(column);
             SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
             model.addAttribute(column.name(), col);
         }
-
         model.addAttribute("certUpdates", certUpdates);
-        
         helper.addText(model, userContext);
-        
+        boolean enableNMGatewayVersion = true;
+        Double nmCompatibility = configurationSource.getDouble(MasterConfigDouble.NM_COMPATIBILITY);
+        if (nmCompatibility != null && nmCompatibility >= 7.0) {
+            enableNMGatewayVersion = true;
+        }
+        model.addAttribute("enableNMGatewayVersion",enableNMGatewayVersion);
         return "gateways/list.jsp";
     }
     
